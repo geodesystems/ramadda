@@ -172,7 +172,6 @@ public class Json {
     public static String map(List<String> values, boolean quoteValue) {
         StringBuffer row = new StringBuffer();
         map(row, values, quoteValue);
-
         return row.toString();
     }
 
@@ -212,6 +211,27 @@ public class Json {
 
         return row;
     }
+
+    public static String mapAndGuessType(List<String> values) {
+	StringBuilder    row = new StringBuilder();
+	row.append(mapOpen());
+	int cnt = 0;
+            for (int i = 0; i < values.size(); i += 2) {
+                String name  = values.get(i);
+                String value = values.get(i + 1);
+                if (value == null) {
+                    continue;
+                }
+                if (cnt > 0) {
+                    row.append(",\n");
+                }
+                cnt++;
+                row.append(attrGuessType(name, value));
+            }
+            row.append(mapClose());
+        return row.toString();
+    }
+
 
 
     /**
@@ -436,6 +456,17 @@ public class Json {
     public static String attr(String name, String value) {
         return attr(name, value, DFLT_QUOTE);
     }
+
+    public static String attrGuessType(String name, String v) {
+	if(v.equals("true") ||v.equals("false"))
+	    return attr(name,v);
+	try {
+	    double d = Double.parseDouble(v);
+	    return attr(name,d);
+	} catch(Exception ignore) {}
+	return attr(name,v,true);
+    }
+
 
     /**
      * Create a JSON object attribute
