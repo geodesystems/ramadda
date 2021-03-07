@@ -1346,16 +1346,35 @@ ul {
     background: rgb(238,238,238);
 }
 
-
 .slick-prev:before, .slick-next:before {
     color:#aaa !important;
 }
 
 
 .ramadda-slides {
-    margin-left:20px;
-    margin-right:20px;    
+    margin-left:25px;
+    margin-right:25px;    
 }
+
+.ramadda-slides-bigarrow {
+    margin-left:24px;
+    margin-right:24px;    
+}
+
+.ramadda-slides-bigarrow .slick-prev:before, .ramadda-slides-bigarrow .slick-next:before {
+    font-size:28pt !important;
+}
+
+.ramadda-slides-bigarrow .slick-next {
+    right: -14px !important;
+}
+
+.ramadda-slides-bigarrow .slick-prev {
+    left: -30px !important;
+}
+
+
+
 
 .ramadda-slider-value {
     font-family: Verdana, Arial, sans-serif;

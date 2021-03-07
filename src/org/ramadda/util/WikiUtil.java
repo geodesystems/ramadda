@@ -1160,12 +1160,14 @@ public class WikiUtil {
 		    slidesProps = HU.parseHtmlProperties(toks.size()>1?toks.get(1):"");
 		    slidesId = HU.getUniqueId("slides_");
 		    buff.append(HU.script("HtmlUtils.loadSlides();"));
-		    HU.open(buff,"div",HU.attrs("id",slidesId,"class","ramadda-slides"));
+		    slidesProps.remove("bigArrow");
+		    boolean bigArrow  = Utils.getProperty(slidesProps,"bigArrow",true);
+		    HU.open(buff,"div",HU.attrs("id",slidesId,"class"," ramadda-slides " +(bigArrow?"ramadda-slides-bigarrow":"")));
 		    continue;
 		}
 
                 if (tline.startsWith("+slide")) {
-		    String style= slidesProps!=null?Utils.getProperty(slidesProps,"style",""):"";
+		    String style= "margin:10px;padding:10px;" + (slidesProps!=null?Utils.getProperty(slidesProps,"style",""):"");
 		    HU.open(buff,"div",HU.attrs("style",style));
 		    continue;
 		}
