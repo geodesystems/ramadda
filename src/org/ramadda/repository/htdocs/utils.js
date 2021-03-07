@@ -520,6 +520,11 @@ var Utils =  {
 	if(!Array.isArray(v)) return [v];
 	return v;
     },
+    getUniqueId: function(prefix) {
+	return HtmlUtils.getUniqueId(prefix);
+	
+    },
+
     join: function(l, delimiter, offset) {
         if ((typeof offset) == "undefined") offset = 0;
         var s = "";
@@ -2707,6 +2712,24 @@ $(document).ready(function(){
 	}
 	HtmlUtils.waitForIt(what,callback, error);
     },
+    makeSlides: function(id,args) {
+	let opts = {
+	    dots:true
+	};
+	if(args) $.extend(opts,args);
+	HtmlUtils.loadSlides();
+	$("#" + id).slick(opts);
+    },
+    loadSlides: function() {
+	if(!HtmlUtils.slidesLoaded) {
+	    let base =  ramaddaBaseUrl +"/lib/slick/";
+	    let imports = HU.cssLink(base+"slick.css") + "\n" + HU.cssLink(base+"slick-theme.css") + "\n";
+	    $(imports).appendTo("head");
+	    imports = HU.javascriptLink(base+"slick.min.js");
+	    $(imports).appendTo("body");
+	    HtmlUtils.slidesLoaded = true;
+	}
+    },
     loadKatex: function(callback, error) {
 	if (!window["katex"]) {
             let imports = "<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Main-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Math-Italic.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size2-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size4-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'/>\n<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato:300,400,700,700i'>\n<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.css' crossorigin='anonymous'>\n<script defer src='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.js' crossorigin='anonymous'></script>";
@@ -3132,7 +3155,12 @@ $(document).ready(function(){
     cssTag: function(css) {
         return '<style type="text/css">\n' + css + '</style>';
     },
-
+    cssLink: function(url) {
+        return "<link href='" + url +"'  rel='stylesheet'  type='text/css' />";
+    },	
+    javascriptLink: function(url) {
+        return "<script type='text/javascript' src='" + url+"'></script>";
+    },	
     getDimension(d) {
 	if(!d) return null;
 	d = String(d);
@@ -3789,7 +3817,7 @@ $(document).ready(function(){
 	}
     },
     toggleBlock: function(label, contents, visible) {
-        var id = "block_" + (uniqueCnt++);
+        var id = Utils.getUniqueId("block_");
         var imgid = id + "_img";
 
         var img1 = ramaddaBaseUrl + "/icons/togglearrowdown.gif";

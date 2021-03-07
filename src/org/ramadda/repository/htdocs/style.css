@@ -83,7 +83,7 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     font-size:120%;
 }
 
-.ramadda-nav-link {
+.ramadda-tree-link, .ramadda-nav-link {
     text-decoration:none;
     color:rgb(59, 69, 78);
 }
@@ -1347,7 +1347,15 @@ ul {
 }
 
 
+.slick-prev:before, .slick-next:before {
+    color:#aaa !important;
+}
 
+
+.ramadda-slides {
+    margin-left:20px;
+    margin-right:20px;    
+}
 
 .ramadda-slider-value {
     font-family: Verdana, Arial, sans-serif;
@@ -3680,7 +3688,6 @@ a.toggleblocklabellink:visited {
 
 
 .entry-toggleblock-label  {
-    color: #666;
     vertical-align:middle;
     padding-top:2px;
     padding-bottom:2px;
@@ -4388,9 +4395,12 @@ h3.ui-accordion-header a {
     padding:5px;
 }
 
+
+
+
+
 .wiki-editor-popup-header {
     display:inline-block;
-    font-weight:bold;
     width:190px;
 }
 
