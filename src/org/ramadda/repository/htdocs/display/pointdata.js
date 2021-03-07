@@ -3281,3 +3281,69 @@ function RamaddaBounds(north,west,south,east) {
     });
 	      
 }
+
+
+function makeInlineData(display, src) {
+    let csv = $("#"+src).html().trim();
+    let lines = csv.split("\n");
+    let fields = [];
+    let samples = lines[1].split(",");
+    let latField  =null, lonField=null,dateField=null;
+    lines[0].split(",").forEach((tok,idx)=>{
+	tok = tok.trim();
+	let id = Utils.makeId(tok);
+	let label = Utils.makeLabel(tok);
+	let type = "string";
+	let sample = samples[idx];
+	if(display.getProperty(id+".type")) {
+	    type =  display.getProperty(id+".type");
+	    if(type=="enum") type = "enumeration";
+	} else {
+	    if(id=="date") {
+		type="date";
+	    } else {
+		if(!isNaN(parseFloat(sample))) type = "double";
+		//check for numeric
+	    }
+	}
+	let field = new RecordField({
+            id:tok,
+	    index:idx,
+            label:label,
+            type:type,
+            chartable:true
+        });
+	fields.push(field);
+	if(field.isFieldLatitude()) latField = field;
+	else if(field.isFieldLongitude()) lonField = field;
+    });
+    let records =[];
+    lines.forEach((line,idx)=>{
+	if(idx==0) return;
+	line = line.trim();
+	if(line.length==0) return;
+	let data =[];
+	let lat = NaN;
+	let lon = NaN;
+	let date = null;
+	line.split(",").forEach((tok,col)=>{
+	    tok  = tok.replace(/_nl_/g,"\n").replace(/_qt_/g,"\"").replace(/_comma_/g,",");
+	    let field = fields[col];
+	    if(latField && latField.getIndex()==col) {
+		lat = tok = parseFloat(tok);
+	    } else  if(lonField && lonField.getIndex()==col) {
+		lon = tok = parseFloat(tok);
+	    } else  if(dateField && dataField.getIndex()==col) {
+		date = tok = new Data(tok);
+	    } else {
+		if(field.isFieldNumeric()) {
+		    tok = parseFloat(tok);
+		}
+	    }
+	    data.push(tok);
+	});
+	//PointRecord(fields,lat, lon, elevation, time, data)
+        records.push(new  PointRecord(fields,lat, lon, NaN, date, data));
+    });
+    return  new PointData(src, fields, records,"#" + src);
+}

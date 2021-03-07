@@ -272,7 +272,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    //	    var t1= new Date();
 	    if(debug)
 		console.log("\tcalling displayData");
-            this.displayData(args.reload);
+            this.displayData(args.reload, debug);
 	    //	    var t2= new Date();
 	    //	    Utils.displayTimes("chart.displayData",[t1,t2]);
         },
@@ -500,8 +500,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    return fields;
 	},
 
-        displayData: function(reload) {
-	    let debug = false;
+        displayData: function(reload, debug) {
 	    if(debug)
 		console.log(this.type +" displayData " + this.getId() +" " + this.type);
 
@@ -1138,7 +1137,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 	    if(debug) {
 		for(var i=0;i<dataTable.getNumberOfColumns();i++)
-		    console.log("col:" + i +" " + dataTable.getColumnLabel(i) +" " + dataTable.getColumnType(i));
+		    console.log("col[" + i +"]=" + dataTable.getColumnLabel(i) +" " + dataTable.getColumnType(i));
 	    }
 	    if(this.getProperty("annotations") ||  this.getProperty("annotationFields")) {
 		let clonedList = Utils.cloneList(dataList);
@@ -1250,7 +1249,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		tooltip = HU.div([STYLE,HU.css('padding','8px')],tooltip);
                 let newRow = [];
 		if(debug && rowIdx<debugRows)
-		    console.log("row:");
+		    console.log("row[" + rowIdx+"]:");
 
 		let fIdx=0;
                 for (let colIdx = 0; colIdx < row.length; colIdx++) {
@@ -1274,7 +1273,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			}
 			if(debug && rowIdx<debugRows) {
 			    let v = value.f?("f:" + value.f +" v:" +value.v):value;
-			    console.log("\t value: " + colIdx +"="+ v +" " + (typeof value));
+			    console.log("\t value[" + colIdx +"]="+ v +" " + (typeof value));
 			}
 			if(maxWidth>0 && type == "string" && value.length > maxWidth)
 			    value = value.substring(0,maxWidth) +"...";

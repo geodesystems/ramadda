@@ -3948,6 +3948,7 @@ a
                 this.properties.theData.lon = this.getProperty("longitude", "-105");
             }
 
+
             if (this.properties.theData.hasData()) {
                 this.addData(this.properties.theData);
                 return;
@@ -3955,7 +3956,14 @@ a
             this.properties.theData.loadData(this);
         },
         getData: function() {
-            if (!this.hasData()) return null;
+            if (!this.hasData()) {
+		//Inline data
+		if(this.properties.dataSrc) {
+		    this.addData(makeInlineData(this,this.properties.dataSrc));
+		} else {
+		    return null;
+		}
+	    }
             var dataList = this.dataCollection.getList();
             return dataList[0];
         },
@@ -4070,10 +4078,11 @@ a
 	},
         displayData: function() {},
         setDisplayReady: function() {
+//	    console.log("setDisplayReady");
 	    var callUpdate = !this.displayReady;
             this.displayReady = true;
 	    if(callUpdate) {
-		this.callUpdateUI();
+		this.callUpdateUI(true);
 	    }
         },
         getDisplayReady: function() {
@@ -4092,7 +4101,7 @@ a
 		this.getAnimation().makeControls();
             }
             this.checkSearchBar();
-	    this.callUpdateUI();
+	    this.callUpdateUI(true);
 	    if(this.getProperty("reloadSeconds")) {
 		this.runReload();
 	    }
