@@ -626,6 +626,10 @@ a.ramadda-menubar-button:hover {
     padding:4px;
 }
 
+.ramadda-expandable-link {
+    background:#fff;
+}
+
 .ramadda-gridboxes-1 {
     grid-template-columns: 1fr;
 }
@@ -1354,6 +1358,30 @@ ul {
 .ramadda-slides {
     margin-left:25px;
     margin-right:25px;    
+}
+
+.ramadda-slides-header {
+    padding:0px;
+    text-align:center;
+}
+
+.ramadda-slides-header-item {
+    display:inline-block;
+    margin-left: 5px;
+    margin-right: 5px;
+    padding-left:6px;
+    padding-right:6px;
+    cursor:pointer;
+}
+
+data {
+    display:none;
+}
+
+
+.ramadda-slides-header-item-selected {
+    font-weight:500;
+    background:#efefef;
 }
 
 .ramadda-slides-bigarrow {
