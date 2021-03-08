@@ -2038,6 +2038,10 @@ public class TypeHandler extends RepositoryManager {
         return createEntryFromDatabase(results, false);
     }
 
+    public void initEntryHasBeenCalled(Entry entry) {
+    }
+
+
     /**
      * _more_
      *

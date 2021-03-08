@@ -571,6 +571,12 @@ public class Entry implements Cloneable {
         this.startDate = startDate;
         this.endDate   = endDate;
         this.values    = values;
+
+	if(typeHandler!=null) {
+	    typeHandler.initEntryHasBeenCalled(this);
+	}
+
+
     }
 
 
