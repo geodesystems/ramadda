@@ -2352,6 +2352,11 @@ public class StorageManager extends RepositoryManager implements PointFile
         return IOUtil.readContents(url.toString(), getClass());
     }
 
+    public String readFile(String file) throws Exception {
+        checkPath(file);
+        return IOUtil.readContents(file, getClass());
+    }
+
 
     /**
      * Read a system resource from the file
