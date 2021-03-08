@@ -4097,8 +4097,8 @@ public class EntryManager extends RepositoryManager {
 
         CategoryBuffer cats      = new CategoryBuffer();
         //Preload the super categories
-        superCats.add("");
-        superCatMap.put("", cats);
+        superCats.add("General");
+        superCatMap.put("General", cats);
         superCats.add("Science and Education");
         superCatMap.put("Science and Education", new CategoryBuffer());
         superCats.add("Miscellaneous");
@@ -4119,6 +4119,19 @@ public class EntryManager extends RepositoryManager {
                 SESSION_TYPES);
 
         List<TypeHandler> typeHandlers = getRepository().getTypeHandlers();
+	
+        Comparator comp = new Comparator() {
+            public int compare(Object o1, Object o2) {
+		TypeHandler t1  = (TypeHandler) o1;
+		TypeHandler t2  = (TypeHandler) o2;
+		if(t1.getPriority()==t2.getPriority())
+		    return t1.getLabel().compareTo(t2.getLabel());
+		return t1.getPriority()-t2.getPriority();
+	    }};
+        Object[] array = typeHandlers.toArray();
+        Arrays.sort(array, comp);
+	typeHandlers = (List<TypeHandler>) Misc.toList(array);
+
         for (TypeHandler typeHandler : typeHandlers) {
             if ( !typeHandler.getForUser()) {
                 continue;
@@ -4143,9 +4156,6 @@ public class EntryManager extends RepositoryManager {
                 img = HtmlUtils.img(typeHandler.getIconUrl(icon));
             }
 
-
-
-
             boolean hasUsedType =
                 ((sessionTypes != null)
                  && sessionTypes.contains(typeHandler.getType()));
@@ -4153,6 +4163,9 @@ public class EntryManager extends RepositoryManager {
             String superCategory = typeHandler.getSuperCategory();
             if (superCategory.equals("Basic")) {
                 superCategory = "";
+            }
+            if (superCategory.equals("")) {
+                superCategory = "General";
             }
             cats = superCatMap.get(superCategory);
             if (cats == null) {
@@ -4165,13 +4178,14 @@ public class EntryManager extends RepositoryManager {
             if (hasUsedType) {
                 cats.moveToFront(category);
             }
-            cats.append(category, HtmlUtils
+	    String href = HtmlUtils
                 .href(request
                     .makeUrl(getRepository().URL_ENTRY_FORM, ARG_GROUP, group
                         .getId(), ARG_TYPE, typeHandler.getType()), img + " "
-                            + msg(typeHandler.getLabel())));
+                            + msg(typeHandler.getLabel()));
 
-            cats.append(category, HtmlUtils.br());
+            cats.append(category, HU.div(href,HU.attrs("class","entry-type-list-item","title",typeHandler.getHelp())));
+
         }
 
         StringBuilder inner = new StringBuilder();
@@ -4179,7 +4193,7 @@ public class EntryManager extends RepositoryManager {
         for (String superCategory : superCats) {
             cats = superCatMap.get(superCategory);
             inner.append("<div class=ramadda-section>");
-            inner.append("<h2>" + superCategory + "</h2>");
+	    HU.div(inner, superCategory,HU.attrs("class","entry-type-group"));
             inner.append("<table cellpadding=10><tr valign=top>");
             int colCnt = 0;
             for (String cat : cats.getCategories()) {
