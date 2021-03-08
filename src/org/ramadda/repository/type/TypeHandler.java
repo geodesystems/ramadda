@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -383,6 +383,8 @@ public class TypeHandler extends RepositoryManager {
     private Entry synthTopLevelEntry;
 
 
+    /** _more_          */
+    private int priority;
 
 
     /**
@@ -475,6 +477,7 @@ public class TypeHandler extends RepositoryManager {
                     (String) null);
             superCategory = XmlUtil.getAttributeFromTree(node,
                     ATTR_SUPERCATEGORY, superCategory);
+            priority = Utils.getAttributeOrTag(node, "priority", 999);
             filePattern = Utils.getAttributeOrTag(node, ATTR_PATTERN,
                     (String) null);
             editHelp = Utils.getAttributeOrTag(node, "edithelp", "");
@@ -1958,30 +1961,39 @@ public class TypeHandler extends RepositoryManager {
      */
     public Entry changeType(Request request, Entry entry) throws Exception {
         //Recreate the entry. This will fill in any extra entry type db tables
-	Object[] origValues =  entry.getTypeHandler().getEntryValues(entry);
-	List<Column> origColumns = entry.getTypeHandler().getColumns();
-	List<Column> columns = this.getColumns();	
+        Object[]     origValues =
+            entry.getTypeHandler().getEntryValues(entry);
+        List<Column> origColumns = entry.getTypeHandler().getColumns();
+        List<Column> columns     = this.getColumns();
         entry = getEntryManager().getEntry(request, entry.getId());
         //Then initialize it, e.g., point data type will read the file and set the entry values, etc.
         initializeNewEntry(request, entry, false);
-	Object[] values =  getEntryValues(entry);
-	for(int i=0;i<origColumns.size();i++) {
-	    if(i>=columns.size()) break;
-	    Column origColumn = origColumns.get(i);
-	    Column column = columns.get(i);
-    	    if(!origColumn.getName().equals(column.getName())) break;
-	    if(origColumn.getOffset()!= column.getOffset()) break;
-	    values[origColumn.getOffset()] = origValues[origColumn.getOffset()];
-	}
+        Object[] values = getEntryValues(entry);
+        for (int i = 0; i < origColumns.size(); i++) {
+            if (i >= columns.size()) {
+                break;
+            }
+            Column origColumn = origColumns.get(i);
+            Column column     = columns.get(i);
+            if ( !origColumn.getName().equals(column.getName())) {
+                break;
+            }
+            if (origColumn.getOffset() != column.getOffset()) {
+                break;
+            }
+            values[origColumn.getOffset()] =
+                origValues[origColumn.getOffset()];
+        }
 
-	/*
-	System.err.println("type:" + this);
-	for(int i=0;i<values.length;i++) {
-	    System.err.println("value[" + i +"] = " + values[i]);
-	}
-	*/
+        /*
+        System.err.println("type:" + this);
+        for(int i=0;i<values.length;i++) {
+            System.err.println("value[" + i +"] = " + values[i]);
+        }
+        */
         //Now store the changes
         getEntryManager().updateEntry(request, entry);
+
         return entry;
     }
 
@@ -2038,8 +2050,12 @@ public class TypeHandler extends RepositoryManager {
         return createEntryFromDatabase(results, false);
     }
 
-    public void initEntryHasBeenCalled(Entry entry) {
-    }
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     */
+    public void initEntryHasBeenCalled(Entry entry) {}
 
 
     /**
@@ -2243,39 +2259,55 @@ public class TypeHandler extends RepositoryManager {
             boolean abbreviated)
             throws Exception {
         if (parent != null) {}
-        DatabaseManager dbm        = getDatabaseManager();
-        String          entryId    = results.getString(Tables.ENTRIES.COL_NODOT_ID);
-        Entry           entry      = createEntry(entryId);
-        Date            createDate =  dbm.getDate(results, Tables.ENTRIES.COL_NODOT_CREATEDATE);
-        String          parentId   = results.getString(Tables.ENTRIES.COL_NODOT_PARENT_GROUP_ID);
-        Entry           parent = getEntryManager().findGroup(null, parentId);
-	Resource resource = new Resource(
-					 getStorageManager().resourceFromDB(results.getString(Tables.ENTRIES.COL_NODOT_RESOURCE)),
-					 results.getString(Tables.ENTRIES.COL_NODOT_RESOURCE_TYPE),
-					 results.getString(Tables.ENTRIES.COL_NODOT_MD5),
-					 results.getLong(Tables.ENTRIES.COL_NODOT_FILESIZE));
-	User user = 	getUserManager().findUser(results.getString(Tables.ENTRIES.COL_NODOT_USER_ID), true); 
-	int order = results.getInt(Tables.ENTRIES.COL_NODOT_ENTRYORDER);
-	if(order ==0) order=999;
-	entry.initEntry(results.getString(Tables.ENTRIES.COL_NODOT_NAME), 
-			results.getString(Tables.ENTRIES.COL_NODOT_DESCRIPTION),
-			parent,
-			user,
-			resource,
-			results.getString(Tables.ENTRIES.COL_NODOT_DATATYPE),
-			order,
-			createDate.getTime(), 
-			dbm.getDate(results, Tables.ENTRIES.COL_NODOT_CHANGEDATE, createDate).getTime(),
-			dbm.getDate(results, Tables.ENTRIES.COL_NODOT_FROMDATE).getTime(),
-			dbm.getDate(results, Tables.ENTRIES.COL_NODOT_TODATE).getTime(),
-			null);
+        DatabaseManager dbm   = getDatabaseManager();
+        String entryId        =
+            results.getString(Tables.ENTRIES.COL_NODOT_ID);
+        Entry           entry = createEntry(entryId);
+        Date createDate = dbm.getDate(results,
+                                      Tables.ENTRIES.COL_NODOT_CREATEDATE);
+        String parentId =
+            results.getString(Tables.ENTRIES.COL_NODOT_PARENT_GROUP_ID);
+        Entry parent = getEntryManager().findGroup(null, parentId);
+        Resource resource =
+            new Resource(getStorageManager()
+                .resourceFromDB(results
+                    .getString(Tables.ENTRIES.COL_NODOT_RESOURCE)), results
+                        .getString(Tables.ENTRIES
+                            .COL_NODOT_RESOURCE_TYPE), results
+                                .getString(Tables.ENTRIES
+                                    .COL_NODOT_MD5), results
+                                        .getLong(Tables.ENTRIES
+                                            .COL_NODOT_FILESIZE));
+        User user = getUserManager().findUser(
+                        results.getString(Tables.ENTRIES.COL_NODOT_USER_ID),
+                        true);
+        int order = results.getInt(Tables.ENTRIES.COL_NODOT_ENTRYORDER);
+        if (order == 0) {
+            order = 999;
+        }
+        entry.initEntry(results
+            .getString(Tables.ENTRIES.COL_NODOT_NAME), results
+            .getString(Tables.ENTRIES
+                .COL_NODOT_DESCRIPTION), parent, user, resource, results
+                    .getString(Tables.ENTRIES
+                        .COL_NODOT_DATATYPE), order, createDate.getTime(), dbm
+                            .getDate(results, Tables.ENTRIES
+                                .COL_NODOT_CHANGEDATE, createDate)
+                                    .getTime(), dbm
+                                    .getDate(results, Tables.ENTRIES
+                                        .COL_NODOT_FROMDATE).getTime(), dbm
+                                            .getDate(results, Tables.ENTRIES
+                                                .COL_NODOT_TODATE)
+                                                    .getTime(), null);
 
         entry.setSouth(results.getDouble(Tables.ENTRIES.COL_NODOT_SOUTH));
         entry.setNorth(results.getDouble(Tables.ENTRIES.COL_NODOT_NORTH));
         entry.setEast(results.getDouble(Tables.ENTRIES.COL_NODOT_EAST));
         entry.setWest(results.getDouble(Tables.ENTRIES.COL_NODOT_WEST));
-        entry.setAltitudeTop(results.getDouble(Tables.ENTRIES.COL_NODOT_ALTITUDETOP));
-        entry.setAltitudeBottom(results.getDouble(Tables.ENTRIES.COL_NODOT_ALTITUDEBOTTOM));
+        entry.setAltitudeTop(
+            results.getDouble(Tables.ENTRIES.COL_NODOT_ALTITUDETOP));
+        entry.setAltitudeBottom(
+            results.getDouble(Tables.ENTRIES.COL_NODOT_ALTITUDEBOTTOM));
 
         if ( !abbreviated) {
             initializeEntryFromDatabase(entry);
@@ -2512,6 +2544,7 @@ public class TypeHandler extends RepositoryManager {
 
         if (parent != null) {
             parent.getEntryLinks(request, entry, links);
+
             return;
         }
 
@@ -2650,7 +2683,8 @@ public class TypeHandler extends RepositoryManager {
                         entry), ICON_METADATA_EDIT, "Edit Properties",
                                 OutputType.TYPE_EDIT));
 
-	    List<String> metadataTypes = entry.getTypeHandler().getMetadataTypes();
+            List<String> metadataTypes =
+                entry.getTypeHandler().getMetadataTypes();
             if (metadataTypes.size() > 0) {
                 links.add(makeHRLink(OutputType.TYPE_EDIT));
             }
@@ -3158,7 +3192,8 @@ public class TypeHandler extends RepositoryManager {
             if (resourceLink.length() > 0) {
                 if (entry.getResource().isUrl()) {
                     try {
-                        resourceLink = typeHandler.getPathForEntry(request, entry);
+                        resourceLink = typeHandler.getPathForEntry(request,
+                                entry);
                         resourceLink = HtmlUtils.href(resourceLink,
                                 resourceLink);
                     } catch (Exception exc) {
@@ -3410,7 +3445,8 @@ public class TypeHandler extends RepositoryManager {
         if (desc == null) {
             return false;
         }
-	desc = desc.trim();
+        desc = desc.trim();
+
         return (desc.startsWith("<wiki_inner>")
                 || desc.startsWith(WIKI_PREFIX));
     }
@@ -3755,8 +3791,15 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     public boolean isDescriptionWiki(Entry entry) {
-	return  getProperty(entry, "form.description.iswiki", false);
+        return getProperty(entry, "form.description.iswiki", false);
     }
 
 
@@ -4025,10 +4068,11 @@ public class TypeHandler extends RepositoryManager {
             addSpecialToEntryForm(request, sb, parentEntry, entry, formInfo,
                                   this);
 
-	    sb.append(formEntry(request, msgLabel("Order"),
-				HtmlUtils.input(ARG_ENTRYORDER,
-                                        ((entry != null)
-                                         ? entry.getEntryOrder():999),HtmlUtils.SIZE_5)+" 1-N"));
+            sb.append(formEntry(request, msgLabel("Order"),
+                                HtmlUtils.input(ARG_ENTRYORDER,
+                                    ((entry != null)
+                                     ? entry.getEntryOrder()
+                                     : 999), HtmlUtils.SIZE_5) + " 1-N"));
             if ((entry != null) && request.getUser().getAdmin()
                     && okToShowInForm(entry, "owner", true)) {
                 sb.append(formEntry(request, msgLabel("Owner"),
@@ -4449,13 +4493,13 @@ public class TypeHandler extends RepositoryManager {
                         addWikiEditor(request, entry, sb, formInfo,
                                       ARG_DESCRIPTION + "_editor",
                                       ARG_DESCRIPTION, desc, "Description",
-                                      false,
-                                      Entry.MAX_DESCRIPTION_LENGTH);
+                                      false, Entry.MAX_DESCRIPTION_LENGTH);
                     } else {
                         desc = desc.trim();
                         boolean isTextWiki = isWikiText(desc);
                         if (desc.startsWith(WIKI_PREFIX)) {
-                            desc = desc.substring(WIKI_PREFIX.length()).trim();
+                            desc = desc.substring(
+                                WIKI_PREFIX.length()).trim();
                         }
                         String        cbxId  = "iswiki";
                         String        textId = ARG_DESCRIPTION;
@@ -4470,15 +4514,14 @@ public class TypeHandler extends RepositoryManager {
                                                      ICON_WIKI), "title",
                                                          "Wikify text");
 
-			HtmlUtils.open(tmpSB, "div",
+                        HtmlUtils.open(tmpSB, "div",
                                        HtmlUtils.attrs("style", isTextWiki
                                 ? ""
                                 : "display:none;", "id", wikiId + "_block"));
 
                         addWikiEditor(request, entry, tmpSB, formInfo,
                                       wikiId, ARG_WIKITEXT, desc, null,
-                                      false,
-                                      Entry.MAX_DESCRIPTION_LENGTH);
+                                      false, Entry.MAX_DESCRIPTION_LENGTH);
                         HtmlUtils.close(tmpSB, "div");
                         HtmlUtils.open(tmpSB, "div",
                                        HtmlUtils.attrs("style", !isTextWiki
@@ -4904,10 +4947,10 @@ public class TypeHandler extends RepositoryManager {
                               String hiddenId, String text, String label,
                               boolean readOnly, int length)
             throws Exception {
-	if (text.startsWith(WIKI_PREFIX)) {
-	    if(!isDescriptionWiki(entry)) {
-		text = text.substring(WIKI_PREFIX.length()).trim();
-	    }
+        if (text.startsWith(WIKI_PREFIX)) {
+            if ( !isDescriptionWiki(entry)) {
+                text = text.substring(WIKI_PREFIX.length()).trim();
+            }
         }
         String sidebar = "";
         if ( !readOnly) {
@@ -5022,9 +5065,9 @@ public class TypeHandler extends RepositoryManager {
             //replace any macros {name} is the type id without the leading type_
             propertyValue = propertyValue.replace("${type}",
                     type).replace("${name}", type.replace("type_", ""));
-	    propertyValue = getStorageManager().localizePath(propertyValue);
+            propertyValue = getStorageManager().localizePath(propertyValue);
             propertyValue = getStorageManager().readSystemResource(
-								   propertyValue.substring("file:".length()));
+                propertyValue.substring("file:".length()));
             delimiter = "\n";
         }
         List<String> tmp = StringUtil.split(propertyValue, delimiter, true,
@@ -6259,7 +6302,7 @@ public class TypeHandler extends RepositoryManager {
                                    List<Entry> subGroups, SelectInfo select)
             throws Exception {
         List<String> ids = getEntryManager().getChildIds(request, group,
-							 select);
+                               select);
         List<Entry> myEntries   = new ArrayList<Entry>();
         List<Entry> mySubGroups = new ArrayList<Entry>();
         for (String id : ids) {
@@ -7114,7 +7157,7 @@ public class TypeHandler extends RepositoryManager {
         long t3 = System.currentTimeMillis();
 
 
-	//	Utils.printTimes("Key:"+ key +" times:",t1,t2,t3);
+        //      Utils.printTimes("Key:"+ key +" times:",t1,t2,t3);
         set = new HashSet();
         set.addAll(Misc.toList(values));
         columnEnumValues.put(key, set);
@@ -7397,6 +7440,16 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
+     * @return _more_
+     */
+    public int getPriority() {
+        return priority;
+    }
+
+
+    /**
+     * _more_
+     *
      * @param args _more_
      *
      * @throws Exception _more_
@@ -7405,6 +7458,7 @@ public class TypeHandler extends RepositoryManager {
         String pattern = ".*\\.ggp$";
         System.err.println(args[0].toLowerCase().matches(pattern));
     }
+
 
 
 
