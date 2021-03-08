@@ -2404,13 +2404,11 @@ public class WikiUtil {
                             ? toks.get(1)
                             : "");
                     rowStates.add(new RowState(buff, props));
-
                     continue;
                 }
                 if (tline.equals("-row")) {
                     if (rowStates.size() == 0) {
                         wikiError(buff, "Error: unopened row");
-
                         continue;
                     }
                     RowState rowState = rowStates.get(rowStates.size() - 1);
@@ -2704,10 +2702,23 @@ public class WikiUtil {
                 hb.append("\n");
             }
             if (left) {
+		StringBuilder args = new StringBuilder();
+		boolean open = Utils.getProperty(headingsProps,"leftOpen", true);
+		String leftWidth = Utils.getProperty(headingsProps,"leftWidth", "250px");
                 String leftStyle = (String) Utils.getProperty(headingsProps,
-                                       "leftStyle", "");
+							      "leftStyle", "");
                 String rightStyle = (String) Utils.getProperty(headingsProps,
-                                        "rightStyle", "");
+							       "rightStyle", "");
+		leftStyle = HU.css("width",leftWidth) +
+		    leftStyle;
+		args.append("leftOpen:" + open +",");
+		args.append("leftWidth:'" + leftWidth +"',");		
+		if(!open) {
+		    rightStyle+=HU.css("margin-left","0px");
+		    leftStyle+=HU.css("display","none");		    
+		} else {
+		    rightStyle+=HU.css("margin-left",leftWidth);
+		}
                 s = s.replace("${" + headingsNav + "}", "");
                 String leftLinks = HU.div(hb.toString(),
                                           "class=ramadda-nav-left-links");
@@ -2716,7 +2727,7 @@ public class WikiUtil {
                     + leftLinks
                     + "<div id=ramadda-nav-2></div><div id=ramadda-nav-3></div></div><div style='"
                     + rightStyle + "' class=ramadda-nav-right>" + s
-                    + "</div></div>" + HU.script("HtmlUtils.initNavLinks()");
+                    + "</div></div>" + HU.script("HtmlUtils.initNavLinks({" + args+"})");
             } else if (list) {
                 String style = Utils.getProperty(headingsProps, "style", "");
                 s = s.replace("${" + headingsNav + "}",
