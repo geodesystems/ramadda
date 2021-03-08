@@ -4229,7 +4229,7 @@ a
 
             let html =  HU.div([ATTR_CLASS, "ramadda-popup", ATTR_ID, this.getDomId(ID_MENU_OUTER)], "");
             let style = this.getProperty("displayStyle", "");
-            html += HU.div([CLASS, "display-contents", STYLE, "display:relative;" + style],table);
+            html += HU.div([CLASS, "display-contents", STYLE, "position:relative;" + style],table);
             return html;
         },
         getWidthForStyle: function(dflt) {

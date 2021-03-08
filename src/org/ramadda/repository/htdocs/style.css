@@ -88,8 +88,11 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     color:rgb(59, 69, 78);
 }
 
+
+
 .ramadda-nav-left-extra {
 }
+
 
 .ramadda-nav-left-extra li {
     margin:0px;
@@ -244,9 +247,17 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
 
 
 
+.ramadda-nav-left-toggle  {
+    position:absolute;
+    left:5px;
+    top:0px;
+    cursor:pointer;
+}
+
 .ramadda-nav-right {
     /* the margin here is the same as the width of the ramada-nav-left element */
     margin-left:250px;
+    position:relative;
 }
 
 .ramadda-nav-arrow {

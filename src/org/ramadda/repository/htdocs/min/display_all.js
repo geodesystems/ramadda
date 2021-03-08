@@ -7044,7 +7044,7 @@ a
 
             let html =  HU.div([ATTR_CLASS, "ramadda-popup", ATTR_ID, this.getDomId(ID_MENU_OUTER)], "");
             let style = this.getProperty("displayStyle", "");
-            html += HU.div([CLASS, "display-contents", STYLE, "display:relative;" + style],table);
+            html += HU.div([CLASS, "display-contents", STYLE, "position:relative;" + style],table);
             return html;
         },
         getWidthForStyle: function(dflt) {
@@ -25371,6 +25371,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    });
 	},
         getResultsHeader: function(entries) {
+	    if(entries.length<=10) return  this.getCloser();
             var left = "Showing " + (this.searchSettings.skip + 1) + "-" + (this.searchSettings.skip + Math.min(this.searchSettings.max, entries.length));
             var nextPrev = [];
             var lessMore = [];
@@ -27672,7 +27673,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	{p:'maxWidth',w:200},		
 	{p:"autoSearch",w:true},
 	{p:"showHeader",w:true},
-	{p:"inputSize",w:"30"},
+	{p:"inputWidth",w:"100%"},
 	{p:"entryType",w:"",tt:"Constrain search to entries of this type"},		
 	{p:"entryRoot",w:"this",tt:"Constrain search to this tree"},		
     ];
@@ -27763,8 +27764,8 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    
 	    let eg = this.getEgText();
 	    let text  = this.getFormText();
-	    let size = this.getPropertyInputSize("30");
-            var textField = HtmlUtils.input("", text, ["placeholder", eg, ATTR_CLASS, "display-search-input", ATTR_SIZE, size, ATTR_ID, this.getDomId(ID_TEXT_FIELD)]);
+	    let size = this.getPropertyInputWidth("100%");
+            var textField = HtmlUtils.input("", text, [STYLE, HU.css("width", size), "placeholder", eg, ATTR_CLASS, "display-search-input", ATTR_ID, this.getDomId(ID_TEXT_FIELD)]);
 
 	    form += textField;
             form += "<input type=\"submit\" style=\"position:absolute;left:-9999px;width:1px;height:1px;\"/>";
