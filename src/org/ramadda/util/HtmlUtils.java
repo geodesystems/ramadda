@@ -1011,6 +1011,18 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return attr(ATTR_STYLE, c);
     }
 
+    public static String css(String... s) {
+	StringBuilder sb = new StringBuilder();
+	for(int i=0;i<s.length;i+=2) {
+	    if(s[i+1]==null) continue;
+	    sb.append(s[i]);
+	    sb.append(":");
+	    sb.append(s[i+1]);	    
+	    sb.append(";");
+	}
+	return sb.toString();
+    }
+    
     /**
      * _more_
      *
