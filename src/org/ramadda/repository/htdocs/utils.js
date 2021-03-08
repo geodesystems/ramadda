@@ -3261,15 +3261,38 @@ $(document).ready(function(){
 	    scrollTop: diff+contents.scrollTop()
 	}, animate);
     },
-    initNavLinks: function() {
+        initNavLinks: function(args) {
+	let opts = {
+	    leftOpen:true,
+	    showToggle:true,
+	    leftWidth:"250px"
+	}
+	if(args) $.extend(opts,args);
+	let left = $(".ramadda-nav-left");
+	let right = $(".ramadda-nav-right");	
+   
+	if(opts.showToggle) {
+	    let menu = HU.div(["toggle-state",opts.leftOpen?"open":"closed", TITLE,"Toggle left", ID,"ramadda-nav-left-toggle",CLASS,"ramadda-nav-left-toggle"], HtmlUtils.getIconImage("fa-bars"));
+	    $(menu).appendTo(right);
+	    $("#ramadda-nav-left-toggle").click(function() {
+		let closed = $(this).attr("toggle-state")==="closed";
+		if(closed) {
+		    left.show();
+		    right.animate({"margin-left":opts.leftWidth});
+		} else {
+		    left.hide();
+		    right.animate({"margin-left":"0px"});
+		}
+		$(this).attr("toggle-state",closed?"open":"closed");
+	    });
+	}
+
 	let linksContainer = $(".ramadda-nav-left-links");
 	linksContainer.mouseenter(function() {
 	    Utils.linksMouseIn = true;
-	    console.log("in");
 	});
 	linksContainer.mouseleave(function() {
 	    Utils.linksMouseIn = false;
-	    console.log("out");
 	});	
 
 	let anchors = 	$(".ramadda-nav-anchor");
