@@ -39,16 +39,16 @@
 
 </type>
 
-  <type name="type_document_doc"  description="Word File" pattern="(.*\.doc|.*\.docx)"  super="type_document_tika"         handler="org.ramadda.data.docs.MsDocTypeHandler" >
+  <type name="type_document_doc"  description="Word File" pattern="(.*\.doc|.*\.docx)"  super="type_document_tika"         handler="org.ramadda.data.docs.MsDocTypeHandler" priority="10" >
      <property name="icon" value="/icons/doc.png"/>
 </type>
 
-  <type name="type_document_ppt"  description="Powerpoint File" pattern="(.*\.ppt|.*\.pptx)"  super="type_document_tika"   handler="org.ramadda.data.docs.MsDocTypeHandler" >
+  <type name="type_document_ppt"  description="Powerpoint File" pattern="(.*\.ppt|.*\.pptx)"  super="type_document_tika"   handler="org.ramadda.data.docs.MsDocTypeHandler" priority="10" >
      <property name="icon" value="/icons/ppt.png"/>
 </type>
 
 
-  <type name="type_document_xls"  description="Excel File" pattern="(.*\.xls|.*\.xlsx)"  super="type_document_tabular"   handler="org.ramadda.plugins.media.XlsTypeHandler">
+  <type name="type_document_xls"  description="Excel File" pattern="(.*\.xls|.*\.xlsx)"  super="type_document_tabular"   handler="org.ramadda.plugins.media.XlsTypeHandler" priority="10" >
      <property name="icon" value="/icons/xls.png"/>
 
 </type>
@@ -83,7 +83,7 @@
   <type name="media_youtubevideo"  
         description="YouTube Video" 
         handler="org.ramadda.plugins.media.YouTubeVideoTypeHandler" 
-        category="Documents" 
+        category="Media" 
         pattern="^(http|https)://www.youtube.com/(watch\?v=|v/).*">
      <property name="icon" value="/media/youtube.png"/>
      <property name="form.area.show" value="false"/>
@@ -102,7 +102,7 @@
 </type>
 
 
-  <type name="media_video_channel"  description="Video Channel" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Information">
+  <type name="media_video_channel"  description="Video Channel" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Media">
      <property name="icon" value="/media/folder-open-film.png"/>
      <property name="form.resource.show" value="false"/>
      <wiki><![CDATA[
@@ -143,7 +143,7 @@
         super="media_video"
         description="Quicktime Video" 
         handler="org.ramadda.plugins.media.QuicktimeTypeHandler" 
-        category="Documents" 
+        category="Media" 
         pattern="(.*\.mov|.*\.mp4)">
      <property name="icon" value="/icons/mov.png"/>
      <column name="autoplay" type="boolean" label="Auto play" default="false"  showinhtml="false"/>
@@ -159,7 +159,8 @@
 </type>
 
 
-  <type name="media_photoalbum"  description="Photo Album" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Information">
+<type name="media_photoalbum"  description="Photo Album" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Media"
+      help="A collection of images displayed as a photo album"      >
      <property name="icon" value="/media/pictures.png"/>
      <property name="form.resource.show" value="false"/>
      <wiki><![CDATA[
@@ -173,7 +174,7 @@
 </type>
 
 
-  <type name="media_imageloop"  description="Image Loop" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Imagery">
+  <type name="media_imageloop"  description="Image Loop" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Media">
      <property name="form.resource.show" value="false"/>
      <property name="icon" value="/media/film.png"/>
      <wiki><![CDATA[
@@ -189,14 +190,15 @@
 </type>
 
 
-  <type name="type_image"  description="Image" foruser="true" category="Imagery" pattern="(.*\.png|.*\.gif|.*\.jpg|.*\.jpeg)" handler="org.ramadda.plugins.media.ImageTypeHandler">
+  <type name="type_image"  description="Image" foruser="true" category="Media" pattern="(.*\.png|.*\.gif|.*\.jpg|.*\.jpeg)" handler="org.ramadda.plugins.media.ImageTypeHandler" priority="1" >
      <property name="icon" value="/icons/image.gif"/>
      <column   name="proxy" type="boolean" label="Proxy Image if URL"  showinhtml="false" default="false"/>
      <column   name="filename" label="Alternate filename"  showinhtml="false" />
 </type>
 
 
-  <type name="type_360image"  super="type_image" description="360 Image" metadata="3d_label,content.alias" foruser="true" category="Imagery" >
+<type name="type_360image"  super="type_image" description="360 Image" metadata="3d_label,content.alias" foruser="true" category="Media"
+      help="Displays a 360 degree image"      >
      <property name="icon" value="/icons/image.gif"/>
      <column   name="rotation" label="Initial rotation" suffix="Pitch, rotation about the X-axis. Yaw, rotation about the Y-axis. Roll, rotation about the Z-axis."  showinhtml="false" />
      <wiki><![CDATA[
@@ -215,12 +217,12 @@
 
 
 
-  <type name="type_image_airport"  description="Airport Image" super="type_image" foruser="true" category="Imagery" >
+  <type name="type_image_airport"  description="Airport Image" super="type_image" foruser="false" category="Media" >
      <property name="icon" value="/media/paper-plane.png"/>
 </type>
 
 
-  <type name="type_image_webcam"  description="Webcam" super="type_image" foruser="true" category="Imagery"  metadata="enum_tag,camera.direction">
+  <type name="type_image_webcam"  description="Webcam" super="type_image" foruser="true" category="Media"  metadata="enum_tag,camera.direction">
      <property name="form.file.show" value="false"/>
      <property name="form.area.show" value="false"/>
      <property name="form.location.show" value="true"/>
@@ -236,7 +238,7 @@
   <type name="media_zoomify"  
         description="Zoomify" 
         handler="org.ramadda.plugins.media.ZoomifyTypeHandler" 
-        category="Documents" >
+        category="Media" >
      <property name="icon" value="/icons/image.gif"/>
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>
@@ -258,7 +260,7 @@
 
 <type name="type_document_vegalite"  description="Vega-Lite chart file" 
       handler="org.ramadda.plugins.media.VegaTypeHandler" 
-super="type_document_tabular" >
+      super="type_document_tabular" supercategory="" category="Data">
      <property name="icon" value="/media/vega.png"/>
      <wiki><![CDATA[
 +section # title="{{name}}"

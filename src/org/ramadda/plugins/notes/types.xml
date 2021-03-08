@@ -35,7 +35,7 @@
 <!--
     legacy
 -->
- <type name="notes_jsonfile"  super="type_json" description="Json File"></type>
+ <type name="notes_jsonfile"  super="type_json" description="Json File" foruser="false"></type>
 
 
 <!--

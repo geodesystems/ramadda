@@ -1575,6 +1575,11 @@ input, password, fileinput,textarea {
 }
 
 
+.entry-type-group {
+    font-size:150%;
+    background:#efefef;
+    padding-left:10px;
+}
 
 .entry-type-list {
     margin-top: 2px;
@@ -1583,6 +1588,15 @@ input, password, fileinput,textarea {
     padding:2px;
     max-height: 250px; 
     overflow-y: auto;
+}
+
+
+.entry-type-list-item {
+    width:100%;
+}
+
+.entry-type-list-item:hover {
+    background:#eee;
 }
 
 .entry-type-search {

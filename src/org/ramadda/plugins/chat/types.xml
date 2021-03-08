@@ -1,7 +1,7 @@
 <types>
 
 
-  <type name="chatroom"  description="Chat Room" category="Collaboration" handler="org.ramadda.plugins.chat.ChatTypeHandler">
+  <type name="chatroom"  description="Chat Room" category="Collaboration" handler="org.ramadda.plugins.chat.ChatTypeHandler" supercategory="Miscellaneous">
      <property name="icon" value="/icons/user_comment.png"/>
      <property name="form.date.show" value="false"/>
      <property name="form.area.show" value="false"/>

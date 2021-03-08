@@ -1,6 +1,6 @@
-<types supercategory="Geoscience">
+<types supercategory="" category="Data">
 
-  <type name="type_point_collection"  description="Point Data Collection" handler="org.ramadda.data.services.PointCollectionTypeHandler" category="Point Data">
+  <type name="type_point_collection"  description="Point Data Collection" handler="org.ramadda.data.services.PointCollectionTypeHandler" >
      <property name="icon" value="/point/sitemap_color.png"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.area.show" value="true"/>
@@ -42,16 +42,65 @@
 
 
 
-  <type name="type_point"  description="" handler="org.ramadda.data.services.PointTypeHandler"  category="Point Data" foruser="false">
-     <property name="icon" value="/point/points.gif"/>
+  <type name="type_point"  description="" handler="org.ramadda.data.services.PointTypeHandler"   foruser="false">
+     <property name="icon" value="/icons/chart.png"/>
      <column name="numberofpoints" type="int"  label="Number of points"  showinhtml="false" showinform="false"/>
      <column name="properties" type="string" size="8000" columns="-1" rows="8"  label="Properties"  showinhtml="false" canlist="false" changetype="true" canexport="false" cansearch="true"/>
   </type>
 
 
-  <type name="point_text"  description="Text Point Data"  super="type_point"> 
+  <type name="point_text"  description="Text Point Data"  super="type_point" priority="1"
+	help="A structured text data file"
+	> 
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
   </type>
+
+
+
+  <type name="type_point_fetch"  description="Fetch Points" super="type_point" foruser="true" handler="org.ramadda.geodata.point.FetchPointTypeHandler"
+	help="Downloads the given URL every once in a while"
+>
+      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+     <column  name="source_url"  label="Source URL" type="url" />
+     <column  name="enabled"  label="Enabled" type="boolean" default="true"/>
+     <column  name="every_hours"  label="Every" type="double" default="24" suffix="hours"/>
+     <column  name="last_update_time"  label="Last Update" type="datetime" />
+     <column  name="add_date"  label="Add Date" type="boolean" default="true"/>
+<wiki>
+<![CDATA[
++section  title="{{name}}"
+{{description}}
+----
+{{display_table}}
+]]>
+
+</wiki>
+     </type>
+
+
+     <type name="type_point_inline"  description="Inline Point File" super="type_point" foruser="true" handler="org.ramadda.geodata.point.InlinePointTypeHandler"
+	help="Contains structured CSV data"
+	   >
+     <column  name="data"  label="Data" cansearch="false" size="50000" type="clob" rows="50" columns="80" showinhtml="false"/>
+</type>
+
+<type name="type_point_text"  description="Record Text File" super="type_point" foruser="true" handler="org.ramadda.data.services.PointTypeHandler" priority="2"
+	help="A unstructured text data file"
+      >
+     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="false"/>
+ <property name="record.properties">
+<![CDATA[
+delimiter=_none_
+fields=sentence[label="Sentence" type="string"]
+skiplines=0
+commentLineStart=#
+]]>
+     </property>
+</type>
+
+  
 
 
 </types>

@@ -1,5 +1,5 @@
 <types>
-  <type name="wikipage"  description="Wiki Page" handler="org.ramadda.plugins.wiki.WikiPageTypeHandler" category="Information">
+  <type name="wikipage"  description="Wiki Page" handler="org.ramadda.plugins.wiki.WikiPageTypeHandler" category="Information" priority="1">
      <property name="icon" value="/icons/wiki.png"/>
      <property name="form.description.rows" value="50"/>
      <property name="form.date.show" value="true"/>

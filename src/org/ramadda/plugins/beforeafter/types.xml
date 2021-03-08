@@ -1,4 +1,4 @@
-<types   category="Imagery">
+<types   category="Media">
 
   <type name="beforeafterbase"  foruser="true" description="Image Pair" handler="org.ramadda.plugins.beforeafter.BeforeAfterBase" >
      <property name="icon" value="/icons/jpeg.png"/>

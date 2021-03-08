@@ -1,24 +1,6 @@
 <types supercategory="Geoscience">
 
 
-    <type name="type_point_fetch"  description="Fetch Points" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.FetchPointTypeHandler">
-      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-     <column  name="source_url"  label="Source URL" type="url" />
-     <column  name="enabled"  label="Enabled" type="boolean" default="true"/>
-     <column  name="every_hours"  label="Every" type="double" default="24" suffix="hours"/>
-     <column  name="last_update_time"  label="Last Update" type="datetime" />
-     <column  name="add_date"  label="Add Date" type="boolean" default="true"/>
-<wiki>
-<![CDATA[
-+section  title="{{name}}"
-{{description}}
-----
-{{display_table}}
-]]>
-
-</wiki>
-     </type>
-
 
   <type name="type_point_openaq"  description="Open AQ Air Quality" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.OpenAQTypeHandler">
      <property name="icon" value="/point/openaq.png"/>
@@ -57,9 +39,6 @@
 
   </type>
 
-  <type name="type_point_inline"  description="Inline Point File" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.InlinePointTypeHandler">
-     <column  name="data"  label="Data" cansearch="false" size="50000" type="clob" rows="50" columns="80" showinhtml="false"/>
-</type>
 
 
   <type name="type_sounding"  description="Sounding" super="type_point" category="Point Data" foruser="false" handler="org.ramadda.data.services.PointTypeHandler">
@@ -397,21 +376,6 @@ fields="etr,etrn,ghi,dni,dhi,gh_illum,dn_illum,dh_illum,zenith_lum,totcld,opqcld
 
   </type>
 
-
-
-  <type name="type_point_text"  description="Record Text File" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.data.services.PointTypeHandler">
-     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-     <property name="form.area.show" value="false"/>
-     <property name="form.location.show" value="false"/>
- <property name="record.properties">
-<![CDATA[
-delimiter=_none_
-fields=sentence[label="Sentence" type="string"]
-skiplines=0
-commentLineStart=#
-]]>
-     </property>
-</type>
 
 
 

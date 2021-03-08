@@ -12,12 +12,13 @@
   </type>
 
 
-  <type name="incident_neighborhood"  description="Neighborhood" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Events">
+
+  <type name="incident_neighborhood"  description="Neighborhood" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Events" foruser="false" >
      <property name="icon" value="/incident/house.png"/>
      <property name="form.resource.show" value="false"/>
   </type>
 
-  <type name="incident_location"  description="Incident Location" handler="org.ramadda.plugins.incident.LocationTypeHandler" category="Events" mefirst="true">
+  <type name="incident_location"  description="Incident Location" handler="org.ramadda.plugins.incident.LocationTypeHandler" category="Events" mefirst="true" foruser="false" >
      <property name="icon" value="/incident/flag_red.png"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
@@ -47,7 +48,7 @@
 
 
 
-<type name="incident_basement"  super="incident_location" description="Basement Flooding" category="Events" >
+<type name="incident_basement"  super="incident_location" description="Basement Flooding" category="Events"  foruser="false" >
      <column name="type" type="enumerationplus" label="Type of flooding"  showinhtml="true" values="groundwater,sewer,both,unknown" cansearch="true" canlist="true" />
      <column name="depth" label="Water Depth"  suffix="in inches" type="int" showinhtml="true" cansearch="true" canlist="true"/>
      <column name="duration" label="Duration"  suffix="in days" type="int" showinhtml="true" cansearch="true" canlist="true"/>
