@@ -305,6 +305,8 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     private String editHelp = "";
 
+    private String help = "";    
+
     /** _more_ */
     private String iconPath;
 
@@ -478,9 +480,11 @@ public class TypeHandler extends RepositoryManager {
             superCategory = XmlUtil.getAttributeFromTree(node,
                     ATTR_SUPERCATEGORY, superCategory);
             priority = Utils.getAttributeOrTag(node, "priority", 999);
+            description = Utils.getAttributeOrTag(node, "description", "");	    
             filePattern = Utils.getAttributeOrTag(node, ATTR_PATTERN,
                     (String) null);
             editHelp = Utils.getAttributeOrTag(node, "edithelp", "");
+            help = Utils.getAttributeOrTag(node, "help", "");	    
             String tmp = Utils.getAttributeOrTag(node,
                              PROP_FIELD_FILE_PATTERN, (String) null);
 
@@ -6751,16 +6755,6 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-
-    /**
-     * Set the Description property.
-     *
-     * @param value The new value for Description
-     */
-    public void setDescription(String value) {
-        description = value;
-    }
-
     /**
      * _more_
      *
@@ -6823,27 +6817,6 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * Get the Description property.
-     *
-     * @return The Description
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public String getLabel() {
-        if ( !Utils.stringDefined(description)) {
-            return getType();
-        }
-
-        return description;
-    }
 
     /**
      * _more_
@@ -7437,6 +7410,21 @@ public class TypeHandler extends RepositoryManager {
                              StringBuilder sb) {}
 
 
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String getLabel() {
+        if ( !Utils.stringDefined(description)) {
+            return getType();
+        }
+
+        return description;
+    }
+
+
     /**
      * _more_
      *
@@ -7445,6 +7433,22 @@ public class TypeHandler extends RepositoryManager {
     public int getPriority() {
         return priority;
     }
+
+    public String getDescription() {
+	return description;
+    }
+
+    public void setDescription(String d) {
+	description = d;
+    }
+
+    public String getHelp() {
+	return help;
+    }
+
+    public void setHelp(String d) {
+	help = d;
+    }        
 
 
     /**
