@@ -48,7 +48,7 @@
 	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" >
     <property name="form.description.iswiki" value="true"/>
 
-     <property name="icon" value="/icons/page.png"/>
+     <property name="icon" value="/icons/file.png"/>
 <wiki>
 <![CDATA[
 <link rel='stylesheet' type='text/css' href='{{root}}/userguide.css'>
@@ -110,6 +110,13 @@
      <column name="excludepattern" type="string"     label="Exclude files with patterns" rows="5" suffix=""  showinhtml="false"/>
      <column name="naming"  group="Attributes"       type="string"     label="Naming" rows="5" suffix="pattern:replacement e.g.&lt;br&gt;&lt;i&gt;NAM:North American Model&lt;br&gt;path:GFS:Global Forecast Model&lt;br&gt;&lt;i&gt;"  showinhtml="false"/>
  </type>
+
+
+<!--
+ <type name="type_descriptionfromfile"  description="Description from file" handler="org.ramadda.repository.type.DescriptionFromFileTypeHandler">
+     <property name="form.description.show" value="false"/>
+ </type>
+-->
 
 
 
