@@ -4178,11 +4178,13 @@ public class EntryManager extends RepositoryManager {
             if (hasUsedType) {
                 cats.moveToFront(category);
             }
-	    String href = HtmlUtils
+	    //	    System.out.println("type:" + category +" " + typeHandler.getLabel());
+
+	    String href = HU
                 .href(request
-                    .makeUrl(getRepository().URL_ENTRY_FORM, ARG_GROUP, group
-                        .getId(), ARG_TYPE, typeHandler.getType()), img + " "
-                            + msg(typeHandler.getLabel()));
+		      .makeUrl(getRepository().URL_ENTRY_FORM, ARG_GROUP, group
+			       .getId(), ARG_TYPE, typeHandler.getType()), img + " "
+		      + msg(typeHandler.getLabel()));
 
             cats.append(category, HU.div(href,HU.attrs("class","entry-type-list-item","title",typeHandler.getHelp())));
 
