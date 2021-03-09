@@ -650,8 +650,9 @@ public class PluginManager extends RepositoryManager {
      */
     protected boolean checkFile(String file, boolean fromPlugin)
             throws Exception {
+	String rootName =  new File(file).getName();
+	if(rootName.startsWith(".") || rootName.startsWith("#") || rootName.endsWith("~")) return false;
         allFiles.add(file);
-
         if (file.indexOf("api.xml") >= 0) {
             if (fromPlugin) {
                 pluginStat("Api", file);
