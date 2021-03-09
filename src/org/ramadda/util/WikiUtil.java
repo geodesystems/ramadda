@@ -727,7 +727,7 @@ public class WikiUtil {
         Hashtable headingsProps = null;
 
 
-        TriConsumer<StringBuffer,String,Integer> defineHeading = (sb,label,level) -> {
+        Utils.TriConsumer<StringBuffer,String,Integer> defineHeading = (sb,label,level) -> {
             String id = Utils.makeID(label);
             label = Utils.stripTags(label);
             //      String id = "heading_" + HU.blockCnt++;
@@ -3987,27 +3987,6 @@ public class WikiUtil {
     }
 
 
-    /**
-     * Interface description
-     *
-     *
-     * @param <T>
-     * @param <U>
-     * @param <V>
-     *
-     * @author         Enter your name here...    
-     */
-    public interface TriConsumer<T, U, V> {
-
-        /**
-         * _more_
-         *
-         * @param t _more_
-         * @param u _more_
-         * @param v _more_
-         */
-        void accept(T t, U u, V v);
-    }
 
     /**
      * Interface description
