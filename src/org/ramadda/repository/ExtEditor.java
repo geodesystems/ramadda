@@ -18,60 +18,34 @@ package org.ramadda.repository;
 
 
 import org.ramadda.repository.auth.AccessException;
-import org.ramadda.repository.auth.AuthorizationMethod;
 import org.ramadda.repository.auth.Permission;
-import org.ramadda.repository.auth.User;
 import org.ramadda.repository.database.DatabaseManager;
 import org.ramadda.repository.database.Tables;
-import org.ramadda.repository.auth.AccessException;
 
 import org.ramadda.repository.metadata.*;
-import org.ramadda.repository.metadata.ContentMetadataHandler;
 import org.ramadda.repository.metadata.Metadata;
-import org.ramadda.repository.metadata.JpegMetadataHandler;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
-import org.ramadda.repository.output.XmlOutputHandler;
 import org.ramadda.repository.type.Column;
-import org.ramadda.repository.type.ProcessFileTypeHandler;
 import org.ramadda.repository.type.TypeHandler;
-import org.ramadda.repository.type.TypeInsertInfo;
 import org.ramadda.repository.util.SelectInfo;
+
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.CategoryList;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
 import org.ramadda.util.Utils;
 
 
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlNodeList;
-import ucar.unidata.xml.XmlUtil;
 
-
-import java.awt.Image;
 import java.awt.geom.Rectangle2D;
 
 import java.io.File;
-import java.io.FileFilter;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-
-import java.net.URL;
-import java.net.URLConnection;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -84,38 +58,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.GregorianCalendar;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
 
 
 
 /**
- * This class does most of the work of managing repository content
+ * This class handles the extended entry edit functions
  */
 public class ExtEditor extends RepositoryManager {
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     */
-    public ExtEditor(Repository repository) {
-        super(repository);
-    }
 
 
     /** _more_ */
@@ -208,6 +162,16 @@ public class ExtEditor extends RepositoryManager {
     /**
      * _more_
      *
+     * @param repository _more_
+     */
+    public ExtEditor(Repository repository) {
+        super(repository);
+    }
+
+
+    /**
+     * _more_
+     *
      * @param request _more_
      *
      * @return _more_
@@ -269,7 +233,7 @@ public class ExtEditor extends RepositoryManager {
 			    }
 
                             if (doSpatial) {
-                                Rectangle2D.Double rect = getEntryManager().getBounds(children);
+                                Rectangle2D.Double rect = getEntryUtil().getBounds(children);
                                 if (rect != null) {
                                     if ( !Misc.equals(rect,
 						      entry.getBounds())) {
@@ -388,18 +352,19 @@ public class ExtEditor extends RepositoryManager {
 	    final String js = request.getString(ARG_EXTEDIT_SOURCE,"");
             ActionManager.Action action = new ActionManager.Action() {
                 public void run(final Object actionId) throws Exception {
-		    final org.mozilla.javascript.Context cx =
+		    final org.mozilla.javascript.Context ctx =
 			org.mozilla.javascript.Context.enter();
 		    final org.mozilla.javascript.Scriptable scope =
-			cx.initSafeStandardObjects();
+			ctx.initSafeStandardObjects();
 		    final StringBuilder buffer = new StringBuilder();
-		    cx.evaluateString(scope, "var confirmed = "+ forReal+";", "<cmd>", 1, null);
-		    final org.mozilla.javascript.Script script = cx.compileString(js, "code", 0, null);
+		    ctx.evaluateString(scope, "var confirmed = "+ forReal+";", "<cmd>", 1, null);
+		    final org.mozilla.javascript.Script script = ctx.compileString(js, "code", 0, null);
 		    final List<Entry> allEntries = new ArrayList<Entry>();
 		    //Do the holder because the walker needs a final JsContext but the
 		    //JsContext needs the walker
 		    final Request theRequest =  request;
 		    final JsContext[] holder = new JsContext[1];
+		    final List<EntryWrapper> wrappers = new ArrayList<EntryWrapper>();
                     EntryVisitor walker = new EntryVisitor(request,
                                               getRepository(), actionId,
                                               true) {
@@ -408,8 +373,10 @@ public class ExtEditor extends RepositoryManager {
                                 throws Exception {
 				allEntries.add(entry);
 				try {
-				    scope.put("entry", scope, entry);
-				    Object o = script.exec(cx, scope);
+				    EntryWrapper wrapper = new EntryWrapper(entry);
+				    wrappers.add(wrapper);
+				    scope.put("entry", scope, wrapper);
+				    Object o = script.exec(ctx, scope);
 				} catch(Exception exc) {
 				    append("An error occurred processing entry:" + entry+"\n" + exc);
 				    return false;
@@ -422,12 +389,32 @@ public class ExtEditor extends RepositoryManager {
 				    getEntryManager().removeFromCache(entry);
 				}				    
 				if(forReal) {
-				    resetMessageBuffer();
+				    boolean haveReset = false;
 				    try {
-					for(Entry entry:  holder[0].getChangedEntries()) {
-					    append("Updated entry:" + entry+"\n");
-					    incrementProcessedCnt(1);
-					    getEntryManager().updateEntry(request, entry);
+					for(EntryWrapper wrapper:  wrappers) {
+					    Entry entry = wrapper.entry;
+					    boolean changed = false;
+					    if(wrapper.name!=null) {
+						changed = true;
+						entry.setName(wrapper.name);
+					    }
+					    if(wrapper.startDate!=null) {
+						changed = true;
+						entry.setStartDate(wrapper.startDate);
+					    }
+					    if(wrapper.endDate!=null) {
+						changed = true;
+						entry.setEndDate(wrapper.endDate);
+					    }
+					    if(changed) {
+						if(!haveReset) {
+						    resetMessageBuffer();
+						    haveReset = true;
+						}
+						append("Updated entry:" + entry+"\n");
+						incrementProcessedCnt(1);
+						getEntryManager().updateEntry(request, entry);
+					    }
 					}
 				    } catch(Exception exc) {
 					append("An error occurred updating entry\n" + exc);
@@ -686,7 +673,9 @@ public class ExtEditor extends RepositoryManager {
 	    } else if(form.equals(ARG_EXTEDIT_JS)){
 		opener.accept("Process with Javascript");
 		sb.append(HU.formTable());
-		String ex =  "ctx.print('Processing: ' + entry.getName());\nif(confirmed) {\n\tctx.entryChanged(entry);\n}";
+		String ex =  "ctx.print('Processing: ' + entry.getName());\n" +
+		    "//entry access:\n//entry.getName() entry.setName()\n//entry.getType()\n//entry.getStartDate() entry.getEndDate()\n" +
+		    "//entry.setStartDate(String) entry.setEndDate(String)";
 		ex = request.getString(ARG_EXTEDIT_SOURCE, ex);
 		HU.formEntry(sb,  msgLabel("Javascript"),
 			     HU.textArea(ARG_EXTEDIT_SOURCE, ex,10,80));
@@ -1105,7 +1094,7 @@ public class ExtEditor extends RepositoryManager {
         if (entry == null) {
             return;
         }
-        Rectangle2D.Double rect = getEntryManager().getBounds(getEntryManager().getChildren(request, entry));
+        Rectangle2D.Double rect = getEntryUtil().getBounds(getEntryManager().getChildren(request, entry));
         if (rect != null) {
             entry.setBounds(rect);
             getEntryManager().updateEntry(request, entry);
@@ -1113,9 +1102,62 @@ public class ExtEditor extends RepositoryManager {
     }
 
 
+    public static class EntryWrapper {
+	private Entry entry;
+
+	String name;
+	Date startDate;
+	Date endDate;
+
+	public EntryWrapper(Entry entry) {
+	    this.entry = entry;
+	}
+
+	public String getType() {
+	    return entry.getTypeHandler().getType();
+	}
+
+	public String getName() {
+	    return entry.getName();
+	}
+
+	public void setName(String name) {
+	    this.name = name;
+	}	
+
+	public String getFile() {
+	    return entry.getResource().getPath();
+	}
+
+	public Date getStartDate() {
+	    return new Date(entry.getStartDate());
+	}
+
+	public void setStartDate(String date) throws Exception {
+	    this.startDate = DateUtil.parse(date);
+	}	
+
+
+	public Date getEndDate() {
+	    return new Date(entry.getEndDate());
+	}
+
+	public void setEndDate(String date) throws Exception {
+	    this.endDate = DateUtil.parse(date);
+	}	
+	
+
+	
+    }
+    
+	    
+
+	    
+	
+
     public static class JsContext {
 	private StringBuilder msg = new StringBuilder();
-	private List<Entry> changedEntries = new ArrayList<Entry>();	
+	private List<EntryWrapper> changedEntries = new ArrayList<EntryWrapper>();	
 	private EntryVisitor visitor;
 	private boolean confirm;
 	
@@ -1123,15 +1165,7 @@ public class ExtEditor extends RepositoryManager {
 	    this.visitor= visitor;
 	    this.confirm = confirm;
 	}
-	public void entryChanged(Entry e) {
-	    if(confirm) {
-		changedEntries.add(e);
-		visitor.incrementProcessedCnt(1);
-	    }
-	}
-	public List<Entry> getChangedEntries() {
-	    return changedEntries;
-	}
+
 
 	public Date getDate(String d) throws Exception {
 	    return DateUtil.parse(d);
@@ -1139,14 +1173,6 @@ public class ExtEditor extends RepositoryManager {
 	public void print(Object msg) {
 	    visitor.append(msg+"\n");
 	}
-    }
-
-
-    public static void main(String[]args) {
-	String name = "Admin Settings";
-	String text = "admin";
-	System.err.println(name.regionMatches(true,0,text,0,name.length()));
-	System.err.println(name.regionMatches(true,0,text,0,text.length()));	
     }
 
 
