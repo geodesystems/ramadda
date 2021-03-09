@@ -541,6 +541,7 @@ Median income
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
   </type>
 
+<!--
   <type name="type_urbaninstitute_employment"  super="type_urbaninstitute_trend"  description="MetroTrends Employment Data" handler="org.ramadda.data.services.PointTypeHandler" >
      <property name="map.chart.fields" value="NumTotNonFarm,NumTotPriv"/>
      <property name="record.properties">
@@ -563,7 +564,7 @@ fields=year[type=string label="Year"],month[type=string label="Month"],metronm[t
 </wiki>
 
   </type>
-
+-->
 
 
 
