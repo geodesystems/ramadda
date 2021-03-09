@@ -1973,21 +1973,23 @@ public class TypeHandler extends RepositoryManager {
         //Then initialize it, e.g., point data type will read the file and set the entry values, etc.
         initializeNewEntry(request, entry, false);
         Object[] values = getEntryValues(entry);
-        for (int i = 0; i < origColumns.size(); i++) {
-            if (i >= columns.size()) {
-                break;
-            }
-            Column origColumn = origColumns.get(i);
-            Column column     = columns.get(i);
-            if ( !origColumn.getName().equals(column.getName())) {
-                break;
-            }
-            if (origColumn.getOffset() != column.getOffset()) {
-                break;
-            }
-            values[origColumn.getOffset()] =
-                origValues[origColumn.getOffset()];
-        }
+	if(origColumns!=null) {
+	    for (int i = 0; i < origColumns.size(); i++) {
+		if (i >= columns.size()) {
+		    break;
+		}
+		Column origColumn = origColumns.get(i);
+		Column column     = columns.get(i);
+		if ( !origColumn.getName().equals(column.getName())) {
+		    break;
+		}
+		if (origColumn.getOffset() != column.getOffset()) {
+		    break;
+		}
+		values[origColumn.getOffset()] =
+		    origValues[origColumn.getOffset()];
+	    }
+	}
 
         /*
         System.err.println("type:" + this);
