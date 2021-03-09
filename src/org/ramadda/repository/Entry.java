@@ -660,6 +660,14 @@ public class Entry implements Cloneable {
         startDate = value;
     }
 
+    public void setStartDate(Date value) {
+	if(value!=null) setStartDate(value.getTime());
+    }    
+
+    public void setEndDate(Date value) {
+	if(value!=null) setEndDate(value.getTime());
+    }    
+
     /**
      * _more_
      *
