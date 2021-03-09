@@ -32,12 +32,5 @@
    </type>
 
 
-  <type name="astro_horoscope"  description="Horoscope" handler="org.ramadda.geodata.astro.HoroscopeTypeHandler" category="Astronomy" >
-     <property name="icon" value="/astro/horoscope.jpg"/>
-     <property name="form.resource.show" value="false"/>
-     <property name="form.area.show" value="false"/>
-     <property name="form.datatype.show" value="false"/>
-
-   </type>
 
 </types>
