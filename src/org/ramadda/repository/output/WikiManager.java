@@ -6647,7 +6647,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             sb.append("\n");
             request.putExtraProperty(PROP_ADDED_GROUP, "true");
             topProps.addAll(propList);
-            System.err.println("GID1:" + mainDivId);
             js.append("\nvar displayManager = getOrCreateDisplayManager("
                       + HU.quote(mainDivId) + "," + Json.map(topProps, false)
                       + ",true);\n");
