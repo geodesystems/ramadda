@@ -3509,7 +3509,7 @@ public class PageHandler extends RepositoryManager {
                                        boolean includeNonFiles)
             throws Exception {
         List<HtmlUtils.Selector> items =
-            getEntryManager().getTypeHandlerSelectors(request, true,
+            getRepository().getExtEditor().getTypeHandlerSelectors(request, true,
                 includeNonFiles, null);
 
         HtmlUtils.Selector selector = new HtmlUtils.Selector(

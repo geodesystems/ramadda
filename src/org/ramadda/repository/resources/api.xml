@@ -20,7 +20,6 @@
       <api request="/entry/show"             method="processEntryShow"       name="${topgroup}" toplevel="true" ishome="true" icon="fa-home"/>
       <api request="/entry/show/*"           method="processEntryShow"       checkauthmethod="true"/>
       <api request="/entry/form"             method="processEntryForm"       actions="edit"/>
-      <api request="/entry/extedit"          method="processEntryExtEdit"       actions="edit"/>
       <api request="/entry/access/*"         method="processEntryAccess"     actions=""/>
       <api request="/entry/change"           method="processEntryChange"     actions="edit"/>
       <api request="/entry/delete"           method="processEntryDelete"     actions="edit"/>
@@ -32,7 +31,6 @@
       <api request="/entry/getentries"       method="processGetEntries" />
       <api request="/entry/copy"             method="processEntryCopy"/>
       <api request="/entry/type/*"           method="processEntryTypeAction"/>
-      <api request="/entry/typechange"       method="processEntryTypeChange"/>
       <api request="/entry/import"           method="processEntryImport" actions="new"/>
       <api request="/entry/export/*"         method="processEntryExport" />
       <api request="/entry/links"            method="processEntryLinks" />
@@ -41,6 +39,12 @@
       <api request="/entry/*"                method="processEntryShowPath"        authmethod="httpauth"  />
       <api request="/entry/dump"             method="processEntryDump" admin="true"/>
       <api request="/entry/types"             method="processEntryTypes"/>
+  </group>
+
+
+  <group handler="exteditor">
+    <api request="/entry/extedit"          method="processEntryExtEdit"       actions="edit"/>
+      <api request="/entry/typechange"       method="processEntryTypeChange"/>
   </group>
 
 

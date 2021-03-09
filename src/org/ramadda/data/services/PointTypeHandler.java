@@ -439,9 +439,9 @@ public class PointTypeHandler extends RecordTypeHandler {
         try {
             super.doFinalEntryInitialization(request, entry, fromImport);
             if ( !anySuperTypesOfThisType()) {
-                getEntryManager().setBoundsFromChildren(request,
+                getRepository().getExtEditor().setBoundsFromChildren(request,
                         entry.getParentEntry());
-                getEntryManager().setTimeFromChildren(request,
+                getRepository().getExtEditor().setTimeFromChildren(request,
                         entry.getParentEntry(), null);
             }
         } catch (Exception exc) {

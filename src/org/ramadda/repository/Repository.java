@@ -270,6 +270,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** The EntryManager */
     private EntryManager entryManager;
 
+    private ExtEditor extEditor;
+    
     /** The CommentManager */
     private CommentManager commentManager;
 
@@ -2201,6 +2203,20 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
+    public ExtEditor getExtEditor() {
+        if (extEditor == null) {
+            extEditor = new ExtEditor(this);
+        }
+        return extEditor;
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public CommentManager getCommentManager() {
         if (commentManager == null) {
             commentManager = doMakeCommentManager();
@@ -3084,7 +3100,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 }
                 request.put(ARG_FROM, idBuffer);
 
-                return getEntryManager().processEntryTypeChange(request);
+                return getExtEditor().processEntryTypeChange(request);
                 //                return new Result(request.makeUrl(URL_ENTRY_COPY, ARG_FROM,
                 //                        idBuffer.toString()));
             }
