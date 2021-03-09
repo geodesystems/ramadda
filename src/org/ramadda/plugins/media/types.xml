@@ -53,16 +53,16 @@
 
 </type>
 
-  <type name="type_document_csv"  description="CSV File" pattern="(.*\.csv)"  super="type_document_tabular"    handler="org.ramadda.data.docs.TabularTypeHandler">
-     <property name="icon" value="/icons/document-excel-csv.png"/>
+  <type name="type_document_csv"  description="CSV File" pattern="(.*\.csv)"  super="type_document_tabular"    handler="org.ramadda.data.docs.TabularTypeHandler"         category="Data" >
+     <property name="icon" value="/icons/csv.png"/>
   </type>
 
-  <type name="type_document_xml"  description="XML File" pattern="(.*\.xml)"  super="type_document_tabular" >
+  <type name="type_document_xml"  description="XML File" pattern="(.*\.xml)"  super="type_document_tabular"  category="Data">
      <property name="icon" value="/icons/xml.png"/>
   </type>
 
 
-  <type name="type_json"  super="type_convertible" description="Json File" pattern=".*\.json" handler="org.ramadda.plugins.media.JsonFileTypeHandler" >
+  <type name="type_json"  super="type_convertible" description="Json File" pattern=".*\.json" handler="org.ramadda.plugins.media.JsonFileTypeHandler" category="Data">
      <property name="icon" value="/icons/json.png"/>
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>
