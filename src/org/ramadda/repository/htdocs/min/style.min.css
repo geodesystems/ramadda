@@ -1545,7 +1545,8 @@ input, password, fileinput,textarea {
 }
 
 .ramadda-menu-entries {
-    max-width:300px;
+    white-space:nowrap;
+    max-width:250px;
     overflow-x: auto;
     max-height: 300px;
     overflow-y: auto;
@@ -2697,7 +2698,7 @@ a.ramadda-heading-2-link:visited {
 .ramadda-datetime {
     font-style:italic;
     margin:0px;
-    white-space:nowrap;
+    white-space:nowrap;    
 }
 
 .ramadda-logo {
@@ -2924,8 +2925,11 @@ a.ramadda-menuitem-link {
 }
 
 .ramadda-menugroup  {
-    max-height: 300px; 
+    white-space:nowrap;
+    max-height: 200px; 
     overflow-y: auto;
+    max-width:250px;
+    overflow-x: auto;
 }
 
 
