@@ -211,7 +211,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         nodes.add(node);
         super.initTypeHandler(root);
         super.initColumns(nodes);
-
+	this.setDescription(desc);
         List props = XmlUtil.findChildren(tableNode, TAG_PROPERTY);
         for (int j = 0; j < props.size(); j++) {
             Element propNode = (Element) props.get(j);
@@ -220,11 +220,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             //            System.err.println ("db:" +XmlUtil.getAttribute(propNode,"name") +":" + XmlUtil.getAttribute(propNode,"value"));
         }
 
+
         setCategory(XmlUtil.getAttributeFromTree(tableNode,
                 TypeHandler.ATTR_CATEGORY, "Database"));
         setSuperCategory(XmlUtil.getAttributeFromTree(tableNode,
                 "supercategory", "Basic"));
-
 
         myEntry = new Entry(this, true);
 
