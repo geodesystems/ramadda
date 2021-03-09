@@ -136,8 +136,23 @@ var Utils =  {
 	if(!t) return null;
 	t = String(t);
 	return t.replace(/_dq_/g,"\"\"").replace(/&quote;/gi, '\"').replace(/_quote_/gi, '\"').replace(/_qt_/gi, '\"').replace(/_newline_/gi, '\n').replace(/newline/gi, '\n').replace(/_nl_/g,'\n');
+r    },
+    handleActionResults: function(id,url) {
+	setTimeout(() =>{
+	    let success=json=>{
+		let msg = "Status:" + json.status;
+		if(json.message) msg+="<br>" + json.message.replace(/\n/g,"<br>");
+		$("#" + id).html(msg);
+		if(json.status=="running") {
+		    Utils.handleActionResults(id,url);
+		}
+	    };
+	    let fail=json=>{
+		$("#" + id).html("Error:" + json);
+	    };		   
+            $.getJSON(url, success).fail(fail);
+	},1000);
     },
-
     mergeLists: function(l1,l2,l3,l4,l5) {
 	let l = [];
 	if(l1) l1.map(e=>l.push(e));
