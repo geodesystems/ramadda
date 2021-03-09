@@ -3767,12 +3767,22 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @return _more_
      */
     public static String formEntry(String left, String right) {
-        return tag(TAG_TR, "",
-                   tag(TAG_TD,
-                       attrs(ATTR_ALIGN, VALUE_RIGHT, ATTR_CLASS,
-                             CLASS_FORMLABEL), left) + tag(TAG_TD,
-                                 attrs(ATTR_CLASS, CLASS_FORMCONTENTS),
-                                 right)) + "\n";
+	StringBuilder sb = new StringBuilder();
+	formEntry(sb,left,right);
+	return sb.toString();
+    }
+
+    public static void formEntry(Appendable sb,String left, String right) {
+        try {
+	    sb.append(tag(TAG_TR, "",
+			  tag(TAG_TD,
+			      attrs(ATTR_ALIGN, VALUE_RIGHT, ATTR_CLASS,
+				    CLASS_FORMLABEL), left) + tag(TAG_TD,
+								  attrs(ATTR_CLASS, CLASS_FORMCONTENTS),
+								  right)) + "\n");
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
 
 
     }
