@@ -76,9 +76,6 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -104,7 +101,7 @@ import java.util.zip.ZipInputStream;
 
 
 /**
- * This class does most of the work of managing repository content
+ * This class does most of the work of managing the entries
  */
 public class EntryManager extends RepositoryManager {
 
@@ -112,9 +109,6 @@ public class EntryManager extends RepositoryManager {
     public static final String[] PRELOAD_CATEGORIES = { "Documents",
             "General", "Information", "Collaboration", "Database" };
 
-
-    /** _more_ */
-    private EntryUtil entryUtil;
 
 
     /** _more_ */
@@ -190,18 +184,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public EntryUtil getEntryUtil() {
-        if (entryUtil == null) {
-            entryUtil = new EntryUtil(getRepository());
-        }
-
-        return entryUtil;
-    }
 
 
     /**
@@ -4338,6 +4320,7 @@ public class EntryManager extends RepositoryManager {
         }
     }
 
+
     /**
      * _more_
      *
@@ -4359,7 +4342,7 @@ public class EntryManager extends RepositoryManager {
      */
     public void setBoundsOnEntry(final Entry parent, List<Entry> children) {
         try {
-            Rectangle2D.Double rect = getBounds(children);
+            Rectangle2D.Double rect = getEntryUtil().getBounds(children);
             if ((rect != null) && !rect.equals(parent.getBounds())) {
                 parent.setBounds(rect);
                 setEntryBounds(parent);
@@ -4368,37 +4351,6 @@ public class EntryManager extends RepositoryManager {
             logError("Updating parent's bounds", exc);
         }
     }
-
-
-
-    /**
-     * _more_
-     *
-     * @param children _more_
-     *
-     * @return _more_
-     */
-    public Rectangle2D.Double getBounds(List<Entry> children) {
-        Rectangle2D.Double rect = null;
-
-        for (Entry child : children) {
-            if ( !child.hasAreaDefined() && !child.hasLocationDefined()) {
-                continue;
-            }
-
-
-            if (rect == null) {
-                rect = child.getBounds();
-            } else {
-                rect.add(child.getBounds());
-            }
-        }
-
-        return rect;
-    }
-
-
-
 
     /**
      * _more_
@@ -4438,7 +4390,6 @@ public class EntryManager extends RepositoryManager {
     public Result processEntryXmlCreate(Request request) throws Exception {
         try {
             request.ensureAuthToken();
-
             return processEntryXmlCreateInner(request);
         } catch (Exception exc) {
             if (request.getString(ARG_RESPONSE, "").equals(RESPONSE_XML)) {
@@ -9952,42 +9903,5 @@ public class EntryManager extends RepositoryManager {
             throw new RuntimeException(exc);
         }
     }
-
-    public static class JsContext {
-	private StringBuilder msg = new StringBuilder();
-	private List<Entry> changedEntries = new ArrayList<Entry>();	
-	private EntryVisitor visitor;
-	private boolean confirm;
-	
-	public JsContext(EntryVisitor visitor, boolean confirm) {
-	    this.visitor= visitor;
-	    this.confirm = confirm;
-	}
-	public void entryChanged(Entry e) {
-	    if(confirm) {
-		changedEntries.add(e);
-		visitor.incrementProcessedCnt(1);
-	    }
-	}
-	public List<Entry> getChangedEntries() {
-	    return changedEntries;
-	}
-
-	public Date getDate(String d) throws Exception {
-	    return DateUtil.parse(d);
-	}
-	public void print(Object msg) {
-	    visitor.append(msg+"\n");
-	}
-    }
-
-
-    public static void main(String[]args) {
-	String name = "Admin Settings";
-	String text = "admin";
-	System.err.println(name.regionMatches(true,0,text,0,name.length()));
-	System.err.println(name.regionMatches(true,0,text,0,text.length()));	
-    }
-
 
 }

@@ -438,7 +438,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                                  Utils.makeMap(MapManager.PROP_DETAILED,
                                      "false", MapManager.PROP_SCREENBIGRECTS,
                                      "true"));
-        Rectangle2D.Double bounds = getEntryManager().getBounds(allEntries);
+        Rectangle2D.Double bounds = getEntryUtil().getBounds(allEntries);
 
 
         //shrink the bounds down

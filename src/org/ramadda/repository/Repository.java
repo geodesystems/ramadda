@@ -272,6 +272,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     private ExtEditor extEditor;
     
+    /** _more_ */
+    private EntryUtil entryUtil;
+
     /** The CommentManager */
     private CommentManager commentManager;
 
@@ -2026,7 +2029,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public UserManager getUserManager() {
+    public synchronized UserManager getUserManager() {
         if (userManager == null) {
             userManager = doMakeUserManager();
         }
@@ -2052,7 +2055,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public MonitorManager getMonitorManager() {
+    public synchronized MonitorManager getMonitorManager() {
         if (monitorManager == null) {
             monitorManager = doMakeMonitorManager();
         }
@@ -2066,7 +2069,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public SessionManager getSessionManager() {
+    public synchronized SessionManager getSessionManager() {
         if (sessionManager == null) {
             sessionManager = doMakeSessionManager();
             sessionManager.init();
@@ -2089,7 +2092,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public ApiManager getApiManager() {
+    public synchronized ApiManager getApiManager() {
         if (apiManager == null) {
             apiManager = doMakeApiManager();
         }
@@ -2102,7 +2105,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public PageHandler getPageHandler() {
+    public synchronized PageHandler getPageHandler() {
         if (pageHandler == null) {
             pageHandler = doMakePageHandler();
         }
@@ -2115,7 +2118,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public DateHandler getDateHandler() {
+    public synchronized DateHandler getDateHandler() {
 
         if (dateHandler == null) {
             dateHandler = doMakeDateHandler();
@@ -2130,7 +2133,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public WikiManager getWikiManager() {
+    public synchronized WikiManager getWikiManager() {
         if (wikiManager == null) {
             wikiManager = doMakeWikiManager();
         }
@@ -2144,7 +2147,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public LogManager getLogManager() {
+    public synchronized LogManager getLogManager() {
         if (logManager == null) {
             logManager = doMakeLogManager();
             logManager.init();
@@ -2168,7 +2171,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public JobManager getJobManager() {
+    public synchronized JobManager getJobManager() {
         if (jobManager == null) {
             jobManager = doMakeJobManager();
         }
@@ -2190,7 +2193,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public EntryManager getEntryManager() {
+    public synchronized EntryManager getEntryManager() {
         if (entryManager == null) {
             entryManager = doMakeEntryManager();
         }
@@ -2203,11 +2206,24 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public ExtEditor getExtEditor() {
+    public synchronized ExtEditor getExtEditor() {
         if (extEditor == null) {
             extEditor = new ExtEditor(this);
         }
         return extEditor;
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public synchronized EntryUtil getEntryUtil() {
+        if (entryUtil == null) {
+            entryUtil = new EntryUtil(getRepository());
+        }
+
+        return entryUtil;
     }
 
 
@@ -2217,7 +2233,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public CommentManager getCommentManager() {
+    public synchronized CommentManager getCommentManager() {
         if (commentManager == null) {
             commentManager = doMakeCommentManager();
         }
@@ -2231,7 +2247,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public AssociationManager getAssociationManager() {
+    public synchronized AssociationManager getAssociationManager() {
         if (associationManager == null) {
             associationManager = doMakeAssociationManager();
         }
@@ -2244,7 +2260,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public HarvesterManager getHarvesterManager() {
+    public synchronized HarvesterManager getHarvesterManager() {
         if (harvesterManager == null) {
             harvesterManager = doMakeHarvesterManager();
         }
@@ -2258,7 +2274,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public ActionManager getActionManager() {
+    public synchronized ActionManager getActionManager() {
         if (actionManager == null) {
             actionManager = doMakeActionManager();
         }
@@ -2284,7 +2300,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public AccessManager getAccessManager() {
+    public synchronized AccessManager getAccessManager() {
         if (accessManager == null) {
             accessManager = doMakeAccessManager();
         }
@@ -2312,7 +2328,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public SearchManager getSearchManager() {
+    public synchronized SearchManager getSearchManager() {
         if (searchManager == null) {
             searchManager = doMakeSearchManager();
         }
@@ -2339,7 +2355,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public MapManager getMapManager() {
+    public synchronized MapManager getMapManager() {
         if (mapManager == null) {
             mapManager = doMakeMapManager();
         }
@@ -2367,7 +2383,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public MetadataManager getMetadataManager() {
+    public synchronized MetadataManager getMetadataManager() {
         if (metadataManager == null) {
             metadataManager = doMakeMetadataManager();
         }
@@ -2413,7 +2429,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public RegistryManager getRegistryManager() {
+    public synchronized RegistryManager getRegistryManager() {
         if (registryManager == null) {
             registryManager = doMakeRegistryManager();
         }
@@ -2426,7 +2442,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public MailManager getMailManager() {
+    public synchronized MailManager getMailManager() {
         if (mailManager == null) {
             mailManager = doMakeMailManager();
         }
@@ -2439,7 +2455,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public LocalRepositoryManager getLocalRepositoryManager() {
+    public synchronized LocalRepositoryManager getLocalRepositoryManager() {
         if (localRepositoryManager == null) {
             localRepositoryManager = doMakeLocalRepositoryManager();
         }
@@ -2454,7 +2470,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public StorageManager getStorageManager() {
+    public synchronized StorageManager getStorageManager() {
         if (storageManager == null) {
             storageManager = doMakeStorageManager();
             storageManager.init();
@@ -2468,7 +2484,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public PluginManager getPluginManager() {
+    public synchronized PluginManager getPluginManager() {
         if (pluginManager == null) {
             pluginManager = doMakePluginManager();
         }
@@ -2482,7 +2498,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public DatabaseManager getDatabaseManager() {
+    public synchronized DatabaseManager getDatabaseManager() {
         if (databaseManager == null) {
             databaseManager = doMakeDatabaseManager();
         }
@@ -2496,7 +2512,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public FtpManager getFtpManager() {
+    public synchronized FtpManager getFtpManager() {
         if (ftpManager == null) {
             //Only the top-level ramaddas gets the ftpmanager
             if (globalFtpManager != null) {
@@ -2515,7 +2531,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public Admin getAdmin() {
+    public synchronized Admin getAdmin() {
         if (admin == null) {
             admin = doMakeAdmin();
         }

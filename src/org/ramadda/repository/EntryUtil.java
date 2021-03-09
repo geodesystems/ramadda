@@ -47,6 +47,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import java.awt.geom.Rectangle2D;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -793,6 +795,34 @@ public class EntryUtil extends RepositoryManager {
 
         return result;
     }
+
+    /**
+     * _more_
+     *
+     * @param children _more_
+     *
+     * @return _more_
+     */
+    public Rectangle2D.Double getBounds(List<Entry> children) {
+        Rectangle2D.Double rect = null;
+
+        for (Entry child : children) {
+            if ( !child.hasAreaDefined() && !child.hasLocationDefined()) {
+                continue;
+            }
+
+
+            if (rect == null) {
+                rect = child.getBounds();
+            } else {
+                rect.add(child.getBounds());
+            }
+        }
+
+        return rect;
+    }
+
+
 
 
     /**

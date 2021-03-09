@@ -1366,7 +1366,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             }
         }
         if (bounds == null) {
-            bounds = getEntryManager().getBounds(entriesToUse);
+            bounds = getEntryUtil().getBounds(entriesToUse);
         }
         boolean haveLocation = false;
 

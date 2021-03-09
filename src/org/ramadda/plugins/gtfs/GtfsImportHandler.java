@@ -491,7 +491,7 @@ public class GtfsImportHandler extends ImportHandler {
      */
     private void setBounds(Entry entry, List<Entry> children)
             throws Exception {
-        Rectangle2D.Double rect = getEntryManager().getBounds(children);
+        Rectangle2D.Double rect = getEntryUtil().getBounds(children);
         if (rect != null) {
             //            System.err.println("set bounds:" + entry.getName() + " " + children.size() + " " + rect.getWidth());
             if ( !Misc.equals(rect, entry.getBounds())) {

@@ -665,14 +665,10 @@ public class RepositoryManager implements RepositorySource, Constants,
         return repository.getEntryManager();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public EntryUtil getEntryUtil() {
-        return getEntryManager().getEntryUtil();
-    }
+        return repository.getEntryUtil();
+    }    
+
 
     /**
      * _more_

@@ -377,7 +377,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
                     getRepository().getExtEditor().setTimeFromChildren(request, entry,
                             childrenEntries);
                     Rectangle2D.Double rect =
-                        getEntryManager().getBounds(childrenEntries);
+                        getEntryUtil().getBounds(childrenEntries);
                     if (rect != null) {
                         entry.setBounds(rect);
                     }
