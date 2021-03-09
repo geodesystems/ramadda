@@ -17,66 +17,7 @@
 package org.ramadda.repository;
 
 
-import org.ramadda.repository.auth.*;
-
-import org.ramadda.repository.database.*;
-import org.ramadda.repository.harvester.*;
-import org.ramadda.repository.metadata.*;
-import org.ramadda.repository.output.*;
-
-import org.ramadda.repository.type.*;
-import org.ramadda.util.HtmlTemplate;
-
-import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.TTLCache;
-import org.ramadda.util.TTLObject;
-
-import org.ramadda.util.TempDir;
-import org.ramadda.util.Utils;
-
-
-import org.ramadda.util.sql.Clause;
-import org.ramadda.util.sql.SqlUtil;
-
-import org.w3c.dom.*;
-
-
-
-import java.awt.*;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-
-
-import java.io.*;
-
-import java.io.File;
-import java.io.InputStream;
-
-
-
-import java.net.*;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
-
-import java.text.SimpleDateFormat;
-
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import java.util.regex.*;
 
 
 /**
@@ -134,6 +75,10 @@ public abstract class EntryVisitor implements Constants {
      */
     public StringBuffer getMessageBuffer() {
         return sb;
+    }
+
+    public void resetMessageBuffer() {
+	sb = new StringBuffer();
     }
 
     /**
@@ -213,7 +158,7 @@ public abstract class EntryVisitor implements Constants {
         if (actionId != null) {
             getRepository().getActionManager().setActionMessage(actionId,
                     "# entries:" + totalCnt + "<br># changed entries:"
-                    + processedCnt);
+                    + processedCnt+"<br>"+ sb);
         }
     }
 
@@ -236,6 +181,18 @@ public abstract class EntryVisitor implements Constants {
      * @throws Exception _more_
      */
     public boolean walk(Entry entry) throws Exception {
+	try {
+	    boolean ok = walkInner(entry);
+	    return ok;
+	} finally {
+	    finished();
+	}
+    }
+
+    public void finished() {}
+
+    private boolean walkInner(Entry entry) throws Exception {	
+
         //        System.err.println("Walk: " + entry);
         if ( !isRunning()) {
             System.err.println("\t- not running");
@@ -263,7 +220,7 @@ public abstract class EntryVisitor implements Constants {
                             actionId)) {
                     return false;
                 }
-                if ( !walk(child)) {
+                if ( !walkInner(child)) {
                     return false;
                 }
             }

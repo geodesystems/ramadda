@@ -16,6 +16,7 @@
 
 package org.ramadda.repository;
 
+import org.ramadda.util.Json;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
@@ -81,6 +82,14 @@ public class ActionManager extends RepositoryManager {
     }
 
 
+    public Result makeResult(Request request, String title, String status, StringBuffer sb, boolean json) throws Exception {
+	if(json) {
+	    String result = Json.map("status",Json.quote(status),"message",Json.quote(sb.toString()));
+	    return new Result(result, Result.TYPE_JSON);
+	}
+	return new Result(title, sb);
+    }
+
     /**
      * _more_
      *
@@ -91,76 +100,99 @@ public class ActionManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result processStatus(Request request) throws Exception {
-
+	boolean json = request.getString("output","").equals("json");
+	String status = "";
         String       id     = request.getString(ARG_ACTION_ID, "");
         ActionInfo   action = getAction(id);
         StringBuffer sb     = new StringBuffer();
         if (action == null) {
-            sb.append(msg("No action found"));
-
-            return new Result(msg("Status"), sb);
+            sb.append("No action found");
+            return makeResult(request,"Status", "noaction",sb,json); 
         }
 
-
-        if (action.getEntry() != null) {
-            getPageHandler().entrySectionOpen(request, action.getEntry(), sb,
-                    "Action: " + action.getName());
-        } else {
-            sb.append(HtmlUtils.sectionOpen("Action: " + action.getName(),
-                                            false));
-        }
+	if(!json) {
+	    if (action.getEntry() != null) {
+		getPageHandler().entrySectionOpen(request, action.getEntry(), sb,
+						  "Action: " + action.getName());
+	    } else {
+		sb.append(HtmlUtils.sectionOpen("Action: " + action.getName(),
+						false));
+	    }
+	}
         if (request.exists(ARG_CANCEL)) {
             action.setRunning(false);
             actions.remove(id);
-            sb.append(msg("Action canceled"));
+            sb.append("Action canceled");
+	    status = "canceled";
             JobManager.getManager().stopLoad(id);
         } else {
             if (action.getError() != null) {
-                sb.append(getPageHandler().showDialogError(msg("Error")
-                        + "<p>" + action.getError()));
+		if(!json) {
+		    sb.append(getPageHandler().showDialogError("Error"
+							       + "<p>" + action.getError()));
+		} else {
+		    status = "error";
+		    sb.append(action.getError());
+		}
                 actions.remove(id);
             } else if ( !action.getRunning()) {
                 StringBuilder message = new StringBuilder();
-                message.append(msg("Completed"));
-                message.append(HtmlUtils.hr());
-                message.append(action.getContinueHtml());
-                sb.append(
-                    getPageHandler().showDialogNote(message.toString()));
+		status = "complete";
+		if(json) {
+		    sb.append(action.getContinueHtml());
+		} else {
+		    message.append("Completed");
+		    message.append(HtmlUtils.hr());
+		    message.append(action.getContinueHtml());
+		    sb.append(
+			      getPageHandler().showDialogNote(message.toString()));
+		}
                 actions.remove(id);
             } else {
-                sb.append("<meta http-equiv=\"refresh\" content=\"2\">");
-                sb.append(getRepository().progress(msg("In progress")));
-                sb.append(HtmlUtils.href(request.makeUrl(URL_STATUS,
-                        ARG_ACTION_ID, id), msg("Reload")));
-                sb.append("<p>");
-                if (action.getExtraHtml() != null) {
-                    sb.append(action.getExtraHtml());
-                }
-                String msg = JobManager.getManager().getDialogLabel2(id);
+		status = "running";
+		String msg = JobManager.getManager().getDialogLabel2(id);
+		if(!json) {
+		    sb.append("<meta http-equiv=\"refresh\" content=\"2\">");
+		    sb.append(getRepository().progress("In progress"));
+		    sb.append(HtmlUtils.href(request.makeUrl(URL_STATUS,
+							     ARG_ACTION_ID, id), "Reload"));
+		    sb.append("<p>");
+		}
+		if (action.getExtraHtml() != null) {
+		    sb.append(action.getExtraHtml());
+		}
+		if (action.getExtraHtml() != null) {
+		    sb.append(action.getExtraHtml());
+		}
                 if (msg != null) {
                     sb.append(msg);
                 } else {
                     sb.append(action.getMessage());
                 }
-                sb.append("<p>");
-                sb.append(request.form(URL_STATUS));
-                sb.append(HtmlUtils.submit(msg("Cancel Action"), ARG_CANCEL));
-                sb.append(HtmlUtils.hidden(ARG_ACTION_ID, id));
-                sb.append(HtmlUtils.formClose());
+		if(!json) {
+		    sb.append("<p>");
+		    sb.append(request.form(URL_STATUS));
+		    sb.append(HtmlUtils.submit("Cancel Action", ARG_CANCEL));
+		    sb.append(HtmlUtils.hidden(ARG_ACTION_ID, id));
+		    sb.append(HtmlUtils.formClose());
+		}
             }
         }
-        if (action.getEntry() != null) {
-            getPageHandler().entrySectionClose(request, action.getEntry(),
-                    sb);
-        } else {
-            sb.append(HtmlUtils.sectionClose());
+	if(!json) {
+	    if (action.getEntry() != null) {
+		getPageHandler().entrySectionClose(request, action.getEntry(),
+						   sb);
+	    } else {
+		sb.append(HtmlUtils.sectionClose());
+	    }
+	}
+	Result  result = makeResult(request,"Status", status, sb,json); 
+	if(!json) {
+	    if (action.entry != null) {
+		return getEntryManager().addEntryHeader(request, action.entry,
+							result);
+	    }
         }
-        Result result = new Result(msg("Status"), sb);
-        if (action.entry != null) {
-            return getEntryManager().addEntryHeader(request, action.entry,
-                    result);
-        }
-
         return result;
     }
 
@@ -294,7 +326,6 @@ public class ActionManager extends RepositoryManager {
     public Result doAction(Request request, final Action runnable,
                            String name, String continueHtml, Entry entry) {
         Object actionId = runAction(runnable, name, continueHtml, entry);
-
         return new Result(request.makeUrl(URL_STATUS, ARG_ACTION_ID,
                                           "" + actionId));
     }

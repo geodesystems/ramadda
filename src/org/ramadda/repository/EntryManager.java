@@ -76,6 +76,9 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -1171,6 +1174,13 @@ public class EntryManager extends RepositoryManager {
     /** _more_ */
     public static final String ARG_EXTEDIT_URL_CHANGE = "extedit.url";
 
+    public static final String ARG_EXTEDIT_JS = "extedit.js";
+
+    public static final String ARG_EXTEDIT_JS_CONFIRM =
+        "extedit.js.confirm";
+    public static final String ARG_EXTEDIT_SOURCE = "extedit.source";    
+
+
     /** _more_ */
     public static final String ARG_EXTEDIT_SPATIAL = "extedit.spatial";
 
@@ -1240,6 +1250,23 @@ public class EntryManager extends RepositoryManager {
     public Result processEntryExtEdit(final Request request)
             throws Exception {
 
+	String[] what = new String[]{
+	    ARG_EXTEDIT_EDIT,
+	    ARG_EXTEDIT_REPORT,
+	    ARG_EXTEDIT_CHANGETYPE,
+	    ARG_EXTEDIT_CHANGETYPE_RECURSE,
+	    ARG_EXTEDIT_URL_CHANGE,
+	    ARG_EXTEDIT_JS,
+	};
+	
+
+        final StringBuilder sb = new StringBuilder();
+        final StringBuilder prefix = new StringBuilder();
+        final StringBuilder suffix = new StringBuilder();
+	Object actionId=null;
+
+
+
         Entry              entry        = getEntry(request);
         final Entry        finalEntry   = entry;
         final boolean      recurse = request.get(ARG_EXTEDIT_RECURSE, false);
@@ -1306,41 +1333,16 @@ public class EntryManager extends RepositoryManager {
                 }
             };
 
-            return getActionManager().doAction(request, action,
-                    "Walking the tree", "", entry);
-
-        }
-
-
-        /*
-        if(request.exists(ARG_EXTEDIT_MD5)) {
-            ActionManager.Action action = new ActionManager.Action() {
-                public void run(Object actionId) throws Exception {
-                    StringBuilder sb = new StringBuilder();
-                    setMD5(request, actionId, sb, recurse, entry.getId(), new int[]{0}, new int[]{0});
-                    if(sb.length()==0) sb.append("No checksums set");
-                    getActionManager().setContinueHtml(actionId,
-                                                       sb.toString());
-                }
-            };
-            return getActionManager().doAction(request, action,
-                                               "Setting MD5 Checksum", "", entry);
-
-        }
-
-        */
-
-        final StringBuilder sb = new StringBuilder();
-
-
-
-        if (request.exists(ARG_EXTEDIT_CHANGETYPE)) {
+	    actionId = getActionManager().runAction(action,"extendededitjs","");
+	    what = new String[]{ARG_EXTEDIT_EDIT};
+	    //            return getActionManager().doAction(request, action, "Walking the tree", "", entry);
+        } else  if (request.exists(ARG_EXTEDIT_CHANGETYPE)) {
             TypeHandler newTypeHandler = getRepository().getTypeHandler(
                                              request.getString(
                                                  ARG_EXTEDIT_NEWTYPE, ""));
 
             entry = changeType(request, entry, newTypeHandler);
-            sb.append(
+            prefix.append(
                 getPageHandler().showDialogNote(
                     msg("Entry type has been changed")));
         } else if (request.exists(ARG_EXTEDIT_CHANGETYPE_RECURSE)) {
@@ -1411,8 +1413,72 @@ public class EntryManager extends RepositoryManager {
                 }
             };
 
-            return getActionManager().doAction(request, action,
-                    "Walking the tree, changing entries", "", entry);
+	    actionId = getActionManager().runAction(action,"extendededitjs","");
+	    what = new String[]{ARG_EXTEDIT_CHANGETYPE_RECURSE};
+        } else if (request.exists(ARG_EXTEDIT_JS)) {
+            final boolean forReal =
+                request.get(ARG_EXTEDIT_JS_CONFIRM, false);
+	    final String js = request.getString(ARG_EXTEDIT_SOURCE,"");
+            ActionManager.Action action = new ActionManager.Action() {
+                public void run(final Object actionId) throws Exception {
+		    final org.mozilla.javascript.Context cx =
+			org.mozilla.javascript.Context.enter();
+		    final org.mozilla.javascript.Scriptable scope =
+			cx.initSafeStandardObjects();
+		    final StringBuilder buffer = new StringBuilder();
+		    cx.evaluateString(scope, "var confirmed = "+ forReal+";", "<cmd>", 1, null);
+		    final org.mozilla.javascript.Script script = cx.compileString(js, "code", 0, null);
+		    final List<Entry> allEntries = new ArrayList<Entry>();
+		    //Do the holder because the walker needs a final JsContext but the
+		    //JsContext needs the walker
+		    final Request theRequest =  request;
+		    final JsContext[] holder = new JsContext[1];
+                    EntryVisitor walker = new EntryVisitor(request,
+                                              getRepository(), actionId,
+                                              true) {
+			    public boolean processEntry(Entry entry,
+							List<Entry> children)
+                                throws Exception {
+				allEntries.add(entry);
+				try {
+				    scope.put("entry", scope, entry);
+				    Object o = script.exec(cx, scope);
+				} catch(Exception exc) {
+				    append("An error occurred processing entry:" + entry+"\n" + exc);
+				    return false;
+				}
+				return true;
+			    }
+			    public void finished() {
+				super.finished();
+				for(Entry entry: allEntries) {
+				    removeFromCache(entry);
+				}				    
+				if(forReal) {
+				    resetMessageBuffer();
+				    try {
+					for(Entry entry:  holder[0].getChangedEntries()) {
+					    append("Updated entry:" + entry+"\n");
+					    incrementProcessedCnt(1);
+					    updateEntry(request, entry);
+					}
+				    } catch(Exception exc) {
+					append("An error occurred updating entry\n" + exc);
+				    }					
+				}
+			    }
+			};
+		    final JsContext jsContext = new JsContext(walker,forReal);
+		    holder[0] = jsContext;
+		    scope.put("ctx", scope, jsContext);
+                    walker.walk(finalEntry);
+                    getActionManager().setContinueHtml(actionId,
+						       walker.getMessageBuffer().toString());
+                }
+            };
+	    actionId = getActionManager().runAction(action,"extendededitjs","");
+	    what = new String[]{ARG_EXTEDIT_JS};
+
         } else if (request.exists(ARG_EXTEDIT_URL_CHANGE)) {
             final String pattern = request.getString(ARG_EXTEDIT_URL_PATTERN,
                                        (String) null);
@@ -1447,28 +1513,9 @@ public class EntryManager extends RepositoryManager {
                 }
             };
 
-            return getActionManager().doAction(request, action,
-                    "Walking the tree, changing URLs", "", entry);
-        }
-
-
-        /*
-        if(request.exists(ARG_EXTEDIT_SETPARENTID)) {
-            ActionManager.Action action = new ActionManager.Action() {
-                public void run(Object actionId) throws Exception {
-                    StringBuilder sb = new StringBuilder();
-                    setParentId(request, actionId, sb, recurse, entry.getId(), new int[]{0}, new int[]{0});
-                    getActionManager().setContinueHtml(actionId,
-                                                       sb.toString());
-                }
-            };
-            return getActionManager().doAction(request, action,
-                                               "Setting parent ids", "", entry);
-
-        }
-        */
-
-        if (request.exists(ARG_EXTEDIT_REPORT)) {
+	    actionId = getActionManager().runAction(action,"","");
+	    what = new String[]{ARG_EXTEDIT_URL_CHANGE};
+        } else  if (request.exists(ARG_EXTEDIT_REPORT)) {
             final long[] size     = { 0 };
             final int[]  numFiles = { 0 };
             final boolean showMissing =
@@ -1519,161 +1566,177 @@ public class EntryManager extends RepositoryManager {
                 }
             };
             walker.walk(entry);
-            sb.append("<table><tr><td><b>" + msg("File") + "</b></td><td><b>"
+	    suffix.append(HtmlUtils.openInset(5, 30, 20, 0));
+            suffix.append("<table><tr><td><b>" + msg("File") + "</b></td><td><b>"
                       + msg("Size") + "</td><td></td></tr>");
-            sb.append(walker.getMessageBuffer());
-            sb.append("<tr><td><b>" + msgLabel("Total")
+            suffix.append(walker.getMessageBuffer());
+            suffix.append("<tr><td><b>" + msgLabel("Total")
                       + "</td><td align=right>"
                       + HtmlUtils.b(formatFileLength(size[0]))
                       + "</td></tr>");
-            sb.append("</table>");
-            sb.append("**** - File managed by RAMADDA");
-
-            return makeEntryEditResult(request, entry, "Entry Report", sb);
+            suffix.append("</table>");
+            suffix.append("**** - File managed by RAMADDA");
+	    suffix.append(HtmlUtils.closeInset());
+	    what = new String[]{ARG_EXTEDIT_REPORT};
         }
 
+        /*
+	  else if(request.exists(ARG_EXTEDIT_SETPARENTID)) {
+            ActionManager.Action action = new ActionManager.Action() {
+                public void run(Object actionId) throws Exception {
+                    StringBuilder sb = new StringBuilder();
+                    setParentId(request, actionId, sb, recurse, entry.getId(), new int[]{0}, new int[]{0});
+                    getActionManager().setContinueHtml(actionId,
+                                                       sb.toString());
+                }
+            };
+            return getActionManager().doAction(request, action,
+                                               "Setting parent ids", "", entry);
 
-        sb.append(request.form(getRepository().URL_ENTRY_EXTEDIT,
-                               HtmlUtils.attr("name", "entryform")));
-        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+        }
+        */
+
+        /*
+	  else if(request.exists(ARG_EXTEDIT_MD5)) {
+            ActionManager.Action action = new ActionManager.Action() {
+                public void run(Object actionId) throws Exception {
+                    StringBuilder sb = new StringBuilder();
+                    setMD5(request, actionId, sb, recurse, entry.getId(), new int[]{0}, new int[]{0});
+                    if(sb.length()==0) sb.append("No checksums set");
+                    getActionManager().setContinueHtml(actionId,
+                                                       sb.toString());
+                }
+            };
+            return getActionManager().doAction(request, action,
+                                               "Setting MD5 Checksum", "", entry);
+
+        }
+        */
+
+
+
 
 
         getPageHandler().entrySectionOpen(request, entry, sb,
                                           "Extended Edit", true);
 
 
-        sb.append(formHeader("Spatial and Temporal Metadata"));
-        sb.append(HtmlUtils.openInset(5, 30, 20, 0));
-
-        sb.append(HtmlUtils.labeledCheckbox(ARG_EXTEDIT_SPATIAL, "true",
-                                            false, "Set spatial metadata"));
-        sb.append(HtmlUtils.p());
-        sb.append(HtmlUtils.labeledCheckbox(ARG_EXTEDIT_TEMPORAL, "true",
-                                            false, "Set temporal metadata"));
-        sb.append(HtmlUtils.p());
-        sb.append(HtmlUtils.labeledCheckbox(ARG_EXTEDIT_THUMBNAIL, "true",
-                                            false, "Add image thumbnails"));	
-        sb.append(HtmlUtils.p());
-        sb.append(HtmlUtils.labeledCheckbox(ARG_EXTEDIT_RECURSE, "true",
-                                            true, "Recurse"));
-        sb.append(HtmlUtils.p());
-        //        sb.append(HtmlUtils.labeledCheckbox(ARG_EXTEDIT_MD5,"true", false, "Set MD5 checksums"));
-        //        sb.append(HtmlUtils.p());
-        sb.append(HtmlUtils.submit(msg("Set metadata"),
-                                   ARG_EXTEDIT_EDIT));
-
-
-
-        sb.append(HtmlUtils.closeInset());
-
-        sb.append(formHeader("File Listing"));
-        sb.append(HtmlUtils.openInset(5, 30, 20, 0));
-        sb.append(HtmlUtils.checkbox(ARG_EXTEDIT_REPORT_MISSING, "true",
-                                     true) + " " + msg("Show missing files")
-                                           + "<p>");
-        sb.append(HtmlUtils.checkbox(ARG_EXTEDIT_REPORT_FILES, "true", true)
-                  + " " + msg("Show OK files") + "<p>");
-        sb.append(HtmlUtils.submit(msg("Generate File Listing"),
-                                   ARG_EXTEDIT_REPORT));
-
-
-
-        List<HtmlUtils.Selector> tfos = getTypeHandlerSelectors(request,
-                                            true, true, entry);
-
-        sb.append(HtmlUtils.closeInset());
-        sb.append(formHeader("Change Entry Type"));
-        sb.append(HtmlUtils.openInset(5, 30, 20, 0));
-        sb.append(msgLabel("New type"));
-        sb.append(HtmlUtils.space(1));
-
-        //        this.jq(ID_TYPE_FIELD).selectBoxIt({});
-        //        "data-iconurl",icon];
-
-        sb.append(HtmlUtils.select(ARG_EXTEDIT_NEWTYPE, tfos));
-        sb.append(HtmlUtils.p());
-        List<Column> columns = entry.getTypeHandler().getColumns();
-        if ((columns != null) && (columns.size() > 0)) {
-            StringBuilder note = new StringBuilder();
-            for (Column col : columns) {
-                if (note.length() > 0) {
-                    note.append(", ");
-                }
-                note.append(col.getLabel());
-            }
-            sb.append(msgLabel("Note: this metadata would be lost") + note);
-        }
-
-        sb.append(HtmlUtils.p());
-        sb.append(HtmlUtils.submit(msg("Change type of this entry"),
-                                   ARG_EXTEDIT_CHANGETYPE));
-        sb.append(HtmlUtils.formClose());
-        sb.append(HtmlUtils.closeInset());
-
-        sb.append(formHeader("Change Descendents Entry Type"));
-        sb.append(request.form(getRepository().URL_ENTRY_EXTEDIT,
-                               HtmlUtils.attr("name", "entryform")));
-        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
-
-        sb.append(HtmlUtils.openInset(5, 30, 20, 0));
-        sb.append(HtmlUtils.formTable());
-        sb.append(HtmlUtils.formEntry(msgLabel("Old type"),
-                                      HtmlUtils.select(ARG_EXTEDIT_OLDTYPE,
-                                          tfos)));
-
-        sb.append(
-            HtmlUtils.formEntry(
-                msgLabel("Regexp Pattern"),
-                HtmlUtils.input(ARG_EXTEDIT_NEWTYPE_PATTERN, "") + " "
-                + msg("Only change type for entries that match this pattern")));
-        sb.append(HtmlUtils.formEntry(msgLabel("New type"),
-                                      HtmlUtils.select(ARG_EXTEDIT_NEWTYPE,
-                                          tfos)));
-        sb.append(
-            HtmlUtils.formEntry(
-                "",
-                HtmlUtils.checkbox(
-                    ARG_EXTEDIT_CHANGETYPE_RECURSE_CONFIRM, "true",
-                    false) + " " + msg("Yes, change them")));
-
-
-        sb.append(HtmlUtils.formTableClose());
-        sb.append(HtmlUtils.p());
-        sb.append(
-            HtmlUtils.submit(
-                msg("Change the type of all descendent entries"),
-                ARG_EXTEDIT_CHANGETYPE_RECURSE));
+	sb.append(prefix);
+	if(actionId!=null) {
+	    String url = getRepository().getUrlBase() +"/status?actionid=" + actionId +"&output=json";
+	    sb.append(HU.b("Results"));
+	    HU.div(sb,"",HU.attrs("class","ramadda-action-results", "id",actionId.toString()));
+	    HU.script(sb,"Utils.handleActionResults('" + actionId +"','" + url+"');\n");
+	}
 
 
 
 
-        sb.append(formHeader("Change Descendents URL Path"));
-        sb.append(request.form(getRepository().URL_ENTRY_EXTEDIT,
-                               HtmlUtils.attr("name", "entryform")));
-        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
-
-        sb.append(HtmlUtils.openInset(5, 30, 20, 0));
-        sb.append(HtmlUtils.formTable());
-        sb.append(
-            HtmlUtils.formEntry(
-                msgLabel("Pattern"),
-                HtmlUtils.input(ARG_EXTEDIT_URL_PATTERN, "")));
-        sb.append(HtmlUtils.formEntry(msgLabel("To"),
-                                      HtmlUtils.input(ARG_EXTEDIT_URL_TO,
-                                          "")));
+	Consumer<String> opener = label->{
+	    sb.append(formHeader(label));
+	    sb.append(HU.openInset(5, 30, 20, 0));
+	};
+        BiConsumer<String, String> closer= (id,label) -> {
+	    sb.append(HU.p());
+	    sb.append(HU.submit(label, id));
+	    sb.append(HU.closeInset());
+	};
 
 
-        sb.append(HtmlUtils.formTableClose());
-        sb.append(HtmlUtils.p());
-        sb.append(HtmlUtils.submit(msg("Change URLs"),
-                                   ARG_EXTEDIT_URL_CHANGE));
+	List<HtmlUtils.Selector> tfos = getTypeHandlerSelectors(request,true, true, entry);
 
-        sb.append(HtmlUtils.formClose());
-        sb.append(HtmlUtils.closeInset());
+	for(String form: what) {
+	    sb.append(request.form(getRepository().URL_ENTRY_EXTEDIT,
+				   HU.attr("name", "entryform")));
+	    sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
+	    if(form.equals(ARG_EXTEDIT_EDIT)) {
+		opener.accept("Spatial and Temporal Metadata");
+		sb.append(HU.labeledCheckbox(ARG_EXTEDIT_SPATIAL, "true",
+						    false, "Set spatial metadata"));
+		sb.append(HU.br());
+		sb.append(HU.labeledCheckbox(ARG_EXTEDIT_TEMPORAL, "true",
+						    false, "Set temporal metadata"));
+		sb.append(HU.br());
+		sb.append(HU.labeledCheckbox(ARG_EXTEDIT_THUMBNAIL, "true",
+						    false, "Add image thumbnails"));	
+		sb.append(HU.br());
+		sb.append(HU.labeledCheckbox(ARG_EXTEDIT_RECURSE, "true",
+						    true, "Recurse"));
+		closer.accept(form,"Set metadata");
+	    } else if(form.equals(ARG_EXTEDIT_REPORT)){
+		opener.accept("File Listing");
+		sb.append(HU.checkbox(ARG_EXTEDIT_REPORT_MISSING, "true",
+					     true) + " " + msg("Show missing files")  + "<br>");
+		sb.append(HU.checkbox(ARG_EXTEDIT_REPORT_FILES, "true", true)
+			  + " " + msg("Show OK files") + "<p>");
+		closer.accept(form, "Generate File Listing");
+	    }  else if(form.equals(ARG_EXTEDIT_CHANGETYPE)){
+		opener.accept("Change Entry Type");
+		sb.append(msgLabel("New type"));
+		sb.append(HU.space(1));
+		sb.append(HU.select(ARG_EXTEDIT_NEWTYPE, tfos));
+		sb.append(HU.p());
+		List<Column> columns = entry.getTypeHandler().getColumns();
+		if ((columns != null) && (columns.size() > 0)) {
+		    StringBuilder note = new StringBuilder();
+		    for (Column col : columns) {
+			if (note.length() > 0) {
+			    note.append(", ");
+			}
+			note.append(col.getLabel());
+		    }
+		    sb.append(msgLabel("Note: this metadata would be lost") + note);
+		}
+
+		closer.accept(form, "Change type of this entry");
+	    }  else if(form.equals(ARG_EXTEDIT_CHANGETYPE_RECURSE)){
+		opener.accept("Change Descendents Entry Type");
+		sb.append(HU.formTable());
+		HU.formEntry(sb, msgLabel("Old type"),
+			     HU.select(ARG_EXTEDIT_OLDTYPE,
+				       tfos));
+
+		HU.formEntry(sb, msgLabel("Regexp Pattern"),
+			     HU.input(ARG_EXTEDIT_NEWTYPE_PATTERN, "") + " "
+			     + msg("Only change type for entries that match this pattern"));
+
+		HU.formEntry(sb, msgLabel("New type"),
+			     HU.select(ARG_EXTEDIT_NEWTYPE,
+				       tfos));
+		HU.formEntry(sb, "",
+			     HU.checkbox(ARG_EXTEDIT_CHANGETYPE_RECURSE_CONFIRM, "true",
+					 false) + " " + msg("Yes, change them"));
+		sb.append(HU.formTableClose());
+		closer.accept(form,"Change the type of all descendent entries");
+	    }	else if(form.equals(ARG_EXTEDIT_URL_CHANGE)){		
+		opener.accept("Change Descendents URL Path");
+		sb.append(HU.formTable());
+		HU.formEntry(sb, msgLabel("Pattern"),
+			     HU.input(ARG_EXTEDIT_URL_PATTERN, request.getString(ARG_EXTEDIT_URL_PATTERN,"")));
+		HU.formEntry(sb,msgLabel("To"),  HU.input(ARG_EXTEDIT_URL_TO, request.getString(ARG_EXTEDIT_URL_TO,"")));
+		sb.append(HU.formTableClose());
+		closer.accept(form,"Change URLs");
+	    } else if(form.equals(ARG_EXTEDIT_JS)){
+		opener.accept("Process with Javascript");
+		sb.append(HU.formTable());
+		String ex =  "ctx.print('Processing: ' + entry.getName());\nif(confirmed) {\n\tctx.entryChanged(entry);\n}";
+		ex = request.getString(ARG_EXTEDIT_SOURCE, ex);
+		HU.formEntry(sb,  msgLabel("Javascript"),
+			     HU.textArea(ARG_EXTEDIT_SOURCE, ex,10,80));
+		
+		HU.formEntry(sb, "",
+			     HU.checkbox(
+					 ARG_EXTEDIT_JS_CONFIRM, "true",
+					 request.get(ARG_EXTEDIT_JS_CONFIRM,false)) + " " + msg("Yes, apply the Javascript"));
+		sb.append(HU.formTableClose());
+		closer.accept(form,"Apply Javascript");
+	    }
+	    sb.append(HU.formClose());
+	}
+	sb.append(suffix);
 
 
         return makeEntryEditResult(request, entry, "Extended Edit", sb);
-
     }
 
 
@@ -1970,15 +2033,11 @@ public class EntryManager extends RepositoryManager {
         String title = BLANK;
 
         if (type == null) {
-            sb.append(
-                HtmlUtils.formEntry(
-                    msgLabel("Type"),
-                    getRepository().makeTypeSelect(
-                        request, false, "", true, null)));
-
-            sb.append(
-                HtmlUtils.formEntry(
-                    BLANK, HtmlUtils.submit(msg("Select Type to Add"))));
+	    HU.formEntry(sb,
+				msgLabel("Type"),
+				getRepository().makeTypeSelect(
+							       request, false, "", true, null));
+	    HtmlUtils.formEntry(sb, BLANK, HtmlUtils.submit(msg("Select Type to Add")));
             sb.append(HtmlUtils.hidden(ARG_GROUP, group.getId()));
         } else {
             title = ((entry == null)
@@ -10144,8 +10203,8 @@ public class EntryManager extends RepositoryManager {
      * @param sb _more_
      */
     public void addStatusInfo(StringBuffer sb) {
-        sb.append(HtmlUtils.formEntry(msgLabel("Entry Cache"),
-                                      getEntryCache().size() / 2 + ""));
+        HtmlUtils.formEntry(sb,msgLabel("Entry Cache"),
+			    getEntryCache().size() / 2 + "");
     }
 
     /**
@@ -10874,6 +10933,34 @@ public class EntryManager extends RepositoryManager {
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
+    }
+
+    public static class JsContext {
+	private StringBuilder msg = new StringBuilder();
+	private List<Entry> changedEntries = new ArrayList<Entry>();	
+	private EntryVisitor visitor;
+	private boolean confirm;
+	
+	public JsContext(EntryVisitor visitor, boolean confirm) {
+	    this.visitor= visitor;
+	    this.confirm = confirm;
+	}
+	public void entryChanged(Entry e) {
+	    if(confirm) {
+		changedEntries.add(e);
+		visitor.incrementProcessedCnt(1);
+	    }
+	}
+	public List<Entry> getChangedEntries() {
+	    return changedEntries;
+	}
+
+	public Date getDate(String d) throws Exception {
+	    return DateUtil.parse(d);
+	}
+	public void print(Object msg) {
+	    visitor.append(msg+"\n");
+	}
     }
 
 
