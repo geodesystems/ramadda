@@ -15,7 +15,7 @@
 */
 
 
-package org.ramadda.repository;
+package org.ramadda.util;
 
 
 import java.util.ArrayList;
