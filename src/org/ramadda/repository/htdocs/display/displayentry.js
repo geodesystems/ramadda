@@ -2840,9 +2840,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    let success= ()=>{
 		if(this.callNumber == callNumber) {
 		    this.entryListChanged(this.entryList);
-		} else {
-		    console.log("skipping");
-		}
+		} 
 	    };
 	    let fail= (error)=>{
 		this.writeEntries("Error:" + error);
