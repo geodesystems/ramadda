@@ -59,6 +59,10 @@ import java.util.regex.*;
 
 public class HtmlUtils implements HtmlUtilsConstants {
 
+    public static final String SPACE = "&nbsp;";
+    public static final String SPACE2 = "&nbsp;&nbsp;";
+    public static final String SPACE3 = "&nbsp;&nbsp;&nbsp;";    
+
     /**
      * _more_
      *
@@ -3224,13 +3228,15 @@ public class HtmlUtils implements HtmlUtilsConstants {
                 if (selector.attr != null) {
                     attrSB.append(selector.attr);
                 }
-                //                System.out.println(selector.label  + " " + selector.icon +" " +selector.isHeader);
-                if (selector.icon != null) {
+                if (Utils.stringDefined(selector.icon)) {
+		    String style = "";
+		    if(!selector.isHeader)
+			style +="margin-left:" + selector.margin+"px;";
                     extraAttr = attrs("data-class", "ramadda-select-icon",
                                       "data-style",
-                                      "width:" + selector.padding
-                                      + "px;margin-right:" + selector.margin
-                                      + "px", "img-src", selector.icon);
+				      style, "img-src", selector.icon);
+		    if(selector.isHeader)
+			extraAttr = attrs("isheader","true","label-class", "ramadda-select-header");
                 } else if (selector.isHeader) {
                     extraAttr = style(
                         "font-weight:bold;background: #ddd;padding:6px;");
