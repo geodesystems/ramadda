@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -69,7 +69,8 @@ public class Entry implements Cloneable {
     /** _more_ */
     public static final int MAX_NAME_LENGTH = 200;
 
-    public static final int DEFAULT_ORDER=999;
+    /** _more_          */
+    public static final int DEFAULT_ORDER = 999;
 
     /** List of comments */
     List<Comment> comments;
@@ -112,8 +113,9 @@ public class Entry implements Cloneable {
     /** the user (owner) */
     private User user;
 
+    /** _more_          */
     private int entryOrder = DEFAULT_ORDER;
-    
+
     /** the create date */
     private long createDate = 0L;
 
@@ -539,6 +541,7 @@ public class Entry implements Cloneable {
      * @param user         the loser
      * @param resource     the resource
      * @param category     the category
+     * @param entryOrder _more_
      * @param createDate   the creation date
      * @param changeDate   the change date
      * @param startDate    the start date
@@ -547,15 +550,14 @@ public class Entry implements Cloneable {
      */
     public void initEntry(String name, String description, Entry parentEntry,
                           User user, Resource resource, String category,
-			  int entryOrder,
-                          long createDate, long changeDate, long startDate,
-                          long endDate, Object[] values) {
+                          int entryOrder, long createDate, long changeDate,
+                          long startDate, long endDate, Object[] values) {
         this.id = id;
         setName(name);
         setDescription(description);
         this.parentEntry = parentEntry;
         this.user        = user;
-	this.entryOrder = entryOrder;
+        this.entryOrder  = entryOrder;
         setCreateDate(createDate);
         setChangeDate(changeDate);
 
@@ -572,9 +574,9 @@ public class Entry implements Cloneable {
         this.endDate   = endDate;
         this.values    = values;
 
-	if(typeHandler!=null) {
-	    typeHandler.initEntryHasBeenCalled(this);
-	}
+        if (typeHandler != null) {
+            typeHandler.initEntryHasBeenCalled(this);
+        }
 
 
     }
@@ -660,13 +662,27 @@ public class Entry implements Cloneable {
         startDate = value;
     }
 
+    /**
+     * _more_
+     *
+     * @param value _more_
+     */
     public void setStartDate(Date value) {
-	if(value!=null) setStartDate(value.getTime());
-    }    
+        if (value != null) {
+            setStartDate(value.getTime());
+        }
+    }
 
+    /**
+     * _more_
+     *
+     * @param value _more_
+     */
     public void setEndDate(Date value) {
-	if(value!=null) setEndDate(value.getTime());
-    }    
+        if (value != null) {
+            setEndDate(value.getTime());
+        }
+    }
 
     /**
      * _more_
@@ -874,6 +890,19 @@ public class Entry implements Cloneable {
         return c.getOffset();
     }
 
+
+    /**
+     * _more_
+     *
+     * @param column _more_
+     *
+     * @return _more_
+     */
+    public Object getValue(String column) {
+        int index = getTypeHandler().getValueIndex(column);
+
+        return getValue(index);
+    }
 
     /**
      * Get the string value of the values index
@@ -1774,8 +1803,18 @@ public class Entry implements Cloneable {
         return equalsEntry(that);
     }
 
+    /**
+     * _more_
+     *
+     * @param that _more_
+     *
+     * @return _more_
+     */
     public boolean equalsEntry(Entry that) {
-	if(that==null) return false;
+        if (that == null) {
+            return false;
+        }
+
         return Misc.equals(this.id, that.id);
     }
 
@@ -1790,21 +1829,21 @@ public class Entry implements Cloneable {
     }
 
     /**
-       Set the EntryOrder property.
-
-       @param value The new value for EntryOrder
-    **/
-    public void setEntryOrder (int value) {
-	entryOrder = value;
+     *  Set the EntryOrder property.
+     *
+     *  @param value The new value for EntryOrder
+     */
+    public void setEntryOrder(int value) {
+        entryOrder = value;
     }
 
     /**
-       Get the EntryOrder property.
-
-       @return The EntryOrder
-    **/
-    public int getEntryOrder () {
-	return entryOrder;
+     *  Get the EntryOrder property.
+     *
+     *  @return The EntryOrder
+     */
+    public int getEntryOrder() {
+        return entryOrder;
     }
 
 
@@ -1968,7 +2007,7 @@ public class Entry implements Cloneable {
         description = value;
         if (description.length() > MAX_DESCRIPTION_LENGTH) {
             description = description.substring(0,
-						MAX_DESCRIPTION_LENGTH - 1);
+                    MAX_DESCRIPTION_LENGTH - 1);
         }
     }
 
