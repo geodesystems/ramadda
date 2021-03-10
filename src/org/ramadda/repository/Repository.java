@@ -125,6 +125,8 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -270,8 +272,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** The EntryManager */
     private EntryManager entryManager;
 
+    /** _more_          */
     private ExtEditor extEditor;
-    
+
     /** _more_ */
     private EntryUtil entryUtil;
 
@@ -2024,12 +2027,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+    //TODO: use this to synchronize the getters below
+
+    /** _more_          */
+    private Object getMutex = new Object();
+
     /**
      * _more_
      *
      * @return _more_
      */
-    public synchronized UserManager getUserManager() {
+    public UserManager getUserManager() {
         if (userManager == null) {
             userManager = doMakeUserManager();
         }
@@ -2055,7 +2063,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public synchronized MonitorManager getMonitorManager() {
+    public MonitorManager getMonitorManager() {
         if (monitorManager == null) {
             monitorManager = doMakeMonitorManager();
         }
@@ -2069,7 +2077,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public synchronized SessionManager getSessionManager() {
+    public SessionManager getSessionManager() {
         if (sessionManager == null) {
             sessionManager = doMakeSessionManager();
             sessionManager.init();
@@ -2092,7 +2100,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public synchronized ApiManager getApiManager() {
+    public ApiManager getApiManager() {
         if (apiManager == null) {
             apiManager = doMakeApiManager();
         }
@@ -2105,7 +2113,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public synchronized PageHandler getPageHandler() {
+    public PageHandler getPageHandler() {
         if (pageHandler == null) {
             pageHandler = doMakePageHandler();
         }
@@ -2118,7 +2126,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public synchronized DateHandler getDateHandler() {
+    public DateHandler getDateHandler() {
 
         if (dateHandler == null) {
             dateHandler = doMakeDateHandler();
@@ -2133,7 +2141,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public synchronized WikiManager getWikiManager() {
+    public WikiManager getWikiManager() {
         if (wikiManager == null) {
             wikiManager = doMakeWikiManager();
         }
@@ -2147,7 +2155,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public synchronized LogManager getLogManager() {
+    public LogManager getLogManager() {
         if (logManager == null) {
             logManager = doMakeLogManager();
             logManager.init();
@@ -2171,7 +2179,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public synchronized JobManager getJobManager() {
+    public JobManager getJobManager() {
         if (jobManager == null) {
             jobManager = doMakeJobManager();
         }
@@ -2193,7 +2201,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public synchronized EntryManager getEntryManager() {
+    public EntryManager getEntryManager() {
         if (entryManager == null) {
             entryManager = doMakeEntryManager();
         }
@@ -2206,10 +2214,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public synchronized ExtEditor getExtEditor() {
+    public ExtEditor getExtEditor() {
         if (extEditor == null) {
             extEditor = new ExtEditor(this);
         }
+
         return extEditor;
     }
 
@@ -2218,7 +2227,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public synchronized EntryUtil getEntryUtil() {
+    public EntryUtil getEntryUtil() {
         if (entryUtil == null) {
             entryUtil = new EntryUtil(getRepository());
         }
@@ -2233,7 +2242,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public synchronized CommentManager getCommentManager() {
+    public CommentManager getCommentManager() {
         if (commentManager == null) {
             commentManager = doMakeCommentManager();
         }
@@ -2247,7 +2256,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public synchronized AssociationManager getAssociationManager() {
+    public AssociationManager getAssociationManager() {
         if (associationManager == null) {
             associationManager = doMakeAssociationManager();
         }
@@ -2260,7 +2269,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public synchronized HarvesterManager getHarvesterManager() {
+    public HarvesterManager getHarvesterManager() {
         if (harvesterManager == null) {
             harvesterManager = doMakeHarvesterManager();
         }
@@ -2274,7 +2283,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public synchronized ActionManager getActionManager() {
+    public ActionManager getActionManager() {
         if (actionManager == null) {
             actionManager = doMakeActionManager();
         }
@@ -2300,7 +2309,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public synchronized AccessManager getAccessManager() {
+    public AccessManager getAccessManager() {
         if (accessManager == null) {
             accessManager = doMakeAccessManager();
         }
@@ -2328,7 +2337,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public synchronized SearchManager getSearchManager() {
+    public SearchManager getSearchManager() {
         if (searchManager == null) {
             searchManager = doMakeSearchManager();
         }
@@ -2355,7 +2364,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public synchronized MapManager getMapManager() {
+    public MapManager getMapManager() {
         if (mapManager == null) {
             mapManager = doMakeMapManager();
         }
@@ -2383,7 +2392,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public synchronized MetadataManager getMetadataManager() {
+    public MetadataManager getMetadataManager() {
         if (metadataManager == null) {
             metadataManager = doMakeMetadataManager();
         }
@@ -2429,7 +2438,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public synchronized RegistryManager getRegistryManager() {
+    public RegistryManager getRegistryManager() {
         if (registryManager == null) {
             registryManager = doMakeRegistryManager();
         }
@@ -2442,7 +2451,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public synchronized MailManager getMailManager() {
+    public MailManager getMailManager() {
         if (mailManager == null) {
             mailManager = doMakeMailManager();
         }
@@ -2455,7 +2464,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public synchronized LocalRepositoryManager getLocalRepositoryManager() {
+    public LocalRepositoryManager getLocalRepositoryManager() {
         if (localRepositoryManager == null) {
             localRepositoryManager = doMakeLocalRepositoryManager();
         }
@@ -2470,7 +2479,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public synchronized StorageManager getStorageManager() {
+    public StorageManager getStorageManager() {
         if (storageManager == null) {
             storageManager = doMakeStorageManager();
             storageManager.init();
@@ -2484,7 +2493,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public synchronized PluginManager getPluginManager() {
+    public PluginManager getPluginManager() {
         if (pluginManager == null) {
             pluginManager = doMakePluginManager();
         }
@@ -2498,7 +2507,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public synchronized DatabaseManager getDatabaseManager() {
+    public DatabaseManager getDatabaseManager() {
         if (databaseManager == null) {
             databaseManager = doMakeDatabaseManager();
         }
@@ -2512,7 +2521,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public synchronized FtpManager getFtpManager() {
+    public FtpManager getFtpManager() {
         if (ftpManager == null) {
             //Only the top-level ramaddas gets the ftpmanager
             if (globalFtpManager != null) {
@@ -2531,7 +2540,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public synchronized Admin getAdmin() {
+    public Admin getAdmin() {
         if (admin == null) {
             admin = doMakeAdmin();
         }
@@ -3395,13 +3404,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
-	//A hack (should put this in a user-agent blacklist file sometime
+        //A hack (should put this in a user-agent blacklist file sometime
         String userAgent = request.getUserAgent();
-	if(userAgent!=null) {
-	    if(userAgent.indexOf("OpenVAS")>=0 || userAgent.indexOf("GBN")>=0) {
-		return makeBlockedResult(request);
-	    }
-	}
+        if (userAgent != null) {
+            if ((userAgent.indexOf("OpenVAS") >= 0)
+                    || (userAgent.indexOf("GBN") >= 0)) {
+                return makeBlockedResult(request);
+            }
+        }
 
 
         String requestPath = request.getRequestPath().replaceAll("//", "/");
@@ -5401,12 +5411,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
         groupTypeHandler.setCategory("Documents");
         groupTypeHandler.putProperty("form.resource.show", "false");
         groupTypeHandler.putProperty("icon", ICON_FOLDER);
-	groupTypeHandler.setHelp("A group of entries");
+        groupTypeHandler.setHelp("A group of entries");
         TypeHandler typeHandler;
         addTypeHandler(TypeHandler.TYPE_FILE,
                        typeHandler = new TypeHandler(this, "file", "File",
                            "Documents"));
-	typeHandler.setHelp("The entry type is figured out by the file extension");
+        typeHandler.setHelp(
+            "The entry type is figured out by the file extension");
         typeHandler.putProperty("icon", ICON_FILE);
 
         addTypeHandler(ProcessFileTypeHandler.TYPE_PROCESS,
@@ -5475,6 +5486,47 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+    /**
+     * _more_
+     *
+     * @param anyOk _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public List<TypeHandler> getTypeHandlersForDisplay(boolean anyOk)
+            throws Exception {
+        List<TypeHandler> typeHandlers = getTypeHandlers();
+        Comparator        comp         = new Comparator() {
+            public int compare(Object o1, Object o2) {
+                TypeHandler t1 = (TypeHandler) o1;
+                TypeHandler t2 = (TypeHandler) o2;
+                if (t1.getPriority() == t2.getPriority()) {
+                    return t1.getLabel().compareTo(t2.getLabel());
+                }
+
+                return t1.getPriority() - t2.getPriority();
+            }
+        };
+        Object[] array = typeHandlers.toArray();
+        Arrays.sort(array, comp);
+        List<TypeHandler> tmp = new ArrayList<TypeHandler>();
+        for (TypeHandler typeHandler :
+                (List<TypeHandler>) Misc.toList(array)) {
+            if ( !typeHandler.getForUser()) {
+                continue;
+            }
+            if (typeHandler.isAnyHandler()) {
+                if ( !anyOk) {
+                    continue;
+                }
+            }
+            tmp.add(typeHandler);
+        }
+
+        return tmp;
+    }
 
 
     /**
