@@ -356,7 +356,6 @@ public class ExtEditor extends RepositoryManager {
             final String type = request.getString(ARG_EXTEDIT_TYPE, (String) null);
 	    final boolean anyFile = Misc.equals(TypeHandler.TYPE_ANY, type);
 
-
             ActionManager.Action action = new ActionManager.Action() {
                 public void run(final Object actionId) throws Exception {
 		    final org.mozilla.javascript.Context ctx =
@@ -366,7 +365,6 @@ public class ExtEditor extends RepositoryManager {
 		    final StringBuilder buffer = new StringBuilder();
 		    ctx.evaluateString(scope, "var confirmed = "+ forReal+";", "<cmd>", 1, null);
 		    final org.mozilla.javascript.Script script = ctx.compileString(js, "code", 0, null);
-		    final List<Entry> allEntries = new ArrayList<Entry>();
 		    //Do the holder because the walker needs a final JsContext but the
 		    //JsContext needs the walker
 		    final Request theRequest =  request;
@@ -379,18 +377,23 @@ public class ExtEditor extends RepositoryManager {
 							List<Entry> children)
                                 throws Exception {
 				if(anyFile) {
-				    if(!entry.getResource().isFile()) return true;
-				} else {
-				    if(type!=null && !entry.getTypeHandler().isType(type)) return true;
+				    if(!entry.getResource().isFile()) {
+					return true;
+				    }					
+				} else  if(Utils.stringDefined(type) && !entry.getTypeHandler().isType(type)) {
+				    return true;
 				}
 
-				allEntries.add(entry);
 				try {
 				    EntryWrapper wrapper = new EntryWrapper(entry);
 				    wrappers.add(wrapper);
 				    scope.put("entry", scope, wrapper);
-				    Object o = script.exec(ctx, scope);
+				    script.exec(ctx, scope);
+				    if(!holder[0].okToRun) {
+					return false;
+				    }
 				} catch(Exception exc) {
+				    holder[0].cancel = true;
 				    append("An error occurred processing entry:" + entry+"\n" + exc);
 				    return false;
 				}
@@ -398,9 +401,7 @@ public class ExtEditor extends RepositoryManager {
 			    }
 			    public void finished() {
 				super.finished();
-				for(Entry entry: allEntries) {
-				    getEntryManager().removeFromCache(entry);
-				}				    
+				if(holder[0].cancel) return;
 				if(forReal) {
 				    boolean haveReset = false;
 				    try {
@@ -424,6 +425,7 @@ public class ExtEditor extends RepositoryManager {
 						entry.setEndDate(wrapper.endDate);
 					    }
 					    if(changed) {
+						getEntryManager().removeFromCache(entry);
 						if(!haveReset) {
 						    resetMessageBuffer();
 						    haveReset = true;
@@ -615,6 +617,7 @@ public class ExtEditor extends RepositoryManager {
 
 
 	List<HtmlUtils.Selector> tfos = getTypeHandlerSelectors(request,true, true, entry);
+	tfos.add(0,new HtmlUtils.Selector("Select one","",""));
 
 	for(String form: what) {
 	    sb.append(request.form(getRepository().URL_ENTRY_EXTEDIT,
@@ -693,11 +696,15 @@ public class ExtEditor extends RepositoryManager {
 		HtmlUtils.formEntry(sb, msgLabel("Only apply to entries of type"),
 				    HtmlUtils.select(ARG_EXTEDIT_TYPE, tfos,request.getString(ARG_EXTEDIT_TYPE,null)));
 
-		String ex =  "ctx.print('Processing: ' + entry.getName());\n" +
+		String ex ="//Include any javascript here\n" +
+		    "ctx.print('Processing: ' + entry.getName());\n" +
 		    "//entry access:\n//entry.getName() entry.setName()\n//entry.getType()\n//entry.getStartDate() entry.getEndDate()\n" +
 		    "//entry.setStartDate(String) entry.setEndDate(String)\n" +
-		    "//entry.getValue(column name);\n";
-		    ;
+		    "//entry.getValue('column_name');\n" +
+		    "//ctx is the context object\n" +
+		    "//ctx.print() prints output\n" +
+		    "//ctx.stop() will stop processing but still apply any changes\n" +
+		    "//ctx.cancel() will cancel processing and no changes will be applied\n";
 		ex = request.getString(ARG_EXTEDIT_SOURCE, ex);
 		HU.formEntry(sb,  msgLabel("Javascript"),
 			     HU.textArea(ARG_EXTEDIT_SOURCE, ex,10,80));
@@ -705,7 +712,7 @@ public class ExtEditor extends RepositoryManager {
 		HU.formEntry(sb, "",
 			     HU.checkbox(
 					 ARG_EXTEDIT_JS_CONFIRM, "true",
-					 request.get(ARG_EXTEDIT_JS_CONFIRM,false)) + " " + msg("Yes, apply the Javascript"));
+					 request.get(ARG_EXTEDIT_JS_CONFIRM,false)) + " " + msg("Apply changes to entries"));
 		sb.append(HU.formTableClose());
 		closer.accept(form,"Apply Javascript");
 	    }
@@ -1199,12 +1206,22 @@ public class ExtEditor extends RepositoryManager {
 	private List<EntryWrapper> changedEntries = new ArrayList<EntryWrapper>();	
 	private EntryVisitor visitor;
 	private boolean confirm;
-	
+	private boolean okToRun = true;
+	private boolean cancel = false;	
+
 	public JsContext(EntryVisitor visitor, boolean confirm) {
 	    this.visitor= visitor;
 	    this.confirm = confirm;
 	}
 
+	public void stop() {
+	    okToRun = false;
+	}
+
+	public void cancel() {
+	    okToRun = false;
+	    cancel = true;
+	}	
 
 	public Date getDate(String d) throws Exception {
 	    return DateUtil.parse(d);

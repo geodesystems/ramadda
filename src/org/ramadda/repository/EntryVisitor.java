@@ -210,7 +210,6 @@ public abstract class EntryVisitor implements Constants {
             getRepository().getEntryManager().getChildren(request, entry);
         if (children == null) {
             System.err.println("\tNo children");
-
             return true;
         }
         if (recurse) {
