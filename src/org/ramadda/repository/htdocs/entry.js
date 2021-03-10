@@ -968,7 +968,6 @@ function Entry(props) {
 }
 
 
-
 function EntryList(repository, jsonUrl, listener, doSearch) {
     $.extend(this, {
         repository: repository,
@@ -994,7 +993,7 @@ function EntryList(repository, jsonUrl, listener, doSearch) {
         getEntries: function() {
             return this.entries;
         },
-        createEntries: function(data, listener) {
+        createEntries: function(data, listener, success) {
             this.entries = createEntriesFromJson(data, this.getRepository());
             for (var i = 0; i < this.entries.length; i++) {
                 var entry = this.entries[i];
@@ -1003,27 +1002,30 @@ function EntryList(repository, jsonUrl, listener, doSearch) {
             if (listener == null) {
                 listener = this.listener;
             }
-            if (listener && listener.entryListChanged) {
+	    if(success) {
+		success(this);
+	    } else if (listener && listener.entryListChanged) {
                 listener.entryListChanged(this);
             }
         },
-        doSearch: async function(listener) {
+        doSearch: async function(listener, success, fail) {
             if (listener == null) {
                 listener = this.listener;
             }
             var _this = this;
             //console.log("search url:" + this.url);
             await $.getJSON(this.url, function(data, status, jqxhr) {
-                    if (GuiUtils.isJsonError(data)) {
-                        return;
-                    }
-                    _this.haveLoaded = true;
-                    _this.createEntries(data, listener);
-                })
+                if (GuiUtils.isJsonError(data)) {
+                    return;
+                }
+                _this.haveLoaded = true;
+                _this.createEntries(data, listener, success);
+            })
                 .fail(function(jqxhr, textStatus, error) {
                     GuiUtils.handleError("An error occurred doing search: " + error, _this.url, true);
-                    console.log("listener:" + listener.handleSearchError);
-                    if (listener.handleSearchError) {
+		    if(fail) {
+			fail(error);
+		    }   else if (listener && listener.handleSearchError) {
                         listener.handleSearchError(_this.url, error);
                     }
                 });

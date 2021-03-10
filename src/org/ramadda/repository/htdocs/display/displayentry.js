@@ -2694,6 +2694,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 
     RamaddaUtil.inherit(this, SUPER = new RamaddaSearcherDisplay(displayManager, id, DISPLAY_SIMPLESEARCH, properties));
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+	callNumber:1,
         haveDisplayed: false,
         selectedEntries: [],
         getSelectedEntries: function() {
@@ -2718,16 +2719,16 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 			_this.writeEntries("");			
 			return;
 		    }
-		    _this.submitSearchForm(true);
+		    _this.submitSearchForm(true,++_this.callNumber);
 		});
 	    }
 
             this.jq(ID_SEARCH).button().click(function(event) {
-                _this.submitSearchForm();
+		_this.submitSearchForm(false,++_this.callNumber);
                 event.preventDefault();
             });
             this.jq(ID_FORM).submit(function(event) {
-                _this.submitSearchForm();
+		_this.submitSearchForm(false,++_this.callNumber);
                 event.preventDefault();
             });
 
@@ -2823,7 +2824,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    }
 	},
 	
-        submitSearchForm: function(auto) {
+        submitSearchForm: function(auto, callNumber) {
 	    this.jq(ID_RESULTS).html("");
             this.haveSearched = true;
             var settings = this.getSearchSettings();
@@ -2835,8 +2836,18 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
             }
             var theRepository = this.getRamadda()
             var jsonUrl = this.makeSearchUrl(this.getRamadda());
-//	    console.log(jsonUrl);
-            this.entryList = new EntryList(this.getRamadda(), jsonUrl, this, true);
+            this.entryList = new EntryList(this.getRamadda(), jsonUrl);
+	    let success= ()=>{
+		if(this.callNumber == callNumber) {
+		    this.entryListChanged(this.entryList);
+		} else {
+		    console.log("skipping");
+		}
+	    };
+	    let fail= (error)=>{
+		this.writeEntries("Error:" + error);
+	    };	    
+	    this.entryList.doSearch(null,success,fail);
 	    if(!auto)
 		this.updateForSearching(jsonUrl);
         },
@@ -2881,7 +2892,6 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
         makeEntriesDisplay: function(entries) {
             return this.getEntriesTree(entries);
         },
-
         entryListChanged: function(entryList) {
             if (this.multiSearch) {
                 this.multiSearch.count--;
