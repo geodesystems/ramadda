@@ -2719,7 +2719,14 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 			_this.writeEntries("");			
 			return;
 		    }
-		    _this.submitSearchForm(true,++_this.callNumber);
+		    let myCallNumber = ++_this.callNumber;
+		    //Wait a bit in case more keys are coming
+		    setTimeout(()=>{
+			if(myCallNumber == _this.callNumber) {
+			    _this.submitSearchForm(true,myCallNumber);
+			} else {
+			}
+		    },250);
 		});
 	    }
 
@@ -2761,7 +2768,6 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		if(abs) {
 		    $(entries).append(this.results);
 		} else {
-
 		    html+= this.results;
 		}
 	    }
