@@ -456,7 +456,7 @@ public class UserManager extends RepositoryManager {
         StringBuilder headerSB = new StringBuilder();
         addUserHeader(request, headerSB);
         headerSB.append(sb);
-
+	getPageHandler().sectionClose(request, headerSB);
         return addHeader(request, new Result(title, headerSB));
     }
 
@@ -480,6 +480,7 @@ public class UserManager extends RepositoryManager {
         } else if ( !user.getIsLocal()) {
             links = remoteUserUrls;
         }
+	getPageHandler().sectionOpen(request, sb, "User: " + user.getId(),false);
         getPageHandler().makeLinksHeader(request, sb, links, "");
     }
 

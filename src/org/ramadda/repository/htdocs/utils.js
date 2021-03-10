@@ -1467,22 +1467,31 @@ r    },
 	Utils.searchLastInput = input.val();
 	input.keyup(function(e) {
             var keyCode = e.keyCode || e.which;
+	    let results = $("#searchresults");
+	    let closer = () =>{
+		results.slideUp(250);
+	    };
+	    let opener = () =>{
+		results.slideDown(250);
+	    };	    
             if (keyCode == 27) {
-		var popup = $("#searchpopup");
-		popup.hide();
+		closer();
 		return;
             }
 
             if (keyCode == 13) {
-		var popup = $("#searchpopup");
-		popup.hide();
+		closer();
 		return;
             }
-
             e.stopPropagation();
             if (searching) return;
 
-            var newVal = input.val();
+            var newVal = input.val()||"";
+	    if(newVal.length==0) {
+		closer();
+		return;
+	    }
+
             if (newVal != Utils.searchLastInput) {
 		Utils.searchLastInput = newVal;
 		searching = true;
@@ -1490,43 +1499,34 @@ r    },
 		if (type) url += "&type=" + type;
 
 		var jqxhr = $.getJSON(url, function(data) {
-                    var popup = $("#searchpopup");
+                    var results = $("#searchresults");
                     searching = false;
                     if (data.values.length == 0) {
-			popup.hide();
+			results.html(HtmlUtils.div([CLASS, "ramadda-search-suggestion "],"No results"))
+			opener();
 			return;
                     }
-                    var html = "";
-                    var even = true;
-                    for (var i = 0; i < data.values.length; i++) {
-			var value = data.values[i];
-			var v = value.replace(/\"/g, "_quote_");
-			html += HtmlUtils.div(["class", "ramadda-search-suggestion " + (even ? "ramadda-row-even" : "ramadda-row-odd"), "title", v, "suggest", v], value);
+                    let html = "";
+                    let even = true;
+                    for (let i = 0; i < data.values.length; i++) {
+			let value = data.values[i];
+			let name = value.name;
+			let id = value.id;
+			let v = name.replace(/\"/g, "_quote_");
+			let entryLink =  HU.href(ramaddaBaseUrl + "/entry/show?entryid=" + id,name,[TITLE,"View entry"]);
+			let searchLink =  HU.href(ramaddaBaseUrl + "/search/do?text=" + encodeURIComponent("name:" + v),HtmlUtils.getIconImage("fa-search"),[TITLE,"Search for"]);
+			let row =  searchLink +  SPACE + entryLink;
+//			html += HtmlUtils.div([CLASS, 'ramadda-search-suggestion ' + (even ? 'ramadda-row-even' : 'ramadda-row-odd')], row);
+			html += HtmlUtils.div([CLASS, 'ramadda-search-suggestion '], row);			
 			even = !even;
                     }
-                    popup.html(html);
-                    popup.find(".ramadda-search-suggestion").mousedown(function(e) {
+                    results.html(html);
+		    /*
+                    results.find(".ramadda-search-suggestion-item").mousedown(function(e) {
 			e.stopPropagation();
                     });
-                    popup.find(".ramadda-search-suggestion").click(function(e) {
-			popupTime = new Date();
-			var v = $(this).attr("suggest");
-			v = v.replace(/_quote_/g, "\"");
-			Utils.searchLastInput = v;
-			input.val(v);
-			input.focus();
-			e.stopPropagation();
-			popup.hide();
-                    });
-                    popup.show();
-                    var my = "left top";
-                    var at = "left bottom+1";
-                    popup.position({
-			of: input,
-			my: my,
-			at: at,
-			collision: "fit none"
-                    });
+		    */
+		    opener();
 		}).fail(function(jqxhr, textStatus, error) {
                     console.log("fail");
 		});
@@ -1536,54 +1536,57 @@ r    },
     },
 
     searchLink:function() {
-	var input = $("#popup_search_input");
-	var val = input.val().trim();
-	var url = $(this).attr('url');
+	let input = $("#popup_search_input");
+	let val = input.val().trim();
+	let url = $(this).attr('url');
 	if (val != "") {
             url += "?text=" + encodeURIComponent(val);
 	}
 	window.location = url;
     },
 
-    searchPopup:function(id) {
-	var value = "";
-	if (Utils.searchLastInput)
-            value = " value='" + Utils.searchLastInput + "' ";
-	var html = "<form action='" + ramaddaBaseUrl + "/search/do'><input " + value + " autocomplete=off autofocus id='popup_search_input' size='30' style='border: 1px #ccc solid;' placeholder=' Search text' name='text'></form><div id=searchpopup class=ramadda-popup ></div>";
-	var linkStyle = "font-size:13px;";
-	html += "\n";
-	var linksId = HtmlUtils.getUniqueId();
-	html += " ";
-	html += HtmlUtils.span(["class", "ramadda-links", "id", linksId],
-			       HtmlUtils.leftCenterRight(
-				   HtmlUtils.link(ramaddaBaseUrl + "/search/do", "Search", ["title", "Do search", "style", linkStyle]),
-				   HtmlUtils.link(ramaddaBaseUrl + "/search/form", "Form", ["title", "Go to form", "style", linkStyle]),
-				   HtmlUtils.link(ramaddaBaseUrl + "/search/type", "By Type", ["title", "Go to search by type form", "style", linkStyle])));
-	html = HtmlUtils.div(["style", "padding:5px;"], html);
-	var selectDiv = $("#ramadda-selectdiv");
-	var icon = $("#" + id);
+    searchPopup:function(id,anchor) {
+	anchor = anchor || id;
+	let value = Utils.searchLastInput||"";
+	hidePopupObject();
+	let form = "<form action='" + ramaddaBaseUrl + "/search/do'>";
+	form += HU.open('input',['value', value, 'placeholder','Search text', 'autocomplete','off','autofocus','true','id','popup_search_input','class', 'ramadda-search-input',
+				 STYLE,HU.css('margin-left','4px', 'padding','2px','width','250px','border','0px'),'name','text']);
+	form +="</form>";
+	let linksId = HU.getUniqueId();
+	let links =  HU.div(["class", "ramadda-links", "id", linksId],
+				    HU.leftCenterRight(
+					HtmlUtils.getIconImage(icon_close, [ID,"searchclose",STYLE,HU.css("cursor","pointer")]),
+					"",
+					HU.link(ramaddaBaseUrl + '/search/form', 'Advanced', [TITLE, 'Go to form', STYLE,HU.css('color','#888','font-size','13px')]),
+				    ));
+	let results = "<div id=searchresults style='display:none;border-top:1px solid #ccc;margin-top:2px;max-width:250px; width:250px;max-height:300px;overflow-y:auto;'></div>";
+	links = HU.div([CLASS,"ramadda-popup-header"],links);
+	let html = HU.div([],links+form+results);
+	html = HU.div([CLASS,"ramadda-popup", ID,"ramadda-search-popup","style", "xxpadding:5px;"], html);
+	let icon = $("#" + id);
+	anchor =  $("#" + anchor);	
 	popupTime = new Date();
-	popupObject = selectDiv;
-	selectDiv.html(html);
+	anchor.html(html);
+	let popup = popupObject = $("#ramadda-search-popup");
 	$("#" + linksId).find(".ramadda-link").click(Utils.searchLink);
 	var input = $("#popup_search_input");
 	input.mousedown(function(evt) {
             evt.stopPropagation();
 	});
-	selectDiv.show();
-	selectDiv.position({
+	popup.show();
+	popup.position({
             of: icon,
             my: "right top",
             at: "right bottom",
             collision: "none none"
 	});
+	$("#searchclose").click(()=>{
+	    hidePopupObject();
+	});
 	Utils.searchSuggestInit('popup_search_input', null, true);
 	input.focus();
     },
-
-
-
-
     handleKeyPress:function(event) {
 	getTooltip().hide();
     },
@@ -4007,14 +4010,27 @@ $.widget("custom.iconselectmenu", $.ui.selectmenu, {
             li.addClass("ui-state-disabled");
         }
 
-        $("<img>", {
-            style: item.element.attr("data-style"),
-            "class": "ui-icon " + item.element.attr("data-class"),
-            "src": item.element.attr("img-src")
-        }).appendTo(wrapper);
 
-        wrapper.append(item.label);
+	let label = item.label;
+	let img = item.element.attr("img-src");
+	if(img) {
+	    if(img.startsWith("fa")) {
+		img = HU.getIconImage(img);
+	    } else {
+		img = HU.image(img, [STYLE,item.element.attr("data-style")||"", "width",64,
+				     "class", "ui-icon " + item.element.attr("data-class")]);
+	    }
+	    $(img).appendTo(wrapper);
+	} else if(!item.element.attr("isheader")) {
+	    label = HU.span([STYLE,HU.css('margin-left','36px')], label);
+	}
+	let labelClass = item.element.attr("label-class");
+	if(labelClass) {
+	    label = HU.div([STYLE,HU.css('width','100%'), 'class', labelClass],label);
+	}
 
+
+        wrapper.append(label);
         return li.append(wrapper).appendTo(ul);
     }
 });

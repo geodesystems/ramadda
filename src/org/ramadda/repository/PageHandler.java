@@ -401,9 +401,7 @@ public class PageHandler extends RepositoryManager {
         String       systemMessage =
             getRepository().getSystemMessage(request);
 
-
         String       jsContent     = getTemplateJavascriptContent();
-
         String entryHeader = (String) result.getProperty(PROP_ENTRY_HEADER,
                                  "");
         String entryFooter = (String) result.getProperty(PROP_ENTRY_FOOTER,
@@ -506,9 +504,11 @@ public class PageHandler extends RepositoryManager {
 
         if (showSearch) {
             String searchLink =
-                HU.mouseClickHref("Utils.searchPopup('searchlink');",
-                                         searchImg, "");
-            extra.append(searchLink);
+                HU.mouseClickHref("Utils.searchPopup('searchlink','popupanchor');",
+				  searchImg, "");
+	    String searchAnchor = HU.span("",HU.attrs("id","popupanchor","style","position:relative;"));
+            extra.append(searchLink);    
+            extra.append(searchAnchor);
             extra.append(HU.space(2));
         }
         extra.append(makePopupLink(popupImage, menuHtml, false, true));
@@ -2264,11 +2264,6 @@ public class PageHandler extends RepositoryManager {
                 "<span class=\".ramadda-separator\">|</span>",
                 links), HU.cssClass("ramadda-linksheader-links"));
         header.append("\n");
-        if (Utils.stringDefined(onLabel)) {
-            header.append(
-                HU.div(
-                    msg(onLabel), HU.cssClass("ramadda-page-title")));
-        }
         sb.append(HU.tag(HU.TAG_DIV,
                                 HU.cssClass("ramadda-linksheader"),
                                 header.toString()));
@@ -3510,14 +3505,13 @@ public class PageHandler extends RepositoryManager {
             throws Exception {
         List<HtmlUtils.Selector> items =
             getRepository().getExtEditor().getTypeHandlerSelectors(request, true,
-                includeNonFiles, null);
+								   includeNonFiles, null);
 
         HtmlUtils.Selector selector = new HtmlUtils.Selector(
-                                          "Find match",
-                                          TypeHandler.TYPE_FINDMATCH,
-                                          getRepository().getIconUrl(
-                                              "/icons/blank.gif"), 0, 0,
-                                                  false);
+							     HtmlUtils.space(2) +"Find match",
+							     TypeHandler.TYPE_FINDMATCH,
+							     getRepository().getIconUrl("/icons/blank.gif"), 0, 0,
+							     false);
         selector.setAttr(" style=\"padding:6px;\" ");
         items.add(0, selector);
         String selected = (typeHandler != null)

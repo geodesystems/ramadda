@@ -146,18 +146,18 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     /** _more_ */
     public final RequestUrl URL_SEARCH_FORM = new RequestUrl(this,
-                                                  "/search/form", "Search");
+                                                  "/search/form", "Form");
 
 
     /** _more_ */
     public final RequestUrl URL_SEARCH_TYPE = new RequestUrl(this,
                                                   "/search/type",
-                                                  "Search by Type");
+                                                  "By Type");
 
     /** _more_ */
     public final RequestUrl URL_SEARCH_ASSOCIATIONS =
         new RequestUrl(this, "/search/associations/do",
-                       "Search Associations");
+                       "Associations");
 
     /** _more_ */
     public final RequestUrl URL_SEARCH_ASSOCIATIONS_FORM =
@@ -517,24 +517,27 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                 string = string.substring("file:".length());
             }
             Clause clause = getDatabaseManager().makeLikeTextClause(
-                                Tables.ENTRIES.COL_NAME, string + "%", false);
+                                Tables.ENTRIES.COL_NAME, "%" + string + "%", false);
             if (type != null) {
                 clause = Clause.and(clause,
                                     Clause.eq(Tables.ENTRIES.COL_TYPE, type));
             }
             Statement statement = getDatabaseManager().select(
-                                      "distinct " + Tables.ENTRIES.COL_NAME,
-                                      Utils.makeList(Tables.ENTRIES.NAME),
-                                      clause, "", 20);
+							      //                                      "distinct " + Tables.ENTRIES.COL_NAME,
+							      Tables.ENTRIES.COL_ID+"," +Tables.ENTRIES.COL_NAME,				      
+							      Utils.makeList(Tables.ENTRIES.NAME),
+							      clause, "", 20);
             SqlUtil.Iterator iter =
                 getDatabaseManager().getIterator(statement);
             ResultSet results;
             while ((results = iter.getNext()) != null) {
-                names.add(results.getString(1));
+		String id = results.getString(1);
+		String name = results.getString(2);		
+		String obj = Json.map("name",Json.quote(name),"id",Json.quote(id)); 
+                names.add(obj);
             }
         }
-        String json = Json.map("values", Json.list(names, true));
-
+        String json = Json.map("values", Json.list(names));
         return new Result("", new StringBuilder(json), "text/json");
     }
 
@@ -829,7 +832,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         StringBuilder formSB        = new StringBuilder();
         boolean       showProviders = request.get("show_providers", false);
         HtmlUtils.makeAccordion(formSB, msg("Search Options"), inner,
-                                !showProviders, "ramadda-accordion", null);
+                                !showProviders, "ramadda-accordion", null);	
 
         sb.append(HtmlUtils.insetDiv(formSB.toString(), 0, 0, 0, 0));
         sb.append(HtmlUtils.formClose());
@@ -872,7 +875,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         List<String> titles   = new ArrayList<String>();
         List<String> contents = new ArrayList<String>();
 
-        addSearchProviders(request, contents, titles);
 
         Object       oldValue = request.remove(ARG_RELATIVEDATE);
         List<Clause> where    = typeHandler.assembleWhereClause(request);
@@ -883,6 +885,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         typeHandler.addToSearchForm(request, titles, contents, where, true,
                                     false);
 
+        addSearchProviders(request, contents, titles);
         long t1 = System.currentTimeMillis();
         if (includeMetadata()) {
             StringBuilder metadataSB = new StringBuilder();
@@ -1086,10 +1089,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                 getRepository().getOutputHandlers()) {
             for (OutputType type : outputHandler.getTypes()) {
                 if (type.getIsForSearch()) {
-                    tfos.add(new HtmlUtils.Selector(type.getLabel(),
-                            type.getId(),
-                            getRepository().getIconUrl(type.getIcon()), 3,
-                            20, false));
+		    String icon = type.getIcon();
+		    if(icon==null) icon = "";
+		    if(!icon.startsWith("fa") &&  !icon.equals("")) {
+			icon  = getRepository().getIconUrl(icon);
+		    } 
+                    tfos.add(new HtmlUtils.Selector(HtmlUtils.space(2) +type.getLabel(),
+						    type.getId(),
+						    icon));
                 }
             }
         }
@@ -1146,49 +1153,48 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      */
     private void addSearchByTypeList(Request request, StringBuffer sb)
             throws Exception {
-        CategoryBuffer cb = new CategoryBuffer();
-
-
-        for (String preload : EntryManager.PRELOAD_CATEGORIES) {
-            cb.append(preload, "");
+	for(EntryManager.SuperType superType:getEntryManager().getCats(false)) {
+	    boolean didSuper = false;
+	    for(EntryManager.Types types: superType.getList()) {
+		boolean didSub = false;
+		for(TypeHandler typeHandler: types.getList()) {
+		    int cnt = getEntryUtil().getEntryCount(typeHandler);
+		    if (cnt == 0) {
+			continue;
+		    }
+		    if(!didSuper) {
+			didSuper = true;
+			sb.append("<div class=type-group-container><div class='type-group-header'>" + superType.getName()+"</div><div class=type-group>");
+		    }
+		    if(!didSub) {
+			didSub=true;
+			sb.append("<div class=type-list-container><div class='type-list-header'>" + types.getName()+"</div><div class=type-list>");
+		    }
+		    String icon = typeHandler.getIconProperty(null);
+		    String img;
+		    if (icon == null) {
+			icon = ICON_BLANK;
+			img = HtmlUtils.img(typeHandler.getIconUrl(icon), "",
+					    HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
+							   "16"));
+		    } else {
+			img = HtmlUtils.img(typeHandler.getIconUrl(icon));
+		    }
+		    String label = img +HU.SPACE + typeHandler.getDescription() + HU.SPACE+"(" + cnt + ")";
+		    String href = HtmlUtils.href(getRepository().getUrlBase()
+						 + "/search/type/"
+						 + typeHandler.getType(), label);
+		    String help = "Search for " + typeHandler.getDescription() +" - " + cnt +" entries";
+		    HU.div(sb,href,HU.attrs("class","type-list-item","title",help));
+		}
+		if(didSub) {
+		    sb.append("</div></div>");
+		}
+	    }
+	    if(didSuper) {
+		sb.append("</div></div>");
+	    }
         }
-
-        for (TypeHandler typeHandler : getRepository().getTypeHandlers()) {
-            if ( !typeHandler.getForUser()) {
-                continue;
-            }
-            if (typeHandler.isAnyHandler()) {
-                continue;
-            }
-            int cnt = getEntryUtil().getEntryCount(typeHandler);
-            if (cnt == 0) {
-                continue;
-            }
-            String icon = typeHandler.getIconProperty(null);
-            String img;
-            if (icon == null) {
-                icon = ICON_BLANK;
-                img = HtmlUtils.img(typeHandler.getIconUrl(icon), "",
-                                    HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
-                                        "16"));
-            } else {
-                img = HtmlUtils.img(typeHandler.getIconUrl(icon));
-            }
-            StringBuffer buff = new StringBuffer();
-
-            buff.append("<li> ");
-            buff.append(img);
-            buff.append(" ");
-            String label = typeHandler.getDescription() + " (" + cnt + ")";
-
-
-
-            buff.append(HtmlUtils.href(getRepository().getUrlBase()
-                                       + "/search/type/"
-                                       + typeHandler.getType(), label));
-            cb.append(typeHandler.getCategory(), buff);
-        }
-        getPageHandler().doTableLayout(request, sb, cb);
     }
 
 
@@ -1425,7 +1431,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             sb.append(HtmlUtils.p());
         }
         sb.append(HtmlUtils.p());
-        sb.append(header(msg("Search Results")));
+	//        sb.append(header(msg("Search Results")));
 
         return makeResult(request, msg("Remote Form"), sb);
 
@@ -1465,9 +1471,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     public Result makeResult(Request request, String title, Appendable sb)
             throws Exception {
         StringBuilder headerSB = new StringBuilder();
+	getPageHandler().sectionOpen(request, headerSB, "Search",false);
         getPageHandler().makeLinksHeader(request, headerSB, getSearchUrls(),
-                                         "");
+                                       "");
         headerSB.append(sb.toString());
+	getPageHandler().sectionClose(request, headerSB);
         Result result = new Result(title, headerSB);
 
         return addHeaderToAncillaryPage(request, result);
@@ -1752,10 +1760,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         boolean       foundAny = (groups.size() > 0) || (entries.size() > 0);
 
         StringBuilder header   = new StringBuilder();
-        getPageHandler().makeLinksHeader(request, header, getSearchUrls(),
-                                         "");
-        getPageHandler().sectionOpen(request, header, "Search Results",
-                                     false);
+	getPageHandler().sectionOpen(request, header, "Search",false);
+        getPageHandler().makeLinksHeader(request, header, getSearchUrls(),  "");
         makeSearchForm(request, header);
         if ( !foundAny) {
             header.append(
@@ -1783,10 +1789,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             r = getEntryManager().addEntryHeader(request, theGroup, result);
         }
 
-        //                System.err.println("search:  #: " + total + " doSearch: " + (t2 - t1)
-        //                                   + " makeForm:" + (t3 - t2) + " outputGroup:"
-        //                                   + (t4 - t3));
-        //        System.err.println(total + "," + (t4 - t3));
         return r;
     }
 

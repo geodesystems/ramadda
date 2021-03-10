@@ -872,6 +872,14 @@ public class TypeHandler extends RepositoryManager {
 
         return values;
     }
+    public int getValueIndex(String name) {
+	for (Column column : getColumns()) {
+	    if(column.getName().equalsIgnoreCase(name)) return column.getColumnIndex();
+	}
+	return -1;
+    }
+
+
 
     /**
      * _more_
@@ -5347,7 +5355,6 @@ public class TypeHandler extends RepositoryManager {
         if (parent != null) {
             parent.addToSearchForm(request, titles, contents, where,
                                    advancedForm, showText);
-
             return;
         }
 

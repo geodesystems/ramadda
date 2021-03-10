@@ -833,8 +833,8 @@ svg > g > g:last-child { pointer-events: none }
     padding:0px;
     margin-left:2px;
     margin-right:2px;
-   border-radius: 5px;
-   font-size: 11pt;
+    border-radius: 5px;
+    font-size: 11pt;
 }
 
 
@@ -2412,7 +2412,6 @@ table.dataTable tfoot td {
 }
 
 .ramadda-simplesearch-container {
-    background:red;
 }
 
 .display-simplesearch-entries {

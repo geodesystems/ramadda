@@ -85,6 +85,9 @@ public class ExtEditor extends RepositoryManager {
     public static final String ARG_EXTEDIT_THUMBNAIL= "extedit.thumbnail";    
 
 
+    public static final String ARG_EXTEDIT_TYPE= "extedit.type";
+
+
     /** _more_ */
     public static final String ARG_EXTEDIT_URL_TO = "extedit.url.to";
 
@@ -350,6 +353,10 @@ public class ExtEditor extends RepositoryManager {
             final boolean forReal =
                 request.get(ARG_EXTEDIT_JS_CONFIRM, false);
 	    final String js = request.getString(ARG_EXTEDIT_SOURCE,"");
+            final String type = request.getString(ARG_EXTEDIT_TYPE, (String) null);
+	    final boolean anyFile = Misc.equals(TypeHandler.TYPE_ANY, type);
+
+
             ActionManager.Action action = new ActionManager.Action() {
                 public void run(final Object actionId) throws Exception {
 		    final org.mozilla.javascript.Context ctx =
@@ -371,6 +378,12 @@ public class ExtEditor extends RepositoryManager {
 			    public boolean processEntry(Entry entry,
 							List<Entry> children)
                                 throws Exception {
+				if(anyFile) {
+				    if(!entry.getResource().isFile()) return true;
+				} else {
+				    if(type!=null && !entry.getTypeHandler().isType(type)) return true;
+				}
+
 				allEntries.add(entry);
 				try {
 				    EntryWrapper wrapper = new EntryWrapper(entry);
@@ -398,6 +411,10 @@ public class ExtEditor extends RepositoryManager {
 						changed = true;
 						entry.setName(wrapper.name);
 					    }
+					    if(wrapper.url!=null) {
+						changed = true;
+						entry.getResource().setPath(wrapper.url);
+					    }					    
 					    if(wrapper.startDate!=null) {
 						changed = true;
 						entry.setStartDate(wrapper.startDate);
@@ -673,9 +690,14 @@ public class ExtEditor extends RepositoryManager {
 	    } else if(form.equals(ARG_EXTEDIT_JS)){
 		opener.accept("Process with Javascript");
 		sb.append(HU.formTable());
+		HtmlUtils.formEntry(sb, msgLabel("Only apply to entries of type"),
+				    HtmlUtils.select(ARG_EXTEDIT_TYPE, tfos,request.getString(ARG_EXTEDIT_TYPE,null)));
+
 		String ex =  "ctx.print('Processing: ' + entry.getName());\n" +
 		    "//entry access:\n//entry.getName() entry.setName()\n//entry.getType()\n//entry.getStartDate() entry.getEndDate()\n" +
-		    "//entry.setStartDate(String) entry.setEndDate(String)";
+		    "//entry.setStartDate(String) entry.setEndDate(String)\n" +
+		    "//entry.getValue(column name);\n";
+		    ;
 		ex = request.getString(ARG_EXTEDIT_SOURCE, ex);
 		HU.formEntry(sb,  msgLabel("Javascript"),
 			     HU.textArea(ARG_EXTEDIT_SOURCE, ex,10,80));
@@ -731,8 +753,10 @@ public class ExtEditor extends RepositoryManager {
 
 
 
-        for (TypeHandler typeHandler : getRepository().getTypeHandlers()) {
-            if ( !typeHandler.getForUser()) {
+        List<TypeHandler> typeHandlers = getRepository().getTypeHandlersForDisplay(true);
+
+        for (TypeHandler typeHandler : typeHandlers) {
+            if ( !typeHandler.getForUser()) { 
                 continue;
             }
             if ( !fileType && !typeHandler.isGroup()) {
@@ -749,24 +773,24 @@ public class ExtEditor extends RepositoryManager {
 
             HtmlUtils.Selector tfo =
                 new HtmlUtils.Selector(
-                    HtmlUtils.space(2) + typeHandler.getLabel(),
-                    typeHandler.getType(), typeHandler.getTypeIconUrl());
+				       HtmlUtils.space(2) + typeHandler.getLabel(),
+				       typeHandler.getType(), typeHandler.getTypeIconUrl(),20);
             //Add the seen ones first
             if (first.contains(typeHandler.getType())) {
                 if (tfos.size() == 0) {
-                    tfos.add(new HtmlUtils.Selector("Recent", "", null, 0,
-                            true));
+		    tfos.add(new HtmlUtils.Selector("Recent", "",
+						    getRepository().getIconUrl("/icons/blank.gif"), 0, 0,
+						    true));
                 }
                 tfos.add(tfo);
             }
-
-            cats.add(typeHandler.getCategory(), tfo);
-        }
+            cats.add(typeHandler.getCategory(), tfo); 
+       }
         for (String cat : cats.getCategories()) {
             List<HtmlUtils.Selector> selectors = cats.get(cat);
             if (selectors.size() > 0) {
                 tfos.add(new HtmlUtils.Selector(cat, "",
-                        getRepository().getIconUrl("/icons/blank.gif"), 0, 0,
+						getRepository().getIconUrl("/icons/blank.gif"), 0, 0,
                         true));
                 tfos.addAll(selectors);
             }
@@ -1108,9 +1132,14 @@ public class ExtEditor extends RepositoryManager {
 	String name;
 	Date startDate;
 	Date endDate;
+	String url;
 
 	public EntryWrapper(Entry entry) {
 	    this.entry = entry;
+	}
+
+	public Object getValue(String col) {
+	    return entry.getValue(col);
 	}
 
 	public String getType() {
@@ -1128,6 +1157,16 @@ public class ExtEditor extends RepositoryManager {
 	public String getFile() {
 	    return entry.getResource().getPath();
 	}
+
+	public String getUrl() {
+	    return entry.getResource().getPath();
+	}	
+
+	public void setUrl(String url) {
+	    this.url = url;
+	}
+
+
 
 	public Date getStartDate() {
 	    return new Date(entry.getStartDate());

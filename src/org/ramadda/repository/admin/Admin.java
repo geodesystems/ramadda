@@ -1073,9 +1073,10 @@ public class Admin extends RepositoryManager {
     public Result makeResult(Request request, String title, Appendable sb)
             throws Exception {
         StringBuilder headerSB = new StringBuilder();
+	getPageHandler().sectionOpen(request, headerSB, "Admin",false);
         getPageHandler().makeLinksHeader(request, headerSB, adminUrls, "");
         headerSB.append(sb);
-
+	getPageHandler().sectionClose(request, headerSB);
         return new Result(title, headerSB);
     }
 

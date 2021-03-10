@@ -36,11 +36,11 @@ import org.ramadda.repository.type.ProcessFileTypeHandler;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.type.TypeInsertInfo;
 import org.ramadda.repository.util.SelectInfo;
-import org.ramadda.util.CategoryBuffer;
-import org.ramadda.util.CategoryList;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
+import org.ramadda.util.NamedList;
+
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.TTLObject;
 import org.ramadda.util.Utils;
@@ -680,9 +680,6 @@ public class EntryManager extends RepositoryManager {
                 entry = request.getRootEntry();
             }
         }
-
-        getSessionManager().setLastEntry(request, entry);
-
         return entry;
     }
 
@@ -699,7 +696,6 @@ public class EntryManager extends RepositoryManager {
     public Result processEntryShow(Request request) throws Exception {
         if (request.getCheckingAuthMethod()) {
             OutputHandler handler = getRepository().getOutputHandler(request);
-
             return new Result(handler.getAuthorizationMethod(request));
         }
 
@@ -717,12 +713,12 @@ public class EntryManager extends RepositoryManager {
                                         getRepository().URL_ENTRY_SHOW);
         }
 
-
         if (entry == null) {
             fatalError(request, "No entry specified");
         }
 
 
+	getSessionManager().setLastEntry(request, entry);
         addSessionEntry(request, entry);
         if (entry.getIsRemoteEntry()) {
             String redirectUrl = entry.getRemoteServer()
@@ -3299,6 +3295,60 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+
+    public static class Types extends NamedList<TypeHandler> {
+	public  Types(String name) {
+	    super(name);
+	}
+    }
+
+    public static class SuperType extends NamedList<Types> {
+	public  SuperType(String name) {
+	    super(name);
+	}
+    }
+
+
+    public List<SuperType> getCats(boolean anyOk) throws Exception {
+	List<SuperType> superTypes = new ArrayList<SuperType>();
+	Hashtable<String,SuperType> superMap = new Hashtable<String,SuperType>();
+	Hashtable<String,Types> typesMap = new Hashtable<String,Types>();
+
+        for (String superCat : PRELOAD_CATEGORIES) {
+	    SuperType superType  = new SuperType(superCat);
+	    superTypes.add(superType);
+	    superMap.put(superCat, superType);
+	}
+
+        List<TypeHandler> typeHandlers = getRepository().getTypeHandlersForDisplay(anyOk);
+
+        for (TypeHandler typeHandler : typeHandlers) {
+            String superCat = typeHandler.getSuperCategory();
+            if (superCat.equals("Basic") || superCat.equals("")) {
+                superCat = "General";
+            }
+	    SuperType superType  = superMap.get(superCat);
+	    if(superType == null) {
+		superType  = new SuperType(superCat);
+		superTypes.add(superType);
+		superMap.put(superCat, superType);
+		//		System.err.println("new super:" + superType);
+	    }
+	    String key = superCat+"-"+typeHandler.getCategory();
+	    Types types = typesMap.get(key);
+	    if(types == null) {
+		types = new Types(typeHandler.getCategory());
+		superType.add(types);
+		typesMap.put(key,types);
+		//		System.err.println("\tnew sub:" + types);
+	    }
+	    types.add(typeHandler);
+	}
+	return superTypes;
+    }
+
+
+
     /**
      * _more_
      *
@@ -3312,142 +3362,51 @@ public class EntryManager extends RepositoryManager {
 
         Entry         group = findGroup(request);
         StringBuilder sb    = new StringBuilder();
-
-
-        Hashtable<String, CategoryBuffer> superCatMap = new Hashtable<String,
-                                                            CategoryBuffer>();
-        List<String>   superCats = new ArrayList<String>();
-
-        CategoryBuffer cats      = new CategoryBuffer();
-        //Preload the super categories
-        superCats.add("General");
-        superCatMap.put("General", cats);
-        superCats.add("Science and Education");
-        superCatMap.put("Science and Education", new CategoryBuffer());
-        superCats.add("Miscellaneous");
-        superCatMap.put("Miscellaneous", new CategoryBuffer());
-
-
-        for (String preload : PRELOAD_CATEGORIES) {
-            cats.get(preload);
-        }
-
-        HashSet<String> exclude = new HashSet<String>();
-        //        exclude.add(TYPE_FILE);
-        //        exclude.add(TYPE_GROUP);
-
-
-        List<String> sessionTypes =
-            (List<String>) getSessionManager().getSessionProperty(request,
-                SESSION_TYPES);
-
-        List<TypeHandler> typeHandlers = getRepository().getTypeHandlers();
-	
-        Comparator comp = new Comparator() {
-            public int compare(Object o1, Object o2) {
-		TypeHandler t1  = (TypeHandler) o1;
-		TypeHandler t2  = (TypeHandler) o2;
-		if(t1.getPriority()==t2.getPriority())
-		    return t1.getLabel().compareTo(t2.getLabel());
-		return t1.getPriority()-t2.getPriority();
-	    }};
-        Object[] array = typeHandlers.toArray();
-        Arrays.sort(array, comp);
-	typeHandlers = (List<TypeHandler>) Misc.toList(array);
-
-        for (TypeHandler typeHandler : typeHandlers) {
-            if ( !typeHandler.getForUser()) {
-                continue;
-            }
-            if (typeHandler.isAnyHandler()) {
-                continue;
-            }
-            if (exclude.contains(typeHandler.getType())) {
-                continue;
-            }
-            if ( !typeHandler.canBeCreatedBy(request)) {
-                continue;
-            }
-            String icon = typeHandler.getIconProperty(null);
-            String img;
-            if (icon == null) {
-                icon = ICON_BLANK;
-                img = HtmlUtils.img(typeHandler.getIconUrl(icon), "",
-                                    HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
-                                        "16"));
-            } else {
-                img = HtmlUtils.img(typeHandler.getIconUrl(icon));
-            }
-
-            boolean hasUsedType =
-                ((sessionTypes != null)
-                 && sessionTypes.contains(typeHandler.getType()));
-            String category      = typeHandler.getCategory();
-            String superCategory = typeHandler.getSuperCategory();
-            if (superCategory.equals("Basic")) {
-                superCategory = "";
-            }
-            if (superCategory.equals("")) {
-                superCategory = "General";
-            }
-            cats = superCatMap.get(superCategory);
-            if (cats == null) {
-                cats = new CategoryBuffer();
-                superCats.add(superCategory);
-                superCatMap.put(superCategory, cats);
-            }
-
-            cats.get(category);
-            if (hasUsedType) {
-                cats.moveToFront(category);
-            }
-	    //	    System.out.println("type:" + category +" " + typeHandler.getLabel());
-
-	    String href = HU
-                .href(request
-		      .makeUrl(getRepository().URL_ENTRY_FORM, ARG_GROUP, group
-			       .getId(), ARG_TYPE, typeHandler.getType()), img + " "
-		      + msg(typeHandler.getLabel()));
-
-            cats.append(category, HU.div(href,HU.attrs("class","entry-type-list-item","title",typeHandler.getHelp())));
-
-        }
-
-        StringBuilder inner = new StringBuilder();
-
-        for (String superCategory : superCats) {
-            cats = superCatMap.get(superCategory);
-            inner.append("<div class=ramadda-section>");
-	    HU.div(inner, superCategory,HU.attrs("class","entry-type-group"));
-            inner.append("<table cellpadding=10><tr valign=top>");
-            int colCnt = 0;
-            for (String cat : cats.getCategories()) {
-                StringBuilder catBuff = cats.get(cat);
-                if (catBuff.length() == 0) {
-                    continue;
-                }
-                HtmlUtils.col(inner,
-                              HtmlUtils.b(msg(cat))
-                              + HtmlUtils.div(catBuff.toString(),
-                                  HtmlUtils.cssClass("entry-type-list")));
-                colCnt++;
-                if (colCnt > 4) {
-                    inner.append(
-                        "</tr><tr><td>&nbsp;</td></tr><tr valign=top>");
-                    colCnt = 0;
-                }
-            }
-            inner.append("</tr></table>");
-            inner.append("</div>");
-        }
-
         getPageHandler().entrySectionOpen(request, group, sb,
                                           "Choose entry type");
-        sb.append(HtmlUtils.open("div", " class='ramadda-links' "));
-        sb.append(HtmlUtils.insetDiv(inner.toString(), 10, 20, 0, 0));
-        sb.append(HtmlUtils.close("div"));
-        getPageHandler().entrySectionClose(request, group, sb);
 
+	for(EntryManager.SuperType superType:getEntryManager().getCats(false)) {
+	    boolean didSuper = false;
+	    for(EntryManager.Types types: superType.getList()) {
+		boolean didSub = false;
+		for(TypeHandler typeHandler: types.getList()) {
+		    if(!didSuper) {
+			didSuper = true;
+			sb.append("<div class=type-group-container><div class='type-group-header'>" + superType.getName()+"</div><div class=type-group>");
+		    }
+		    if(!didSub) {
+			didSub=true;
+			sb.append("<div class=type-list-container><div class='type-list-header'>" + types.getName()+"</div><div class=type-list>");
+		    }
+		    String icon = typeHandler.getIconProperty(null);
+		    String img;
+		    if (icon == null) {
+			icon = ICON_BLANK;
+			img = HtmlUtils.img(typeHandler.getIconUrl(icon), "",
+					    HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
+							   "16"));
+		    } else {
+			img = HtmlUtils.img(typeHandler.getIconUrl(icon));
+		    }
+		    String href = HU
+			.href(request
+			      .makeUrl(getRepository().URL_ENTRY_FORM, ARG_GROUP, group
+				       .getId(), ARG_TYPE, typeHandler.getType()), img + HU.SPACE
+			      + msg(typeHandler.getLabel()));
+		    
+		    String help = typeHandler.getHelp();
+		    HU.div(sb,href,HU.attrs("class","type-list-item","title",help!=null?help:""));
+		}
+		if(didSub) {
+		    sb.append("</div></div>");
+		}
+	    }
+	    if(didSuper) {
+		sb.append("</div></div>");
+	    }
+	}
+
+        getPageHandler().entrySectionClose(request, group, sb);
         return makeEntryEditResult(request, group, "Create Entry", sb);
 
     }
@@ -6286,11 +6245,6 @@ public class EntryManager extends RepositoryManager {
             throw new RepositoryUtil.MissingEntryException(
                 "Could not find entry:" + request.getString(urlArg, BLANK));
         }
-
-        if (entry != null) {
-            getSessionManager().setLastEntry(request, entry);
-        }
-
         return entry;
     }
 
