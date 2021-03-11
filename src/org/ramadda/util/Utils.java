@@ -4011,6 +4011,13 @@ public class Utils extends IO {
         return ((o1 == null) && (o2 == null));
     }
 
+    public static String clipTo(String s, int length, String pad) {
+	if(s.length()>length) {
+	    s = s.substring(0,length)+pad;
+	}
+	return s;
+    }
+
     /**
      * _more_
      *

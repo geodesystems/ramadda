@@ -375,6 +375,9 @@ public interface WikiConstants {
     public static final String WIKI_TAG_MENU = "menu";
 
 
+    public static final String WIKI_TAG_MENUTREE = "menutree";    
+
+
     /** _more_ */
     public static final String WIKI_TAG_SEARCH = "search";
 

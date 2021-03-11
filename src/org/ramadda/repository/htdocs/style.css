@@ -1326,7 +1326,24 @@ textarea, input {
 }
 
 .ui-menu {
+    width: 150px;
 }
+
+.ui-menu .ui-state-active {
+    border:1px solid transparent;
+    background:#eee;
+}
+
+.ui-menu .ui-widget-header {
+    padding: 0.2em;
+    background:#eee;
+
+}
+
+.ui-menu-item-wrapper:not([aria-haspopup="true"]) {
+    padding-left:22px;
+}
+
 
 
 .ui-dialog {
@@ -4424,7 +4441,6 @@ h3.ui-accordion-header a {
 .ui-widget-content {
     border: none;
 }
-
 
 .ui-widget-header {
     border: none;

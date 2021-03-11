@@ -117,7 +117,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag(WIKI_TAG_FIELD, null, "name", "")),
         new WikiTagCategory("Layout", 
                             new WikiTag(WIKI_TAG_TREE, null, ATTR_DETAILS, "true"),
-                            new WikiTag(WIKI_TAG_FULLTREE, null,"depth","10","addprefix","true","showroot","true","showicon","true","types","group,file,...."), 			    
+                            new WikiTag(WIKI_TAG_FULLTREE, null,"depth","10","addprefix","false","showroot","true","labelWidth","20", "showicon","true","types","group,feile,...."),
+                            new WikiTag(WIKI_TAG_MENUTREE, null,"depth","10","addprefix","false","showroot","true","menuStyle","","labelWidth","20", "showicon","true","types","group,file,...."), 			    			    
                             new WikiTag(WIKI_TAG_LINKS, null),
                             new WikiTag(WIKI_TAG_LIST), 
                             new WikiTag(WIKI_TAG_TABS, null), 
@@ -2948,7 +2949,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_ROOT)) {
             return getRepository().getUrlBase();
-        } else if (theTag.equals(WIKI_TAG_FULLTREE)) {
+        } else if (theTag.equals(WIKI_TAG_FULLTREE) || theTag.equals(WIKI_TAG_MENUTREE)) {
+	    boolean doMenu = theTag.equals(WIKI_TAG_MENUTREE);
             int depth = getProperty(wikiUtil, props, "depth", 10);
             boolean addPrefix = getProperty(wikiUtil, props, "addPrefix",
                                             false);
@@ -2958,15 +2960,21 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                            false);
             List<String> types = StringUtil.split(getProperty(wikiUtil,
                                      props, "types", ""), ",", true, true);
-            if (addPrefix) {
-                sb.append("<ul style='list-style-type:none;'>\n");
-            } else {
-                sb.append("<ul>");
-            }
-            doFullTree(request, wikiUtil, originalEntry, entry, props,
-                       addPrefix, "", showRoot, showIcon, depth, types, sb);
-            sb.append("</ul>");
 
+	    String menuId = HU.getUniqueId("tree_");
+	    String style = getProperty(wikiUtil,props,"menuStyle","");
+	    if (addPrefix) 
+		style = "list-style-type:none;" + style;
+	    int labelWidth = getProperty(wikiUtil,props,"labelWidth",30);
+	    sb.append("\n");
+	    doFullTree(request, wikiUtil, originalEntry, entry, props, true, doMenu, menuId,  
+                       style, labelWidth, addPrefix, "", showRoot, showIcon, depth, types, sb);
+
+	    sb.append("\n");
+	    if(doMenu) {
+		HU.script(sb, "$('#" +menuId+"').menu();\n");
+	    }
+	    sb.append("\n");
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_CHILDREN_GROUPS)
                    || theTag.equals(WIKI_TAG_CHILDREN_ENTRIES)
@@ -3390,8 +3398,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 String v = getProperty(wikiUtil, props, key);
                 if (v != null) {
                     v = v.replace("${entryid}", entry.getId());
-                    //xxxx
-                    //              System.err.println("mapProp:" + mapArg +" " + v);
                     mapProps.put(mapArg, Json.quote(v));
                 }
             }
@@ -3515,35 +3521,46 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      *
      * @throws Exception _more_
      */
-    private void doFullTree(Request request, WikiUtil wikiUtil,
+    private void doFullTree(Request request,  WikiUtil wikiUtil,
                             Entry originalEntry, Entry entry,
-                            Hashtable props, boolean addPrefix,
+                            Hashtable props,
+			    boolean top, boolean asMenu, String menuId,
+			    String style,
+			    int labelWidth,
+			    boolean addPrefix,
                             String prefix, boolean showRoot,
                             boolean showIcon, int depth, List<String> types,
                             Appendable sb)
             throws Exception {
-        if ((prefix.length() > 0) || showRoot) {
-            if (addPrefix) {
-                sb.append("<li> ");
-                sb.append(prefix + " ");
-            } else {
-                sb.append("<li> ");
-            }
-            sb.append(getEntryManager().getEntryLink(request, entry,showIcon,HU.attrs("class","ramadda-tree-link")));
-            sb.append("\n");
+	if(top) {
+	    HU.open(sb,"ul",HU.attrs("id",menuId, "style",style));
+	    sb.append("\n");
+	}
+	
+	if ((prefix.length() > 0) || showRoot) {
+	    HU.open(sb, "li");
+            String label = Utils.clipTo(getEntryManager().getEntryDisplayName(entry),labelWidth,"...");
+	    if(showIcon)
+		label = HtmlUtils.img(getPageHandler().getIconUrl(request, entry)) + HU.SPACE + label;
+            String link =  HtmlUtils.href(getEntryManager().getEntryURL(request, entry), label, HU.attrs("class","ramadda-tree-link"));
+	    if(addPrefix) link = prefix +" " + link;
+	    if(asMenu) link = HU.div(link);
+            sb.append(link);
+	    if(top && showRoot) sb.append("<ul>");
+	    sb.append("\n");
         }
+
         if (depth-- < 0) {
+	    if(top && showRoot) HU.close(sb,"ul","\n");
+	    HU.close(sb,"li","\n");
+	    if(top) HU.close(sb,"ul","\n");
             return;
         }
         List<Entry> children = getEntries(request, wikiUtil, originalEntry,
                                           entry, props);
 
         if (children.size() > 0) {
-            if (addPrefix) {
-                sb.append("<ul style='list-style-type:none;'>\n");
-            } else {
-                sb.append("<ul>\n");
-            }
+	    boolean addedUl = false;
             int cnt = 1;
             for (Entry child : children) {
                 if (types.size() > 0) {
@@ -3551,7 +3568,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     for (String type : types) {
                         if (child.getTypeHandler().isType(type)) {
                             ok = true;
-
                             break;
                         }
                     }
@@ -3560,19 +3576,28 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     }
                 }
 
-
-
-
-
+		if(!top) {
+		    if(!addedUl) {
+			HU.open(sb,"ul",HU.attrs("style",style));
+			sb.append("\n");
+			addedUl = true;
+		    }
+		}
                 String p = ((prefix.length() > 0)
                             ? prefix + "."
                             : "") + (cnt++);
-                doFullTree(request, wikiUtil, originalEntry, child, props,
-                           addPrefix, p, showRoot, showIcon, depth, types,
+                doFullTree(request,  wikiUtil, originalEntry, child, props,
+			   false, asMenu, null,			   
+                           style, labelWidth, addPrefix, p, showRoot, showIcon, depth, types,
                            sb);
-            }
-            sb.append("</ul>\n");
+	    }
+	    if(addedUl) {
+		HU.close(sb,"ul","\n");
+	    }
         }
+	if(top && showRoot) HU.close(sb,"ul","\n");
+	HU.close(sb,"li","\n");	
+	if(top) HU.close(sb,"ul","\n");
     }
 
     /**
@@ -5334,6 +5359,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 	    getWikiEditLink(textAreaId, "Tabs", "+tabs_newline_+tab tab title_newline_", "-tab_newline_-tabs_newline_", ""),
 	    getWikiEditLink(textAreaId, "Accordion", "+accordion decorate=true collapsible=true activeSegment=0 _newline_+segment segment  title_newline_", "-segment_newline_-accordion_newline_", ""),
 	    getWikiEditLink(textAreaId, "Slides", "+slides dots=true slidesToShow=1  bigArrow=true style=_qt__qt__nl_+slide Title_nl_", "-slide_nl_-slides_nl_", ""),
+
+
+
+	    getWikiEditLink(textAreaId, "Menu", "+menu_nl_    :menuheader Header_nl_    :menuitem Item 1_nl_    +menu Menu 1_nl_        :menuitem Item 2_nl_        +menuitem style=_qt_width:300px; background:green;_qt_ _nl_        Menu contents_nl_        -menuitem_nl_    -menu_nl_    +menu Menu 2_nl_        :menuitem Item 3_nl_    -menu_nl_-menu", "", ""),
 	    getWikiEditLink(textAreaId, "Navigation left", ":navleft leftStyle=_qt_width:250px;_qt_ rightStyle=_qt__qt_  maxLevel=_qt__qt_", "", ""),
 	    getWikiEditLink(textAreaId, "Navigation top", ":navtop style=_quote__quote_ delimiter=_quote_|_quote_  maxLevel=_qt__qt_", "", ""),
 	    getWikiEditLink(textAreaId, "Prev arrow", "{{prev position=fixed iconSize=32 sort=name,entryorder sortAscending=true style=_qt_left:250px;_qt_  showName=false}}", "", ""), getWikiEditLink(textAreaId, "Next arrow", "{{next position=fixed iconSize=32 sort=name,entryorder sortAscending=true style=_dq_  showName=false}}", "", ""), getWikiEditLink(textAreaId, "Title", ":title {{name link=true}}", "", ""), getWikiEditLink(textAreaId, "Heading", ":heading your heading", "", ""), getWikiEditLink(textAreaId, "Heading-1", ":h1 your heading", "", ""), getWikiEditLink(textAreaId, "Heading-2", ":h2 your heading", "", ""), getWikiEditLink(textAreaId, "Heading-3", ":h3 your heading", "", ""));

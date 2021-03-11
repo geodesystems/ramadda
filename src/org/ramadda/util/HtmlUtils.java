@@ -218,9 +218,12 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static Appendable close(Appendable sb, String... args) {
         try {
             for (String comp : args) {
-                sb.append("</");
-                sb.append(comp);
-                sb.append(">");
+		if(comp.equals("\n")) sb.append(comp);
+		else {
+		    sb.append("</");
+		    sb.append(comp);
+		    sb.append(">");
+		}
             }
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);

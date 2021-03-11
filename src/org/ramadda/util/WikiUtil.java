@@ -762,6 +762,10 @@ public class WikiUtil {
         boolean          dragToggleVisible = false;
 
         String           lmrWidth          = "50%";
+	int menuCnt = 0;
+	String menuId = null;
+
+
 
         for (Chunk chunk : chunks) {
             if (chunk.type == chunk.TYPE_CODE) {
@@ -872,6 +876,75 @@ public class WikiUtil {
 
                     continue;
                 }
+
+
+		if (tline.startsWith(":menuitem")) {
+                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+		    HU.open(buff, "li");
+		    HU.open(buff,"div");
+		    buff.append(toks.size()>1?toks.get(1):"No Label");
+		    HU.close(buff,"div","li","\n");
+		    continue;
+		}
+		    
+		if (tline.startsWith(":menuheader")) {
+		    List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+		    HU.open(buff, "li",HU.attrs("class","ui-widget-header"));
+		    HU.open(buff,"div");
+		    buff.append(toks.size()>1?toks.get(1):"No Label");
+		    HU.close(buff,"div","li","\n");
+		    continue;
+		}
+
+		if (tline.startsWith("+menuitem")) {
+                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+		    Hashtable props = HU.parseHtmlProperties(toks.size()>1?toks.get(1):"");
+		    String attrs = HU.attrs("style",Utils.getProperty(props,"style",""));
+		    HU.open(buff, "li",attrs);
+		    HU.open(buff,"div");
+		    continue;
+		}
+		if (tline.startsWith("-menuitem")) {
+		    HU.close(buff,"div","li","\n");
+		    continue;
+		}
+                if (tline.startsWith("+menu")) {
+		    buff.append("\n");
+                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+		    String attrs = "";
+		    if(menuCnt==0) {
+			if(menuId!=null) {
+			    HU.script(buff, "$('#" +menuId+"').menu();\n");
+			}
+			menuId = HU.getUniqueId("menu_");
+			attrs +=HU.attrs("id",menuId);
+		    } else {
+			HU.open(buff, "li");
+			HU.open(buff,"div");
+			buff.append(toks.size()>1?toks.get(1):"No label");
+			HU.close(buff,"div","\n");
+		    }
+		    menuCnt++;
+		    HU.open(buff,"ul",attrs);
+		    buff.append("\n");
+		    continue;
+		}
+
+                if (tline.startsWith("-menu")) {
+		    menuCnt--;
+		    if(menuCnt>0)
+			HU.close(buff,"ul","li","\n");
+		    else
+			HU.close(buff,"ul","\n");		    
+		    if(menuCnt<=0) {
+			HU.script(buff, "$('#" +menuId+"').menu();\n");
+			menuId = null;
+		    }
+		    continue;
+		}
+
+
+
 
 
                 if (tline.startsWith(":macro")) {
@@ -1770,7 +1843,7 @@ public class WikiUtil {
                     buff.append(clazz);
                     buff.append("\"   " + extraAttr + ">");
 
-                    //                System.err.println("s:" + clazz +" " + extraAttr);
+
                     if (label == null) {
                         label = heading;
                     }
@@ -2580,6 +2653,9 @@ public class WikiUtil {
         }
 
 
+	if(menuId!=null) {
+	    buff.append("Unfinished menu");
+	}
 
         //end of processing
         while (ulCnt > 0) {
