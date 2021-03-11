@@ -328,14 +328,13 @@ public class WeblogOutputHandler extends OutputHandler {
         if (values[0] != null) {
             String extra = ((String) values[0]).trim();
             if (extra.length() > 0) {
-                extra = getWikiManager().wikifyEntry(request, entry, extra);
                 if (single) {
+		    extra = getWikiManager().wikifyEntry(request, entry, extra);
                     blogBody.append(extra);
                 } else {
+		    blogBody.append(HU.button(HtmlUtils.href(entryUrl, "Read More")));
                     if ( !embedded) {
-                        blogBody.append(
-                            HtmlUtils.makeShowHideBlock(
-                                msg("More..."), extra, false));
+			//                        blogBody.append(HtmlUtils.makeShowHideBlock(msg("More..."), extra, false));
                     }
                 }
             }
