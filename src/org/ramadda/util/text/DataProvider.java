@@ -546,6 +546,7 @@ public abstract class DataProvider {
 		    System.err.println("Error reading array");
 		    if(s.length()>1000) s = s.substring(0,999);
 		    System.err.println("JSON:" + s);
+		    throw new IllegalArgumentException("Could not read JSON data");
 		}		    
             }
 
@@ -577,7 +578,7 @@ public abstract class DataProvider {
                                 Object o = Json.readObject(jrow, tok);
                                 if (o != null) {
                                     primary.putAll(Json.getHashtable(o,
-                                            true));
+								     false));
                                 }
                             } catch (Exception exc) {
                                 Object o = Json.readArray(jrow, tok);
