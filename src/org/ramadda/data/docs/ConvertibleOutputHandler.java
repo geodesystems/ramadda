@@ -174,6 +174,14 @@ public class ConvertibleOutputHandler extends OutputHandler {
             throws Exception {
         StringBuilder sb = new StringBuilder();
         getPageHandler().entrySectionOpen(request, entry, sb, "");
+	makeConvertForm(request, entry, sb);
+        getPageHandler().entrySectionClose(request, entry, sb);
+        return new Result("", sb);
+    }
+
+
+    public void makeConvertForm(Request request, Entry entry, StringBuilder sb)
+            throws Exception {
         StringBuilder js = new StringBuilder();
         js.append("var convertCsvEntry = '" + entry.getId() + "';\n");
         String lastInput =
@@ -210,11 +218,8 @@ public class ConvertibleOutputHandler extends OutputHandler {
         HtmlUtils.importJS(sb,
                            getRepository().getUrlBase()
                            + "/media/convertcsv.js");
-        getPageHandler().entrySectionClose(request, entry, sb);
-
-        return new Result("", sb);
     }
-
+    
     /**
      * _more_
      *

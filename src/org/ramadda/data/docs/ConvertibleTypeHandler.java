@@ -25,7 +25,12 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 
+
+
+
+
 import org.ramadda.util.Utils;
+import org.ramadda.util.WikiUtil;
 
 
 import org.w3c.dom.*;
@@ -154,6 +159,23 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
             Utils.parseMultiLineCommandLine(tmp.toString());
 
         return toks;
+    }
+
+    
+
+
+    @Override
+    public String getWikiInclude(WikiUtil wikiUtil, Request request,
+                                 Entry originalEntry, Entry entry,
+                                 String tag, Hashtable props)
+            throws Exception {
+	if(!tag.equals("convertform")) return super.getWikiInclude(wikiUtil, request,originalEntry, entry, tag, props);
+	ConvertibleOutputHandler coh =(ConvertibleOutputHandler) 
+	    (ConvertibleOutputHandler) getRepository().getOutputHandler(
+									ConvertibleOutputHandler.class);
+	StringBuilder sb = new StringBuilder();
+	coh.makeConvertForm(request, entry, sb);
+	return sb.toString();
     }
 
 
