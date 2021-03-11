@@ -646,10 +646,15 @@ function DisplayThing(argId, argProperties) {
 		values+=desc;
 	    }
 
+	    let tooltipNots = {};
+	    this.getProperty("tooltipNotFields","").split(",").forEach(f=>{
+		tooltipNots[f] = true;
+	    });
             values += HU.open(TABLE);
             for (var doDerived = 0; doDerived < 2; doDerived++) {
                 for (let i = 0; i < fields.length; i++) {
                     var field = fields[i];
+		    if(tooltipNots[field.getId()]) continue;
 		    if(field==titleField || field==descField) continue;
                     if (doDerived == 0 && !field.derived) continue;
                     else if (doDerived == 1 && field.derived) continue;
@@ -2661,7 +2666,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 records = pointData.extractGroup(this.dataGroup, records);
             }
 
-
 	    if(debug)   console.log("R-1:" + records.length);
 	    if(this.getProperty("filterLatest")) {
 		let fields = this.getFieldsByIds(null,this.getProperty("filterLatest"));
@@ -2734,6 +2738,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 		records = newData;
 	    }
+
 
 	    if(debug)   console.log("R-2:" + records.length);
 

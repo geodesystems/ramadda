@@ -3938,6 +3938,17 @@ RepositoryMap.prototype = {
         return line;
     },
 
+    getLinesLayer: function() {
+        if (!this.lines) {
+            let base_style = OpenLayers.Util.extend({},
+						    OpenLayers.Feature.Vector.style['default']);
+            this.lines = new OpenLayers.Layer.Vector("Lines", {
+                style: base_style
+            });
+            this.addVectorLayer(this.lines);
+        }	
+	return this.lines;
+    },
     handleMarkerLayer:  function() {
         if (this.currentPopup) {
             this.getMap().removePopup(this.currentPopup);
@@ -3960,6 +3971,7 @@ RepositoryMap.prototype = {
     },
 
     showMarkerPopup:  function(marker, fromClick, simplePopup) {
+
         if (this.entryClickHandler && window[this.entryClickHandler]) {
             if (!window[this.entryClickHandler](this, marker)) {
                 return;
@@ -3977,6 +3989,7 @@ RepositoryMap.prototype = {
 	    }
 	}
 
+
         var id = marker.ramaddaId;
         if (!id)
             id = marker.id;
@@ -3987,6 +4000,7 @@ RepositoryMap.prototype = {
 	if(!this.doPopup) {
 	    return;
 	}
+
         this.hiliteBox(id);
         var _this = this;
         if (marker.inputProps) {
@@ -4007,6 +4021,7 @@ RepositoryMap.prototype = {
 	    $("#" + this.displayDiv).html(markertext);
 	    return;
 	}
+
 
 
         if (fromClick && marker.locationKey != null) {
@@ -4030,28 +4045,43 @@ RepositoryMap.prototype = {
 	
         // set marker text as the location
         var location = marker.location;
-        if (!location) return;
-        if (typeof location.lon === 'undefined') {
-            location = createLonLat(location.x, location.y);
-        }
-        if (!markertext || markertext == "") {
-            //            marker.location = this.transformProjPoint(marker.lonlat);
-            if (location.lat == location.lat) {
-                markertext = "Lon: " + location.lat + "<br>" + "Lat: " + location.lon;
-            }
-        }
 
-        if (marker.entryType) {
-            var type = marker.entryType;
-            if (type == "geo_kml" || type == "geo_json" || type == "geo_shapefile") {
-                this.currentEntryMarker = marker;
-                var call = "ramaddaMapMap['" + this.mapId + "'].handleMarkerLayer();";
-                var label = marker.entryLayer ? "Remove Layer" : "Load Layer";
-                markertext = "<center>" + HtmlUtils.onClick(call, label) + "</center>" + markertext;
+        let projPoint = null;
+	if(!location) {
+	    if(marker.geometry) {
+		let b = marker.geometry.getBounds();
+		if(b) {
+		    projPoint = b.getCenterLonLat();
+		}
+	    }
+	} else {
+            if (typeof location.lon === 'undefined') {
+		location = createLonLat(location.x, location.y);
             }
-        }
+            if (!markertext || markertext == "") {
+		//            marker.location = this.transformProjPoint(marker.lonlat);
+		if (location.lat == location.lat) {
+                    markertext = "Lon: " + location.lat + "<br>" + "Lat: " + location.lon;
+		}
+            }
+	    
+            if (marker.entryType) {
+		var type = marker.entryType;
+		if (type == "geo_kml" || type == "geo_json" || type == "geo_shapefile") {
+                    this.currentEntryMarker = marker;
+                    var call = "ramaddaMapMap['" + this.mapId + "'].handleMarkerLayer();";
+                    var label = marker.entryLayer ? "Remove Layer" : "Load Layer";
+                    markertext = "<center>" + HtmlUtils.onClick(call, label) + "</center>" + markertext;
+		}
+            }
+	    projPoint = this.transformLLPoint(location);
+	}	
 
-        var projPoint = this.transformLLPoint(location);
+	if(projPoint==null) {
+	    console.log("No location for feature popup");
+	    return;
+	}
+
 
 	if(simplePopup || this.simplePopup) {
 	    popup = new OpenLayers.Popup("popup",
@@ -4076,7 +4106,6 @@ RepositoryMap.prototype = {
         popup.marker = marker;
         this.getMap().addPopup(popup);
         this.currentPopup = popup;
-
 
         if (marker.inputProps && marker.inputProps.chartType) {
             this.popupChart(marker.inputProps);
