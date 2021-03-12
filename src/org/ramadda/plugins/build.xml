@@ -35,6 +35,7 @@
       <ant antfile="${src_dir}/org/ramadda/plugins/edu/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/faq/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/fda/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/plugins/files/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/feed/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/gadgets/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/gdata/build.xml" inheritAll="false"/>
