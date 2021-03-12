@@ -770,7 +770,7 @@ public class WikiUtil {
         for (Chunk chunk : chunks) {
             if (chunk.type == chunk.TYPE_CODE) {
                 buff.append("<nowiki>");
-                handleCode(buff, chunk, handler);
+                handleCode(buff, chunk, handler, true);
                 buff.append("</nowiki>");
                 continue;
             }
@@ -3235,15 +3235,14 @@ public class WikiUtil {
      *
      * @throws IOException _more_
      */
-    public void handleCode(Appendable sb, Chunk chunk,
-                           WikiPageHandler handler)
+    public boolean handleCode(Appendable sb, Chunk chunk,
+                           WikiPageHandler handler, boolean doDflt)
             throws IOException {
         if (chunk.rest.equals("vega-lite")) {
             handleVega(sb, chunk.buff.toString(), handler);
-
-            return;
+            return true;
         }
-        if (chunk.rest.equals("markdown")) {
+        if (chunk.rest.equals("markdown") || chunk.rest.equals("md")) {
             String srcId    = HU.getUniqueId("markdownsrc");
             String targetId = HU.getUniqueId("markdownsrc");
             HU.div(sb, chunk.buff.toString(),
@@ -3254,7 +3253,7 @@ public class WikiUtil {
                       "HtmlUtils.applyMarkdown('" + srcId + "','" + targetId
                       + "');");
 
-            return;
+            return true;
         }
         if (chunk.rest.equals("latex")) {
             String srcId    = HU.getUniqueId("latexsrc");
@@ -3267,11 +3266,9 @@ public class WikiUtil {
                       "HtmlUtils.applyLatex('" + srcId + "','" + targetId
                       + "');");
 
-            return;
+            return true;
         }
-
-
-        if (chunk.rest.equals("javascript")) {
+        if (chunk.rest.equals("javascript") || chunk.rest.equals("js")) {
             sb.append(
                 HU.cssLink(
                     handler.getHtdocsUrl("/lib/prettify/prettify.css")));
@@ -3293,9 +3290,13 @@ public class WikiUtil {
             sb.append("</pre>\n");
             sb.append(HU.script("prettyPrint();"));
 
-            return;
+            return true;
         }
-        HU.pre(sb, "CODE:" + chunk.rest + "\n" + chunk.buff.toString());
+        if (chunk.rest.equals("raw") || doDflt) {
+	    HU.pre(sb,   chunk.buff.toString());
+	    return true;
+	}
+	return false;
     }
 
 
@@ -3791,7 +3792,7 @@ public class WikiUtil {
      * @version        $version$, Thu, Feb 25, '21
      * @author         Enter your name here...
      */
-    private static class Chunk {
+    public static class Chunk {
 
         /** _more_ */
         static int TYPE = 0;
@@ -3848,6 +3849,12 @@ public class WikiUtil {
             this(type);
             this.rest = rest.trim();
         }
+
+        public Chunk(String rest, StringBuilder sb) {
+	    this.rest = rest;
+	    buff=  sb;
+	}
+
 
         /**
          * _more_

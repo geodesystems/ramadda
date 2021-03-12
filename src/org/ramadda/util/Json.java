@@ -1168,16 +1168,14 @@ public class Json {
     /**
      * _more_
      *
-     * @param file _more_
      * @param forHtml _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public static String format(String file, boolean forHtml)
+    public static String format(String json, boolean forHtml)
             throws Exception {
-        String     json = IOUtil.readContents(file, Json.class);
         JSONObject obj  = new JSONObject(json.toString());
         //        String     s    = forHtml?obj.toString().replaceAll("\n"," "):obj.toString(3);
         String s = forHtml

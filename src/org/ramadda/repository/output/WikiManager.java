@@ -113,7 +113,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag("multi", null, "_attrs", "attr1,attr2"),
                             new WikiTag(WIKI_TAG_SIMPLE, null, ATTR_TEXTPOSITION, POS_LEFT),
                             new WikiTag(WIKI_TAG_IMPORT, null, ATTR_ENTRY,""),
-                            new WikiTag(WIKI_TAG_EMBED, null, ATTR_ENTRY,"",ATTR_SKIP_LINES,"0",ATTR_MAX_LINES,"1000",ATTR_FORCE,"false",ATTR_MAXHEIGHT,"300",ATTR_ANNOTATE,"false"),
+                            new WikiTag(WIKI_TAG_EMBED, null, ATTR_ENTRY,"",ATTR_SKIP_LINES,"0",ATTR_MAX_LINES,"1000",ATTR_FORCE,"false",ATTR_MAXHEIGHT,"300",ATTR_ANNOTATE,"true","raw","true","wikify","true"),
                             new WikiTag(WIKI_TAG_FIELD, null, "name", "")),
         new WikiTagCategory("Layout", 
                             new WikiTag(WIKI_TAG_TREE, null, ATTR_DETAILS, "true"),
@@ -1710,16 +1710,19 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 return "Entry isn't a text file";
             }
             StringBuilder txt = new StringBuilder("");
-
             InputStream fis = getStorageManager().getFileInputStream(
                                   entry.getResource().getPath());
             BufferedReader br =
                 new BufferedReader(new InputStreamReader(fis));
+            boolean raw = getProperty(wikiUtil, props, "raw",   false);
+            boolean embedWikify = getProperty(wikiUtil, props, "wikify", false);
             int skipLines = getProperty(wikiUtil, props, ATTR_SKIP_LINES, 0);
             int maxLines = getProperty(wikiUtil, props, ATTR_MAX_LINES, 1000);
-            int maxHeight = getProperty(wikiUtil, props, ATTR_MAXHEIGHT, 300);
-            boolean annotate = getProperty(wikiUtil, props, ATTR_ANNOTATE,
-                                           false);
+            int maxHeight = getProperty(wikiUtil, props, ATTR_MAXHEIGHT, raw?-1:300);
+
+            boolean annotate = getProperty(wikiUtil, props, ATTR_ANNOTATE, false);
+            String  as = getProperty(wikiUtil, props, "as",null);
+
             int    lineNumber = 0;
             int    cnt        = 0;
             String line;
@@ -1727,17 +1730,18 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 lineNumber++;
                 if (skipLines > 0) {
                     skipLines--;
-
                     continue;
                 }
                 cnt++;
-                line = line.replaceAll("<", "&lt;");
-                line = line.replaceAll(">", "&gt;");
-                if (annotate) {
-                    txt.append("#");
-                    txt.append(lineNumber);
-                    txt.append(": ");
-                }
+		if(!embedWikify && !raw) {
+		    line = line.replaceAll("<", "&lt;");
+		    line = line.replaceAll(">", "&gt;");
+		    if (annotate) {
+			txt.append("#");
+			txt.append(lineNumber);
+			txt.append(": ");
+		    }
+		}
                 txt.append(line);
                 txt.append("\n");
                 if (cnt > maxLines) {
@@ -1745,10 +1749,45 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 }
             }
             IOUtil.close(fis);
-
-            return HU.pre(txt.toString(),
-                          HU.style("max-height:" + maxHeight
-                                   + "px; overflow-y:auto;"));
+	    if(as!=null) {
+		boolean doFile = false;
+		if(as.equals("file")) {
+		    doFile = true;
+		    String ext = IOUtil.getFileExtension(entry.getResource().getPath()).toLowerCase();
+		    ext = ext.replace(".","");
+		    as = ext;
+		}
+		if(as.equals("json") || as.equals("geojson")) {
+		    return  embedJson(request, txt.toString());
+		} else {
+		    StringBuilder tmp = new StringBuilder();
+		    WikiUtil.Chunk chunk = new WikiUtil.Chunk(as,txt);
+		    if(wikiUtil.handleCode(tmp,  chunk, this, doFile)) {
+			String s =  tmp.toString();
+			if(maxHeight>0) {
+			    return HU.pre(s,
+					  HU.style("max-height:" + maxHeight
+						   + "px; overflow-y:auto;"));
+			}
+			return s;
+		    }
+		}
+		return "Unknown type:" + as;
+				    
+	    }
+	    if(embedWikify) {
+		return  wikifyEntry(request, entry, wikiUtil, txt.toString(),
+                                             false, null, null, null, false);
+	    }
+	    if(maxHeight>0) {
+		return HU.pre(txt.toString(),
+			      HU.style("max-height:" + maxHeight
+				       + "px; overflow-y:auto;"));
+	    } else if(!raw) {
+		return HU.pre(txt.toString());
+	    } else {
+		return txt.toString();
+	    }
         } else if (theTag.equals(WIKI_TAG_FIELD)) {
             String name = getProperty(wikiUtil, props, ATTR_FIELDNAME,
                                       (String) null);
@@ -3239,6 +3278,20 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     }
 
 
+
+    public String embedJson(Request request, String json) throws Exception {
+        StringBuilder sb = new StringBuilder();
+	HU.importJS(sb, getPageHandler().makeHtdocsUrl("/media/json.js"));
+	String id = Utils.getGuid();
+	//entry.getResource().getPath(), true);
+	String formatted = Json.format(json,true);
+	HtmlUtils.open(sb, "div", "id", id);
+	HtmlUtils.pre(sb, formatted);
+	HtmlUtils.close(sb, "div");
+	sb.append(HtmlUtils.script("RamaddaJson.init('" + id + "');"));
+	return sb.toString();
+    }
+	
 
 
     /**
