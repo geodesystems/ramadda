@@ -3378,6 +3378,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     private Result handleRequestInner(Request request) throws Exception {
 
+	//	System.err.println("r:" + request);
         if (debugSession) {
             debugSession(request,
                          "RAMADDA.handleRequest:" + request.getRequestPath());
@@ -3574,10 +3575,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
             //            System.err.println (getUrlBase() +" setting cookie:" + sessionId);
             if (debugSession) {
-                debugSession(request,
-                             "Cookie:"
-                             + getSessionManager().getSessionCookieName()
-                             + "=" + sessionId + " path=" + getUrlBase());
+		//                debugSession(request,
+		//                             "Cookie:"+ getSessionManager().getSessionCookieName()+ "=" + sessionId + " path=" + getUrlBase());
             }
             String path;
 
@@ -3593,11 +3592,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                              + (isSSLEnabled(request)
                                 ? "; secure"
                                 : "") + "; HttpOnly;SameSite=Strict");
-            /*
-            result.addCookie(getSessionManager().getSessionCookieName(),
-                             sessionId + "; path=" + path + "; expires="
-                             + cookieExpirationDate + " 23:59:59 GMT");
-            */
+
         }
 
         return result;
@@ -3820,12 +3815,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public void debugSession(Request request, String msg) {
         if (debugSession) {
+	    /*
             if ((request != null)
                     && !request.getRequestPath().equals(
                         "/repository/entry/show")) {
                 return;
-            }
-            System.err.println(debugPrefix() + msg);
+		}*/
+	    //            System.err.println(debugPrefix() + msg);
+            System.err.println(msg);
         }
     }
 

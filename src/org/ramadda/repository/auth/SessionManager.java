@@ -477,42 +477,38 @@ public class SessionManager extends RepositoryManager {
             throws Exception {
         UserSession session = sessionMap.get(sessionId);
         if (session != null) {
-            //            debugSession(request, "RAMADDA.getSession got session from session map:" + session);
+	    debugSession(request, "getSession: got session from session map:" + session);
             return session;
         }
         session = anonymousSessionMap.get(sessionId);
         if (session != null) {
-            debugSession(
-                request,
-                "RAMADDA.getSession got session from anonymous session map: "
-                + session);
-
+            debugSession(request, "getSession: got session from anonymous session map: "  + session);
             return session;
         }
 
         Statement stmt = getDatabaseManager().select(Tables.SESSIONS.COLUMNS,
-                             Tables.SESSIONS.NAME,
-                             Clause.eq(Tables.SESSIONS.COL_SESSION_ID,
-                                       sessionId));
+						     Tables.SESSIONS.NAME,
+						     Clause.eq(Tables.SESSIONS.COL_SESSION_ID,
+							       sessionId));
         try {
             SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
             ResultSet        results;
             while ((results = iter.getNext()) != null) {
                 session = makeSession(results);
-                debugSession(request,
-                             "RAMADDA.getSession got session from database:"
-                             + session);
                 session.setLastActivity(new Date());
                 //Remove it from the DB and then re-add it so we update the lastActivity
+                debugSession(request, "getSession: got session from database:"+ session);
                 removeSession(request, session.getId());
                 addSession(session);
-
                 break;
             }
         } finally {
             getDatabaseManager().closeAndReleaseConnection(stmt);
         }
 
+	if(session == null) {
+	    debugSession(request, "getSession: could not find session");
+	}
         return session;
     }
 
@@ -556,7 +552,7 @@ public class SessionManager extends RepositoryManager {
      */
     public void removeSession(Request request, String sessionId)
             throws Exception {
-        debugSession(request, "RAMADDA.removeSession:" + sessionId);
+        debugSession(request, "removeSession:" + sessionId);
         sessionMap.remove(sessionId);
         anonymousSessionMap.remove(sessionId);
         getDatabaseManager().delete(Tables.SESSIONS.NAME,
@@ -572,13 +568,13 @@ public class SessionManager extends RepositoryManager {
      * @throws Exception _more_
      */
     private void addSession(UserSession session) throws Exception {
-        //        debugSession(null,"RAMADDA.addSession:" + session);
+	debugSession(null,"addSession:" + session);
         sessionMap.put(session.getId(), session);
         getDatabaseManager().executeInsert(Tables.SESSIONS.INSERT,
                                            new Object[] { session.getId(),
-                session.getUserId(), session.getCreateDate(),
-                session.getLastActivity(),
-                "" });
+							  session.getUserId(), session.getCreateDate(),
+							  session.getLastActivity(),
+							  "" });
     }
 
 
@@ -613,25 +609,27 @@ public class SessionManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public void checkSession(Request request) throws Exception {
-
-        debugSession(request, "RAMADDA: checkSession");
+	//        debugSession(request, "RAMADDA: checkSession");
         User         user    = request.getUser();
         List<String> cookies = getCookies(request);
+	if (Repository.debugSession) {
+	    debugSession(request,"checkSession cookies:" + cookies);
+	}
         for (String cookieValue : cookies) {
-            if (Repository.debugSession) {
-                getRepository().debugSession(request,
-                                             "checkSession: cookie:"
-                                             + cookieValue);
-            }
             if (user == null) {
+		if (Repository.debugSession) {
+		    //		    getRepository().debugSession(request, "checkSession: cookie:"+ cookieValue);
+		}
                 UserSession session = getSession(request, cookieValue, false);
                 if (session != null) {
                     session.setLastActivity(new Date());
                     user = getUserManager().getCurrentUser(session.getUser());
                     session.setUser(user);
                     request.setSessionId(cookieValue);
-                    getRepository().debugSession(request,
-                            "checkSession: got session from cookie");
+		    if (Repository.debugSession) {
+			getRepository().debugSession(request,
+						     "checkSession: got session from cookie:" + session);
+		    }
 
                     break;
                 }
@@ -819,7 +817,6 @@ public class SessionManager extends RepositoryManager {
      */
     public String getSessionCookieName() {
         return cookieName;
-        //        return COOKIE_NAME;
     }
 
 
