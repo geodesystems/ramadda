@@ -122,7 +122,7 @@ public class UserSession {
      * @return _more_
      */
     public String toString() {
-        return "session:" + user + " id:" + id;
+        return "session:" + user + " id:" + id.substring(0,5);
     }
 
     /**
