@@ -1869,12 +1869,10 @@ table.dataTable tbody td {
     padding-bottom:0px;
 }
 
-.ramadda-row-odd {
-    background-color:#fafafa;
+.ramadda-row-odd, .entry-table tr.odd {
+    background-color:#f4f4f4;
 }
-.entry-table tr.odd {
-    background-color:#fafafa;
-}
+
 .ramadda-row-even {
     background-color:#fff;
 }
