@@ -715,8 +715,8 @@ RepositoryMap.prototype = {
     },
     zoomToExtent: function(bounds,flag) {
 	if(debugBounds) {
-	    console.log("zoomToExtent");
-	    console.trace();
+	    console.log("zoomToExtent:" );
+//	    console.trace();
 	}
         this.getMap().zoomToExtent(bounds,flag);
     },
