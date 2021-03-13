@@ -8,6 +8,8 @@ const DISPLAY_ORGCHART = "orgchart";
 const DISPLAY_TIMELINE = "timeline";
 const DISPLAY_HOURS = "hours";
 const DISPLAY_BLANK = "blank";
+const DISPLAY_PRE = "pre";
+const DISPLAY_HTMLTABLE = "htmltable";
 const DISPLAY_RECORDS = "records";
 const DISPLAY_TSNE = "tsne";
 const DISPLAY_HEATMAP = "heatmap";
@@ -153,6 +155,20 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_BLANK,
     label: "Blank",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_CONTROLS
+});
+addGlobalDisplayType({
+    type: DISPLAY_PRE,
+    label: "Preformat",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_CONTROLS
+});
+addGlobalDisplayType({
+    type: DISPLAY_HTMLTABLE,
+    label: "HTML Table",
     requiresData: true,
     forUser: true,
     category: CATEGORY_CONTROLS
@@ -951,6 +967,8 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
 	    let records = this.filterData();
 	    this.writeHtml(ID_DISPLAY_CONTENTS, "");
 	    if(!records) return;
+	    console.log("r:" + records.length);
+
 	    let colorBy = this.getColorByInfo(records);
 	    if(colorBy.index>=0) {
 		records.map(record=>{
@@ -958,6 +976,105 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
 		});
 		colorBy.displayColorTable();
 	    }
+	}});
+}
+
+
+function RamaddaPreDisplay(displayManager, id, properties) {
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_PRE, properties);
+    let myProps = [
+	{label:'Pre Properties'},
+	{p:'numRecords',ex:'100',d:1000},
+	{p:'includeGeo',ex:'true',d:true},	
+    ];
+
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+	updateUI: function() {
+	    let records = this.filterData();
+	    if(!records) {
+		this.writeHtml(ID_DISPLAY_CONTENTS, "No records yet");		
+		return;
+	    }
+            let pointData = this.dataCollection.getList()[0];
+            let fields = pointData.getRecordFields();
+	    let numRecords = this.getNumRecords();
+	    let includeGeo = this.getIncludeGeo();
+	    let html ="Number of records:" + records.length+"<pre>";
+	    fields.forEach((f,idx)=>{
+		if(idx>0) html+=", ";
+		html+=f.getId() +"[" + f.getType()+"]";
+	    });
+	    if(includeGeo) html+=", latitude, longitude";
+	    html+="\n";
+	    records.every((r,idx)=>{
+		if(numRecords>-1 && idx>numRecords) return false;
+		let d = r.getData();
+		d = d.map(d=>{
+		    if(d.getTime) return this.formatDate(d);
+		    return d;
+		});
+		html+="#" + idx+": ";
+		html+=d.join(", ");
+		if(includeGeo) {
+		    html+=", " + r.getLatitude() +"," + r.getLongitude();
+		}
+		html+="\n";
+		return true;
+	    });
+	    html+="</pre>"
+	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
+	}});
+}
+
+
+
+function RamaddaHtmltableDisplay(displayManager, id, properties) {
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_HTMLTABLE, properties);
+    let myProps = [
+	{label:'Pre Properties'},
+	{p:'numRecords',ex:'100',d:1000},
+	{p:'includeGeo',ex:'true',d:true},	
+    ];
+
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+	updateUI: function() {
+	    let records = this.filterData();
+	    if(!records) {
+		this.writeHtml(ID_DISPLAY_CONTENTS, "No records yet");		
+		return;
+	    }
+            let pointData = this.dataCollection.getList()[0];
+            let fields = pointData.getRecordFields();
+	    let numRecords = this.getNumRecords();
+	    let includeGeo = this.getIncludeGeo();
+	    let html ="Number of records:" + records.length+"<table width=100% border=0>";
+	    html+="<tr valign=top><td></td>";
+	    let headerAttrs = [STYLE,"white-space:nowrap;background:#efefef;margin:1px;padding:3px; font-weight:bold;"];
+	    fields.forEach((f,idx)=>{
+		html+=HU.td([],HU.div(headerAttrs,f.getId() +"[" + f.getType()+"]"));
+	    });
+	    if(includeGeo) html+=HU.td(HU.div(headerAttrs,"latitude")) + HU.td([],HU.div(headerAttrs,"longitude"));
+	    html+="</tr>";
+	    records.every((r,idx)=>{
+		if(numRecords>-1 && idx>numRecords) return false;
+		let d = r.getData();
+		d = d.map(d=>{
+		    if(d.getTime) return this.formatDate(d);
+		    return d;
+		});
+		let clazz = (idx%2)?"ramadda-row-odd":"ramadda-row-even";
+		html+="<tr class=" + clazz+"><td>#" + idx+": </td>";
+		d.forEach(v=>{
+		    html+=HU.td([],v);
+		});
+		if(includeGeo) {
+		    html+=HU.td([],r.getLatitude()) +HU.td([],r.getLongitude());
+		}
+		html+="</tr>";
+		return true;
+	    });
+	    html+="</table>";
+	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
 	}});
 }
 
