@@ -2663,8 +2663,12 @@
         "provider_url": "http://www.scribd.com/",
         "endpoints": [
             {
+		"comment":"jeffmc: added these",
                 "schemes": [
-                    "http://www.scribd.com/doc/*"
+                    "http://www.scribd.com/doc/*",
+		    "http://www.scribd.com/document/*",
+                    "https://www.scribd.com/doc/*",
+		    "https://www.scribd.com/document/*"		    
                 ],
                 "url": "http://www.scribd.com/services/oembed/"
             }
