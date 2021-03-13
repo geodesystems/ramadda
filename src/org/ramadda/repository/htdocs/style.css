@@ -152,11 +152,47 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     background:#eee;
 }
 
+.ramadda-nav-popup-container {
+    display:inline-block;
+    position:relative;
+}
+
+
+.ramadda-nav-popup {
+    font-size:12pt;
+    z-index: 50;
+    background:#fff;
+    display:none;
+    position:absolute;
+    width:200px;
+    padding:5px 10px;
+    border:1px solid #ccc;
+    border-radius: 4px;
+    -webkit-box-shadow: 1px 1px 1px #ccc;
+    box-shadow: 1px 1px 1px #ccc;
+}
+
+.ramadda-nav-popup-link {
+    cursor:pointer;
+}
+
+.ramadda-nav-popup a {
+    color:rgb(59, 69, 78);
+    color: rgb(116, 129, 141);
+}
+
+
+.ramadda-nav-popup-link .fa:hover {
+    color: rgb(56,132,255);
+}
+
+
 .ramadda-nav-horizontal {
 }
 
 .ramadda-nav-link:hover {
-    background:#eee;
+    color: rgb(56,132,255);
+    text-decoration:none;
 }
 
 .ramadda-nav-left-link {
@@ -435,6 +471,26 @@ a.ramadda-menubar-button:hover {
 .ramadda-heading-outer  {
     text-align:center;
 }
+
+.ramadda-heading  {
+    cursor:pointer;
+}
+
+.ramadda-heading.ramadda-linkable {
+    display:inline-block;
+}
+
+.ramadda-linkable  {
+    position:relative;
+}
+
+.ramadda-linkable-link  {
+    position:absolute;
+    display:none;
+    left:100%;
+    margin-left:1px;
+}
+
 
 .ramadda-page-heading, .ramadda-heading  {
     padding: 0px;
@@ -3261,12 +3317,18 @@ nowiki {
 
 .wiki-error {
     font-weight: bold;
-    background: #ff9999;
+    background: #BA3B28;
 }
 
 .wiki-image {
     padding-bottom:0px;
 }
+
+
+.embed-decorated {
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+}
+
 
 
 .wiki-image-caption {
