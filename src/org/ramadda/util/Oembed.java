@@ -81,7 +81,6 @@ public class Oembed {
         for (int i = 0; i < schemes.length(); i++) {
             addScheme(schemes.getString(i));
         }
-        //          System.err.println(name +" " + url +" " + this.schemes);
     }
 
     /**
@@ -176,7 +175,6 @@ public class Oembed {
             throws Exception {
         Oembed oembed = find(url);
         if (oembed == null) {
-            //      System.err.println("no embed found");
             return null;
         }
 	Response fixed = oembed.fixed;
@@ -195,7 +193,6 @@ public class Oembed {
             }
         } catch (Exception exc) {
             System.err.println("Error fetching embed for:" + url + " " + exc);
-
             return null;
         }
     }
@@ -369,8 +366,6 @@ public class Oembed {
                 return html;
             }
             if (type.equals("link")) {
-                System.err.println("LINk:" + title + " " + author);
-
                 return HtmlUtils.href(originalUrl, (title != null)
                         ? title
                         : (author != null)
