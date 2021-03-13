@@ -1765,7 +1765,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 		    if(wikiUtil.handleCode(tmp,  chunk, this, doFile)) {
 			String s =  tmp.toString();
 			if(maxHeight>0) {
-			    return HU.pre(s,
+			    return HU.div(s,
 					  HU.style("max-height:" + maxHeight
 						   + "px; overflow-y:auto;"));
 			}
@@ -5426,9 +5426,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
 	    getWikiEditLink(textAreaId, "Menu", "+menu_nl_    :menuheader Header_nl_    :menuitem Item 1_nl_    +menu Menu 1_nl_        :menuitem Item 2_nl_        +menuitem style=_qt_width:300px; background:green;_qt_ _nl_        Menu contents_nl_        -menuitem_nl_    -menu_nl_    +menu Menu 2_nl_        :menuitem Item 3_nl_    -menu_nl_-menu", "", ""),
-	    getWikiEditLink(textAreaId, "Navigation left", ":navleft leftStyle=_qt_width:250px;_qt_ rightStyle=_qt__qt_  maxLevel=_qt__qt_", "", ""),
+	    getWikiEditLink(textAreaId, "Navigation left", ":navleft leftStyle=_qt_width:250px;_qt_ rightStyle=_qt__qt_  maxLevel=_qt_4_qt_", "", ""),
 	    getWikiEditLink(textAreaId, "Navigation top", ":navtop style=_quote__quote_ delimiter=_quote_|_quote_  maxLevel=_qt__qt_", "", ""),
-	    getWikiEditLink(textAreaId, "Prev arrow", "{{prev position=fixed iconSize=32 sort=name,entryorder sortAscending=true style=_qt_left:250px;_qt_  showName=false}}", "", ""), getWikiEditLink(textAreaId, "Next arrow", "{{next position=fixed iconSize=32 sort=name,entryorder sortAscending=true style=_dq_  showName=false}}", "", ""), getWikiEditLink(textAreaId, "Title", ":title {{name link=true}}", "", ""), getWikiEditLink(textAreaId, "Heading", ":heading your heading", "", ""), getWikiEditLink(textAreaId, "Heading-1", ":h1 your heading", "", ""), getWikiEditLink(textAreaId, "Heading-2", ":h2 your heading", "", ""), getWikiEditLink(textAreaId, "Heading-3", ":h3 your heading", "", ""));
+	    getWikiEditLink(textAreaId, "Navigation popup", ":navpopup align=right|left  maxLevel=_qt__qt_", "", ""),	    
+
+	    getWikiEditLink(textAreaId, "Prev arrow", "{{prev position=relative|fixed decorate=false iconSize=32 sort=name,entryorder sortAscending=true style=_qt_left:250px;_qt_  showName=false}}", "", ""),
+	    getWikiEditLink(textAreaId, "Next arrow", "{{next position=relative|fixed decorate=false iconSize=32 sort=name,entryorder sortAscending=true style=_dq_  showName=false}}", "", ""), getWikiEditLink(textAreaId, "Title", ":title {{name link=true}}", "", ""), getWikiEditLink(textAreaId, "Heading", ":heading your heading", "", ""), getWikiEditLink(textAreaId, "Heading-1", ":h1 your heading", "", ""), getWikiEditLink(textAreaId, "Heading-2", ":h2 your heading", "", ""), getWikiEditLink(textAreaId, "Heading-3", ":h3 your heading", "", ""));
 
         Utils.appendAll(tags2,
                 getWikiEditLink(textAreaId, "Draggable",
