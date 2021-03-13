@@ -1838,10 +1838,9 @@ public class Utils extends IO {
      */
     public static int getProperty(Hashtable props, String key, int dflt) {
         String s = Utils.getProperty(props, key, (String) null);
-        if (s == null) {
+        if (!stringDefined(s)) {
             return dflt;
         }
-
         return new Integer(s).intValue();
     }
 
