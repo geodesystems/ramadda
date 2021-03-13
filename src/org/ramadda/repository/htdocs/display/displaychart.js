@@ -492,8 +492,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         },
 	makeIndexValue: function(indexField, value, offset) {
 	    if(indexField.isString()) {
-		value = {v:offset,f:value};
+		return  {v:offset,f:value};
 	    } 
+	    if(value && value.getTime) {
+		return  {v:value,f:this.formatDate(value)}
+	    }
 	    return value;
 	},
 	getFieldsToDisplay: function(fields) {
@@ -560,8 +563,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             let selectedFields = this.getSelectedFields();
 	    if(debug)
 		console.log("\tselectedFields:" + selectedFields);
-	    
-
 
             if (selectedFields.length == 0 && this.lastSelectedFields != null) {
                 selectedFields = this.lastSelectedFields;
@@ -593,6 +594,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    }
                 }
             }
+
 
             if (selectedFields.length == 0) {
                 this.setContents("No fields selected");
@@ -940,7 +942,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	},
         makeDataTable: function(dataList, props, selectedFields, chartOptions) {
 	    let dateType = this.getProperty("dateType","date");
-	    let debug = displayDebug.makeDataTable;
+	    let debug =  displayDebug.makeDataTable;
 	    let debugRows = 4;
 	    if(debug) console.log(this.type+" makeDataTable #records" + dataList.length);
 	    if(debug) console.log("\tfields:" + selectedFields);
@@ -1431,6 +1433,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    };
 
 
+
             chartOptions.vAxis = {
                 gridlines: {},
                 minorGridlines: {},		
@@ -1659,10 +1662,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		chartOptions.hAxis.maxValue = x.max;
 	    }
 
-	    if(this.getProperty("vAxisFixedRange")) {
+	    if(this.getProperty("vAxisFixedRange") || this.getProperty("vAxisSelectedFields") || this.getProperty("vAxisAllFields")) {
 		let min = Number.MAX_VALUE;
 		let max = Number.MIN_VALUE;		
-		selectedFields.forEach(f=>{
+		let fields = this.getProperty("vAxisAllFields")?this.getFields():selectedFields;
+		fields.forEach(f=>{
 		    if(f.isFieldNumeric()) {
 			let y = this.getColumnValues(records, f);
 			if(!isNaN(y.min))
@@ -1676,6 +1680,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    chartOptions.vAxis.maxValue = max;
 		}
 	    }
+
 	},
 	doMakeGoogleChartInner: function(dataList, props, selectedFields) {
             if (typeof google == 'undefined') {
@@ -1694,6 +1699,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             let records = this.getPointData().getRecords();
 	    this.setAxisRanges(this.chartOptions, selectedFields, records);
+
 //	    console.log(JSON.stringify(this.chartOptions, null,2));
 	    
 	    if(this.getProperty("doMultiCharts",this.getProperty("multipleCharts",false))) {
@@ -1755,7 +1761,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	},
 	makeGoogleChartInner: function(dataList, chartId, props, selectedFields) {
 	    let chartDiv = document.getElementById(chartId);
-	    //	    console.log(JSON.stringify(this.chartOptions, null, 2));
 	    if(!chartDiv) return;
 	    var dataTable = this.makeDataTable(dataList, props, selectedFields, this.chartOptions);
             let chart = this.doMakeGoogleChart(dataList, props, chartDiv, selectedFields, this.chartOptions);
@@ -1774,7 +1779,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		}
                 chartOptions.vAxis.maxValue = max;
             }
-
 
 
 	    if(this.getProperty("animation",false,true)) {
@@ -1852,88 +1856,83 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 function RamaddaAxisChart(displayManager, id, chartType, properties) {
     let SUPER = new RamaddaGoogleChart(displayManager, id, chartType, properties);
-    defineDisplay(this, SUPER, [], {
-	getWikiEditorTags: function() {
-	    var t = SUPER.getWikiEditorTags();
-	    var myTags = [
-		"label:Chart Attributes",
-		'indexField=field',
-		"vAxisMinValue=\"\"",
-		"vAxisMaxValue=\"\"", 
-		['vAxisSharedRange=true','use the same max value across all time series'],
-		'vAxisLogScale=true',
-		'hAxisLogScale=true',
-		'tooltipFields=""',
-		'annotations="date,label,desc;date,label,desc; e.g. 2008-09-29,A,Start of housing crash;2008-11-04,B,Obama elected;"',
-		'annotationFields=""',	
-		'annotationLabelField=""',
-		'indexField="alternate field to use as index"',
-		'dateType=datetime',
-		'forceStrings="if index is a string set to true"',
-		'inlinelabel:Multiples',
-		'doMultiCharts=true',
-		'multiField=field',
-		'multiStyle=""',
-		'multiLabelTemplate="${value}"',
-		'multiChartsLabelPosition=bottom|top|none',
-		'inlinelabel:Chart Layout',
-		"chartHeight=\"\"",
-		"chartWidth=\"\"",
-		"chartLeft=\"0\"",
-		"chartRight=\"0\"",
-		"chartTop=\"0\"",
-		"chartBottom=\"0\"",
-		"inlinelabel:Misc Chart Options",
-		'lineColor=""',
-		'chartBackground=""',
-		'chart.fill=""',
-		'chartArea.fill=""',
-		'chart.stroke=""',
-		'chart.strokeWidth=""',
-		'chartArea.fill=""',
-		'chartArea.stroke=""',
-		'chartArea.strokeWidth=""',
-		'gridlines.color="transparent"',
-		'minorGridLines.color="transparent"',
-		'gridlines.color=""',
-		'hAxis.gridlines.color=""',
-		'hAxis.minorGridlines.color="transparent"',
-		'baselineColor=""',
-		'hAxis.baselineColor=""',
-		'gridlines.color=""',
-		'vAxis.gridlines.color=""',
-		'vAxis.minorGridlines.color="transparent"',
-		'baselineColor=""',
-		'vAxis.baselineColor=""',
-		'textColor="#000"',
-		'textBold="true"',
-		'axis.text.color="#000"',
-		'hAxis.text.color="#000"',
-		'axis.text.color="#000"',
-		'vAxis.text.color="#000"',
-		'hAxis.text.bold="false"',
-		'vAxis.text.bold="false"',
-		'vAxisText=""',
-		'vAxis.text=""',
-		'slantedText="true"',
-		'hAxis.slantedText=""',
-		'hAxis.text.color="#000"',
-		'vAxis.text.color="#000"',
-		'legend.position="top|bottom|none"',
-		'legend.text.color="#000"',
-		'hAxis.ticks=""',
-		'hAxis.ticks=""',
-		'vAxis.ticks=""',
-		'vAxis.ticks=""',
-		'useMultipleAxes="true"',
-		'showTrendLines="true"',
+    let myProps = [
+	{label:'Chart Attributes'},
+	{p:'indexField',w:'field'},
+	{p:'vAxisMinValue',w:''},
+	{p:'vAxisMaxValue',w:''},
+	{p:'vAxisSharedRange',w:'true',tt:'use the same max value across all time series'},
+	{p:"hAxisFixedRange"},
+	{p:"vAxisSelectedFields",w:'true',tt:'Use selected fields to find min/max for the range'},
+	{p:"vAxisAllFields",w:'true',tt:'Use all field values to find min/max for the range'},
+	{p:'vAxisLogScale',w:'true'},
+	{p:'hAxisLogScale',w:'true'},
+	{p:'tooltipFields',w:''},
+	{p:'annotations',w:'date,label,desc;date,label,desc;',tt:'e.g. 2008-09-29,A,Start of housing crash;2008-11-04,B,Obama elected;'},
+ 	{p:'annotationFields',w:''},
+	{p:'annotationLabelField',w:''},
+	{p:'indexField',w:'',tt:'alternate field to use as index'},
+ 	{p:'dateType',w:'datetime'},
+ 	{p:'forceStrings',w:'',tt:'if index is a string set to true'},
+	{inlineLabel:'Multiples Charts'},
+	{p:'doMultiCharts',w:'true'},
+	{p:'multiField',w:'field'},
+	{p:'multiStyle',w:''},
+	{p:'multiLabelTemplate',w:'${value}'},
+	{p:'multiChartsLabelPosition',w:'bottom|top|none'},
+	{inlineLabel:'Chart Layout'},
+	{p:'chartHeight',w:''},
+	{p:'chartWidth',w:''},
+	{p:'chartLeft',w:'0'},
+	{p:'chartRight',w:'0'},
+	{p:'chartTop',w:'0'},
+	{p:'chartBottom',w:'0'},
+	{p:'lineColor',w:''},
+	{p:'chartBackground',w:''},
+	{p:'chart.fill',w:''},
+	{p:'chartArea.fill',w:''},
+	{p:'chart.stroke',w:''},
+	{p:'chart.strokeWidth',w:''},
+	{p:'chartArea.fill',w:''},
+	{p:'chartArea.stroke',w:''},
+	{p:'chartArea.strokeWidth',w:''},
+	{p:'gridlines.color',w:'transparent'},
+	{p:'minorGridLines.color',w:'transparent'},
+	{p:'gridlines.color',w:''},
+	{p:'hAxis.gridlines.color',w:''},
+	{p:'hAxis.minorGridlines.color',w:'transparent'},
+	{p:'baselineColor',w:''},
+	{p:'hAxis.baselineColor',w:''},
+	{p:'gridlines.color',w:''},
+	{p:'vAxis.gridlines.color',w:''},
+	{p:'vAxis.minorGridlines.color',w:'transparent'},
+	{p:'baselineColor',w:''},
+	{p:'vAxis.baselineColor',w:''},
+	{p:'textColor',w:'#000'},
+	{p:'textBold',w:'true'},
+	{p:'axis.text.color',w:'#000'},
+	{p:'hAxis.text.color',w:'#000'},
+	{p:'axis.text.color',w:'#000'},
+	{p:'vAxis.text.color',w:'#000'},
+	{p:'hAxis.text.bold',w:'false'},
+	{p:'vAxis.text.bold',w:'false'},
+	{p:'vAxisText',w:''},
+	{p:'vAxis.text',w:''},
+	{p:'slantedText',w:'true'},
+	{p:'hAxis.slantedText',w:''},
+	{p:'hAxis.text.color',w:'#000'},
+	{p:'vAxis.text.color',w:'#000'},
+	{p:'legend.position',w:'top|bottom|none'},
+	{p:'legend.text.color',w:'#000'},
+	{p:'hAxis.ticks',w:''},
+	{p:'hAxis.ticks',w:''},
+	{p:'vAxis.ticks',w:''},
+	{p:'vAxis.ticks',w:''},
+	{p:'useMultipleAxes',w:'true'},
+	{p:'showTrendLines',w:'true'},
+    ];
 
-
-
-	    ]
-	    myTags.map(tag=>t.push(tag));
-	    return t;
-	},
+    defineDisplay(this, SUPER, myProps, {
 
 	setChartArea: function(chartOptions) {
             if (!chartOptions.chartArea) {
@@ -1963,7 +1962,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 
 	    this.setPropertyOn(chartOptions.legend, "legend.position", "position", this.getProperty("legendPosition", 'bottom'));
 	    this.setChartArea(chartOptions);
-	    
+   
             let useMultipleAxes = this.getProperty("useMultipleAxes", true);
             if (useMultipleAxes) {
 		//TODO: 
@@ -1975,23 +1974,41 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
                     }];
             }
 
+	    if(chartOptions.legend.position=="left") {
+		console.log(chartOptions.legend.position);
+                chartOptions.series = [
+		    {
+			targetAxisIndex: 1
+		    }]
+	    }
+
+
+
 	    if (!chartOptions.hAxis) {
 		chartOptions.hAxis = {};
 	    }
 	    if (!chartOptions.vAxis) {
 		chartOptions.vAxis = {};
 	    }
-	    chartOptions.hAxis.textPosition = this.getProperty("hAxisTextPosition");
+	    chartOptions.hAxis.textPosition = this.getProperty("hAxisTextPosition","top");
 	    chartOptions.vAxis.textPosition = this.getProperty("vAxisTextPosition");
 
-	    //	    console.log(JSON.stringify(chartOptions,null, 2));
 
             if (this.getProperty("hAxisTitle")) {
                 chartOptions.hAxis.title = this.getProperty("hAxisTitle");
             }
             if (this.getProperty("vAxisTitle")) {
                 chartOptions.vAxis.title = this.getProperty("vAxisTitle");
+		if(chartOptions.vAxis.title && dataFields) {
+		    let label = dataFields.reduce((acc,v)=>{
+			return acc+" " + v.getLabel();
+		    },"");
+		    chartOptions.vAxis.title = chartOptions.vAxis.title.replace("${fields}",label);
+		}
+
             }
+//	    console.log(JSON.stringify(chartOptions,null,2));
+
             if (Utils.isDefined(this.chartHeight)) {
                 chartOptions.height = this.chartHeight;
             }
@@ -2828,7 +2845,7 @@ function TableDisplay(displayManager, id, properties) {
 	    }
 
 
-	    //	    console.log(JSON.stringify(chartOptions,null,2));
+//	    console.log(JSON.stringify(chartOptions,null,2));
             chartOptions.allowHtml = true;
 	    if(this.getProperty("tableWidth"))
 		chartOptions.width=this.getProperty("tableWidth");
@@ -3693,7 +3710,7 @@ function ScatterplotDisplay(displayManager, id, properties) {
 	      };		
 
 	    */
-	    //	    console.log(JSON.stringify(chartOptions,null,2));
+
 
             if (dataList.length > 0 && this.getDataValues(dataList[0]).length > 1) {
                 if (!chartOptions.vAxis) chartOptions.vAxis = {};
