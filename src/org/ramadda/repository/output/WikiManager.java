@@ -2164,8 +2164,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     } else if (key.startsWith("notfirst.")) {
                         notFirstProps.put(
                             key.substring("notfirst.".length()), value);
-                    }
-                    props2.put(key, value);
+                    } else {
+			props2.put(key, value);
+		    }
                 }
             }
 
@@ -2208,10 +2209,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 colWidth = ((int) 100 / columns) + "%";
             }
             for (int i = 0; i < max; i++) {
+		boolean debug = false;
                 Hashtable _props = new Hashtable();
                 _props.put("displayIndex", "" + i);
                 _props.putAll(props2);
-                if (i == 0) {
+                if (i==0) {
                     _props.putAll(firstProps);
                 } else {
                     _props.putAll(notFirstProps);
@@ -2221,6 +2223,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 } else {
                     _props.putAll(notLastProps);
                 }
+		if(debug) 
+		    System.err.println("p4:" + _props.get("chartHeight"));
                 String s = template;
 
                 for (Enumeration keys = multiAttrs.keys();
@@ -2240,6 +2244,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                         }
                     }
                 }
+		if(debug) 
+		    System.err.println("p5:" + _props.get("chartHeight"));
                 if (columns > 0) {
                     colCnt++;
                     if (colCnt > columns) {
@@ -2269,8 +2275,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                              false, null, null, null, false);
                     buff.append(tmp);
                 } else {
+		    if(debug) {
+			System.err.println("p6:" + _props.get("chartHeight"));
+			System.err.println("p7:" + firstProps.get("chartHeight"));
+		    }
                     buff.append(getWikiIncludeInner(wikiUtil, request,
-                            originalEntry, theEntry, tag, _props));
+						    originalEntry, theEntry, tag, _props));
                 }
                 if (columns > 0) {
                     buff.append("</td>");
