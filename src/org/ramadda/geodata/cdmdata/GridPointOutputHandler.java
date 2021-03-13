@@ -511,9 +511,8 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
         DiskCache2      dc = getCdmManager().getDiskCache2();
         PointDataStream pds = PointDataStream.factory(sf, outStream, dc);
         List<CalendarDate> wantedDates = NcssRequestUtils.wantedDates(gapds,
-                                             CalendarDateRange.of(dates[0],
-                                                 dates[1]), 0);
-
+								      CalendarDateRange.of(dates[0],
+											   dates[1]), 0);
         boolean allWritten = false;
         allWritten = pds.stream(gds, llp, wantedDates, groupVars,
                                 pdrb.getVertCoord());
@@ -533,18 +532,6 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
                                         new OutputStreamWriter(
                                             new FileOutputStream(jsonFile)));
                 List<RecordField> fields = new ArrayList<RecordField>();
-                for (int i = 0; i < vars.size(); i++) {
-                    VariableEnhanced var = vars.get(i);
-                    RecordField recordField =
-                        new RecordField(
-                            getAlias(var.getShortName()),
-                            Utils.makeLabel(getAlias(var.getShortName())),
-                            var.getShortName(), i, var.getUnitsString());
-                    recordField.setChartable(true);
-                    fields.add(recordField);
-                }
-                RecordField.addJsonHeader(bw, entry.getName(), fields, false,
-                                          false, false);
 
                 String  line        = null;
                 int     cnt         = 0;
@@ -552,19 +539,59 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
 
                 //                    System.err.println ("has vert:" + hasVertical);
                 //                    System.err.println ("vars:" + varNames.size() +" " + varNames);
+		boolean didOne = false;
                 while ((line = br.readLine()) != null) {
                     cnt++;
+		    //		    System.out.println("line:" + line);
                     List<String> toks = StringUtil.split(line, ",", true,
-                                            true);
+							 true);
                     if (cnt == 1) {
                         //                            System.err.println ("line:" + line);
                         //time/lat/lon  maybeZ vars
                         if (toks.size() == 3 + 1 + vars.size()) {
                             hasVertical = true;
                         }
-
                         continue;
                     }
+		    if(!didOne) {
+			didOne = true;
+			for (int i = 0; i < vars.size(); i++) {
+			    VariableEnhanced var = vars.get(i);
+			    System.err.println("var:" + var.getShortName());
+			    RecordField recordField =
+				new RecordField(
+						getAlias(var.getShortName()),
+						Utils.makeLabel(getAlias(var.getShortName())),
+						var.getShortName(), i, var.getUnitsString());
+			    recordField.setChartable(true);
+			    fields.add(recordField);
+
+			}
+			if(hasVertical) {
+			    RecordField recordField =
+				new RecordField(
+						"level",
+						"Level",
+						"level",vars.size(),"");
+			    recordField.setChartable(true);
+			    fields.add(recordField);
+			}
+			/*
+
+			fields.add(
+				   new RecordField(
+						   "latitude",
+						   "Latitude",
+						   "latitude"));
+			fields.add(
+				   new RecordField(
+						   "longitude",
+						   "Longitude",
+						   "longitude"));
+			*/
+			RecordField.addJsonHeader(bw, entry.getName(), fields, false,
+						  false, false);
+		    }
                     if (cnt > 2) {
                         bw.append(",");
                     }
@@ -592,6 +619,9 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
                         double v = Double.parseDouble(toks.get(i));
                         values.add(Json.formatNumber(v));
                     }
+		    if(hasVertical) {
+			values.add(Json.formatNumber(alt));
+		    }
                     bw.append(Json.list(values));
                     bw.append(Json.mapClose());
                 }

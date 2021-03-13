@@ -1,4 +1,4 @@
-/*
+a/*
 * Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -181,7 +181,7 @@ public class GridTypeHandler extends GenericTypeHandler {
 
             jsonbuf.append(getRepository().getUrlBase() + "/grid/pointjson?"
                            + HtmlUtils.args(new String[] { ARG_ENTRYID,
-                    entry.getId() }, false));
+							   entry.getId() }, false));
             // get the lat/lon from the request if there
             String latArg = "${latitude}";
             String lonArg = "${longitude}";

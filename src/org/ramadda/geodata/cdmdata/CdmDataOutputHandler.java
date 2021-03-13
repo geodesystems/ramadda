@@ -1366,7 +1366,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
     public Result outputGridJson(final Request request, final Entry entry)
             throws Exception {
 
-        final boolean debug = false;
+        final boolean debug = true;
         String        path  = getPath(request, entry);
         if (debug) {
             System.err.println("outputGridJson path:" + path);
@@ -1402,13 +1402,18 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         double[]         zVals = null;
         if (zAxis != null) {
             zVals = zAxis.getCoordValues();
+	    if(debug && zVals!=null) {
+		System.err.println("# Z levels:" + zVals.length +" v:" + java.util.Arrays.toString(zVals));
+	    }
         }
         Range zRange = null;
         if (request.defined("gridLevel")) {
             String gridLevel = request.getString("gridLevel", (String) null);
             if (gridLevel != null) {
-                if (gridLevel.equals("last") && (zVals != null)) {
+		if (gridLevel.equals("last") && (zVals != null)) {
                     zRange = new Range(zVals.length - 1, zVals.length - 1);
+		} else if (gridLevel.equals("all") && (zVals != null)) {
+                    zRange = new Range(0, zVals.length - 1);
                 } else {
                     int index = new Integer(gridLevel).intValue();
                     if (index >= 0) {
@@ -1418,9 +1423,11 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             }
         }
 
+
         if (zRange == null) {
             zRange = new Range(1, 1);
         }
+
         final int  max        = request.get("max", 200000);
         final int  timeStride = request.get("timeStride", 1);
         int        gridStride = request.get("gridStride", -1);
@@ -1454,7 +1461,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                                + " zRange:" + zRange + " tRange:" + tRange);
         }
 
-
         //If a stride was not specified then keep subsetting until we're under the max # points
         if (gridStride > 0) {
             grid = grid.subset(tRange, zRange, bounds, 1, gridStride,
@@ -1479,7 +1485,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 Dimension xDimension = grid.getXDimension();
                 Dimension yDimension = grid.getYDimension();
                 int numPoints = xDimension.getLength()
-                                * yDimension.getLength() * numTimes
+		    * yDimension.getLength() * zRange.length()* numTimes
                                 / timeStride;
                 if (debug) {
                     System.err.println(
@@ -1487,7 +1493,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                         + (xDimension.getLength() * yDimension.getLength())
                         + " grid stride:" + gridStrideX);
                 }
-                if (numPoints < max) {
+		if (numPoints < max) {
                     break;
                 }
                 if (doX) {
@@ -1518,6 +1524,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                                + dates.size());
         }
         PipedInputStream         in       = new PipedInputStream();
+	final Range finalZRange  =zRange;
         final PipedOutputStream  out      = new PipedOutputStream(in);
         final List<CalendarDate> theDates = dates;
         final GeoGrid            theGrid  = grid;
@@ -1525,7 +1532,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             public void run() {
                 PrintWriter writer = new PrintWriter(out);
                 try {
-
                     runInner(writer);
                 } catch (Exception exc) {
                     writer.println("Error:" + exc);
@@ -1550,7 +1556,12 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                                     Json.quote("Date"), "index",
                                     "" + (index++), "type",
                                     Json.quote("date")));
-
+		if(finalZRange.length()>1)  {
+		    fields.add(Json.map("id", Json.quote("level"), "label",
+					Json.quote("Level"), "index",
+					"" + (index++), "type",
+					Json.quote("double")));
+		}
                 fields.add(Json.map("id", Json.quote("latitude"), "label",
                                     Json.quote("Latitude"), "index",
                                     "" + (index++), "type",
@@ -1596,11 +1607,16 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 long                  t1     = System.currentTimeMillis();
                 for (int tIdx = 0; (tIdx < theDates.size()) && (cnt < max);
                         tIdx += timeStride) {
-                    Array a = theGrid.readYXData(tIdx, 0);
+		    Array a;
+		    if(finalZRange.length()==1) {
+			a = theGrid.readYXData(tIdx, 0);
+		    } else {
+			a = theGrid.readVolumeData(tIdx);
+		    }
                     if (debug) {
 			System.err.println("\treading time index:" + tIdx + " size:" + a.getSize());
                     }
-                    cnt += writeJson(writer, cnt, max, a, Json.quote(theDates.get(tIdx).toString()), points,
+                    cnt += writeJson(writer, cnt, max, a, Json.quote(theDates.get(tIdx).toString()), points, finalZRange,
                                      scaler);
                 }
                 writer.println("]}");
@@ -1637,29 +1653,38 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
      */
     private int writeJson(PrintWriter writer, int cnt, int max, Array a,
                           String dateString, List<LatLonPoint> points,
+			  Range zRange,
                           DoubleFunction<Float> scaler)
             throws Exception {
         synchronized (writer) {
             int written = 0;
-            for (int i = 0; (i < a.getSize()) && (cnt < max); i++) {
-                written++;
-                LatLonPoint llp = points.get(i);
-                float       v   =
-                    (float) scaler.apply((double) a.getFloat(i));
-                if (cnt++ > 0) {
-                    writer.print(",");
-                }
-                writer.print("[");
-                writer.print((Double.isNaN(v)
-                              ? null
-                              : v));
-                writer.print(",");
-                writer.print(dateString);
-                writer.print(",");
-                writer.print(llp.getLatitude());
-                writer.print(",");
-                writer.print(llp.getLongitude());
-                writer.print("]");
+	    int numPointsPerLevel = (int)(a.getSize()/zRange.length());
+	    System.err.println("a:" +a.getSize() +" per level:" + (numPointsPerLevel) +" #points:" + points.size());
+ 	    for(int z=zRange.first();z<=zRange.last();z++) {
+		for (int i = 0; (i < numPointsPerLevel) && (cnt < max); i++) {
+		    written++;
+		    LatLonPoint llp = points.get(i);
+		    float       v   =
+			(float) scaler.apply((double) a.getFloat(i));
+		    if (cnt++ > 0) {
+			writer.print(",");
+		    }
+		    writer.print("[");
+		    writer.print((Double.isNaN(v)
+				  ? null
+				  : v));
+		    writer.print(",");
+		    writer.print(dateString);
+		    if(zRange.length()>1) {
+			writer.print(",");
+			writer.print(z);
+		    }
+		    writer.print(",");
+		    writer.print(llp.getLatitude());
+		    writer.print(",");
+		    writer.print(llp.getLongitude());
+		    writer.print("]");
+		}
             }
 
             return written;
