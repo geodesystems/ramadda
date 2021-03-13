@@ -1812,6 +1812,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
             let records = this.records =  this.filterData();
+	    console.log("#records:" + records.length);
+
 
 	    if(this.coordinatesTypeField && this.coordinatesField) {
 		this.loadCoordinates(records);
@@ -1955,7 +1957,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 	heatmapCnt:0,
 	animationApply: function(animation, skipUpdateUI) {
- 	    if(!this.heatmapLayers) {
+//	    console.log("map.applyAnimation:" +this.heatmapVisible);
+ 	    if(!this.heatmapLayers || !this.heatmapVisible) {
+//		console.log("map.applyAnimation-1");
 		SUPER.animationApply.call(this, animation, skipUpdateUI);
 		return;
 	    }
@@ -1978,6 +1982,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    offLayers.forEach(layer=>{
 		layer.setVisibility(false);
 	    });
+	    console.log("map.applyAnimation-2:" + onDate);
  	    if(!onDate) {
 		SUPER.animationApply.call(this, animation, skipUpdateUI);
 	    }
@@ -1987,6 +1992,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         setDateRange: function(min, max) {
 	    //Not sure why we do this
 	    if(this.getProperty("doGridPoints",false)|| this.getProperty("doHeatmap",false)) {
+		SUPER.setDateRange.call(this, min,max);
 	    } else {
 		SUPER.setDateRange.call(this, min,max);
 	    }
@@ -2190,8 +2196,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.getHmShowToggle() || this.getHmShowReload()) {
 		let cbx = this.jq(ID_HEATMAP_TOGGLE);
 		let reload =  HU.getIconImage("fa-sync",[CLASS,"display-anim-button",TITLE,"Reload heatmap", ID,this.domId("heatmapreload")])+SPACE2;
+		this.heatmapVisible= cbx.length==0 ||cbx.is(':checked');
+
 		this.writeHeader(ID_HEADER2_PREFIX,
-				 reload + HU.checkbox("",[ID,this.domId(ID_HEATMAP_TOGGLE)],cbx.length==0 ||cbx.is(':checked')) +SPACE +
+				 reload + HU.checkbox("",[ID,this.domId(ID_HEATMAP_TOGGLE)],this.heatmapVisible) +SPACE +
 				 this.getHmToggleLabel("Toggle Heatmap") +SPACE2);
 		let _this = this;
 		this.jq("heatmapreload").click(()=> {
@@ -2202,6 +2210,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.jq(ID_HEATMAP_TOGGLE).change(function() {
 		    if(_this.heatmapLayers)  {
 			let visible = $(this).is(':checked');
+			_this.heatmapVisible  = visible;
 			_this.heatmapLayers.forEach(layer=>layer.setVisibility(visible));
 			_this.map.setPointsVisibility(!visible);
 		    }
@@ -2978,6 +2987,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if (!seen[key]) {
 			seen[key] = 1;
 		    }  else {
+//			console.log(this.formatDate(record.getDate()) +" " + record.getLatitude() + " " + seen[key]);
 			if (seen[key] > 500) {
 			    return;
 			}

@@ -3539,6 +3539,7 @@ function DisplayThing(argId, argProperties) {
         },
         formatRecordLabel: function(label) {
             label = label.replace(/!!/g, " -- ");
+	    label = label.replace(/ /g,"&nbsp;");
             return label;
         },
         getFormValue: function(what, dflt) {
@@ -3888,6 +3889,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'convertData',label:"percent increase",ex:"addPercentIncrease(replaceValues=false);",tt:"Add percent increase"},
 	{p:'convertData',label:"doubling rate",ex:"doublingRate(fields=f1\\\\,f2, keyFields=f3);",tt:"Calculate # days to double"},
 	{p:'convertData',label:"unfurl",ex:"unfurl(headerField=field to get header from,uniqueField=e.g. date,valueFields=);",tt:"Unfurl"},
+	{p:'accum',label:"Accumulate data",ex:"accum(fields=);",tt:"Accumulate"},
+	{p:'scaleAndOffset',label:"Scalen and offset",ex:"accum(scale=1,offset1=0,offset2=0,unit=,fields=);",tt:"(d + offset1) * scale + offset2"},		
 	{label:"Color Attributes"},
 	{p:"colors",ex:"color1},...,colorN",tt:"Comma separated array of colors"},
 	{p:"colorBy",ex:"",tt:"Field id to color by"},
@@ -4378,6 +4381,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.minDateObj = min;
 	    this.maxDateObj = max;
 	    this.dateRangeDoDay = doDay;
+//	    console.log("setDateRange: " + this.minDateObj +" " + this.maxDateObj);
 	},
         handleDateRangeChanged: function(source, prop) {
 	    this.setDateRange(prop.minDate, prop.maxDate);
@@ -5434,6 +5438,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	    $.extend(opts,args);
 	    let debug = displayDebug.filterData;
+	    if(this.getAnimationEnabled()) {
+		if(this.getProperty("animationFilter", true)) {
+		    this.setDateRange(this.getAnimation().begin, this.getAnimation().end);
+		}
+	    }
+
+
 	    let highlight =  this.getFilterHighlight();
 	    let startDate = this.getProperty("startDate");
 	    let endDate = this.getProperty("endDate");
@@ -5516,10 +5527,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		r.clearHighlight(this);
 	    });
 
-	    records = records.filter(record=>{
+	    if(debug)   console.log("checking dates");
+	    records = records.filter((record,idx)=>{
                 let date = record.getDate();
 		if(!date) return true;
-		return this.dateInRange(date);
+		return this.dateInRange(date,idx<5 && debug);
 	    });
 	    if(debug)   console.log("filter Fields:" + this.filters.length +" #records:" + records.length);
 
@@ -8664,7 +8676,7 @@ a
 	    if(!args) args = {};
 	    let debug = displayDebug.getStandardData;
 	    if(debug) console.log("getStandardData:" + this.type +"  fields:" + fields);
-	    let showUnit  = this.getProperty("showUnit",true);
+	    let showUnit  = this.getProperty("showUnit",this.getProperty("showUnitInSeries",true));
 	    this.recordToIndex = {};
 	    this.indexToRecord = {};
             var pointData = this.getPointData();
@@ -10334,12 +10346,8 @@ function RecordField(props) {
             return  HtmlUtils.span(["title",tt,"class","fa " +type,"style","color:rgb(169, 169, 169);font-size:12pt;"]);
         },
         getUnitLabel: function() {
-            var label = this.getLabel();
-            if (this.unit && this.unit != "")
-                label = label + " [" + this.unit + "]";
-            return label;
+            return this.getLabel() + this.getUnitSuffix();
         },
-
         getUnitSuffix: function() {
             if (this.unit && this.unit != "")
                 return "&nbsp;[" + this.unit + "]";
@@ -10442,6 +10450,9 @@ PointRecord.prototype =  {
     getData: function() {
         return this.data;
     },
+    setData: function(d) {
+        this.data = d;
+    },    
     allZeros: function() {
         var tuple = this.getData();
         var allZeros = false;
@@ -11820,7 +11831,8 @@ function CsvUtil() {
 		    }
 		});
 	    } catch(e) {
-		console.log("Error applying derived function:" + theCmd.command+" error:" + e);
+		console.log("Error applying derived function:" + theCmd.command);
+		console.log(e);
 	    }
 	    return pointData;
 	},
@@ -12141,6 +12153,92 @@ function CsvUtil() {
 	    }
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
+	scaleAndOffset: function(pointData,args) {
+	    let records = pointData.getRecords(); 
+            let allFields  = pointData.getRecordFields();
+	    let fields;
+	    if(args.fields)
+		fields = this.display.getFieldsByIds(allFields, (args.fields||"").replace(/_comma_/g,","));
+	    else 
+		fields = allFields;
+	    let unit = args.unit;
+	    let scale = args.scale?parseFloat(args.scale):1;
+	    let offset1 = args.offset1?parseFloat(args.offset1):0;
+	    let offset2 = args.offset?parseFloat(args.offset):args.offset2?parseFloat(args.offset2):0;	    	    
+	    let newRecords  =[]
+	    let newFields = [];
+	    let changedFields = {};
+	    fields.forEach(f=>{changedFields[f.getId()]  =true});
+	    allFields.map(f=>{
+		let newField = f.clone();
+		newFields.push(newField);
+		if(!f.isNumeric()) {
+		    return;
+		}
+		if(changedFields[newField.getId()]) {
+		    newField.unit = unit;
+		}
+	    });
+	    for (var rowIdx=0; rowIdx <records.length; rowIdx++) {
+		let record = records[rowIdx];
+		let newRecord = record.clone();
+		newRecords.push(newRecord);
+		let data = record.getData();
+		let newData=Utils.cloneList(data);
+		newFields.forEach(f=>{
+		    if(!f.isNumeric()) return;
+		    let d = data[f.getIndex()];
+		    if(!isNaN(d)) {
+			d  = (d + offset1) * scale + offset2;
+			newData[f.getIndex()]=d;
+		    }
+		});
+		newRecord.setData(newData);
+	    }
+	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
+	},
+
+//0.039370079003585	    
+	accum: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+            let allFields  = pointData.getRecordFields();
+	    let fields;
+	    if(args.fields)
+		fields = this.display.getFieldsByIds(allFields, (args.fields||"").replace(/_comma_/g,","));
+	    else 
+		fields = allFields;
+	    let newRecords  =[]
+	    let newFields = Utils.cloneList(allFields);
+	    let totals =[];
+	    allFields.map(f=>{
+		totals.push(0);
+		let newField = f.clone();
+		newFields.push(newField);
+		if(!f.isNumeric()) return;
+		newField.id = newField.id+"_accum";
+		newField.label = newField.label+" accum";
+	    });
+	    for (var rowIdx=0; rowIdx <records.length; rowIdx++) {
+		let record = records[rowIdx];
+		let newRecord = record.clone();
+		newRecords.push(newRecord);
+		let data = record.getData();
+		let newData=Utils.cloneList(data);
+		fields.forEach(f=>{
+		    if(!f.isNumeric()) return;
+		    let d = data[f.getIndex()];
+		    if(!isNaN(d)) {
+			let x = d;
+			totals[f.getIndex()]+=d;
+			d = totals[f.getIndex()];
+		    }
+		    newData[f.getIndex()] = d;
+		});
+		newRecord.setData(newData);
+	    }
+	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
+	},
+
 	mergeRows: function(pointData, args) {
 	    let records = pointData.getRecords(); 
             let fields  = pointData.getRecordFields();
@@ -30592,6 +30690,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
             let records = this.records =  this.filterData();
+	    console.log("#records:" + records.length);
+
 
 	    if(this.coordinatesTypeField && this.coordinatesField) {
 		this.loadCoordinates(records);
@@ -30735,7 +30835,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 	heatmapCnt:0,
 	animationApply: function(animation, skipUpdateUI) {
- 	    if(!this.heatmapLayers) {
+//	    console.log("map.applyAnimation:" +this.heatmapVisible);
+ 	    if(!this.heatmapLayers || !this.heatmapVisible) {
+//		console.log("map.applyAnimation-1");
 		SUPER.animationApply.call(this, animation, skipUpdateUI);
 		return;
 	    }
@@ -30758,6 +30860,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    offLayers.forEach(layer=>{
 		layer.setVisibility(false);
 	    });
+	    console.log("map.applyAnimation-2:" + onDate);
  	    if(!onDate) {
 		SUPER.animationApply.call(this, animation, skipUpdateUI);
 	    }
@@ -30767,6 +30870,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         setDateRange: function(min, max) {
 	    //Not sure why we do this
 	    if(this.getProperty("doGridPoints",false)|| this.getProperty("doHeatmap",false)) {
+		SUPER.setDateRange.call(this, min,max);
 	    } else {
 		SUPER.setDateRange.call(this, min,max);
 	    }
@@ -30970,8 +31074,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.getHmShowToggle() || this.getHmShowReload()) {
 		let cbx = this.jq(ID_HEATMAP_TOGGLE);
 		let reload =  HU.getIconImage("fa-sync",[CLASS,"display-anim-button",TITLE,"Reload heatmap", ID,this.domId("heatmapreload")])+SPACE2;
+		this.heatmapVisible= cbx.length==0 ||cbx.is(':checked');
+
 		this.writeHeader(ID_HEADER2_PREFIX,
-				 reload + HU.checkbox("",[ID,this.domId(ID_HEATMAP_TOGGLE)],cbx.length==0 ||cbx.is(':checked')) +SPACE +
+				 reload + HU.checkbox("",[ID,this.domId(ID_HEATMAP_TOGGLE)],this.heatmapVisible) +SPACE +
 				 this.getHmToggleLabel("Toggle Heatmap") +SPACE2);
 		let _this = this;
 		this.jq("heatmapreload").click(()=> {
@@ -30982,6 +31088,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.jq(ID_HEATMAP_TOGGLE).change(function() {
 		    if(_this.heatmapLayers)  {
 			let visible = $(this).is(':checked');
+			_this.heatmapVisible  = visible;
 			_this.heatmapLayers.forEach(layer=>layer.setVisibility(visible));
 			_this.map.setPointsVisibility(!visible);
 		    }
@@ -31758,6 +31865,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if (!seen[key]) {
 			seen[key] = 1;
 		    }  else {
+//			console.log(this.formatDate(record.getDate()) +" " + record.getLatitude() + " " + seen[key]);
 			if (seen[key] > 500) {
 			    return;
 			}

@@ -1,10 +1,5 @@
-/*
-try a google font
-*/
-/*
-@import url(//fonts.googleapis.com/css?family=Open+Sans);*/
 
-
+/* @import url(//fonts.googleapis.com/css?family=Open+Sans); */
 
 body {
     font-family: 'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif;
@@ -28,8 +23,14 @@ h3 {
 p {margin-top:1.5em;}
 a {color: #000; text-decoration: underline;}
 a.btn:link {color: #000;}
-.row {margin-right:0px;margin-left:0px;}
+
+a:hover {
+    text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
+}
+
 h2 a,   h2 a:visited, h2 a:link  {color: #000;}
+
+.row {margin-right:0px;margin-left:0px;}
 
 /* reset the bootstrap pagination to enable  scrollify */
 .pagination {
@@ -73,9 +74,13 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     border:1px #e1b07e solid;
 }
 
+
 .ramadda-hflow {
     display:inline-block;
 }
+
+
+/*** navigation **/
 
 .ramadda-nav-top {
     text-align: center;
@@ -84,12 +89,12 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
 
 .ramadda-tree-link, .ramadda-nav-link {
     text-decoration:none;
-    color:rgb(59, 69, 78);
+    color:#000;
 }
+
 
 .ramadda-nav-left-extra {
 }
-
 
 .ramadda-nav-left-extra li {
     margin:0px;
@@ -115,6 +120,7 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
 .ramadda-nav-link-3 {
     margin-left:30px;
 }    
+
 
 .ramadda-nav-list-link::before{
    content: '';
@@ -152,22 +158,60 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     background:#eee;
 }
 
+.ramadda-nav-popup-container {
+    display:inline-block;
+    position:relative;
+}
+
+.ramadda-nav-popup {
+    font-size:12pt;
+    background:#fff;
+    display:none;
+    position:absolute;
+    width:200px;
+    padding:5px 10px;
+    z-index: 100;
+    text-align:left;
+    background-color : #FFF; -webkit-box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; border:1px solid rgb(211, 220, 228); border-radius: 4px;
+}
+
+.ramadda-nav-popup-link {
+    display: inline-block;
+    cursor:pointer;
+    width:100%;
+}
+
+.ramadda-nav-popup a {
+    color: rgb(116, 129, 141);
+}
+
+.ramadda-nav-popup-link .fa:hover {
+    color: rgb(56,132,255) !important;
+}
+
+
 .ramadda-nav-horizontal {
 }
 
-.ramadda-nav-link:hover {
-    background:#eee;
+.ramadda-nav-horizontal .ramadda-links a {
+    display:inline-block;
+    width:100%;
 }
 
-.ramadda-nav-left-link {
-    margin-bottom:3px;
+.ramadda-nav-horizontal .ramadda-links a:hover {
+text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
 }
+
+.ramadda-nav-link:hover {
+text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
+}
+
 
 .ramadda-nav-left {
     padding:20px;
     padding-top:80px;
     width:250px;
-    border-right:1px solid #ccc;
+    border-right:1px #ccc solid;
     background:#FAFAFA;
     min-height:100vh;
     height:100vh;
@@ -186,18 +230,36 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
    margin-bottom:10px;
 }
 
+.ramadda-nav-left-link {
+    margin-bottom:3px;
+}
+
+
+.ramadda-nav-left-link .ramadda-nav-link {
+    display:inline-block;
+    width:100%;
+}
+
+
 .ramadda-nav-left-extra .ramadda-links {
+   color:@NAV-LINK-COLOR;
    min-height:40vh;
    max-height:40vh;
    overflow-y:auto;
    white-space:nowrap;
 }
 
-
-.ramadda-links a {
-    color:rgb(59, 69, 78);
+.ramadda-nav-left a, .ramadda-nav-left a:visited {
+    color:rgb(116, 129, 141);
 }
 
+.ramadda-nav-left-extra .ramadda-links  a {
+    color:@NAV-LINK-COLOR;
+}
+
+.ramadda-links a {
+    color: rgb(116, 129, 141);
+}
 
 .ramadda-links h3 {
     text-align:center;
@@ -207,21 +269,20 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     margin-top:1em;
     margin-bottom:4px;
     border-bottom: 1px #e8e8e8 solid;
-    color:rgb(59, 69, 78);
+    border-bottom: 1px #ccc solid;    
+    color: #000;
 }
+
+
 
 .ramadda-links h3:hover {
 }
 
-
-
-
 .ramadda-nav-left-extra .ramadda-links-highlight {
     display:block;
     background:#ddd;
-    color:rgb(59, 69, 78);
+    color: #000;
 }
-
 
 .ramadda-links-inner ul {
     padding-left:15px;
@@ -235,16 +296,23 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     overflow-x:auto;
     max-width:100%;
     white-space: nowrap;
-    color:rgb(59, 69, 78);
+    color: #000;
 }
-
-
 
 .ramadda-nav-left-toggle  {
     position:absolute;
     left:5px;
     top:0px;
     cursor:pointer;
+}
+
+
+a span i.fa:hover  {
+    color: rgb(56,132,255) !important;
+}
+
+.ramadda-nav-left-toggle i.fa:hover  {
+    color: rgb(56,132,255) !important;
 }
 
 .ramadda-nav-right {
@@ -256,10 +324,15 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
 .ramadda-nav-arrow {
     color:rgba(190,190,190,0.90);
 }
+
 .ramadda-nav-arrow:hover {
-    background:rgb(240,240,240);
+    text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
 }
 
+
+a.ramadda-nav-link-0, a.ramadda-nav-link-0:visited, .ramadda-nav-left h3 a, .ramadda-nav-left h3 a:visited {
+    color:#000;
+}
 
 .ramadda-nav-arrow-disabled {
     color:rgba(240,240,240,0.90);
@@ -274,16 +347,13 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     vertical-align:top;
 }
 
-
 .ramadda-nav-page-decorated {
     min-width:200px;
-    border: 1px solid #eee;
     padding:10px;
     padding-bottom:0px;
-    border-radius: 4px;
-    -webkit-box-shadow: 1px 1px 1px #ccc;
-    box-shadow: 1px 1px 1px #ccc;
+    background-color : #FFF; -webkit-box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; border:1px solid rgb(211, 220, 228); border-radius: 4px;
 }
+
 
 
 .ramadda-nav-page-decorated:hover {
@@ -436,6 +506,26 @@ a.ramadda-menubar-button:hover {
     text-align:center;
 }
 
+.ramadda-heading  {
+    cursor:pointer;
+}
+
+.ramadda-heading.ramadda-linkable {
+    display:inline-block;
+}
+
+.ramadda-linkable  {
+    position:relative;
+}
+
+.ramadda-linkable-link  {
+    position:absolute;
+    display:none;
+    left:100%;
+    margin-left:1px;
+}
+
+
 .ramadda-page-heading, .ramadda-heading  {
     padding: 0px;
     margin: 0px;
@@ -486,7 +576,7 @@ a.ramadda-menubar-button:hover {
 
 
 .ramadda-callout {
-    border:1px solid #ccc;
+    border:1px #ccc solid;
     border-left: 4px solid;
     padding:10px;
     border-radius:4px;
@@ -586,7 +676,7 @@ a.ramadda-menubar-button:hover {
     margin-top:2px;
     margin-bottom:2px;
     padding:10px;
-    border : 1px #ddd solid;
+    border : 1px #ccc solid;
     background: #F3F3F3;
 }
 
@@ -597,9 +687,10 @@ a.ramadda-menubar-button:hover {
     row-gap: 20px;
 }
 
+
 .ramadda-draggable-frame {
     z-index:1000;
-    border:1px solid #ccc;
+    border:1px #ccc solid;
     padding:4px;
     position:relative;
 }
@@ -607,22 +698,22 @@ a.ramadda-menubar-button:hover {
 
 .ramadda-draggable-header {
     background:#efefef;
-    border:1px solid #ccc;    
-    border-bottom:1px solid #ccc;
+    border:1px #ccc solid;    
+    border-bottom:1px #ccc solid;
     cursor:grab;
     padding:4px;
 }
 
 .ramadda-expandable-frame {
     z-index:500;
-    border:1px solid #ccc;
+    border:1px #ccc solid;
     padding:4px;
 }
 
 
 .ramadda-expandable-header {
     background:#efefef;
-    border:1px solid #ccc;    
+    border:1px #ccc solid;    
     border-bottom:0px solid #ccc;
     cursor:grab;
     padding:4px;
@@ -721,7 +812,7 @@ a.ramadda-menubar-button:hover {
 }    
 
 .ramadda-card img {
-    border : 1px #ddd solid;
+    border : 1px #ccc solid;
     margin-top:4px;
 }
 
@@ -732,7 +823,7 @@ a.ramadda-menubar-button:hover {
     padding:10px;
     padding-bottom:6px;
     padding-top:6px;
-    border : 1px #ddd solid;
+    border : 1px #ccc solid;
     background: #FbFbFb;
     border-radius: 4px;
 
@@ -752,7 +843,7 @@ a.ramadda-menubar-button:hover {
     padding:8px;
     padding-left:14px;
     padding-right:14px;
-    border : 1px #ddd solid;
+    border : 1px #ccc solid;
     display: inline-block;
     background-color : #fffeec;
 }
@@ -767,7 +858,7 @@ a.ramadda-menubar-button:hover {
     margin-bottom:4px;
     display:inline-block;
     border: 0px;
-    border: 1px #ddd solid;
+    border: 1px #ccc solid;
     background:#fff;
     padding: 6px; 
     padding-left:12px;
@@ -834,7 +925,7 @@ a.ramadda-menubar-button:hover {
 }
 
 .ramadda-map-loc {
-    border-bottom: 1px #ddd solid;
+    border-bottom: 1px #ccc solid;
     padding-left:4px;
     padding-right:4px;
     padding-bottom:2px;
@@ -907,7 +998,6 @@ a.ramadda-menubar-button:hover {
 .ramadda-message {
     display: inline-block;
     border-radius: 4px;
-    border: 1px #eee solid;
     border: 1px #aaa solid;
     background-color : #fffeec;
     margin:10px;
@@ -1061,39 +1151,27 @@ a.ramadda-menubar-button:hover {
 }
 
 
-
 .ramadda-background-cornflower , .ramadda-block-cornflower , .ramadda-heading-cornflower , .ramadda-box-cornflower , .ramadda-note-cornflower , .ramadda-blurb-cornflower , .ramadda-section-cornflower  {
     background-color: #188fa7;
 }
-
-
 
 .ramadda-background-whitesmoke , .ramadda-block-whitesmoke , .ramadda-heading-whitesmoke , .ramadda-box-whitesmoke , .ramadda-note-whitesmoke , .ramadda-blurb-whitesmoke , .ramadda-section-whitesmoke  {
     background-color: #edf7f6;
 }
 
-
-
 .ramadda-background-cambridgeblue , .ramadda-block-cambridgeblue , .ramadda-heading-cambridgeblue , .ramadda-box-cambridgeblue , .ramadda-note-cambridgeblue , .ramadda-blurb-cambridgeblue , .ramadda-section-cambridgeblue  {
     background-color: #9ec1a3;
 }
-
-
 
 .ramadda-background-white , .ramadda-block-white , .ramadda-heading-white , .ramadda-box-white , .ramadda-note-white , .ramadda-blurb-white , .ramadda-section-white  {
     background-color: white;
 }
 
-
-
 .ramadda-background-gray , .ramadda-block-gray , .ramadda-heading-gray , .ramadda-box-gray , .ramadda-note-gray , .ramadda-blurb-gray , .ramadda-section-gray  {
     background-color: #F8F8F8;
 }
 
-
-
 .ramadda-background-green , .ramadda-block-green , .ramadda-heading-green , .ramadda-box-green , .ramadda-note-green , .ramadda-blurb-green , .ramadda-section-green  {
-/*    background-color: honeydew;*/
     background-color: #4C7B65;
     color:white;
 }
@@ -1101,7 +1179,6 @@ a.ramadda-menubar-button:hover {
 .ramadda-background-green a  , .ramadda-block-green a  , .ramadda-heading-green a  , .ramadda-box-green a  , .ramadda-note-green   a, .ramadda-blurb-green a  , .ramadda-section-green a   {
     color:white;
 }
-
 
 
 .ramadda-background-plain , .ramadda-block-plain , .ramadda-heading-plain , .ramadda-box-plain , .ramadda-note-plain , .ramadda-blurb-plain , .ramadda-section-plain  {
@@ -1113,15 +1190,11 @@ a.ramadda-menubar-button:hover {
     margin-right: 20px;
 }
 
-
-
 .ramadda-image-centered {
     text-align:center;
     margin-top: 20px;
     margin-bottom: 40px;
 }
-
-
 
 .ramadda-thumbnail-image {
     width: 100px;
@@ -1268,7 +1341,6 @@ a.ramadda-menubar-button:hover {
     border-top:1px #ccc solid;
 }
 
-
 .ramadda-line  {
     border-bottom:1px #ccc solid;
 }
@@ -1283,7 +1355,7 @@ a.ramadda-menubar-button:hover {
 }
 
 thin_hr {
-    border-top:1px solid #ccc;
+    border-top:1px #ccc solid;
     height:1px;
     display:block;
 }
@@ -1481,7 +1553,7 @@ input, password, fileinput,textarea {
 
 
 .ramadda-action-results {
-    border:1px solid #ccc;
+    border:1px #ccc solid;
     width:500px;
     height:100px; 
     max-height:100px;
@@ -1861,7 +1933,7 @@ table.dataTable tbody td {
 }
 
 .entry-table  {
-    border: 1px #ddd solid;
+    border: 1px #ccc solid;
 }
 
 .entry-table tr {
@@ -1898,14 +1970,14 @@ td.entry-table-block {
 .entry-table thead th {
     background-color:#f0f0f0;
     padding: 3px 10px 3px 10px;
-    border-bottom: 1px solid #ddd;
-    border-right: 1px solid #ddd;
+    border-bottom: 1px #ccc solid;
+    border-right: 1px #ccc solid;
     font-weight: bold;
 }
 
 .entry-table tfoot th {
     padding: 3px 10px 3px 10px;
-    border-top: 1px solid #ddd;
+    border-top: 1px #ccc solid;
     font-weight: bold;
 }
 
@@ -2071,12 +2143,14 @@ pre {
 }
 
 .shadow-box {
-    border : 1px #ccc solid;
     padding: 10px;
     margin:5px;
-    -webkit-box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
-    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
+    background-color : #FFF; -webkit-box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; border:1px solid rgb(211, 220, 228); border-radius: 4px;
+
 }
+
+
+
 
 
 .ramadda-system-message {
@@ -2113,7 +2187,7 @@ pre {
 }
 
 .ramadda-hline {
-    border-top:1px solid #ccc;
+    border-top:1px #ccc solid;
 }
 
 .ramadda-highlight {
@@ -2134,10 +2208,8 @@ pre {
 }
 
 
-.ramadda-error-label {
-    color:#F00;
-    font-weight: bold;
-}
+
+.ramadda-error-label {font-weight: bold; background: #BA3B28;}
 
 .map-drag-box {
     border :4px #ccc solid;
@@ -2187,11 +2259,8 @@ a.btn-primary:link, a.btn-primary  {
 }
 
 .ramadda-link:hover, a:hover {
-    color: #000;
-    text-decoration: underline;
-    cursor:pointer;
+    text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
 }
-
 
 
 .ramadda-selectdiv {
@@ -2207,16 +2276,7 @@ a.btn-primary:link, a.btn-primary  {
 .ramadda-popup, .ramadda-selectdiv {
     position: absolute; 
     display: none;
-    border : 1px #ccc solid;
-    background-color : #FFF;
-    /*Shadow effect*/
-    /* offset left, top, thickness, color with alpha */
-    -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
-    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
-    /* IE */
-    filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray');
-    /* slightly different syntax for IE8 */
-    -ms-filter:"progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray')";
+    background-color : #FFF; -webkit-box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; border:1px solid rgb(211, 220, 228); border-radius: 4px;
 }
 
 
@@ -2250,14 +2310,8 @@ a.btn-primary:link, a.btn-primary  {
 
 
 .ui-selectmenu-menu {
-    border : 1px #ccc solid;
-    background-color : #FFF;
-    -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
-    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
-    filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray');
-    -ms-filter:"progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray')";
+    background-color : #FFF; -webkit-box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; border:1px solid rgb(211, 220, 228); border-radius: 4px;
 }
-
 
 .ramadda-popup-inner {
     padding:4px;
@@ -2331,16 +2385,7 @@ a.btn-primary:link, a.btn-primary  {
 
 .ramadda-popup-box {
     padding:1px;
-    border : 1px #888 solid;
-    background-color : #FFFFFF;
-    /* Shadow effect */
-    /* offset left, top, thickness, color with alpha */
-    -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
-    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
-    /* IE */
-    filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray');
-    /* slightly different syntax for IE8 */
-    -ms-filter:"progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray')";
+    background-color : #FFF; -webkit-box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; border:1px solid rgb(211, 220, 228); border-radius: 4px;
 }
 
 
@@ -2379,12 +2424,8 @@ label {
 .ramadda-bubble {
   position:relative;
   padding:10px;
-/*  margin-bottom:1em;*/
-  border:1px solid #ccc;
   color:#333;
-  background:#fff;
-  -webkit-border-radius:10px;
-  -moz-border-radius:10px;
+background-color : #FFF; -webkit-box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; border:1px solid rgb(211, 220, 228); border-radius: 4px;
   border-radius:10px;
 }
 
@@ -2518,7 +2559,7 @@ label {
 }
 
 .ramadda-header a:hover  {
-    color:red;
+    text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
 }
 
 .ramadda-header-layoutbar {
@@ -2603,11 +2644,8 @@ label {
 }
 
 .breadcrumbs a:hover {
-    text-decoration: underline;
-    color: red;
+    text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
 }
-
-
 
 
 .ramadda-plugin-row td {
@@ -2675,6 +2713,10 @@ label {
     margin-top:1px;
     text-align:left;
     border-bottom: 1px #aaa solid;
+}
+
+.ramadda-user-link .fa:hover {
+    color: rgb(56,132,255) !important;
 }
 
 .ramadda-user-link:last-child {
@@ -2864,7 +2906,7 @@ a.ramadda-heading-2-link:visited {
 }
 
 .entry-sidebox {
-    border: 1px #ddd solid;
+    border: 1px #ccc solid;
     padding: 4px;
     border-radius: 6px;
     max-width: 300px;
@@ -3131,7 +3173,7 @@ snippet-hide {
 }
 
 .subnav a:hover  {
-    color:red;
+    text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
 }
 
 .subnavoncomp  {
@@ -3174,7 +3216,7 @@ snippet-hide {
 }
 
 .subnavoffcomp a:hover {
-    color:red;
+    text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
 }
 
 .cimg {
@@ -3247,8 +3289,6 @@ snippet-hide {
     font-style:italic;
 }
 
-
-
 nowiki {
     display: inline;
 }
@@ -3258,21 +3298,18 @@ nowiki {
     padding:0px;
 }
 
-
-.wiki-error {
-    font-weight: bold;
-    background: #ff9999;
-}
+.wiki-error {font-weight: bold; background: #BA3B28;}
 
 .wiki-image {
     padding-bottom:0px;
 }
 
+.wiki-embed-decorated {
+}
 
 .wiki-image-caption {
     font-style:italic;
 }
-
 
 .wiki-text-raw {
     background-color: #ddd;
@@ -3645,7 +3682,7 @@ nowiki {
 
 .toolbar-selected {
     margin:2px;
-    border : 1px solid #ccc;
+    border : 1px #ccc solid;
     padding-left:1px;
     padding-right:1px;
 }
@@ -3661,11 +3698,6 @@ nowiki {
     border:1px solid;
 }
 
-
-
-.foobar {
-    border: 1px red solid;
-}
 
 .moreblock {
     visibility: hidden; 
