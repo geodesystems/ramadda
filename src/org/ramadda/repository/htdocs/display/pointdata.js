@@ -10,7 +10,8 @@ function DataCollection() {
         data: [],
         hasData: function() {
             for (var i = 0; i < this.data.length; i++) {
-                if (this.data[i].hasData()) return true;
+		if(this.data[i])
+                    if (this.data[i].hasData()) return true;
             }
             return false;
         },
@@ -213,6 +214,11 @@ function PointData(name, recordFields, records, url, properties) {
 		return this.parentPointData.getRootPointData();
 	    return this;
 	},
+        getUrl: function() {
+	    if(this.url) return this.url;
+	    if(this.parentPointData) return this.parentPointData.getUrl();
+	    return null;
+	},
         equals: function(that) {
 	    if(this.jsonUrl) {
 		return this.jsonUrl == that.jsonUrl;
@@ -223,12 +229,12 @@ function PointData(name, recordFields, records, url, properties) {
             return this.loadingCnt > 0;
         },
         handleEventMapClick: function(myDisplay, source, lon, lat) {
-	    //	    console.log("map click:"+ this.url);
+	    let url = this.getUrl();
             this.lon = lon;
             this.lat = lat;
 	    ///repository/grid/json?entryid=3715ca8e-3c42-4105-96b1-da63e3813b3a&location.latitude=0&location.longitude=179.5
 	    //	    initiallatitude=40&location.latitude=0&location.longitude=179.5
-            if (myDisplay.getDisplayManager().hasGeoMacro(this.url)) {
+            if (myDisplay.getDisplayManager().hasGeoMacro(url)) {
 		this.loadData(myDisplay, true);
                 return true;
             }
@@ -385,6 +391,7 @@ function PointData(name, recordFields, records, url, properties) {
             }
 
             var success=function(data) {
+		if(debug) console.log("pointDataLoaded");
                 if (GuiUtils.isJsonError(data)) {
 		    console.log("is error");
 		    if(debug)
@@ -2138,18 +2145,23 @@ function CsvUtil() {
     $.extend(this, {
 	process: function(display, pointData, cmds) {
 	    this.display = display;
-	    let commands = DataUtils.parseCommands(cmds);
-
-	    commands.map(cmd=>{
-		if(this[cmd.command]) {
-		    let orig = pointData;
-    		    pointData = this[cmd.command](pointData, cmd.args);
-		    if(!pointData) pointData=orig;
-		    else pointData.entryId = orig.entryId;
-		} else {
-		    console.log("unknown command:" + cmd.command);
-		}
-	    });
+	    let theCmd;
+	    try {
+		let commands = DataUtils.parseCommands(cmds);
+		commands.map(cmd=>{
+		    theCmd =cmd;
+		    if(this[cmd.command]) {
+			let orig = pointData;
+    			pointData = this[cmd.command](pointData, cmd.args);
+			if(!pointData) pointData=orig;
+			else pointData.entryId = orig.entryId;
+		    } else {
+			console.log("unknown command:" + cmd.command);
+		    }
+		});
+	    } catch(e) {
+		console.log("Error applying derived function:" + theCmd.command+" error:" + e);
+	    }
 	    return pointData;
 	},
 	help: function(pointData, args) {
@@ -2658,10 +2670,17 @@ function CsvUtil() {
 	    let uniqueField =  this.display.getFieldById(fields, args.uniqueField||"");
 	    let valueFields =  this.display.getFieldsByIds(fields, args.valueFields||"");
 	    let includeFields =  this.display.getFieldsByIds(fields, args.includeFields||"");
-
+	    let prefix = args.prefix||"";
 	    
 	    if(!headerField) throw new Error("No headerField");
-	    if(!uniqueField) throw new Error("No uniqueField");
+	    let uniqueIsDate = false;
+	    if(!uniqueField) {
+		if(args.uniqueField=="date") {
+		    uniqueIsDate = true;
+		} else {
+		    throw new Error("No uniqueField");
+		}
+	    }
 	    if(valueFields.length==0) throw new Error("No value fields");
 	    /*
 	      newFields.push(new RecordField({
@@ -2680,7 +2699,7 @@ function CsvUtil() {
 	    let indexMap={};
 	    records.forEach(record=>{
 		let unfurlValue = record.getValue(headerField.getIndex());
-		let uniqueValue = record.getValue(uniqueField.getIndex());
+		let uniqueValue = uniqueIsDate?record.getDate():record.getValue(uniqueField.getIndex());
 		if(!newColumnMap[unfurlValue]) {
                     newColumnMap[unfurlValue] = true;
                     if (valueFields.length > 1) {
@@ -2701,20 +2720,43 @@ function CsvUtil() {
                 rowGroup.push(record);
 	    });
 
-	    newColumns.sort();
+	    //In case the new colum labels are numbers
+	    newColumns.sort((a,b)=>{
+		if(typeof a =="number" &&  typeof b =="number") {
+		    return a-b;
+		}
+		return (""+a).localeCompare(""+b);
+	    });
             newColumns.forEach((v,idx) => {
                 indexMap[v] = idx;
             });
 
 	    let newRecords = [];
 	    let newFields = [];
-	    newColumns = Utils.mergeLists([uniqueField.getId()], newColumns);
+	    let uniqueType = "string";
+	    if(uniques[0]) {
+		if(uniques[0].getTime)
+		    uniqueType ="date";
+		else if(typeof uniques[0] =="number")
+		    uniqueType ="double";
+		    
+	    }
+	    if(uniqueIsDate)
+		newColumns = Utils.mergeLists(["date"], newColumns);
+	    else
+		newColumns = Utils.mergeLists([uniqueField.getId()], newColumns);
 	    newColumns.forEach((c,idx)=>{
-		let type = (idx==0?"string":"double");
+		if(idx>0)
+		    c = prefix+""+c;
+		else
+		    c = ""+c;
+		let label =Utils.makeLabel(c);
+		let id  = Utils.makeId(c);
+		let type = (idx==0?uniqueType:"double");
 		newFields.push(new RecordField({
-		    id:c,
+		    id:id,
 		    index:newFields.length,
-		    label:c,
+		    label:label,
 		    type:type,
 		    chartable:true,
 		}));
@@ -2760,7 +2802,8 @@ function CsvUtil() {
                     array[1 + includeCnt] = firstRow.getValue(f.getIndex());
                     includeCnt++;
                 });
-		let newRecord = new  PointRecord(newFields,NaN, NaN, NaN, null, array);
+		let newRecord = new  PointRecord(newFields,firstRow.getLatitude(),firstRow.getLongitude(), NaN, null, array);
+//		console.log("lat:" + firstRow.getLatitude());
 		newRecords.push(newRecord);
                 cnt++;
             });
