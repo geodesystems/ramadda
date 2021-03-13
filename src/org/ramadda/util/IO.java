@@ -646,7 +646,7 @@ public class IO {
                     || (response == HttpURLConnection.HTTP_MOVED_PERM)
                     || (response == HttpURLConnection.HTTP_SEE_OTHER)) {
                 String newUrl = connection.getHeaderField("Location");
-                System.err.println(newUrl);
+		//                System.err.println(newUrl);
                 //Don't follow too many redirects
                 if (tries > 10) {
                     throw new IllegalArgumentException(
@@ -1021,7 +1021,20 @@ public class IO {
     }
 
 
+    private static boolean debuggingStderr = false;
 
+    public static void debugStderr() throws Exception {
+	if(debuggingStderr) return;
+	debuggingStderr = true;
+        final PrintStream oldErr = System.err;
+	final PrintStream oldOut = System.out;
+	System.setErr(new PrintStream(oldOut){
+		public void     println(String x) {
+		    new RuntimeException("stderr").printStackTrace();
+		    oldErr.println(x);
+		}
+	    });
+    }	
 
 
 
