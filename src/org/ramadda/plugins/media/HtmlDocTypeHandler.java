@@ -38,12 +38,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.List;
-
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 
 /**
@@ -89,7 +83,6 @@ public class HtmlDocTypeHandler extends GenericTypeHandler {
             String      html = IOUtil.readInputStream(fis);
             String title = StringUtil.findPattern(html,
                                "<title>(.*)</title>");
-            System.err.println("title:" + title);
             if (title != null) {
                 entry.setName(title.trim());
             }
