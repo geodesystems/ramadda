@@ -231,9 +231,19 @@
         </javac>
     </target>
 
-    <target name="htdocs" depends="init">
+
+    <target name="htdocs" depends="init,css">
         <exec executable="${ramadda_dir}/htdocs/build.sh"/>
     </target>
+
+    <target name="css" depends="init">
+        <copy overwrite="true" file="${ramadda_dir}/htdocs/style.tmpl.css" tofile="${ramadda_dir}/htdocs/style.css">
+            <filterset>
+	      <filtersfile file="${ramadda_dir}/htdocs/style.properties"/>
+            </filterset>
+       </copy>
+    </target>
+
 
 
     <target name="ramadda.jar" depends="init,compile">
