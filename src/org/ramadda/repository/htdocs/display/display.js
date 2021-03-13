@@ -1072,7 +1072,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'convertData',lagel:"rotate data", ex:"rotateData(includeFields=true,includeDate=true,flipColumns=true);",tt:"Rotate data"},
 	{p:'convertData',label:"percent increase",ex:"addPercentIncrease(replaceValues=false);",tt:"Add percent increase"},
 	{p:'convertData',label:"doubling rate",ex:"doublingRate(fields=f1\\\\,f2, keyFields=f3);",tt:"Calculate # days to double"},
-	{p:'convertData',label:"unfurl",ex:"unfurl(headerField=,uniqueField=,valueFields=);",tt:"Unfurl"},
+	{p:'convertData',label:"unfurl",ex:"unfurl(headerField=field to get header from,uniqueField=e.g. date,valueFields=);",tt:"Unfurl"},
 	{label:"Color Attributes"},
 	{p:"colors",ex:"color1},...,colorN",tt:"Comma separated array of colors"},
 	{p:"colorBy",ex:"",tt:"Field id to color by"},
@@ -2279,6 +2279,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getFieldById: function(fields, id) {
 	    //Support one arg
 	    if(fields!=null && id==null) {
+		if(typeof fields!="string") return null;
 		id = fields;
 		fields=null;
 	    }
@@ -4222,7 +4223,7 @@ a
 
 	    let sideWidth = "1%";
             let contents = this.getContentsDiv();
-            let table =   HU.open("table", ["width","100%","border",0]);
+            let table =   HU.open("table", ["width","100%","border","0","cellpadding","0","cellspacing","0"]);
 	    if(this.getProperty("showDisplayTop",true)) {
 		table+= HU.tr([],HU.td(["width",sideWidth]) + HU.td(["width","99%"],top) +HU.td(["width",sideWidth]));
 	    }
