@@ -501,10 +501,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             });
 
 	    let hasLoc = Utils.isDefined(this.getZoomLevel())   ||
-		Utils.isDefined(this.getMapCenter());
-            if (!hasLoc && (this.getPropertyBounds() ||this.getPropertyGridBounds()) ) {
+		Utils.isDefined(this.getMapCenter()) ||
+		this.hadInitialPosition;
+	    
+            if (this.getPropertyBounds() ||this.getPropertyGridBounds() ) {
 		this.hadInitialPosition = true;
-                var toks = this.getPropertyBounds(this.getGridBounds("")).split(",");
+                let toks = this.getPropertyBounds(this.getGridBounds("")).split(",");
                 if (toks.length == 4) {
                     if (this.getProperty("showBounds", false)) {
                         var attrs = {};
@@ -513,7 +515,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         }
                         this.map.addRectangle("bounds", parseFloat(toks[0]), parseFloat(toks[1]), parseFloat(toks[2]), parseFloat(toks[3]), attrs, "");
                     }
-                    this.setInitMapBounds(parseFloat(toks[0]), parseFloat(toks[1]), parseFloat(toks[2]), parseFloat(toks[3]));
+		    if(!hasLoc)
+			this.setInitMapBounds(parseFloat(toks[0]), parseFloat(toks[1]), parseFloat(toks[2]), parseFloat(toks[3]));
                 }
             }
 
@@ -1810,7 +1813,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
             let records = this.records =  this.filterData();
 
-
 	    if(this.coordinatesTypeField && this.coordinatesField) {
 		this.loadCoordinates(records);
 	    }
@@ -2781,12 +2783,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(!Utils.isDefined(point.x) || !Utils.isDefined(point.y)) return;
 		}
 
+
 		if(justOneMarker) {
 		    debug = false;
-		    if(didMarker) return;
-		    didMarker = true;
+		    if(didMarker) {
+			if(debug)
+			    console.log("didMarker");
+			return;
+		    }
                     this.map.removeMarker(this.justOneMarker);
                     if(!isNaN(point.x) && !isNaN(point.y)) {
+			didMarker = true;
                         this.justOneMarker= this.map.addMarker(id, [point.x,point.y], null, "", "");
 			if(debug) console.log("\tadding justOneMarker had initial position:" + this.hadInitialPosition);
 			if(!this.hadInitialPosition) {
@@ -2874,6 +2881,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(polygonField) {
 		    let s = values[polygonField.getIndex()];
 		    let delimiter;
+		    console.log("p:" + polygonField);
 		    [";",","].forEach(d=>{
 			if(s.indexOf(d)>=0) delimiter = d;
 		    });
@@ -3266,13 +3274,6 @@ function MapEntryInfo(entry) {
 
     });
 }
-
-
-
-
-
-
-
 
 
 function RamaddaMapgridDisplay(displayManager, id, properties) {
