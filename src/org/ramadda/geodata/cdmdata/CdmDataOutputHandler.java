@@ -508,13 +508,15 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 sb.append(HtmlUtils.p());
                 List<Entry> entries = (List<Entry>) Misc.newList(entry);
                 getEntryManager().addInitialMetadata(request, entries, false,
-                        request.get(ARG_SHORT, false));
+						     request.get(ARG_SHORT, false));
                 getEntryManager().updateEntries(request, entries);
+		getPageHandler().entrySectionOpen(request, entry, sb, "");
                 sb.append(
                     getPageHandler().showDialogNote("Properties added"));
                 sb.append(
                     getRepository().getHtmlOutputHandler().getInformationTabs(
                         request, entry, false));
+		getPageHandler().entrySectionClose(request, entry, sb);		
 
             } else {
                 sb.append("You cannot add properties");
@@ -1410,8 +1412,10 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         if (request.defined("gridLevel")) {
             String gridLevel = request.getString("gridLevel", (String) null);
             if (gridLevel != null) {
-		if (gridLevel.equals("last") && (zVals != null)) {
-                    zRange = new Range(zVals.length - 1, zVals.length - 1);
+		if (gridLevel.equals("last")) {
+		    if (zVals != null) {
+			zRange = new Range(zVals.length - 1, zVals.length - 1);
+		    }
 		} else if (gridLevel.equals("all") && (zVals != null)) {
                     zRange = new Range(0, zVals.length - 1);
                 } else {
