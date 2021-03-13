@@ -677,7 +677,6 @@ public class WikiUtil {
         while (matcher3.find()) {
             String prefix = matcher3.group(1).trim();
             String label  = matcher3.group(2).trim();
-            //            System.err.println("MATCH " + prefix + ":" + label);
             int    start = matcher3.start(0);
             int    end   = matcher3.end(0);
             int    level = prefix.length();
@@ -2364,6 +2363,8 @@ public class WikiUtil {
                         headingsProps.put("navleft", "true");
                     } else if (what.equals(":navlist")) {
                         headingsProps.put("navlist", "true");
+                    } else if (what.equals(":navpopup")) {
+                        headingsProps.put("navpopup", "true");			
                     }
                     headingsNav = "heading_" + HU.blockCnt++;
                     buff.append("${" + headingsNav + "}");
@@ -2392,10 +2393,16 @@ public class WikiUtil {
                     } else {
                         clazz = "ramadda-" + what;
                     }
+		    String attrs = "";
                     if (what.startsWith("heading")) {
+			String id = "heading-" +Utils.makeID(blob);
                         defineHeading.accept(buff, blob, 1);
+			buff.append(HU.anchorName(id));
+			blob += HU.span("",HU.attrs("id",id+"-hover","class","ramadda-linkable-link"));
+			attrs = HU.attrs("id",id);
+			clazz+=" ramadda-linkable ";
                     }
-                    buff.append(HU.div(HU.div(blob, HU.cssClass(clazz)),
+                    buff.append(HU.div(HU.div(blob, HU.cssClass(clazz)+attrs),
                                        HU.cssClass("ramadda-" + what
                                            + "-outer")));
 
@@ -2734,10 +2741,12 @@ public class WikiUtil {
                                "navleft", "false"));
             boolean list = "true".equals(Utils.getProperty(headingsProps,
                                "navlist", "false"));
+            boolean popup = "true".equals(Utils.getProperty(headingsProps,
+							    "navpopup", "false"));	    
             String delim = Utils.getProperty(headingsProps, "delimiter",
                                              "&nbsp;|&nbsp;");
             int maxLevel = Utils.getProperty(headingsProps, "maxLevel", 100);
-            if (left || list) {
+            if (left || list || popup) {
                 delim = "<br>";
             }
             for (Object o : headings2) {
@@ -2757,13 +2766,16 @@ public class WikiUtil {
                     hb.append(delim);
                 }
                 String clazz = " ramadda-nav-link ";
-                if (list && (level == 0)) {
+                if ((list || popup) && (level == 0)) {
                     continue;
                 }
                 if (left) {
                     clazz += " ramadda-nav-link-" + level;
                 } else if (list) {
                     clazz += "ramadda-nav-list-link ramadda-nav-list-link-"
+                             + level;
+                } else if (popup) {
+                    clazz += "ramadda-nav-popup-link ramadda-nav-popup-link-"
                              + level;
                 }
                 String href = HU.mouseClickHref("HtmlUtils.scrollToAnchor('"
@@ -2773,7 +2785,8 @@ public class WikiUtil {
                     href = HU.div(href,
                                   HU.attrs("class", "ramadda-nav-left-link",
                                            "navlink", id));
-                } else if (list) {}
+                } else if (list || popup) {
+		}
                 hb.append(href);
                 hb.append("\n");
             }
@@ -2810,6 +2823,20 @@ public class WikiUtil {
                               HU.div(hb.toString(),
                                      HU.attrs("class", "ramadda-nav-list",
                                          "style", style)));
+            } else if (popup) {
+                String style = Utils.getProperty(headingsProps, "style", "");
+		String id = HU.getUniqueId("popup");
+		String p =  HU.div(hb.toString(),
+				   HU.attrs("id",id+"-popup", "class", "ramadda-nav-popup",
+					    "style", style));
+		String icon = HU.span(HU.getIconImage("fa-align-right"),HU.attrs("id",id,"class","ramadda-nav-popup-link","title","Click to view table of contents"));
+		String container = HU.div(icon +p, HU.attrs("class","ramadda-nav-popup-container"));
+                String align = Utils.getProperty(headingsProps, "align", "right");
+		String args = Json.map("align",Json.quote(align));
+		container += HU.script(JQuery.ready("HtmlUtils.initNavPopup('" + id+"',"+ args+");"));
+                s = s.replace("${" + headingsNav + "}",container);
+
+
             } else {
                 String style = Utils.getProperty(headingsProps, "style", "");
                 s = s.replace("${" + headingsNav + "}",
@@ -3126,6 +3153,8 @@ public class WikiUtil {
         boolean link = Misc.equals("true",
                                    getWikiProperty(props, "link",
                                        "embedLink", "false"));
+        boolean decorate = Misc.equals("true",""+getWikiProperty(props, "label", "decorate",
+								 getWikiProperty(props, "label", "decorateEmbed","true")));								 
         String label = (String) getWikiProperty(props, "label", "embedLabel",
                            null);
         String width = (String) getWikiProperty(props, "width", "embedWidth",
@@ -3134,7 +3163,6 @@ public class WikiUtil {
                             "embedHeight", "390");
         String style = (String) getWikiProperty(props, "style", "embedStyle",
                            null);
-        //      System.err.println(link +"  " + label +" " + width +" " + height +" " + style);
         StringBuilder sb = new StringBuilder();
 
         boolean isFacebook =
@@ -3151,7 +3179,12 @@ public class WikiUtil {
             sb.append("<div class='fb-post' data-href='" + url
                       + "' data-width='" + width
                       + "' data-show-text='true'></div>");
-        } else {
+	} else if(Pattern.matches("https://music.apple.com/.*\\d+",url)) {
+	    url = url.replace("https://music","https://embed.music");
+	    sb.append("<iframe allow='autoplay *; encrypted-media *; fullscreen *' frameborder='0' height='" + height+"' style='width:100%;max-width:660px;overflow:hidden;background:transparent;' sandbox='allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation' src='" + url+"'></iframe>");
+        } else if(Pattern.matches("",url)) {
+	    sb.append("");
+	} else {
             Oembed.Response response = Oembed.get(url, width, height);
             if (response != null) {
                 sb.append(response.getHtml());
@@ -3159,11 +3192,13 @@ public class WikiUtil {
                 buff.append(HU.href(url, (label != null)
                                          ? label
                                          : url));
-
                 return;
             }
         }
 
+	if(decorate) {
+            sb = new StringBuilder(HU.div(sb.toString(), "class=wiki-embed-decorated"));
+	}
         if ( !link && (label != null)) {
             sb = new StringBuilder(HU.div(link + "<br>" + sb,
                                           "style=display-inline:block;"));
@@ -3275,12 +3310,16 @@ public class WikiUtil {
             sb.append(
                 HU.importJS(
                     handler.getHtdocsUrl("/lib/prettify/prettify.js")));
-            String id = "javascript" + HU.blockCnt++;
-            sb.append("<pre class=\"prettyprint\">\n");
+            String id = HU.getUniqueId("javascript");
+            HU.open(sb,"pre","class='prettyprint'");
             int cnt = 0;
-            for (String line : chunk.buff.toString().split("\n")) {
+	    String c  = chunk.buff.toString().trim();
+	    boolean seenOne = false;
+            for (String line : c.split("\n")) {
                 cnt++;
                 line = line.replace("\r", "");
+		if(line.length()==0 &&!seenOne) continue;
+		seenOne = true;
                 line = HU.entityEncode(line);
                 sb.append("<span class=nocode><a "
                           + HU.attr("name", "line" + cnt)
@@ -3288,7 +3327,7 @@ public class WikiUtil {
                           + "</a></span>" + HU.space(1) + line + "<br>");
             }
             sb.append("</pre>\n");
-            sb.append(HU.script("prettyPrint();"));
+	    sb.append(HU.script("prettyPrint();"));
 
             return true;
         }
@@ -3417,7 +3456,6 @@ public class WikiUtil {
             } else {
                 prefix = "" + cnt;
             }
-            //            System.err.println(prefix);
             toc.append(StringUtil.repeat("&nbsp;&nbsp;", level - 1));
             toc.append("<a href=\"#" + label + "\">");
             toc.append(prefix);
@@ -3919,7 +3957,6 @@ public class WikiUtil {
             String tmp = this.buff.toString();
             tmp = tmp.replaceAll("\n", "_NL_");
 
-            //      System.err.println("TMP:" + tmp);
             return getTypeName(type) + ":" + tmp;
         }
 
