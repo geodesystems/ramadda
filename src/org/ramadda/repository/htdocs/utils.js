@@ -219,6 +219,7 @@ r    },
 	}
 	console.log(t);
     },
+
     cloneList: function(l) {
         return l.slice(0);
     },
@@ -1452,6 +1453,25 @@ r    },
         //Buttonize
         $(parent + ':submit').button().click(function(event) {});
         $(parent + '.ramadda-button').button().click(function(event) {});
+	//Headers
+	let headings = $(parent + '.ramadda-linkable');
+	headings.mouseenter(function(){
+	    let id = $(this).attr("id");
+	    if(!id) return;
+	    $("#" + id +"-hover").html(HtmlUtils.getIconImage("fa-link",null,[STYLE,"font-size:10pt;"]));
+	    $("#" + id +"-hover").show();
+	});
+	headings.click(function(){
+	    let id = $(this).attr("id");
+	    if(id) {
+		HU.scrollToAnchor(id,-50);
+	    }
+	});
+	headings.mouseleave(function(){
+	    let id = $(this).attr("id");
+	    if(!id) return;
+	    $("#" + id +"-hover").hide();
+	});	
         //menuize
         /*
           $(".ramadda-pulldown").selectBoxIt({});
@@ -1665,9 +1685,6 @@ r    },
 	document.onmousedown = Utils.handleMouseDown;
 	document.onmouseup = Utils.handleMouseUp;
 	document.onkeypress = Utils.handleKeyPress;
-
-
-
         //allow for tabs to be added to text areas
         $(document).delegate('textarea', 'keydown', function(e) {
             var keyCode = e.keyCode || e.which;
@@ -2328,7 +2345,7 @@ Utils.ColorTables =  {
 
 
         precipitation: {
-            colors: ['rgb(255,255,255)', 'rgb(6,13,255)', 'rgb(13,26,255)', 'rgb(20,40,255)', 'rgb(26,53,255)', 'rgb(33,67,255)', 'rgb(40,80,255)', 'rgb(46,93,255)', 'rgb(53,107,255)', 'rgb(60,120,255)', 'rgb(67,134,255)', 'rgb(73,147,255)', 'rgb(80,161,255)', 'rgb(87,174,255)', 'rgb(93,187,255)', 'rgb(100,201,255)', 'rgb(107,214,255)', 'rgb(114,228,255)', 'rgb(120,241,255)', 'rgb(127,255,255)', 'rgb(127,255,229)', 'rgb(129,253,223)', 'rgb(130,251,216)', 'rgb(132,249,210)', 'rgb(133,247,203)', 'rgb(135,245,197)', 'rgb(137,243,190)', 'rgb(138,241,184)', 'rgb(140,239,177)', 'rgb(142,237,171)', 'rgb(143,235,164)', 'rgb(145,233,158)', 'rgb(146,231,152)', 'rgb(148,229,145)', 'rgb(150,227,139)', 'rgb(151,225,132)', 'rgb(153,224,126)', 'rgb(154,222,119)', 'rgb(156,220,113)', 'rgb(158,218,106)', 'rgb(159,216,100)', 'rgb(161,214,93)', 'rgb(163,212,87)', 'rgb(164,210,81)', 'rgb(166,208,74)', 'rgb(167,206,68)', 'rgb(169,204,61)', 'rgb(171,202,55)', 'rgb(172,200,48)', 'rgb(174,198,42)', 'rgb(175,196,35)', 'rgb(177,194,29)', 'rgb(179,193,22)', 'rgb(180,191,16)', 'rgb(182,189,10)', 'rgb(183,187,3)', 'rgb(185,185,0)', 'rgb(187,183,0)', 'rgb(188,181,0)', 'rgb(190,179,0)', 'rgb(192,177,0)', 'rgb(193,175,0)', 'rgb(195,173,0)', 'rgb(196,171,0)', 'rgb(198,169,0)', 'rgb(200,167,0)', 'rgb(201,165,0)', 'rgb(203,163,0)', 'rgb(204,162,0)', 'rgb(206,160,0)', 'rgb(208,158,0)', 'rgb(209,156,0)', 'rgb(211,154,0)', 'rgb(213,152,0)', 'rgb(214,150,0)', 'rgb(216,148,0)', 'rgb(217,146,0)', 'rgb(219,144,0)', 'rgb(221,142,0)', 'rgb(222,140,0)', 'rgb(224,138,0)', 'rgb(225,136,0)', 'rgb(227,134,0)', 'rgb(229,132,0)', 'rgb(230,131,0)', 'rgb(232,129,0)', 'rgb(234,127,0)', 'rgb(235,125,0)', 'rgb(237,123,0)', 'rgb(238,121,0)', 'rgb(240,119,0)', 'rgb(242,117,0)', 'rgb(243,115,0)', 'rgb(245,113,0)', 'rgb(246,111,0)', 'rgb(248,109,0)', 'rgb(250,107,0)', 'rgb(251,105,0)', 'rgb(253,103,0)', 'rgb(255,101,0)', ]
+            colors: ['rgba(255,255,255,0)', 'rgb(6,13,255)', 'rgb(13,26,255)', 'rgb(20,40,255)', 'rgb(26,53,255)', 'rgb(33,67,255)', 'rgb(40,80,255)', 'rgb(46,93,255)', 'rgb(53,107,255)', 'rgb(60,120,255)', 'rgb(67,134,255)', 'rgb(73,147,255)', 'rgb(80,161,255)', 'rgb(87,174,255)', 'rgb(93,187,255)', 'rgb(100,201,255)', 'rgb(107,214,255)', 'rgb(114,228,255)', 'rgb(120,241,255)', 'rgb(127,255,255)', 'rgb(127,255,229)', 'rgb(129,253,223)', 'rgb(130,251,216)', 'rgb(132,249,210)', 'rgb(133,247,203)', 'rgb(135,245,197)', 'rgb(137,243,190)', 'rgb(138,241,184)', 'rgb(140,239,177)', 'rgb(142,237,171)', 'rgb(143,235,164)', 'rgb(145,233,158)', 'rgb(146,231,152)', 'rgb(148,229,145)', 'rgb(150,227,139)', 'rgb(151,225,132)', 'rgb(153,224,126)', 'rgb(154,222,119)', 'rgb(156,220,113)', 'rgb(158,218,106)', 'rgb(159,216,100)', 'rgb(161,214,93)', 'rgb(163,212,87)', 'rgb(164,210,81)', 'rgb(166,208,74)', 'rgb(167,206,68)', 'rgb(169,204,61)', 'rgb(171,202,55)', 'rgb(172,200,48)', 'rgb(174,198,42)', 'rgb(175,196,35)', 'rgb(177,194,29)', 'rgb(179,193,22)', 'rgb(180,191,16)', 'rgb(182,189,10)', 'rgb(183,187,3)', 'rgb(185,185,0)', 'rgb(187,183,0)', 'rgb(188,181,0)', 'rgb(190,179,0)', 'rgb(192,177,0)', 'rgb(193,175,0)', 'rgb(195,173,0)', 'rgb(196,171,0)', 'rgb(198,169,0)', 'rgb(200,167,0)', 'rgb(201,165,0)', 'rgb(203,163,0)', 'rgb(204,162,0)', 'rgb(206,160,0)', 'rgb(208,158,0)', 'rgb(209,156,0)', 'rgb(211,154,0)', 'rgb(213,152,0)', 'rgb(214,150,0)', 'rgb(216,148,0)', 'rgb(217,146,0)', 'rgb(219,144,0)', 'rgb(221,142,0)', 'rgb(222,140,0)', 'rgb(224,138,0)', 'rgb(225,136,0)', 'rgb(227,134,0)', 'rgb(229,132,0)', 'rgb(230,131,0)', 'rgb(232,129,0)', 'rgb(234,127,0)', 'rgb(235,125,0)', 'rgb(237,123,0)', 'rgb(238,121,0)', 'rgb(240,119,0)', 'rgb(242,117,0)', 'rgb(243,115,0)', 'rgb(245,113,0)', 'rgb(246,111,0)', 'rgb(248,109,0)', 'rgb(250,107,0)', 'rgb(251,105,0)', 'rgb(253,103,0)', 'rgb(255,101,0)', ]
         },
         humidity: {
             colors: ['rgb(255,255,0)', 'rgb(228,255,0)', 'rgb(201,255,0)', 'rgb(174,255,0)', 'rgb(147,255,0)', 'rgb(120,255,0)', 'rgb(93,255,0)', 'rgb(67,255,0)', 'rgb(40,255,0)', 'rgb(13,255,0)', 'rgb(0,248,13)', 'rgb(0,234,40)', 'rgb(0,221,67)', 'rgb(0,208,93)', 'rgb(0,194,120)', 'rgb(0,181,147)', 'rgb(0,167,174)', 'rgb(0,154,201)', 'rgb(0,140,228)', 'rgb(0,127,255)', ]
@@ -3279,7 +3296,33 @@ $(document).ready(function(){
 	    scrollTop: diff+contents.scrollTop()
 	}, animate);
     },
-        initNavLinks: function(args) {
+    initNavPopup: function(id,args) {
+	let opts = {
+	    align:"left"
+	};
+	if(args) $.extend(opts, args);
+	$("#"+id).click(function() {
+	    let popup = popupObject = $("#"+ id+"-popup");
+	    let my,at;
+	    if(opts.align=="right") {
+		my = "right top";
+		at = "right bottom";
+	    } else {
+		my = "left top";
+		at = "left bottom";
+	    }
+	    popup.show();
+            popup.position({
+                of: popup.parent(),
+                my: my,
+                at: at,
+                collision: "fit fit"
+	    });
+
+	});
+    },
+
+    initNavLinks: function(args) {
 	let opts = {
 	    leftOpen:true,
 	    showToggle:true,
