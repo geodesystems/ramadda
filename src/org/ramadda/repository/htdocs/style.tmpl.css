@@ -1,5 +1,5 @@
 
-/*@import url(//fonts.googleapis.com/css?family=Open+Sans);*/
+/* @import url(//fonts.googleapis.com/css?family=Open+Sans); */
 
 body {
     font-family: 'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif;
@@ -25,7 +25,7 @@ a {color: #000; text-decoration: underline;}
 a.btn:link {color: #000;}
 
 a:hover {
-    text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
+    @NAV-HOVER@
 }
 
 h2 a,   h2 a:visited, h2 a:link  {color: #000;}
@@ -170,9 +170,9 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     position:absolute;
     width:200px;
     padding:5px 10px;
-    z-index: 100;
+    z-index: @POPUP-ZINDEX@;
     text-align:left;
-    background-color : #FFF; -webkit-box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; border:1px solid rgb(211, 220, 228); border-radius: 4px;
+    @SHADOW-POPUP@
 }
 
 .ramadda-nav-popup-link {
@@ -182,11 +182,11 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
 }
 
 .ramadda-nav-popup a {
-    color: rgb(116, 129, 141);
+    color: @NAV-LINK-COLOR@;
 }
 
 .ramadda-nav-popup-link .fa:hover {
-    color: rgb(56,132,255) !important;
+    @I-HOVER@
 }
 
 
@@ -199,11 +199,11 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
 }
 
 .ramadda-nav-horizontal .ramadda-links a:hover {
-text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
+@NAV-HOVER@
 }
 
 .ramadda-nav-link:hover {
-text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
+@NAV-HOVER@
 }
 
 
@@ -211,7 +211,7 @@ text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
     padding:20px;
     padding-top:80px;
     width:250px;
-    border-right:1px #ccc solid;
+    border-right:@BORDER-BASIC@;
     background:#FAFAFA;
     min-height:100vh;
     height:100vh;
@@ -250,7 +250,7 @@ text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
 }
 
 .ramadda-nav-left a, .ramadda-nav-left a:visited {
-    color:rgb(116, 129, 141);
+    color:@NAV-LINK-COLOR@;
 }
 
 .ramadda-nav-left-extra .ramadda-links  a {
@@ -258,7 +258,7 @@ text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
 }
 
 .ramadda-links a {
-    color: rgb(116, 129, 141);
+    color: @NAV-LINK-COLOR@;
 }
 
 .ramadda-links h3 {
@@ -269,8 +269,8 @@ text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
     margin-top:1em;
     margin-bottom:4px;
     border-bottom: 1px #e8e8e8 solid;
-    border-bottom: 1px #ccc solid;    
-    color: #000;
+    border-bottom: @BORDER-BASIC@;    
+    color: @NAV-COLOR@;
 }
 
 
@@ -281,7 +281,7 @@ text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
 .ramadda-nav-left-extra .ramadda-links-highlight {
     display:block;
     background:#ddd;
-    color: #000;
+    color: @NAV-COLOR@;
 }
 
 .ramadda-links-inner ul {
@@ -296,7 +296,7 @@ text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
     overflow-x:auto;
     max-width:100%;
     white-space: nowrap;
-    color: #000;
+    color: @NAV-COLOR@;
 }
 
 .ramadda-nav-left-toggle  {
@@ -308,11 +308,11 @@ text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
 
 
 a span i.fa:hover  {
-    color: rgb(56,132,255) !important;
+    @I-HOVER@
 }
 
 .ramadda-nav-left-toggle i.fa:hover  {
-    color: rgb(56,132,255) !important;
+    @I-HOVER@
 }
 
 .ramadda-nav-right {
@@ -326,7 +326,7 @@ a span i.fa:hover  {
 }
 
 .ramadda-nav-arrow:hover {
-    text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
+    @NAV-HOVER@
 }
 
 
@@ -351,13 +351,13 @@ a.ramadda-nav-link-0, a.ramadda-nav-link-0:visited, .ramadda-nav-left h3 a, .ram
     min-width:200px;
     padding:10px;
     padding-bottom:0px;
-    background-color : #FFF; -webkit-box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; border:1px solid rgb(211, 220, 228); border-radius: 4px;
+    @SHADOW-POPUP@
 }
 
 
 
 .ramadda-nav-page-decorated:hover {
-    border: 1px solid #aaa;
+    @BORDER-HOVER-LIGHT@
 }
 
 
@@ -440,7 +440,7 @@ a.ramadda-menubar-button:hover {
 
 .ramadda-menubar-button {
     display:inline-block;
-    border-right:1px #ccc solid;
+    border-right:@BORDER-BASIC@;
     padding-left:8px;
     padding-right:8px;
     padding-top:5px;
@@ -576,7 +576,7 @@ a.ramadda-menubar-button:hover {
 
 
 .ramadda-callout {
-    border:1px #ccc solid;
+    border:@BORDER-BASIC@;
     border-left: 4px solid;
     padding:10px;
     border-radius:4px;
@@ -643,7 +643,7 @@ a.ramadda-menubar-button:hover {
 }
 
 .ramadda-block  {
-    border-bottom: 1px #ccc solid;
+    border-bottom: @BORDER-BASIC@;
     margin-bottom: 5px;
 }
 
@@ -676,7 +676,7 @@ a.ramadda-menubar-button:hover {
     margin-top:2px;
     margin-bottom:2px;
     padding:10px;
-    border : 1px #ccc solid;
+    border : @BORDER-BASIC@;
     background: #F3F3F3;
 }
 
@@ -690,7 +690,7 @@ a.ramadda-menubar-button:hover {
 
 .ramadda-draggable-frame {
     z-index:1000;
-    border:1px #ccc solid;
+    border:@BORDER-BASIC@;
     padding:4px;
     position:relative;
 }
@@ -698,22 +698,22 @@ a.ramadda-menubar-button:hover {
 
 .ramadda-draggable-header {
     background:#efefef;
-    border:1px #ccc solid;    
-    border-bottom:1px #ccc solid;
+    border:@BORDER-BASIC@;    
+    border-bottom:@BORDER-BASIC@;
     cursor:grab;
     padding:4px;
 }
 
 .ramadda-expandable-frame {
     z-index:500;
-    border:1px #ccc solid;
+    border:@BORDER-BASIC@;
     padding:4px;
 }
 
 
 .ramadda-expandable-header {
     background:#efefef;
-    border:1px #ccc solid;    
+    border:@BORDER-BASIC@;    
     border-bottom:0px solid #ccc;
     cursor:grab;
     padding:4px;
@@ -812,7 +812,7 @@ a.ramadda-menubar-button:hover {
 }    
 
 .ramadda-card img {
-    border : 1px #ccc solid;
+    border : @BORDER-BASIC@;
     margin-top:4px;
 }
 
@@ -823,7 +823,7 @@ a.ramadda-menubar-button:hover {
     padding:10px;
     padding-bottom:6px;
     padding-top:6px;
-    border : 1px #ccc solid;
+    border : @BORDER-BASIC@;
     background: #FbFbFb;
     border-radius: 4px;
 
@@ -843,9 +843,9 @@ a.ramadda-menubar-button:hover {
     padding:8px;
     padding-left:14px;
     padding-right:14px;
-    border : 1px #ccc solid;
+    border : @BORDER-BASIC@;
     display: inline-block;
-    background-color : #fffeec;
+    background-color : @MELLOW-YELLOW@;
 }
 
 
@@ -858,7 +858,7 @@ a.ramadda-menubar-button:hover {
     margin-bottom:4px;
     display:inline-block;
     border: 0px;
-    border: 1px #ccc solid;
+    border: @BORDER-BASIC@;
     background:#fff;
     padding: 6px; 
     padding-left:12px;
@@ -925,7 +925,7 @@ a.ramadda-menubar-button:hover {
 }
 
 .ramadda-map-loc {
-    border-bottom: 1px #ccc solid;
+    border-bottom: @BORDER-BASIC@;
     padding-left:4px;
     padding-right:4px;
     padding-bottom:2px;
@@ -999,7 +999,7 @@ a.ramadda-menubar-button:hover {
     display: inline-block;
     border-radius: 4px;
     border: 1px #aaa solid;
-    background-color : #fffeec;
+    background-color : @MELLOW-YELLOW@;
     margin:10px;
     padding:5px;
     min-width: 400px;
@@ -1093,7 +1093,7 @@ a.ramadda-menubar-button:hover {
 
 
 .ramadda-background-yellow , .ramadda-block-yellow , .ramadda-heading-yellow , .ramadda-box-yellow , .ramadda-note-yellow , .ramadda-blurb-yellow ,  .ramadda-section-yellow  {
-    background-color: #fffeec;
+    background-color: @MELLOW-YELLOW@;
 }
 
 
@@ -1338,15 +1338,15 @@ a.ramadda-menubar-button:hover {
 }
 
 .ramadda-section-border  {
-    border-top:1px #ccc solid;
+    border-top:@BORDER-BASIC@;
 }
 
 .ramadda-line  {
-    border-bottom:1px #ccc solid;
+    border-bottom:@BORDER-BASIC@;
 }
 
 .ramadda-section-line  {
-    border-bottom:1px #ccc solid;
+    border-bottom:@BORDER-BASIC@;
 }
 
 .ramadda-hr {
@@ -1355,7 +1355,7 @@ a.ramadda-menubar-button:hover {
 }
 
 thin_hr {
-    border-top:1px #ccc solid;
+    border-top:@BORDER-BASIC@;
     height:1px;
     display:block;
 }
@@ -1553,7 +1553,7 @@ input, password, fileinput,textarea {
 
 
 .ramadda-action-results {
-    border:1px #ccc solid;
+    border:@BORDER-BASIC@;
     width:500px;
     height:100px; 
     max-height:100px;
@@ -1817,15 +1817,15 @@ table.dataTable tbody th, table.dataTable tbody td {
 }
 
 table.dataTable thead th, table.dataTable thead td {
-    border-bottom:1px #ccc solid;
+    border-bottom:@BORDER-BASIC@;
 }
 
 table.dataTable.no-footer {
-    border-bottom:1px #ccc solid;
+    border-bottom:@BORDER-BASIC@;
 }
 
 .dataTables_wrapper.no-footer .dataTables_scrollBody {
-    border-bottom:1px #ccc solid;
+    border-bottom:@BORDER-BASIC@;
 }
 
 .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody > table > thead > tr > th, .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody > table > thead > tr > td, .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody > table > tbody > tr > th, .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody > table > tbody > tr > td {
@@ -1933,7 +1933,7 @@ table.dataTable tbody td {
 }
 
 .entry-table  {
-    border: 1px #ccc solid;
+    border: @BORDER-BASIC@;
 }
 
 .entry-table tr {
@@ -1970,14 +1970,14 @@ td.entry-table-block {
 .entry-table thead th {
     background-color:#f0f0f0;
     padding: 3px 10px 3px 10px;
-    border-bottom: 1px #ccc solid;
-    border-right: 1px #ccc solid;
+    border-bottom: @BORDER-BASIC@;
+    border-right: @BORDER-BASIC@;
     font-weight: bold;
 }
 
 .entry-table tfoot th {
     padding: 3px 10px 3px 10px;
-    border-top: 1px #ccc solid;
+    border-top: @BORDER-BASIC@;
     font-weight: bold;
 }
 
@@ -2145,7 +2145,7 @@ pre {
 .shadow-box {
     padding: 10px;
     margin:5px;
-    background-color : #FFF; -webkit-box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; border:1px solid rgb(211, 220, 228); border-radius: 4px;
+    @SHADOW-POPUP@
 
 }
 
@@ -2187,7 +2187,7 @@ pre {
 }
 
 .ramadda-hline {
-    border-top:1px #ccc solid;
+    border-top:@BORDER-BASIC@;
 }
 
 .ramadda-highlight {
@@ -2209,7 +2209,7 @@ pre {
 
 
 
-.ramadda-error-label {font-weight: bold; background: #BA3B28;}
+.ramadda-error-label {@ERROR@}
 
 .map-drag-box {
     border :4px #ccc solid;
@@ -2259,7 +2259,7 @@ a.btn-primary:link, a.btn-primary  {
 }
 
 .ramadda-link:hover, a:hover {
-    text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
+    @NAV-HOVER@
 }
 
 
@@ -2276,7 +2276,7 @@ a.btn-primary:link, a.btn-primary  {
 .ramadda-popup, .ramadda-selectdiv {
     position: absolute; 
     display: none;
-    background-color : #FFF; -webkit-box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; border:1px solid rgb(211, 220, 228); border-radius: 4px;
+    @SHADOW-POPUP@
 }
 
 
@@ -2292,7 +2292,7 @@ a.btn-primary:link, a.btn-primary  {
 .ramadda-popup-header {
     padding:2px;
     padding-bottom:0px;
-    border-bottom:1px #ccc solid; 
+    border-bottom:@BORDER-BASIC@; 
     background-color: #f0f0f0;
 }
 
@@ -2310,7 +2310,7 @@ a.btn-primary:link, a.btn-primary  {
 
 
 .ui-selectmenu-menu {
-    background-color : #FFF; -webkit-box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; border:1px solid rgb(211, 220, 228); border-radius: 4px;
+    @SHADOW-POPUP@
 }
 
 .ramadda-popup-inner {
@@ -2385,7 +2385,7 @@ a.btn-primary:link, a.btn-primary  {
 
 .ramadda-popup-box {
     padding:1px;
-    background-color : #FFF; -webkit-box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; border:1px solid rgb(211, 220, 228); border-radius: 4px;
+    @SHADOW-POPUP@
 }
 
 
@@ -2425,7 +2425,7 @@ label {
   position:relative;
   padding:10px;
   color:#333;
-background-color : #FFF; -webkit-box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; border:1px solid rgb(211, 220, 228); border-radius: 4px;
+@SHADOW-POPUP@
   border-radius:10px;
 }
 
@@ -2559,7 +2559,7 @@ background-color : #FFF; -webkit-box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8p
 }
 
 .ramadda-header a:hover  {
-    text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
+    @NAV-HOVER@
 }
 
 .ramadda-header-layoutbar {
@@ -2644,7 +2644,7 @@ background-color : #FFF; -webkit-box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8p
 }
 
 .breadcrumbs a:hover {
-    text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
+    @NAV-HOVER@
 }
 
 
@@ -2716,7 +2716,7 @@ background-color : #FFF; -webkit-box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8p
 }
 
 .ramadda-user-link .fa:hover {
-    color: rgb(56,132,255) !important;
+    @I-HOVER@
 }
 
 .ramadda-user-link:last-child {
@@ -2835,7 +2835,7 @@ a.ramadda-heading-2-link:visited {
     margin-left:10px;
 }
 .entryheader {
-    border-bottom : 1px #ccc solid;
+    border-bottom : @BORDER-BASIC@;
     margin-bottom:5px;
 }
 .entryname {
@@ -2906,7 +2906,7 @@ a.ramadda-heading-2-link:visited {
 }
 
 .entry-sidebox {
-    border: 1px #ccc solid;
+    border: @BORDER-BASIC@;
     padding: 4px;
     border-radius: 6px;
     max-width: 300px;
@@ -2960,7 +2960,7 @@ a.ramadda-entries-link {
     padding:0px;
     color:black;
     margin-right:30px;
-    border-bottom: 1px #ccc solid;
+    border-bottom: @BORDER-BASIC@;
 }
 
 
@@ -3014,7 +3014,7 @@ a.ramadda-menuitem-link {
     margin-left:5px;
     margin-right:5px;
     margin-bottom:4px;
-    border-bottom : 1px #ccc solid;
+    border-bottom : @BORDER-BASIC@;
 }
 
 .ramadda-menugroup  {
@@ -3173,7 +3173,7 @@ snippet-hide {
 }
 
 .subnav a:hover  {
-    text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
+    @NAV-HOVER@
 }
 
 .subnavoncomp  {
@@ -3216,7 +3216,7 @@ snippet-hide {
 }
 
 .subnavoffcomp a:hover {
-    text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
+    @NAV-HOVER@
 }
 
 .cimg {
@@ -3298,7 +3298,7 @@ nowiki {
     padding:0px;
 }
 
-.wiki-error {font-weight: bold; background: #BA3B28;}
+.wiki-error {@ERROR@}
 
 .wiki-image {
     padding-bottom:0px;
@@ -3481,7 +3481,7 @@ nowiki {
 }
 
 .kml-description {
-    border: 1px #ccc solid;
+    border: @BORDER-BASIC@;
     max-height: 150px; 
     overflow-y: auto;
     padding:4px;
@@ -3682,7 +3682,7 @@ nowiki {
 
 .toolbar-selected {
     margin:2px;
-    border : 1px #ccc solid;
+    border : @BORDER-BASIC@;
     padding-left:1px;
     padding-right:1px;
 }
@@ -3757,7 +3757,7 @@ nowiki {
     padding-bottom: 0px;
     color: #000;
     background-color : #eee;
-    border-bottom: 1px #ccc solid;
+    border-bottom: @BORDER-BASIC@;
     font-weight: bold;
     border-top-left-radius: 8px;
     -webkit-border-top-left-radius: 8px;
@@ -3990,7 +3990,7 @@ a.toggleblocklabellink:visited {
     border: 1px #EFEFEF solid;
     border: 1px #eaeaea solid;
     border-top: 0px;
-    background: #fffeec;
+    background: @MELLOW-YELLOW@;
     background: #f8f8f8;
     padding:5px;
     max-height: 100px; 
@@ -4074,7 +4074,7 @@ a.toggleblocklabellink:visited {
     color: #000;
     border-radius: 4px;
     border : 1px #ccc solid;
-    background:#fffeec;
+    background:@MELLOW-YELLOW@;
     display: inline-block;
     margin:0.5em;   
     padding-top: 0.25em;
