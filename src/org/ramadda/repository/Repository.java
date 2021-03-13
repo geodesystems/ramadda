@@ -76,6 +76,7 @@ import org.ramadda.util.Bounds;
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.GeoUtils;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.Json;
 import org.ramadda.util.MyTrace;
 import org.ramadda.util.Place;
@@ -1010,17 +1011,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     public void init(Properties properties) throws Exception {
-        /*
-        final PrintStream oldErr = System.err;
-                final PrintStream oldOut = System.out;
-                System.setErr(new PrintStream(oldOut){
-                        public void     println(String x) {
-                            Misc.printStack("got it");
-                            oldErr.println(x);
-                        }
-                    });
-        */
-
+	//	IO.debugStderr();
         //        MyTrace.startTrace();
         //This stops jython from processing jars and printing out its annoying message
         System.setProperty("python.cachedir.skip", "true");
