@@ -762,9 +762,13 @@ color: #000;
 }
 
 
-/* fixes the tooltip clicker bug */
+
 .google-visualization-tooltip {
+/* fixes the tooltip clicker bug 
+   but it also introduces other bugs with lingering tooltips
     pointer-events: none;
+    
+*/
     /*position:absolute !important; top:100% !important; z-index:+1; */
 }
 

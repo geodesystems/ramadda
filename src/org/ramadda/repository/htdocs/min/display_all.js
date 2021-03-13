@@ -3887,7 +3887,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'convertData',lagel:"rotate data", ex:"rotateData(includeFields=true,includeDate=true,flipColumns=true);",tt:"Rotate data"},
 	{p:'convertData',label:"percent increase",ex:"addPercentIncrease(replaceValues=false);",tt:"Add percent increase"},
 	{p:'convertData',label:"doubling rate",ex:"doublingRate(fields=f1\\\\,f2, keyFields=f3);",tt:"Calculate # days to double"},
-	{p:'convertData',label:"unfurl",ex:"unfurl(headerField=,uniqueField=,valueFields=);",tt:"Unfurl"},
+	{p:'convertData',label:"unfurl",ex:"unfurl(headerField=field to get header from,uniqueField=e.g. date,valueFields=);",tt:"Unfurl"},
 	{label:"Color Attributes"},
 	{p:"colors",ex:"color1},...,colorN",tt:"Comma separated array of colors"},
 	{p:"colorBy",ex:"",tt:"Field id to color by"},
@@ -5094,6 +5094,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getFieldById: function(fields, id) {
 	    //Support one arg
 	    if(fields!=null && id==null) {
+		if(typeof fields!="string") return null;
 		id = fields;
 		fields=null;
 	    }
@@ -7037,7 +7038,7 @@ a
 
 	    let sideWidth = "1%";
             let contents = this.getContentsDiv();
-            let table =   HU.open("table", ["width","100%","border",0]);
+            let table =   HU.open("table", ["width","100%","border","0","cellpadding","0","cellspacing","0"]);
 	    if(this.getProperty("showDisplayTop",true)) {
 		table+= HU.tr([],HU.td(["width",sideWidth]) + HU.td(["width","99%"],top) +HU.td(["width",sideWidth]));
 	    }
@@ -9669,7 +9670,8 @@ function DataCollection() {
         data: [],
         hasData: function() {
             for (var i = 0; i < this.data.length; i++) {
-                if (this.data[i].hasData()) return true;
+		if(this.data[i])
+                    if (this.data[i].hasData()) return true;
             }
             return false;
         },
@@ -9872,6 +9874,11 @@ function PointData(name, recordFields, records, url, properties) {
 		return this.parentPointData.getRootPointData();
 	    return this;
 	},
+        getUrl: function() {
+	    if(this.url) return this.url;
+	    if(this.parentPointData) return this.parentPointData.getUrl();
+	    return null;
+	},
         equals: function(that) {
 	    if(this.jsonUrl) {
 		return this.jsonUrl == that.jsonUrl;
@@ -9882,12 +9889,12 @@ function PointData(name, recordFields, records, url, properties) {
             return this.loadingCnt > 0;
         },
         handleEventMapClick: function(myDisplay, source, lon, lat) {
-	    //	    console.log("map click:"+ this.url);
+	    let url = this.getUrl();
             this.lon = lon;
             this.lat = lat;
 	    ///repository/grid/json?entryid=3715ca8e-3c42-4105-96b1-da63e3813b3a&location.latitude=0&location.longitude=179.5
 	    //	    initiallatitude=40&location.latitude=0&location.longitude=179.5
-            if (myDisplay.getDisplayManager().hasGeoMacro(this.url)) {
+            if (myDisplay.getDisplayManager().hasGeoMacro(url)) {
 		this.loadData(myDisplay, true);
                 return true;
             }
@@ -10044,6 +10051,7 @@ function PointData(name, recordFields, records, url, properties) {
             }
 
             var success=function(data) {
+		if(debug) console.log("pointDataLoaded");
                 if (GuiUtils.isJsonError(data)) {
 		    console.log("is error");
 		    if(debug)
@@ -11797,18 +11805,23 @@ function CsvUtil() {
     $.extend(this, {
 	process: function(display, pointData, cmds) {
 	    this.display = display;
-	    let commands = DataUtils.parseCommands(cmds);
-
-	    commands.map(cmd=>{
-		if(this[cmd.command]) {
-		    let orig = pointData;
-    		    pointData = this[cmd.command](pointData, cmd.args);
-		    if(!pointData) pointData=orig;
-		    else pointData.entryId = orig.entryId;
-		} else {
-		    console.log("unknown command:" + cmd.command);
-		}
-	    });
+	    let theCmd;
+	    try {
+		let commands = DataUtils.parseCommands(cmds);
+		commands.map(cmd=>{
+		    theCmd =cmd;
+		    if(this[cmd.command]) {
+			let orig = pointData;
+    			pointData = this[cmd.command](pointData, cmd.args);
+			if(!pointData) pointData=orig;
+			else pointData.entryId = orig.entryId;
+		    } else {
+			console.log("unknown command:" + cmd.command);
+		    }
+		});
+	    } catch(e) {
+		console.log("Error applying derived function:" + theCmd.command+" error:" + e);
+	    }
 	    return pointData;
 	},
 	help: function(pointData, args) {
@@ -12317,10 +12330,17 @@ function CsvUtil() {
 	    let uniqueField =  this.display.getFieldById(fields, args.uniqueField||"");
 	    let valueFields =  this.display.getFieldsByIds(fields, args.valueFields||"");
 	    let includeFields =  this.display.getFieldsByIds(fields, args.includeFields||"");
-
+	    let prefix = args.prefix||"";
 	    
 	    if(!headerField) throw new Error("No headerField");
-	    if(!uniqueField) throw new Error("No uniqueField");
+	    let uniqueIsDate = false;
+	    if(!uniqueField) {
+		if(args.uniqueField=="date") {
+		    uniqueIsDate = true;
+		} else {
+		    throw new Error("No uniqueField");
+		}
+	    }
 	    if(valueFields.length==0) throw new Error("No value fields");
 	    /*
 	      newFields.push(new RecordField({
@@ -12339,7 +12359,7 @@ function CsvUtil() {
 	    let indexMap={};
 	    records.forEach(record=>{
 		let unfurlValue = record.getValue(headerField.getIndex());
-		let uniqueValue = record.getValue(uniqueField.getIndex());
+		let uniqueValue = uniqueIsDate?record.getDate():record.getValue(uniqueField.getIndex());
 		if(!newColumnMap[unfurlValue]) {
                     newColumnMap[unfurlValue] = true;
                     if (valueFields.length > 1) {
@@ -12360,20 +12380,43 @@ function CsvUtil() {
                 rowGroup.push(record);
 	    });
 
-	    newColumns.sort();
+	    //In case the new colum labels are numbers
+	    newColumns.sort((a,b)=>{
+		if(typeof a =="number" &&  typeof b =="number") {
+		    return a-b;
+		}
+		return (""+a).localeCompare(""+b);
+	    });
             newColumns.forEach((v,idx) => {
                 indexMap[v] = idx;
             });
 
 	    let newRecords = [];
 	    let newFields = [];
-	    newColumns = Utils.mergeLists([uniqueField.getId()], newColumns);
+	    let uniqueType = "string";
+	    if(uniques[0]) {
+		if(uniques[0].getTime)
+		    uniqueType ="date";
+		else if(typeof uniques[0] =="number")
+		    uniqueType ="double";
+		    
+	    }
+	    if(uniqueIsDate)
+		newColumns = Utils.mergeLists(["date"], newColumns);
+	    else
+		newColumns = Utils.mergeLists([uniqueField.getId()], newColumns);
 	    newColumns.forEach((c,idx)=>{
-		let type = (idx==0?"string":"double");
+		if(idx>0)
+		    c = prefix+""+c;
+		else
+		    c = ""+c;
+		let label =Utils.makeLabel(c);
+		let id  = Utils.makeId(c);
+		let type = (idx==0?uniqueType:"double");
 		newFields.push(new RecordField({
-		    id:c,
+		    id:id,
 		    index:newFields.length,
-		    label:c,
+		    label:label,
 		    type:type,
 		    chartable:true,
 		}));
@@ -12419,7 +12462,8 @@ function CsvUtil() {
                     array[1 + includeCnt] = firstRow.getValue(f.getIndex());
                     includeCnt++;
                 });
-		let newRecord = new  PointRecord(newFields,NaN, NaN, NaN, null, array);
+		let newRecord = new  PointRecord(newFields,firstRow.getLatitude(),firstRow.getLongitude(), NaN, null, array);
+//		console.log("lat:" + firstRow.getLatitude());
 		newRecords.push(newRecord);
                 cnt++;
             });
@@ -16813,8 +16857,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         },
 	makeIndexValue: function(indexField, value, offset) {
 	    if(indexField.isString()) {
-		value = {v:offset,f:value};
+		return  {v:offset,f:value};
 	    } 
+	    if(value && value.getTime) {
+		return  {v:value,f:this.formatDate(value)}
+	    }
 	    return value;
 	},
 	getFieldsToDisplay: function(fields) {
@@ -16881,8 +16928,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             let selectedFields = this.getSelectedFields();
 	    if(debug)
 		console.log("\tselectedFields:" + selectedFields);
-	    
-
 
             if (selectedFields.length == 0 && this.lastSelectedFields != null) {
                 selectedFields = this.lastSelectedFields;
@@ -16914,6 +16959,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    }
                 }
             }
+
 
             if (selectedFields.length == 0) {
                 this.setContents("No fields selected");
@@ -17261,7 +17307,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	},
         makeDataTable: function(dataList, props, selectedFields, chartOptions) {
 	    let dateType = this.getProperty("dateType","date");
-	    let debug = displayDebug.makeDataTable;
+	    let debug =  displayDebug.makeDataTable;
 	    let debugRows = 4;
 	    if(debug) console.log(this.type+" makeDataTable #records" + dataList.length);
 	    if(debug) console.log("\tfields:" + selectedFields);
@@ -17752,6 +17798,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    };
 
 
+
             chartOptions.vAxis = {
                 gridlines: {},
                 minorGridlines: {},		
@@ -17980,10 +18027,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		chartOptions.hAxis.maxValue = x.max;
 	    }
 
-	    if(this.getProperty("vAxisFixedRange")) {
+	    if(this.getProperty("vAxisFixedRange") || this.getProperty("vAxisSelectedFields") || this.getProperty("vAxisAllFields")) {
 		let min = Number.MAX_VALUE;
 		let max = Number.MIN_VALUE;		
-		selectedFields.forEach(f=>{
+		let fields = this.getProperty("vAxisAllFields")?this.getFields():selectedFields;
+		fields.forEach(f=>{
 		    if(f.isFieldNumeric()) {
 			let y = this.getColumnValues(records, f);
 			if(!isNaN(y.min))
@@ -17997,6 +18045,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    chartOptions.vAxis.maxValue = max;
 		}
 	    }
+
 	},
 	doMakeGoogleChartInner: function(dataList, props, selectedFields) {
             if (typeof google == 'undefined') {
@@ -18015,6 +18064,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             let records = this.getPointData().getRecords();
 	    this.setAxisRanges(this.chartOptions, selectedFields, records);
+
 //	    console.log(JSON.stringify(this.chartOptions, null,2));
 	    
 	    if(this.getProperty("doMultiCharts",this.getProperty("multipleCharts",false))) {
@@ -18076,7 +18126,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	},
 	makeGoogleChartInner: function(dataList, chartId, props, selectedFields) {
 	    let chartDiv = document.getElementById(chartId);
-	    //	    console.log(JSON.stringify(this.chartOptions, null, 2));
 	    if(!chartDiv) return;
 	    var dataTable = this.makeDataTable(dataList, props, selectedFields, this.chartOptions);
             let chart = this.doMakeGoogleChart(dataList, props, chartDiv, selectedFields, this.chartOptions);
@@ -18095,7 +18144,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		}
                 chartOptions.vAxis.maxValue = max;
             }
-
 
 
 	    if(this.getProperty("animation",false,true)) {
@@ -18173,88 +18221,83 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 function RamaddaAxisChart(displayManager, id, chartType, properties) {
     let SUPER = new RamaddaGoogleChart(displayManager, id, chartType, properties);
-    defineDisplay(this, SUPER, [], {
-	getWikiEditorTags: function() {
-	    var t = SUPER.getWikiEditorTags();
-	    var myTags = [
-		"label:Chart Attributes",
-		'indexField=field',
-		"vAxisMinValue=\"\"",
-		"vAxisMaxValue=\"\"", 
-		['vAxisSharedRange=true','use the same max value across all time series'],
-		'vAxisLogScale=true',
-		'hAxisLogScale=true',
-		'tooltipFields=""',
-		'annotations="date,label,desc;date,label,desc; e.g. 2008-09-29,A,Start of housing crash;2008-11-04,B,Obama elected;"',
-		'annotationFields=""',	
-		'annotationLabelField=""',
-		'indexField="alternate field to use as index"',
-		'dateType=datetime',
-		'forceStrings="if index is a string set to true"',
-		'inlinelabel:Multiples',
-		'doMultiCharts=true',
-		'multiField=field',
-		'multiStyle=""',
-		'multiLabelTemplate="${value}"',
-		'multiChartsLabelPosition=bottom|top|none',
-		'inlinelabel:Chart Layout',
-		"chartHeight=\"\"",
-		"chartWidth=\"\"",
-		"chartLeft=\"0\"",
-		"chartRight=\"0\"",
-		"chartTop=\"0\"",
-		"chartBottom=\"0\"",
-		"inlinelabel:Misc Chart Options",
-		'lineColor=""',
-		'chartBackground=""',
-		'chart.fill=""',
-		'chartArea.fill=""',
-		'chart.stroke=""',
-		'chart.strokeWidth=""',
-		'chartArea.fill=""',
-		'chartArea.stroke=""',
-		'chartArea.strokeWidth=""',
-		'gridlines.color="transparent"',
-		'minorGridLines.color="transparent"',
-		'gridlines.color=""',
-		'hAxis.gridlines.color=""',
-		'hAxis.minorGridlines.color="transparent"',
-		'baselineColor=""',
-		'hAxis.baselineColor=""',
-		'gridlines.color=""',
-		'vAxis.gridlines.color=""',
-		'vAxis.minorGridlines.color="transparent"',
-		'baselineColor=""',
-		'vAxis.baselineColor=""',
-		'textColor="#000"',
-		'textBold="true"',
-		'axis.text.color="#000"',
-		'hAxis.text.color="#000"',
-		'axis.text.color="#000"',
-		'vAxis.text.color="#000"',
-		'hAxis.text.bold="false"',
-		'vAxis.text.bold="false"',
-		'vAxisText=""',
-		'vAxis.text=""',
-		'slantedText="true"',
-		'hAxis.slantedText=""',
-		'hAxis.text.color="#000"',
-		'vAxis.text.color="#000"',
-		'legend.position="top|bottom|none"',
-		'legend.text.color="#000"',
-		'hAxis.ticks=""',
-		'hAxis.ticks=""',
-		'vAxis.ticks=""',
-		'vAxis.ticks=""',
-		'useMultipleAxes="true"',
-		'showTrendLines="true"',
+    let myProps = [
+	{label:'Chart Attributes'},
+	{p:'indexField',w:'field'},
+	{p:'vAxisMinValue',w:''},
+	{p:'vAxisMaxValue',w:''},
+	{p:'vAxisSharedRange',w:'true',tt:'use the same max value across all time series'},
+	{p:"hAxisFixedRange"},
+	{p:"vAxisSelectedFields",w:'true',tt:'Use selected fields to find min/max for the range'},
+	{p:"vAxisAllFields",w:'true',tt:'Use all field values to find min/max for the range'},
+	{p:'vAxisLogScale',w:'true'},
+	{p:'hAxisLogScale',w:'true'},
+	{p:'tooltipFields',w:''},
+	{p:'annotations',w:'date,label,desc;date,label,desc;',tt:'e.g. 2008-09-29,A,Start of housing crash;2008-11-04,B,Obama elected;'},
+ 	{p:'annotationFields',w:''},
+	{p:'annotationLabelField',w:''},
+	{p:'indexField',w:'',tt:'alternate field to use as index'},
+ 	{p:'dateType',w:'datetime'},
+ 	{p:'forceStrings',w:'',tt:'if index is a string set to true'},
+	{inlineLabel:'Multiples Charts'},
+	{p:'doMultiCharts',w:'true'},
+	{p:'multiField',w:'field'},
+	{p:'multiStyle',w:''},
+	{p:'multiLabelTemplate',w:'${value}'},
+	{p:'multiChartsLabelPosition',w:'bottom|top|none'},
+	{inlineLabel:'Chart Layout'},
+	{p:'chartHeight',w:''},
+	{p:'chartWidth',w:''},
+	{p:'chartLeft',w:'0'},
+	{p:'chartRight',w:'0'},
+	{p:'chartTop',w:'0'},
+	{p:'chartBottom',w:'0'},
+	{p:'lineColor',w:''},
+	{p:'chartBackground',w:''},
+	{p:'chart.fill',w:''},
+	{p:'chartArea.fill',w:''},
+	{p:'chart.stroke',w:''},
+	{p:'chart.strokeWidth',w:''},
+	{p:'chartArea.fill',w:''},
+	{p:'chartArea.stroke',w:''},
+	{p:'chartArea.strokeWidth',w:''},
+	{p:'gridlines.color',w:'transparent'},
+	{p:'minorGridLines.color',w:'transparent'},
+	{p:'gridlines.color',w:''},
+	{p:'hAxis.gridlines.color',w:''},
+	{p:'hAxis.minorGridlines.color',w:'transparent'},
+	{p:'baselineColor',w:''},
+	{p:'hAxis.baselineColor',w:''},
+	{p:'gridlines.color',w:''},
+	{p:'vAxis.gridlines.color',w:''},
+	{p:'vAxis.minorGridlines.color',w:'transparent'},
+	{p:'baselineColor',w:''},
+	{p:'vAxis.baselineColor',w:''},
+	{p:'textColor',w:'#000'},
+	{p:'textBold',w:'true'},
+	{p:'axis.text.color',w:'#000'},
+	{p:'hAxis.text.color',w:'#000'},
+	{p:'axis.text.color',w:'#000'},
+	{p:'vAxis.text.color',w:'#000'},
+	{p:'hAxis.text.bold',w:'false'},
+	{p:'vAxis.text.bold',w:'false'},
+	{p:'vAxisText',w:''},
+	{p:'vAxis.text',w:''},
+	{p:'slantedText',w:'true'},
+	{p:'hAxis.slantedText',w:''},
+	{p:'hAxis.text.color',w:'#000'},
+	{p:'vAxis.text.color',w:'#000'},
+	{p:'legend.position',w:'top|bottom|none'},
+	{p:'legend.text.color',w:'#000'},
+	{p:'hAxis.ticks',w:''},
+	{p:'hAxis.ticks',w:''},
+	{p:'vAxis.ticks',w:''},
+	{p:'vAxis.ticks',w:''},
+	{p:'useMultipleAxes',w:'true'},
+	{p:'showTrendLines',w:'true'},
+    ];
 
-
-
-	    ]
-	    myTags.map(tag=>t.push(tag));
-	    return t;
-	},
+    defineDisplay(this, SUPER, myProps, {
 
 	setChartArea: function(chartOptions) {
             if (!chartOptions.chartArea) {
@@ -18284,7 +18327,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 
 	    this.setPropertyOn(chartOptions.legend, "legend.position", "position", this.getProperty("legendPosition", 'bottom'));
 	    this.setChartArea(chartOptions);
-	    
+   
             let useMultipleAxes = this.getProperty("useMultipleAxes", true);
             if (useMultipleAxes) {
 		//TODO: 
@@ -18296,23 +18339,41 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
                     }];
             }
 
+	    if(chartOptions.legend.position=="left") {
+		console.log(chartOptions.legend.position);
+                chartOptions.series = [
+		    {
+			targetAxisIndex: 1
+		    }]
+	    }
+
+
+
 	    if (!chartOptions.hAxis) {
 		chartOptions.hAxis = {};
 	    }
 	    if (!chartOptions.vAxis) {
 		chartOptions.vAxis = {};
 	    }
-	    chartOptions.hAxis.textPosition = this.getProperty("hAxisTextPosition");
+	    chartOptions.hAxis.textPosition = this.getProperty("hAxisTextPosition","top");
 	    chartOptions.vAxis.textPosition = this.getProperty("vAxisTextPosition");
 
-	    //	    console.log(JSON.stringify(chartOptions,null, 2));
 
             if (this.getProperty("hAxisTitle")) {
                 chartOptions.hAxis.title = this.getProperty("hAxisTitle");
             }
             if (this.getProperty("vAxisTitle")) {
                 chartOptions.vAxis.title = this.getProperty("vAxisTitle");
+		if(chartOptions.vAxis.title && dataFields) {
+		    let label = dataFields.reduce((acc,v)=>{
+			return acc+" " + v.getLabel();
+		    },"");
+		    chartOptions.vAxis.title = chartOptions.vAxis.title.replace("${fields}",label);
+		}
+
             }
+//	    console.log(JSON.stringify(chartOptions,null,2));
+
             if (Utils.isDefined(this.chartHeight)) {
                 chartOptions.height = this.chartHeight;
             }
@@ -19149,7 +19210,7 @@ function TableDisplay(displayManager, id, properties) {
 	    }
 
 
-	    //	    console.log(JSON.stringify(chartOptions,null,2));
+//	    console.log(JSON.stringify(chartOptions,null,2));
             chartOptions.allowHtml = true;
 	    if(this.getProperty("tableWidth"))
 		chartOptions.width=this.getProperty("tableWidth");
@@ -20014,7 +20075,7 @@ function ScatterplotDisplay(displayManager, id, properties) {
 	      };		
 
 	    */
-	    //	    console.log(JSON.stringify(chartOptions,null,2));
+
 
             if (dataList.length > 0 && this.getDataValues(dataList[0]).length > 1) {
                 if (!chartOptions.vAxis) chartOptions.vAxis = {};
@@ -29220,10 +29281,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             });
 
 	    let hasLoc = Utils.isDefined(this.getZoomLevel())   ||
-		Utils.isDefined(this.getMapCenter());
-            if (!hasLoc && (this.getPropertyBounds() ||this.getPropertyGridBounds()) ) {
+		Utils.isDefined(this.getMapCenter()) ||
+		this.hadInitialPosition;
+	    
+            if (this.getPropertyBounds() ||this.getPropertyGridBounds() ) {
 		this.hadInitialPosition = true;
-                var toks = this.getPropertyBounds(this.getGridBounds("")).split(",");
+                let toks = this.getPropertyBounds(this.getGridBounds("")).split(",");
                 if (toks.length == 4) {
                     if (this.getProperty("showBounds", false)) {
                         var attrs = {};
@@ -29232,7 +29295,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         }
                         this.map.addRectangle("bounds", parseFloat(toks[0]), parseFloat(toks[1]), parseFloat(toks[2]), parseFloat(toks[3]), attrs, "");
                     }
-                    this.setInitMapBounds(parseFloat(toks[0]), parseFloat(toks[1]), parseFloat(toks[2]), parseFloat(toks[3]));
+		    if(!hasLoc)
+			this.setInitMapBounds(parseFloat(toks[0]), parseFloat(toks[1]), parseFloat(toks[2]), parseFloat(toks[3]));
                 }
             }
 
@@ -30529,7 +30593,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
             let records = this.records =  this.filterData();
 
-
 	    if(this.coordinatesTypeField && this.coordinatesField) {
 		this.loadCoordinates(records);
 	    }
@@ -31500,12 +31563,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(!Utils.isDefined(point.x) || !Utils.isDefined(point.y)) return;
 		}
 
+
 		if(justOneMarker) {
 		    debug = false;
-		    if(didMarker) return;
-		    didMarker = true;
+		    if(didMarker) {
+			if(debug)
+			    console.log("didMarker");
+			return;
+		    }
                     this.map.removeMarker(this.justOneMarker);
                     if(!isNaN(point.x) && !isNaN(point.y)) {
+			didMarker = true;
                         this.justOneMarker= this.map.addMarker(id, [point.x,point.y], null, "", "");
 			if(debug) console.log("\tadding justOneMarker had initial position:" + this.hadInitialPosition);
 			if(!this.hadInitialPosition) {
@@ -31593,6 +31661,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(polygonField) {
 		    let s = values[polygonField.getIndex()];
 		    let delimiter;
+		    console.log("p:" + polygonField);
 		    [";",","].forEach(d=>{
 			if(s.indexOf(d)>=0) delimiter = d;
 		    });
@@ -31985,13 +32054,6 @@ function MapEntryInfo(entry) {
 
     });
 }
-
-
-
-
-
-
-
 
 
 function RamaddaMapgridDisplay(displayManager, id, properties) {
@@ -35200,6 +35262,8 @@ const DISPLAY_ORGCHART = "orgchart";
 const DISPLAY_TIMELINE = "timeline";
 const DISPLAY_HOURS = "hours";
 const DISPLAY_BLANK = "blank";
+const DISPLAY_PRE = "pre";
+const DISPLAY_HTMLTABLE = "htmltable";
 const DISPLAY_RECORDS = "records";
 const DISPLAY_TSNE = "tsne";
 const DISPLAY_HEATMAP = "heatmap";
@@ -35345,6 +35409,20 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_BLANK,
     label: "Blank",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_CONTROLS
+});
+addGlobalDisplayType({
+    type: DISPLAY_PRE,
+    label: "Preformat",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_CONTROLS
+});
+addGlobalDisplayType({
+    type: DISPLAY_HTMLTABLE,
+    label: "HTML Table",
     requiresData: true,
     forUser: true,
     category: CATEGORY_CONTROLS
@@ -36143,6 +36221,8 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
 	    let records = this.filterData();
 	    this.writeHtml(ID_DISPLAY_CONTENTS, "");
 	    if(!records) return;
+	    console.log("r:" + records.length);
+
 	    let colorBy = this.getColorByInfo(records);
 	    if(colorBy.index>=0) {
 		records.map(record=>{
@@ -36150,6 +36230,105 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
 		});
 		colorBy.displayColorTable();
 	    }
+	}});
+}
+
+
+function RamaddaPreDisplay(displayManager, id, properties) {
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_PRE, properties);
+    let myProps = [
+	{label:'Pre Properties'},
+	{p:'numRecords',ex:'100',d:1000},
+	{p:'includeGeo',ex:'true',d:true},	
+    ];
+
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+	updateUI: function() {
+	    let records = this.filterData();
+	    if(!records) {
+		this.writeHtml(ID_DISPLAY_CONTENTS, "No records yet");		
+		return;
+	    }
+            let pointData = this.dataCollection.getList()[0];
+            let fields = pointData.getRecordFields();
+	    let numRecords = this.getNumRecords();
+	    let includeGeo = this.getIncludeGeo();
+	    let html ="Number of records:" + records.length+"<pre>";
+	    fields.forEach((f,idx)=>{
+		if(idx>0) html+=", ";
+		html+=f.getId() +"[" + f.getType()+"]";
+	    });
+	    if(includeGeo) html+=", latitude, longitude";
+	    html+="\n";
+	    records.every((r,idx)=>{
+		if(numRecords>-1 && idx>numRecords) return false;
+		let d = r.getData();
+		d = d.map(d=>{
+		    if(d.getTime) return this.formatDate(d);
+		    return d;
+		});
+		html+="#" + idx+": ";
+		html+=d.join(", ");
+		if(includeGeo) {
+		    html+=", " + r.getLatitude() +"," + r.getLongitude();
+		}
+		html+="\n";
+		return true;
+	    });
+	    html+="</pre>"
+	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
+	}});
+}
+
+
+
+function RamaddaHtmltableDisplay(displayManager, id, properties) {
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_HTMLTABLE, properties);
+    let myProps = [
+	{label:'Pre Properties'},
+	{p:'numRecords',ex:'100',d:1000},
+	{p:'includeGeo',ex:'true',d:true},	
+    ];
+
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+	updateUI: function() {
+	    let records = this.filterData();
+	    if(!records) {
+		this.writeHtml(ID_DISPLAY_CONTENTS, "No records yet");		
+		return;
+	    }
+            let pointData = this.dataCollection.getList()[0];
+            let fields = pointData.getRecordFields();
+	    let numRecords = this.getNumRecords();
+	    let includeGeo = this.getIncludeGeo();
+	    let html ="Number of records:" + records.length+"<table width=100% border=0>";
+	    html+="<tr valign=top><td></td>";
+	    let headerAttrs = [STYLE,"white-space:nowrap;background:#efefef;margin:1px;padding:3px; font-weight:bold;"];
+	    fields.forEach((f,idx)=>{
+		html+=HU.td([],HU.div(headerAttrs,f.getId() +"[" + f.getType()+"]"));
+	    });
+	    if(includeGeo) html+=HU.td(HU.div(headerAttrs,"latitude")) + HU.td([],HU.div(headerAttrs,"longitude"));
+	    html+="</tr>";
+	    records.every((r,idx)=>{
+		if(numRecords>-1 && idx>numRecords) return false;
+		let d = r.getData();
+		d = d.map(d=>{
+		    if(d.getTime) return this.formatDate(d);
+		    return d;
+		});
+		let clazz = (idx%2)?"ramadda-row-odd":"ramadda-row-even";
+		html+="<tr class=" + clazz+"><td>#" + idx+": </td>";
+		d.forEach(v=>{
+		    html+=HU.td([],v);
+		});
+		if(includeGeo) {
+		    html+=HU.td([],r.getLatitude()) +HU.td([],r.getLongitude());
+		}
+		html+="</tr>";
+		return true;
+	    });
+	    html+="</table>";
+	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
 	}});
 }
 
