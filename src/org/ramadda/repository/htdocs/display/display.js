@@ -724,6 +724,7 @@ function DisplayThing(argId, argProperties) {
         },
         formatRecordLabel: function(label) {
             label = label.replace(/!!/g, " -- ");
+	    label = label.replace(/ /g,"&nbsp;");
             return label;
         },
         getFormValue: function(what, dflt) {
@@ -1073,6 +1074,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'convertData',label:"percent increase",ex:"addPercentIncrease(replaceValues=false);",tt:"Add percent increase"},
 	{p:'convertData',label:"doubling rate",ex:"doublingRate(fields=f1\\\\,f2, keyFields=f3);",tt:"Calculate # days to double"},
 	{p:'convertData',label:"unfurl",ex:"unfurl(headerField=field to get header from,uniqueField=e.g. date,valueFields=);",tt:"Unfurl"},
+	{p:'accum',label:"Accumulate data",ex:"accum(fields=);",tt:"Accumulate"},
+	{p:'scaleAndOffset',label:"Scalen and offset",ex:"accum(scale=1,offset1=0,offset2=0,unit=,fields=);",tt:"(d + offset1) * scale + offset2"},		
 	{label:"Color Attributes"},
 	{p:"colors",ex:"color1},...,colorN",tt:"Comma separated array of colors"},
 	{p:"colorBy",ex:"",tt:"Field id to color by"},
@@ -1563,6 +1566,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.minDateObj = min;
 	    this.maxDateObj = max;
 	    this.dateRangeDoDay = doDay;
+//	    console.log("setDateRange: " + this.minDateObj +" " + this.maxDateObj);
 	},
         handleDateRangeChanged: function(source, prop) {
 	    this.setDateRange(prop.minDate, prop.maxDate);
@@ -2619,6 +2623,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	    $.extend(opts,args);
 	    let debug = displayDebug.filterData;
+	    if(this.getAnimationEnabled()) {
+		if(this.getProperty("animationFilter", true)) {
+		    this.setDateRange(this.getAnimation().begin, this.getAnimation().end);
+		}
+	    }
+
+
 	    let highlight =  this.getFilterHighlight();
 	    let startDate = this.getProperty("startDate");
 	    let endDate = this.getProperty("endDate");
@@ -2701,10 +2712,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		r.clearHighlight(this);
 	    });
 
-	    records = records.filter(record=>{
+	    if(debug)   console.log("checking dates");
+	    records = records.filter((record,idx)=>{
                 let date = record.getDate();
 		if(!date) return true;
-		return this.dateInRange(date);
+		return this.dateInRange(date,idx<5 && debug);
 	    });
 	    if(debug)   console.log("filter Fields:" + this.filters.length +" #records:" + records.length);
 
@@ -5849,7 +5861,7 @@ a
 	    if(!args) args = {};
 	    let debug = displayDebug.getStandardData;
 	    if(debug) console.log("getStandardData:" + this.type +"  fields:" + fields);
-	    let showUnit  = this.getProperty("showUnit",true);
+	    let showUnit  = this.getProperty("showUnit",this.getProperty("showUnitInSeries",true));
 	    this.recordToIndex = {};
 	    this.indexToRecord = {};
             var pointData = this.getPointData();

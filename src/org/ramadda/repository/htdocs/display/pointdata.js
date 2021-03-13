@@ -674,12 +674,8 @@ function RecordField(props) {
             return  HtmlUtils.span(["title",tt,"class","fa " +type,"style","color:rgb(169, 169, 169);font-size:12pt;"]);
         },
         getUnitLabel: function() {
-            var label = this.getLabel();
-            if (this.unit && this.unit != "")
-                label = label + " [" + this.unit + "]";
-            return label;
+            return this.getLabel() + this.getUnitSuffix();
         },
-
         getUnitSuffix: function() {
             if (this.unit && this.unit != "")
                 return "&nbsp;[" + this.unit + "]";
@@ -782,6 +778,9 @@ PointRecord.prototype =  {
     getData: function() {
         return this.data;
     },
+    setData: function(d) {
+        this.data = d;
+    },    
     allZeros: function() {
         var tuple = this.getData();
         var allZeros = false;
@@ -2160,7 +2159,8 @@ function CsvUtil() {
 		    }
 		});
 	    } catch(e) {
-		console.log("Error applying derived function:" + theCmd.command+" error:" + e);
+		console.log("Error applying derived function:" + theCmd.command);
+		console.log(e);
 	    }
 	    return pointData;
 	},
@@ -2481,6 +2481,92 @@ function CsvUtil() {
 	    }
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
+	scaleAndOffset: function(pointData,args) {
+	    let records = pointData.getRecords(); 
+            let allFields  = pointData.getRecordFields();
+	    let fields;
+	    if(args.fields)
+		fields = this.display.getFieldsByIds(allFields, (args.fields||"").replace(/_comma_/g,","));
+	    else 
+		fields = allFields;
+	    let unit = args.unit;
+	    let scale = args.scale?parseFloat(args.scale):1;
+	    let offset1 = args.offset1?parseFloat(args.offset1):0;
+	    let offset2 = args.offset?parseFloat(args.offset):args.offset2?parseFloat(args.offset2):0;	    	    
+	    let newRecords  =[]
+	    let newFields = [];
+	    let changedFields = {};
+	    fields.forEach(f=>{changedFields[f.getId()]  =true});
+	    allFields.map(f=>{
+		let newField = f.clone();
+		newFields.push(newField);
+		if(!f.isNumeric()) {
+		    return;
+		}
+		if(changedFields[newField.getId()]) {
+		    newField.unit = unit;
+		}
+	    });
+	    for (var rowIdx=0; rowIdx <records.length; rowIdx++) {
+		let record = records[rowIdx];
+		let newRecord = record.clone();
+		newRecords.push(newRecord);
+		let data = record.getData();
+		let newData=Utils.cloneList(data);
+		newFields.forEach(f=>{
+		    if(!f.isNumeric()) return;
+		    let d = data[f.getIndex()];
+		    if(!isNaN(d)) {
+			d  = (d + offset1) * scale + offset2;
+			newData[f.getIndex()]=d;
+		    }
+		});
+		newRecord.setData(newData);
+	    }
+	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
+	},
+
+//0.039370079003585	    
+	accum: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+            let allFields  = pointData.getRecordFields();
+	    let fields;
+	    if(args.fields)
+		fields = this.display.getFieldsByIds(allFields, (args.fields||"").replace(/_comma_/g,","));
+	    else 
+		fields = allFields;
+	    let newRecords  =[]
+	    let newFields = Utils.cloneList(allFields);
+	    let totals =[];
+	    allFields.map(f=>{
+		totals.push(0);
+		let newField = f.clone();
+		newFields.push(newField);
+		if(!f.isNumeric()) return;
+		newField.id = newField.id+"_accum";
+		newField.label = newField.label+" accum";
+	    });
+	    for (var rowIdx=0; rowIdx <records.length; rowIdx++) {
+		let record = records[rowIdx];
+		let newRecord = record.clone();
+		newRecords.push(newRecord);
+		let data = record.getData();
+		let newData=Utils.cloneList(data);
+		fields.forEach(f=>{
+		    if(!f.isNumeric()) return;
+		    let d = data[f.getIndex()];
+		    if(!isNaN(d)) {
+			let x = d;
+			totals[f.getIndex()]+=d;
+			d = totals[f.getIndex()];
+		    }
+		    newData[f.getIndex()] = d;
+		});
+		newRecord.setData(newData);
+	    }
+	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
+	},
+
 	mergeRows: function(pointData, args) {
 	    let records = pointData.getRecords(); 
             let fields  = pointData.getRecordFields();
