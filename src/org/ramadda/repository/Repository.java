@@ -1289,9 +1289,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
             File[] localFiles =
                 getStorageManager().getRepositoryDir().listFiles();
             for (File f : localFiles) {
+		
                 if ( !f.toString().endsWith(".properties")) {
                     continue;
                 }
+		if(f.getName().startsWith(".")) continue;
                 if (f.getName().equals("repository.properties")) {
                     continue;
                 }

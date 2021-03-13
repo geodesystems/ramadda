@@ -82,7 +82,6 @@ public class DateHandler extends RepositoryManager {
     protected List<SimpleDateFormat> parseFormats;
 
 
-
     /**
      * _more_
      *
@@ -91,7 +90,6 @@ public class DateHandler extends RepositoryManager {
     public DateHandler(Repository repository) {
         super(repository);
     }
-
 
 
     /**
@@ -103,7 +101,11 @@ public class DateHandler extends RepositoryManager {
         dateFormats = new Hashtable<String, SimpleDateFormat>();
         shortDateFormat = getRepository().getProperty(PROP_DATE_SHORTFORMAT,
                 DEFAULT_TIME_SHORTFORMAT);
+	Repository.propdebug = true;
+	System.err.println("getting timezone property");
         String tz = getRepository().getProperty(PROP_TIMEZONE, "UTC");
+	Repository.propdebug = false;
+	System.err.println("timezone:" + tz);
         displayTimeZone = TimeZone.getTimeZone(tz);
         displaySdf =
             RepositoryUtil.makeDateFormat(getDefaultDisplayDateFormat(),
