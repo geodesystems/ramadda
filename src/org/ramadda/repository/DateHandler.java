@@ -101,17 +101,16 @@ public class DateHandler extends RepositoryManager {
         dateFormats = new Hashtable<String, SimpleDateFormat>();
         shortDateFormat = getRepository().getProperty(PROP_DATE_SHORTFORMAT,
                 DEFAULT_TIME_SHORTFORMAT);
-	Repository.propdebug = true;
-	System.err.println("getting timezone property");
+	//	Repository.propdebug = true;
+	//	System.err.println("getting timezone property");
         String tz = getRepository().getProperty(PROP_TIMEZONE, "UTC");
-	Repository.propdebug = false;
-	System.err.println("timezone:" + tz);
+	//	Repository.propdebug = false;
+	//	System.err.println("timezone:" + tz);
         displayTimeZone = TimeZone.getTimeZone(tz);
         displaySdf =
             RepositoryUtil.makeDateFormat(getDefaultDisplayDateFormat(),
                                           displayTimeZone);
         yyyymmddSdf = RepositoryUtil.makeDateFormat("yyyy-MM-dd");
-
         TimeZone.setDefault(RepositoryUtil.TIMEZONE_DEFAULT);
     }
 
