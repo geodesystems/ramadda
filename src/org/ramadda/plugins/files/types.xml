@@ -14,7 +14,24 @@
   </type>
 
 
-  <type name="type_json"  super="type_convertible" description="Json File" pattern=".*\.json" handler="org.ramadda.plugins.files.JsonFileTypeHandler" category="Data">
+  <type name="type_file"  description="Text File" pattern="(.*\.xml)"  category="Files">
+     <property name="icon" value="/icons/xml.png"/>
+     <wiki><![CDATA[
++section title={{name}}
+{{description wikify="true"}}
+{{embed as=file   maxheight="600"  }}
+-section
+]]>
+</wiki>
+  </type>
+  
+
+<type name="type_file_javascript"  description="Javascript File" pattern=".*\.js"  category="Files">
+    <property name="icon" value="/icons/js.png"/>
+</type>
+
+
+<type name="type_json"  super="type_convertible" description="Json File" pattern=".*\.json" handler="org.ramadda.plugins.files.JsonFileTypeHandler" category="Data">
      <property name="icon" value="/icons/json.png"/>
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>
