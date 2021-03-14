@@ -2461,3 +2461,49 @@ table.dataTable tfoot td {
 .ramadda-menu-item:hover {
     background:#eee;
 }
+
+.display-datebox-table {
+    position:relative;
+}
+
+
+.display-datebox-row {
+    border:1px solid #efefef;
+    position:relative;
+}
+
+.display-datebox-box {
+    position:absolute;
+    cursor:pointer;
+    margin-left:0px;
+    margin-right:0px;
+}
+
+
+.display-datebox-rowlabel {
+    font-size:10pt;
+}
+
+.display-datebox-stats {
+    font-size:10pt;
+    margin-left:3px;
+}
+
+.display-datebox-header {
+    font-weight:bold;
+}
+
+.display-datebox-dateheader {
+    position:relative;
+    width:100%;
+    overflow:hidden;
+}
+
+.display-datebox-date {
+    font-size:10pt;
+    position:absolute;
+}
+.display-datebox-tick {
+    font-size:10pt;
+    position:absolute;
+}
