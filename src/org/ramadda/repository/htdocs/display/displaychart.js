@@ -1484,8 +1484,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             this.setPropertyOn(chartOptions.hAxis.textStyle, "hAxis.text.bold", "bold", textBold);
             this.setPropertyOn(chartOptions.vAxis.textStyle, "vAxis.text.bold", "bold", textBold);
 
-	    chartOptions.vAxis.title  = this.getProperty("vAxis.text", this.getProperty("vAxisText"));
-	    chartOptions.hAxis.title  = this.getProperty("hAxis.text", this.getProperty("hAxisText"));	    
+	    chartOptions.vAxis.title  = Utils.decodeText(this.getProperty("vAxis.text", this.getProperty("vAxisText")));
+	    chartOptions.hAxis.title  = Utils.decodeText(this.getProperty("hAxis.text", this.getProperty("hAxisText")));	    
 	    chartOptions.hAxis.slantedText = this.getProperty("hAxis.slantedText",this.getProperty("slantedText",false));
             this.setPropertyOn(chartOptions.hAxis.titleTextStyle, "hAxis.text.color", "color", textColor);
             this.setPropertyOn(chartOptions.vAxis.titleTextStyle, "vAxis.text.color", "color", textColor);
