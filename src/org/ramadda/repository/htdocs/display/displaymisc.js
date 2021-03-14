@@ -2197,7 +2197,7 @@ function RamaddaRecordsDisplay(displayManager, id, properties, type) {
 		    if(v.getTime) v = this.formatDate(v);
                     div += HU.b(field.getLabel()) + ": " + v + "<br>" +"\n";
                 }
-                html += HU.div([CLASS,"display-records-record",RECORD_INDEX,rowIdx], div);
+                html += HU.div([CLASS,"display-records-record",RECORD_INDEX,rowIdx,RECORD_ID, records[rowIdx].getId()], div);
             }
             let height = this.getProperty("maxHeight", "400px");
             if (!height.endsWith("px")) {
@@ -2854,7 +2854,7 @@ function RamaddaBoxtableDisplay(displayManager, id, properties) {
 		    if(colorBy.index) {
 			color =  colorBy.getColor(record.getData()[colorBy.index], record) || color;
 		    }
-		    row +=HU.div([TITLE,"",RECORD_INDEX, idx, CLASS,"display-colorboxes-box",STYLE,HU.css('background', color)],"");
+		    row +=HU.div([TITLE,"",RECORD_ID, record.getId(), CLASS,"display-colorboxes-box",STYLE,HU.css('background', color)],"");
 		});
 		row+=HU.close(TD,TR);
 		html+=row;
@@ -3698,7 +3698,7 @@ function RamaddaCanvasDisplay(displayManager, id, properties) {
 		let title  = titleTemplate?
 		    HU.div([CLASS,"display-canvas-title"], 
 			   this.getRecordHtml(record, null, titleTemplate)):"";	
-		let div =  HU.div([TITLE,"",CLASS,"display-canvas-block", RECORD_INDEX,idx], topTitle+c+title);
+		let div =  HU.div([TITLE,"",CLASS,"display-canvas-block", RECORD_INDEX,idx,RECORD_ID, record.getId()], topTitle+c+title);
 		if(urlField) {
 		    let url = record.getValue(urlField.getIndex());
 		    if(Utils.stringDefined(url))
@@ -3801,7 +3801,7 @@ function RamaddaFieldtableDisplay(displayManager, id, properties) {
 		    hdrAttrs.push("field-value");
 		    hdrAttrs.push(r.getValue(labelField.getIndex()));
 		}
-		html += HU.open(TR,["valign","center",RECORD_INDEX,idx,CLASS,"display-fieldtable-row"]);
+		html += HU.open(TR,["valign","center",RECORD_INDEX,idx,RECORD_ID, r.getId(),CLASS,"display-fieldtable-row"]);
 		html+=HU.td([STYLE,HU.css('vertical-align','center'),'align','right'],HU.div(hdrAttrs,label));
 		fields.forEach(f=>{
 		    let v = r.getValue(f.getIndex());
@@ -3963,7 +3963,7 @@ function RamaddaDotstackDisplay(displayManager, id, properties) {
 		    }
 		    let c = colorBy.getColorFromRecord(r,"blue");
 		    let box = HU.div(
-			[TITLE,"", RECORD_INDEX,idToIndex[r.getId()],CLASS, "display-dotstack-dot",STYLE,HU.css('width', w+'px','height', w +'px','background', c)],"");
+			[TITLE,"", RECORD_ID, r.getId(),RECORD_INDEX,idToIndex[r.getId()],CLASS, "display-dotstack-dot",STYLE,HU.css('width', w+'px','height', w +'px','background', c)],"");
 		    row.push(box);
 		});
 		html += HU.open(DIV,[CLASS,"display-dotstack-block"]);
@@ -4080,7 +4080,7 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 			style+=HU.css(HEIGHT,HU.getDimension(size),WIDTH,HU.getDimension(size));
 		    }
 		    let top = maxHeight/2-size/2;
-		    html +=  HU.span([RECORD_INDEX,idx2,CLASS,clazz,STYLE,HU.css('border',dotBorder, "background",c,"position",'absolute','top',HU.getDimension(top),'left', perc+'%')+style, RECORD_INDEX,idx2, TITLE,""]); 
+		    html +=  HU.span([RECORD_INDEX,idx2,RECORD_ID, r.getId(),CLASS,clazz,STYLE,HU.css('border',dotBorder, "background",c,"position",'absolute','top',HU.getDimension(top),'left', perc+'%')+style, RECORD_INDEX,idx2, TITLE,""]); 
 		});
 
 		html += HU.close(DIV,TD);
@@ -4155,6 +4155,8 @@ function RamaddaDateboxDisplay(displayManager, id, properties) {
  	{p:'leftLabel',tt:'Label for the left column'},
  	{p:'rightLabel',tt:'Label for the left column',d:'Total/Min/Max'},	
 	{p:'dateHeaderStyle',tt:'Style to use for the date header'},
+	{p:'dateStride',d:-1,tt:'The stride in hours to display the date label'},	
+	{p:'numLabels',d:8,tt:'Hour many date labels to show if no dateStride given'},	
 	{p:'boxStyle',tt:'Style to use for color boxes'},
 	{p:'leftStyle',tt:'Style to use for left column'},
 	{p:'rightStyle',tt:'Style to use for right column'},			
@@ -4209,13 +4211,23 @@ function RamaddaDateboxDisplay(displayManager, id, properties) {
 	    let rightStyle = this.getRightStyle("");	    	    
 	    let dateHeader = HU.open("div",[CLASS,'display-datebox-dateheader',STYLE,dateHeaderStyle]) + SPACE;
 	    let date  = minDate;
-	    let dateDelta = 1000*60*60*24*2;
+	    let dateStride = this.getDateStride(-1);
+	    let dateDelta;
+	    if(dateStride>0) {
+		dateDelta = dateStride*1000*60*60;
+	    } else {
+		let hours = Math.round((maxDate.getTime()- minDate.getTime())/1000/60/60);
+		let numLabels = this.getNumLabels();
+		let hoursPerLabel =Math.round(hours/numLabels);
+		dateDelta = hoursPerLabel*1000*60*60;
+	    }
 	    let rem =  minDate.getTime()%dateDelta;
 	    date = new Date(minDate.getTime()-rem+dateDelta);
 
 	    while(date.getTime()<=maxDate.getTime()) {
 		let perc = (100*scaleX(date))+"%";
-		dateHeader+=HU.div([CLASS,"display-datebox-header display-datebox-date",STYLE,HU.css("left",perc,"top","0%")],this.formatDate(date))+"\n";
+		let style = HU.css("left",perc,"top","0%","transform","translate(-50%, 0%)");
+		dateHeader+=HU.div([CLASS,"display-datebox-header display-datebox-date",STYLE,style],this.formatDate(date))+"\n";
 
 		date = new Date(date.getTime() +dateDelta);
 	    }
@@ -4261,7 +4273,7 @@ function RamaddaDateboxDisplay(displayManager, id, properties) {
 			min = isNaN(min)?cv:Math.min(min,cv);
 			max = isNaN(max)?cv:Math.max(max,cv);			
 		    }
-		    row+=HU.div([RECORD_ID,r.getId(),CLASS,"display-datebox-box",TITLE,cv,STYLE,HU.css("left",perc,"right",right, "height",height,"background",color)+boxStyle],"&nbsp;");
+		    row+=HU.div(["foo","bar", RECORD_ID,r.getId(),CLASS,"display-datebox-box",TITLE,cv,STYLE,HU.css("left",perc,"right",right, "height",height,"background",color)+boxStyle],"&nbsp;");
 		}
 		row+="</div>\n";
 		html+="<tr><td width='"+ leftWidth+"'>" +HU.div([STYLE,leftStyle,CLASS,"display-datebox-rowlabel"], v)+"</td><td>" + row +"</td>"
@@ -4281,9 +4293,39 @@ function RamaddaDateboxDisplay(displayManager, id, properties) {
 	    });
 	    html += "</table></div>";
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
-	    let boxes = this.jq(ID_DISPLAY_CONTENTS).find(".display-datebox-box");
-	    this.makeTooltips(boxes,records,null);
+	    this.boxes = this.jq(ID_DISPLAY_CONTENTS).find(".display-datebox-box");
+	    this.addFieldClickHandler(this.boxes, records,false);
+	    this.makeTooltips(this.boxes,records,null);
+	    this.recordMap = this.makeIdToRecords(records);
+	    this.records = records;
 	    colorBy.displayColorTable();
+	},
+        handleEventRecordSelection: function(source, args) {
+	    SUPER.handleEventRecordSelection.call(this, source, args);
+	    if(!this.boxes) {
+		return;
+	    }
+	    let matched = [];
+	    let record = this.recordMap[args.record.getId()];
+	    if(record) {
+		matched.push(record);
+	    } else {
+		matched = this.findMatchingDates(args.record.getDate(), this.filteredRecords);
+	    }
+	    if(matched.length==0) {
+		console.log("none");
+		return;
+	    }
+	    this.boxes.removeClass("display-datebox-box-highlight");
+	    let boxMap ={};
+	    this.boxes.each(function() {
+		boxMap[$(this).attr(RECORD_ID)] = $(this);
+	    });
+	    matched.forEach(record=>{
+		let box =  boxMap[record.getId()];
+		if(box) box.addClass("display-datebox-box-highlight");
+	    });
+
 
 	}
     });
