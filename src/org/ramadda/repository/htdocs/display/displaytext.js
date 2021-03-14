@@ -846,12 +846,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    }
 		    if(!handleSelectOnClick)
 			recordStyle+=HU.css("cursor","default");
-		    var tag = HU.openTag("div",[CLASS,"display-template-record",STYLE,recordStyle, ID, this.getId() +"-" + record.getId(), TITLE,"",RECORD_INDEX,rowIdx]);
-
+		    var tag = HU.openTag("div",[CLASS,"display-template-record",STYLE,recordStyle, ID, this.getId() +"-" + record.getId(), TITLE,"",RECORD_ID,record.getId(),RECORD_INDEX, recordrowIdx]);
 		    s = macros.apply(rowAttrs);
-
-
-
 		    if(s.startsWith("<td")) {
 			s = s.replace(/<td([^>]*)>/,"<td $1>"+tag);
 			s = s.replace(/<\/td>$/,"</div></td>");
@@ -2335,7 +2331,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 
 	},
         handleEventRecordSelection: function(source, args) {
-	    var index = this.findMatchingIndex(args.record);
+	    var index = this.findMatchingIndex(args.record).index;
 	    if(index<0 || !Utils.isDefined(index)) {
 		return;
 	    }
