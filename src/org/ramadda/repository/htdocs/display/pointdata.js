@@ -728,6 +728,15 @@ function PointRecord(fields,lat, lon, elevation, time, data) {
         data: data,
 	id: HtmlUtils.getUniqueId(),
     });
+    if(!time && data) {
+	data.every(d=>{
+	    if(d && d.getTime) {
+		this.recordTime = d;
+		return false;
+	    }
+	    return true;
+	});
+    }
 }
 
 
@@ -2419,6 +2428,7 @@ function CsvUtil() {
 	    }
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
+
 	noop: function(pointData, args) {
 	    return pointData;
 	},
@@ -2526,8 +2536,53 @@ function CsvUtil() {
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
 
+	scaleAndOffset: function(pointData,args) {
+	    let records = pointData.getRecords(); 
+            let allFields  = pointData.getRecordFields();
+	    let fields;
+	    if(args.fields)
+		fields = this.display.getFieldsByIds(allFields, (args.fields||"").replace(/_comma_/g,","));
+	    else 
+		fields = allFields;
+	    let unit = args.unit;
+	    let scale = args.scale?parseFloat(args.scale):1;
+	    let offset1 = args.offset1?parseFloat(args.offset1):0;
+	    let offset2 = args.offset?parseFloat(args.offset):args.offset2?parseFloat(args.offset2):0;	    	    
+	    let newRecords  =[]
+	    let newFields = [];
+	    let changedFields = {};
+	    fields.forEach(f=>{changedFields[f.getId()]  =true});
+	    allFields.map(f=>{
+		let newField = f.clone();
+		newFields.push(newField);
+		if(!f.isNumeric()) {
+		    return;
+		}
+		if(changedFields[newField.getId()]) {
+		    newField.unit = unit;
+		}
+	    });
+	    for (var rowIdx=0; rowIdx <records.length; rowIdx++) {
+		let record = records[rowIdx];
+		let newRecord = record.clone();
+		newRecords.push(newRecord);
+		let data = record.getData();
+		let newData=Utils.cloneList(data);
+		fields.forEach(f=>{
+		    if(!f.isNumeric()) return;
+		    let d = data[f.getIndex()];
+		    if(!isNaN(d)) {
+			d  = (d + offset1) * scale + offset2;
+			newData[f.getIndex()]=d;
+		    }
+		});
+		newRecord.setData(newData);
+	    }
+	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
+	},
 	accum: function(pointData, args) {
 	    let records = pointData.getRecords(); 
+
             let allFields  = pointData.getRecordFields();
 	    let fields;
 	    let suffix = args.suffix!=null?args.suffix:"_accum";
@@ -2566,6 +2621,88 @@ function CsvUtil() {
 	    }
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
+
+	mean: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+            let allFields  = pointData.getRecordFields();
+	    let fields;
+	    if(args.fields)
+		fields = this.display.getFieldsByIds(allFields, (args.fields||"").replace(/_comma_/g,","));
+	    else 
+		fields = allFields;
+	    let newRecords  =[]
+	    let newFields = [];
+	    allFields.map(f=>{
+		newFields.push(f.clone());
+	    });
+	    newFields.push(new RecordField({
+		id:"mean",
+		index:newFields.length,
+		label:"Mean",
+		type:"double",
+		chartable:true,
+	    }));
+
+	    for (var rowIdx=0; rowIdx <records.length; rowIdx++) {
+		let record = records[rowIdx];
+		let newRecord = record.clone();
+		newRecords.push(newRecord);
+		let data = record.getData();
+		let newData=Utils.cloneList(data);
+		let total = 0;
+		let fieldCnt = 0;
+		fields.forEach(f=>{
+		    if(!f.isNumeric()) return;
+		    fieldCnt++;
+		    let d = data[f.getIndex()];
+		    if(!isNaN(d)) {
+			total+=d;
+		    }
+		});
+		newData.push(total/fieldCnt);
+		newRecord.setData(newData);
+	    }
+	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
+	},
+
+	prune: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+            let allFields  = pointData.getRecordFields();
+	    let fields;
+	    if(args.fields)
+		fields = this.display.getFieldsByIds(allFields, (args.fields||"").replace(/_comma_/g,","));
+	    else 
+		fields = allFields;
+	    let newRecords  =[]
+	    let newFields = [];
+	    allFields.map(f=>{
+		newFields.push(f.clone());
+	    });
+	    for (var rowIdx=0; rowIdx <records.length; rowIdx++) {
+		let record = records[rowIdx];
+		let data = record.getData();
+		let newData=Utils.cloneList(data);
+		let ok = false;
+		let fieldCnt= 0;
+		fields.every(f=>{
+		    if(!f.isNumeric()) return true;
+		    fieldCnt++;
+		    let d = data[f.getIndex()];
+		    if(!isNaN(d)) {
+			ok = true;
+			return false;
+		    }
+		    return true;
+		});
+		if(ok)  {
+		    let newRecord = record.clone();
+		    newRecord.setData(newData);
+		    newRecords.push(newRecord);
+		}
+	    }
+	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
+	},
+
 
 	mergeRows: function(pointData, args) {
 	    let records = pointData.getRecords(); 
@@ -2757,7 +2894,6 @@ function CsvUtil() {
 	    let valueFields =  this.display.getFieldsByIds(fields, args.valueFields||"");
 	    let includeFields =  this.display.getFieldsByIds(fields, args.includeFields||"");
 	    let prefix = args.prefix||"";
-	    
 	    if(!headerField) throw new Error("No headerField");
 	    let uniqueIsDate = false;
 	    if(!uniqueField) {
