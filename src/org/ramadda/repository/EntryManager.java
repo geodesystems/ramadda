@@ -83,6 +83,8 @@ import java.sql.Statement;
 
 import java.text.SimpleDateFormat;
 
+import java.util.function.Function;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -5935,8 +5937,20 @@ public class EntryManager extends RepositoryManager {
 
 
 
+	Hashtable<Object,Integer> count  =new Hashtable<Object,Integer>();
+	Function<StringBuilder,String> stringer = sb-> {
+	    Integer c = count.get(sb);
+	    String s = sb.toString();
+	    if(c.intValue()<12) {
+		s = s.replaceAll("ramadda-menugroup","ramadda-menugroup ramadda-menugroup-ext");
+	    }
+	    return s;
+	};
+
+
+
         StringBuilder
-            htmlSB          = null,
+            viewSB          = null,
             exportSB        = null,
             nonHtmlSB       = null,
             actionSB        = null,
@@ -5950,80 +5964,73 @@ public class EntryManager extends RepositoryManager {
             }
             StringBuilder sb;
             if (link.isType(OutputType.TYPE_VIEW)) {
-                if (htmlSB == null) {
-                    htmlSB =
-                        new StringBuilder(HtmlUtils.open(HtmlUtils.TAG_DIV,
-                            HtmlUtils.cssClass(CSS_CLASS_MENU_GROUP)));
+                if (viewSB == null) {
+                    viewSB =new  StringBuilder();
                     cnt++;
                 }
-                sb = htmlSB;
-                //} else if (link.isType(OutputType.TYPE_FEEDS)) {
-                //if (nonHtmlSB == null) {
+                sb = viewSB;
             } else if (link.isType(OutputType.TYPE_FEEDS)) {
                 if (exportSB == null) {
                     cnt++;
-                    exportSB =
-                        new StringBuilder(HtmlUtils.open(HtmlUtils.TAG_DIV,
-                            HtmlUtils.cssClass(CSS_CLASS_MENU_GROUP)));
+                    exportSB =  new StringBuilder();
                 }
                 sb = exportSB;
             } else if (link.isType(OutputType.TYPE_FILE)) {
                 if (fileSB == null) {
                     cnt++;
-                    fileSB =
-                        new StringBuilder(HtmlUtils.open(HtmlUtils.TAG_DIV,
-                            HtmlUtils.cssClass(CSS_CLASS_MENU_GROUP)));
+                    fileSB = new StringBuilder();
                 }
                 sb = fileSB;
             } else if (link.isType(OutputType.TYPE_OTHER)) {
                 if (categorySB == null) {
                     cnt++;
-                    categorySB =
-                        new StringBuilder(HtmlUtils.open(HtmlUtils.TAG_DIV,
-                            HtmlUtils.cssClass(CSS_CLASS_MENU_GROUP)));
+                    categorySB = new StringBuilder();
                 }
                 sb = categorySB;
             } else {
                 if (actionSB == null) {
                     cnt++;
-                    actionSB =
-                        new StringBuilder(HtmlUtils.open(HtmlUtils.TAG_DIV,
-                            HtmlUtils.cssClass(CSS_CLASS_MENU_GROUP)));
-                    //                    actionSB.append("<tr><td class=entrymenulink>" + msg("Edit") +"</td></tr>");
+                    actionSB = new StringBuilder();
                 }
                 sb = actionSB;
             }
             //Only add the hr if we have more things in the list
             if (needToAddHr && (sb.length() > 0)) {
                 sb.append("</div>");
-
-                sb.append(
-                    HtmlUtils.div(
-                        "",
-                        HtmlUtils.cssClass(CSS_CLASS_MENUITEM_SEPARATOR)));
-                sb.append(
-                    HtmlUtils.open(
-                        HtmlUtils.TAG_DIV,
-                        HtmlUtils.cssClass(CSS_CLASS_MENU_GROUP)));
+		HtmlUtils.div(sb,
+			      "",
+			      HtmlUtils.cssClass(CSS_CLASS_MENUITEM_SEPARATOR));
+		HtmlUtils.open(sb,
+			       HtmlUtils.TAG_DIV,
+			       HtmlUtils.cssClass(CSS_CLASS_MENU_GROUP));
             }
             needToAddHr = link.getHr();
             if (needToAddHr) {
                 continue;
             }
+	    Integer c = count.get(sb);
+	    if(c == null) c = new Integer(0);
+	    c  = new Integer(c.intValue()+1);
+	    count.put(sb,c);
 
-            sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV, "class",
-                                     CSS_CLASS_MENUITEM));
+	    if(sb.length()==0) {
+		HtmlUtils.open(sb,
+			       HtmlUtils.TAG_DIV,
+			       HtmlUtils.cssClass(CSS_CLASS_MENU_GROUP));
+	    }
+            HtmlUtils.open(sb, HtmlUtils.TAG_DIV, "class",
+			   CSS_CLASS_MENUITEM);
             if (link.getIcon() == null) {
-                sb.append(HtmlUtils.space(1));
+                sb.append(HU.SPACE);
             } else {
-                sb.append(HtmlUtils.href(link.getUrl(),
-                                         getIconImage(link.getIcon())));
+                HtmlUtils.href(sb, link.getUrl(),
+			       getIconImage(link.getIcon()));
             }
-            sb.append(HtmlUtils.space(1));
-            sb.append(
-                HtmlUtils.href(
-                    link.getUrl(), msg(link.getLabel()),
-                    HtmlUtils.cssClass(CSS_CLASS_MENUITEM_LINK)));
+	    sb.append(HU.SPACE);
+	    HtmlUtils.href(sb,
+			   link.getUrl(), msg(link.getLabel()),
+			   HU.attrs("title",link.getLabel(),"class",
+				    CSS_CLASS_MENUITEM_LINK));
             sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
         }
 
@@ -6048,16 +6055,20 @@ public class EntryManager extends RepositoryManager {
         }
         if (actionSB != null) {
             actionSB.append("</div>");
+	    String s  = stringer.apply(actionSB);
             menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "",
                                       HtmlUtils.b(msg("Edit")) + "<br>"
-                                      + actionSB.toString()));
+                                      + s));
         }
 
-        if (htmlSB != null) {
-            htmlSB.append("</div>");
+
+	
+        if (viewSB != null) {
+            viewSB.append("</div>");
+	    String s  = stringer.apply(viewSB);
             menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "",
                                       HtmlUtils.b(msg("View")) + "<br>"
-                                      + htmlSB.toString()));
+                                      + s));
         }
 
 
@@ -6070,32 +6081,31 @@ public class EntryManager extends RepositoryManager {
 
         if (categorySB != null) {
             categorySB.append("</div>");
+	    String s  = stringer.apply(categorySB);
             menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "",
                                       HtmlUtils.b(msg("Data")) + "<br>"
-                                      + categorySB.toString()));
+                                      + s));
         }
 
         if ((typeMask & OutputType.TYPE_CHILDREN) != 0) {
             List<Entry> children = getChildren(request, entry);
             if (children.size() > 0) {
                 StringBuilder childrenSB = new StringBuilder();
-                for (Entry child : children) {
+		for (Entry child : getEntryUtil().sortEntriesOnName(children,false)) {
                     String url       = getEntryUrl(request, child);
                     String linkLabel = child.getName();
                     linkLabel =
                         HtmlUtils.img(getPageHandler().getIconUrl(request,
                             child)) + HtmlUtils.space(1) + linkLabel;
-                    String href = HtmlUtils.href(url, linkLabel);
-                    childrenSB.append(href);
-                    childrenSB.append("<br>");
+                    String href = HtmlUtils.href(url, linkLabel,HU.attrs("title",child.getName()));
+		    HU.div(childrenSB,href,HU.attrs("class","ramadda-menu-item"));
                 }
-                menu.append(
-                    HtmlUtils.tag(
-                        HtmlUtils.TAG_TD, "",
-                        HtmlUtils.b(msg("Children")) + "<br>"
-                        + HtmlUtils.div(
-                            childrenSB.toString(),
-                            HtmlUtils.clazz("ramadda-menu-entries"))));
+		HtmlUtils.tag(menu,
+			      HtmlUtils.TAG_TD, "",
+			      HtmlUtils.b(msg("Children"))  
+			      + HtmlUtils.div(
+					      childrenSB.toString(),
+					      HtmlUtils.clazz("ramadda-menugroup ramadda-menugroup-ext")));
             }
         }
 
