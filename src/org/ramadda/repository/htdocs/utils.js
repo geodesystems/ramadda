@@ -542,6 +542,27 @@ r    },
 	
     },
 
+    //split the given list into
+    splitList: function(list,max) {
+	let lists = [];
+	if(list.length<max) {
+	    lists.push(list);
+	} else {
+	    let num = Math.ceil(list.length/max);
+	    let maxPer = Math.ceil(list.length/num);
+	    let current = [];
+	    lists.push(current);
+	    list.forEach(o=>{
+		if(current.length>=maxPer) {
+		    current = [];
+		    lists.push(current);
+		}
+		current.push(o);
+	    });
+	}
+	return lists;
+    },
+
     join: function(l, delimiter, offset) {
         if ((typeof offset) == "undefined") offset = 0;
         var s = "";
@@ -1360,33 +1381,27 @@ r    },
 	    },1000);
 	}
     },
-    checkForResize:     function() {
-	let redisplayPending = false;
-	let redisplayPendingCnt = 0;
-	//A hack to redraw the chart after the window is resized
-	$(window).resize(function() {
-            //This handles multiple resize events but keeps only having one timeout pending at a time
-            if (redisplayPending) {
-		redisplayPendingCnt++;
-		return;
-            }
-            let timeoutFunc = function(myCnt) {
-		if (myCnt == redisplayPendingCnt) {
-                    redisplayPending = false;
-                    redisplayPendingCnt = 0;
-                    for (let i = 0; i < Utils.displaysList.length; i++) {
-			let display = Utils.displaysList[i];
-			if (display.displayData) {
-                            display.displayData();
-			}
-                    }
-		} else {
-                    //Had a resize event during the previous timeout
-//                    setTimeout(timeoutFunc.bind(null, redisplayPendingCnt), 1000);
-		}
-            }
-            redisplayPending = true;
-            setTimeout(timeoutFunc.bind(null, redisplayPendingCnt), 1000);
+    checkForResize: function() {
+	/*
+	  When the window resizes then clear any past timeouts
+	  and setTimeout for 1 second to notify the displays
+	*/
+
+	$(window).resize(()=>{
+	    if(this.pendingResizeTimeout) {
+		clearTimeout(this.pendingResizeTimeout);
+		this.pendingResizeTimeout = null;
+	    }
+            let timeoutFunc = ()=>  {
+                for (let i = 0; i < Utils.displaysList.length; i++) {
+		    let display = Utils.displaysList[i];
+		    if (display.displayData) {
+                        display.displayData();
+		    }
+                }
+		this.pendingResizeTimeout=null;
+            };
+            this.pendingResizeTimeout = setTimeout(timeoutFunc, 1000);
 	});
     },
     displaysList:[],
