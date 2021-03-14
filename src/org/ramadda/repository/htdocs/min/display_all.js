@@ -3466,7 +3466,8 @@ function DisplayThing(argId, argProperties) {
 	    this.getProperty("tooltipNotFields","").split(",").forEach(f=>{
 		tooltipNots[f] = true;
 	    });
-            values += HU.open(TABLE);
+
+	    let rows = [];
 	    let hadDate = false;
             for (var doDerived = 0; doDerived < 2; doDerived++) {
                 for (let i = 0; i < fields.length; i++) {
@@ -3526,25 +3527,38 @@ function DisplayThing(argId, argProperties) {
 			value  = HU.div([STYLE,HU.css("max-height","200px","overflow-y","auto")],value);
 		    }
 		    let label = this.formatRecordLabel(field.getLabel());
-                    values += HU.open(TR,['valign','top']);
-		    values += HU.td([],HU.b(label + ':'));
-		    values += HU.td(["field-id",field.getId(),"field-value",fieldValue, "align","left"], HU.div([STYLE,HU.css('margin-left','5px')], value));
-		    values += HU.close(TR);
+                    let row = HU.open(TR,['valign','top']);
+		    row += HU.td([],HU.b(label + ':'));
+		    row += HU.td(["field-id",field.getId(),"field-value",fieldValue, "align","left"], HU.div([STYLE,HU.css('margin-left','5px')], value));
+		    row += HU.close(TR);
+		    rows.push(row);
                 }
             }
 	    if(!hadDate && showDate) {
 		if(record.hasDate()) {
-                    values += HU.tr([],HU.td([ALIGN,'right'],HU.b('Date')) +
-				    HU.td([ALIGN,'left'], this.formatDate(record.getDate())));
+                    let row = HU.open(TR,['valign','top']);
+		    let label = this.formatRecordLabel("Date");
+		    row += HU.td([],HU.b(label+":"));
+		    row += HU.td(["align","left"], HU.div([STYLE,HU.css('margin-left','5px')],
+							  this.formatDate(record.getDate())));
+		    row += HU.close(TR);
+		    rows.push(row);
 		}
 	    }
             if (showElevation && record.hasElevation()) {
-                values += HU.tr([],HU.td([ALIGN,'right'],HU.b('Elevation:')) +
-				HU.td([ALIGN,'left'], number_format(record.getElevation(), 4, '.', '')));
+                rows.push(HU.tr([],HU.td([ALIGN,'right'],HU.b('Elevation:')) +
+			       HU.td([ALIGN,'left'], number_format(record.getElevation(), 4, '.', ''))));
             }
-            values += HU.close(TABLE);
+	    let rowCnt = 0;
+	    values += "<table><tr valign=top>";
+	    let		lists   = Utils.splitList(rows,10);
+	    let tdStyle =lists.length>1?"margin-right:5px;":"";
+	    lists.forEach(list=>{
+		values += "<td><div style='" + tdStyle+"'><table>" + Utils.join(list,"") +"</table></div></td>";
+	    });
+            values += "</tr><table>";
 	    if(this.getProperty("recordHtmlStyle")){
-		values = HU.div([STYLE,this.getProperty("recordHtmlStyle")], values);
+		values = HU.div([CLASS,"display-tooltip", STYLE,this.getProperty("recordHtmlStyle")], values);
 	    }
             return values;
         },
@@ -3903,6 +3917,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'convertData',label:"doubling rate",ex:"doublingRate(fields=f1\\\\,f2, keyFields=f3);",tt:"Calculate # days to double"},
 	{p:'convertData',label:"unfurl",ex:"unfurl(headerField=field to get header from,uniqueField=e.g. date,valueFields=);",tt:"Unfurl"},
 	{p:'accum',label:"Accumulate data",ex:"accum(fields=);",tt:"Accumulate"},
+	{p:'mean',label:"Add an average field",ex:"mean(fields=);",tt:"Mean"},
+	{p:'prune',label:"Prune where fields are all NaN",ex:"prune(fields=);",tt:"Prune"},		
 	{p:'scaleAndOffset',label:"Scalen and offset",ex:"accum(scale=1,offset1=0,offset2=0,unit=,fields=);",tt:"(d + offset1) * scale + offset2"},		
 	{label:"Color Attributes"},
 	{p:"colors",ex:"color1},...,colorN",tt:"Comma separated array of colors"},
@@ -5736,6 +5752,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(debug)
 		console.log("filtered:" + records.length);
 	    this.jq(ID_FILTER_COUNT).html("Count: " + records.length);
+	    this.filteredRecords = records;
             return records;
         },
 	getBinnedRecords: function(record) {
@@ -8085,16 +8102,19 @@ a
 	    let _this = this;
 	    if(records) {
 		if(!jq) jq = this.jq(ID_DISPLAY_CONTENTS);
+		let map = this.makeIdToRecords(records);
 		let func = function() {
 		    if(addHighlight) {
 			$(this).parent().find(".display-row-highlight").removeClass("display-row-highlight");
 			$(this).addClass("display-row-highlight");
 		    }
 		    let record = records[$(this).attr(RECORD_INDEX)];
+		    if(!record) record = map[$(this).attr(RECORD_ID)];
 		    if(record)
 			_this.propagateEventRecordSelection({record:record});
 		};
 		let children = jq.find("[" +RECORD_INDEX+"]");
+		if(!children.length) children = jq.find("[" +RECORD_ID+"]");
 		if(!children.length) children = jq;
 		children.click(func);
 	    }
@@ -8627,18 +8647,40 @@ a
         },
 	indexToRecord: {},
 	recordToIndex: {},
+	findMatchingDates: function(date, records, within) {
+	    if(!Utils.isDefined(within)) within=0;
+	    let good = [];
+	    let millis = date.getTime();
+	    records.forEach(r=>{
+		let rd = r.getDate();
+		if(!rd) return;
+		let diff = Math.abs(rd.getTime()-millis);
+		if(diff<=within) {
+		    good.push(r);
+		}
+	    });
+	    return good;
+	},
 	findMatchingIndex: function(record) {
-	    if(!record) return -1;
+	    if(!record) return {index:-1,record:null};
 	    var index = this.recordToIndex[record.getId()];
 	    if(Utils.isDefined(index)) {
-		return index;
+		return {index:index, record:recordToIndex[index]}
 	    }
 	    if(!record.hasDate()) return -1;
+	    let records =this.filteredRecords;
+	    if(records) {
+		records = [];
+		for(i in this.indexToRecord) {
+		    records.push(this.indexToRecord[i]);
+		}
+	    }
 	    var closest;
 	    var min  =0;
-	    for(i in this.indexToRecord) {
-		var r = this.indexToRecord[i];
-		if(!r.hasDate()) return -1;
+	    records.forEach(r=>{
+		if(!r.hasDate()) {
+		    return -1;
+		}
 		var diff = Math.abs(record.getDate().getTime()-r.getDate().getTime());
 		if(!closest) {
 		    min = diff;
@@ -8649,10 +8691,10 @@ a
 			closest = r;
 		    }
 		}
-	    }
+	    });
 	    if(!closest) 
-		return -1;
-	    return this.recordToIndex[closest.getId()];
+		return {index:-1, record:null}
+	    return {index:this.recordToIndex[closest.getId()], record:closest};
 	},
         makeDataArray: function(dataList) {
             if (dataList.length == 0) return dataList;
@@ -10412,6 +10454,15 @@ function PointRecord(fields,lat, lon, elevation, time, data) {
         data: data,
 	id: HtmlUtils.getUniqueId(),
     });
+    if(!time && data) {
+	data.every(d=>{
+	    if(d && d.getTime) {
+		this.recordTime = d;
+		return false;
+	    }
+	    return true;
+	});
+    }
 }
 
 
@@ -12103,6 +12154,7 @@ function CsvUtil() {
 	    }
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
+
 	noop: function(pointData, args) {
 	    return pointData;
 	},
@@ -12210,8 +12262,53 @@ function CsvUtil() {
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
 
+	scaleAndOffset: function(pointData,args) {
+	    let records = pointData.getRecords(); 
+            let allFields  = pointData.getRecordFields();
+	    let fields;
+	    if(args.fields)
+		fields = this.display.getFieldsByIds(allFields, (args.fields||"").replace(/_comma_/g,","));
+	    else 
+		fields = allFields;
+	    let unit = args.unit;
+	    let scale = args.scale?parseFloat(args.scale):1;
+	    let offset1 = args.offset1?parseFloat(args.offset1):0;
+	    let offset2 = args.offset?parseFloat(args.offset):args.offset2?parseFloat(args.offset2):0;	    	    
+	    let newRecords  =[]
+	    let newFields = [];
+	    let changedFields = {};
+	    fields.forEach(f=>{changedFields[f.getId()]  =true});
+	    allFields.map(f=>{
+		let newField = f.clone();
+		newFields.push(newField);
+		if(!f.isNumeric()) {
+		    return;
+		}
+		if(changedFields[newField.getId()]) {
+		    newField.unit = unit;
+		}
+	    });
+	    for (var rowIdx=0; rowIdx <records.length; rowIdx++) {
+		let record = records[rowIdx];
+		let newRecord = record.clone();
+		newRecords.push(newRecord);
+		let data = record.getData();
+		let newData=Utils.cloneList(data);
+		fields.forEach(f=>{
+		    if(!f.isNumeric()) return;
+		    let d = data[f.getIndex()];
+		    if(!isNaN(d)) {
+			d  = (d + offset1) * scale + offset2;
+			newData[f.getIndex()]=d;
+		    }
+		});
+		newRecord.setData(newData);
+	    }
+	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
+	},
 	accum: function(pointData, args) {
 	    let records = pointData.getRecords(); 
+
             let allFields  = pointData.getRecordFields();
 	    let fields;
 	    let suffix = args.suffix!=null?args.suffix:"_accum";
@@ -12250,6 +12347,88 @@ function CsvUtil() {
 	    }
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
+
+	mean: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+            let allFields  = pointData.getRecordFields();
+	    let fields;
+	    if(args.fields)
+		fields = this.display.getFieldsByIds(allFields, (args.fields||"").replace(/_comma_/g,","));
+	    else 
+		fields = allFields;
+	    let newRecords  =[]
+	    let newFields = [];
+	    allFields.map(f=>{
+		newFields.push(f.clone());
+	    });
+	    newFields.push(new RecordField({
+		id:"mean",
+		index:newFields.length,
+		label:"Mean",
+		type:"double",
+		chartable:true,
+	    }));
+
+	    for (var rowIdx=0; rowIdx <records.length; rowIdx++) {
+		let record = records[rowIdx];
+		let newRecord = record.clone();
+		newRecords.push(newRecord);
+		let data = record.getData();
+		let newData=Utils.cloneList(data);
+		let total = 0;
+		let fieldCnt = 0;
+		fields.forEach(f=>{
+		    if(!f.isNumeric()) return;
+		    fieldCnt++;
+		    let d = data[f.getIndex()];
+		    if(!isNaN(d)) {
+			total+=d;
+		    }
+		});
+		newData.push(total/fieldCnt);
+		newRecord.setData(newData);
+	    }
+	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
+	},
+
+	prune: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+            let allFields  = pointData.getRecordFields();
+	    let fields;
+	    if(args.fields)
+		fields = this.display.getFieldsByIds(allFields, (args.fields||"").replace(/_comma_/g,","));
+	    else 
+		fields = allFields;
+	    let newRecords  =[]
+	    let newFields = [];
+	    allFields.map(f=>{
+		newFields.push(f.clone());
+	    });
+	    for (var rowIdx=0; rowIdx <records.length; rowIdx++) {
+		let record = records[rowIdx];
+		let data = record.getData();
+		let newData=Utils.cloneList(data);
+		let ok = false;
+		let fieldCnt= 0;
+		fields.every(f=>{
+		    if(!f.isNumeric()) return true;
+		    fieldCnt++;
+		    let d = data[f.getIndex()];
+		    if(!isNaN(d)) {
+			ok = true;
+			return false;
+		    }
+		    return true;
+		});
+		if(ok)  {
+		    let newRecord = record.clone();
+		    newRecord.setData(newData);
+		    newRecords.push(newRecord);
+		}
+	    }
+	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
+	},
+
 
 	mergeRows: function(pointData, args) {
 	    let records = pointData.getRecords(); 
@@ -12441,7 +12620,6 @@ function CsvUtil() {
 	    let valueFields =  this.display.getFieldsByIds(fields, args.valueFields||"");
 	    let includeFields =  this.display.getFieldsByIds(fields, args.includeFields||"");
 	    let prefix = args.prefix||"";
-	    
 	    if(!headerField) throw new Error("No headerField");
 	    let uniqueIsDate = false;
 	    if(!uniqueField) {
@@ -16672,6 +16850,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
     var _this = this;
     //Init the defaults first
     $.extend(this, {
+	debugChartOptions:false,
         indexField: -1,
         curveType: 'none',
         fontSize: 0,
@@ -16680,12 +16859,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
     });
     const SUPER = new RamaddaFieldsDisplay(displayManager, id, chartType, properties);
     let myProps = [
-	{label:'Chart Highlight'},
+	{label:'Chart Style'},
 	{p:'highlightFields',d:null,ex:'fields'},
 	{p:'highlightShowFields',d:null,ex:'true'},
 	{p:'highlightShowFieldsSize',d:"4",ex:'4'},
 	{p:"acceptHighlightFieldsEvent",d:true,ex:'true'},
 	{p:'highlightDim',d:'true',ex:'true',tt:'Dim the non highlight lines'},
+
 	{p:'lineDashStyle',d:null,ex:'2,2,20,2,20'},
 	{p:'highlight.lineDashStyle',d:'2,2,20,2,20',ex:'2,2,20,2,20'},
 	{p:'nohighlight.lineDashStyle',d:'2,2,20,2,20',ex:'2,2,20,2,20'},	
@@ -16705,13 +16885,16 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'highlight.pointSize',d:'0',ex:'4'},
 	{p:'nohighlight.pointSize',d:'0',ex:'4'},	
 	{p:'some_field.pointSize',d:'4',ex:'4'},
+
 	{p:'lineWidth',d:null,ex:null},
 	{p:'highlight.lineWidth',d:null,ex:'2'},
 	{p:'nohighlight.lineWidth',d:null,ex:'2'},	
 	{p:'some_field.lineWidth',d:'2',ex:'2'},
+
 	{p:'highlight.color',d:null,ex:null},
 	{p:'nohighlight.color',d:null,ex:null},
 	{p:'some_field.color',d:null,ex:null},
+
 	{p:'pointShape',d:null,ex:null},
 	{p:'highlight.pointShape',d:null,ex:null},
 	{p:'nohighlight.pointShape',d:null,ex:null},	
@@ -16939,8 +17122,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             if (!this.okToHandleEventRecordSelection()) {
                 return;
 	    }
-	    var index = this.findMatchingIndex(args.record);
-	    //	    console.log(this.type +" index:" + index);
+	    var index = this.findMatchingIndex(args.record).index
 	    if(index<0 || !Utils.isDefined(index)) {
 		return;
 	    }
@@ -17320,6 +17502,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let seriesInfo = {};
             let useMultipleAxes = this.getProperty("useMultipleAxes", true);
 	    seriesNames.forEach((name,idx)=>{
+		name = name.replace(/\(.*\)/g,"");
 		let id = Utils.makeId(name);
 		let highlight = highlightMap[id];
 		let s = {
@@ -18232,6 +18415,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		let chart = this.makeGoogleChartInner(dataList, this.domId(ID_CHART), props, selectedFields);
 		if(chart) this.charts.push(chart);
 	    }
+	    
+
+	    this.mapCharts(chart=>{
+		google.visualization.events.addListener(chart, 'onmouseout',()=>{this.setChartSelection(null)});
+	    });
+
+
 
 	},
 	makeGoogleChartInner: function(dataList, chartId, props, selectedFields) {
@@ -18272,7 +18462,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		});
 	    } else {
 		try {
-//		    console.log(JSON.stringify(this.chartOptions, null,2));
+		    if(this.debugChartOptions)
+			console.log(JSON.stringify(this.chartOptions, null,2));
 		    this.chart = chart;
 		    this.dataTable = dataTable;
 		    chart.draw(dataTable, this.chartOptions);
@@ -18456,8 +18647,6 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 			targetAxisIndex: 1
 		    }]
 	    }
-
-
 
 	    if (!chartOptions.hAxis) {
 		chartOptions.hAxis = {};
@@ -22547,12 +22736,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    }
 		    if(!handleSelectOnClick)
 			recordStyle+=HU.css("cursor","default");
-		    var tag = HU.openTag("div",[CLASS,"display-template-record",STYLE,recordStyle, ID, this.getId() +"-" + record.getId(), TITLE,"",RECORD_INDEX,rowIdx]);
-
+		    var tag = HU.openTag("div",[CLASS,"display-template-record",STYLE,recordStyle, ID, this.getId() +"-" + record.getId(), TITLE,"",RECORD_ID,record.getId(),RECORD_INDEX, recordrowIdx]);
 		    s = macros.apply(rowAttrs);
-
-
-
 		    if(s.startsWith("<td")) {
 			s = s.replace(/<td([^>]*)>/,"<td $1>"+tag);
 			s = s.replace(/<\/td>$/,"</div></td>");
@@ -24036,7 +24221,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 
 	},
         handleEventRecordSelection: function(source, args) {
-	    var index = this.findMatchingIndex(args.record);
+	    var index = this.findMatchingIndex(args.record).index;
 	    if(index<0 || !Utils.isDefined(index)) {
 		return;
 	    }
@@ -37571,7 +37756,7 @@ function RamaddaRecordsDisplay(displayManager, id, properties, type) {
 		    if(v.getTime) v = this.formatDate(v);
                     div += HU.b(field.getLabel()) + ": " + v + "<br>" +"\n";
                 }
-                html += HU.div([CLASS,"display-records-record",RECORD_INDEX,rowIdx], div);
+                html += HU.div([CLASS,"display-records-record",RECORD_INDEX,rowIdx,RECORD_ID, records[rowIdx].getId()], div);
             }
             let height = this.getProperty("maxHeight", "400px");
             if (!height.endsWith("px")) {
@@ -38228,7 +38413,7 @@ function RamaddaBoxtableDisplay(displayManager, id, properties) {
 		    if(colorBy.index) {
 			color =  colorBy.getColor(record.getData()[colorBy.index], record) || color;
 		    }
-		    row +=HU.div([TITLE,"",RECORD_INDEX, idx, CLASS,"display-colorboxes-box",STYLE,HU.css('background', color)],"");
+		    row +=HU.div([TITLE,"",RECORD_ID, record.getId(), CLASS,"display-colorboxes-box",STYLE,HU.css('background', color)],"");
 		});
 		row+=HU.close(TD,TR);
 		html+=row;
@@ -39072,7 +39257,7 @@ function RamaddaCanvasDisplay(displayManager, id, properties) {
 		let title  = titleTemplate?
 		    HU.div([CLASS,"display-canvas-title"], 
 			   this.getRecordHtml(record, null, titleTemplate)):"";	
-		let div =  HU.div([TITLE,"",CLASS,"display-canvas-block", RECORD_INDEX,idx], topTitle+c+title);
+		let div =  HU.div([TITLE,"",CLASS,"display-canvas-block", RECORD_INDEX,idx,RECORD_ID, record.getId()], topTitle+c+title);
 		if(urlField) {
 		    let url = record.getValue(urlField.getIndex());
 		    if(Utils.stringDefined(url))
@@ -39175,7 +39360,7 @@ function RamaddaFieldtableDisplay(displayManager, id, properties) {
 		    hdrAttrs.push("field-value");
 		    hdrAttrs.push(r.getValue(labelField.getIndex()));
 		}
-		html += HU.open(TR,["valign","center",RECORD_INDEX,idx,CLASS,"display-fieldtable-row"]);
+		html += HU.open(TR,["valign","center",RECORD_INDEX,idx,RECORD_ID, r.getId(),CLASS,"display-fieldtable-row"]);
 		html+=HU.td([STYLE,HU.css('vertical-align','center'),'align','right'],HU.div(hdrAttrs,label));
 		fields.forEach(f=>{
 		    let v = r.getValue(f.getIndex());
@@ -39337,7 +39522,7 @@ function RamaddaDotstackDisplay(displayManager, id, properties) {
 		    }
 		    let c = colorBy.getColorFromRecord(r,"blue");
 		    let box = HU.div(
-			[TITLE,"", RECORD_INDEX,idToIndex[r.getId()],CLASS, "display-dotstack-dot",STYLE,HU.css('width', w+'px','height', w +'px','background', c)],"");
+			[TITLE,"", RECORD_ID, r.getId(),RECORD_INDEX,idToIndex[r.getId()],CLASS, "display-dotstack-dot",STYLE,HU.css('width', w+'px','height', w +'px','background', c)],"");
 		    row.push(box);
 		});
 		html += HU.open(DIV,[CLASS,"display-dotstack-block"]);
@@ -39454,7 +39639,7 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 			style+=HU.css(HEIGHT,HU.getDimension(size),WIDTH,HU.getDimension(size));
 		    }
 		    let top = maxHeight/2-size/2;
-		    html +=  HU.span([RECORD_INDEX,idx2,CLASS,clazz,STYLE,HU.css('border',dotBorder, "background",c,"position",'absolute','top',HU.getDimension(top),'left', perc+'%')+style, RECORD_INDEX,idx2, TITLE,""]); 
+		    html +=  HU.span([RECORD_INDEX,idx2,RECORD_ID, r.getId(),CLASS,clazz,STYLE,HU.css('border',dotBorder, "background",c,"position",'absolute','top',HU.getDimension(top),'left', perc+'%')+style, RECORD_INDEX,idx2, TITLE,""]); 
 		});
 
 		html += HU.close(DIV,TD);
@@ -39529,6 +39714,8 @@ function RamaddaDateboxDisplay(displayManager, id, properties) {
  	{p:'leftLabel',tt:'Label for the left column'},
  	{p:'rightLabel',tt:'Label for the left column',d:'Total/Min/Max'},	
 	{p:'dateHeaderStyle',tt:'Style to use for the date header'},
+	{p:'dateStride',d:-1,tt:'The stride in hours to display the date label'},	
+	{p:'numLabels',d:8,tt:'Hour many date labels to show if no dateStride given'},	
 	{p:'boxStyle',tt:'Style to use for color boxes'},
 	{p:'leftStyle',tt:'Style to use for left column'},
 	{p:'rightStyle',tt:'Style to use for right column'},			
@@ -39583,13 +39770,23 @@ function RamaddaDateboxDisplay(displayManager, id, properties) {
 	    let rightStyle = this.getRightStyle("");	    	    
 	    let dateHeader = HU.open("div",[CLASS,'display-datebox-dateheader',STYLE,dateHeaderStyle]) + SPACE;
 	    let date  = minDate;
-	    let dateDelta = 1000*60*60*24*2;
+	    let dateStride = this.getDateStride(-1);
+	    let dateDelta;
+	    if(dateStride>0) {
+		dateDelta = dateStride*1000*60*60;
+	    } else {
+		let hours = Math.round((maxDate.getTime()- minDate.getTime())/1000/60/60);
+		let numLabels = this.getNumLabels();
+		let hoursPerLabel =Math.round(hours/numLabels);
+		dateDelta = hoursPerLabel*1000*60*60;
+	    }
 	    let rem =  minDate.getTime()%dateDelta;
 	    date = new Date(minDate.getTime()-rem+dateDelta);
 
 	    while(date.getTime()<=maxDate.getTime()) {
 		let perc = (100*scaleX(date))+"%";
-		dateHeader+=HU.div([CLASS,"display-datebox-header display-datebox-date",STYLE,HU.css("left",perc,"top","0%")],this.formatDate(date))+"\n";
+		let style = HU.css("left",perc,"top","0%","transform","translate(-50%, 0%)");
+		dateHeader+=HU.div([CLASS,"display-datebox-header display-datebox-date",STYLE,style],this.formatDate(date))+"\n";
 
 		date = new Date(date.getTime() +dateDelta);
 	    }
@@ -39635,7 +39832,7 @@ function RamaddaDateboxDisplay(displayManager, id, properties) {
 			min = isNaN(min)?cv:Math.min(min,cv);
 			max = isNaN(max)?cv:Math.max(max,cv);			
 		    }
-		    row+=HU.div([RECORD_ID,r.getId(),CLASS,"display-datebox-box",TITLE,cv,STYLE,HU.css("left",perc,"right",right, "height",height,"background",color)+boxStyle],"&nbsp;");
+		    row+=HU.div(["foo","bar", RECORD_ID,r.getId(),CLASS,"display-datebox-box",TITLE,cv,STYLE,HU.css("left",perc,"right",right, "height",height,"background",color)+boxStyle],"&nbsp;");
 		}
 		row+="</div>\n";
 		html+="<tr><td width='"+ leftWidth+"'>" +HU.div([STYLE,leftStyle,CLASS,"display-datebox-rowlabel"], v)+"</td><td>" + row +"</td>"
@@ -39655,9 +39852,39 @@ function RamaddaDateboxDisplay(displayManager, id, properties) {
 	    });
 	    html += "</table></div>";
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
-	    let boxes = this.jq(ID_DISPLAY_CONTENTS).find(".display-datebox-box");
-	    this.makeTooltips(boxes,records,null);
+	    this.boxes = this.jq(ID_DISPLAY_CONTENTS).find(".display-datebox-box");
+	    this.addFieldClickHandler(this.boxes, records,false);
+	    this.makeTooltips(this.boxes,records,null);
+	    this.recordMap = this.makeIdToRecords(records);
+	    this.records = records;
 	    colorBy.displayColorTable();
+	},
+        handleEventRecordSelection: function(source, args) {
+	    SUPER.handleEventRecordSelection.call(this, source, args);
+	    if(!this.boxes) {
+		return;
+	    }
+	    let matched = [];
+	    let record = this.recordMap[args.record.getId()];
+	    if(record) {
+		matched.push(record);
+	    } else {
+		matched = this.findMatchingDates(args.record.getDate(), this.filteredRecords);
+	    }
+	    if(matched.length==0) {
+		console.log("none");
+		return;
+	    }
+	    this.boxes.removeClass("display-datebox-box-highlight");
+	    let boxMap ={};
+	    this.boxes.each(function() {
+		boxMap[$(this).attr(RECORD_ID)] = $(this);
+	    });
+	    matched.forEach(record=>{
+		let box =  boxMap[record.getId()];
+		if(box) box.addClass("display-datebox-box-highlight");
+	    });
+
 
 	}
     });

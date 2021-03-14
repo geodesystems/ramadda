@@ -25,9 +25,8 @@ a.display-container {
 
 .display-tooltip {
     max-width:600px;
-    border:1px solid #999 !important;
     margin:0px;
-    box-shadow: 0px 0px 0px  rgba(0, 0, 0, 0);
+    background-color : #FFF; -webkit-box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; border:1px solid rgb(211, 220, 228); border-radius: 4px;z-index:1000;
 }
 
 .display-dialog {
@@ -763,7 +762,9 @@ color: #000;
 
 
 
+
 .google-visualization-tooltip {
+    pointer-events: none;
 /* fixes the tooltip clicker bug 
    but it also introduces other bugs with lingering tooltips
     pointer-events: none;
@@ -785,6 +786,7 @@ svg > g > g:last-child { pointer-events: none }
 .google-visualization-table-table th {
     background:#E4E9F4;
 }
+
 
 .display-stats, .google-visualization-table-table {
     font-family: inherit;
@@ -2477,6 +2479,10 @@ table.dataTable tfoot td {
     cursor:pointer;
     margin-left:0px;
     margin-right:0px;
+}
+
+.display-datebox-box-highlight {
+    border:1px solid red;
 }
 
 
