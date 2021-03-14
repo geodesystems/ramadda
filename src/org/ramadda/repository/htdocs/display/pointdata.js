@@ -2513,7 +2513,7 @@ function CsvUtil() {
 		newRecords.push(newRecord);
 		let data = record.getData();
 		let newData=Utils.cloneList(data);
-		newFields.forEach(f=>{
+		fields.forEach(f=>{
 		    if(!f.isNumeric()) return;
 		    let d = data[f.getIndex()];
 		    if(!isNaN(d)) {
@@ -2526,25 +2526,25 @@ function CsvUtil() {
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
 
-//0.039370079003585	    
 	accum: function(pointData, args) {
 	    let records = pointData.getRecords(); 
             let allFields  = pointData.getRecordFields();
 	    let fields;
+	    let suffix = args.suffix!=null?args.suffix:"_accum";
 	    if(args.fields)
 		fields = this.display.getFieldsByIds(allFields, (args.fields||"").replace(/_comma_/g,","));
 	    else 
 		fields = allFields;
 	    let newRecords  =[]
-	    let newFields = Utils.cloneList(allFields);
+	    let newFields = [];
 	    let totals =[];
 	    allFields.map(f=>{
 		totals.push(0);
 		let newField = f.clone();
 		newFields.push(newField);
 		if(!f.isNumeric()) return;
-		newField.id = newField.id+"_accum";
-		newField.label = newField.label+" accum";
+		newField.id = newField.id+suffix;
+		newField.label = newField.label+suffix;
 	    });
 	    for (var rowIdx=0; rowIdx <records.length; rowIdx++) {
 		let record = records[rowIdx];
