@@ -110,4 +110,21 @@ This directory is  created during the build process. All build products
 get placed there.
 
 
+html resources:
+The core JS, images and css are in:
+src/org/ramadda/repository/htdocs
+
+We have  a simple template mechanism used to generate the two core css files:
+style.css display/display.css
+
+These files both have a source css template file:
+style.tmpl.css display/display.tmpl.css
+
+That contain macros of the form @MACRO_NAME@
+The files are generated in the ant task css in the
+src/org/ramadda/repository/build.xml
+file. They get generated in the build process
+
+
+
 

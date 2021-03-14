@@ -224,12 +224,11 @@ function EntryFormList(formId, img, selectId, initialOn) {
     this.setVisibility = function() {
         if (this.toggleImg) {
             if (this.on) {
-                $("#" + this.toggleImg).attr('src', icon_downdart);
+                $("#" + this.toggleImg).html(HU.getIconImage("fa-caret-down"));
             } else {
-                $("#" + this.toggleImg).attr('src', icon_rightdart);
+                $("#" + this.toggleImg).html(HU.getIconImage("fa-caret-right"));
             }
         }
-
 
         var form = $("#"+this.formId);
         if(this.on) {
@@ -359,8 +358,13 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails,args) {
         text = getChildText(xmlDoc);
         var leftSide = entryRow.getRow().offset().left;
         var offset = entryRow.lastClick - leftSide;
-        var close = HtmlUtils.getIconImage(icon_close, ["xclass","ramadda-popup-close", "onmousedown", "hideEntryPopup();","id","tooltipclose"]);
-        getTooltip().html("<div class=ramadda-popup-inner><div id=\"tooltipwrapper\" ><table><tr valign=top>"+ close +"</td><td>" + text + "</table></div></div>");
+        var close = HU.jsLink("", HU.getIconImage(icon_close), ["onmousedown", "hideEntryPopup();","id","tooltipclose"]);
+
+	let header =  HU.div([CLASS,"ramadda-popup-header"],close);
+	let html = HU.div([CLASS,"ramadda-popup",STYLE,"display:block;"],   header + "<table>" + text + "</table>");
+	HU.makeDraggableDialog(getTooltip,html);
+        getTooltip().html(html);
+        getTooltip().draggable();
         Utils.checkTabs(text);
 
         var pos = entryRow.getRow().offset();
@@ -370,13 +374,11 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails,args) {
         var wWidth = $(window).width();
 
         var x = entryRow.lastClick;
-
         if (entryRow.lastClick + mWidth > wWidth) {
             x -= (entryRow.lastClick + mWidth - wWidth);
         }
         var left = x + "px";
         var top = (3 + pos.top + eHeight) + "px";
-
         getTooltip().css({
             position: 'absolute',
             zIndex: 5000,
@@ -552,19 +554,15 @@ function folderClick(uid, url, changeImg) {
     var jqImage = $("#img_" + uid);
     var showing = jqBlock.css('display') != "none";
     if (!showing) {
-        originalImages[uid] = jqImage.attr('src');
+        originalImages[uid] = jqImage.html();
         jqBlock.show();
-        jqImage.attr('src', icon_progress);
+        jqImage.html(HU.getIconImage("fa-caret-down"));
 	url +="&orderby=entryorder&ascending=true";
-	console.log(url);
         GuiUtils.loadXML(url, handleFolderList, uid);
     } else {
         if (changeImg) {
-            if (originalImages[uid]) {
-                jqImage.attr('src', originalImages[uid]);
-            } else
-                jqImage.attr('src', icon_folderclosed);
-        }
+            jqImage.html(HU.getIconImage("fa-caret-right"));
+	}
         jqBlock.hide();
     }
 }
@@ -732,7 +730,7 @@ function handleSelect(request, id) {
     var xmlDoc = request.responseXML.documentElement;
     text = getChildText(xmlDoc);
     var pinId = selector.div.id +"-pin";
-    var pin = HtmlUtils.getIconImage("fa-thumbtack", ["class","ramadda-popup-pin", "id",pinId]);
+    var pin = HU.jsLink("",HtmlUtils.getIconImage(icon_pin), ["class","ramadda-popup-pin", "id",pinId]); 
     var closeImage = HtmlUtils.getIconImage(icon_close, []);
     var close = "<a href=\"javascript:selectCancel(true);\">" + closeImage+"</a>";
     var header = HtmlUtils.div(["style","text-align:left;","class","ramadda-popup-header"],SPACE+close+SPACE+pin);

@@ -1,0 +1,8 @@
+To generate the style.css and display/display.css files run:
+ant css
+
+form the parent src/org/ramadda/repository directory
+The build.xml converts the files style.tmpl.css and display/display.tmpl.css
+using the properties defined in style.properties
+
+

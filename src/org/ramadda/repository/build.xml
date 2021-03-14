@@ -242,6 +242,12 @@
 	      <filtersfile file="${ramadda_dir}/htdocs/style.properties"/>
             </filterset>
        </copy>
+        <copy overwrite="true" file="${ramadda_dir}/htdocs/display/display.tmpl.css" tofile="${ramadda_dir}/htdocs/display/display.css">
+            <filterset>
+	      <filtersfile file="${ramadda_dir}/htdocs/style.properties"/>
+            </filterset>
+       </copy>
+
     </target>
 
 

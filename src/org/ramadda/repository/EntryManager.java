@@ -5667,13 +5667,9 @@ public class EntryManager extends RepositoryManager {
                                     HtmlUtils.squote(getDownArrowIcon()))));
 
 
-            prefix = Utils.concatString(
-                HtmlUtils.open(HtmlUtils.TAG_SPAN, "class", "entry-arrow"),
-                HtmlUtils.img(
-                    getRightArrowIcon(), msg(message),
-                    Utils.concatString(
-                        HtmlUtils.id("img_" + uid),
-                        imgClick)), HtmlUtils.close("span"));
+            prefix = HU.jsLink("",HtmlUtils.span(getIconImage("fa-caret-right"),
+						 HU.attrs("class", "entry-arrow","title",message,"id","img_"+uid) +
+						 imgClick));
         }
 
         //        if(true)

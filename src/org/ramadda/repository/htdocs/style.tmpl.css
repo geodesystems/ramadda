@@ -185,6 +185,12 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     color: @NAV-LINK-COLOR@;
 }
 
+i.fa, i.fas {
+    color:#aaa;
+    font-size:12pt;
+}
+
+
 .ramadda-nav-popup-link .fa:hover {
     @I-HOVER@
 }
@@ -307,11 +313,11 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
 }
 
 
-a span i.fa:hover  {
+a span i:hover  {
     @I-HOVER@
 }
 
-.ramadda-nav-left-toggle i.fa:hover  {
+.ramadda-nav-left-toggle i:hover  {
     @I-HOVER@
 }
 
@@ -355,11 +361,13 @@ a.ramadda-nav-link-0, a.ramadda-nav-link-0:visited, .ramadda-nav-left h3 a, .ram
 }
 
 
-
 .ramadda-nav-page-decorated:hover {
     @BORDER-HOVER-LIGHT@
 }
 
+.ramadda-nav-page:hover i {
+    color:@NAV-HOVER-COLOR@;
+}
 
 .ramadda-nav-page-label {
     margin:10px;
@@ -532,6 +540,14 @@ a.ramadda-menubar-button:hover {
     color: #000;
     text-align: center;
 }
+
+
+.ramadda-shadow {
+    display:inline-block;
+    padding:5px;
+    @SHADOW@
+}
+
 
 
 .ramadda-subheading  {
@@ -2041,6 +2057,7 @@ td.entry-table-block {
 }
 
 .entry-arrow:hover {
+    cursor:pointer;
 }
 
 
@@ -2629,7 +2646,7 @@ label {
 
 .ramadda-breadcrumbs-menu-button:hover {
     background-color:#ccc;
-    border-color: #999;
+    border-color: @NAV-HOVER-COLOR@;
 }
 
 .breadcrumbs {
@@ -2715,7 +2732,9 @@ label {
     border-bottom: 1px #aaa solid;
 }
 
-.ramadda-user-link .fa:hover {
+
+
+.ramadda-user-link:hover, .ramadda-user-link:hover .fa, .ramadda-user-link .fa:hover {
     @I-HOVER@
 }
 
@@ -2724,7 +2743,7 @@ label {
 }
 
 .ramadda-user-link:hover {
-    background-color: #eee;
+    @HIGHLIGHT-BACKGROUND@
     cursor:pointer;
 }
 
@@ -2901,6 +2920,8 @@ a.ramadda-heading-2-link:visited {
 }
 
 
+
+
 .ramadda-menu-label {
     border: 1px red solid;
 }
@@ -2954,6 +2975,10 @@ a.ramadda-entries-link {
 }
 
 
+.ramadda-menuitem:hover {
+    @HIGHLIGHT-BACKGROUND@
+}
+
 .ramadda-menuitem-separator {
     margin:2px;
     margin-bottom:3px;
@@ -2966,12 +2991,14 @@ a.ramadda-entries-link {
 
 
 a.ramadda-menuitem-link:hover {
-    text-decoration: underline;
+    text-decoration: none;
     color:#000;
 }
 
 a.ramadda-menuitem-link {
     text-decoration: none;
+    width:100%;
+    display:inline-block;
 }
 
 
@@ -3093,30 +3120,31 @@ a.image-link {
     color: #000;
 }
 
-.sortlinkon  {
-    background-color : #eee;
+.sortlink   {
     font-size: 80%;
-    font-weight: bold;
+}
+
+.sortlink  a {
+    text-decoration:none;
     padding-left:2px;
     padding-right:2px;
     font-style:italic;
-}
-
-.sortlinkoff  {
-    font-size: 80%;
-    padding-left:2px;
-    padding-right:2px;
-    font-style:italic;
-}
-
-.sortlinkoff a {
     color:black;
 }
 
-
-.sortlinkon a:hover {
-    text-decoration: underline;
+.sortlink a:hover {
+    color:@NAV-HOVER-COLOR@;
 }
+
+
+.sortlinkon  {
+    background-color : #eee;
+}
+
+.sortlinkoff  {
+}
+
+
 
 
 snippet {
@@ -3151,7 +3179,7 @@ snippet-hide {
 }
 
 .ramadda-linksheader-on {
-    background:#eee;
+    @HIGHLIGHT-BACKGROUND@
 }
 
 
@@ -4606,10 +4634,7 @@ h3.ui-accordion-header a {
 }
 
 
-i.fa {
-    color:#aaa;
-    font-size:12pt;
-}
+
 
 
 

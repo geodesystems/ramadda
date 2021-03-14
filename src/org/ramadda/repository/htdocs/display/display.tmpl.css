@@ -2419,7 +2419,7 @@ table.dataTable tfoot td {
 }
 
 .display-simplesearch-entries {
-    background-color : #FFF; -webkit-box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; border:1px solid rgb(211, 220, 228); border-radius: 4px;z-index:1000;
+    @SHADOW-POPUP@
     max-width:300px;
     scroll-x:auto;
     padding:5px;

@@ -1282,7 +1282,7 @@ public class OutputHandler extends RepositoryManager {
             sb.append(HtmlUtils.br());
         }
         sb.append(HtmlUtils.span(msgLabel("Sort"),
-                                 HtmlUtils.cssClass("sortlinkoff")));
+                                 HtmlUtils.cssClass("sortlink sortlinkoff")));
         String entryIds = request.getString(ARG_ENTRYIDS, (String) null);
         //Swap out the long value
         if (entryIds != null) {
@@ -1302,7 +1302,7 @@ public class OutputHandler extends RepositoryManager {
             if (Misc.equals(order[i], orderBy)
                     && Misc.equals(order[i + 1], ascending)) {
                 sb.append(HtmlUtils.span(order[i + 2],
-                                         HtmlUtils.cssClass("sortlinkon")));
+                                         HtmlUtils.cssClass("sortlink sortlinkon")));
             } else {
                 request.put(ARG_ORDERBY, order[i]);
                 request.put(ARG_ASCENDING, order[i + 1]);
@@ -1312,7 +1312,7 @@ public class OutputHandler extends RepositoryManager {
                     HtmlUtils.span(
                         HtmlUtils.href(url, order[i + 2]),
                         HtmlUtils.title(order[i + 3])
-                        + HtmlUtils.cssClass("sortlinkoff")));
+                        + HtmlUtils.cssClass("sortlink sortlinkoff")));
             }
         }
 
@@ -1453,16 +1453,12 @@ public class OutputHandler extends RepositoryManager {
 
         selectSB.append(HtmlUtils.leftRightBottom(sortLinks,
                 actionsSB.toString(), ""));
-        String arrowImg = getRepository().getIconImage(hideIt
-						       //                ? "/icons/application_side_expand.png"
-						       //                : "/icons/application_side_contract.png", "title",
-                ? "/icons/togglearrowright.gif"
-                : "/icons/togglearrowdown.gif", "title",						       
-                    msg("Show/Hide Form"), "id", base + "img");
-        String linkLabel = arrowImg;
+        String arrowImg = getRepository().getIconImage(hideIt?"fa-caret-right":"fa-caret-down",
+						        "title",						       
+						       msg("Show/Hide Form"), "id", base + "img");
         String linkExtra = HtmlUtils.cssClass("ramadda-entries-link");
         String link = HtmlUtils.jsLink(HtmlUtils.onMouseClick(base
-                          + ".groupToggleVisibility()"), linkLabel,
+                          + ".groupToggleVisibility()"), arrowImg,
                               linkExtra);
         String selectId = base + "select";
         formSB.append(HtmlUtils.div(selectSB.toString(),
@@ -1592,7 +1588,6 @@ public class OutputHandler extends RepositoryManager {
             base        = tuple[1];
             afterHeader = tuple[2];
         }
-
 
 
         String prefix = (showDetails

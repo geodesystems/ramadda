@@ -7,6 +7,7 @@
 var root = ramaddaBaseUrl;
 var urlroot = ramaddaBaseUrl;
 var icon_close = "fa-window-close";
+var icon_pin = "fa-thumbtack";
 var icon_rightarrow = ramaddaBaseUrl + "/icons/grayrightarrow.gif";
 var icon_downdart = ramaddaBaseUrl + "/icons/downdart.gif";
 var icon_rightdart = ramaddaBaseUrl + "/icons/rightdart.gif";
@@ -3099,7 +3100,7 @@ $(document).ready(function(){
 	}
 	if(args) $.extend(opts,args);
 	let id = HtmlUtils.getUniqueId();
-	let closeImage = HtmlUtils.getIconImage(icon_close, [ID,id+"_close",STYLE,HU.css('cursor','pointer')]);
+	let closeImage = HU.jsLink("",HtmlUtils.getIconImage(icon_close), [ID,id+"_close",STYLE,HU.css('cursor','pointer')]);
 	let header = HtmlUtils.div([STYLE,HU.css("text-align","left"),CLASS,"ramadda-popup-header"],SPACE+closeImage);
 	let html = header +HU.div([STYLE,"margin:8px;"],inner);
 	$(document.body).append(HU.div([ID,id,CLASS,"ramadda-popup"],html));
@@ -3675,6 +3676,12 @@ $(document).ready(function(){
             return ramaddaBaseUrl + "/metadata/view/" + attach + "?entryid=" + entryId;
         }
         return tag;
+    },
+    jsLink: function(inner,content,extra) {
+	extra = extra||[];
+        return HU.href("javascript:noop();",  
+                       content,extra);
+
     },
     href: function(url, label, attrs) {
         if (attrs == null) attrs = [];

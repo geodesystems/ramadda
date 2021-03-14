@@ -2746,13 +2746,14 @@ public class WikiUtil {
             String delim = Utils.getProperty(headingsProps, "delimiter",
                                              "&nbsp;|&nbsp;");
             int maxLevel = Utils.getProperty(headingsProps, "maxLevel", 100);
+            int minLevel = Utils.getProperty(headingsProps, "minLevel", -1);	    
             if (left || list || popup) {
                 delim = "<br>";
             }
             for (Object o : headings2) {
                 Object[] tuple = (Object[]) o;
                 int      level = (int) tuple[2];
-                if (level > maxLevel) {
+                if (level > maxLevel || level<minLevel) {
                     continue;
                 }
                 String id    = (String) tuple[0];
@@ -2798,6 +2799,7 @@ public class WikiUtil {
 							      "leftStyle", "");
                 String rightStyle = (String) Utils.getProperty(headingsProps,
 							       "rightStyle", "");
+		String title = Utils.getProperty(headingsProps, "title",null);
 		leftStyle = HU.css("width",leftWidth) +
 		    leftStyle;
 		args.append("leftOpen:" + open +",");
@@ -2811,6 +2813,9 @@ public class WikiUtil {
                 s = s.replace("${" + headingsNav + "}", "");
                 String leftLinks = HU.div(hb.toString(),
                                           "class=ramadda-nav-left-links");
+		if(title!=null) {
+		    leftLinks = "<div class=ramadda-links>" +HU.h3(title) + "</div>" + leftLinks;
+		}
                 s = "<div class=ramadda-nav-horizontal><div class=ramadda-nav-left style='"
                     + leftStyle + "'><div id=ramadda-nav-1></div>"
                     + leftLinks
