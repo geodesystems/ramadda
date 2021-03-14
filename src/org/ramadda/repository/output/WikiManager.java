@@ -6425,6 +6425,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         String displayType = getProperty(wikiUtil, props, "type",
                                          "linechart");
         this.addDisplayImports(request, sb);
+        if (request.getExtraProperty("added plotly") == null) {
+            HU.importJS(sb, getHtdocsUrl("/lib/plotly/plotly-latest.min.js"));
+            request.putExtraProperty("added plotly", "true");
+        }
         List<String> topProps = new ArrayList<String>();
         if (propList == null) {
             propList = new ArrayList<String>();
@@ -6737,16 +6741,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 topProps.add(key.toString());
                 topProps.add(Json.quote(value.toString()));
             }
-            sb.append("\n");
             HU.div(sb, "", HU.id(mainDivId));
-            sb.append("\n");
             request.putExtraProperty(PROP_ADDED_GROUP, "true");
             topProps.addAll(propList);
             js.append("\nvar displayManager = getOrCreateDisplayManager("
                       + HU.quote(mainDivId) + "," + Json.map(topProps, false)
                       + ",true);\n");
             wikiUtil.appendJavascript(js.toString());
-
             return;
         }
 
@@ -6786,9 +6787,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         String groupDivId = HU.getUniqueId("groupdiv");
         //Put the main div after the display div
         if (needToCreateGroup) {
-            sb.append("\n");
             HU.div(sb, "", HU.id(groupDivId));
-            sb.append("\n");
         }
 
         for (String arg : new String[] {
@@ -6867,12 +6866,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             props.remove("defaultMapLayer");
         }
 
-
-
-        if (request.getExtraProperty("added plotly") == null) {
-            HU.importJS(sb, getHtdocsUrl("/lib/plotly/plotly-latest.min.js"));
-            request.putExtraProperty("added plotly", "true");
-        }
 
         if (displayType.equals("entrygallery")
                 || displayType.equals("entrygrid")) {
@@ -7001,11 +6994,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         wikiUtil.addWikiAttributes(propList);
         js.append("displayManager.createDisplay(" + HU.quote(displayType)
                   + "," + Json.map(propList, false) + ");\n");
-
-        sb.append("\n");
         wikiUtil.appendJavascript(js.toString());
-        //        sb.append(HU.script(JQuery.ready(js.toString())));
-
     }
 
 
