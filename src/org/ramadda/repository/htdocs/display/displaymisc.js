@@ -25,6 +25,7 @@ const DISPLAY_SPARKLINE = "sparkline";
 const DISPLAY_POINTIMAGE = "pointimage";
 const DISPLAY_CANVAS = "canvas";
 const DISPLAY_FIELDTABLE = "fieldtable";
+const DISPLAY_DATEBAR = "datebar";
 
 addGlobalDisplayType({
     type: DISPLAY_RANKING,
@@ -190,6 +191,13 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_DATATABLE,
     label: "Date Table",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_TABLE
+});
+addGlobalDisplayType({
+    type: DISPLAY_DATEBAR,
+    label: "Date Bar",
     requiresData: true,
     forUser: true,
     category: CATEGORY_TABLE
@@ -1033,7 +1041,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
     let myProps = [
 	{label:'Pre Properties'},
 	{p:'numRecords',ex:'100',d:1000},
-	{p:'includeGeo',ex:'true',d:true},	
+	{p:'includeGeo',ex:'true',d:true},
+	{p:'includeDate',ex:'true',d:true},		
     ];
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -1047,9 +1056,11 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
             let fields = pointData.getRecordFields();
 	    let numRecords = this.getNumRecords();
 	    let includeGeo = this.getIncludeGeo();
+	    let includeDate = this.getIncludeGeo();	    
 	    let html ="Number of records:" + records.length+"<table width=100% border=0>";
 	    html+="<tr valign=top><td></td>";
 	    let headerAttrs = [STYLE,"white-space:nowrap;background:#efefef;margin:1px;padding:3px; font-weight:bold;"];
+	    if(includeDate) html+=HU.td(HU.div(headerAttrs,"Date"));
 	    fields.forEach((f,idx)=>{
 		html+=HU.td([],HU.div(headerAttrs,f.getId() +"[" + f.getType()+"]"));
 	    });
@@ -1064,6 +1075,9 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		});
 		let clazz = (idx%2)?"ramadda-row-odd":"ramadda-row-even";
 		html+="<tr class=" + clazz+"><td>#" + idx+": </td>";
+		if(includeDate) {
+		    html+=HU.td([],this.formatDate(r.getDate()));
+		}
 		d.forEach(v=>{
 		    html+=HU.td([],v);
 		});
@@ -4115,6 +4129,161 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 	    this.makeTooltips(dots,records,null);
 	    let t5 = new Date();
 	    //	    Utils.displayTimes("t",[t1,t2,t3,t4,t5]);
+
+	}
+    });
+}
+
+
+
+
+function RamaddaDateboxDisplay(displayManager, id, properties) {
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, "datebox", properties);
+    $.extend(this, SUPER);
+    addRamaddaDisplay(this);
+    let myProps = [
+	{label:'Date Box'},
+	{p:'groupField'},
+	{p:'boxSize',d:16},
+	{p:'showStats',w:'true',d:true,tt:'show starts per row'},
+	{p:'showTotal',w:'true',d:true,tt:'show the totals'},
+	{p:'showMin',w:'true',d:true,tt:'show min'},
+	{p:'showMax',w:'true',d:true,tt:'show max'},
+	{p:'showAverage',w:'true',d:false,tt:'show average'},				
+	{p:'leftWidth',tt:'width of left column',d:'100px'},
+	{p:'rightWidth',tt:'width of right column',d:'100px'},
+ 	{p:'leftLabel',tt:'Label for the left column'},
+ 	{p:'rightLabel',tt:'Label for the left column',d:'Total/Min/Max'},	
+	{p:'dateHeaderStyle',tt:'Style to use for the date header'},
+	{p:'boxStyle',tt:'Style to use for color boxes'},
+	{p:'leftStyle',tt:'Style to use for left column'},
+	{p:'rightStyle',tt:'Style to use for right column'},			
+
+    ];
+    this.defineSizeByProperties();
+    defineDisplay(this, SUPER, myProps, {
+	updateUI: function() {
+	    let records = this.filterData();
+	    if(!records) return;
+	    let groupField = this.getFieldById(null,this.getPropertyGroupField());
+	    let size = this.getBoxSize();
+	    let cats =[];
+	    let colorBy = this.getColorByInfo(records);
+	    let minDate= null, maxDate=null;
+	    records.forEach(r=>{
+		if(!minDate) {
+		    minDate = maxDate = r.getDate();
+		} else {
+		    let d = r.getDate();
+		    minDate = d.getTime()<minDate.getTime()?d:minDate;
+		    maxDate = d.getTime()>maxDate.getTime()?d:maxDate;		    
+		}
+		let v = r.getValue(groupField.getIndex());
+		let cat = cats[v];
+		if(cat == null) {
+		    cat = {
+			records:[]
+		    };
+		    cats[v] = cat;
+		}
+		cat.records.push(r);
+	    });
+	    if(!this.dateFormat)
+		this.dateFormat =  this.getProperty("dateFormat", "ddd mm/dd");
+	    let showStats = this.getShowStats();
+	    let leftWidth = HU.getDimension(this.getLeftWidth());
+	    let rightWidth = HU.getDimension(this.getRightWidth());	    
+	    let html = "";
+	    let width = 400;
+	    let dateRange = maxDate.getTime()-minDate.getTime();
+	    let scaleX = d=>{
+		return  (d.getTime()-minDate.getTime())/dateRange;
+	    };
+	    let height = "1.5em";
+	    html="<div class=display-datebox-table><table width=100% border=0 cellpadding=0 cellspacing=0>";
+
+	    html+="<tr><td width='" + leftWidth+"'>" + HU.div([CLASS,"display-datebox-header"],this.getLeftLabel(groupField.getLabel())) +"</td>";
+	    let dateHeaderStyle = this.getDateHeaderStyle("background:#eee;border-bottom:1px solid #888;");
+	    let boxStyle = this.getBoxStyle("");
+	    let leftStyle = this.getLeftStyle("");
+	    let rightStyle = this.getRightStyle("");	    	    
+	    let dateHeader = HU.open("div",[CLASS,'display-datebox-dateheader',STYLE,dateHeaderStyle]) + SPACE;
+	    let date  = minDate;
+	    let dateDelta = 1000*60*60*24*2;
+	    let rem =  minDate.getTime()%dateDelta;
+	    date = new Date(minDate.getTime()-rem+dateDelta);
+
+	    while(date.getTime()<=maxDate.getTime()) {
+		let perc = (100*scaleX(date))+"%";
+		dateHeader+=HU.div([CLASS,"display-datebox-header display-datebox-date",STYLE,HU.css("left",perc,"top","0%")],this.formatDate(date))+"\n";
+
+		date = new Date(date.getTime() +dateDelta);
+	    }
+	    dateHeader +="</div>";
+
+	    html+=HU.td([],dateHeader);
+	    if(showStats) {
+		let dflt = [];
+		if(this.getShowTotal()) dflt.push("Total");
+		if(this.getShowMin()) dflt.push("Min");
+		if(this.getShowMax()) dflt.push("Max");
+		if(this.getShowAverage()) dflt.push("Avg");
+		html+="<td width='" + rightWidth + "'>" + HU.div([CLASS,"display-datebox-header display-datebox-stats"], this.getRightLabel(Utils.join(dflt,"/"))) +"</td>";
+	    }
+	    html +="</tr>"
+	    Object.keys(cats).sort(v=>{
+		let cat = cats[v];
+		let row = HU.open("div",[CLASS,"display-datebox-row", STYLE,HU.css('height',height)]);
+		let sorted = cat.records.sort((a,b)=>{
+		    return a.getTime()-b.getTime();
+		});
+		let total = 0;
+		let min=NaN;
+		let max=NaN;
+		
+		for(let i=0;i<sorted.length;i++) {
+		    let r = sorted[i];
+		    let perc = scaleX(r.getDate());
+		    let next = sorted[i+1];
+		    let boxWidth="10p";
+		    let right = perc+0.05;
+		    if(next) {
+			let nperc = scaleX(next.getDate());
+			let diff = nperc - perc;
+			right = (1-nperc);
+		    }
+		    perc = 100*perc+"%";
+		    right = 100*right+"%";
+		    let color =  colorBy.getColorFromRecord(r);
+		    let cv = r.getValue(colorBy.index);
+		    if(!isNaN(cv)) {
+			total+=cv;
+			min = isNaN(min)?cv:Math.min(min,cv);
+			max = isNaN(max)?cv:Math.max(max,cv);			
+		    }
+		    row+=HU.div([RECORD_ID,r.getId(),CLASS,"display-datebox-box",TITLE,cv,STYLE,HU.css("left",perc,"right",right, "height",height,"background",color)+boxStyle],"&nbsp;");
+		}
+		row+="</div>\n";
+		html+="<tr><td width='"+ leftWidth+"'>" +HU.div([STYLE,leftStyle,CLASS,"display-datebox-rowlabel"], v)+"</td><td>" + row +"</td>"
+		if(showStats) {
+		    let stats = [];
+		    if(this.getShowTotal())
+			stats.push(this.formatNumber(total));
+		    if(this.getShowMin())
+			stats.push(this.formatNumber(min));
+		    if(this.getShowMax())
+			stats.push(this.formatNumber(max));
+		    if(this.getShowAverage())
+			stats.push(this.formatNumber(total/sorted.length));		    		    		    
+		    html+=HU.td(["nowrap","true"],HU.div([STYLE, rightStyle,CLASS,"display-datebox-stats"],Utils.join(stats,SPACE)));
+		}
+		html+="</tr>";
+	    });
+	    html += "</table></div>";
+	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
+	    let boxes = this.jq(ID_DISPLAY_CONTENTS).find(".display-datebox-box");
+	    this.makeTooltips(boxes,records,null);
+	    colorBy.displayColorTable();
 
 	}
     });
