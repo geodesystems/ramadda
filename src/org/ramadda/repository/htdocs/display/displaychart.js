@@ -197,6 +197,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
     var _this = this;
     //Init the defaults first
     $.extend(this, {
+	debugChartOptions:false,
         indexField: -1,
         curveType: 'none',
         fontSize: 0,
@@ -205,12 +206,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
     });
     const SUPER = new RamaddaFieldsDisplay(displayManager, id, chartType, properties);
     let myProps = [
-	{label:'Chart Highlight'},
+	{label:'Chart Style'},
 	{p:'highlightFields',d:null,ex:'fields'},
 	{p:'highlightShowFields',d:null,ex:'true'},
 	{p:'highlightShowFieldsSize',d:"4",ex:'4'},
 	{p:"acceptHighlightFieldsEvent",d:true,ex:'true'},
 	{p:'highlightDim',d:'true',ex:'true',tt:'Dim the non highlight lines'},
+
 	{p:'lineDashStyle',d:null,ex:'2,2,20,2,20'},
 	{p:'highlight.lineDashStyle',d:'2,2,20,2,20',ex:'2,2,20,2,20'},
 	{p:'nohighlight.lineDashStyle',d:'2,2,20,2,20',ex:'2,2,20,2,20'},	
@@ -230,13 +232,16 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'highlight.pointSize',d:'0',ex:'4'},
 	{p:'nohighlight.pointSize',d:'0',ex:'4'},	
 	{p:'some_field.pointSize',d:'4',ex:'4'},
+
 	{p:'lineWidth',d:null,ex:null},
 	{p:'highlight.lineWidth',d:null,ex:'2'},
 	{p:'nohighlight.lineWidth',d:null,ex:'2'},	
 	{p:'some_field.lineWidth',d:'2',ex:'2'},
+
 	{p:'highlight.color',d:null,ex:null},
 	{p:'nohighlight.color',d:null,ex:null},
 	{p:'some_field.color',d:null,ex:null},
+
 	{p:'pointShape',d:null,ex:null},
 	{p:'highlight.pointShape',d:null,ex:null},
 	{p:'nohighlight.pointShape',d:null,ex:null},	
@@ -464,8 +469,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             if (!this.okToHandleEventRecordSelection()) {
                 return;
 	    }
-	    var index = this.findMatchingIndex(args.record);
-	    //	    console.log(this.type +" index:" + index);
+	    var index = this.findMatchingIndex(args.record).index
 	    if(index<0 || !Utils.isDefined(index)) {
 		return;
 	    }
@@ -845,6 +849,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let seriesInfo = {};
             let useMultipleAxes = this.getProperty("useMultipleAxes", true);
 	    seriesNames.forEach((name,idx)=>{
+		name = name.replace(/\(.*\)/g,"");
 		let id = Utils.makeId(name);
 		let highlight = highlightMap[id];
 		let s = {
@@ -1757,6 +1762,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		let chart = this.makeGoogleChartInner(dataList, this.domId(ID_CHART), props, selectedFields);
 		if(chart) this.charts.push(chart);
 	    }
+	    
+
+	    this.mapCharts(chart=>{
+		google.visualization.events.addListener(chart, 'onmouseout',()=>{this.setChartSelection(null)});
+	    });
+
+
 
 	},
 	makeGoogleChartInner: function(dataList, chartId, props, selectedFields) {
@@ -1797,7 +1809,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		});
 	    } else {
 		try {
-//		    console.log(JSON.stringify(this.chartOptions, null,2));
+		    if(this.debugChartOptions)
+			console.log(JSON.stringify(this.chartOptions, null,2));
 		    this.chart = chart;
 		    this.dataTable = dataTable;
 		    chart.draw(dataTable, this.chartOptions);
@@ -1981,8 +1994,6 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 			targetAxisIndex: 1
 		    }]
 	    }
-
-
 
 	    if (!chartOptions.hAxis) {
 		chartOptions.hAxis = {};
