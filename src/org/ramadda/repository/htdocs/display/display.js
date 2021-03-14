@@ -651,7 +651,8 @@ function DisplayThing(argId, argProperties) {
 	    this.getProperty("tooltipNotFields","").split(",").forEach(f=>{
 		tooltipNots[f] = true;
 	    });
-            values += HU.open(TABLE);
+
+	    let rows = [];
 	    let hadDate = false;
             for (var doDerived = 0; doDerived < 2; doDerived++) {
                 for (let i = 0; i < fields.length; i++) {
@@ -711,25 +712,38 @@ function DisplayThing(argId, argProperties) {
 			value  = HU.div([STYLE,HU.css("max-height","200px","overflow-y","auto")],value);
 		    }
 		    let label = this.formatRecordLabel(field.getLabel());
-                    values += HU.open(TR,['valign','top']);
-		    values += HU.td([],HU.b(label + ':'));
-		    values += HU.td(["field-id",field.getId(),"field-value",fieldValue, "align","left"], HU.div([STYLE,HU.css('margin-left','5px')], value));
-		    values += HU.close(TR);
+                    let row = HU.open(TR,['valign','top']);
+		    row += HU.td([],HU.b(label + ':'));
+		    row += HU.td(["field-id",field.getId(),"field-value",fieldValue, "align","left"], HU.div([STYLE,HU.css('margin-left','5px')], value));
+		    row += HU.close(TR);
+		    rows.push(row);
                 }
             }
 	    if(!hadDate && showDate) {
 		if(record.hasDate()) {
-                    values += HU.tr([],HU.td([ALIGN,'right'],HU.b('Date')) +
-				    HU.td([ALIGN,'left'], this.formatDate(record.getDate())));
+                    let row = HU.open(TR,['valign','top']);
+		    let label = this.formatRecordLabel("Date");
+		    row += HU.td([],HU.b(label+":"));
+		    row += HU.td(["align","left"], HU.div([STYLE,HU.css('margin-left','5px')],
+							  this.formatDate(record.getDate())));
+		    row += HU.close(TR);
+		    rows.push(row);
 		}
 	    }
             if (showElevation && record.hasElevation()) {
-                values += HU.tr([],HU.td([ALIGN,'right'],HU.b('Elevation:')) +
-				HU.td([ALIGN,'left'], number_format(record.getElevation(), 4, '.', '')));
+                rows.push(HU.tr([],HU.td([ALIGN,'right'],HU.b('Elevation:')) +
+			       HU.td([ALIGN,'left'], number_format(record.getElevation(), 4, '.', ''))));
             }
-            values += HU.close(TABLE);
+	    let rowCnt = 0;
+	    values += "<table><tr valign=top>";
+	    let		lists   = Utils.splitList(rows,10);
+	    let tdStyle =lists.length>1?"margin-right:5px;":"";
+	    lists.forEach(list=>{
+		values += "<td><div style='" + tdStyle+"'><table>" + Utils.join(list,"") +"</table></div></td>";
+	    });
+            values += "</tr><table>";
 	    if(this.getProperty("recordHtmlStyle")){
-		values = HU.div([STYLE,this.getProperty("recordHtmlStyle")], values);
+		values = HU.div([CLASS,"display-tooltip", STYLE,this.getProperty("recordHtmlStyle")], values);
 	    }
             return values;
         },
@@ -1088,6 +1102,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'convertData',label:"doubling rate",ex:"doublingRate(fields=f1\\\\,f2, keyFields=f3);",tt:"Calculate # days to double"},
 	{p:'convertData',label:"unfurl",ex:"unfurl(headerField=field to get header from,uniqueField=e.g. date,valueFields=);",tt:"Unfurl"},
 	{p:'accum',label:"Accumulate data",ex:"accum(fields=);",tt:"Accumulate"},
+	{p:'mean',label:"Add an average field",ex:"mean(fields=);",tt:"Mean"},
+	{p:'prune',label:"Prune where fields are all NaN",ex:"prune(fields=);",tt:"Prune"},		
 	{p:'scaleAndOffset',label:"Scalen and offset",ex:"accum(scale=1,offset1=0,offset2=0,unit=,fields=);",tt:"(d + offset1) * scale + offset2"},		
 	{label:"Color Attributes"},
 	{p:"colors",ex:"color1},...,colorN",tt:"Comma separated array of colors"},
@@ -2921,6 +2937,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(debug)
 		console.log("filtered:" + records.length);
 	    this.jq(ID_FILTER_COUNT).html("Count: " + records.length);
+	    this.filteredRecords = records;
             return records;
         },
 	getBinnedRecords: function(record) {
@@ -5270,16 +5287,19 @@ a
 	    let _this = this;
 	    if(records) {
 		if(!jq) jq = this.jq(ID_DISPLAY_CONTENTS);
+		let map = this.makeIdToRecords(records);
 		let func = function() {
 		    if(addHighlight) {
 			$(this).parent().find(".display-row-highlight").removeClass("display-row-highlight");
 			$(this).addClass("display-row-highlight");
 		    }
 		    let record = records[$(this).attr(RECORD_INDEX)];
+		    if(!record) record = map[$(this).attr(RECORD_ID)];
 		    if(record)
 			_this.propagateEventRecordSelection({record:record});
 		};
 		let children = jq.find("[" +RECORD_INDEX+"]");
+		if(!children.length) children = jq.find("[" +RECORD_ID+"]");
 		if(!children.length) children = jq;
 		children.click(func);
 	    }
@@ -5812,18 +5832,40 @@ a
         },
 	indexToRecord: {},
 	recordToIndex: {},
+	findMatchingDates: function(date, records, within) {
+	    if(!Utils.isDefined(within)) within=0;
+	    let good = [];
+	    let millis = date.getTime();
+	    records.forEach(r=>{
+		let rd = r.getDate();
+		if(!rd) return;
+		let diff = Math.abs(rd.getTime()-millis);
+		if(diff<=within) {
+		    good.push(r);
+		}
+	    });
+	    return good;
+	},
 	findMatchingIndex: function(record) {
-	    if(!record) return -1;
+	    if(!record) return {index:-1,record:null};
 	    var index = this.recordToIndex[record.getId()];
 	    if(Utils.isDefined(index)) {
-		return index;
+		return {index:index, record:recordToIndex[index]}
 	    }
 	    if(!record.hasDate()) return -1;
+	    let records =this.filteredRecords;
+	    if(records) {
+		records = [];
+		for(i in this.indexToRecord) {
+		    records.push(this.indexToRecord[i]);
+		}
+	    }
 	    var closest;
 	    var min  =0;
-	    for(i in this.indexToRecord) {
-		var r = this.indexToRecord[i];
-		if(!r.hasDate()) return -1;
+	    records.forEach(r=>{
+		if(!r.hasDate()) {
+		    return -1;
+		}
 		var diff = Math.abs(record.getDate().getTime()-r.getDate().getTime());
 		if(!closest) {
 		    min = diff;
@@ -5834,10 +5876,10 @@ a
 			closest = r;
 		    }
 		}
-	    }
+	    });
 	    if(!closest) 
-		return -1;
-	    return this.recordToIndex[closest.getId()];
+		return {index:-1, record:null}
+	    return {index:this.recordToIndex[closest.getId()], record:closest};
 	},
         makeDataArray: function(dataList) {
             if (dataList.length == 0) return dataList;
