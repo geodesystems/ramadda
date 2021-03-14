@@ -618,6 +618,7 @@ function DisplayThing(argId, argProperties) {
 	    let showImage = this.getProperty("showImage", true);
 	    let showMovie = this.getProperty("showMovie", true);	    
             let showGeo = false;
+            let showElevation = this.getProperty("showElevation",false);
             if (Utils.isDefined(this.showGeo)) {
                 showGeo = ("" + this.showGeo) == "true";
             }
@@ -651,6 +652,7 @@ function DisplayThing(argId, argProperties) {
 		tooltipNots[f] = true;
 	    });
             values += HU.open(TABLE);
+	    let hadDate = false;
             for (var doDerived = 0; doDerived < 2; doDerived++) {
                 for (let i = 0; i < fields.length; i++) {
                     var field = fields[i];
@@ -661,8 +663,11 @@ function DisplayThing(argId, argProperties) {
                     if (!field.getForDisplay()) {
 			continue;
 		    }
-		    if(!showDate) {
-			if(field.isRecordDate()) continue;
+		    if(field.isRecordDate()) {
+			if(!showDate) {
+			    continue;
+			}
+			hadDate = true;
 		    }
                     if (!showGeo) {
                         if (field.isFieldGeo()) {
@@ -712,7 +717,13 @@ function DisplayThing(argId, argProperties) {
 		    values += HU.close(TR);
                 }
             }
-            if (record.hasElevation()) {
+	    if(!hadDate && showDate) {
+		if(record.hasDate()) {
+                    values += HU.tr([],HU.td([ALIGN,'right'],HU.b('Date')) +
+				    HU.td([ALIGN,'left'], this.formatDate(record.getDate())));
+		}
+	    }
+            if (showElevation && record.hasElevation()) {
                 values += HU.tr([],HU.td([ALIGN,'right'],HU.b('Elevation:')) +
 				HU.td([ALIGN,'left'], number_format(record.getElevation(), 4, '.', '')));
             }
@@ -782,6 +793,8 @@ function DisplayThing(argId, argProperties) {
 	    let f = this.formatNumberInner(number, propPrefix);
 	    let fmt = this.getProperty([propPrefix+".numberTemplate","numberTemplate"]);
 	    if(fmt) f = fmt.replace("${number}", f);
+	    f = String(f);
+	    if(f.endsWith(".")) f = f.substring(0,f.length-1);
 	    return f;
 	},
         formatNumberInner: function(number,propPrefix) {
@@ -5352,7 +5365,6 @@ a
 	    if(selector.length>500) {
 		//A hack to fix really slow tooltip calls when there are lots of elements
 		selector.mouseenter(function() {
-		    console.log("enter");
 		    let tooltip = $(this).tooltip(tooltipFunc);
 		    tooltip.tooltip('open');
 		});
