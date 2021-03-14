@@ -156,7 +156,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }
-
         return sb;
     }
 
@@ -4349,7 +4348,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static String importJS(String jsUrl) {
         StringBuilder sb = new StringBuilder("\n");
         importJS(sb, jsUrl);
-
         return sb.toString();
     }
 
@@ -4364,7 +4362,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
             sb.append(tag(TAG_SCRIPT,
                           attrs(ATTR_SRC, jsUrl, ATTR_TYPE,
                                 "text/JavaScript"), ""));
-            sb.append("\n");
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }
