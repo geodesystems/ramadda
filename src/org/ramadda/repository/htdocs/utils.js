@@ -136,7 +136,7 @@ var Utils =  {
     decodeText: function(t) {
 	if(!t) return null;
 	t = String(t);
-	return t.replace(/_dq_/g,"\"\"").replace(/&quote;/gi, '\"').replace(/_quote_/gi, '\"').replace(/_qt_/gi, '\"').replace(/_newline_/gi, '\n').replace(/newline/gi, '\n').replace(/_nl_/g,'\n');
+	return t.replace(/_leftbracket_/g,"[").replace(/_rightbracket_/g,"]").replace(/_dq_/g,"\"\"").replace(/&quote;/gi, '\"').replace(/_quote_/gi, '\"').replace(/_qt_/gi, '\"').replace(/_newline_/gi, '\n').replace(/newline/gi, '\n').replace(/_nl_/g,'\n');
 r    },
     handleActionResults: function(id,url) {
 	setTimeout(() =>{
