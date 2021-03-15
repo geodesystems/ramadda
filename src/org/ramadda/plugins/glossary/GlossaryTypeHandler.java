@@ -182,7 +182,7 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
         StringBuffer sb = new StringBuffer();
         getPageHandler().entrySectionOpen(request, group, sb, null);
 
-        sb.append(group.getDescription());
+	sb.append( getWikiManager().wikifyEntry(request, group, group.getDescription()));
         sb.append(HtmlUtils.p());
 
         boolean canAdd = getAccessManager().canDoAction(request, group,
