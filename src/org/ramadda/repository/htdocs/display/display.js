@@ -5849,7 +5849,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(!record) return {index:-1,record:null};
 	    var index = this.recordToIndex[record.getId()];
 	    if(Utils.isDefined(index)) {
-		return {index:index, record:this.recordToIndex[index]}
+		return {index:index, record:this.indexToRecord[index]}
 	    }
 	    if(!record.hasDate()) return -1;
 	    let records =this.filteredRecords;
