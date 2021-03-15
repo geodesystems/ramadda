@@ -65,7 +65,7 @@ public class IPythonNotebookOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_IPYTHON_TOJSMD =
         new OutputType("Convert to JSMD", "ipython.tojsmd", OutputType.TYPE_VIEW, "",
-                       "/python/python.png");
+                       "fa-python");
 
 
 
