@@ -1087,6 +1087,14 @@ public class HtmlOutputHandler extends OutputHandler {
                 }
             }
 
+	    HU.open(sb, "div", HU.cssClass("ramadda-select-search"));
+	    //	    sb.append(HU.center(HU.b(msg("Search"))));
+
+	    String searchId = HU.getUniqueId("search");
+	    HU.div(sb, "",HU.attrs("id",searchId));
+	    sb.append(HU.script("HtmlUtils.initSearchPopup('" + searchId +"','" + target +"');"));
+	    HU.close(sb, "div");
+	    sb.append(sectionDivider);
 
             List<Entry> cartEntries = getUserManager().getCart(request);
             if (cartEntries.size() > 0) {

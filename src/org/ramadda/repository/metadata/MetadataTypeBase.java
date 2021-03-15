@@ -824,7 +824,6 @@ public class MetadataTypeBase extends RepositoryManager {
         if (label != null) {
             return label;
         }
-
         return getName();
     }
 

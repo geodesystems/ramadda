@@ -838,8 +838,8 @@ public class MetadataHandler extends RepositoryManager {
         content.append(cloudLink);
         content.append(HtmlUtils.p());
         content.append(HtmlUtils.h3(msg("Search")));
-        content.append("<div class=\"browseblock\">");
         int rowNum = 1;
+	List<String> rows = new ArrayList<String>();
         for (int i = 0; i < values.length; i++) {
             String browseUrl = HtmlUtils.url(url,
                                              ARG_METADATA_TYPE + "_"
@@ -850,16 +850,21 @@ public class MetadataHandler extends RepositoryManager {
             if (value.length() == 0) {
                 value = "-blank-";
             }
-            content.append(HtmlUtils.div(HtmlUtils.href(browseUrl, value),
-                                         HtmlUtils.cssClass("listrow"
-                                             + rowNum)));
+	    rows.add(HtmlUtils.div(HtmlUtils.href(browseUrl, value),
+				   HtmlUtils.cssClass("listrow"
+						      + rowNum)));
             rowNum++;
             if (rowNum > 2) {
                 rowNum = 1;
             }
         }
-        content.append("</div>");
 
+	List<List> lists = Utils.splitList(rows,5);
+	for(List row: lists)  {
+	    content.append("<div class=\"browseblock\">");
+	    content.append(Utils.join(row,""));
+	    content.append("</div>");
+	}
         titles.add(type.getLabel());
         contents.add(content.toString());
         sb.append(HtmlUtils.makeShowHideBlock(type.getLabel(),

@@ -4418,7 +4418,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
-        if (f.startsWith("fa-")) {
+	
+        if (HU.isFontAwesome(f)) {
             return f;
         }
 

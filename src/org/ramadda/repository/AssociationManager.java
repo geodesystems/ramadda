@@ -428,8 +428,9 @@ public class AssociationManager extends RepositoryManager {
     public String getAssociationLinks(Request request, String association)
             throws Exception {
         if (true) {
-            return BLANK;
+	    return BLANK;
         }
+	//TODO: if this is used check the ICON_SEARCH as its a FA icon now
         String search =
             HtmlUtils.href(
                 request.makeUrl(

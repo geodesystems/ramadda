@@ -1,4 +1,4 @@
-
+a
 a.display-container {
     display:inline-block;
 }
@@ -2435,6 +2435,8 @@ table.dataTable tfoot td {
 
 .display-simplesearch-entry a {
     text-decoration:none;
+    display:inline-block;
+    width:100%;
 }
 
 

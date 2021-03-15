@@ -1402,7 +1402,7 @@ public class Service extends RepositoryManager {
             return children.get(0).getIcon();
         }
 
-        return "/icons/cog.png";
+        return "fa-cog";
     }
 
     /**

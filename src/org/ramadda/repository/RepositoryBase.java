@@ -42,6 +42,10 @@ public class RepositoryBase implements Constants, RepositorySource {
 
 
     /** _more_ */
+    public static final HtmlUtils HU = null;
+
+
+    /** _more_ */
     public final RequestUrl URL_HELP = new RequestUrl(this, "/docs");
 
     /** _more_ */
@@ -626,7 +630,7 @@ public class RepositoryBase implements Constants, RepositorySource {
      * @return _more_
      */
     public String getIconImage(String url, String... args) {
-        if (url.startsWith("fa-")) {
+        if (HU.isFontAwesome(url)) {
             return HtmlUtils.faIcon(url, args);
         } else {
             return HtmlUtils.image(getIconUrl(url), args);

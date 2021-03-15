@@ -84,6 +84,8 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 
 import java.util.function.Function;
+import java.util.function.BiFunction;
+import java.util.function.BiConsumer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -5938,14 +5940,6 @@ public class EntryManager extends RepositoryManager {
 
 
 	Hashtable<Object,Integer> count  =new Hashtable<Object,Integer>();
-	Function<StringBuilder,String> stringer = sb-> {
-	    Integer c = count.get(sb);
-	    String s = sb.toString();
-	    if(c.intValue()<12) {
-		s = s.replaceAll("ramadda-menugroup","ramadda-menugroup ramadda-menugroup-ext");
-	    }
-	    return s;
-	};
 
 
 
@@ -6040,6 +6034,7 @@ public class EntryManager extends RepositoryManager {
 
 
         StringBuilder menu = new StringBuilder();
+
         if (header != null) {
             menu.append(
                 HtmlUtils.div(
@@ -6047,46 +6042,25 @@ public class EntryManager extends RepositoryManager {
         }
         menu.append("<table class=\"ramadda-menu\">");
         HtmlUtils.open(menu, HtmlUtils.TAG_TR, HtmlUtils.ATTR_VALIGN, "top");
-        if (fileSB != null) {
-            fileSB.append("</div>");
+
+	BiConsumer<StringBuilder,String> finisher = (sb,label) -> {
+	    if(sb==null) return;
+            sb.append("</div>");
+	    Integer c = count.get(sb);
+	    String s = sb.toString();
+	    if(c.intValue()<12) {
+		s = s.replaceAll("ramadda-menugroup","ramadda-menugroup ramadda-menugroup-ext");
+	    }
             menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "",
-                                      HtmlUtils.b(msg("File")) + "<br>"
-                                      + fileSB.toString()));
-        }
-        if (actionSB != null) {
-            actionSB.append("</div>");
-	    String s  = stringer.apply(actionSB);
-            menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "",
-                                      HtmlUtils.b(msg("Edit")) + "<br>"
+                                      HtmlUtils.b(msg(label)) + "<br>"
                                       + s));
-        }
+	};
 
-
-	
-        if (viewSB != null) {
-            viewSB.append("</div>");
-	    String s  = stringer.apply(viewSB);
-            menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "",
-                                      HtmlUtils.b(msg("View")) + "<br>"
-                                      + s));
-        }
-
-
-        if (exportSB != null) {
-            exportSB.append("</div>");
-            menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "",
-                                      HtmlUtils.b(msg("Links")) + "<br>"
-                                      + exportSB.toString()));
-        }
-
-        if (categorySB != null) {
-            categorySB.append("</div>");
-	    String s  = stringer.apply(categorySB);
-            menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "",
-                                      HtmlUtils.b(msg("Data")) + "<br>"
-                                      + s));
-        }
-
+	finisher.accept(fileSB,"File");
+	finisher.accept(actionSB,"Edit");
+	finisher.accept(viewSB,"View");
+	finisher.accept(exportSB,"Links");
+	finisher.accept(categorySB,"Data");	
         if ((typeMask & OutputType.TYPE_CHILDREN) != 0) {
             List<Entry> children = getChildren(request, entry);
             if (children.size() > 0) {

@@ -150,63 +150,63 @@ public class DateHandler extends RepositoryManager {
         next.setTime(date);
         next.add(cal.MONTH, 1);
 
-        HtmlUtils.open(sb, HtmlUtils.TAG_TABLE, HtmlUtils.ATTR_BORDER, "1",
-                       HtmlUtils.ATTR_CELLSPACING, "0",
-                       HtmlUtils.ATTR_CELLPADDING, "0");
+        HU.open(sb, HU.TAG_TABLE, HU.ATTR_BORDER, "1",
+                       HU.ATTR_CELLSPACING, "0",
+                       HU.ATTR_CELLPADDING, "0");
         String[] dayNames = {
             "Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"
         };
-        String prevUrl = HtmlUtils.space(1)
-                         + HtmlUtils.href(
+        String prevUrl = HU.space(1)
+                         + HU.href(
                              url + "&"
                              + CalendarOutputHandler.getUrlArgs(
                                  prev), "&lt;");
         String nextUrl =
-            HtmlUtils.href(
+            HU.href(
                 url + "&" + CalendarOutputHandler.getUrlArgs(next),
-                HtmlUtils.ENTITY_GT) + HtmlUtils.space(1);
-        HtmlUtils.open(sb, HtmlUtils.TAG_TR, HtmlUtils.ATTR_VALIGN,
-                       HtmlUtils.VALUE_TOP);
-        HtmlUtils.open(sb, HtmlUtils.TAG_TD, HtmlUtils.ATTR_COLSPAN, "7",
-                       HtmlUtils.ATTR_ALIGN, HtmlUtils.VALUE_CENTER,
-                       HtmlUtils.ATTR_CLASS, "calnavmonthheader");
+                HU.ENTITY_GT) + HU.space(1);
+        HU.open(sb, HU.TAG_TR, HU.ATTR_VALIGN,
+                       HU.VALUE_TOP);
+        HU.open(sb, HU.TAG_TD, HU.ATTR_COLSPAN, "7",
+                       HU.ATTR_ALIGN, HU.VALUE_CENTER,
+                       HU.ATTR_CLASS, "calnavmonthheader");
 
-        HtmlUtils.open(sb, HtmlUtils.TAG_TABLE, "class", "calnavtable",
-                       HtmlUtils.ATTR_CELLSPACING, "0",
-                       HtmlUtils.ATTR_CELLPADDING, "0", HtmlUtils.ATTR_WIDTH,
+        HU.open(sb, HU.TAG_TABLE, "class", "calnavtable",
+                       HU.ATTR_CELLSPACING, "0",
+                       HU.ATTR_CELLPADDING, "0", HU.ATTR_WIDTH,
                        "100%");
-        HtmlUtils.open(sb, HtmlUtils.TAG_TR);
-        HtmlUtils.col(sb, prevUrl,
-                      HtmlUtils.attrs(HtmlUtils.ATTR_WIDTH, "1",
-                                      HtmlUtils.ATTR_CLASS,
+        HU.open(sb, HU.TAG_TR);
+        HU.col(sb, prevUrl,
+                      HU.attrs(HU.ATTR_WIDTH, "1",
+                                      HU.ATTR_CLASS,
                                       "calnavmonthheader"));
-        HtmlUtils.col(
-            sb, DateUtil.MONTH_NAMES[cal.get(cal.MONTH)] + HtmlUtils.space(1)
-            + theYear, HtmlUtils.attr(
-                HtmlUtils.ATTR_CLASS, "calnavmonthheader"));
+        HU.col(
+            sb, DateUtil.MONTH_NAMES[cal.get(cal.MONTH)] + HU.space(1)
+            + theYear, HU.attr(
+                HU.ATTR_CLASS, "calnavmonthheader"));
 
-        HtmlUtils.col(sb, nextUrl,
-                      HtmlUtils.attrs(HtmlUtils.ATTR_WIDTH, "1",
-                                      HtmlUtils.ATTR_CLASS,
+        HU.col(sb, nextUrl,
+                      HU.attrs(HU.ATTR_WIDTH, "1",
+                                      HU.ATTR_CLASS,
                                       "calnavmonthheader"));
-        HtmlUtils.close(sb, HtmlUtils.TAG_TABLE);
-        HtmlUtils.close(sb, HtmlUtils.TAG_TR);
-        HtmlUtils.open(sb, HtmlUtils.TAG_TR);
+        HU.close(sb, HU.TAG_TABLE);
+        HU.close(sb, HU.TAG_TR);
+        HU.open(sb, HU.TAG_TR);
         for (int colIdx = 0; colIdx < 7; colIdx++) {
-            HtmlUtils.col(sb, dayNames[colIdx],
-                          HtmlUtils.attrs(HtmlUtils.ATTR_WIDTH, "14%",
-                                          HtmlUtils.ATTR_CLASS,
+            HU.col(sb, dayNames[colIdx],
+                          HU.attrs(HU.ATTR_WIDTH, "14%",
+                                          HU.ATTR_CLASS,
                                           "calnavdayheader"));
         }
-        HtmlUtils.close(sb, HtmlUtils.TAG_TR);
+        HU.close(sb, HU.TAG_TR);
         int startDow = cal.get(cal.DAY_OF_WEEK);
         while (startDow > 1) {
             cal.add(cal.DAY_OF_MONTH, -1);
             startDow--;
         }
         for (int rowIdx = 0; rowIdx < 6; rowIdx++) {
-            HtmlUtils.open(sb, HtmlUtils.TAG_TR, HtmlUtils.ATTR_VALIGN,
-                           HtmlUtils.VALUE_TOP);
+            HU.open(sb, HU.TAG_TR, HU.ATTR_VALIGN,
+                           HU.VALUE_TOP);
             for (int colIdx = 0; colIdx < 7; colIdx++) {
                 int     thisDay    = cal.get(cal.DAY_OF_MONTH);
                 int     thisMonth  = cal.get(cal.MONTH);
@@ -224,7 +224,7 @@ public class DateHandler extends RepositoryManager {
                 if (dayLinks != null) {
                     String key = thisYear + "/" + thisMonth + "/" + thisDay;
                     if (dayLinks.get(key) != null) {
-                        content = HtmlUtils.href(url + "&"
+                        content = HU.href(url + "&"
                                 + CalendarOutputHandler.getUrlArgs(cal), ""
                                     + thisDay);
                         if ( !currentDay) {
@@ -235,13 +235,13 @@ public class DateHandler extends RepositoryManager {
                         dayClass = "calnavday";
                     }
                 } else {
-                    content = HtmlUtils.href(
+                    content = HU.href(
                         url + "&" + CalendarOutputHandler.getUrlArgs(cal),
                         "" + thisDay);
                 }
 
-                sb.append(HtmlUtils.col(content,
-                                        HtmlUtils.cssClass(dayClass)));
+                sb.append(HU.col(content,
+                                        HU.cssClass(dayClass)));
                 sb.append("\n");
                 cal.add(cal.DAY_OF_MONTH, 1);
             }
@@ -252,7 +252,7 @@ public class DateHandler extends RepositoryManager {
                 break;
             }
         }
-        sb.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
+        sb.append(HU.close(HU.TAG_TABLE));
 
     }
 
@@ -339,7 +339,7 @@ public class DateHandler extends RepositoryManager {
                                        ? timeArg
                                        : doFormat(date, timeFormat));
 
-        String           inputId    = HtmlUtils.getUniqueId("dateinput");
+        String           inputId    = HU.getUniqueId("dateinput");
         String           minDate    = null;
         String           maxDate    = null;
         if ((dates != null) && !dates.isEmpty()) {
@@ -349,7 +349,7 @@ public class DateHandler extends RepositoryManager {
 
         StringBuilder jsBuf =
             new StringBuilder("<script>jQuery(function() {$( ");
-        HtmlUtils.squote(jsBuf, "#" + inputId);
+        HU.squote(jsBuf, "#" + inputId);
         jsBuf.append(
             " ).datepicker({ dateFormat: 'yy-mm-dd',changeMonth: true, changeYear: true,constrainInput:false, yearRange: '1900:2100' ");
         if ((minDate != null) && (maxDate != null)) {
@@ -360,16 +360,16 @@ public class DateHandler extends RepositoryManager {
         String extra = "";
         if (includeTime) {
             extra = " T:"
-                    + HtmlUtils.input(name + ".time", timeString,
-                                      HtmlUtils.sizeAttr(10)
-                                      + HtmlUtils.attr(HtmlUtils.ATTR_TITLE,
+		+ HU.input(name + ".time", timeString,
+				  HU.attr("placeholder","hh:mm:ss TZ") + HU.sizeAttr(10)
+                                      + HU.attr(HU.ATTR_TITLE,
                                           timeHelp));
         }
 
         return jsBuf.toString() + "\n"
-               + HtmlUtils.input(name, dateString,
-                                 HtmlUtils.SIZE_10 + HtmlUtils.id(inputId)
-                                 + HtmlUtils.title(dateHelp)) + extra;
+               + HU.input(name, dateString,
+				 HU.attr("placeholder","yyyy-MM-dd")+ HU.SIZE_10 + HU.id(inputId)
+                                 + HU.title(dateHelp)) + extra;
     }
 
 
@@ -719,9 +719,9 @@ public class DateHandler extends RepositoryManager {
             result = doFormat(d, sdf);
         }
 
-        return HtmlUtils.span(result,
-                              HtmlUtils.cssClass(CSS_CLASS_DATETIME)
-                              + HtmlUtils.attr(HtmlUtils.ATTR_TITLE,
+        return HU.span(result,
+                              HU.cssClass(CSS_CLASS_DATETIME)
+                              + HU.attr(HU.ATTR_TITLE,
                                   fullDate + extraAlt));
     }
 

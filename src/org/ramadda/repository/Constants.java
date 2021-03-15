@@ -232,7 +232,7 @@ public interface Constants {
     public static final String ICON_LIST = "/icons/list.gif";
 
     /** _more_ */
-    public static final String ICON_LOG = "/icons/log.gif";
+    public static final String ICON_LOG = "fa-scroll";
 
     /** _more_ */
     public static final String ICON_MAP = "fa-map";
@@ -290,7 +290,7 @@ public interface Constants {
     public static final String ICON_ATOM = "/icons/atom.gif";
 
     /** _more_ */
-    public static final String ICON_SEARCH = "/icons/find.png";
+    public static final String ICON_SEARCH = "fa-binoculars";    
 
     /** _more_ */
     public static final String ICON_SEARCH_SMALL = "fa-search";

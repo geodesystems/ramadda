@@ -746,6 +746,12 @@ function handleSelect(request, id) {
 	    $(this).attr("data-pinned",true);
 	}
     });
+    var arr = selector.div.obj.getElementsByTagName('script')
+    //Eval any embedded js
+    for (var n = 0; n < arr.length; n++) {
+	eval(arr[n].innerHTML);
+    }
+
 }
 
 

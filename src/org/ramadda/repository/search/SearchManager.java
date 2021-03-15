@@ -1091,7 +1091,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                 if (type.getIsForSearch()) {
 		    String icon = type.getIcon();
 		    if(icon==null) icon = "";
-		    if(!icon.startsWith("fa") &&  !icon.equals("")) {
+		    if(!HU.isFontAwesome("fa") &&  !icon.equals("")) {
 			icon  = getRepository().getIconUrl(icon);
 		    } 
                     tfos.add(new HtmlUtils.Selector(HtmlUtils.space(2) +type.getLabel(),

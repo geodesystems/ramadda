@@ -1496,6 +1496,7 @@ r    },
         $(parent + ".ramadda-pulldown-with-icons").iconselectmenu().iconselectmenu("menuWidget").addClass("ui-menu-icons ramadda-select-icon");
     },
 
+
     searchLastInput:"",
     searchSuggestInit:function(id, type, icon) {
 	let searching = false;
@@ -3157,6 +3158,53 @@ $(document).ready(function(){
             console.log("err:" + e);
         }
     },
+    initSearchPopup:function(id,target) {
+	let input = HU.input("","",["id",id+"_input",CLASS,"input","placeholder","Search", "style",
+				    HU.css("width","200px")]);
+	input = HU.center(input);
+	let html = input +HU.div([CLASS,"ramadda-select-search-results","id",id+"_results"]);
+	$("#" +id).html(html);
+	let results = $("#" + id +"_results");
+	$("#" + id +"_input").keyup(function(event){
+	    let value =  $(this).val();
+	    if(value=="") {
+		results.hide();
+		results.html("");
+		return;
+	    }
+	    var keycode = (event.keyCode ? event.keyCode : event.which);
+	    if(keycode == 13) {
+		let searchLink =  ramaddaBaseUrl + "/search/do?text=" + encodeURIComponent(value) +"&output=json";
+		results.html(HU.getIconImage(icon_wait) + " Searching...");
+		results.show();
+		var myCallback = {
+                    entryListChanged: function(list) {
+			let entries = list.getEntries();
+			if(entries.length==0) {
+			    results.show();
+			    results.html("Nothing found");
+			    return;
+			}
+			let html = "";
+			entries.forEach(entry=>{
+			    let call = "selectClick('" +  target +"','" + entry.getId() +
+				"','" + entry.getName()+"');";
+			    html += HU.href("javascript:void(0);",entry.getIconImage() +" " + entry.getName(),
+					    ["onclick",call]) +"<br>";
+			});
+			results.html(html);
+			results.show(400);
+                    },
+                    handleSearchError:function(url, error) {
+			results.html("An error occurred:" + error);
+		    }
+		};
+		var entryList = new EntryList(getGlobalRamadda(), searchLink, myCallback, false);
+		entryList.doSearch();
+	    }
+	});
+    },
+
     removeFromDocumentUrl:function(arg) {
         try {
             var url = String(window.location);

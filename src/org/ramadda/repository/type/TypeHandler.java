@@ -2651,7 +2651,7 @@ public class TypeHandler extends RepositoryManager {
                     getRepository().URL_ENTRY_LINKS.toString(),
                     new String[] { ARG_ENTRYID,
                                    entry
-                                   .getId() }), "/icons/application-detail.png",
+                                   .getId() }), "fa-list",
                                        "All Actions", OutputType.TYPE_FILE));
 
         links.add(makeHRLink(OutputType.TYPE_FILE));
@@ -5438,15 +5438,17 @@ public class TypeHandler extends RepositoryManager {
                                            + msg("Exclude")
                                : "");
 
+	    
+	    String submit = HtmlUtils.submitImage(
+                        getRepository().getIconUrl(ICON_SEARCH),
+                        "submit_type",
+                        "Show search form with this type",
+                        "");
             basicSB.append(
                 formEntry(
                     request, msgLabel("Kind"),
-                    typeSelect + HtmlUtils.space(1)
-                    + HtmlUtils.submitImage(
-                        getRepository().getIconUrl(ICON_SEARCH),
-                        "submit_type",
-                        msg("Show search form with this type"),
-                        "") + HtmlUtils.space(1) + groupCbx));
+                    typeSelect + HtmlUtils.SPACE
+                    + submit + HtmlUtils.SPACE + groupCbx));
         } else if (typeHandlers.size() == 1) {
             basicSB.append(HtmlUtils.hidden(ARG_TYPE,
                                             typeHandlers.get(0).getType()));

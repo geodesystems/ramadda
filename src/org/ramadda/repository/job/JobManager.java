@@ -797,9 +797,10 @@ public class JobManager extends RepositoryManager {
                                        service);
         String extra = HtmlUtils.hidden(ARG_SERVICEID, service.getId());
         if ( !soh.doExecute(request)) {
+	    getPageHandler().sectionOpen(request,  sb, "Services", false);
             soh.makeForm(request, service, null, null, URL_SERVICES_VIEW,
                          null, sb, extra);
-
+	    getPageHandler().sectionClose(request,  sb);
             return new Result("", sb);
         }
 

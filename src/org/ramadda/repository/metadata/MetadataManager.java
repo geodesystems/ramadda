@@ -1244,8 +1244,9 @@ public class MetadataManager extends RepositoryManager {
             throws Exception {
         StringBuilder tmp      = new StringBuilder();
         List<String>  titles   = new ArrayList<String>();
+
         List<String>  contents = new ArrayList<String>();
-        sb.append("<ul>");
+	List rows = new ArrayList();
         for (MetadataType type : metadataTypes) {
             if ( !type.getBrowsable()) {
                 continue;
@@ -1257,14 +1258,16 @@ public class MetadataManager extends RepositoryManager {
                             .URL_METADATA_LIST, ARG_METADATA_TYPE,
                                 type.toString()), type.getLabel());
 
-            sb.append("<li>");
-            sb.append(link);
+	    rows.add("<li>"+link);
             //            type.getHandler().addToBrowseSearchForm(request, tmp, type, titles, contents);
         }
-        sb.append("</ul>");
-
+	List<List> lists = Utils.splitList(rows,8);
+	List cols = new ArrayList();
+	for(List list: lists) {
+	    cols.add("<ul>" + Utils.join(list,"") +"</ul>");
+	}
+	HU.centerBlock(sb,HU.hrow(cols));
         //        HtmlUtils.makeAccordion(sb, titles, contents);
-
         return sb;
     }
 
@@ -1442,15 +1445,16 @@ public class MetadataManager extends RepositoryManager {
                              CSS_CLASS_SEPARATOR)) + HtmlUtils.href(
                                  request.getUrl(), msg("Cloud"));
         }
+	//Don't do cloud
+	header = "";
         String metadataType     = request.getString(ARG_METADATA_TYPE, "");
         MetadataHandler handler = findMetadataHandler(metadataType);
         MetadataType    type    = handler.findType(metadataType);
 
         StringBuilder   sb      = new StringBuilder();
         if ( !request.responseAsJson()) {
-            sb.append(HtmlUtils.sectionOpen(msg("Browse Metadata")));
+            sb.append(HtmlUtils.sectionOpen("Metadata: " + type.getLabel()));
             sb.append(HtmlUtils.center(header));
-            sb.append(HtmlUtils.hr());
         }
         doMakeTagCloudOrList(request, metadataType, sb, doCloud, 0);
         if (request.responseAsJson()) {
@@ -1556,20 +1560,33 @@ public class MetadataManager extends RepositoryManager {
                 }
                 sb.append(Json.list(maps));
             } else {
-                sb.append(HtmlUtils.formTable());
-                sb.append(HtmlUtils.row(HtmlUtils.cols(HtmlUtils.b("Count"),
-                        HtmlUtils.b(type.getLabel()))));
+
+		List rows = new ArrayList();
                 for (int i = 0; i < tuples.size(); i++) {
                     Object[] tuple = (Object[]) tuples.get(i);
-                    sb.append("<tr><td width=\"1%\" align=right>");
-                    sb.append(tuple[0].toString());
-                    sb.append("</td><td>");
                     String value = (String) tuple[1];
-                    sb.append(HtmlUtils.href(handler.getSearchUrl(request,
-                            type, value), value));
-                    sb.append("</td></tr>");
+		    String label = value;
+		    if(value.trim().length()==0) {
+			label  ="----";
+		    }
+		    StringBuilder row =new StringBuilder();
+                    row.append("<tr><td>");
+                    row.append(tuple[0].toString());
+                    row.append("</td><td>");
+                    row.append(HtmlUtils.href(handler.getSearchUrl(request,
+                            type, value), label));
+                    row.append("</td></tr>");
+		    rows.add(row);
                 }
-                sb.append(HtmlUtils.formTableClose());
+		List cols = new ArrayList();
+		List<List> lists = Utils.splitList(rows,15);
+		for(List row: lists)  {		
+		    cols.add(HU.formTable() +
+			     HU.row(HU.cols(HU.b("# entries"), HU.b(type.getLabel())),"class=ramadda-table-header") +
+			     Utils.join(row,"") +
+			     HU.formTableClose());
+		}
+		sb.append(Utils.wrap(cols,"<div style='vertical-align:top;display:inline-block;margin:15px;'>","</div>"));
             }
 
         } else {

@@ -2010,9 +2010,9 @@ public class UserManager extends RepositoryManager {
                 HtmlUtils.href(
                     request.makeUrl(
                         getRepositoryBase().URL_USER_ACTIVITY, ARG_USER_ID,
-                        user.getId()), HtmlUtils.img(
-                            getRepository().getIconUrl(ICON_LOG),
-                            msg("View user log")));
+                        user.getId()), HtmlUtils.getIconImage(
+							      getRepository().getIconUrl(ICON_LOG),
+							      "title","View user log"));
 
             String userCbx = HtmlUtils.checkbox("user_" + user.getId(),
                                  "true", false, "");
@@ -3925,10 +3925,9 @@ public class UserManager extends RepositoryManager {
                         HtmlUtils.href(
                             request.makeUrl(
                                 getRepositoryBase().URL_USER_ACTIVITY,
-                                ARG_USER_ID, user.getId()), HtmlUtils.img(
-                                    getRepository().getIconUrl(ICON_LOG),
-                                    msg("View user log")) + " "
-                                        + user.getLabel());
+                                ARG_USER_ID, user.getId()), HtmlUtils.getIconImage(getRepository().getIconUrl(ICON_LOG),
+										   "title","View user log") + HU.SPACE
+			    + user.getLabel());
                 }
 
             }
