@@ -3980,6 +3980,29 @@ public class Utils extends IO {
     }
 
 
+    public static List<List> splitList(List list,int max) {
+	List<List>  lists = new ArrayList<List>();
+	if(list.size()<max) {
+	    lists.add(list);
+	} else {
+	    int num =(int) Math.ceil(list.size()/(double)max);
+	    int maxPer = (int)Math.ceil(list.size()/(double)num);
+	    List current = new ArrayList();
+	    lists.add(current);
+	    for(int i=0;i<list.size();i++) {
+		Object o  = list.get(i);
+		if(current.size()>=maxPer) {
+		    current = new ArrayList();
+		    lists.add(current);
+		}
+		current.add(o);
+	    }
+	}
+	return lists;
+    }
+
+
+
     /**
      * _more_
      *
