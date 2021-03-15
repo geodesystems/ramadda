@@ -392,6 +392,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private String dumpFile;
 
+    private String startupScript;    
+
     /** _more_ */
     private Date startTime = new Date();
 
@@ -1073,12 +1075,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
             Toolkit.getDefaultToolkit().beep();
         }
 
-	String startupScript = getProperty("ramadda.startupscript");
-	if(startupScript!=null) {
+	String script = startupScript!=null?startupScript:getProperty("ramadda.startupscript");
+	if(script!=null) {
 	    try {
-		Runtime.getRuntime().exec(startupScript);
+		Runtime.getRuntime().exec(script);
 	    } catch(Exception exc) {
-		System.err.println("Error running startup script:" + startupScript+"\n" + exc);
+		System.err.println("Error running startup script:" + script+"\n" + exc);
 	    }
 	}
         Repository theRepository = this;
@@ -1176,45 +1178,51 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
         for (int i = 0; i < args.length; i++) {
-            if (getPluginManager().checkFile(args[i])) {
+	    String arg = args[i];
+
+
+            if (getPluginManager().checkFile(arg)) {
                 continue;
             }
-            if (args[i].endsWith(".properties")) {
-                loadProperties(cmdLineProperties, args[i]);
-            } else if (args[i].equals("-dump")) {
+            if (arg.endsWith(".properties")) {
+                loadProperties(cmdLineProperties, arg);
+            } else if (arg.equals("-dump")) {
                 dumpFile = args[i + 1];
                 i++;
-            } else if (args[i].equals("-load")) {
+            } else if (arg.equals("-startup")) {
+		startupScript = args[i + 1];
+                i++;		
+            } else if (arg.equals("-load")) {
                 sqlLoadFiles.add(args[i + 1]);
                 i++;
-            } else if (args[i].equals("-admin")) {
+            } else if (arg.equals("-admin")) {
                 User user = new User(args[i + 1], true);
                 user.setPassword(args[i + 2]);
                 cmdLineUsers.add(user);
                 i += 2;
-            } else if (args[i].equals("-port")) {
+            } else if (arg.equals("-port")) {
                 //skip
                 i++;
-            } else if (args[i].equals("-home")) {
+            } else if (arg.equals("-home")) {
                 String homeDir = args[++i];
                 cmdLineProperties.put(PROP_REPOSITORY_HOME, homeDir);
-            } else if (args[i].startsWith("-D")) {
-                String       s    = args[i].substring(2);
+            } else if (arg.startsWith("-D")) {
+                String       s    = arg.substring(2);
                 List<String> toks = StringUtil.split(s, "=", true, true);
                 if (toks.size() == 0) {
                     throw new IllegalArgumentException("Bad argument:"
-                            + args[i]);
+                            + arg);
                 } else if (toks.size() == 1) {
                     cmdLineProperties.put(toks.get(0), "");
                 } else {
                     cmdLineProperties.put(toks.get(0), toks.get(1));
                 }
-            } else if (args[i].equals("-help")) {
+            } else if (arg.equals("-help")) {
                 //For command line use
                 System.err.println(USAGE_MESSAGE);
                 System.exit(0);
             } else {
-                usage("Unknown argument: " + args[i]);
+                usage("Unknown argument: " + arg);
             }
         }
 
