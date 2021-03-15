@@ -2821,7 +2821,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    if(!Utils.stringDefined(msg)) {
 		this.jq(ID_ENTRIES).fadeOut();
 	    } else {
-		let header = entries?this.getResultsHeader(entries)+"<br>":"";
+		let header = entries?this.getResultsHeader(entries,true)+"<br>":"";
 		this.jq(ID_ENTRIES).html(header+msg);
 		this.jq(ID_ENTRIES).show();
 		this.initCloser(ID_ENTRIES);

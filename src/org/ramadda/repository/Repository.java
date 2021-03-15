@@ -244,7 +244,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** File Listing OutputType */
     public static final OutputType OUTPUT_FILELISTING =
         new OutputType("File Listing", "repository.filelisting",
-                       OutputType.TYPE_FILE | OutputType.TYPE_FORSEARCH, "",
+                       OutputType.TYPE_OTHER| OutputType.TYPE_FORSEARCH, "",
                        ICON_FILELISTING);
 
 
@@ -3157,7 +3157,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     for (Entry entry : state.getAllEntries()) {
                         if (entry.getResource().isFile()) {
                             links.add(makeLink(request, state.getEntry(),
-                                    OUTPUT_FILELISTING));
+					       OUTPUT_FILELISTING));
 
                             break;
                         }

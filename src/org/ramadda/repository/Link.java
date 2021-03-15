@@ -190,6 +190,7 @@ public class Link {
      * @return _more_
      */
     public String toString() {
+	if(true) return url +" " +label;
         if (hr) {
             return "<hr>";
         }

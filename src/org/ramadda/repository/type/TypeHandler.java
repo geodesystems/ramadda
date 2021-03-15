@@ -3023,18 +3023,6 @@ public class TypeHandler extends RepositoryManager {
                                      String label)
             throws Exception {
         if ( !getAccessManager().canDownload(request, entry)) {
-            /*
-            if(!entry.isGroup() && !seenIt.contains(entry.getId())) {
-                seenIt.add(entry.getId());
-                getLogManager().logInfoAndPrint("cannot download:" + entry);
-                Resource resource = entry.getResource();
-                getLogManager().logInfoAndPrint("\tresource:" + resource +
-                " type:" + resource.getType() +
-                " exists:" +  resource.getTheFile().exists() +
-                " the file:" + resource.getTheFile());
-
-            }
-            */
             return null;
         }
         String size = " ("

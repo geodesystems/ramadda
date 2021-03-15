@@ -114,6 +114,8 @@ public class OutputType {
                                        | TYPE_FILE | TYPE_EDIT | TYPE_TOOLBAR
                                        | TYPE_OTHER | TYPE_IMPORTANT;
 
+    public static final int TYPE_MENU =  TYPE_VIEW | TYPE_FILE |TYPE_EDIT | TYPE_CHILDREN;
+
 
     /** _more_ */
     public static String ICON_NULL = null;

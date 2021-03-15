@@ -71,19 +71,19 @@ public class ZipOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_ZIP =
         new OutputType("Zip and Download File", "zip.zip",
-                       OutputType.TYPE_FILE, "", ICON_ZIP);
+                       OutputType.TYPE_OTHER, "", ICON_ZIP);
 
 
     /** _more_ */
     public static final OutputType OUTPUT_ZIPTREE =
         new OutputType("Zip and Download Tree", "zip.tree",
-                       OutputType.TYPE_FILE, "", ICON_ZIP);
+                       OutputType.TYPE_OTHER, "", ICON_ZIP);
 
 
     /** _more_ */
     public static final OutputType OUTPUT_ZIPGROUP =
         new OutputType("Zip and Download Files", "zip.zipgroup",
-                       OutputType.TYPE_FILE, "", ICON_ZIP);
+                       OutputType.TYPE_OTHER, "", ICON_ZIP);
 
     /** _more_ */
     public static final OutputType OUTPUT_EXPORT =
@@ -131,23 +131,12 @@ public class ZipOutputHandler extends OutputHandler {
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
-
-
-
         if (state.entry != null) {
             if (getAccessManager().canDownload(request, state.entry)
                     && getAccessManager().canExportEntry(request,
                         state.entry)) {
-                /* don't add the .zip to the URL. This now gets set below in setReturnFilename
-                links.add(
-                    makeLink(
-                        request, state.entry, OUTPUT_ZIP,
-                        "/" + IOUtil.stripExtension(state.entry.getName())
-                        + ".zip"));
-                */
                 links.add(makeLink(request, state.entry, OUTPUT_ZIP));
             }
-
             return;
         }
 
@@ -156,7 +145,6 @@ public class ZipOutputHandler extends OutputHandler {
         for (Entry child : state.getAllEntries()) {
             if (getAccessManager().canDownload(request, child)) {
                 hasFile = true;
-
                 break;
             }
             if (child.isGroup()) {
@@ -165,30 +153,16 @@ public class ZipOutputHandler extends OutputHandler {
         }
 
 
-
         if (hasFile) {
             if (state.group != null) {
-                /* don't add the .zip to the URL. This now gets set below in setReturnFilename
-                links.add(
-                    makeLink(
-                        request, state.group, OUTPUT_ZIPGROUP,
-                        "/" + IOUtil.stripExtension(state.group.getName())
-                        + ".zip"));
-                */
                 links.add(makeLink(request, state.group, OUTPUT_ZIPGROUP));
             } else {
                 links.add(makeLink(request, state.group, OUTPUT_ZIP));
             }
         }
 
-
         if ((state.group != null) && hasGroup
-                && ( !state.group.isTopEntry() || state.group.isDummy())) {
-            /*
-            links.add(makeLink(request, state.group, OUTPUT_ZIPTREE,
-                               "/"
-                               + IOUtil.stripExtension(state.group.getName())
-                               + ".zip"));*/
+	    && ( !state.group.isTopEntry() || state.group.isDummy())) {
             links.add(makeLink(request, state.group, OUTPUT_ZIPTREE));
         }
 

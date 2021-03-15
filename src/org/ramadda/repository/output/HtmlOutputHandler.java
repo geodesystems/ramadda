@@ -378,10 +378,8 @@ public class HtmlOutputHandler extends OutputHandler {
             throws Exception {
         String contents;
         if (showLinks) {
-            int menuType = OutputType.TYPE_VIEW | OutputType.TYPE_FILE
-                           | OutputType.TYPE_EDIT | OutputType.TYPE_OTHER;
             contents = getEntryManager().getEntryActionsTable(request, entry,
-                    menuType);
+							      OutputType.TYPE_MENU);
         } else {
             contents = getInformationTabs(request, entry, true);
         }
@@ -408,7 +406,7 @@ public class HtmlOutputHandler extends OutputHandler {
     public Result getLinksXml(Request request, Entry entry) throws Exception {
         StringBuffer sb = new StringBuffer("<content>\n");
         String links = getEntryManager().getEntryActionsTable(request, entry,
-                           OutputType.TYPE_ALL);
+							      OutputType.TYPE_ALL);
         StringBuffer inner = new StringBuffer();
         String cLink = HU.jsLink(HU.onMouseClick("hidePopupObject();"),
                                  getIconImage(ICON_CLOSE), "");
@@ -1260,10 +1258,6 @@ public class HtmlOutputHandler extends OutputHandler {
             }
         }
 
-
-        //        tabTitles.add(msg(LABEL_LINKS));
-        //        tabContents.add(getEntryManager().getEntryActionsTable(request, entry,
-        //                OutputType.TYPE_ALL));
 
         if (tabContents.size() == 1) {
             return tabContents.get(0).toString();

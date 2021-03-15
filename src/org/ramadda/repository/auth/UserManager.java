@@ -3688,19 +3688,18 @@ public class UserManager extends RepositoryManager {
                         List<Entry> cart = getCart(request);
                         boolean entryIsInCart =
                             cart.contains(state.getEntry());
+			/**
+			 //Don't show this for now. less is more. 
                         if ( !entryIsInCart) {
-                            link = makeLink(request, state.getEntry(),
-                                            OUTPUT_CART_ADD);
-                            link.setLinkType(OutputType.TYPE_FILE
-                                             | OutputType.TYPE_TOOLBAR);
-                            links.add(link);
+			link = makeLink(request, state.getEntry(),  OUTPUT_CART_ADD);
+			link.setLinkType(OutputType.TYPE_FILE| OutputType.TYPE_TOOLBAR);
+			links.add(link);
                         } else {
-                            link = makeLink(request, state.getEntry(),
-                                            OUTPUT_CART_REMOVE);
-                            link.setLinkType(OutputType.TYPE_FILE
-                                             | OutputType.TYPE_ACTION);
+                            link = makeLink(request, state.getEntry(),   OUTPUT_CART_REMOVE);
+                            link.setLinkType(OutputType.TYPE_FILE | OutputType.TYPE_ACTION);
                             links.add(link);
                         }
+			**/
                     }
 
 

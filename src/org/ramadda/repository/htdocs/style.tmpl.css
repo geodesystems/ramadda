@@ -2577,7 +2577,6 @@ label {
     border:0px solid;
 }
 
-
 .ramadda-breadcrumbs {
     border-bottom : 1px #e0e0e0 solid;
     padding-left: 4px;
@@ -2817,17 +2816,19 @@ a.ramadda-heading-2-link:visited {
 }
 
 .ramadda-footer {
+    margin:0px;
+    margin-top:5px;
+    
    margin-left: auto;
    margin-right: auto;
    text-align:center;
    font-size:90%;
-   margin:0px;
    padding:20px;
    align:center;
    text-align:center;
    background-repeat: repeat; 
    background-image:url(${root}/images/background.png);
-   border-top: 1px #000 solid;
+   border-top: 1px #e0e0e0  solid;
 }
 
 .ramadda-smalllink {
@@ -3772,6 +3773,7 @@ nowiki {
 }
 
 .ramadda-innercontent {
+   padding-top: 0px;
     margin: 0px;
 }
 

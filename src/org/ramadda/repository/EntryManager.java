@@ -5935,24 +5935,18 @@ public class EntryManager extends RepositoryManager {
                                        boolean returnNullIfNoneMatch,
                                        String header)
             throws Exception {
-
-
-
-
 	Hashtable<Object,Integer> count  =new Hashtable<Object,Integer>();
-
-
-
         StringBuilder
             viewSB          = null,
             exportSB        = null,
             nonHtmlSB       = null,
             actionSB        = null,
-            categorySB      = null,
+            otherSB      = null,
             fileSB          = null;
         int     cnt         = 0;
         boolean needToAddHr = false;
         for (Link link : links) {
+
             if ( !link.isType(typeMask)) {
                 continue;
             }
@@ -5976,11 +5970,11 @@ public class EntryManager extends RepositoryManager {
                 }
                 sb = fileSB;
             } else if (link.isType(OutputType.TYPE_OTHER)) {
-                if (categorySB == null) {
+                if (otherSB == null) {
                     cnt++;
-                    categorySB = new StringBuilder();
+                    otherSB = new StringBuilder();
                 }
-                sb = categorySB;
+                sb = otherSB;
             } else {
                 if (actionSB == null) {
                     cnt++;
@@ -6060,8 +6054,9 @@ public class EntryManager extends RepositoryManager {
 	finisher.accept(actionSB,"Edit");
 	finisher.accept(viewSB,"View");
 	finisher.accept(exportSB,"Links");
-	finisher.accept(categorySB,"Data");	
-        if ((typeMask & OutputType.TYPE_CHILDREN) != 0) {
+	finisher.accept(otherSB,"Etc");	
+	
+        if (typeMask!=OutputType.TYPE_ALL && (typeMask & OutputType.TYPE_CHILDREN) != 0) {
             List<Entry> children = getChildren(request, entry);
             if (children.size() > 0) {
                 StringBuilder childrenSB = new StringBuilder();

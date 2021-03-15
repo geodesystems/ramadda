@@ -1151,7 +1151,6 @@ public class PageHandler extends RepositoryManager {
                     } catch (Exception exc) {
                         getLogManager().logError(
                             "failed to process template:" + path, exc);
-
                         continue;
                     }
                     String[] changes = { "userlink", MACRO_USERLINK,
@@ -1163,7 +1162,9 @@ public class PageHandler extends RepositoryManager {
 
                     resource = resource.replace("${imports}", webImports);
                     HtmlTemplate template = new HtmlTemplate(getRepository(),
-                                                path, resource);
+							     path, resource);
+		    //		    System.out.println("p: " + path + " " + template.getId()+ " " + template.getName());
+
                     //Check if we got some other ...template.html file from a plugin
                     if (template.getId() == null) {
                         System.err.println("template: no id in " + path);
@@ -2724,10 +2725,9 @@ public class PageHandler extends RepositoryManager {
                            + getEntryDisplayName(entry));
 
         String links = getEntryManager().getEntryActionsTable(request, entry,
-                           OutputType.TYPE_FILE | OutputType.TYPE_EDIT
-                           | OutputType.TYPE_VIEW | OutputType.TYPE_OTHER
-                           | OutputType.TYPE_CHILDREN, linkList, false,
-                               headerLabel);
+							      OutputType.TYPE_MENU, 
+							      linkList, false,
+							      headerLabel);
 
 
         StringBuilder popup = new StringBuilder();

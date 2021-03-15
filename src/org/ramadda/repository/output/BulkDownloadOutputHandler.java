@@ -55,12 +55,12 @@ public class BulkDownloadOutputHandler extends OutputHandler {
     /** The  output type */
     public static final OutputType OUTPUT_CURL =
         new OutputType("Bulk Download Script", "bulk.curl",
-                       OutputType.TYPE_FILE, "", ICON_FETCH);
+                       OutputType.TYPE_OTHER, "", ICON_FETCH);
 
     /** _more_ */
     public static final OutputType OUTPUT_WGET =
         new OutputType("Wget Download Script", "bulk.wget",
-                       OutputType.TYPE_FILE, "", ICON_FETCH);
+                       OutputType.TYPE_OTHER, "", ICON_FETCH);
 
 
     /** _more_ */
@@ -136,14 +136,6 @@ public class BulkDownloadOutputHandler extends OutputHandler {
                 if (ok) {
                     break;
                 }
-                /*
-                if (child.getResource().isUrl()
-                        || getAccessManager().canDownload(request, child)) {
-                    ok = true;
-
-                    break;
-                }
-                    */
             }
 
 
