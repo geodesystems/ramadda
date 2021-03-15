@@ -2466,52 +2466,52 @@ table.dataTable tfoot td {
     background:#eee;
 }
 
-.display-datebox-table {
+.display-dategrid-table {
     position:relative;
 }
 
 
-.display-datebox-row {
+.display-dategrid-row {
     border:1px solid #efefef;
     position:relative;
 }
 
-.display-datebox-box {
+.display-dategrid-box {
     position:absolute;
     cursor:pointer;
     margin-left:0px;
     margin-right:0px;
 }
 
-.display-datebox-box-highlight {
+.display-dategrid-box-highlight {
     border:1px solid red;
 }
 
 
-.display-datebox-rowlabel {
+.display-dategrid-rowlabel {
     font-size:10pt;
 }
 
-.display-datebox-stats {
+.display-dategrid-stats {
     font-size:10pt;
     margin-left:3px;
 }
 
-.display-datebox-header {
+.display-dategrid-header {
     font-weight:bold;
 }
 
-.display-datebox-dateheader {
+.display-dategrid-dateheader {
     position:relative;
     width:100%;
     overflow:hidden;
 }
 
-.display-datebox-date {
+.display-dategrid-date {
     font-size:10pt;
     position:absolute;
 }
-.display-datebox-tick {
+.display-dategrid-tick {
     font-size:10pt;
     position:absolute;
 }

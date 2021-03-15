@@ -25,7 +25,7 @@ const DISPLAY_SPARKLINE = "sparkline";
 const DISPLAY_POINTIMAGE = "pointimage";
 const DISPLAY_CANVAS = "canvas";
 const DISPLAY_FIELDTABLE = "fieldtable";
-const DISPLAY_DATEBAR = "datebar";
+const DISPLAY_DATEGRID = "dategrid";
 
 addGlobalDisplayType({
     type: DISPLAY_RANKING,
@@ -196,8 +196,8 @@ addGlobalDisplayType({
     category: CATEGORY_TABLE
 });
 addGlobalDisplayType({
-    type: DISPLAY_DATEBAR,
-    label: "Date Bar",
+    type: DISPLAY_DATEGRID,
+    label: "Date Grid",
     requiresData: true,
     forUser: true,
     category: CATEGORY_TABLE
@@ -4137,8 +4137,8 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 
 
 
-function RamaddaDateboxDisplay(displayManager, id, properties) {
-    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, "datebox", properties);
+function RamaddaDategridDisplay(displayManager, id, properties) {
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_DATEGRID, properties);
     $.extend(this, SUPER);
     addRamaddaDisplay(this);
     let myProps = [
@@ -4202,14 +4202,14 @@ function RamaddaDateboxDisplay(displayManager, id, properties) {
 		return  (d.getTime()-minDate.getTime())/dateRange;
 	    };
 	    let height = "1.5em";
-	    html="<div class=display-datebox-table><table width=100% border=0 cellpadding=0 cellspacing=0>";
+	    html="<div class=display-dategrid-table><table width=100% border=0 cellpadding=0 cellspacing=0>";
 
-	    html+="<tr><td width='" + leftWidth+"'>" + HU.div([CLASS,"display-datebox-header"],this.getLeftLabel(groupField.getLabel())) +"</td>";
+	    html+="<tr><td width='" + leftWidth+"'>" + HU.div([CLASS,"display-dategrid-header"],this.getLeftLabel(groupField.getLabel())) +"</td>";
 	    let dateHeaderStyle = this.getDateHeaderStyle("background:#eee;border-bottom:1px solid #888;");
 	    let boxStyle = this.getBoxStyle("");
 	    let leftStyle = this.getLeftStyle("");
 	    let rightStyle = this.getRightStyle("");	    	    
-	    let dateHeader = HU.open("div",[CLASS,'display-datebox-dateheader',STYLE,dateHeaderStyle]) + SPACE;
+	    let dateHeader = HU.open("div",[CLASS,'display-dategrid-dateheader',STYLE,dateHeaderStyle]) + SPACE;
 	    let date  = minDate;
 	    let dateStride = this.getDateStride(-1);
 	    let dateDelta;
@@ -4227,7 +4227,7 @@ function RamaddaDateboxDisplay(displayManager, id, properties) {
 	    while(date.getTime()<=maxDate.getTime()) {
 		let perc = (100*scaleX(date))+"%";
 		let style = HU.css("left",perc,"top","0%","transform","translate(-50%, 0%)");
-		dateHeader+=HU.div([CLASS,"display-datebox-header display-datebox-date",STYLE,style],this.formatDate(date))+"\n";
+		dateHeader+=HU.div([CLASS,"display-dategrid-header display-dategrid-date",STYLE,style],this.formatDate(date))+"\n";
 
 		date = new Date(date.getTime() +dateDelta);
 	    }
@@ -4240,12 +4240,12 @@ function RamaddaDateboxDisplay(displayManager, id, properties) {
 		if(this.getShowMin()) dflt.push("Min");
 		if(this.getShowMax()) dflt.push("Max");
 		if(this.getShowAverage()) dflt.push("Avg");
-		html+="<td width='" + rightWidth + "'>" + HU.div([CLASS,"display-datebox-header display-datebox-stats"], this.getRightLabel(Utils.join(dflt,"/"))) +"</td>";
+		html+="<td width='" + rightWidth + "'>" + HU.div([CLASS,"display-dategrid-header display-dategrid-stats"], this.getRightLabel(Utils.join(dflt,"/"))) +"</td>";
 	    }
 	    html +="</tr>"
 	    Object.keys(cats).sort(v=>{
 		let cat = cats[v];
-		let row = HU.open("div",[CLASS,"display-datebox-row", STYLE,HU.css('height',height)]);
+		let row = HU.open("div",[CLASS,"display-dategrid-row", STYLE,HU.css('height',height)]);
 		let sorted = cat.records.sort((a,b)=>{
 		    return a.getTime()-b.getTime();
 		});
@@ -4273,10 +4273,10 @@ function RamaddaDateboxDisplay(displayManager, id, properties) {
 			min = isNaN(min)?cv:Math.min(min,cv);
 			max = isNaN(max)?cv:Math.max(max,cv);			
 		    }
-		    row+=HU.div(["foo","bar", RECORD_ID,r.getId(),CLASS,"display-datebox-box",TITLE,cv,STYLE,HU.css("left",perc,"right",right, "height",height,"background",color)+boxStyle],"&nbsp;");
+		    row+=HU.div(["foo","bar", RECORD_ID,r.getId(),CLASS,"display-dategrid-box",TITLE,cv,STYLE,HU.css("left",perc,"right",right, "height",height,"background",color)+boxStyle],"&nbsp;");
 		}
 		row+="</div>\n";
-		html+="<tr><td width='"+ leftWidth+"'>" +HU.div([STYLE,leftStyle,CLASS,"display-datebox-rowlabel"], v)+"</td><td>" + row +"</td>"
+		html+="<tr><td width='"+ leftWidth+"'>" +HU.div([STYLE,leftStyle,CLASS,"display-dategrid-rowlabel"], v)+"</td><td>" + row +"</td>"
 		if(showStats) {
 		    let stats = [];
 		    if(this.getShowTotal())
@@ -4287,13 +4287,13 @@ function RamaddaDateboxDisplay(displayManager, id, properties) {
 			stats.push(this.formatNumber(max));
 		    if(this.getShowAverage())
 			stats.push(this.formatNumber(total/sorted.length));		    		    		    
-		    html+=HU.td(["nowrap","true"],HU.div([STYLE, rightStyle,CLASS,"display-datebox-stats"],Utils.join(stats,SPACE)));
+		    html+=HU.td(["nowrap","true"],HU.div([STYLE, rightStyle,CLASS,"display-dategrid-stats"],Utils.join(stats,SPACE)));
 		}
 		html+="</tr>";
 	    });
 	    html += "</table></div>";
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
-	    this.boxes = this.jq(ID_DISPLAY_CONTENTS).find(".display-datebox-box");
+	    this.boxes = this.jq(ID_DISPLAY_CONTENTS).find(".display-dategrid-box");
 	    this.addFieldClickHandler(this.boxes, records,false);
 	    this.makeTooltips(this.boxes,records,null);
 	    this.recordMap = this.makeIdToRecords(records);
@@ -4316,14 +4316,14 @@ function RamaddaDateboxDisplay(displayManager, id, properties) {
 		console.log("none");
 		return;
 	    }
-	    this.boxes.removeClass("display-datebox-box-highlight");
+	    this.boxes.removeClass("display-dategrid-box-highlight");
 	    let boxMap ={};
 	    this.boxes.each(function() {
 		boxMap[$(this).attr(RECORD_ID)] = $(this);
 	    });
 	    matched.forEach(record=>{
 		let box =  boxMap[record.getId()];
-		if(box) box.addClass("display-datebox-box-highlight");
+		if(box) box.addClass("display-dategrid-box-highlight");
 	    });
 
 
