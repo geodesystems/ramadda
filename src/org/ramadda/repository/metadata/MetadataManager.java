@@ -52,6 +52,7 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
@@ -1244,10 +1245,11 @@ public class MetadataManager extends RepositoryManager {
             throws Exception {
         StringBuilder tmp      = new StringBuilder();
         List<String>  titles   = new ArrayList<String>();
-
         List<String>  contents = new ArrayList<String>();
 	List rows = new ArrayList();
-        for (MetadataType type : metadataTypes) {
+	List<MetadataType> sorted = new ArrayList<MetadataType>(metadataTypes);
+	Collections.sort(sorted);
+        for (MetadataType type : sorted) {
             if ( !type.getBrowsable()) {
                 continue;
             }

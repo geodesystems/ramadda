@@ -57,7 +57,7 @@ import java.util.List;
  * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
-public class MetadataType extends MetadataTypeBase {
+public class MetadataType extends MetadataTypeBase implements Comparable {
 
     /** _more_ */
     public static final String TAG_TYPE = "type";
@@ -176,6 +176,13 @@ public class MetadataType extends MetadataTypeBase {
         super(handler);
         this.id = id;
     }
+
+    public int 	compareTo(Object o) {
+	boolean ok = o instanceof MetadataType;
+	if(!ok) return -1;
+	return this.getName().compareTo(((MetadataType)o).getName());
+    }
+	
 
     /**
      * _more_
