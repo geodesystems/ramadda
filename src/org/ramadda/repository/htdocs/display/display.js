@@ -3886,7 +3886,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             newMenu += HU.tag(TAG_LI, [], HU.onClick(get + ".createDisplay('" + entry.getFullId() + "','entrydisplay',null,null," + props+");", "New Entry Display"));
             newMenuItems.push(HU.tag(TAG_LI, [], HU.onClick(get + ".createDisplay('" + entry.getFullId() + "','entrydisplay',null,null," + props+");", "New Entry Display")));
 
-a
             //check if it has point data
             var pointUrl = this.getPointUrl(entry);
             //            console.log("entry:" + entry.getName() + " url:" + pointUrl);

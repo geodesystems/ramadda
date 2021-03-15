@@ -6701,7 +6701,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             newMenu += HU.tag(TAG_LI, [], HU.onClick(get + ".createDisplay('" + entry.getFullId() + "','entrydisplay',null,null," + props+");", "New Entry Display"));
             newMenuItems.push(HU.tag(TAG_LI, [], HU.onClick(get + ".createDisplay('" + entry.getFullId() + "','entrydisplay',null,null," + props+");", "New Entry Display")));
 
-a
             //check if it has point data
             var pointUrl = this.getPointUrl(entry);
             //            console.log("entry:" + entry.getName() + " url:" + pointUrl);
@@ -25480,6 +25479,9 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
         }),
         entryList: properties.entryList,
         entryMap: {},
+	writeEntries: function(msg, entries) {
+	    this.jq(ID_ENTRIES).html(msg);
+	},
         getSearchSettings: function() {
             if (this.getPropertyProviders() != null) {
                 var provider = this.searchSettings.provider;
@@ -25731,8 +25733,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		this.jq(what||ID_RESULTS).hide();
 	    });
 	},
-        getResultsHeader: function(entries) {
-	    if(entries.length<=10) return  this.getCloser();
+        getResultsHeader: function(entries, includeCloser) {
+	    if(entries.length<=10) return  includeCloser?this.getCloser():"";
             var left = "Showing " + (this.searchSettings.skip + 1) + "-" + (this.searchSettings.skip + Math.min(this.searchSettings.max, entries.length));
             var nextPrev = [];
             var lessMore = [];
@@ -25751,7 +25753,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             }
             var results = "";
             var spacer = "&nbsp;&nbsp;&nbsp;"
-            results = this.getCloser() + "&nbsp;" + left + spacer +
+	    if(includeCloser)
+		results = this.getCloser();
+	    results += "&nbsp;" + left + spacer;
+            results += 
                 HtmlUtils.join(nextPrev, "&nbsp;") + spacer +
                 HtmlUtils.join(lessMore, "&nbsp;");
             return results;
@@ -28256,7 +28261,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		this.handleNoEntries();
                 return;
             }
-            this.writeHtml(ID_RESULTS, this.getResultsHeader(entries));
+            this.writeHtml(ID_RESULTS, this.getResultsHeader(entries, true));
 	    this.initCloser(ID_RESULTS);
 
             var get = this.getGet();
