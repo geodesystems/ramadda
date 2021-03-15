@@ -224,9 +224,9 @@ function EntryFormList(formId, img, selectId, initialOn) {
     this.setVisibility = function() {
         if (this.toggleImg) {
             if (this.on) {
-                $("#" + this.toggleImg).html(HU.getIconImage("fa-caret-down"));
+                $("#" + this.toggleImg).html(HU.getIconImage("fas fa-caret-down"));
             } else {
-                $("#" + this.toggleImg).html(HU.getIconImage("fa-caret-right"));
+                $("#" + this.toggleImg).html(HU.getIconImage("fas fa-caret-right"));
             }
         }
 

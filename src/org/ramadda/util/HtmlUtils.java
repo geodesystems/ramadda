@@ -2627,7 +2627,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
 	if(icon.trim().indexOf(" ")>=0) {
 	    return span("<i class=\"" + icon + "\"></i>", attr);
 	}
-        return span("<i class=\"fa " + icon + "\"></i>", attr);
+        return span("<i class=\"fas " + icon + "\"></i>", attr);
     }
 
 
@@ -2659,7 +2659,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
 	if(icon.trim().indexOf(" ")>=0) {
 	    return span("<i class=\"" + icon + "\"></i>", attrs(args));
 	}
-        return span("<i class=\"fa " + icon + "\"></i>", attrs(args));
+        return span("<i class=\"fas " + icon + "\"></i>", attrs(args));
     }
 
 

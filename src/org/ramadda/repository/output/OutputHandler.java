@@ -1453,7 +1453,7 @@ public class OutputHandler extends RepositoryManager {
 
         selectSB.append(HtmlUtils.leftRightBottom(sortLinks,
                 actionsSB.toString(), ""));
-        String arrowImg = getRepository().getIconImage(hideIt?"fa-caret-right":"fa-caret-down",
+        String arrowImg = getRepository().getIconImage(hideIt?"fas fa-caret-right":"fas fa-caret-down",
 						        "title",						       
 						       msg("Show/Hide Form"), "id", base + "img");
         String linkExtra = HtmlUtils.cssClass("ramadda-entries-link");

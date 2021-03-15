@@ -2839,9 +2839,20 @@ $(document).ready(function(){
 	HtmlUtils.loadKatex(f,e);
     },
 
+    isFontAwesome:function(icon) {
+	return icon.startsWith("fa-") || icon.startsWith("fas ")
+	    || icon.startsWith("fab ");	    
+    },
     getIconImage: function(url,attrs,attrs2) {
-        if(StringUtil.startsWith(url,"fa-")) {
-	    var a = ["class","fa " + url]
+        if(HtmlUtils.isFontAwesome(url)) {
+	    let clazz = "";
+	    let a;
+	    if(url.startsWith("fas ") || url.startsWith("fab ")) {
+		a = ["class",url];
+
+	    } else {
+		a = ["class","fas " + url];
+	    }
 	    if(attrs2)
 		a = Utils.mergeLists(a, attrs2);
             return HtmlUtils.span(attrs,HtmlUtils.tag("i",a));
