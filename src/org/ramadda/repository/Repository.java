@@ -1075,7 +1075,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 	String startupScript = getProperty("ramadda.startupscript");
 	if(startupScript!=null) {
-	    Runtime.getRuntime().exec(startupScript);
+	    try {
+		Runtime.getRuntime().exec(startupScript);
+	    } catch(Exception exc) {
+		System.err.println("Error running startup script:" + startupScript+"\n" + exc);
+	    }
 	}
         Repository theRepository = this;
         //Add a listener for the kill signal so we can shutdown gracefully
