@@ -554,6 +554,14 @@ public class HtmlUtils implements HtmlUtilsConstants {
     }
 
 
+    public static Appendable centerBlock(Appendable sb, String inner) throws Exception {
+	sb.append("<center><div style='display:inline-block;text-align:left;'>");
+	sb.append(inner);
+	sb.append("</div></center>");
+	return sb;
+    }
+
+
     /**
      * _more_
      *
@@ -891,6 +899,12 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return image(path, title, extra, null);
     }
 
+    public static boolean isFontAwesome(String icon) {
+	return icon.startsWith("fa-") || icon.startsWith("fas ")
+	    || icon.startsWith("fab ");	    
+    }
+
+
     /**
      * _more_
      *
@@ -904,7 +918,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static String image(String path, String title, String extra,
                                String inner) {
         if (Utils.stringDefined(title)) {
-            if (path.startsWith("fa-")) {
+            if (isFontAwesome(path)) {
                 return faIconWithAttr(path,
                                       attrs(ATTR_TITLE, title) + " " + extra);
             }
@@ -913,7 +927,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
                        attrs(ATTR_BORDER, "0", ATTR_SRC, path, ATTR_TITLE,
                              title, ATTR_ALT, title) + " " + extra);
         }
-        if (path.startsWith("fa-")) {
+        if (isFontAwesome(path)) {
             return faIconWithAttr(path, extra);
         }
         String img = tag(TAG_IMG,
@@ -1404,6 +1418,21 @@ public class HtmlUtils implements HtmlUtilsConstants {
             throw new RuntimeException(exc);
         }
     }
+
+    public static String hrow(List cols) throws Exception {
+	Appendable sb = new StringBuilder();
+	hrow(sb, cols);
+	return sb.toString();
+    }
+
+
+    public static Appendable hrow(Appendable sb, List cols) throws Exception {
+	for(Object o: cols) {
+	    sb.append(div(o.toString(), attrs("style", "display:inline-block;vertical-align:top;")));
+	}
+	return sb;
+    }
+
 
     /**
      * _more_
@@ -2595,6 +2624,9 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @return _more_
      */
     public static String faIconWithAttr(String icon, String attr) {
+	if(icon.trim().indexOf(" ")>=0) {
+	    return span("<i class=\"" + icon + "\"></i>", attr);
+	}
         return span("<i class=\"fa " + icon + "\"></i>", attr);
     }
 
@@ -2608,6 +2640,9 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @return _more_
      */
     public static String fasIconWithAttr(String icon, String attr) {
+	if(icon.trim().indexOf(" ")>=0) {
+	    return span("<i class=\"" + icon + "\"></i>", attr);
+	}
         return span("<i class=\"fas " + icon + "\"></i>", attr);
     }
 
@@ -2621,6 +2656,9 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @return _more_
      */
     public static String faIcon(String icon, String... args) {
+	if(icon.trim().indexOf(" ")>=0) {
+	    return span("<i class=\"" + icon + "\"></i>", attrs(args));
+	}
         return span("<i class=\"fa " + icon + "\"></i>", attrs(args));
     }
 
@@ -2635,7 +2673,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @return _more_
      */
     public static String getIconImage(String url, String... args) {
-        if (url.startsWith("fa-")) {
+        if (isFontAwesome(url)) {
             return HtmlUtils.faIcon(url, args);
         } else {
             return HtmlUtils.image(url, args);
@@ -2667,6 +2705,10 @@ public class HtmlUtils implements HtmlUtilsConstants {
      */
     public static String submitImage(String img, String name, String alt,
                                      String extra) {
+	if(isFontAwesome(img)) {
+	    return open("button", "type='submit' " + extra +attr(ATTR_TITLE,alt)) +
+		getIconImage(img) +"</button>";
+	}
         return tag(TAG_INPUT,
                    extra
                    + attrs(ATTR_NAME, name, ATTR_BORDER, "0", ATTR_SRC, img,
@@ -4629,7 +4671,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
                       ? hideImg
                       : showImg;
         String img;
-        if (icon.startsWith("fa-")) {
+        if (isFontAwesome(icon)) {
             img = faIconWithAttr(icon, HtmlUtils.id(id + "img"));
         } else {
             img = HtmlUtils.img(icon, "", HtmlUtils.id(id + "img"));
