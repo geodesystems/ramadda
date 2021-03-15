@@ -1066,12 +1066,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
+
         if (getProperty("ramadda.beep", false)) {
             Toolkit.getDefaultToolkit().beep();
             Misc.sleep(200);
             Toolkit.getDefaultToolkit().beep();
         }
 
+	String startupScript = getProperty("ramadda.startupscript");
+	if(startupScript!=null) {
+	    Runtime.getRuntime().exec(startupScript);
+	}
         Repository theRepository = this;
         //Add a listener for the kill signal so we can shutdown gracefully
         Runtime.getRuntime().addShutdownHook(new Thread() {
