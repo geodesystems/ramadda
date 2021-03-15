@@ -92,23 +92,23 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
     public static final OutputType OUTPUT_WIKI = new OutputType("Wiki",
                                                      "wiki.view",
                                                      OutputType.TYPE_OTHER,
-                                                     "", ICON_WIKI,
+                                                     "", "fab fa-wikipedia-w",
                                                      GROUP_WIKI);
 
     /** _more_ */
     public static final OutputType OUTPUT_WIKI_HISTORY =
         new OutputType("Wiki History", "wiki.history", OutputType.TYPE_VIEW,
-                       "", ICON_WIKI, GROUP_WIKI);
+                       "", "fab fa-wikipedia-w", GROUP_WIKI);
 
     /** _more_ */
     public static final OutputType OUTPUT_WIKI_DETAILS =
         new OutputType("Entry Details", "wiki.details",
-                       OutputType.TYPE_OTHER, "", ICON_WIKI, GROUP_WIKI);
+                       OutputType.TYPE_OTHER, "", "fab fa-wikipedia-w", GROUP_WIKI);
 
     /** _more_ */
     public static final OutputType OUTPUT_WIKI_TEXT =
         new OutputType("Wiki Text", "wiki.text", OutputType.TYPE_OTHER, "",
-                       ICON_WIKI, GROUP_WIKI);
+                       "fab fa-wikipedia-w", GROUP_WIKI);
 
 
     /**
