@@ -25,6 +25,10 @@ p {margin-top:1.5em;}
 a {color: #000; text-decoration: underline;}
 a.btn:link {color: #000;}
 
+a:plain {
+    text-decoration: none;
+}
+
 a:hover {
     text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
 }

@@ -84,23 +84,19 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
 
         if (canAdd) {
             sb.append(
-                HtmlUtils
-                    .href(HtmlUtils
-                        .url(request
-                            .entryUrlWithArg(
-                                getRepository().URL_ENTRY_FORM, group,
-                                    ARG_GROUP), ARG_TYPE,
+                HU.href(HU.url(request.entryUrlWithArg(getRepository().URL_ENTRY_FORM, group, ARG_GROUP), ARG_TYPE,
                                         FaqEntryTypeHandler
-                                            .TYPE_FAQENTRY), HtmlUtils
+                                            .TYPE_FAQENTRY), HU
                                                 .img(getRepository()
                                                     .getIconUrl(
                                                         ICON_NEW), msg(
                                                             "New FAQ Question"))));
+	    sb.append(HU.SPACE);
         }
 
 
 
-        sb.append(group.getDescription());
+	sb.append( getWikiManager().wikifyEntry(request, group, group.getDescription()));
         Hashtable<String, StringBuffer> catQuestionMap =
             new Hashtable<String, StringBuffer>();
         Hashtable<String, StringBuffer> catAnswerMap = new Hashtable<String,
@@ -108,7 +104,7 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
         List<String> cats = new ArrayList<String>();
         subGroups.addAll(entries);
         sb.append(
-            "<style type=\"text/css\">.faq_question {margin:0px;margin-bottom:5px;}\n</style>");
+            "<style type=\"text/css\">.faq_question {margin:0px;margin-bottom:5px;}\n.faq_question a {text-decoration:none;}\n</style>");
         for (Entry entry : subGroups) {
             String cat = "General";
             if (entry.getType().equals(FaqEntryTypeHandler.TYPE_FAQENTRY)) {
@@ -131,27 +127,27 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
             catQuestionSB.append("<li class=\"faq_question\">");
             boolean includeLink = group.getValue(0, true);
             if (canAdd || includeLink) {
-                String link = HtmlUtils.href(
+                String link = HU.href(
                                   getEntryManager().getEntryURL(
-                                      request, entry), HtmlUtils.img(
+                                      request, entry), HU.img(
                                       getRepository().getIconUrl(ICON_ENTRY),
                                       msg("View entry details")));
                 //            catQuestionSB.append(" ");
                 catQuestionSB.append(link);
                 catQuestionSB.append(" ");
             }
-            catQuestionSB.append(HtmlUtils.href("#" + entry.getId(),
-                    entry.getName()));
+            catQuestionSB.append(HU.mouseClickHref("HtmlUtils.scrollToAnchor('" + entry.getId()+"')",
+						   entry.getName(),""));
 
             catAnswerSB.append("<a name=" + entry.getId() + "></a>");
             catAnswerSB.append("<li class=\"faq_question\">");
             catAnswerSB.append(" ");
-            catAnswerSB.append(HtmlUtils.b(entry.getName()));
-            catAnswerSB.append(HtmlUtils.br());
+            catAnswerSB.append(HU.b(entry.getName()));
+            catAnswerSB.append(HU.br());
             String desc = entry.getDescription();
             desc = desc.replaceAll("\r\n\r\n", "\n<p>\n");
             catAnswerSB.append(desc);
-            catAnswerSB.append(HtmlUtils.p());
+            catAnswerSB.append(HU.p());
         }
 
 
@@ -165,7 +161,7 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
             StringBuffer catQuestionSB = catQuestionMap.get(cat);
             catQuestionSB.append("</ol>");
             if (cats.size() > 1) {
-                sb.append(HtmlUtils.h2(cat));
+                sb.append(HU.h2(cat));
             }
             sb.append(catQuestionSB.toString());
         }
@@ -176,7 +172,7 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
             sb.append("<hr>");
             catAnswerSB.append("</ol>");
             if (cats.size() > 1) {
-                sb.append(HtmlUtils.h2(cat));
+                sb.append(HU.h2(cat));
             }
 
             sb.append(catAnswerSB);

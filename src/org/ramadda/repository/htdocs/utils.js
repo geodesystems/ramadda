@@ -3344,6 +3344,7 @@ $(document).ready(function(){
 	return  "[" + name+"=\"" + value +"\"]";
     },
     scrollToAnchor:function(aid,offset) {
+	if(!Utils.isDefined(offset)) offset=-50;
 	var aTag = $("a[name='"+ aid +"']");
 	if(!offset) offset=0;
 	offset = +offset;
