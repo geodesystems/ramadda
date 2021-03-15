@@ -178,7 +178,7 @@ public class DoiOutputHandler extends OutputHandler {
     /** Map output type */
     public static final OutputType OUTPUT_DOI_CREATE =
         new OutputType("Create Identifier", "doi.create",
-                       OutputType.TYPE_EDIT, "", "/doi/ezid.png");
+                       OutputType.TYPE_EDIT, "", "fa-passport");
 
 
     /**
