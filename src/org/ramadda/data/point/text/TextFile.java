@@ -211,7 +211,6 @@ public abstract class TextFile extends PointFile {
      */
     public int getSkipLines(VisitInfo visitInfo) {
         int skipLines = Integer.parseInt(getProperty(PROP_SKIPLINES, "0"));
-
         return skipLines;
     }
 
@@ -644,6 +643,11 @@ public abstract class TextFile extends PointFile {
         String f = makeFields(fields);
         putProperty(PROP_FIELDS, f);
     }
+
+    public void putFields(List<String> fields) {
+        String f = makeFields(fields);
+        putProperty(PROP_FIELDS, f);
+    }    
 
 
     /**
