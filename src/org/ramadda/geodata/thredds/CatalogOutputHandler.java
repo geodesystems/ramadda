@@ -79,7 +79,7 @@ public class CatalogOutputHandler extends OutputHandler {
     public static final String ICON_OPENDAP = "/cdmdata/opendap.gif";
 
     /** _more_ */
-    public static final String ICON_CATALOG = "/icons/book_open.png";
+    public static final String ICON_CATALOG = "fas fa-book";
 
     /** _more_ */
     public static final String SERVICE_HTTP = "http";

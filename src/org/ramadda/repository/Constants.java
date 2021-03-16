@@ -96,7 +96,7 @@ public interface Constants {
     public static final String ICON_FTP = "/icons/server_go.png";
 
     /** _more_ */
-    public static final String ICON_CSV = "/icons/document-excel-csv.png";
+    public static final String ICON_CSV = "fas fa-file-csv";
 
     /** _more_ */
     public static final String ICON_DATA = "fa-table";
