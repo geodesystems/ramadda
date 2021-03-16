@@ -3612,6 +3612,7 @@ public class PageHandler extends RepositoryManager {
     public void entrySectionOpen(Request request, Entry entry, Appendable sb,
                                  String title, boolean showLine)
             throws Exception {
+	if(request.get(ARG_EMBEDDED,false)) return;
         sb.append(HU.sectionOpen(null, showLine));
         if (entry != null) {
             String label = entry.getTypeHandler().getEntryName(entry);
@@ -3645,6 +3646,7 @@ public class PageHandler extends RepositoryManager {
      */
     public void entrySectionClose(Request request, Entry entry, Appendable sb)
             throws Exception {
+	if(request.get(ARG_EMBEDDED,false)) return;
         sb.append(HU.sectionClose());
     }
 
