@@ -1074,11 +1074,15 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		    return d;
 		});
 		let clazz = (idx%2)?"ramadda-row-odd":"ramadda-row-even";
-		html+="<tr class=" + clazz+"><td>#" + idx+": </td>";
+		html+="<tr valign=top class=" + clazz+"><td>#" + idx+": </td>";
 		if(includeDate) {
 		    html+=HU.td([],this.formatDate(r.getDate()));
 		}
 		d.forEach(v=>{
+		    v = String(v);
+		    if(v.length>500) {
+			v = HU.div([STYLE,"max-height:200px;overflow-y:auto;"],v);
+		    }
 		    html+=HU.td([],v);
 		});
 		if(includeGeo) {
