@@ -155,6 +155,17 @@ function ramaddaDisplayCheckLayout() {
 
 
 function getRamaddaDisplay(id) {
+    let display =  Utils.displaysMap[id];
+    if(display) return display;
+    //Lazily set up the display map as when they are first created they don't have their getId() function defined yet
+    Utils.displaysList.forEach(display=>{
+	if(display.getId) {
+	    Utils.displaysMap[display.getId()] = display;
+	}
+	if (display.displayId) {
+            Utils.displaysMap[display.displayId] = display;
+	}
+    });
     return Utils.displaysMap[id];
 }
 
@@ -625,7 +636,7 @@ function DisplayThing(argId, argProperties) {
 	    if(!template)
 		template = this.getProperty("recordTemplate");
 	    if(template) {
-		if(template!="${default}" && template!="${fields}") {
+		if(!template.startsWith("${default") && template!="${fields}") {
 		    return this.applyRecordTemplate(this.getDataValues(record), fields, template, null, null,debug);
 		}
 	    }
@@ -633,6 +644,14 @@ function DisplayThing(argId, argProperties) {
 		fields = this.getFieldsByIds(null,this.getProperty("tooltipFields",this.getPropertyFields()));
 	    }
 
+	    let templateProps = {};
+	    let itemsPerColumn=10;
+	    if(template) {
+		let attrs = Utils.tokenizeMacros(template).getAttributes("default");
+		if(attrs) {
+		    itemsPerColumn = attrs["itemsPerColumn"] || itemsPerColumn;
+		}
+	    }
 	    let values = "";
 	    if(titleField) {
 		let title = record.getValue(titleField.getIndex());
@@ -736,7 +755,7 @@ function DisplayThing(argId, argProperties) {
             }
 	    let rowCnt = 0;
 	    values += "<table><tr valign=top>";
-	    let		lists   = Utils.splitList(rows,10);
+	    let		lists   = Utils.splitList(rows,itemsPerColumn);
 	    let tdStyle =lists.length>1?"margin-right:5px;":"";
 	    lists.forEach(list=>{
 		values += "<td><div style='" + tdStyle+"'><table>" + Utils.join(list,"") +"</table></div></td>";
@@ -3593,14 +3612,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
             var entryMenuButton = this.getEntryMenuButton(entry);
-            /*
-              entryMenuButton =  HU.onClick(this.getGet()+".showEntryDetails(event, '" + entry.getId() +"');", 
-              HU.image(ramaddaBaseUrl+"/icons/downdart.png", 
-              [ATTR_CLASS, "display-dialog-button", ATTR_ID,  this.getDomId(ID_MENU_BUTTON + entry.getId())]));
-
-            */
-            //            toolbarItems.push(entryMenuButton);
-
             var tmp = [];
 
 
