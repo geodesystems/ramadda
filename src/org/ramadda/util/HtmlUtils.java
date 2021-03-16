@@ -59,9 +59,14 @@ import java.util.regex.*;
 
 public class HtmlUtils implements HtmlUtilsConstants {
 
+    /** _more_          */
     public static final String SPACE = "&nbsp;";
+
+    /** _more_          */
     public static final String SPACE2 = "&nbsp;&nbsp;";
-    public static final String SPACE3 = "&nbsp;&nbsp;&nbsp;";    
+
+    /** _more_          */
+    public static final String SPACE3 = "&nbsp;&nbsp;&nbsp;";
 
     /**
      * _more_
@@ -156,6 +161,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }
+
         return sb;
     }
 
@@ -217,12 +223,13 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static Appendable close(Appendable sb, String... args) {
         try {
             for (String comp : args) {
-		if(comp.equals("\n")) sb.append(comp);
-		else {
-		    sb.append("</");
-		    sb.append(comp);
-		    sb.append(">");
-		}
+                if (comp.equals("\n")) {
+                    sb.append(comp);
+                } else {
+                    sb.append("</");
+                    sb.append(comp);
+                    sb.append(">");
+                }
             }
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
@@ -554,11 +561,24 @@ public class HtmlUtils implements HtmlUtilsConstants {
     }
 
 
-    public static Appendable centerBlock(Appendable sb, String inner) throws Exception {
-	sb.append("<center><div style='display:inline-block;text-align:left;'>");
-	sb.append(inner);
-	sb.append("</div></center>");
-	return sb;
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param inner _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static Appendable centerBlock(Appendable sb, String inner)
+            throws Exception {
+        sb.append(
+            "<center><div style='display:inline-block;text-align:left;'>");
+        sb.append(inner);
+        sb.append("</div></center>");
+
+        return sb;
     }
 
 
@@ -899,10 +919,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return image(path, title, extra, null);
     }
 
-    public static boolean isFontAwesome(String icon) {
-	return icon.startsWith("fa-") || icon.startsWith("fas ")
-	    || icon.startsWith("fab ");	    
-    }
 
 
     /**
@@ -936,6 +952,115 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
         return img;
     }
+
+    /**
+     * _more_
+     *
+     * @param icon _more_
+     *
+     * @return _more_
+     */
+    public static boolean isFontAwesome(String icon) {
+        return icon.startsWith("fa-") || icon.startsWith("fas ")
+               || icon.startsWith("fab ");
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param icon _more_
+     * @param attr _more_
+     *
+     * @return _more_
+     */
+    public static String faIconWithAttr(String icon, String attr) {
+        if (icon.trim().indexOf(" ") >= 0) {
+            return span("<i class=\"" + icon + "\"></i>", attr);
+        }
+
+        return span("<i class=\"fas " + icon + "\"></i>", attr);
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param icon _more_
+     * @param attr _more_
+     * @param outerAttr _more_
+     * @param innerAttr _more_
+     *
+     * @return _more_
+     */
+    public static String faIcon(String icon, String outerAttr,
+                                String innerAttr) {
+        if (icon.trim().indexOf(" ") >= 0) {
+            return span("<i class='" + icon + "' " + innerAttr + "></i>",
+                        outerAttr);
+        }
+
+        return span("<i class='fas " + icon + "' " + innerAttr + "></i>",
+                    outerAttr);
+    }
+
+
+
+
+    /**
+     * _more_
+     *
+     * @param icon _more_
+     * @param attr _more_
+     *
+     * @return _more_
+     */
+    public static String fasIconWithAttr(String icon, String attr) {
+        if (icon.trim().indexOf(" ") >= 0) {
+            return span("<i class=\"" + icon + "\"></i>", attr);
+        }
+
+        return span("<i class=\"fas " + icon + "\"></i>", attr);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param icon _more_
+     * @param args _more_
+     *
+     * @return _more_
+     */
+    public static String faIcon(String icon, String... args) {
+        if (icon.trim().indexOf(" ") >= 0) {
+            return span("<i class=\"" + icon + "\"></i>", attrs(args));
+        }
+
+        return span("<i class=\"fas " + icon + "\"></i>", attrs(args));
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param url _more_
+     * @param args _more_
+     *
+     * @return _more_
+     */
+    public static String getIconImage(String url, String... args) {
+        if (isFontAwesome(url)) {
+            return HtmlUtils.faIcon(url, args);
+        } else {
+            return HtmlUtils.image(url, args);
+        }
+    }
+
+
 
     /**
      * _more_
@@ -1031,18 +1156,28 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return attr(ATTR_STYLE, c);
     }
 
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
     public static String css(String... s) {
-	StringBuilder sb = new StringBuilder();
-	for(int i=0;i<s.length;i+=2) {
-	    if(s[i+1]==null) continue;
-	    sb.append(s[i]);
-	    sb.append(":");
-	    sb.append(s[i+1]);	    
-	    sb.append(";");
-	}
-	return sb.toString();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < s.length; i += 2) {
+            if (s[i + 1] == null) {
+                continue;
+            }
+            sb.append(s[i]);
+            sb.append(":");
+            sb.append(s[i + 1]);
+            sb.append(";");
+        }
+
+        return sb.toString();
     }
-    
+
     /**
      * _more_
      *
@@ -1119,6 +1254,18 @@ public class HtmlUtils implements HtmlUtilsConstants {
      */
     public static String colRight(String v1) {
         return tag(TAG_TD, " " + attr(ATTR_ALIGN, "right") + " ", v1);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param c _more_
+     *
+     * @return _more_
+     */
+    public static String highlightable(String c) {
+        return span(c, cssClass("ramadda-highlightable"));
     }
 
 
@@ -1419,19 +1566,64 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
     }
 
+    /**
+     * _more_
+     *
+     * @param cols _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public static String hrow(List cols) throws Exception {
-	Appendable sb = new StringBuilder();
-	hrow(sb, cols);
-	return sb.toString();
+        Appendable sb = new StringBuilder();
+        hrow(sb, cols);
+
+        return sb.toString();
     }
 
 
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param cols _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public static Appendable hrow(Appendable sb, List cols) throws Exception {
-	for(Object o: cols) {
-	    sb.append(div(o.toString(), attrs("style", "display:inline-block;vertical-align:top;")));
-	}
-	return sb;
+        for (Object o : cols) {
+            sb.append(div(o.toString(),
+                          attrs("style",
+                                "display:inline-block;vertical-align:top;")));
+        }
+
+        return sb;
     }
+
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param cols _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static Appendable hrow(Appendable sb, String... cols)
+            throws Exception {
+        for (String o : cols) {
+            sb.append(div(o.toString(),
+                          attrs("style",
+                                "display:inline-block;vertical-align:top;")));
+        }
+
+        return sb;
+    }
+
 
 
     /**
@@ -2618,71 +2810,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
     /**
      * _more_
      *
-     * @param icon _more_
-     * @param attr _more_
-     *
-     * @return _more_
-     */
-    public static String faIconWithAttr(String icon, String attr) {
-	if(icon.trim().indexOf(" ")>=0) {
-	    return span("<i class=\"" + icon + "\"></i>", attr);
-	}
-        return span("<i class=\"fas " + icon + "\"></i>", attr);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param icon _more_
-     * @param attr _more_
-     *
-     * @return _more_
-     */
-    public static String fasIconWithAttr(String icon, String attr) {
-	if(icon.trim().indexOf(" ")>=0) {
-	    return span("<i class=\"" + icon + "\"></i>", attr);
-	}
-        return span("<i class=\"fas " + icon + "\"></i>", attr);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param icon _more_
-     * @param args _more_
-     *
-     * @return _more_
-     */
-    public static String faIcon(String icon, String... args) {
-	if(icon.trim().indexOf(" ")>=0) {
-	    return span("<i class=\"" + icon + "\"></i>", attrs(args));
-	}
-        return span("<i class=\"fas " + icon + "\"></i>", attrs(args));
-    }
-
-
-
-    /**
-     * _more_
-     *
-     * @param url _more_
-     * @param args _more_
-     *
-     * @return _more_
-     */
-    public static String getIconImage(String url, String... args) {
-        if (isFontAwesome(url)) {
-            return HtmlUtils.faIcon(url, args);
-        } else {
-            return HtmlUtils.image(url, args);
-        }
-    }
-
-    /**
-     * _more_
-     *
      * @param img _more_
      * @param name _more_
      *
@@ -2705,10 +2832,13 @@ public class HtmlUtils implements HtmlUtilsConstants {
      */
     public static String submitImage(String img, String name, String alt,
                                      String extra) {
-	if(isFontAwesome(img)) {
-	    return open("button", "type='submit' " + extra +attr(ATTR_TITLE,alt)) +
-		getIconImage(img) +"</button>";
-	}
+        if (isFontAwesome(img)) {
+            return open("button",
+                        "type='submit' " + extra
+                        + attr(ATTR_TITLE, alt)) + getIconImage(img)
+                            + "</button>";
+        }
+
         return tag(TAG_INPUT,
                    extra
                    + attrs(ATTR_NAME, name, ATTR_BORDER, "0", ATTR_SRC, img,
@@ -3273,14 +3403,17 @@ public class HtmlUtils implements HtmlUtilsConstants {
                     attrSB.append(selector.attr);
                 }
                 if (Utils.stringDefined(selector.icon)) {
-		    String style = "";
-		    if(!selector.isHeader)
-			style +="margin-left:" + selector.margin+"px;";
+                    String style = "";
+                    if ( !selector.isHeader) {
+                        style += "margin-left:" + selector.margin + "px;";
+                    }
                     extraAttr = attrs("data-class", "ramadda-select-icon",
-                                      "data-style",
-				      style, "img-src", selector.icon);
-		    if(selector.isHeader)
-			extraAttr = attrs("isheader","true","label-class", "ramadda-select-header");
+                                      "data-style", style, "img-src",
+                                      selector.icon);
+                    if (selector.isHeader) {
+                        extraAttr = attrs("isheader", "true", "label-class",
+                                          "ramadda-select-header");
+                    }
                 } else if (selector.isHeader) {
                     extraAttr = style(
                         "font-weight:bold;background: #ddd;padding:6px;");
@@ -3817,22 +3950,30 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @return _more_
      */
     public static String formEntry(String left, String right) {
-	StringBuilder sb = new StringBuilder();
-	formEntry(sb,left,right);
-	return sb.toString();
+        StringBuilder sb = new StringBuilder();
+        formEntry(sb, left, right);
+
+        return sb.toString();
     }
 
-    public static void formEntry(Appendable sb,String left, String right) {
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param left _more_
+     * @param right _more_
+     */
+    public static void formEntry(Appendable sb, String left, String right) {
         try {
-	    sb.append(tag(TAG_TR, "",
-			  tag(TAG_TD,
-			      attrs(ATTR_ALIGN, VALUE_RIGHT, ATTR_CLASS,
-				    CLASS_FORMLABEL), left) + tag(TAG_TD,
-								  attrs(ATTR_CLASS, CLASS_FORMCONTENTS),
-								  right)) + "\n");
-	} catch(Exception exc) {
-	    throw new RuntimeException(exc);
-	}
+            sb.append(tag(TAG_TR, "",
+                    tag(TAG_TD,
+                        attrs(ATTR_ALIGN, VALUE_RIGHT, ATTR_CLASS,
+                            CLASS_FORMLABEL), left) + tag(TAG_TD,
+                                attrs(ATTR_CLASS, CLASS_FORMCONTENTS),
+                                    right)) + "\n");
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
 
 
     }
@@ -4390,6 +4531,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static String importJS(String jsUrl) {
         StringBuilder sb = new StringBuilder("\n");
         importJS(sb, jsUrl);
+
         return sb.toString();
     }
 
