@@ -546,6 +546,7 @@ var originalImages = new Array();
 var changeImages = new Array();
 
 function folderClick(uid, url, changeImg) {
+    console.log("img:" + changeImg);
     changeImages[uid] = changeImg;
     var jqBlock = $("#" + uid);
     if (jqBlock.length == 0) {
@@ -593,6 +594,7 @@ function handleFolderList(request, uid) {
             eval(script);
         }
     }
+    
     if (changeImages[uid]) {
         $("#img_" + uid).attr('src', icon_folderopen);
     } else {

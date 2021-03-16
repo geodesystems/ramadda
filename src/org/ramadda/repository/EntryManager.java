@@ -1244,19 +1244,19 @@ public class EntryManager extends RepositoryManager {
 
 
 
-        String formId = HtmlUtils.getUniqueId("entryform_");
+        String formId = HU.getUniqueId("entryform_");
         if (type == null) {
             sb.append(request.form(getRepository().URL_ENTRY_FORM,
-                                   HtmlUtils.attr("name", "entryform")
-                                   + HtmlUtils.id(formId)));
+                                   HU.attr("name", "entryform")
+                                   + HU.id(formId)));
         } else {
             request.uploadFormWithAuthToken(
                 sb, getRepository().URL_ENTRY_CHANGE,
-                HtmlUtils.attr("name", "entryform") + HtmlUtils.id(formId));
+                HU.attr("name", "entryform") + HU.id(formId));
         }
 
 
-        sb.append(HtmlUtils.formTable("ramadda-entry-edit"));
+        sb.append(HU.formTable("ramadda-entry-edit"));
         String title = BLANK;
 
         if (type == null) {
@@ -1264,13 +1264,13 @@ public class EntryManager extends RepositoryManager {
 				msgLabel("Type"),
 				getRepository().makeTypeSelect(
 							       request, false, "", true, null));
-	    HtmlUtils.formEntry(sb, BLANK, HtmlUtils.submit(msg("Select Type to Add")));
-            sb.append(HtmlUtils.hidden(ARG_GROUP, group.getId()));
+	    HU.formEntry(sb, BLANK, HU.submit(msg("Select Type to Add")));
+            sb.append(HU.hidden(ARG_GROUP, group.getId()));
         } else {
             title = ((entry == null)
                      ? msg("Add Entry")
                      : msg("Edit Entry"));
-            String submitButton = HtmlUtils.submit((entry == null)
+            String submitButton = HU.submit((entry == null)
                     ? "Add " + typeHandler.getLabel()
                     : msg("Save"), ARG_SUBMIT,
                                    makeButtonSubmitDialog(sb, ((entry == null)
@@ -1279,30 +1279,30 @@ public class EntryManager extends RepositoryManager {
 
             String nextButton = ((entry == null)
                                  ? ""
-                                 : HtmlUtils.submit("Save & Next",
+                                 : HU.submit("Save & Next",
                                      ARG_SAVENEXT));
 
 
             String deleteButton = (((entry != null) && entry.isTopEntry())
                                    ? ""
-                                   : HtmlUtils.submit(msg("Delete"),
+                                   : HU.submit(msg("Delete"),
                                        ARG_DELETE,
                                        makeButtonSubmitDialog(sb,
                                            "Deleting Entry...")));
 
 
 
-            String cancelButton = HtmlUtils.submit(msg("Cancel"), ARG_CANCEL);
+            String cancelButton = HU.submit(msg("Cancel"), ARG_CANCEL);
             String buttons      = ((entry != null)
-                                   ? HtmlUtils.buttons(submitButton,
+                                   ? HU.buttons(submitButton,
                                        deleteButton, cancelButton)
-                                   : HtmlUtils.buttons(submitButton,
+                                   : HU.buttons(submitButton,
                                        cancelButton));
 
-            HtmlUtils.row(sb, HtmlUtils.colspan(buttons, 2));
+            HU.row(sb, HU.colspan(buttons, 2));
             if (entry != null) {
-                sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
-                sb.append(HtmlUtils.hidden(ARG_ENTRY_TIMESTAMP,
+                sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
+                sb.append(HU.hidden(ARG_ENTRY_TIMESTAMP,
                                            getEntryTimestamp(entry)));
                 if (isAnonymousUpload(entry)) {
                     List<Metadata> metadataList =
@@ -1323,25 +1323,25 @@ public class EntryManager extends RepositoryManager {
                                 + email + " <b>IP:</b> "
                                 + metadata.getAttr2();
                     }
-                    String msg = HtmlUtils.space(2) + msg("Make public?")
+                    String msg = HU.space(2) + msg("Make public?")
                                  + extra;
-                    sb.append(HtmlUtils.formEntry(msgLabel("Publish"),
-                            HtmlUtils.checkbox(ARG_PUBLISH, "true", false)
+                    sb.append(HU.formEntry(msgLabel("Publish"),
+                            HU.checkbox(ARG_PUBLISH, "true", false)
                             + msg));
                 }
             } else {
-                sb.append(HtmlUtils.hidden(ARG_TYPE, type));
-                sb.append(HtmlUtils.hidden(ARG_GROUP, group.getId()));
+                sb.append(HU.hidden(ARG_TYPE, type));
+                sb.append(HU.hidden(ARG_GROUP, group.getId()));
             }
 
             FormInfo formInfo = new FormInfo(formId);
             typeHandler.addToEntryForm(request, sb, group, entry, formInfo);
 
             formInfo.addToForm(sb);
-            HtmlUtils.row(sb, HtmlUtils.colspan(buttons, 2));
+            HU.row(sb, HU.colspan(buttons, 2));
 
         }
-        HtmlUtils.formTableClose(sb);
+        HU.formTableClose(sb);
 
         return group;
 
@@ -1474,7 +1474,7 @@ public class EntryManager extends RepositoryManager {
                     Result result = doProcessEntryChange(request, false,
                                         actionId);
                     getActionManager().setContinueHtml(actionId,
-                            HtmlUtils.href(result.getRedirectUrl(),
+                            HU.href(result.getRedirectUrl(),
                                            msg("Continue")));
                 }
             };
@@ -2250,8 +2250,8 @@ public class EntryManager extends RepositoryManager {
                     getPageHandler().showDialogError(inner.getMessage());
                 if ((request.getUser() != null)
                         && request.getUser().getAdmin()) {
-                    msg += HtmlUtils.pre(
-                        HtmlUtils.entityEncode(LogUtil.getStackTrace(inner)));
+                    msg += HU.pre(
+                        HU.entityEncode(LogUtil.getStackTrace(inner)));
                 }
 
                 return getPageHandler().makeEntryHeaderResult(request,
@@ -2291,7 +2291,7 @@ public class EntryManager extends RepositoryManager {
                     getRepository().URL_ENTRY_SHOW, entry.getParentEntry(),
                     ARG_MESSAGE,
                     entries.size()
-                    + HtmlUtils.pad(
+                    + HU.pad(
                         getRepository().translate(
                             request, "files uploaded"))));
         } else {
@@ -2431,7 +2431,7 @@ public class EntryManager extends RepositoryManager {
         Date fromDate   = new Date(entry.getStartDate());
         Date toDate     = new Date(entry.getEndDate());
 
-        String url = HtmlUtils.url(getFullEntryShowUrl(null), ARG_ENTRYID,
+        String url = HU.url(getFullEntryShowUrl(null), ARG_ENTRYID,
                                    entry.getId());
         //j-
         String[] macros = {
@@ -2688,18 +2688,18 @@ public class EntryManager extends RepositoryManager {
             inner.append(
                 msg("Are you sure you want to delete the following folder?"));
             inner.append(
-                HtmlUtils.div(
-                    breadcrumbs, HtmlUtils.cssClass("ramadda-confirm")));
+                HU.div(
+                    breadcrumbs, HU.cssClass("ramadda-confirm")));
             inner.append(
-                HtmlUtils.b(
+                HU.b(
                     msg(
                     "Note: This will also delete everything contained by this folder")));
         } else {
             inner.append(
                 msg("Are you sure you want to delete the following entry?"));
             inner.append(
-                HtmlUtils.div(
-                    breadcrumbs, HtmlUtils.cssClass("ramadda-confirm")));
+                HU.div(
+                    breadcrumbs, HU.cssClass("ramadda-confirm")));
         }
 
 
@@ -2708,11 +2708,11 @@ public class EntryManager extends RepositoryManager {
         fb.append(request.form(getRepository().URL_ENTRY_DELETE, BLANK));
 
         getRepository().addAuthToken(request, fb);
-        fb.append(HtmlUtils.buttons(HtmlUtils.submit(msg("OK"),
-                ARG_DELETE_CONFIRM), HtmlUtils.submit(msg("Cancel"),
+        fb.append(HU.buttons(HU.submit(msg("OK"),
+                ARG_DELETE_CONFIRM), HU.submit(msg("Cancel"),
                     ARG_CANCEL)));
-        fb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
-        fb.append(HtmlUtils.formClose());
+        fb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
+        fb.append(HU.formClose());
         getPageHandler().entrySectionOpen(request, entry, sb, "Delete Entry");
         sb.append(getPageHandler().showDialogQuestion(inner.toString(),
                 fb.toString()));
@@ -2811,7 +2811,7 @@ public class EntryManager extends RepositoryManager {
             entryListSB.append(
                 getPageHandler().getConfirmBreadCrumbs(
                     request, toBeDeletedEntry));
-            entryListSB.append(HtmlUtils.br());
+            entryListSB.append(HU.br());
             if (toBeDeletedEntry.isGroup()) {
                 anyFolders = true;
             }
@@ -2825,13 +2825,13 @@ public class EntryManager extends RepositoryManager {
                 msg(
                 "Are you sure you want to delete all of the following entries?"));
         }
-        msgSB.append(HtmlUtils.div(entryListSB.toString(),
-                                   HtmlUtils.cssClass("ramadda-confirm")));
+        msgSB.append(HU.div(entryListSB.toString(),
+                                   HU.cssClass("ramadda-confirm")));
 
         if (anyFolders) {
             msgSB.append(
-                HtmlUtils.div(
-                    HtmlUtils.b(
+                HU.div(
+                    HU.b(
                         msg(
                         "Note: This will also delete everything contained by the above "
                         + ((entries.size() == 1)
@@ -2841,7 +2841,7 @@ public class EntryManager extends RepositoryManager {
         request.formPostWithAuthToken(sb,
                                       getRepository().URL_ENTRY_DELETELIST);
         StringBuilder hidden =
-            new StringBuilder(HtmlUtils.hidden(ARG_ENTRYIDS,
+            new StringBuilder(HU.hidden(ARG_ENTRYIDS,
                 idBuffer.toString()));
         String form = PageHandler.makeOkCancelForm(request,
                           getRepository().URL_ENTRY_DELETELIST,
@@ -2878,7 +2878,7 @@ public class EntryManager extends RepositoryManager {
         };
         String href = (group == null)
                       ? ""
-                      : HtmlUtils.href(
+                      : HU.href(
                           request.entryUrl(
                               getRepository().URL_ENTRY_SHOW,
                               group), "Continue");
@@ -3229,15 +3229,15 @@ public class EntryManager extends RepositoryManager {
             StringBuilder contents =
                 new StringBuilder(
                     "A new entry has been uploaded to the RAMADDA server under the folder: ");
-            String url1 = HtmlUtils.url(getFullEntryShowUrl(request),
+            String url1 = HU.url(getFullEntryShowUrl(request),
                                         ARG_ENTRYID, parentEntry.getId());
 
-            contents.append(HtmlUtils.href(url1, parentEntry.getFullName()));
+            contents.append(HU.href(url1, parentEntry.getFullName()));
             contents.append("<p>\n\n");
-            String url = HtmlUtils.url(getFullEntryShowUrl(request),
+            String url = HU.url(getFullEntryShowUrl(request),
                                        ARG_ENTRYID, entry.getId());
             contents.append("Edit to confirm: ");
-            contents.append(HtmlUtils.href(url, entry.getLabel()));
+            contents.append(HU.href(url, entry.getLabel()));
             boolean sentNotification = false;
             List<Metadata> metadataList =
                 getMetadataManager().findMetadata(request, parentEntry,
@@ -3280,16 +3280,16 @@ public class EntryManager extends RepositoryManager {
             getPageHandler().entrySectionOpen(request, group, sb,
                     "Upload a File");
             sb.append(request.uploadForm(getRepository().URL_ENTRY_UPLOAD,
-                                         HtmlUtils.attr("name",
+                                         HU.attr("name",
                                              "entryform")));
-            sb.append(HtmlUtils.submit(msg("Upload")));
-            sb.append(HtmlUtils.formTable());
-            sb.append(HtmlUtils.hidden(ARG_GROUP, group.getId()));
+            sb.append(HU.submit(msg("Upload")));
+            sb.append(HU.formTable());
+            sb.append(HU.hidden(ARG_GROUP, group.getId()));
             typeHandler.addToEntryForm(request, sb, group, null,
                                        new FormInfo(""));
-            HtmlUtils.formTableClose(sb);
-            sb.append(HtmlUtils.submit(msg("Upload")));
-            sb.append(HtmlUtils.formClose());
+            HU.formTableClose(sb);
+            sb.append(HU.submit(msg("Upload")));
+            sb.append(HU.formClose());
             getPageHandler().entrySectionClose(request, group, sb);
         } else {
             return doProcessEntryChange(request, true, null);
@@ -3386,11 +3386,11 @@ public class EntryManager extends RepositoryManager {
 		    String img;
 		    if (icon == null) {
 			icon = ICON_BLANK;
-			img = HtmlUtils.img(typeHandler.getIconUrl(icon), "",
-					    HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
+			img = HU.img(typeHandler.getIconUrl(icon), "",
+					    HU.attr(HU.ATTR_WIDTH,
 							   "16"));
 		    } else {
-			img = HtmlUtils.img(typeHandler.getIconUrl(icon));
+			img = HU.img(typeHandler.getIconUrl(icon));
 		    }
 		    String href = HU
 			.href(request
@@ -3580,7 +3580,7 @@ public class EntryManager extends RepositoryManager {
             long length = file.length();
             if (request.isHeadRequest()) {
                 Result result = new Result("", new StringBuilder());
-                result.addHttpHeader(HtmlUtils.HTTP_CONTENT_LENGTH,
+                result.addHttpHeader(HU.HTTP_CONTENT_LENGTH,
                                      "" + length);
                 result.addHttpHeader("Connection", "close");
                 result.setLastModified(new Date(file.lastModified()));
@@ -3623,7 +3623,7 @@ public class EntryManager extends RepositoryManager {
             Result result = new Result(BLANK, inputStream, mimeType);
             result.setResponseCode(response);
             result.addHttpHeader("Accept-Ranges", "bytes");
-            result.addHttpHeader(HtmlUtils.HTTP_CONTENT_LENGTH, "" + length);
+            result.addHttpHeader(HU.HTTP_CONTENT_LENGTH, "" + length);
             result.setLastModified(new Date(file.lastModified()));
             result.setCacheOk(
                 getRepository().getProperty("ramadda.http.cachefile", false));
@@ -3799,11 +3799,11 @@ public class EntryManager extends RepositoryManager {
         for (Entry fromEntry : entries) {
             fromList.append(getPageHandler().getBreadCrumbs(request,
                     fromEntry));
-            fromList.append(HtmlUtils.br());
+            fromList.append(HU.br());
         }
         String fromDiv =
-            HtmlUtils.div(fromList.toString(),
-                          HtmlUtils.cssClass("entry-confirm-list"));
+            HU.div(fromList.toString(),
+                          HU.cssClass("entry-confirm-list"));
 
         String force  = request.getString(ARG_ACTION_FORCE, (String) null);
         String action = null;
@@ -3860,95 +3860,94 @@ public class EntryManager extends RepositoryManager {
             }
             request.formPostWithAuthToken(sb, getRepository().URL_ENTRY_COPY);
             if (force != null) {
-                sb.append(HtmlUtils.hidden(ARG_ACTION_FORCE, force));
+                sb.append(HU.hidden(ARG_ACTION_FORCE, force));
             }
 
-            sb.append(HtmlUtils.sectionOpen(msg(label)));
-
-            sb.append(
-                HtmlUtils.div(
-                    msg("The Entries"),
-                    HtmlUtils.cssClass("entry-confirm-header")));
+            HU.sectionOpen(sb,msg(label),false);
+	    HU.div(sb, msg("The entries"), HU.cssClass("entry-confirm-header"));
             sb.append(fromDiv);
 
-
+	    StringBuilder left  = new StringBuilder();
+	    StringBuilder right  = new StringBuilder();
+	    StringBuilder middle = new StringBuilder();
             if (force == null) {
-                sb.append(
-                    HtmlUtils.div(
+                left.append(
+                    HU.div(
                         msg("What do you want to do?"),
-                        HtmlUtils.cssClass("entry-confirm-header")));
-                sb.append(
-                    HtmlUtils.open(
-                        HtmlUtils.TAG_DIV,
-                        HtmlUtils.cssClass("entry-confirm-list")));
-                sb.append(HtmlUtils.labeledRadio(ARG_ACTION, "move", isMove,
+                        HU.cssClass("entry-confirm-header")));
+                left.append(
+                    HU.open(
+                        HU.TAG_DIV,
+                        HU.cssClass("entry-confirm-list")));
+                left.append(HU.labeledRadio(ARG_ACTION, "move", isMove,
                         msg("Move")));
-                sb.append("&nbsp;&nbsp;");
-                sb.append(HtmlUtils.labeledRadio(ARG_ACTION, "copy", isCopy,
+                left.append("&nbsp;&nbsp;");
+                left.append(HU.labeledRadio(ARG_ACTION, "copy", isCopy,
                         msg("Copy")));
-                sb.append("&nbsp;&nbsp;");
-                sb.append(HtmlUtils.labeledRadio(ARG_ACTION, "link", isLink,
+                left.append("&nbsp;&nbsp;");
+                left.append(HU.labeledRadio(ARG_ACTION, "link", isLink,
                         msg("Link")));
-                sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+                left.append(HU.close(HU.TAG_DIV));
             }
 
 
+	    HU.div(middle, HU.div("To",HU.cssClass("entry-confirm-header")) +HU.faIcon(ICON_RIGHTARROW, "", HU.style("font-size:24pt;")),HU.style("margin-left:32px;margin-right:32px;text-align:center;"));
 
-            sb.append(
-                HtmlUtils.div(
+            right.append(
+                HU.div(
                     msg("Select a destination"),
-                    HtmlUtils.cssClass("entry-confirm-header")));
-            sb.append(
-                HtmlUtils.open(
-                    HtmlUtils.TAG_DIV,
-                    HtmlUtils.cssClass("entry-confirm-list")));
-            sb.append(HtmlUtils.hidden(ARG_FROM, fromIds));
+                    HU.cssClass("entry-confirm-header")));
+            right.append(
+                HU.open(
+                    HU.TAG_DIV,
+                    HU.cssClass("entry-confirm-list")));
+            right.append(HU.hidden(ARG_FROM, fromIds));
 
 
             if (toEntry != null) {
-                sb.append(msgLabel("Target Entry"));
-                sb.append(HtmlUtils.space(1));
-                sb.append(toEntry.getTypeHandler().getEntryName(toEntry));
-                sb.append(HtmlUtils.hidden(ARG_TO, toEntry.getId()));
+                right.append(msgLabel("Target Entry"));
+                right.append(HU.space(1));
+                right.append(toEntry.getTypeHandler().getEntryName(toEntry));
+                right.append(HU.hidden(ARG_TO, toEntry.getId()));
             } else {
                 Entry parent = entries.get(0).getParentEntry();
                 String select =
-                    getRepository().getHtmlOutputHandler().getSelect(
-                        request, ARG_TO, HtmlUtils.img(
-                            getRepository().getIconUrl(
-                                ICON_FOLDER_OPEN)) + HtmlUtils.space(1)
-                                    + msg("Select")
-                                    + HtmlUtils.space(
-                                        1), true, "", parent, false);
+                    getRepository().getHtmlOutputHandler().getSelect(request, ARG_TO,
+								     HU.highlightable(
+										   HU.image("fas fa-bars")
+										   + HU.SPACE
+										   + msg("Select")
+										   + HU.SPACE), true, "", parent, false);
 
-                sb.append(HtmlUtils.hidden(ARG_TO + "_hidden",
+                right.append(HU.hidden(ARG_TO + "_hidden",
                                            parent.getId(),
-                                           HtmlUtils.id(ARG_TO + "_hidden")));
+                                           HU.id(ARG_TO + "_hidden")));
 
-                sb.append(select);
-                sb.append(HtmlUtils.space(1));
-                sb.append(HtmlUtils.disabledInput(ARG_TO, parent.getName(),
-                        HtmlUtils.SIZE_60 + HtmlUtils.id(ARG_TO)));
+                right.append(select);
+                right.append(HU.space(1));
+                right.append(HU.disabledInput(ARG_TO, parent.getName(),
+                        HU.SIZE_60 + HU.id(ARG_TO)));
 
             }
-            sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+            right.append(HU.close(HU.TAG_DIV));
 
+	    HU.hrow(sb, left.toString(), middle.toString(), right.toString());
             sb.append(
-                HtmlUtils.div(
-                    msg("You sure?"),
-                    HtmlUtils.cssClass("entry-confirm-header")));
+                HU.div(
+                    msg("Are you sure?"),
+                    HU.cssClass("entry-confirm-header")));
             sb.append(
-                HtmlUtils.open(
-                    HtmlUtils.TAG_DIV,
-                    HtmlUtils.cssClass("entry-confirm-list")));
-            sb.append(HtmlUtils.buttons(HtmlUtils.submit(msg("Yes, do it"),
-                    ARG_CONFIRM), HtmlUtils.submit(msg("Cancel"),
+                HU.open(
+                    HU.TAG_DIV,
+                    HU.cssClass("entry-confirm-list")));
+            sb.append(HU.buttons(HU.submit(msg("Yes, do it"),
+                    ARG_CONFIRM), HU.submit(msg("Cancel"),
                         ARG_CANCEL)));
 
-            sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+            sb.append(HU.close(HU.TAG_DIV));
 
-            sb.append(HtmlUtils.formClose());
-            sb.append(HtmlUtils.sectionClose());
+            sb.append(HU.formClose());
+            sb.append(HU.sectionClose());
 
             if (entries.size() == 1) {
                 getPageHandler().entrySectionClose(request, entries.get(0),
@@ -4067,7 +4066,7 @@ public class EntryManager extends RepositoryManager {
 
 
         final String link =
-            HtmlUtils.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
+            HU.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                             toGroup), "Continue");
         ActionManager.Action action = new ActionManager.Action() {
             public void run(Object actionId) throws Exception {
@@ -4176,7 +4175,7 @@ public class EntryManager extends RepositoryManager {
                         "Copied " + count + "/" + newEntries.size()
                         + " entries");
                 links.append(
-                    HtmlUtils.href(
+                    HU.href(
                         request.entryUrl(
                             getRepository().URL_ENTRY_SHOW,
                             newEntry), newEntry.getName()));
@@ -4187,7 +4186,7 @@ public class EntryManager extends RepositoryManager {
             }
 
             getActionManager().setContinueHtml(actionId,
-                    count + " entries copied" + HtmlUtils.br() + link);
+                    count + " entries copied" + HU.br() + link);
         } catch (Exception exc) {
             if (actionId == null) {
                 throw exc;
@@ -4546,73 +4545,73 @@ public class EntryManager extends RepositoryManager {
                                         getRepository().URL_ENTRY_PUBLISH,
                                         "");
 
-        sb.append(HtmlUtils.hidden(ARG_FROM, fromIds));
-        sb.append(HtmlUtils.hidden(ARG_TYPE, type));
+        sb.append(HU.hidden(ARG_FROM, fromIds));
+        sb.append(HU.hidden(ARG_TYPE, type));
 
         String label = isWiki
                        ? "Publish Wiki Page"
                        : "Publish Blog Post";
-        sb.append(HtmlUtils.sectionOpen(msg(label)));
+        sb.append(HU.sectionOpen(msg(label)));
 
-        sb.append(HtmlUtils.formTable());
+        sb.append(HU.formTable());
         sb.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 "",
-                HtmlUtils.buttons(
-                    HtmlUtils.submit(msg("Publish"), ARG_CONFIRM),
-                    HtmlUtils.submit(msg("Cancel"), ARG_CANCEL))));
+                HU.buttons(
+                    HU.submit(msg("Publish"), ARG_CONFIRM),
+                    HU.submit(msg("Cancel"), ARG_CANCEL))));
 
-        sb.append(HtmlUtils.formEntry(msgLabel("Name"),
-                                      HtmlUtils.input(ARG_NAME,
+        sb.append(HU.formEntry(msgLabel("Name"),
+                                      HU.input(ARG_NAME,
                                           request.getString(ARG_NAME, ""),
-                                          HtmlUtils.SIZE_70)));
+                                          HU.SIZE_70)));
 
-        String textWidget = HtmlUtils.textArea(ARG_DESCRIPTION + "_extra",
+        String textWidget = HU.textArea(ARG_DESCRIPTION + "_extra",
                                 "", 5, 120, "");
-        sb.append(HtmlUtils.formEntryTop(msgLabel("Description"),
+        sb.append(HU.formEntryTop(msgLabel("Description"),
                                          textWidget));
 
-        sb.append(HtmlUtils.comment("The description"));
+        sb.append(HU.comment("The description"));
         String encodedDesc = Utils.encodeBase64(desc);
-        sb.append(HtmlUtils.hidden(ARG_DESCRIPTION + "_encoded",
+        sb.append(HU.hidden(ARG_DESCRIPTION + "_encoded",
                                    encodedDesc));
 
         String buttons =
             getRepository().getWikiManager().makeWikiEditBar(request, dummy,
-                ARG_DESCRIPTION) + HtmlUtils.br();
+                ARG_DESCRIPTION) + HU.br();
 
 
 
 
 
         String select = getRepository().getHtmlOutputHandler().getSelect(
-                            request, ARG_TO, HtmlUtils.img(
-                                getRepository().getIconUrl(
-                                    ICON_FOLDER_OPEN)) + HtmlUtils.space(1)
-                                        + msg("Select")
-                                        + HtmlUtils.space(
-                                            1), true, "", null, false);
+									 request, ARG_TO,
+									 HU.highlightable(
+										       HU.image("fas fa-bars")
+										       + HU.SPACE
+										       + msg("Select")
+										       + HU.SPACE), true, "", null, false);
 
 
 
 
-        sb.append(HtmlUtils.hidden(ARG_TO + "_hidden", "",
-                                   HtmlUtils.id(ARG_TO + "_hidden")));
+        sb.append(HU.hidden(ARG_TO + "_hidden", "",
+                                   HU.id(ARG_TO + "_hidden")));
 
 
-        sb.append(HtmlUtils.formEntry(msgLabel("Destination"),
-                                      select + HtmlUtils.space(1)
-                                      + HtmlUtils.disabledInput(ARG_TO, "",
-                                          HtmlUtils.SIZE_60
-                                          + HtmlUtils.id(ARG_TO))));
+        sb.append(HU.formEntry(msgLabel("Destination"),
+                                      select + HU.space(1)
+                                      + HU.disabledInput(ARG_TO, "",
+                                          HU.SIZE_60
+                                          + HU.id(ARG_TO))));
 
 
-        sb.append(HtmlUtils.formTableClose());
-        sb.append(HtmlUtils.formClose());
+        sb.append(HU.formTableClose());
+        sb.append(HU.formClose());
 
-        sb.append(HtmlUtils.sectionClose());
-        sb.append(HtmlUtils.hr());
-        sb.append(HtmlUtils.p());
+        sb.append(HU.sectionClose());
+        sb.append(HU.hr());
+        sb.append(HU.p());
 
         String wiki = getWikiManager().wikifyEntry(request, dummy, desc);
 
@@ -4685,35 +4684,35 @@ public class EntryManager extends RepositoryManager {
                                         makeFormSubmitDialog(sb,
                                             msg("Importing "
                                                 + LABEL_ENTRIES)));
-        sb.append(HtmlUtils.hidden(ARG_GROUP, group.getId()));
-        sb.append(HtmlUtils.formTable());
-        sb.append(HtmlUtils.formEntry(msgLabel("File"),
-                                      HtmlUtils.fileInput(ARG_FILE,
-                                          HtmlUtils.SIZE_70)));
+        sb.append(HU.hidden(ARG_GROUP, group.getId()));
+        sb.append(HU.formTable());
+        sb.append(HU.formEntry(msgLabel("File"),
+                                      HU.fileInput(ARG_FILE,
+                                          HU.SIZE_70)));
 
-        sb.append(HtmlUtils.formEntry(msgLabel("Or URL"),
-                                      HtmlUtils.input(ARG_URL, "",
-                                          HtmlUtils.SIZE_70)));
+        sb.append(HU.formEntry(msgLabel("Or URL"),
+                                      HU.input(ARG_URL, "",
+                                          HU.SIZE_70)));
         if (importTypes.size() > 0) {
             importTypes.add(
                 0, new TwoFacedObject("RAMADDA will figure it out", ""));
-            sb.append(HtmlUtils.formEntry(msgLabel("Type"),
-                                          HtmlUtils.select(ARG_IMPORT_TYPE,
+            sb.append(HU.formEntry(msgLabel("Type"),
+                                          HU.select(ARG_IMPORT_TYPE,
                                               importTypes)));
         }
 
-        sb.append(HtmlUtils.formEntry(msgLabel("Extra"),
-                                      HtmlUtils.input("extra",
+        sb.append(HU.formEntry(msgLabel("Extra"),
+                                      HU.input("extra",
                                           request.getString("extra", ""),
-                                          HtmlUtils.SIZE_70)));
+                                          HU.SIZE_70)));
 
-        sb.append(HtmlUtils.formEntry("", HtmlUtils.submit("Submit")));
+        sb.append(HU.formEntry("", HU.submit("Submit")));
 
 
         sb.append(extraForm);
 
-        HtmlUtils.formTableClose(sb);
-        sb.append(HtmlUtils.formClose());
+        HU.formTableClose(sb);
+        sb.append(HU.formClose());
 
         getPageHandler().entrySectionClose(request, group, sb);
 
@@ -5476,12 +5475,12 @@ public class EntryManager extends RepositoryManager {
                                String... args) {
         try {
             String label = (addIcon
-                            ? HtmlUtils.img(
+                            ? HU.img(
                                 getPageHandler().getIconUrl(
                                     request, entry)) + " "
                             : "") + getEntryDisplayName(entry);
 
-            return HtmlUtils.href(getEntryURL(request, entry, args), label, hrefAttrs);
+            return HU.href(getEntryURL(request, entry, args), label, hrefAttrs);
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
@@ -5617,7 +5616,7 @@ public class EntryManager extends RepositoryManager {
         boolean forTreeView  = request.get(ARG_TREEVIEW, false);
         if (url == null) {
             //For now don't use the full entry path
-            url = HtmlUtils.url(entryShowUrl, ARG_ENTRYID, entry.getId());
+            url = HU.url(entryShowUrl, ARG_ENTRYID, entry.getId());
             //            url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
         } else if (forTreeView) {
             url = url.replace("%27", "'");
@@ -5628,8 +5627,8 @@ public class EntryManager extends RepositoryManager {
             String label = getEntryListName(request, entry);
             label = label.replace("'", "\\'");
             url = Utils.concatString("javascript:",
-                                     HtmlUtils.call("treeViewClick",
-                                         HtmlUtils.jsMakeArgs(true,
+                                     HU.call("treeViewClick",
+                                         HU.jsMakeArgs(true,
                                              entry.getId(), url, label)));
             forTreeNavigation = false;
         }
@@ -5643,15 +5642,15 @@ public class EntryManager extends RepositoryManager {
         boolean showDetails = request.get(ARG_DETAILS, true);
         showIcon    = request.get("showIcon", showIcon);	
         String  entryId     = entry.getId();
-        String  uid         = HtmlUtils.getUniqueId("link_");
+        String  uid         = HU.getUniqueId("link_");
         String  output      = "inline";
-        String  targetId    = HtmlUtils.getUniqueId("targetspan_");
-        String  qtargetId   = HtmlUtils.squote(targetId);
+        String  targetId    = HU.getUniqueId("targetspan_");
+        String  qtargetId   = HU.squote(targetId);
         boolean okToMove    = !request.getUser().getAnonymous();
         String  prefix      = "";
 
         if (forTreeNavigation) {
-            String folderClickUrl = HtmlUtils.url(entryShowUrl, ARG_ENTRYID,
+            String folderClickUrl = HU.url(entryShowUrl, ARG_ENTRYID,
                                         entry.getId(), ARG_OUTPUT, output,
                                         ARG_DETAILS,
                                         Boolean.toString(showDetails),
@@ -5665,13 +5664,13 @@ public class EntryManager extends RepositoryManager {
                              ? "Click to open folder"
                              : "Click to view contents";
             String imgClick =
-                HtmlUtils.onMouseClick(HtmlUtils.call("folderClick",
-                    HtmlUtils.comma(HtmlUtils.squote(uid),
-                                    HtmlUtils.squote(folderClickUrl),
-                                    HtmlUtils.squote(getDownArrowIcon()))));
+                HU.onMouseClick(HU.call("folderClick",
+                    HU.comma(HU.squote(uid),
+                                    HU.squote(folderClickUrl),
+                                    HU.squote(getDownArrowIcon()))));
 
 
-            prefix = HU.jsLink("",HtmlUtils.span(getIconImage("fas fa-caret-right"),
+            prefix = HU.jsLink("",HU.span(getIconImage("fas fa-caret-right"),
 						 HU.attrs("class", "entry-arrow","title",message,"id","img_"+uid) +
 						 imgClick));
         }
@@ -5686,36 +5685,36 @@ public class EntryManager extends RepositoryManager {
         String        iconId      = "img_" + uid;
         if (okToMove) {
             if (forTreeNavigation) {
-                HtmlUtils.onMouseOver(
+                HU.onMouseOver(
                     targetEvent,
-                    HtmlUtils.call(
+                    HU.call(
                         "mouseOverOnEntry",
-                        HtmlUtils.comma(
-                            "event", HtmlUtils.squote(entry.getId()),
+                        HU.comma(
+                            "event", HU.squote(entry.getId()),
                             qtargetId)));
 
 
-                HtmlUtils.onMouseUp(targetEvent,
-                                    HtmlUtils.call("mouseUpOnEntry",
-                                        HtmlUtils.comma("event",
-                                            HtmlUtils.squote(entry.getId()),
+                HU.onMouseUp(targetEvent,
+                                    HU.call("mouseUpOnEntry",
+                                        HU.comma("event",
+                                            HU.squote(entry.getId()),
                                             qtargetId)));
             }
-            HtmlUtils.onMouseOut(targetEvent,
-                                 HtmlUtils.call("mouseOutOnEntry",
-                                     HtmlUtils.comma("event",
-                                         HtmlUtils.squote(entry.getId()),
+            HU.onMouseOut(targetEvent,
+                                 HU.call("mouseOutOnEntry",
+                                     HU.comma("event",
+                                         HU.squote(entry.getId()),
                                          qtargetId)));
 
-            HtmlUtils.onMouseDown(
+            HU.onMouseDown(
                 sourceEvent,
-                HtmlUtils.call(
+                HU.call(
                     "mouseDownOnEntry",
-                    HtmlUtils.comma(
-                        "event", HtmlUtils.squote(entry.getId()),
-                        HtmlUtils.squote(entry.getLabel().replace("'", "")),
-                        HtmlUtils.squote(iconId),
-                        HtmlUtils.squote(entryIcon))));
+                    HU.comma(
+                        "event", HU.squote(entry.getId()),
+                        HU.squote(entry.getLabel().replace("'", "")),
+                        HU.squote(iconId),
+                        HU.squote(entryIcon))));
         }
 
         //        if(true)
@@ -5746,23 +5745,23 @@ public class EntryManager extends RepositoryManager {
         }
 
 
-        String img = HtmlUtils.img(entryIcon, imgText.toString(),
-                                   Utils.concatString(HtmlUtils.id(iconId),
+        String img = HU.img(entryIcon, imgText.toString(),
+                                   Utils.concatString(HU.id(iconId),
                                        sourceEvent.toString()));
 
         StringBuilder sb = new StringBuilder();
-        HtmlUtils.open(sb, HtmlUtils.TAG_SPAN,
-                       HtmlUtils.attr("title", linkText)
-                       + HtmlUtils.cssClass("entry-name")
-                       + HtmlUtils.id(targetId) + targetEvent.toString());
+        HU.open(sb, HU.TAG_SPAN,
+                       HU.attr("title", linkText)
+                       + HU.cssClass("entry-name")
+                       + HU.id(targetId) + targetEvent.toString());
 
         sb.append(prefix);
         if (imgUrl != null) {
-            img = HtmlUtils.href(imgUrl, img);
+            img = HU.href(imgUrl, img);
         }
 	if(showIcon)
 	    sb.append(img);
-        sb.append(HtmlUtils.space(1));
+        sb.append(HU.space(1));
         if (textBeforeEntryLink != null) {
             sb.append(textBeforeEntryLink);
         }
@@ -5770,22 +5769,22 @@ public class EntryManager extends RepositoryManager {
             getMetadataManager().decorateEntry(request, entry, sb, true);
         }
         if (showUrl) {
-            HtmlUtils.span(sb, getTooltipLink(request, entry, linkText, url),
-                           HtmlUtils.cssClass("entry-link"));
+            HU.span(sb, getTooltipLink(request, entry, linkText, url),
+                           HU.cssClass("entry-link"));
         } else {
-            HtmlUtils.span(sb, linkText,
+            HU.span(sb, linkText,
                            Utils.concatString(targetEvent.toString(),
-                               HtmlUtils.cssClass("entry-link")));
+                               HU.cssClass("entry-link")));
         }
 
-        HtmlUtils.close(sb, HtmlUtils.TAG_SPAN);
+        HU.close(sb, HU.TAG_SPAN);
         String folderBlock = ( !forTreeNavigation
                                ? ""
-                               : HtmlUtils.div("",
-                                   HtmlUtils.attrs(HtmlUtils.ATTR_STYLE,
-                                       "display:none;", HtmlUtils.ATTR_CLASS,
+                               : HU.div("",
+                                   HU.attrs(HU.ATTR_STYLE,
+                                       "display:none;", HU.ATTR_CLASS,
                                        CSS_CLASS_FOLDER_BLOCK,
-                                       HtmlUtils.ATTR_ID, uid)));
+                                       HU.ATTR_ID, uid)));
 
         return new EntryLink(sb.toString(), folderBlock, uid);
 
@@ -5816,19 +5815,19 @@ public class EntryManager extends RepositoryManager {
         }
 
         String elementId  = entry.getId();
-        String qid        = HtmlUtils.squote(elementId);
-        String linkId     = HtmlUtils.getUniqueId("link_");
-        String qlinkId    = HtmlUtils.squote(linkId);
+        String qid        = HU.squote(elementId);
+        String linkId     = HU.getUniqueId("link_");
+        String qlinkId    = HU.squote(linkId);
 
         String target     = (request.defined(ARG_TARGET)
                              ? request.getString(ARG_TARGET, "")
                              : null);
         String targetAttr = ((target != null)
-                             ? HtmlUtils.attr(HtmlUtils.ATTR_TARGET, target)
+                             ? HU.attr(HU.ATTR_TARGET, target)
                              : "");
 
-        return HtmlUtils.href(url, linkText,
-                              HtmlUtils.id(linkId) + targetAttr);
+        return HU.href(url, linkText,
+                              HU.id(linkId) + targetAttr);
     }
 
 
@@ -5985,12 +5984,12 @@ public class EntryManager extends RepositoryManager {
             //Only add the hr if we have more things in the list
             if (needToAddHr && (sb.length() > 0)) {
                 sb.append("</div>");
-		HtmlUtils.div(sb,
+		HU.div(sb,
 			      "",
-			      HtmlUtils.cssClass(CSS_CLASS_MENUITEM_SEPARATOR));
-		HtmlUtils.open(sb,
-			       HtmlUtils.TAG_DIV,
-			       HtmlUtils.cssClass(CSS_CLASS_MENU_GROUP));
+			      HU.cssClass(CSS_CLASS_MENUITEM_SEPARATOR));
+		HU.open(sb,
+			       HU.TAG_DIV,
+			       HU.cssClass(CSS_CLASS_MENU_GROUP));
             }
             needToAddHr = link.getHr();
             if (needToAddHr) {
@@ -6002,24 +6001,24 @@ public class EntryManager extends RepositoryManager {
 	    count.put(sb,c);
 
 	    if(sb.length()==0) {
-		HtmlUtils.open(sb,
-			       HtmlUtils.TAG_DIV,
-			       HtmlUtils.cssClass(CSS_CLASS_MENU_GROUP));
+		HU.open(sb,
+			       HU.TAG_DIV,
+			       HU.cssClass(CSS_CLASS_MENU_GROUP));
 	    }
-            HtmlUtils.open(sb, HtmlUtils.TAG_DIV, "class",
+            HU.open(sb, HU.TAG_DIV, "class",
 			   CSS_CLASS_MENUITEM);
             if (link.getIcon() == null) {
                 sb.append(HU.SPACE);
             } else {
-                HtmlUtils.href(sb, link.getUrl(),
+                HU.href(sb, link.getUrl(),
 			       getIconImage(link.getIcon()));
             }
 	    sb.append(HU.SPACE);
-	    HtmlUtils.href(sb,
+	    HU.href(sb,
 			   link.getUrl(), msg(link.getLabel()),
 			   HU.attrs("title",link.getLabel(),"class",
 				    CSS_CLASS_MENUITEM_LINK));
-            sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+            sb.append(HU.close(HU.TAG_DIV));
         }
 
         if (returnNullIfNoneMatch && (cnt == 0)) {
@@ -6031,11 +6030,11 @@ public class EntryManager extends RepositoryManager {
 
         if (header != null) {
             menu.append(
-                HtmlUtils.div(
-                    header, HtmlUtils.cssClass("ramadda-entry-menu-title")));
+                HU.div(
+                    header, HU.cssClass("ramadda-entry-menu-title")));
         }
         menu.append("<table class=\"ramadda-menu\">");
-        HtmlUtils.open(menu, HtmlUtils.TAG_TR, HtmlUtils.ATTR_VALIGN, "top");
+        HU.open(menu, HU.TAG_TR, HU.ATTR_VALIGN, "top");
 
 	BiConsumer<StringBuilder,String> finisher = (sb,label) -> {
 	    if(sb==null) return;
@@ -6045,8 +6044,8 @@ public class EntryManager extends RepositoryManager {
 	    if(c.intValue()<12) {
 		s = s.replaceAll("ramadda-menugroup","ramadda-menugroup ramadda-menugroup-ext");
 	    }
-            menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "",
-                                      HtmlUtils.b(msg(label)) + "<br>"
+            menu.append(HU.tag(HU.TAG_TD, "",
+                                      HU.b(msg(label)) + "<br>"
                                       + s));
 	};
 
@@ -6064,22 +6063,22 @@ public class EntryManager extends RepositoryManager {
                     String url       = getEntryUrl(request, child);
                     String linkLabel = child.getName();
                     linkLabel =
-                        HtmlUtils.img(getPageHandler().getIconUrl(request,
-                            child)) + HtmlUtils.space(1) + linkLabel;
-                    String href = HtmlUtils.href(url, linkLabel,HU.attrs("title",child.getName()));
+                        HU.img(getPageHandler().getIconUrl(request,
+                            child)) + HU.space(1) + linkLabel;
+                    String href = HU.href(url, linkLabel,HU.attrs("title",child.getName()));
 		    HU.div(childrenSB,href,HU.attrs("class","ramadda-menu-item"));
                 }
-		HtmlUtils.tag(menu,
-			      HtmlUtils.TAG_TD, "",
-			      HtmlUtils.b(msg("Children"))  
-			      + HtmlUtils.div(
+		HU.tag(menu,
+			      HU.TAG_TD, "",
+			      HU.b(msg("Children"))  
+			      + HU.div(
 					      childrenSB.toString(),
-					      HtmlUtils.clazz("ramadda-menugroup ramadda-menugroup-ext")));
+					      HU.clazz("ramadda-menugroup ramadda-menugroup-ext")));
             }
         }
 
-        menu.append(HtmlUtils.close(HtmlUtils.TAG_TR));
-        menu.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
+        menu.append(HU.close(HU.TAG_TR));
+        menu.append(HU.close(HU.TAG_TABLE));
 
         return menu.toString();
 
@@ -6278,7 +6277,7 @@ public class EntryManager extends RepositoryManager {
             throws Exception {
         String remoteUrl = server + getRepository().URL_ENTRY_SHOW.getPath();
         remoteUrl =
-            HtmlUtils.url(remoteUrl, ARG_ENTRYID, id, ARG_OUTPUT,
+            HU.url(remoteUrl, ARG_ENTRYID, id, ARG_OUTPUT,
                           XmlOutputHandler.OUTPUT_XMLENTRY.toString());
         String entriesXml = getStorageManager().readSystemResource(remoteUrl);
 
@@ -7578,16 +7577,16 @@ public class EntryManager extends RepositoryManager {
         }
 
         String fileTail = getStorageManager().getFileTail(entry);
-        fileTail = HtmlUtils.urlEncodeExceptSpace(fileTail);
+        fileTail = HU.urlEncodeExceptSpace(fileTail);
         //For now use the full entry path ???? why though ???
         if (addPath && fileTail.equals(entry.getName())) {
             fileTail = entry.getFullName(true);
         }
         if (request.getMakeAbsoluteUrls() || full) {
-            return HtmlUtils.url(getFullEntryGetUrl(request) + "/"
+            return HU.url(getFullEntryGetUrl(request) + "/"
                                  + fileTail, ARG_ENTRYID, entry.getId());
         } else {
-            return HtmlUtils.url(
+            return HU.url(
                 request.makeUrl(getRepository().URL_ENTRY_GET) + "/"
                 + fileTail, ARG_ENTRYID, entry.getId());
         }
@@ -7916,10 +7915,10 @@ public class EntryManager extends RepositoryManager {
                 didone = true;
             }
             sb.append(
-                HtmlUtils.href(
+                HU.href(
                     request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
                     getEntryDisplayName(entry)));
-            sb.append(HtmlUtils.br());
+            sb.append(HU.br());
         }
         if ( !didone) {
             sb.append(
@@ -9101,7 +9100,7 @@ public class EntryManager extends RepositoryManager {
      * @param sb _more_
      */
     public void addStatusInfo(StringBuffer sb) {
-        HtmlUtils.formEntry(sb,msgLabel("Entry Cache"),
+        HU.formEntry(sb,msgLabel("Entry Cache"),
 			    getEntryCache().size() / 2 + "");
     }
 
@@ -9472,7 +9471,7 @@ public class EntryManager extends RepositoryManager {
             cnt++;
             if (cnt <= 100) {
                 html.append("<li> "
-                            + HtmlUtils.href(getRepository().URL_ENTRY_SHOW
+                            + HU.href(getRepository().URL_ENTRY_SHOW
                                              + "?" + ARG_ENTRYID + "="
                                              + id, resource) + "   to: "
                                                  + newValue);
@@ -9790,12 +9789,12 @@ public class EntryManager extends RepositoryManager {
             getRepository().getHtmlOutputHandler().getSelect(request,
                 baseArg, "Select", true, null, entry);
         sb.append("\n");
-        sb.append(HtmlUtils.hidden(baseArg + "_hidden", value,
-                                   HtmlUtils.id(baseArg + "_hidden")));
+        sb.append(HU.hidden(baseArg + "_hidden", value,
+                                   HU.id(baseArg + "_hidden")));
         sb.append("\n");
-        sb.append(HtmlUtils.disabledInput(baseArg, ((theEntry != null)
+        sb.append(HU.disabledInput(baseArg, ((theEntry != null)
                 ? theEntry.getFullName()
-                : ""), HtmlUtils.id(baseArg) + HtmlUtils.SIZE_60) + select);
+                : ""), HU.id(baseArg) + HU.SIZE_60) + select);
         sb.append("\n");
 
         return sb.toString();

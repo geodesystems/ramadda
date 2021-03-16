@@ -1101,14 +1101,15 @@ public class OutputHandler extends RepositoryManager {
                                     ? namePrefix
                                     : "") + getEntryDisplayName(entry);
         StringBuilder sb         = new StringBuilder();
+	HU.open(sb,"span",HU.cssClass("ramadda-highlightable"));
         String        entryId    = entry.getId();
         String        icon       = getPageHandler().getIconUrl(request,
                                        entry);
         String        event;
-        String        uid = "link_" + HtmlUtils.blockCnt++;
+        String        uid = "link_" + HU.blockCnt++;
         String folderClickUrl =
             request.entryUrl(getRepository().URL_ENTRY_SHOW, entry) + "&"
-            + HtmlUtils.args(new String[] {
+            + HU.args(new String[] {
             ARG_NOREDIRECT, "true", ARG_OUTPUT,
             request.getString(ARG_OUTPUT, "inline"), ATTR_TARGET, target,
             ARG_ALLENTRIES, request.getString(ARG_ALLENTRIES, "true"),
@@ -1121,28 +1122,28 @@ public class OutputHandler extends RepositoryManager {
                             : "Click to view contents";
         boolean showArrow = true;
         String  prefix    = ( !showArrow
-                              ? HtmlUtils.img(
+                              ? HU.img(
                                   getRepository().getIconUrl(ICON_BLANK), "",
-                                  HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "10"))
-                              : HtmlUtils.img(
+                                  HU.attr(HU.ATTR_WIDTH, "10"))
+                              : HU.img(
                                   getRepository().getIconUrl(
                                       ICON_TOGGLEARROWRIGHT), msg(message),
-                                          HtmlUtils.id("img_" + uid)
-                                          + HtmlUtils.onMouseClick(
-                                              HtmlUtils.call(
+				  HU.id("img_" + uid)
+                                          + HU.onMouseClick(
+                                              HU.call(
                                                   "folderClick",
-                                                  HtmlUtils.comma(
-                                                      HtmlUtils.squote(uid),
-                                                      HtmlUtils.squote(
-                                                          folderClickUrl), HtmlUtils.squote(
+                                                  HU.comma(
+                                                      HU.squote(uid),
+                                                      HU.squote(
+                                                          folderClickUrl), HU.squote(
                                                           getIconUrl(
                                                               ICON_TOGGLEARROWDOWN)))))));
 
 
-        String img = prefix + HtmlUtils.space(1) + HtmlUtils.img(icon);
+        String img = prefix + HU.space(1) + HU.img(icon);
 
         sb.append(img);
-        sb.append(HtmlUtils.space(1));
+        sb.append(HU.space(1));
 
         String type      = request.getString(ARG_SELECTTYPE, "");
         String elementId = entry.getId();
@@ -1150,19 +1151,20 @@ public class OutputHandler extends RepositoryManager {
                            ? ((Entry) entry).getName()
                            : getEntryDisplayName(entry);
         value = value.replace("'", "\\'");
-        sb.append(HtmlUtils.mouseClickHref(HtmlUtils.call("selectClick",
-                HtmlUtils.comma(HtmlUtils.squote(target),
-                                HtmlUtils.squote(entry.getId()),
-                                HtmlUtils.squote(value),
-                                HtmlUtils.squote(type))), linkText));
+        sb.append(HU.mouseClickHref(HU.call("selectClick",
+                HU.comma(HU.squote(target),
+                                HU.squote(entry.getId()),
+                                HU.squote(value),
+                                HU.squote(type))), linkText));
 
-        sb.append(HtmlUtils.br());
-        sb.append(HtmlUtils.div("",
-                                HtmlUtils.attrs(HtmlUtils.ATTR_STYLE,
-                                    HtmlUtils.STYLE_HIDDEN,
-                                    HtmlUtils.ATTR_CLASS,
+	HU.close(sb,"span");
+        sb.append(HU.br());
+        sb.append(HU.div("",
+                                HU.attrs(HU.ATTR_STYLE,
+                                    HU.STYLE_HIDDEN,
+                                    HU.ATTR_CLASS,
                                     CSS_CLASS_FOLDER_BLOCK,
-                                    HtmlUtils.ATTR_ID, uid)));
+                                    HU.ATTR_ID, uid)));
 
         return sb.toString();
     }
@@ -1279,10 +1281,10 @@ public class OutputHandler extends RepositoryManager {
         //J++
 
         if (request.isMobile()) {
-            sb.append(HtmlUtils.br());
+            sb.append(HU.br());
         }
-        sb.append(HtmlUtils.span(msgLabel("Sort"),
-                                 HtmlUtils.cssClass("sortlink sortlinkoff")));
+        sb.append(HU.span(msgLabel("Sort"),
+                                 HU.cssClass("sortlink sortlinkoff")));
         String entryIds = request.getString(ARG_ENTRYIDS, (String) null);
         //Swap out the long value
         if (entryIds != null) {
@@ -1296,23 +1298,23 @@ public class OutputHandler extends RepositoryManager {
         int cnt = 0;
         for (int i = 0; i < order.length; i += 4) {
             if ((cnt > 0) && (cnt % 2) == 0) {
-                sb.append(HtmlUtils.space(1));
+                sb.append(HU.space(1));
             }
             cnt++;
             if (Misc.equals(order[i], orderBy)
                     && Misc.equals(order[i + 1], ascending)) {
-                sb.append(HtmlUtils.span(order[i + 2],
-                                         HtmlUtils.cssClass("sortlink sortlinkon")));
+                sb.append(HU.span(order[i + 2],
+                                         HU.cssClass("sortlink sortlinkon")));
             } else {
                 request.put(ARG_ORDERBY, order[i]);
                 request.put(ARG_ASCENDING, order[i + 1]);
                 request.put(ARG_SHOWENTRYSELECTFORM, "true");
                 String url = request.getUrl();
                 sb.append(
-                    HtmlUtils.span(
-                        HtmlUtils.href(url, order[i + 2]),
-                        HtmlUtils.title(order[i + 3])
-                        + HtmlUtils.cssClass("sortlink sortlinkoff")));
+                    HU.span(
+                        HU.href(url, order[i + 2]),
+                        HU.title(order[i + 3])
+                        + HU.cssClass("sortlink sortlinkoff")));
             }
         }
 
@@ -1350,14 +1352,14 @@ public class OutputHandler extends RepositoryManager {
 
 
         String        base   = "toggleentry" + (entryCnt++);
-        String        formId = "entryform_" + (HtmlUtils.blockCnt++);
+        String        formId = "entryform_" + (HU.blockCnt++);
         StringBuilder formSB = new StringBuilder("");
 
         //FOR NOW - 
         //        formSB.append(request.formPost(getRepository().URL_ENTRY_GETENTRIES,
-        //                                   HtmlUtils.id(formId)));
+        //                                   HU.id(formId)));
         formSB.append(request.formPost(getRepository().URL_ENTRY_GETENTRIES,
-                                       HtmlUtils.id(formId)));
+                                       HU.id(formId)));
 
 
         long t1 = System.currentTimeMillis();
@@ -1431,49 +1433,49 @@ public class OutputHandler extends RepositoryManager {
         StringBuilder actionsSB = new StringBuilder();
 
         actionsSB.append(
-            HtmlUtils.select(
+            HU.select(
                 ARG_OUTPUT, tfos, (List<String>) null,
-                HtmlUtils.cssClass("entry-action-list")));
-        actionsSB.append(HtmlUtils.space(2));
+                HU.cssClass("entry-action-list")));
+        actionsSB.append(HU.space(2));
         actionsSB.append(msgLabel("to"));
 
         StringBuilder js               = new StringBuilder();
 
-        String        allButtonId      = HtmlUtils.getUniqueId("getall");
-        String        selectedButtonId = HtmlUtils.getUniqueId("getselected");
-        actionsSB.append(HtmlUtils.submit(msg("Selected"), "getselected",
-                                          HtmlUtils.id(selectedButtonId)));
-        actionsSB.append(HtmlUtils.space(1));
-        actionsSB.append(HtmlUtils.submit(msg("All"), "getall",
-                                          HtmlUtils.id(allButtonId)));
+        String        allButtonId      = HU.getUniqueId("getall");
+        String        selectedButtonId = HU.getUniqueId("getselected");
+        actionsSB.append(HU.submit(msg("Selected"), "getselected",
+                                          HU.id(selectedButtonId)));
+        actionsSB.append(HU.space(1));
+        actionsSB.append(HU.submit(msg("All"), "getall",
+                                          HU.id(allButtonId)));
         js.append(JQuery.buttonize(JQuery.id(allButtonId)));
         js.append(JQuery.buttonize(JQuery.id(selectedButtonId)));
 
         String sortLinks = getSortLinks(request);
 
-        selectSB.append(HtmlUtils.leftRightBottom(sortLinks,
+        selectSB.append(HU.leftRightBottom(sortLinks,
                 actionsSB.toString(), ""));
         String arrowImg = getRepository().getIconImage(hideIt?"fas fa-caret-right":"fas fa-caret-down",
 						        "title",						       
 						       msg("Show/Hide Form"), "id", base + "img");
-        String linkExtra = HtmlUtils.cssClass("ramadda-entries-link");
-        String link = HtmlUtils.jsLink(HtmlUtils.onMouseClick(base
+        String linkExtra = HU.cssClass("ramadda-entries-link");
+        String link = HU.jsLink(HU.onMouseClick(base
                           + ".groupToggleVisibility()"), arrowImg,
                               linkExtra);
         String selectId = base + "select";
-        formSB.append(HtmlUtils.div(selectSB.toString(),
-                                    HtmlUtils.cssClass("entry-list-form")
-                                    + HtmlUtils.id(selectId) + (hideIt
-                ? HtmlUtils.style("display:none;")
+        formSB.append(HU.div(selectSB.toString(),
+                                    HU.cssClass("entry-list-form")
+                                    + HU.id(selectId) + (hideIt
+                ? HU.style("display:none;")
                 : "")));
 
-        js.append(HtmlUtils.callln(base + "= new EntryFormList",
-                                   HtmlUtils.comma(HtmlUtils.squote(formId),
-                                       HtmlUtils.squote(base + "img"),
-                                       HtmlUtils.squote(selectId), (hideIt
+        js.append(HU.callln(base + "= new EntryFormList",
+                                   HU.comma(HU.squote(formId),
+                                       HU.squote(base + "img"),
+                                       HU.squote(selectId), (hideIt
                 ? "0"
                 : "1"))));
-        formSB.append(HtmlUtils.script(js.toString()));
+        formSB.append(HU.script(js.toString()));
 
 
 
@@ -1498,38 +1500,38 @@ public class OutputHandler extends RepositoryManager {
                                  Appendable htmlSB, Appendable jsSB,
                                  boolean showDetails, boolean showIcon)
             throws Exception {
-        String rowId        = HtmlUtils.getUniqueId("entryrow_");
-        String cbxId        = HtmlUtils.getUniqueId("entry_");
+        String rowId        = HU.getUniqueId("entryrow_");
+        String cbxId        = HU.getUniqueId("entry_");
         String cbxArgId     = ARG_SELENTRY;
         String cbxArgValue  = entry.getId();
-        String cbxWrapperId = HtmlUtils.getUniqueId("cbx_");
+        String cbxWrapperId = HU.getUniqueId("cbx_");
         jsSB.append("new EntryRow(");
-        HtmlUtils.squote(jsSB, entry.getId());
+        HU.squote(jsSB, entry.getId());
         jsSB.append(",");
-        HtmlUtils.squote(jsSB, rowId);
+        HU.squote(jsSB, rowId);
         jsSB.append(",");
-        HtmlUtils.squote(jsSB, cbxId);
+        HU.squote(jsSB, cbxId);
         jsSB.append(",");
-        HtmlUtils.squote(jsSB, cbxWrapperId);
+        HU.squote(jsSB, cbxWrapperId);
         jsSB.append(",");
         jsSB.append(Boolean.toString(showDetails));
         jsSB.append(");\n");
 
 
         StringBuilder attrSB = new StringBuilder();
-        HtmlUtils.id(attrSB, cbxId);
-        HtmlUtils.clazz(attrSB, "ramadda-entry-select");
-        HtmlUtils.attr(
-            attrSB, HtmlUtils.ATTR_TITLE,
+        HU.id(attrSB, cbxId);
+        HU.clazz(attrSB, "ramadda-entry-select");
+        HU.attr(
+            attrSB, HU.ATTR_TITLE,
             "Shift-click: select range; Control-click: toggle all");
         //Spool this out to save concats
-        attrSB.append(HtmlUtils.ATTR_ONCLICK);
+        attrSB.append(HU.ATTR_ONCLICK);
         attrSB.append("=\"");
         attrSB.append("entryRowCheckboxClicked(");
         attrSB.append("event, ");
-        HtmlUtils.squote(attrSB, cbxId);
+        HU.squote(attrSB, cbxId);
         attrSB.append(");\"  ");
-        String cbx = HtmlUtils.checkbox(cbxArgId, cbxArgValue, false,
+        String cbx = HU.checkbox(cbxArgId, cbxArgValue, false,
                                         attrSB.toString());
         decorateEntryRow(request, entry, htmlSB,
                          getEntryManager().getAjaxLink(request, entry, getEntryDisplayName(entry),null, true, null, true, showIcon), rowId, cbx,
@@ -1547,7 +1549,7 @@ public class OutputHandler extends RepositoryManager {
      *     @return _more_
      */
     public String getEntryFormEnd(Request request, String formId) {
-        return HtmlUtils.formClose();
+        return HU.formClose();
     }
 
 
@@ -1593,7 +1595,7 @@ public class OutputHandler extends RepositoryManager {
         String prefix = (showDetails
                          ? "entry-list"
                          : "entry-tree");
-        HtmlUtils.open(sb, HtmlUtils.TAG_DIV, "class", prefix + "-block");
+        HU.open(sb, HU.TAG_DIV, "class", prefix + "-block");
         boolean isMobile       = request.isMobile();
         boolean showDate       = true;
         boolean showCreateDate = getPageHandler().showEntryTableCreateDate();
@@ -1627,23 +1629,23 @@ public class OutputHandler extends RepositoryManager {
                                false)));
             sortLink = tmpRequest.getUrl();
             sb.append(
-                HtmlUtils.tag(
-                    HtmlUtils.TAG_TD,
-                    HtmlUtils.attrs(
-                        HtmlUtils.ATTR_CLASS,
-                        "entry-list-header-column"), HtmlUtils.href(
+                HU.tag(
+                    HU.TAG_TD,
+                    HU.attrs(
+                        HU.ATTR_CLASS,
+                        "entry-list-header-column"), HU.href(
                             sortLink, msg("Name"))));
 
             tmpRequest.put(ARG_ORDERBY, SORTBY_FROMDATE);
             sortLink = tmpRequest.getUrl();
             if (showDate) {
                 sb.append(
-                    HtmlUtils.tag(
-                        HtmlUtils.TAG_TD,
-                        HtmlUtils.attrs(
-                            HtmlUtils.ATTR_WIDTH, WIDTH_DATE,
-                            HtmlUtils.ATTR_CLASS,
-                            "entry-list-header-column"), HtmlUtils.href(
+                    HU.tag(
+                        HU.TAG_TD,
+                        HU.attrs(
+                            HU.ATTR_WIDTH, WIDTH_DATE,
+                            HU.ATTR_CLASS,
+                            "entry-list-header-column"), HU.href(
                                 sortLink, msg("Date"))));
             }
 
@@ -1651,12 +1653,12 @@ public class OutputHandler extends RepositoryManager {
                 tmpRequest.put(ARG_ORDERBY, SORTBY_CREATEDATE);
                 sortLink = tmpRequest.getUrl();
                 sb.append(
-                    HtmlUtils.tag(
-                        HtmlUtils.TAG_TD,
-                        HtmlUtils.attrs(
-                            HtmlUtils.ATTR_WIDTH, WIDTH_DATE,
-                            HtmlUtils.ATTR_CLASS,
-                            "entry-list-header-column"), HtmlUtils.href(
+                    HU.tag(
+                        HU.TAG_TD,
+                        HU.attrs(
+                            HU.ATTR_WIDTH, WIDTH_DATE,
+                            HU.ATTR_CLASS,
+                            "entry-list-header-column"), HU.href(
                                 sortLink, msg("Created"))));
 
 
@@ -1666,22 +1668,22 @@ public class OutputHandler extends RepositoryManager {
                 tmpRequest.put(ARG_ORDERBY, SORTBY_SIZE);
                 sortLink = tmpRequest.getUrl();
                 sb.append(
-                    HtmlUtils.tag(
-                        HtmlUtils.TAG_TD,
-                        HtmlUtils.attrs(
-                            HtmlUtils.ATTR_WIDTH, WIDTH_SIZE,
-                            HtmlUtils.ATTR_CLASS,
-                            "entry-list-header-column"), HtmlUtils.href(
+                    HU.tag(
+                        HU.TAG_TD,
+                        HU.attrs(
+                            HU.ATTR_WIDTH, WIDTH_SIZE,
+                            HU.ATTR_CLASS,
+                            "entry-list-header-column"), HU.href(
                                 sortLink, msg("Size"))));
                 tmpRequest.put(ARG_ORDERBY, SORTBY_TYPE);
                 sortLink = tmpRequest.getUrl();
                 sb.append(
-                    HtmlUtils.tag(
-                        HtmlUtils.TAG_TD,
-                        HtmlUtils.attrs(
-                            HtmlUtils.ATTR_WIDTH, WIDTH_KIND,
-                            HtmlUtils.ATTR_CLASS,
-                            "entry-list-header-column-last"), HtmlUtils.href(
+                    HU.tag(
+                        HU.TAG_TD,
+                        HU.attrs(
+                            HU.ATTR_WIDTH, WIDTH_KIND,
+                            HU.ATTR_CLASS,
+                            "entry-list-header-column-last"), HU.href(
                                 sortLink, msg("Type"))));
             }
             sb.append("</tr></table>");
@@ -1690,7 +1692,7 @@ public class OutputHandler extends RepositoryManager {
             sb.append(afterHeader);
         }
 
-        HtmlUtils.open(sb, HtmlUtils.TAG_DIV, "class", prefix);
+        HU.open(sb, HU.TAG_DIV, "class", prefix);
         boolean        doCategories = request.get(ARG_SHOWCATEGORIES, false);
         CategoryBuffer cb           = new CategoryBuffer();
         int            cnt          = 0;
@@ -1705,17 +1707,17 @@ public class OutputHandler extends RepositoryManager {
             String rowId        = base + (cnt++);
             String cbxArgId     = ARG_SELENTRY;
             String cbxArgValue  = entry.getId();
-            String cbxId        = HtmlUtils.getUniqueId("entry_");
-            String cbxWrapperId = HtmlUtils.getUniqueId("checkboxwrapper_");
+            String cbxId        = HU.getUniqueId("entry_");
+            String cbxWrapperId = HU.getUniqueId("checkboxwrapper_");
 
             jsSB.append("new EntryRow(");
-            HtmlUtils.squote(jsSB, entry.getId());
+            HU.squote(jsSB, entry.getId());
             jsSB.append(",");
-            HtmlUtils.squote(jsSB, rowId);
+            HU.squote(jsSB, rowId);
             jsSB.append(",");
-            HtmlUtils.squote(jsSB, cbxId);
+            HU.squote(jsSB, cbxId);
             jsSB.append(",");
-            HtmlUtils.squote(jsSB, cbxWrapperId);
+            HU.squote(jsSB, cbxWrapperId);
             jsSB.append(",");
             jsSB.append(showDetails
                         ? "true"
@@ -1723,24 +1725,24 @@ public class OutputHandler extends RepositoryManager {
             jsSB.append(");\n");
 
             if (doForm) {
-                HtmlUtils.hidden(cbxSB, ARG_ALLENTRY, entry.getId(), "");
-                HtmlUtils.open(cbxSB, HtmlUtils.TAG_SPAN, "id", cbxWrapperId);
+                HU.hidden(cbxSB, ARG_ALLENTRY, entry.getId(), "");
+                HU.open(cbxSB, HU.TAG_SPAN, "id", cbxWrapperId);
 
-                HtmlUtils.dangleOpen(cbxSB, HtmlUtils.TAG_INPUT);
-                HtmlUtils.id(cbxSB, cbxId);
-                HtmlUtils.attr(cbxSB, HtmlUtils.ATTR_STYLE, "display:none;");
-                HtmlUtils.clazz(cbxSB, "ramadda-entry-select");
-                HtmlUtils.attr(
-                    cbxSB, HtmlUtils.ATTR_TITLE,
+                HU.dangleOpen(cbxSB, HU.TAG_INPUT);
+                HU.id(cbxSB, cbxId);
+                HU.attr(cbxSB, HU.ATTR_STYLE, "display:none;");
+                HU.clazz(cbxSB, "ramadda-entry-select");
+                HU.attr(
+                    cbxSB, HU.ATTR_TITLE,
                     "Shift-click: select range; Control-click: toggle all");
-                HtmlUtils.attr(cbxSB, HtmlUtils.ATTR_ONCLICK,
+                HU.attr(cbxSB, HU.ATTR_ONCLICK,
                                "entryRowCheckboxClicked(event, '" + cbxId
                                + "');");
-                HtmlUtils.attrs(cbxSB, HtmlUtils.ATTR_TYPE,
-                                HtmlUtils.TYPE_CHECKBOX, HtmlUtils.ATTR_NAME,
-                                cbxArgId, HtmlUtils.ATTR_VALUE, cbxArgValue);
+                HU.attrs(cbxSB, HU.ATTR_TYPE,
+                                HU.TYPE_CHECKBOX, HU.ATTR_NAME,
+                                cbxArgId, HU.ATTR_VALUE, cbxArgValue);
                 cbxSB.append(">");
-                HtmlUtils.close(cbxSB, HtmlUtils.TAG_SPAN);
+                HU.close(cbxSB, HU.TAG_SPAN);
             }
 
 
@@ -1748,7 +1750,7 @@ public class OutputHandler extends RepositoryManager {
             if (showCrumbs) {
                 crumbs = getPageHandler().getBreadCrumbs(request,
                         entry.getParentEntry(), null, null, 60);
-                crumbs = HtmlUtils.makeToggleInline("",
+                crumbs = HU.makeToggleInline("",
                         Utils.concatString(crumbs, BREADCRUMB_SEPARATOR_PAD),
                         false);
             }
@@ -1776,9 +1778,9 @@ public class OutputHandler extends RepositoryManager {
                 if (category.length() > 0) {
                     sb.append(subHeader(category));
                 }
-                HtmlUtils.div(sb, cb.get(category).toString(),
-                              HtmlUtils.cssClass(prefix));
-                sb.append(HtmlUtils.p());
+                HU.div(sb, cb.get(category).toString(),
+                              HU.cssClass(prefix));
+                sb.append(HU.p());
             } else {
                 sb.append(cb.get(category));
             }
@@ -1787,9 +1789,9 @@ public class OutputHandler extends RepositoryManager {
         if (doForm) {
             sb.append(getEntryFormEnd(request, base));
         }
-        HtmlUtils.close(sb, "div");
-        HtmlUtils.close(sb, "div");
-        HtmlUtils.script(sb, jsSB.toString());
+        HU.close(sb, "div");
+        HU.close(sb, "div");
+        HU.script(sb, jsSB.toString());
         sb.append("\n\n");
 
         long t4 = System.currentTimeMillis();
@@ -1821,7 +1823,7 @@ public class OutputHandler extends RepositoryManager {
             throws Exception {
 
         if (rowId == null) {
-            rowId = HtmlUtils.getUniqueId("entryrow_");
+            rowId = HU.getUniqueId("entryrow_");
         }
 
 
@@ -1832,15 +1834,15 @@ public class OutputHandler extends RepositoryManager {
                   ? CSS_CLASS_ENTRY_LIST_ROW
                   : CSS_CLASS_ENTRY_TREE_ROW);
         sb.append("\" ");
-        sb.append(HtmlUtils.ATTR_ONCLICK);
+        sb.append(HU.ATTR_ONCLICK);
         sb.append("=\"entryRowClick(event, '");
         sb.append(rowId);
         sb.append("');\" ");
-        sb.append(HtmlUtils.ATTR_ONMOUSEOVER);
+        sb.append(HU.ATTR_ONMOUSEOVER);
         sb.append("=\"entryRowOver('");
         sb.append(rowId);
         sb.append("'); \" ");
-        sb.append(HtmlUtils.ATTR_ONMOUSEOUT);
+        sb.append(HU.ATTR_ONMOUSEOUT);
         sb.append("=\"entryRowOut('");
         sb.append(rowId);
         sb.append("'); \"  >");
@@ -1867,25 +1869,25 @@ public class OutputHandler extends RepositoryManager {
         if (showDate) {
             String dttm = getDateHandler().formatDateShort(request, entry,
                               entry.getStartDate());
-            HtmlUtils.open(sb, HtmlUtils.TAG_TD, HtmlUtils.ATTR_WIDTH,
-                           WIDTH_DATE, HtmlUtils.ATTR_ALIGN, "right");
-            HtmlUtils.div(sb, dttm,
-                          HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL));
-            HtmlUtils.close(sb, HtmlUtils.TAG_TD);
+            HU.open(sb, HU.TAG_TD, HU.ATTR_WIDTH,
+                           WIDTH_DATE, HU.ATTR_ALIGN, "right");
+            HU.div(sb, dttm,
+                          HU.cssClass(CSS_CLASS_ENTRY_ROW_LABEL));
+            HU.close(sb, HU.TAG_TD);
         }
 
         if (showCreateDate) {
             String dttm = getDateHandler().formatDateShort(request, entry,
                               entry.getCreateDate());
-            HtmlUtils.open(sb, HtmlUtils.TAG_TD, HtmlUtils.ATTR_WIDTH,
-                           WIDTH_DATE, HtmlUtils.ATTR_ALIGN, "right");
-            HtmlUtils.div(sb, dttm,
-                          HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL));
-            HtmlUtils.close(sb, HtmlUtils.TAG_TD);
+            HU.open(sb, HU.TAG_TD, HU.ATTR_WIDTH,
+                           WIDTH_DATE, HU.ATTR_ALIGN, "right");
+            HU.div(sb, dttm,
+                          HU.cssClass(CSS_CLASS_ENTRY_ROW_LABEL));
+            HU.close(sb, HU.TAG_TD);
         }
 
         if ( !isMobile && showDetails) {
-            HtmlUtils.open(sb, HtmlUtils.TAG_TD, "width", WIDTH_SIZE,
+            HU.open(sb, HU.TAG_TD, "width", WIDTH_SIZE,
                            "align", "right", "class",
                            CSS_CLASS_ENTRY_ROW_LABEL);
             if (entry.getResource().isFile()) {
@@ -1894,37 +1896,37 @@ public class OutputHandler extends RepositoryManager {
             } else {
                 sb.append("---");
             }
-            HtmlUtils.close(sb, HtmlUtils.TAG_TD);
+            HU.close(sb, HU.TAG_TD);
         }
 
         if ( !isMobile && showDetails) {
-            HtmlUtils.open(sb, HtmlUtils.TAG_TD, "width", WIDTH_KIND,
+            HU.open(sb, HU.TAG_TD, "width", WIDTH_KIND,
                            "align", "right", "class",
                            CSS_CLASS_ENTRY_ROW_LABEL);
-            HtmlUtils.div(
+            HU.div(
                 sb, entry.getTypeHandler().getFileTypeDescription(
-                    request, entry), HtmlUtils.attrs(
+                    request, entry), HU.attrs(
                     "style", "max-width:190px; overflow-x: hidden;"));
-            HtmlUtils.close(sb, HtmlUtils.TAG_TD);
+            HU.close(sb, HU.TAG_TD);
         }
 
 
         if (showDetails) {
-            HtmlUtils.open(sb, HtmlUtils.TAG_TD, "width", "1%", "align",
+            HU.open(sb, HU.TAG_TD, "width", "1%", "align",
                            "right", "class", CSS_CLASS_ENTRY_ROW_LABEL);
-            sb.append(HtmlUtils.space(1));
+            sb.append(HU.space(1));
             sb.append("  ");
-            HtmlUtils.div(sb,
+            HU.div(sb,
                           getRepository().getIconImage(ICON_BLANK, "width",
                               "10", "id",
                               "entrymenuarrow_"
-                              + rowId), HtmlUtils.clazz("entrymenuarrow"));
-            HtmlUtils.close(sb, HtmlUtils.TAG_TD);
+                              + rowId), HU.clazz("entrymenuarrow"));
+            HU.close(sb, HU.TAG_TD);
         }
 
-        HtmlUtils.close(sb, HtmlUtils.TAG_TR);
-        HtmlUtils.close(sb, HtmlUtils.TAG_TABLE);
-        HtmlUtils.close(sb, HtmlUtils.TAG_DIV);
+        HU.close(sb, HU.TAG_TR);
+        HU.close(sb, HU.TAG_TABLE);
+        HU.close(sb, HU.TAG_DIV);
         sb.append(link.getFolderBlock());
     }
 
@@ -2105,7 +2107,7 @@ public class OutputHandler extends RepositoryManager {
         }
 
 
-        return HtmlUtils.url(request.makeUrl(repository.URL_ENTRY_GET) + "/"
+        return HU.url(request.makeUrl(repository.URL_ENTRY_GET) + "/"
                              + (addVersion
                                 ? ("v" + (imageVersionCnt++))
                                 : "") + getStorageManager().getFileTail(
@@ -2246,9 +2248,9 @@ public class OutputHandler extends RepositoryManager {
         StringBuilder tabHtml = new StringBuilder();
         String        tabId   = "tabId" + (tabCnt++);
         tabHtml.append("\n\n");
-        HtmlUtils.open(tabHtml, HtmlUtils.TAG_DIV, "id", tabId, "class",
+        HU.open(tabHtml, HU.TAG_DIV, "id", tabId, "class",
                        "ui-tabs");
-        HtmlUtils.open(tabHtml, HtmlUtils.TAG_UL);
+        HU.open(tabHtml, HU.TAG_UL);
         int cnt = 1;
         for (int i = 0; i < titles.size(); i++) {
             String title       = titles.get(i).toString();
@@ -2261,7 +2263,7 @@ public class OutputHandler extends RepositoryManager {
             tabHtml.append("<li><a href=\"#" + tabId + "-" + (cnt++) + "\">"
                            + title + "</a></li>");
         }
-        HtmlUtils.close(tabHtml, HtmlUtils.TAG_UL);
+        HU.close(tabHtml, HU.TAG_UL);
         cnt = 1;
         for (int i = 0; i < titles.size(); i++) {
             String tabContents = tabs.get(i).toString();
@@ -2270,18 +2272,18 @@ public class OutputHandler extends RepositoryManager {
                         || (tabContents.length() == 0))) {
                 continue;
             }
-            tabHtml.append(HtmlUtils.div(tabContents, HtmlUtils.id(tabId
-                    + "-" + (cnt++)) + HtmlUtils.cssClass("ui-tabs-hide")));
+            tabHtml.append(HU.div(tabContents, HU.id(tabId
+                    + "-" + (cnt++)) + HU.cssClass("ui-tabs-hide")));
             tabHtml.append("\n");
         }
 
-        tabHtml.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+        tabHtml.append(HU.close(HU.TAG_DIV));
         tabHtml.append("\n");
         String args = "activate: HtmlUtil.tabLoaded";
         if (useCookies) {
             args += ",\ncookie: {expires:1}";
         }
-        tabHtml.append(HtmlUtils.script("\njQuery(function(){\njQuery('#"
+        tabHtml.append(HU.script("\njQuery(function(){\njQuery('#"
                                         + tabId + "').tabs({" + args
                                         + "})});\n\n"));
 
@@ -2302,8 +2304,8 @@ public class OutputHandler extends RepositoryManager {
      */
     public String htmlInput(Request request, String arg, String dflt,
                             int width) {
-        return HtmlUtils.input(arg, request.getString(arg, dflt),
-                               HtmlUtils.attr(HtmlUtils.ATTR_SIZE,
+        return HU.input(arg, request.getString(arg, dflt),
+                               HU.attr(HU.ATTR_SIZE,
                                    "" + width));
     }
 
@@ -2410,30 +2412,30 @@ public class OutputHandler extends RepositoryManager {
             }
         }
         StringBuilder publishSB = new StringBuilder();
-        sb.append(HtmlUtils.hidden(ARG_PUBLISH_ENTRY + "_hidden", entryId,
-                                   HtmlUtils.id(ARG_PUBLISH_ENTRY
+        sb.append(HU.hidden(ARG_PUBLISH_ENTRY + "_hidden", entryId,
+                                   HU.id(ARG_PUBLISH_ENTRY
                                        + "_hidden")));
-        HtmlUtils.row(sb, HtmlUtils.colspan(header, 2));
+        HU.row(sb, HU.colspan(header, 2));
 
         String select = OutputHandler.getSelect(request, ARG_PUBLISH_ENTRY,
                             "Select folder", false, null, entry);
         String addMetadata = !addMetadataField
                              ? ""
-                             : HtmlUtils.checkbox(ARG_METADATA_ADD,
-                                 HtmlUtils.VALUE_TRUE,
+                             : HU.checkbox(ARG_METADATA_ADD,
+                                 HU.VALUE_TRUE,
                                  request.get(ARG_METADATA_ADD,
                                              false)) + msg("Add properties");
         sb.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 msgLabel("Folder"),
-                HtmlUtils.disabledInput(
+                HU.disabledInput(
                     ARG_PUBLISH_ENTRY, entryName,
-                    HtmlUtils.id(ARG_PUBLISH_ENTRY)
-                    + HtmlUtils.SIZE_60) + select + HtmlUtils.space(2)
+                    HU.id(ARG_PUBLISH_ENTRY)
+                    + HU.SIZE_60) + select + HU.space(2)
                                          + addMetadata));
 
         if (addNameField) {
-            sb.append(HtmlUtils.formEntry(msgLabel("Name"),
+            sb.append(HU.formEntry(msgLabel("Name"),
                                           htmlInput(request,
                                               ARG_PUBLISH_NAME, "", 30)));
         }

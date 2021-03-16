@@ -1005,7 +1005,6 @@ public class HtmlOutputHandler extends OutputHandler {
                     String type = request.getString(ATTR_TYPE, "");
                     sb.append(getSelectLink(request, localeEntry, seen,
                                             target));
-                    //              localeEntry.getTypeHandler().addToSelectMenu(request, localeEntry,sb, type, target);
                 }
                 if ( !localeEntry.isGroup()) {
                     localeEntry = getEntryManager().getParent(request,
@@ -1020,7 +1019,6 @@ public class HtmlOutputHandler extends OutputHandler {
                     if (grandParent != null) {
                         sb.append(getSelectLink(request, grandParent, seen,
                                 target));
-                        //indent = HU.space(2);
                     }
                     sb.append(indent);
                     sb.append(getSelectLink(request, localeEntry, seen,
@@ -1060,6 +1058,13 @@ public class HtmlOutputHandler extends OutputHandler {
                     sb.append(sectionDivider);
                 }
             }
+	    HU.open(sb, "div", HU.cssClass("ramadda-select-search"));
+	    String searchId = HU.getUniqueId("search");
+	    HU.div(sb, "",HU.attrs("id",searchId));
+	    sb.append(HU.script("HtmlUtils.initSearchPopup('" + searchId +"','" + target +"');"));
+	    HU.close(sb, "div");
+	    sb.append(sectionDivider);
+
             List<FavoriteEntry> favoritesList =
                 getUserManager().getFavorites(request, request.getUser());
             if (favoritesList.size() > 0) {
@@ -1085,14 +1090,6 @@ public class HtmlOutputHandler extends OutputHandler {
                 }
             }
 
-	    HU.open(sb, "div", HU.cssClass("ramadda-select-search"));
-	    //	    sb.append(HU.center(HU.b(msg("Search"))));
-
-	    String searchId = HU.getUniqueId("search");
-	    HU.div(sb, "",HU.attrs("id",searchId));
-	    sb.append(HU.script("HtmlUtils.initSearchPopup('" + searchId +"','" + target +"');"));
-	    HU.close(sb, "div");
-	    sb.append(sectionDivider);
 
             List<Entry> cartEntries = getUserManager().getCart(request);
             if (cartEntries.size() > 0) {

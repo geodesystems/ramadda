@@ -196,6 +196,12 @@ i.fa, i.fas,i.fab {
 }
 
 
+
+
+.ramadda-highlightable:hover span i {
+    @I-HOVER@
+}
+
 .ramadda-nav-popup-link span i:hover {
     @I-HOVER@
 }
@@ -2171,9 +2177,10 @@ pre {
     font-weight: bold; 
 }
 
-.disabledinput {
+.disabledinput, .disabledinput:focus {
     border : 0px #888888 solid;
     background: #dfdfdf;
+    cursor:default;
 }
 
 .hiddeninput {

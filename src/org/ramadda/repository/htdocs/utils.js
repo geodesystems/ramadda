@@ -14,8 +14,13 @@ var icon_rightdart = ramaddaBaseUrl + "/icons/rightdart.gif";
 var icon_progress = ramaddaBaseUrl + "/icons/progress.gif";
 var icon_wait = ramaddaBaseUrl + "/icons/wait.gif";
 var icon_information = ramaddaBaseUrl + "/icons/information.png";
+
 var icon_folderclosed = ramaddaBaseUrl + "/icons/folderclosed.png";
 var icon_folderopen = ramaddaBaseUrl + "/icons/togglearrowdown.gif";
+
+var icon_folderclosed = "fas fa-caret-right";
+var icon_folderopen = "fas fa-caret-down";
+
 var icon_tree_open = ramaddaBaseUrl + "/icons/togglearrowdown.gif";
 var icon_tree_closed = ramaddaBaseUrl + "/icons/togglearrowright.gif";
 var icon_zoom = ramaddaBaseUrl + "/icons/magnifier.png";
