@@ -452,7 +452,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             tabTitles.push("Fields");
             tabContents.push(html);
-            SUPER.RamaddaDisplay.getDialogContents.call(this, tabTitles, tabContents);
+            SUPER.getDialogContents.call(this, tabTitles, tabContents);
         },
         okToHandleEventRecordSelection: function() {
             return true;
