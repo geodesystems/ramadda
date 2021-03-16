@@ -307,7 +307,7 @@ public interface Constants {
         "/icons/togglearrowright.gif";
 
     /** _more_ */
-    public static final String ICON_TOOLS = "/icons/tools.gif";
+    public static final String ICON_TOOLS = "fas fas-tools";
 
     /** _more_ */
     public static final String ICON_UPARROW = "/icons/uparrow.gif";
