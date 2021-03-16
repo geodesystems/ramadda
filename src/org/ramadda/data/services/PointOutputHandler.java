@@ -206,11 +206,11 @@ public class PointOutputHandler extends RecordOutputHandler {
                                         OutputType.TYPE_OTHER);
 
         OUTPUT_VIEW = new OutputType("View Data", base + ".view",
-                                     OutputType.TYPE_OTHER, "", ICON_DATA,
+                                     OutputType.TYPE_VIEW, "", ICON_DATA,
                                      category);
 
         OUTPUT_METADATA = new OutputType("Metadata ", base + ".metadata",
-                                         OutputType.TYPE_OTHER, "",
+                                         OutputType.TYPE_VIEW, "",
                                          ICON_METADATA, category);
 
 
