@@ -372,7 +372,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                + "&gt;</b>";
                     }
                 }
-            }
+	    }
             remainder = remainder.replaceAll("\\\\\"", "_XQUOTE_");
             Hashtable tmpProps = HU.parseHtmlProperties(remainder);
             Hashtable props    = new Hashtable();
@@ -5236,7 +5236,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 }
             } else {
                 if (originalEntry.getId().equals(importEntry.getId())) {
-                    return "<b>Error: Circular import</b>";
+		    //                    return "<b>Error: Circular import</b>";
                 }
                 tag = getProperty(wikiUtil, props, ATTR_OUTPUT,
                                   OutputHandler.OUTPUT_HTML.getId());
