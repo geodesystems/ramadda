@@ -2754,7 +2754,7 @@ public class TypeHandler extends RepositoryManager {
                 new Link(
                     request.entryUrl(
                         getRepository().URL_ENTRY_EXTEDIT,
-                        entry), "/icons/sitemap.png", "Extended Edit",
+                        entry), "fas fa-sitemap", "Extended Edit",
                                 OutputType.TYPE_EDIT));
 
         }
