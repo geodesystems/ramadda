@@ -87,10 +87,10 @@ public interface Constants {
     public static final String ICON_CLOSE = "fa-window-close";
 
     /** _more_ */
-    public static final String ICON_CLOUD = "/icons/cloud.gif";
+    public static final String ICON_CLOUD = "fas fa-cloud";
 
     /** _more_ */
-    public static final String ICON_COMMENTS = "/icons/comment.png";
+    public static final String ICON_COMMENTS = "fas fa-comments";
 
     /** _more_ */
     public static final String ICON_FTP = "/icons/server_go.png";
@@ -102,7 +102,7 @@ public interface Constants {
     public static final String ICON_DATA = "fa-table";
 
     /** _more_ */
-    public static final String ICON_DIF = "/icons/metadata.gif";
+    public static final String ICON_DIF = "fas fa-info-circle";
 
     /** _more_ */
     public static final String ICON_DATEGRID = "/icons/dategrid.gif";
@@ -287,7 +287,11 @@ public interface Constants {
     /** _more_ */
 
     /** _more_ */
-    public static final String ICON_ATOM = "/icons/atom.gif";
+    public static final String ICON_ATOM = "fas fa-rss";
+
+    /** _more_ */
+    public static final String ICON_RSS = "fas fa-rss";
+
 
     /** _more_ */
     public static final String ICON_SEARCH = "fa-binoculars";    
