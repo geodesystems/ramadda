@@ -19,7 +19,6 @@ package org.ramadda.plugins.map;
 
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
-import org.ramadda.data.record.*;
 
 
 import org.ramadda.data.services.PointTypeHandler;

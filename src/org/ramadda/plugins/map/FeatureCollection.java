@@ -205,6 +205,10 @@ public class FeatureCollection {
         return properties;
     }
 
+    public List<DbaseDataWrapper> getDatum() {
+	return fieldDatum;
+    }
+
     /**
      * _more_
      *
@@ -263,6 +267,15 @@ public class FeatureCollection {
 
         return styleUrl;
     }
+
+    public EsriShapefile getShapefile() {
+	return  (EsriShapefile) properties.get("shapefile");
+    }
+	    
+    public DbaseFile   getDbFile() {
+	return  (DbaseFile) properties.get("dbfile");
+    }
+
 
     /**
      * Turn this into KML
@@ -712,7 +725,6 @@ public class FeatureCollection {
             flist.add(feature.toGeoJson());
         }
         map.add(Json.list(flist, false));
-
         return Json.map(map, false);
     }
 

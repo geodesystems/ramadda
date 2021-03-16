@@ -21,13 +21,18 @@ import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.map.MapInfo;
-import org.ramadda.repository.output.KmlOutputHandler;
 
 import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.type.GenericTypeHandler;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
+
+import org.ramadda.data.services.PointTypeHandler;
+import org.ramadda.data.point.text.*;
+import org.ramadda.data.record.*;
+
+
 
 
 import org.w3c.dom.Element;
@@ -38,26 +43,38 @@ import ucar.unidata.gis.shapefile.DbaseData;
 import ucar.unidata.gis.shapefile.DbaseFile;
 import ucar.unidata.gis.shapefile.EsriShapefile;
 import ucar.unidata.gis.shapefile.ProjFile;
+import org.ramadda.util.TTLCache;
 
 
 import java.awt.geom.Rectangle2D;
+import java.io.*;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 
 /**
  */
-public class ShapefileTypeHandler extends GenericTypeHandler implements WikiConstants {
+public class ShapefileTypeHandler extends PointTypeHandler implements WikiConstants {
+
+	public static final String PROP_FIELDS = "fields";
+
+	public static final String PROP_FIELDS_WITHSHAPES = "fieldsWithShapes";
+	public static final String PROP_FIELDS_WITHOUTSHAPES = "fieldsWithoutShapes";	
+
+
 
     /** _more_ */
     public static int MAX_POINTS = 200000;
+
 
     /** _more_ */
     private static final int IDX_LON = 0;
 
     /** _more_ */
     private static final int IDX_LAT = 1;
+
 
 
     /**
@@ -70,6 +87,17 @@ public class ShapefileTypeHandler extends GenericTypeHandler implements WikiCons
     public ShapefileTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
+
+    }
+
+    public EsriShapefile getShapefile(Entry entry) throws Exception {
+	return getOutputHandler().getShapefile(entry);
+    }
+
+
+
+    public boolean shouldProcessResource(Request request, Entry entry) {
+        return false;
     }
 
 
@@ -86,22 +114,27 @@ public class ShapefileTypeHandler extends GenericTypeHandler implements WikiCons
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
             throws Exception {
+	super.initializeEntryFromForm(request,  entry,parent, newEntry);
+
+
         if ( !newEntry) {
             return;
         }
         if ( !entry.isFile()) {
             System.err.println("Shapefile not a file");
-
             return;
         }
         EsriShapefile shapefile = null;
         try {
-            shapefile = new EsriShapefile(entry.getFile().toString());
+            shapefile = getShapefile(entry);
         } catch (Exception exc) {
             System.err.println("Error opening shapefile:" + exc);
-
             return;
         }
+
+	ShapefileRecordFile recordFile =  new ShapefileRecordFile(request,entry,entry.getResource().getPath(),shapefile);
+	String props = recordFile.getEntryFieldsProperties();
+	getEntryValues(entry)[IDX_PROPERTIES] = props;
 
         Rectangle2D bounds   = shapefile.getBoundingBox();
         double[][]  lonlat   = new double[][] {
@@ -120,7 +153,6 @@ public class ShapefileTypeHandler extends GenericTypeHandler implements WikiCons
         }
         entry.setSouth(lonlat[IDX_LAT][0]);
         entry.setEast(lonlat[IDX_LON][0]);
-
     }
 
 
@@ -149,7 +181,7 @@ public class ShapefileTypeHandler extends GenericTypeHandler implements WikiCons
      *
      * @param request _more_
      * @param entry _more_
-     *
+     * 
      * @throws Exception _more_
      */
     @Override
@@ -172,23 +204,14 @@ public class ShapefileTypeHandler extends GenericTypeHandler implements WikiCons
                                      List<String> tabContents) {
         super.addToInformationTabs(request, entry, tabTitles, tabContents);
         try {
-            EsriShapefile shapefile =
-                new EsriShapefile(entry.getFile().toString());
-            DbaseFile dbfile = shapefile.getDbFile();
-            if (dbfile == null) {
-                return;
-            }
-
-            String[]      fieldNames = dbfile.getFieldNames();
+	    Hashtable props = getRecordProperties(entry);
+	    String fields = (String) props.get(PROP_FIELDS);
+	    if(fields==null) return;
             StringBuilder sb = new StringBuilder("<h2>Fields</h2><ul>");
-            for (int i = 0; i < fieldNames.length; i++) {
-                DbaseData field = dbfile.getField(i);
+            for (String field: fields.split(",")) {
                 sb.append("<li>");
-                sb.append(fieldNames[i]);
-                sb.append(" (");
-                sb.append(
-                    ShapefileOutputHandler.getTypeName(field.getType()));
-                sb.append(")\n");
+                sb.append(field);
+		//                sb.append(" (");             sb.append(")\n");
             }
             sb.append("</ul>");
             tabTitles.add("Shapefile Fields");
@@ -216,14 +239,14 @@ public class ShapefileTypeHandler extends GenericTypeHandler implements WikiCons
         if ( !entry.isFile()) {
             return true;
         }
-        int numPoints = entry.getValue(0, -1);
+        int numPoints = entry.getValue(IDX_RECORD_COUNT, -1);
 
         if (numPoints < 0) {
             long t1 = System.currentTimeMillis();
             //TODO: stream through the shapes
             EsriShapefile shapefile = null;
             try {
-                shapefile = new EsriShapefile(entry.getFile().toString());
+                shapefile = getShapefile(entry);
             } catch (Exception exc) {
                 map.setHeaderMessage("Error opening shapefile:" + exc);
 
@@ -238,7 +261,7 @@ public class ShapefileTypeHandler extends GenericTypeHandler implements WikiCons
                 numFeatures++;
             }
             long t2 = System.currentTimeMillis();
-            getEntryValues(entry)[0] = new Integer(numPoints);
+            getEntryValues(entry)[IDX_RECORD_COUNT] = new Integer(numPoints);
             getEntryManager().updateEntry(request, entry);
         }
 
@@ -271,66 +294,197 @@ public class ShapefileTypeHandler extends GenericTypeHandler implements WikiCons
     }
 
 
-    /**
-     * Add this entry to a map
-     * @param request the request
-     * @param entry   the entry
-     * @param map     the mapinfo
-     *
-     * @return true to also display the bounding box
-     * @Override
-     * public boolean addToMap(Request request, Entry entry, MapInfo map) throws Exception  {
-     *   try {
-     *       if ( !entry.isFile()) {
-     *           return true;
-     *       }
-     *       //TODO: stream through the shapes
-     *       EsriShapefile shapefile = null;
-     *       try {
-     *           shapefile = new EsriShapefile(entry.getFile().toString());
-     *       } catch (Exception exc) {
-     *           return true;
-     *       }
-     *
-     *       List features    = shapefile.getFeatures();
-     *       int  totalPoints = 0;
-     *       int  MAX_POINTS  = 10000;
-     *       for (int i = 0; i < features.size(); i++) {
-     *           if (totalPoints > MAX_POINTS) {
-     *               break;
-     *           }
-     *           EsriShapefile.EsriFeature gf =
-     *               (EsriShapefile.EsriFeature) features.get(i);
-     *           java.util.Iterator pi = gf.getGisParts();
-     *           while (pi.hasNext()) {
-     *               if (totalPoints > MAX_POINTS) {
-     *                   break;
-     *               }
-     *               GisPart        gp     = (GisPart) pi.next();
-     *               double[]       xx     = gp.getX();
-     *               double[]       yy     = gp.getY();
-     *               List<double[]> points = new ArrayList<double[]>();
-     *               for (int ptIdx = 0; ptIdx < xx.length; ptIdx++) {
-     *                   points.add(new double[] { yy[ptIdx], xx[ptIdx] });
-     *               }
-     *               totalPoints += points.size();
-     *               if (points.size() > 1) {
-     *
-     *                   map.addLines(entry, "", points,null);
-     *               } else if (points.size() == 1) {
-     *                   map.addMarker("id", points.get(0)[0],
-     *                                 points.get(0)[1], null, "");
-     *               }
-     *           }
-     *       }
-     *   } catch (Exception exc) {
-     *       throw new RuntimeException(exc);
-     *   }
-     *
-     *   return false;
-     * }
-     */
+    @Override
+    public String getUrlForWiki(Request request, Entry entry, String tag,
+                                Hashtable props, List<String> topProps) {
+        if (tag.equals(WikiConstants.WIKI_TAG_CHART)
+                || tag.equals(WikiConstants.WIKI_TAG_DISPLAY)
+                || tag.startsWith("display_")) {
+            try {
+		String url = super.getUrlForWiki(request, entry, tag, props, topProps);
+		url+="&addShapes=" +  Utils.getProperty(props,"addShapes",false);
+		return url;
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
+        }
+        return super.getUrlForWiki(request, entry, tag, props, topProps);
+    }
 
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    @Override
+    public RecordFile doMakeRecordFile(Request request, Entry entry)
+            throws Exception {
+        return new ShapefileRecordFile(request,entry,entry.getResource().getPath(),null);
+    }
+
+
+    private ShapefileOutputHandler getOutputHandler() throws Exception {
+	return (ShapefileOutputHandler) getRepository().getOutputHandler(ShapefileOutputHandler.class);
+    }
+
+    
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Sat, Dec 8, '18
+     * @author         Enter your name here...
+     */
+    public class  ShapefileRecordFile extends CsvFile {
+
+	Request  request;
+	Entry entry;
+	EsriShapefile shapefile;
+	Hashtable props;
+	String 	    fieldsWithoutShapes;
+	String 	    fieldsWithShapes;
+	String 	    fields;	
+
+        /**
+         * _more_
+         *
+         * @param filename _more_
+         *
+         * @throws IOException _more_
+         */
+	public  ShapefileRecordFile(Request  request, Entry entry, String filename, EsriShapefile shapefile) throws Exception {
+            super(filename);
+	    //Get the properties from the entry
+	    props = getRecordProperties(entry);
+	    this.request = request;
+	    this.entry = entry;
+	    this.shapefile  = shapefile;
+	    fieldsWithShapes = (String) props.get(PROP_FIELDS_WITHSHAPES);
+	    fieldsWithoutShapes = (String) props.get(PROP_FIELDS_WITHOUTSHAPES);
+	    fields = (String) props.get(PROP_FIELDS);	    	    
+	    if(fieldsWithShapes==null) {
+		getEntryFieldsProperties();
+	    }
+        }
+
+
+
+        /**
+         * _more_
+         *
+         * @param buffered _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+	 */
+        @Override
+        public InputStream doMakeInputStream(boolean buffered)
+                throws Exception {
+	    if(shapefile ==null) {
+		shapefile = getShapefile(entry);
+	    }
+	    //	    new RuntimeException("").printStackTrace();
+	    StringBuilder sb = getOutputHandler().getCsvBuffer(request,  entry, shapefile, false,request.get("addShapes",false));
+	    ByteArrayInputStream bais = new ByteArrayInputStream(sb.toString().getBytes());
+	    return bais;
+        }
+
+        /**
+         * _more_
+         *
+         * @param visitInfo _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        public VisitInfo prepareToVisit(VisitInfo visitInfo)
+                throws Exception {
+	    putProperty(PROP_SKIPLINES,"1");
+            super.prepareToVisit(visitInfo);
+	    boolean addShapes = request.get("addShapes",false);
+	    putProperty(PROP_FIELDS, makeFields(addShapes));
+            return visitInfo;
+        }
+
+	private String makeFields(boolean addShapes) throws Exception {
+	    List<String[]> fileFields = getFields(request, entry);
+	    List<String> fields = new ArrayList<String>();
+	    this.fields = null;
+	    for(String[] tuple: fileFields) {
+		if(this.fields!=null)
+		    this.fields+=",";
+		else
+		    this.fields = "";
+		this.fields+=tuple[0];
+		fields.add(makeField(tuple[0], attrType(tuple[1])));
+	    }
+	    if(addShapes) {
+		fields.add(makeField("shapeType", attrType("string")));
+		fields.add(makeField("shape", attrType("string")));
+	    }
+	    return  makeFields(fields);
+	}	    
+
+
+
+	@Override
+	public List<RecordField> doMakeFields(boolean failureOk)  {
+	    try {
+	    if(fieldsWithoutShapes==null) {
+		getEntryFieldsProperties();
+	    }		
+	    boolean addShapes = request.get("addShapes",false);
+	    if(addShapes) {
+		putProperty(PROP_FIELDS, fieldsWithShapes);
+	    } else {
+		putProperty(PROP_FIELDS, fieldsWithoutShapes);
+	    }
+	    return super.doMakeFields(failureOk);
+	    } catch(Exception exc) {
+		throw new RuntimeException(exc);
+	    }
+	}
+
+
+	public String getEntryFieldsProperties() throws Exception {
+	    fieldsWithShapes =  makeFields(true);
+	    fieldsWithoutShapes =  makeFields(false);	    
+	    String result =  "#fields for data access. do not change\n" + PROP_FIELDS+"=" + fields+"\n"+PROP_FIELDS_WITHSHAPES + "="+fieldsWithShapes+"\n" + PROP_FIELDS_WITHOUTSHAPES+"=" + fieldsWithoutShapes+"\n";	    
+	    return result;
+	}
+
+	public List<String[]> getFields(Request request, Entry entry) throws Exception {
+	    List<String[]> fields =new ArrayList<String[]>();
+	    if(shapefile == null) {
+		shapefile =   getShapefile(entry);
+	    }
+	    DbaseFile     dbfile   = shapefile.getDbFile();
+	    if (dbfile == null) {
+		return fields;
+	    }	    
+	    List<DbaseDataWrapper> fieldDatum = getOutputHandler().getDatum(request, entry, dbfile);
+	    for (DbaseDataWrapper dbd : fieldDatum) {
+		String type = "string";
+		if (dbd.getType() == DbaseData.TYPE_NUMERIC) {
+		    type = "double";
+		}
+		fields.add(new String[]{dbd.getName(),type});
+	    }
+	    return fields;
+	}
+
+
+
+    }
 
 
 }
