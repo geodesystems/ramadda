@@ -1041,7 +1041,6 @@ r    },
 		    //		    if(debug) console.log("macro:" + JSON.stringify(source,null,2));
 		    let cnt = 0;
 		    let s ="";
-
 		    this.tokens.forEach(t=>{
 			if(t.type=="string") {
 			    s+=t.s;
@@ -1408,8 +1407,9 @@ r    },
     displaysMap:[],
     addDisplay: function(display) {
 	this.displaysList.push(display);
-	if(display.getId)
+	if(display.getId) {
 	    this.displaysMap[display.getId()] = display;
+	}
 	if (display.displayId) {
             this.displaysMap[display.displayId] = display;
 	}
