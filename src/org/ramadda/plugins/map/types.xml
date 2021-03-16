@@ -112,6 +112,37 @@
    </type>
 
 
+  <type name="geo_dbase"  description="DBase File"   super="type_point" handler="org.ramadda.plugins.map.DbaseTypeHandler" pattern="(.*\.dbf$)" >
+     <property name="icon" value="/icons/database.png"/>
+<xwiki>
+<![CDATA[
++section title={{name}}
+{{description wikify="true"}}
++tabs
++tab Map
++row
++col-md-8
+{{map width="100%" height="450" viewBounds="<bounds>" details="true" displayDiv="mapDisplay" showSearch="true" }}
+-col
++col-md-4
+<div style="padding-top:20px;"></div>
+<div id="mapDisplay" style="max-height:450px; overflow-y:auto;"></div>
+-col
+-row
+-tab
++tab Table
+{{import output=shapefile.fields_table}}
+-tab
++tab Metadata
+{{information details=true}}
+-tab
+-tabs
+-section
+]]>
+</xwiki>
+   </type>
+   
+
 <!--
 
 

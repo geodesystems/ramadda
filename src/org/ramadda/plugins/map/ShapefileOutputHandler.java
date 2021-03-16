@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
 import org.ramadda.util.KmlUtil;
+
+import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
 import org.ramadda.util.text.CsvUtil;
 
@@ -42,16 +44,15 @@ import ucar.unidata.gis.shapefile.DbaseFile;
 import ucar.unidata.gis.shapefile.EsriShapefile;
 import ucar.unidata.util.IOUtil;
 
+import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
 import java.awt.geom.Rectangle2D;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+
+import java.io.*;
 
 import java.text.DecimalFormat;
 
@@ -62,8 +63,9 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
-
-import org.ramadda.util.TTLCache;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 
 /**
@@ -115,6 +117,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         new DecimalFormat("####.#");
 
 
+    /** _more_          */
     private TTLCache<String, EsriShapefile> cache;
 
 
@@ -134,23 +137,50 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         addType(OUTPUT_CSV);
         addType(OUTPUT_FIELDS_TABLE);
         addType(OUTPUT_FIELDS_LIST);
-	//Create the cache with a 1 minute TTL
-	cache = new TTLCache<String,EsriShapefile>(60 * 1000);
+        //Create the cache with a 1 minute TTL
+        cache = new TTLCache<String, EsriShapefile>(60 * 1000);
 
     }
 
 
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public EsriShapefile getShapefile(Entry entry) throws Exception {
-	synchronized(cache) {
-	    EsriShapefile shapefile = cache.get(entry.getId());
-	    if(shapefile==null) {
-		System.err.println("new EsriShapefile");
-		shapefile = new EsriShapefile(entry.getFile().toString());
-		cache.put(entry.getId(),shapefile);
-	    }
-	    return shapefile;
-	}
+        synchronized (cache) {
+            EsriShapefile shapefile = cache.get(entry.getId());
+            if (shapefile == null) {
+                System.err.println("new EsriShapefile");
+                String path = entry.getFile().toString();
+                if (false && path.endsWith(".shp")) {
+                    File tmp = getStorageManager().getTmpFile(
+                                   getRepository().getTmpRequest(),
+                                   "tmp.zip");
+                    ZipEntry zipEntry = new ZipEntry("tmp.shp");
+                    ZipOutputStream zos =
+                        new ZipOutputStream(new FileOutputStream(tmp));
+                    zos.putNextEntry(zipEntry);
+                    InputStream shpIS =
+                        getStorageManager().getInputStream(path);
+                    IOUtil.writeTo(shpIS, zos);
+                    IOUtil.close(shpIS);
+                    IOUtil.close(zos);
+                    shapefile = new EsriShapefile(tmp.toString());
+                } else {
+                    shapefile = new EsriShapefile(path);
+                }
+                cache.put(entry.getId(), shapefile);
+            }
+
+            return shapefile;
+        }
     }
 
 
@@ -320,17 +350,19 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
      *
      * @param request  the Request
      * @param entry    the Entry
+     * @param shapefile _more_
      *
      * @return a FeatureCollection
      *
      * @throws Exception  problems
      */
     private FeatureCollection makeFeatureCollection(Request request,
-						    Entry entry,EsriShapefile shapefile)
+            Entry entry, EsriShapefile shapefile)
             throws Exception {
-	if(shapefile==null) {
-	    shapefile = getShapefile(entry);
-	}
+
+        if (shapefile == null) {
+            shapefile = getShapefile(entry);
+        }
         DbaseFile              dbfile    = shapefile.getDbFile();
         DbaseDataWrapper       nameField = null;
         String                 schemaName;
@@ -495,6 +527,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
 
         return fc;
 
+
     }
 
     /**
@@ -575,7 +608,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             }
         }
 
-        FeatureCollection fc          = makeFeatureCollection(request, entry,null);
+        FeatureCollection fc = makeFeatureCollection(request, entry, null);
         long              t1          = System.currentTimeMillis();
         List<String>      fieldValues = null;
         if (fieldsArg != null) {
@@ -624,7 +657,8 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
      */
     private Result outputGeoJson(Request request, Entry entry)
             throws Exception {
-        FeatureCollection fc     = makeFeatureCollection(request, entry,null);
+        FeatureCollection fc     = makeFeatureCollection(request, entry,
+                                       null);
         StringBuffer      sb     = new StringBuffer(fc.toGeoJson());
         Result            result = new Result("", sb, Json.MIMETYPE);
         result.setReturnFilename(
@@ -692,52 +726,76 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
      *
      * @throws Exception _more_
      */
-    public  Result getCsvResult(Request request, Entry entry)  throws Exception {
-	StringBuilder sb = getCsvBuffer(request, entry, null,false, false);
-	return new  Result(sb.toString(), Result.TYPE_CSV);
+    public Result getCsvResult(Request request, Entry entry)
+            throws Exception {
+        StringBuilder sb = getCsvBuffer(request, entry, null, false, false);
+
+        return new Result(sb.toString(), Result.TYPE_CSV);
     }
 
 
-    public  StringBuilder getCsvBuffer(Request request, Entry entry, EsriShapefile shapefile, boolean addHeader, boolean addFeatures)  throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param shapefile _more_
+     * @param addHeader _more_
+     * @param addFeatures _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public StringBuilder getCsvBuffer(Request request, Entry entry,
+                                      EsriShapefile shapefile,
+                                      boolean addHeader, boolean addFeatures)
+            throws Exception {
 
-	FeatureCollection fc          = makeFeatureCollection(request, entry, shapefile);
-        List<DbaseDataWrapper> datum = fc.getDatum();
-        List<Feature>  features = (List<Feature>) fc.getFeatures();
-        StringBuilder sb       = new StringBuilder();
-        if (datum==null) {
-	    if(addHeader)
-		sb.append("#fields=\n");
+        FeatureCollection fc = makeFeatureCollection(request, entry,
+                                   shapefile);
+        List<DbaseDataWrapper> datum    = fc.getDatum();
+        List<Feature>          features = (List<Feature>) fc.getFeatures();
+        StringBuilder          sb       = new StringBuilder();
+        if (datum == null) {
+            if (addHeader) {
+                sb.append("#fields=\n");
+            }
             sb.append("#No fields");
-	    return sb;
-	}	    
-	if(addHeader)
-	    sb.append("#fields=");
-        int    colCnt     = 0;
+
+            return sb;
+        }
+        if (addHeader) {
+            sb.append("#fields=");
+        }
+        int colCnt = 0;
         for (DbaseDataWrapper dbd : datum) {
-	    String type = "string";
-	    if (dbd.getType() == DbaseData.TYPE_NUMERIC) {
-		type = "double";
-	    }
+            String type = "string";
+            if (dbd.getType() == DbaseData.TYPE_NUMERIC) {
+                type = "double";
+            }
             if (colCnt++ > 0) {
                 sb.append(",");
             }
             sb.append(dbd.getName());
-	    if(addHeader) {
-		sb.append("[type=" + type +"]");
-	    }
-	}
-	if(addFeatures) {
-	    sb.append(",shapeType");
-	    if(addHeader)
-		sb.append("[type=string]");
-	    sb.append(",shape");
-	    if(addHeader)
-		sb.append("[type=string]");	    
-	}
+            if (addHeader) {
+                sb.append("[type=" + type + "]");
+            }
+        }
+        if (addFeatures) {
+            sb.append(",shapeType");
+            if (addHeader) {
+                sb.append("[type=string]");
+            }
+            sb.append(",shape");
+            if (addHeader) {
+                sb.append("[type=string]");
+            }
+        }
         sb.append("\n");
         int cnt = 0;
-        for (int i=0; i < features.size(); i++) {
-	    Feature feature = features.get(i);
+        for (int i = 0; i < features.size(); i++) {
+            Feature feature = features.get(i);
             cnt++;
             colCnt = 0;
             for (DbaseDataWrapper dbd : datum) {
@@ -752,20 +810,21 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                     sb.append(",");
                 }
                 sb.append(CsvUtil.cleanColumnValue(value));
-	    }
-	    if(addFeatures) {
-		sb.append(",");
-		sb.append(feature.getGeometry().getGeometryType());
-		sb.append(",");
-		String shape = feature.getGeometry().getCoordsString();
-		shape = shape.replaceAll("\n","").replaceAll(" ","");
-		sb.append("\"");
-		sb.append(shape);
-		sb.append("\"");
-	    }
+            }
+            if (addFeatures) {
+                sb.append(",");
+                sb.append(feature.getGeometry().getGeometryType());
+                sb.append(",");
+                String shape = feature.getGeometry().getCoordsString();
+                shape = shape.replaceAll("\n", "").replaceAll(" ", "");
+                sb.append("\"");
+                sb.append(shape);
+                sb.append("\"");
+            }
             sb.append("\n");
-	}
-	return sb;
+        }
+
+        return sb;
     }
 
 
@@ -791,8 +850,8 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             throws Exception {
 
         EsriShapefile shapefile = getShapefile(entry);
-        DbaseFile     dbfile = shapefile.getDbFile();
-        StringBuilder sb     = new StringBuilder();
+        DbaseFile     dbfile    = shapefile.getDbFile();
+        StringBuilder sb        = new StringBuilder();
         getPageHandler().entrySectionOpen(request, entry, sb, table
                 ? "Shapefile Table"
                 : "Shapefile Fields");
