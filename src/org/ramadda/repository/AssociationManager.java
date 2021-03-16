@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -130,41 +130,40 @@ public class AssociationManager extends RepositoryManager {
 
         StringBuilder sb = new StringBuilder();
         getPageHandler().entrySectionOpen(request, fromEntry, sb,
-                                          msg("Add Association"), false);
-        sb.append("Add association between: " + fromEntry.getLabel());
+                                          msg("Add Link"), false);
+        sb.append("Add link between: " + fromEntry.getLabel());
         sb.append(" and:  " + toEntry.getLabel());
         request.formPostWithAuthToken(sb,
                                       getRepository().URL_ASSOCIATION_ADD,
                                       BLANK);
-        sb.append(HtmlUtils.br());
-        sb.append(HtmlUtils.formTable());
+        sb.append(HU.br());
+        sb.append(HU.formTable());
 
-        sb.append(HtmlUtils.formEntry(msgLabel("Association Name"),
-                                      HtmlUtils.input(ARG_NAME)));
+        sb.append(HU.formEntry(msgLabel("Link name"), HU.input(ARG_NAME)));
 
         List types = getAssociationManager().getTypes();
         types.add(0, new TwoFacedObject("None", ""));
         String select = ((types.size() == 1)
                          ? ""
-                         : HtmlUtils.select(ARG_TYPE, types)
-                           + HtmlUtils.space(1) + "Or:" + HtmlUtils.space(1));
-        sb.append(HtmlUtils.formEntry(msgLabel("Type"),
-                                      select
-                                      + HtmlUtils.input(ARG_TYPE_FREEFORM,
-                                          "", HtmlUtils.SIZE_20)));
+                         : HU.select(ARG_TYPE, types) + HU.space(1) + "Or:"
+                           + HU.space(1));
+        sb.append(HU.formEntry(msgLabel("Type"),
+                               select
+                               + HU.input(ARG_TYPE_FREEFORM, "",
+                                          HU.SIZE_20)));
 
-        sb.append(HtmlUtils.formTableClose());
+        sb.append(HU.formTableClose());
 
-        sb.append(HtmlUtils.hidden(ARG_FROM, fromEntry.getId()));
-        sb.append(HtmlUtils.hidden(ARG_TO, toEntry.getId()));
-        sb.append(HtmlUtils.space(1));
-        sb.append(HtmlUtils.submit(msg("Add Association")));
-        sb.append(HtmlUtils.formClose());
+        sb.append(HU.hidden(ARG_FROM, fromEntry.getId()));
+        sb.append(HU.hidden(ARG_TO, toEntry.getId()));
+        sb.append(HU.space(1));
+        sb.append(HU.submit(msg("Add Link")));
+        sb.append(HU.formClose());
 
         getPageHandler().entrySectionClose(request, fromEntry, sb);
 
         return getEntryManager().addEntryHeader(request, fromEntry,
-                new Result("Add Association", sb));
+                new Result("Add Link", sb));
 
 
     }
@@ -185,10 +184,9 @@ public class AssociationManager extends RepositoryManager {
         List<Association> associations = getAssociations(request, clause);
         if (associations.size() == 0) {
             return new Result(
-                msg("Delete Associations"),
+                msg("Delete Links"),
                 new StringBuilder(
-                    getPageHandler().showDialogError(
-                        "Could not find assocation")));
+                    getPageHandler().showDialogError("Could not find link")));
         }
 
         Entry fromEntry = getEntryManager().getEntry(request,
@@ -215,10 +213,10 @@ public class AssociationManager extends RepositoryManager {
         StringBuilder hidden = new StringBuilder();
 
         getPageHandler().entrySectionOpen(request, fromEntry, sb,
-                                          msg("Delete Association"), false);
+                                          msg("Delete Link"), false);
 
         getRepository().addAuthToken(request, hidden);
-        hidden.append(HtmlUtils.hidden(ARG_ASSOCIATION, associationId));
+        hidden.append(HU.hidden(ARG_ASSOCIATION, associationId));
         String form = PageHandler.makeOkCancelForm(request,
                           getRepository().URL_ASSOCIATION_DELETE,
                           ARG_DELETE_CONFIRM, hidden.toString());
@@ -228,14 +226,14 @@ public class AssociationManager extends RepositoryManager {
                 form));
 
         sb.append(associations.get(0).getName());
-        sb.append(HtmlUtils.br());
+        sb.append(HU.br());
         sb.append(fromEntry.getLabel());
-        sb.append(HtmlUtils.pad(HtmlUtils.img(getIconUrl(ICON_ARROW))));
+        sb.append(HU.pad(HU.img(getIconUrl(ICON_ARROW))));
         sb.append(toEntry.getLabel());
 
         getPageHandler().entrySectionClose(request, fromEntry, sb);
 
-        return new Result(msg("Delete Associations"), sb);
+        return new Result(msg("Delete Links"), sb);
     }
 
 
@@ -302,12 +300,12 @@ public class AssociationManager extends RepositoryManager {
             throws Exception {
         if ( !getAccessManager().canDoAction(request, fromEntry,
                                              Permission.ACTION_NEW)) {
-            throw new IllegalArgumentException("Cannot add association to "
+            throw new IllegalArgumentException("Cannot add link to "
                     + fromEntry);
         }
         if ( !getAccessManager().canDoAction(request, toEntry,
                                              Permission.ACTION_NEW)) {
-            throw new IllegalArgumentException("Cannot add association to "
+            throw new IllegalArgumentException("Cannot add link to "
                     + toEntry);
         }
         //Clear the cached associations
@@ -428,17 +426,15 @@ public class AssociationManager extends RepositoryManager {
     public String getAssociationLinks(Request request, String association)
             throws Exception {
         if (true) {
-	    return BLANK;
+            return BLANK;
         }
-	//TODO: if this is used check the ICON_SEARCH as its a FA icon now
+        //TODO: if this is used check the ICON_SEARCH as its a FA icon now
         String search =
-            HtmlUtils.href(
+            HU.href(
                 request.makeUrl(
                     getRepository().getSearchManager().URL_SEARCH_FORM,
-                    ARG_ASSOCIATION,
-                    HtmlUtils.urlEncode(association)), HtmlUtils.img(
-                        getIconUrl(ICON_SEARCH),
-                        msg("Search in association")));
+                    ARG_ASSOCIATION, HU.urlEncode(association)), HU.img(
+                        getIconUrl(ICON_SEARCH), msg("Search in link")));
 
         return search;
     }
@@ -696,19 +692,19 @@ public class AssociationManager extends RepositoryManager {
         int idx = text.indexOf("<more>");
         if (idx >= 0) {
             String first  = text.substring(0, idx);
-            String base   = "" + (HtmlUtils.blockCnt++);
+            String base   = "" + (HU.blockCnt++);
             String divId  = "morediv_" + base;
             String linkId = "morelink_" + base;
             String second = text.substring(idx + "<more>".length());
-            String moreLink = "javascript:Utils.showMore("
-                              + HtmlUtils.squote(base) + ")";
-            String lessLink = "javascript:Utils.hideMore("
-                              + HtmlUtils.squote(base) + ")";
-            text = first + "<br><a " + HtmlUtils.id(linkId) + " href="
-                   + HtmlUtils.quote(moreLink)
+            String moreLink = "javascript:Utils.showMore(" + HU.squote(base)
+                              + ")";
+            String lessLink = "javascript:Utils.hideMore(" + HU.squote(base)
+                              + ")";
+            text = first + "<br><a " + HU.id(linkId) + " href="
+                   + HU.quote(moreLink)
                    + ">More...</a><div style=\"\" class=\"moreblock\" "
-                   + HtmlUtils.id(divId) + ">" + second + "<br>" + "<a href="
-                   + HtmlUtils.quote(lessLink) + ">...Less</a>" + "</div>";
+                   + HU.id(divId) + ">" + second + "<br>" + "<a href="
+                   + HU.quote(lessLink) + ">...Less</a>" + "</div>";
         }
 
         return text;
@@ -813,14 +809,12 @@ public class AssociationManager extends RepositoryManager {
             }
             if (canEdit) {
                 cols.add(
-                    HtmlUtils.pad(
-                        HtmlUtils.href(
-                            request.makeUrl(
-                                getRepository().URL_ASSOCIATION_DELETE,
-                                ARG_ASSOCIATION,
-                                association.getId()), HtmlUtils.img(
-                                    getRepository().getIconUrl(ICON_DELETE),
-                                    msg("Delete association")))) + "&nbsp;");
+                    HU.pad(HU.href(
+                        request.makeUrl(
+                            getRepository().URL_ASSOCIATION_DELETE,
+                            ARG_ASSOCIATION, association.getId()), HU.img(
+                                getRepository().getIconUrl(ICON_DELETE),
+                                msg("Delete link")))) + HU.SPACE);
             } else {
                 cols.add("");
             }
@@ -832,44 +826,42 @@ public class AssociationManager extends RepositoryManager {
             if (fromIsMe) {
                 fromLabel = lastFromIsMe
                             ? "&nbsp;...&nbsp;"
-                            : HtmlUtils.b(fromEntry.getLabel());
+                            : HU.b(fromEntry.getLabel());
             } else {
                 fromLabel = getEntryManager().getEntryLink(request,
-							   fromEntry, "", ARG_SHOW_ASSOCIATIONS, "true");
+                        fromEntry, "", ARG_SHOW_ASSOCIATIONS, "true");
             }
             if (toIsMe) {
                 toLabel = lastToIsMe
                           ? "&nbsp;...&nbsp;"
-                          : HtmlUtils.b(toEntry.getLabel());
+                          : HU.b(toEntry.getLabel());
             } else {
                 toLabel = getEntryManager().getEntryLink(request, toEntry,
-							 "", ARG_SHOW_ASSOCIATIONS, "true");
+                        "", ARG_SHOW_ASSOCIATIONS, "true");
             }
 
             lastFromIsMe = fromIsMe;
             lastToIsMe   = toIsMe;
-            cols.add(HtmlUtils.img(getPageHandler().getIconUrl(request,
-                    fromEntry)) + HtmlUtils.pad(fromLabel));
+            cols.add(HU.img(getPageHandler().getIconUrl(request, fromEntry))
+                     + HU.pad(fromLabel));
             cols.add("&nbsp;&nbsp;" + association.getType() + "&nbsp;&nbsp;");
             //            cols.add(association.getLabel());
-            cols.add(HtmlUtils.img(getRepository().getIconUrl(ICON_ARROW)));
-            cols.add(HtmlUtils.img(getPageHandler().getIconUrl(request,
-                    toEntry)) + HtmlUtils.pad(toLabel));
+            cols.add(HU.img(getRepository().getIconUrl(ICON_ARROW)));
+            cols.add(HU.img(getPageHandler().getIconUrl(request, toEntry))
+                     + HU.pad(toLabel));
         }
 
-        List cols = Misc.toList(new Object[] { "&nbsp;",
-                HtmlUtils.bold(msg("From")),
-                HtmlUtils.bold(msg("&nbsp;&nbsp;Type&nbsp;&nbsp;")),
-        /*HtmlUtils.bold(msg("Name")),*/
-        "&nbsp;", HtmlUtils.bold(msg("To")) });
+        List cols = Misc.toList(new Object[] { "&nbsp;", HU.bold(msg("From")),
+                HU.bold(msg("&nbsp;&nbsp;Type&nbsp;&nbsp;")),
+        /*HU.bold(msg("Name")),*/
+        "&nbsp;", HU.bold(msg("To")) });
 
         cols.addAll(cols1);
         cols.addAll(cols2);
 
-        return HtmlUtils.table(
-            cols, 5,
-            HtmlUtils.attr(HtmlUtils.ATTR_CELLSPACING, "3")
-            + HtmlUtils.attr(HtmlUtils.ATTR_CELLPADDING, "3"));
+        return HU.table(cols, 5,
+                        HU.attr(HU.ATTR_CELLSPACING, "3")
+                        + HU.attr(HU.ATTR_CELLPADDING, "3"));
     }
 
 
@@ -919,15 +911,15 @@ public class AssociationManager extends RepositoryManager {
             getAssociationsSearchForm(request, sb);
         } else {
             getAssociationsSearchForm(request, sb);
-            sb.append(HtmlUtils.sectionOpen(null, false));
+            sb.append(HU.sectionOpen(null, false));
             getRepository().getHtmlOutputHandler().showNext(request, cnt, sb);
             sb.append(getAssociationManager().getAssociationList(request,
                     associations, null, false));
-            sb.append(HtmlUtils.sectionClose());
+            sb.append(HU.sectionClose());
         }
 
-        return getSearchManager().makeResult(request,
-                                             msg("Search Associations"), sb);
+        return getSearchManager().makeResult(request, msg("Search Links"),
+                                             sb);
     }
 
 
@@ -946,8 +938,8 @@ public class AssociationManager extends RepositoryManager {
         StringBuilder sb = new StringBuilder();
         getAssociationsSearchForm(request, sb);
 
-        return getSearchManager().makeResult(request,
-                                             msg("Search Associations"), sb);
+        return getSearchManager().makeResult(request, msg("Search Links"),
+                                             sb);
     }
 
 
@@ -963,48 +955,47 @@ public class AssociationManager extends RepositoryManager {
     private void getAssociationsSearchForm(Request request, Appendable sb)
             throws Exception {
 
-        sb.append(HtmlUtils.sectionOpen(null, false));
-        sb.append(HtmlUtils
+        sb.append(HU.sectionOpen(null, false));
+        sb.append(HU
             .form(request
                 .makeUrl(getRepository().getSearchManager()
                     .URL_SEARCH_ASSOCIATIONS, ARG_NAME,
                         WHAT_ENTRIES), " name=\"searchform\" "));
 
-        sb.append(HtmlUtils.formTable());
+        sb.append(HU.formTable());
 
         String searchExact = " "
-                             + HtmlUtils.checkbox(ARG_EXACT, "true",
-                                 request.get(ARG_EXACT, false)) + " "
-                                     + msg("Match exactly");
-        sb.append(
-            HtmlUtils.formEntry(
-                msgLabel("Name"),
-                HtmlUtils.input(
-                    ARG_NAME, request.getSanitizedString(ARG_NAME, ""),
-                    HtmlUtils.SIZE_40) + searchExact));
+                             + HU.checkbox(ARG_EXACT, "true",
+                                           request.get(ARG_EXACT,
+                                               false)) + " "
+                                                   + msg("Match exactly");
+        sb.append(HU.formEntry(msgLabel("Name"),
+                               HU.input(ARG_NAME,
+                                        request.getSanitizedString(ARG_NAME,
+                                            ""), HU.SIZE_40) + searchExact));
 
 
         List types = getAssociationManager().getTypes();
         types.add(0, new TwoFacedObject(msg("None"), ""));
         if (types.size() > 1) {
             sb.append(
-                HtmlUtils.formEntry(
+                HU.formEntry(
                     msgLabel("Type"),
-                    HtmlUtils.select(
+                    HU.select(
                         ARG_TYPE, types,
                         request.getSanitizedString(ARG_TYPE, ""))));
         }
 
 
-        sb.append(HtmlUtils.formTableClose());
+        sb.append(HU.formTableClose());
 
         OutputType output  = request.getOutput(BLANK);
-        String     buttons = HtmlUtils.submit(msg("Search"), "submit");
-        sb.append(HtmlUtils.p());
+        String     buttons = HU.submit(msg("Search"), "submit");
+        sb.append(HU.p());
         sb.append(buttons);
-        sb.append(HtmlUtils.p());
-        sb.append(HtmlUtils.formClose());
-        sb.append(HtmlUtils.sectionClose());
+        sb.append(HU.p());
+        sb.append(HU.formClose());
+        sb.append(HU.sectionClose());
 
     }
 
