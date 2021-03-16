@@ -18,13 +18,15 @@ fields=raw_text[chartable=true type=string],station_id[type=string],observation_
 +row
 +col-md-8
 {{group showMenu="true" layoutType="table" layoutColumns="1"}}
-{{display type="linechart" showTitle="false" layoutHere="false"}}
-{{display type="text" layoutHere="false" }}
+{{display_linechart showTitle="false" layoutHere="false"}}
 -col
 +col-md-4
 {{map  zoomLevel=3 height="350"  layoutHere="true" }}
 -col
 -row
+----
+:heading Text
+{{display_text showMenu=false recordTemplate="${default itemsPerColumn=20}" }}
 ]]>
 
 </wiki>
