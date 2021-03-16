@@ -1656,7 +1656,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }});
 	},
 	requiresGeoLocation: function() {
-	    if(this.coordinatesField && this.coordinatesTypeField) return false;
+	    if(this.shapesField && this.shapesTypeField) return false;
 	    return true;
 	},
 	addFilters: function(filters) {
@@ -1736,7 +1736,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.map)
 		this.map.setProgress("");
 	},
-	loadCoordinates: function(records) {
+	loadShapes: function(records) {
             let baseStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
 	    $.extend(baseStyle,{
                 strokeColor: this.getProperty("vectorLayerStrokeColor","#000"),
@@ -1773,19 +1773,19 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		return polygonFeature;
 	    };
 	    records.forEach((r,idx)=>{
-		let type = r.getValue(this.coordinatesTypeField.getIndex());		
-		let coordinatesString= r.getValue(this.coordinatesField.getIndex());
-		let coordinates = JSON.parse(coordinatesString);
+		let type = r.getValue(this.shapesTypeField.getIndex());		
+		let shapesString= r.getValue(this.shapesField.getIndex());
+		let shapes = JSON.parse(shapesString);
 		if(type=="MultiPolygon") {
-		    for(let i=0;i<coordinates.length;i++) {
-			let c2 = coordinates[i];
+		    for(let i=0;i<shapes.length;i++) {
+			let c2 = shapes[i];
 			for(let j=0;j<c2.length;j++) {
 			    createFeature(r, c2[j]);
 			}
 		    }
 		} else if(type=="Polygon") {
-		    for(let i=0;i<coordinates.length;i++) {
-			createFeature(r, coordinates[i]);
+		    for(let i=0;i<shapes.length;i++) {
+			createFeature(r, shapes[i]);
 		    }
 		} else {
 		    console.log("Unknown geometry:" + type);
@@ -1794,7 +1794,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	},	    
         updateUI: function(args) {
-//	    console.trace();
 	    if(!args) args={};
 	    let debug = false;
 	    this.lastUpdateTime = null;
@@ -1805,20 +1804,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
             let pointData = this.getPointData();
 
-
-	    //Set the coordinates Fields here before filter data so we can accept non georeferenced data
-	    this.coordinatesField = this.getFieldById(null,this.getProperty("coordinatesField"));
-	    this.coordinatesTypeField = this.getFieldById(null,this.getProperty("coordinatesTypeField"));
-
+	    //Set the shapes Fields here before filter data so we can accept non georeferenced data
+	    this.shapesField = this.getFieldById(null,this.getProperty("shapesField"));
+	    this.shapesTypeField = this.getFieldById(null,this.getProperty("shapesTypeField"));
 
             let records = this.records =  this.filterData();
 	    console.log("#records:" + records.length);
 
-
-	    if(this.coordinatesTypeField && this.coordinatesField) {
-		this.loadCoordinates(records);
+	    if(this.shapesTypeField && this.shapesField) {
+		this.setProperty("tooltipNotFields",this.shapesTypeField.getId()+"," + this.shapesField);
+		this.loadShapes(records);
 	    }
-
 
 	    if(debug) console.log("map.updateUI");
             if (records == null) {
