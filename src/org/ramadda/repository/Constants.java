@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -27,14 +27,18 @@ public interface Constants {
 
     //j--
 
+    /** _more_          */
     public static final String RESOURCE_ALLCSS = "allcss.css";
-    public static final String RESOURCE_ALLJS = "alljs.js";    
 
+    /** _more_          */
+    public static final String RESOURCE_ALLJS = "alljs.js";
+
+    /** _more_          */
     public static final String WIKI_PREFIX = "<wiki>";
 
 
     /** _more_ */
-    public static final String ICON_ACCESS = "fa-lock";
+    public static final String ICON_ACCESS = "fas fa-lock";
 
     /** _more_ */
     public static final String ICON_ADD = "/icons/add.gif";
@@ -51,31 +55,31 @@ public interface Constants {
         "/icons/arrow_rotate_anticlockwise.png";
 
     /** _more_ */
-    public static final String ICON_ARROW = "fa-arrow-right";
+    public static final String ICON_ARROW = "fas fa-arrow-right";
 
     /** _more_ */
     public static final String ICON_GOOGLEEARTH = "/icons/googleearth.gif";
 
     /** _more_ */
-    public static final String ICON_ASSOCIATION = "fa-arrow-right";
+    public static final String ICON_ASSOCIATION = "fas fa-arrow-right";
 
     /** _more_ */
     public static final String ICON_BLANK = "/icons/blank.gif";
 
     /** _more_ */
-    public static final String ICON_CALENDAR = "fa-calendar-alt";
+    public static final String ICON_CALENDAR = "fas fa-calendar-alt";
 
     /** _more_ */
     public static final String ICON_CART = "/icons/cart.png";
 
     /** _more_ */
-    public static final String ICON_CART_ADD = "fa-cart-plus";
+    public static final String ICON_CART_ADD = "fas fa-cart-plus";
 
     /** _more_ */
     public static final String ICON_CART_DELETE = "/icons/cart_delete.png";
 
     /** _more_ */
-    public static final String ICON_CHAT = "fa-comments";
+    public static final String ICON_CHAT = "fas fa-comments";
 
     /** _more_ */
     public static final String ICON_CLOCK = "/icons/clock.png";
@@ -84,7 +88,7 @@ public interface Constants {
     public static final String ICON_TIMELINE = "/icons/timeline_marker.png";
 
     /** _more_ */
-    public static final String ICON_CLOSE = "fa-window-close";
+    public static final String ICON_CLOSE = "fas fa-window-close";
 
     /** _more_ */
     public static final String ICON_CLOUD = "fas fa-cloud";
@@ -99,7 +103,7 @@ public interface Constants {
     public static final String ICON_CSV = "fas fa-file-csv";
 
     /** _more_ */
-    public static final String ICON_DATA = "fa-table";
+    public static final String ICON_DATA = "fas fa-table";
 
     /** _more_ */
     public static final String ICON_DIF = "fas fa-info-circle";
@@ -108,7 +112,7 @@ public interface Constants {
     public static final String ICON_DATEGRID = "/icons/dategrid.gif";
 
     /** _more_ */
-    public static final String ICON_DELETE = "fa-cut";
+    public static final String ICON_DELETE = "fas fa-cut";
 
     /** _more_ */
     public static final String ICON_DOWNARROW = "/icons/downarrow.gif";
@@ -120,10 +124,10 @@ public interface Constants {
     public static final String ICON_DOWNDART = "/icons/downdart.gif";
 
     /** _more_ */
-    public static final String ICON_EDIT = "fa-edit";
+    public static final String ICON_EDIT = "fas fa-edit";
 
     /** _more_ */
-    public static final String ICON_ENTRY = "fa-info-circle";
+    public static final String ICON_ENTRY = "fas fa-info-circle";
 
     /** _more_ */
     public static final String ICON_ENTRY_ADD = "/icons/fileadd.png";
@@ -141,22 +145,22 @@ public interface Constants {
     public static final String ICON_ERROR = "/icons/error.png";
 
     /** _more_ */
-    public static final String ICON_FAVORITE = "fa-star";
+    public static final String ICON_FAVORITE = "fas fa-star";
 
     /** _more_ */
-    public static final String ICON_FETCH = "fa-download";
+    public static final String ICON_FETCH = "fas fa-download";
 
     /** _more_ */
     public static final String ICON_FILE = "/icons/page.png";
 
     /** _more_ */
-    public static final String ICON_FILELISTING = "fa-list-alt";
+    public static final String ICON_FILELISTING = "fas fa-list-alt";
 
     /** _more_ */
     public static final String ICON_FOLDER = "/icons/folder.png";
 
     /** _more_ */
-    public static final String ICON_FOLDER_ADD = "fa-folder-plus";
+    public static final String ICON_FOLDER_ADD = "fas fa-folder-plus";
 
     /** _more_ */
     public static final String ICON_FOLDER_CLOSED = "/icons/folderclosed.png";
@@ -172,7 +176,7 @@ public interface Constants {
     public static final String ICON_GRAPH = "/icons/vector.png";
 
     /** _more_ */
-    public static final String ICON_TABLE = "fa-table";
+    public static final String ICON_TABLE = "fas fa-table";
 
     /** _more_ */
     public static final String ICON_GRAYRECT = "/icons/grayrect.gif";
@@ -181,7 +185,7 @@ public interface Constants {
     public static final String ICON_GRAYRECTARROW = "";
 
     /** _more_ */
-    public static final String ICON_HOME = "fa-home";
+    public static final String ICON_HOME = "fas fa-home";
 
     /** _more_ */
     public static final String ICON_HEADER = "/images/header.jpg";
@@ -190,19 +194,19 @@ public interface Constants {
     public static final String ICON_HELP = "/icons/help.png";
 
     /** _more_ */
-    public static final String ICON_IMAGE = "fa-image";
+    public static final String ICON_IMAGE = "fas fa-image";
 
     /** _more_ */
-    public static final String ICON_MOVIE = "fa-film";
+    public static final String ICON_MOVIE = "fas fa-film";
 
     /** _more_ */
-    public static final String ICON_IMPORT = "fa-file-import";
+    public static final String ICON_IMPORT = "fas fa-file-import";
 
     /** _more_ */
-    public static final String ICON_EXPORT = "fa-file-export";
+    public static final String ICON_EXPORT = "fas fa-file-export";
 
     /** _more_ */
-    public static final String ICON_IMAGES = "fa-images";
+    public static final String ICON_IMAGES = "fas fa-images";
 
     /** _more_ */
     public static final String ICON_INFORMATION = ICON_ENTRY;
@@ -211,7 +215,7 @@ public interface Constants {
     public static final String ICON_TREE = ICON_ENTRY;
 
     /** _more_ */
-    public static final String ICON_KML = "/icons/kml.png";
+    public static final String ICON_KML = "fas fa-globe";
 
     /** _more_ */
     public static final String ICON_LCURVE = "/icons/blc.gif";
@@ -232,39 +236,36 @@ public interface Constants {
     public static final String ICON_LIST = "/icons/list.gif";
 
     /** _more_ */
-    public static final String ICON_LOG = "fa-scroll";
+    public static final String ICON_LOG = "fas fa-scroll";
 
     /** _more_ */
-    public static final String ICON_MAP = "fa-map";
+    public static final String ICON_MAP = "fas fa-map";
 
     /** _more_ */
     public static final String ICON_MAP_NAV = "/icons/bullet_go.png";
 
     /** _more_ */
-    public static final String ICON_METADATA = "fa-info";
+    public static final String ICON_METADATA = "fas fa-info";
 
     /** _more_ */
-    public static final String ICON_METADATA_ADD = "fa-database";
+    public static final String ICON_METADATA_ADD = "fas fa-database";
 
     /** _more_ */
-    public static final String ICON_METADATA_EDIT = "fa-database";
+    public static final String ICON_METADATA_EDIT = "fas fa-database";
 
 
 
     /** _more_ */
-    public static final String ICON_MOVE = "fa-copy";
+    public static final String ICON_MOVE = "fas fa-copy";
 
     /** _more_ */
-    public static final String ICON_NEW = "fa-plus";
+    public static final String ICON_NEW = "fas fa-plus";
 
     /** _more_ */
-    //    public static final String ICON_PLUS = "/icons/plus.gif";
-    //    public static final String ICON_MINUS = "/icons/minus.gif";
-    public static final String ICON_PLUS = "fa-plus-square";
+    public static final String ICON_PLUS = "fas fa-plus-square";
 
     /** _more_ */
-    public static final String ICON_MINUS = "fa-minus-square";
-
+    public static final String ICON_MINUS = "fas fa-minus-square";
 
     /** _more_ */
     public static final String ICON_PROGRESS = "/icons/progress.gif";
@@ -285,22 +286,19 @@ public interface Constants {
     public static final String ICON_RIGHTARROW = "/icons/rightarrow.png";
 
     /** _more_ */
-
-    /** _more_ */
     public static final String ICON_ATOM = "fas fa-rss";
 
     /** _more_ */
     public static final String ICON_RSS = "fas fa-rss";
 
+    /** _more_ */
+    public static final String ICON_SEARCH = "fas fa-binoculars";
 
     /** _more_ */
-    public static final String ICON_SEARCH = "fa-binoculars";    
+    public static final String ICON_SEARCH_SMALL = "fas fa-search";
 
     /** _more_ */
-    public static final String ICON_SEARCH_SMALL = "fa-search";
-
-    /** _more_ */
-    public static final String ICON_TEXT = "fa-align-left";
+    public static final String ICON_TEXT = "fas fa-align-left";
 
     /** _more_ */
     public static final String ICON_TOGGLEARROWDOWN =
@@ -338,10 +336,12 @@ public interface Constants {
     public static final String ICON_GEOJSON = "/icons/geojson.png";
 
     /** _more_ */
-    public static final String ICON_ZIP = "fa-file-archive";
+    public static final String ICON_ZIP = "fas fa-file-archive";
 
     /** _more_ */
-    public static final String ICON_ZIPTREE = "fa-file-archive";
+    public static final String ICON_ZIPTREE = "fas fa-file-archive";
+
+
 
     //j++
 
@@ -368,7 +368,9 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_SHOWCATEGORIES = "showCategories";
 
+    /** _more_          */
     public static final String ARG_SHOWNEXT = "showNext";
+
     /** _more_ */
     public static final String ARG_RETURNFILENAME = "returnfilename";
 
@@ -426,7 +428,8 @@ public interface Constants {
     /** _more_ */
     public static final String ATTR_CATEGORY = "category";
 
-    public static final String ATTR_ENTRYORDER = "entryorder";    
+    /** _more_          */
+    public static final String ATTR_ENTRYORDER = "entryorder";
 
     /** _more_ */
     public static final String ATTR_EAST = "east";
@@ -721,6 +724,7 @@ public interface Constants {
     public static final String ARG_CONTRIBUTION_FROMNAME =
         "contribution.fromname";
 
+    /** _more_          */
     public static final String ARG_ENTRYORDER = "entryorder";
 
 
@@ -795,10 +799,10 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_DESCRIPTION = "description";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_ISWIKI = "iswiki";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_WIKITEXT = "wikitext";
 
     /** _more_ */
@@ -2246,6 +2250,7 @@ public interface Constants {
     public static final String ARG_IMPORT_TYPE = "import.type";
 
 
+    /** _more_          */
     public static final String SORTBY_DATE = "date";
 
     /** _more_ */
@@ -2255,7 +2260,7 @@ public interface Constants {
     public static final String SORTBY_TODATE = "todate";
 
     /** _more_ */
-    public static final String SORTBY_CHANGEDATE = "changedate";    
+    public static final String SORTBY_CHANGEDATE = "changedate";
 
     /** _more_ */
     public static final String SORTBY_SIZE = "size";
@@ -2263,6 +2268,7 @@ public interface Constants {
     /** _more_ */
     public static final String SORTBY_TYPE = "type";
 
+    /** _more_          */
     public static final String SORTBY_ENTRYORDER = "entryorder";
 
     /** _more_ */
