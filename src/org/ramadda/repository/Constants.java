@@ -27,13 +27,13 @@ public interface Constants {
 
     //j--
 
-    /** _more_          */
+    /** _more_ */
     public static final String RESOURCE_ALLCSS = "allcss.css";
 
-    /** _more_          */
+    /** _more_ */
     public static final String RESOURCE_ALLJS = "alljs.js";
 
-    /** _more_          */
+    /** _more_ */
     public static final String WIKI_PREFIX = "<wiki>";
 
 
@@ -283,7 +283,7 @@ public interface Constants {
     public static final String ICON_RIGHT = "/icons/resultset_next.png";
 
     /** _more_ */
-    public static final String ICON_RIGHTARROW = "/icons/rightarrow.png";
+    public static final String ICON_RIGHTARROW = "fas fa-arrow-right";
 
     /** _more_ */
     public static final String ICON_ATOM = "fas fa-rss";
@@ -301,12 +301,10 @@ public interface Constants {
     public static final String ICON_TEXT = "fas fa-align-left";
 
     /** _more_ */
-    public static final String ICON_TOGGLEARROWDOWN =
-        "/icons/togglearrowdown.gif";
+    public static final String ICON_TOGGLEARROWDOWN = "fas fa-caret-down";
 
     /** _more_ */
-    public static final String ICON_TOGGLEARROWRIGHT =
-        "/icons/togglearrowright.gif";
+    public static final String ICON_TOGGLEARROWRIGHT = "fas fa-caret-right";
 
     /** _more_ */
     public static final String ICON_TOOLS = "fas fa-tools";
@@ -368,7 +366,7 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_SHOWCATEGORIES = "showCategories";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_SHOWNEXT = "showNext";
 
     /** _more_ */
@@ -428,7 +426,7 @@ public interface Constants {
     /** _more_ */
     public static final String ATTR_CATEGORY = "category";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_ENTRYORDER = "entryorder";
 
     /** _more_ */
@@ -724,7 +722,7 @@ public interface Constants {
     public static final String ARG_CONTRIBUTION_FROMNAME =
         "contribution.fromname";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_ENTRYORDER = "entryorder";
 
 
@@ -2250,7 +2248,7 @@ public interface Constants {
     public static final String ARG_IMPORT_TYPE = "import.type";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String SORTBY_DATE = "date";
 
     /** _more_ */
@@ -2268,7 +2266,7 @@ public interface Constants {
     /** _more_ */
     public static final String SORTBY_TYPE = "type";
 
-    /** _more_          */
+    /** _more_ */
     public static final String SORTBY_ENTRYORDER = "entryorder";
 
     /** _more_ */
