@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2019 Geode Systems LLC
+ * Copyright (c) 2008-2021 Geode Systems LLC
  */
 
 
@@ -21,8 +21,6 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
             select.html("<select><option value=''>--</option></select>");
         }
     }
-
-
 
     this.valueDefined = function(value) {
         if (value != "" && value.indexOf("--") != 0) {
@@ -124,8 +122,7 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
     }
 
 
-
-   this.processEntryJson = function(data) {
+    this.processEntryJson = function(data) {
         var totalSize = 0;
         var html = "";
         var tableId = HtmlUtils.getUniqueId("");

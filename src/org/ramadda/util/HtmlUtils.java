@@ -5356,7 +5356,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @throws Exception _more_
      */
     public static void tooltip(Appendable sb, String icon, String msg)
-            throws Exception {
+	throws Exception {
         String id     = getUniqueId("tooltipblock_");
         String opener = getUniqueId("tooltipopener_");
         sb.append(img(icon, "Help",
@@ -5365,26 +5365,9 @@ public class HtmlUtils implements HtmlUtilsConstants {
         tag(sb, TAG_DIV,
             cssClass("ramadda-tooltip-contents") + attr(ATTR_ID, id), msg);
         HtmlUtils.script(sb,
-                         HtmlUtils.call("HtmlUtil.tooltipInit",
+                         HtmlUtils.call("HtmlUtils.tooltipInit",
                                         HtmlUtils.squote(opener),
                                         HtmlUtils.squote(id)));
-    }
-
-    /**
-     * _more_
-     *
-     * @param icon _more_
-     * @param msg _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public static String tooltip(String icon, String msg) throws Exception {
-        StringBuilder sb = new StringBuilder();
-        tooltip(sb, icon, msg);
-
-        return sb.toString();
     }
 
 
@@ -5398,7 +5381,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static String comment(String s) {
         Appendable sb = Utils.makeAppendable();
         comment(sb, s);
-
         return sb.toString();
     }
 

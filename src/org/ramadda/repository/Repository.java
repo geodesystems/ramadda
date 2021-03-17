@@ -1475,7 +1475,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         loadResources();
         MyTrace.call2("Repository.loadResources");
 
-        initDefaultOutputHandlers();
+
         getRegistryManager().checkApi();
 
         //Load in any other sql files from the command line
@@ -1547,6 +1547,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         getPageHandler().clearCache();
         loadPluginResources();
         getPluginManager().loadPluginsFinish();
+
+        initDefaultOutputHandlers();	
+
     }
 
 
@@ -2965,8 +2968,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     }
                 }
                 if (metadataOk) {
-                    links.add(makeLink(request, state.getEntry(),
-                                       OUTPUT_TYPECHANGE));
+		    //                    links.add(makeLink(request, state.getEntry(),  OUTPUT_TYPECHANGE));
                     links.add(makeLink(request, state.getEntry(),
                                        OUTPUT_METADATA_SHORT));
 

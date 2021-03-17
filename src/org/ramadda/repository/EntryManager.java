@@ -3785,7 +3785,9 @@ public class EntryManager extends RepositoryManager {
         }
 
         if (entries.size() == 0) {
-            throw new IllegalArgumentException("No entries specified");
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(getPageHandler().showDialogWarning("No entries specified"));
+	    return new Result("", sb);
         }
 
         if (request.exists(ARG_CANCEL)) {
@@ -3842,12 +3844,7 @@ public class EntryManager extends RepositoryManager {
             toEntry = findGroupFromName(request, toName, request.getUser(),
                                         false);
         }
-
-
-
         if ( !request.exists(ARG_CONFIRM) || (toEntry == null)) {
-
-
             StringBuilder sb = new StringBuilder();
             if (entries.size() == 1) {
                 getPageHandler().entrySectionOpen(request, entries.get(0),
@@ -3893,20 +3890,16 @@ public class EntryManager extends RepositoryManager {
 
 	    HU.div(middle, HU.div("To",HU.cssClass("entry-confirm-header")) +HU.faIcon(ICON_RIGHTARROW, "", HU.style("font-size:24pt;")),HU.style("margin-left:32px;margin-right:32px;text-align:center;"));
 
-            right.append(
-                HU.div(
-                    msg("Select a destination"),
-                    HU.cssClass("entry-confirm-header")));
+	    HU.div(right,
+		   toEntry==null?"Select a destination":"Target entry:",
+		   HU.cssClass("entry-confirm-header"));
             right.append(
                 HU.open(
                     HU.TAG_DIV,
                     HU.cssClass("entry-confirm-list")));
             right.append(HU.hidden(ARG_FROM, fromIds));
 
-
             if (toEntry != null) {
-                right.append(msgLabel("Target Entry"));
-                right.append(HU.space(1));
                 right.append(toEntry.getTypeHandler().getEntryName(toEntry));
                 right.append(HU.hidden(ARG_TO, toEntry.getId()));
             } else {

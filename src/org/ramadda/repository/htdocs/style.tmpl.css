@@ -202,6 +202,10 @@ i.fa, i.fas,i.fab {
     @I-HOVER@
 }
 
+a:hover span i {
+    @I-HOVER@
+}
+
 .ramadda-nav-popup-link span i:hover {
     @I-HOVER@
 }
@@ -1228,6 +1232,7 @@ a.ramadda-menubar-button:hover {
 }
 
 .ramadda-thumbnail {
+    position:relative;
     display:inline-block;
     width:100px;
     max-width:100px;
@@ -1301,6 +1306,11 @@ a.ramadda-menubar-button:hover {
     padding-right:1%;
     padding-top:4px;
     padding-bottom:4px;
+}
+
+
+.ui-selectmenu-menu {
+    @SHADOW-POPUP@
 }
 
 .ui-selectmenu-menu {
@@ -1808,8 +1818,7 @@ select:focus {
 
 .entry-list-form {
     padding: 5px;
-    padding-left: 10px;
-    border: 1px #d8d8d8 solid;
+    border: 1px #ccc solid;
     border-top: 0px;
 }
 
@@ -2290,7 +2299,6 @@ a.btn-primary:link, a.btn-primary  {
     font-size:12pt;
 }
 
-
 .ramadda-popup, .ramadda-selectdiv {
     position: absolute; 
     display: none;
@@ -2298,20 +2306,13 @@ a.btn-primary:link, a.btn-primary  {
 }
 
 
-.ramadda-menu-item {
-    padding-left:4px;
-    padding-right:4px;
-    cursor:pointer;
-}
-.ramadda-menu-item:hover {
-    background:#eee;
-}
-
 .ramadda-popup-header {
     padding:4px;
     padding-bottom:0px;
     border-bottom:@BORDER-BASIC@; 
     background-color: #f0f0f0;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
 }
 
 .ramadda-popup-pin {
@@ -2327,26 +2328,58 @@ a.btn-primary:link, a.btn-primary  {
 }
 
 
-.ui-selectmenu-menu {
-    @SHADOW-POPUP@
-}
-
 .ramadda-popup-inner {
     padding:4px;
     background-color : #fff;
     margin:0px;
 }
 
+.ramadda-popup, .ramadda-popup a:visited, .ramadda-popup a {
+    color:black;
+}
+
+.ramadda-popup-link {
+    color:black;
+}
+
+.ramadda-popup-close {
+    padding-right:4px;
+}
+
+.ramadda-popup-link:hover {
+    text-decoration: underline;
+}
+
+.ramadda-popup-close {
+    margin: 5px;
+}
+
+.ramadda-popup a:hover {
+    text-decoration: underline;
+    color:black;
+}
+
+.ramadda-popup-box {
+    padding:1px;
+    @SHADOW-POPUP@
+}
+
+
+
+.ramadda-menu-item {
+    padding-left:4px;
+    padding-right:4px;
+    cursor:pointer;
+}
+
+.ramadda-menu-item:hover {
+    background:#eee;
+}
 
 
 .ramadda-tooltip-icon:hover { 
     cursor:pointer;
 }
-
-
-.ramadda-tooltip-contents {
-}
-
 
 .ramadda-tooltip {
     padding:0px;
@@ -2367,43 +2400,6 @@ a.btn-primary:link, a.btn-primary  {
     padding-right:10px;
     max-height:300px;
     overflow-y:auto;
-}
-
-
-.ramadda-tooltip-wide {
-    max-width:600px;
-}
-
-
-.ramadda-popup, .ramadda-popup a:visited, .ramadda-popup a {
-    color:black;
-}
-
-.ramadda-popup-link {
-    color:black;
-}
-
-.ramadda-popup-close {
-    padding-right:4px;
-}
-
-.ramadda-popup-link:hover {
-    text-decoration: underline;
-}
-
-
-.ramadda-popup-close {
-    margin: 5px;
-}
-
-.ramadda-popup a:hover {
-    text-decoration: underline;
-    color:black;
-}
-
-.ramadda-popup-box {
-    padding:1px;
-    @SHADOW-POPUP@
 }
 
 
@@ -3743,7 +3739,7 @@ nowiki {
     -khtml-opacity: 0.80;
     opacity: 0.80;
     position: absolute; 
-    visibility: hidden; 
+    display:none;
     z-index: 1;
     background-color:     #67a7e3;
     border: 1px #666666 solid;   
@@ -4498,6 +4494,8 @@ h3.ui-accordion-header a {
 	font-size: 110%;
     }
 }
+
+
 
 .wiki-editor-popup {
     margin:5px;

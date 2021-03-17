@@ -1180,38 +1180,3 @@ function EntryListHolder(ramadda) {
 }
 
 
-/**
-   {"id":"0fdc0daa-2535-4f89-9a36-6295ea8279f4",
-"name":"Top",
-"description":"<wiki>\r\nThis is an example RAMADDA repository highlighting some of its science data management facilities.\r\n\r\n\r\n\r\n\r\n\r\n{{tree details=false}}\r\n\r\n{{import entry=df59f025-7f30-494e-a8c8-3dd317a956ff }}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n",
-"type":{"id":"group",
-"name":"Folder"},
-"isGroup":true,
-"icon":"/repository/repos/data/icons/folderclosed.png",
-"parent":null,
-"user":"default",
-"createDate":"2013-06-11 19:13:00",
-"startDate":"2013-06-11 19:13:00",
-"endDate":"2013-06-11 19:13:00",
-"north":-9999,
-"south":-9999,
-"east":-9999,
-"west":-9999,
-"altitudeTop":-9999,
-"altitudeBottom":-9999,
-"services":[],
-"columnNames":[],
-"columnLabels":[],
-"extraColumns":[],
-"metadata":[{"id":"44ea1893-e433-490d-9b0c-5fd77af0ee6c",
-"type":"content.sort",
-"label":"Sort Order",
-"attr1":"name",
-"attr2":true,
-"attr3":"-1",
-"attr4":""}]}
-
-*/
-
-
-

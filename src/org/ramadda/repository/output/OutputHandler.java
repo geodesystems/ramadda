@@ -27,6 +27,7 @@ import org.ramadda.util.BufferMapList;
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
+import org.ramadda.util.Json;
 
 import org.ramadda.util.TempDir;
 import org.ramadda.util.Utils;
@@ -40,15 +41,15 @@ import org.ramadda.util.sql.SqlUtil;
 import org.w3c.dom.Element;
 
 import ucar.unidata.util.DateUtil;
-
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
-
-
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
+import java.util.function.Function;
+import java.util.function.BiFunction;
+import java.util.function.BiConsumer;
 
 import java.io.*;
 
@@ -1259,32 +1260,9 @@ public class OutputHandler extends RepositoryManager {
      */
     public String getSortLinks(Request request) {
         StringBuilder sb           = new StringBuilder();
-        String oldOrderBy = request.getString(ARG_ORDERBY, null);
-        String orderBy = request.getString(ARG_ORDERBY, SORTBY_FROMDATE);
-        String oldAscending = request.getString(ARG_ASCENDING,null);
-        String ascending = request.getString(ARG_ASCENDING,
-						       "false");
-
-        //J--
-        String[] order = {
-            SORTBY_NAME, "true", msg("Name") + getRepository().getIconImage(ICON_UPARROW),  "Sort by name A-Z", 
-            SORTBY_NAME, "false", msg("Name")  + getRepository().getIconImage(ICON_DOWNARROW), "Sort by name Z-A", 
-            SORTBY_FROMDATE, "false", msg("Date")  + getRepository().getIconImage(ICON_UPARROW),"Sort by date newer to older", 
-            SORTBY_FROMDATE, "true",   msg("Date") + getRepository().getIconImage(ICON_DOWNARROW),   "Sort by date older to newer", 
-            SORTBY_CREATEDATE, "true",   msg("Created") + getRepository().getIconImage(ICON_UPARROW),  "Sort by created date older to newer", 
-            SORTBY_CREATEDATE, "false",  msg("Created")            + getRepository().getIconImage(ICON_DOWNARROW),   "Sort by created date newer to older", 
-            SORTBY_SIZE, "true",  msg("Size") + getRepository().getIconImage(ICON_UPARROW),"Sort by size smallest to largest", 
-            SORTBY_SIZE, "false",  msg("Size") + getRepository().getIconImage(ICON_DOWNARROW),  "Sort by size largest to smallest",
-            SORTBY_TYPE, "true",  msg("Type") + getRepository().getIconImage(ICON_UPARROW),"Sort by type A-Z", 
-            SORTBY_TYPE, "false",  msg("Type") + getRepository().getIconImage(ICON_DOWNARROW),  "Sort by type Z-A",
-        };
-        //J++
-
-        if (request.isMobile()) {
-            sb.append(HU.br());
-        }
-        sb.append(HU.span(msgLabel("Sort"),
-                                 HU.cssClass("sortlink sortlinkoff")));
+        String cbxAll = HU.checkbox("", "true", false,HU.attrs("id","selectall", "title","Select all"));
+	sb.append(cbxAll);
+        sb.append(HU.script("EntryTree.initSelectAll()"));
         String entryIds = request.getString(ARG_ENTRYIDS, (String) null);
         //Swap out the long value
         if (entryIds != null) {
@@ -1294,37 +1272,9 @@ public class OutputHandler extends RepositoryManager {
                 getRepository().getSessionManager().putSessionExtra(
                     entryIds));
         }
-
-        int cnt = 0;
-        for (int i = 0; i < order.length; i += 4) {
-            if ((cnt > 0) && (cnt % 2) == 0) {
-                sb.append(HU.space(1));
-            }
-            cnt++;
-            if (Misc.equals(order[i], orderBy)
-                    && Misc.equals(order[i + 1], ascending)) {
-                sb.append(HU.span(order[i + 2],
-                                         HU.cssClass("sortlink sortlinkon")));
-            } else {
-                request.put(ARG_ORDERBY, order[i]);
-                request.put(ARG_ASCENDING, order[i + 1]);
-                request.put(ARG_SHOWENTRYSELECTFORM, "true");
-                String url = request.getUrl();
-                sb.append(
-                    HU.span(
-                        HU.href(url, order[i + 2]),
-                        HU.title(order[i + 3])
-                        + HU.cssClass("sortlink sortlinkoff")));
-            }
-        }
-
         if (entryIds != null) {
             request.put(ARG_ENTRYIDS, entryIds);
         }
-
-        request.remove(ARG_SHOWENTRYSELECTFORM);
-        request.put(ARG_ORDERBY, oldOrderBy);
-        request.put(ARG_ASCENDING, oldAscending);
         return sb.toString();
     }
 
@@ -1382,65 +1332,41 @@ public class OutputHandler extends RepositoryManager {
         linkMap.put("Edit", new ArrayList<HtmlUtils.Selector>());
 
 
+        ArrayList<HtmlUtils.Selector> tfos =
+            new ArrayList<HtmlUtils.Selector>();
+
+	tfos.add(new HtmlUtils.Selector("Apply action", "", null, 0, true));
         for (Link link : links) {
             OutputType outputType = link.getOutputType();
             if (outputType == null) {
                 continue;
             }
-            String category;
-            if (outputType.getIsFile()) {
-                category = "File";
-            } else if (outputType.getIsEdit()) {
-                category = "Edit";
-            } else {
+            if (!(outputType.getIsFile() || outputType.getIsEdit())) {
                 continue;
-                //Skip view items
-                //                category = "View";
             }
-            List<HtmlUtils.Selector> linksForCategory = linkMap.get(category);
-
-            if (linksForCategory == null) {
-                linksForCategory = new ArrayList<HtmlUtils.Selector>();
-                linkCategories.add(category);
-                linkMap.put(category, linksForCategory);
-            }
-
             String icon = link.getIcon();
             if (icon == null) {
                 icon = getRepository().getIconUrl(ICON_BLANK);
             }
-            linksForCategory.add(
-                new HtmlUtils.Selector(
-                    outputType.getLabel(), outputType.getId(), icon, 20));
+	    HtmlUtils.Selector selector = new HtmlUtils.Selector(outputType.getLabel(), outputType.getId(), icon, 20);
+	    //A bit of a hack
+	    if(selector.getId().equals("repository.copymovelink")) {
+		tfos.add(1,selector);
+	    } else {
+		tfos.add(selector);
+
+	    }
         }
-
-        ArrayList<HtmlUtils.Selector> tfos =
-            new ArrayList<HtmlUtils.Selector>();
-        //        selectSB.append(msgLabel("Apply action"));
-
-        tfos.add(new HtmlUtils.Selector("Apply action", "", null, 5, false));
-        for (String category : linkCategories) {
-            List<HtmlUtils.Selector> linksForCategory = linkMap.get(category);
-            if (linksForCategory.size() == 0) {
-                continue;
-            }
-            tfos.add(new HtmlUtils.Selector(category, "", null, 0, true));
-            tfos.addAll(linksForCategory);
-        }
-
 
         StringBuilder selectSB  = new StringBuilder();
         StringBuilder actionsSB = new StringBuilder();
-
         actionsSB.append(
             HU.select(
                 ARG_OUTPUT, tfos, (List<String>) null,
                 HU.cssClass("entry-action-list")));
-        actionsSB.append(HU.space(2));
+        actionsSB.append(HU.SPACE2);
         actionsSB.append(msgLabel("to"));
-
         StringBuilder js               = new StringBuilder();
-
         String        allButtonId      = HU.getUniqueId("getall");
         String        selectedButtonId = HU.getUniqueId("getselected");
         actionsSB.append(HU.submit(msg("Selected"), "getselected",
@@ -1452,9 +1378,7 @@ public class OutputHandler extends RepositoryManager {
         js.append(JQuery.buttonize(JQuery.id(selectedButtonId)));
 
         String sortLinks = getSortLinks(request);
-
-        selectSB.append(HU.leftRightBottom(sortLinks,
-                actionsSB.toString(), ""));
+        selectSB.append(sortLinks + HU.SPACE2 + actionsSB.toString());
         String arrowImg = getRepository().getIconImage(hideIt?"fas fa-caret-right":"fas fa-caret-down",
 						        "title",						       
 						       msg("Show/Hide Form"), "id", base + "img");
@@ -1476,10 +1400,6 @@ public class OutputHandler extends RepositoryManager {
                 ? "0"
                 : "1"))));
         formSB.append(HU.script(js.toString()));
-
-
-
-
         return new String[] { link, base, formSB.toString() };
 
     }
@@ -1505,6 +1425,7 @@ public class OutputHandler extends RepositoryManager {
         String cbxArgId     = ARG_SELENTRY;
         String cbxArgValue  = entry.getId();
         String cbxWrapperId = HU.getUniqueId("cbx_");
+	String args = Json.mapAndQuote("name",entry.getName(),"icon", getPageHandler().getIconUrl(request, entry));
         jsSB.append("new EntryRow(");
         HU.squote(jsSB, entry.getId());
         jsSB.append(",");
@@ -1515,6 +1436,8 @@ public class OutputHandler extends RepositoryManager {
         HU.squote(jsSB, cbxWrapperId);
         jsSB.append(",");
         jsSB.append(Boolean.toString(showDetails));
+        jsSB.append(",");
+	jsSB.append(args);
         jsSB.append(");\n");
 
 
@@ -1527,7 +1450,7 @@ public class OutputHandler extends RepositoryManager {
         //Spool this out to save concats
         attrSB.append(HU.ATTR_ONCLICK);
         attrSB.append("=\"");
-        attrSB.append("entryRowCheckboxClicked(");
+        attrSB.append("EntryTree.entryRowCheckboxClicked(");
         attrSB.append("event, ");
         HU.squote(attrSB, cbxId);
         attrSB.append(");\"  ");
@@ -1574,23 +1497,16 @@ public class OutputHandler extends RepositoryManager {
             throws Exception {	
 
 	boolean showIcon = args.length>0?args[0]:true;
-        long   t1          = System.currentTimeMillis();
         String link        = "";
         String base        = "";
         String afterHeader = "";
-
-
         if (doForm) {
-            long x1 = System.currentTimeMillis();
             String[] tuple = getEntryFormStart(request, entries, true,
-                                 "Search Results");
-            long x2 = System.currentTimeMillis();
-            //            System.err.println("entryFormStart:" + (x2-x1));
+					       "Search Results");
             link        = tuple[0];
             base        = tuple[1];
             afterHeader = tuple[2];
         }
-
 
         String prefix = (showDetails
                          ? "entry-list"
@@ -1618,76 +1534,54 @@ public class OutputHandler extends RepositoryManager {
                 "<td align=center valign=center width=20><div class=\"entry-list-header-toggle\">");
             sb.append(link);
             sb.append("</div></td>");
+	    String orderBy = request.getString(ARG_ORDERBY,"");
+	    boolean ascending = request.get(ARG_ASCENDING,true);
+	    boolean defined = request.defined(ARG_ASCENDING);
+	    String dflt = "true";
+	    Utils.TriConsumer<String,String,String> makeHeader = (by,name,width) -> {
+		Request tmpRequest = request.cloneMe();
+		if(by.equals(orderBy)) {
+		    if(!defined) {
+			tmpRequest.put(ARG_ASCENDING,  dflt);
+		    } else if(ascending) {
+			tmpRequest.put(ARG_ASCENDING,  "false");
+		    }  else {
+			//Restore to the default listing
+			tmpRequest.remove(ARG_ORDERBY);
+		    }
+		}  else {
+		    if(!defined) {
+			tmpRequest.put(ARG_ASCENDING,  dflt);
+		    } else {
+			tmpRequest.put(ARG_ASCENDING,  Boolean.toString( !ascending));
+		    }
+		    tmpRequest.put(ARG_ORDERBY, by);
+		}
+		boolean on = Misc.equals(by,orderBy);
+		String extra = "";
+		if(on) extra = (ascending?HU.getIconImage("fas fa-arrow-up"):HU.getIconImage("fas fa-arrow-down"))+HU.SPACE;
+		else extra = HU.span("",HU.style("min-width:14px;display:inline-block;"));
+		String url = tmpRequest.getUrl();
+		try {
+		    HU.tag(sb,HU.TAG_TD,
+			   HU.attrs(HU.ATTR_CLASS,
+				    "entry-list-header-column",
+				    HU.ATTR_WIDTH, width), HU.href(url, extra +msg(name)));
+		} catch(Exception exc) {
+		    throw new RuntimeException(exc);
+		} 
+	    };
 
-
-            String  sortLink;
-            Request tmpRequest = request.cloneMe();
-            tmpRequest.put(ARG_SHOWENTRYSELECTFORM, "true");
-            tmpRequest.put(ARG_ORDERBY, SORTBY_NAME);
-            tmpRequest.put(ARG_ASCENDING,
-                           Boolean.toString( !request.get(ARG_ASCENDING,
-                               false)));
-            sortLink = tmpRequest.getUrl();
-            sb.append(
-                HU.tag(
-                    HU.TAG_TD,
-                    HU.attrs(
-                        HU.ATTR_CLASS,
-                        "entry-list-header-column"), HU.href(
-                            sortLink, msg("Name"))));
-
-            tmpRequest.put(ARG_ORDERBY, SORTBY_FROMDATE);
-            sortLink = tmpRequest.getUrl();
-            if (showDate) {
-                sb.append(
-                    HU.tag(
-                        HU.TAG_TD,
-                        HU.attrs(
-                            HU.ATTR_WIDTH, WIDTH_DATE,
-                            HU.ATTR_CLASS,
-                            "entry-list-header-column"), HU.href(
-                                sortLink, msg("Date"))));
-            }
-
+	    makeHeader.accept(SORTBY_NAME,"Name",null);
+	    makeHeader.accept(SORTBY_FROMDATE,"Date",WIDTH_DATE);
             if (showCreateDate) {
-                tmpRequest.put(ARG_ORDERBY, SORTBY_CREATEDATE);
-                sortLink = tmpRequest.getUrl();
-                sb.append(
-                    HU.tag(
-                        HU.TAG_TD,
-                        HU.attrs(
-                            HU.ATTR_WIDTH, WIDTH_DATE,
-                            HU.ATTR_CLASS,
-                            "entry-list-header-column"), HU.href(
-                                sortLink, msg("Created"))));
-
-
-            }
-
+		makeHeader.accept(SORTBY_CREATEDATE,"Created",WIDTH_DATE);
+	    }
             if ( !isMobile) {
-                tmpRequest.put(ARG_ORDERBY, SORTBY_SIZE);
-                sortLink = tmpRequest.getUrl();
-                sb.append(
-                    HU.tag(
-                        HU.TAG_TD,
-                        HU.attrs(
-                            HU.ATTR_WIDTH, WIDTH_SIZE,
-                            HU.ATTR_CLASS,
-                            "entry-list-header-column"), HU.href(
-                                sortLink, msg("Size"))));
-                tmpRequest.put(ARG_ORDERBY, SORTBY_TYPE);
-                sortLink = tmpRequest.getUrl();
-                sb.append(
-                    HU.tag(
-                        HU.TAG_TD,
-                        HU.attrs(
-                            HU.ATTR_WIDTH, WIDTH_KIND,
-                            HU.ATTR_CLASS,
-                            "entry-list-header-column-last"), HU.href(
-                                sortLink, msg("Type"))));
+		makeHeader.accept(SORTBY_SIZE,"Size",WIDTH_SIZE);
+		makeHeader.accept(SORTBY_TYPE,"Type",WIDTH_KIND);		
             }
             sb.append("</tr></table>");
-
             link = "";
             sb.append(afterHeader);
         }
@@ -1699,10 +1593,7 @@ public class OutputHandler extends RepositoryManager {
         StringBuilder  jsSB         = new StringBuilder();
         StringBuilder  cbxSB        = new StringBuilder();
 
-        long           t2           = System.currentTimeMillis();
-
         for (Entry entry : (List<Entry>) entries) {
-
             cbxSB.setLength(0);
             String rowId        = base + (cnt++);
             String cbxArgId     = ARG_SELENTRY;
@@ -1710,6 +1601,7 @@ public class OutputHandler extends RepositoryManager {
             String cbxId        = HU.getUniqueId("entry_");
             String cbxWrapperId = HU.getUniqueId("checkboxwrapper_");
 
+	    String entryRowArgs = Json.mapAndQuote("name",entry.getName(),"icon", getPageHandler().getIconUrl(request, entry));
             jsSB.append("new EntryRow(");
             HU.squote(jsSB, entry.getId());
             jsSB.append(",");
@@ -1722,6 +1614,8 @@ public class OutputHandler extends RepositoryManager {
             jsSB.append(showDetails
                         ? "true"
                         : "false");
+            jsSB.append(",");
+	    jsSB.append(entryRowArgs);
             jsSB.append(");\n");
 
             if (doForm) {
@@ -1736,7 +1630,7 @@ public class OutputHandler extends RepositoryManager {
                     cbxSB, HU.ATTR_TITLE,
                     "Shift-click: select range; Control-click: toggle all");
                 HU.attr(cbxSB, HU.ATTR_ONCLICK,
-                               "entryRowCheckboxClicked(event, '" + cbxId
+                               "EntryTree.entryRowCheckboxClicked(event, '" + cbxId
                                + "');");
                 HU.attrs(cbxSB, HU.ATTR_TYPE,
                                 HU.TYPE_CHECKBOX, HU.ATTR_NAME,
@@ -1793,11 +1687,6 @@ public class OutputHandler extends RepositoryManager {
         HU.close(sb, "div");
         HU.script(sb, jsSB.toString());
         sb.append("\n\n");
-
-        long t4 = System.currentTimeMillis();
-
-        //        System.err.println("getEntryList: loop:" + (t3 - t2));
-
         return link;
 
     }

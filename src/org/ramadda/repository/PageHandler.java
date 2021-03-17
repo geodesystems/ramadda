@@ -1909,7 +1909,6 @@ public class PageHandler extends RepositoryManager {
                                 boolean alignLeft, Appendable popup,
                                 String header) {
         try {
-
             String compId = "menu_" + HU.blockCnt++;
             String linkId = "menulink_" + HU.blockCnt++;
             popup.append(makePopupDiv(menuContents, compId, makeClose,
@@ -2008,7 +2007,7 @@ public class PageHandler extends RepositoryManager {
         StringBuilder menu = new StringBuilder();
         if (makeClose) {
             String cLink = HU.jsLink(
-                               HU.onMouseClick("hidePopupObject();"),
+                               HU.onMouseClick("hidePopupObject(event);"),
                                getIconImage(
                                    ICON_CLOSE, "title", "Close", "class",
                                    "ramadda-popup-close"), "");
@@ -3455,9 +3454,6 @@ public class PageHandler extends RepositoryManager {
      * @param mapInfo _more_
      */
     public void addToMap(Request request, MapInfo mapInfo) {
-        //        if(mapInfo.forSelection()) return;
-        //http://wms.alaskamapped.org/extras?
-
         List<String> titles = new ArrayList<String>();
         List<String> tabs   = new ArrayList<String>();
         for (MapLayer mapLayer : getMapLayers()) {
@@ -3482,9 +3478,6 @@ public class PageHandler extends RepositoryManager {
                 HU.img(
                     getRepository().getFileUrl(
                         "/icons/map_go.png")), rightSide.toString(), null));
-        //        mapInfo.addRightSide(HU.makeShowHideBlock("", rightSide.toString(),false));
-        //        mapInfo.addRightSide(HU.makeShowHideBlock("", rightSide.toString(),false));
-
     }
 
 
