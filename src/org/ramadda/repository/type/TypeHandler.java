@@ -4214,10 +4214,9 @@ public class TypeHandler extends RepositoryManager {
             String[] nwse = new String[] { lat, lon };
             //            sb.append(formEntry(request, msgLabel("Location"),  locationWidget));
             MapInfo map = getMapManager().createMap(request, entry, true,
-                              getMapManager().getMapProps(request, entry,
-                                  null));
-            String mapSelector = map.makeSelector(ARG_LOCATION, true, nwse,
-                                     "", "");
+						    getMapManager().getMapProps(request, entry,
+										null));
+            String mapSelector = map.makeSelector(ARG_LOCATION, true, nwse, "", "");
             sb.append(formEntry(request, msgLabel("Location"), mapSelector));
 
         } else if (okToShowInForm(entry, ARG_AREA)) {
@@ -4307,7 +4306,7 @@ public class TypeHandler extends RepositoryManager {
              */
         String extraMapStuff = "";
         MapInfo map = getRepository().getMapManager().createMap(request,
-                          entry, true, props);
+								entry, "600","300",true, props);
         addToMapSelector(request, entry, map);
         String mapSelector = map.makeSelector(ARG_AREA, true, nwse, "", "")
                              + extraMapStuff;
