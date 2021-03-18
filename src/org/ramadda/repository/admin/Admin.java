@@ -507,7 +507,7 @@ public class Admin extends RepositoryManager {
      * @return _more_
      */
     private String note(String s) {
-        return "<div class=\"ramadda-admin-note\">" + s + "</div>\n";
+        return "<div class=\"ramadda-note\">" + s + "</div>\n";
     }
 
     /**
@@ -711,11 +711,9 @@ public class Admin extends RepositoryManager {
                     }
 
                     StringBuilder html = new StringBuilder();
-                    html.append(HtmlUtils.sectionOpen(null, false));
-                    html.append(HtmlUtils.h2("RAMADDA Install"));
+		    getPageHandler().sectionOpen(request,html,"RAMADDA Install",false);
                     html.append(sb);
-                    html.append(HtmlUtils.sectionClose());
-
+      		    getPageHandler().sectionClose(request,html);
                     return new Result("Repository Initialization", html);
                 }
             }
@@ -724,8 +722,8 @@ public class Admin extends RepositoryManager {
                 sb.append(getPageHandler().showDialogError(msg("Error")
                         + "<br>" + errorBuffer));
             }
-            sb.append(
-                "Please enter the following information. This information is used to configure your RAMADDA server and is not sent anywhere.");
+            sb.append(note(
+			   "Please enter the following information. This information is used to configure your RAMADDA server and is not sent anywhere."));
             String required1 =
                 " <span class=\"ramadda-required-field\">* required</span>";
             String required2 =
@@ -802,12 +800,12 @@ public class Admin extends RepositoryManager {
             sb.append(HtmlUtils.submit(msg("Initialize Server")));
         }
 
-
+ 
         StringBuffer finalSB = new StringBuffer();
         finalSB.append(request.formPost(getRepository().URL_INSTALL));
-        finalSB.append(HtmlUtils.sectionOpen(null, false));
-        finalSB.append(HtmlUtils.h2(title));
+	getPageHandler().sectionOpen(request,finalSB,title,false);
         finalSB.append(sb);
+	getPageHandler().sectionClose(request,finalSB);
         finalSB.append(HtmlUtils.sectionClose());
         finalSB.append(HtmlUtils.formClose());
 
