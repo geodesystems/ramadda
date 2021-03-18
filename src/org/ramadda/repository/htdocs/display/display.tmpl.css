@@ -2421,22 +2421,28 @@ table.dataTable tfoot td {
 }
 
 .display-simplesearch-entries {
-    @SHADOW-POPUP@
     max-width:300px;
     scroll-x:auto;
     padding:5px;
-    border-radius: 5px;
+    max-height:300px;
+    overflow-y:auto;
+    border-top:@BORDER-BASIC@;
 }
 
 
 .display-simplesearch-entry {
-
+    margin-left:4px;
+    margin-right:4px;
 }
 
 .display-simplesearch-entry a {
     text-decoration:none;
     display:inline-block;
     width:100%;
+}
+
+.display-simplesearch-entry:hover a {
+    @I-HOVER@
 }
 
 

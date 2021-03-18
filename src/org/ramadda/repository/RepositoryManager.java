@@ -28,7 +28,9 @@ import org.ramadda.repository.output.JsonOutputHandler;
 import org.ramadda.repository.output.WikiManager;
 import org.ramadda.repository.search.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.NamedValue;
 import org.ramadda.util.Utils;
+
 
 
 import org.ramadda.util.sql.SqlUtil;
@@ -200,6 +202,11 @@ public class RepositoryManager implements RepositorySource, Constants,
             return HtmlUtils.formEntryTop(label, contents);
         }
     }
+
+    public NamedValue arg(String name, Object value) {
+	return new NamedValue(name, value);
+    }
+
 
     /**
      * _more_

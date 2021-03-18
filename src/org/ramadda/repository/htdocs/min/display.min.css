@@ -26,7 +26,7 @@ a.display-container {
 .display-tooltip {
     max-width:600px;
     margin:0px;
-    background-color : #FFF; -webkit-box-shadow: rgba(116, 129, 141, 0.5) 5px 5px 10px 0px;box-shadow: rgba(116, 129, 141, 0.5) 5px 5px 10px 0px; border:1px solid #ccc; border-radius: 4px;z-index:1000;
+    background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
 }
 
 .display-dialog {
@@ -2421,22 +2421,28 @@ table.dataTable tfoot td {
 }
 
 .display-simplesearch-entries {
-    background-color : #FFF; -webkit-box-shadow: rgba(116, 129, 141, 0.5) 5px 5px 10px 0px;box-shadow: rgba(116, 129, 141, 0.5) 5px 5px 10px 0px; border:1px solid #ccc; border-radius: 4px;z-index:1000;
     max-width:300px;
     scroll-x:auto;
     padding:5px;
-    border-radius: 5px;
+    max-height:300px;
+    overflow-y:auto;
+    border-top:1px #ccc solid;
 }
 
 
 .display-simplesearch-entry {
-
+    margin-left:4px;
+    margin-right:4px;
 }
 
 .display-simplesearch-entry a {
     text-decoration:none;
     display:inline-block;
     width:100%;
+}
+
+.display-simplesearch-entry:hover a {
+    color: rgb(56,132,255) !important;
 }
 
 

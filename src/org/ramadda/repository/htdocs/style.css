@@ -25,7 +25,7 @@ p {margin-top:1.5em;}
 a {color: #000; text-decoration: underline;}
 a.btn:link {color: #000;}
 
-a:plain {
+a {
     text-decoration: none;
 }
 
@@ -132,7 +132,6 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
    display: inline-block;
    width: 8px;
    height: 8px;
-   -moz-border-radius: 4px;
    -webkit-border-radius: 4px;
    border-radius: 4px;
    background-color: #444;
@@ -177,7 +176,7 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     padding:5px 10px;
     z-index: 100;
     text-align:left;
-    background-color : #FFF; -webkit-box-shadow: rgba(116, 129, 141, 0.5) 5px 5px 10px 0px;box-shadow: rgba(116, 129, 141, 0.5) 5px 5px 10px 0px; border:1px solid #ccc; border-radius: 4px;z-index:1000;
+    background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
 }
 
 .ramadda-nav-popup-link {
@@ -210,6 +209,9 @@ a:hover span i {
     color: rgb(56,132,255) !important;
 }
 
+.ramadda-popup-link:hover  span i:hover {
+    color: rgb(56,132,255) !important;
+}
 
 .ramadda-nav-horizontal {
 }
@@ -263,7 +265,7 @@ text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
 
 
 .ramadda-nav-left-extra .ramadda-links {
-   color:@NAV-LINK-COLOR;
+   color:rgb(116, 129, 141);
    min-height:40vh;
    max-height:40vh;
    overflow-y:auto;
@@ -275,7 +277,7 @@ text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
 }
 
 .ramadda-nav-left-extra .ramadda-links  a {
-    color:@NAV-LINK-COLOR;
+    color:rgb(116, 129, 141);
 }
 
 .ramadda-links a {
@@ -372,13 +374,15 @@ a.ramadda-nav-link-0, a.ramadda-nav-link-0:visited, .ramadda-nav-left h3 a, .ram
     min-width:200px;
     padding:10px;
     padding-bottom:0px;
-    background-color : #FFF; -webkit-box-shadow: rgba(116, 129, 141, 0.5) 5px 5px 10px 0px;box-shadow: rgba(116, 129, 141, 0.5) 5px 5px 10px 0px; border:1px solid #ccc; border-radius: 4px;z-index:1000;
+    background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
 }
-
 
 .ramadda-nav-page-decorated:hover {
-    border: 1px solid #aaa;
+    /*border: 1px solid #aaa;*/
+    border:1px solid rgb(56,132,255);
 }
+
+.
 
 .ramadda-nav-page:hover i {
     color:rgb(56,132,255);
@@ -560,7 +564,7 @@ a.ramadda-menubar-button:hover {
 .ramadda-shadow {
     display:inline-block;
     padding:5px;
-    -webkit-box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px; box-shadow: rgba(116, 129, 141, 0.1) 0px 3px 8px 0px;border-radius:4px;border:1px solid rgb(211, 220, 228); 
+    box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; border-radius:4px;border:1px solid rgb(211, 220, 228); 
 }
 
 
@@ -1232,6 +1236,7 @@ a.ramadda-menubar-button:hover {
 }
 
 .ramadda-thumbnail {
+    margin:5px;
     position:relative;
     display:inline-block;
     width:100px;
@@ -1310,7 +1315,7 @@ a.ramadda-menubar-button:hover {
 
 
 .ui-selectmenu-menu {
-    background-color : #FFF; -webkit-box-shadow: rgba(116, 129, 141, 0.5) 5px 5px 10px 0px;box-shadow: rgba(116, 129, 141, 0.5) 5px 5px 10px 0px; border:1px solid #ccc; border-radius: 4px;z-index:1000;
+    background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
 }
 
 .ui-selectmenu-menu {
@@ -1405,12 +1410,10 @@ thin_hr {
 /* jquery resets */
 .ui-widget {
     font-family: inherit;
-    /*    font-size:12pt;*/
 }
 
 
 .ui-widget select , .ui-widget .ui-widget {
-    /*     font-size:12pt;*/
 }
 
 .ui-button {
@@ -1635,61 +1638,7 @@ select:focus {
     overflow-x:hidden;
 }
 
-.sf-menu   {
-    font-size: 11pt;
-    margin:0px;
-    padding:0px;
-}
 
-.sf-menu  li {
-    background: #eee;
-    padding:0px;
-    margin:0px;
-}
-
-.sf-menu ul li {
-    background: #eee;
-}
-
-
-.sf-menu  ul ul li {
-    background: #eee;
-}
-
-.sf-menu a {
-    color: #000;
-}
-
-.ramadda-menu-entries {
-    white-space:nowrap;
-    max-width:250px;
-    overflow-x: auto;
-    max-height: 300px;
-    overflow-y: auto;
-    padding-left:10px;
-}
-
-.ramadda-menu-block  {
-    padding-left:4px;
-    padding-top:4px;
-    padding-bottom:4px;
-    font-size: 13px;
-}
-
-.ramadda-menu-block a {
-    font-size: 13px;
-    display: inline;
-    border: 0px #ccc solid;
-    padding:0px;
-    margin:0px;
-}
-
-.sf-menu a {
-    font-size: 13px;
-    padding: 6px;
-    height: 15px /* for example */
-    line-height: 15px /* You should include this line-height attribute to align the text in the middle of the box, the value is equal to the value of height attr. */
-}
 
 
 .type-group-container {
@@ -2171,13 +2120,8 @@ pre {
 .shadow-box {
     padding: 10px;
     margin:5px;
-    background-color : #FFF; -webkit-box-shadow: rgba(116, 129, 141, 0.5) 5px 5px 10px 0px;box-shadow: rgba(116, 129, 141, 0.5) 5px 5px 10px 0px; border:1px solid #ccc; border-radius: 4px;z-index:1000;
-
+    background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
 }
-
-
-
-
 
 .ramadda-system-message {
     margin:4px;
@@ -2302,11 +2246,20 @@ a.btn-primary:link, a.btn-primary  {
 .ramadda-popup, .ramadda-selectdiv {
     position: absolute; 
     display: none;
-    background-color : #FFF; -webkit-box-shadow: rgba(116, 129, 141, 0.5) 5px 5px 10px 0px;box-shadow: rgba(116, 129, 141, 0.5) 5px 5px 10px 0px; border:1px solid #ccc; border-radius: 4px;z-index:1000;
+    background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
 }
 
 
+.ramadda-popup-close {
+    padding-left:0px;
+    position:absolute;
+    /**nudge it up a bit */
+    top:-2px;
+    left:0px;
+}
+
 .ramadda-popup-header {
+    position:relative;
     padding:4px;
     padding-bottom:0px;
     border-bottom:1px #ccc solid; 
@@ -2314,6 +2267,25 @@ a.btn-primary:link, a.btn-primary  {
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
 }
+
+
+.ramadda-popup-header a:hover, .ramadda-popup-header .ramadda-link:hover {
+    color: rgb(56,132,255) !important;
+}
+
+
+.ramadda-popup-inner {
+    padding-top:5px;
+}
+
+.ramadda-popup-link  {
+    display:inline-block;
+    cursor:pointer;
+}
+
+.wiki-popup-inner {
+    padding:5px;
+}    
 
 .ramadda-popup-pin {
     border: 1px solid rgba(0,0,0,0);
@@ -2361,10 +2333,8 @@ a.btn-primary:link, a.btn-primary  {
 
 .ramadda-popup-box {
     padding:1px;
-    background-color : #FFF; -webkit-box-shadow: rgba(116, 129, 141, 0.5) 5px 5px 10px 0px;box-shadow: rgba(116, 129, 141, 0.5) 5px 5px 10px 0px; border:1px solid #ccc; border-radius: 4px;z-index:1000;
+    background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
 }
-
-
 
 .ramadda-menu-item {
     padding-left:4px;
@@ -2439,7 +2409,7 @@ label {
   position:relative;
   padding:10px;
   color:#333;
-background-color : #FFF; -webkit-box-shadow: rgba(116, 129, 141, 0.5) 5px 5px 10px 0px;box-shadow: rgba(116, 129, 141, 0.5) 5px 5px 10px 0px; border:1px solid #ccc; border-radius: 4px;z-index:1000;
+background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
   border-radius:10px;
 }
 
@@ -2821,17 +2791,15 @@ a.ramadda-heading-2-link:visited {
 .ramadda-footer {
     margin:0px;
     margin-top:5px;
-    
-   margin-left: auto;
-   margin-right: auto;
-   text-align:center;
-   font-size:90%;
-   padding:20px;
-   align:center;
-   text-align:center;
-   background-repeat: repeat; 
-   background-image:url(${root}/images/background.png);
-   border-top: 1px #e0e0e0  solid;
+    margin-left: auto;
+    margin-right: auto;
+    text-align:center;
+    font-size:90%;
+    padding:20px;
+    text-align:center;
+    background-repeat: repeat; 
+    background-image:url(${root}/images/background.png);
+    border-top: 1px #e0e0e0  solid;
 }
 
 .ramadda-smalllink {
@@ -3018,6 +2986,32 @@ text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
     border: 0px #ccc solid;
 }
 
+.ramadda-menu-entries {
+    white-space:nowrap;
+    max-width:250px;
+    overflow-x: auto;
+    max-height: 300px;
+    overflow-y: auto;
+    padding-left:10px;
+}
+
+.ramadda-menu-block  {
+    padding-left:4px;
+    padding-top:4px;
+    padding-bottom:4px;
+    font-size: 12pt;
+}
+
+.ramadda-menu-block a {
+    font-size: 12pt;
+    display: inline;
+    border: 0px #ccc solid;
+    padding:0px;
+    margin:0px;
+}
+
+
+
 .ramadda-menu td { 
     padding: 0px;
     text-align: left;
@@ -3025,8 +3019,8 @@ text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
 
 
 .ramadda-entry-menu-title {
-    margin-left:5px;
-    margin-right:5px;
+    background-color: #f0f0f0;
+    padding:px;
     margin-bottom:4px;
     border-bottom : 1px #ccc solid;
 }
@@ -3385,7 +3379,7 @@ nowiki {
     max-height:300px;
     overflow-y: auto;
     max-width: 300px;
-    oveflow-x:auto;
+    overflow-x:auto;
     display:none;
     padding-left:5px;
 }
@@ -4381,7 +4375,6 @@ h3.ui-accordion-header a {
     background: transparent; 
     border: none; 
     border-bottom: 1px solid #c0c0c0; 
-    -moz-border-radius: 0px; 
     -webkit-border-radius: 0px; 
     border-radius: 0px; 
 } 
@@ -4559,3 +4552,34 @@ h3.ui-accordion-header a {
 }
 
 
+
+
+.sf-menu   {
+    font-size: 12pt;
+    margin:0px;
+    padding:0px;
+}
+
+.sf-menu a {
+    font-size: 12pt;
+    padding: 6px;
+}
+
+.sf-menu  li {
+    background: #eee;
+    padding:0px;
+    margin:0px;
+}
+
+.sf-menu ul li {
+    background: #eee;
+}
+
+
+.sf-menu  ul ul li {
+    background: #eee;
+}
+
+.sf-menu a {
+    color: #000;
+}

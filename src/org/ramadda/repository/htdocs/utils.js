@@ -1591,43 +1591,25 @@ var Utils =  {
     },
 
     searchPopup:function(id,anchor) {
-	anchor = anchor || id;
+	anchor = id;
+//	anchor = anchor || id;
 	let value = Utils.searchLastInput||"";
-	hidePopupObject();
 	let form = "<form action='" + ramaddaBaseUrl + "/search/do'>";
 	form += HU.open('input',['value', value, 'placeholder','Search text', 'autocomplete','off','autofocus','true','id','popup_search_input','class', 'ramadda-search-input',
 				 STYLE,HU.css('margin-left','4px', 'padding','2px','width','250px','border','0px'),'name','text']);
 	form +="</form>";
 	let linksId = HU.getUniqueId();
-	let links =  HU.div(["class", "ramadda-links", "id", linksId],
-			    HU.leftCenterRight(
-				HtmlUtils.getIconImage(icon_close, [ID,"searchclose",STYLE,HU.css("cursor","pointer")]),
-				"",
-				HU.link(ramaddaBaseUrl + '/search/form', 'Advanced', [TITLE, 'Go to form', STYLE,HU.css('color','#888','font-size','13px')]),
-			    ));
+	let links =  HU.div(["id", linksId,STYLE,"text-align:right"],
+			    HU.link(ramaddaBaseUrl + '/search/form', 'Advanced', [TITLE, 'Go to form', STYLE,HU.css('color','#888','font-size','13px')]));
+
 	let results = "<div id=searchresults style='display:none;border-top:1px solid #ccc;margin-top:2px;max-width:250px; width:250px;max-height:300px;overflow-y:auto;'></div>";
-	links = HU.div([CLASS,"ramadda-popup-header"],links);
-	let html = HU.div([],links+form+results);
-	html = HU.div([CLASS,"ramadda-popup", ID,"ramadda-search-popup","style", "xxpadding:5px;"], html);
+	let html = HU.div([],form+results);
 	let icon = $("#" + id);
-	anchor =  $("#" + anchor);	
-	popupTime = new Date();
-	anchor.html(html);
-	let popup = popupObject = $("#ramadda-search-popup");
+	this.dialog = HU.makeDialog({content:html,my:"right top",at:"right bottom",title:links,anchor:anchor,draggable:true,header:true});
 	$("#" + linksId).find(".ramadda-link").click(Utils.searchLink);
 	var input = $("#popup_search_input");
 	input.mousedown(function(evt) {
             evt.stopPropagation();
-	});
-	popup.show();
-	popup.position({
-            of: icon,
-            my: "right top",
-            at: "right bottom",
-            collision: "none none"
-	});
-	$("#searchclose").click(()=>{
-	    hidePopupObject();
 	});
 	Utils.searchSuggestInit('popup_search_input', null, true);
 	input.focus();
@@ -3169,6 +3151,80 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		$("#" + textId).focus();
 	    }
 	})
+    },
+    makeDialog: function(args) {
+	hidePopupObject();
+	let opts  = {
+	    content:null,
+	    contentId:null,
+	    anchor:null,
+	    draggable:false,
+	    decorate:true,
+	    header:false,
+	    remove:true,
+	    my: "left top",
+	    at: "left bottom",	    
+	    title:""
+	};
+	if(args) {
+	    $.extend(opts, args);
+	}
+	let html = opts.content;
+	if(html == null) {
+	    if(opts.contentId) {
+		html = $("#" + opts.contentId).html();
+	    } else {
+		html = "No html provided";
+	    }
+	}
+	if(opts.anchor && (typeof opts.anchor=="string")) {
+	    opts.anchor = $("#"  + opts.anchor);
+	}
+	let id = HtmlUtils.getUniqueId();
+	if(opts.header) {
+	    html = HU.div([CLASS,"ramadda-popup-inner"], html);
+	}
+
+	if(opts.header) {
+	    let closeImage = HU.div([TITLE,"Close",CLASS,"ramadda-popup-close"], HU.jsLink("",HtmlUtils.getIconImage(icon_close), [ID,id+"_close",STYLE,HU.css('cursor','pointer')]));
+	    let title = HU.div([STYLE,HU.css('width','100%','display','inline-block','text-align','center')],opts.title);
+	    let hdr = closeImage+title
+	    let header = HtmlUtils.div([STYLE,HU.css("text-align","left"),CLASS,"ramadda-popup-header"],hdr);
+	    html = header + html;
+	}
+	if(opts.decorate || opts.header) {
+	    html = HU.div([CLASS,"ramadda-popup"], html);
+	}
+	let popup =   $(html).appendTo("body");
+	if(opts.remove) {
+	    popup.attr("removeonclose","true");
+	}
+	if(opts.animate && opts.animate!="false") {
+	    popup.show(400);
+	} else {
+	    popup.show();
+	}
+	if(opts.anchor) {
+//	    console.log("my: " + opts.my +" at:" + opts.at);
+	    popup.position({
+		of: opts.anchor,
+		my: opts.my,
+		at: opts.at,
+	    });
+	}
+	if(opts.draggable) {
+	    popup.draggable();
+	} else {
+	    popupObject = popup;
+	}
+	if(opts.header) {
+	    $("#" + id +"_close").click(function() {
+		popup.hide();
+		if(opts.callback) opts.callback(popup);
+		if(opts.remove) popup.remove();
+	    });
+	}
+	return popup;
     },
     makeDraggableDialog:function(target, inner, args) {
 	let opts = {

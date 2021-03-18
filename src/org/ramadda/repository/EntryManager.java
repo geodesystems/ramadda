@@ -6020,7 +6020,6 @@ public class EntryManager extends RepositoryManager {
 
 
         StringBuilder menu = new StringBuilder();
-
         if (header != null) {
             menu.append(
                 HU.div(

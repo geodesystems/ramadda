@@ -4291,6 +4291,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
      */
     public static void onMouseClick(Appendable sb, String call) {
         try {
+	    call = call.replaceAll("\"","&quot;").replaceAll("\n"," ");
             attrs(sb, ATTR_ONCLICK, call);
         } catch (Exception exc) {
             throw new RuntimeException(exc);
@@ -4306,6 +4307,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @return _more_
      */
     public static String onMouseClick(String call) {
+	call = call.replaceAll("\"","&quot;").replaceAll("\n"," ");
         return attrs(ATTR_ONCLICK, call);
     }
 

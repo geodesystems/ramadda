@@ -18,7 +18,9 @@ package org.ramadda.repository.metadata;
 
 
 import org.ramadda.repository.*;
+
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.NamedValue;
 import org.ramadda.util.Utils;
 
 
@@ -635,13 +637,10 @@ public class MetadataTypeBase extends RepositoryManager {
                                     ARG_ENTRYID, metadata.getEntryId(),
                                     ARG_METADATA_ID,
                                     metadata.getId()), "thumbnail", "");
-
-                img = HtmlUtils.div(img,
-                                    HtmlUtils.cssClass("ramadda-thumbnail"));
-
-                img = handler.getPageHandler().makePopupLink(img, bigimg,
-							     true, false);
-		//                img = HtmlUtils.div(img, HtmlUtils.cssClass("ramadda-thumbnail"));
+		StringBuilder tmp = new StringBuilder();
+                img = HtmlUtils.div(img, HtmlUtils.cssClass("ramadda-thumbnail"));
+                img = handler.getPageHandler().makePopupLink(tmp, img, bigimg,new NamedValue("at","right top"),new NamedValue("header",true));
+                img = HtmlUtils.div(img, HtmlUtils.cssClass("ramadda-thumbnail")) + "\n" + tmp;
             } else {
                 img = Utils.concatString(img, "\n<br>\n<b>", tail, "</b>\n");
             }

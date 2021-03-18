@@ -330,8 +330,10 @@ function DisplayManager(argId, argProperties) {
             menuBar += HU.tag(TAG_LI, [], "<a>Edit</a>" + HU.tag("ul", [], editMenu)) +
                 HU.tag(TAG_LI, [], "<a>New</a>" + HU.tag("ul", [], newMenu)) +
                 HU.tag(TAG_LI, [], "<a>Layout</a>" + HU.tag("ul", [], layoutMenu));
-            var menu = HU.div([ATTR_CLASS, "ramadda-popup", ATTR_ID, this.getDomId(ID_MENU_OUTER)],
-				     HU.tag("ul", [ATTR_ID, this.getDomId(ID_MENU_INNER), ATTR_CLASS, "sf-menu"], menuBar));
+
+
+            var menu = HU.div([STYLE,"background:#fff;z-index:1000;", ATTR_CLASS, "xramadda-popup", ATTR_ID, this.getDomId(ID_MENU_OUTER)],
+			      HU.tag("ul", [ATTR_ID, this.getDomId(ID_MENU_INNER), ATTR_CLASS, "sf-menu"], menuBar));
 
             html += menu;
             //                html += HU.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)],"&nbsp;");
@@ -540,48 +542,53 @@ function DisplayManager(argId, argProperties) {
     addDisplayManager(this);
 
     let displaysHtml = HU.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container",STYLE,HU.css("display","block")]);
-    let html = HU.openTag(TAG_DIV);
+    let html = HU.openTag(TAG_DIV,["style","position:relative;"]);
     html += HU.div(["id", this.getDomId(ID_MENU_CONTAINER)]);
     html +=  this.getEntriesMenu(argProperties);
 
-    //    html += this.makeMainMenu();
     if(this.getShowMenu()) {
-        html += HU.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)], "&nbsp;");
+        html += HU.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)], SPACE);
     }
     let targetDiv = this.getProperty("target",this.getProperty("targetDiv"));
     let _this = this;
     if (targetDiv != null) {
+	if($("#" + targetDiv).length==0) {
+	    console.log("Error: display group could not find targetDiv:" + targetDiv);
+	    targetDiv=null;
+	}
+    }
+
+    if (targetDiv != null) {
         $(document).ready(function() {
             $("#" + targetDiv).html(displaysHtml);
             _this.getLayoutManager().doLayout();
-        });
+	});
     } else {
         html += displaysHtml;
     }
     html += HU.closeTag(TAG_DIV);
-    $("#" + this.getId()).html(html)
+    let divid = this.getProperty("divId",this.getId());
+    $("#" + divid).html(html)
     this.initializeEntriesMenu();
 
-
     this.jq(ID_MENU_BUTTON).html(HU.getIconImage("fa-cog",[TITLE,"Display menu"] )).button({
-        xxicons: {
-            primary: "ui-icon-gear",
-            secondary: "ui-icon-triangle-1-s"
-        },
 	classes: {
 	    "ui-button": "display-manager-button",
 	}	
     }).click(function(event) {
+	if(this.dialog) {
+	    this.dialog.remove();
+	}
         let html = _this.makeMainMenu();
-        _this.jq(ID_MENU_CONTAINER).html(html);
-        let id = _this.getDomId(ID_MENU_OUTER);
-        showPopup(event, _this.getDomId(ID_MENU_BUTTON), id, false, null, "left bottom");
+	this.dialog = HU.makeDialog({content:html,title:"Displays",my:"left top",at:"left bottom",anchor:_this.jq(ID_MENU_BUTTON)});
         _this.jq(ID_MENU_INNER).superfish({
             //Don't set animation - it is broke on safari
             //                    animation: {height:'show'},
             speed: 'fast',
             delay: 300
         });
+
+
     });
 
 }
@@ -612,8 +619,8 @@ function RamaddaMultiDisplay(displayManager, id, properties) {
                     toks.push(v);
                 }
             } else if (value.includes("${fieldId}")) {
-                for (i = 0; i < selectedFields.length; i++) {
-                    var v = value.replace("\${fieldId}", selectedFields[i].getId());
+                for (i = 0; i < selectedFields.length; i++) { 
+                   var v = value.replace("\${fieldId}", selectedFields[i].getId());
                     toks.push(v);
                 }
             } else if (value.includes("${fieldCnt}")) {

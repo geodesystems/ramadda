@@ -145,10 +145,10 @@ function ramaddaDisplayCheckLayout() {
     Utils.displaysList.forEach(d=>{
         if (d.checkLayout) {
 	    let t1= new Date();
-	    console.log("before:" + d.type);
+//	    console.log("before:" + d.type);
             d.checkLayout();
 	    let t2= new Date();
-	    Utils.displayTimes("after:" + d.type,[t1,t2],true);
+//	    Utils.displayTimes("after:" + d.type,[t1,t2],true);
         }
     });
 }
@@ -209,6 +209,9 @@ function displayDefineMembers(display, props, members) {
 function defineDisplay(display, SUPER, props, members) {
     RamaddaUtil.inherit(display, SUPER);
     displayDefineMembers(display, props, members);
+    if(members.ctor) {
+	display.ctor();
+    }
     return display;
 }
 
@@ -376,15 +379,14 @@ function DisplayThing(argId, argProperties) {
 	    return v;
         },
         getShowTitle: function() {
-            if (Utils.isDefined(this.showTitle)) {
-		return this.showTitle;
+            if (this.getProperty("showTitle")) {
+		return this.getProperty("showTitle");
 	    }
 	    var dflt = false;
             if (this.displayParent != null) {
 		dflt = this.displayParent.getProperty("showChildTitle",dflt);
 	    }
-	    var v = this.getProperty("showTitle", dflt);
-	    return v;
+	    return this.getProperty("showTitle", dflt);
         },
 
         getTimeZone: function() {
@@ -876,10 +878,10 @@ function DisplayThing(argId, argProperties) {
 	getPropertyFields: function(dflt) {
 	    return this.getPropertyFromUrl(PROP_FIELDS,dflt);
 	},
-        getProperty: function(key, dflt, skipThis) {
+        getProperty: function(key, dflt, skipThis, skipParent) {
 	    if(this.debugGetProperty)
 		console.log("\tgetProperty:" + key);
-	    let value =  this.getPropertyInner(key,null,skipThis);
+	    let value =  this.getPropertyInner(key,null,skipThis, skipParent);
 	    if(this.debugGetProperty)
 		console.log("\tgot:" + value);
 	    if(this.writePropertyDef!=null) {
@@ -901,7 +903,7 @@ function DisplayThing(argId, argProperties) {
 		console.log("\treturning value:" + value);
 	    return value;
 	},
-        getPropertyInner: function(keys, dflt,skipThis) {	    
+        getPropertyInner: function(keys, dflt,skipThis, skipParent) {	    
 	    let debug = displayDebug.getProperty;
 	    debug = this.debugGetProperty;
 	    if(!Array.isArray(keys)) keys = [keys];
@@ -919,28 +921,32 @@ function DisplayThing(argId, argProperties) {
                     return value;
 		}
 	    }
-	    for(let i=0;i<keys.length;i++) {
-		let key = keys[i];
-		var fromParent=null;
-		if (this.displayParent != null) {
-                    fromParent =  this.displayParent.getPropertyInner("inherit."+key, skipThis);
-		}
-		if (!fromParent && this.getDisplayManager) {
-                    fromParent=  this.getDisplayManager().getPropertyInner("inherit."+key);
-		}
-		if(fromParent) {
-		    if(debug) console.log("\tgetProperty-3");
-		    return fromParent;
+	    if(!skipParent) {
+		for(let i=0;i<keys.length;i++) {
+		    let key = keys[i];
+		    var fromParent=null;
+		    if (this.displayParent != null) {
+			fromParent =  this.displayParent.getPropertyInner("inherit."+key, skipThis);
+		    }
+		    if (!fromParent && this.getDisplayManager) {
+			fromParent=  this.getDisplayManager().getPropertyInner("inherit."+key);
+		    }
+		    if(fromParent) {
+			if(debug) console.log("\tgetProperty-3");
+			return fromParent;
+		    }
 		}
 	    }
 	    if(!this.ignoreGlobals) {
-		if (this.displayParent != null) {
-		    if(debug) console.log("\tgetProperty calling parent");
-                    return this.displayParent.getPropertyInner(keys, skipThis);
-		}
-		if (this.getDisplayManager) {
-		    if(debug) console.log("\tgetProperty-5");
-                    return   this.getDisplayManager().getPropertyInner(keys);
+		if(!skipParent) {
+		    if (this.displayParent != null) {
+			if(debug) console.log("\tgetProperty calling parent");
+			return this.displayParent.getPropertyInner(keys, skipThis);
+		    }
+		    if (this.getDisplayManager) {
+			if(debug) console.log("\tgetProperty-5");
+			return   this.getDisplayManager().getPropertyInner(keys);
+		    }
 		}
 		for(let i=0;i<keys.length;i++) {
 		    let key = keys[i];
@@ -1582,6 +1588,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (entryId) {
                     titleToShow = HU.href(this.getRamadda().getEntryUrl(entryId), titleToShow, [ATTR_CLASS, "display-title",  STYLE, titleStyle]);
 		}
+		titleToShow =HU.span([ID,this.domId(ID_TITLE)],titleToShow);
             }
 
 	    if(this.getProperty("showEntryIcon")) {
@@ -3284,18 +3291,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
         getEntriesTree: function(entries, props) {
             if (!props) props = {};
-            var columns = this.getProperty("entryColumns", null);
+            let columns = this.getProperty("entryColumns", null);
             if (columns != null) {
-                var columnNames = this.getProperty("columnNames", null);
+                let columnNames = this.getProperty("columnNames", null);
                 if (columnNames != null) {
                     columnNames = columnNames.split(",");
                 }
                 columns = columns.split(",");
-                var ids = [];
-                var names = [];
-                for (var i = 0; i < columns.length; i++) {
-                    var toks = columns[i].split(":");
-                    var id = null,
+                let ids = [];
+                let names = [];
+                for (let i = 0; i < columns.length; i++) {
+                    let toks = columns[i].split(":");
+                    let id = null,
                         name = null;
                     if (toks.length > 1) {
                         if (toks[0] == "property") {
@@ -3319,8 +3326,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 return this.getEntriesTable(entries, columns, columnNames);
             }
 
-            var suffix = props.suffix;
-            var domIdSuffix = "";
+            let suffix = props.suffix;
+            let domIdSuffix = "";
             if (!suffix) {
                 suffix = "null";
             } else {
@@ -3328,38 +3335,38 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 suffix = "'" + suffix + "'";
             }
 
-            var handler = getHandler(props.handlerId);
-            var showIndex = props.showIndex;
-            var html = "";
-            var rowClass = "entryrow_" + this.getId();
-            var even = true;
+            let handler = getHandler(props.handlerId);
+            let showIndex = props.showIndex;
+            let html = "";
+            let rowClass = "entryrow_" + this.getId();
+            let even = true;
             if (this.entriesMap == null)
                 this.entriesMap = {};
-            for (var i = 0; i < entries.length; i++) {
+            for (let i = 0; i < entries.length; i++) {
                 even = !even;
-                var entry = entries[i];
+                let entry = entries[i];
                 this.entriesMap[entry.getId()] = entry;
-                var toolbar = this.makeEntryToolbar(entry, handler, props.handlerId);
-                var entryMenuButton = this.getEntryMenuButton(entry);
+                let toolbar = this.makeEntryToolbar(entry, handler, props.handlerId);
+                let entryMenuButton = this.getEntryMenuButton(entry);
 
-                var entryName = entry.getDisplayName();
+                let entryName = entry.getDisplayName();
                 if (entryName.length > 100) {
                     entryName = entryName.substring(0, 99) + "...";
                 }
-                var icon = entry.getIconImage([ATTR_TITLE, "View entry"]);
-                var link = HU.tag(TAG_A, [ATTR_HREF, entry.getEntryUrl()], icon + " " + entryName);
+                let icon = entry.getIconImage([ATTR_TITLE, "View entry"]);
+                let link = HU.tag(TAG_A, [ATTR_HREF, entry.getEntryUrl()], icon + " " + entryName);
                 entryName = "";
-                var entryIdForDom = entry.getIdForDom() + domIdSuffix;
-                var entryId = entry.getId();
-                var arrow = HU.image(icon_tree_closed, [ATTR_BORDER, "0",
+                let entryIdForDom = entry.getIdForDom() + domIdSuffix;
+                let entryId = entry.getId();
+                let arrow = HU.image(icon_tree_closed, [ATTR_BORDER, "0",
 							"tree-open", "false",
 							ATTR_ID,
 							this.getDomId(ID_TREE_LINK + entryIdForDom)
 						       ]);
-                var toggleCall = this.getGet() + ".toggleEntryDetails(event, '" + entryId + "'," + suffix + ",'" + props.handlerId + "');";
-                var toggleCall2 = this.getGet() + ".entryHeaderClick(event, '" + entryId + "'," + suffix + "); ";
-                var open = HU.onClick(toggleCall, arrow);
-                var extra = "";
+                let toggleCall = this.getGet() + ".toggleEntryDetails(event, '" + entryId + "'," + suffix + ",'" + props.handlerId + "');";
+                let toggleCall2 = this.getGet() + ".entryHeaderClick(event, '" + entryId + "'," + suffix + "); ";
+                let open = HU.onClick(toggleCall, arrow);
+                let extra = "";
 
                 if (showIndex) {
                     extra = "#" + (i + 1) + " ";
@@ -3367,12 +3374,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (handler && handler.getEntryPrefix) {
                     extra += handler.getEntryPrefix(props.handlerId, entry);
                 }
-                var left = HU.div([ATTR_CLASS, "display-entrylist-name"], entryMenuButton + " " + open + " " + extra + link + " " + entryName);
-                var details = HU.div([ATTR_ID, this.getDomId(ID_DETAILS + entryIdForDom), ATTR_CLASS, "display-entrylist-details"], HU.div([ATTR_CLASS, "display-entrylist-details-inner", ATTR_ID, this.getDomId(ID_DETAILS_INNER + entryIdForDom)], ""));
+                let left = HU.div([ATTR_CLASS, "display-entrylist-name"], entryMenuButton + " " + open + " " + extra + link + " " + entryName);
+                let details = HU.div([ATTR_ID, this.getDomId(ID_DETAILS + entryIdForDom), ATTR_CLASS, "display-entrylist-details"], HU.div([ATTR_CLASS, "display-entrylist-details-inner", ATTR_ID, this.getDomId(ID_DETAILS_INNER + entryIdForDom)], ""));
 
                 //                    console.log("details:" + details);
 
-                var line;
+                let line;
                 if (this.getProperty("showToolbar", true)) {
                     line = HU.leftCenterRight(left, "", toolbar, "80%", "1%", "19%");
                 } else {
@@ -3381,13 +3388,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 //                    line = HU.leftRight(left,toolbar,"60%","30%");
 
 
-                var mainLine = HU.div(["onclick", toggleCall2, ATTR_ID, this.getDomId(ID_DETAILS_MAIN + entryIdForDom), ATTR_CLASS, "display-entrylist-entry-main" + " " + "entry-main-display-entrylist-" + (even ? "even" : "odd"), ATTR_ENTRYID, entryId], line);
-                var line = HU.div([CLASS, (even ? "ramadda-row-even" : "ramadda-row-odd"), ATTR_ID, this.getDomId("entryinner_" + entryIdForDom)], mainLine + details);
-
-                html += HU.tag(TAG_DIV, [ATTR_ID,
-					 this.getDomId("entry_" + entryIdForDom),
-					 ATTR_ENTRYID, entryId, ATTR_CLASS, "display-entrylist-entry" + rowClass
-					], line);
+                let mainLine = HU.div(["onclick", toggleCall2, ATTR_ID, this.getDomId(ID_DETAILS_MAIN + entryIdForDom), ATTR_CLASS, "display-entrylist-entry-main" + " " + "entry-main-display-entrylist-" + (even ? "even" : "odd"), ATTR_ENTRYID, entryId], line);
+                line = HU.div([CLASS, (even ? "ramadda-row-even" : "ramadda-row-odd"), ATTR_ID, this.getDomId("entryinner_" + entryIdForDom)], mainLine + details);
+                html += HU.div([ATTR_ID,
+				this.getDomId("entry_" + entryIdForDom),
+				ATTR_ENTRYID, entryId, ATTR_CLASS, "display-entrylist-entry" + rowClass
+			       ], line);
                 html += "\n";
             }
             return html;
@@ -3950,7 +3956,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             });
             this.writeHtml(ID_MENU_OUTER, menu);
             var srcId = this.getDomId(ID_MENU_BUTTON + Utils.cleanId(entryId));
-            showPopup(event, srcId, this.getDomId(ID_MENU_OUTER), false, "left top", "left bottom");
+	    this.dialog = HU.makeDialog({content:menu,anchor:srcId,draggable:false,header:false});
             $("#" + this.getDomId(ID_MENU_INNER + Utils.cleanId(entryId))).superfish({
                 speed: 'fast',
                 delay: 300
@@ -3985,12 +3991,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 "<tr><td align=right><b>Width:</b></td><td> " + HU.input("", this.getProperty("width", ""), ["size", "7", ATTR_ID, this.getDomId("width")]) + "  " + "<b>Height:</b> " + HU.input("", this.getProperty("height", ""), ["size", "7", ATTR_ID, this.getDomId("height")]) + "</td></tr>" +
                 "</table>";
             var tmp =
-                HU.checkbox(this.getDomId("showtitle"), [], this.showTitle) + " Title  " +
-                HU.checkbox(this.getDomId("showdetails"), [], this.showDetails) + " Details " +
+                HU.checkbox(this.getDomId("showtitle"), [], this.getProperty("showTitle")) + " Title  " +
+                HU.checkbox(this.getDomId("showdetails"), [], this.getProperty("showDetails")) + " Details " +
                 "&nbsp;&nbsp;&nbsp;" +
                 HU.onClick(get + ".askSetTitle();", "Set Title");
             menu += HU.formTable() + HU.formEntry("Show:", tmp) + HU.close(TABLE);
-
             return menu;
         },
         isLayoutHorizontal: function() {
@@ -4056,8 +4061,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
         },
         setShowTitle: function(v) {
-            this.showTitle = v;
-            if (this.showTitle) {
+	    if(v==="true") v = true;
+	    else if(v==="false") v = true;	    
+            this.setProperty("showTitle", v);
+            if (v) {
                 this.jq(ID_TITLE).show();
             } else {
                 this.jq(ID_TITLE).hide();
@@ -4171,17 +4178,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }, this.getProperty("reloadSeconds")*1000);
 	},
         getMainDiv: function() {
-	    let divId = this.getProperty("targetDiv",this.getProperty(PROP_DIVID));
+	    //Don't check the parent for the targetDiv
+	    let divId = this.getProperty("targetDiv",this.getProperty(PROP_DIVID,null,null,true),null,true);
 	    return $("#" + divid); 
 	},
         getGroupDiv: function() {
 	    return $("#" + this.getProperty("groupDiv"));
 	},	
         createUI: function() {
-            var divid = this.getProperty("targetDiv",this.getProperty(PROP_DIVID));
-            if (divid != null) {
+	    let divId = this.getProperty("targetDiv",this.getProperty(PROP_DIVID,null,null,true),null,true);
+            if (divId != null) {
                 var html = this.getHtml();
-		let div = $("#" + divid);
+		let div = $("#" + divId);
 		let inline = this.getProperty("displayInline");
 		if(inline) {
 		    div.css("display","inline-block");
@@ -5467,13 +5475,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
         makeDialog: function(text) {
             var html = "";
-            html += HU.div([ATTR_ID, this.getDomId(ID_HEADER), ATTR_CLASS, "display-header"]);
-            var closeImage = HU.getIconImage(icon_close, []);
-            var close = HU.onClick("$('#" + this.getDomId(ID_DIALOG) + "').hide();", closeImage);
-            var right = close;
-            var left = "";
-            //                var left = this.makeToolbar({addLabel:true});
-            var header = HU.div([ATTR_CLASS, "display-dialog-header"], HU.leftRight(left, right));
 	    if(!text) {
 		var tabTitles = [];
 		var tabContents = [];
@@ -5496,7 +5497,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		tabLinks += "</ul>\n";
 		text =  HU.div([ID, this.getDomId(ID_DIALOG_TABS)], tabLinks + tabs);
 	    }
-	    return  header + text;
+	    return text;
         },
         initDialog: function() {
             var _this = this;
@@ -5531,12 +5532,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
         },
         showDialog: function(text, from, initDialog) {
+	    if(this.dialog) this.dialog.remove();
 	    if(!this.dialogElement) {
-		$(document.body).append(HU.div([ATTR_CLASS, "display-dialog",ID,this.getDomId(ID_DIALOG)]));
-		this.dialogElement = this.jq(ID_DIALOG);
+//		$(document.body).append(HU.div([ATTR_CLASS, "display-dialog",ID,this.getDomId(ID_DIALOG)]));
+//		this.dialogElement = this.jq(ID_DIALOG);
 	    }
-	    this.dialogElement.html(this.makeDialog(text));
-            this.popup(from || this.getDomId(ID_MENU_BUTTON), null,null, this.dialogElement);
+	    let html = this.makeDialog(text);
+	    this.dialog = HU.makeDialog({content:html,title:this.getTitle(),anchor:this.jq(ID_MENU_BUTTON),draggable:true,header:true});
 	    if(initDialog) initDialog();
             else this.initDialog();
         },
@@ -6698,7 +6700,6 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
             }
 
 	    //If we don't  have any displays to show then hide us
-
 	    if(!this.getShowMenu() && displaysToLayout.length==0) {
 		//TODO: This hides the change entry group menu 
 //		$("#" + this.getId()).hide();
@@ -6890,9 +6891,9 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
         },
         getDialogContents: function(tabTitles, tabContents) {
             var height = "600";
-            var html = HU.div([ATTR_ID, this.getDomId(ID_FIELDS), STYLE, HU.css("overflow-y","auto","max-height", height + "px")], " FIELDS ");
-            tabTitles.push("Fields");
-            tabContents.push(html);
+//            var html = HU.div([ATTR_ID, this.getDomId(ID_FIELDS), STYLE, HU.css("overflow-y","auto","max-height", height + "px")], "");
+//            tabTitles.push("Fields");
+//            tabContents.push(html);
             SUPER.getDialogContents.call(this, tabTitles, tabContents);
         },
         handleEventFieldsSelected: function(source, fields) {

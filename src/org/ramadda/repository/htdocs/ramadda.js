@@ -711,6 +711,9 @@ function hideElementById(id) {
 function hidePopupObject(event) {
     if (popupObject) {
         popupObject.hide();
+	if(popupObject.attr("removeonclose")== "true") {
+	    popupObject.remove();
+	}
         popupObject = null;
     }
     popupTime = new Date();
@@ -729,35 +732,6 @@ function checkToHidePopup() {
         return false;
     }
     return true;
-}
-
-function showPopup(event, srcId, popupId, alignLeft, myalign, atalign) {
-    hidePopupObject();
-    let popup = popupObject = $("#" + popupId);
-    popupTime = new Date();
-    var src = $("#" + srcId);
-    if (!myalign)
-        myalign = 'left top';
-    if (!atalign)
-        atalign = 'right top';
-    if (alignLeft) {
-        myalign = 'right top';
-        atalign = 'left bottom';
-    }
-    popup.show();
-    popup.position({
-        of: src,
-        my: myalign,
-        at: atalign,
-        collision: "none none"
-    });
-    //Do it again to fix a bug on safari
-    popup.position({
-        of: src,
-        my: myalign,
-        at: atalign,
-        collision: "none none"
-    });
 }
 
 

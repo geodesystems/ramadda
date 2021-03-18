@@ -32,7 +32,9 @@ import org.ramadda.repository.output.PageStyle;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.HtmlTemplate;
+import org.ramadda.util.NamedValue;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Json;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.MapRegion;
 
@@ -511,9 +513,11 @@ public class PageHandler extends RepositoryManager {
             extra.append(searchAnchor);
             extra.append(HU.space(2));
         }
-        extra.append(makePopupLink(popupImage, menuHtml, false, true));
-        menuHtml = HU.div(extra.toString(),
-                                 HU.clazz("ramadda-user-menu"));
+
+
+	popupImage = HtmlUtils.div(popupImage, HtmlUtils.cssClass("ramadda-popup-link"));
+	extra.append(makePopupLink(null, popupImage, menuHtml, arg("my","right top"),arg("at","left bottom"), arg("animate",false)));
+        menuHtml = HU.div(extra.toString(), HU.clazz("ramadda-user-menu"));
         long     t1     = System.currentTimeMillis();
 
         String[] macros = new String[] {
@@ -563,21 +567,7 @@ public class PageHandler extends RepositoryManager {
             }
         }
         html = sb.toString();
-
-        long t3 = System.currentTimeMillis();
         html = translate(request, html);
-        long t4 = System.currentTimeMillis();
-        //        System.err.println ("html template: total:" + (t4-t0) + "  preface:" + (t1-t0) +" array:" + (t2-t1) +" replace:" + 
-        //                            (t3-t2) +" translate:" + (t4-t3));
-        /*
-        if(html.indexOf("${")>=0) {
-            System.out.println("Got macro in:" + request);
-            int idx = html.indexOf("${");
-            idx-=10;
-            if(idx<0) idx=0;
-            System.out.println("html:" + html.substring(idx));
-        }
-        */
         result.setContent(html);
     }
 
@@ -1823,113 +1813,50 @@ public class PageHandler extends RepositoryManager {
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param link _more_
-     * @param menuContents _more_
-     *
-     * @return _more_
-     */
-    public String makePopupLink(String link, String menuContents) {
-        return makePopupLink(link, menuContents, false, false);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param link _more_
-     * @param menuContents _more_
-     * @param makeClose _more_
-     * @param alignLeft _more_
-     *
-     * @return _more_
-     */
-    public String makePopupLink(String link, String menuContents,
-                                boolean makeClose, boolean alignLeft) {
-        return makePopupLink(link, menuContents,
-                             " class=\"ramadda-popup-link\" ", makeClose,
-                             alignLeft);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param link _more_
-     * @param menuContents _more_
-     * @param linkAttributes _more_
-     *
-     * @return _more_
-     */
-    public String makePopupLink(String link, String menuContents,
-                                String linkAttributes) {
-        return makePopupLink(link, menuContents, linkAttributes, false,
-                             false);
-    }
-
-    /**
-     * _more_
-     *
-     * @param link _more_
-     * @param menuContents _more_
-     * @param linkAttributes _more_
-     * @param makeClose _more_
-     * @param alignLeft _more_
-     *
-     * @return _more_
-     */
-    public String makePopupLink(String link, String menuContents,
-                                String linkAttributes, boolean makeClose,
-                                boolean alignLeft) {
-        StringBuilder sb = new StringBuilder();
-        link = makePopupLink(link, menuContents, linkAttributes, makeClose,
-                             alignLeft, sb, null);
-
-        return link + sb;
-    }
-
-    /**
-     * _more_
-     *
-     * @param link _more_
-     * @param menuContents _more_
-     * @param linkAttributes _more_
-     * @param makeClose _more_
-     * @param alignLeft _more_
-     * @param popup _more_
-     * @param header _more_
-     *
-     * @return _more_
-     */
-    public String makePopupLink(String link, String menuContents,
-                                String linkAttributes, boolean makeClose,
-                                boolean alignLeft, Appendable popup,
-                                String header) {
-        try {
+    public String makePopupLink(Appendable popup, String link, String menuContents,
+				NamedValue ...args) {
+	try {
             String compId = "menu_" + HU.blockCnt++;
             String linkId = "menulink_" + HU.blockCnt++;
-            popup.append(makePopupDiv(menuContents, compId, makeClose,
-                                      header));
-            String onClick =
-                HU.onMouseClick(HU.call("showPopup",
-                    HU.comma(new String[] { "event",
-                    HU.squote(linkId), HU.squote(compId),
-                    (alignLeft
-                     ? "1"
-                     : "0") })));
-            String href = HU.href("javascript:noop();", link,
-                                         onClick + HU.id(linkId)
-                                         + linkAttributes);
+	    String header=null;
+	    String linkAttributes="";
+	    List<String> attrs = (List<String>) Utils.makeList("contentId",HU.squote(compId),"anchor",HU.squote(linkId));
+	    boolean seenAnimate = false;
+	    for(NamedValue v:args) {
+		if(v.getName().equals("linkAttributes")) {
+		    linkAttributes = v.getValue().toString();
+		    continue;
+		}
+		Object o = v.getValue();
+		if(o==null) continue;
+		if(v.getName().equals("animate")) seenAnimate = true;
+		attrs.add(v.getName());
+		if(o instanceof String) {
+		    if(!o.equals("true") && !o.equals("false"))
+			o  = HU.squote(o.toString());
+		}
+		attrs.add(o.toString());
+	    }
 
-            return href;
+	    if(!seenAnimate) {
+		attrs.add("animate");
+		attrs.add("true");
+	    }
+
+	    String callArgs = Json.map(attrs);
+	    String call = "HtmlUtils.makeDialog(" + callArgs+");";
+            String onClick = HU.onMouseClick(call);
+            String href = HU.div(link,HU.cssClass("ramadda-popup-link") +linkAttributes + onClick + HU.id(linkId));
+
+	    String contents = makePopupDiv(menuContents, compId, false,  header);
+	    if(popup!=null) {
+		popup.append(contents);
+		return href;
+	    }
+            return href+contents;
         } catch (java.io.IOException ioe) {
             throw new RuntimeException(ioe);
         }
-
-
     }
 
 
@@ -2015,7 +1942,7 @@ public class PageHandler extends RepositoryManager {
                 contents = HU.table(HU.row("<td width=5%>"
                         + cLink + "</td><td>" + header + "</td>")) + contents;
             } else {
-                contents =HU.div(cLink,"class=ramadda-popup-header") + contents;
+		//                contents =HU.div(cLink,"class=ramadda-popup-header") + contents;
             }
         }
 
@@ -2726,19 +2653,16 @@ public class PageHandler extends RepositoryManager {
         String links = getEntryManager().getEntryActionsTable(request, entry,
 							      OutputType.TYPE_MENU, 
 							      linkList, false,
-							      headerLabel);
+							      null);
 
 
-        StringBuilder popup = new StringBuilder();
+	StringBuilder popup = new StringBuilder();
         String menuLinkImg = HU.div(
                                  "",
                                  HU.cssClass(
                                      "ramadda-breadcrumbs-menu-button"));
-        String menuLink = getPageHandler().makePopupLink(menuLinkImg, links,
-                              "", true, false, popup, null);
 
-        //crumbs
-        //        parents.add(entry);
+        String menuLink = getPageHandler().makePopupLink(popup, menuLinkImg, links,arg("title", headerLabel), arg("header",true));
         List<Entry>  parents = getEntryManager().getParents(request, entry);
         List<String> titleList = new ArrayList();
         List<String> breadcrumbs = makeBreadcrumbList(request, parents,
@@ -2877,18 +2801,15 @@ public class PageHandler extends RepositoryManager {
                           HU.cssClass(CSS_CLASS_MENUBUTTON_SEPARATOR));
 
 
-        String menuClass = HU.cssClass(CSS_CLASS_MENUBUTTON);
+	NamedValue linkAttr = arg("linkAttributes", HU.cssClass(CSS_CLASS_MENUBUTTON));
         for (Link link : links) {
             if (link.isType(OutputType.TYPE_OTHER)) {
                 categoryMenu =
                     getEntryManager().getEntryActionsTable(request, entry,
                         OutputType.TYPE_OTHER, links);
                 String categoryName = link.getOutputType().getCategory();
-                //HU.span(msg(categoryName), menuClass),
                 categoryMenu =
-                    getPageHandler().makePopupLink(msg(categoryName),
-                        categoryMenu.toString(), menuClass, false, true);
-
+		    makePopupLink(null, categoryName, categoryMenu.toString(), linkAttr);
                 break;
             }
         }
@@ -2917,8 +2838,8 @@ public class PageHandler extends RepositoryManager {
                 //                menuName="Folder";
             }
             //HU.span(msg(menuName), menuClass), 
-            menuItems.add(getPageHandler().makePopupLink(msg(menuName),
-                    entryMenu, menuClass, false, true));
+            menuItems.add(getPageHandler().makePopupLink(null, menuName,
+							 entryMenu, linkAttr));
 
         }
 
@@ -2927,8 +2848,8 @@ public class PageHandler extends RepositoryManager {
             if (menuItems.size() > 0) {
                 menuItems.add(sep);
             }
-            menuItems.add(getPageHandler().makePopupLink(msg("Edit"),
-                    editMenu, menuClass, false, true));
+            menuItems.add(getPageHandler().makePopupLink(null, "Edit",
+							 editMenu, linkAttr));
         }
 
         if (pageStyle.okToShowMenu(entry, PageStyle.MENU_FEEDS)
@@ -2936,8 +2857,8 @@ public class PageHandler extends RepositoryManager {
             if (menuItems.size() > 0) {
                 menuItems.add(sep);
             }
-            menuItems.add(getPageHandler().makePopupLink(msg("Links"),
-                    exportMenu, menuClass, false, true));
+            menuItems.add(getPageHandler().makePopupLink(null, "Links",
+							 exportMenu, linkAttr));
         }
 
         if (pageStyle.okToShowMenu(entry, PageStyle.MENU_VIEW)
@@ -2945,8 +2866,8 @@ public class PageHandler extends RepositoryManager {
             if (menuItems.size() > 0) {
                 menuItems.add(sep);
             }
-            menuItems.add(getPageHandler().makePopupLink(msg("View"),
-                    viewMenu, menuClass, false, true));
+            menuItems.add(getPageHandler().makePopupLink(null, "View",
+							 viewMenu, linkAttr));
         }
 
         if (pageStyle.okToShowMenu(entry, PageStyle.MENU_OTHER)
@@ -3472,7 +3393,6 @@ public class PageHandler extends RepositoryManager {
         StringBuffer rightSide = new StringBuffer();
         rightSide.append("<b>Legends</b><br>");
         rightSide.append(OutputHandler.makeTabs(titles, tabs, true));
-
         mapInfo.addRightSide(
             getPageHandler().makeStickyPopup(
                 HU.img(
