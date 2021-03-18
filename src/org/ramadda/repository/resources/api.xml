@@ -76,7 +76,7 @@
   </group>
 
   <group handler="searchmanager">
-      <api request="/search/form"            method="processSearchForm"     name="Search" xtoplevel="true"  icon="/icons/magnifier.png"/>
+      <api request="/search/form"            method="processSearchForm"     name="Search" icon="/icons/magnifier.png"/>
       <api request="/search/do"              method="processEntrySearch"/>
       <api request="/search/browse"          method="processEntryBrowseSearchForm"   name="Browse"/>
       <api request="/search/suggest"          method="processEntrySuggest"/>
@@ -113,7 +113,7 @@
   <group handler="registrymanager">
       <api request="/registry/add"       method="processRegistryAdd"/>
       <api request="/registry/info"      method="processRegistryInfo"/>
-      <api request="/registry/list"      method="processRegistryList" toplevel="false" name="Repositories"/>
+      <api request="/registry/list"      method="processRegistryList"  name="Repositories"/>
       <api request="/admin/remoteservers"      method="processAdminRemoteServers"  name="Remote Servers" admin="true"/>
   </group>
 
