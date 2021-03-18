@@ -1342,6 +1342,8 @@ public class EntryManager extends RepositoryManager {
 
         }
         HU.formTableClose(sb);
+	//Add some space here so the map popup flows ok
+	sb.append("<div style='height:100px;'></div>");
 
         return group;
 
