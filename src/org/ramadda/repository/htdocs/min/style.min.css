@@ -481,7 +481,7 @@ a.ramadda-menubar-button:hover {
     padding-top:5px;
 }
 
-.ramadda-menubar-button-last, .ramadda-menubar-button:last-child {
+.ramadda-menubar-button-last {
     border-right:0px #ccc solid;
 }
 

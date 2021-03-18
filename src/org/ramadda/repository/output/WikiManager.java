@@ -5520,7 +5520,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         StringBuilder help        = new StringBuilder();
 
 	BiFunction<String,String,String> makeButton = (title,contents)->{
-	    return getPageHandler().makePopupLink(null,title,
+	    return getPageHandler().makePopupLink(null,HU.div(title,HU.cssClass("ramadda-menubar-button")),
                                                   HU.div(contents, "class='wiki-editor-popup'"),
 						  new NamedValue("linkAttributes", buttonClass));
 	};
