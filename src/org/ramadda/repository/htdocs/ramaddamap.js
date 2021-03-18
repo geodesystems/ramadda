@@ -2834,9 +2834,6 @@ RepositoryMap.prototype = {
         }
     },
 
-
-
-
     selectionPopupInit:  function() {
         if (!this.inited) {
             this.initMap(this.selectRegion);
@@ -2845,7 +2842,6 @@ RepositoryMap.prototype = {
             }
 
             if (this.fldNorth) {
-                // alert("north = " + this.fldNorth.obj.value);
                 this.setSelectionBox(this.fldNorth.obj.value,
 				     this.fldWest.obj.value, this.fldSouth.obj.value,
 				     this.fldEast.obj.value, true);
@@ -2856,6 +2852,7 @@ RepositoryMap.prototype = {
                 this.setSelectionMarker(this.fldLon.obj.value, this.fldLat.obj.value);
             }
         }
+	this.map.updateSize();
     },
 
     setSelectionBoxFromFields:  function(zoom) {
@@ -3153,8 +3150,6 @@ RepositoryMap.prototype = {
             }
         });
         _this.map.addControl(_this.selectorControl);
-
-
         _this.panControl = new OpenLayers.Control();
         OpenLayers.Util.extend(_this.panControl, {
             draw: function() {
@@ -3218,7 +3213,7 @@ RepositoryMap.prototype = {
                 }
             },
             move: function(pt) {
-                var ll = this.getMap().getLonLatFromPixel(new OpenLayers.Pixel(pt.x, pt.y));
+                var ll = _this.getMap().getLonLatFromPixel(new OpenLayers.Pixel(pt.x, pt.y));
                 ll = _this.transformProjPoint(ll);
                 dx = ll.lon - this.firstPoint.lon;
                 dy = ll.lat - this.firstPoint.lat;

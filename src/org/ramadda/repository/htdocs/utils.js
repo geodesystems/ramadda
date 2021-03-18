@@ -3155,6 +3155,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     makeDialog: function(args) {
 	hidePopupObject();
 	let opts  = {
+	    sticky:false,
 	    content:null,
 	    contentId:null,
 	    anchor:null,
@@ -3164,21 +3165,34 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    remove:true,
 	    my: "left top",
 	    at: "left bottom",	    
-	    title:""
+	    fit:null,
+	    title:"",
+	    inPlace:false,
+	    fit:false
 	};
+
 	if(args) {
 	    $.extend(opts, args);
 	}
-	let html = opts.content;
-	if(html == null) {
-	    if(opts.contentId) {
-		html = $("#" + opts.contentId).html();
-	    } else {
-		html = "No html provided";
-	    }
-	}
 	if(opts.anchor && (typeof opts.anchor=="string")) {
 	    opts.anchor = $("#"  + opts.anchor);
+	}
+
+	let parentId;
+	let html;
+	if(opts.inPlace) {
+	    opts.remove = false;
+	    parentId= HtmlUtils.getUniqueId();
+	    html = HU.div([ID,parentId,STYLE,HU.css()],HU.SPACE);
+	} else {
+	    html = opts.content;
+	    if(html == null) {
+		if(opts.contentId) {
+		    html = $("#" + opts.contentId).html();
+		} else {
+		    html = "No html provided";
+		}
+	    }
 	}
 	let id = HtmlUtils.getUniqueId();
 	if(opts.header) {
@@ -3195,7 +3209,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	if(opts.decorate || opts.header) {
 	    html = HU.div([CLASS,"ramadda-popup"], html);
 	}
-	let popup =   $(html).appendTo("body");
+	let popup=   $(html).appendTo("body");
 	if(opts.remove) {
 	    popup.attr("removeonclose","true");
 	}
@@ -3205,16 +3219,28 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    popup.show();
 	}
 	if(opts.anchor) {
-//	    console.log("my: " + opts.my +" at:" + opts.at);
+	    if(opts.width) {
+		popup.css("width",opts.width);
+	    }
 	    popup.position({
 		of: opts.anchor,
 		my: opts.my,
 		at: opts.at,
+		collision:opts.fit?"fit fit":null
 	    });
+//	    console.log(opts.my +" " + opts.at);
 	}
+	if(opts.inPlace) {
+	    let src =  $("#" + opts.contentId);
+	    let dest = $("#"+ parentId);
+	    dest.css("display","block").css("width","fit-content").css("height","fit-content");
+	    src.appendTo(dest);
+	    src.show();
+	}
+
 	if(opts.draggable) {
 	    popup.draggable();
-	} else {
+	} else if(!opts.sticky) {
 	    popupObject = popup;
 	}
 	if(opts.header) {
@@ -3223,6 +3249,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		if(opts.callback) opts.callback(popup);
 		if(opts.remove) popup.remove();
 	    });
+	}
+	if(opts.initCall) {
+	    if(typeof opts.initCall == "string") {
+		eval(opts.initCall);
+	    } else {
+		opts.initCall();
+	    }
 	}
 	return popup;
     },

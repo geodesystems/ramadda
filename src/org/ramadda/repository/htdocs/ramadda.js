@@ -738,8 +738,6 @@ function checkToHidePopup() {
 function showStickyPopup(event, srcId, popupId, alignLeft) {
     var myalign = 'left top';
     var atalign = 'left top';
-
-
     $("#" + popupId).show("slow");
     $("#" + popupId).position({
         of: jQuery("#" + srcId),

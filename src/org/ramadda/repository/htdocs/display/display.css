@@ -2442,7 +2442,7 @@ table.dataTable tfoot td {
 }
 
 .display-simplesearch-entry:hover a {
-    color: rgb(56,132,255) !important;
+    color: #0074D9 !important;
 }
 
 

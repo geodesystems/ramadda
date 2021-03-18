@@ -22,16 +22,20 @@ h3 {
     margin-bottom:4px;    
 }
 p {margin-top:1.5em;}
-a {color: #000; text-decoration: underline;}
-a.btn:link {color: #000;}
 
 a {
-    text-decoration: none;
+    color: #000;
+    text-decoration: underline;
 }
 
+
 a:hover {
-    text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
+    color:#0074D9;    cursor:pointer;
 }
+
+
+a.btn:link {color: #000;}
+
 
 h2 a,   h2 a:visited, h2 a:link  {color: #000;}
 
@@ -198,19 +202,23 @@ i.fa, i.fas,i.fab {
 
 
 .ramadda-highlightable:hover span i {
-    color: rgb(56,132,255) !important;
+    color: #0074D9 !important;
 }
 
 a:hover span i {
-    color: rgb(56,132,255) !important;
+    color: #0074D9 !important;
 }
 
 .ramadda-nav-popup-link span i:hover {
-    color: rgb(56,132,255) !important;
+    color: #0074D9 !important;
+}
+
+a.ramadda-highlightable:hover  {
+    color: #0074D9 !important;
 }
 
 .ramadda-popup-link:hover  span i:hover {
-    color: rgb(56,132,255) !important;
+    color: #0074D9 !important;
 }
 
 .ramadda-nav-horizontal {
@@ -222,11 +230,11 @@ a:hover span i {
 }
 
 .ramadda-nav-horizontal .ramadda-links a:hover {
-text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
+text-decoration:none; color:#0074D9;    cursor:pointer;
 }
 
 .ramadda-nav-link:hover {
-text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
+text-decoration:none; color:#0074D9;    cursor:pointer;
 }
 
 
@@ -331,11 +339,11 @@ text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
 
 
 a span i:hover  {
-    color: rgb(56,132,255) !important;
+    color: #0074D9 !important;
 }
 
 .ramadda-nav-left-toggle i:hover  {
-    color: rgb(56,132,255) !important;
+    color: #0074D9 !important;
 }
 
 .ramadda-nav-right {
@@ -349,7 +357,7 @@ a span i:hover  {
 }
 
 .ramadda-nav-arrow:hover {
-    text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
+    text-decoration:none; color:#0074D9;    cursor:pointer;
 }
 
 
@@ -379,13 +387,13 @@ a.ramadda-nav-link-0, a.ramadda-nav-link-0:visited, .ramadda-nav-left h3 a, .ram
 
 .ramadda-nav-page-decorated:hover {
     /*border: 1px solid #aaa;*/
-    border:1px solid rgb(56,132,255);
+    border:1px solid #0074D9;
 }
 
 .
 
 .ramadda-nav-page:hover i {
-    color:rgb(56,132,255);
+    color:#0074D9;
 }
 
 .ramadda-nav-page-label {
@@ -2229,8 +2237,8 @@ a.btn-primary:link, a.btn-primary  {
     cursor:pointer;
 }
 
-.ramadda-link:hover, a:hover {
-    text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
+.ramadda-link:hover {
+    text-decoration:none; color:#0074D9;    cursor:pointer;
 }
 
 
@@ -2270,7 +2278,7 @@ a.btn-primary:link, a.btn-primary  {
 
 
 .ramadda-popup-header a:hover, .ramadda-popup-header .ramadda-link:hover {
-    color: rgb(56,132,255) !important;
+    color: #0074D9 !important;
 }
 
 
@@ -2543,7 +2551,7 @@ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;
 }
 
 .ramadda-header a:hover  {
-    text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
+    text-decoration:none; color:#0074D9;    cursor:pointer;
 }
 
 .ramadda-header-layoutbar {
@@ -2612,7 +2620,7 @@ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;
 
 .ramadda-breadcrumbs-menu-button:hover {
     background-color:#ccc;
-    border-color: rgb(56,132,255);
+    border-color: #0074D9;
 }
 
 .breadcrumbs {
@@ -2627,7 +2635,7 @@ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;
 }
 
 .breadcrumbs a:hover {
-    text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
+    text-decoration:none; color:#0074D9;    cursor:pointer;
 }
 
 
@@ -2701,7 +2709,7 @@ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;
 
 
 .ramadda-user-link:hover, .ramadda-user-link:hover span i, .ramadda-user-link span i:hover {
-    color: rgb(56,132,255) !important;
+    color: #0074D9 !important;
 }
 
 .ramadda-user-link:last-child {
@@ -2940,7 +2948,7 @@ a.ramadda-entries-link {
 
 
 .ramadda-menuitem:hover span i {
-    color: rgb(56,132,255) !important;
+    color: #0074D9 !important;
 }
 
 .ramadda-menuitem-separator {
@@ -2968,7 +2976,7 @@ a.ramadda-menuitem-link {
 
 
 a.ramadda-menuitem-link:hover {
-text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
+text-decoration:none; color:#0074D9;    cursor:pointer;
 }
 
 
@@ -3114,7 +3122,7 @@ a.image-link {
 }
 
 .sortlink a:hover {
-    color:rgb(56,132,255);
+    color:#0074D9;
 }
 
 .sortlinkon  {
@@ -3180,7 +3188,7 @@ snippet-hide {
 }
 
 .subnav a:hover  {
-    text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
+    text-decoration:none; color:#0074D9;    cursor:pointer;
 }
 
 .subnavoncomp  {
@@ -3223,7 +3231,7 @@ snippet-hide {
 }
 
 .subnavoffcomp a:hover {
-    text-decoration:none; color:rgb(56,132,255);    cursor:pointer;
+    text-decoration:none; color:#0074D9;    cursor:pointer;
 }
 
 .cimg {
