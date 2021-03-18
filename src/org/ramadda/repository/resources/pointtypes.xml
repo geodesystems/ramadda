@@ -57,7 +57,7 @@
 
 
 
-  <type name="type_point_fetch"  description="Fetch Points" super="type_point" foruser="true" handler="org.ramadda.geodata.point.FetchPointTypeHandler"
+  <type name="type_point_fetch"  description="Fetch Points" super="type_point" foruser="true" handler="org.ramadda.data.services.FetchPointTypeHandler"
 	priority="4"	
 	help="Downloads the given URL every once in a while"
 >
@@ -79,7 +79,7 @@
      </type>
 
 
-     <type name="type_point_inline"  description="Inline Point File" super="type_point" foruser="true" handler="org.ramadda.geodata.point.InlinePointTypeHandler"
+     <type name="type_point_inline"  description="Inline Point File" super="type_point" foruser="true" handler="org.ramadda.data.services.types.InlinePointTypeHandler"
 priority="3"
 	help="Contains structured CSV data"
 	   >
