@@ -3156,22 +3156,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                       List<Link> links)
                     throws Exception {
                 if (fileListingOK(request)) {
-                    for (Entry entry : state.getAllEntries()) {
-                        if (entry.getResource().isFile()) {
-                            links.add(makeLink(request, state.getEntry(),
-					       OUTPUT_FILELISTING));
-
-                            break;
-                        }
-                    }
+		    links.add(makeLink(request, state.getEntry(),
+				       OUTPUT_FILELISTING));
                 }
             }
 
             private boolean fileListingOK(Request request) {
-                if (true) {
-                    return true;
-                }
-
                 return request.getUser().getAdmin()
                        || ( !request.getUser().getAnonymous()
                             && getProperty(PROP_ENABLE_FILE_LISTING, false));
@@ -3220,7 +3210,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                             request, child));
                     sb.append(
                         formatFileLength(
-                            entry.getResource().getFileSize(), true));
+					 child.getResource().getFileSize(), true));
                     sb.append(HtmlUtils.br());
                     didOne = true;
                 }

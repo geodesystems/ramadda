@@ -1836,7 +1836,7 @@ public class HtmlOutputHandler extends OutputHandler {
                     if (entry.isFile()) {
                         tableSB.append(
                             HU.col(formatFileLength(
-                                entry.getResource().getFileSize()) + " "
+						    entry.getResource().getFileSize()) + " "
                                     + downloadLink, " align=right nowrap "));
                     } else {
                         tableSB.append(HU.col("NA", " align=right nowrap "));
