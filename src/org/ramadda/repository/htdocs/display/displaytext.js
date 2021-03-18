@@ -846,7 +846,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    }
 		    if(!handleSelectOnClick)
 			recordStyle+=HU.css("cursor","default");
-		    var tag = HU.openTag("div",[CLASS,"display-template-record",STYLE,recordStyle, ID, this.getId() +"-" + record.getId(), TITLE,"",RECORD_ID,record.getId(),RECORD_INDEX, recordrowIdx]);
+		    var tag = HU.openTag("div",[CLASS,"display-template-record",STYLE,recordStyle, ID, this.getId() +"-" + record.getId(), TITLE,"",RECORD_ID,record.getId(),RECORD_INDEX, rowIdx]);
 		    s = macros.apply(rowAttrs);
 		    if(s.startsWith("<td")) {
 			s = s.replace(/<td([^>]*)>/,"<td $1>"+tag);
