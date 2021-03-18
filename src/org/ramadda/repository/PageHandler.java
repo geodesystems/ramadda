@@ -95,8 +95,6 @@ public class PageHandler extends RepositoryManager {
     /** _more_ */
     private List<MapRegion> mapRegions = new ArrayList<MapRegion>();
 
-
-
     /** _more_ */
     public static final String MSG_PREFIX = "<msg ";
 
@@ -475,9 +473,7 @@ public class PageHandler extends RepositoryManager {
             }
         }
 
-
         StringBuilder extra = new StringBuilder();
-
         String userLinkTemplate =
             "<div onClick=\"document.location=\'${url}\'\"  class=\"ramadda-user-link\">${label}</div>";
         List<String> allLinks = new ArrayList<String>();
@@ -485,11 +481,9 @@ public class PageHandler extends RepositoryManager {
                                             msg("Search"), "class",
                                             "ramadda-user-menu-image", "id",
                                             "searchlink");
-
         List<String> navLinks = getNavLinks(request, userLinkTemplate);
         List<String> userLinks = getUserLinks(request, userLinkTemplate,
                                      extra, true);
-
         allLinks.addAll(navLinks);
         allLinks.addAll(userLinks);
 
@@ -497,12 +491,9 @@ public class PageHandler extends RepositoryManager {
             HU.faIcon("fa-cog", "title",
                              msg("Login, user settings, help"), "class",
                              "ramadda-user-menu-image");
-
-
         String menuHtml =
             HU.div(StringUtil.join("", allLinks),
                           HU.cssClass("ramadda-user-menu"));
-
 
         if (showSearch) {
             String searchLink =
@@ -511,14 +502,12 @@ public class PageHandler extends RepositoryManager {
 	    String searchAnchor = HU.span("",HU.attrs("id","popupanchor","style","position:relative;"));
             extra.append(searchLink);    
             extra.append(searchAnchor);
-            extra.append(HU.space(2));
+            extra.append(HU.SPACE2);
         }
-
 
 	popupImage = HtmlUtils.div(popupImage, HtmlUtils.cssClass("ramadda-popup-link"));
 	extra.append(makePopupLink(null, popupImage, menuHtml, arg("my","right top"),arg("at","left bottom"), arg("animate",false)));
         menuHtml = HU.div(extra.toString(), HU.clazz("ramadda-user-menu"));
-        long     t1     = System.currentTimeMillis();
 
         String[] macros = new String[] {
             MACRO_LOGO_URL, logoUrl, MACRO_LOGO_IMAGE, logoImage,
@@ -1654,7 +1643,7 @@ public class PageHandler extends RepositoryManager {
             return msg;
         }
 
-        return Utils.concatString(msg(msg), ":", HU.space(1));
+        return Utils.concatString(msg(msg), ":", HU.SPACE);
     }
 
     /**
@@ -1818,14 +1807,22 @@ public class PageHandler extends RepositoryManager {
 	try {
             String compId = "menu_" + HU.blockCnt++;
             String linkId = "menulink_" + HU.blockCnt++;
-	    String header=null;
 	    String linkAttributes="";
 	    List<String> attrs = (List<String>) Utils.makeList("contentId",HU.squote(compId),"anchor",HU.squote(linkId));
 	    boolean seenAnimate = false;
+	    boolean inPlace =false;
+	    String extraCode = "";
 	    for(NamedValue v:args) {
 		if(v.getName().equals("linkAttributes")) {
 		    linkAttributes = v.getValue().toString();
 		    continue;
+		}
+		if(v.getName().equals("extraCode")) {
+		    extraCode = v.getValue().toString();
+		    continue;
+		}		
+		if(v.getName().equals("inPlace")) {
+		    inPlace = (Boolean)v.getValue();
 		}
 		Object o = v.getValue();
 		if(o==null) continue;
@@ -1845,10 +1842,16 @@ public class PageHandler extends RepositoryManager {
 
 	    String callArgs = Json.map(attrs);
 	    String call = "HtmlUtils.makeDialog(" + callArgs+");";
-            String onClick = HU.onMouseClick(call);
+            String onClick = HU.onMouseClick(call+extraCode);
             String href = HU.div(link,HU.cssClass("ramadda-popup-link") +linkAttributes + onClick + HU.id(linkId));
-
-	    String contents = makePopupDiv(menuContents, compId, false,  header);
+	    String contents;
+	    if(inPlace) {
+		contents = HU.div(menuContents,
+                                  HU.id(compId)
+                                  + HU.attr("style", "display:none;"));
+	    } else {
+		contents= makePopupDiv(menuContents, compId, false,  null);
+	    }
 	    if(popup!=null) {
 		popup.append(contents);
 		return href;
@@ -1858,64 +1861,6 @@ public class PageHandler extends RepositoryManager {
             throw new RuntimeException(ioe);
         }
     }
-
-
-
-    /**
-     * _more_
-     *
-     * @param link _more_
-     * @param innerContents _more_
-     * @param initCall _more_
-     *
-     * @return _more_
-     */
-    public String makeStickyPopup(String link, String innerContents,
-                                  String initCall) {
-        boolean alignLeft = true;
-        String  compId    = "menu_" + HU.blockCnt++;
-        String  linkId    = "menulink_" + HU.blockCnt++;
-        String  contents  = makeStickyPopupDiv(innerContents, compId);
-        String onClick =
-            HU.onMouseClick(HU.call("showStickyPopup",
-                HU.comma(new String[] { "event",
-                HU.squote(linkId), HU.squote(compId), (alignLeft
-                ? "1"
-                : "0") })) + initCall);
-        String href = HU.href("javascript:noop();", link,
-                                     onClick + HU.id(linkId));
-
-        return href + contents;
-    }
-
-
-
-    /**
-     * _more_
-     *
-     * @param contents _more_
-     * @param compId _more_
-     *
-     * @return _more_
-     */
-    public String makeStickyPopupDiv(String contents, String compId) {
-        StringBuilder menu = new StringBuilder();
-        String cLink = HU.jsLink(
-                           HU.onMouseClick(
-                               HU.call(
-                                   "hideElementById",
-                                   HU.squote(compId))), getIconImage(
-                                       ICON_CLOSE, "title", "Close", "class",
-                                       "ramadda-popup-close"), "");
-        contents = cLink + HU.br() + contents;
-
-        menu.append(HU.div(contents,
-                                  HU.id(compId)
-                                  + HU.cssClass(CSS_CLASS_POPUP)));
-
-        return menu.toString();
-    }
-
 
 
 
@@ -2109,13 +2054,7 @@ public class PageHandler extends RepositoryManager {
      */
     private List<String> getNavLinks(Request request, String template) {
         List<String> links   = new ArrayList<String>();
-        boolean      isAdmin = false;
-        if (request != null) {
-            User user = request.getUser();
-            isAdmin = user.getAdmin();
-        }
-
-
+        boolean      isAdmin = request==null?false:request.isAdmin();
         ApiMethod homeApi = getRepository().getApiManager().getHomeApi();
         for (ApiMethod apiMethod :
                 getRepository().getApiManager().getTopLevelMethods()) {
@@ -2133,20 +2072,16 @@ public class PageHandler extends RepositoryManager {
             } else {
                 url = request.makeUrl(apiMethod.getUrl());
             }
-
             if (icon != null) {
                 label = getIconImage(icon) + " " + label;
             }
 
             String html = template.replace("${url}", url);
             html = html.replace("${label}", label);
-
             html = html.replace("${topgroup}",
                                 request.getRootEntry().getName());
             links.add(html);
         }
-
-
         return links;
     }
 
@@ -3389,15 +3324,18 @@ public class PageHandler extends RepositoryManager {
             }
             mapLayer.addToMap(request, mapInfo);
         }
+	titles.add("Some title here");
+	tabs.add("Some content here");
+	titles.add("Some title here");
+	tabs.add("Some content here");
+	titles.add("Some title here");
+	tabs.add("Some content here");
 
         StringBuffer rightSide = new StringBuffer();
         rightSide.append("<b>Legends</b><br>");
         rightSide.append(OutputHandler.makeTabs(titles, tabs, true));
-        mapInfo.addRightSide(
-            getPageHandler().makeStickyPopup(
-                HU.img(
-                    getRepository().getFileUrl(
-                        "/icons/map_go.png")), rightSide.toString(), null));
+	String popupLink = HtmlUtils.div(HU.img("fas fa-layer-group"), HtmlUtils.cssClass("ramadda-popup-link"));
+        mapInfo.addRightSide(makePopupLink(null, popupLink, rightSide.toString(), arg("width","500px"),arg("animate", false),arg("my","right top"), arg("at","left top"),arg("draggable",true),arg("inPlace",true),arg("header",true),arg("fit",true),arg("sticky",true)));
     }
 
 
@@ -3437,7 +3375,6 @@ public class PageHandler extends RepositoryManager {
         return repository.makeTypeSelect(items, request, false, selected,
                                          false, null);
     }
-
 
     /**
      * _more_
@@ -3545,7 +3482,6 @@ public class PageHandler extends RepositoryManager {
         } else {
             HU.sectionTitle(sb, msg(title));
         }
-
     }
 
     /**
@@ -3583,7 +3519,6 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-
     /**
      * _more_
      *
@@ -3592,39 +3527,6 @@ public class PageHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        String dummy =
-            "big long string big long string big long string big long string big long string big long string big long string big long string big long string big long string big long string big long string big long string big long string big long string big long string ";
-
-        /*
-Time:499 cnt:1000
-Time:1129 cnt:2000
-Time:2534 cnt:3000
-Time:4517 cnt:4000
-Time:7226 cnt:5000
-Time:10535 cnt:6000
-Time:14625 cnt:7000
-        */
-
-        for (int j = 1; j < 10; j++) {
-            StringBuffer s = new StringBuffer();
-            for (int i = 0; i < j * 1000; i++) {
-                s.append(dummy);
-                String msg = "msg " + i;
-                s.append(MSG_PREFIX + msg + MSG_SUFFIX);
-            }
-            s.append(dummy);
-            long   t1 = System.currentTimeMillis();
-            String r1 = replaceMsgOld(s.toString(), null);
-            long   t2 = System.currentTimeMillis();
-            String r2 = replaceMsgNew(s.toString(), null);
-            long   t3 = System.currentTimeMillis();
-            if ( !r1.equals(r2)) {
-                System.err.println("bad:" + r1.length() + "  r2:"
-                                   + r2.length() + " " + r1.equals(r2));
-            }
-            System.err.println(" cnt:" + (j * 1000) + " " + (t2 - t1) + " "
-                               + (t3 - t2));
-        }
     }
 
     /**

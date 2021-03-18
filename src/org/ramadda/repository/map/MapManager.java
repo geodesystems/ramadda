@@ -1473,17 +1473,17 @@ public class MapManager extends RepositoryManager implements WikiConstants {
 
         }
 
-        if ((map.getHtml().length() == 0) && (catMap.size() == 0)) {
-            listentries = false;
-        }
         if (request.defined("map_layer")) {
             map.addProperty("defaultMapLayer",
                             Json.quote(request.getString("map_layer", "")));
         }
-
+	String mapHtml = map.getHtml();
+        if ((mapHtml.length() == 0) && (catMap.size() == 0)) {
+            listentries = false;
+        }
         String extra = map.getExtraNav();
         layoutMap(request, sb, map, listentries, numEntries, listwidth,
-                  height, categories, catMap, map.getHtml(), navTop, extra);
+                  height, categories, catMap, mapHtml, navTop, extra);
 
         String js = "highlightMarkers('." + map.getVariableName()
                     + " .ramadda-earth-nav', " + map.getVariableName()
