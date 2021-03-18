@@ -5496,7 +5496,37 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+    public String getPopupLink(Request request, Entry entry,
+			       String linkText) throws Exception {
+	
+        String        entryIcon = HU.getIconImage(getPageHandler().getIconUrl(request, entry));
+	String link = entryIcon+HU.SPACE+linkText;
+	StringBuilder inner = new StringBuilder();
+	String snippet = getWikiManager().getSnippet(request, entry, true);
+	if(Utils.stringDefined(snippet)) {
+	    HU.div(inner,snippet,HU.cssClass("ramadda-snippet"));
+	}
+	if (entry.isImage()) {
+	    String img  = getEntryResourceUrl(request, entry);
+	    inner.append(HU.center(HU.img(img,"",HU.attr("width","90%") + HU.style("max-width","400px"))));
+	}
 
+	List<Entry> children = getChildren(request, entry);
+	for (Entry child : getEntryUtil().sortEntriesOnName(children,false)) {
+	    String url       = getEntryUrl(request, child);
+	    String linkLabel = child.getName();
+	    linkLabel =
+		HU.img(getPageHandler().getIconUrl(request,
+						   child)) + HU.space(1) + linkLabel;
+	    String href = HU.href(url, linkLabel,HU.attrs("title",child.getName()));
+	    inner.append(HU.div(href,HU.attrs("class","ramadda-menu-item")));
+	}
+	String html =HU.div(inner.toString(),HU.style("min-width","300px","max-height","200px","overflow-y","auto"));
+	String title = HU.div(entryIcon+HU.SPACE+HU.href(getEntryUrl(request, entry),entry.getName()),HU.style("margin-left","20px","margin-right","20px"));
+        String menuLink = getPageHandler().makePopupLink(null, link, html,arg("title", title), arg("draggable",true),arg("header",true),arg("decorate",true));
+	return menuLink;
+
+    }
 
 
     /**

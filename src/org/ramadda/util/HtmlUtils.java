@@ -1152,8 +1152,10 @@ public class HtmlUtils implements HtmlUtilsConstants {
      *
      * @return _more_
      */
-    public static String style(String c) {
-        return attr(ATTR_STYLE, c);
+    public static String style(String ...args) {
+	if(args.length==1) 
+	    return attr(ATTR_STYLE, args[0]);
+	return attr(ATTR_STYLE,css(args));
     }
 
     /**

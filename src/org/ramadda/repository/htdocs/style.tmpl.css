@@ -3556,11 +3556,11 @@ nowiki {
     table-layout: fixed;
 }
 
+
 .calnavtable {
-    border-color: #888;
-    border-width: 1px 1px 1px 1px;
-    border-style: solid;
+    border-width: 0px;
 }
+
 
 .calnavday, .calheader, .calentry, .daycalendartable td, .dategrid>tr>td  {
     border-color: #888;
@@ -3576,7 +3576,7 @@ nowiki {
 .calheader {
     padding-top:10px;
     padding-left:10px;
-    background-color:#c3d9ff;
+    background-color:@CAL-BACKGROUND@;
     font-weight: bold;
 }
 
@@ -3608,21 +3608,28 @@ nowiki {
 .calnavmonthheader {
     border-width: 0px 0px 0 0;
     text-align:center;
-    background-color:#c3d9ff;
+    background-color:@CAL-BACKGROUND@;
     font-weight: bold;
-    font-size: 8pt;
+    font-size: @CAL-FONT-SIZE@;
+}
+
+.calnavmonthheader a {
+    text-decoration:none;
+}
+.calnavmonthheader a:hover {
+    @I-HOVER@
 }
 
 .calnavdayheader {
     text-align:center;
-    background-color:#c3d9ff;
+    background-color:@CAL-BACKGROUND@;
     font-weight: bold;
-    font-size: 8pt;
+    font-size: @CAL-FONT-SIZE@;
 }
 
 .calnavday {
     text-align:right;
-    font-size: 8pt;
+    font-size: @CAL-FONT-SIZE@;
     background-color:#fff;
     padding-left:20px;
     padding-top:5px;
@@ -3630,13 +3637,13 @@ nowiki {
 }
 
 .calnavoffday a, .calnavtheday a {
-    font-size: 8pt;
+    font-size: @CAL-FONT-SIZE@;
 }
 
 .calnavtheday {
     text-align:right;
-    font-size: 8pt;
-    background-color:#c3d9ff;
+    font-size: @CAL-FONT-SIZE@;
+    background-color:@CAL-BACKGROUND@;
     padding-left:20px;
     padding-top:5px;
     padding-right:1px;
@@ -3645,7 +3652,7 @@ nowiki {
 
 .calnavoffday {
     text-align:right;
-    font-size: 8pt;
+    font-size: @CAL-FONT-SIZE@;
     background-color:#cccccc;
     padding-left:20px;
     padding-top:5px;

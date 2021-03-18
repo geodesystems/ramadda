@@ -126,6 +126,7 @@ public class CalendarOutputHandler extends OutputHandler {
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_CALENDAR);
 
+    
 
     /** _more_ */
     public static final OutputType OUTPUT_TIMELINE =
@@ -233,22 +234,15 @@ public class CalendarOutputHandler extends OutputHandler {
             return timelineResult;
         }
 
-
-
         StringBuffer sb = new StringBuffer();
-        //        sb.append(getRepository().getHtmlOutputHandler().getHtmlHeader(request, group));
         showNext(request, subGroups, entries, sb);
         entries.addAll(subGroups);
         Result result;
         if (outputType.equals(OUTPUT_DATE_GRID)) {
             result = outputDateGrid(request, group, entries, sb);
         } else if (outputType.equals(OUTPUT_TIMELINE)) {
-            //            sb.append(getHtmlHeader(request,  group));
             List allEntries = new ArrayList(entries);
-            //            makeTimeline(request, allEntries, sb, "height: 300px;");
             getPageHandler().entrySectionOpen(request, group, sb, "Timeline");
-	    
-
             makeTimeline(request, group, allEntries, sb, "height: 300px;",
                          new Hashtable());
             getPageHandler().entrySectionClose(request, group, sb);
@@ -669,7 +663,6 @@ public class CalendarOutputHandler extends OutputHandler {
         outputCalendar(request, makeCalendarEntries(request, entries), sb,
                        request.defined(ARG_DAY));
         getPageHandler().entrySectionClose(request, group, sb);
-
         return new Result(msg("Calendar"), sb);
     }
 
@@ -697,8 +690,7 @@ public class CalendarOutputHandler extends OutputHandler {
             String url =
                 HtmlUtils.nobr(getEntryManager().getAjaxLink(request, entry,
 							     label, null, true, null, false, true).toString());
-
-
+	    url = getEntryManager().getPopupLink(request, entry, label);
             calEntries.add(new CalendarEntry(entryDate, url, entry));
         }
 
@@ -869,9 +861,13 @@ public class CalendarOutputHandler extends OutputHandler {
         }
 
 
-        String[] navIcons = { "/icons/prevprev.gif", "/icons/prev.gif",
+        String[] navIconolds = { "/icons/prevprev.gif", "/icons/prev.gif",
                               "/icons/today.gif", "/icons/next.gif",
                               "/icons/nextnext.gif" };
+
+        String[] navIcons = { "fas fa-backward", "fas fa-step-backward",
+                              "fas fa-stop", "fas fa-step-forward",
+                              "fas fa-forward" };	
 
 
         String[]          navLabels;
@@ -964,7 +960,7 @@ public class CalendarOutputHandler extends OutputHandler {
             sb.append(HtmlUtils.p());
             sb.append(
                 "<table  width=100% border=0 cellpadding=10><tr valign=top><td width=200>");
-            getPageHandler().createMonthNav(sb, cal.getTime(),
+            getDateHandler().createMonthNav(sb, cal.getTime(),
                                             request.getUrl(), dates);
             sb.append("</td><td>");
             if (request.isMobile()) {
@@ -976,9 +972,10 @@ public class CalendarOutputHandler extends OutputHandler {
             request.put(ARG_DAY, selected[IDX_DAY]);
             //            sb.append(HtmlUtils.b(StringUtil.join(HtmlUtils.space(1),
             //                    navList)));
-            sb.append(
-                HtmlUtils.href(
-                    monthUrl, HtmlUtils.b(headerSdf.format(cal.getTime()))));
+	    //            sb.append(
+	    //                HtmlUtils.href(
+	    //                    monthUrl, HtmlUtils.b(headerSdf.format(cal.getTime()))));
+	    sb.append(HtmlUtils.b(headerSdf.format(cal.getTime())));
             if (dayItems.size() == 0) {
                 sb.append("<p>No Entries");
             } else {

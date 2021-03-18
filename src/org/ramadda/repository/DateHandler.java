@@ -131,6 +131,7 @@ public class DateHandler extends RepositoryManager {
                                Hashtable dayLinks)
             throws Exception {
 
+
         GregorianCalendar cal =
             new GregorianCalendar(RepositoryUtil.TIMEZONE_DEFAULT);
         cal.setTime(date);
@@ -156,15 +157,13 @@ public class DateHandler extends RepositoryManager {
         String[] dayNames = {
             "Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"
         };
-        String prevUrl = HU.space(1)
-                         + HU.href(
-                             url + "&"
-                             + CalendarOutputHandler.getUrlArgs(
-                                 prev), "&lt;");
+
+        String prevUrl = HU.SPACE
+	    + HU.href(url + "&"+ CalendarOutputHandler.getUrlArgs(prev), HU.getIconImage("fas fa-caret-left"));
         String nextUrl =
             HU.href(
                 url + "&" + CalendarOutputHandler.getUrlArgs(next),
-                HU.ENTITY_GT) + HU.space(1);
+                HU.getIconImage("fas fa-caret-right")) + HU.SPACE;
         HU.open(sb, HU.TAG_TR, HU.ATTR_VALIGN,
                        HU.VALUE_TOP);
         HU.open(sb, HU.TAG_TD, HU.ATTR_COLSPAN, "7",
@@ -177,16 +176,17 @@ public class DateHandler extends RepositoryManager {
                        "100%");
         HU.open(sb, HU.TAG_TR);
         HU.col(sb, prevUrl,
-                      HU.attrs(HU.ATTR_WIDTH, "1",
+	       HU.attrs("nowrap","true",HU.ATTR_WIDTH, "1",
                                       HU.ATTR_CLASS,
                                       "calnavmonthheader"));
-        HU.col(
-            sb, DateUtil.MONTH_NAMES[cal.get(cal.MONTH)] + HU.space(1)
-            + theYear, HU.attr(
-                HU.ATTR_CLASS, "calnavmonthheader"));
+	int month = cal.get(cal.MONTH);
+	String monthHref= HU.href(url+"&month=" + month +"&year=" + theYear,
+				  DateUtil.MONTH_NAMES[month] + HU.SPACE
+				  + theYear);
+	HU.col(sb, monthHref, HU.attr(HU.ATTR_CLASS, "calnavmonthheader"));
 
         HU.col(sb, nextUrl,
-                      HU.attrs(HU.ATTR_WIDTH, "1",
+	       HU.attrs("nowrap","true",HU.ATTR_WIDTH, "1",
                                       HU.ATTR_CLASS,
                                       "calnavmonthheader"));
         HU.close(sb, HU.TAG_TABLE);
