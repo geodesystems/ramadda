@@ -1431,8 +1431,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                                    !getTestMode()
                                    && (groupTemplate.indexOf("${dirgroup}")
                                        >= 0));
-            //Don't do this as it ends up with multiple dir entrys if there is a "." in the dir name
-            //            dirGroup = SqlUtil.cleanName(dirGroup);
             dirGroup = dirGroup.replace("\\", "/");
         }
 
