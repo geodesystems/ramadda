@@ -838,6 +838,8 @@ public class WikiUtil {
 
                 String tline = line.trim();
 
+
+
                 if (tline.startsWith("{{")) {
                     buff.append(tline);
                     buff.append("\n");
@@ -894,6 +896,42 @@ public class WikiUtil {
 		    HU.close(buff,"div","li","\n");
 		    continue;
 		}
+
+
+		if (tline.startsWith("+popup")) {
+		    List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+		    Hashtable props = HU.parseHtmlProperties(toks.size()>1?toks.get(1):"");
+		    String icon = (String) props.get("icon");
+		    String link =  Utils.getProperty(props,"link","");
+		    if(icon!=null) link = HU.image(handler.getWikiImageUrl(this, icon, props))+HU.SPACE + link;
+		    else if(link.length()==0) link = "Link";
+		    NamedValue[]args = new NamedValue[]{
+			arg("title",Utils.getProperty(props,"title",null)),
+ 			arg("header",Utils.getProperty(props,"header","false")),
+			arg("decorate",Utils.getProperty(props,"decorate","true")),
+			arg("animate",Utils.getProperty(props,"animate","false")),
+			arg("my",Utils.getProperty(props,"my",null)),
+			arg("at",Utils.getProperty(props,"at",null)),
+			arg("draggable",Utils.getProperty(props,"draggable","false")),
+			arg("sticky",Utils.getProperty(props,"sticky","false")),									
+		    };
+		    String []tuple=HtmlUtils.makePopupLink(link, args);
+		    String compId = tuple[0];
+		    buff.append(tuple[1]);
+		    HU.open(buff,"div",
+                                  HU.id(compId)
+                                  + HU.attr("style", "display:none;")
+                                  + HU.cssClass(HU.CSS_CLASS_POPUP));
+		    buff.append("<div>");
+		    continue;
+		}
+
+
+		if (tline.startsWith("-popup")) {
+		    buff.append("</div>");
+		    buff.append("</div>");
+		    continue;
+		}		
 
 		if (tline.startsWith("+menuitem")) {
                     List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
@@ -2735,7 +2773,7 @@ public class WikiUtil {
         s = sb.toString();
 
 
-        if ((headingsNav != null) && (headings2.size() > 0)) {
+        if (headingsNav != null) {
             StringBuilder hb = new StringBuilder();
             boolean left = "true".equals(Utils.getProperty(headingsProps,
                                "navleft", "false"));
@@ -3059,6 +3097,11 @@ public class WikiUtil {
         return notTags;
     }
 
+
+
+    public NamedValue arg(String name, Object value) {
+	return new NamedValue(name, value);
+    }
 
 
     /**
