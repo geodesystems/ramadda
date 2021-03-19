@@ -91,11 +91,32 @@ CREATE TABLE  metadata (id varchar(200),
 			entry_id varchar(200),
                         type varchar(200),
                 	inherited int,
-                        attr1 varchar(5000),
-                        attr2 varchar(5000),
-                        attr3 varchar(5000),
-                        attr4 varchar(5000),
+                        attr1 varchar(32000),
+                        attr2 varchar(32000),
+                        attr3 varchar(32000),
+                        attr4 varchar(32000),
 		        extra ramadda.bigclob);
+
+
+
+#if  derby 
+     alter table metadata alter  attr1 set data type varchar(32000);
+     alter table metadata alter  attr2 set data type varchar(32000);
+     alter table metadata alter  attr3 set data type varchar(32000);
+     alter table metadata alter  attr4 set data type varchar(32000);     
+#endif
+
+#if comment
+TODO: add mysql, oracle and h2
+#endif
+
+#if postgres
+--     alter table metadata modify column attr1 varchar(32000);
+--     alter table metadata modify column attr2 varchar(32000);
+--     alter table metadata modify column attr3 varchar(32000);
+--     alter table metadata modify column attr4 varchar(32000);
+#endif
+
 
 
 CREATE INDEX METADATA_INDEX_ID ON metadata (ID);
