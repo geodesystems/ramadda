@@ -1016,9 +1016,10 @@ public class Column implements DataTypes, Constants, Cloneable {
      */
     public boolean isString() {
         return isType(DATATYPE_STRING) || isEnumeration()
-               || isType(DATATYPE_CLOB) || isType(DATATYPE_JSONLIST)
-               || isType(DATATYPE_ENTRY) || isType(DATATYPE_EMAIL)
-               || isType(DATATYPE_URL) || isType(DATATYPE_LIST);
+	    || isType(DATATYPE_CLOB) || isType(DATATYPE_JSONLIST)
+	    || isType(DATATYPE_ENTRY) || isType(DATATYPE_EMAIL)
+	    || isType(DATATYPE_WIKI)	    
+	    || isType(DATATYPE_URL) || isType(DATATYPE_LIST);
     }
 
     /**
@@ -1810,19 +1811,18 @@ public class Column implements DataTypes, Constants, Cloneable {
      *
      * @throws Exception _more_
      */
-    private void defineColumn(Statement statement, String name, String type)
+    private void defineColumn(Statement statement, String name, String type, boolean ignoreErrors)
             throws Exception {
 
-
-        String sql = "alter table " + getTableName() + " add column " + name
+       String sql = "alter table " + getTableName() + " add column " + name
                      + " " + type;
-        SqlUtil.loadSql(sql, statement, true);
+       SqlUtil.loadSql(sql, statement, ignoreErrors,null);
 
         if (changeType) {
             sql = getDatabaseManager().getAlterTableSql(getTableName(), name,
                     type);
             //            System.err.println("altering table: " + sql);
-            SqlUtil.loadSql(sql, statement, true);
+            SqlUtil.loadSql(sql, statement, ignoreErrors,null);
         }
     }
 
@@ -1836,44 +1836,51 @@ public class Column implements DataTypes, Constants, Cloneable {
      * @throws Exception _more_
      */
     public void createTable(Statement statement) throws Exception {
+	createTable(statement, true);
+    }
+
+    public void createTable(Statement statement, boolean ignoreErrors) throws Exception {	
         if (isType(DATATYPE_STRING) || isType(DATATYPE_PASSWORD)
                 || isType(DATATYPE_EMAIL) || isType(DATATYPE_URL)
                 || isType(DATATYPE_JSONLIST) || isType(DATATYPE_FILE)
                 || isType(DATATYPE_ENTRY)) {
-            defineColumn(statement, name, "varchar(" + size + ") ");
+            defineColumn(statement, name, "varchar(" + size + ") ", ignoreErrors);
+        } else if (isType(DATATYPE_WIKI)) {
+            defineColumn(statement, name,
+                         getDatabaseManager().convertType("clob",24000), ignoreErrors);
         } else if (isType(DATATYPE_LIST)) {
-            defineColumn(statement, name, "varchar(" + size + ") ");
+            defineColumn(statement, name, "varchar(" + size + ") ", ignoreErrors);
         } else if (isType(DATATYPE_CLOB)) {
             String clobType = getDatabaseManager().convertType("clob", size);
-            defineColumn(statement, name, clobType);
+            defineColumn(statement, name, clobType, ignoreErrors);
         } else if (isEnumeration()) {
-            defineColumn(statement, name, "varchar(" + size + ") ");
+            defineColumn(statement, name, "varchar(" + size + ") ", ignoreErrors);
         } else if (isType(DATATYPE_INT)) {
-            defineColumn(statement, name, "int");
+            defineColumn(statement, name, "int", ignoreErrors);
         } else if (isDouble()) {
             defineColumn(statement, name,
-                         getDatabaseManager().convertType("double"));
+                         getDatabaseManager().convertType("double"), ignoreErrors);
         } else if (isType(DATATYPE_BOOLEAN)) {
             //use int as boolean for database compatibility
-            defineColumn(statement, name, "int");
+            defineColumn(statement, name, "int", ignoreErrors);
 
         } else if (isDate()) {
             defineColumn(statement, name,
-                         getDatabaseManager().convertSql("ramadda.datetime"));
+                         getDatabaseManager().convertSql("ramadda.datetime"), ignoreErrors);
         } else if (isType(DATATYPE_LATLON)) {
             defineColumn(statement, name + "_lat",
-                         getDatabaseManager().convertType("double"));
+                         getDatabaseManager().convertType("double"), ignoreErrors);
             defineColumn(statement, name + "_lon",
-                         getDatabaseManager().convertType("double"));
+                         getDatabaseManager().convertType("double"), ignoreErrors);
         } else if (isType(DATATYPE_LATLONBBOX)) {
             defineColumn(statement, name + "_north",
-                         getDatabaseManager().convertType("double"));
+                         getDatabaseManager().convertType("double"), ignoreErrors);
             defineColumn(statement, name + "_west",
-                         getDatabaseManager().convertType("double"));
+                         getDatabaseManager().convertType("double"), ignoreErrors);
             defineColumn(statement, name + "_south",
-                         getDatabaseManager().convertType("double"));
+                         getDatabaseManager().convertType("double"), ignoreErrors);
             defineColumn(statement, name + "_east",
-                         getDatabaseManager().convertType("double"));
+                         getDatabaseManager().convertType("double"), ignoreErrors);
 
         } else {
             throw new IllegalArgumentException("Unknown column type:" + type
@@ -1885,17 +1892,17 @@ public class Column implements DataTypes, Constants, Cloneable {
             for (int i = 0; i < oldNames.size(); i++) {
                 String sql = "update " + getTableName() + " set " + name
                              + " = " + oldNames.get(i);
-                SqlUtil.loadSql(sql, statement, true);
+                SqlUtil.loadSql(sql, statement, ignoreErrors,null);
                 sql = "alter table " + getTableName() + " drop "
                       + oldNames.get(i);
-                SqlUtil.loadSql(sql, statement, true);
+                SqlUtil.loadSql(sql, statement, true,null);
             }
         }
 
         if (isIndex) {
             SqlUtil.loadSql("CREATE INDEX " + getTableName() + "_INDEX_"
                             + name + "  ON " + getTableName() + " (" + name
-                            + ")", statement, true);
+                            + ")", statement, ignoreErrors,null);
         }
 
     }
