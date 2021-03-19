@@ -2282,6 +2282,15 @@ a.btn-primary:link, a.btn-primary  {
 }
 
 
+.ramadda-popup-title {
+    margin-left:10px;
+    margin-right:10px;    
+    width:100%;
+    display:inline-block;
+    text-align:center;
+}
+
+
 .ramadda-popup-inner {
     padding-top:5px;
 }
@@ -2290,6 +2299,11 @@ a.btn-primary:link, a.btn-primary  {
     display:inline-block;
     cursor:pointer;
 }
+
+.ramadda-popup-link:hover, .ramadda-popup-link:hover span i   {
+    color: #0074D9 !important;
+}
+
 
 .wiki-popup-inner {
     padding:5px;
@@ -4508,6 +4522,23 @@ h3.ui-accordion-header a {
 .wiki-editor-popup {
     margin:5px;
     vertical-align:top;
+}
+
+.wiki-editor-popup-link  {
+    width:100%;
+}
+
+.wiki-editor-popup-link a {
+    display:inline-block;
+    width:100%;
+    margin-left:4px;
+    margin-right:4px;
+}
+
+.wiki-editor-popup-link:hover a, .wiki-editor-popup a:hover {
+    color: #0074D9 !important;
+    background-color: #eee;
+
 }
 
 .wiki-editor-popup-toolbar {

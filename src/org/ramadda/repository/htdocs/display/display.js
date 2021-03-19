@@ -115,6 +115,21 @@ function addGlobalDisplayProperty(name, value) {
 }
 
 
+function makeDisplayHelp(header,img,text) {
+    let h =  "";
+    if(header!=null) h +=HU.b(header);
+    if(img) {
+	if(!img.startsWith("/")) {
+	    img = ramaddaBaseUrl +"/help/display/" + img;
+	}
+	if(h!="") h+="<br>"
+	h+="<img src="+ img +" width=200px>";
+    }
+    if(text) h+="<br>"+text;
+    h  = h.replace(/"/g,"&quot;");
+    return h;
+}
+
 function getGlobalDisplayProperty(name) {
     if (window.globalDisplayProperties == null) {
         return null;
@@ -5866,7 +5881,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	    if(!record.hasDate()) return -1;
 	    let records =this.filteredRecords;
-	    if(records) {
+	    if(!records) {
 		records = [];
 		for(i in this.indexToRecord) {
 		    records.push(this.indexToRecord[i]);

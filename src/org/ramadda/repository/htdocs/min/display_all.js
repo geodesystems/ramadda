@@ -2930,6 +2930,21 @@ function addGlobalDisplayProperty(name, value) {
 }
 
 
+function makeDisplayHelp(header,img,text) {
+    let h =  "";
+    if(header!=null) h +=HU.b(header);
+    if(img) {
+	if(!img.startsWith("/")) {
+	    img = ramaddaBaseUrl +"/help/display/" + img;
+	}
+	if(h!="") h+="<br>"
+	h+="<img src="+ img +" width=200px>";
+    }
+    if(text) h+="<br>"+text;
+    h  = h.replace(/"/g,"&quot;");
+    return h;
+}
+
 function getGlobalDisplayProperty(name) {
     if (window.globalDisplayProperties == null) {
         return null;
@@ -8681,7 +8696,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	    if(!record.hasDate()) return -1;
 	    let records =this.filteredRecords;
-	    if(records) {
+	    if(!records) {
 		records = [];
 		for(i in this.indexToRecord) {
 		    records.push(this.indexToRecord[i]);
@@ -16728,21 +16743,24 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_TABLE,
-    desc:"Basic tabular display"
+    desc:"Basic tabular display",
+    help: makeDisplayHelp(null,"table.png")                        
 }, true);
 addGlobalDisplayType({
     type: DISPLAY_LINECHART,
     label: "Line Chart",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CHARTS
+    category: CATEGORY_CHARTS,
+    help: makeDisplayHelp(null,"linechart.png")
 });
 addGlobalDisplayType({
     type: DISPLAY_BARCHART,
     label: "Bar Chart",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CHARTS
+    category: CATEGORY_CHARTS,
+    help: makeDisplayHelp(null,"barchart.png")    
 });
 addGlobalDisplayType({
     type: DISPLAY_BARSTACK,
@@ -16756,7 +16774,8 @@ addGlobalDisplayType({
     label: "Area Chart",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CHARTS
+    category: CATEGORY_CHARTS,
+    help: makeDisplayHelp(null,"areachart.png")    
 });
 
 addGlobalDisplayType({
@@ -16764,21 +16783,24 @@ addGlobalDisplayType({
     label: "Bar Table",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CHARTS
+    category: CATEGORY_CHARTS,
+    help: makeDisplayHelp(null,"bartable.png")        
 });
 addGlobalDisplayType({
     type: DISPLAY_SCATTERPLOT,
     label: "Scatter Plot",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CHARTS
+    category: CATEGORY_CHARTS,
+    help: makeDisplayHelp(null,"scatterplot.png")            
 });
 addGlobalDisplayType({
     type: DISPLAY_HISTOGRAM,
     label: "Histogram",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CHARTS
+    category: CATEGORY_CHARTS,
+    help: makeDisplayHelp(null,"histogram.png")                
 });
 addGlobalDisplayType({
     type: DISPLAY_BUBBLE,
@@ -16786,13 +16808,15 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_CHARTS,
+    help: makeDisplayHelp(null,"bubblechart.png")    
 });
 addGlobalDisplayType({
     type: DISPLAY_PIECHART,
     label: "Pie Chart",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CHARTS
+    category: CATEGORY_CHARTS,
+    help: makeDisplayHelp(null,"piechart.png")                    
 });
 
 addGlobalDisplayType({
@@ -25400,16 +25424,18 @@ addGlobalDisplayType({
 });
 addGlobalDisplayType({
     type: DISPLAY_SEARCH,
-    label: "Entry List",
+    label: "Entry Search",
     requiresData: false,
     category: CATEGORY_ENTRIES
 });
+/*
 addGlobalDisplayType({
     type: DISPLAY_TESTLIST,
     label: "Test  List",
     requiresData: false,
     category: CATEGORY_ENTRIES
 });
+*/
 addGlobalDisplayType({
     type: DISPLAY_ENTRYDISPLAY,
     label: "Entry Display",
@@ -35601,7 +35627,8 @@ addGlobalDisplayType({
     label: "Ranking",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_TABLE
+    category: CATEGORY_TABLE,
+    help: makeDisplayHelp(null,"ranking.png")                            
 });
 addGlobalDisplayType({
     type: DISPLAY_CORRELATION,
@@ -40614,7 +40641,8 @@ addGlobalDisplayType({
     label: "Combo Chart",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CHARTS
+    category: CATEGORY_CHARTS,
+    help: makeDisplayHelp(null,"combochart.png")                        
 });
 
 addGlobalDisplayType({
@@ -40630,7 +40658,8 @@ addGlobalDisplayType({
     label: "Dot Plot",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CHARTS
+    category: CATEGORY_CHARTS,
+    help: makeDisplayHelp(null,"dotplot.png")                    
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_SPLOM,
@@ -40651,7 +40680,8 @@ addGlobalDisplayType({
     label: "Profile",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CHARTS
+    category: CATEGORY_CHARTS,
+    help: makeDisplayHelp(null,"profile.png")                    
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_3DMESH,

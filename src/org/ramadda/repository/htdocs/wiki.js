@@ -26,16 +26,26 @@ function  wikiInitDisplaysButton(id) {
                 links[category] = [];
                 cats.push(category);
             }
-	    let link = HU.href("#",type.label,["onclick", "insertDisplayText('" + id + "','" + type.type+"')"]);
+	    let help = type.help||"";
+	    let link = HU.div([CLASS,"wiki-editor-popup-link"],HU.href("#",type.label,[CLASS,"display-link ",TITLE,help,"onclick", "insertDisplayText('" + id + "','" + type.type+"')"]));
             links[category].push(link);
         });
         let menu = "<table><tr valign=top>";
         for (var i = 0; i < cats.length; i++) {
             var cat = cats[i];
-	    menu += HU.td([],HU.div([STYLE,'margin-right:5px;'], HU.b(cat)) +"<div style='margin-right:5px;max-height:200px;overflow-y:auto;'>" + Utils.join(links[cat],"<div>"));
+	    menu += HU.td([],HU.div([STYLE,'margin-right:5px;'], HU.b(cat)) +"<div style='margin-right:5px;max-height:250px;overflow-y:auto;'>" + Utils.join(links[cat],"<div>"));
         }
-	menu = HU.div([STYLE,"font-size:10pt;"], menu);
-	let popup = HtmlUtils.makeDraggableDialog(button,menu,{});
+	menu = HU.div([ID,"wiki-display-popup",STYLE,"font-size:10pt;width:800px;"], menu);
+	let init = ()=>{
+	    $("#wiki-display-popup").tooltip({
+		content: function () {
+		    return $(this).prop('title');
+		},
+		show: { effect: 'slide', delay: 500, duration: 400 },
+		position: { my: "left top", at: "right top" }		
+	    });
+	};
+	let popup = HU.makeDialog({content:menu,my:"left top",at:"left-200px bottom",title:"",anchor:button,draggable:true,header:true,initCall:init});
 	if(wikiPopup) 
 	    wikiPopup.hide();
 	wikiPopup =  popup;
@@ -56,7 +66,7 @@ async function  wikiPreview(entry, id, inPlace) {
 	    .css("right","5px")//area.position().left-100)
 	    .css("top",area.position().top-10)
 //	    .css("min-width","400px")
-//	    .css("width","98%")
+	    .css("width",width+"px")
 	    .css("overflow-x","auto")
 
     }

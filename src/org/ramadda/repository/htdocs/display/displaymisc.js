@@ -32,7 +32,8 @@ addGlobalDisplayType({
     label: "Ranking",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_TABLE
+    category: CATEGORY_TABLE,
+    help: makeDisplayHelp(null,"ranking.png")                            
 });
 addGlobalDisplayType({
     type: DISPLAY_CORRELATION,

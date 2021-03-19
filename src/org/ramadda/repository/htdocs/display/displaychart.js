@@ -64,21 +64,24 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_TABLE,
-    desc:"Basic tabular display"
+    desc:"Basic tabular display",
+    help: makeDisplayHelp(null,"table.png")                        
 }, true);
 addGlobalDisplayType({
     type: DISPLAY_LINECHART,
     label: "Line Chart",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CHARTS
+    category: CATEGORY_CHARTS,
+    help: makeDisplayHelp(null,"linechart.png")
 });
 addGlobalDisplayType({
     type: DISPLAY_BARCHART,
     label: "Bar Chart",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CHARTS
+    category: CATEGORY_CHARTS,
+    help: makeDisplayHelp(null,"barchart.png")    
 });
 addGlobalDisplayType({
     type: DISPLAY_BARSTACK,
@@ -92,7 +95,8 @@ addGlobalDisplayType({
     label: "Area Chart",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CHARTS
+    category: CATEGORY_CHARTS,
+    help: makeDisplayHelp(null,"areachart.png")    
 });
 
 addGlobalDisplayType({
@@ -100,21 +104,24 @@ addGlobalDisplayType({
     label: "Bar Table",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CHARTS
+    category: CATEGORY_CHARTS,
+    help: makeDisplayHelp(null,"bartable.png")        
 });
 addGlobalDisplayType({
     type: DISPLAY_SCATTERPLOT,
     label: "Scatter Plot",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CHARTS
+    category: CATEGORY_CHARTS,
+    help: makeDisplayHelp(null,"scatterplot.png")            
 });
 addGlobalDisplayType({
     type: DISPLAY_HISTOGRAM,
     label: "Histogram",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CHARTS
+    category: CATEGORY_CHARTS,
+    help: makeDisplayHelp(null,"histogram.png")                
 });
 addGlobalDisplayType({
     type: DISPLAY_BUBBLE,
@@ -122,13 +129,15 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_CHARTS,
+    help: makeDisplayHelp(null,"bubblechart.png")    
 });
 addGlobalDisplayType({
     type: DISPLAY_PIECHART,
     label: "Pie Chart",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CHARTS
+    category: CATEGORY_CHARTS,
+    help: makeDisplayHelp(null,"piechart.png")                    
 });
 
 addGlobalDisplayType({

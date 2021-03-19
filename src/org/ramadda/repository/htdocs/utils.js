@@ -3001,7 +3001,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return html;
     },
     qt: function(value) {
-        return "\"" + value + "\"";
+        return "'" + value + "'";
     },
     sqt: function(value) {
         return "\'" + value + "\'";
@@ -3172,6 +3172,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	};
 
 	if(args) {
+	    if(args.at=="") delete args.at;
+	    if(args.my=="") delete args.my;
+//	    console.log(JSON.stringify(args,null,2));
 	    $.extend(opts, args);
 	}
 	if(opts.anchor && (typeof opts.anchor=="string")) {
@@ -3201,15 +3204,19 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
 	if(opts.header) {
 	    let closeImage = HU.div([TITLE,"Close",CLASS,"ramadda-popup-close"], HU.jsLink("",HtmlUtils.getIconImage(icon_close), [ID,id+"_close",STYLE,HU.css('cursor','pointer')]));
-	    let title = HU.div([STYLE,HU.css('width','100%','display','inline-block','text-align','center')],opts.title);
+	    let title = HU.div([CLASS,"ramadda-popup-title"],opts.title);
 	    let hdr = closeImage+title
 	    let header = HtmlUtils.div([STYLE,HU.css("text-align","left"),CLASS,"ramadda-popup-header"],hdr);
 	    html = header + html;
 	}
+
 	if(opts.decorate || opts.header) {
 	    html = HU.div([CLASS,"ramadda-popup"], html);
 	}
+
+//	html = HU.div([],html);
 	let popup=   $(html).appendTo("body");
+
 	if(opts.remove) {
 	    popup.attr("removeonclose","true");
 	}
@@ -3258,38 +3265,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    }
 	}
 	return popup;
-    },
-    makeDraggableDialog:function(target, inner, args) {
-	let opts = {
-	    at:"left bottom",
-	    my: "left top",
-	    callback:null,
-	    remove:false
-	}
-	if(args) $.extend(opts,args);
-	let id = HtmlUtils.getUniqueId();
-	let closeImage = HU.jsLink("",HtmlUtils.getIconImage(icon_close), [ID,id+"_close",STYLE,HU.css('cursor','pointer')]);
-	let header = HtmlUtils.div([STYLE,HU.css("text-align","left"),CLASS,"ramadda-popup-header"],SPACE+closeImage);
-	let html = header +HU.div([STYLE,"margin:8px;"],inner);
-	$(document.body).append(HU.div([ID,id,CLASS,"ramadda-popup"],html));
-	if((typeof target)=="string") {
-	    target = $("#" + target);
-	}
-	let dialog =  $("#" + id);
-	dialog.show();
-	dialog.draggable();
-	dialog.position({
-            of: target,
-            my: opts.my,
-            at: opts.at,
-            collision: "fit fit"
-	});	
-	$("#" + id +"_close").click(function() {
-	    dialog.hide();
-	    if(opts.callback) opts.callback(dialog);
-	    if(opts.remove) dialog.remove();
-	});
-	return dialog;
     },
     addToDocumentUrl:function(name,value,append) {
         var url = String(window.location);

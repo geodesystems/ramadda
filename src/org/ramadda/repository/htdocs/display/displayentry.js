@@ -43,16 +43,18 @@ addGlobalDisplayType({
 });
 addGlobalDisplayType({
     type: DISPLAY_SEARCH,
-    label: "Entry List",
+    label: "Entry Search",
     requiresData: false,
     category: CATEGORY_ENTRIES
 });
+/*
 addGlobalDisplayType({
     type: DISPLAY_TESTLIST,
     label: "Test  List",
     requiresData: false,
     category: CATEGORY_ENTRIES
 });
+*/
 addGlobalDisplayType({
     type: DISPLAY_ENTRYDISPLAY,
     label: "Entry Display",

@@ -51,7 +51,8 @@ addGlobalDisplayType({
     label: "Combo Chart",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CHARTS
+    category: CATEGORY_CHARTS,
+    help: makeDisplayHelp(null,"combochart.png")                        
 });
 
 addGlobalDisplayType({
@@ -67,7 +68,8 @@ addGlobalDisplayType({
     label: "Dot Plot",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CHARTS
+    category: CATEGORY_CHARTS,
+    help: makeDisplayHelp(null,"dotplot.png")                    
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_SPLOM,
@@ -88,7 +90,8 @@ addGlobalDisplayType({
     label: "Profile",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CHARTS
+    category: CATEGORY_CHARTS,
+    help: makeDisplayHelp(null,"profile.png")                    
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_3DMESH,
