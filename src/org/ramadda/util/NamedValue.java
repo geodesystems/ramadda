@@ -46,9 +46,16 @@ public class NamedValue<T> {
         this.value = value;
     }
 
+    public static Object getValue(String name, NamedValue[] list) {
+	for(NamedValue v: list) {
+	    if(v.getName().equals(name)) return v.getValue();
+	}
+	return null;
+    }
+
     /**
      * _more_
-     *
+     t*
      * @return _more_
      */
     public String getName() {
