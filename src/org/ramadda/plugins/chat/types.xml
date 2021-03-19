@@ -1,6 +1,7 @@
 <types>
 
 
+<!-- hide for now
   <type name="chatroom"  description="Chat Room" category="Collaboration" handler="org.ramadda.plugins.chat.ChatTypeHandler" supercategory="Miscellaneous">
      <property name="icon" value="/icons/user_comment.png"/>
      <property name="form.date.show" value="false"/>
@@ -14,6 +15,7 @@
 -section
 ]]>
 </wiki>
+-->
 
   </type>
 

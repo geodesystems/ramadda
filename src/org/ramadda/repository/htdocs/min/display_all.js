@@ -35635,14 +35635,16 @@ addGlobalDisplayType({
     label: "Correlation",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_TABLE
+    category: CATEGORY_TABLE,
+    help: makeDisplayHelp(null,"correlation.png")                            
 });
 addGlobalDisplayType({
     type: DISPLAY_CROSSTAB,
     label: "Crosstab",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_TABLE
+    category: CATEGORY_TABLE,
+    help: makeDisplayHelp("Cross Tabulation","crosstab.png")                                
 });
 
 addGlobalDisplayType({
