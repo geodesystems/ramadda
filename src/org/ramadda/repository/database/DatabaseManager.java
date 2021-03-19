@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -344,8 +344,9 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         String driverClassPropertyName = PROP_DB_DRIVER.replace("${db}",
                                              dbType);
         String driverClassName =
-	    (String) getRepository().getProperty(driverClassPropertyName);
+            (String) getRepository().getProperty(driverClassPropertyName);
         Misc.findClass(driverClassName);
+
         return driverClassName;
     }
 
@@ -2085,6 +2086,17 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return date;
     }
 
+    /**
+     * _more_
+     *
+     * @param results _more_
+     * @param col _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Date getDate(ResultSet results, String col, Date dflt)
             throws Exception {
         Date date = getDate(results, col, false);
@@ -2094,7 +2106,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
         return date;
     }
-    
+
 
     /**
      * _more_
@@ -2124,7 +2136,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     public Date getDate(ResultSet results, String col) throws Exception {
         return getDate(results, col, true);
     }
-    
+
     /**
      * _more_
      *
@@ -2466,6 +2478,18 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     /**
      * _more_
      *
+     * @return _more_
+     */
+    public HashSet getFlags() {
+        HashSet flags = new HashSet();
+        flags.add(db);
+
+        return flags;
+    }
+
+    /**
+     * _more_
+     *
      * @param connection _more_
      * @param sql _more_
      * @param ignoreErrors _more_
@@ -2480,7 +2504,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         try {
             List<SqlUtil.SqlError> errors = new ArrayList<SqlUtil.SqlError>();
             SqlUtil.loadSql(sql, statement, ignoreErrors, printStatus,
-                            errors);
+                            errors, getFlags());
             int existsCnt = 0;
             for (SqlUtil.SqlError error : errors) {
                 String errorString =
