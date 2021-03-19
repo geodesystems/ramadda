@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <metadata>
 <!-- Hide for now
+
   <handler class="org.ramadda.repository.metadata.MetadataHandler"        category="Miscellaneous">
     <type
        name="Saved Chat"
@@ -8,6 +9,7 @@
       <element name="File" datatype="file" thumbnail="false"/>
     </type>
 </handler>
+
 -->
 
 
