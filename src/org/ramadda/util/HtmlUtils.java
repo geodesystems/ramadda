@@ -967,6 +967,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @return _more_
      */
     public static boolean isFontAwesome(String icon) {
+	if(icon==null) return false;
         return icon.startsWith("fa-") || icon.startsWith("fas ")
                || icon.startsWith("fab ");
     }
@@ -5948,48 +5949,55 @@ public class HtmlUtils implements HtmlUtilsConstants {
     }
 
 
-    public static String makePopupLink(Appendable popup, String link, String menuContents,
-				NamedValue ...args) {
+    public static String[] makePopupLink(String link, 
+					 NamedValue ...args) {
+	String compId = "menu_" + HtmlUtils.blockCnt++;
+	String linkId = "menulink_" + HtmlUtils.blockCnt++;
+	String linkAttributes="";
+	List<String> attrs = (List<String>) Utils.makeList("contentId",HtmlUtils.squote(compId),"anchor",HtmlUtils.squote(linkId));
+	boolean seenAnimate = false;
+	String extraCode = "";
+	for(NamedValue v:args) {
+	    if(v.getValue()==null) continue;
+	    if(v.getName().equals("linkAttributes")) {
+		linkAttributes = v.getValue().toString();
+		continue;
+	    }
+	    if(v.getName().equals("extraCode")) {
+		extraCode = v.getValue().toString();
+		continue;
+	    }		
+	    Object o = v.getValue();
+	    if(o==null) continue;
+	    if(v.getName().equals("animate")) seenAnimate = true;
+	    attrs.add(v.getName());
+	    if(o instanceof String) {
+		if(!o.equals("true") && !o.equals("false"))
+		    o  = HtmlUtils.squote(o.toString());
+	    }
+	    attrs.add(o.toString());
+	}
+
+	if(!seenAnimate) {
+	    attrs.add("animate");
+	    attrs.add("true");
+	}
+
+	String callArgs = Json.map(attrs);
+	String call = "HtmlUtils.makeDialog(" + callArgs+");";
+	String onClick = HtmlUtils.onMouseClick(call+extraCode);
+	String href = HtmlUtils.div(link,HtmlUtils.cssClass("ramadda-popup-link") +linkAttributes + onClick + HtmlUtils.id(linkId));
+	return new String[]{compId, href};
+    }
+
+
+    public static String makePopup(Appendable popup, String link, String menuContents,
+				   NamedValue ...args) {
 	try {
-            String compId = "menu_" + HtmlUtils.blockCnt++;
-            String linkId = "menulink_" + HtmlUtils.blockCnt++;
-	    String linkAttributes="";
-	    List<String> attrs = (List<String>) Utils.makeList("contentId",HtmlUtils.squote(compId),"anchor",HtmlUtils.squote(linkId));
-	    boolean seenAnimate = false;
-	    boolean inPlace =false;
-	    String extraCode = "";
-	    for(NamedValue v:args) {
-		if(v.getName().equals("linkAttributes")) {
-		    linkAttributes = v.getValue().toString();
-		    continue;
-		}
-		if(v.getName().equals("extraCode")) {
-		    extraCode = v.getValue().toString();
-		    continue;
-		}		
-		if(v.getName().equals("inPlace")) {
-		    inPlace = (Boolean)v.getValue();
-		}
-		Object o = v.getValue();
-		if(o==null) continue;
-		if(v.getName().equals("animate")) seenAnimate = true;
-		attrs.add(v.getName());
-		if(o instanceof String) {
-		    if(!o.equals("true") && !o.equals("false"))
-			o  = HtmlUtils.squote(o.toString());
-		}
-		attrs.add(o.toString());
-	    }
-
-	    if(!seenAnimate) {
-		attrs.add("animate");
-		attrs.add("true");
-	    }
-
-	    String callArgs = Json.map(attrs);
-	    String call = "HtmlUtils.makeDialog(" + callArgs+");";
-            String onClick = HtmlUtils.onMouseClick(call+extraCode);
-            String href = HtmlUtils.div(link,HtmlUtils.cssClass("ramadda-popup-link") +linkAttributes + onClick + HtmlUtils.id(linkId));
+	    String []tuple=makePopupLink(link, args);
+            String compId = tuple[0];
+	    String href=tuple[1];
+	    boolean inPlace = Misc.equals(NamedValue.getValue("inPlace",args)+"","true");
 	    String contents;
 	    if(inPlace) {
 		contents = HtmlUtils.div(menuContents,
@@ -6008,7 +6016,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
     }
 
-
+    
 
     /**
      * _more_
