@@ -1101,7 +1101,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         if (blockPopup) {
 	    String contents = HU.div(sb.toString(),"class=wiki-popup-inner");
-	    return getPageHandler().makePopupLink(null, blockTitle, contents,
+	    return HU.makePopupLink(null, blockTitle, contents,
 						  new NamedValue("decorate",true),
 						  new NamedValue("header",getProperty(wikiUtil,props,"block.header",false)),
 						  new NamedValue("draggable",getProperty(wikiUtil,props,"block.draggable",false)));
@@ -2103,7 +2103,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                          "/icons/menu_arrow.gif"), msg(
                                          "Click to show menu"), HU.cssClass(
                                          "ramadda-breadcrumbs-menu-img"));
-		String menuLink = getPageHandler().makePopupLink(popup, menuLinkImg, links);
+		String menuLink = HU.makePopupLink(popup, menuLinkImg, links);
                 popup.append(menuLink);
                 return popup.toString();
             }
@@ -5520,7 +5520,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         StringBuilder help        = new StringBuilder();
 
 	BiFunction<String,String,String> makeButton = (title,contents)->{
-	    return getPageHandler().makePopupLink(null,HU.div(title,HU.cssClass("ramadda-menubar-button")),
+	    return HU.makePopupLink(null,HU.div(title,HU.cssClass("ramadda-menubar-button")),
                                                   HU.div(contents, "class='wiki-editor-popup'"),
 						  new NamedValue("linkAttributes", buttonClass));
 	};
@@ -5608,7 +5608,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         Utils.appendAll(buttons, HU.span("", HU.id(textAreaId + "_prefix")),
                         formattingButton, textButton, entriesButton);
         if (fromTypeBuff != null) {
-	    buttons.append(getPageHandler().makePopupLink(null,entry.getTypeHandler().getLabel() + " tags",
+	    buttons.append(HU.makePopupLink(null,entry.getTypeHandler().getLabel() + " tags",
 							  HU.div(fromTypeBuff.toString(), "class='wiki-editor-popup'"),
 							  new NamedValue("linkAttributes", buttonClass)));
         }

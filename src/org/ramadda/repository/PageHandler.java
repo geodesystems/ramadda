@@ -506,7 +506,7 @@ public class PageHandler extends RepositoryManager {
         }
 
 	popupImage = HtmlUtils.div(popupImage, HtmlUtils.cssClass("ramadda-popup-link"));
-	extra.append(makePopupLink(null, popupImage, menuHtml, arg("my","right top"),arg("at","left bottom"), arg("animate",false)));
+	extra.append(HU.makePopupLink(null, popupImage, menuHtml, arg("my","right top"),arg("at","left bottom"), arg("animate",false)));
         menuHtml = HU.div(extra.toString(), HU.clazz("ramadda-user-menu"));
 
         String[] macros = new String[] {
@@ -1661,105 +1661,6 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    public String makePopupLink(Appendable popup, String link, String menuContents,
-				NamedValue ...args) {
-	try {
-            String compId = "menu_" + HU.blockCnt++;
-            String linkId = "menulink_" + HU.blockCnt++;
-	    String linkAttributes="";
-	    List<String> attrs = (List<String>) Utils.makeList("contentId",HU.squote(compId),"anchor",HU.squote(linkId));
-	    boolean seenAnimate = false;
-	    boolean inPlace =false;
-	    String extraCode = "";
-	    for(NamedValue v:args) {
-		if(v.getName().equals("linkAttributes")) {
-		    linkAttributes = v.getValue().toString();
-		    continue;
-		}
-		if(v.getName().equals("extraCode")) {
-		    extraCode = v.getValue().toString();
-		    continue;
-		}		
-		if(v.getName().equals("inPlace")) {
-		    inPlace = (Boolean)v.getValue();
-		}
-		Object o = v.getValue();
-		if(o==null) continue;
-		if(v.getName().equals("animate")) seenAnimate = true;
-		attrs.add(v.getName());
-		if(o instanceof String) {
-		    if(!o.equals("true") && !o.equals("false"))
-			o  = HU.squote(o.toString());
-		}
-		attrs.add(o.toString());
-	    }
-
-	    if(!seenAnimate) {
-		attrs.add("animate");
-		attrs.add("true");
-	    }
-
-	    String callArgs = Json.map(attrs);
-	    String call = "HtmlUtils.makeDialog(" + callArgs+");";
-            String onClick = HU.onMouseClick(call+extraCode);
-            String href = HU.div(link,HU.cssClass("ramadda-popup-link") +linkAttributes + onClick + HU.id(linkId));
-	    String contents;
-	    if(inPlace) {
-		contents = HU.div(menuContents,
-                                  HU.id(compId)
-                                  + HU.attr("style", "display:none;"));
-	    } else {
-		contents= makePopupDiv(menuContents, compId, false,  null);
-	    }
-	    if(popup!=null) {
-		popup.append(contents);
-		return href;
-	    }
-            return href+contents;
-        } catch (java.io.IOException ioe) {
-            throw new RuntimeException(ioe);
-        }
-    }
-
-
-
-    /**
-     * _more_
-     *
-     * @param contents _more_
-     * @param compId _more_
-     * @param makeClose _more_
-     * @param header _more_
-     *
-     * @return _more_
-     */
-    public String makePopupDiv(String contents, String compId,
-                               boolean makeClose, String header) {
-        StringBuilder menu = new StringBuilder();
-        if (makeClose) {
-            String cLink = HU.jsLink(
-                               HU.onMouseClick("hidePopupObject(event);"),
-                               getIconImage(
-                                   ICON_CLOSE, "title", "Close", "class",
-                                   "ramadda-popup-close"), "");
-            if (header != null) {
-                contents = HU.table(HU.row("<td width=5%>"
-                        + cLink + "</td><td>" + header + "</td>")) + contents;
-            } else {
-		//                contents =HU.div(cLink,"class=ramadda-popup-header") + contents;
-            }
-        }
-
-        menu.append(HU.div(contents,
-                                  HU.id(compId)
-                                  + HU.attr("style", "display:none;")
-                                  + HU.cssClass(CSS_CLASS_POPUP)));
-
-
-        return menu.toString();
-    }
-
-
 
     /**
      * _more_
@@ -2456,7 +2357,7 @@ public class PageHandler extends RepositoryManager {
                                  HU.cssClass(
                                      "ramadda-breadcrumbs-menu-button"));
 
-        String menuLink = getPageHandler().makePopupLink(popup, menuLinkImg, links,arg("title", headerLabel), arg("header",true));
+        String menuLink = HU.makePopupLink(popup, menuLinkImg, links,arg("title", headerLabel), arg("header",true));
         List<Entry>  parents = getEntryManager().getParents(request, entry);
         List<String> titleList = new ArrayList();
         List<String> breadcrumbs = makeBreadcrumbList(request, parents,
@@ -2603,7 +2504,7 @@ public class PageHandler extends RepositoryManager {
                         OutputType.TYPE_OTHER, links);
                 String categoryName = link.getOutputType().getCategory();
                 categoryMenu =
-		    makePopupLink(null, categoryName, categoryMenu.toString(), linkAttr);
+		    HU.makePopupLink(null, categoryName, categoryMenu.toString(), linkAttr);
                 break;
             }
         }
@@ -2632,7 +2533,7 @@ public class PageHandler extends RepositoryManager {
                 //                menuName="Folder";
             }
             //HU.span(msg(menuName), menuClass), 
-            menuItems.add(getPageHandler().makePopupLink(null, menuName,
+            menuItems.add(HU.makePopupLink(null, menuName,
 							 entryMenu, linkAttr));
 
         }
@@ -2642,7 +2543,7 @@ public class PageHandler extends RepositoryManager {
             if (menuItems.size() > 0) {
                 menuItems.add(sep);
             }
-            menuItems.add(getPageHandler().makePopupLink(null, "Edit",
+            menuItems.add(HU.makePopupLink(null, "Edit",
 							 editMenu, linkAttr));
         }
 
@@ -2651,7 +2552,7 @@ public class PageHandler extends RepositoryManager {
             if (menuItems.size() > 0) {
                 menuItems.add(sep);
             }
-            menuItems.add(getPageHandler().makePopupLink(null, "Links",
+            menuItems.add(HU.makePopupLink(null, "Links",
 							 exportMenu, linkAttr));
         }
 
@@ -2660,7 +2561,7 @@ public class PageHandler extends RepositoryManager {
             if (menuItems.size() > 0) {
                 menuItems.add(sep);
             }
-            menuItems.add(getPageHandler().makePopupLink(null, "View",
+            menuItems.add(HU.makePopupLink(null, "View",
 							 viewMenu, linkAttr));
         }
 
@@ -3194,7 +3095,7 @@ public class PageHandler extends RepositoryManager {
         rightSide.append("<b>Legends</b><br>");
         rightSide.append(OutputHandler.makeTabs(titles, tabs, true));
 	String popupLink = HtmlUtils.div(HU.img("fas fa-layer-group"), HtmlUtils.cssClass("ramadda-popup-link"));
-        mapInfo.addRightSide(makePopupLink(null, popupLink, rightSide.toString(), arg("width","500px"),arg("animate", false),arg("my","right top"), arg("at","left top"),arg("draggable",true),arg("inPlace",true),arg("header",true),arg("fit",true),arg("sticky",true)));
+        mapInfo.addRightSide(HU.makePopupLink(null, popupLink, rightSide.toString(), arg("width","500px"),arg("animate", false),arg("my","right top"), arg("at","left top"),arg("draggable",true),arg("inPlace",true),arg("header",true),arg("fit",true),arg("sticky",true)));
     }
 
 

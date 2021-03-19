@@ -771,7 +771,7 @@ public class MapInfo {
                                     msg("Show Map"));
 	    PageHandler ph = repository.getPageHandler();
 	    String initCall =  getVariableName() + ".selectionPopupInit();";
-	    String mapPopup =  ph.makePopupLink(null, popupLabel,sb.toString(), ph.arg("my","left top"),ph.arg("at","right top-50px"),ph.arg("animate",false),ph.arg("inPlace",true),ph.arg("header",true),ph.arg("sticky",true),ph.arg("initCall",initCall));
+	    String mapPopup =  HtmlUtils.makePopupLink(null, popupLabel,sb.toString(), ph.arg("my","left top"),ph.arg("at","right top-50px"),ph.arg("animate",false),ph.arg("inPlace",true),ph.arg("header",true),ph.arg("sticky",true),ph.arg("initCall",initCall));
 
             rightSide = HU.SPACE2 + mapPopup + HU.SPACE2 + extraTop;
         } else {

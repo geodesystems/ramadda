@@ -68,6 +68,12 @@ public class HtmlUtils implements HtmlUtilsConstants {
     /** _more_          */
     public static final String SPACE3 = "&nbsp;&nbsp;&nbsp;";
 
+    /** _more_ */
+    public static final String ICON_CLOSE = "fas fa-window-close";
+
+    public static final String CSS_CLASS_POPUP = "ramadda-popup";
+
+
     /**
      * _more_
      *
@@ -5941,13 +5947,109 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sanitizeString(s).replaceAll("\"", "_");
     }
 
+
+    public static String makePopupLink(Appendable popup, String link, String menuContents,
+				NamedValue ...args) {
+	try {
+            String compId = "menu_" + HtmlUtils.blockCnt++;
+            String linkId = "menulink_" + HtmlUtils.blockCnt++;
+	    String linkAttributes="";
+	    List<String> attrs = (List<String>) Utils.makeList("contentId",HtmlUtils.squote(compId),"anchor",HtmlUtils.squote(linkId));
+	    boolean seenAnimate = false;
+	    boolean inPlace =false;
+	    String extraCode = "";
+	    for(NamedValue v:args) {
+		if(v.getName().equals("linkAttributes")) {
+		    linkAttributes = v.getValue().toString();
+		    continue;
+		}
+		if(v.getName().equals("extraCode")) {
+		    extraCode = v.getValue().toString();
+		    continue;
+		}		
+		if(v.getName().equals("inPlace")) {
+		    inPlace = (Boolean)v.getValue();
+		}
+		Object o = v.getValue();
+		if(o==null) continue;
+		if(v.getName().equals("animate")) seenAnimate = true;
+		attrs.add(v.getName());
+		if(o instanceof String) {
+		    if(!o.equals("true") && !o.equals("false"))
+			o  = HtmlUtils.squote(o.toString());
+		}
+		attrs.add(o.toString());
+	    }
+
+	    if(!seenAnimate) {
+		attrs.add("animate");
+		attrs.add("true");
+	    }
+
+	    String callArgs = Json.map(attrs);
+	    String call = "HtmlUtils.makeDialog(" + callArgs+");";
+            String onClick = HtmlUtils.onMouseClick(call+extraCode);
+            String href = HtmlUtils.div(link,HtmlUtils.cssClass("ramadda-popup-link") +linkAttributes + onClick + HtmlUtils.id(linkId));
+	    String contents;
+	    if(inPlace) {
+		contents = HtmlUtils.div(menuContents,
+                                  HtmlUtils.id(compId)
+                                  + HtmlUtils.attr("style", "display:none;"));
+	    } else {
+		contents= makePopupDiv(menuContents, compId, false,  null);
+	    }
+	    if(popup!=null) {
+		popup.append(contents);
+		return href;
+	    }
+            return href+contents;
+        } catch (java.io.IOException ioe) {
+            throw new RuntimeException(ioe);
+        }
+    }
+
+
+
     /**
-     * Class description
+     * _more_
      *
+     * @param contents _more_
+     * @param compId _more_
+     * @param makeClose _more_
+     * @param header _more_
      *
-     * @version        $version$, Thu, Feb 20, '20
-     * @author         Enter your name here...
+     * @return _more_
      */
-    public static class HT extends HtmlUtils {}
+    public static String makePopupDiv(String contents, String compId,
+                               boolean makeClose, String header) {
+        StringBuilder menu = new StringBuilder();
+        if (makeClose) {
+            String cLink = HtmlUtils.jsLink(
+                               HtmlUtils.onMouseClick("hidePopupObject(event);"),
+                               getIconImage(
+                                   ICON_CLOSE, "title", "Close", "class",
+                                   "ramadda-popup-close"), "");
+            if (header != null) {
+                contents = HtmlUtils.table(HtmlUtils.row("<td width=5%>"
+                        + cLink + "</td><td>" + header + "</td>")) + contents;
+            } else {
+		//                contents =HtmlUtils.div(cLink,"class=ramadda-popup-header") + contents;
+            }
+        }
+
+        menu.append(HtmlUtils.div(contents,
+                                  HtmlUtils.id(compId)
+                                  + HtmlUtils.attr("style", "display:none;")
+                                  + HtmlUtils.cssClass(CSS_CLASS_POPUP)));
+
+
+        return menu.toString();
+    }
+
+
+
+
+
+
 
 }

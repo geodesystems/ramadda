@@ -5523,7 +5523,7 @@ public class EntryManager extends RepositoryManager {
 	}
 	String html =HU.div(inner.toString(),HU.style("min-width","300px","max-height","200px","overflow-y","auto"));
 	String title = HU.div(entryIcon+HU.SPACE+HU.href(getEntryUrl(request, entry),entry.getName()),HU.style("margin-left","20px","margin-right","20px"));
-        String menuLink = getPageHandler().makePopupLink(null, link, html,arg("title", title), arg("draggable",true),arg("header",true),arg("decorate",true));
+        String menuLink = HU.makePopupLink(null, link, html,arg("title", title), arg("draggable",true),arg("header",true),arg("decorate",true));
 	return menuLink;
 
     }

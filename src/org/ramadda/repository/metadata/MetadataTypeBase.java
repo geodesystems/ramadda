@@ -639,7 +639,7 @@ public class MetadataTypeBase extends RepositoryManager {
                                     metadata.getId()), "thumbnail", "");
 		StringBuilder tmp = new StringBuilder();
                 img = HtmlUtils.div(img, HtmlUtils.cssClass("ramadda-thumbnail"));
-                img = handler.getPageHandler().makePopupLink(tmp, img, bigimg,new NamedValue("at","right top"),new NamedValue("header",true));
+                img = HtmlUtils.makePopupLink(tmp, img, bigimg,new NamedValue("at","right top"),new NamedValue("header",true));
                 img = HtmlUtils.div(img, HtmlUtils.cssClass("ramadda-thumbnail")) + "\n" + tmp;
             } else {
                 img = Utils.concatString(img, "\n<br>\n<b>", tail, "</b>\n");
