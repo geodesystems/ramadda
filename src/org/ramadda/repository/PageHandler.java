@@ -506,7 +506,7 @@ public class PageHandler extends RepositoryManager {
         }
 
 	popupImage = HtmlUtils.div(popupImage, HtmlUtils.cssClass("ramadda-popup-link"));
-	extra.append(HU.makePopupLink(null, popupImage, menuHtml, arg("my","right top"),arg("at","left bottom"), arg("animate",false)));
+	extra.append(HU.makePopup(null, popupImage, menuHtml, arg("my","right top"),arg("at","left bottom"), arg("animate",false)));
         menuHtml = HU.div(extra.toString(), HU.clazz("ramadda-user-menu"));
 
         String[] macros = new String[] {
@@ -2357,7 +2357,7 @@ public class PageHandler extends RepositoryManager {
                                  HU.cssClass(
                                      "ramadda-breadcrumbs-menu-button"));
 
-        String menuLink = HU.makePopupLink(popup, menuLinkImg, links,arg("title", headerLabel), arg("header",true));
+        String menuLink = HU.makePopup(popup, menuLinkImg, links,arg("title", headerLabel), arg("header",true));
         List<Entry>  parents = getEntryManager().getParents(request, entry);
         List<String> titleList = new ArrayList();
         List<String> breadcrumbs = makeBreadcrumbList(request, parents,
@@ -2504,7 +2504,7 @@ public class PageHandler extends RepositoryManager {
                         OutputType.TYPE_OTHER, links);
                 String categoryName = link.getOutputType().getCategory();
                 categoryMenu =
-		    HU.makePopupLink(null, categoryName, categoryMenu.toString(), linkAttr);
+		    HU.makePopup(null, categoryName, categoryMenu.toString(), linkAttr);
                 break;
             }
         }
@@ -2533,7 +2533,7 @@ public class PageHandler extends RepositoryManager {
                 //                menuName="Folder";
             }
             //HU.span(msg(menuName), menuClass), 
-            menuItems.add(HU.makePopupLink(null, menuName,
+            menuItems.add(HU.makePopup(null, menuName,
 							 entryMenu, linkAttr));
 
         }
@@ -2543,7 +2543,7 @@ public class PageHandler extends RepositoryManager {
             if (menuItems.size() > 0) {
                 menuItems.add(sep);
             }
-            menuItems.add(HU.makePopupLink(null, "Edit",
+            menuItems.add(HU.makePopup(null, "Edit",
 							 editMenu, linkAttr));
         }
 
@@ -2552,7 +2552,7 @@ public class PageHandler extends RepositoryManager {
             if (menuItems.size() > 0) {
                 menuItems.add(sep);
             }
-            menuItems.add(HU.makePopupLink(null, "Links",
+            menuItems.add(HU.makePopup(null, "Links",
 							 exportMenu, linkAttr));
         }
 
@@ -2561,7 +2561,7 @@ public class PageHandler extends RepositoryManager {
             if (menuItems.size() > 0) {
                 menuItems.add(sep);
             }
-            menuItems.add(HU.makePopupLink(null, "View",
+            menuItems.add(HU.makePopup(null, "View",
 							 viewMenu, linkAttr));
         }
 
@@ -3095,7 +3095,7 @@ public class PageHandler extends RepositoryManager {
         rightSide.append("<b>Legends</b><br>");
         rightSide.append(OutputHandler.makeTabs(titles, tabs, true));
 	String popupLink = HtmlUtils.div(HU.img("fas fa-layer-group"), HtmlUtils.cssClass("ramadda-popup-link"));
-        mapInfo.addRightSide(HU.makePopupLink(null, popupLink, rightSide.toString(), arg("width","500px"),arg("animate", false),arg("my","right top"), arg("at","left top"),arg("draggable",true),arg("inPlace",true),arg("header",true),arg("fit",true),arg("sticky",true)));
+        mapInfo.addRightSide(HU.makePopup(null, popupLink, rightSide.toString(), arg("width","500px"),arg("animate", false),arg("my","right top"), arg("at","left top"),arg("draggable",true),arg("inPlace",true),arg("header",true),arg("fit",true),arg("sticky",true)));
     }
 
 
