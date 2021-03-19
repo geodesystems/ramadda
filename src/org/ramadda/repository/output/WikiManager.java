@@ -1101,7 +1101,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         if (blockPopup) {
 	    String contents = HU.div(sb.toString(),"class=wiki-popup-inner");
-	    return HU.makePopupLink(null, blockTitle, contents,
+	    return HU.makePopup(null, blockTitle, contents,
 						  new NamedValue("decorate",true),
 						  new NamedValue("header",getProperty(wikiUtil,props,"block.header",false)),
 						  new NamedValue("draggable",getProperty(wikiUtil,props,"block.draggable",false)));
@@ -2103,7 +2103,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                          "/icons/menu_arrow.gif"), msg(
                                          "Click to show menu"), HU.cssClass(
                                          "ramadda-breadcrumbs-menu-img"));
-		String menuLink = HU.makePopupLink(popup, menuLinkImg, links);
+		String menuLink = HU.makePopup(popup, menuLinkImg, links);
                 popup.append(menuLink);
                 return popup.toString();
             }
@@ -5433,12 +5433,16 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 	    getWikiEditLink(textAreaId, "Navigation popup", ":navpopup align=right|left  maxLevel=_qt__qt_", "", ""),	    
 
 	    getWikiEditLink(textAreaId, "Prev arrow", "{{prev position=relative|fixed decorate=false iconSize=32 sort=name,entryorder sortAscending=true style=_qt_left:250px;_qt_  showName=false}}", "", ""),
-	    getWikiEditLink(textAreaId, "Next arrow", "{{next position=relative|fixed decorate=false iconSize=32 sort=name,entryorder sortAscending=true style=_dq_  showName=false}}", "", ""), getWikiEditLink(textAreaId, "Title", ":title {{name link=true}}", "", ""), getWikiEditLink(textAreaId, "Heading", ":heading your heading", "", ""), getWikiEditLink(textAreaId, "Heading-1", ":h1 your heading", "", ""), getWikiEditLink(textAreaId, "Heading-2", ":h2 your heading", "", ""), getWikiEditLink(textAreaId, "Heading-3", ":h3 your heading", "", ""));
+	    getWikiEditLink(textAreaId, "Next arrow", "{{next position=relative|fixed decorate=false iconSize=32 sort=name,entryorder sortAscending=true style=_dq_  showName=false}}", "", "")); 
 
         Utils.appendAll(tags2,
-                getWikiEditLink(textAreaId, "Draggable",
-                    "+draggable framed=true header=_quote__quote_ style=_quote_background:#fff;_quote_ toggle=_quote_true_quote_ toggleVisible=_quote_true_quote__newline_",
-                        "-draggable", ""), getWikiEditLink(textAreaId,
+			getWikiEditLink(textAreaId,"Popup",
+					"+popup link=_qt_Link_qt_ icon=_qt_fas fa-cog_qt_ title=_qt_Title_qt_ header=true draggable=true decorate=true sticky=true my=_qt__qt_ at=_qt__qt_ animate=false_nl__nl_",
+					"-popup_nl_",""),
+			getWikiEditLink(textAreaId, "Draggable",
+					"+draggable framed=true header=_quote__quote_ style=_quote_background:#fff;_quote_ toggle=_quote_true_quote_ toggleVisible=_quote_true_quote__newline_",
+                        "-draggable", ""),
+			getWikiEditLink(textAreaId,
                             "Expandable",
                                 "+expandable header=_quote_quote_ expand=true_newline_",
                                     "-expandable",
@@ -5520,7 +5524,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         StringBuilder help        = new StringBuilder();
 
 	BiFunction<String,String,String> makeButton = (title,contents)->{
-	    return HU.makePopupLink(null,HU.div(title,HU.cssClass("ramadda-menubar-button")),
+	    return HU.makePopup(null,HU.div(title,HU.cssClass("ramadda-menubar-button")),
                                                   HU.div(contents, "class='wiki-editor-popup'"),
 						  new NamedValue("linkAttributes", buttonClass));
 	};
@@ -5557,14 +5561,20 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         String formattingButton = makeButton.apply("Formatting",
                                       HU.hbox(tags, tags2, tags3, tags4));
 
-        StringBuilder text = new StringBuilder();
+        StringBuilder text1 = new StringBuilder();
+        StringBuilder text2 = new StringBuilder();	
         Utils.appendAll(
-            text, getWikiEditLink(
+            text1,
+	    getWikiEditLink(textAreaId, "Title", ":title {{name link=true}}", "", ""), getWikiEditLink(textAreaId, "Heading", ":heading your heading", "", ""), getWikiEditLink(textAreaId, "Heading-1", ":h1 your heading", "", ""), getWikiEditLink(textAreaId, "Heading-2", ":h2 your heading", "", ""), getWikiEditLink(textAreaId, "Heading-3", ":h3 your heading", "", ""),	    
+	    getWikiEditLink(
                 textAreaId, "Break", "\\n:br", "", ""), getWikiEditLink(
                 textAreaId, "Paragraph", "\\n:p", "", ""), getWikiEditLink(
                 textAreaId, "Bold text", "\\'\\'\\'", "\\'\\'\\'", ""), getWikiEditLink(
                 textAreaId, "Italic text", "\\'\\'", "\\'\\'", ""), getWikiEditLink(
-                textAreaId, "Code", "```\\n", "\\n```", ""), getWikiEditLink(
+										    textAreaId, "Code", "```\\n", "\\n```", ""));
+        Utils.appendAll(
+			text2,
+			getWikiEditLink(
                 textAreaId, "Internal link", "[[", "]]", "Link title"), getWikiEditLink(
                 textAreaId, "External link", "[", "]", "http://www.example.com link title"), getWikiEditLink(
                 textAreaId, "Level 2 headline", "\\n== ", " ==\\n", "Headline text"), getWikiEditLink(
@@ -5575,9 +5585,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 textAreaId, "Reload", "\\n:reload seconds=30 showCheckbox=true showLabel=true", "", ""), getWikiEditLink(
                 textAreaId, "After", "+after pause=0 afterFade=5000_newline__newline_", "-after", "After"), getWikiEditLink(
                 textAreaId, "Odometer", "{{odometer initCount=0 count=100 immediate=true pause=1000}}", "", ""));
+	
 
+        String textButton = makeButton.apply("Text",
+                                      HU.hbox(text1, text2));
 
-        String textButton = makeButton.apply("Text", text.toString());
         String entriesButton = makeButton.apply("Entries",
                                    makeTagsMenu(textAreaId));
         String displaysButton = HU.href(
@@ -5608,7 +5620,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         Utils.appendAll(buttons, HU.span("", HU.id(textAreaId + "_prefix")),
                         formattingButton, textButton, entriesButton);
         if (fromTypeBuff != null) {
-	    buttons.append(HU.makePopupLink(null,entry.getTypeHandler().getLabel() + " tags",
+	    buttons.append(HU.makePopup(null,entry.getTypeHandler().getLabel() + " tags",
 							  HU.div(fromTypeBuff.toString(), "class='wiki-editor-popup'"),
 							  new NamedValue("linkAttributes", buttonClass)));
         }
@@ -5723,8 +5735,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                  + HU.squote(prefix) + "," + HU.squote(suffix) + ","
                  + HU.squote(example) + ");";
         }
-
-        return HU.href(js, label) + "<br>";
+        return HU.div(HU.href(js, label),HU.cssClass("wiki-editor-popup-link"));
     }
 
 
@@ -5742,6 +5753,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     public String getWikiImageUrl(WikiUtil wikiUtil, String src,
                                   Hashtable props) {
         try {
+	    if(src.startsWith("/") || HU.isFontAwesome(src)) return src;
             Entry   entry      = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
             Request request    = (Request) wikiUtil.getProperty(ATTR_REQUEST);
             Entry   srcEntry   = null;
