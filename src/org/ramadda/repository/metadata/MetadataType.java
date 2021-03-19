@@ -21,6 +21,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
+import org.ramadda.util.sql.SqlUtil;
 
 
 import org.w3c.dom.*;
@@ -254,7 +255,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
             Element node = (Element) children.item(i);
             if (node.getTagName().equals(TAG_HANDLER)) {
                 parse(node, manager, types);
-
                 continue;
             }
 
@@ -337,22 +337,28 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
         makeDatabaseTable = XmlUtil.getAttributeFromTree(node,
                 ATTR_MAKEDATABASE, false);
-        if (makeDatabaseTable) {
+	/*
+        if makeDatabaseTable) {
             initDatabase();
         }
+	*/
     }
 
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public String getTableName() {
-        return "md_" + id;
+    public static final String TABLE_NAME_PREFIX = "metadata_";
+    public String getDbTableName() {
+	String id = SqlUtil.cleanName(this.id);
+	return TABLE_NAME_PREFIX  + id;
     }
 
+
+    public String getDbColumnName(String name) {
+	name =  SqlUtil.cleanName(name);
+	if(name.equals("type")) name = "column_type";
+	else if(name.equals("output")) name = "column_output";	
+	return name;
+    }
+				   
 
     /**
      * _more_
@@ -363,58 +369,87 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         Statement statement = getDatabaseManager().createStatement();
         databaseColumns = new ArrayList<Column>();
         int          cnt       = 0;
-        final String tableName = "md_" + id;
+        final String tableName = getDbTableName();
         System.err.println("Making db:" + tableName);
         TypeHandler typeHandler = new TypeHandler(getRepository()) {
-            public String getTableName() {
-                return tableName;
-            }
-        };
+		@Override
+		public String getTableName() {
+		    return tableName;
+		}
+	    };
+        String dropTable = "DROP TABLE " + tableName;
+        try {
+            getDatabaseManager().executeAndClose(dropTable);
+        } catch (Throwable exc) {
+	    //	    System.err.println("Error dropping table:" + exc+"\n"+  dropTable);
+	    //	    throw new RuntimeException(exc);
+        }
+
+
         StringBuffer tableDef = new StringBuffer("CREATE TABLE " + tableName
                                     + " (\n");
-
         tableDef.append(
             "id varchar(200), entry_id varchar(200), type varchar(200), inherited int)");
+	System.out.println("Creating metadata table:" + tableName);
         try {
             getDatabaseManager().executeAndClose(tableDef.toString());
         } catch (Throwable exc) {
-            System.err.println("EXC:" + exc);
             if (exc.toString().indexOf("already exists") < 0) {
-                //TODO:
-                //                throw new WrapperException(exc);
+		System.err.println("Error creating metadata db table:" + exc+"\n"+  tableDef);
+		throw new RuntimeException(exc);
             }
         }
 
         StringBuffer indexDef = new StringBuffer();
-        indexDef.append("CREATE INDEX " + getTableName() + "_INDEX_" + "id"
-                        + "  ON " + getTableName() + " (" + "id" + ");\n");
-        indexDef.append("CREATE INDEX " + getTableName() + "_INDEX_"
-                        + "entry_id" + "  ON " + getTableName() + " ("
+        indexDef.append("CREATE INDEX " + tableName + "_INDEX_" + "id"
+                        + "  ON " + tableName + " (" + "id" + ");\n");
+        indexDef.append("CREATE INDEX " + tableName + "_INDEX_"
+                        + "entry_id" + "  ON " + tableName + " ("
                         + "entry_id" + ");\n");
-        indexDef.append("CREATE INDEX " + getTableName() + "_INDEX_" + "type"
-                        + "  ON " + getTableName() + " (" + "type" + ");\n");
+        indexDef.append("CREATE INDEX " + tableName + "_INDEX_" + "type"
+                        + "  ON " + tableName + " (" + "type" + ");\n");
 
         try {
             getDatabaseManager().loadSql(indexDef.toString(), true, false);
         } catch (Throwable exc) {
             //TODO:
-            //            throw new WrapperException(exc);
+	    System.err.println("Error creating metadata index:" + exc+"\n"+  indexDef);
+	    throw new RuntimeException(exc);
         }
 
-
-
-
         for (MetadataElement element : getChildren()) {
-            Column column = new Column(typeHandler, element.getId(),
-                                       element.getDataType(), cnt);
-            column.setSize(XmlUtil.getAttribute(element.getXmlNode(),
-                    column.ATTR_SIZE, 200));
-            column.createTable(statement);
+	    String dataType = element.getDataType();
+	    String columnName = element.getId();
+	    if(columnName == null) {
+		columnName = element.getName();
+	    }
+	    if(columnName == null) {
+		throw new RuntimeException("No name defined for metadata element:" + element);
+	    }
+	    columnName = getDbColumnName(columnName);
+	    System.out.println("\tcolumn:" + columnName +" type:" + dataType);
+	    int size = XmlUtil.getAttribute(element.getXmlNode(),
+					    Column.ATTR_SIZE, 1000);
+	    if(dataType==null) {
+		dataType = DataTypes.DATATYPE_STRING;
+	    }
+
+            Column column = new Column(typeHandler, columnName,
+                                       dataType, cnt);
+            column.setSize(size);
+	    //false-> don't ignore errors
+	    try {
+		column.createTable(statement, false);
+	    } catch (Throwable exc) {
+		System.err.println("Error:" + exc);
+		return;
+	    }
             databaseColumns.add(column);
             cnt++;
         }
         getDatabaseManager().closeAndReleaseConnection(statement);
     }
+
 
     /**
      * _more_

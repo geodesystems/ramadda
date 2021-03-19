@@ -212,7 +212,7 @@ public class MetadataManager extends RepositoryManager {
         typeMap.put(type.getId(), type);
         handlerMap.put(type.getId(), type.getHandler());
         if (type.getHasDatabaseTable()) {
-            tableNames.add(type.getTableName());
+            tableNames.add(type.getDbTableName());
         }
     }
 
