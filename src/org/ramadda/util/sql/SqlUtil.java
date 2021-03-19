@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
@@ -322,8 +323,6 @@ public class SqlUtil {
 
     /**
      * _more_
-     *
-     * @param s _more_
      *
      * @param args _more_
      *
@@ -1229,13 +1228,14 @@ public class SqlUtil {
      * @param sql _more_
      * @param statement _more_
      * @param ignoreErrors _more_
+     * @param flags If non-null them contains flags for checking #if/#endif blocks
      *
      * @throws Exception _more_
      */
     public static void loadSql(String sql, Statement statement,
-                               boolean ignoreErrors)
+                               boolean ignoreErrors, HashSet flags)
             throws Exception {
-        loadSql(sql, statement, ignoreErrors, false);
+        loadSql(sql, statement, ignoreErrors, false, flags);
     }
 
     /**
@@ -1245,15 +1245,17 @@ public class SqlUtil {
      * @param statement _more_
      * @param ignoreErrors _more_
      * @param printStatus _more_
+     * @param flags If non-null them contains flags for checking #if/#endif blocks
      *
      * @throws Exception _more_
      */
     public static void loadSql(String sql, Statement statement,
-                               boolean ignoreErrors, boolean printStatus)
+                               boolean ignoreErrors, boolean printStatus,
+                               HashSet flags)
             throws Exception {
 
         loadSql(sql, statement, ignoreErrors, printStatus,
-                new ArrayList<SqlError>());
+                new ArrayList<SqlError>(), flags);
     }
 
 
@@ -1268,16 +1270,17 @@ public class SqlUtil {
      * @param ignoreErrors _more_
      * @param printStatus _more_
      * @param errors _more_
+     * @param flags If non-null them contains flags for checking #if/#endif blocks
      *
      * @throws Exception _more_
      */
     public static void loadSql(String sql, Statement statement,
                                boolean ignoreErrors, boolean printStatus,
-                               List<SqlError> errors)
+                               List<SqlError> errors, HashSet flags)
             throws Exception {
 
         int cnt = 0;
-        for (String command : parseSql(sql)) {
+        for (String command : parseSql(sql, flags)) {
             if (printStatus) {
                 cnt++;
                 if (cnt % 100 == 0) {
@@ -1322,18 +1325,63 @@ public class SqlUtil {
      * _more_
      *
      * @param sql _more_
+     * @param flags If non-null them contains flags for checking #if/#endif blocks
      *
      * @return _more_
      */
-    public static List<String> parseSql(String sql) {
+    public static List<String> parseSql(String sql, HashSet flags) {
         List<String> result = new ArrayList<String>();
-        List<String> toks   = (List<String>) StringUtil.split(sql, "\n");
+        List<String> lines  = (List<String>) StringUtil.split(sql, "\n");
         StringBuffer sb     = new StringBuffer();
-        for (String line : toks) {
+        boolean      skip   = false;
+        for (String line : lines) {
             String trimLine = line.trim();
             if (trimLine.startsWith("--")) {
                 continue;
             }
+            //check for flagged blocks
+            if (trimLine.startsWith("#if")) {
+                List<String> toks = StringUtil.split(trimLine, " ", true,
+                                        true);
+                if (flags != null) {
+                    //If there are any flags then we need to match one
+                    boolean ok = toks.size() == 1;
+                    for (int i = 1; i < toks.size(); i++) {
+                        String  flag = toks.get(i).trim();
+                        boolean not  = false;
+                        if (flag.startsWith("!")) {
+                            not  = true;
+                            flag = flag.substring(1);
+                        }
+                        boolean contains = flags.contains(flag);
+                        if (not) {
+                            if (contains) {
+                                ok = false;
+
+                                break;
+                            }
+                        }
+                        //                      System.err.println("\tskip flag:" +flag +" ok:" + contains);
+                        if (contains) {
+                            ok = true;
+                        }
+                    }
+                    skip = !ok;
+                    //              System.err.println("SqlUtil: skip flag:" +trimLine +" skip:" + skip);
+                }
+                continue;
+            }
+
+            if (trimLine.startsWith("#endif")) {
+                skip = false;
+                continue;
+            }
+
+            if (skip) {
+                //              System.err.println("SqlUtil: skipping:" + line);
+                continue;
+            }
+
             sb.append(line);
             sb.append("\n");
             if (trimLine.endsWith(";")) {
@@ -2063,7 +2111,6 @@ public class SqlUtil {
      *
      * @param statement _more_
      *
-     * @throws SQLException _more_
      */
     public static void closeAndReleaseConnection(Statement statement) {
         if (statement == null) {
@@ -2144,8 +2191,9 @@ public class SqlUtil {
             return null;
         }
         //IMPORTANT: if this screws up and we can have sql injection attacks
-        String s = value.toString().replaceAll("[^\\s\\*\\.,\\(\\)a-zA-Z0-9_]",
-                       "_X_");
+        String s =
+            value.toString().replaceAll("[^\\s\\*\\.,\\(\\)a-zA-Z0-9_]",
+                                        "_X_");
 
         return s;
     }
@@ -2174,8 +2222,6 @@ public class SqlUtil {
 
     /**
      * _more_
-     *
-     * @param name _more_
      *
      * @param value _more_
      *
@@ -2208,8 +2254,9 @@ public class SqlUtil {
         if (value == null) {
             return null;
         }
-        String s = value.toString().replaceAll(" ", "_");
-        s = s.replaceAll("\\.", "_");
+        String s = value.toString().trim().toLowerCase();
+        s = s.replaceAll("[^a-zA-Z0-9_]+", "_");
+        s = s.replaceAll("__+", "_");
 
         return s;
     }
@@ -2254,11 +2301,10 @@ public class SqlUtil {
             String what, List tables, Clause clause,
             String sqlBetweenFromAndWhere, String suffixSql)
             throws Exception {
-	String stmt = getSelectStatement(what, tables,
-					 clause, sqlBetweenFromAndWhere, suffixSql);
-	//	System.err.println("stmt:" + stmt);
-        PreparedStatement statement =
-            connection.prepareStatement(stmt);
+        String stmt = getSelectStatement(what, tables, clause,
+                                         sqlBetweenFromAndWhere, suffixSql);
+        //      System.err.println("stmt:" + stmt);
+        PreparedStatement statement = connection.prepareStatement(stmt);
         if (connectionManager != null) {
             connectionManager.initSelectStatement(statement);
         }
