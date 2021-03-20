@@ -35,14 +35,17 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
+
 import java.awt.Color;
+import java.io.*;
 
 import java.text.SimpleDateFormat;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
+import java.util.zip.*;
 
 /**
  * DataSource for Web Map Servers
@@ -172,6 +175,56 @@ public class KmlUtil {
     /** the KML 2.2 XML namespace */
     public static final String XMLNS_KML2_2 =
         "http://www.opengis.net/kml/2.2";
+
+    public static Element readKml(String path)
+            throws Exception {
+        Element kmlRoot = null;
+        if (path.toLowerCase().endsWith(".kmz")) {
+            ZipInputStream zin =
+                new ZipInputStream(IO.getInputStream(path));
+            ZipEntry ze = null;
+            while ((ze = zin.getNextEntry()) != null) {
+                String name = ze.getName().toLowerCase();
+                if (name.toLowerCase().endsWith(".kml")) {
+                    kmlRoot =
+                        XmlUtil.getRoot(new String(IOUtil.readBytes(zin)));
+
+                    break;
+                }
+            }
+            IOUtil.close(zin);
+        } else {
+            kmlRoot = XmlUtil.getRoot(IO.readContents(path));
+        }
+
+        return kmlRoot;
+    }
+
+    public static Element readKml(String path,InputStream inputStream)
+            throws Exception {
+        Element kmlRoot = null;
+        if (path.toLowerCase().endsWith(".kmz")) {
+            ZipInputStream zin =
+                new ZipInputStream(inputStream);
+            ZipEntry ze = null;
+            while ((ze = zin.getNextEntry()) != null) {
+                String name = ze.getName().toLowerCase();
+                if (name.toLowerCase().endsWith(".kml")) {
+                    kmlRoot =
+                        XmlUtil.getRoot(new String(IOUtil.readBytes(zin)));
+
+                    break;
+                }
+            }
+            IOUtil.close(zin);
+        } else {
+            kmlRoot = XmlUtil.getRoot(IO.readInputStream(inputStream));
+        }
+
+        return kmlRoot;
+    }
+    
+
 
     /**
      * Make a Kml element
@@ -1111,26 +1164,18 @@ public class KmlUtil {
      * @return  the parsed coordinates
      */
     public static double[][] parseCoordinates(String coords) {
-        coords = StringUtil.replace(coords, "\n", " ");
-        while (true) {
-            String newCoords = StringUtil.replace(coords, " ,", ",");
-            if (newCoords.equals(coords)) {
-                break;
-            }
-            coords = newCoords;
-        }
-        while (true) {
-            String newCoords = StringUtil.replace(coords, ", ", ",");
-            if (newCoords.equals(coords)) {
-                break;
-            }
-            coords = newCoords;
-        }
+	return parseCoordinates(coords,Integer.MAX_VALUE);
+    }
 
-        List       tokens = StringUtil.split(coords, " ", true, true);
+    public static double[][] parseCoordinates(String coords, int max) {	
+        coords = StringUtil.replace(coords, "\n", " ");
+	coords = coords.replaceAll(" ,", ",");
+	coords = coords.replaceAll( ", ", ",");
+	List<String>  tokens =  Utils.split(coords, " ",true,true);
         double[][] result = null;
         for (int pointIdx = 0; pointIdx < tokens.size(); pointIdx++) {
-            String tok     = (String) tokens.get(pointIdx);
+	    if(pointIdx>=max) break;
+            String tok     = tokens.get(pointIdx);
             List   numbers = StringUtil.split(tok, ",");
             if ((numbers.size() != 2) && (numbers.size() != 3)) {
                 //Maybe its just comma separated
@@ -1139,6 +1184,7 @@ public class KmlUtil {
                     result = new double[3][numbers.size() / 3];
                     int cnt = 0;
                     for (int i = 0; i < numbers.size(); i += 3) {
+			if(i/3>=max) break;
                         result[0][cnt] = new Double(
                             numbers.get(i).toString()).doubleValue();
                         result[1][cnt] = new Double(numbers.get(i
@@ -1154,14 +1200,15 @@ public class KmlUtil {
                 throw new IllegalStateException(
                     "Bad number of coordinate values:" + numbers);
             }
-            if (result == null) {
-                result = new double[numbers.size()][tokens.size()];
+            if (result == null) {  
+              result = new double[numbers.size()][Math.min(max,tokens.size())];
             }
             for (int coordIdx = 0; (coordIdx < numbers.size()); coordIdx++) {
+		if(coordIdx>=max) break;
                 result[coordIdx][pointIdx] = new Double(
-                    numbers.get(coordIdx).toString()).doubleValue();
+							numbers.get(coordIdx).toString()).doubleValue();
             }
-        }
+	}
 
         return result;
     }
@@ -1302,6 +1349,29 @@ public class KmlUtil {
 
 
 
+    public static List<Element> findPlacemarks(Element root) throws Exception {
+        return (List<Element>) XmlUtil.findDescendants(root, TAG_PLACEMARK);
+    }
+
+
+    public static List<double[]> getCoordinates(List<Element> coords) throws Exception {
+	List<double[]> d = new ArrayList<double[]>();
+	for (Element coord : (List<Element>) coords) {
+	    String c = XmlUtil.getChildText(coord);
+	    for (String triple : StringUtil.split(c, " ")) {
+		List<String> toks = StringUtil.split(triple, ",");
+		if (toks.size() < 2) {
+		    continue;
+		}
+		double lon = Double.parseDouble(toks.get(0));
+		double lat = Double.parseDouble(toks.get(1));
+		double elev = (toks.size()>2?Double.parseDouble(toks.get(2)):Double.NaN);
+		d.add(new double[]{lat,lon,elev});
+	    }
+	}
+	return d;
+    }
+				  
     /**
      * _more_
      *
