@@ -820,7 +820,7 @@ public class Request implements Constants, Cloneable {
         if ((httpServletRequest != null) && !alwaysHttps) {
             String scheme = httpServletRequest.getScheme();
             if (scheme != null) {
-                List<String> toks = StringUtil.split(scheme, "/", true, true);
+                List<String> toks = Utils.split(scheme, "/", true, true);
                 if (toks.size() > 0) {
                     protocol = toks.get(0);
                 }
@@ -2236,12 +2236,12 @@ public class Request implements Constants, Cloneable {
 
             return false;
         }
-        List<String> toks = StringUtil.split(accept, ",", true, true);
+        List<String> toks = Utils.split(accept, ",", true, true);
         for (String tok : toks) {
             if ( !tok.startsWith("gzip")) {
                 continue;
             }
-            if (StringUtil.splitUpTo(tok, ";",
+            if (Utils.splitUpTo(tok, ";",
                                      2).get(0).trim().equals("gzip")) {
                 return true;
             }

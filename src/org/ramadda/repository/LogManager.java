@@ -24,7 +24,7 @@ import org.apache.log4j.Logger;
 import org.ramadda.repository.auth.*;
 
 import org.ramadda.util.HtmlUtils;
-
+import org.ramadda.util.Utils;
 import ucar.unidata.util.IOUtil;
 
 import ucar.unidata.util.LogUtil;
@@ -496,7 +496,7 @@ public class LogManager extends RepositoryManager {
         String       stackTrace = ((thr != null)
                                    ? LogUtil.getStackTrace(thr)
                                    : "");
-        List<String> lines = StringUtil.split(stackTrace, "\n", true, true);
+        List<String> lines = Utils.split(stackTrace, "\n", true, true);
         for (int i = 0; (i < lines.size()) && (i < 20); i++) {
             trace.append(lines.get(i));
             trace.append("\n");
@@ -828,7 +828,7 @@ public class LogManager extends RepositoryManager {
             StringBuffer stackSB      = null;
             boolean      lastOneBlank = false;
             for (String line :
-                    StringUtil.split(logString, "\n", false, false)) {
+                    Utils.split(logString, "\n", false, false)) {
                 if ( !didOne) {
                     didOne = true;
 

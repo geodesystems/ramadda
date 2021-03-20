@@ -1543,7 +1543,7 @@ public class EntryManager extends RepositoryManager {
         if (ips != null) {
             String  requestIp = request.getIp();
             boolean ok        = false;
-            for (String ip : StringUtil.split(ips, ";", true, true)) {
+            for (String ip : Utils.split(ips, ";", true, true)) {
                 if (requestIp.startsWith(ip)) {
                     ok = true;
 
@@ -1922,7 +1922,7 @@ public class EntryManager extends RepositoryManager {
                         }
                         Entry parent = parentEntry;
                         if (request.get(ARG_FILE_PRESERVEDIRECTORY, false)) {
-                            List<String> toks = StringUtil.split(path, "/",
+                            List<String> toks = Utils.split(path, "/",
                                                     true, true);
                             String ancestors = "";
                             //Remove the file name from the list of tokens
@@ -2017,7 +2017,7 @@ public class EntryManager extends RepositoryManager {
                             name = IOUtil.stripExtension(name);
                             StringBuilder tmp = new StringBuilder();
                             for (String tok :
-                                    StringUtil.split(name, " ", true, true)) {
+                                    Utils.split(name, " ", true, true)) {
                                 tok = StringUtil.camelCase(tok);
                                 tmp.append(tok);
                                 tmp.append(" ");
@@ -2740,7 +2740,7 @@ public class EntryManager extends RepositoryManager {
     public Result processEntryListDelete(Request request) throws Exception {
         List<Entry> entries = new ArrayList<Entry>();
         for (String id :
-                StringUtil.split(request.getString(ARG_ENTRYIDS, ""), ",",
+                Utils.split(request.getString(ARG_ENTRYIDS, ""), ",",
                                  true, true)) {
             Entry entry = getEntry(request, id, false);
             if (entry == null) {
@@ -3463,7 +3463,7 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result processEntryShowPath(Request request) throws Exception {
-        List<String> toks = StringUtil.split(request.getRequestPath(), "/",
+        List<String> toks = Utils.split(request.getRequestPath(), "/",
                                              true, true);
         String id    = toks.get(toks.size() - 1);
         Entry  entry = getEntry(request, id);
@@ -3605,7 +3605,7 @@ public class EntryManager extends RepositoryManager {
             if (Utils.stringDefined(range)) {
                 //assume: bytes=start-end
                 List<String> toks1 = StringUtil.splitUpTo(range, "=", 2);
-                List<String> toks  = StringUtil.split(toks1.get(1), "-");
+                List<String> toks  = Utils.split(toks1.get(1), "-");
                 byteStart = Long.decode(toks.get(0)).longValue();
                 if ((toks.size() > 1) && Utils.stringDefined(toks.get(1))) {
                     byteEnd = Long.decode(toks.get(1)).longValue();
@@ -3714,7 +3714,7 @@ public class EntryManager extends RepositoryManager {
         }
         String ids = request.getIds((String) null);
         if (ids != null) {
-            List<String> idList = StringUtil.split(ids, ",", true, true);
+            List<String> idList = Utils.split(ids, ",", true, true);
             for (String id : idList) {
                 Entry entry = getEntry(request, id);
                 if (entry != null) {
@@ -3769,7 +3769,7 @@ public class EntryManager extends RepositoryManager {
 
         String      fromIds = request.getString(ARG_FROM, "");
         List<Entry> entries = new ArrayList<Entry>();
-        for (String id : StringUtil.split(fromIds, ",", true, true)) {
+        for (String id : Utils.split(fromIds, ",", true, true)) {
             Entry entry = getEntry(request, id, false);
             if (entry == null) {
                 throw new RepositoryUtil.MissingEntryException(
@@ -4408,7 +4408,7 @@ public class EntryManager extends RepositoryManager {
             fromIds = request.getString("entries", "");
         }
         List<Entry> entries = new ArrayList<Entry>();
-        for (String id : StringUtil.split(fromIds, ",", true, true)) {
+        for (String id : Utils.split(fromIds, ",", true, true)) {
             Entry entry = getEntry(request, id, false);
             if (entry == null) {
                 throw new RepositoryUtil.MissingEntryException(
@@ -5088,7 +5088,7 @@ public class EntryManager extends RepositoryManager {
         }
         String aliases = XmlUtil.getAttribute(node, "aliases", (String) null);
         if (aliases != null) {
-	    for(String alias: StringUtil.split(aliases,",",true,true)) {
+	    for(String alias: Utils.split(aliases,",",true,true)) {
 		for (Entry entry : entryList) {
 		    entries.put(alias, entry);
 		}
@@ -8336,7 +8336,7 @@ public class EntryManager extends RepositoryManager {
                                 User user)
             throws Exception {
         //        synchronized (MUTEX_ENTRY) {
-        List<String> toks = (List<String>) StringUtil.split(name,
+        List<String> toks = (List<String>) Utils.split(name,
                                 Entry.PATHDELIMITER, true, true);
 
         for (String tok : toks) {
@@ -8373,7 +8373,7 @@ public class EntryManager extends RepositoryManager {
     public Entry findEntryFromPath(Request request, Entry parent, String path)
             throws Exception {
         Entry currentEntry = parent;
-        List<String> toks = StringUtil.split(path, Entry.PATHDELIMITER, true,
+        List<String> toks = Utils.split(path, Entry.PATHDELIMITER, true,
                                              true);
         for (int i = 0; i < toks.size(); i++) {
             if (currentEntry.getTypeHandler().isSynthType()) {
@@ -8644,7 +8644,7 @@ public class EntryManager extends RepositoryManager {
     public List<Entry> findDescendants(Request request, Entry parent,
                                        String name)
             throws Exception {
-        List<String> toks = (List<String>) StringUtil.split(name,
+        List<String> toks = (List<String>) Utils.split(name,
                                 Entry.PATHDELIMITER, true, true);
 
         List<Entry> parents = new ArrayList<Entry>();
@@ -8773,7 +8773,7 @@ public class EntryManager extends RepositoryManager {
             name = topEntryName + Entry.PATHDELIMITER + name;
         }
         //split the list
-        List<String> toks = (List<String>) StringUtil.split(name,
+        List<String> toks = (List<String>) Utils.split(name,
                                 Entry.PATHDELIMITER, true, true);
         //Now remove the top group
 
@@ -9637,7 +9637,7 @@ public class EntryManager extends RepositoryManager {
             throws Exception {
         dir = dir.trim();
         //        System.err.println("getRelativeEntry: base:" + base.getName()  + " cwd:" + current.getName() + " text:" + dir);
-        List<String> toks = StringUtil.split(dir, "/", true, true);
+        List<String> toks = Utils.split(dir, "/", true, true);
         if (toks.size() == 0) {
             //Maybe return base?
             return current;

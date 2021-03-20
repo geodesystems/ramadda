@@ -37,7 +37,6 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.MapRegion;
-
 import org.ramadda.util.Utils;
 
 import ucar.unidata.util.DateUtil;
@@ -315,12 +314,12 @@ public class PageHandler extends RepositoryManager {
             webImports = "";
             String cssImports = "";
             List<String> cssFiles =
-                StringUtil.split(
+                Utils.split(
                     getStorageManager().readSystemResource(
                         "/org/ramadda/repository/resources/web/cssimports.html"), "\n", true, true);
             String jsImports = "";
             List<String> jsFiles =
-                StringUtil.split(
+                Utils.split(
                     getStorageManager().readSystemResource(
                         "/org/ramadda/repository/resources/web/jsimports.html"), "\n", true, true);
 
@@ -951,7 +950,7 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     private Object[] parsePhrases(String file, String content) {
-        List<String> lines   = StringUtil.split(content, "\n", true, true);
+        List<String> lines   = Utils.split(content, "\n", true, true);
         Properties   phrases = new Properties();
         String       type    =
             IOUtil.stripExtension(IOUtil.getFileTail(file));
@@ -960,7 +959,7 @@ public class PageHandler extends RepositoryManager {
             if (line.startsWith("#")) {
                 continue;
             }
-            List<String> toks = StringUtil.split(line, "=", true, true);
+            List<String> toks = Utils.split(line, "=", true, true);
             if (toks.size() == 0) {
                 continue;
             }
@@ -1106,7 +1105,7 @@ public class PageHandler extends RepositoryManager {
                 new ArrayList<String>(
                     getRepository().getPluginManager().getTemplateFiles());
             for (String path :
-                    StringUtil.split(
+                    Utils.split(
                         getRepository().getProperty(
                             PROP_HTML_TEMPLATES,
                             "%resourcedir%/template.html"), ";", true,
@@ -1410,12 +1409,12 @@ public class PageHandler extends RepositoryManager {
             }
             //Name,ID,Group,North,West,South,East
             //Group
-            List<String> lines = StringUtil.split(contents, "\n", true, true);
+            List<String> lines = Utils.split(contents, "\n", true, true);
             lines.remove(0);
             String group = lines.get(0);
             lines.remove(0);
             for (String line : lines) {
-                List<String> toks = StringUtil.split(line, ",");
+                List<String> toks = Utils.split(line, ",");
                 if ((toks.size() != 6) && (toks.size() != 4)) {
                     throw new IllegalArgumentException("Bad map region line:"
                             + line + "\nFile:" + path);
@@ -2092,7 +2091,7 @@ public class PageHandler extends RepositoryManager {
 
                     break;
                 }
-                for (String type : StringUtil.split(types, ",", true, true)) {
+                for (String type : Utils.split(types, ",", true, true)) {
                     if (type.equals("file") && !entry.isGroup()) {
                         theMetadata = metadata;
 
@@ -2134,7 +2133,7 @@ public class PageHandler extends RepositoryManager {
                         pageStyle.setShowMenubar(false);
                     } else {
                         for (String menu :
-                                StringUtil.split(menus, ",", true, true)) {
+                                Utils.split(menus, ",", true, true)) {
                             pageStyle.setMenu(menu);
                         }
                     }
@@ -3050,7 +3049,7 @@ public class PageHandler extends RepositoryManager {
         if (mapLayers == null) {
             List<MapLayer> tmp = new ArrayList<MapLayer>();
             for (String base :
-                    StringUtil.split(
+                    Utils.split(
                         getRepository().getProperty(
                             "ramadda.map.extras", ""), ",", true, true)) {
                 tmp.addAll(MapLayer.makeLayers(getRepository(), base));

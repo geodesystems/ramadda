@@ -23,6 +23,7 @@ import org.ramadda.repository.harvester.*;
 import org.ramadda.repository.search.*;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 import org.ramadda.util.MultiJarClassLoader;
 import org.ramadda.util.MyTrace;
 import org.ramadda.util.TempDir;
@@ -358,14 +359,14 @@ public class PluginManager extends RepositoryManager {
         //Now check for any special classes that need loading
         for (String classDefFile : classDefFiles) {
             for (String classToLoad :
-                    StringUtil.split(
+                    Utils.split(
                         getStorageManager().readSystemResource(classDefFile),
                         "\n", true, true)) {
                 try {
                     if (classToLoad.startsWith("#")) {
                         continue;
                     }
-                    List<String> toks = StringUtil.split(classToLoad, ";",
+                    List<String> toks = Utils.split(classToLoad, ";",
                                             true, true);
                     if (toks.size() > 1) {
                         classToLoad = toks.get(0);

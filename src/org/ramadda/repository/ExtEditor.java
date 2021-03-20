@@ -872,7 +872,7 @@ public class ExtEditor extends RepositoryManager {
 
         String      fromIds = request.getString(ARG_FROM, "");
         List<Entry> entries = new ArrayList<Entry>();
-        for (String id : StringUtil.split(fromIds, ",", true, true)) {
+        for (String id : Utils.split(fromIds, ",", true, true)) {
             Entry entry = getEntryManager().getEntry(request, id, false);
             if (entry == null) {
                 throw new RepositoryUtil.MissingEntryException(

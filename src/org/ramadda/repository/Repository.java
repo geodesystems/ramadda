@@ -1036,7 +1036,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             try {
                 blacklist = new HashSet();
                 for (String ip :
-                        StringUtil.split(IOUtil.readContents(blacklistFile),
+                        Utils.split(IOUtil.readContents(blacklistFile),
                                          "\n", true, true)) {
                     getLogManager().logInfoAndPrint(
                         "RAMADDA: Add blacklist ip:" + ip);
@@ -1208,7 +1208,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 cmdLineProperties.put(PROP_REPOSITORY_HOME, homeDir);
             } else if (arg.startsWith("-D")) {
                 String       s    = arg.substring(2);
-                List<String> toks = StringUtil.split(s, "=", true, true);
+                List<String> toks = Utils.split(s, "=", true, true);
                 if (toks.size() == 0) {
                     throw new IllegalArgumentException("Bad argument:"
                             + arg);
@@ -1363,7 +1363,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
         for (String s :
-                StringUtil.split(getProperty("ramadda.html.htdocroots",
+                Utils.split(getProperty("ramadda.html.htdocroots",
                                              BLANK), ";", true, true)) {
             htdocRoots.add(getStorageManager().localizePath(s));
         }
@@ -1455,7 +1455,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         initDefaultTypeHandlers();
         boolean loadedRdb = false;
         boolean doDrop    = getProperty("db.load.drop", true);
-        sqlLoadFiles.addAll(StringUtil.split(getProperty("db.load.files",
+        sqlLoadFiles.addAll(Utils.split(getProperty("db.load.files",
                 ""), ";", true, true));
         for (String sqlFile : (List<String>) sqlLoadFiles) {
             if (sqlFile.endsWith(".rdb")) {
@@ -2617,7 +2617,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
 
             if (contents != null) {
-                List<String> lines = StringUtil.split(contents, "\n", true,
+                List<String> lines = Utils.split(contents, "\n", true,
                                          true);
                 for (String file : lines) {
                     listing.add(path + "/" + file);
@@ -2675,7 +2675,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public List<String> getResourcePaths(String propertyName) {
-        List<String> tmp = StringUtil.split(getProperty(propertyName, BLANK),
+        List<String> tmp = Utils.split(getProperty(propertyName, BLANK),
                                             ";", true, true);
         List<String> paths = new ArrayList<String>();
         for (String path : tmp) {
@@ -4271,7 +4271,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
             if (Utils.stringDefined(alias)) {
                 String       childPath = null;
-                List<String> toks      = StringUtil.splitUpTo(alias, "/", 2);
+                List<String> toks      = Utils.splitUpTo(alias, "/", 2);
                 if (toks.size() > 0) {
                     Entry entry =
                         getEntryManager().getEntryFromAlias(request,
@@ -5704,7 +5704,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             //Check the whitelist
             boolean ok = false;
             for (String pattern :
-                    StringUtil.split(getProperty(PROP_PROXY_WHITELIST, ""),
+                    Utils.split(getProperty(PROP_PROXY_WHITELIST, ""),
                                      ",", true, true)) {
                 //            System.err.println("pattern:" + pattern);
                 if (url.matches(pattern)) {
@@ -6030,7 +6030,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         List<String> objs   = new ArrayList<String>();
         Bounds       bounds = null;
         if (request.defined("bounds")) {
-            List<String> toks = StringUtil.split(request.getString("bounds",
+            List<String> toks = Utils.split(request.getString("bounds",
                                     ""), ",");
             bounds = new Bounds(Double.parseDouble(toks.get(0)),
                                 Double.parseDouble(toks.get(1)),
@@ -6101,7 +6101,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                         String state = result.get("state_alpha").toString();
                         String county = result.get("county_name").toString();
                         List<String> toks =
-                            StringUtil.splitUpTo(
+                            Utils.splitUpTo(
                                 result.get("location").toString(), "|", 2);
                         if (icon != null) {
                             icon = getUrlBase() + icon;
@@ -6726,7 +6726,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public void setLocalFilePaths() {
         localFilePaths = (List<File>) Misc.toList(
             IOUtil.toFiles(
-                (List<String>) StringUtil.split(
+                (List<String>) Utils.split(
                     getProperty(PROP_LOCALFILEPATHS, ""), "\n", true, true)));
         //Add the ramadda dir as well
         localFilePaths.add(0, getStorageManager().getRepositoryDir());

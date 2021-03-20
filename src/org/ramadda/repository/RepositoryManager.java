@@ -935,7 +935,7 @@ public class RepositoryManager implements RepositorySource, Constants,
         if (textSuffixes == null) {
             HashSet<String> tmp = new HashSet<String>();
             tmp.addAll(
-                StringUtil.split(
+                Utils.split(
                     getRepository().getProperty("ramadda.suffixes.text", ""),
                     ",", true, true));
             textSuffixes = tmp;
