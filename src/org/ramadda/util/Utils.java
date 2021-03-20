@@ -363,7 +363,7 @@ public class Utils extends IO {
             String rowDelimiter, String columnDelimiter, int skip) {
         int                cnt     = 0;
         List<List<String>> results = new ArrayList<List<String>>();
-        List<String> lines = StringUtil.split(source, rowDelimiter, true,
+        List<String> lines = Utils.split(source, rowDelimiter, true,
                                  true);
         for (String line : lines) {
             line = line.trim();
@@ -468,15 +468,15 @@ public class Utils extends IO {
      */
     public static List<Integer> getNumbers(String s) {
         List<Integer> cols = new ArrayList<Integer>();
-        for (String tok : StringUtil.split(s, ",", true, true)) {
+        for (String tok : Utils.split(s, ",", true, true)) {
             if ((tok.indexOf("-") >= 0) && !tok.startsWith("-")) {
-                int from = new Integer(StringUtil.split(tok, "-", true,
+                int from = new Integer(Utils.split(tok, "-", true,
                                true).get(0)).intValue();
 
                 int    step  = 1;
-                String right = StringUtil.split(tok, "-", true, true).get(1);
+                String right = Utils.split(tok, "-", true, true).get(1);
                 if (right.indexOf(":") >= 0) {
-                    List<String> tmp = StringUtil.split(right, ":", true,
+                    List<String> tmp = Utils.split(right, ":", true,
                                            true);
                     right = tmp.get(0);
                     if (tmp.size() > 1) {
@@ -1220,11 +1220,11 @@ public class Utils extends IO {
      */
     public static Hashtable getProperties(String s) {
         Hashtable p = new Hashtable();
-        for (String line : StringUtil.split(s, "\n", true, true)) {
+        for (String line : Utils.split(s, "\n", true, true)) {
             if (line.startsWith("#")) {
                 continue;
             }
-            List<String> toks = StringUtil.splitUpTo(line, "=", 2);
+            List<String> toks = Utils.splitUpTo(line, "=", 2);
             if (toks.size() == 2) {
                 p.put(toks.get(0), toks.get(1));
             } else if (toks.size() == 2) {
@@ -1547,8 +1547,8 @@ public class Utils extends IO {
         if (s == null) {
             return points;
         }
-        for (String pair : StringUtil.split(s, ";", true, true)) {
-            List<String> toks = StringUtil.splitUpTo(pair, ",", 2);
+        for (String pair : Utils.split(s, ";", true, true)) {
+            List<String> toks = Utils.splitUpTo(pair, ",", 2);
             if (toks.size() != 2) {
                 continue;
             }
@@ -2037,7 +2037,7 @@ public class Utils extends IO {
      */
     public static String upperCaseFirst(String s) {
         StringBuilder sb = new StringBuilder();
-        for (String tok : StringUtil.split(s, " ", true, true)) {
+        for (String tok : Utils.split(s, " ", true, true)) {
             sb.append(tok.substring(0, 1).toUpperCase()
                       + tok.substring(1).toLowerCase());
             sb.append(" ");
@@ -2118,7 +2118,7 @@ public class Utils extends IO {
         label = label.replaceAll("__+", "_");
 
 
-        for (String tok : StringUtil.split(label, " ", true, true)) {
+        for (String tok : Utils.split(label, " ", true, true)) {
             tok = tok.substring(0, 1).toUpperCase()
                   + tok.substring(1, tok.length()).toLowerCase();
             tmpSB.append(tok);
@@ -2211,7 +2211,7 @@ public class Utils extends IO {
      * @return _more_
      */
     public static int hhmmssToSeconds(String s) {
-        List<String> toks    = StringUtil.split(s, ":", true, true);
+        List<String> toks    = Utils.split(s, ":", true, true);
         int          seconds = 0;
         //HH
         if (toks.size() == 1) {
@@ -3770,6 +3770,29 @@ public class Utils extends IO {
 
 
 
+    public static List<String> splitUpTo(String s,String delim, int cnt) {
+	return StringUtil.splitUpTo(s,delim,cnt);
+    }
+
+    public static List<String> split(Object s,String delim) {
+	return split(s,delim,false,false);
+    }
+	
+
+    public static List<String> split(Object o,String delim, boolean trim, boolean skipBlank) {
+	List<String> toks = new ArrayList<String>();
+	if(o==null) return toks;
+	String s= o.toString();
+	String[]a = s.split(delim);
+	for(String tok:a) {
+	    if(trim) tok = tok.trim();
+	    if(skipBlank && tok.length()==0) continue;
+	    toks.add(tok);
+	}
+	return toks;
+    }
+
+
     /**
      * _more_
      *
@@ -3856,7 +3879,7 @@ public class Utils extends IO {
      */
     public static List findDescendantsFromPath(Element parent, String path) {
         List results = new ArrayList();
-        List tags    = StringUtil.split(path, ".");
+        List tags    = Utils.split(path, ".");
         //In case the path starts with the root node
         if (parent.getTagName().equals(tags.get(0))) {
             tags.remove(0);
