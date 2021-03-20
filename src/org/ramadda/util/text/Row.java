@@ -255,8 +255,9 @@ public class Row {
      *
      * @param object _more_
      */
-    public void add(Object object) {
-        values.add(object);
+    public void add(Object... args) {
+	for(Object object: args)
+	    values.add(object);
         check();
     }
 

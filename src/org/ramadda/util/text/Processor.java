@@ -142,7 +142,7 @@ public abstract class Processor extends CsvOperator {
                                           List<Row> rows)
             throws Exception {
 
-        List<String>  toks   = StringUtil.split(name, ":unit:", true, true);
+        List<String>  toks   = Utils.split(name, ":unit:", true, true);
         String        id     = cleanName(toks.get(0));
         StringBuilder extra  = new StringBuilder();
         String        suffix = null;
@@ -2655,7 +2655,7 @@ rotate -> pass -> pass -> rotate -> pass
             Collections.sort(newColumns);
             for (int i = 0; i < newColumns.size(); i++) {
                 String       v    = newColumns.get(i);
-                List<String> toks = StringUtil.split(v, ":unit:");
+                List<String> toks = Utils.split(v, ":unit:");
                 indexMap.put(toks.get(0), new Integer(i));
                 indexMap.put(v, new Integer(i));
             }
@@ -2933,9 +2933,9 @@ rotate -> pass -> pass -> rotate -> pass
         public List<Row> finish(TextReader info, List<Row> rows)
                 throws Exception {
             List<Row> newRows = new ArrayList<Row>();
-            int keyIndex = getIndices(info,StringUtil.split(key, ",", true,
+            int keyIndex = getIndices(info,Utils.split(key, ",", true,
                                true)).get(0);
-            int valueIndex = getIndices(info,StringUtil.split(value, ",", true,
+            int valueIndex = getIndices(info,Utils.split(value, ",", true,
                                  true)).get(0);
             List<Row> allRows   = getRows();
             Row       headerRow = allRows.get(0);

@@ -388,7 +388,7 @@ public abstract class CsvOperator {
     public void getColumnIndex(TextReader info, List<Integer> indices,
                                String s) {
         s = s.toLowerCase().trim();
-        List<String> toks  = StringUtil.splitUpTo(s, "-", 2);
+        List<String> toks  = Utils.splitUpTo(s, "-", 2);
         int          start = -1;
         int          end   = -1;
         try {

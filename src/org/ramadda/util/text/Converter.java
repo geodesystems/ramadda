@@ -25,6 +25,7 @@ import org.ramadda.util.GeoUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Json;
 import org.ramadda.util.Place;
+import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
 import ucar.unidata.util.Misc;
@@ -1446,7 +1447,7 @@ public abstract class Converter extends Processor {
          * @param code _more_
          */
         public ColumnFunc(String js, String names, String code) {
-            this.names = StringUtil.split(names, ",", true, true);
+            this.names = Utils.split(names, ",", true, true);
             if (code.indexOf("return ") >= 0) {
                 code = "function _tmp() {" + code + "}\n_tmp()";
             }
@@ -2918,7 +2919,7 @@ public abstract class Converter extends Processor {
             }
             //            row.remove(index);
             int          colOffset = 0;
-            List<String> toks = StringUtil.split(row.get(index), delimiter);
+            List<String> toks = Utils.split(row.get(index), delimiter);
             while (toks.size() < names.size()) {
                 toks.add("");
             }
@@ -3199,7 +3200,7 @@ public abstract class Converter extends Processor {
                 if (line.startsWith("#")) {
                     continue;
                 }
-                List<String> toks = StringUtil.split(line, ",");
+                List<String> toks = Utils.split(line, ",");
                 String       key  = toks.get(nameIndex).trim();
                 try {
                     double[] v = new double[2];
@@ -3276,11 +3277,11 @@ public abstract class Converter extends Processor {
                         bounds = map.get(tok.replaceAll("-.*$", ""));
                     }
                     if (bounds == null) {
-                        List<String> toks = StringUtil.splitUpTo(tok, ",", 2);
+                        List<String> toks = Utils.splitUpTo(tok, ",", 2);
                         bounds = map.get(toks.get(0));
                     }
                     if (bounds == null) {
-                        List<String> toks = StringUtil.splitUpTo(tok, " ", 2);
+                        List<String> toks = Utils.splitUpTo(tok, " ", 2);
                         bounds = map.get(toks.get(0));
                     }
                     if (bounds == null) {
@@ -4493,6 +4494,80 @@ public abstract class Converter extends Processor {
 
     }
 
+    public static class StripTags extends Converter {
+
+        /**
+         * @param indices _more_
+         * @param action _more_
+         */
+        public StripTags(List<String> indices) {
+            super(indices);
+        }
+
+        /**
+         *
+         * @param info _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row) {
+            if (rowCnt++ == 0) {
+		return row;
+	    }
+            List<Integer> indices = getIndices(info);
+            for (Integer idx : indices) {
+                int index = idx.intValue();
+                if ((index < 0) || (index >= row.size())) {
+                    continue;
+                }
+                String s = (String) row.getValues().get(index);
+		s = Utils.stripTags(s);
+		row.set(index,s);
+	    }
+	    return row;
+        }
+
+    }
+
+
+    public static class Decoder extends Converter {
+
+        /**
+         * @param indices _more_
+         * @param action _more_
+         */
+        public Decoder(List<String> indices) {
+            super(indices);
+        }
+
+        /**
+         *
+         * @param info _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row) {
+            if (rowCnt++ == 0) {
+		return row;
+	    }
+            List<Integer> indices = getIndices(info);
+            for (Integer idx : indices) {
+                int index = idx.intValue();
+                if ((index < 0) || (index >= row.size())) {
+                    continue;
+                }
+                String s = (String) row.getValues().get(index);
+		row.set(index,HtmlUtils.entityDecode(s));
+	    }
+	    return row;
+        }
+
+    }
+    
 
     /**
      * Class description
@@ -4585,7 +4660,7 @@ public abstract class Converter extends Processor {
          */
         public ColumnInserter(String col, String value) {
             super(col);
-            this.values = StringUtil.split(value, ",", false, false);
+            this.values = Utils.split(value, ",", false, false);
         }
 
         /**

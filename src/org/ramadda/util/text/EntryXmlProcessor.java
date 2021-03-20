@@ -114,8 +114,8 @@ public class EntryXmlProcessor extends Processor.RowCollector {
             String assessment_type       = "oneoff";
 
             String keywords              = values.get(39).toString();
-            for (String tok : StringUtil.split(keywords, ";", true, true)) {
-                List<String> toks = StringUtil.splitUpTo(tok, ":", 2);
+            for (String tok : Utils.split(keywords, ";", true, true)) {
+                List<String> toks = Utils.splitUpTo(tok, ":", 2);
                 String       n    = toks.get(0).toLowerCase();
                 String       v    = ((toks.size() > 1)
                                      ? toks.get(1)
@@ -211,7 +211,7 @@ public class EntryXmlProcessor extends Processor.RowCollector {
             }
 
             for (String author :
-                    StringUtil.split(values.get(3).toString(), ";", true,
+                    Utils.split(values.get(3).toString(), ";", true,
                                      true)) {
                 author = Utils.removeNonAscii(author);
                 content.append(
