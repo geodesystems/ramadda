@@ -3769,9 +3769,21 @@ public class Utils extends IO {
     }
 
 
+    public static List<String> splitMacros(String s) {
+	return StringUtil.splitMacros(s);
+      
+    }
 
-    public static List<String> splitUpTo(String s,String delim, int cnt) {
-	return StringUtil.splitUpTo(s,delim,cnt);
+    public static List<String> split(Object source) {
+	return split(source, ",");
+    }
+
+    public static String[] split(Object s, String delim, int cnt) {
+	return  StringUtil.split(s.toString(), delim, cnt);
+    }
+
+    public static List<String> splitUpTo(Object s,String delim, int cnt) {
+	return StringUtil.splitUpTo(s.toString(),delim,cnt);
     }
 
     public static List<String> split(Object s,String delim) {
@@ -3779,7 +3791,7 @@ public class Utils extends IO {
     }
 	
 
-    public static List<String> split(Object o,String delim, boolean trim, boolean skipBlank) {
+    public static List<String> split(Object o, String delim,  boolean trim, boolean skipBlank) {
 	List<String> toks = new ArrayList<String>();
 	if(o==null) return toks;
 	String s= o.toString();
