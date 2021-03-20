@@ -541,7 +541,7 @@ public abstract class TextFile extends PointFile {
                     line = line.substring(1);
                     int idx = line.indexOf("=");
                     if (idx >= 0) {
-                        List<String> toks = StringUtil.splitUpTo(line, "=",
+                        List<String> toks = Utils.splitUpTo(line, "=",
                                                 2);
                         putProperty(toks.get(0), toks.get(1));
                     }
@@ -619,7 +619,7 @@ public abstract class TextFile extends PointFile {
         }
         StringBuffer textHeader = new StringBuffer();
         for (String line : getHeaderLines()) {
-            List<String> toks = StringUtil.splitUpTo(line, "=", 2);
+            List<String> toks = Utils.splitUpTo(line, "=", 2);
             if (toks.size() == 2) {
                 if (toks.get(0).trim().indexOf(" ") < 0) {
                     continue;

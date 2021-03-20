@@ -386,7 +386,8 @@ public class CsvFile extends TextFile {
      *
      * @throws Exception on badness
      */
-    public static void main(String[] args) throws Exception {
+    public static void main(String[]
+ args) throws Exception {
         if (true) {
             PointFile.test(args, CsvFile.class);
 
@@ -395,23 +396,28 @@ public class CsvFile extends TextFile {
 
 
         for (int argIdx = 0; argIdx < args.length; argIdx++) {
-            String arg = args[argIdx];
+            String arg = args[argIdx]
+;
             try {
                 long                t1       = System.currentTimeMillis();
-                final int[]         cnt      = { 0 };
+                final int[]
+         cnt      = { 0 };
                 CsvFile             file     = new CsvFile(arg);
                 final RecordVisitor metadata = new RecordVisitor() {
                     public boolean visitRecord(RecordFile file,
                             VisitInfo visitInfo, BaseRecord record) {
-                        cnt[0]++;
+                        cnt[0]
+++;
                         PointRecord pointRecord = (PointRecord) record;
                         if ((pointRecord.getLatitude() < -90)
                                 || (pointRecord.getLatitude() > 90)) {
                             System.err.println("Bad lat:"
                                     + pointRecord.getLatitude());
                         }
-                        if ((cnt[0] % 100000) == 0) {
-                            System.err.println(cnt[0] + " lat:"
+                        if ((cnt[0]
+ % 100000) == 0) {
+                            System.err.println(cnt[0]
+ + " lat:"
                                     + pointRecord.getLatitude() + " "
                                     + pointRecord.getLongitude() + " "
                                     + pointRecord.getAltitude());
@@ -424,7 +430,8 @@ public class CsvFile extends TextFile {
                 file.visit(metadata);
                 long t2 = System.currentTimeMillis();
                 System.err.println("time:" + (t2 - t1) / 1000.0
-                                   + " # record:" + cnt[0]);
+                                   + " # record:" + cnt[0]
+);
             } catch (Exception exc) {
                 System.err.println("Error:" + exc);
                 exc.printStackTrace();

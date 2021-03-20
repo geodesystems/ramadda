@@ -135,7 +135,8 @@ public class HeaderPointFile extends CsvFile {
      *
      * @param args _more_
      */
-    public static void main(String[] args) {
+    public static void main(String[]
+ args) {
         PointFile.test(args, HeaderPointFile.class);
     }
 

@@ -736,7 +736,7 @@ public class TextRecord extends DataRecord {
                 System.err.println("split:" + tokens.length);
             }
             while (true) {
-                List<String> toks = StringUtil.split(sourceString,
+                List<String> toks = Utils.split(sourceString,
                                         (sourceString.indexOf(",") >= 0)
                                         ? ","
                                         : " ", true, true);
@@ -771,7 +771,7 @@ public class TextRecord extends DataRecord {
         } else if (delimiterIsSpaces) {
             int cnt = 0;
             while (true) {
-                List<String> toks = StringUtil.split(sourceString, " ", true,
+                List<String> toks = Utils.split(sourceString, " ", true,
                                         true);
                 for (int i = 0; (i < toks.size()) && (cnt < tokens.length);
                         i++) {
