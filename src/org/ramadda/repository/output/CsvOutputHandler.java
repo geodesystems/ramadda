@@ -21,7 +21,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
-
+import org.ramadda.util.Utils;
 import org.ramadda.util.sql.Clause;
 
 
@@ -163,14 +163,14 @@ public class CsvOutputHandler extends OutputHandler {
 
         StringBuffer sb          = new StringBuffer();
         StringBuffer header      = new StringBuffer();
-        List<String> toks = StringUtil.split(fieldsArg, ",", true, true);
+        List<String> toks = Utils.split(fieldsArg, ",", true, true);
         List<String> fieldNames  = new ArrayList<String>();
         List<String> fieldLabels = new ArrayList<String>();
         for (int i = 0; i < toks.size(); i++) {
             String       tok   = toks.get(i);
             String       field  = tok;
             String       label = tok;
-            List<String> pair  = StringUtil.splitUpTo(tok, ";", 2);
+            List<String> pair  = Utils.splitUpTo(tok, ";", 2);
             if (pair.size() > 1) {
                 field  = pair.get(0);
                 label = pair.get(1);

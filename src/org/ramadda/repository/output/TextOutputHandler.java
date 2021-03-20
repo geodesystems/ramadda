@@ -20,7 +20,7 @@ package org.ramadda.repository.output;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.util.HtmlUtils;
-
+import org.ramadda.util.Utils;
 import org.ramadda.util.sql.SqlUtil;
 
 
@@ -200,7 +200,7 @@ public class TextOutputHandler extends OutputHandler {
         sb.append("<pre>\n");
         int cnt = 0;
         for (String line :
-                (List<String>) StringUtil.split(contents, "\n", false,
+                (List<String>) Utils.split(contents, "\n", false,
                     false)) {
             cnt++;
             line = line.replace("\r", "");
@@ -251,7 +251,7 @@ public class TextOutputHandler extends OutputHandler {
         js.append("function draw() {\n");
         js.append("var data = new google.visualization.DataTable();\n");
         js.append("data.addColumn('string', 'Text1');\n");
-        List<String> lines = (List<String>) StringUtil.split(contents, "\n",
+        List<String> lines = (List<String>) Utils.split(contents, "\n",
                                  false, false);
 
         js.append("data.addRows(" + lines.size() + ");\n");
@@ -311,7 +311,7 @@ public class TextOutputHandler extends OutputHandler {
 
         int cnt = 0;
         for (String line :
-                (List<String>) StringUtil.split(contents, "\n", false,
+                (List<String>) Utils.split(contents, "\n", false,
                     false)) {
             cnt++;
             line = line.replace("\r", "");

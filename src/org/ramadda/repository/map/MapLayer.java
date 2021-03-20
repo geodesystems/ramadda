@@ -21,7 +21,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.metadata.MetadataHandler;
 import org.ramadda.util.HtmlUtils;
-
+import org.ramadda.util.Utils;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.Misc;
@@ -122,7 +122,7 @@ public class MapLayer {
                                             String prefix) {
         List<MapLayer> layers = new ArrayList<MapLayer>();
         for (String id :
-                StringUtil.split(repository.getProperty(prefix + ".maps",
+                Utils.split(repository.getProperty(prefix + ".maps",
                     ""), ",", true, true)) {
             try {
                 layers.add(new MapLayer(repository, prefix, id));

@@ -23,7 +23,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
-
+import org.ramadda.util.Utils;
 
 import org.ramadda.util.sql.SqlUtil;
 
@@ -642,7 +642,7 @@ public class WebHarvester extends Harvester {
                         createDate.getTime(), createDate.getTime(),
                         fromDate.getTime(), toDate.getTime(), null);
         if (tag.length() > 0) {
-            List tags = StringUtil.split(tag, ",", true, true);
+            List tags = Utils.split(tag, ",", true, true);
             for (int i = 0; i < tags.size(); i++) {
                 getMetadataManager().addMetadata(entry,
                         new Metadata(repository.getGUID(), entry.getId(),

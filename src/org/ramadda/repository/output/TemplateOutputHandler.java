@@ -21,7 +21,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
-
+import org.ramadda.util.Utils;
 import org.ramadda.util.sql.SqlUtil;
 
 
@@ -153,7 +153,7 @@ public class TemplateOutputHandler extends OutputHandler {
                 TAG_WIKI_FOLDER, wikiTemplate);
         fileWikiTemplate = XmlUtil.getGrandChildText(element, TAG_WIKI_FILE,
                 wikiTemplate);
-        types = StringUtil.split(XmlUtil.getAttribute(element, ATTR_TYPES,
+        types = Utils.split(XmlUtil.getAttribute(element, ATTR_TYPES,
                 "file,folder"), ",", true, true);
 
         forGroups = types.contains("folder");

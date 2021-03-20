@@ -166,7 +166,7 @@ public class OpenSearchProvider extends SearchProvider {
             dateString = XmlUtil.getGrandChildText(item, "dc:date",
                     (String) null);
             if (Utils.stringDefined(dateString)) {
-                List<String> toks = StringUtil.splitUpTo(dateString, "/", 2);
+                List<String> toks = Utils.splitUpTo(dateString, "/", 2);
                 fromDate = DateUtil.parse(toks.get(0));
                 if (toks.size() > 1) {
                     toDate = DateUtil.parse(toks.get(1));

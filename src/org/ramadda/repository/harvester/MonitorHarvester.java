@@ -301,7 +301,7 @@ public class MonitorHarvester extends Harvester {
             logStatus("Email is not enabled");
         } else {
             String mail = message.replace("${url}", this.url);
-            for (String email : StringUtil.split(emails, "\n", true, true)) {
+            for (String email : Utils.split(emails, "\n", true, true)) {
                 getRepository().getMailManager().sendEmail(email,
                         "RAMADDA server monitor failed", mail, false);
                 logStatus("email sent to:" + email);

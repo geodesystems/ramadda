@@ -527,13 +527,13 @@ public class TypeHandler extends RepositoryManager {
                 services.add(new Service(getRepository(), serviceNode));
             }
 
-            metadataTypes = StringUtil.split(Utils.getAttributeOrTag(node,
+            metadataTypes = Utils.split(Utils.getAttributeOrTag(node,
                     ATTR_METADATA,
                     EnumeratedMetadataHandler.TYPE_TAG + ","
                     + ContentMetadataHandler.TYPE_THUMBNAIL + ","
                     + ContentMetadataHandler.TYPE_ALIAS), ",", true, true);
 
-            childTypes = StringUtil.split(Utils.getAttributeOrTag(node,
+            childTypes = Utils.split(Utils.getAttributeOrTag(node,
                     ATTR_CHILDTYPES, ""));
             setType(Utils.getAttributeOrTag(node, ATTR_DB_NAME, (type == null)
                     ? ""
@@ -593,7 +593,7 @@ public class TypeHandler extends RepositoryManager {
      */
     private List<String> getMetadataTypes() {
         if (metadataTypes == null) {
-            metadataTypes = StringUtil.split(
+            metadataTypes = Utils.split(
                 EnumeratedMetadataHandler.TYPE_TAG + ","
                 + ContentMetadataHandler.TYPE_THUMBNAIL, ",", true, true);
         }
@@ -773,7 +773,7 @@ public class TypeHandler extends RepositoryManager {
 
                     break;
                 }
-                for (String type : StringUtil.split(types, ",", true, true)) {
+                for (String type : Utils.split(types, ",", true, true)) {
                     if (type.equals("file") && !entry.isGroup()) {
                         theMetadata = metadata;
 
@@ -5074,7 +5074,7 @@ public class TypeHandler extends RepositoryManager {
                 propertyValue.substring("file:".length()));
             delimiter = "\n";
         }
-        List<String> tmp = StringUtil.split(propertyValue, delimiter, true,
+        List<String> tmp = Utils.split(propertyValue, delimiter, true,
                                             true);
 
         return tmp;
@@ -5788,7 +5788,7 @@ public class TypeHandler extends RepositoryManager {
                         request.getString(ARG_FILESUFFIX, ""));
             List<Clause> clauses = new ArrayList<Clause>();
             for (String tok :
-                    (List<String>) StringUtil.split(
+                    (List<String>) Utils.split(
                         request.getString(ARG_FILESUFFIX, ""), ",", true,
                         true)) {
                 clauses.add(Clause.like(Tables.ENTRIES.COL_RESOURCE,
@@ -5822,7 +5822,7 @@ public class TypeHandler extends RepositoryManager {
                                       groupId));
             } else {
 
-                List<String> toks = StringUtil.split(groupId, "|", true,
+                List<String> toks = Utils.split(groupId, "|", true,
                                         true);
                 if (toks.size() > 1) {
                     List<Clause> ors = new ArrayList<Clause>();
@@ -6257,7 +6257,7 @@ public class TypeHandler extends RepositoryManager {
         for (String argPrefix : argPrefixes) {
             if (request.defined(argPrefix)) {
                 List<String> toks =
-                    StringUtil.split(request.getString(argPrefix, ""), ",",
+                    Utils.split(request.getString(argPrefix, ""), ",",
                                      true, true);
                 //n,w,s,e
                 if (toks.size() == 4) {
@@ -6402,7 +6402,7 @@ public class TypeHandler extends RepositoryManager {
         textToSearch = textToSearch.replaceAll("%20", " ");
         List<Clause> textOrs = new ArrayList<Clause>();
         for (String textTok :
-                (List<String>) StringUtil.split(textToSearch, ",", true,
+                (List<String>) Utils.split(textToSearch, ",", true,
                     true)) {
             boolean doLike   = false;
             boolean doRegexp = false;
@@ -6412,7 +6412,7 @@ public class TypeHandler extends RepositoryManager {
                             textToSearch);
             } else if ( !request.get(ARG_EXACT, false)) {
                 addCriteria(request, searchCriteria, "Text like", textTok);
-                List tmp = StringUtil.split(textTok, ",", true, true);
+                List tmp = Utils.split(textTok, ",", true, true);
                 //                textTok = "%" + StringUtil.join("%,%", tmp) + "%";
                 doLike = true;
             } else {
@@ -7328,19 +7328,19 @@ public class TypeHandler extends RepositoryManager {
             for (DateArgument arg : DateArgument.SEARCH_ARGS) {
                 tmp.add(arg);
             }
-            List<String> from = StringUtil.split(
+            List<String> from = Utils.split(
                                     getRepository().getProperty(
                                         "ramadda.arg.date.from", ""), ",",
                                             true, true);
-            List<String> to = StringUtil.split(
+            List<String> to = Utils.split(
                                   getRepository().getProperty(
                                       "ramadda.arg.date.to", ""), ",", true,
                                           true);
-            List<String> mode = StringUtil.split(
+            List<String> mode = Utils.split(
                                     getRepository().getProperty(
                                         "ramadda.arg.date.mode", ""), ",",
                                             true, true);
-            List<String> relative = StringUtil.split(
+            List<String> relative = Utils.split(
                                         getRepository().getProperty(
                                             "ramadda.arg.date.relative",
                                             ""), ",", true, true);

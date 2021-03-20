@@ -355,7 +355,7 @@ public class Admin extends RepositoryManager {
                 //No key defined
                 return;
             }
-            List<String> toks = StringUtil.split(registrationKey, ":");
+            List<String> toks = Utils.split(registrationKey, ":");
             //id:keyword:version:date:orgtype:users:                                                               
             if (toks.size() < 6) {
                 System.err.println(

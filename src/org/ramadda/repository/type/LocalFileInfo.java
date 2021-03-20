@@ -16,15 +16,10 @@
 
 package org.ramadda.repository.type;
 
-
 import org.ramadda.repository.*;
-
-import ucar.unidata.util.StringUtil;
+import org.ramadda.util.Utils;
 
 import java.io.File;
-
-
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -166,7 +161,7 @@ public class LocalFileInfo {
             return new ArrayList<String>();
         }
 
-        return (List<String>) StringUtil.split(values[idx], "\n", true, true);
+        return (List<String>) Utils.split(values[idx], "\n", true, true);
     }
 
 

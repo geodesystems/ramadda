@@ -309,7 +309,7 @@ public class RepositorySearch extends RepositoryClient {
      * @throws Exception _more_
      */
     private void handleDownload(String csv) throws Exception {
-        List<String> lines = StringUtil.split(csv, "\n", true, true);
+        List<String> lines = Utils.split(csv, "\n", true, true);
         for (int i = 0; i < lines.size(); i++) {
 
             if (i == 0) {
@@ -317,7 +317,7 @@ public class RepositorySearch extends RepositoryClient {
             }
             String line = lines.get(i);
             //            System.err.println("line:" + line);
-            List<String> toks = StringUtil.splitUpTo(line, ",", 3);
+            List<String> toks = Utils.splitUpTo(line, ",", 3);
             if (toks.size() != 3) {
                 continue;
             }

@@ -3324,7 +3324,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                                    dbTableName.toLowerCase());
             if (className == null) {
                 className = "";
-                for (String tok : StringUtil.split(dbTableName, "_")) {
+                for (String tok : Utils.split(dbTableName, "_")) {
                     className += Utils.upperCaseFirst(tok);
                 }
             }
@@ -3384,7 +3384,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                     throw new Exception("Unknown type:" + typeName);
                 }
                 String get = "";
-                for (String tok : StringUtil.split(varName, "_")) {
+                for (String tok : Utils.split(varName, "_")) {
                     get += Utils.upperCaseFirst(tok);
                 }
                 getters.append(sp1 + "public " + type + " get" + get

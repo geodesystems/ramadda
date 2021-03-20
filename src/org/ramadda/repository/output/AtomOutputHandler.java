@@ -253,8 +253,8 @@ public class AtomOutputHandler extends OutputHandler {
 
                     double         firstLat = Double.NaN;
                     double         firstLon = Double.NaN;
-                    for (String pair : StringUtil.split(s, ";", true, true)) {
-                        List<String> toks = StringUtil.splitUpTo(pair, ",",
+                    for (String pair : Utils.split(s, ";", true, true)) {
+                        List<String> toks = Utils.splitUpTo(pair, ",",
                                                 2);
                         if (toks.size() != 2) {
                             continue;

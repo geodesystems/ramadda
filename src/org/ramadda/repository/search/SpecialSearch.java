@@ -176,7 +176,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                 null);
         if (syntheticIds != null) {
             for (String id :
-                    StringUtil.split(syntheticIds, ",", true, true)) {
+                    Utils.split(syntheticIds, ",", true, true)) {
                 String label =
                     (String) typeHandler.getTypeProperty("search.synthetic."
                         + id + ".label", id);
@@ -184,7 +184,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                     (String) typeHandler.getTypeProperty("search.synthetic."
                         + id + ".fields", null);
                 syntheticFields.add(new SyntheticField(id, label,
-                        StringUtil.split(fieldString, ",", true, true)));
+                        Utils.split(fieldString, ",", true, true)));
             }
         }
 
@@ -192,13 +192,13 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             (String) typeHandler.getTypeProperty("search.metadatatypes",
                 null);
         if (types != null) {
-            for (String type : StringUtil.split(types, ",", true, true)) {
+            for (String type : Utils.split(types, ",", true, true)) {
                 metadataTypes.add(type);
             }
         }
         String tabsToUse =
             (String) typeHandler.getTypeProperty("search.tabs", TAB_LIST);
-        tabs.addAll(StringUtil.split(tabsToUse, ",", true, true));
+        tabs.addAll(Utils.split(tabsToUse, ",", true, true));
 
         searchOpen = typeHandler.getTypeProperty("search.searchopen",
                 "true").equals("true");
@@ -235,13 +235,13 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     public void init(Element node, Hashtable props) throws Exception {
         String types = (String) props.get("metadatatypes");
         if (types != null) {
-            for (String type : StringUtil.split(types, ",", true, true)) {
+            for (String type : Utils.split(types, ",", true, true)) {
                 metadataTypes.add(type);
             }
         }
         String tabsToUse = (String) props.get(ATTR_TABS);
         if (tabsToUse != null) {
-            tabs.addAll(StringUtil.split(tabsToUse, ",", true, true));
+            tabs.addAll(Utils.split(tabsToUse, ",", true, true));
         } else {
             tabs.add(TAB_LIST);
             tabs.add(TAB_MAP);
@@ -478,7 +478,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                                             request.getString("tabs",
                                                 (String) null));
         if (tabsProp != null) {
-            tabsToUse = StringUtil.split(tabsProp, ",", true, true);
+            tabsToUse = Utils.split(tabsProp, ",", true, true);
         }
 
         boolean georeferencedResults = tabsToUse.contains(TAB_MAP)
@@ -619,11 +619,11 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         List<String> metadataTypesToUse = metadataTypes;
         if (request.defined(ARG_METADATA)) {
             metadataTypesToUse =
-                StringUtil.split(request.getSanitizedString(ARG_METADATA,
+                Utils.split(request.getSanitizedString(ARG_METADATA,
                     ""), ",", true, true);
         }
         List<String> fieldsList =
-            StringUtil.split(request.getSanitizedString(ARG_FIELDS, ""), ",",
+            Utils.split(request.getSanitizedString(ARG_FIELDS, ""), ",",
                              true, true);
 
         HashSet<String> fieldsToShow = null;

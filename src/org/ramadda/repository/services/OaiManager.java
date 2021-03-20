@@ -26,7 +26,7 @@ import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.util.HtmlUtils;
-
+import org.ramadda.util.Utils;
 import org.ramadda.util.sql.Clause;
 
 import org.ramadda.util.sql.SqlUtil;
@@ -711,7 +711,7 @@ public class OaiManager extends RepositoryManager {
             repositoryIdentifier = StringUtil.join(
                 ".",
                 Misc.reverseList(
-                    StringUtil.split(
+                    Utils.split(
                         getRepository().getHostname(), ".", true, true)));
         }
 

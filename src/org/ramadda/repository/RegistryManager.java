@@ -22,6 +22,7 @@ import org.ramadda.repository.database.*;
 
 import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 import org.ramadda.util.sql.Clause;
 
@@ -361,7 +362,7 @@ public class RegistryManager extends RepositoryManager {
      */
     public void applyInstallForm(Request request) throws Exception {
         List<String> newList =
-            StringUtil.split(request.getUnsafeString(PROP_REGISTRY_SERVERS,
+            Utils.split(request.getUnsafeString(PROP_REGISTRY_SERVERS,
                 ""), "\n", true, true);
 
 
@@ -508,7 +509,7 @@ public class RegistryManager extends RepositoryManager {
     public void applyAdminSettings(Request request) throws Exception {
         List<String> oldList = getServersToRegisterWith();
         List<String> newList =
-            StringUtil.split(request.getUnsafeString(PROP_REGISTRY_SERVERS,
+            Utils.split(request.getUnsafeString(PROP_REGISTRY_SERVERS,
                 ""), "\n", true, true);
 
 
@@ -740,7 +741,7 @@ public class RegistryManager extends RepositoryManager {
      * @return _more_
      */
     public List<String> getServersToRegisterWith() {
-        List<String> urls = StringUtil.split(
+        List<String> urls = Utils.split(
                                 getRepository().getProperty(
                                                             PROP_REGISTRY_SERVERS, ""), "\n", true,
                                         true);

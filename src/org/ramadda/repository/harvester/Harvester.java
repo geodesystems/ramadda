@@ -23,6 +23,7 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 
 import org.ramadda.util.sql.SqlUtil;
@@ -470,7 +471,7 @@ public abstract class Harvester extends RepositoryManager {
     protected void init(Element element) throws Exception {
         rootDirs = new ArrayList<File>();
         for (String dir :
-                StringUtil.split(XmlUtil.getAttribute(element, ATTR_ROOTDIR,
+                Utils.split(XmlUtil.getAttribute(element, ATTR_ROOTDIR,
                     ""), ROOTDIR_DELIM, true, true)) {
             rootDirs.add(new File(dir));
         }
@@ -574,7 +575,7 @@ public abstract class Harvester extends RepositoryManager {
         getEntryManager().clearSeenResources();
         rootDirs = new ArrayList<File>();
         for (String dir :
-                StringUtil.split(request.getUnsafeString(ATTR_ROOTDIR, ""),
+                Utils.split(request.getUnsafeString(ATTR_ROOTDIR, ""),
                                  "\n", true, true)) {
             rootDirs.add(new File(dir));
         }
@@ -1270,7 +1271,7 @@ public abstract class Harvester extends RepositoryManager {
             return new ArrayList<String>();
         }
 
-        return StringUtil.split(XmlUtil.getAttribute(element, attr), ",",
+        return Utils.split(XmlUtil.getAttribute(element, attr), ",",
                                 true, true);
     }
 

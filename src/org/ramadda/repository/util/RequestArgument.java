@@ -111,7 +111,7 @@ public class RequestArgument {
      */
     public List<String> getArgs(Request request) {
         if (args == null) {
-            args = StringUtil.split(
+            args = Utils.split(
                 request.getRepository().getProperty(argsProperty, ""));
         }
 

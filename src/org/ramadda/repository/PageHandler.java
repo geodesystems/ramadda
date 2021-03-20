@@ -705,7 +705,7 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public String processTemplate(String template, boolean ignoreErrors) {
-        List<String>  toks   = StringUtil.splitMacros(template);
+        List<String>  toks   = Utils.splitMacros(template);
         StringBuilder result = new StringBuilder();
         if (toks.size() > 0) {
             result.append(toks.get(0));

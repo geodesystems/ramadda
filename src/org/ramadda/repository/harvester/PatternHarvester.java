@@ -521,7 +521,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             sdf = new ArrayList<SimpleDateFormat>();
             if ((dateFormat != null) && (dateFormat.length() > 0)) {
                 for (String tok :
-                        (List<String>) StringUtil.split(dateFormat, ",",
+                        (List<String>) Utils.split(dateFormat, ",",
                             true, true)) {
                     sdf.add(new SimpleDateFormat(tok));
                 }
@@ -1422,7 +1422,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
         //Don't do this here. We'll check for "_" in getDirNames
         //        dirPath = dirPath.replaceAll("_", " ");
-        List dirToks = (List<String>) StringUtil.split(dirPath, "/", true,
+        List dirToks = (List<String>) Utils.split(dirPath, "/", true,
                            true);
         Entry  baseGroup = getBaseGroup();
         String dirGroup  = null;

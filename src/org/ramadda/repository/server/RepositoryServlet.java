@@ -16,6 +16,7 @@
 
 package org.ramadda.repository.server;
 
+import org.ramadda.util.Utils;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -30,13 +31,9 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 
 import ucar.unidata.util.Misc;
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.WrapperException;
 
 import java.io.*;
-
 import java.net.*;
-
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
@@ -225,7 +222,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
             }
             String paramValue =
                 getServletContext().getInitParameter(paramName);
-            tokens = StringUtil.split(paramValue, ",", true, true);
+            tokens = Utils.split(paramValue, ",", true, true);
 
             break;
         }

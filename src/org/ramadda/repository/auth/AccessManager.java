@@ -21,30 +21,18 @@ import org.ramadda.repository.*;
 
 import org.ramadda.repository.database.*;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.JQuery;
+import org.ramadda.util.Utils;
 import org.ramadda.util.TTLCache;
 
 
-
 import org.ramadda.util.sql.Clause;
-
-
 import org.ramadda.util.sql.SqlUtil;
-
 
 import org.w3c.dom.*;
 
-import ucar.unidata.util.DateUtil;
-
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 
 import ucar.unidata.util.StringUtil;
-
-import ucar.unidata.xml.XmlUtil;
-
-
 
 import java.io.*;
 
@@ -52,13 +40,8 @@ import java.io.File;
 import java.io.InputStream;
 
 import java.lang.reflect.*;
-
-
-
 import java.net.*;
-
 import java.sql.ResultSet;
-
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -200,7 +183,7 @@ public class AccessManager extends RepositoryManager {
 
         if (request.exists(ARG_ENTRYIDS)) {
             for (String id :
-                    StringUtil.split(request.getString(ARG_ENTRYIDS, ""),
+                    Utils.split(request.getString(ARG_ENTRYIDS, ""),
                                      ",", true, true)) {
                 Entry entry = getEntryManager().getEntry(request, id, false);
                 if (entry == null) {
@@ -1079,7 +1062,7 @@ public class AccessManager extends RepositoryManager {
         }
         List<Permission> permissions = new ArrayList<Permission>();
         for (int i = 0; i < Permission.ACTIONS.length; i++) {
-            List roles = StringUtil.split(request.getString(ARG_ROLES + "."
+            List roles = Utils.split(request.getString(ARG_ROLES + "."
                              + Permission.ACTIONS[i], ""), "\n", true, true);
             if (roles.size() > 0) {
                 permissions.add(new Permission(Permission.ACTIONS[i], roles));

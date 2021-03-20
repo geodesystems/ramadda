@@ -3604,7 +3604,7 @@ public class EntryManager extends RepositoryManager {
             long   byteEnd   = -1;
             if (Utils.stringDefined(range)) {
                 //assume: bytes=start-end
-                List<String> toks1 = StringUtil.splitUpTo(range, "=", 2);
+                List<String> toks1 = Utils.splitUpTo(range, "=", 2);
                 List<String> toks  = Utils.split(toks1.get(1), "-");
                 byteStart = Long.decode(toks.get(0)).longValue();
                 if ((toks.size() > 1) && Utils.stringDefined(toks.get(1))) {
@@ -6275,7 +6275,7 @@ public class EntryManager extends RepositoryManager {
             return new String[] { "", "" };
         }
         id = id.substring(ID_PREFIX_REMOTE.length());
-        String[] pair = StringUtil.split(id, TypeHandler.ID_DELIMITER, 2);
+        String[] pair = Utils.split(id, TypeHandler.ID_DELIMITER, 2);
         if (pair == null) {
             return new String[] { "", "" };
         }
@@ -6740,7 +6740,7 @@ public class EntryManager extends RepositoryManager {
      */
     public String[] getSynthId(String id) {
         id = id.substring(ID_PREFIX_SYNTH.length());
-        String[] pair = StringUtil.split(id, TypeHandler.ID_DELIMITER, 2);
+        String[] pair = Utils.split(id, TypeHandler.ID_DELIMITER, 2);
         if (pair == null) {
             return new String[] { id, null };
         }

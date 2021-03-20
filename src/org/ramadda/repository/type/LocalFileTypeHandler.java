@@ -558,7 +558,7 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
                     name = IOUtil.getFileTail(targetFile.toString());
                 }
             }
-            String[] tuple = StringUtil.split(pair, ":", 2);
+            String[] tuple = Utils.split(pair, ":", 2);
             if ((tuple == null) || (tuple.length != 2)) {
                 continue;
             }

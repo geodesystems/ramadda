@@ -28,6 +28,7 @@ import org.ramadda.repository.util.SelectInfo;
 
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 import org.w3c.dom.Element;
 
@@ -246,9 +247,9 @@ public class BulkDownloadOutputHandler extends OutputHandler {
             new ArrayList<List<String>>();
         boolean            includeGroupOutputs = false;
         for (String pair :
-                StringUtil.split(request.getString(ARG_OUTPUTS, ""), ",",
+                Utils.split(request.getString(ARG_OUTPUTS, ""), ",",
                                  true, true)) {
-            outputPairs.add(StringUtil.splitUpTo(pair, ":", 2));
+            outputPairs.add(Utils.splitUpTo(pair, ":", 2));
             String outputId = outputPairs.get(outputPairs.size()
                                   - 1).get(0).toString();
             if (outputId.equals(XmlOutputHandler.OUTPUT_XMLENTRY.getId())) {

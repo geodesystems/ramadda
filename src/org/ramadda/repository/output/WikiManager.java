@@ -234,7 +234,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         displayImports = makeDisplayImports();
         wikiMacros     = new Hashtable<String, String>();
         for (String macro :
-                StringUtil.split(
+                Utils.split(
                     getRepository().getProperty("ramadda.wiki.macros", ""),
                     ",", true, true)) {
             wikiMacros.put(macro,
@@ -354,7 +354,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             if (tag.equals(WIKI_TAG_IMPORT)) {
                 //Old style
                 if (remainder.indexOf("=") < 0) {
-                    List<String> toks = StringUtil.splitUpTo(remainder, " ",
+                    List<String> toks = Utils.splitUpTo(remainder, " ",
                                             3);
                     if (toks.size() < 2) {
                         return "<b>Incorrect tag specification: {{" + tag
@@ -918,7 +918,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         String attachment = null;
         int    idx        = src.indexOf("::");
         if (idx >= 0) {
-            List<String> toks = StringUtil.splitUpTo(src, "::", 2);
+            List<String> toks = Utils.splitUpTo(src, "::", 2);
             if (toks.size() == 2) {
                 src        = toks.get(0);
                 attachment = toks.get(1).substring(1);
@@ -2079,7 +2079,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_MENU)) {
             String menus = getProperty(wikiUtil, props, ATTR_MENUS, "");
-            int type = OutputType.getTypeMask(StringUtil.split(menus, ",",
+            int type = OutputType.getTypeMask(Utils.split(menus, ",",
                            true, true));
 
             String links = getEntryManager().getEntryActionsTable(request,
@@ -2140,7 +2140,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                          props);
                     max = Math.max(max, entries.size());
                 } else if (key.equals("_headers")) {
-                    headers = StringUtil.split(value, ",");
+                    headers = Utils.split(value, ",");
                 } else if (key.equals("_headerTemplate")) {
                     headerTemplate = value;
                 } else if (key.equals("_header")) {
@@ -2151,7 +2151,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     columns = Integer.parseInt(value);
                 } else if (key.startsWith("_")) {
                     key = key.substring(1);
-                    List<String> toks = StringUtil.split(value, ",");
+                    List<String> toks = Utils.split(value, ",");
                     max = Math.max(max, toks.size());
                     multiAttrs.put(key, toks);
                 } else {
@@ -2638,7 +2638,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 String ws = getProperty(wikiUtil, props, "weights",
                                         (String) null);
                 if (ws != null) {
-                    weights = StringUtil.split(ws, ",", true, true);
+                    weights = Utils.split(ws, ",", true, true);
                 }
 
                 int columns = getProperty(wikiUtil, props, "columns", 3);
@@ -3009,7 +3009,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                            false);
             boolean showIcon = getProperty(wikiUtil, props, "showicon",
                                            false);
-            List<String> types = StringUtil.split(getProperty(wikiUtil,
+            List<String> types = Utils.split(getProperty(wikiUtil,
                                      props, "types", ""), ",", true, true);
 
 	    String menuId = HU.getUniqueId("tree_");
@@ -3456,7 +3456,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             for (String mapArg : mapArgs) {
                 String key = mapArg;
                 if (mapArg.indexOf(":") >= 0) {
-                    List<String> toks = StringUtil.splitUpTo(mapArg, ":", 2);
+                    List<String> toks = Utils.splitUpTo(mapArg, ":", 2);
                     mapArg = toks.get(0);
                     key    = toks.get(1);
                 }
@@ -3470,7 +3470,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             String mapSet = getProperty(wikiUtil, props, "mapSettings",
                                         (String) null);
             if (mapSet != null) {
-                List<String> msets = StringUtil.split(mapSet, ",");
+                List<String> msets = Utils.split(mapSet, ",");
                 for (int i = 0; i < msets.size() - 1; i += 2) {
                     mapProps.put(msets.get(i), Json.quote(msets.get(i + 1)));
                 }
@@ -3966,7 +3966,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             onlyTheseTypes = new ArrayList<String>();
             notTheseTypes  = new ArrayList<String>();
             for (String type :
-                    StringUtil.split(metadataTypesAttr, ",", true, true)) {
+                    Utils.split(metadataTypesAttr, ",", true, true)) {
                 if (type.startsWith("!")) {
                     notTheseTypes.add(type.substring(1));
                 } else {
@@ -4233,7 +4233,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             entries = tmp;
         } else if (filter.startsWith(FILTER_TYPE)) {
             List<String> types =
-                StringUtil.split(filter.substring(FILTER_TYPE.length()), ";",
+                Utils.split(filter.substring(FILTER_TYPE.length()), ";",
                                  true, true);
             List<Entry> tmp = new ArrayList<Entry>();
             for (Entry child : entries) {
@@ -4251,7 +4251,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             entries = tmp;
         } else if (filter.startsWith(FILTER_SUFFIX)) {
             List<String> suffixes =
-                StringUtil.split(filter.substring(FILTER_SUFFIX.length()),
+                Utils.split(filter.substring(FILTER_SUFFIX.length()),
                                  ",", true, true);
             List<Entry> tmp = new ArrayList<Entry>();
             for (Entry child : entries) {
@@ -4275,7 +4275,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             entries = tmp;
         } else if (filter.startsWith(FILTER_ID)) {
             List<String> ids =
-                StringUtil.split(filter.substring(FILTER_ID.length()), ",",
+                Utils.split(filter.substring(FILTER_ID.length()), ",",
                                  true, true);
             List<Entry> tmp = new ArrayList<Entry>();
             for (Entry child : entries) {
@@ -4379,7 +4379,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         if (excludeEntries != null) {
             HashSet seen = new HashSet();
-            for (String id : StringUtil.split(excludeEntries, ",")) {
+            for (String id : Utils.split(excludeEntries, ",")) {
                 if (id.equals(ID_THIS)) {
                     seen.add(originalEntry.getId());
                 } else {
@@ -4443,7 +4443,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 map.put(child.getId(), child);
                 map.put(child.getName(), child);
             }
-            List<String> ids = StringUtil.split(firstEntries, ",");
+            List<String> ids = Utils.split(firstEntries, ",");
             for (int i = ids.size() - 1; i >= 0; i--) {
                 String id         = ids.get(i);
                 Entry  firstEntry = map.get(id);
@@ -4477,7 +4477,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 map.put(child.getId(), child);
                 map.put(child.getName(), child);
             }
-            List<String> ids = StringUtil.split(lastEntries, ",");
+            List<String> ids = Utils.split(lastEntries, ",");
             for (int i = ids.size() - 1; i >= 0; i--) {
                 String id        = ids.get(i);
                 Entry  lastEntry = map.get(id);
@@ -4566,7 +4566,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         Boolean     orderDir    = null;
         HashSet     nots        = new HashSet();
 
-        for (String entryid : StringUtil.split(ids, ",", true, true)) {
+        for (String entryid : Utils.split(ids, ",", true, true)) {
             if (entryid.startsWith("#")) {
                 continue;
             }
@@ -4601,12 +4601,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             Entry  theBaseEntry = baseEntry;
             String type         = null;
             //            entries="children:<other id>
-            List<String> toks = StringUtil.splitUpTo(entryid, ":", 2);
+            List<String> toks = Utils.splitUpTo(entryid, ":", 2);
             if (toks.size() == 2) {
                 //TODO: handle specifying a type
                 entryid = toks.get(0);
                 String       suffix = toks.get(1);
-                List<String> toks2  = StringUtil.splitUpTo(suffix, ":", 2);
+                List<String> toks2  = Utils.splitUpTo(suffix, ":", 2);
                 if (toks2.size() == 2) {}
                 else {
                     theBaseEntry = getEntryManager().getEntry(request,
@@ -4618,7 +4618,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             //            entries="children;type;type
             String filter = null;
             //            children;type=foo
-            toks = StringUtil.splitUpTo(entryid, ";", 2);
+            toks = Utils.splitUpTo(entryid, ";", 2);
             if (toks.size() > 1) {
                 entryid = toks.get(0);
                 filter  = toks.get(1);
@@ -4676,7 +4676,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             if (entryid.startsWith(ID_REMOTE)) {
                 //TBD
                 //http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c
-                //                List<String> toks = StringUtil.splitUpTo(entryid, ID_REMOTE,  2);
+                //                List<String> toks = Utils.splitUpTo(entryid, ID_REMOTE,  2);
                 //                String url = toks.get(1);
                 continue;
             }
@@ -4691,7 +4691,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
             if (entryid.startsWith(ATTR_ENTRIES + ".filter")) {
-                List<String> tokens = StringUtil.splitUpTo(entryid, "=", 2);
+                List<String> tokens = Utils.splitUpTo(entryid, "=", 2);
                 if (tokens.size() == 2) {
                     props.put(ATTR_ENTRIES + ".filter", tokens.get(1));
                 }
@@ -4703,7 +4703,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             boolean isRemote = entryid.startsWith(ATTR_SEARCH_URL);
             if ( !isRemote && entryid.startsWith(ID_SEARCH + ".")) {
 
-                List<String> tokens = StringUtil.splitUpTo(entryid, "=", 2);
+                List<String> tokens = Utils.splitUpTo(entryid, "=", 2);
                 if (tokens.size() == 2) {
                     if (searchProps == null) {
                         searchProps = new Hashtable();
@@ -4733,9 +4733,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
                 if (isRemote) {
                     List<String> tokens = (entryid.indexOf("=") >= 0)
-                                          ? StringUtil.splitUpTo(entryid,
+                                          ? Utils.splitUpTo(entryid,
                                               "=", 2)
-                                          : StringUtil.splitUpTo(entryid,
+                                          : Utils.splitUpTo(entryid,
                                               ":", 2);
                     ServerInfo serverInfo =
                         new ServerInfo(new URL(tokens.get(1)),
@@ -5535,9 +5535,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 	};
 
         for (String extraHelp :
-                StringUtil.split(request.getString("extrahelp", ""), ",",
+                Utils.split(request.getString("extrahelp", ""), ",",
                                  true, true)) {
-            List<String> toks = StringUtil.splitUpTo(extraHelp, "|", 2);
+            List<String> toks = Utils.splitUpTo(extraHelp, "|", 2);
             if (toks.size() == 2) {
                 help.append(HU.href(Utils.encodeUntrustedText(toks.get(0)),
                                     Utils.encodeUntrustedText(toks.get(1)),
@@ -5761,7 +5761,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             int     idx        = src.indexOf("::");
             if (idx >= 0) {
-                List<String> toks = StringUtil.splitUpTo(src, "::", 2);
+                List<String> toks = Utils.splitUpTo(src, "::", 2);
                 if (toks.size() == 2) {
                     src        = toks.get(0);
                     attachment = toks.get(1).substring(1);
@@ -5826,7 +5826,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             name = name.trim();
             String outputType = null;
             if (name.indexOf("#") > 0) {
-                List<String> foo = StringUtil.split(name, "#");
+                List<String> foo = Utils.split(name, "#");
                 name = foo.get(0);
                 if (foo.size() > 1) {
                     outputType = foo.get(1);
@@ -6487,11 +6487,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             //derived=temp_f:Temp F:temperature;pressure:v1*9/5+32:isRow:true:decimals:2
             //{'name':'temp_f','label':'Temp F', 'columns':'temperature','function':'v1*9/5+32', 'isRow':true,'decimals':2,},
-            List<String> toks = StringUtil.split(derived, ",", true, true);
+            List<String> toks = Utils.split(derived, ",", true, true);
 
             List<String> jsonObjects = new ArrayList<String>();
             for (String tok : toks) {
-                List<String> toks2 = StringUtil.split(tok, ":", true, true);
+                List<String> toks2 = Utils.split(tok, ":", true, true);
                 if (toks2.get(0).startsWith("#")) {
                     continue;
                 }
@@ -6518,7 +6518,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         String providers = getProperty(wikiUtil, props, "providers");
         if (providers != null) {
             List<String> processed = new ArrayList<String>();
-            for (String tok : StringUtil.split(providers, ",")) {
+            for (String tok : Utils.split(providers, ",")) {
                 //                System.err.println ("Tok:" + tok);
                 if (tok.startsWith("name:") || tok.startsWith("category:")) {
                     boolean doName  = tok.startsWith("name:");
@@ -6560,7 +6560,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     continue;
                 }
 
-                List<String> subToks = StringUtil.split(tok, ":", true, true);
+                List<String> subToks = Utils.split(tok, ":", true, true);
                 if (subToks.size() == 0) {
                     continue;
                 }
@@ -6617,7 +6617,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         String colors = getProperty(wikiUtil, props, ATTR_COLORS);
         if (colors != null) {
             propList.add(ATTR_COLORS);
-            propList.add(Json.list(StringUtil.split(colors, ","), true));
+            propList.add(Json.list(Utils.split(colors, ","), true));
             props.remove(ATTR_COLORS);
         }
 
@@ -6768,7 +6768,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         String fields = getProperty(wikiUtil, props, "fields", (String) null);
         if (fields != null) {
-            List<String> toks = StringUtil.split(fields, ",", true, true);
+            List<String> toks = Utils.split(fields, ",", true, true);
             if (toks.size() > 0) {
                 propList.add("fields");
                 propList.add(Json.list(toks, true));
@@ -6839,7 +6839,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     List<String> attrs      = new ArrayList<String>();
                     String       markerDesc = mtd.getAttr(idx++);
                     List<String> toks =
-                        StringUtil.splitUpTo(mtd.getAttr(idx++), ",", 2);
+                        Utils.splitUpTo(mtd.getAttr(idx++), ",", 2);
                     String lat        = (toks.size() > 0)
                                         ? toks.get(0)
                                         : "";
@@ -6852,12 +6852,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                               "description", markerDesc, "lat", lat, "lon",
                               lon, "type", markerType, "icon", markerIcon);
                     for (String attr :
-                            StringUtil.split(mtd.getAttr(idx++), "\n", true,
+                            Utils.split(mtd.getAttr(idx++), "\n", true,
                                              true)) {
                         if (attr.startsWith("#")) {
                             continue;
                         }
-                        List<String> pair = StringUtil.splitUpTo(attr, "=",
+                        List<String> pair = Utils.splitUpTo(attr, "=",
                                                 2);
                         attrs.addAll(pair);
                         if (pair.size() == 1) {
@@ -7123,7 +7123,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                             (String) null);
             if (includes != null) {
                 for (String include :
-                        StringUtil.split(includes, ",", true, true)) {
+                        Utils.split(includes, ",", true, true)) {
                     HU.importJS(sb, getFileUrl(include));
                 }
             }

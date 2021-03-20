@@ -720,7 +720,7 @@ public class SessionManager extends RepositoryManager {
                 if (auth.startsWith("Basic")) {
                     auth = new String(
                         Utils.decodeBase64(auth.substring(5).trim()));
-                    String[] toks = StringUtil.split(auth, ":", 2);
+                    String[] toks = Utils.split(auth, ":", 2);
                     if (toks.length == 2) {
                         user = getUserManager().findUser(toks[0], false);
                         if (user == null) {}
@@ -787,10 +787,10 @@ public class SessionManager extends RepositoryManager {
         }
 
         //        System.err.println ("Cookie:" + cookie);
-        List toks = StringUtil.split(cookie, ";", true, true);
+        List toks = Utils.split(cookie, ";", true, true);
         for (int i = 0; i < toks.size(); i++) {
             String tok     = (String) toks.get(i);
-            List   subtoks = StringUtil.split(tok, "=", true, true);
+            List   subtoks = Utils.split(tok, "=", true, true);
             if (subtoks.size() != 2) {
                 continue;
             }

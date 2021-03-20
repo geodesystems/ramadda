@@ -1000,7 +1000,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         for (String tok :
                 (List<String>) request.get(ARG_PROVIDER,
                                            new ArrayList<String>())) {
-            selectedProviders.addAll(StringUtil.split(tok, ",", true, true));
+            selectedProviders.addAll(Utils.split(tok, ",", true, true));
         }
 
         if (selectedProviders.size() == 0) {
@@ -1116,7 +1116,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      */
     public Result processSearchType(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
-        List<String> toks = StringUtil.split(request.getRequestPath(), "/",
+        List<String> toks = Utils.split(request.getRequestPath(), "/",
                                              true, true);
         String lastTok = toks.get(toks.size() - 1);
         if (lastTok.equals("type")) {
@@ -1586,7 +1586,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         HashSet<String> providers = new HashSet<String>();
         for (String arg :
                 (List<String>) request.get(ARG_PROVIDER, new ArrayList())) {
-            providers.addAll(StringUtil.split(arg, ",", true, true));
+            providers.addAll(Utils.split(arg, ",", true, true));
         }
         if (providers.size() == 0) {
             providers.add("this");
@@ -1603,7 +1603,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
         if (request.defined("entries")) {
             for (String id :
-                    StringUtil.split(request.getString("entries", ""), ",",
+                    Utils.split(request.getString("entries", ""), ",",
                                      true, true)) {
                 Entry e = getEntryManager().getEntry(request, id);
                 if (e == null) {

@@ -22,7 +22,7 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
-
+import org.ramadda.util.Utils;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -403,14 +403,14 @@ public class EntryMonitor implements Constants {
             return;
         }
         if (what.equals(ARG_FILESUFFIX)) {
-            List<String> suffixes = StringUtil.split(request.getString(what,
+            List<String> suffixes = Utils.split(request.getString(what,
                                         ""), ",", true, true);
             addFilter(new Filter(what, suffixes, doNot));
         } else if (what.equals(ARG_TEXT)) {
             addFilter(new Filter(what, request.getString(what, "").trim(),
                                  doNot));
         } else if (what.equals(ARG_USER)) {
-            List<String> users = StringUtil.split(request.getString(what,
+            List<String> users = Utils.split(request.getString(what,
                                      ""), ",", true, true);
             addFilter(new Filter(what, users, doNot));
         } else if (what.equals(ARG_TYPE)) {

@@ -1307,7 +1307,7 @@ public class ImageOutputHandler extends OutputHandler {
         int cropLeft   = 0;
         int cropBottom = 0;
         int cropRight  = 0;
-        List<String> crops = StringUtil.split(request.getString("crop", ""),
+        List<String> crops = Utils.split(request.getString("crop", ""),
                                  ",", true, true);
         if (crops.size() > 0) {
             cropTop = Integer.parseInt(crops.get(0));

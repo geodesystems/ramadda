@@ -170,7 +170,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                 (String) getSessionManager().getSessionProperty(request,
                     ARG_AREA);
             if (userLoc != null) {
-                List<String> toks = StringUtil.split(userLoc, ";");
+                List<String> toks = Utils.split(userLoc, ";");
                 props.put(PROP_INITIAL_BOUNDS, Json.list(toks));
                 didLoc = true;
             }
@@ -182,7 +182,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                 (String) getSessionManager().getSessionProperty(request,
                     ARG_LOCATION_LATITUDE);
             if (userLoc != null) {
-                List<String> toks = StringUtil.split(userLoc, ";");
+                List<String> toks = Utils.split(userLoc, ";");
                 props.put(PROP_INITIAL_LOCATION, Json.list(toks));
                 didLoc = true;
             }
@@ -356,7 +356,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         }
         if (mapLayers != null) {
             mapInfo.addProperty("mapLayers",
-                                StringUtil.split(mapLayers, ";", true, true));
+                                Utils.split(mapLayers, ";", true, true));
         }
 
         for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
@@ -588,8 +588,8 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             }
             List<List<String>> tmpKeys = new ArrayList<List<String>>();
             for (String line :
-                    StringUtil.split(geAPIKeys, "\n", true, true)) {
-                List<String> toks = StringUtil.split(line, ";", true, false);
+                    Utils.split(geAPIKeys, "\n", true, true)) {
+                List<String> toks = Utils.split(line, ";", true, false);
                 if (toks.size() > 1) {
                     tmpKeys.add(toks);
                 }
@@ -852,8 +852,8 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                     List<double[]> points   = new ArrayList<double[]>();
                     String         s        = metadata.getAttr1();
                     StringBuilder  pointsSB = new StringBuilder();
-                    for (String pair : StringUtil.split(s, ";", true, true)) {
-                        List<String> toks = StringUtil.splitUpTo(pair, ",",
+                    for (String pair : Utils.split(s, ";", true, true)) {
+                        List<String> toks = Utils.splitUpTo(pair, ",",
                                                 2);
                         if (toks.size() != 2) {
                             continue;
@@ -1355,7 +1355,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
 
         Rectangle2D.Double bounds = null;
         if (viewBounds != null) {
-            List<String> toks = StringUtil.split(viewBounds, ",");
+            List<String> toks = Utils.split(viewBounds, ",");
             if (toks.size() == 4) {
                 double north = Double.parseDouble(toks.get(0));
                 double west  = Double.parseDouble(toks.get(1));
@@ -1374,7 +1374,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         if (request.defined("map_bounds")) {
             haveLocation = true;
             List<String> toks =
-                StringUtil.split(request.getString("map_bounds", ""), ",",
+                Utils.split(request.getString("map_bounds", ""), ",",
                                  true, true);
             if (toks.size() == 4) {
                 map.addProperty(MapManager.PROP_INITIAL_BOUNDS,
@@ -1384,7 +1384,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         } else if (request.defined("map_location")) {
             haveLocation = true;
             List<String> toks =
-                StringUtil.split(request.getString("map_location", ""), ",",
+                Utils.split(request.getString("map_location", ""), ",",
                                  true, true);
             if (toks.size() == 2) {
                 map.addProperty(MapManager.PROP_INITIAL_LOCATION,

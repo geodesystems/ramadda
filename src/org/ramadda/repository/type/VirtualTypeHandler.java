@@ -22,6 +22,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 import org.ramadda.util.TTLCache;
 
@@ -169,9 +170,7 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
             //Don't cache for now
             cachedIds.put(idString, fromCache);
             List<String> lines = new ArrayList<String>();
-
-
-            for (String line : StringUtil.split(idString, "\n", true, true)) {
+            for (String line : Utils.split(idString, "\n", true, true)) {
                 if (line.startsWith("#")) {
                     continue;
                 }

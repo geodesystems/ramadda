@@ -237,10 +237,10 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 }
                 String tagValues = getStorageManager().readSystemResource(
                                        values.substring(5));
-                tmpValues = (List<String>) StringUtil.split(tagValues, "\n",
+                tmpValues = (List<String>) Utils.split(tagValues, "\n",
                         true, true);
             } else {
-                tmpValues = (List<String>) StringUtil.split(values, ",",
+                tmpValues = (List<String>) Utils.split(values, ",",
                         true, true);
             }
 
@@ -257,7 +257,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
                     continue;
                 }
-                String[] toks = StringUtil.split(tok, delimiter, 2);
+                String[] toks = Utils.split(tok, delimiter, 2);
                 if (toks == null) {
                     valueMap.put(tok, tok);
                     enumValues.add(new TwoFacedObject(tok));
@@ -870,7 +870,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                                            "" + columns));
             }
 	} else if (dataType.equals(DATATYPE_LATLON)) {
-	    List<String> toks = StringUtil.splitUpTo(value,",",2);
+	    List<String> toks = Utils.splitUpTo(value,",",2);
             MapInfo map = getMapManager().createMap(request, entry, true,null);
             String mapSelector = map.makeSelector(arg, true, new String[]{toks.size()>0?toks.get(0):"40",toks.size()>1?toks.get(1):"-107"},
 						  "", "");
@@ -878,7 +878,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 	    return mapSelector;
         } else if (dataType.equals(DATATYPE_COLORTABLE)) {
             List names =
-                StringUtil.split(
+                Utils.split(
                     "blues,blue_green_red,white_blue,blue_red,red_white_blue,blue_white_red,grayscale,inversegrayscale,rainbow,nice,blues,gray_scale,inverse_gray_shade,light_gray_scale,blue_green,blue_purple,green_blue,orange_red,purple_blue,purple_blue_green,purple_red,red_purple,yellow_green,yellow_green_blue,yellow_orange_brown,yellow_orange_red,oranges,purples,reds,greens,map_grays,bright38,precipitation,humidity,temperature,visad,inverse_visad,wind_comps,windspeed,dbz,dbz_nws,topographic", ",");
             //            List<TwoFacedObject> names = ColorTable.getColorTableNames();
             //            names.add(0, new TwoFacedObject("--none--", ""));

@@ -24,7 +24,7 @@ import org.ramadda.repository.output.XmlOutputHandler;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.util.HtmlUtils;
-
+import org.ramadda.util.Utils;
 import org.ramadda.util.sql.Clause;
 
 import org.w3c.dom.*;
@@ -108,7 +108,7 @@ public abstract class SearchProvider extends GenericTypeHandler {
      * @param s _more_
      */
     private void initId(String s) {
-        List<String> toks = StringUtil.split(s, ",");
+        List<String> toks = Utils.split(s, ",");
         this.id = toks.get(0);
         toks.remove(0);
         this.aliases.addAll(toks);

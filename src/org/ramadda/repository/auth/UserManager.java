@@ -498,7 +498,7 @@ public class UserManager extends RepositoryManager {
         salt = getRepository().getProperty(PROP_PASSWORD_SALT, "");
         salt1 = getRepository().getProperty(PROP_PASSWORD_SALT1, "");
         salt2 = getRepository().getProperty(PROP_PASSWORD_SALT2, "");
-        allowedIpsForLogin = StringUtil.split(
+        allowedIpsForLogin = Utils.split(
             getRepository().getProperty(PROP_LOGIN_ALLOWEDIPS, ""), ",",
             true, true);
 
@@ -523,7 +523,7 @@ public class UserManager extends RepositoryManager {
         String adminFromProperties =
             getRepository().getLocalProperty(PROP_ADMIN, null);
         if (adminFromProperties != null) {
-            List<String> toks = StringUtil.split(adminFromProperties, ":");
+            List<String> toks = Utils.split(adminFromProperties, ":");
             if (toks.size() != 2) {
                 getLogManager().logError("Error: The " + PROP_ADMIN
                                          + " property is incorrect");
@@ -1214,7 +1214,7 @@ public class UserManager extends RepositoryManager {
         user.setIsGuest(request.get(ARG_USER_ISGUEST, false));
 
         List<String> roles =
-            StringUtil.split(request.getString(ARG_USER_ROLES, ""), "\n",
+            Utils.split(request.getString(ARG_USER_ROLES, ""), "\n",
                              true, true);
 
         user.setRoles(roles);
@@ -1489,13 +1489,13 @@ public class UserManager extends RepositoryManager {
 
         if (importFile == null) {
             for (String line :
-                    (List<String>) StringUtil.split(
+                    (List<String>) Utils.split(
                         request.getString(ARG_USER_BULK, ""), "\n", true,
                         true)) {
                 if (line.startsWith("#")) {
                     continue;
                 }
-                List<String> toks = (List<String>) StringUtil.split(line,
+                List<String> toks = (List<String>) Utils.split(line,
                                         ",", true, true);
                 if (toks.size() == 0) {
                     continue;
@@ -1593,7 +1593,7 @@ public class UserManager extends RepositoryManager {
 
         }
         List<String> newUserRoles =
-            StringUtil.split(request.getString(ARG_USER_ROLES, ""), "\n",
+            Utils.split(request.getString(ARG_USER_ROLES, ""), "\n",
                              true, true);
 
         String homeGroupId = request.getString(ARG_USER_HOME + "_hidden", "");

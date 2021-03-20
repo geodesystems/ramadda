@@ -21,7 +21,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 
 import org.ramadda.util.HtmlUtils;
-
+import org.ramadda.util.Utils;
 import ucar.unidata.util.StringUtil;
 
 
@@ -145,7 +145,7 @@ public class EmailAction extends PasswordAction {
 
             try {
                 for (String to :
-                        StringUtil.split(getRemoteUserId(), ",", true,
+                        Utils.split(getRemoteUserId(), ",", true,
                                          true)) {
                     monitor.getRepository().getLogManager().logInfo(
                         "Monitor:" + this + " sending mail to: " + to);

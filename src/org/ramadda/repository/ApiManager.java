@@ -25,6 +25,7 @@ import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.monitor.*;
 
+import org.ramadda.util.Utils;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.*;
 import org.ramadda.repository.util.ServerInfo;
@@ -295,8 +296,8 @@ public class ApiManager extends RepositoryManager {
                                         XmlUtil.getAttribute(node,
                                             ApiMethod.ATTR_TOPLEVEL,
                                             false), icon);
-        List actions = StringUtil.split(XmlUtil.getAttribute(node,
-                           ApiMethod.ATTR_ACTIONS, BLANK), ",", true, true);
+        List actions = Utils.split(XmlUtil.getAttribute(node,
+							ApiMethod.ATTR_ACTIONS, BLANK), ",", true, true);
         if ( !Permission.isValidActions(actions)) {
             throw new IllegalArgumentException("Bad actions:" + actions
                     + " for api method:" + apiMethod.getName());

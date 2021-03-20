@@ -466,7 +466,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 
         name             = XmlUtil.getAttribute(element, ATTR_NAME);
         group = XmlUtil.getAttribute(element, ATTR_GROUP, (String) null);
-        oldNames = StringUtil.split(XmlUtil.getAttribute(element,
+        oldNames = Utils.split(XmlUtil.getAttribute(element,
                 ATTR_OLDNAMES, ""), ",", true, true);
         suffix    = Utils.getAttributeOrTag(element, ATTR_SUFFIX, "");
         help      = Utils.getAttributeOrTag(element, ATTR_HELP,
@@ -765,11 +765,11 @@ public class Column implements DataTypes, Constants, Cloneable {
             String label = tok;
             String value = tok;
             if (tok.indexOf(":") >= 0) {
-                List<String> toks = StringUtil.splitUpTo(tok, ":", 2);
+                List<String> toks = Utils.splitUpTo(tok, ":", 2);
                 value = toks.get(0);
                 label = toks.get(1);
             } else if (tok.indexOf("=") >= 0) {
-                List<String> toks = StringUtil.splitUpTo(tok, "=", 2);
+                List<String> toks = Utils.splitUpTo(tok, "=", 2);
 
                 value = toks.get(0);
                 label = toks.get(1);
@@ -1345,7 +1345,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             }
         } else if (isType(DATATYPE_URL)) {
             String       s    = toString(values, offset);
-            List<String> urls = StringUtil.split(s, "\n");
+            List<String> urls = Utils.split(s, "\n");
             if (raw) {
                 s = StringUtil.join(delimiter, urls);
                 sb.append(s);
@@ -2193,7 +2193,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 
             return;
         }
-        List<String> values  = StringUtil.split(text, ",", true, true);
+        List<String> values  = Utils.split(text, ",", true, true);
         List<Clause> clauses = new ArrayList<Clause>();
         for (String value : values) {
             if (value.equals("<blank>")) {
@@ -2251,7 +2251,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         List<String> result    = new ArrayList<String>();
         String       searchArg = getSearchArg();
         for (String arg : (List<String>) request.get(searchArg, result)) {
-            //            result.addAll(StringUtil.split(arg, ",", true));
+            //            result.addAll(Utils.split(arg, ",", true));
             result.add(arg);
         }
 
@@ -2586,7 +2586,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                 if ((rows > 1) || isWiki) {
                     if (isType(DATATYPE_LIST)) {
                         value = StringUtil.join("\n",
-                                StringUtil.split(value, ",", true, true));
+                                Utils.split(value, ",", true, true));
                     }
                     if (isWiki) {
                         StringBuilder tmp = new StringBuilder();
@@ -2825,7 +2825,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                                     ? dflt
                                     : ""));
                 value = StringUtil.join(", ",
-                                        StringUtil.split(value, "\n", true,
+                                        Utils.split(value, "\n", true,
                                             true));
                 values[offset] = value;
             } else {
@@ -2912,12 +2912,12 @@ public class Column implements DataTypes, Constants, Cloneable {
             throws Exception {
 
         if (isType(DATATYPE_LATLON)) {
-            List<String> toks = StringUtil.split(value, ";", true, true);
+            List<String> toks = Utils.split(value, ";", true, true);
             if (toks.size() == 2) {
                 values[offset]     = new Double(toks.get(0));
                 values[offset + 1] = new Double(toks.get(1));
             } else {
-                toks = StringUtil.split(value, "|", true, true);
+                toks = Utils.split(value, "|", true, true);
                 if (toks.size() == 2) {
                     values[offset]     = new Double(toks.get(0));
                     values[offset + 1] = new Double(toks.get(1));
@@ -2926,7 +2926,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                 }
             }
         } else if (isType(DATATYPE_LATLONBBOX)) {
-            List<String> toks = StringUtil.split(value, ";", true, true);
+            List<String> toks = Utils.split(value, ";", true, true);
             values[offset]     = new Double(toks.get(0));
             values[offset + 1] = new Double(toks.get(1));
             values[offset + 2] = new Double(toks.get(2));

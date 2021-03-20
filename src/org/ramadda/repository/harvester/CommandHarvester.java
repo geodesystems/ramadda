@@ -684,7 +684,7 @@ public class CommandHarvester extends Harvester {
 
         boolean ok = false;
 
-        for (String token : StringUtil.split(tokens, "\n", true, true)) {
+        for (String token : Utils.split(tokens, "\n", true, true)) {
             if (Misc.equals(token, tokenFromRequest)) {
                 //                debug("request token:" +tokenFromRequest +" my:" + token);
                 ok = true;
@@ -722,7 +722,7 @@ public class CommandHarvester extends Harvester {
                            + cmdRequest.getRequest());
         Request request         = cmdRequest.getRequest();
         String  textFromRequest = getText(cmdRequest);
-        List<String> commandToks = StringUtil.split(textFromRequest, ";",
+        List<String> commandToks = Utils.split(textFromRequest, ";",
                                        false, false);
         if (commandToks.size() == 0) {
             commandToks.add("");
@@ -745,7 +745,7 @@ public class CommandHarvester extends Harvester {
             String       cmd  = request.getString(ARG_COMMAND, (String) null);
             List<String> toks;
             if (cmd == null) {
-                toks = StringUtil.splitUpTo(text, " ", 2);
+                toks = Utils.splitUpTo(text, " ", 2);
                 if (toks.size() == 0) {
                     return getUsage(cmdRequest, "No command given");
                 }
@@ -997,7 +997,7 @@ public class CommandHarvester extends Harvester {
     public CommandHarvester.Args parseArgs(CommandRequest request,
                                            String text)
             throws Exception {
-        List<String>          toks = StringUtil.split(text, " ", true, true);
+        List<String>          toks = Utils.split(text, " ", true, true);
         CommandHarvester.Args args    = new CommandHarvester.Args(toks, null);
         String                entryId = null;
         StringBuilder         textSB  = new StringBuilder();
@@ -1521,7 +1521,7 @@ public class CommandHarvester extends Harvester {
         //new <type> <name>|<description>
         String type = request.getRequest().getString(ARG_TYPE, (String) null);
         if (type == null) {
-            toks = StringUtil.splitUpTo(text, " ", 2);
+            toks = Utils.splitUpTo(text, " ", 2);
             if (toks.size() == 0) {
                 return getUsage(
                     request,
@@ -1535,7 +1535,7 @@ public class CommandHarvester extends Harvester {
                 text = "";
             }
         }
-        toks = StringUtil.splitUpTo(text, "|", 2);
+        toks = Utils.splitUpTo(text, "|", 2);
         String name = toks.get(0);
         String desc = (toks.size() > 1)
                       ? toks.get(1)

@@ -26,8 +26,10 @@ import org.ramadda.repository.type.*;
 
 
 
+
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.TTLObject;
+import org.ramadda.util.Utils;
 import org.ramadda.util.sql.Clause;
 import org.ramadda.util.sql.SqlUtil;
 
@@ -546,7 +548,7 @@ public class EntryUtil extends RepositoryManager {
      */
     public static List<Entry> sortEntriesOn(List<Entry> entries, String ons,
                                             boolean descending) {
-        return sortEntriesOn(entries, StringUtil.split(ons, ",", true, true),
+        return sortEntriesOn(entries, Utils.split(ons, ",", true, true),
                              descending);
     }
 
@@ -610,7 +612,7 @@ public class EntryUtil extends RepositoryManager {
         }
 
         return sortEntriesOn(entries,
-                             StringUtil.split(sorts, ",", true, true),
+                             Utils.split(sorts, ",", true, true),
                              descending);
     }
 
