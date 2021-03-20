@@ -22,6 +22,9 @@ package org.ramadda.util;
 
 import org.apache.commons.net.ftp.*;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
+
 import ucar.unidata.util.IOUtil;
 
 
@@ -71,7 +74,8 @@ public class HtmlUtils implements HtmlUtilsConstants {
     /** _more_ */
     public static final String ICON_CLOSE = "fas fa-window-close";
 
-    public static final String CSS_CLASS_POPUP = "ramadda-popup";
+    public static final String CSS_CLASS_POPUP_CONTENTS = "ramadda-popup-contents";
+    public static final String CSS_CLASS_POPUP = "ramadda-popup";    
 
 
     /**
@@ -5119,6 +5123,11 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
+    public static String entityDecode(String input) {
+	return StringEscapeUtils.unescapeHtml(input);
+
+    }
+
 
 
     /**
@@ -6048,7 +6057,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
         menu.append(HtmlUtils.div(contents,
                                   HtmlUtils.id(compId)
                                   + HtmlUtils.attr("style", "display:none;")
-                                  + HtmlUtils.cssClass(CSS_CLASS_POPUP)));
+                                  + HtmlUtils.cssClass(CSS_CLASS_POPUP_CONTENTS)));
 
 
         return menu.toString();

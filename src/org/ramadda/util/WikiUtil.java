@@ -436,7 +436,7 @@ public class WikiUtil {
      */
     public String getInfoBox(String property) {
         StringBuffer sb = new StringBuffer();
-        List<String> toks = (List<String>) StringUtil.split(property, "\n",
+        List<String> toks = (List<String>) Utils.split(property, "\n",
                                 true, true);
         String firstLine = toks.get(0);
         toks.remove(0);
@@ -868,7 +868,7 @@ public class WikiUtil {
                 }
 
                 if (tline.startsWith(":property")) {
-                    List<String> toks = StringUtil.splitUpTo(tline, " ", 3);
+                    List<String> toks = Utils.splitUpTo(tline, " ", 3);
                     if (toks.size() > 2) {
                         putWikiProperty(toks.get(1), toks.get(2));
                     } else {
@@ -880,7 +880,7 @@ public class WikiUtil {
 
 
 		if (tline.startsWith(":menuitem")) {
-                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks  = Utils.splitUpTo(tline, " ", 2);
 		    HU.open(buff, "li");
 		    HU.open(buff,"div");
 		    buff.append(toks.size()>1?toks.get(1):"No Label");
@@ -889,7 +889,7 @@ public class WikiUtil {
 		}
 		    
 		if (tline.startsWith(":menuheader")) {
-		    List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+		    List<String> toks  = Utils.splitUpTo(tline, " ", 2);
 		    HU.open(buff, "li",HU.attrs("class","ui-widget-header"));
 		    HU.open(buff,"div");
 		    buff.append(toks.size()>1?toks.get(1):"No Label");
@@ -899,7 +899,7 @@ public class WikiUtil {
 
 
 		if (tline.startsWith("+popup")) {
-		    List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+		    List<String> toks  = Utils.splitUpTo(tline, " ", 2);
 		    Hashtable props = HU.parseHtmlProperties(toks.size()>1?toks.get(1):"");
 		    String icon = (String) props.get("icon");
 		    String link =  Utils.getProperty(props,"link","");
@@ -921,7 +921,7 @@ public class WikiUtil {
 		    HU.open(buff,"div",
                                   HU.id(compId)
                                   + HU.attr("style", "display:none;")
-                                  + HU.cssClass(HU.CSS_CLASS_POPUP));
+                                  + HU.cssClass(HU.CSS_CLASS_POPUP_CONTENTS));
 		    buff.append("<div>");
 		    continue;
 		}
@@ -934,7 +934,7 @@ public class WikiUtil {
 		}		
 
 		if (tline.startsWith("+menuitem")) {
-                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks  = Utils.splitUpTo(tline, " ", 2);
 		    Hashtable props = HU.parseHtmlProperties(toks.size()>1?toks.get(1):"");
 		    String attrs = HU.attrs("style",Utils.getProperty(props,"style",""));
 		    HU.open(buff, "li",attrs);
@@ -947,7 +947,7 @@ public class WikiUtil {
 		}
                 if (tline.startsWith("+menu")) {
 		    buff.append("\n");
-                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks  = Utils.splitUpTo(tline, " ", 2);
 		    String attrs = "";
 		    if(menuCnt==0) {
 			if(menuId!=null) {
@@ -986,7 +986,7 @@ public class WikiUtil {
 
                 if (tline.startsWith(":macro")) {
                     hasSet = true;
-                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 3);
+                    List<String> toks  = Utils.splitUpTo(tline, " ", 3);
                     String       var   = ((toks.size() > 1)
                                           ? toks.get(1)
                                           : "");
@@ -998,7 +998,7 @@ public class WikiUtil {
                 }
 
                 if (tline.startsWith("+macro")) {
-                    List<String> toks = StringUtil.splitUpTo(tline, " ", 3);
+                    List<String> toks = Utils.splitUpTo(tline, " ", 3);
                     currentVar      = ((toks.size() > 1)
                                        ? toks.get(1)
                                        : "");
@@ -1065,7 +1065,7 @@ public class WikiUtil {
 
 
                 if (tline.startsWith("+table")) {
-                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     String       width     = "100%";
                     String       height    = null;
                     String       ordering  = null;
@@ -1150,7 +1150,7 @@ public class WikiUtil {
                         buff.append("Not in a table");
                         continue;
                     }
-                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     buff.append("<tr valign=top>");
                     if (toks.size() == 2) {
                         for (String td :
@@ -1210,7 +1210,7 @@ public class WikiUtil {
                         buff.append("Not in a table");
                         continue;
                     }
-                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks  = Utils.splitUpTo(tline, " ", 2);
                     String       width = null;
                     if (toks.size() == 2) {
                         Hashtable props = HU.parseHtmlProperties(toks.get(1));
@@ -1253,7 +1253,7 @@ public class WikiUtil {
                         buff.append("Not in a table");
                         continue;
                     }
-                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     String       td   = (toks.size() == 2)
                                         ? toks.get(1)
                                         : "";
@@ -1266,7 +1266,7 @@ public class WikiUtil {
                 }
 
                 if (tline.startsWith("+slides")) {
-                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     String       divClass = "";
 		    slidesProps = HU.parseHtmlProperties(toks.size()>1?toks.get(1):"");
 		    slideTitles = new ArrayList<String>();
@@ -1280,7 +1280,7 @@ public class WikiUtil {
 		}
 
                 if (tline.startsWith("+slide")) {
-                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
 		    String title = toks.size()>1?toks.get(1):null;
 		    if(slideTitles !=null) {
 			slideTitles.add(title);
@@ -1330,7 +1330,7 @@ public class WikiUtil {
 
                 if (tline.startsWith("+tabs")) {
                     TabState     tabInfo  = new TabState();
-                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     String       divClass = "";
                     if (toks.size() == 2) {
                         Hashtable props = HU.parseHtmlProperties(toks.get(1));
@@ -1370,7 +1370,7 @@ public class WikiUtil {
                         buff.append("No +tabs tag");
                         continue;
                     }
-                    List<String> toks    = StringUtil.splitUpTo(tline, " ",
+                    List<String> toks    = Utils.splitUpTo(tline, " ",
                                                2);
                     String       title   = (toks.size() > 1)
                                            ? toks.get(1)
@@ -1424,7 +1424,7 @@ public class WikiUtil {
                         || tline.startsWith("+accordion")) {
                     AccordionState accordionState = new AccordionState();
                     accordionStates.add(accordionState);
-                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     String       divClass = "";
                     if (toks.size() == 2) {
                         Hashtable props = HU.parseHtmlProperties(toks.get(1));
@@ -1487,7 +1487,7 @@ public class WikiUtil {
                     }
                     AccordionState accordionState =
                         accordionStates.get(accordionStates.size() - 1);
-                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks  = Utils.splitUpTo(tline, " ", 2);
                     String       title = (toks.size() > 1)
                                          ? toks.get(1)
                                          : "";
@@ -1557,7 +1557,7 @@ public class WikiUtil {
                 }
 
                 if (tline.startsWith("+inset")) {
-                    List<String>  toks  = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String>  toks  = Utils.splitUpTo(tline, " ", 2);
                     StringBuilder extra = new StringBuilder();
                     if (toks.size() > 1) {
                         StringBuilder styles = new StringBuilder();
@@ -1587,7 +1587,7 @@ public class WikiUtil {
                 }
 
                 if (tline.startsWith("+div")) {
-                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks  = Utils.splitUpTo(tline, " ", 2);
                     String       style = "";
                     String       clazz = "";
                     if (toks.size() == 2) {
@@ -1635,8 +1635,8 @@ public class WikiUtil {
 
                 if (tline.startsWith("+gridboxes")) {
                     tline = tline.substring(1);
-                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
-                    List<String> toks2 = StringUtil.splitUpTo(toks.get(0),
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
+                    List<String> toks2 = Utils.splitUpTo(toks.get(0),
                                              "-", 2);
                     String clazz = "";
                     if (toks2.size() > 1) {
@@ -1657,7 +1657,7 @@ public class WikiUtil {
                 }
 
                 if (tline.startsWith("+gridbox")) {
-                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     buff.append(HU.open(HU.TAG_DIV,
                                         HU.cssClass("ramadda-gridbox")));
                     if (toks.size() > 1) {
@@ -1712,7 +1712,7 @@ public class WikiUtil {
 
 
                 if (tline.startsWith("+draggable")) {
-                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
                             ? toks.get(1)
                             : "");
@@ -1767,7 +1767,7 @@ public class WikiUtil {
                 }
 
                 if (tline.startsWith("+expandable")) {
-                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
                             ? toks.get(1)
                             : "");
@@ -1807,13 +1807,13 @@ public class WikiUtil {
                 }
 
                 if (tline.startsWith("+section")) {
-                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
                             ? toks.get(1)
                             : "");
 
                     String       tag       = toks.get(0).substring(1);
-                    List<String> toks2     = StringUtil.splitUpTo(tag, "-",
+                    List<String> toks2     = Utils.splitUpTo(tag, "-",
                                                  2);
                     String       remainder = ((toks2.size() > 1)
                             ? toks2.get(1)
@@ -1938,7 +1938,7 @@ public class WikiUtil {
                 }
 
                 if (tline.startsWith("+callout")) {
-                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     String what =
                         toks.get(0).trim().substring("+callout".length());
                     Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
@@ -1986,7 +1986,7 @@ public class WikiUtil {
 
 
                 if (tline.startsWith(":wikip")) {
-                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 3);
+                    List<String> toks  = Utils.splitUpTo(tline, " ", 3);
                     String       page  = toks.get(1).trim();
                     String       label = (toks.size() > 2)
                                          ? toks.get(2).trim()
@@ -1999,7 +1999,7 @@ public class WikiUtil {
 
                 if (tline.startsWith(":reload")) {
                     String       id   = HU.getUniqueId("reload");
-                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
                             ? toks.get(1)
                             : "");
@@ -2027,7 +2027,7 @@ public class WikiUtil {
                 }
 
                 if (tline.startsWith(":script")) {
-                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     HU.importJS(buff, toks.get(1));
 
                     continue;
@@ -2035,7 +2035,7 @@ public class WikiUtil {
 
                 if (tline.startsWith("+panel")) {
                     buff.append("\n");
-                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
                             ? toks.get(1)
                             : "");
@@ -2083,7 +2083,7 @@ public class WikiUtil {
                 }
 
                 if (tline.startsWith(":title")) {
-                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     if (toks.size() > 1) {
                         String label = toks.get(1);
 
@@ -2102,7 +2102,7 @@ public class WikiUtil {
 
 
                 if (tline.startsWith("+frame")) {
-                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
                             ? toks.get(1)
                             : "");
@@ -2168,7 +2168,7 @@ public class WikiUtil {
 
                 if (tline.startsWith("+title")) {
                     StringBuilder extra = new StringBuilder();
-                    List<String>  toks  = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String>  toks  = Utils.splitUpTo(tline, " ", 2);
                     HU.open(buff, "div", HU.cssClass("ramadda-page-title"));
                     String url = getTitleUrl(true);
                     if (url != null) {
@@ -2192,7 +2192,7 @@ public class WikiUtil {
 
 
                 if (tline.startsWith(":button")) {
-                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 3);
+                    List<String> toks  = Utils.splitUpTo(tline, " ", 3);
                     String       tag   = toks.get(0).substring(1);
                     String       url   = ((toks.size() > 1)
                                           ? toks.get(1)
@@ -2200,7 +2200,7 @@ public class WikiUtil {
                     String       label = ((toks.size() > 2)
                                           ? toks.get(2)
                                           : url);
-                    List<String> toks2 = StringUtil.splitUpTo(tag, "-", 2);
+                    List<String> toks2 = Utils.splitUpTo(tag, "-", 2);
                     String       clazz = ((toks2.size() > 1)
                                           ? toks2.get(1)
                                           : "");
@@ -2309,7 +2309,7 @@ public class WikiUtil {
                 }
 
                 if (tline.startsWith(":b ")) {
-                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     buff.append(HU.b((toks.size() > 1)
                                      ? toks.get(1)
                                      : ""));
@@ -2318,7 +2318,7 @@ public class WikiUtil {
                 }
 
                 if (tline.startsWith(":h1")) {
-                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks  = Utils.splitUpTo(tline, " ", 2);
                     String       label = (toks.size() > 1)
                                          ? toks.get(1)
                                          : "";
@@ -2328,7 +2328,7 @@ public class WikiUtil {
                 }
 
                 if (tline.startsWith(":h2")) {
-                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks  = Utils.splitUpTo(tline, " ", 2);
                     String       label = (toks.size() > 1)
                                          ? toks.get(1)
                                          : "";
@@ -2340,7 +2340,7 @@ public class WikiUtil {
 
 
                 if (tline.startsWith(":h3")) {
-                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks  = Utils.splitUpTo(tline, " ", 2);
                     String       label = (toks.size() > 1)
                                          ? toks.get(1)
                                          : "";
@@ -2350,7 +2350,7 @@ public class WikiUtil {
                 }
 
                 if (tline.startsWith(":center")) {
-                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     buff.append(HU.center((toks.size() > 1)
                                           ? toks.get(1)
                                           : ""));
@@ -2360,7 +2360,7 @@ public class WikiUtil {
 
 
                 if (tline.startsWith(":link")) {
-                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 3);
+                    List<String> toks  = Utils.splitUpTo(tline, " ", 3);
                     String       label = (toks.size() > 2)
                                          ? toks.get(2)
                                          : "link";
@@ -2370,7 +2370,7 @@ public class WikiUtil {
                 }
 
                 if (tline.startsWith(":draft")) {
-                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks  = Utils.splitUpTo(tline, " ", 2);
                     String       label = (toks.size() > 1)
                                          ? toks.get(1)
                                          : "Draft";
@@ -2382,7 +2382,7 @@ public class WikiUtil {
                 }
 
                 if (tline.startsWith(":anchor")) {
-                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks  = Utils.splitUpTo(tline, " ", 2);
                     String       label = (toks.size() > 1)
                                          ? toks.get(1)
                                          : "";
@@ -2392,7 +2392,7 @@ public class WikiUtil {
 
 
                 if (tline.startsWith(":nav")) {
-                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     String       what = toks.get(0).trim();
                     headingsProps = HU.parseHtmlProperties((toks.size() > 1)
                             ? toks.get(1)
@@ -2418,9 +2418,9 @@ public class WikiUtil {
                         || tline.startsWith(":box")
                         || tline.startsWith(":blurb")
                         || tline.startsWith(":callout")) {
-                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks  = Utils.splitUpTo(tline, " ", 2);
                     String       what  = toks.get(0).substring(1);
-                    List<String> toks2 = StringUtil.splitUpTo(what, "-", 2);
+                    List<String> toks2 = Utils.splitUpTo(what, "-", 2);
                     what = toks2.get(0);
                     String clazz = toks.get(0).trim().substring(1);
                     String blob  = (toks.size() > 1)
@@ -2468,11 +2468,11 @@ public class WikiUtil {
                         || tline.startsWith("+box")
                         || tline.startsWith("+heading")
                         || tline.startsWith("+blurb")) {
-                    List<String>  toks = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String>  toks = Utils.splitUpTo(tline, " ", 2);
                     String        tag       = toks.get(0).substring(1);
                     //box-green
 
-                    List<String>  toks2 = StringUtil.splitUpTo(tag, "-", 2);
+                    List<String>  toks2 = Utils.splitUpTo(tag, "-", 2);
                     String        what      = toks2.get(0);
                     //box
 
@@ -2517,7 +2517,7 @@ public class WikiUtil {
 
 
                 if (tline.startsWith("+row")) {
-                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
                             ? toks.get(1)
                             : "");
@@ -2537,7 +2537,7 @@ public class WikiUtil {
                 }
 
                 if (tline.startsWith(":comment")) {
-                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     if (toks.size() > 1) {
                         HU.comment(buff, toks.get(1));
                     }
@@ -2550,7 +2550,7 @@ public class WikiUtil {
                 }
 
                 if (tline.startsWith(":pad")) {
-                    List<String> toks   = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks   = Utils.splitUpTo(tline, " ", 2);
                     String       height = "100px";
                     if (toks.size() > 1) {
                         height = toks.get(1);
@@ -2568,7 +2568,7 @@ public class WikiUtil {
                         rowState = rowStates.get(rowStates.size() - 1);
                     }
 
-                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks  = Utils.splitUpTo(tline, " ", 2);
                     String       clazz = toks.get(0).substring(1);
                     if (clazz.matches("col-[0-9]+")) {
                         clazz = clazz.replace("col-", "col-md-");
@@ -2594,7 +2594,7 @@ public class WikiUtil {
                     } else {
                         rowState = rowStates.get(rowStates.size() - 1);
                     }
-                    List<String>  toks  = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String>  toks  = Utils.splitUpTo(tline, " ", 2);
                     StringBuilder extra = new StringBuilder();
                     String        clazz = toks.get(0).substring(1);
                     if (toks.size() > 1) {
@@ -2753,7 +2753,7 @@ public class WikiUtil {
                 replaceNewlineWithP = false;
             } else if (property.startsWith("wikip ")) {
                 //the wikipedia link
-                List<String> toks  = StringUtil.splitUpTo(property, " ", 3);
+                List<String> toks  = Utils.splitUpTo(property, " ", 3);
                 String       page  = toks.get(1).trim();
                 String       label = (toks.size() > 2)
                                      ? toks.get(2).trim()
@@ -3054,11 +3054,11 @@ public class WikiUtil {
         int          i1 = property.indexOf(" ");
         int          i2 = property.indexOf("\n");
         if ((i1 >= 0) && (i1 < i2)) {
-            toks = StringUtil.splitUpTo(property, " ", 2);
+            toks = Utils.splitUpTo(property, " ", 2);
         } else if (i2 >= 0) {
-            toks = StringUtil.splitUpTo(property, "\n", 2);
+            toks = Utils.splitUpTo(property, "\n", 2);
         } else {
-            toks = StringUtil.splitUpTo(property, " ", 2);
+            toks = Utils.splitUpTo(property, " ", 2);
         }
         if (toks.size() == 0) {
             return "<b>Incorrect tag specification:" + property + "</b>";
@@ -3460,7 +3460,7 @@ public class WikiUtil {
      * @return _more_
      */
     private Hashtable lineToProps(String tline) {
-        List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+        List<String> toks  = Utils.splitUpTo(tline, " ", 2);
         Hashtable    props = HU.parseHtmlProperties((toks.size() > 1)
                 ? toks.get(1)
                 : "");
