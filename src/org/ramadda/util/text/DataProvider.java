@@ -21,6 +21,7 @@ import org.json.*;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
+import org.ramadda.util.KmlUtil;
 import org.ramadda.util.Json;
 import org.ramadda.util.NamedInputStream;
 import org.ramadda.util.Utils;
@@ -426,7 +427,7 @@ public abstract class DataProvider {
             int numLines = info.getMaxRows();
             pattern = Utils.convertPattern(pattern);
             if (cols.length() > 0) {
-                addRow(new Row(StringUtil.split(cols, ",")));
+                addRow(new Row(Utils.split(cols, ",")));
             }
 
             //      System.err.println(start);
@@ -552,7 +553,7 @@ public abstract class DataProvider {
 
             List<String> objectPathList = null;
             if (Utils.stringDefined(objectPath)) {
-                objectPathList = StringUtil.split(objectPath, ",", true,
+                objectPathList = Utils.split(objectPath, ",", true,
                         true);
             }
             List<String> names = null;
@@ -989,6 +990,155 @@ r                  for(int k=0;k<fields.length();k++)
     }
 
 
+    public static class KmlDataProvider extends BulkDataProvider {
+
+
+        /**
+         * _more_
+         *
+         * @param arrayPath _more_
+         */
+        public KmlDataProvider() {
+            super();
+        }
+
+
+	@Override
+        public void initialize(CsvUtil csvUtil, TextReader textReader,
+                               NamedInputStream stream)
+                throws Exception {
+	    List<String> files = csvUtil.getInputFiles();
+	    if(files.size()==0) return;
+	    String path = files.get(0);
+	    Element root = KmlUtil.readKml(path,textReader.getInput().getInputStream());
+	    read(root);
+        }
+
+
+        public void tokenize(TextReader info, String s)
+	    throws Exception {
+	}
+
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param s _more_
+         *
+         * @throws Exception _more_
+         */
+        private void read(Element root) throws Exception {
+            List<Element> placemarks = KmlUtil.findPlacemarks(root);
+	    List<Element> lookAts = (List<Element>) XmlUtil.findDescendants(root, KmlUtil.TAG_LOOKAT);
+	    if(lookAts.size()>placemarks.size()) {
+		readLookAts(lookAts);
+	    } else  if(placemarks.size()>0) {
+		readPlacemarks(placemarks);
+	    } else {
+		List<Element> nodes = (List<Element>) XmlUtil.findDescendants(root, KmlUtil.TAG_GROUNDOVERLAY);
+		if(nodes.size()>0) {
+		    readGroundOverlays(nodes);
+		}
+	    }
+	}
+		
+	private  void readLookAts(List<Element> lookAts) throws Exception  {
+/*
+  <LookAt>
+  <longitude>-125.3755150766427</longitude>
+  <latitude>45.14857104780791</latitude>
+  <altitude>0</altitude>
+  <heading>11.0763894632395</heading>
+  <tilt>82.24426129889574</tilt>
+  <range>7143.488623627887</range>
+  <altitudeMode>relativeToGround</altitudeMode>
+  <gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+  </LookAt>	    */
+            Row     header = new Row();
+	    header.add("Latitude","Longitude","Elevation","Heading","Tilt","Range");
+            addRow(header);
+            for (Element lookAt : lookAts) {
+		Row row = new Row();
+		addRow(row);
+		row.add(XmlUtil.getGrandChildText(lookAt,"latitude","NaN"));
+		row.add(XmlUtil.getGrandChildText(lookAt,"longitude","NaN"));		
+		row.add(XmlUtil.getGrandChildText(lookAt,"altitude","NaN"));
+		row.add(XmlUtil.getGrandChildText(lookAt,"heading","NaN"));
+		row.add(XmlUtil.getGrandChildText(lookAt,"tilt","NaN"));
+            }
+	}
+
+
+	private  void readGroundOverlays(List<Element> nodes) throws Exception  {
+/*
+<GroundOverlay>
+<name>colorado</name>
+<Icon>
+<href>colorado.png</href>
+</Icon><LatLonBox>
+<north>41.406131744384766</north>
+<south>36.645328521728516</south>
+<east>-102.614990234375</east>
+<west>-108.80926513671875</west>
+</LatLonBox>
+</GroundOverlay>
+
+
+ */
+            Row     header = new Row();
+	    header.add("Name","Image","Latitude","Longitude","North","South","East","West");
+            addRow(header);
+            for (Element node : nodes) {
+		Row row = new Row();
+		addRow(row);
+		row.add(XmlUtil.getGrandChildText(node,"name",""));
+		Element icon = XmlUtil.findChild(node,"Icon");
+		if(icon!=null) row.add(XmlUtil.getGrandChildText(icon,"href",""));
+		else row.add("");
+		Element llbox = XmlUtil.findChild(node,"LatLonBox");
+		if(llbox==null) {
+		    row.add("NaN","NaN","NaN","NaN","NaN","NaN");
+		    continue;
+		}
+		double north = Double.parseDouble(XmlUtil.getGrandChildText(llbox,"north","NaN"));
+		double south = Double.parseDouble(XmlUtil.getGrandChildText(llbox,"south","NaN"));		
+		double east = Double.parseDouble(XmlUtil.getGrandChildText(llbox,"east","NaN"));
+		double west = Double.parseDouble(XmlUtil.getGrandChildText(llbox,"west","NaN"));
+		double lat = south+(north-south)/2;
+		double lon = west+(east-west)/2;		
+		row.add(""+lat);
+		row.add(""+lon);
+		row.add(""+north);
+		row.add(""+south);
+		row.add(""+east);
+		row.add(""+west);
+            }
+	}
+
+
+
+	private void readPlacemarks(List<Element> placemarks) throws Exception {
+            Row     header = new Row();
+	    header.add("Name","Description","Latitude","Longitude","Elevation");
+            addRow(header);
+            for (Element placemark : placemarks) {
+		Row row = new Row();
+		addRow(row);
+		row.add(XmlUtil.getGrandChildText(placemark,"name",""));
+		row.add(XmlUtil.getGrandChildText(placemark,"description",""));		
+		List<Element> coords = (List<Element>) XmlUtil.findDescendants(placemark, "coordinates");
+		if(coords.size()==0) {
+		    row.add("NaN","NaN","NaN");
+		} else {
+		    String coordsText = XmlUtil.getChildText(coords.get(0));
+		    double[][] pts = KmlUtil.parseCoordinates(coordsText, 1);
+		    row.add(pts[0][0]+"",pts[1][0]+"",pts[2][0]+"");
+		}
+            }
+	}
+    }    
+
     /**
      * Class description
      *
@@ -1100,7 +1250,7 @@ r                  for(int k=0;k<fields.length();k++)
         public void tokenize(TextReader info, String s) throws Exception {
             Row headerRow = new Row();
             addRow(headerRow);
-            for (String tok : StringUtil.split(header, ",")) {
+            for (String tok : Utils.split(header, ",")) {
                 headerRow.add(tok);
             }
             Pattern p1 = Pattern.compile(chunkPattern);
@@ -1188,7 +1338,7 @@ r                  for(int k=0;k<fields.length();k++)
         public void tokenize(TextReader info, String s) throws Exception {
             Row headerRow = new Row();
             addRow(headerRow);
-            for (String tok : StringUtil.split(header, ",")) {
+            for (String tok : Utils.split(header, ",")) {
                 headerRow.add(tok);
             }
             if (info.getDebug()) {
@@ -1275,7 +1425,7 @@ r                  for(int k=0;k<fields.length();k++)
         public void tokenize(TextReader info, String s) throws Exception {
             Row headerRow = new Row();
             addRow(headerRow);
-            for (String tok : StringUtil.split(header, ",")) {
+            for (String tok : Utils.split(header, ",")) {
                 headerRow.add(tok);
             }
             try {
@@ -1461,7 +1611,7 @@ r                  for(int k=0;k<fields.length();k++)
                 if (widths != null) {
                     row = new Row(Utils.tokenizeColumns(line, widths));
                 } else if (ctx.getSplitOnSpaces()) {
-                    row = new Row(StringUtil.split(line, " ", true, true));
+                    row = new Row(Utils.split(line, " ", true, true));
                 } else {
                     row = new Row(Utils.tokenizeColumns(line,
                             ctx.getDelimiter()));

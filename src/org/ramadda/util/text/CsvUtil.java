@@ -108,6 +108,8 @@ public class CsvUtil {
 
     private PropertyProvider propertyProvider;
 
+    private List<String> inputFiles;
+
     /**
      * _more_
      *
@@ -195,6 +197,11 @@ public class CsvUtil {
         this.js      = csvUtil.js;
         //        this.delimiter = csvUtil.delimiter;
     }
+
+    public List<String> getInputFiles() {
+	return inputFiles;
+    }
+
 
     /**
        Set the PropertyProvider property.
@@ -369,6 +376,7 @@ public class CsvUtil {
         if (files == null) {
             files = new ArrayList<String>();
         }
+	this.inputFiles = files;
         boolean      doConcat      = false;
         boolean      doHeader      = false;
         boolean      doRaw         = false;
@@ -450,13 +458,13 @@ public class CsvUtil {
 
             if (arg.startsWith("-header")) {
                 myTextReader.setFirstRow(
-				       new Row(StringUtil.split(args.get(++i), ",")));
+				       new Row(Utils.split(args.get(++i), ",")));
                 continue;
             }
 
             if (arg.startsWith("-iter")) {
                 iterateColumn = args.get(++i);
-                iterateValues = StringUtil.split(args.get(++i), ",");
+                iterateValues = Utils.split(args.get(++i), ",");
 
                 continue;
             }
@@ -466,7 +474,6 @@ public class CsvUtil {
 
         if ( !parseArgs(extra, myTextReader, files)) {
             currentArg = null;
-
             return;
         }
         currentArg = null;
@@ -786,7 +793,7 @@ public class CsvUtil {
             List<String> cols = (widths != null)
 		? Utils.tokenizeColumns(line, widths)
 		: myTextReader.getSplitOnSpaces()
-		? StringUtil.split(line, " ", true, true)
+		? Utils.split(line, " ", true, true)
 		: Utils.tokenizeColumns(line, delimiter);
             if (asPoint) {
                 writer.println("skiplines=1");
@@ -2154,7 +2161,7 @@ public class CsvUtil {
 
 	defineFunction("-widths",1,(ctx,args,i) -> {
 		List<Integer> widths = new ArrayList<Integer>();
-		for (String tok : StringUtil.split(args.get(++i), ",", true,
+		for (String tok : Utils.split(args.get(++i), ",", true,
 						   true)) {
 		    widths.add(Integer.parseInt(tok));
 		}
@@ -2345,7 +2352,7 @@ public class CsvUtil {
 
 
 	defineFunction("-crop",2,(ctx,args,i) -> {
-		ctx.getProcessor().addProcessor(new Converter.Cropper(getCols(args.get(++i)), StringUtil.split(args.get(++i), ",", true, true)));
+		ctx.getProcessor().addProcessor(new Converter.Cropper(getCols(args.get(++i)), Utils.split(args.get(++i), ",", true, true)));
 		return i;
 	    });
 
@@ -2526,7 +2533,7 @@ public class CsvUtil {
 	    });
 
 	defineFunction("-tokenize",2,(ctx,args,i) -> {
-		ctx.getProviders().add(new DataProvider.PatternDataProvider(StringUtil.split(args.get(++i), ","),
+		ctx.getProviders().add(new DataProvider.PatternDataProvider(Utils.split(args.get(++i), ","),
 									    args.get(++i)));
 		return i;
 	    });
@@ -2546,10 +2553,14 @@ public class CsvUtil {
 
 	defineFunction("-xml",1,(ctx,args,i) -> {
 		ctx.getProviders().add(new DataProvider.XmlDataProvider(args.get(++i)));
-
 		return i;
 	    });
 
+	defineFunction("-kml",0,(ctx,args,i) -> {
+		ctx.getProviders().add(new DataProvider.KmlDataProvider());
+		return i;
+	    });
+	
 	defineFunction("-changeraw",2,(ctx,args,i) -> {
 		ctx.addChangeFromTo(args.get(++i),args.get(++i));
 		return i;
@@ -2665,7 +2676,7 @@ public class CsvUtil {
 	defineFunction("-split", 3,(ctx,args,i) -> {
 		ctx.getProcessor().addProcessor(new Converter.ColumnSplitter(
 									     args.get(++i), args.get(++i),
-									     StringUtil.split(args.get(++i), ",")));
+									     Utils.split(args.get(++i), ",")));
 		return i;
 	    });
 
@@ -2782,6 +2793,16 @@ public class CsvUtil {
 		ctx.getProcessor().addProcessor(new Converter.MD(getCols(args.get(++i)),args.get(++i)));
 		return i;
 	    });
+
+
+	defineFunction("-striptags", 1,(ctx,args,i) -> {
+		ctx.getProcessor().addProcessor(new Converter.StripTags(getCols(args.get(++i))));
+		return i;
+	    });
+	defineFunction("-decode", 1,(ctx,args,i) -> {
+		ctx.getProcessor().addProcessor(new Converter.Decoder(getCols(args.get(++i))));
+		return i;
+	    });	
 
 
 	defineFunction("-case", 2,(ctx,args,i) -> {
@@ -3146,7 +3167,7 @@ public class CsvUtil {
      * @return _more_
      */
     private List<String> getCols(String s) {
-	return StringUtil.split(s, ",", true, true);
+	return Utils.split(s, ",", true, true);
     }
 
     /**
