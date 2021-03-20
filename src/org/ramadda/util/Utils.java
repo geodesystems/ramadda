@@ -936,10 +936,8 @@ public class Utils extends IO {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        String s =
-            "blah blah <h1>Some H1</h1> asdasd <h1>asdasdasd</h1> asdasds";
-        List<String[]> all = findAllPatterns(s, "(<h1>.*?</h1>)");
-        System.err.println(all.size());
+        String s = "f4ce4a71-57a7-4d0b-bfd8-f44b92aaccaf";
+	split(s,"|",false,false);
         System.exit(0);
     }
 
@@ -3792,15 +3790,25 @@ public class Utils extends IO {
 	
 
     public static List<String> split(Object o, String delim,  boolean trim, boolean skipBlank) {
+	//	List<String> test=    StringUtil.split(o, delim, trim, skipBlank);
 	List<String> toks = new ArrayList<String>();
 	if(o==null) return toks;
 	String s= o.toString();
+	delim = Pattern.quote(delim);
 	String[]a = s.split(delim);
 	for(String tok:a) {
 	    if(trim) tok = tok.trim();
 	    if(skipBlank && tok.length()==0) continue;
 	    toks.add(tok);
 	}
+
+	/*
+	  if(test.size()!=toks.size()) {
+	  System.err.println("Error: " + "delim:" + delim +" o:" + o);
+	  System.err.println("OLD:" + test.size());
+	  System.err.println("NEW:"+ toks.size() +" " + a.length);
+	  }
+	*/
 	return toks;
     }
 
