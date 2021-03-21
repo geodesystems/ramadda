@@ -395,7 +395,7 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
         try {
             StringBuilder sb = new StringBuilder();
             addReadOnlyWikiEditor(request, entry, sb, entry.getValue(0, ""));
-            //       sb.append(HtmlUtils.textArea("dummy", entry.getValue(0, ""), 10,   120));
+            //       sb.append(HU.textArea("dummy", entry.getValue(0, ""), 10,   120));
             tabTitles.add("Wiki Text");
             tabContents.add(sb.toString());
         } catch (Exception exc) {
@@ -421,7 +421,7 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
                                FormInfo formInfo)
             throws Exception {
 
-        String size = HtmlUtils.SIZE_70;
+        String size = HU.SIZE_70;
         String name;
         if (entry != null) {
             name = entry.getName();
@@ -455,20 +455,20 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
             }
             wikiText = wph.getText();
             sb.append(
-                HtmlUtils.formEntry(
+                HU.formEntry(
                     "",
                     msgLabel("Editing with text from version")
                     + getDateHandler().formatDate(wph.getDate())));
         }
 
-        sb.append(HtmlUtils.formEntry(msgLabel("Title"),
-                                      HtmlUtils.input(ARG_NAME, name, size)));
+        sb.append(HU.formEntry(msgLabel("Title"),
+                                      HU.input(ARG_NAME, name, size)));
 
         if (entry != null) {
             sb.append(
-                HtmlUtils.formEntry(
+                HU.formEntry(
                     msgLabel("Edit&nbsp;Summary"),
-                    HtmlUtils.input(
+                    HU.input(
                         WikiPageOutputHandler.ARG_WIKI_CHANGEDESCRIPTION, "",
                         size)));
         }
@@ -477,32 +477,27 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
 
 
 
-        StringBuilder help = new StringBuilder();
-        help.append("<b>Import:</b><br>");
-        help.append(
-            "e.g., <i>{{property &lt;optional arguments&gt;}}</i><br>");
-        help.append(
-            "Or: <i>{{import entryid property &lt;arguments&gt;}}</i><br>");
-        help.append("<i>{{&lt;output identifier&gt;}}</i><br>");
+
+	StringBuilder tmpSB  = new StringBuilder();
+
+	String id1 = ARG_WIKI_TEXTAREA+"_editor";
+	HU.open(tmpSB, "div", HU.attrs("class", "wiki-editor", "id", id1+"_block"));
+        addWikiEditor(request, entry, tmpSB, formInfo, id1,  ARG_WIKI_TEXTAREA,
+                      wikiText, null, false, 256000);
+	HU.close(tmpSB, "div");
+	HtmlUtils.close(tmpSB, "div");
+	sb.append(formEntryTop(request,
+			       getFormLabel(entry, ARG_WIKI_TEXTAREA,
+					    "Wiki Text"), tmpSB.toString()));
 
 
-        addWikiEditor(request, entry, sb, formInfo, ARG_WIKI_TEXTAREA+"_editor",  ARG_WIKI_TEXTAREA,
-                      wikiText, "Wiki Text", false, 256000);
 
-
-        /*
-        String right = HtmlUtils.div(help.toString(),
-                                     HtmlUtils.cssClass(CSS_CLASS_SMALLHELP));
-        right = "";
-        textWidget = "<table><tr valign=\"top\"><td>" + textWidget
-                     + "</td><td>" + right + "</td></tr></table>";
-        */
         addDateToEntryForm(request, sb, entry);
         addAreaWidget(request, entry, sb, formInfo);
 	sb.append(formEntry(request, msgLabel("Order"),
-			    HtmlUtils.input(ARG_ENTRYORDER,
+			    HU.input(ARG_ENTRYORDER,
 					    ((entry != null)
-					     ? entry.getEntryOrder():999),HtmlUtils.SIZE_5)+" 1-N"));
+					     ? entry.getEntryOrder():999),HU.SIZE_5)+" 1-N"));
         //super.addToEntryForm(request, sb, parentEntry, entry, formInfo);
     }
 
