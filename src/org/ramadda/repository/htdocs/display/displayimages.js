@@ -7,21 +7,14 @@ const DISPLAY_IMAGES = "images";
 const DISPLAY_IMAGEZOOM = "imagezoom";
 const DISPLAY_CARDS = "cards";
 
-addGlobalDisplayType({
-    type: DISPLAY_CARDS,
-    label: "Cards",
-    requiresData: true,
-    forUser: true,
-    category: CATEGORY_MAPS_IMAGES
-});
-
 
 addGlobalDisplayType({
     type: DISPLAY_IMAGES,
     label: "Images",
     requiresData: true,
     forUser: true,
-    category:CATEGORY_MAPS_IMAGES
+    category:CATEGORY_IMAGES,
+    tooltip: makeDisplayTooltip("Image Gallery","images.png"),                    
 });
 
 addGlobalDisplayType({
@@ -29,7 +22,8 @@ addGlobalDisplayType({
     label: "Image Zoom",
     requiresData: true,
     forUser: true,
-    category:CATEGORY_MAPS_IMAGES
+    category:CATEGORY_IMAGES,
+    tooltip: makeDisplayTooltip("Image Zoom","imagezoom.png","Show a set of images and allow for zooming in"),                        
 });
 
 addGlobalDisplayType({
@@ -37,9 +31,19 @@ addGlobalDisplayType({
     label: "Slides",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MAPS_IMAGES
+    category: CATEGORY_IMAGES,
+    tooltip: makeDisplayTooltip("Show records in a slide like format","slides.png")
 });
 
+
+addGlobalDisplayType({
+    type: DISPLAY_CARDS,
+    label: "Cards",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_IMAGES,
+    tooltip: makeDisplayTooltip("Group records hierachically showing images","cards.png"),                
+});
 
 
 function RamaddaCardsDisplay(displayManager, id, properties) {
@@ -636,7 +640,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	{p:'urlField'},
 	{p:'popupWidth'},
 	{p:'popupHeight'},	
-	{p:"popupImageWidth"}
+	{p:"popupImageWidth",d:2000}
     ];
 
 
@@ -722,7 +726,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    }
 
 	    this.jq(ID_IMAGE).click((e)=>{
-		let width = +this.getProperty("popupImageWidth",500);
+		let width = +this.getPopupImageWidth();
                 if (event.shiftKey) {
 		    this.setProperty("popupImageWidth",Math.max(width*0.9,500));
 		} else {
@@ -738,9 +742,9 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    let image = row[this.imageField.getIndex()];
 	    this.jq(ID_POPUP).css("display","block");
 	    let imageAttrs = [ID,this.domId(ID_POPUPIMAGE),STYLE,HU.css("xposition","absolute")];
-	    if(this.getPropertyPopupImageWidth()) {
+	    if(this.getPopupImageWidth()) {
 		imageAttrs.push(WIDTH);
-		imageAttrs.push(this.getPropertyPopupImageWidth());
+		imageAttrs.push(this.getPopupImageWidth());
 	    } 
 	    this.jq(ID_POPUP).html(HU.image(image,imageAttrs));
 	},
@@ -802,7 +806,6 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    let scaledHeight = scaleY*popupHeight;
 	    let sw2 = scaledWidth/2;
 	    let sh2 = scaledHeight/2;	    
-
 	    let parentOffset = image.parent().offset();
 	    if(!Utils.isDefined(params.x)) 
 		params.x = params.event.pageX - parentOffset.left;
@@ -814,9 +817,9 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    if(params.y>h-sh2) params.y=h-sh2;	    	    
 	    
 
-
-	    HU.addToDocumentUrl("imagezoom_x",params.x);
-	    HU.addToDocumentUrl("imagezoom_y",params.y);	    
+	    //This causes problems
+//	    HU.addToDocumentUrl("imagezoom_x",params.x);
+//	    HU.addToDocumentUrl("imagezoom_y",params.y);	    
 
 	    let offX = scaleX*iw/2;
 	    let offY = scaleY*ih/2;		

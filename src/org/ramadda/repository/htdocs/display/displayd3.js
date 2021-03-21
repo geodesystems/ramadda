@@ -44,12 +44,13 @@ addGlobalDisplayType({
     forUser: true,
     label: "Venn Diagram",
     requiresData: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_MISC,
+    tooltip: makeDisplayTooltip("A Venn diagram","venn.png")    
 });
 
 addGlobalDisplayType({
     type: DISPLAY_MINIDOTS,
-    forUser: true,
+    forUser: false,
     label: "Mini Dots",
     requiresData: true,
     category: CATEGORY_MISC
@@ -57,7 +58,7 @@ addGlobalDisplayType({
 
 addGlobalDisplayType({
     type: DISPLAY_CHERNOFF,
-    forUser: true,
+    forUser: false,
     label: "Chernoff Faces",
     requiresData: true,
     category: CATEGORY_MISC
@@ -68,7 +69,8 @@ addGlobalDisplayType({
     forUser: true,
     label: "Bubble Chart",
     requiresData: true,
-    category: CATEGORY_MAPS_IMAGES
+    category: CATEGORY_IMAGES,
+    tooltip: makeDisplayTooltip("Animated bubbles showing images","d3bubble.png"),            
 });
 
 

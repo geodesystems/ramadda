@@ -4,10 +4,14 @@ a.display-container {
 }
 
 .display-contents {
+   overflow-y: auto;
+   overflow-x: auto;    
 }
 
 .display-contents-inner {
     height:100%;
+    overflow-y: auto;
+    overflow-x: auto;    
 }
 
 .display-table  td {
@@ -902,6 +906,7 @@ svg > g > g:last-child { pointer-events: none }
 
 .display-text-inner {
    overflow-y: auto;
+   overflow-x: auto;    
 }
 
 .display-text-input {

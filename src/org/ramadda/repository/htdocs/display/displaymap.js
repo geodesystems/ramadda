@@ -19,42 +19,48 @@ let displayMapMarkerIcons = {};
 addGlobalDisplayType({
     type: DISPLAY_MAP,
     label: "Map",
-    category:CATEGORY_MAPS_IMAGES
+    category:CATEGORY_MAPS,
+    tooltip: makeDisplayTooltip("Maps of many colors",["map1.png","map2.png"],"Lots of ways to show georeferenced data - dots, heatmaps, plots, etc"),        
 });
 
 addGlobalDisplayType({
     type: DISPLAY_MAPGRID,
     label: "Map Grid",
-    category:CATEGORY_MAPS_IMAGES
+    category:CATEGORY_MAPS,
+    tooltip: makeDisplayTooltip("Schematic map grid","mapgrid.png","Can display US States or World countries"),    
 });
 
 addGlobalDisplayType({
     type: DISPLAY_MAPCHART,
-    label: "Map chart",
+    label: "Map Chart",
     requiresData: true,
-    category:CATEGORY_MAPS_IMAGES
+    category:CATEGORY_MAPS,
+    tooltip: makeDisplayTooltip("2.5D display in a map","mapchart.png","Plot numeric data as heights. Can display US States, European countries or world countries"),        
 });
 
 
 addGlobalDisplayType({
     type: DISPLAY_MAPSHRINK,
-    label: "Map shrink",
+    label: "Map Shrink",
     requiresData: true,
-    category:CATEGORY_MAPS_IMAGES
+    category:CATEGORY_MAPS,
+    tooltip: makeDisplayTooltip("Show values as relative size of map regions","mapshrink.png","Can display US States, European countries or world countries"),            
 });
 
 
 addGlobalDisplayType({
     type: DISPLAY_MAPARRAY,
-    label: "Map array",
+    label: "Map Array",
     requiresData: true,
-    category:CATEGORY_MAPS_IMAGES
+    category:CATEGORY_MAPS,
+    tooltip: makeDisplayTooltip("Colored map regions displayed separately","maparray.png","Can display US States, European countries or world countries"),                
 });
 addGlobalDisplayType({
     type: DISPLAY_MAPIMAGES,
-    label: "Map array",
+    label: "Map Images",
     requiresData: true,
-    category:CATEGORY_MAPS_IMAGES
+    category:CATEGORY_MAPS,
+    tooltip: makeDisplayTooltip("Display images in map regions","mapimage.png","Can display US States, European countries or world countries"),                    
 });
 
 

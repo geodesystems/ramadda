@@ -36,7 +36,8 @@ addGlobalDisplayType({
     label: "Top Fields",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_MISC,
+    tooltip: makeDisplayTooltip("List Fields","topfields.png","For every row it sorts the field values and lists the field names"),    
 });
 
 addGlobalDisplayType({

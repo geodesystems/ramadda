@@ -82,7 +82,7 @@ addGlobalDisplayType({
     type: DISPLAY_PLOTLY_3DSCATTER,
     label: "3D Scatter",
     requiresData: true,
-    forUser: true,
+    forUser: false,
     category: CATEGORY_RADIAL_ETC
 });
 addGlobalDisplayType({
@@ -96,8 +96,8 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_3DMESH,
     label: "3D Mesh",
-    requiresData: true,
-    forUser: true,
+    requiresData: false,
+    forUser: false,
     category: CATEGORY_RADIAL_ETC
 });
 

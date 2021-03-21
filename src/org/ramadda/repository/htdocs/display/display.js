@@ -29,12 +29,13 @@ const displayDebug = {
 const CATEGORY_CHARTS = "Basic Charts";
 const CATEGORY_TABLE = "Tables";
 const CATEGORY_MISC = "Misc Charts";
-const CATEGORY_MAPS_IMAGES = "Maps and Images";
+const CATEGORY_MAPS = "Maps";
+const CATEGORY_IMAGES = "Images";
 const CATEGORY_RADIAL_ETC = "Trees, etc";
-const CATEGORY_TEXT = "Text Displays";
-const CATEGORY_ENTRIES = "Entry Displays";
+const CATEGORY_TEXT = "Text";
+const CATEGORY_ENTRIES = "Entries";
 const CATEGORY_CONTROLS = "Controls";
-const DISPLAY_CATEGORIES = [CATEGORY_CHARTS,CATEGORY_TABLE,CATEGORY_MAPS_IMAGES,CATEGORY_MISC,CATEGORY_TEXT,CATEGORY_RADIAL_ETC,CATEGORY_CONTROLS,CATEGORY_ENTRIES];
+const DISPLAY_CATEGORIES = [CATEGORY_CHARTS,CATEGORY_TABLE,CATEGORY_MAPS,CATEGORY_IMAGES,CATEGORY_MISC,CATEGORY_TEXT,CATEGORY_RADIAL_ETC,CATEGORY_CONTROLS,CATEGORY_ENTRIES];
 
 
 
@@ -133,15 +134,22 @@ function addGlobalDisplayType(type, front) {
 }
 
 
-function makeDisplayTooltip(header,img,text) {
+function makeDisplayTooltip(header,imgs,text) {
     let h =  "";
     if(header!=null) h +=HU.b(header);
-    if(img) {
-	if(!img.startsWith("/")) {
-	    img = ramaddaBaseUrl +"/help/display/" + img;
+    if(imgs) {
+        if(!Array.isArray(imgs)) {
+	    imgs  = [imgs];
 	}
-	if(h!="") h+="<br>"
-	h+="<img src="+ img +" width=250px>";
+	let imgHtml = imgs.reduce((acc,img)=>{
+	    if(!img.startsWith("/")) {
+		img = ramaddaBaseUrl +"/help/display/" + img;
+	    }
+	    return acc+"<td><img src="+ img +" width=250px></td>";
+	},"<table><tr valign=top>");
+	imgHtml+="</tr></table>";
+	if(h!="") h+="<br>";
+	h+=imgHtml;
     }
     if(text) h+="<br>"+text;
     h  = h.replace(/"/g,"&quot;");
@@ -522,7 +530,7 @@ function DisplayThing(argId, argProperties) {
 	    if(!props) {
 		props = this.getTemplateProps(fields);
 	    }
-	    if(!macros) macros = Utils.tokenizeMacros(template);
+	    if(!macros) macros = Utils.tokenizeMacros(template,{dateFormat:this.getProperty("dateFormat")});
 	    let attrs = {};
 	    if(props.iconMap && props.iconField) {
 		var value = row[props.iconField.getIndex()];
@@ -633,6 +641,7 @@ function DisplayThing(argId, argProperties) {
 		    }
 		    continue;
 		} else if(f.isDate) {
+
 		    if(value) {
 			attrs[f.getId()]= value;
 		    }
@@ -697,9 +706,9 @@ function DisplayThing(argId, argProperties) {
 	    }
 
 	    let templateProps = {};
-	    let itemsPerColumn=10;
+	    let itemsPerColumn=this.getProperty("itemsPerColumn",50);
 	    if(template) {
-		let attrs = Utils.tokenizeMacros(template).getAttributes("default");
+		let attrs = Utils.tokenizeMacros(template,{dateFormat:this.getProperty("dateFormat")}).getAttributes("default");
 		if(attrs) {
 		    itemsPerColumn = attrs["itemsPerColumn"] || itemsPerColumn;
 		}
@@ -725,6 +734,12 @@ function DisplayThing(argId, argProperties) {
 
 	    let rows = [];
 	    let hadDate = false;
+	    let labelColAttrs = [];
+	    if(this.getProperty("labelColumnAttrs")) {
+		labelColAttrs = this.getProperty("labelColumnAttrs").split(",");
+	    }
+	    let labelWidth = this.getProperty("labelWidth");
+
             for (var doDerived = 0; doDerived < 2; doDerived++) {
                 for (let i = 0; i < fields.length; i++) {
                     var field = fields[i];
@@ -782,9 +797,15 @@ function DisplayThing(argId, argProperties) {
 		    if(value.length>200) {
 			value  = HU.div([STYLE,HU.css("max-height","200px","overflow-y","auto")],value);
 		    }
-		    let label = this.formatRecordLabel(field.getLabel());
+		    let labelValue = field.getLabel();
+		    let label = this.formatRecordLabel(labelValue)+":";
+		    if(labelWidth) {
+			label = HU.div([TITLE,labelValue,STYLE,HU.css("max-width" ,HU.getDimension(labelWidth),"overflow-x","auto")], label);
+		    }
+		    
                     let row = HU.open(TR,['valign','top']);
-		    row += HU.td([],HU.b(label + ':'));
+		    
+		    row += HU.td(labelColAttrs,HU.b(label));
 		    row += HU.td(["field-id",field.getId(),"field-value",fieldValue, "align","left"], HU.div([STYLE,HU.css('margin-left','5px')], value));
 		    row += HU.close(TR);
 		    rows.push(row);
@@ -1068,6 +1089,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:"tooltip",doGetter:false,ex:"${default}"},
 	{p:"tooltipPositionMy",ex:"left top"},
 	{p:"tooltipPositionAt",ex:"left bottom+2"},		
+	{p:"itemsPerColumn",ex:10,tt:'How many items to show in each column in a tooltip'},
+	{p:"labelColumnAttrs",ex:"align,right",tt:"Attributes of the label column in the record templates"},
+	{p:"labelWidth",ex:"10",tt:"Width of labels the record templates"},	
 	{p:"displayStyle",ex:"css styles",tt:"Specify styles for display"},
 	{p:"title",ex:""},
 	{p:"titleBackground",ex:"color"},
@@ -1223,7 +1247,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	getWikiEditorTags: function() {
 	    return this._wikiTags;
 	},
-
 	getTypeDef: function() {
 	    return this.typeDef;
 	},

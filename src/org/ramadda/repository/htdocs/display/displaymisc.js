@@ -57,7 +57,8 @@ addGlobalDisplayType({
     label: "Stats Table",
     requiresData: false,
     forUser: true,
-    category: CATEGORY_TABLE
+    category: CATEGORY_TABLE,
+    tooltip: makeDisplayTooltip("Statistical Summary","stats.png"),
 });
 addGlobalDisplayType({
     type: DISPLAY_RECORDS,
@@ -70,7 +71,7 @@ addGlobalDisplayType({
     type: DISPLAY_TSNE,
     label: "TSNE",
     requiresData: true,
-    forUser: true,
+    forUser: false,
     category: CATEGORY_MISC
 });
 addGlobalDisplayType({
@@ -78,14 +79,16 @@ addGlobalDisplayType({
     label: "Heatmap",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MAPS_IMAGES
+    category: CATEGORY_MISC,
+    tooltip: makeDisplayTooltip("Table showing colored fields","heatmap.png"),    
 });
 addGlobalDisplayType({
     type: DISPLAY_GRAPH,
     label: "Graph",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_MISC,
+    tooltip: makeDisplayTooltip("Display a force-directed graph","graph.png")
 });
 
 addGlobalDisplayType({
@@ -93,7 +96,8 @@ addGlobalDisplayType({
     label: "Percent Change",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_MISC,
+    tooltip: makeDisplayTooltip("Percent Change","percentchange.png","Show percent change over a given time in a text template")    
 });
 
 addGlobalDisplayType({
@@ -101,7 +105,8 @@ addGlobalDisplayType({
     label: "Sparkline",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MAPS_IMAGES
+    category: CATEGORY_IMAGES,
+    tooltip: makeDisplayTooltip("Embed little sparkline plots in text","sparkline.png"),    
 });
 
 addGlobalDisplayType({
@@ -109,7 +114,8 @@ addGlobalDisplayType({
     label: "Canvas",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MAPS_IMAGES
+    category: CATEGORY_IMAGES,
+    tooltip: makeDisplayTooltip("Draw records into a canvas","canvas.png"),        
 });
 
 addGlobalDisplayType({
@@ -117,14 +123,16 @@ addGlobalDisplayType({
     label: "Point Image",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MAPS_IMAGES
+    category: CATEGORY_IMAGES,
+    tooltip: makeDisplayTooltip("Embed 2D images into text","pointimage.png"),            
 });
 addGlobalDisplayType({
     type: DISPLAY_FIELDTABLE,
     label: "Field Table",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_TABLE
+    category: CATEGORY_TABLE,
+    tooltip: makeDisplayTooltip(null,"fieldtable.png"),
 });
 addGlobalDisplayType({
     type: DISPLAY_TREE,
@@ -147,14 +155,16 @@ addGlobalDisplayType({
     label: "Timeline",
     requiresData: true,
     forUser: true,
-    category:  CATEGORY_MISC
+    category:  CATEGORY_MISC,
+    tooltip: makeDisplayTooltip("Timeline showing text and images","timeline.png")
 });
 addGlobalDisplayType({
     type: DISPLAY_HOURS,
     label: "Hours",
     requiresData: true,
     forUser: true,
-    category:  CATEGORY_MISC
+    category:  CATEGORY_MISC,
+    tooltip: makeDisplayTooltip("Hourly timeline","timeline.png","Show data by the day and hour")    
 });
 addGlobalDisplayType({
     type: DISPLAY_BLANK,
@@ -182,28 +192,33 @@ addGlobalDisplayType({
     label: "Cooccurence",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_TABLE
+    category: CATEGORY_TABLE,
+    tooltip: makeDisplayTooltip("Cooccurence Table","cooccurrence.png","Tabular plot showing number of records that share values from two fields"),    
+
 });
 addGlobalDisplayType({
     type: DISPLAY_BOXTABLE,
     label: "Box Table",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_TABLE
+    category: CATEGORY_TABLE,
+    tooltip: makeDisplayTooltip("Box Table","boxtable.png","Shows number of records that share the same category field value"),    
 });
 addGlobalDisplayType({
     type: DISPLAY_DATATABLE,
-    label: "Date Table",
+    label: "Data Table",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_TABLE
+    category: CATEGORY_TABLE,
+    tooltip: makeDisplayTooltip("Data Table",["datatable1.png","datatable2.png"],"Selectable record grouping. Can be colored or show pie charts"),        
 });
 addGlobalDisplayType({
     type: DISPLAY_DATEGRID,
     label: "Date Grid",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_TABLE
+    category: CATEGORY_TABLE,
+    tooltip: makeDisplayTooltip("Date Grid",["dategrid.png"],"Show records grouped by category and date"),        
 });
 
 
@@ -2992,7 +3007,7 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 function RamaddaDatatableDisplay(displayManager, id, properties) {
     const SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_DATATABLE, properties);
     let myProps = [
-	{label:'Date Table'},
+	{label:'Data Table'},
 	{p:'columnSelector',ex:'date_day|date_hour|date_dow|date_month|date_year'},
 	{p:'selectors',ex:'date_day,date_hour,date_dow,date_month,date_year,date_fieldid'},
 	{p:'columnSelector',ex:'date_day|date_hour|date_dow|date_month'},

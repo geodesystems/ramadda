@@ -993,7 +993,10 @@ var Utils =  {
         if (v == null || v == "") return false;
         return true;
     },
-    tokenizeMacros:function(s) {
+    tokenizeMacros:function(s,args) {
+	let opts = {
+	};
+	if(args) $.extend(opts,args);
 	let tokens = [];
 	let tokenMap = {};
 	let cnt = 0;
@@ -1090,7 +1093,7 @@ var Utils =  {
 				return;
 			    } 
 			    if(value.getTime) {
-				value = Utils.formatDateWithFormat(value,t.attrs["format"]);
+				value =  Utils.formatDateWithFormat(value,t.attrs["format"]||opts.dateFormat);
 			    } else {
 				if(t.attrs["missing"] && isNaN(value)) {
 				    s+= t.attrs["missing"]
@@ -3132,6 +3135,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	hidePopupObject();
 	let opts  = {
 	    modal:false,
+	    modalContentsCss:"",
 	    sticky:false,
 	    content:null,
 	    contentId:null,
@@ -3198,7 +3202,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
 	let innerId = HU.getUniqueId("model_inner");
 	if(opts.modal) {
-	    html  = HU.div([ID, innerId, CLASS,"ramadda-modal-contents"],html);
+	    html  = HU.div([ID, innerId, STYLE,opts.modalContentsCss,CLASS,"ramadda-modal-contents"],html);
 	    html = HU.div([CLASS,"ramadda-modal"],html);
 	}
 

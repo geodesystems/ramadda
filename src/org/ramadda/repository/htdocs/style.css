@@ -4667,6 +4667,7 @@ h3.ui-accordion-header a {
 
 .wiki-editor-tooltip {
     font-size:10pt;
+    max-width:600px;
 }
 
 .wiki-editor-popup-link a {

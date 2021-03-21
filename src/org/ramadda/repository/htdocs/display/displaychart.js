@@ -23,6 +23,7 @@ const ID_CHART = "chart";
 const ID_CHARTS = "charts";
 const ID_CHARTS_INNER = "chartsinner";
 
+
 var googleChartsLoaded = false;
 function googleChartsHaveLoaded() {
     googleChartsLoaded = true;
@@ -65,7 +66,7 @@ addGlobalDisplayType({
     forUser: true,
     category: CATEGORY_TABLE,
     desc:"Basic tabular display",
-    tooltip: makeDisplayTooltip(null,"table.png")                        
+    tooltip: makeDisplayTooltip("Tabular display of data","table.png")                        
 }, true);
 addGlobalDisplayType({
     type: DISPLAY_LINECHART,
@@ -89,7 +90,9 @@ addGlobalDisplayType({
     label: "Stacked Bar Chart",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CHARTS
+    category: CATEGORY_CHARTS,
+    tooltip: makeDisplayTooltip("Stacked bar chart","barstack.png"),
+    helpurl:true    
 });
 addGlobalDisplayType({
     type: DISPLAY_AREACHART,
@@ -146,14 +149,16 @@ addGlobalDisplayType({
     label: "Gauge",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_MISC,
+    tooltip: makeDisplayTooltip("A gauge","gauge.png")
 });
 addGlobalDisplayType({
     type: DISPLAY_TIMERANGECHART,
     label: "Timerange",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_MISC,
+    tooltip: makeDisplayTooltip("Time ranges","timerange.png","Show data with start/end times")    
 });
 addGlobalDisplayType({
     type: DISPLAY_SANKEY,
@@ -168,7 +173,8 @@ addGlobalDisplayType({
     label: "Calendar Chart",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_MISC,
+    tooltip: makeDisplayTooltip("Show a calendar","calendar.png")
 });
 addGlobalDisplayType({
     type: DISPLAY_WORDTREE,
@@ -208,6 +214,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
     //Init the defaults first
     $.extend(this, {
 	debugChartOptions:false,
+	useTestData:false,	
         indexField: -1,
         curveType: 'none',
         fontSize: 0,
@@ -956,13 +963,14 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	},
         makeDataTable: function(dataList, props, selectedFields, chartOptions) {
 	    let dateType = this.getProperty("dateType","date");
-	    let debug =  displayDebug.makeDataTable;
+	    let debug =   false||displayDebug.makeDataTable;
 	    let debugRows = 4;
 	    if(debug) console.log(this.type+" makeDataTable #records" + dataList.length);
 	    if(debug) console.log("\tfields:" + selectedFields);
 	    let maxWidth = this.getProperty("maxFieldLength",this.getProperty("maxFieldWidth",-1));
 	    let addTooltip = this.getAddToolTip();
     	    let addStyle= this.getAddStyle();
+	    addTooltip = addStyle = false;
 	    let annotationTemplate = this.getAnnotationTemplate();
 	    let formatNumbers = this.getFormatNumbers();
             if (dataList.length == 1) {
@@ -1397,7 +1405,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		colorBy.displayColorTable();
             }
 	    if(chartOptions) {
-		chartOptions.series = this.makeSeriesInfo(dataTable);
+		//Only make the series if it isn't stacked
+		if(!chartOptions.isStacked) {
+		    chartOptions.series = this.makeSeriesInfo(dataTable);
+		}
 		chartOptions.trendlines = this.makeTrendlinesInfo(dataTable);
 	    }
 
@@ -1822,7 +1833,14 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			console.log(JSON.stringify(this.chartOptions, null,2));
 		    this.chart = chart;
 		    this.dataTable = dataTable;
-		    chart.draw(dataTable, this.chartOptions);
+		    let testData = google.visualization.arrayToDataTable([
+			['Genre', 'Fantasy & Sci Fi', 'Western'],
+			['2010', 10, 24],
+			['2020', 16, 22],
+			['2030', 28, 19]
+		    ]);
+
+		    chart.draw(this.useTestData?testData:dataTable, this.chartOptions);
 		} catch(err) {
 		    this.setErrorMessage("Error creating chart: " + err);
 		    console.log(this.type+ " Error creating chart:" + err);
@@ -2857,7 +2875,8 @@ function TableDisplay(displayManager, id, properties) {
 	    }
 
 
-//	    console.log(JSON.stringify(chartOptions,null,2));
+	    if(this.debugChartOptions)
+		console.log(JSON.stringify(chartOptions,null,2));
             chartOptions.allowHtml = true;
 	    if(this.getProperty("tableWidth"))
 		chartOptions.width=this.getProperty("tableWidth");
@@ -3643,6 +3662,7 @@ function GaugeDisplay(displayManager, id, properties) {
             this.index = index;
             var dataTable = this.makeDataTable(this.dataList);
             this.mapCharts(chart=>{
+
                 chart.draw(dataTable, this.chartOptions);
 	    });
         },
