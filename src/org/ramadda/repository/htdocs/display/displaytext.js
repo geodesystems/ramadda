@@ -19,7 +19,8 @@ addGlobalDisplayType({
     label: "Text Readout",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_TEXT
+    category: CATEGORY_TEXT,
+    tooltip: makeDisplayTooltip("Simple text display","text.png")
 });
 
 addGlobalDisplayType({
@@ -27,7 +28,8 @@ addGlobalDisplayType({
     label: "Template",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_TEXT
+    category: CATEGORY_TEXT,
+    tooltip: makeDisplayTooltip("Flexible text template to show records","template.png")    
 });
 
 
@@ -45,7 +47,8 @@ addGlobalDisplayType({
     forUser: true,
     label: "Word Cloud",
     requiresData: true,
-    category: CATEGORY_TEXT
+    category: CATEGORY_TEXT,
+    tooltip: makeDisplayTooltip("Cloud of words","wordcloud.png")
 });
 
 addGlobalDisplayType({
@@ -53,7 +56,8 @@ addGlobalDisplayType({
     forUser: true,
     label: "Text Stats",
     requiresData: true,
-    category: CATEGORY_TEXT
+    category: CATEGORY_TEXT,
+    tooltip: makeDisplayTooltip("Summary statistics for text","textstats.png","Incudes line/word count, word length and frequency")    
 });
 
 addGlobalDisplayType({
@@ -61,21 +65,24 @@ addGlobalDisplayType({
     forUser: true,
     label: "Frequency",
     requiresData: true,
-    category: CATEGORY_TEXT
+    category: CATEGORY_TEXT,
+    tooltip: makeDisplayTooltip("Text field based frequencies","frequency.png")
 });
 addGlobalDisplayType({
     type: DISPLAY_TEXTRAW,
     forUser: true,
     label: "Text Raw",
     requiresData: true,
-    category: CATEGORY_TEXT
+    category: CATEGORY_TEXT,
+    tooltip: makeDisplayTooltip("Shows raw text","textraw.png","Provides a search field")                                        
 });
 addGlobalDisplayType({
     type: DISPLAY_TEXTANALYSIS,
     forUser: true,
     label: "Text Analysis",
     requiresData: true,
-    category: CATEGORY_TEXT
+    category: CATEGORY_TEXT,
+    tooltip: makeDisplayTooltip("Analyzes text","textanalysis.png")
 });
 addGlobalDisplayType({
     type: DISPLAY_BLOCKS,
@@ -91,7 +98,8 @@ addGlobalDisplayType({
     forUser: true,
     label: "Glossary",
     requiresData: true,
-    category: CATEGORY_TEXT
+    category: CATEGORY_TEXT,
+    tooltip: makeDisplayTooltip("Searchable glossary","glossary.png")    
 });
 
 
