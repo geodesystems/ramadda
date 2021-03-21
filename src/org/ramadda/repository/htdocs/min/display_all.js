@@ -3859,6 +3859,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
     const SUPER  = new DisplayThing(argId, argProperties);
     RamaddaUtil.inherit(this, SUPER);
 
+
     if(window.globalDisplayTypesMap) {
 	this.typeDef = window.globalDisplayTypesMap[argType];
     }
@@ -4733,7 +4734,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return HU.image(ramaddaBaseUrl + "/icons/progress.gif");
         },
         getLoadingMessage: function(msg) {
-	    if(!msg && !this.getProperty("data")) {
+	    //Check if we didn't have any data specified
+	    if(!msg && !this.getProperty("theData")) {
 		msg = "No data specified"
 	    }
 	    if (!msg) msg = this.getProperty("loadingMessage", "icon_progress Loading data...");
@@ -14321,9 +14323,9 @@ addGlobalDisplayType({
     label: "Tree Map",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_RADIAL_ETC
+    category: CATEGORY_RADIAL_ETC,
+    tooltip: makeDisplayTooltip("A tree map","treemap.png")    
 });
-
 
 
 

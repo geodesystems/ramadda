@@ -189,9 +189,9 @@ addGlobalDisplayType({
     label: "Tree Map",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_RADIAL_ETC
+    category: CATEGORY_RADIAL_ETC,
+    tooltip: makeDisplayTooltip("A tree map","treemap.png")    
 });
-
 
 
 
