@@ -7081,6 +7081,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 		sb.append("\n");
                 HU.importJS(
                     sb,
+                    getPageHandler().getCdnPath("/display/displayimages.js"));
+		sb.append("\n");
+                HU.importJS(
+                    sb,
                     getPageHandler().getCdnPath("/display/displaymisc.js"));
 		sb.append("\n");
                 HU.importJS(
@@ -7104,9 +7108,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 HU.importJS(
                     sb,
                     getPageHandler().getCdnPath("/display/displaytext.js"));
-                HU.importJS(
-                    sb,
-                    getPageHandler().getCdnPath("/display/displayimages.js"));
                 HU.importJS(
                     sb,
                     getPageHandler().getCdnPath("/display/displayext.js"));
