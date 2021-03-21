@@ -5981,8 +5981,12 @@ public class HtmlUtils implements HtmlUtilsConstants {
 	    if(v.getName().equals("animate")) seenAnimate = true;
 	    attrs.add(v.getName());
 	    if(o instanceof String) {
-		if(!o.equals("true") && !o.equals("false"))
-		    o  = HtmlUtils.squote(o.toString());
+		if(!o.equals("true") && !o.equals("false")) {
+		    //Escape and single quotes
+		    String s = o.toString();
+		    s = s.replaceAll("'","\\\\'");
+		    o  = HtmlUtils.squote(s);
+		}
 	    }
 	    attrs.add(o.toString());
 	}
