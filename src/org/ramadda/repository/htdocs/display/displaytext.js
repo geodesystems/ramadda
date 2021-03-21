@@ -82,7 +82,8 @@ addGlobalDisplayType({
     forUser: true,
     label: "Blocks",
     requiresData: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_MISC,
+    tooltip: makeDisplayTooltip("Blocks","blocks.png","Shows a certain number of small blocks or<br> icons color coded from the data"),        
 });
 
 addGlobalDisplayType({
@@ -1184,6 +1185,7 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 	{label:'Block'},
 	{p:'animStep',d:1000,ex:"1000",tt:'Delay'},
 	{p:'doSum',d:true,ex:"false",tt:''},
+	{p:'numBlocks',d:1000,ex:"1000",tt:'How many blocks to show'},
 	{p:'header',d:true,ex:"Each block represents ${blockValue} ... There were a total of ${total} ...",tt:''},
 
 //	{p:'counts',d:100,ex:"100",tt:''},	
@@ -1210,7 +1212,7 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 		if(!fields) return;
 		this.footers = [];
 		this.headers = [];
-		let numBlocks  = this.getProperty("numBlocks",1000);
+		let numBlocks  = this.getPropertNumBlocks(1000);
 		this.total = 0;
 		fields.forEach(f=>{
 		    this.footers.push("${count} " + f.getLabel());

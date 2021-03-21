@@ -14313,7 +14313,8 @@ addGlobalDisplayType({
     label: "Word Tree",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_TEXT
+    category: CATEGORY_TEXT,
+    tooltip: makeDisplayTooltip("Displays data as a tree of words","wordtree.png","Specify a number of fields. Each field value is a level in the tree")    
 });
 addGlobalDisplayType({
     type: DISPLAY_TREEMAP,
@@ -16720,13 +16721,23 @@ function SankeyDisplay(displayManager, id, properties) {
 
 function WordtreeDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_WORDTREE, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    let myProps = [
+	{label:"Word Tree"},
+	{p:"treeRoot",d:"root", tt:"Word to use for root"},
+	{p:"wordColors",ex:"red,green,blue",tt:"Colors to use for tree levels"},
+	{p:"fixedSize",d:"false",tt:""},
+	{p:"buckets",ex:"100,110,115,120,130",tt:"For numeric fields the buckets to put the records in"},	
+	{p:"&lt;field&gt;.buckets",ex:"100,110,115,120,130",tt:"Specify buckets for a particular field"},
+	{p:"bucketLabels",ex:"young,middle,old,really_old",tt:"For numeric fields the labels used for the buckets"},	
+	{p:"&lt;field&gt;.bucketLabels",ex:"young,middle,old,really_old",tt:"Specify bucket labels for a particular field"},			
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         handleEventRecordSelection: function(source, args) {},
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
             if (this.getProperty("chartHeight"))
                 chartOptions.height = parseInt(this.getProperty("chartHeight"));
-            if (this.getProperty("wordColors")) {
-                var tmp = this.getProperty("wordColors").split(",");
+            if (this.getWordColors()) {
+                var tmp = this.getWordColors().split(",");
                 var colors = [];
                 for (var i = 0; i < 3 && i < tmp.length; i++) {
                     colors.push(tmp[i]);
@@ -16742,7 +16753,7 @@ function WordtreeDisplay(displayManager, id, properties) {
             chartOptions.wordtree = {
                 format: 'implicit',
                 wordSeparator: "_SEP_",
-                word: this.getProperty("treeRoot", "root"),
+                word: this.getTreeRoot(),
                 //                    type: this.getProperty("treeType","double")
 
             }
@@ -16756,14 +16767,14 @@ function WordtreeDisplay(displayManager, id, properties) {
 
         makeDataTable: function(dataList, props, selectedFields) {
             //null ->get all data
-            var root = this.getProperty("treeRoot", "root");
+            var root = this.getTreeRoot();
             var records = this.filterData(null, selectedFields, {skipFirst:true});
             var fields = this.getSelectedFields(this.getData().getRecordFields());
             var valueField = this.getFieldById(null, this.getProperty("colorBy"));
             var values = [];
             var typeTuple = ["phrases"];
             values.push(typeTuple);
-            var fixedSize = this.getProperty("fixedSize");
+            var fixedSize = this.getFixedSize();
             if (valueField)
                 fixedSize = 1;
             if (fixedSize) typeTuple.push("size");
@@ -23721,7 +23732,8 @@ addGlobalDisplayType({
     forUser: true,
     label: "Blocks",
     requiresData: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_MISC,
+    tooltip: makeDisplayTooltip("Blocks","blocks.png","Shows a certain number of small blocks or<br> icons color coded from the data"),        
 });
 
 addGlobalDisplayType({
@@ -24823,6 +24835,7 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 	{label:'Block'},
 	{p:'animStep',d:1000,ex:"1000",tt:'Delay'},
 	{p:'doSum',d:true,ex:"false",tt:''},
+	{p:'numBlocks',d:1000,ex:"1000",tt:'How many blocks to show'},
 	{p:'header',d:true,ex:"Each block represents ${blockValue} ... There were a total of ${total} ...",tt:''},
 
 //	{p:'counts',d:100,ex:"100",tt:''},	
@@ -24849,7 +24862,7 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 		if(!fields) return;
 		this.footers = [];
 		this.headers = [];
-		let numBlocks  = this.getProperty("numBlocks",1000);
+		let numBlocks  = this.getPropertNumBlocks(1000);
 		this.total = 0;
 		fields.forEach(f=>{
 		    this.footers.push("${count} " + f.getLabel());
@@ -35688,7 +35701,8 @@ addGlobalDisplayType({
     label: "Records",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_TEXT
+    category: CATEGORY_TEXT,
+    tooltip: makeDisplayTooltip("Displays records as text","records.png")
 });
 addGlobalDisplayType({
     type: DISPLAY_TSNE,
@@ -39804,6 +39818,7 @@ function RamaddaDategridDisplay(displayManager, id, properties) {
 	    let html = "";
 	    let width = 400;
 	    let dateRange = maxDate.getTime()-minDate.getTime();
+
 	    let scaleX = d=>{
 		return  (d.getTime()-minDate.getTime())/dateRange;
 	    };
@@ -40702,7 +40717,8 @@ addGlobalDisplayType({
     label: "Text Count",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_TEXT
+    category: CATEGORY_TEXT,
+    tooltip: makeDisplayTooltip("Shows counts of certain patterns","textcount.png","Given a text field show the number of times certain word patterns occur")                                    
 });
 
 //Ternary doesn't work

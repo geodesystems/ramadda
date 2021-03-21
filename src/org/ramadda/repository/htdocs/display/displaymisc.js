@@ -65,7 +65,8 @@ addGlobalDisplayType({
     label: "Records",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_TEXT
+    category: CATEGORY_TEXT,
+    tooltip: makeDisplayTooltip("Displays records as text","records.png")
 });
 addGlobalDisplayType({
     type: DISPLAY_TSNE,
@@ -4181,6 +4182,7 @@ function RamaddaDategridDisplay(displayManager, id, properties) {
 	    let html = "";
 	    let width = 400;
 	    let dateRange = maxDate.getTime()-minDate.getTime();
+
 	    let scaleX = d=>{
 		return  (d.getTime()-minDate.getTime())/dateRange;
 	    };

@@ -106,7 +106,8 @@ addGlobalDisplayType({
     label: "Text Count",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_TEXT
+    category: CATEGORY_TEXT,
+    tooltip: makeDisplayTooltip("Shows counts of certain patterns","textcount.png","Given a text field show the number of times certain word patterns occur")                                    
 });
 
 //Ternary doesn't work
