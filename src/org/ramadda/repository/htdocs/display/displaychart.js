@@ -65,7 +65,7 @@ addGlobalDisplayType({
     forUser: true,
     category: CATEGORY_TABLE,
     desc:"Basic tabular display",
-    help: makeDisplayHelp(null,"table.png")                        
+    tooltip: makeDisplayTooltip(null,"table.png")                        
 }, true);
 addGlobalDisplayType({
     type: DISPLAY_LINECHART,
@@ -73,7 +73,8 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_CHARTS,
-    help: makeDisplayHelp(null,"linechart.png")
+    tooltip: makeDisplayTooltip("Basic line chart","linechart.png","Show time series or other data"),
+    helpurl:true
 });
 addGlobalDisplayType({
     type: DISPLAY_BARCHART,
@@ -81,7 +82,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_CHARTS,
-    help: makeDisplayHelp(null,"barchart.png")    
+    tooltip: makeDisplayTooltip(null,"barchart.png")    
 });
 addGlobalDisplayType({
     type: DISPLAY_BARSTACK,
@@ -96,7 +97,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_CHARTS,
-    help: makeDisplayHelp(null,"areachart.png")    
+    tooltip: makeDisplayTooltip(null,"areachart.png")    
 });
 
 addGlobalDisplayType({
@@ -105,7 +106,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_CHARTS,
-    help: makeDisplayHelp(null,"bartable.png")        
+    tooltip: makeDisplayTooltip(null,"bartable.png")        
 });
 addGlobalDisplayType({
     type: DISPLAY_SCATTERPLOT,
@@ -113,7 +114,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_CHARTS,
-    help: makeDisplayHelp(null,"scatterplot.png")            
+    tooltip: makeDisplayTooltip(null,"scatterplot.png")            
 });
 addGlobalDisplayType({
     type: DISPLAY_HISTOGRAM,
@@ -121,7 +122,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_CHARTS,
-    help: makeDisplayHelp(null,"histogram.png")                
+    tooltip: makeDisplayTooltip(null,"histogram.png")                
 });
 addGlobalDisplayType({
     type: DISPLAY_BUBBLE,
@@ -129,7 +130,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_CHARTS,
-    help: makeDisplayHelp(null,"bubblechart.png")    
+    tooltip: makeDisplayTooltip(null,"bubblechart.png")    
 });
 addGlobalDisplayType({
     type: DISPLAY_PIECHART,
@@ -137,7 +138,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_CHARTS,
-    help: makeDisplayHelp(null,"piechart.png")                    
+    tooltip: makeDisplayTooltip(null,"piechart.png")                    
 });
 
 addGlobalDisplayType({
@@ -1878,7 +1879,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 function RamaddaAxisChart(displayManager, id, chartType, properties) {
     let SUPER = new RamaddaGoogleChart(displayManager, id, chartType, properties);
     let myProps = [
-	{label:'Chart Attributes'},
+	{label:'Chart Properties'},
 	{p:'indexField',w:'field'},
 	{p:'vAxisMinValue',w:''},
 	{p:'vAxisMaxValue',w:''},
@@ -2078,12 +2079,10 @@ function LinechartDisplay(displayManager, id, properties) {
 
 function AreachartDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaSeriesChart(displayManager, id, DISPLAY_AREACHART, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"isStacked=true"])},
-
+    let myProps = [
+	{p:'isStacked',ex:'true'}
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         doMakeGoogleChart: function(dataList, props, chartDiv,  selectedFields, chartOptions) {
             if (this.isStacked)
                 chartOptions.isStacked = true;
@@ -2095,13 +2094,9 @@ function AreachartDisplay(displayManager, id, properties) {
 
 function RamaddaBaseBarchart(displayManager, id, type, properties) {
     const SUPER  = new RamaddaSeriesChart(displayManager, id, type, properties);
-    defineDisplay(this, SUPER, [], {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					//"inlinelabel:Bar Chart",
-				    ])},
-
+    let myProps = [
+    ];
+    defineDisplay(this, SUPER, myProps, {
         canDoGroupBy: function() {
             return true;
         },
@@ -2154,18 +2149,17 @@ function BarstackDisplay(displayManager, id, properties) {
 
 function HistogramDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaGoogleChart(displayManager, id, DISPLAY_HISTOGRAM, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    ["label:Histogram Attributes",
-				     'legendPosition="none|top|right|left|bottom"',
-				     'textPosition="out|in|none"',
-				     'isStacked="false|true|percent|relative"',
-				     'logScale="true|false"',
-				     'scaleType="log|mirrorLog"',
-				     'minValue=""',
-				     'maxValue=""'])},
-
+    let myProps = [
+	{label:'Histogram Properties'},
+	{p:'legendPosition',ex:'none|top|right|left|bottom'},
+	{p:'textPosition',ex:'out|in|none'},
+	{p:'isStacked',ex:'false|true|percent|relative'},
+	{p:'logScale',ex:'true|false'},
+	{p:'scaleType',ex:'log|mirrorLog'},
+	{p:'minValue',ex:''},
+	{p:'maxValue',ex:''}
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         okToHandleEventRecordSelection: function() {
             return false;
         },
@@ -2232,7 +2226,24 @@ function RamaddaTextChart(displayManager, id, chartType, properties) {
 function PiechartDisplay(displayManager, id, properties) {
     let ID_PIE_LEGEND = "pielegend";
     const SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_PIECHART, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    let myProps = [
+	{label:'Pie Chart Properties'},
+	{p:'groupBy',ex:''},
+	{p:'groupByCount',ex:'true'},
+	{p:'groupByCountLabel',ex:''},
+	{p:'binCount',ex:'true'},
+	{p:'pieHole',ex:'0.5'},
+	{p:'is3D',ex:'true'},
+	{p:'bins',ex:''},
+	{p:'binMin',ex:''},
+	{p:'binMax',ex:'max'},
+	{p:'sliceVisibilityThreshold',ex:'0.01'},
+	{p:'pieSliceTextColor',ex:'black'},
+	{p:'pieSliceBorderColor',ex:'black'}
+    ];
+
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+
 	uniqueValues:[],
 	uniqueValuesMap:{},
         canDoGroupBy: function() {
@@ -2257,24 +2268,6 @@ function PiechartDisplay(displayManager, id, properties) {
 	    }
 	    this.jq(ID_PIE_LEGEND).html(legend);
 
-	},
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Pie Chart Attributes",
-					'groupBy=""',
-					'groupByCount=true',
-					'groupByCountLabel=""',
-					'binCount=true',
-					"pieHole=\"0.5\"",
-					"is3D=\"true\"",
-					"bins=\"\"",
-					"binMin=\"\"",
-					"binMax=\"max\"",
-					"sliceVisibilityThreshold=\"0.01\"",
-					'pieSliceTextColor=black',
-					'pieSliceBorderColor=black'
-				    ]);
 	},
         setChartSelection: function(index) {
 	    //noop
@@ -2735,9 +2728,9 @@ function WordtreeDisplay(displayManager, id, properties) {
 function TableDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_TABLE, properties);
     let myProps = [
-	{label:'Table Properties'},
+	{label:'Table'},
 	{p:'imageField',ex:''},
-	{p:'tableWidth=',ex:'100%'},
+	{p:'tableWidth',ex:'100%'},
 	{p:'frozenColumns',ex:'1'},
 	{p:'colorCells',ex:'field1,field2'},
 	{p:'foregroundColor'},
@@ -2933,17 +2926,15 @@ function TableDisplay(displayManager, id, properties) {
 
 function BubbleDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_BUBBLE, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					'label:Bubble Chart Attibutes',
-					'legendPosition="none|top|right|left|bottom"',
-					'hAxisFormat="none|decimal|scientific|percent|short|long"',
-					'vAxisFormat="none|decimal|scientific|percent|short|long"',
-					'hAxisTitle=""',
-					'vAxisTitle=""'])},
-
+    let myProps = [
+	{label:'Bubble Chart Attibutes'},
+	{p:'legendPosition',ex:'none|top|right|left|bottom'},
+	{p:'hAxisFormat',ex:'none|decimal|scientific|percent|short|long'},
+	{p:'vAxisFormat',ex:'none|decimal|scientific|percent|short|long'},
+	{p:'hAxisTitle',ex:''},
+	{p:'vAxisTitle',ex:''}
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         getChartDiv: function(chartId) {
             var divAttrs = [ATTR_ID, chartId];
             divAttrs.push(STYLE);
@@ -3451,7 +3442,7 @@ function TimerangechartDisplay(displayManager, id, properties) {
 function CalendarDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaGoogleChart(displayManager, id, DISPLAY_CALENDAR, properties);
     let myProps = [
-	{label:'Calendar Properties'},
+	{label:'Calendar'},
 	{p:'cellSize',d:15,ex:"15"},
 	{p:'missingValue',ex:""},	
 	{p:'strokeColor',d: '#76a7fa', ex:'#76a7fa'},

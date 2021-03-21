@@ -27,33 +27,6 @@ function addDisplayManager(displayManager) {
 }
 
 
-function addGlobalDisplayType(type, front) {
-    if (window.globalDisplayTypes == null) {
-        window.globalDisplayTypes = [];
-	window.globalDisplayTypesMap = {};
-    }
-    if(type.type) {
-	window.globalDisplayTypesMap[type.type] = type;
-    }
-
-
-    if(front) {
-	window.globalDisplayTypes.unshift(type);
-    } else {
-	window.globalDisplayTypes.push(type);
-    }
-}
-
-
-addGlobalDisplayType({
-    type: "group",
-    label: "Group",
-    requiresData: false,
-    forUser: true,
-    category: "Basic Charts"
-},true);
-
-
 
 
 addGlobalDisplayType({
@@ -462,15 +435,18 @@ function DisplayManager(argId, argProperties) {
                 //                console.log("data:" + haveItAlready);
             }
 
+	    if(type==null || type.trim().length==0) return null;
             //            console.log("props:" + JSON.stringify(props));
             //Upper case the type name, e.g., linechart->Linechart
             var proc = type.substring(0, 1).toUpperCase() + type.substring(1);
+
 
             //Look for global functions  Ramadda<Type>Display, <Type>Display, <Type> 
             //e.g. - RamaddaLinechartDisplay, LinechartDisplay, Linechart 
             var classname = null;
             var names = ["Ramadda" + proc + "Display",
 			 proc + "Display",
+			 "Display"+ proc,
 			 proc
 			];
             var func = null;
@@ -485,6 +461,7 @@ function DisplayManager(argId, argProperties) {
                 }
 
             }
+
             if (func == null) {
                 console.log("Error: could not find display function:" + type);
                 //                    alert("Error: could not find display function:" + type);

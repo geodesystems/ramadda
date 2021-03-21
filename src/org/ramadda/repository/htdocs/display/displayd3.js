@@ -191,22 +191,18 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
     const ID_SKEWT = "skewt";
     const ID_DATE_LABEL = "skewtdate";
     const SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_SKEWT, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    let myProps = [
+        {label:'Skewt Attributes'},
+        {p:'skewtWidth',ex:'500'},
+        {p:'skewtHeight',ex:'550'},
+        {p:'hodographWidth',ex:'150'},
+        {p:'showHodograph',ex:'false'},
+        {p:'windStride',ex:'1'},
+        {p:'showText',ex:'false'},
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
-        },
-        getWikiEditorTags: function() {
-            return Utils.mergeLists(
-                SUPER.getWikiEditorTags(),
-                ['label:Skewt Attributes',
-                 'skewtWidth="500"',
-                 'skewtHeight="550"',
-                 'hodographWidth=150',
-                 'showHodograph=false',
-                 'windStride=1',
-                 'showText=false',
-                ])
-
         },
         initDisplay:  function() {
             SUPER.initDisplay.call(this);
@@ -1336,25 +1332,22 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
 	Utils.importJS(ramaddaBaseUrl +"/lib/d3/d3-legend.min.js");
 	Utils.importJS(ramaddaBaseUrl +"/lib/d3/bubblechart.js");
     }
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    let myProps = [
+	{label:'Bubble Chart'},
+	{p:'labelField',ex:''},
+	{p:'colorBy',ex:''},
+	{p:'valueField',ex:''},
+	{p:'descriptionField',ex:''},
+	{p:'imageField',ex:''},
+	{p:'sizeLabel1',ex:''},
+	{p:'sizeLabel2',ex:''},
+	{p:'showSizeLegend',ex:'false'}
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
         },
 	callbackWaiting:false,
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Bubble Chart",
-					'labelField=""',
-					'colorBy=""',
-					'valueField=""',
-					'descriptionField=""',
-					'imageField=""',
-					'sizeLabel1=""',
-					'sizeLabel2=""',
-					'showSizeLegend=false'
-				    ])},
-
         displayData: function() {
 	    this.updateUI();
 	},

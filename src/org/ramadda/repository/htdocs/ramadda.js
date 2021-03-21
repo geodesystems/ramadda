@@ -593,16 +593,17 @@ function selectClick(id, entryId, value) {
         return;
     }
 
+    console.log("id:" + selector.elementId);
     if (selector.selecttype == "wikilink") {
         insertAtCursor(selector.elementId, selector.textComp.obj, "[[" + entryId + "|" + value + "]]");
     } else   if (selector.selecttype == "fieldname") {
         insertAtCursor(selector.elementId, selector.textComp.obj,  value);
     } else if (selector.selecttype == "entryid") {
         //        insertTagsInner(selector.elementId, selector.textComp.obj, "" +entryId+"|"+value+" "," ","importtype");
-        insertTagsInner(selector.elementId, selector.textComp.obj, entryId, " ", "importtype");
+        HU.getWikiEditor(selector.elementId).insertTags(entryId, " ", "importtype");
     } else if (selector.selecttype == "entry:entryid") {
         //        insertTagsInner(selector.elementId, selector.textComp.obj, "" +entryId+"|"+value+" "," ","importtype");
-        insertTagsInner(selector.elementId, selector.textComp.obj, "entry:" + entryId, " ", "importtype");
+        HU.getWikiEditor(selector.elementId).insertTags("entry:" + entryId, " ", "importtype");
     } else {
         selector.getHiddenComponent().val(entryId);
         selector.getTextComponent().val(value);

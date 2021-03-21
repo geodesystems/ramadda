@@ -33,7 +33,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_TABLE,
-    help: makeDisplayHelp(null,"ranking.png")                            
+    tooltip: makeDisplayTooltip("Show fields ordered by values","ranking.png")                            
 });
 addGlobalDisplayType({
     type: DISPLAY_CORRELATION,
@@ -41,7 +41,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_TABLE,
-    help: makeDisplayHelp(null,"correlation.png")                            
+    tooltip: makeDisplayTooltip(null,"correlation.png")                            
 });
 addGlobalDisplayType({
     type: DISPLAY_CROSSTAB,
@@ -49,7 +49,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_TABLE,
-    help: makeDisplayHelp("Cross Tabulation","crosstab.png")                                
+    tooltip: makeDisplayTooltip("Cross Tabulation","crosstab.png")                                
 });
 
 addGlobalDisplayType({
@@ -216,29 +216,28 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
     if(!window["ForceGraph"]) {
 	Utils.importJS("https://unpkg.com/force-graph");
     }
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    let myProps = [
+	{label:'Graph'},
+	 {p:'sourceField',ex:''},
+	 {p:'targetField',ex:''},
+	 {p:'nodeBackground',ex:'#ccc'},
+	 {p:'drawCircle',ex:'true'},
+	 {p:'nodeWidth',ex:'10'},
+	 {p:'linkColor',ex:'red'},
+	 {p:'linkWidth',ex:'3'},
+	 {p:'linkDash',ex:'5'},
+	 {p:'linkWidth',ex:'3'},
+	 {p:'arrowLength',ex:'6'},
+	 {p:'arrowColor',ex:'green'},
+	 {p:'directionalParticles',ex:'2'}
+    ]
+
+
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
         },
 	callbackWaiting:false,
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Graph Properties",
-					'sourceField=""',
-					'targetField=""',
-					'nodeBackground="#ccc"',
-					'drawCircle="true"',
-					'nodeWidth="10"',
-					'linkColor="red"',
-					'linkWidth="3"',
-					'linkDash="5"',
-					'linkWidth="3"',
-					'arrowLength="6"',
-					'arrowColor="green"',
-					'directionalParticles="2"'
-				    ])},
-
         updateUI: function() {
             if(!window["ForceGraph"]) {
 		if(!this.callbackWaiting) {
@@ -400,18 +399,16 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
 
 function RamaddaTreeDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_TREE, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    let myProps = [
+	{label:'Tree'},
+	 {p:'maxDepth',ex:'3'},
+	 {p:'showDetails',ex:'false'},
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	countToRecord: {},
         needsData: function() {
             return true;
         },
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Tree Properties",
-					"maxDepth=3",
-					"showDetails=false",
-				    ])},
         updateUI: function() {
             let records = this.filterData();
             if (!records) return;
@@ -511,23 +508,17 @@ function RamaddaTreeDisplay(displayManager, id, properties) {
 function OrgchartDisplay(displayManager, id, properties) {
     const ID_ORGCHART = "orgchart";
     const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_ORGCHART, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    let myProps = [
+	{label:'Orgchart'},
+	{p:'labelField',ex:''},
+	{p:'parentField',ex:''},
+	{p:'idField',ex:''},
+	{p:'treeRoot',ex:'some label'},
+	{p:'treeTemplate',ex:''},
+	{p:'treeNodeSize',ex:'small|medium|large'}
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER,myProps, {
         handleEventRecordSelection: function(source, args) {},
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					'label:Orgchart Properties',
-					'labelField=""',
-					'parentField=""',
-					'idField=""',
-					'treeRoot="some label"',
-					'treeTemplate=""',
-					'treeNodeSize="small|medium|large"'
-					
-				    ])},
-
-
-
         needsData: function() {
             return true;
         },
@@ -585,7 +576,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
     if(!properties.height) properties.height=400;
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TIMELINE, properties);
     let myProps = [
-	{label:'Timeline Properties'},
+	{label:'Timeline'},
 	{p:'titleField',ex:''},
 	{p:'imageField',ex:''},
 	{p:'textTemplate',ex:''},
@@ -777,7 +768,7 @@ function RamaddaHoursDisplay(displayManager, id, properties) {
     const MULTI_ID = "multiid";
   
     let myProps = [
-	{label:'Hours Properties'},
+	{label:'Hours'},
 	{p:'dateField',ex:''},
 	{p:'boxWidth',ex:''},
 	{p:'boxColor',ex:'blue'},	
@@ -994,7 +985,7 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
 function RamaddaPreDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_PRE, properties);
     let myProps = [
-	{label:'Pre Properties'},
+	{label:'Pre'},
 	{p:'numRecords',ex:'100',d:1000},
 	{p:'includeGeo',ex:'true',d:true},	
     ];
@@ -1042,7 +1033,7 @@ function RamaddaPreDisplay(displayManager, id, properties) {
 function RamaddaHtmltableDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_HTMLTABLE, properties);
     let myProps = [
-	{label:'Pre Properties'},
+	{label:'Html Table'},
 	{p:'numRecords',ex:'100',d:1000},
 	{p:'includeGeo',ex:'true',d:true},
 	{p:'includeDate',ex:'true',d:true},		
@@ -1542,18 +1533,12 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
     });
     if(properties.sortAscending) this.sortAscending = "true" == properties.sortAscending;
     const SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_RANKING, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Chart Properties",
-					"sortField=\"\"",
-					'nameFields=""',
-				    ]);
-
-	},
-
-
+    let myProps = [
+	{label:'Ranking'},
+	{p:'sortField',ex:''},
+	{p:'nameFields',ex:''},
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
         },
@@ -1849,30 +1834,27 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
     });
 
     const SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_CORRELATION, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    let myProps = [
+	{label:'Correlation'},
+	{p:'showSelectSlider',ex:'false'},
+	{p:'range.low.min',ex:'-1'},
+	{p:'range.low.max',ex:'0'},
+	{p:'range.high.min',ex:'0'},
+	{p:'range.high.max',ex:'1'},
+	{p:'short',ex:'true',tt:'Abbreviated display'},
+	{p:'showValue',ex:'false',tt:'Show the values'},
+	{p:'useId ',ex:' true',tt:'Use field id instead of label'},
+	{p:'useIdTop',ex:'true',tt:'Use field id for top header'},
+	{p:'useIdSide ',ex:'true',tt:'Use field id for side header'},
+	{p:'labelStyle',ex:'',tt:'CSS style for labels'}
+
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         "map-display": false,
         needsData: function() {
             return true;
         },
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					
-					"label:Chart Properties",
-					'showSelectSlider=false',
-					"range.low.min=\"-1\"",
-					"range.low.max=\"0\"",
-					"range.high.min=\"0\"",
-					"range.high.max=\"1\"",
-					["short=true","Abbreviated display"],
-					["showValue=false","Show the values"],
-					['useId = true',"Use field id instead of label"],
-					['useIdTop=true',"Use field id for top header"],
-					['useIdSide = true',"Use field id for side header"],
-					['labelStyle=""',"CSS style for labels"]
-				    ]);
 
-	},
 
         getMenuItems: function(menuItems) {
             SUPER.getMenuItems.call(this, menuItems);
@@ -2156,13 +2138,12 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 
 function RamaddaRecordsDisplay(displayManager, id, properties, type) {
     const SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_RECORDS, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"maxHeight=\"\"",
-				    ]);
-	},
+    let myProps = [
+	{label:'Records'},
+	{p:'maxHeight',ex:'400px'},
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+
         needsData: function() {
             return true;
         },
@@ -2245,29 +2226,26 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
     const SUPER = new RamaddaFieldsDisplay(displayManager, id, type || DISPLAY_STATS, properties);
     if (!type)
         addRamaddaDisplay(this);
-    defineDisplay(this, SUPER, [], {
+    let myProps = [
+	{label:'Summary Statistics'},
+	{p:'showMin',ex:'true'},
+	{p:'showMax',ex:'true'},
+        {p:'showAverage',ex:'true'},
+        {p:'showStd',ex:'true'},
+        {p:'showPercentile',ex:'true'},
+        {p:'showCount',ex:'true'},
+        {p:'showTotal',ex:'true'},
+        {p:'showPercentile',ex:'true'},
+        {p:'showMissing',ex:'true'},
+        {p:'showUnique',ex:'true'},
+        {p:'showType',ex:'true'},
+        {p:'showText',ex:'true'},
+	{p:'doValueSelection',ex:'true'}
+
+    ];
+
+    defineDisplay(this, SUPER, myProps, {
         "map-display": false,
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					'label:Summary Statistics',
-					'showMin="true"',
-					'showMax="true"',
-                                        'showAverage="true"',
-                                        'showStd="true"',
-                                        'showPercentile="true"',
-                                        'showCount="true"',
-                                        'showTotal="true"',
-                                        'showPercentile="true"',
-                                        'showMissing="true"',
-                                        'showUnique="true"',
-                                        'showType="true"',
-                                        'showText="true"',
-					'doValueSelection=true'
-				    ])},
-
-
-
         needsData: function() {
             return true;
             //                return this.getProperty("loadData", false) || this.getCreatedInteractively();
@@ -2632,25 +2610,23 @@ function RamaddaCooccurenceDisplay(displayManager, id, properties) {
     const ID_HEADER = "coocheader";
     const ID_SORTBY = "sortby";
     const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_COOCCURENCE, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    let myProps = [
+	{label:'Cooccurence'},
+	{p:'sourceField',ex:''},
+	{p:'targetField',ex:''},
+	{p:'colorBy',ex:''},
+	{p:'directed',ex:'false'},
+	{p:'missingBackground',ex:'#eee'},
+	{p:'showSortBy',ex:'false'},
+	{p:'sortBy',ex:'weight'},
+	{p:'minWeight',ex:''},
+	{p:'topSpace',ex:'50px'}
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
         },
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Cooccurence Properties",
-					'sourceField=""',
-					'targetField=""',
-					'colorBy=""',
-					'directed=false',
-					'missingBackground=#eee',
-					'showSortBy=false',
-					'sortBy=weight',
-					'minWeight=""',
-					'topSpace=50px'
-					
-				    ])},
+
 	getHeader2:function() {
 	    let html = SUPER.getHeader2.call(this);
 	    let weightField = this.getFieldById(null, this.getProperty("colorBy","weight"));
@@ -2798,19 +2774,16 @@ function RamaddaBoxtableDisplay(displayManager, id, properties) {
     const ID_HEADER = "coocheader";
     const ID_SORTBY = "sortby";
     const SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_BOXTABLE, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    let myProps = [
+	{label:'Color Boxes'},
+	{p:'categoryField',ex:''},
+	{p:'colorBy',ex:''},
+	{p:'tableWidth',ex:'300'},
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
         },
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Color Boxes",
-					'categoryField=""',
-					'colorBy=""',
-					'tableWidth=300',
-					
-				    ])},
 
         updateUI: function() {
 	    let records = this.filterData();
@@ -2882,23 +2855,19 @@ function RamaddaBoxtableDisplay(displayManager, id, properties) {
 
 function RamaddaPercentchangeDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_PERCENTCHANGE, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Percent change Properties",
-					'template="${date1} ${date2} ${value1} ${value2} ${percent} ${per_hour} ${per_day} ${per_week} ${per_month} ${per_year}"',
-					'fieldLabel=""',
-					'sortFields=false',
-					'highlightPercent="50"',
-					'highlightPercentPositive="50"',
-					'highlightPercentNegative="-50"',
-					'highlightColor=""',
-					'highlightColorPositive=""',
-					'highlightColorNegative=""',
-					
-				    ]);
-	},
+    let myProps = [
+	{label:'Percent Change'},
+	{p:'template',ex:'${date1} ${date2} ${value1} ${value2} ${percent} ${per_hour} ${per_day} ${per_week} ${per_month} ${per_year}'},
+	{p:'fieldLabel',ex:''},
+	{p:'sortFields',ex:'false'},
+	{p:'highlightPercent',ex:'50'},
+	{p:'highlightPercentPositive',ex:'50'},
+	{p:'highlightPercentNegative',ex:'-50'},
+	{p:'highlightColor',ex:''},
+	{p:'highlightColorPositive',ex:''},
+	{p:'highlightColorNegative',ex:''},
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	updateUI: function() {
 	    let records = this.filterData();
 	    if(!records) return;
@@ -3022,30 +2991,28 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 
 function RamaddaDatatableDisplay(displayManager, id, properties) {
     const SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_DATATABLE, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    let myProps = [
+	{label:'Date Table'},
+	{p:'columnSelector',ex:'date_day|date_hour|date_dow|date_month|date_year'},
+	{p:'selectors',ex:'date_day,date_hour,date_dow,date_month,date_year,date_fieldid'},
+	{p:'columnSelector',ex:'date_day|date_hour|date_dow|date_month'},
+	{p:'rowSelector',ex:'date_day|date_hour|date_dow|date_month'},
+	{p:'checkedIcon',ex:'fa-checked'},
+	{p:'checkedTooltipHeader',ex:'${numberChecked}'},
+	{p:'dataCheckers',ex:'match|notmatch|lessthan|greaterthan|equals|notequals(field=field,value=value,label=label,enabled=false) '}, 
+	{p:'showColumnSelector',ex:'false'},
+	{p:'showRowSelector',ex:'false'},
+	{p:'showValues',ex:'false'},
+	{p:'showColors',ex:'false'},
+	{p:'showRowTotals',ex:'false'},
+	{p:'showColumnTotals',ex:'false'},
+	{p:'slantHeader',ex:'true'}
+	];
+
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
         },
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Date Table",
-					'columnSelector="date_day|date_hour|date_dow|date_month|date_year"',
-					'selectors="date_day,date_hour,date_dow,date_month,date_year,date_fieldid"',
-					'columnSelector="date_day|date_hour|date_dow|date_month"',
-					'rowSelector="date_day|date_hour|date_dow|date_month"',
-					'checkedIcon="fa-checked"',
-					'checkedTooltipHeader="${numberChecked}"',
-					'dataCheckers="match|notmatch|lessthan|greaterthan|equals|notequals(field=field,value=value,label=label,enabled=false) "', 
-					'showColumnSelector=false',
-					'showRowSelector=false',
-					'showValues=false',
-					'showColors=false',
-					'showRowTotals=false',
-					'showColumnTotals=false',
-					'slantHeader=true'
-
-				    ])},
         updateUI: function() {
             this.setContents(this.getLoadingMessage());
 	    let records = this.filterData();
@@ -3431,7 +3398,7 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_SPARKLINE, properties);
     let myProps = [
-	{label:'Sparkline Properties'},
+	{label:'Sparkline'},
 	{p:'showDate',ex:'true'},
 	{p:'showMin',ex:'true'},
 	{p:'showMax',ex:'true'},
@@ -3531,21 +3498,19 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
     if(!properties.width) properties.width="200";
     properties.displayInline = true;
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_POINTIMAGE, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Image Display",
-					'cellShape="rect|circle"',
-					'cellSize=4',
-					'cellFilled=false',
-					'cellColor=false',
-					'doHeatmap=true',
-					'padding=5',
-					'borderColor=#ccc',
-					'showTooltips=false',
-					'colorBy=""'
-				    ])},
+    let myProps = [
+	{label:'Point Image'},
+	{p:'cellShape',ex:'rect|circle'},
+	{p:'cellSize',ex:'4'},
+	{p:'cellFilled',ex:'false'},
+	{p:'cellColor',ex:'false'},
+	{p:'doHeatmap',ex:'true'},
+	{p:'padding',ex:'5'},
+	{p:'borderColor',ex:'#ccc'},
+	{p:'showTooltips',ex:'false'},
+	{p:'colorBy',ex:''}
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER,myProps, {
         needsData: function() {
             return true;
         },
@@ -3639,7 +3604,7 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 function RamaddaCanvasDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_CANVAS, properties);
     let myProps = [
-	{label:'Canvas Properties'},
+	{label:'Canvas'},
 	{p:'canvasWidth',d:100,ex:"100",tt:'Canvas width'},
 	{p:'canvasHeight',d:100,ex:"100",tt:'Canvas height'},
 	{p:'canvasStyle',d:"",ex:"",tt:'Canvas CSS style'},
@@ -3746,20 +3711,18 @@ function RamaddaCanvasDisplay(displayManager, id, properties) {
 function RamaddaFieldtableDisplay(displayManager, id, properties) {
     const ID_TABLE = "fieldtable";
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_FIELDTABLE, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Field Table",
-					'field=""',
-					'labelField=field',
-					'columnWidth=150',
-					'tableHeight=300',
-					'markerShape=circle|rect|triangle|bar|arrow|dart|bar',
-					'markerSize=16',
-					'markerFill=#64CDCC',
-					'markerStroke=#000'
-				    ])},
+    let myProps = [
+	{label:'Field Table'},
+	{p:'field',ex:''},
+	{p:'labelField',ex:'field'},
+	{p:'columnWidth',ex:'150'},
+	{p:'tableHeight',ex:'300'},
+	{p:'markerShape',ex:'circle|rect|triangle|bar|arrow|dart|bar'},
+	{p:'markerSize',ex:'16'},
+	{p:'markerFill',ex:'#64CDCC'},
+	{p:'markerStroke',ex:'#000'}
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
         },
@@ -3928,13 +3891,11 @@ function RamaddaFieldtableDisplay(displayManager, id, properties) {
 
 function RamaddaDotstackDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, "dotstack", properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Dot Stack",
-					'categoryField=field',
-				    ])},
+    let myProps = [
+	{label:'Dot Stack'},
+	{p:'categoryField',ex:'field'},
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
         },

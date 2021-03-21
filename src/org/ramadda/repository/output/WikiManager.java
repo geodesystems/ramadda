@@ -100,7 +100,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     public static final WikiTagCategory[] WIKITAGS = {
         new WikiTagCategory("General",
                             new WikiTag(WIKI_TAG_INFORMATION, null, ATTR_DETAILS, "false",ATTR_SHOWTITLE,"false"),
-                            new WikiTag(WIKI_TAG_NAME), 
+                            new WikiTag(WIKI_TAG_NAME,null,"link","true"), 
                             new WikiTag(WIKI_TAG_DESCRIPTION),
                             new WikiTag(WIKI_TAG_RESOURCE, null, ATTR_TITLE,"",ATTR_INCLUDEICON,"true"), 
                             new WikiTag(WIKI_TAG_DATERANGE,"Date Range", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT),
@@ -575,11 +575,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 if ((type != null)
                         && !otherEntry.getTypeHandler().isType(type)) {
                     System.err.println("not type");
-
                     continue;
                 }
                 theEntry = otherEntry;
-
                 break;
             }
         }
@@ -1168,10 +1166,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             for (int tagIdx = 0; tagIdx < cat.tags.length; tagIdx++) {
                 WikiTag      tag = cat.tags[tagIdx];
                 List<String> tmp = new ArrayList<String>();
-                tmp.add(Json.quote("label:" + tag.tag + " properties"));
+		String label = Utils.makeLabel(tag.tag) + " properties";
+                tmp.add(Json.map("label",Json.quote(label)));
                 for (int j = 0; j < tag.attrsList.size(); j += 2) {
-                    tmp.add(Json.quote(tag.attrsList.get(j) + "=\""
-                                       + tag.attrsList.get(j + 1) + "\""));
+                    tmp.add(Json.map("p",Json.quote(tag.attrsList.get(j)),"ex",
+				     Json.quote(tag.attrsList.get(j + 1))));
                 }
                 tags.add(tag.tag);
                 tags.add(Json.list(tmp));
@@ -1180,7 +1179,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         sb.append(Json.map(tags, false));
         Result result = new Result("", sb, Json.MIMETYPE);
         result.setShouldDecorate(false);
-
         return result;
     }
 
@@ -1706,7 +1704,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 String url = getEntryManager().getEntryUrl(request, entry);
                 name = HU.href(url, name, HU.cssClass("ramadda-link"));
             }
-
             return name;
         } else if (theTag.equals(WIKI_TAG_EMBED)) {
             if ( !entry.isFile()
@@ -7067,12 +7064,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     sb, getPageHandler().getCdnPath("/display/widgets.js"));
 		sb.append("\n");
                 HU.importJS(
+                    sb, getPageHandler().getCdnPath("/display/display.js"));
+		sb.append("\n");
+                HU.importJS(
                     sb,
                     getPageHandler().getCdnPath(
                         "/display/displaymanager.js"));
-		sb.append("\n");
-                HU.importJS(
-                    sb, getPageHandler().getCdnPath("/display/display.js"));
 		sb.append("\n");
                 HU.importJS(
                     sb,

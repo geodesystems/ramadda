@@ -52,7 +52,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_CHARTS,
-    help: makeDisplayHelp(null,"combochart.png")                        
+    tooltip: makeDisplayTooltip(null,"combochart.png")                        
 });
 
 addGlobalDisplayType({
@@ -69,7 +69,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_CHARTS,
-    help: makeDisplayHelp(null,"dotplot.png")                    
+    tooltip: makeDisplayTooltip(null,"dotplot.png")                    
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_SPLOM,
@@ -91,7 +91,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_CHARTS,
-    help: makeDisplayHelp(null,"profile.png")                    
+    tooltip: makeDisplayTooltip(null,"profile.png")                    
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_3DMESH,
@@ -542,24 +542,21 @@ function RamaddaSunburstDisplay(displayManager, id, properties) {
         height: "500",
     });
     let SUPER = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_SUNBURST, properties);
-    RamaddaUtil.inherit(this, SUPER);
-    addRamaddaDisplay(this);
-    RamaddaUtil.defineMembers(this, {
+    let myProps = [
+	{label:'Sunburst Display'},
+	{p:'parentField',ex:''},
+	{p:'labelField',ex:''},
+	{p:'idField',ex:''},
+	{p:'valueField',ex:''},
+	{p:'nodeFields',ex:''},
+	{p:'treeRoot',ex:'some label'},
+	{p:'doTopColors',ex:'true'},
+    ];
+
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         getDisplayStyle: function() {
             return "";
         },
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    ["label:Sunburst Display",
-				     'parentField=""',
-				     'labelField=""',
-				     'idField=""',
-				     'valueField=""',
-				     'nodeFields=""',
-				     'treeRoot="some label"',
-				     'doTopColors="true"',
-				    ])},
-
         updateUI: function() {
             var records = this.filterData();
             if (!records) return;
@@ -1384,16 +1381,13 @@ function RamaddaPTreemapDisplay(displayManager, id, properties) {
 }
 function TextcountDisplay(displayManager, id, properties) {
     let SUPER  =  new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_TEXTCOUNT, properties);
-    RamaddaUtil.inherit(this, SUPER);
-    addRamaddaDisplay(this);
-    $.extend(this, {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    ["label:Text Count Display",
-				     'patterns="foo,bar"',
-				     'labels="Foo,Bar"',
-				     'textField=""',
-				    ])},
+    let myProps = [
+	{label:'Text Count Display'},
+	{p:'patterns',ex:'foo,bar'},
+	{p:'labels',ex:'Foo,Bar'},
+	{p:'textField',ex:''},
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         getDialogContents: function(tabTitles, tabContents) {
 	    let html = HtmlUtils.div(["id",this.getDomId("dialog_set_pattern")],"Change patterns") + "<br>" +
 		HtmlUtils.textarea("",Utils.join(this.patternList||[],"\n"),["id", this.getDomId("dialog_patterns"),"rows","10"]);
@@ -1495,33 +1489,29 @@ function TextcountDisplay(displayManager, id, properties) {
 
 function CombochartDisplay(displayManager, id, properties) {
     let SUPER  =  new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_COMBOCHART, properties);
-    RamaddaUtil.inherit(this, SUPER);
-    addRamaddaDisplay(this);
-    $.extend(this, {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    ["label:Combo Chart",
-				     'fields=""',
- 				     '&lt;field&gt;.axisSide="right|left"',
-				     '&lt;field&gt;.axisTitle=""',
-				     '&lt;field&gt;.chartType="scatter|bar"',
-				     'chartType="scatter|bar"',
-				     '&lt;field&gt;.chartColor=""',
-				     'chartType=""',
-				     'xAxisTitle=""',
-				     'xAxisShowGrid=""',
-				     'xAxisShowLine=""',
-				     'legendBackground=""',
-				     'legendBorder=""',
-				     'chartBackground=""',
-				     'plotBackground=""',
-				     'marginLeft=""',
-				     'marginRight=""',
-				     'marginBottom=""',
-				     'marginTop=""',
-				     'chartPad=""',
-				    ])},
-
+    let myProps = [
+	{label:'Combo Chart'},
+	{p:'fields',ex:''},
+ 	{p:'&lt;field&gt;.axisSide',ex:'right|left'},
+	{p:'&lt;field&gt;.axisTitle',ex:''},
+	{p:'&lt;field&gt;.chartType',ex:'scatter|bar'},
+	{p:'chartType',ex:'scatter|bar'},
+	{p:'&lt;field&gt;.chartColor',ex:''},
+	{p:'chartType',ex:''},
+	{p:'xAxisTitle',ex:''},
+	{p:'xAxisShowGrid',ex:''},
+	{p:'xAxisShowLine',ex:''},
+	{p:'legendBackground',ex:''},
+	{p:'legendBorder',ex:''},
+	{p:'chartBackground',ex:''},
+	{p:'plotBackground',ex:''},
+	{p:'marginLeft',ex:''},
+	{p:'marginRight',ex:''},
+	{p:'marginBottom',ex:''},
+	{p:'marginTop',ex:''},
+	{p:'chartPad',ex:''},
+    ];	
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	updateUI: function() {
             let records = this.filterData();
             if (!records) return;

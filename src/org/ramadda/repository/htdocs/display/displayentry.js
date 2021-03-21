@@ -95,7 +95,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
     RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id, type, properties));
 
     this.defineProperties([
-	{label:'Entry Search Properties'},
+	{label:'Entry Search'},
 	{p:'providers',ex:'',tt:'List of search providers'},
     ]);
 
@@ -181,7 +181,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
 function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
     let NONE = "-- None --";
     let myProps = [
-	{label:'Search Properties'},
+	{label:'Search'},
         {p:"showForm",d: true},
         {p:"formOpen",d: true},	
         {p:"searchText",d: ""},
@@ -2401,16 +2401,13 @@ function RamaddaEntrytitleDisplay(displayManager, id, properties) {
         f();
     }
 
-    addRamaddaDisplay(this);
-    $.extend(this, {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Entry Title",
-					'template="<b>${icon} ${name} Date: ${date} ${start_date} ${end_date} ${entry_attribute...}</b>"',
-					'showLink=false'
- 				    ])},
-        initDisplay: function() {
+    let myProps = [
+	{label:'Entry Title'},
+	{p:'template',ex:'<b>${icon} ${name} Date: ${date} ${start_date} ${end_date} ${entry_attribute...}</b>'},
+	{p:'showLink',ex:'false'}
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+	initDisplay: function() {
             this.createUI();
 	    let html = "";
 	    if(this.sourceEntry) {
@@ -2690,7 +2687,7 @@ var RamaddaGalleryDisplay = RamaddaEntrygalleryDisplay;
 function RamaddaSimplesearchDisplay(displayManager, id, properties) {
     let SUPER;
     let myProps = [
-	{label:'Simple Search Properties'},
+	{label:'Simple Search'},
 	{p:'maxHeight',w:300},
 	{p:'maxWidth',w:200},
 	{p:'maxWidth',w:200},		

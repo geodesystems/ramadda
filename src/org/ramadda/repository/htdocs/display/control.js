@@ -302,22 +302,19 @@ function RamaddaLegendDisplay(displayManager, id, properties) {
     if(!properties.width) properties.width='100%';
     let SUPER =  new RamaddaDisplay(displayManager, id, DISPLAY_LEGEND, properties);
     RamaddaUtil.inherit(this,SUPER);
-    addRamaddaDisplay(this);
-    $.extend(this, {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Legend Display",
-					'labels=""',
-					'colors=""',
-					'inBox=true',
-					'labelColor=#fff',
-					'labelColors=color1,color2,...',
-					'orientation=vertical'
-				    ]);
-	},
+    let myProps = [
+	{label:'Legend'},
+	{p:'labels',ex:''},
+	{p:'colors',ex:''},
+	{p:'inBox',ex:'true'},
+	{p:'labelColor',ex:'#fff'},
+	{p:'labelColors',ex:'color1,color2,...'},
+	{p:'orientation',ex:'vertical'}
+    ];
+
+
+    addRamaddaDisplay(this,SUPER, myProps, {
 	updateUI: function() {
-	    
 	    let labels = this.getProperty("labels","").split(",");
 	    let colors = this.getColorList();
 	    let html = "";
@@ -346,7 +343,7 @@ function RamaddaLegendDisplay(displayManager, id, properties) {
 	    }
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
 	},
-    })
+    });
 }
 
 
@@ -359,7 +356,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     this.defineProperties([
-	{label:'Download Properties'},
+	{label:'Download'},
 	{p:'csvLabel',ex:'Download'},
 	{p:'useIcon',d:'false',ex:'false'},
 	{p:'fileName',d:'download',ex:'download'},
@@ -463,7 +460,7 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     this.defineProperties([
-	{label:'Reloader Properties'},
+	{label:'Reloader'},
 	{p:'interval',ex:'30',d:30,label:"Interval"},
 	{p:'showCheckbox',ex:'false',d:true,label:"Show Checkbox"},
 	{p:'showCountdown',ex:'false',d:true,label:"Show Countdown"},
@@ -558,7 +555,7 @@ function RamaddaTicksDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
 
     this.defineProperties([
-	{label:'Time Ticks Properties'},
+	{label:'Time Ticks'},
 	{p:'animationHeight',ex:'30px'},
 	{p:'showYears',ex:'true'},
     ]);

@@ -30,7 +30,7 @@ const CATEGORY_CHARTS = "Basic Charts";
 const CATEGORY_TABLE = "Tables";
 const CATEGORY_MISC = "Misc Charts";
 const CATEGORY_MAPS_IMAGES = "Maps and Images";
-const CATEGORY_RADIAL_ETC = "Radial, trees, etc";
+const CATEGORY_RADIAL_ETC = "Trees, etc";
 const CATEGORY_TEXT = "Text Displays";
 const CATEGORY_ENTRIES = "Entry Displays";
 const CATEGORY_CONTROLS = "Controls";
@@ -115,7 +115,25 @@ function addGlobalDisplayProperty(name, value) {
 }
 
 
-function makeDisplayHelp(header,img,text) {
+function addGlobalDisplayType(type, front) {
+    if (window.globalDisplayTypes == null) {
+        window.globalDisplayTypes = [];
+	window.globalDisplayTypesMap = {};
+    }
+
+    if(type.type) {
+	window.globalDisplayTypesMap[type.type] = type;
+    }
+
+    if(front) {
+	window.globalDisplayTypes.unshift(type);
+    } else {
+	window.globalDisplayTypes.push(type);
+    }
+}
+
+
+function makeDisplayTooltip(header,img,text) {
     let h =  "";
     if(header!=null) h +=HU.b(header);
     if(img) {
@@ -123,7 +141,7 @@ function makeDisplayHelp(header,img,text) {
 	    img = ramaddaBaseUrl +"/help/display/" + img;
 	}
 	if(h!="") h+="<br>"
-	h+="<img src="+ img +" width=200px>";
+	h+="<img src="+ img +" width=250px>";
     }
     if(text) h+="<br>"+text;
     h  = h.replace(/"/g,"&quot;");
@@ -229,6 +247,23 @@ function defineDisplay(display, SUPER, props, members) {
     }
     return display;
 }
+
+
+
+addGlobalDisplayType({
+    type: "group",
+    label: "Group",
+    requiresData: false,
+    forUser: true,
+    category: "Basic Charts",
+    tooltip: makeDisplayTooltip("Create a collection of displays",null,"This allows you to layout displays and share common attributes"),
+    helpUrl:true
+
+},true);
+
+
+
+
 
 
 /**
@@ -988,24 +1023,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
     const SUPER  = new DisplayThing(argId, argProperties);
     RamaddaUtil.inherit(this, SUPER);
 
+    if(window.globalDisplayTypesMap) {
+	this.typeDef = window.globalDisplayTypesMap[argType];
+    }
+
     this._wikiTags  = [];
     
     this.defineProperties = function(props) {
 	let tagList = [];
 	props.forEach(prop=>{
-	    if(!prop.p && prop.label) {
-		tagList.push('label:' + prop.label);
-		return;
-	    }
-	    if(!prop.p && prop.inlineLabel) {
-		tagList.push('inlinelabel:' + prop.inlineLabel);
-		return;
-	    }		
+	    tagList.push(prop);
 	    if(!prop.p) {
-		console.log("Malformed property:" + JSON.stringify(prop));
 		return;
 	    }
-
 	    if(prop.p.indexOf("&")<0) {
 		if(!Utils.isDefined(prop.doGetter) || prop.doGetter) {
 		    let getFunc = (dflt,debug)=>{
@@ -1020,28 +1050,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			this[funcName] = getFunc;
 		}
 	    }
-
-
-	    let tag = "";
-	    tag +=prop.p+'="';
 	    prop.wikiValue = prop.wikiValue||prop.w;
-	    tag += (prop.ex?prop.ex:prop.wikiValue?prop.wikiValue:prop.d?prop.d:"")+'"';
-	    let w = [];
-	    let tt = prop.tt||"";
-	    if(prop.label) {
-		w.push(prop.label);
-		w.push(tag);
-	    } else {
-		w.push(tag);
-	    }
-	    w.push(prop.tt);
-	    tagList.push(w);
 	});
 	this._wikiTags  = Utils.mergeLists(tagList,this._wikiTags);
     }
 
     let myProps = [
-	{label:'Display Attributes'},
+	{label:'Display'},
 	{p:'fields',doGetter:false,ex:'comma separated list of field ids or indices - e.g. #1,#2,#4-#7,etc or *'},
 	{p:'notFields',ex:'regexp',tt:'regexp to not include fields'},		
 	{p:"showMenu",ex:true},	      
@@ -1137,15 +1152,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:"groupBy",ex:"field",tt:"Group the data"},
 	{p:'convertData', label:"derived data", ex:"derived(field=new_field_id, function=foo*bar);",tt:"Add derived field"},
 	{p:'convertData',label:"merge rows",ex:"mergeRows(keyFields=f1\\\\,f2, operator=count|sum|average, valueFields=);",tt:"Merge rows together"},
-	{p:'convertData',lagel:"rotate data", ex:"rotateData(includeFields=true,includeDate=true,flipColumns=true);",tt:"Rotate data"},
+	{p:'convertData',label:"rotate data", ex:"rotateData(includeFields=true,includeDate=true,flipColumns=true);",tt:"Rotate data"},
 	{p:'convertData',label:"percent increase",ex:"addPercentIncrease(replaceValues=false);",tt:"Add percent increase"},
 	{p:'convertData',label:"doubling rate",ex:"doublingRate(fields=f1\\\\,f2, keyFields=f3);",tt:"Calculate # days to double"},
 	{p:'convertData',label:"unfurl",ex:"unfurl(headerField=field to get header from,uniqueField=e.g. date,valueFields=);",tt:"Unfurl"},
-	{p:'accum',label:"Accumulate data",ex:"accum(fields=);",tt:"Accumulate"},
-	{p:'mean',label:"Add an average field",ex:"mean(fields=);",tt:"Mean"},
-	{p:'prune',label:"Prune where fields are all NaN",ex:"prune(fields=);",tt:"Prune"},		
-	{p:'scaleAndOffset',label:"Scalen and offset",ex:"accum(scale=1,offset1=0,offset2=0,unit=,fields=);",tt:"(d + offset1) * scale + offset2"},		
-	{label:"Color Attributes"},
+	{p:'convertData',label:"Accumulate data",ex:"accum(fields=);",tt:"Accumulate"},
+	{p:'convertData',label:"Add an average field",ex:"mean(fields=);",tt:"Mean"},
+	{p:'convertData',label:"Prune where fields are all NaN",ex:"prune(fields=);",tt:"Prune"},		
+	{p:'convertData',label:"Scale and offset",ex:"accum(scale=1,offset1=0,offset2=0,unit=,fields=);",tt:"(d + offset1) * scale + offset2"},		
+	{label:"Color"},
 	{p:"colors",ex:"color1},...,colorN",tt:"Comma separated array of colors"},
 	{p:"colorBy",ex:"",tt:"Field id to color by"},
 	{p:"colorByFields",ex:"",tt:"Show color by fields in a menu"},
@@ -1174,7 +1189,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:"alphaSourceMax",ex:100},
 	{p:"alphaTargetMin",ex:0},
 	{p:"alphaTargetMax",ex:1},
-	{label:"Animation Attributes"},
+	{label:"Animation"},
 	{p:"doAnimation",ex:true},
 	{p:"animationHighlightRecord",ex:true},
 	{p:"animationHighlightRecordList",ex:true},
@@ -1209,6 +1224,22 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return this._wikiTags;
 	},
 
+	getTypeDef: function() {
+	    return this.typeDef;
+	},
+	getTypeLabel: function() {
+	    if(!this.typeDef) return null;
+	    return this.typeDef.label;
+	},
+	getTypeHelpUrl: function() {
+	    if(!this.typeDef) return null;
+	    let helpUrl = this.typeDef.helpUrl;
+	    if(!helpUrl) return null;
+	    if(helpUrl===true) {
+		return "https://ramadda.org/repository/alias/help_" + this.typeDef.type;
+	    }
+	    return helpUrl;
+	},
 	defineSizeByProperties: function() {
 	    this.defineProperties([
 		{inlineLabel:'Size By'},
@@ -1864,6 +1895,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return HU.image(ramaddaBaseUrl + "/icons/progress.gif");
         },
         getLoadingMessage: function(msg) {
+	    if(!msg && !this.getProperty("data")) {
+		msg = "No data specified"
+	    }
 	    if (!msg) msg = this.getProperty("loadingMessage", "icon_progress Loading data...");
 	    if(msg=="") return "";
 	    msg = msg.replace("icon_progress",HU.image(icon_progress));
@@ -6414,6 +6448,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         }
     }
 }
+
 
 
 

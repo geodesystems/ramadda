@@ -196,7 +196,7 @@ function RamaddaBaseTextDisplay(displayManager, id, type, properties) {
 function RamaddaWordcloudDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaBaseTextDisplay(displayManager, id, DISPLAY_WORDCLOUD, properties);
     let myProps = [
-	{label:"Wordcloud Properties"},
+	{label:"Wordcloud"},
 	{p:'termField'},
 	{p:'fields'},	
 	{p:'tableFields'},
@@ -486,7 +486,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
     if(!Utils.isDefined(properties.displayStyle)) properties.displayStyle = "background:rgba(0,0,0,0);";
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TEMPLATE, properties);
     let myProps = [
-	{label:"Template Attributes"},
+	{label:"Template"},
 	{p: "template"},
 	{p:"headerTemplate",ex:"... ${totalCount} ... ${selectedCount}"},
 	{p:"footerTemplate",ex:"... ${totalCount} ... ${selectedCount}"},
@@ -1045,21 +1045,18 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 function RamaddaTopfieldsDisplay(displayManager, id, properties) {
     const ID_SLIDE = "slide";
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TOPFIELDS, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    let myProps = [
+	{label:'Top Fields'},
+	{p:'fieldCount',tt:''},
+	{p:'labelField',tt:''},
+	{p:'dateFormat',ex:'yyyy'},
+	{p:'labelField'},
+	{p:'scaleFont',ex:'false'}
+    ]
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
         },
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Top Fields Attributes",
-					'fieldCount=""',
-					'labelField=""',
-					'dateFormat"yyyy"',
-					'labelField=""',
-					'scaleFont="false"',
-				    ]);
-	},
 	updateUI: function() {
 	    var pointData = this.getData();
 	    if (pointData == null) return;
@@ -1183,7 +1180,7 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
     const ID_BLOCKS = "blocks";
     const ID_BLOCKS_FOOTER = "blocks_footer";
     let myProps = [
-	{label:'Block Properties'},
+	{label:'Block'},
 	{p:'animStep',d:1000,ex:"1000",tt:'Delay'},
 	{p:'doSum',d:true,ex:"false",tt:''},
 	{p:'header',d:true,ex:"Each block represents ${blockValue} ... There were a total of ${total} ...",tt:''},
@@ -1192,6 +1189,7 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 	{p:'blockIcon',d:null,ex:"fa-male",tt:'Use an icon'},
 //	{p:'',d:"",ex:"",tt:''},
     ];
+
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         getContentsStyle: function() {
@@ -1540,24 +1538,20 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
 
 function RamaddaFrequencyDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaBaseTextDisplay(displayManager, id, DISPLAY_FREQUENCY, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Frequency Attributes",
-					'orientation="vertical"',
-					'tableHeight="300px"',
-					'showPercent=false',
-					'showCount=false',
-					'showBars=true',
-					'showBars=false',
-					'showHeader=false',
-					'banner=true',
-					'barWidth=200',
-					'clickFunction=selectother'
-				    ]);
-	},
-
+    let myProps = [
+	{label:'Frequency'},
+	{p:'orientation',ex:'vertical'},
+	{p:'tableHeight',ex:'300px'},
+	{p:'showPercent',ex:'false'},
+	{p:'showCount',ex:'false'},
+	{p:'showBars',ex:'true'},
+	{p:'showBars',ex:'false'},
+	{p:'showHeader',ex:'false'},
+	{p:'banner',ex:'true'},
+	{p:'barWidth',ex:'200'},
+	{p:'clickFunction',ex:'selectother'}
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         updateUI: function() {
             let records = this.filterData();
 	    if(!records) return;
@@ -1994,25 +1988,21 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
     const ID_HIGHLIGHT = "highlight"; 
     const ID_SHRINK = "shrink";
     const SUPER = new RamaddaBaseTextDisplay(displayManager, id, DISPLAY_TEXTRAW, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    let myProps = [
+	{label:'Raw Text'},
+	{p:'doBubble',ex:'true'},
+	{p:'addLineNumbers',ex:'false'},
+	{p:'labelTemplate',ex:'${lineNumber}'},
+	{p:'maxLines',ex:'1000'},
+	{p:'pattern',ex:'initial search pattern'},
+	{p:'fromField',ex:''},
+	{p:'linesDescriptor',ex:''},
+	{p:'asHtml',ex:'false'},
+	{p:'breakLines',ex:'true'},
+	{p:'includeEmptyLines',ex:'false'},
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	doShrink: properties["initialShrink"],
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Raw Text Attributes",
-					'doBubble=true',
-					'addLineNumbers=false',
-					'labelTemplate="${lineNumber}"',
-					'maxLines=1000',
-					'pattern="initial search pattern"',
-					'fromField=""',
-					'linesDescriptor=""',
-					'asHtml=false',
-					'breakLines=true',
-					'includeEmptyLines=false',
-				    ]);
-	},
-
         checkLayout: function() {
             this.updateUI();
         },
@@ -2352,7 +2342,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 function RamaddaTextDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_TEXT, properties);
     let myProps = [
-	{label:'Text Display Attributes'},
+	{label:'Text Display'},
 	{p:'recordTemplate',ex:''},
 	{p:'showDefault',d:true,ex:"false"},
 	{p:'message',d:null,ex:""},
@@ -2437,7 +2427,7 @@ function RamaddaGlossaryDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_GLOSSARY, properties);
     const ID_GLOSSARY_HEADER = "glossary_header";
     let myProps = [
-	{label:'Glossary Properties'},
+	{label:'Glossary'},
 	{p:'wordField',ex:""},
 	{p:'definitionField',ex:""},	
     ];

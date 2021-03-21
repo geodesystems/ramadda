@@ -3,11 +3,11 @@
  */
 
 
-
 var root = ramaddaBaseUrl;
 var urlroot = ramaddaBaseUrl;
-var icon_close = "fa-window-close";
-var icon_pin = "fa-thumbtack";
+var icon_close = "fas fa-window-close";
+var icon_pin = "fas fa-thumbtack";
+var icon_help = "fas fa-question-circle";
 var icon_rightarrow = ramaddaBaseUrl + "/icons/grayrightarrow.gif";
 var icon_downdart = ramaddaBaseUrl + "/icons/downdart.gif";
 var icon_rightdart = ramaddaBaseUrl + "/icons/rightdart.gif";
@@ -577,6 +577,14 @@ var Utils =  {
             if (i > offset) s += delimiter;
             s += l[i];
         }
+        return s;
+    },
+    wrap: function(l, prefix, suffix) {
+	let s= ""; 
+	l.forEach(item=>{
+	    s+=precix = item +suffix;
+	});
+
         return s;
     },
 
@@ -1605,7 +1613,7 @@ var Utils =  {
 	let results = "<div id=searchresults style='display:none;border-top:1px solid #ccc;margin-top:2px;max-width:250px; width:250px;max-height:300px;overflow-y:auto;'></div>";
 	let html = HU.div([],form+results);
 	let icon = $("#" + id);
-	this.dialog = HU.makeDialog({content:html,my:"right top",at:"right bottom",title:links,anchor:anchor,draggable:true,header:true});
+	this.dialog = HU.makeDialog({content:html,my:"right top",at:"right bottom",title:links,anchor:anchor,draggable:true,header:true,inPlace:false});
 	$("#" + linksId).find(".ramadda-link").click(Utils.searchLink);
 	var input = $("#popup_search_input");
 	input.mousedown(function(evt) {
@@ -1937,7 +1945,7 @@ var Utils =  {
             cnt++;
         }
     },
-    getColorTablePopup: function(info) {
+    getColorTablePopup: function(wikiEditor) {
 	let popup = "<div class=wiki-editor-popup-items>"
 	for (a in Utils.ColorTables) {
 	    if(Utils.ColorTables[a].label) {
@@ -1949,8 +1957,8 @@ var Utils =  {
 		height: "20px"
 	    });
 	    ct = HtmlUtils.div([STYLE,HU.css('width','150px'),TITLE,a,CLASS, "ramadda-colortable-select","colortable",a],ct);
-	    if(info) {
-		var call = "insertText(" + HtmlUtils.squote(info.id) +","+HtmlUtils.squote("colorTable=" + a)+")";
+	    if(wikiEditor) {
+		var call = "insertText(" + HtmlUtils.squote(wikiEditor.getId()) +","+HtmlUtils.squote("colorTable=" + a)+")";
 		popup+=HtmlUtils.onClick(call,ct);
 	    } else {
 		popup+=ct;
@@ -2893,7 +2901,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         } else {
             return HtmlUtils.image(url, attrs);
         }
-
     },
     getObjectURL:function(blob) {
         var urlCreator = window.URL || window.webkitURL;
@@ -2902,51 +2909,20 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     getErrorDialog: function(msg) {
         return "<div class=\"ramadda-message\"><table><tr valign=top><td><div class=\"ramadda-message-link\"><img border=\"0\"  src=\"/repository/icons/error.png\"  /></div></td><td><div class=\"ramadda-message-inner\">" + msg + "</div></td></tr></table></div>";
     },
-    getAceEditor: function(id) {
-        if (!this.aceEditors) return null;
-        var info = this.aceEditors[id];
-        if (!info) return null;
-        return info.editor;
+    getWikiEditor: function(id) {
+        if (!this.wikiEditors) return null;
+        return  this.wikiEditors[id];
     },
-    handleAceEditorSubmit: function() {
-        if (!this.aceEditors) return;
-        for (a in this.aceEditors) {
-            var info = this.aceEditors[a];
-	    console.log($("#" + info.hidden).length);
-	    $("#" + info.hidden).val(info.editor.getValue());
+    handleWikiEditorSubmit: function() {
+        if (!this.wikiEditors) return;
+        for (a in this.wikiEditors) {
+            let editor= this.wikiEditors[a];
+	    editor.handleSubmit();
         }
     },
-    initAceEditor: function(formId, id, hidden, argOptions) {
-        var options = {
-            autoScrollEditorIntoView: true,
-            copyWithEmptySelection: true,
-            //            theme:'ace/theme/solarized_light',
-        };
-        if (argOptions)
-            $.extend(options, argOptions);
-
-        if (!this.aceEditors) {
-            this.aceEditors = {};
-        }
-        var info = {};
-        this.aceEditors[id] = info;
-	info.id = id;
-        info.editor = ace.edit(id);
-        info.formId = formId;
-        info.hidden = hidden;
-	info.editor.setBehavioursEnabled(false);
-	info.editor.setDisplayIndentGuides(false);
-        info.editor.setKeyboardHandler("emacs");
-        info.editor.setShowPrintMargin(false);
-        info.editor.getSession().setUseWrapMode(true);
-        info.editor.setOptions(options);
-        info.editor.session.setMode("ace/mode/ramadda");
-	try {
-	    wikiInitEditor(info);
-        } catch (e) {
-	    console.log("error:" + e);
-	}
-        return info.editor;
+    addWikiEditor:function(editor) {
+	if(!this.wikiEditors)  this.wikiEditors={};
+	this.wikiEditors[editor.getId()] = editor;
     },
     makeBreadcrumbsInit: function(id) {
 	//If page isn't loaded then register a callback
@@ -3001,7 +2977,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return html;
     },
     qt: function(value) {
-        return "'" + value + "'";
+        return "\"" + value + "\"";
     },
     sqt: function(value) {
         return "\'" + value + "\'";
@@ -3135,16 +3111,16 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	var textBlock = textId +"_block";
 	var wikiBlock = wikiId +"_block";
 	$("#" + cbxId).click(() => {
-	    var editor = HtmlUtils.getAceEditor(wikiId);
+	    var editor = HtmlUtils.getWikiEditor(wikiId);
 	    var on  = $("#" + cbxId).is(':checked');
 	    if(on) {
 		$("#" + textBlock).css("display","none");
 		$("#" + wikiBlock).css("display","block");
 		var val = $("#" + textId).val();
-		editor.setValue(val,8);
+		editor.getEditor().setValue(val,8);
 		$("#" + wikiId).focus();
 	    } else {
-		var val = editor.getValue();
+		var val = editor.getEditor().getValue();
 		$("#" + textId).val(val);
 		$("#" + textBlock).css("display","block");
 		$("#" + wikiBlock).css("display","none");
@@ -3155,6 +3131,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     makeDialog: function(args) {
 	hidePopupObject();
 	let opts  = {
+	    modal:false,
 	    sticky:false,
 	    content:null,
 	    contentId:null,
@@ -3165,10 +3142,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    remove:true,
 	    my: "left top",
 	    at: "left bottom",	    
-	    fit:null,
 	    title:"",
-	    inPlace:false,
-	    fit:false
+	    inPlace:true,
+	    fit:true
 	};
 
 	if(args) {
@@ -3183,6 +3159,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
 	let parentId;
 	let html;
+	if(opts.content)  {
+	    //Can't be in place if its a string
+	    opts.inPlace = false;
+	}
 	if(opts.inPlace) {
 	    opts.remove = false;
 	    parentId= HtmlUtils.getUniqueId();
@@ -3195,7 +3175,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		} else {
 		    html = "No html provided";
 		}
-	    }
+	    } 
+    
 	}
 	let id = HtmlUtils.getUniqueId();
 	if(opts.header) {
@@ -3214,17 +3195,32 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    html = HU.div([CLASS,"ramadda-popup"], html);
 	}
 
-//	html = HU.div([],html);
+
+	let innerId = HU.getUniqueId("model_inner");
+	if(opts.modal) {
+	    html  = HU.div([ID, innerId, CLASS,"ramadda-modal-contents"],html);
+	    html = HU.div([CLASS,"ramadda-modal"],html);
+	}
+
 	let popup=   $(html).appendTo("body");
 
 	if(opts.remove) {
 	    popup.attr("removeonclose","true");
 	}
+	if(opts.inPlace) {
+	    let src =  $("#" + opts.contentId);
+	    let dest = $("#"+ parentId);
+	    dest.css("display","block").css("width","fit-content").css("height","fit-content");
+	    src.appendTo(dest);
+	    src.show();
+	}
+
 	if(opts.animate && opts.animate!="false") {
 	    popup.show(400);
 	} else {
 	    popup.show();
 	}
+
 	if(opts.anchor) {
 	    if(opts.width) {
 		popup.css("width",opts.width);
@@ -3237,16 +3233,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    });
 //	    console.log(opts.my +" " + opts.at);
 	}
-	if(opts.inPlace) {
-	    let src =  $("#" + opts.contentId);
-	    let dest = $("#"+ parentId);
-	    dest.css("display","block").css("width","fit-content").css("height","fit-content");
-	    src.appendTo(dest);
-	    src.show();
-	}
 
 	if(opts.draggable) {
-	    popup.draggable();
+	    if(opts.modal) {
+		$("#" + innerId).draggable();
+	    } else {
+		popup.draggable();
+		//	    popup.resizable({containment: "parent",handles: 'se',});
+	    }
 	} else if(!opts.sticky) {
 	    popupObject = popup;
 	}

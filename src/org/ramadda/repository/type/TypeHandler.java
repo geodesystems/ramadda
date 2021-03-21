@@ -4518,10 +4518,15 @@ public class TypeHandler extends RepositoryManager {
                                                      ICON_WIKI), "title",
                                                          "Wikify text");
 
-                        HtmlUtils.open(tmpSB, "div",
-                                       HtmlUtils.attrs("style", isTextWiki
-                                ? ""
-                                : "display:none;", "id", wikiId + "_block"));
+
+			if(isTextWiki) {
+			    HtmlUtils.open(tmpSB, "div",
+					   HtmlUtils.attrs("class", "wiki-editor", "id", wikiId+"_block"));
+
+			} else {
+			    HtmlUtils.open(tmpSB, "div",
+					   HtmlUtils.attrs("style", "display:none;", "id", wikiId + "_block"));
+			}
 
                         addWikiEditor(request, entry, tmpSB, formInfo,
                                       wikiId, ARG_WIKITEXT, desc, null,
@@ -4995,11 +5000,11 @@ public class TypeHandler extends RepositoryManager {
             HtmlUtils.importJS(
                 sb, getRepository().getHtdocsUrl("/lib/ace/src-min/ace.js"));
             if ((formInfo != null) && !readOnly) {
-                formInfo.appendExtraJS("HtmlUtil.handleAceEditorSubmit();\n");
+		formInfo.appendExtraJS("HtmlUtil.handleWikiEditorSubmit();\n");
             }
         }
 
-        sb.append(HtmlUtils.script("HtmlUtil.initAceEditor('"
+        sb.append(HtmlUtils.script("new WikiEditor('"
                                    + ((formInfo == null)
                                       ? "null"
                                       : formInfo.getId()) + "','" + editorId
@@ -5066,7 +5071,7 @@ public class TypeHandler extends RepositoryManager {
             String propertyValue, String delimiter)
             throws Exception {
         if (propertyValue.startsWith("file:")) {
-            //replace any macros {name} is the type id without the leading type_
+	    //replace any macros {name} is the type id without the leading type_
             propertyValue = propertyValue.replace("${type}",
                     type).replace("${name}", type.replace("type_", ""));
             propertyValue = getStorageManager().localizePath(propertyValue);

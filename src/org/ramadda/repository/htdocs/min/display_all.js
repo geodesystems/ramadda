@@ -2845,7 +2845,7 @@ const CATEGORY_CHARTS = "Basic Charts";
 const CATEGORY_TABLE = "Tables";
 const CATEGORY_MISC = "Misc Charts";
 const CATEGORY_MAPS_IMAGES = "Maps and Images";
-const CATEGORY_RADIAL_ETC = "Radial, trees, etc";
+const CATEGORY_RADIAL_ETC = "Trees, etc";
 const CATEGORY_TEXT = "Text Displays";
 const CATEGORY_ENTRIES = "Entry Displays";
 const CATEGORY_CONTROLS = "Controls";
@@ -2930,7 +2930,25 @@ function addGlobalDisplayProperty(name, value) {
 }
 
 
-function makeDisplayHelp(header,img,text) {
+function addGlobalDisplayType(type, front) {
+    if (window.globalDisplayTypes == null) {
+        window.globalDisplayTypes = [];
+	window.globalDisplayTypesMap = {};
+    }
+
+    if(type.type) {
+	window.globalDisplayTypesMap[type.type] = type;
+    }
+
+    if(front) {
+	window.globalDisplayTypes.unshift(type);
+    } else {
+	window.globalDisplayTypes.push(type);
+    }
+}
+
+
+function makeDisplayTooltip(header,img,text) {
     let h =  "";
     if(header!=null) h +=HU.b(header);
     if(img) {
@@ -2938,7 +2956,7 @@ function makeDisplayHelp(header,img,text) {
 	    img = ramaddaBaseUrl +"/help/display/" + img;
 	}
 	if(h!="") h+="<br>"
-	h+="<img src="+ img +" width=200px>";
+	h+="<img src="+ img +" width=250px>";
     }
     if(text) h+="<br>"+text;
     h  = h.replace(/"/g,"&quot;");
@@ -3044,6 +3062,23 @@ function defineDisplay(display, SUPER, props, members) {
     }
     return display;
 }
+
+
+
+addGlobalDisplayType({
+    type: "group",
+    label: "Group",
+    requiresData: false,
+    forUser: true,
+    category: "Basic Charts",
+    tooltip: makeDisplayTooltip("Create a collection of displays",null,"This allows you to layout displays and share common attributes"),
+    helpUrl:true
+
+},true);
+
+
+
+
 
 
 /**
@@ -3803,24 +3838,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
     const SUPER  = new DisplayThing(argId, argProperties);
     RamaddaUtil.inherit(this, SUPER);
 
+    if(window.globalDisplayTypesMap) {
+	this.typeDef = window.globalDisplayTypesMap[argType];
+    }
+
     this._wikiTags  = [];
     
     this.defineProperties = function(props) {
 	let tagList = [];
 	props.forEach(prop=>{
-	    if(!prop.p && prop.label) {
-		tagList.push('label:' + prop.label);
-		return;
-	    }
-	    if(!prop.p && prop.inlineLabel) {
-		tagList.push('inlinelabel:' + prop.inlineLabel);
-		return;
-	    }		
+	    tagList.push(prop);
 	    if(!prop.p) {
-		console.log("Malformed property:" + JSON.stringify(prop));
 		return;
 	    }
-
 	    if(prop.p.indexOf("&")<0) {
 		if(!Utils.isDefined(prop.doGetter) || prop.doGetter) {
 		    let getFunc = (dflt,debug)=>{
@@ -3835,28 +3865,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			this[funcName] = getFunc;
 		}
 	    }
-
-
-	    let tag = "";
-	    tag +=prop.p+'="';
 	    prop.wikiValue = prop.wikiValue||prop.w;
-	    tag += (prop.ex?prop.ex:prop.wikiValue?prop.wikiValue:prop.d?prop.d:"")+'"';
-	    let w = [];
-	    let tt = prop.tt||"";
-	    if(prop.label) {
-		w.push(prop.label);
-		w.push(tag);
-	    } else {
-		w.push(tag);
-	    }
-	    w.push(prop.tt);
-	    tagList.push(w);
 	});
 	this._wikiTags  = Utils.mergeLists(tagList,this._wikiTags);
     }
 
     let myProps = [
-	{label:'Display Attributes'},
+	{label:'Display'},
 	{p:'fields',doGetter:false,ex:'comma separated list of field ids or indices - e.g. #1,#2,#4-#7,etc or *'},
 	{p:'notFields',ex:'regexp',tt:'regexp to not include fields'},		
 	{p:"showMenu",ex:true},	      
@@ -3952,15 +3967,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:"groupBy",ex:"field",tt:"Group the data"},
 	{p:'convertData', label:"derived data", ex:"derived(field=new_field_id, function=foo*bar);",tt:"Add derived field"},
 	{p:'convertData',label:"merge rows",ex:"mergeRows(keyFields=f1\\\\,f2, operator=count|sum|average, valueFields=);",tt:"Merge rows together"},
-	{p:'convertData',lagel:"rotate data", ex:"rotateData(includeFields=true,includeDate=true,flipColumns=true);",tt:"Rotate data"},
+	{p:'convertData',label:"rotate data", ex:"rotateData(includeFields=true,includeDate=true,flipColumns=true);",tt:"Rotate data"},
 	{p:'convertData',label:"percent increase",ex:"addPercentIncrease(replaceValues=false);",tt:"Add percent increase"},
 	{p:'convertData',label:"doubling rate",ex:"doublingRate(fields=f1\\\\,f2, keyFields=f3);",tt:"Calculate # days to double"},
 	{p:'convertData',label:"unfurl",ex:"unfurl(headerField=field to get header from,uniqueField=e.g. date,valueFields=);",tt:"Unfurl"},
-	{p:'accum',label:"Accumulate data",ex:"accum(fields=);",tt:"Accumulate"},
-	{p:'mean',label:"Add an average field",ex:"mean(fields=);",tt:"Mean"},
-	{p:'prune',label:"Prune where fields are all NaN",ex:"prune(fields=);",tt:"Prune"},		
-	{p:'scaleAndOffset',label:"Scalen and offset",ex:"accum(scale=1,offset1=0,offset2=0,unit=,fields=);",tt:"(d + offset1) * scale + offset2"},		
-	{label:"Color Attributes"},
+	{p:'convertData',label:"Accumulate data",ex:"accum(fields=);",tt:"Accumulate"},
+	{p:'convertData',label:"Add an average field",ex:"mean(fields=);",tt:"Mean"},
+	{p:'convertData',label:"Prune where fields are all NaN",ex:"prune(fields=);",tt:"Prune"},		
+	{p:'convertData',label:"Scale and offset",ex:"accum(scale=1,offset1=0,offset2=0,unit=,fields=);",tt:"(d + offset1) * scale + offset2"},		
+	{label:"Color"},
 	{p:"colors",ex:"color1},...,colorN",tt:"Comma separated array of colors"},
 	{p:"colorBy",ex:"",tt:"Field id to color by"},
 	{p:"colorByFields",ex:"",tt:"Show color by fields in a menu"},
@@ -3989,7 +4004,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:"alphaSourceMax",ex:100},
 	{p:"alphaTargetMin",ex:0},
 	{p:"alphaTargetMax",ex:1},
-	{label:"Animation Attributes"},
+	{label:"Animation"},
 	{p:"doAnimation",ex:true},
 	{p:"animationHighlightRecord",ex:true},
 	{p:"animationHighlightRecordList",ex:true},
@@ -4024,6 +4039,22 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return this._wikiTags;
 	},
 
+	getTypeDef: function() {
+	    return this.typeDef;
+	},
+	getTypeLabel: function() {
+	    if(!this.typeDef) return null;
+	    return this.typeDef.label;
+	},
+	getTypeHelpUrl: function() {
+	    if(!this.typeDef) return null;
+	    let helpUrl = this.typeDef.helpUrl;
+	    if(!helpUrl) return null;
+	    if(helpUrl===true) {
+		return "https://ramadda.org/repository/alias/help_" + this.typeDef.type;
+	    }
+	    return helpUrl;
+	},
 	defineSizeByProperties: function() {
 	    this.defineProperties([
 		{inlineLabel:'Size By'},
@@ -4679,6 +4710,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return HU.image(ramaddaBaseUrl + "/icons/progress.gif");
         },
         getLoadingMessage: function(msg) {
+	    if(!msg && !this.getProperty("data")) {
+		msg = "No data specified"
+	    }
 	    if (!msg) msg = this.getProperty("loadingMessage", "icon_progress Loading data...");
 	    if(msg=="") return "";
 	    msg = msg.replace("icon_progress",HU.image(icon_progress));
@@ -9232,6 +9266,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
 
+
 function DisplayGroup(argDisplayManager, argId, argProperties, type) {
     const LAYOUT_TABLE = "table";
     const LAYOUT_HTABLE = "htable";
@@ -9748,6 +9783,714 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
             return true;
         }
     })
+}
+
+/**
+   Copyright 2008-2019 Geode Systems LLC
+*/
+
+
+//Properties
+const PROP_LAYOUT_TYPE = "layoutType";
+const PROP_LAYOUT_COLUMNS = "layoutColumns";
+const PROP_SHOW_MAP = "showMap";
+const PROP_SHOW_MENU = "showMenu";
+const PROP_FROMDATE = "fromDate";
+const PROP_TODATE = "toDate";
+const DISPLAY_MULTI = "multi";
+
+
+
+//
+//adds the display manager to the list of global display managers
+//
+function addDisplayManager(displayManager) {
+    if (window.globalDisplayManagers == null) {
+        window.globalDisplayManagers = {};
+        // window.globalDisplayManager = null;
+    }
+    window.globalDisplayManagers[displayManager.getId()] = displayManager;
+    window.globalDisplayManager = displayManager;
+}
+
+
+
+
+addGlobalDisplayType({
+    type: DISPLAY_MULTI,
+    label: "Multi Chart",
+    requiresData: true,
+    forUser: false,
+    category: "Misc"
+});
+
+
+
+
+
+//
+//This will get the currently created global displaymanager or will create a new one
+//
+function getOrCreateDisplayManager(id, properties, force) {
+    if (!force) {
+        var displayManager = getDisplayManager(id);
+        if (displayManager != null) {
+            return displayManager;
+        }
+        if (window.globalDisplayManager != null) {
+            return window.globalDisplayManager;
+        }
+    }
+    var displayManager = new DisplayManager(id, properties);
+    if (window.globalDisplayManager == null) {
+        window.globalDisplayManager = displayManager;
+    }
+    return displayManager;
+}
+
+//
+//return the global display manager with the given id, null if not found
+//
+function getDisplayManager(id) {
+    if (window.globalDisplayManagers == null) {
+        return null;
+    }
+    var manager = window.globalDisplayManagers[id];
+    return manager;
+}
+
+
+
+var ID_DISPLAYS = "displays";
+
+//
+//DisplayManager constructor
+//
+
+function DisplayManager(argId, argProperties) {
+
+    var ID_MENU_BUTTON = "menu_button";
+    var ID_MENU_CONTAINER = "menu_container";
+    var ID_MENU_OUTER = "menu_outer";
+    var ID_MENU_INNER = "menu_inner";
+
+
+    RamaddaUtil.inherit(this, this.SUPER = new DisplayThing(argId, argProperties));
+    addRamaddaDisplay(this);
+
+    RamaddaUtil.initMembers(this, {
+        dataList: [],
+        displayTypes: [],
+        initMapBounds: null,
+    });
+
+
+    RamaddaUtil.defineMembers(this, {
+        group: new DisplayGroup(this, argId, argProperties),
+        showmap: this.getProperty(PROP_SHOW_MAP, null),
+        setDisplayReady: function() {
+            SUPER.setDisplayReadyCall(this);
+            this.getLayoutManager().setDisplayReady();
+        },
+        getLayoutManager: function() {
+            return this.group;
+        },
+        collectEntries: function() {
+            var entries = this.getLayoutManager().collectEntries();
+            return entries;
+        },
+        getData: function() {
+            return this.dataList;
+        },
+        handleEventFieldValueSelect: function(source, args) {
+            this.notifyEvent("handleEventFieldValueSelected", source, args);
+        },
+        handleEventFieldsSelected: function(source, fields) {
+            this.notifyEvent("handleEventFieldsSelected", source, fields);
+        },
+        handleEventPropertyChanged: function(source, prop) {
+            this.notifyEvent("handleEventPropertyChanged", source, prop);
+        },
+        handleEventEntriesChanged: function(source, entries) {
+            this.notifyEvent("handleEventEntriesChanged", source, entries);
+        },
+        handleEventMapBoundsChanged: function(source, bounds, forceSet) {
+            var args = {
+                "bounds": bounds,
+                "force": forceSet
+            };
+            this.notifyEvent("handleEventMapBoundsChanged", source, args);
+        },
+        addMapLayer: function(source, entry) {
+            this.notifyEvent("addMapLayer", source, {
+                entry: entry
+            });
+        },
+        propagateEventRecordSelection: function(source, pointData, args) {
+            var index = args.index;
+            if (pointData == null && this.dataList.length > 0) {
+                pointData = this.dataList[0];
+            }
+            var fields = pointData.getRecordFields();
+            var records = pointData.getRecords();
+            if (records == null) {
+                return;
+            }
+            if (index < 0 || index >= records.length) {
+                console.log("propagateEventRecordSelection: bad index= " + index);
+                return;
+            }
+            var record = records[index];
+            if (record == null) return;
+            var values = source?source.getRecordHtml(record, fields):"";
+            if (source.recordSelectionCallback) {
+                var func = source.recordSelectionCallback;
+                if ((typeof func) == "string") {
+                    func = window[func];
+                }
+                func({
+                    display: source,
+                    pointData: pointData,
+                    index: index,
+                    pointRecord: record
+                });
+            }
+            var params = {
+                index: index,
+                record: record,
+                html: values,
+                data: pointData
+            };
+            this.notifyEvent("handleEventRecordSelection", source, params);
+            var entries = source.getEntries();
+            if (entries != null && entries.length > 0) {
+                this.handleEventEntrySelection(source, {
+                    entry: entries[0],
+                    selected: true
+                });
+            }
+        },
+        handleEventEntrySelection: function(source, props) {
+            this.notifyEvent("handleEventEntrySelection", source, props);
+        },
+        handleEventEntryMouseover: function(source, props) {
+            this.notifyEvent("handleEventEntryMouseover", source, props);
+        },
+        handleEventEntryMouseout: function(source, props) {
+            this.notifyEvent("handleEventEntryMouseout", source, props);
+        },
+        handleEventPointDataLoaded: function(source, pointData) {
+            this.notifyEvent("handleEventPointDataLoaded", source, pointData);
+        },
+        ranges: {
+            //               "TRF": [0,100],
+        },
+        setRange: function(field, range) {
+            if (this.ranges[field.getId()] == null) {
+                this.ranges[field.getId()] = range;
+            }
+        },
+        getRange: function(field) {
+            return this.ranges[field.getId()];
+        },
+        makeMainMenu: function() {
+	    if(!this.getShowMenu()) {
+		return "";
+	    }
+            //How else do I refer to this object in the html that I add 
+            var get = "getDisplayManager('" + this.getId() + "')";
+            var layout = "getDisplayManager('" + this.getId() + "').getLayoutManager()";
+            var html = "";
+
+            var newMenus = {};
+            var cats = [];
+            var displayTypes = [];
+            if (window.globalDisplayTypes != null) {
+                displayTypes = window.globalDisplayTypes;
+            }
+	    DISPLAY_CATEGORIES.forEach(category=>{
+                newMenus[category] = [];
+                cats.push(category);
+	    });
+            for (var i = 0; i < displayTypes.length; i++) {
+                //The ids (.e.g., 'linechart' have to match up with some class function with the name 
+                var type = displayTypes[i];
+                if (Utils.isDefined(type.forUser) && !type.forUser) {
+                    continue;
+                }
+		var category = type.category;
+                if (!category) {
+                    category = CATEGORY_MISC;
+                }
+                if (newMenus[category] == null) {
+                    newMenus[category] = [];
+                    cats.push(category);
+                }
+		let menuAttrs = ["onclick", get + ".userCreateDisplay('" + type.type + "');"];
+		if(type.desc) {
+		    menuAttrs.push(TITLE);
+		    menuAttrs.push(type.desc);
+		}
+                newMenus[category].push(HU.tag(TAG_LI, [], HU.tag(TAG_A, menuAttrs, type.label)));
+            }
+            let newMenu = "";
+            for (var i = 0; i < cats.length; i++) {
+                var cat = cats[i];
+		var menu = Utils.join(newMenus[cat],"");
+                var subMenu = HU.tag("ul", [], menu);
+                var catLabel = HU.tag(TAG_A, [], cat);
+                newMenu += HU.tag(TAG_LI, [], catLabel + subMenu);
+            }
+
+
+            var publishMenu =
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".publish('media_photoalbum');", "New Photo Album")) + "\n" +
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".publish('wikipage');", "New Wiki Page")) + "\n" +
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".publish('blogentry');", "New Blog Post")) + "\n";
+
+
+            var fileMenu =
+                HU.tag(TAG_LI, [], "<a>Publish</a>" + HU.tag("ul", [], publishMenu)) + "\n" +
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".showWikiText();", "Show Text")) + "\n" +
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".copyWikiText();", "Copy Text")) + "\n" +		
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".copyDisplayedEntries();", "Save entries")) + "\n";
+
+
+            var titles = HU.tag(TAG_DIV, ["class", "ramadda-menu-block"], "Titles: " + HU.onClick(layout + ".titlesOn();", "On") + "/" + HU.onClick(layout + ".titlesOff();", "Off"));
+            var dates = HU.tag(TAG_DIV, ["class", "ramadda-menu-block"],
+				      "Set date range: " +
+				      HU.onClick(layout + ".askMinDate();", "Min") + "/" +
+				      HU.onClick(layout + ".askMaxDate();", "Max"));
+            var editMenu =
+                HU.tag(TAG_LI, [], HU.tag(TAG_DIV, ["class", "ramadda-menu-block"],
+							"Set axis range :" +
+							HU.onClick(layout + ".askMinZAxis();", "Min") + "/" +
+							HU.onClick(layout + ".askMaxZAxis();", "Max"))) +
+                HU.tag(TAG_LI, [], dates) +
+                HU.tag(TAG_LI, [], titles) + "\n" +
+                HU.tag(TAG_LI, [], HU.tag(TAG_DIV, ["class", "ramadda-menu-block"], "Details: " + HU.onClick(layout + ".detailsOn();", "On", []) + "/" +
+							HU.onClick(layout + ".detailsOff();", "Off", []))) +
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".deleteAllDisplays();", "Delete all displays")) + "\n" +
+                "";
+
+
+            var table = HU.tag(TAG_DIV, ["class", "ramadda-menu-block"], "Table: " +
+				      HU.onClick(layout + ".setLayout('table',1);", "1 column") + " / " +
+				      HU.onClick(layout + ".setLayout('table',2);", "2 column") + " / " +
+				      HU.onClick(layout + ".setLayout('table',3);", "3 column") + " / " +
+				      HU.onClick(layout + ".setLayout('table',4);", "4 column"));
+            var layoutMenu =
+                HU.tag(TAG_LI, [], table) +
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".setLayout('rows');", "Rows")) + "\n" +
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".setLayout('columns');", "Columns")) + "\n" +
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".setLayout('tabs');", "Tabs"));
+
+
+            var menuBar = HU.tag(TAG_LI, [], "<a>File</a>" + HU.tag("ul", [], fileMenu));
+            menuBar += HU.tag(TAG_LI, [], "<a>Edit</a>" + HU.tag("ul", [], editMenu)) +
+                HU.tag(TAG_LI, [], "<a>New</a>" + HU.tag("ul", [], newMenu)) +
+                HU.tag(TAG_LI, [], "<a>Layout</a>" + HU.tag("ul", [], layoutMenu));
+
+
+            var menu = HU.div([STYLE,"background:#fff;z-index:1000;", ATTR_CLASS, "xramadda-popup", ATTR_ID, this.getDomId(ID_MENU_OUTER)],
+			      HU.tag("ul", [ATTR_ID, this.getDomId(ID_MENU_INNER), ATTR_CLASS, "sf-menu"], menuBar));
+
+            html += menu;
+            //                html += HU.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)],"&nbsp;");
+            //                html+="<br>";
+            return html;
+        },
+        hasGeoMacro: function(jsonUrl) {
+	    if(!jsonUrl) return false;
+            return jsonUrl.match(/(\${latitude})/g) != null;
+        },
+        getJsonUrl: function(jsonUrl, display, props) {
+	    display.getRequestMacros().forEach(m=>{
+		jsonUrl = m.apply(jsonUrl);
+	    });
+	    if(display.getAnimationEnabled()) {
+		//Not now. Once was needed for gridded data
+		//jsonUrl +='&doAnimation=true'
+	    }
+	    if(display.getProperty('dbSelect')) {
+		jsonUrl +="&" + "dbSelect" +"=" +display.getProperty("select");
+	    }
+	    if(display.getProperty("requestArgs")) {
+		let args = display.getProperty("requestArgs").split(",");
+		for(let i=0;i<args.length;i+=2) {
+		    jsonUrl +="&" + args[i] +"=" + args[i+1];
+		}
+	    }
+
+	    if(display.pageSkip) {
+		jsonUrl+="&skip=" + display.pageSkip;
+	    }
+
+
+            var fromDate = display.getProperty(PROP_FROMDATE);
+            if (fromDate != null) {
+                jsonUrl += "&fromdate=" + fromDate;
+            }
+            var toDate = display.getProperty(PROP_TODATE);
+            if (toDate != null) {
+                jsonUrl += "&todate=" + toDate;
+            }
+
+            if (this.hasGeoMacro(jsonUrl)) {
+                var lon = props.lon;
+                var lat = props.lat;
+
+                if ((lon == null || lat == null) && this.map != null) {
+                    var tuple = this.getPosition();
+                    if (tuple != null) {
+                        lat = tuple[0];
+                        lon = tuple[1];
+                    }
+                }
+                if (lon != null && lat != null) {
+                    jsonUrl = jsonUrl.replace("${latitude}", lat.toString());
+                    jsonUrl = jsonUrl.replace("${longitude}", lon.toString());
+                }
+            }
+            jsonUrl = jsonUrl.replace("${numpoints}", 1000);
+            return jsonUrl;
+        },
+        getDefaultData: function() {
+            for (var i in this.dataList) {
+                var data = this.dataList[i];
+                var records = data.getRecords();
+                if (records != null) {
+                    return data;
+                }
+            }
+            if (this.dataList.length > 0) {
+                return this.dataList[0];
+            }
+            return null;
+        },
+
+        writeDisplay: function() {
+            if (this.originalLocation == null) {
+                this.originalLocation = document.location;
+            }
+            var url = this.originalLocation + "#";
+            url += "&display0=linechart";
+            for (var attr in document) {
+                //                   if(attr.toString().contains("location")) 
+                //                       console.log(attr +"=" + document[attr]);
+            }
+            document.location = url;
+
+        },
+        userCreateDisplay: function(type, props) {
+            if (props == null) {
+                props = {};
+            }
+            props.editMode = true;
+            props.layoutHere = false;
+            if (type == DISPLAY_LABEL && props.text == null) {
+                var text = prompt("Text");
+                if (text == null) return;
+                props.text = text;
+            }
+            return this.createDisplay(type, props);
+        },
+        createDisplay: function(type, props) {
+
+            if (props == null) {
+                props = {};
+            }
+
+            if (props.data != null) {
+		props.theData = props.data;
+		props.data = null;
+	    }
+
+            if (props.theData != null) {
+                var haveItAlready = false;
+                for (var i = 0; i < this.dataList.length; i++) {
+                    var existingData = this.dataList[i];
+                    if (existingData.equals(props.theData)) {
+                        props.theData = existingData;
+                        haveItAlready = true;
+                        break;
+                    }
+                }
+                if (!haveItAlready) {
+                    this.dataList.push(props.theData);
+                }
+                //                console.log("data:" + haveItAlready);
+            }
+
+	    if(type==null || type.trim().length==0) return null;
+            //            console.log("props:" + JSON.stringify(props));
+            //Upper case the type name, e.g., linechart->Linechart
+            var proc = type.substring(0, 1).toUpperCase() + type.substring(1);
+
+
+            //Look for global functions  Ramadda<Type>Display, <Type>Display, <Type> 
+            //e.g. - RamaddaLinechartDisplay, LinechartDisplay, Linechart 
+            var classname = null;
+            var names = ["Ramadda" + proc + "Display",
+			 proc + "Display",
+			 "Display"+ proc,
+			 proc
+			];
+            var func = null;
+            var funcName = null;
+            var msg = "";
+            for (var i = 0; i < names.length; i++) {
+                msg += ("trying:" + names[i] + "\n");
+                if (window[names[i]] != null) {
+                    funcName = names[i];
+                    func = window[names[i]];
+                    break;
+                }
+
+            }
+
+            if (func == null) {
+                console.log("Error: could not find display function:" + type);
+                //                    alert("Error: could not find display function:" + type);
+                alert("Error: could not find display function:" + type + " msg: " + msg);
+                return;
+            }
+            let displayId = props.displayId;
+	    if(!displayId) 
+		displayId = this.getUniqueId("display");
+            if (props.theData == null && this.dataList.length > 0) {
+                props.theData = this.dataList[0];
+            }
+            props.createdInteractively = true;
+            if (!props.entryId) {
+                props.entryId = this.group.entryId;
+            }
+            let display = eval(" new " + funcName + "(this,'" + displayId + "', props);");
+            if (display == null) {
+                console.log("Error: could not create display using:" + funcName);
+                alert("Error: could not create display using:" + funcName);
+                return;
+            }
+	    if(props.dummy) return display;
+            this.addDisplay(display);
+	    display.doFinalInitialization();
+            return display;
+        },
+        pageHasLoaded: function(display) {
+            this.getLayoutManager().pageHasLoaded();
+        },
+        addDisplay: function(display) {
+            display.setDisplayManager(this);
+            display.loadInitialData();
+            this.getLayoutManager().addDisplay(display);
+        },
+	getDisplays: function() {
+	    return this.getLayoutManager().getDisplays();
+	},
+        notifyEvent: function(func, source, data) {
+            this.getLayoutManager().notifyEvent(func, source, data);
+        },
+        removeDisplay: function(display) {
+            this.getLayoutManager().removeDisplay(display);
+            this.notifyEvent("handleEventRemoveDisplay", this, display);
+        },
+	setEntry: function(entry) {
+	    var displays = this.getLayoutManager().getDisplays();
+	    for (var i = 0; i < displays.length; i++) {
+		var display = displays[i];
+		display.setEntry(entry);
+	    }
+	},
+    });
+
+    addDisplayManager(this);
+
+    let displaysHtml = HU.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container",STYLE,HU.css("display","block")]);
+    let html = HU.openTag(TAG_DIV,["style","position:relative;"]);
+    html += HU.div(["id", this.getDomId(ID_MENU_CONTAINER)]);
+    html +=  this.getEntriesMenu(argProperties);
+
+    if(this.getShowMenu()) {
+        html += HU.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)], SPACE);
+    }
+    let targetDiv = this.getProperty("target",this.getProperty("targetDiv"));
+    let _this = this;
+    if (targetDiv != null) {
+	if($("#" + targetDiv).length==0) {
+	    console.log("Error: display group could not find targetDiv:" + targetDiv);
+	    targetDiv=null;
+	}
+    }
+
+    if (targetDiv != null) {
+        $(document).ready(function() {
+            $("#" + targetDiv).html(displaysHtml);
+            _this.getLayoutManager().doLayout();
+	});
+    } else {
+        html += displaysHtml;
+    }
+    html += HU.closeTag(TAG_DIV);
+    let divid = this.getProperty("divId",this.getId());
+    $("#" + divid).html(html)
+    this.initializeEntriesMenu();
+
+    this.jq(ID_MENU_BUTTON).html(HU.getIconImage("fa-cog",[TITLE,"Display menu"] )).button({
+	classes: {
+	    "ui-button": "display-manager-button",
+	}	
+    }).click(function(event) {
+	if(this.dialog) {
+	    this.dialog.remove();
+	}
+        let html = _this.makeMainMenu();
+	this.dialog = HU.makeDialog({content:html,title:"Displays",my:"left top",at:"left bottom",anchor:_this.jq(ID_MENU_BUTTON)});
+        _this.jq(ID_MENU_INNER).superfish({
+            //Don't set animation - it is broke on safari
+            //                    animation: {height:'show'},
+            speed: 'fast',
+            delay: 300
+        });
+
+
+    });
+
+}
+
+
+function RamaddaMultiDisplay(displayManager, id, properties) {
+    this.props = properties;
+    let SUPER = new DisplayGroup(displayManager, id, properties, DISPLAY_MULTI);
+    RamaddaUtil.inherit(this, SUPER);
+    addRamaddaDisplay(this);
+    RamaddaUtil.defineMembers(this, {
+        inInitDisplay: false,
+        haveInited: false,
+        needsData: function() {
+            return true;
+        },
+
+        pointDataLoaded: function(pointData, url, reload) {
+            SUPER.pointDataLoaded.call(this, pointData, url, reload);
+            this.initDisplay();
+        },
+        processMacros: function(selectedFields, value, makeList) {
+            if ((typeof value) != "string") return null;
+            var toks = [];
+            if (value.includes("${fieldLabel}")) {
+                for (i = 0; i < selectedFields.length; i++) {
+                    var v = value.replace("\${fieldLabel}", selectedFields[i].getLabel());
+                    toks.push(v);
+                }
+            } else if (value.includes("${fieldId}")) {
+                for (i = 0; i < selectedFields.length; i++) { 
+                   var v = value.replace("\${fieldId}", selectedFields[i].getId());
+                    toks.push(v);
+                }
+            } else if (value.includes("${fieldCnt}")) {
+                var v = value.replace("\${fieldCnt}", selectedFields.length);
+                toks.push(v);
+            } else if (value.includes("${")) {
+
+            } else {
+                return null;
+            }
+            if (makeList) return toks;
+            return Utils.join(toks, ",");
+        },
+        initDisplay: function() {
+            try {
+                this.initDisplayInner();
+            } catch (e) {
+                this.setContents(this.getMessage("An error occurred:" + e));
+                console.log("An error occurred:" + e);
+                console.log(e.stack);
+            }
+        },
+        useChartableFields: function() {
+            return false;
+        },
+        initDisplayInner: function() {
+            SUPER.initDisplay.call(this);
+            let records = this.filterData();
+            if (!records) {
+                this.setContents(this.getLoadingMessage());
+                return null;
+            }
+
+            var allFields = this.getData().getRecordFields();
+            var fields = this.getSelectedFields(allFields);
+            if (fields.length == 0) {
+                this.setContents(this.getMessage("no fields"));
+                return;
+            }
+
+            if (this.inInitDisplay) return;
+            if (this.haveInited) return;
+            this.haveInited = true;
+            this.inInitDisplay = true;
+
+            var props = {};
+            var foreachMap = {};
+            var foreachList = [];
+            var cnt = 0;
+            for (a in this.props) {
+                if (a.startsWith("foreach_")) {
+                    var value = this.props[a];
+                    var toks;
+                    var tmp = this.processMacros(fields, value, true);
+                    if (tmp) {
+                        toks = tmp;
+                    } else {
+                        toks = value.split(",");
+                    }
+                    a = a.substring(8);
+                    if (toks.length > cnt) cnt = toks.length;
+                    foreachMap[a] = toks;
+                    foreachList.push({
+                        attr: a,
+                        toks: toks
+                    });
+                }
+                if (a.startsWith("sub_")) {
+                    var value = this.props[a];
+                    a = a.substring(4);
+                    var tmp = this.processMacros(fields, value, false);
+                    if (tmp) {
+                        value = tmp;
+                    }
+                    props[a] = value;
+                }
+            }
+            var html = HU.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container"]);
+            this.writeHtml(ID_DISPLAY_CONTENTS, html);
+            var groupProps = {
+                target: this.getDomId(ID_DISPLAYS),
+            }
+            groupProps[PROP_LAYOUT_TYPE] = 'table';
+            groupProps[PROP_LAYOUT_COLUMNS] = this.getProperty(PROP_LAYOUT_COLUMNS, "2");
+            this.displayManager = new DisplayManager(this.getId() + "_manager", groupProps);
+
+
+            props.layoutHere = false;
+            if (this.props['data'])
+                props['data'] = this.props['data'];
+            var subType = this.getProperty("subType", "table");
+            if (cnt == 0) cnt = 1;
+            for (var i = 0; i < cnt; i++) {
+                var dprops = {};
+                $.extend(dprops, props);
+                for (var j = 0; j < foreachList.length; j++) {
+                    if (i < foreachList[j].toks.length) {
+                        dprops[foreachList[j].attr] = foreachList[j].toks[i];
+                    }
+                }
+                if (dprops['fields']) dprops['fields'] = dprops['fields'].split(",");
+                this.displayManager.createDisplay(subType, dprops);
+            }
+            this.inInitDisplay = false;
+        }
+    });
 }
 
 /**
@@ -13668,22 +14411,19 @@ function RamaddaLegendDisplay(displayManager, id, properties) {
     if(!properties.width) properties.width='100%';
     let SUPER =  new RamaddaDisplay(displayManager, id, DISPLAY_LEGEND, properties);
     RamaddaUtil.inherit(this,SUPER);
-    addRamaddaDisplay(this);
-    $.extend(this, {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Legend Display",
-					'labels=""',
-					'colors=""',
-					'inBox=true',
-					'labelColor=#fff',
-					'labelColors=color1,color2,...',
-					'orientation=vertical'
-				    ]);
-	},
+    let myProps = [
+	{label:'Legend'},
+	{p:'labels',ex:''},
+	{p:'colors',ex:''},
+	{p:'inBox',ex:'true'},
+	{p:'labelColor',ex:'#fff'},
+	{p:'labelColors',ex:'color1,color2,...'},
+	{p:'orientation',ex:'vertical'}
+    ];
+
+
+    addRamaddaDisplay(this,SUPER, myProps, {
 	updateUI: function() {
-	    
 	    let labels = this.getProperty("labels","").split(",");
 	    let colors = this.getColorList();
 	    let html = "";
@@ -13712,7 +14452,7 @@ function RamaddaLegendDisplay(displayManager, id, properties) {
 	    }
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
 	},
-    })
+    });
 }
 
 
@@ -13725,7 +14465,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     this.defineProperties([
-	{label:'Download Properties'},
+	{label:'Download'},
 	{p:'csvLabel',ex:'Download'},
 	{p:'useIcon',d:'false',ex:'false'},
 	{p:'fileName',d:'download',ex:'download'},
@@ -13829,7 +14569,7 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     this.defineProperties([
-	{label:'Reloader Properties'},
+	{label:'Reloader'},
 	{p:'interval',ex:'30',d:30,label:"Interval"},
 	{p:'showCheckbox',ex:'false',d:true,label:"Show Checkbox"},
 	{p:'showCountdown',ex:'false',d:true,label:"Show Countdown"},
@@ -13924,7 +14664,7 @@ function RamaddaTicksDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
 
     this.defineProperties([
-	{label:'Time Ticks Properties'},
+	{label:'Time Ticks'},
 	{p:'animationHeight',ex:'30px'},
 	{p:'showYears',ex:'true'},
     ]);
@@ -16744,7 +17484,7 @@ addGlobalDisplayType({
     forUser: true,
     category: CATEGORY_TABLE,
     desc:"Basic tabular display",
-    help: makeDisplayHelp(null,"table.png")                        
+    tooltip: makeDisplayTooltip(null,"table.png")                        
 }, true);
 addGlobalDisplayType({
     type: DISPLAY_LINECHART,
@@ -16752,7 +17492,8 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_CHARTS,
-    help: makeDisplayHelp(null,"linechart.png")
+    tooltip: makeDisplayTooltip("Basic line chart","linechart.png","Show time series or other data"),
+    helpurl:true
 });
 addGlobalDisplayType({
     type: DISPLAY_BARCHART,
@@ -16760,7 +17501,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_CHARTS,
-    help: makeDisplayHelp(null,"barchart.png")    
+    tooltip: makeDisplayTooltip(null,"barchart.png")    
 });
 addGlobalDisplayType({
     type: DISPLAY_BARSTACK,
@@ -16775,7 +17516,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_CHARTS,
-    help: makeDisplayHelp(null,"areachart.png")    
+    tooltip: makeDisplayTooltip(null,"areachart.png")    
 });
 
 addGlobalDisplayType({
@@ -16784,7 +17525,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_CHARTS,
-    help: makeDisplayHelp(null,"bartable.png")        
+    tooltip: makeDisplayTooltip(null,"bartable.png")        
 });
 addGlobalDisplayType({
     type: DISPLAY_SCATTERPLOT,
@@ -16792,7 +17533,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_CHARTS,
-    help: makeDisplayHelp(null,"scatterplot.png")            
+    tooltip: makeDisplayTooltip(null,"scatterplot.png")            
 });
 addGlobalDisplayType({
     type: DISPLAY_HISTOGRAM,
@@ -16800,7 +17541,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_CHARTS,
-    help: makeDisplayHelp(null,"histogram.png")                
+    tooltip: makeDisplayTooltip(null,"histogram.png")                
 });
 addGlobalDisplayType({
     type: DISPLAY_BUBBLE,
@@ -16808,7 +17549,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_CHARTS,
-    help: makeDisplayHelp(null,"bubblechart.png")    
+    tooltip: makeDisplayTooltip(null,"bubblechart.png")    
 });
 addGlobalDisplayType({
     type: DISPLAY_PIECHART,
@@ -16816,7 +17557,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_CHARTS,
-    help: makeDisplayHelp(null,"piechart.png")                    
+    tooltip: makeDisplayTooltip(null,"piechart.png")                    
 });
 
 addGlobalDisplayType({
@@ -18557,7 +19298,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 function RamaddaAxisChart(displayManager, id, chartType, properties) {
     let SUPER = new RamaddaGoogleChart(displayManager, id, chartType, properties);
     let myProps = [
-	{label:'Chart Attributes'},
+	{label:'Chart Properties'},
 	{p:'indexField',w:'field'},
 	{p:'vAxisMinValue',w:''},
 	{p:'vAxisMaxValue',w:''},
@@ -18757,12 +19498,10 @@ function LinechartDisplay(displayManager, id, properties) {
 
 function AreachartDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaSeriesChart(displayManager, id, DISPLAY_AREACHART, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"isStacked=true"])},
-
+    let myProps = [
+	{p:'isStacked',ex:'true'}
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         doMakeGoogleChart: function(dataList, props, chartDiv,  selectedFields, chartOptions) {
             if (this.isStacked)
                 chartOptions.isStacked = true;
@@ -18774,13 +19513,9 @@ function AreachartDisplay(displayManager, id, properties) {
 
 function RamaddaBaseBarchart(displayManager, id, type, properties) {
     const SUPER  = new RamaddaSeriesChart(displayManager, id, type, properties);
-    defineDisplay(this, SUPER, [], {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					//"inlinelabel:Bar Chart",
-				    ])},
-
+    let myProps = [
+    ];
+    defineDisplay(this, SUPER, myProps, {
         canDoGroupBy: function() {
             return true;
         },
@@ -18833,18 +19568,17 @@ function BarstackDisplay(displayManager, id, properties) {
 
 function HistogramDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaGoogleChart(displayManager, id, DISPLAY_HISTOGRAM, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    ["label:Histogram Attributes",
-				     'legendPosition="none|top|right|left|bottom"',
-				     'textPosition="out|in|none"',
-				     'isStacked="false|true|percent|relative"',
-				     'logScale="true|false"',
-				     'scaleType="log|mirrorLog"',
-				     'minValue=""',
-				     'maxValue=""'])},
-
+    let myProps = [
+	{label:'Histogram Properties'},
+	{p:'legendPosition',ex:'none|top|right|left|bottom'},
+	{p:'textPosition',ex:'out|in|none'},
+	{p:'isStacked',ex:'false|true|percent|relative'},
+	{p:'logScale',ex:'true|false'},
+	{p:'scaleType',ex:'log|mirrorLog'},
+	{p:'minValue',ex:''},
+	{p:'maxValue',ex:''}
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         okToHandleEventRecordSelection: function() {
             return false;
         },
@@ -18911,7 +19645,24 @@ function RamaddaTextChart(displayManager, id, chartType, properties) {
 function PiechartDisplay(displayManager, id, properties) {
     let ID_PIE_LEGEND = "pielegend";
     const SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_PIECHART, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    let myProps = [
+	{label:'Pie Chart Properties'},
+	{p:'groupBy',ex:''},
+	{p:'groupByCount',ex:'true'},
+	{p:'groupByCountLabel',ex:''},
+	{p:'binCount',ex:'true'},
+	{p:'pieHole',ex:'0.5'},
+	{p:'is3D',ex:'true'},
+	{p:'bins',ex:''},
+	{p:'binMin',ex:''},
+	{p:'binMax',ex:'max'},
+	{p:'sliceVisibilityThreshold',ex:'0.01'},
+	{p:'pieSliceTextColor',ex:'black'},
+	{p:'pieSliceBorderColor',ex:'black'}
+    ];
+
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+
 	uniqueValues:[],
 	uniqueValuesMap:{},
         canDoGroupBy: function() {
@@ -18936,24 +19687,6 @@ function PiechartDisplay(displayManager, id, properties) {
 	    }
 	    this.jq(ID_PIE_LEGEND).html(legend);
 
-	},
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Pie Chart Attributes",
-					'groupBy=""',
-					'groupByCount=true',
-					'groupByCountLabel=""',
-					'binCount=true',
-					"pieHole=\"0.5\"",
-					"is3D=\"true\"",
-					"bins=\"\"",
-					"binMin=\"\"",
-					"binMax=\"max\"",
-					"sliceVisibilityThreshold=\"0.01\"",
-					'pieSliceTextColor=black',
-					'pieSliceBorderColor=black'
-				    ]);
 	},
         setChartSelection: function(index) {
 	    //noop
@@ -19414,9 +20147,9 @@ function WordtreeDisplay(displayManager, id, properties) {
 function TableDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_TABLE, properties);
     let myProps = [
-	{label:'Table Properties'},
+	{label:'Table'},
 	{p:'imageField',ex:''},
-	{p:'tableWidth=',ex:'100%'},
+	{p:'tableWidth',ex:'100%'},
 	{p:'frozenColumns',ex:'1'},
 	{p:'colorCells',ex:'field1,field2'},
 	{p:'foregroundColor'},
@@ -19612,17 +20345,15 @@ function TableDisplay(displayManager, id, properties) {
 
 function BubbleDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_BUBBLE, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					'label:Bubble Chart Attibutes',
-					'legendPosition="none|top|right|left|bottom"',
-					'hAxisFormat="none|decimal|scientific|percent|short|long"',
-					'vAxisFormat="none|decimal|scientific|percent|short|long"',
-					'hAxisTitle=""',
-					'vAxisTitle=""'])},
-
+    let myProps = [
+	{label:'Bubble Chart Attibutes'},
+	{p:'legendPosition',ex:'none|top|right|left|bottom'},
+	{p:'hAxisFormat',ex:'none|decimal|scientific|percent|short|long'},
+	{p:'vAxisFormat',ex:'none|decimal|scientific|percent|short|long'},
+	{p:'hAxisTitle',ex:''},
+	{p:'vAxisTitle',ex:''}
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         getChartDiv: function(chartId) {
             var divAttrs = [ATTR_ID, chartId];
             divAttrs.push(STYLE);
@@ -20130,7 +20861,7 @@ function TimerangechartDisplay(displayManager, id, properties) {
 function CalendarDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaGoogleChart(displayManager, id, DISPLAY_CALENDAR, properties);
     let myProps = [
-	{label:'Calendar Properties'},
+	{label:'Calendar'},
 	{p:'cellSize',d:15,ex:"15"},
 	{p:'missingValue',ex:""},	
 	{p:'strokeColor',d: '#76a7fa', ex:'#76a7fa'},
@@ -20675,22 +21406,18 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
     const ID_SKEWT = "skewt";
     const ID_DATE_LABEL = "skewtdate";
     const SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_SKEWT, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    let myProps = [
+        {label:'Skewt Attributes'},
+        {p:'skewtWidth',ex:'500'},
+        {p:'skewtHeight',ex:'550'},
+        {p:'hodographWidth',ex:'150'},
+        {p:'showHodograph',ex:'false'},
+        {p:'windStride',ex:'1'},
+        {p:'showText',ex:'false'},
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
-        },
-        getWikiEditorTags: function() {
-            return Utils.mergeLists(
-                SUPER.getWikiEditorTags(),
-                ['label:Skewt Attributes',
-                 'skewtWidth="500"',
-                 'skewtHeight="550"',
-                 'hodographWidth=150',
-                 'showHodograph=false',
-                 'windStride=1',
-                 'showText=false',
-                ])
-
         },
         initDisplay:  function() {
             SUPER.initDisplay.call(this);
@@ -21820,25 +22547,22 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
 	Utils.importJS(ramaddaBaseUrl +"/lib/d3/d3-legend.min.js");
 	Utils.importJS(ramaddaBaseUrl +"/lib/d3/bubblechart.js");
     }
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    let myProps = [
+	{label:'Bubble Chart'},
+	{p:'labelField',ex:''},
+	{p:'colorBy',ex:''},
+	{p:'valueField',ex:''},
+	{p:'descriptionField',ex:''},
+	{p:'imageField',ex:''},
+	{p:'sizeLabel1',ex:''},
+	{p:'sizeLabel2',ex:''},
+	{p:'showSizeLegend',ex:'false'}
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
         },
 	callbackWaiting:false,
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Bubble Chart",
-					'labelField=""',
-					'colorBy=""',
-					'valueField=""',
-					'descriptionField=""',
-					'imageField=""',
-					'sizeLabel1=""',
-					'sizeLabel2=""',
-					'showSizeLegend=false'
-				    ])},
-
         displayData: function() {
 	    this.updateUI();
 	},
@@ -22120,7 +22844,7 @@ function RamaddaBaseTextDisplay(displayManager, id, type, properties) {
 function RamaddaWordcloudDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaBaseTextDisplay(displayManager, id, DISPLAY_WORDCLOUD, properties);
     let myProps = [
-	{label:"Wordcloud Properties"},
+	{label:"Wordcloud"},
 	{p:'termField'},
 	{p:'fields'},	
 	{p:'tableFields'},
@@ -22410,7 +23134,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
     if(!Utils.isDefined(properties.displayStyle)) properties.displayStyle = "background:rgba(0,0,0,0);";
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TEMPLATE, properties);
     let myProps = [
-	{label:"Template Attributes"},
+	{label:"Template"},
 	{p: "template"},
 	{p:"headerTemplate",ex:"... ${totalCount} ... ${selectedCount}"},
 	{p:"footerTemplate",ex:"... ${totalCount} ... ${selectedCount}"},
@@ -22969,21 +23693,18 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 function RamaddaTopfieldsDisplay(displayManager, id, properties) {
     const ID_SLIDE = "slide";
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TOPFIELDS, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    let myProps = [
+	{label:'Top Fields'},
+	{p:'fieldCount',tt:''},
+	{p:'labelField',tt:''},
+	{p:'dateFormat',ex:'yyyy'},
+	{p:'labelField'},
+	{p:'scaleFont',ex:'false'}
+    ]
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
         },
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Top Fields Attributes",
-					'fieldCount=""',
-					'labelField=""',
-					'dateFormat"yyyy"',
-					'labelField=""',
-					'scaleFont="false"',
-				    ]);
-	},
 	updateUI: function() {
 	    var pointData = this.getData();
 	    if (pointData == null) return;
@@ -23107,7 +23828,7 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
     const ID_BLOCKS = "blocks";
     const ID_BLOCKS_FOOTER = "blocks_footer";
     let myProps = [
-	{label:'Block Properties'},
+	{label:'Block'},
 	{p:'animStep',d:1000,ex:"1000",tt:'Delay'},
 	{p:'doSum',d:true,ex:"false",tt:''},
 	{p:'header',d:true,ex:"Each block represents ${blockValue} ... There were a total of ${total} ...",tt:''},
@@ -23116,6 +23837,7 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 	{p:'blockIcon',d:null,ex:"fa-male",tt:'Use an icon'},
 //	{p:'',d:"",ex:"",tt:''},
     ];
+
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         getContentsStyle: function() {
@@ -23464,24 +24186,20 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
 
 function RamaddaFrequencyDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaBaseTextDisplay(displayManager, id, DISPLAY_FREQUENCY, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Frequency Attributes",
-					'orientation="vertical"',
-					'tableHeight="300px"',
-					'showPercent=false',
-					'showCount=false',
-					'showBars=true',
-					'showBars=false',
-					'showHeader=false',
-					'banner=true',
-					'barWidth=200',
-					'clickFunction=selectother'
-				    ]);
-	},
-
+    let myProps = [
+	{label:'Frequency'},
+	{p:'orientation',ex:'vertical'},
+	{p:'tableHeight',ex:'300px'},
+	{p:'showPercent',ex:'false'},
+	{p:'showCount',ex:'false'},
+	{p:'showBars',ex:'true'},
+	{p:'showBars',ex:'false'},
+	{p:'showHeader',ex:'false'},
+	{p:'banner',ex:'true'},
+	{p:'barWidth',ex:'200'},
+	{p:'clickFunction',ex:'selectother'}
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         updateUI: function() {
             let records = this.filterData();
 	    if(!records) return;
@@ -23918,25 +24636,21 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
     const ID_HIGHLIGHT = "highlight"; 
     const ID_SHRINK = "shrink";
     const SUPER = new RamaddaBaseTextDisplay(displayManager, id, DISPLAY_TEXTRAW, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    let myProps = [
+	{label:'Raw Text'},
+	{p:'doBubble',ex:'true'},
+	{p:'addLineNumbers',ex:'false'},
+	{p:'labelTemplate',ex:'${lineNumber}'},
+	{p:'maxLines',ex:'1000'},
+	{p:'pattern',ex:'initial search pattern'},
+	{p:'fromField',ex:''},
+	{p:'linesDescriptor',ex:''},
+	{p:'asHtml',ex:'false'},
+	{p:'breakLines',ex:'true'},
+	{p:'includeEmptyLines',ex:'false'},
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	doShrink: properties["initialShrink"],
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Raw Text Attributes",
-					'doBubble=true',
-					'addLineNumbers=false',
-					'labelTemplate="${lineNumber}"',
-					'maxLines=1000',
-					'pattern="initial search pattern"',
-					'fromField=""',
-					'linesDescriptor=""',
-					'asHtml=false',
-					'breakLines=true',
-					'includeEmptyLines=false',
-				    ]);
-	},
-
         checkLayout: function() {
             this.updateUI();
         },
@@ -24276,7 +24990,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 function RamaddaTextDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_TEXT, properties);
     let myProps = [
-	{label:'Text Display Attributes'},
+	{label:'Text Display'},
 	{p:'recordTemplate',ex:''},
 	{p:'showDefault',d:true,ex:"false"},
 	{p:'message',d:null,ex:""},
@@ -24361,7 +25075,7 @@ function RamaddaGlossaryDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_GLOSSARY, properties);
     const ID_GLOSSARY_HEADER = "glossary_header";
     let myProps = [
-	{label:'Glossary Properties'},
+	{label:'Glossary'},
 	{p:'wordField',ex:""},
 	{p:'definitionField',ex:""},	
     ];
@@ -24485,21 +25199,19 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 		       console.log("err");
 		   });
   
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Cards Attributes",
-					"groupByFields=\"\"",
-					"groupBy=\"\"",
-					"tooltipFields=\"\"",
-					"initGroupFields=\"\"",
-					"captionTemplate=\"${name}\"",
-					"sortFields=\"\"",
-					"labelField=\"\"",
-					'imageWidth="100"',
-					'imageMargin="5"',
-				    ])},
+    let myProps = [
+	{label:'Cards Attributes'},
+	{p:'groupByFields',ex:''},
+	{p:'groupBy',ex:''},
+	{p:'tooltipFields',ex:''},
+	{p:'initGroupFields',ex:''},
+	{p:'captionTemplate',ex:'${name}'},
+	{p:'sortFields',ex:''},
+	{p:'labelField',ex:''},
+	{p:'imageWidth',ex:'100'},
+	{p:'imageMargin',ex:'5'},
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         getContentsStyle: function() {
             return "";
         },
@@ -25284,15 +25996,13 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
     const ID_NEXT = "next";
     if(!Utils.isDefined(properties.displayStyle)) properties.displayStyle = "background:rgba(0,0,0,0);";
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_SLIDES, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    let myProps = [
+	{label:'Slides Attributes'},
+	{p:'template',ex:''}
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	slideIndex:0,
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Slides Attributes",
-					"template=\"\"",
-				    ]);
-	},
+
         handleEventRecordSelection: function(source, args) {
 	    //	    console.log(this.type+ ".recordSelection");
 	    if(!this.records) return;
@@ -25476,7 +26186,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
     RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id, type, properties));
 
     this.defineProperties([
-	{label:'Entry Search Properties'},
+	{label:'Entry Search'},
 	{p:'providers',ex:'',tt:'List of search providers'},
     ]);
 
@@ -25562,7 +26272,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
 function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
     let NONE = "-- None --";
     let myProps = [
-	{label:'Search Properties'},
+	{label:'Search'},
         {p:"showForm",d: true},
         {p:"formOpen",d: true},	
         {p:"searchText",d: ""},
@@ -27782,16 +28492,13 @@ function RamaddaEntrytitleDisplay(displayManager, id, properties) {
         f();
     }
 
-    addRamaddaDisplay(this);
-    $.extend(this, {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Entry Title",
-					'template="<b>${icon} ${name} Date: ${date} ${start_date} ${end_date} ${entry_attribute...}</b>"',
-					'showLink=false'
- 				    ])},
-        initDisplay: function() {
+    let myProps = [
+	{label:'Entry Title'},
+	{p:'template',ex:'<b>${icon} ${name} Date: ${date} ${start_date} ${end_date} ${entry_attribute...}</b>'},
+	{p:'showLink',ex:'false'}
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+	initDisplay: function() {
             this.createUI();
 	    let html = "";
 	    if(this.sourceEntry) {
@@ -28071,7 +28778,7 @@ var RamaddaGalleryDisplay = RamaddaEntrygalleryDisplay;
 function RamaddaSimplesearchDisplay(displayManager, id, properties) {
     let SUPER;
     let myProps = [
-	{label:'Simple Search Properties'},
+	{label:'Simple Search'},
 	{p:'maxHeight',w:300},
 	{p:'maxWidth',w:200},
 	{p:'maxWidth',w:200},		
@@ -28383,737 +29090,6 @@ function RamaddaExampleDisplay(displayManager, id, properties) {
         }
     });
 }/**
-   Copyright 2008-2019 Geode Systems LLC
-*/
-
-
-//Properties
-const PROP_LAYOUT_TYPE = "layoutType";
-const PROP_LAYOUT_COLUMNS = "layoutColumns";
-const PROP_SHOW_MAP = "showMap";
-const PROP_SHOW_MENU = "showMenu";
-const PROP_FROMDATE = "fromDate";
-const PROP_TODATE = "toDate";
-const DISPLAY_MULTI = "multi";
-
-
-
-//
-//adds the display manager to the list of global display managers
-//
-function addDisplayManager(displayManager) {
-    if (window.globalDisplayManagers == null) {
-        window.globalDisplayManagers = {};
-        // window.globalDisplayManager = null;
-    }
-    window.globalDisplayManagers[displayManager.getId()] = displayManager;
-    window.globalDisplayManager = displayManager;
-}
-
-
-function addGlobalDisplayType(type, front) {
-    if (window.globalDisplayTypes == null) {
-        window.globalDisplayTypes = [];
-	window.globalDisplayTypesMap = {};
-    }
-    if(type.type) {
-	window.globalDisplayTypesMap[type.type] = type;
-    }
-
-
-    if(front) {
-	window.globalDisplayTypes.unshift(type);
-    } else {
-	window.globalDisplayTypes.push(type);
-    }
-}
-
-
-addGlobalDisplayType({
-    type: "group",
-    label: "Group",
-    requiresData: false,
-    forUser: true,
-    category: "Basic Charts"
-},true);
-
-
-
-
-addGlobalDisplayType({
-    type: DISPLAY_MULTI,
-    label: "Multi Chart",
-    requiresData: true,
-    forUser: false,
-    category: "Misc"
-});
-
-
-
-
-
-//
-//This will get the currently created global displaymanager or will create a new one
-//
-function getOrCreateDisplayManager(id, properties, force) {
-    if (!force) {
-        var displayManager = getDisplayManager(id);
-        if (displayManager != null) {
-            return displayManager;
-        }
-        if (window.globalDisplayManager != null) {
-            return window.globalDisplayManager;
-        }
-    }
-    var displayManager = new DisplayManager(id, properties);
-    if (window.globalDisplayManager == null) {
-        window.globalDisplayManager = displayManager;
-    }
-    return displayManager;
-}
-
-//
-//return the global display manager with the given id, null if not found
-//
-function getDisplayManager(id) {
-    if (window.globalDisplayManagers == null) {
-        return null;
-    }
-    var manager = window.globalDisplayManagers[id];
-    return manager;
-}
-
-
-
-var ID_DISPLAYS = "displays";
-
-//
-//DisplayManager constructor
-//
-
-function DisplayManager(argId, argProperties) {
-
-    var ID_MENU_BUTTON = "menu_button";
-    var ID_MENU_CONTAINER = "menu_container";
-    var ID_MENU_OUTER = "menu_outer";
-    var ID_MENU_INNER = "menu_inner";
-
-
-    RamaddaUtil.inherit(this, this.SUPER = new DisplayThing(argId, argProperties));
-    addRamaddaDisplay(this);
-
-    RamaddaUtil.initMembers(this, {
-        dataList: [],
-        displayTypes: [],
-        initMapBounds: null,
-    });
-
-
-    RamaddaUtil.defineMembers(this, {
-        group: new DisplayGroup(this, argId, argProperties),
-        showmap: this.getProperty(PROP_SHOW_MAP, null),
-        setDisplayReady: function() {
-            SUPER.setDisplayReadyCall(this);
-            this.getLayoutManager().setDisplayReady();
-        },
-        getLayoutManager: function() {
-            return this.group;
-        },
-        collectEntries: function() {
-            var entries = this.getLayoutManager().collectEntries();
-            return entries;
-        },
-        getData: function() {
-            return this.dataList;
-        },
-        handleEventFieldValueSelect: function(source, args) {
-            this.notifyEvent("handleEventFieldValueSelected", source, args);
-        },
-        handleEventFieldsSelected: function(source, fields) {
-            this.notifyEvent("handleEventFieldsSelected", source, fields);
-        },
-        handleEventPropertyChanged: function(source, prop) {
-            this.notifyEvent("handleEventPropertyChanged", source, prop);
-        },
-        handleEventEntriesChanged: function(source, entries) {
-            this.notifyEvent("handleEventEntriesChanged", source, entries);
-        },
-        handleEventMapBoundsChanged: function(source, bounds, forceSet) {
-            var args = {
-                "bounds": bounds,
-                "force": forceSet
-            };
-            this.notifyEvent("handleEventMapBoundsChanged", source, args);
-        },
-        addMapLayer: function(source, entry) {
-            this.notifyEvent("addMapLayer", source, {
-                entry: entry
-            });
-        },
-        propagateEventRecordSelection: function(source, pointData, args) {
-            var index = args.index;
-            if (pointData == null && this.dataList.length > 0) {
-                pointData = this.dataList[0];
-            }
-            var fields = pointData.getRecordFields();
-            var records = pointData.getRecords();
-            if (records == null) {
-                return;
-            }
-            if (index < 0 || index >= records.length) {
-                console.log("propagateEventRecordSelection: bad index= " + index);
-                return;
-            }
-            var record = records[index];
-            if (record == null) return;
-            var values = source?source.getRecordHtml(record, fields):"";
-            if (source.recordSelectionCallback) {
-                var func = source.recordSelectionCallback;
-                if ((typeof func) == "string") {
-                    func = window[func];
-                }
-                func({
-                    display: source,
-                    pointData: pointData,
-                    index: index,
-                    pointRecord: record
-                });
-            }
-            var params = {
-                index: index,
-                record: record,
-                html: values,
-                data: pointData
-            };
-            this.notifyEvent("handleEventRecordSelection", source, params);
-            var entries = source.getEntries();
-            if (entries != null && entries.length > 0) {
-                this.handleEventEntrySelection(source, {
-                    entry: entries[0],
-                    selected: true
-                });
-            }
-        },
-        handleEventEntrySelection: function(source, props) {
-            this.notifyEvent("handleEventEntrySelection", source, props);
-        },
-        handleEventEntryMouseover: function(source, props) {
-            this.notifyEvent("handleEventEntryMouseover", source, props);
-        },
-        handleEventEntryMouseout: function(source, props) {
-            this.notifyEvent("handleEventEntryMouseout", source, props);
-        },
-        handleEventPointDataLoaded: function(source, pointData) {
-            this.notifyEvent("handleEventPointDataLoaded", source, pointData);
-        },
-        ranges: {
-            //               "TRF": [0,100],
-        },
-        setRange: function(field, range) {
-            if (this.ranges[field.getId()] == null) {
-                this.ranges[field.getId()] = range;
-            }
-        },
-        getRange: function(field) {
-            return this.ranges[field.getId()];
-        },
-        makeMainMenu: function() {
-	    if(!this.getShowMenu()) {
-		return "";
-	    }
-            //How else do I refer to this object in the html that I add 
-            var get = "getDisplayManager('" + this.getId() + "')";
-            var layout = "getDisplayManager('" + this.getId() + "').getLayoutManager()";
-            var html = "";
-
-            var newMenus = {};
-            var cats = [];
-            var displayTypes = [];
-            if (window.globalDisplayTypes != null) {
-                displayTypes = window.globalDisplayTypes;
-            }
-	    DISPLAY_CATEGORIES.forEach(category=>{
-                newMenus[category] = [];
-                cats.push(category);
-	    });
-            for (var i = 0; i < displayTypes.length; i++) {
-                //The ids (.e.g., 'linechart' have to match up with some class function with the name 
-                var type = displayTypes[i];
-                if (Utils.isDefined(type.forUser) && !type.forUser) {
-                    continue;
-                }
-		var category = type.category;
-                if (!category) {
-                    category = CATEGORY_MISC;
-                }
-                if (newMenus[category] == null) {
-                    newMenus[category] = [];
-                    cats.push(category);
-                }
-		let menuAttrs = ["onclick", get + ".userCreateDisplay('" + type.type + "');"];
-		if(type.desc) {
-		    menuAttrs.push(TITLE);
-		    menuAttrs.push(type.desc);
-		}
-                newMenus[category].push(HU.tag(TAG_LI, [], HU.tag(TAG_A, menuAttrs, type.label)));
-            }
-            let newMenu = "";
-            for (var i = 0; i < cats.length; i++) {
-                var cat = cats[i];
-		var menu = Utils.join(newMenus[cat],"");
-                var subMenu = HU.tag("ul", [], menu);
-                var catLabel = HU.tag(TAG_A, [], cat);
-                newMenu += HU.tag(TAG_LI, [], catLabel + subMenu);
-            }
-
-
-            var publishMenu =
-                HU.tag(TAG_LI, [], HU.onClick(layout + ".publish('media_photoalbum');", "New Photo Album")) + "\n" +
-                HU.tag(TAG_LI, [], HU.onClick(layout + ".publish('wikipage');", "New Wiki Page")) + "\n" +
-                HU.tag(TAG_LI, [], HU.onClick(layout + ".publish('blogentry');", "New Blog Post")) + "\n";
-
-
-            var fileMenu =
-                HU.tag(TAG_LI, [], "<a>Publish</a>" + HU.tag("ul", [], publishMenu)) + "\n" +
-                HU.tag(TAG_LI, [], HU.onClick(layout + ".showWikiText();", "Show Text")) + "\n" +
-                HU.tag(TAG_LI, [], HU.onClick(layout + ".copyWikiText();", "Copy Text")) + "\n" +		
-                HU.tag(TAG_LI, [], HU.onClick(layout + ".copyDisplayedEntries();", "Save entries")) + "\n";
-
-
-            var titles = HU.tag(TAG_DIV, ["class", "ramadda-menu-block"], "Titles: " + HU.onClick(layout + ".titlesOn();", "On") + "/" + HU.onClick(layout + ".titlesOff();", "Off"));
-            var dates = HU.tag(TAG_DIV, ["class", "ramadda-menu-block"],
-				      "Set date range: " +
-				      HU.onClick(layout + ".askMinDate();", "Min") + "/" +
-				      HU.onClick(layout + ".askMaxDate();", "Max"));
-            var editMenu =
-                HU.tag(TAG_LI, [], HU.tag(TAG_DIV, ["class", "ramadda-menu-block"],
-							"Set axis range :" +
-							HU.onClick(layout + ".askMinZAxis();", "Min") + "/" +
-							HU.onClick(layout + ".askMaxZAxis();", "Max"))) +
-                HU.tag(TAG_LI, [], dates) +
-                HU.tag(TAG_LI, [], titles) + "\n" +
-                HU.tag(TAG_LI, [], HU.tag(TAG_DIV, ["class", "ramadda-menu-block"], "Details: " + HU.onClick(layout + ".detailsOn();", "On", []) + "/" +
-							HU.onClick(layout + ".detailsOff();", "Off", []))) +
-                HU.tag(TAG_LI, [], HU.onClick(layout + ".deleteAllDisplays();", "Delete all displays")) + "\n" +
-                "";
-
-
-            var table = HU.tag(TAG_DIV, ["class", "ramadda-menu-block"], "Table: " +
-				      HU.onClick(layout + ".setLayout('table',1);", "1 column") + " / " +
-				      HU.onClick(layout + ".setLayout('table',2);", "2 column") + " / " +
-				      HU.onClick(layout + ".setLayout('table',3);", "3 column") + " / " +
-				      HU.onClick(layout + ".setLayout('table',4);", "4 column"));
-            var layoutMenu =
-                HU.tag(TAG_LI, [], table) +
-                HU.tag(TAG_LI, [], HU.onClick(layout + ".setLayout('rows');", "Rows")) + "\n" +
-                HU.tag(TAG_LI, [], HU.onClick(layout + ".setLayout('columns');", "Columns")) + "\n" +
-                HU.tag(TAG_LI, [], HU.onClick(layout + ".setLayout('tabs');", "Tabs"));
-
-
-            var menuBar = HU.tag(TAG_LI, [], "<a>File</a>" + HU.tag("ul", [], fileMenu));
-            menuBar += HU.tag(TAG_LI, [], "<a>Edit</a>" + HU.tag("ul", [], editMenu)) +
-                HU.tag(TAG_LI, [], "<a>New</a>" + HU.tag("ul", [], newMenu)) +
-                HU.tag(TAG_LI, [], "<a>Layout</a>" + HU.tag("ul", [], layoutMenu));
-
-
-            var menu = HU.div([STYLE,"background:#fff;z-index:1000;", ATTR_CLASS, "xramadda-popup", ATTR_ID, this.getDomId(ID_MENU_OUTER)],
-			      HU.tag("ul", [ATTR_ID, this.getDomId(ID_MENU_INNER), ATTR_CLASS, "sf-menu"], menuBar));
-
-            html += menu;
-            //                html += HU.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)],"&nbsp;");
-            //                html+="<br>";
-            return html;
-        },
-        hasGeoMacro: function(jsonUrl) {
-	    if(!jsonUrl) return false;
-            return jsonUrl.match(/(\${latitude})/g) != null;
-        },
-        getJsonUrl: function(jsonUrl, display, props) {
-	    display.getRequestMacros().forEach(m=>{
-		jsonUrl = m.apply(jsonUrl);
-	    });
-	    if(display.getAnimationEnabled()) {
-		//Not now. Once was needed for gridded data
-		//jsonUrl +='&doAnimation=true'
-	    }
-	    if(display.getProperty('dbSelect')) {
-		jsonUrl +="&" + "dbSelect" +"=" +display.getProperty("select");
-	    }
-	    if(display.getProperty("requestArgs")) {
-		let args = display.getProperty("requestArgs").split(",");
-		for(let i=0;i<args.length;i+=2) {
-		    jsonUrl +="&" + args[i] +"=" + args[i+1];
-		}
-	    }
-
-	    if(display.pageSkip) {
-		jsonUrl+="&skip=" + display.pageSkip;
-	    }
-
-
-            var fromDate = display.getProperty(PROP_FROMDATE);
-            if (fromDate != null) {
-                jsonUrl += "&fromdate=" + fromDate;
-            }
-            var toDate = display.getProperty(PROP_TODATE);
-            if (toDate != null) {
-                jsonUrl += "&todate=" + toDate;
-            }
-
-            if (this.hasGeoMacro(jsonUrl)) {
-                var lon = props.lon;
-                var lat = props.lat;
-
-                if ((lon == null || lat == null) && this.map != null) {
-                    var tuple = this.getPosition();
-                    if (tuple != null) {
-                        lat = tuple[0];
-                        lon = tuple[1];
-                    }
-                }
-                if (lon != null && lat != null) {
-                    jsonUrl = jsonUrl.replace("${latitude}", lat.toString());
-                    jsonUrl = jsonUrl.replace("${longitude}", lon.toString());
-                }
-            }
-            jsonUrl = jsonUrl.replace("${numpoints}", 1000);
-            return jsonUrl;
-        },
-        getDefaultData: function() {
-            for (var i in this.dataList) {
-                var data = this.dataList[i];
-                var records = data.getRecords();
-                if (records != null) {
-                    return data;
-                }
-            }
-            if (this.dataList.length > 0) {
-                return this.dataList[0];
-            }
-            return null;
-        },
-
-        writeDisplay: function() {
-            if (this.originalLocation == null) {
-                this.originalLocation = document.location;
-            }
-            var url = this.originalLocation + "#";
-            url += "&display0=linechart";
-            for (var attr in document) {
-                //                   if(attr.toString().contains("location")) 
-                //                       console.log(attr +"=" + document[attr]);
-            }
-            document.location = url;
-
-        },
-        userCreateDisplay: function(type, props) {
-            if (props == null) {
-                props = {};
-            }
-            props.editMode = true;
-            props.layoutHere = false;
-            if (type == DISPLAY_LABEL && props.text == null) {
-                var text = prompt("Text");
-                if (text == null) return;
-                props.text = text;
-            }
-            return this.createDisplay(type, props);
-        },
-        createDisplay: function(type, props) {
-
-            if (props == null) {
-                props = {};
-            }
-
-            if (props.data != null) {
-		props.theData = props.data;
-		props.data = null;
-	    }
-
-            if (props.theData != null) {
-                var haveItAlready = false;
-                for (var i = 0; i < this.dataList.length; i++) {
-                    var existingData = this.dataList[i];
-                    if (existingData.equals(props.theData)) {
-                        props.theData = existingData;
-                        haveItAlready = true;
-                        break;
-                    }
-                }
-                if (!haveItAlready) {
-                    this.dataList.push(props.theData);
-                }
-                //                console.log("data:" + haveItAlready);
-            }
-
-            //            console.log("props:" + JSON.stringify(props));
-            //Upper case the type name, e.g., linechart->Linechart
-            var proc = type.substring(0, 1).toUpperCase() + type.substring(1);
-
-            //Look for global functions  Ramadda<Type>Display, <Type>Display, <Type> 
-            //e.g. - RamaddaLinechartDisplay, LinechartDisplay, Linechart 
-            var classname = null;
-            var names = ["Ramadda" + proc + "Display",
-			 proc + "Display",
-			 proc
-			];
-            var func = null;
-            var funcName = null;
-            var msg = "";
-            for (var i = 0; i < names.length; i++) {
-                msg += ("trying:" + names[i] + "\n");
-                if (window[names[i]] != null) {
-                    funcName = names[i];
-                    func = window[names[i]];
-                    break;
-                }
-
-            }
-            if (func == null) {
-                console.log("Error: could not find display function:" + type);
-                //                    alert("Error: could not find display function:" + type);
-                alert("Error: could not find display function:" + type + " msg: " + msg);
-                return;
-            }
-            let displayId = props.displayId;
-	    if(!displayId) 
-		displayId = this.getUniqueId("display");
-            if (props.theData == null && this.dataList.length > 0) {
-                props.theData = this.dataList[0];
-            }
-            props.createdInteractively = true;
-            if (!props.entryId) {
-                props.entryId = this.group.entryId;
-            }
-            let display = eval(" new " + funcName + "(this,'" + displayId + "', props);");
-            if (display == null) {
-                console.log("Error: could not create display using:" + funcName);
-                alert("Error: could not create display using:" + funcName);
-                return;
-            }
-	    if(props.dummy) return display;
-            this.addDisplay(display);
-	    display.doFinalInitialization();
-            return display;
-        },
-        pageHasLoaded: function(display) {
-            this.getLayoutManager().pageHasLoaded();
-        },
-        addDisplay: function(display) {
-            display.setDisplayManager(this);
-            display.loadInitialData();
-            this.getLayoutManager().addDisplay(display);
-        },
-	getDisplays: function() {
-	    return this.getLayoutManager().getDisplays();
-	},
-        notifyEvent: function(func, source, data) {
-            this.getLayoutManager().notifyEvent(func, source, data);
-        },
-        removeDisplay: function(display) {
-            this.getLayoutManager().removeDisplay(display);
-            this.notifyEvent("handleEventRemoveDisplay", this, display);
-        },
-	setEntry: function(entry) {
-	    var displays = this.getLayoutManager().getDisplays();
-	    for (var i = 0; i < displays.length; i++) {
-		var display = displays[i];
-		display.setEntry(entry);
-	    }
-	},
-    });
-
-    addDisplayManager(this);
-
-    let displaysHtml = HU.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container",STYLE,HU.css("display","block")]);
-    let html = HU.openTag(TAG_DIV,["style","position:relative;"]);
-    html += HU.div(["id", this.getDomId(ID_MENU_CONTAINER)]);
-    html +=  this.getEntriesMenu(argProperties);
-
-    if(this.getShowMenu()) {
-        html += HU.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)], SPACE);
-    }
-    let targetDiv = this.getProperty("target",this.getProperty("targetDiv"));
-    let _this = this;
-    if (targetDiv != null) {
-	if($("#" + targetDiv).length==0) {
-	    console.log("Error: display group could not find targetDiv:" + targetDiv);
-	    targetDiv=null;
-	}
-    }
-
-    if (targetDiv != null) {
-        $(document).ready(function() {
-            $("#" + targetDiv).html(displaysHtml);
-            _this.getLayoutManager().doLayout();
-	});
-    } else {
-        html += displaysHtml;
-    }
-    html += HU.closeTag(TAG_DIV);
-    let divid = this.getProperty("divId",this.getId());
-    $("#" + divid).html(html)
-    this.initializeEntriesMenu();
-
-    this.jq(ID_MENU_BUTTON).html(HU.getIconImage("fa-cog",[TITLE,"Display menu"] )).button({
-	classes: {
-	    "ui-button": "display-manager-button",
-	}	
-    }).click(function(event) {
-	if(this.dialog) {
-	    this.dialog.remove();
-	}
-        let html = _this.makeMainMenu();
-	this.dialog = HU.makeDialog({content:html,title:"Displays",my:"left top",at:"left bottom",anchor:_this.jq(ID_MENU_BUTTON)});
-        _this.jq(ID_MENU_INNER).superfish({
-            //Don't set animation - it is broke on safari
-            //                    animation: {height:'show'},
-            speed: 'fast',
-            delay: 300
-        });
-
-
-    });
-
-}
-
-
-function RamaddaMultiDisplay(displayManager, id, properties) {
-    this.props = properties;
-    let SUPER = new DisplayGroup(displayManager, id, properties, DISPLAY_MULTI);
-    RamaddaUtil.inherit(this, SUPER);
-    addRamaddaDisplay(this);
-    RamaddaUtil.defineMembers(this, {
-        inInitDisplay: false,
-        haveInited: false,
-        needsData: function() {
-            return true;
-        },
-
-        pointDataLoaded: function(pointData, url, reload) {
-            SUPER.pointDataLoaded.call(this, pointData, url, reload);
-            this.initDisplay();
-        },
-        processMacros: function(selectedFields, value, makeList) {
-            if ((typeof value) != "string") return null;
-            var toks = [];
-            if (value.includes("${fieldLabel}")) {
-                for (i = 0; i < selectedFields.length; i++) {
-                    var v = value.replace("\${fieldLabel}", selectedFields[i].getLabel());
-                    toks.push(v);
-                }
-            } else if (value.includes("${fieldId}")) {
-                for (i = 0; i < selectedFields.length; i++) { 
-                   var v = value.replace("\${fieldId}", selectedFields[i].getId());
-                    toks.push(v);
-                }
-            } else if (value.includes("${fieldCnt}")) {
-                var v = value.replace("\${fieldCnt}", selectedFields.length);
-                toks.push(v);
-            } else if (value.includes("${")) {
-
-            } else {
-                return null;
-            }
-            if (makeList) return toks;
-            return Utils.join(toks, ",");
-        },
-        initDisplay: function() {
-            try {
-                this.initDisplayInner();
-            } catch (e) {
-                this.setContents(this.getMessage("An error occurred:" + e));
-                console.log("An error occurred:" + e);
-                console.log(e.stack);
-            }
-        },
-        useChartableFields: function() {
-            return false;
-        },
-        initDisplayInner: function() {
-            SUPER.initDisplay.call(this);
-            let records = this.filterData();
-            if (!records) {
-                this.setContents(this.getLoadingMessage());
-                return null;
-            }
-
-            var allFields = this.getData().getRecordFields();
-            var fields = this.getSelectedFields(allFields);
-            if (fields.length == 0) {
-                this.setContents(this.getMessage("no fields"));
-                return;
-            }
-
-            if (this.inInitDisplay) return;
-            if (this.haveInited) return;
-            this.haveInited = true;
-            this.inInitDisplay = true;
-
-            var props = {};
-            var foreachMap = {};
-            var foreachList = [];
-            var cnt = 0;
-            for (a in this.props) {
-                if (a.startsWith("foreach_")) {
-                    var value = this.props[a];
-                    var toks;
-                    var tmp = this.processMacros(fields, value, true);
-                    if (tmp) {
-                        toks = tmp;
-                    } else {
-                        toks = value.split(",");
-                    }
-                    a = a.substring(8);
-                    if (toks.length > cnt) cnt = toks.length;
-                    foreachMap[a] = toks;
-                    foreachList.push({
-                        attr: a,
-                        toks: toks
-                    });
-                }
-                if (a.startsWith("sub_")) {
-                    var value = this.props[a];
-                    a = a.substring(4);
-                    var tmp = this.processMacros(fields, value, false);
-                    if (tmp) {
-                        value = tmp;
-                    }
-                    props[a] = value;
-                }
-            }
-            var html = HU.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container"]);
-            this.writeHtml(ID_DISPLAY_CONTENTS, html);
-            var groupProps = {
-                target: this.getDomId(ID_DISPLAYS),
-            }
-            groupProps[PROP_LAYOUT_TYPE] = 'table';
-            groupProps[PROP_LAYOUT_COLUMNS] = this.getProperty(PROP_LAYOUT_COLUMNS, "2");
-            this.displayManager = new DisplayManager(this.getId() + "_manager", groupProps);
-
-
-            props.layoutHere = false;
-            if (this.props['data'])
-                props['data'] = this.props['data'];
-            var subType = this.getProperty("subType", "table");
-            if (cnt == 0) cnt = 1;
-            for (var i = 0; i < cnt; i++) {
-                var dprops = {};
-                $.extend(dprops, props);
-                for (var j = 0; j < foreachList.length; j++) {
-                    if (i < foreachList[j].toks.length) {
-                        dprops[foreachList[j].attr] = foreachList[j].toks[i];
-                    }
-                }
-                if (dprops['fields']) dprops['fields'] = dprops['fields'].split(",");
-                this.displayManager.createDisplay(subType, dprops);
-            }
-            this.inInitDisplay = false;
-        }
-    });
-}
-
-/**
    Copyright 2008-2019 Geode Systems LLC
 */
 
@@ -32399,25 +32375,22 @@ function MapEntryInfo(entry) {
 
 function RamaddaMapgridDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_MAPGRID, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    let myProps = [
+	{label:'Grid Map Attributes'},
+	{p:'localeField',ex:''},
+	{p:'grid',ex:'countries|us'},
+	{p:'cellSize',ex:'30',tt:'use 0 for flexible width'},
+	{p:'cellHeight',ex:'30'},
+	{p:'showCellLabel',ex:'false'},
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
         },
         displayData: function(reload) {
 	    this.updateUI();
 	},
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Grid Map Attributes",
-					'localeField=""',
-					'grid=countries|us',
-					['cellSize="30"','use 0 for flexible width'],
-					'cellHeight="30"',
-					'showCellLabel=false',
-				    ]);
-	},
-        handleEventFieldsSelected: function(source, fields) {
+	handleEventFieldsSelected: function(source, fields) {
 	    if(this.getProperty("selectedFieldIsColorBy") && fields.length>0) {
 		this.colorByFieldChanged(fields[0]);
 	    }
@@ -35628,7 +35601,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_TABLE,
-    help: makeDisplayHelp(null,"ranking.png")                            
+    tooltip: makeDisplayTooltip("Show fields ordered by values","ranking.png")                            
 });
 addGlobalDisplayType({
     type: DISPLAY_CORRELATION,
@@ -35636,7 +35609,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_TABLE,
-    help: makeDisplayHelp(null,"correlation.png")                            
+    tooltip: makeDisplayTooltip(null,"correlation.png")                            
 });
 addGlobalDisplayType({
     type: DISPLAY_CROSSTAB,
@@ -35644,7 +35617,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_TABLE,
-    help: makeDisplayHelp("Cross Tabulation","crosstab.png")                                
+    tooltip: makeDisplayTooltip("Cross Tabulation","crosstab.png")                                
 });
 
 addGlobalDisplayType({
@@ -35811,29 +35784,28 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
     if(!window["ForceGraph"]) {
 	Utils.importJS("https://unpkg.com/force-graph");
     }
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    let myProps = [
+	{label:'Graph'},
+	 {p:'sourceField',ex:''},
+	 {p:'targetField',ex:''},
+	 {p:'nodeBackground',ex:'#ccc'},
+	 {p:'drawCircle',ex:'true'},
+	 {p:'nodeWidth',ex:'10'},
+	 {p:'linkColor',ex:'red'},
+	 {p:'linkWidth',ex:'3'},
+	 {p:'linkDash',ex:'5'},
+	 {p:'linkWidth',ex:'3'},
+	 {p:'arrowLength',ex:'6'},
+	 {p:'arrowColor',ex:'green'},
+	 {p:'directionalParticles',ex:'2'}
+    ]
+
+
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
         },
 	callbackWaiting:false,
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Graph Properties",
-					'sourceField=""',
-					'targetField=""',
-					'nodeBackground="#ccc"',
-					'drawCircle="true"',
-					'nodeWidth="10"',
-					'linkColor="red"',
-					'linkWidth="3"',
-					'linkDash="5"',
-					'linkWidth="3"',
-					'arrowLength="6"',
-					'arrowColor="green"',
-					'directionalParticles="2"'
-				    ])},
-
         updateUI: function() {
             if(!window["ForceGraph"]) {
 		if(!this.callbackWaiting) {
@@ -35995,18 +35967,16 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
 
 function RamaddaTreeDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_TREE, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    let myProps = [
+	{label:'Tree'},
+	 {p:'maxDepth',ex:'3'},
+	 {p:'showDetails',ex:'false'},
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	countToRecord: {},
         needsData: function() {
             return true;
         },
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Tree Properties",
-					"maxDepth=3",
-					"showDetails=false",
-				    ])},
         updateUI: function() {
             let records = this.filterData();
             if (!records) return;
@@ -36106,23 +36076,17 @@ function RamaddaTreeDisplay(displayManager, id, properties) {
 function OrgchartDisplay(displayManager, id, properties) {
     const ID_ORGCHART = "orgchart";
     const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_ORGCHART, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    let myProps = [
+	{label:'Orgchart'},
+	{p:'labelField',ex:''},
+	{p:'parentField',ex:''},
+	{p:'idField',ex:''},
+	{p:'treeRoot',ex:'some label'},
+	{p:'treeTemplate',ex:''},
+	{p:'treeNodeSize',ex:'small|medium|large'}
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER,myProps, {
         handleEventRecordSelection: function(source, args) {},
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					'label:Orgchart Properties',
-					'labelField=""',
-					'parentField=""',
-					'idField=""',
-					'treeRoot="some label"',
-					'treeTemplate=""',
-					'treeNodeSize="small|medium|large"'
-					
-				    ])},
-
-
-
         needsData: function() {
             return true;
         },
@@ -36180,7 +36144,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
     if(!properties.height) properties.height=400;
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TIMELINE, properties);
     let myProps = [
-	{label:'Timeline Properties'},
+	{label:'Timeline'},
 	{p:'titleField',ex:''},
 	{p:'imageField',ex:''},
 	{p:'textTemplate',ex:''},
@@ -36372,7 +36336,7 @@ function RamaddaHoursDisplay(displayManager, id, properties) {
     const MULTI_ID = "multiid";
   
     let myProps = [
-	{label:'Hours Properties'},
+	{label:'Hours'},
 	{p:'dateField',ex:''},
 	{p:'boxWidth',ex:''},
 	{p:'boxColor',ex:'blue'},	
@@ -36589,7 +36553,7 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
 function RamaddaPreDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_PRE, properties);
     let myProps = [
-	{label:'Pre Properties'},
+	{label:'Pre'},
 	{p:'numRecords',ex:'100',d:1000},
 	{p:'includeGeo',ex:'true',d:true},	
     ];
@@ -36637,7 +36601,7 @@ function RamaddaPreDisplay(displayManager, id, properties) {
 function RamaddaHtmltableDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_HTMLTABLE, properties);
     let myProps = [
-	{label:'Pre Properties'},
+	{label:'Html Table'},
 	{p:'numRecords',ex:'100',d:1000},
 	{p:'includeGeo',ex:'true',d:true},
 	{p:'includeDate',ex:'true',d:true},		
@@ -37137,18 +37101,12 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
     });
     if(properties.sortAscending) this.sortAscending = "true" == properties.sortAscending;
     const SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_RANKING, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Chart Properties",
-					"sortField=\"\"",
-					'nameFields=""',
-				    ]);
-
-	},
-
-
+    let myProps = [
+	{label:'Ranking'},
+	{p:'sortField',ex:''},
+	{p:'nameFields',ex:''},
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
         },
@@ -37444,30 +37402,27 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
     });
 
     const SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_CORRELATION, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    let myProps = [
+	{label:'Correlation'},
+	{p:'showSelectSlider',ex:'false'},
+	{p:'range.low.min',ex:'-1'},
+	{p:'range.low.max',ex:'0'},
+	{p:'range.high.min',ex:'0'},
+	{p:'range.high.max',ex:'1'},
+	{p:'short',ex:'true',tt:'Abbreviated display'},
+	{p:'showValue',ex:'false',tt:'Show the values'},
+	{p:'useId ',ex:' true',tt:'Use field id instead of label'},
+	{p:'useIdTop',ex:'true',tt:'Use field id for top header'},
+	{p:'useIdSide ',ex:'true',tt:'Use field id for side header'},
+	{p:'labelStyle',ex:'',tt:'CSS style for labels'}
+
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         "map-display": false,
         needsData: function() {
             return true;
         },
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					
-					"label:Chart Properties",
-					'showSelectSlider=false',
-					"range.low.min=\"-1\"",
-					"range.low.max=\"0\"",
-					"range.high.min=\"0\"",
-					"range.high.max=\"1\"",
-					["short=true","Abbreviated display"],
-					["showValue=false","Show the values"],
-					['useId = true',"Use field id instead of label"],
-					['useIdTop=true',"Use field id for top header"],
-					['useIdSide = true',"Use field id for side header"],
-					['labelStyle=""',"CSS style for labels"]
-				    ]);
 
-	},
 
         getMenuItems: function(menuItems) {
             SUPER.getMenuItems.call(this, menuItems);
@@ -37751,13 +37706,12 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 
 function RamaddaRecordsDisplay(displayManager, id, properties, type) {
     const SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_RECORDS, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"maxHeight=\"\"",
-				    ]);
-	},
+    let myProps = [
+	{label:'Records'},
+	{p:'maxHeight',ex:'400px'},
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+
         needsData: function() {
             return true;
         },
@@ -37840,29 +37794,26 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
     const SUPER = new RamaddaFieldsDisplay(displayManager, id, type || DISPLAY_STATS, properties);
     if (!type)
         addRamaddaDisplay(this);
-    defineDisplay(this, SUPER, [], {
+    let myProps = [
+	{label:'Summary Statistics'},
+	{p:'showMin',ex:'true'},
+	{p:'showMax',ex:'true'},
+        {p:'showAverage',ex:'true'},
+        {p:'showStd',ex:'true'},
+        {p:'showPercentile',ex:'true'},
+        {p:'showCount',ex:'true'},
+        {p:'showTotal',ex:'true'},
+        {p:'showPercentile',ex:'true'},
+        {p:'showMissing',ex:'true'},
+        {p:'showUnique',ex:'true'},
+        {p:'showType',ex:'true'},
+        {p:'showText',ex:'true'},
+	{p:'doValueSelection',ex:'true'}
+
+    ];
+
+    defineDisplay(this, SUPER, myProps, {
         "map-display": false,
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					'label:Summary Statistics',
-					'showMin="true"',
-					'showMax="true"',
-                                        'showAverage="true"',
-                                        'showStd="true"',
-                                        'showPercentile="true"',
-                                        'showCount="true"',
-                                        'showTotal="true"',
-                                        'showPercentile="true"',
-                                        'showMissing="true"',
-                                        'showUnique="true"',
-                                        'showType="true"',
-                                        'showText="true"',
-					'doValueSelection=true'
-				    ])},
-
-
-
         needsData: function() {
             return true;
             //                return this.getProperty("loadData", false) || this.getCreatedInteractively();
@@ -38227,25 +38178,23 @@ function RamaddaCooccurenceDisplay(displayManager, id, properties) {
     const ID_HEADER = "coocheader";
     const ID_SORTBY = "sortby";
     const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_COOCCURENCE, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    let myProps = [
+	{label:'Cooccurence'},
+	{p:'sourceField',ex:''},
+	{p:'targetField',ex:''},
+	{p:'colorBy',ex:''},
+	{p:'directed',ex:'false'},
+	{p:'missingBackground',ex:'#eee'},
+	{p:'showSortBy',ex:'false'},
+	{p:'sortBy',ex:'weight'},
+	{p:'minWeight',ex:''},
+	{p:'topSpace',ex:'50px'}
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
         },
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Cooccurence Properties",
-					'sourceField=""',
-					'targetField=""',
-					'colorBy=""',
-					'directed=false',
-					'missingBackground=#eee',
-					'showSortBy=false',
-					'sortBy=weight',
-					'minWeight=""',
-					'topSpace=50px'
-					
-				    ])},
+
 	getHeader2:function() {
 	    let html = SUPER.getHeader2.call(this);
 	    let weightField = this.getFieldById(null, this.getProperty("colorBy","weight"));
@@ -38393,19 +38342,16 @@ function RamaddaBoxtableDisplay(displayManager, id, properties) {
     const ID_HEADER = "coocheader";
     const ID_SORTBY = "sortby";
     const SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_BOXTABLE, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    let myProps = [
+	{label:'Color Boxes'},
+	{p:'categoryField',ex:''},
+	{p:'colorBy',ex:''},
+	{p:'tableWidth',ex:'300'},
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
         },
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Color Boxes",
-					'categoryField=""',
-					'colorBy=""',
-					'tableWidth=300',
-					
-				    ])},
 
         updateUI: function() {
 	    let records = this.filterData();
@@ -38477,23 +38423,19 @@ function RamaddaBoxtableDisplay(displayManager, id, properties) {
 
 function RamaddaPercentchangeDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_PERCENTCHANGE, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Percent change Properties",
-					'template="${date1} ${date2} ${value1} ${value2} ${percent} ${per_hour} ${per_day} ${per_week} ${per_month} ${per_year}"',
-					'fieldLabel=""',
-					'sortFields=false',
-					'highlightPercent="50"',
-					'highlightPercentPositive="50"',
-					'highlightPercentNegative="-50"',
-					'highlightColor=""',
-					'highlightColorPositive=""',
-					'highlightColorNegative=""',
-					
-				    ]);
-	},
+    let myProps = [
+	{label:'Percent Change'},
+	{p:'template',ex:'${date1} ${date2} ${value1} ${value2} ${percent} ${per_hour} ${per_day} ${per_week} ${per_month} ${per_year}'},
+	{p:'fieldLabel',ex:''},
+	{p:'sortFields',ex:'false'},
+	{p:'highlightPercent',ex:'50'},
+	{p:'highlightPercentPositive',ex:'50'},
+	{p:'highlightPercentNegative',ex:'-50'},
+	{p:'highlightColor',ex:''},
+	{p:'highlightColorPositive',ex:''},
+	{p:'highlightColorNegative',ex:''},
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	updateUI: function() {
 	    let records = this.filterData();
 	    if(!records) return;
@@ -38617,30 +38559,28 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 
 function RamaddaDatatableDisplay(displayManager, id, properties) {
     const SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_DATATABLE, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    let myProps = [
+	{label:'Date Table'},
+	{p:'columnSelector',ex:'date_day|date_hour|date_dow|date_month|date_year'},
+	{p:'selectors',ex:'date_day,date_hour,date_dow,date_month,date_year,date_fieldid'},
+	{p:'columnSelector',ex:'date_day|date_hour|date_dow|date_month'},
+	{p:'rowSelector',ex:'date_day|date_hour|date_dow|date_month'},
+	{p:'checkedIcon',ex:'fa-checked'},
+	{p:'checkedTooltipHeader',ex:'${numberChecked}'},
+	{p:'dataCheckers',ex:'match|notmatch|lessthan|greaterthan|equals|notequals(field=field,value=value,label=label,enabled=false) '}, 
+	{p:'showColumnSelector',ex:'false'},
+	{p:'showRowSelector',ex:'false'},
+	{p:'showValues',ex:'false'},
+	{p:'showColors',ex:'false'},
+	{p:'showRowTotals',ex:'false'},
+	{p:'showColumnTotals',ex:'false'},
+	{p:'slantHeader',ex:'true'}
+	];
+
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
         },
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Date Table",
-					'columnSelector="date_day|date_hour|date_dow|date_month|date_year"',
-					'selectors="date_day,date_hour,date_dow,date_month,date_year,date_fieldid"',
-					'columnSelector="date_day|date_hour|date_dow|date_month"',
-					'rowSelector="date_day|date_hour|date_dow|date_month"',
-					'checkedIcon="fa-checked"',
-					'checkedTooltipHeader="${numberChecked}"',
-					'dataCheckers="match|notmatch|lessthan|greaterthan|equals|notequals(field=field,value=value,label=label,enabled=false) "', 
-					'showColumnSelector=false',
-					'showRowSelector=false',
-					'showValues=false',
-					'showColors=false',
-					'showRowTotals=false',
-					'showColumnTotals=false',
-					'slantHeader=true'
-
-				    ])},
         updateUI: function() {
             this.setContents(this.getLoadingMessage());
 	    let records = this.filterData();
@@ -39026,7 +38966,7 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_SPARKLINE, properties);
     let myProps = [
-	{label:'Sparkline Properties'},
+	{label:'Sparkline'},
 	{p:'showDate',ex:'true'},
 	{p:'showMin',ex:'true'},
 	{p:'showMax',ex:'true'},
@@ -39126,21 +39066,19 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
     if(!properties.width) properties.width="200";
     properties.displayInline = true;
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_POINTIMAGE, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Image Display",
-					'cellShape="rect|circle"',
-					'cellSize=4',
-					'cellFilled=false',
-					'cellColor=false',
-					'doHeatmap=true',
-					'padding=5',
-					'borderColor=#ccc',
-					'showTooltips=false',
-					'colorBy=""'
-				    ])},
+    let myProps = [
+	{label:'Point Image'},
+	{p:'cellShape',ex:'rect|circle'},
+	{p:'cellSize',ex:'4'},
+	{p:'cellFilled',ex:'false'},
+	{p:'cellColor',ex:'false'},
+	{p:'doHeatmap',ex:'true'},
+	{p:'padding',ex:'5'},
+	{p:'borderColor',ex:'#ccc'},
+	{p:'showTooltips',ex:'false'},
+	{p:'colorBy',ex:''}
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER,myProps, {
         needsData: function() {
             return true;
         },
@@ -39234,7 +39172,7 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 function RamaddaCanvasDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_CANVAS, properties);
     let myProps = [
-	{label:'Canvas Properties'},
+	{label:'Canvas'},
 	{p:'canvasWidth',d:100,ex:"100",tt:'Canvas width'},
 	{p:'canvasHeight',d:100,ex:"100",tt:'Canvas height'},
 	{p:'canvasStyle',d:"",ex:"",tt:'Canvas CSS style'},
@@ -39341,20 +39279,18 @@ function RamaddaCanvasDisplay(displayManager, id, properties) {
 function RamaddaFieldtableDisplay(displayManager, id, properties) {
     const ID_TABLE = "fieldtable";
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_FIELDTABLE, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Field Table",
-					'field=""',
-					'labelField=field',
-					'columnWidth=150',
-					'tableHeight=300',
-					'markerShape=circle|rect|triangle|bar|arrow|dart|bar',
-					'markerSize=16',
-					'markerFill=#64CDCC',
-					'markerStroke=#000'
-				    ])},
+    let myProps = [
+	{label:'Field Table'},
+	{p:'field',ex:''},
+	{p:'labelField',ex:'field'},
+	{p:'columnWidth',ex:'150'},
+	{p:'tableHeight',ex:'300'},
+	{p:'markerShape',ex:'circle|rect|triangle|bar|arrow|dart|bar'},
+	{p:'markerSize',ex:'16'},
+	{p:'markerFill',ex:'#64CDCC'},
+	{p:'markerStroke',ex:'#000'}
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
         },
@@ -39523,13 +39459,11 @@ function RamaddaFieldtableDisplay(displayManager, id, properties) {
 
 function RamaddaDotstackDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, "dotstack", properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Dot Stack",
-					'categoryField=field',
-				    ])},
+    let myProps = [
+	{label:'Dot Stack'},
+	{p:'categoryField',ex:'field'},
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
         },
@@ -40644,7 +40578,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_CHARTS,
-    help: makeDisplayHelp(null,"combochart.png")                        
+    tooltip: makeDisplayTooltip(null,"combochart.png")                        
 });
 
 addGlobalDisplayType({
@@ -40661,7 +40595,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_CHARTS,
-    help: makeDisplayHelp(null,"dotplot.png")                    
+    tooltip: makeDisplayTooltip(null,"dotplot.png")                    
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_SPLOM,
@@ -40683,7 +40617,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_CHARTS,
-    help: makeDisplayHelp(null,"profile.png")                    
+    tooltip: makeDisplayTooltip(null,"profile.png")                    
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_3DMESH,
@@ -41134,24 +41068,21 @@ function RamaddaSunburstDisplay(displayManager, id, properties) {
         height: "500",
     });
     let SUPER = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_SUNBURST, properties);
-    RamaddaUtil.inherit(this, SUPER);
-    addRamaddaDisplay(this);
-    RamaddaUtil.defineMembers(this, {
+    let myProps = [
+	{label:'Sunburst Display'},
+	{p:'parentField',ex:''},
+	{p:'labelField',ex:''},
+	{p:'idField',ex:''},
+	{p:'valueField',ex:''},
+	{p:'nodeFields',ex:''},
+	{p:'treeRoot',ex:'some label'},
+	{p:'doTopColors',ex:'true'},
+    ];
+
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         getDisplayStyle: function() {
             return "";
         },
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    ["label:Sunburst Display",
-				     'parentField=""',
-				     'labelField=""',
-				     'idField=""',
-				     'valueField=""',
-				     'nodeFields=""',
-				     'treeRoot="some label"',
-				     'doTopColors="true"',
-				    ])},
-
         updateUI: function() {
             var records = this.filterData();
             if (!records) return;
@@ -41976,16 +41907,13 @@ function RamaddaPTreemapDisplay(displayManager, id, properties) {
 }
 function TextcountDisplay(displayManager, id, properties) {
     let SUPER  =  new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_TEXTCOUNT, properties);
-    RamaddaUtil.inherit(this, SUPER);
-    addRamaddaDisplay(this);
-    $.extend(this, {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    ["label:Text Count Display",
-				     'patterns="foo,bar"',
-				     'labels="Foo,Bar"',
-				     'textField=""',
-				    ])},
+    let myProps = [
+	{label:'Text Count Display'},
+	{p:'patterns',ex:'foo,bar'},
+	{p:'labels',ex:'Foo,Bar'},
+	{p:'textField',ex:''},
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         getDialogContents: function(tabTitles, tabContents) {
 	    let html = HtmlUtils.div(["id",this.getDomId("dialog_set_pattern")],"Change patterns") + "<br>" +
 		HtmlUtils.textarea("",Utils.join(this.patternList||[],"\n"),["id", this.getDomId("dialog_patterns"),"rows","10"]);
@@ -42087,33 +42015,29 @@ function TextcountDisplay(displayManager, id, properties) {
 
 function CombochartDisplay(displayManager, id, properties) {
     let SUPER  =  new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_COMBOCHART, properties);
-    RamaddaUtil.inherit(this, SUPER);
-    addRamaddaDisplay(this);
-    $.extend(this, {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    ["label:Combo Chart",
-				     'fields=""',
- 				     '&lt;field&gt;.axisSide="right|left"',
-				     '&lt;field&gt;.axisTitle=""',
-				     '&lt;field&gt;.chartType="scatter|bar"',
-				     'chartType="scatter|bar"',
-				     '&lt;field&gt;.chartColor=""',
-				     'chartType=""',
-				     'xAxisTitle=""',
-				     'xAxisShowGrid=""',
-				     'xAxisShowLine=""',
-				     'legendBackground=""',
-				     'legendBorder=""',
-				     'chartBackground=""',
-				     'plotBackground=""',
-				     'marginLeft=""',
-				     'marginRight=""',
-				     'marginBottom=""',
-				     'marginTop=""',
-				     'chartPad=""',
-				    ])},
-
+    let myProps = [
+	{label:'Combo Chart'},
+	{p:'fields',ex:''},
+ 	{p:'&lt;field&gt;.axisSide',ex:'right|left'},
+	{p:'&lt;field&gt;.axisTitle',ex:''},
+	{p:'&lt;field&gt;.chartType',ex:'scatter|bar'},
+	{p:'chartType',ex:'scatter|bar'},
+	{p:'&lt;field&gt;.chartColor',ex:''},
+	{p:'chartType',ex:''},
+	{p:'xAxisTitle',ex:''},
+	{p:'xAxisShowGrid',ex:''},
+	{p:'xAxisShowLine',ex:''},
+	{p:'legendBackground',ex:''},
+	{p:'legendBorder',ex:''},
+	{p:'chartBackground',ex:''},
+	{p:'plotBackground',ex:''},
+	{p:'marginLeft',ex:''},
+	{p:'marginRight',ex:''},
+	{p:'marginBottom',ex:''},
+	{p:'marginTop',ex:''},
+	{p:'chartPad',ex:''},
+    ];	
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	updateUI: function() {
             let records = this.filterData();
             if (!records) return;

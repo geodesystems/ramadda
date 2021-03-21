@@ -3284,25 +3284,22 @@ function MapEntryInfo(entry) {
 
 function RamaddaMapgridDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_MAPGRID, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    let myProps = [
+	{label:'Grid Map Attributes'},
+	{p:'localeField',ex:''},
+	{p:'grid',ex:'countries|us'},
+	{p:'cellSize',ex:'30',tt:'use 0 for flexible width'},
+	{p:'cellHeight',ex:'30'},
+	{p:'showCellLabel',ex:'false'},
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
         },
         displayData: function(reload) {
 	    this.updateUI();
 	},
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Grid Map Attributes",
-					'localeField=""',
-					'grid=countries|us',
-					['cellSize="30"','use 0 for flexible width'],
-					'cellHeight="30"',
-					'showCellLabel=false',
-				    ]);
-	},
-        handleEventFieldsSelected: function(source, fields) {
+	handleEventFieldsSelected: function(source, fields) {
 	    if(this.getProperty("selectedFieldIsColorBy") && fields.length>0) {
 		this.colorByFieldChanged(fields[0]);
 	    }

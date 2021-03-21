@@ -51,21 +51,19 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 		       console.log("err");
 		   });
   
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Cards Attributes",
-					"groupByFields=\"\"",
-					"groupBy=\"\"",
-					"tooltipFields=\"\"",
-					"initGroupFields=\"\"",
-					"captionTemplate=\"${name}\"",
-					"sortFields=\"\"",
-					"labelField=\"\"",
-					'imageWidth="100"',
-					'imageMargin="5"',
-				    ])},
+    let myProps = [
+	{label:'Cards Attributes'},
+	{p:'groupByFields',ex:''},
+	{p:'groupBy',ex:''},
+	{p:'tooltipFields',ex:''},
+	{p:'initGroupFields',ex:''},
+	{p:'captionTemplate',ex:'${name}'},
+	{p:'sortFields',ex:''},
+	{p:'labelField',ex:''},
+	{p:'imageWidth',ex:'100'},
+	{p:'imageMargin',ex:'5'},
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         getContentsStyle: function() {
             return "";
         },
@@ -850,15 +848,13 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
     const ID_NEXT = "next";
     if(!Utils.isDefined(properties.displayStyle)) properties.displayStyle = "background:rgba(0,0,0,0);";
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_SLIDES, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    let myProps = [
+	{label:'Slides Attributes'},
+	{p:'template',ex:''}
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	slideIndex:0,
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Slides Attributes",
-					"template=\"\"",
-				    ]);
-	},
+
         handleEventRecordSelection: function(source, args) {
 	    //	    console.log(this.type+ ".recordSelection");
 	    if(!this.records) return;
