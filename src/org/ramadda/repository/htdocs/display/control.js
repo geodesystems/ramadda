@@ -17,14 +17,16 @@ addGlobalDisplayType({
     label: "Download",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CONTROLS
+    category: CATEGORY_CONTROLS,
+    tooltip: makeDisplayTooltip("Show a download link",null,"Allows user to select fields and<br>download CSV and JSON")                                        
 });
 addGlobalDisplayType({
     type: DISPLAY_RELOADER,
     label: "Reloader",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CONTROLS
+    category: CATEGORY_CONTROLS,
+    tooltip: makeDisplayTooltip("Reload the displays",null,"Automatically reloads the displays on a set frequency")                                            
 });
 addGlobalDisplayType({
     type: DISPLAY_FILTER,

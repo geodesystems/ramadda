@@ -165,7 +165,8 @@ addGlobalDisplayType({
     label: "Sankey Chart",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_RADIAL_ETC
+    category: CATEGORY_RADIAL_ETC,
+    tooltip: makeDisplayTooltip(null,"sankey.png")                                    
 });
 
 addGlobalDisplayType({

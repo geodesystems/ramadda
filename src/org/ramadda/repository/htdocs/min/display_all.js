@@ -14299,7 +14299,8 @@ addGlobalDisplayType({
     label: "Sankey Chart",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_RADIAL_ETC
+    category: CATEGORY_RADIAL_ETC,
+    tooltip: makeDisplayTooltip(null,"sankey.png")                                    
 });
 
 addGlobalDisplayType({
@@ -18924,14 +18925,16 @@ addGlobalDisplayType({
     label: "Download",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CONTROLS
+    category: CATEGORY_CONTROLS,
+    tooltip: makeDisplayTooltip("Show a download link",null,"Allows user to select fields and<br>download CSV and JSON")                                        
 });
 addGlobalDisplayType({
     type: DISPLAY_RELOADER,
     label: "Reloader",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CONTROLS
+    category: CATEGORY_CONTROLS,
+    tooltip: makeDisplayTooltip("Reload the displays",null,"Automatically reloads the displays on a set frequency")                                            
 });
 addGlobalDisplayType({
     type: DISPLAY_FILTER,
@@ -35786,7 +35789,8 @@ addGlobalDisplayType({
     forUser: true,
     label: "Tree",
     requiresData: false,
-    category: CATEGORY_RADIAL_ETC
+    category: CATEGORY_RADIAL_ETC,
+    tooltip: makeDisplayTooltip(null,"tree.png")                                    
 });
 
 addGlobalDisplayType({
@@ -35794,7 +35798,8 @@ addGlobalDisplayType({
     label: "Org Chart",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_RADIAL_ETC
+    category: CATEGORY_RADIAL_ETC,
+    tooltip: makeDisplayTooltip(null,"orgchart.png")                                
 });
 
 addGlobalDisplayType({
@@ -35818,21 +35823,24 @@ addGlobalDisplayType({
     label: "Blank",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CONTROLS
+    category: CATEGORY_CONTROLS,
+    tooltip: makeDisplayTooltip("Shows no data",null,"Useful for just showing filters, etc")                                                
 });
 addGlobalDisplayType({
     type: DISPLAY_PRE,
     label: "Preformat",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CONTROLS
+    category: CATEGORY_CONTROLS,
+    tooltip: makeDisplayTooltip("Shows records in an HTML PRE tag",null,"Useful for looking at the data")                                                
 });
 addGlobalDisplayType({
     type: DISPLAY_HTMLTABLE,
     label: "HTML Table",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CONTROLS
+    category: CATEGORY_CONTROLS,
+    tooltip: makeDisplayTooltip("Shows records in an HTML table",null,"Useful for looking at the data")                                                    
 });
 addGlobalDisplayType({
     type: DISPLAY_COOCCURENCE,
@@ -40658,7 +40666,8 @@ addGlobalDisplayType({
     label: "Sunburst",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_RADIAL_ETC
+    category: CATEGORY_RADIAL_ETC,
+    tooltip: makeDisplayTooltip(null,"sunburst.png")                            
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_DENSITY,
@@ -40673,7 +40682,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_CHARTS,
-    tooltip: makeDisplayTooltip(null,"combochart.png")                        
+b    tooltip: makeDisplayTooltip(null,"combochart.png")                        
 });
 
 addGlobalDisplayType({
@@ -40697,7 +40706,8 @@ addGlobalDisplayType({
     label: "Splom",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_RADIAL_ETC
+    category: CATEGORY_RADIAL_ETC,
+    tooltip: makeDisplayTooltip("A scatterplot matrix","splom.png")    
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_3DSCATTER,

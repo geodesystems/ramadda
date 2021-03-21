@@ -37,7 +37,8 @@ addGlobalDisplayType({
     label: "Sunburst",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_RADIAL_ETC
+    category: CATEGORY_RADIAL_ETC,
+    tooltip: makeDisplayTooltip(null,"sunburst.png")                            
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_DENSITY,
@@ -52,7 +53,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_CHARTS,
-    tooltip: makeDisplayTooltip(null,"combochart.png")                        
+b    tooltip: makeDisplayTooltip(null,"combochart.png")                        
 });
 
 addGlobalDisplayType({
@@ -76,7 +77,8 @@ addGlobalDisplayType({
     label: "Splom",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_RADIAL_ETC
+    category: CATEGORY_RADIAL_ETC,
+    tooltip: makeDisplayTooltip("A scatterplot matrix","splom.png")    
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_3DSCATTER,

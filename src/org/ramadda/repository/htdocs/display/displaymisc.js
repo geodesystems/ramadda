@@ -140,7 +140,8 @@ addGlobalDisplayType({
     forUser: true,
     label: "Tree",
     requiresData: false,
-    category: CATEGORY_RADIAL_ETC
+    category: CATEGORY_RADIAL_ETC,
+    tooltip: makeDisplayTooltip(null,"tree.png")                                    
 });
 
 addGlobalDisplayType({
@@ -148,7 +149,8 @@ addGlobalDisplayType({
     label: "Org Chart",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_RADIAL_ETC
+    category: CATEGORY_RADIAL_ETC,
+    tooltip: makeDisplayTooltip(null,"orgchart.png")                                
 });
 
 addGlobalDisplayType({
@@ -172,21 +174,24 @@ addGlobalDisplayType({
     label: "Blank",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CONTROLS
+    category: CATEGORY_CONTROLS,
+    tooltip: makeDisplayTooltip("Shows no data",null,"Useful for just showing filters, etc")                                                
 });
 addGlobalDisplayType({
     type: DISPLAY_PRE,
     label: "Preformat",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CONTROLS
+    category: CATEGORY_CONTROLS,
+    tooltip: makeDisplayTooltip("Shows records in an HTML PRE tag",null,"Useful for looking at the data")                                                
 });
 addGlobalDisplayType({
     type: DISPLAY_HTMLTABLE,
     label: "HTML Table",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CONTROLS
+    category: CATEGORY_CONTROLS,
+    tooltip: makeDisplayTooltip("Shows records in an HTML table",null,"Useful for looking at the data")                                                    
 });
 addGlobalDisplayType({
     type: DISPLAY_COOCCURENCE,
