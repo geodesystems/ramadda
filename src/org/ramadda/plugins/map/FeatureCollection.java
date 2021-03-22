@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -39,8 +39,8 @@ import java.text.DecimalFormat;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -205,8 +205,13 @@ public class FeatureCollection {
         return properties;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public List<DbaseDataWrapper> getDatum() {
-	return fieldDatum;
+        return fieldDatum;
     }
 
     /**
@@ -268,12 +273,22 @@ public class FeatureCollection {
         return styleUrl;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public EsriShapefile getShapefile() {
-	return  (EsriShapefile) properties.get("shapefile");
+        return (EsriShapefile) properties.get("shapefile");
     }
-	    
-    public DbaseFile   getDbFile() {
-	return  (DbaseFile) properties.get("dbfile");
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public DbaseFile getDbFile() {
+        return (DbaseFile) properties.get("dbfile");
     }
 
 
@@ -331,6 +346,7 @@ public class FeatureCollection {
                 if (fieldDatum.get(j).getName().equalsIgnoreCase(
                         colorByFieldAttr)) {
                     colorByField = fieldDatum.get(j);
+
                     break;
                 }
             }
@@ -360,9 +376,10 @@ public class FeatureCollection {
             styleUrls = new ArrayList<String>();
 
 
-            Hashtable<String, Color> valueMap = new Hashtable<String,Color>();
+            Hashtable<String, Color> valueMap = new Hashtable<String,
+                                                    Color>();
             if ((ct != null) && (colorByField != null)) {
-                if(colorByField.isNumeric()) {
+                if (colorByField.isNumeric()) {
                     boolean needMin = Double.isNaN(min);
                     boolean needMax = Double.isNaN(max);
                     if (needMin || needMax) {
@@ -400,21 +417,22 @@ public class FeatureCollection {
                     }
                 }
             }
-            if(colorByField!=null) {
+            if (colorByField != null) {
                 int cnt = 0;
-                Hashtable<String,Integer> indexMap = new Hashtable<String,Integer>();
+                Hashtable<String, Integer> indexMap = new Hashtable<String,
+                                                          Integer>();
                 for (int i = 0; i < features.size(); i++) {
                     Color color = null;
                     if (ct != null) {
-                        if(colorByField.isNumeric()) {
+                        if (colorByField.isNumeric()) {
                             double value = colorByField.getDouble(i);
                             color = ct.getColor(min, max, value);
                         } else {
-                            String value = "" + colorByField.getData(i);
+                            String  value = "" + colorByField.getData(i);
                             Integer index = indexMap.get(value);
-                            if(index==null) {
+                            if (index == null) {
                                 index = new Integer(cnt++);
-                                indexMap.put(value,index);
+                                indexMap.put(value, index);
                             }
                             color = ct.getColorByIndex(index);
                         }
@@ -424,10 +442,10 @@ public class FeatureCollection {
                     }
                     if (color != null) {
                         String styleUrl = makeFillStyle(color, colorMap,
-                                                        lineColor,
-                                                        !lineColorAttr.equals("none"),
-                                                        folder, styleCnt, styleName,
-                                                        balloonTemplate);
+                                              lineColor,
+                                              !lineColorAttr.equals("none"),
+                                              folder, styleCnt, styleName,
+                                              balloonTemplate);
                         styleUrls.add(styleUrl);
                     } else {
                         styleUrls.add(styleName);
@@ -713,19 +731,32 @@ public class FeatureCollection {
     /**
      * _more_
      *
+     *
+     * @param sb _more_
      * @return _more_
+     *
+     * @throws Exception _more_
      */
-    public String toGeoJson() {
+    public void toGeoJson(Appendable sb) throws Exception {
         List<String> map = new ArrayList<String>();
-        map.add("type");
-        map.add(Json.quote(TYPE_FEATURE_COLLECTION));
-        map.add("features");
+        sb.append(Json.mapOpen());
+        Json.attr(sb, "type", Json.quote(TYPE_FEATURE_COLLECTION));
+        sb.append(",\n");
+        sb.append(Json.mapKey("features"));
+        sb.append(Json.listOpen());
         List<String> flist = new ArrayList<String>();
+        int          cnt   = 0;
         for (Feature feature : features) {
-            flist.add(feature.toGeoJson());
+            if (cnt++ > 0) {
+                sb.append(",\n");
+            }
+            feature.toGeoJson(sb);
+            if (cnt > 10) {
+                break;
+            }
         }
-        map.add(Json.list(flist, false));
-        return Json.map(map, false);
+        sb.append(Json.listClose());
+        sb.append(Json.mapClose());
     }
 
 }

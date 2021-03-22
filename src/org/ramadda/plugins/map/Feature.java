@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -323,15 +323,19 @@ public class Feature {
     /**
      * _more_
      *
+     *
+     * @param sb _more_
      * @return _more_
+     *
+     * @throws Exception _more_
      */
-    public String toGeoJson() {
-        List<String> map = new ArrayList<String>();
-        map.add("type");
-        map.add(Json.quote(FeatureCollection.TYPE_FEATURE));
+
+    public void toGeoJson(Appendable sb) throws Exception {
+        sb.append(Json.mapOpen());
+        Json.attr(sb, "type", Json.quote(FeatureCollection.TYPE_FEATURE));
         if ((getId() != null) && !getId().isEmpty()) {
-            map.add("id");
-            map.add(Json.quote(getId()));
+            sb.append(",\n");
+            Json.attr(sb, "id", Json.quote(getId()));
         }
         if ((featureProperties != null) && !featureProperties.isEmpty()) {
             HashMap<String, Object> data =
@@ -353,14 +357,15 @@ public class Feature {
                     }
                 }
                 if (schemadata != null) {
-                    map.add("properties");
-                    map.add(Json.map(schemadata, false));
+                    sb.append(",\n");
+                    Json.attr(sb, "properties", Json.map(schemadata));
                 }
             }
         }
-        map.add(Geometry.TYPE_GEOMETRY);
-        map.add(geometry.toGeoJson());
+        sb.append(",\n");
+        sb.append(Json.mapKey(Geometry.TYPE_GEOMETRY));
+        geometry.toGeoJson(sb);
+        sb.append(Json.mapClose());
 
-        return Json.map(map, false);
     }
 }

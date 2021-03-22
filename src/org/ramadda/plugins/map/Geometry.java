@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -17,7 +17,11 @@
 package org.ramadda.plugins.map;
 
 
+import org.ramadda.util.GeoUtils;
+
+
 import org.ramadda.util.Json;
+import org.ramadda.util.Utils;
 
 import ucar.unidata.util.Misc;
 
@@ -109,16 +113,50 @@ public class Geometry {
     /**
      * _more_
      *
+     *
+     * @param sb _more_
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public void toGeoJson(Appendable sb) throws Exception {
+        sb.append(Json.mapOpen());
+        Json.attr(sb, "type", Json.quote(geometryType));
+        sb.append(",\n");
+        sb.append(Json.mapKey("coordinates"));
+        sb.append(getCoordsString());
+        sb.append(Json.mapClose());
+    }
+
+    /**
+     * _more_
+     *
      * @return _more_
      */
-    public String toGeoJson() {
-        List<String> map = new ArrayList();
-        map.add("type");
-        map.add(Json.quote(geometryType));
-        map.add("coordinates");
-        map.add(getCoordsString());
+    public float[] getCenter() {
+        float minLat = Float.NaN;
+        float minLon = Float.NaN;
+        float maxLat = Float.NaN;
+        float maxLon = Float.NaN;
 
-        return Json.map(map);
+        for (float[][] coord : coords) {
+            if (coord == null) {
+                continue;
+            }
+            int numPoints = coord[0].length;
+            for (int i = 0; i < numPoints; i++) {
+                float lon = coord[0][i];
+                float lat = coord[1][i];
+                minLat = Utils.min(minLat, lat);
+                maxLat = Utils.max(maxLat, lat);
+                minLon = Utils.min(minLon, lon);
+                maxLon = Utils.max(maxLon, lon);
+            }
+        }
+        float cLat = minLat + (maxLat - minLat) / 2.0f;
+        float cLon = minLon + (maxLon - minLon) / 2.0f;
+
+        return new float[] { cLat, cLon };
     }
 
     /**
@@ -205,7 +243,14 @@ public class Geometry {
      * @return _more_
      */
     public String toString() {
-        return toGeoJson();
+        try {
+            StringBuilder sb = new StringBuilder();
+            toGeoJson(sb);
+
+            return sb.toString();
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
     }
 
     /**
