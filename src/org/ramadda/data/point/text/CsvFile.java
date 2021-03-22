@@ -41,6 +41,9 @@ import java.util.List;
 public class CsvFile extends TextFile {
 
 
+    /** _more_          */
+    public static boolean debug = false;
+
     /** column delimiter */
     private String delimiter = null;
 
@@ -140,18 +143,11 @@ public class CsvFile extends TextFile {
     /**
      * _more_
      *
-     * @param buffered _more_
-     *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public InputStream doMakeInputStream(boolean buffered) throws Exception {
-        List<String> commands = getCsvCommands();
-        if (commands.size() == 0) {
-            return super.doMakeInputStream(buffered);
-        }
-
+    public File checkCachedFile() throws Exception {
         File file = getCacheFile();
         if (file != null) {
             if (file != null) {
@@ -166,10 +162,73 @@ public class CsvFile extends TextFile {
             }
         }
 
+        return file;
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public boolean shouldCreateCsvFile() {
+        return false;
+    }
+
+    /**
+     * _more_
+     *
+     * @param file _more_
+     * @param fos _more_
+     * @param buffered _more_
+     * @param commands _more_
+     *
+     * @throws Exception _more_
+     */
+    protected void doCreateCsvFile(File file, OutputStream fos,
+                                   boolean buffered, List<String> commands)
+            throws Exception {
+        if ( !commands.get(commands.size() - 1).equals("-print")) {
+            commands.add("-print");
+        }
+        CsvUtil csvUtil = new CsvUtil(commands,
+                                      new BufferedOutputStream(fos), null);
+
+        RecordFileContext ctx = getRecordFileContext();
+        if (ctx != null) {
+            csvUtil.setPropertyProvider(ctx.getPropertyProvider());
+        }
+        //else   System.err.println("No RecordFileContext set");
+        runCsvUtil(csvUtil, buffered);
+        fos.flush();
+        fos.close();
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param buffered _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public InputStream doMakeInputStream(boolean buffered) throws Exception {
+        List<String> commands     = getCsvCommands();
+        boolean      shouldCreate = shouldCreateCsvFile();
+        if ( !shouldCreate && (commands.size() == 0)) {
+            return super.doMakeInputStream(buffered);
+        }
+
+        File file = checkCachedFile();
         if ((file == null) || !file.exists()) {
             try {
-                System.err.println("Creating CSV cached file: " + file
-                                   + "\ncommands:" + commands);
+                if (debug) {
+                    System.err.println("Creating CSV cached file: " + file
+                                       + "\ncommands:" + commands);
+                }
                 ByteArrayOutputStream bos = null;
                 OutputStream          fos;
                 if (file != null) {
@@ -178,21 +237,7 @@ public class CsvFile extends TextFile {
                 } else {
                     fos = bos = new ByteArrayOutputStream();
                 }
-                if ( !commands.get(commands.size() - 1).equals("-print")) {
-                    commands.add("-print");
-                }
-                CsvUtil csvUtil = new CsvUtil(commands,
-                                      new BufferedOutputStream(fos), null);
-
-
-                RecordFileContext ctx = getRecordFileContext();
-                if (ctx != null) {
-                    csvUtil.setPropertyProvider(ctx.getPropertyProvider());
-                }
-                //else   System.err.println("No RecordFileContext set");
-                runCsvUtil(csvUtil, buffered);
-                fos.flush();
-                fos.close();
+                doCreateCsvFile(file, fos, buffered, commands);
                 if (file == null) {
                     return new ByteArrayInputStream(bos.toByteArray());
                 }
@@ -200,6 +245,10 @@ public class CsvFile extends TextFile {
                 if (file != null) {
                     filesBeingWritten.remove(file);
                 }
+            }
+        } else {
+            if (debug) {
+                System.err.println("CSV file was cached: " + file);
             }
         }
 
@@ -386,8 +435,7 @@ public class CsvFile extends TextFile {
      *
      * @throws Exception on badness
      */
-    public static void main(String[]
- args) throws Exception {
+    public static void main(String[] args) throws Exception {
         if (true) {
             PointFile.test(args, CsvFile.class);
 
@@ -397,27 +445,23 @@ public class CsvFile extends TextFile {
 
         for (int argIdx = 0; argIdx < args.length; argIdx++) {
             String arg = args[argIdx]
-;
+            ;
             try {
                 long                t1       = System.currentTimeMillis();
-                final int[]
-         cnt      = { 0 };
+                final int[]         cnt      = { 0 };
                 CsvFile             file     = new CsvFile(arg);
                 final RecordVisitor metadata = new RecordVisitor() {
                     public boolean visitRecord(RecordFile file,
                             VisitInfo visitInfo, BaseRecord record) {
-                        cnt[0]
-++;
+                        cnt[0]++;
                         PointRecord pointRecord = (PointRecord) record;
                         if ((pointRecord.getLatitude() < -90)
                                 || (pointRecord.getLatitude() > 90)) {
                             System.err.println("Bad lat:"
                                     + pointRecord.getLatitude());
                         }
-                        if ((cnt[0]
- % 100000) == 0) {
-                            System.err.println(cnt[0]
- + " lat:"
+                        if ((cnt[0] % 100000) == 0) {
+                            System.err.println(cnt[0] + " lat:"
                                     + pointRecord.getLatitude() + " "
                                     + pointRecord.getLongitude() + " "
                                     + pointRecord.getAltitude());
@@ -430,8 +474,7 @@ public class CsvFile extends TextFile {
                 file.visit(metadata);
                 long t2 = System.currentTimeMillis();
                 System.err.println("time:" + (t2 - t1) / 1000.0
-                                   + " # record:" + cnt[0]
-);
+                                   + " # record:" + cnt[0]);
             } catch (Exception exc) {
                 System.err.println("Error:" + exc);
                 exc.printStackTrace();
