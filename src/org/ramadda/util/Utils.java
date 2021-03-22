@@ -23,6 +23,7 @@ import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
@@ -2059,10 +2060,11 @@ public class Utils extends IO {
                                 "_").replaceAll("\\(", "_").replaceAll("\\)",
                                     "_").replaceAll("\\?",
                                         "_").replaceAll("[\"'`]+", "").trim();
-
+        label = label.replaceAll("-", "_");	
         label = label.replaceAll("__+", "_");
         label = label.replaceAll("_$", "");
-
+	if(Pattern.matches("^[0-9]+.*", label))
+	    label  = "_" + label;
         return label;
     }
 
@@ -4265,6 +4267,46 @@ public class Utils extends IO {
         return id;
     }
 
+
+    public static String getStack(int howMany) {
+	List<String> lines = new ArrayList<String>();
+	StringBuffer sb =new StringBuffer();
+	int cnt = 0;
+	for(String line: split( Misc.getStackTrace(),"\n")) {
+	    cnt++;
+	    //skip the first 3 lines so we don't get this method, etc
+	    if(cnt<=3) continue;
+	    lines.add(line);
+	    if(lines.size()>=howMany) break;
+	}
+	return join(lines,"\n",false);
+    }
+	    
+
+    public static double max(double d1, double d2) {
+	if(Double.isNaN(d1)) return d2;
+	if(Double.isNaN(d2)) return d1;
+	return Math.max(d1,d2);
+    }
+
+    public static float max(float d1, float d2) {
+	if(Float.isNaN(d1)) return d2;
+	if(Float.isNaN(d2)) return d1;
+	return Math.max(d1,d2);
+    }    
+
+    public static double min(double d1, double d2) {
+	if(Double.isNaN(d1)) return d2;
+	if(Double.isNaN(d2)) return d1;
+	return Math.min(d1,d2);
+    }
+
+    public static float min(float d1, float d2) {
+	if(Float.isNaN(d1)) return d2;
+	if(Float.isNaN(d2)) return d1;
+	return Math.min(d1,d2);
+    }    
+    
 
     /**
      * Interface description
