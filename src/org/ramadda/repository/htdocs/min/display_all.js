@@ -18907,7 +18907,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 
 
 /**
-Copyright 2008-2019 Geode Systems LLC
+   Copyright 2008-2019 Geode Systems LLC
 */
 
 
@@ -18940,47 +18940,53 @@ addGlobalDisplayType({
     type: DISPLAY_FILTER,
     label: "Filter",
     requiresData: false,
-    category: CATEGORY_CONTROLS
+    category: CATEGORY_CONTROLS,
+    tooltip: makeDisplayTooltip("No data, just provides data filtering")
 });
 addGlobalDisplayType({
     type: DISPLAY_ANIMATION,
     label: "Animation",
     requiresData: true,
-    category: CATEGORY_CONTROLS
+    category: CATEGORY_CONTROLS,
+    tooltip: makeDisplayTooltip("Steps through time to drive other displays","animation.png","")                                                        
 });
 addGlobalDisplayType({
     type: DISPLAY_MESSAGE,
     label: "Message",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CONTROLS
+    category: CATEGORY_CONTROLS,
+    tooltip: makeDisplayTooltip("No data, just a formatted message",null,"")                                                    
 });
 
 addGlobalDisplayType({
     type: DISPLAY_LABEL,
-    label: "Text",
+    label: "Label",
     requiresData: false,
-    category: CATEGORY_CONTROLS
+    category: CATEGORY_CONTROLS,
+    tooltip: makeDisplayTooltip("No data, just a text label",null,"Useful to add text to the display layout")                                                
 });
 addGlobalDisplayType({
     type: DISPLAY_LEGEND,
     label: "Legend",
-    requiresData: true,
+    requiresData: false,
     forUser: true,
-    category: CATEGORY_CONTROLS
+    category: CATEGORY_CONTROLS,
+    tooltip: makeDisplayTooltip("No data, just a configurable legend","legend.png")
 });
 addGlobalDisplayType({
     type: DISPLAY_TICKS,
     label: "Ticks",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CONTROLS
+    category: CATEGORY_CONTROLS,
+    tooltip: makeDisplayTooltip("Shows records as ticks in a timeline","ticks.png")
 });
 
 function RamaddaFilterDisplay(displayManager, id, properties) {
-    RamaddaUtil.inherit(this, new RamaddaDisplay(displayManager, id, properties));
-    addRamaddaDisplay(this);
-    RamaddaUtil.defineMembers(this, {
+    let SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_FILTER, properties);
+    let myProps =[];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         html: "<p>&nbsp;&nbsp;&nbsp;Nothing selected&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p>",
         initDisplay: function() {
             this.createUI();
@@ -18994,9 +19000,9 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
     var ID_START = "start";
     var ID_STOP = "stop";
     var ID_TIME = "time";
-    RamaddaUtil.inherit(this, new RamaddaDisplay(displayManager, id, DISPLAY_ANIMATION, properties));
-    addRamaddaDisplay(this);
-    RamaddaUtil.defineMembers(this, {
+    let SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_ANIMATION, properties);
+    let myProps =[];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         running: false,
         timestamp: 0,
         index: 0,
@@ -19054,9 +19060,9 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
                 var dttm = this.formatDate(record.getDate(), {
                     suffix: this.getTimeZone()
                 });
-                label += HtmlUtils.b("Date:") + " " + dttm;
+                label += HU.b("Date:") + " " + dttm;
             } else {
-                label += HtmlUtils.b("Index:") + " " + this.index;
+                label += HU.b("Index:") + " " + this.index;
             }
             $("#" + this.getDomId(ID_TIME)).html(label);
             if (propagate) {
@@ -19089,33 +19095,33 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
             if (this.running) return;
             this.running = true;
             this.timestamp++;
-            $("#" + this.getDomId(ID_START)).html(HtmlUtils.getIconImage(this.iconStop));
+            $("#" + this.getDomId(ID_START)).html(HU.getIconImage(this.iconStop));
             this.tick();
         },
         stop: function() {
             if (!this.running) return;
             this.running = false;
             this.timestamp++;
-            $("#" + this.getDomId(ID_START)).html(HtmlUtils.getIconImage(this.iconStart));
+            $("#" + this.getDomId(ID_START)).html(HU.getIconImage(this.iconStart));
         },
         updateUI: function() {
 	    let records = this.filterData();
 	    if(!records) return;
 	    this.currentRecords = records;
-//            this.createUI();
+	    //            this.createUI();
             this.stop();
 
             var get = this.getGet();
             var html = "";
 	    let c = "display-animation-button";
-            html += HtmlUtils.onClick(get + ".setIndex(0);", HtmlUtils.div([ATTR_TITLE, "beginning", ATTR_CLASS, c],HtmlUtils.getIconImage(this.iconBegin)));
-            html += HtmlUtils.onClick(get + ".deltaIndex(-1);", HtmlUtils.div([ATTR_TITLE, "step back", ATTR_CLASS, c],HtmlUtils.getIconImage(this.iconBack)));
-            html += HtmlUtils.onClick(get + ".toggle();", HtmlUtils.div([ATTR_ID, this.getDomId(ID_START),ATTR_TITLE, "play/stop",ATTR_CLASS, c], HtmlUtils.getIconImage(this.iconStart)));
-            html += HtmlUtils.onClick(get + ".deltaIndex(1);", HtmlUtils.div([ATTR_TITLE, "step forward", ATTR_CLASS, c],HtmlUtils.getIconImage(this.iconForward)));
-            html += HtmlUtils.onClick(get + ".setIndex();", HtmlUtils.div([ATTR_TITLE, "end", ATTR_CLASS, c],HtmlUtils.getIconImage(this.iconEnd)));
-            html += HtmlUtils.onClick(get + ".faster();", HtmlUtils.div([ATTR_TITLE, "faster", ATTR_CLASS, c],HtmlUtils.getIconImage(this.iconFaster)));
-            html += HtmlUtils.onClick(get + ".slower();", HtmlUtils.div([ATTR_TITLE, "slower", ATTR_CLASS, c],HtmlUtils.getIconImage(this.iconSlower)));
-            html += HtmlUtils.div(["style", "display:inline-block; min-height:24px; margin-left:10px;", ATTR_ID, this.getDomId(ID_TIME)], "&nbsp;");
+            html += HU.onClick(get + ".setIndex(0);", HU.div([ATTR_TITLE, "beginning", ATTR_CLASS, c],HU.getIconImage(this.iconBegin)));
+            html += HU.onClick(get + ".deltaIndex(-1);", HU.div([ATTR_TITLE, "step back", ATTR_CLASS, c],HU.getIconImage(this.iconBack)));
+            html += HU.onClick(get + ".toggle();", HU.div([ATTR_ID, this.getDomId(ID_START),ATTR_TITLE, "play/stop",ATTR_CLASS, c], HU.getIconImage(this.iconStart)));
+            html += HU.onClick(get + ".deltaIndex(1);", HU.div([ATTR_TITLE, "step forward", ATTR_CLASS, c],HU.getIconImage(this.iconForward)));
+            html += HU.onClick(get + ".setIndex();", HU.div([ATTR_TITLE, "end", ATTR_CLASS, c],HU.getIconImage(this.iconEnd)));
+            html += HU.onClick(get + ".faster();", HU.div([ATTR_TITLE, "faster", ATTR_CLASS, c],HU.getIconImage(this.iconFaster)));
+            html += HU.onClick(get + ".slower();", HU.div([ATTR_TITLE, "slower", ATTR_CLASS, c],HU.getIconImage(this.iconSlower)));
+            html += HU.div(["style", "display:inline-block; min-height:24px; margin-left:10px;", ATTR_ID, this.getDomId(ID_TIME)], "&nbsp;");
             this.setDisplayTitle("Animation");
             this.setContents(html);
         },
@@ -19125,10 +19131,9 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
 
 
 function RamaddaMessageDisplay(displayManager, id, properties) {
-    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_MESSAGE, properties);
-    RamaddaUtil.inherit(this,SUPER);
-    addRamaddaDisplay(this);
-    $.extend(this, {
+    const SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_MESSAGE, properties);
+    let myProps =[];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return false;
         },
@@ -19145,13 +19150,10 @@ function RamaddaMessageDisplay(displayManager, id, properties) {
 function RamaddaLabelDisplay(displayManager, id, properties) {
     var ID_TEXT = "text";
     var ID_EDIT = "edit";
-    var SUPER;
+
     if (properties && !Utils.isDefined(properties.showTitle)) {
         properties.showTitle = false;
     }
-
-    RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_LABEL, properties));
-    addRamaddaDisplay(this);
     this.text = "";
     this.editMode = properties.editMode;
     if (properties.text) this.text = properties.text;
@@ -19160,7 +19162,9 @@ function RamaddaLabelDisplay(displayManager, id, properties) {
     if (properties["class"]) this["class"] = properties["class"];
     else this["class"] = "display-text";
 
-    RamaddaUtil.defineMembers(this, {
+    const SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_LABEL, properties);
+    let myProps =[];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         initDisplay: function() {
             var theDisplay = this;
             this.createUI();
@@ -19169,9 +19173,9 @@ function RamaddaLabelDisplay(displayManager, id, properties) {
                 textClass += " display-text-edit ";
             }
             var style = "color:" + this.getTextColor("contentsColor") + ";";
-            var html = HtmlUtils.div([ATTR_CLASS, textClass, ATTR_ID, this.getDomId(ID_TEXT), "style", style], this.text);
+            var html = HU.div([ATTR_CLASS, textClass, ATTR_ID, this.getDomId(ID_TEXT), "style", style], this.text);
             if (this.editMode) {
-                html += HtmlUtils.textarea(ID_EDIT, this.text, ["rows", 5, "cols", 120, ATTR_SIZE, "120", ATTR_CLASS, "display-text-input", ATTR_ID, this.getDomId(ID_EDIT)]);
+                html += HU.textarea(ID_EDIT, this.text, ["rows", 5, "cols", 120, ATTR_SIZE, "120", ATTR_CLASS, "display-text-input", ATTR_ID, this.getDomId(ID_EDIT)]);
             }
             this.setContents(html);
             if (this.editMode) {
@@ -19222,8 +19226,10 @@ function RamaddaLegendDisplay(displayManager, id, properties) {
 	{p:'orientation',ex:'vertical'}
     ];
 
-
-    addRamaddaDisplay(this,SUPER, myProps, {
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+	needsData: function() {
+            return false;
+	},
 	updateUI: function() {
 	    let labels = this.getProperty("labels","").split(",");
 	    let colors = this.getColorList();
@@ -19239,17 +19245,17 @@ function RamaddaLegendDisplay(displayManager, id, properties) {
 		let color = colors[i]||"#fff";
 		if(i>0) html+=delim;
 		if(!inBox) {
-		    html+=HtmlUtils.div(["class","display-legend-item"], HtmlUtils.div(["class","display-legend-color","style","background:" + color+";width:" + colorWidth+";"+
-					 "height:15px;"]) +
-					HtmlUtils.div(["class","display-legend-label"],label));
+		    html+=HU.div(["class","display-legend-item"], HU.div(["class","display-legend-color","style","background:" + color+";width:" + colorWidth+";"+
+									  "height:15px;"]) +
+				 HU.div(["class","display-legend-label"],label));
 		} else {
 		    let lc = labelColors?labelColors[i]:labelColor || labelColor;
-		    html+=HtmlUtils.div(["class","display-legend-color","style","margin-left:8px;background:" + color+";"],
-					HtmlUtils.div(["class","display-legend-label","style","margin-left:8px;margin-right:8x;color:" + lc+";"],label));
+		    html+=HU.div(["class","display-legend-color","style","margin-left:8px;background:" + color+";"],
+				 HU.div(["class","display-legend-label","style","margin-left:8px;margin-right:8x;color:" + lc+";"],label));
 		}
 	    }
 	    if(orientation!="vertical") {
-		html = HtmlUtils.center(html); 
+		html = HU.center(html); 
 	    }
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
 	},
@@ -19263,103 +19269,101 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
     const ID_DOWNLOAD_CSV = "downloadcsv";
     const ID_DOWNLOAD_JSON = "downloadjson";    
     const ID_CANCEL = "cancel";    
-    RamaddaUtil.inherit(this,SUPER);
-    addRamaddaDisplay(this);
-    this.defineProperties([
+    let myProps =[
 	{label:'Download'},
 	{p:'csvLabel',ex:'Download'},
 	{p:'useIcon',d:'false',ex:'false'},
 	{p:'fileName',d:'download',ex:'download'},
 	{p:'askFields',d:'false',ex:'true'},		
-    ]);
-    $.extend(this, {
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	fieldOn:{},
 	needsData: function() {
-        return true;
-    },
-    updateUI: function() {
-	let label = this.getPropertyCsvLabel("Download Data");
-	label = label.replace("${title}",this.getProperty("title",""));
-	let useIcon = this.getPropertyUseIcon(true);
-	label = useIcon?HU.getIconImage("fa-download",[STYLE,"cursor:pointer;",TITLE,label]):label;
-	this.setContents(HU.div([],HU.span([ID,this.getDomId("csv")],label)));
-	if(useIcon) {
-            this.jq("csv").click(() => {
-		this.doDownload();
-            });
-	} else {
-            this.jq("csv").button().click(() => {
-		this.doDownload();
-            });
-	}
-    },
-    getCsv: function(fields) {
-        fields = fields || this.getData().getRecordFields();
-	let records = this.filterData();
-	DataUtils.getCsv(fields, records,this.getPropertyFileName()+".csv");
-    },
-    getJson: function(fields) {
-        fields = fields || this.getData().getRecordFields();
-	let records = this.filterData();
-	DataUtils.getJson(fields, records,this.getPropertyFileName()+".json");
-    },
+            return true;
+	},
+	updateUI: function() {
+	    let label = this.getPropertyCsvLabel("Download Data");
+	    label = label.replace("${title}",this.getProperty("title",""));
+	    let useIcon = this.getPropertyUseIcon(true);
+	    label = useIcon?HU.getIconImage("fa-download",[STYLE,"cursor:pointer;",TITLE,label]):label;
+	    this.setContents(HU.div([],HU.span([ID,this.getDomId("csv")],label)));
+	    if(useIcon) {
+		this.jq("csv").click(() => {
+		    this.doDownload();
+		});
+	    } else {
+		this.jq("csv").button().click(() => {
+		    this.doDownload();
+		});
+	    }
+	},
+	getCsv: function(fields) {
+            fields = fields || this.getData().getRecordFields();
+	    let records = this.filterData();
+	    DataUtils.getCsv(fields, records,this.getPropertyFileName()+".csv");
+	},
+	getJson: function(fields) {
+            fields = fields || this.getData().getRecordFields();
+	    let records = this.filterData();
+	    DataUtils.getJson(fields, records,this.getPropertyFileName()+".json");
+	},
 
-    applyFieldSelection: function() {
-	this.getData().getRecordFields().forEach(f=>{
-	    let cbx = this.jq("cbx_" + f.getId());
-	    let on = cbx.is(':checked');
-	    this.fieldOn[f.getId()] = on;
-	});
-    },
-    getDownloadDialog: function() {
-	let html = HU.center(HU.div([ID,this.getDomId(ID_DOWNLOAD_CSV)],"Download CSV") +"&nbsp;&nbsp;" +
-			     HU.div([ID,this.getDomId(ID_DOWNLOAD_JSON)],"Download JSON") +"&nbsp;&nbsp;" +			     			     HU.div([ID,this.getDomId(ID_CANCEL)],"Cancel"));
-	html += "<b>Include:<br></b>";
-	let cbx = "";
-	this.getData().getRecordFields().forEach((f,idx)=>{
-	    let on = this.fieldOn[f.getId()];
-	    if(!Utils.isDefined(on)) on = true;
-	    cbx += HU.checkbox(this.getDomId("cbx_" + f.getId()),[],on) +" " + f.getLabel() +"<br>";
-	});
-	
-	html = HU.div([STYLE,HU.css("margin","5px")],html);
-	html += HU.div([STYLE,HU.css("max-height","200px","overflow-y","auto","margin","5px")], cbx);
-	return html;
-    },
-    doDownload: function() {
-	let func = json=>{
-	    this.jq(ID_DIALOG).hide();
-	    let fields = [];
-	    this.applyFieldSelection();
+	applyFieldSelection: function() {
 	    this.getData().getRecordFields().forEach(f=>{
-		if(this.fieldOn[f.getId()]) {
-		    fields.push(f);
-		}
+		let cbx = this.jq("cbx_" + f.getId());
+		let on = cbx.is(':checked');
+		this.fieldOn[f.getId()] = on;
 	    });
-	    if(json) 
-		this.getJson(fields);
-	    else
-		this.getCsv(fields);
-	};
-	if(this.getPropertyAskFields(true)) {
-	    let html = this.getDownloadDialog();
-	    let init = ()=>{
-		this.jq(ID_CANCEL).button().click(() =>{
-		    this.applyFieldSelection();
-		    this.jq(ID_DIALOG).hide();
+	},
+	getDownloadDialog: function() {
+	    let html = HU.center(HU.div([ID,this.getDomId(ID_DOWNLOAD_CSV)],"Download CSV") +"&nbsp;&nbsp;" +
+				 HU.div([ID,this.getDomId(ID_DOWNLOAD_JSON)],"Download JSON") +"&nbsp;&nbsp;" +			     			     HU.div([ID,this.getDomId(ID_CANCEL)],"Cancel"));
+	    html += "<b>Include:<br></b>";
+	    let cbx = "";
+	    this.getData().getRecordFields().forEach((f,idx)=>{
+		let on = this.fieldOn[f.getId()];
+		if(!Utils.isDefined(on)) on = true;
+		cbx += HU.checkbox(this.getDomId("cbx_" + f.getId()),[],on) +" " + f.getLabel() +"<br>";
+	    });
+	    
+	    html = HU.div([STYLE,HU.css("margin","5px")],html);
+	    html += HU.div([STYLE,HU.css("max-height","200px","overflow-y","auto","margin","5px")], cbx);
+	    return html;
+	},
+	doDownload: function() {
+	    let func = json=>{
+		this.jq(ID_DIALOG).hide();
+		let fields = [];
+		this.applyFieldSelection();
+		this.getData().getRecordFields().forEach(f=>{
+		    if(this.fieldOn[f.getId()]) {
+			fields.push(f);
+		    }
 		});
-		this.jq(ID_DOWNLOAD_CSV).button().click(() =>{
-		    func(false);
-		});
-		this.jq(ID_DOWNLOAD_JSON).button().click(() =>{
-		    func(true);
-		});		
+		if(json) 
+		    this.getJson(fields);
+		else
+		    this.getCsv(fields);
 	    };
-	    this.showDialog(html,this.getDomId(ID_DISPLAY_CONTENTS),init);
-	} else  {
-	    this.getCsv();
-	}
-    },
+	    if(this.getPropertyAskFields(true)) {
+		let html = this.getDownloadDialog();
+		let init = ()=>{
+		    this.jq(ID_CANCEL).button().click(() =>{
+			this.applyFieldSelection();
+			this.jq(ID_DIALOG).hide();
+		    });
+		    this.jq(ID_DOWNLOAD_CSV).button().click(() =>{
+			func(false);
+		    });
+		    this.jq(ID_DOWNLOAD_JSON).button().click(() =>{
+			func(true);
+		    });		
+		};
+		this.showDialog(html,this.getDomId(ID_DISPLAY_CONTENTS),init);
+	    } else  {
+		this.getCsv();
+	    }
+	},
     });
 }
 
@@ -19367,16 +19371,13 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
     const ID_CHECKBOX= "cbx";
     const ID_COUNTDOWN= "countdown";
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_RELOADER, properties);
-    RamaddaUtil.inherit(this,SUPER);
-    addRamaddaDisplay(this);
-    this.defineProperties([
+    let myProps = [
 	{label:'Reloader'},
 	{p:'interval',ex:'30',d:30,label:"Interval"},
 	{p:'showCheckbox',ex:'false',d:true,label:"Show Checkbox"},
-	{p:'showCountdown',ex:'false',d:true,label:"Show Countdown"},
-    ]);
-
-    $.extend(this, {
+	{p:'showCountdown',ex:'false',d:true,label:"Show Countdown"},	
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
         },
@@ -19461,16 +19462,12 @@ function RamaddaTicksDisplay(displayManager, id, properties) {
     properties.animationMakeSlider = false;
     const ID_ANIMATION = "animation";
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TICKS, properties);
-    RamaddaUtil.inherit(this,SUPER);
-    addRamaddaDisplay(this);
-
-    this.defineProperties([
+    let myProps = [
 	{label:'Time Ticks'},
 	{p:'animationHeight',ex:'30px'},
 	{p:'showYears',ex:'true'},
-    ]);
-
-    $.extend(this, {
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {    
         needsData: function() {
             return true;
         },
@@ -19516,7 +19513,7 @@ function RamaddaTicksDisplay(displayManager, id, properties) {
 		    dateInfo.dateMax = new Date(Date.UTC(year,11,31));
 		}
 		animation.init(dateInfo.dateMin, dateInfo.dateMax,info.records);
-	     });
+	    });
 	}
     });
 }
@@ -35746,7 +35743,7 @@ addGlobalDisplayType({
     label: "Percent Change",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC,
+    category: CATEGORY_TEXT,
     tooltip: makeDisplayTooltip("Percent Change","percentchange.png","Show percent change over a given time in a text template")    
 });
 
@@ -40682,7 +40679,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_CHARTS,
-b    tooltip: makeDisplayTooltip(null,"combochart.png")                        
+    tooltip: makeDisplayTooltip(null,"combochart.png")                        
 });
 
 addGlobalDisplayType({

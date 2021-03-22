@@ -97,7 +97,7 @@ addGlobalDisplayType({
     label: "Percent Change",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC,
+    category: CATEGORY_TEXT,
     tooltip: makeDisplayTooltip("Percent Change","percentchange.png","Show percent change over a given time in a text template")    
 });
 

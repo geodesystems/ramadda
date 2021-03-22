@@ -53,7 +53,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_CHARTS,
-b    tooltip: makeDisplayTooltip(null,"combochart.png")                        
+    tooltip: makeDisplayTooltip(null,"combochart.png")                        
 });
 
 addGlobalDisplayType({
