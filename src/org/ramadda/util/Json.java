@@ -448,6 +448,11 @@ public class Json {
     }
 
 
+    public static void attr(Appendable sb, String name, String value) throws Exception {
+        sb.append(mapKey(name));
+	sb.append(getString(value, false));
+    }
+
     /**
      * Create a JSON object attribute
      *
