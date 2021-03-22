@@ -507,8 +507,7 @@ public class RecordField {
      * @return _more_
      */
     public String toString() {
-        return "field:" + name + " label: " + label + " type:" + type
-               + " param:" + paramId;
+        return  name + "[" + type +"]: " + label;
     }
 
 
