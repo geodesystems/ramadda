@@ -5197,6 +5197,35 @@ public abstract class Converter extends Processor {
     }
 
 
+    public static class MakeIds extends Converter {
+
+
+        /**
+         *
+         */
+        public MakeIds() {
+        }
+
+        /**
+         *
+         * @param info _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row) {
+	    if(rowCnt++==0) {
+		Row newRow =new Row();
+		for(int i=0;i<row.size();i++)
+		    newRow.add(Utils.makeID(row.getString(i)));
+		return newRow;
+	    }
+	    return row;
+	}
+    }
+    
+
     /**
      * Class description
      *

@@ -1497,6 +1497,8 @@ public class CsvUtil {
         new Cmd("-break", "Break apart column values and make new rows",
                 "label1", "label2", "columns"),
 
+        new Cmd("-makeids", "Turn the header row into IDs (lowercase, no space, a-z0-9_"),
+
         /** *  Add values * */
         new Cmd(true, "Add Values"),
         new Cmd("-md", "Make a message digest of the column values",
@@ -1698,6 +1700,7 @@ public class CsvUtil {
 			"props",
 			"Name value pairs:\n\t\ttable.id <new id> table.name <new name> table.cansearch <true|false> table.canlist <true|false> table.icon <icon, e.g., /db/database.png>\n\t\t<column name>.id <new id for column> <column name>.label <new label>\n\t\t<column name>.type <string|enumeration|double|int|date>\n\t\t<column name>.format <yyyy MM dd HH mm ss format for dates>\n\t\t<column name>.canlist <true|false> <column name>.cansearch <true|false>\n\t\tinstall <true|false install the new db table>\n\t\tnukedb <true|false careful! this deletes any prior created dbs", "rows", "6")),
         new Cmd("-toxml", "Generate XML", new Arg("tag")),
+        new Cmd("-tojson", "Generate JSON"),	
         new Cmd("-run", "", "Name of process directory"),
         new Cmd("-cat", "One or more csv files", "*.csv"),
         new Cmd("-script", "Generate the script to call"),
@@ -2236,6 +2239,10 @@ public class CsvUtil {
 		ctx.getProcessor().addProcessor(new Processor.ToXml(args.get(++i)));
 		return i;
 	    });
+	defineFunction("-tojson",0,(ctx,args,i) -> {
+		ctx.getProcessor().addProcessor(new Processor.ToJson());
+		return i;
+	    });	
 	
 	defineFunction("-percent",  1,(ctx,args,i) -> {
 		ctx.getProcessor().addProcessor(new Converter.ColumnPercenter(getCols(args.get(++i))));
@@ -2830,6 +2837,11 @@ public class CsvUtil {
 		return i;
 	    });
 
+
+	defineFunction("-makeids", 0,(ctx,args,i) -> {
+		ctx.getProcessor().addProcessor(new Converter.MakeIds());
+		return i;
+	    });
 
 	defineFunction("-setcol", 4,(ctx,args,i) -> {
 		String col1    = args.get(++i);

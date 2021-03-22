@@ -19,6 +19,7 @@ package org.ramadda.util.text;
 
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Json;
 import org.ramadda.util.Utils;
 
 import ucar.unidata.util.IOUtil;
@@ -1465,6 +1466,84 @@ rotate -> pass -> pass -> rotate -> pass
 
     }
 
+
+    public static class ToJson extends Processor {
+
+	private Row headerRow;
+
+        /**
+         * ctor
+         */
+        public ToJson() {
+        }
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param row _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row) throws Exception {
+	    if(headerRow==null) {
+		headerRow = row;
+		info.getWriter().println("[");
+		return row;
+	    }
+            handleRow(info, info.getWriter(), row);
+            return row;
+        }
+
+
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param rows _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public List<Row> finish(TextReader info, List<Row> rows)
+                throws Exception {
+	    info.getWriter().println("]");
+            return rows;
+        }
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param writer _more_
+         * @param row _more_
+         *
+         * @throws Exception _more_
+         */
+        private void handleRow(TextReader info, PrintWriter writer, Row row)
+                throws Exception {
+	    rowCnt++;
+	    if(rowCnt>1) writer.println(",");
+	    List<String> attrs = new ArrayList<String>();
+	    for(int i=0;i<headerRow.size();i++) {
+		String field = headerRow.getString(i);
+		String value = row.getString(i);
+		attrs.add(field);
+		attrs.add(value);		
+	    }
+	    writer.print(Json.mapAndGuessType(attrs));
+        }
+
+    }
+    
 
 
 
