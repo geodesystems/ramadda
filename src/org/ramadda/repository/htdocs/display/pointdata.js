@@ -586,7 +586,7 @@ function DerivedPointData(displayManager, name, pointDataList, operation) {
   as I think RAMADDA passes in NaN
   unit - the unit of the value
 */
-function RecordField(props) {
+function RecordField(props, source) {
     $.extend(this, {
         isDate: props.type == "date",
         isLatitude: false,
@@ -600,6 +600,13 @@ function RecordField(props) {
         properties: props
     });
 
+    //check for extended attributes
+    if(source && source.getProperty) {
+	["type","label","unit"].forEach(t=>{
+	    let ext = source.getProperty(props.id+"." + t);
+	    if(ext) this[t] = ext;
+	});
+    }
     RamaddaUtil.defineMembers(this, {
 	clone: function() {
 	    var newField = {};
@@ -698,6 +705,9 @@ function RecordField(props) {
         getType: function() {
             return this.type;
         },
+        setType: function(t) {
+            this.type = t;
+        },	
         getMissing: function() {
             return this.missing;
         },
@@ -859,7 +869,7 @@ function makePointData(json, derived, source,url) {
     var lastField = null;
     for (var i = 0; i < json.fields.length; i++) {
         var field = json.fields[i];
-        var recordField = new RecordField(field);
+        var recordField = new RecordField(field,source);
         if (recordField.isFieldNumeric()) {
             if (source.getProperty) {
                 var offset1 = source.getProperty(recordField.getId() + ".offset1", source.getProperty("offset1"));

@@ -1186,7 +1186,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'convertData',label:"Prune where fields are all NaN",ex:"prune(fields=);",tt:"Prune"},		
 	{p:'convertData',label:"Scale and offset",ex:"accum(scale=1,offset1=0,offset2=0,unit=,fields=);",tt:"(d + offset1) * scale + offset2"},		
 	{label:"Color"},
-	{p:"colors",ex:"color1},...,colorN",tt:"Comma separated array of colors"},
+	{p:"colors",ex:"color1,...,colorN",tt:"Comma separated array of colors"},
 	{p:"colorBy",ex:"",tt:"Field id to color by"},
 	{p:"colorByFields",ex:"",tt:"Show color by fields in a menu"},
 	{p:"colorByLog",ex:"true",tt:"Use a log scale for the color by"},
@@ -4357,7 +4357,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    let sideWidth = "1%";
             let contents = this.getContentsDiv();
-            let table =   HU.open("table", ["width","100%","border","0","cellpadding","0","cellspacing","0"]);
+	    //display table
+            let table =   HU.open("table", [CLASS, "display-ui-table", "width","100%","border","0","cellpadding","0","cellspacing","0"]);
 	    if(this.getProperty("showDisplayTop",true)) {
 		table+= HU.tr([],HU.td(["width",sideWidth]) + HU.td(["width","99%"],top) +HU.td(["width",sideWidth]));
 	    }

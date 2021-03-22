@@ -382,10 +382,60 @@ a.ramadda-nav-link-0, a.ramadda-nav-link-0:visited, .ramadda-nav-left h3 a, .ram
     background:transparent;
 }
 
+.ramadda-entry-nav-page-outer a {
+    text-decoration:none;
+}    
+
+
+a.ramadda-entry-nav-page {
+    text-decoration:none;
+}
+
+.ramadda-entry-nav-page-decorated {
+    min-width:200px;
+    padding:10px;
+    padding-bottom:10px;
+    margin:20px;
+    margin-left:40px;
+    margin-right:40px;
+    vertical-align:center;
+    background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
+
+}
+
+.ramadda-entry-nav-page-decorated a {
+    text-decoration:none;
+}
+
+
+.ramadda-entry-nav-page-label {
+    text-decoration:none !important;
+    font-weight:bold;
+
+}
+
+.ramadda-entry-nav-page-outer:hover {
+    color: #0074D9 !important;
+}
+
+
+div:hover .ramadda-snippet, .ramadda-entry-nav-page-outer .ramadda-snippet {
+    color:#9DAAB6;
+}
+
+.ramadda-entry-nav-page-decorated:hover {
+    /*border: 1px solid #aaa;*/
+    border:1px solid #0074D9;
+}
+
+
+
 .ramadda-nav-page {
     display:inline-block;
     vertical-align:top;
 }
+
+
 
 .ramadda-nav-page-decorated {
     min-width:200px;
@@ -399,7 +449,7 @@ a.ramadda-nav-link-0, a.ramadda-nav-link-0:visited, .ramadda-nav-left h3 a, .ram
     border:1px solid #0074D9;
 }
 
-.
+
 
 .ramadda-nav-page:hover i {
     color:#0074D9;
@@ -700,6 +750,7 @@ a.ramadda-menubar-button:hover {
 
 .ramadda-snippet {
     margin-bottom: 5px;
+    text-decoration:none !important;
 }
 
 .ramadda-snippet-hover {
@@ -4643,11 +4694,11 @@ h3.ui-accordion-header a {
 }    
 
 .wiki-popup-menu-header {
+    margin-right:2px;
+    margin-left:2px;    
     padding:4px;    
-    padding-left:5px;
-    padding-right:5px;        
-
 }
+
 
 .wiki-popup-menu-item {
     background:#fff;

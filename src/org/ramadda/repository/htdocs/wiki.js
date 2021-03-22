@@ -129,6 +129,8 @@ function insertAtCursor(id, myField, value) {
         myField.value = myField.value.substring(0, startPos) +
             value +
             myField.value.substring(endPos, myField.value.length);
+	let newPos = startPos + value.length;
+	myField.selectionEnd = newPos;
     } else {
         myField.value += value;
     }
@@ -524,7 +526,6 @@ WikiEditor.prototype = {
     },
 
     getScroller:function() {
-	console.log("B:"+ this.getBlock().length);
 	return this.getBlock().find(".ace_scroller");
     },
     getSession:function() {
@@ -533,6 +534,7 @@ WikiEditor.prototype = {
     insertAtCursor:function(value) {
 	value = Utils.decodeText(value);    
 	if(this.popupShowing) {
+	    
 	    insertAtCursor(null, this.jq(ID_WIKI_POPUP_EDITOR)[0], value);
 	    this.jq(ID_WIKI_POPUP_EDITOR).focus();
 	    //We do this because the  SF menu stays popped up after clicking so we hide it
@@ -780,12 +782,20 @@ WikiEditor.prototype = {
 		return;
 	    }
 	    let label = tag.label||tag.p;
-	    let attr=" " +tag.p+"=";
-	    if(tag.ex)
-		attr+='"'+tag.ex+'"';
+	    let attr = "";
+	    if(Utils.isDefined(tag.ex))
+		attr=String(tag.ex);
+	    else if(Utils.isDefined(tag.d))
+		attr=String(tag.d);
 	    else
-		attr+="\"\"";
-	    attr+=" ";
+		attr="";
+	    attr = attr.trim();
+	    if(attr.indexOf(" ")>=0) {
+		attr = '"' + attr +'"';
+	    } else if(attr =="") {
+		attr = '"' + attr +'"';
+	    }
+	    attr=" " +tag.p+"=" + attr +" ";
 	    attr  =attr.replace(/\"/g,"&quot;");
 	    block.items.push(HU.div([CLASS,"ramadda-menu-item",TITLE,tag.tt||""], HtmlUtils.onClick("insertText('" + this.getId() +"','"+attr+"')",label)));
 	};
@@ -819,7 +829,6 @@ WikiEditor.prototype = {
 	    return;
 	}
 
-
 	let blocks = result.blocks;
 	let title = result.title;
 	let display = result.display;
@@ -837,7 +846,8 @@ WikiEditor.prototype = {
 		    menu+=block;
 		    return;
 		}
-		let title = HU.div([CLASS,"wiki-editor-popup-header"], block.title);
+		let title = block.title;
+		title = HU.div([CLASS,"wiki-editor-popup-header"], title)
 		let contents  = block.items.join("");
 		contents = HU.div([CLASS,"wiki-editor-popup-items"],contents);
 		menu +=HU.toggleBlock(block.title, contents);
@@ -845,6 +855,7 @@ WikiEditor.prototype = {
 	    menu += HU.close('div');
 	});
 	menu += "</div>";
+
 
 
 	//	HU.makeDialog({content:menu,anchor:this.getScroller(),title:title,header:true,sticky:true,draggable:true,modal:true});
@@ -878,14 +889,19 @@ WikiEditor.prototype = {
 	let attrs = Utils.parseAttributes(tagInfo.attrs);
 	let contents = tagInfo.attrs;
 	let menu  = "";
+	let prefix = tagInfo.type|| tagInfo.tag;
 	blocks.forEach((block,idx)=>{
 	    if(typeof block=="string") {
 		//TODO: this is the color tables
 		//		menu+=block;
 		return;
 	    }
+	    let title = block.title;
+
+	    //remove the display name from the title of the menu 
+	    if(title.toLowerCase().startsWith(prefix)) title = title.substring(prefix.length).trim();
 	    let sub = Utils.wrap(block.items,"<li>","");
-	    menu += HU.tag(TAG_LI, [],HU.div([CLASS,"wiki-popup-menu-header"],block.title) + HU.tag("ul", [CLASS,"wiki-popup-menu-item"], sub));
+	    menu += HU.tag(TAG_LI, [],HU.div([CLASS,"wiki-popup-menu-header"],title) + HU.tag("ul", [CLASS,"wiki-popup-menu-item"], sub));
 	});
 	let id = this.domId(ID_WIKI_MENUBAR);
 	var menubar = HU.div([CLASS,"wiki-popup-menubar",  ATTR_ID, id],
@@ -893,7 +909,7 @@ WikiEditor.prototype = {
 	let width =$(window).width()-100;
 	let html = HU.div([ID,this.domId("wiki-editor-popup"),CLASS,"wiki-editor-editor"],
 			  menubar +
-			  HU.textarea("",contents,[STYLE,HU.css('width',width+'px','height','300px'),ID,this.domId(ID_WIKI_POPUP_EDITOR),"xrows","10","xcols","120"]) + "<br>" +
+			  HU.textarea("",contents,["spellcheck","false",STYLE,HU.css('width',width+'px','height','300px'),ID,this.domId(ID_WIKI_POPUP_EDITOR),"xrows","10","xcols","120"]) + "<br>" +
 			  HU.div([STYLE,HU.css("text-align","center","padding","4px")],
 				 HU.div([ID,this.domId(ID_WIKI_POPUP_OK)],"Ok") + SPACE1 +
 				 HU.div([ID,this.domId(ID_WIKI_POPUP_CANCEL)],"Cancel")));
@@ -913,7 +929,10 @@ WikiEditor.prototype = {
 	    let val = this.jq(ID_WIKI_POPUP_EDITOR).val();
 	    let tag =  tagInfo.tag;
 	    //A hack
-	    if(tag == "display" && tagInfo.type == "group") tag  = "group";
+	    if(tag == "display") {
+		if(tagInfo.type == "group") tag  = "group";
+		else if(tagInfo.type !="") tag = "display_" + tagInfo.type;
+	    }
 	    let text = "{{" +tag +" " + val +"}}";
 	    this.popupShowing = false;
 	    dialog.remove();

@@ -194,7 +194,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'latField2',tt:'Field id for segments'},
 	{p:'lonField2',tt:'Field id for segments'},
 
-	{label:"Map Label Properties"},
+	{label:"Map Labels"},
 	{p:"labelFontColor",ex:"#000"},
 	{p:"labelFontSize",ex:"12px"},
 	{p:"labelFontFamily",ex:"'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"},
@@ -215,7 +215,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{label:'3dbar glyph', p:"glyph1",ex:"type:3dbar,pos:sw,dx:10,dy:-10,height:30,width:8,baseHeight:5,sizeBy:field"},
 	{label:'gauge glyph',p:"glyph1",ex:"type:gauge,color:#000,pos:sw,width:50,height:50,dx:10,dy:-10,sizeBy:field,sizeByMin:0"},
 
-	{label:'Heatmap Properties'},
+	{label:'Heatmap'},
 	{p:'doHeatmap',ex:'true',tt:'Grid the data into an image'},
 	{p:'hmShowPoints',ex:'true',tt:'Also show the map points'},
 	{p:'hmShowReload',ex:'true',tt:''},

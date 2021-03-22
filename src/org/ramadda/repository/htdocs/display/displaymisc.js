@@ -1054,7 +1054,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
     let myProps = [
 	{label:'Html Table'},
 	{p:'numRecords',ex:'100',d:1000},
-	{p:'includeGeo',ex:'true',d:true},
+	{p:'includeGeo',ex:'true',d:false},
 	{p:'includeDate',ex:'true',d:true},		
     ];
 
