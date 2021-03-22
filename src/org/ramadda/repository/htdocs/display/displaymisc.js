@@ -990,8 +990,6 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
 	    let records = this.filterData();
 	    this.writeHtml(ID_DISPLAY_CONTENTS, "");
 	    if(!records) return;
-	    console.log("r:" + records.length);
-
 	    let colorBy = this.getColorByInfo(records);
 	    if(colorBy.index>=0) {
 		records.map(record=>{

@@ -15106,7 +15106,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let maxWidth = this.getProperty("maxFieldLength",this.getProperty("maxFieldWidth",-1));
 	    let addTooltip = this.getAddToolTip();
     	    let addStyle= this.getAddStyle();
-	    addTooltip = addStyle = false;
 	    let annotationTemplate = this.getAnnotationTemplate();
 	    let formatNumbers = this.getFormatNumbers();
             if (dataList.length == 1) {
@@ -36636,8 +36635,6 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
 	    let records = this.filterData();
 	    this.writeHtml(ID_DISPLAY_CONTENTS, "");
 	    if(!records) return;
-	    console.log("r:" + records.length);
-
 	    let colorBy = this.getColorByInfo(records);
 	    if(colorBy.index>=0) {
 		records.map(record=>{
