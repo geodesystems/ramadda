@@ -32,7 +32,6 @@ import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.type.GenericTypeHandler;
 
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
 
 
@@ -41,11 +40,12 @@ import org.ramadda.util.Utils;
 import org.w3c.dom.Element;
 
 import ucar.unidata.gis.GisPart;
-
 import ucar.unidata.gis.shapefile.DbaseData;
 import ucar.unidata.gis.shapefile.DbaseFile;
 import ucar.unidata.gis.shapefile.EsriShapefile;
 import ucar.unidata.gis.shapefile.ProjFile;
+
+import ucar.unidata.util.IOUtil;
 
 
 import java.awt.geom.Rectangle2D;
@@ -62,14 +62,24 @@ import java.util.List;
 public class ShapefileTypeHandler extends PointTypeHandler implements WikiConstants {
 
     /** _more_          */
+    public static final String PROP_ADD_SHAPES = "addShapes";
+
+    /** _more_          */
+    public static final String PROP_ADD_POINTS = "addPoints";
+
+
+    /** _more_          */
     public static final String PROP_FIELDS = "fields";
 
-    /** _more_          */
+    /** _more_ */
+    public static final String PROP_FIELDS_NOGEO = "fieldsNoGeo";
+
+    /** _more_ */
     public static final String PROP_FIELDS_WITHSHAPES = "fieldsWithShapes";
 
-    /** _more_          */
-    public static final String PROP_FIELDS_WITHOUTSHAPES =
-        "fieldsWithoutShapes";
+    /** _more_ */
+    public static final String PROP_FIELDS_WITHPOINTS = "fieldsWithPoints";
+
 
 
 
@@ -159,11 +169,13 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
             return;
         }
 
-        ShapefileRecordFile recordFile = new ShapefileRecordFile(request,
-                                             entry,
-                                             entry.getResource().getPath(),
-                                             shapefile);
+        ShapefileRecordFile recordFile =
+            new ShapefileRecordFile(getRepository().getTmpRequest(), entry,
+                                    getRecordProperties(entry),
+                                    entry.getResource().getPath(), shapefile);
         String props = recordFile.getEntryFieldsProperties();
+        System.err.println("PROPS:" + props);
+
         getEntryValues(entry)[IDX_PROPERTIES] = props;
 
         Rectangle2D bounds   = shapefile.getBoundingBox();
@@ -346,8 +358,11 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
             try {
                 String url = super.getUrlForWiki(request, entry, tag, props,
                                  topProps);
-                url += "&addShapes="
-                       + Utils.getProperty(props, "addShapes", false);
+                if (Utils.getProperty(props, PROP_ADD_SHAPES, false)) {
+                    url += "&" + PROP_ADD_SHAPES + "=true";
+                } else if (Utils.getProperty(props, PROP_ADD_POINTS, false)) {
+                    url += "&" + PROP_ADD_POINTS + "=true";
+                }
 
                 return url;
             } catch (Exception exc) {
@@ -371,9 +386,38 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
      * @throws Exception _more_
      */
     @Override
-    public RecordFile doMakeRecordFile(Request request, Entry entry)
+    public String getCacheFileName(Request request, Entry entry)
             throws Exception {
-        return new ShapefileRecordFile(request, entry,
+        String file = super.getCacheFileName(request, entry);
+        if (request.get(PROP_ADD_SHAPES, false)) {
+            file = "shapes_true_" + file;
+        } else if (request.get(PROP_ADD_POINTS, false)) {
+            file = "points_true_" + file;
+        }
+
+        return file;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param properties _more_
+     * @param requestProperties _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    @Override
+
+    public RecordFile doMakeRecordFile(Request request, Entry entry,
+                                       Hashtable properties,
+                                       Hashtable requestProperties)
+            throws Exception {
+        return new ShapefileRecordFile(request, entry, properties,
                                        entry.getResource().getPath(), null);
     }
 
@@ -400,26 +444,40 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
      */
     public class ShapefileRecordFile extends CsvFile {
 
-        /** _more_          */
+        /** _more_ */
         Request request;
 
-        /** _more_          */
+        /** _more_ */
         Entry entry;
 
-        /** _more_          */
+        /** _more_ */
         EsriShapefile shapefile;
 
-        /** _more_          */
+        /** _more_ */
         Hashtable props;
 
-        /** _more_          */
-        String fieldsWithoutShapes;
 
-        /** _more_          */
+
+        /** _more_ */
+        String fields;
+
+
+        /** _more_ */
+        String fieldsNoGeo;
+
+
+        /** _more_ */
         String fieldsWithShapes;
 
         /** _more_          */
-        String fields;
+        String fieldsWithPoints;
+
+
+        /** _more_          */
+        boolean addShapes;
+
+        /** _more_          */
+        boolean addPoints;
 
         /**
          * _more_
@@ -427,6 +485,7 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
          *
          * @param request _more_
          * @param entry _more_
+         * @param entryProperties _more_
          * @param filename _more_
          * @param shapefile _more_
          *
@@ -435,18 +494,25 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
          * @throws Exception _more_
          */
         public ShapefileRecordFile(Request request, Entry entry,
+                                   Hashtable entryProperties,
                                    String filename, EsriShapefile shapefile)
                 throws Exception {
             super(filename);
-            //Get the properties from the entry
-            props            = getRecordProperties(entry);
-            this.request     = request;
-            this.entry       = entry;
-            this.shapefile   = shapefile;
-            fieldsWithShapes = (String) props.get(PROP_FIELDS_WITHSHAPES);
-            fieldsWithoutShapes =
-                (String) props.get(PROP_FIELDS_WITHOUTSHAPES);
-            fields = (String) props.get(PROP_FIELDS);
+            props          = entryProperties;
+            this.addShapes = request.get(PROP_ADD_SHAPES, false);
+            this.addPoints = request.get(PROP_ADD_POINTS, false);
+            this.request   = request;
+            this.entry     = entry;
+            this.shapefile = shapefile;
+            fieldsNoGeo    = (String) props.get(PROP_FIELDS_NOGEO);
+            if (fieldsNoGeo != null) {
+                fieldsWithShapes =
+                    fieldsNoGeo
+                    + ",shapeType[ type=string],shape[type=string]";
+                fieldsWithPoints =
+                    fieldsNoGeo
+                    + ",latitude[type=double],longitude[type=double]";
+            }
             if (fieldsWithShapes == null) {
                 getEntryFieldsProperties();
             }
@@ -457,27 +523,35 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
         /**
          * _more_
          *
-         * @param buffered _more_
-         *
          * @return _more_
+         */
+        @Override
+        public boolean shouldCreateCsvFile() {
+            return true;
+        }
+
+        /**
+         * _more_
+         *
+         * @param file _more_
+         * @param fos _more_
+         * @param buffered _more_
+         * @param commands _more_
          *
          * @throws Exception _more_
          */
         @Override
-        public InputStream doMakeInputStream(boolean buffered)
+        protected void doCreateCsvFile(File file, OutputStream fos,
+                                       boolean buffered,
+                                       List<String> commands)
                 throws Exception {
             if (shapefile == null) {
                 shapefile = getShapefile(entry);
             }
-            //      new RuntimeException("").printStackTrace();
-            StringBuilder sb = getOutputHandler().getCsvBuffer(request,
-                                   entry, shapefile, false,
-                                   request.get("addShapes", false));
-            ByteArrayInputStream bais =
-                new ByteArrayInputStream(sb.toString().getBytes());
-
-            return bais;
+            getOutputHandler().getCsvBuffer(request, fos, entry, shapefile,
+                                            false, addPoints, addShapes);
         }
+
 
         /**
          * _more_
@@ -488,12 +562,20 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
          *
          * @throws Exception _more_
          */
+        @Override
         public VisitInfo prepareToVisit(VisitInfo visitInfo)
                 throws Exception {
             putProperty(PROP_SKIPLINES, "1");
             super.prepareToVisit(visitInfo);
-            boolean addShapes = request.get("addShapes", false);
-            putProperty(PROP_FIELDS, makeFields(addShapes));
+            if (addShapes && (fieldsWithShapes != null)) {
+                putProperty(PROP_FIELDS, fieldsWithShapes);
+            } else if (addPoints && (fieldsWithPoints != null)) {
+                putProperty(PROP_FIELDS, fieldsWithPoints);
+            } else if (fieldsNoGeo != null) {
+                putProperty(PROP_FIELDS, fieldsNoGeo);
+            } else {
+                putProperty(PROP_FIELDS, makeFields(addPoints, addShapes));
+            }
 
             return visitInfo;
         }
@@ -501,13 +583,16 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
         /**
          * _more_
          *
+         *
+         * @param addPoints _more_
          * @param addShapes _more_
          *
          * @return _more_
          *
          * @throws Exception _more_
          */
-        private String makeFields(boolean addShapes) throws Exception {
+        private String makeFields(boolean addPoints, boolean addShapes)
+                throws Exception {
             List<String[]> fileFields = getFields(request, entry);
             List<String>   fields     = new ArrayList<String>();
             this.fields = null;
@@ -523,6 +608,9 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
             if (addShapes) {
                 fields.add(makeField("shapeType", attrType("string")));
                 fields.add(makeField("shape", attrType("string")));
+            } else if (addPoints) {
+                fields.add(makeField("latitude", attrType("double")));
+                fields.add(makeField("longitude", attrType("double")));
             }
 
             return makeFields(fields);
@@ -540,14 +628,16 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
         @Override
         public List<RecordField> doMakeFields(boolean failureOk) {
             try {
-                if (fieldsWithoutShapes == null) {
+                if (fieldsNoGeo == null) {
                     getEntryFieldsProperties();
                 }
-                boolean addShapes = request.get("addShapes", false);
+
                 if (addShapes) {
                     putProperty(PROP_FIELDS, fieldsWithShapes);
+                } else if (addPoints) {
+                    putProperty(PROP_FIELDS, fieldsWithPoints);
                 } else {
-                    putProperty(PROP_FIELDS, fieldsWithoutShapes);
+                    putProperty(PROP_FIELDS, fieldsNoGeo);
                 }
 
                 return super.doMakeFields(failureOk);
@@ -565,13 +655,9 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
          * @throws Exception _more_
          */
         public String getEntryFieldsProperties() throws Exception {
-            fieldsWithShapes    = makeFields(true);
-            fieldsWithoutShapes = makeFields(false);
+            fieldsNoGeo = makeFields(false, false);
             String result = "#fields for data access. do not change\n"
-                            + PROP_FIELDS + "=" + fields + "\n"
-                            + PROP_FIELDS_WITHSHAPES + "=" + fieldsWithShapes
-                            + "\n" + PROP_FIELDS_WITHOUTSHAPES + "="
-                            + fieldsWithoutShapes + "\n";
+                            + PROP_FIELDS_NOGEO + "=" + fieldsNoGeo + "\n";
 
             return result;
         }

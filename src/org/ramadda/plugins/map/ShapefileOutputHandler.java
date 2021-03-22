@@ -73,6 +73,8 @@ import java.util.zip.ZipOutputStream;
  */
 public class ShapefileOutputHandler extends OutputHandler implements WikiConstants {
 
+    /** _more_          */
+    public static boolean debug = false;
 
     /** Map output type */
     public static final OutputType OUTPUT_KML =
@@ -117,7 +119,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         new DecimalFormat("####.#");
 
 
-    /** _more_          */
+    /** _more_ */
     private TTLCache<String, EsriShapefile> cache;
 
 
@@ -156,8 +158,18 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
     public EsriShapefile getShapefile(Entry entry) throws Exception {
         synchronized (cache) {
             EsriShapefile shapefile = cache.get(entry.getId());
+            if ((shapefile != null) && debug) {
+                System.err.println(
+                    "ShapefileOutputHandler.getShapefile: in cache");
+                System.err.println("stack:" + Utils.getStack(5));
+            }
+
             if (shapefile == null) {
-                System.err.println("new EsriShapefile");
+                if (debug) {
+                    System.err.println(
+                        "ShapefileOutputHandler.getShapefile: new EsriShapefile");
+                    System.err.println("stack:" + Utils.getStack(5));
+                }
                 String path = entry.getFile().toString();
                 if (false && path.endsWith(".shp")) {
                     File tmp = getStorageManager().getTmpFile(
@@ -657,13 +669,16 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
      */
     private Result outputGeoJson(Request request, Entry entry)
             throws Exception {
-        FeatureCollection fc     = makeFeatureCollection(request, entry,
-                                       null);
-        StringBuffer      sb     = new StringBuffer(fc.toGeoJson());
-        Result            result = new Result("", sb, Json.MIMETYPE);
-        result.setReturnFilename(
+        String filename =
             IOUtil.stripExtension(getStorageManager().getFileTail(entry))
-            + ".geojson");
+            + ".geojson";
+        Result result = request.getOutputStreamResult(filename,
+                            Json.GEOJSON_MIMETYPE);
+        OutputStreamWriter sb =
+            new OutputStreamWriter(request.getOutputStream());
+        FeatureCollection fc = makeFeatureCollection(request, entry, null);
+        fc.toGeoJson(sb);
+        sb.flush();
 
         return result;
     }
@@ -707,13 +722,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
      * @throws Exception _more_
      */
     private Result outputCsv(Request request, Entry entry) throws Exception {
-        Result result = getCsvResult(request, entry);
-        result.setReturnFilename(
-            IOUtil.stripExtension(getStorageManager().getFileTail(entry))
-            + ".csv");
-        result.setMimeType("text/csv");
-
-        return result;
+        return getCsvResult(request, entry);
     }
 
     /**
@@ -728,9 +737,15 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
      */
     public Result getCsvResult(Request request, Entry entry)
             throws Exception {
-        StringBuilder sb = getCsvBuffer(request, entry, null, false, false);
+        String filename =
+            IOUtil.stripExtension(getStorageManager().getFileTail(entry))
+            + ".csv";
+        Result result = request.getOutputStreamResult(filename,
+                            Result.TYPE_CSV);
+        getCsvBuffer(request, request.getOutputStream(), entry, null, false,
+                     false, false);
 
-        return new Result(sb.toString(), Result.TYPE_CSV);
+        return result;
     }
 
 
@@ -738,35 +753,36 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
      * _more_
      *
      * @param request _more_
+     * @param os _more_
      * @param entry _more_
      * @param shapefile _more_
      * @param addHeader _more_
+     * @param addPoints _more_
      * @param addFeatures _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public StringBuilder getCsvBuffer(Request request, Entry entry,
-                                      EsriShapefile shapefile,
-                                      boolean addHeader, boolean addFeatures)
+    public void getCsvBuffer(Request request, OutputStream os, Entry entry,
+                             EsriShapefile shapefile, boolean addHeader,
+                             boolean addPoints, boolean addFeatures)
             throws Exception {
-
+        PrintWriter sb = new PrintWriter(os);
         FeatureCollection fc = makeFeatureCollection(request, entry,
                                    shapefile);
         List<DbaseDataWrapper> datum    = fc.getDatum();
         List<Feature>          features = (List<Feature>) fc.getFeatures();
-        StringBuilder          sb       = new StringBuilder();
         if (datum == null) {
             if (addHeader) {
-                sb.append("#fields=\n");
+                sb.println("#fields=");
             }
-            sb.append("#No fields");
+            sb.println("#No fields");
 
-            return sb;
+            return;
         }
         if (addHeader) {
-            sb.append("#fields=");
+            sb.print("#fields=");
         }
         int colCnt = 0;
         for (DbaseDataWrapper dbd : datum) {
@@ -775,24 +791,36 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                 type = "double";
             }
             if (colCnt++ > 0) {
-                sb.append(",");
+                sb.print(",");
             }
-            sb.append(dbd.getName());
+            sb.print(dbd.getName());
             if (addHeader) {
-                sb.append("[type=" + type + "]");
+                sb.print("[type=" + type + "]");
             }
         }
+        if (addPoints) {
+            sb.print(",latitude");
+            if (addHeader) {
+                sb.print("[type=double]");
+            }
+            sb.print(",longitude");
+            if (addHeader) {
+                sb.print("[type=double]");
+            }
+        }
+
         if (addFeatures) {
-            sb.append(",shapeType");
+            sb.print(",shapeType");
             if (addHeader) {
-                sb.append("[type=string]");
+                sb.print("[type=string]");
             }
-            sb.append(",shape");
+            sb.print(",shape");
             if (addHeader) {
-                sb.append("[type=string]");
+                sb.print("[type=string]");
             }
         }
-        sb.append("\n");
+
+        sb.print("\n");
         int cnt = 0;
         for (int i = 0; i < features.size(); i++) {
             Feature feature = features.get(i);
@@ -807,24 +835,31 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                     value = value.trim();
                 }
                 if (colCnt++ > 0) {
-                    sb.append(",");
+                    sb.print(",");
                 }
-                sb.append(CsvUtil.cleanColumnValue(value));
+                sb.print(CsvUtil.cleanColumnValue(value));
             }
+            if (addPoints) {
+                float[] center = feature.getGeometry().getCenter();
+                sb.print(",");
+                sb.print(center[0]);
+                sb.print(",");
+                sb.print(center[1]);
+            }
+
             if (addFeatures) {
-                sb.append(",");
-                sb.append(feature.getGeometry().getGeometryType());
-                sb.append(",");
+                sb.print(",");
+                sb.print(feature.getGeometry().getGeometryType());
+                sb.print(",");
                 String shape = feature.getGeometry().getCoordsString();
                 shape = shape.replaceAll("\n", "").replaceAll(" ", "");
-                sb.append("\"");
-                sb.append(shape);
-                sb.append("\"");
+                sb.print("\"");
+                sb.print(shape);
+                sb.print("\"");
             }
-            sb.append("\n");
+            sb.print("\n");
         }
-
-        return sb;
+        sb.flush();
     }
 
 
