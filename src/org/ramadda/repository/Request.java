@@ -2241,8 +2241,7 @@ public class Request implements Constants, Cloneable {
             if ( !tok.startsWith("gzip")) {
                 continue;
             }
-            if (Utils.splitUpTo(tok, ";",
-                                     2).get(0).trim().equals("gzip")) {
+            if (Utils.splitUpTo(tok, ";", 2).get(0).trim().equals("gzip")) {
                 return true;
             }
         }
@@ -2837,6 +2836,33 @@ public class Request implements Constants, Cloneable {
 
         return result;
     }
+
+
+    /*
+       Makes a result where the caller will be writing directly to the
+       http output stream which is gotten by calling request.getOutputStream()
+    */
+
+    /**
+     * _more_
+     *
+     * @param filename _more_
+     * @param mimeType _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result getOutputStreamResult(String filename, String mimeType)
+            throws Exception {
+        getHttpServletResponse().setContentType(mimeType);
+        setReturnFilename(filename);
+        Result result = new Result(filename, (byte[]) null, mimeType);
+        result.setNeedToWrite(false);
+
+        return result;
+    }
+
 
 
     /**

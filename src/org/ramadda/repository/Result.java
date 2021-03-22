@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -49,7 +49,8 @@ public class Result {
     /** Internal error response code */
     public static final int RESPONSE_INTERNALERROR = 500;
 
-    public static final int RESPONSE_BLOCKED = 777;    
+    /** _more_          */
+    public static final int RESPONSE_BLOCKED = 777;
 
     /** HTML mime type */
     public static String TYPE_HTML = "text/html";
@@ -64,7 +65,7 @@ public class Result {
     public static String TYPE_CSV = "text/csv";
 
     /** CSV mime type */
-    public static String TYPE_JSON = "text/json";    
+    public static String TYPE_JSON = "text/json";
 
     /** content bytes */
     private byte[] byteContent;
