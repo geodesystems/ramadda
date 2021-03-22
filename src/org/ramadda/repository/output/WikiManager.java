@@ -3119,6 +3119,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                         "highlightThis", false);
             boolean horizontal = getProperty(wikiUtil, props, "horizontal",
                                              false);
+            boolean decorate = getProperty(wikiUtil, props, "decorate",
+                                             false);
+            boolean includeSnippet = getProperty(wikiUtil, props,
+						 "includeSnippet", false);
             boolean includeIcon = getProperty(wikiUtil, props,
                                       ATTR_INCLUDEICON, false);
 
@@ -3146,15 +3150,22 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                : getProperty(wikiUtil, props, ATTR_TAGCLOSE,
                                              ""));
 
-            if (includeIcon) {
-                tagOpen  = "";
-                tagClose = "<br>";
-            }
 
-            if (horizontal) {
-                tagOpen  = "<div class='ramadda-links-horizontal'>";
-                tagClose = "</div>";
-            }
+
+	    if(decorate) {
+		tagOpen = "<div class=' ramadda-entry-nav-page  ramadda-entry-nav-page-decorated '><div class='ramadda-nav-page-label'>";
+		tagClose = "</div></div>";
+	    } else {
+		if (includeIcon) {
+		    tagOpen  = "";
+		    tagClose = "<br>";
+		}
+	    }
+
+	    if (horizontal) {
+		tagOpen  = "<div class='ramadda-links-horizontal'>";
+		tagClose = "</div>";
+	    }
 
 
             List<String> links = new ArrayList<String>();
@@ -3182,6 +3193,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     linkLabel = HU.img(getPageHandler().getIconUrl(request,
                             child)) + HU.space(1) + linkLabel;
                 }
+		String snippet =  includeSnippet?getSnippet(request,  child, true):null;
+		if(decorate) {
+		    linkLabel =  "<div class=' ramadda-entry-nav-page  ramadda-entry-nav-page-decorated '><div class='ramadda-entry-nav-page-label'>" + linkLabel +"</div>" + (snippet!=null?snippet:"") + "</div>";
+		}
                 String href = HU.href(url, linkLabel,
                                       HU.cssClass(cssClass)
                                       + HU.style(style));
@@ -3192,12 +3207,23 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     href = HU.div(href, HU.clazz("ramadda-links-highlight"));
                 }
                 StringBuilder link = new StringBuilder();
-                link.append(tagOpen);
-                link.append(href);
-                link.append(tagClose);
+		if(decorate) {
+		    link.append("<div class=ramadda-entry-nav-page-outer>");
+		    link.append(href);
+		    link.append("</div>");
+		} else {
+		    link.append(tagOpen);
+		    link.append(href);
+		    link.append(tagClose);
+		}
                 String s = link.toString();
                 links.add(s);
             }
+
+	    if(decorate) {
+		return Utils.join(links,"",false);
+	    }
+
 
             StringBuilder contentsSB = new StringBuilder();
             String prefix = getProperty(wikiUtil, props, ATTR_LIST_PREFIX,
