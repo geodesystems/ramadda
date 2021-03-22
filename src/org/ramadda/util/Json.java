@@ -48,6 +48,9 @@ public class Json {
 
     /** JSON MIME type */
     public static final String MIMETYPE = "application/json";
+    public static final String GEOJSON_MIMETYPE = "application/geo+json";
+
+
 
     /** the null string identifier */
     public static final String NULL = "null";
