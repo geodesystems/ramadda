@@ -32,6 +32,7 @@ import java.io.*;
 
 import java.text.SimpleDateFormat;
 
+import java.util.Hashtable;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -75,7 +76,7 @@ public class DaymetTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public RecordFile doMakeRecordFile(Request request, Entry entry)
+    public RecordFile doMakeRecordFile(Request request, Entry entry, Hashtable properties,  Hashtable requestProperties)
             throws Exception {
         return new DaymetRecordFile(getRepository(), entry,
                                     getPathForEntry(request, entry));

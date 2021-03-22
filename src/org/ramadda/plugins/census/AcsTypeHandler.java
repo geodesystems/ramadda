@@ -216,7 +216,8 @@ public class AcsTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public RecordFile doMakeRecordFile(Request request, Entry entry)
+    public RecordFile doMakeRecordFile(Request request, Entry entry, Hashtable properties,
+                                       Hashtable requestProperties)
             throws Exception {
         String               header = entry.getValue(IDX_HEADER, "");
         boolean includeSpecial = entry.getValue(IDX_INCLUDE_LOCALES, false);

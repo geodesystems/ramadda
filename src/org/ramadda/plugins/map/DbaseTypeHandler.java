@@ -104,7 +104,7 @@ public class DbaseTypeHandler extends PointTypeHandler implements WikiConstants 
      * @throws Exception _more_
      */
     @Override
-    public RecordFile doMakeRecordFile(Request request, Entry entry)
+    public RecordFile doMakeRecordFile(Request request, Entry entry, Hashtable properties,  Hashtable requestProperties)
             throws Exception {
         return new DbaseRecordFile(request, entry,
                                    entry.getResource().getPath(), null);

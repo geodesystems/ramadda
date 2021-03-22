@@ -399,7 +399,7 @@ public class NcssTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public RecordFile doMakeRecordFile(Entry entry, Hashtable pointProps,
+    public RecordFile doMakeRecordFile(Request request, Entry entry, Hashtable pointProps,
                                        Hashtable requestProperties)
             throws Exception {
         Hashtable props = getRecordProperties(entry);

@@ -91,8 +91,8 @@ public class TmyTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public RecordFile doMakeRecordFile(Entry entry, Hashtable properties,
-                                       Hashtable requestProperties)
+    public  RecordFile doMakeRecordFile(Request request, Entry entry, Hashtable properties,
+					Hashtable requestProperties)
             throws Exception {
         return new TmyRecordFile(getRepository(), entry,
                                  entry.getResource().getPath(), this);

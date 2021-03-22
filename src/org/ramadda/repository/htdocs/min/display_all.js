@@ -4001,7 +4001,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'convertData',label:"Prune where fields are all NaN",ex:"prune(fields=);",tt:"Prune"},		
 	{p:'convertData',label:"Scale and offset",ex:"accum(scale=1,offset1=0,offset2=0,unit=,fields=);",tt:"(d + offset1) * scale + offset2"},		
 	{label:"Color"},
-	{p:"colors",ex:"color1},...,colorN",tt:"Comma separated array of colors"},
+	{p:"colors",ex:"color1,...,colorN",tt:"Comma separated array of colors"},
 	{p:"colorBy",ex:"",tt:"Field id to color by"},
 	{p:"colorByFields",ex:"",tt:"Show color by fields in a menu"},
 	{p:"colorByLog",ex:"true",tt:"Use a log scale for the color by"},
@@ -7172,7 +7172,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    let sideWidth = "1%";
             let contents = this.getContentsDiv();
-            let table =   HU.open("table", ["width","100%","border","0","cellpadding","0","cellspacing","0"]);
+	    //display table
+            let table =   HU.open("table", [CLASS, "display-ui-table", "width","100%","border","0","cellpadding","0","cellspacing","0"]);
 	    if(this.getProperty("showDisplayTop",true)) {
 		table+= HU.tr([],HU.td(["width",sideWidth]) + HU.td(["width","99%"],top) +HU.td(["width",sideWidth]));
 	    }
@@ -11106,7 +11107,7 @@ function DerivedPointData(displayManager, name, pointDataList, operation) {
   as I think RAMADDA passes in NaN
   unit - the unit of the value
 */
-function RecordField(props) {
+function RecordField(props, source) {
     $.extend(this, {
         isDate: props.type == "date",
         isLatitude: false,
@@ -11120,6 +11121,13 @@ function RecordField(props) {
         properties: props
     });
 
+    //check for extended attributes
+    if(source && source.getProperty) {
+	["type","label","unit"].forEach(t=>{
+	    let ext = source.getProperty(props.id+"." + t);
+	    if(ext) this[t] = ext;
+	});
+    }
     RamaddaUtil.defineMembers(this, {
 	clone: function() {
 	    var newField = {};
@@ -11218,6 +11226,9 @@ function RecordField(props) {
         getType: function() {
             return this.type;
         },
+        setType: function(t) {
+            this.type = t;
+        },	
         getMissing: function() {
             return this.missing;
         },
@@ -11379,7 +11390,7 @@ function makePointData(json, derived, source,url) {
     var lastField = null;
     for (var i = 0; i < json.fields.length; i++) {
         var field = json.fields[i];
-        var recordField = new RecordField(field);
+        var recordField = new RecordField(field,source);
         if (recordField.isFieldNumeric()) {
             if (source.getProperty) {
                 var offset1 = source.getProperty(recordField.getId() + ".offset1", source.getProperty("offset1"));
@@ -29356,7 +29367,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'latField2',tt:'Field id for segments'},
 	{p:'lonField2',tt:'Field id for segments'},
 
-	{label:"Map Label Properties"},
+	{label:"Map Labels"},
 	{p:"labelFontColor",ex:"#000"},
 	{p:"labelFontSize",ex:"12px"},
 	{p:"labelFontFamily",ex:"'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"},
@@ -29377,7 +29388,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{label:'3dbar glyph', p:"glyph1",ex:"type:3dbar,pos:sw,dx:10,dy:-10,height:30,width:8,baseHeight:5,sizeBy:field"},
 	{label:'gauge glyph',p:"glyph1",ex:"type:gauge,color:#000,pos:sw,width:50,height:50,dx:10,dy:-10,sizeBy:field,sizeByMin:0"},
 
-	{label:'Heatmap Properties'},
+	{label:'Heatmap'},
 	{p:'doHeatmap',ex:'true',tt:'Grid the data into an image'},
 	{p:'hmShowPoints',ex:'true',tt:'Also show the map points'},
 	{p:'hmShowReload',ex:'true',tt:''},
@@ -36699,7 +36710,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
     let myProps = [
 	{label:'Html Table'},
 	{p:'numRecords',ex:'100',d:1000},
-	{p:'includeGeo',ex:'true',d:true},
+	{p:'includeGeo',ex:'true',d:false},
 	{p:'includeDate',ex:'true',d:true},		
     ];
 

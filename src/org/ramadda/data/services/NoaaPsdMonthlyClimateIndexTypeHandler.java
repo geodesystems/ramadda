@@ -29,6 +29,7 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -115,7 +116,8 @@ public class NoaaPsdMonthlyClimateIndexTypeHandler extends PointTypeHandler {
      * @throws Exception On badness
      */
     @Override
-    public RecordFile doMakeRecordFile(Request request, Entry entry)
+    public RecordFile doMakeRecordFile(Request request, Entry entry, Hashtable properties,
+                                       Hashtable requestProperties)
             throws Exception {
         String name        = entry.getName();
         String loc         = fixUrl(entry.getResource().getPath());

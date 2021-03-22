@@ -97,14 +97,13 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
      *
      * @throws Exception _more_
      */
-    public RecordFile doMakeRecordFile(Entry entry, Hashtable properties,
+    @Override
+    public RecordFile doMakeRecordFile(Request request, Entry entry, Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
         String commands =
             (String) entry.getValue(ConvertibleTypeHandler.IDX_COMMANDS);
         List<StringBuilder> toks    = tokenizeCommands(commands);
-        Request             request = getRepository().getTmpRequest();
-
         List<String>        args    = new ArrayList<String>();
         for (int j = 0; j < toks.size(); j++) {
             String arg = toks.get(j).toString();

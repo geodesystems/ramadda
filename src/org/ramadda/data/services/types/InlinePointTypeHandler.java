@@ -34,7 +34,7 @@ import java.text.SimpleDateFormat;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
-
+import java.util.Hashtable;
 
 /**
  */
@@ -71,7 +71,7 @@ public class InlinePointTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public RecordFile doMakeRecordFile(Request request, Entry entry)
+    public RecordFile doMakeRecordFile(Request request, Entry entry, Hashtable properties,  Hashtable requestProperties)
             throws Exception {
         return new InlinePointRecordFile(getRepository(), entry);
     }

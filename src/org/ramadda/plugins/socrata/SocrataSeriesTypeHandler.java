@@ -117,7 +117,7 @@ public class SocrataSeriesTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public RecordFile doMakeRecordFile(Request request, Entry entry)
+    public RecordFile doMakeRecordFile(Request request, Entry entry, Hashtable properties,  Hashtable requestProperties)
             throws Exception {
 
         String repository = entry.getValue(IDX_REPOSITORY, (String) null);

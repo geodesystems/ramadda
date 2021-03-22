@@ -91,7 +91,7 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public RecordFile doMakeRecordFile(Entry entry, Hashtable properties,
+    public RecordFile doMakeRecordFile(Request request, Entry entry, Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
         return new UsgsGaugeRecordFile(getPathForRecordEntry(entry,
