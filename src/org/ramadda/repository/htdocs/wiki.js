@@ -453,6 +453,9 @@ const ID_WIKI_MENUBAR    = "menubar";
 const ID_WIKI_POPUP_EDITOR = "wiki-popup-editor";
 const ID_WIKI_POPUP_OK= "wiki-popup-ok";
 const ID_WIKI_POPUP_CANCEL= "wiki-popup-cancel";
+const ID_WIKI_POPUP_TIDY ="wiki-popup-tidy";
+const ID_WIKI_POPUP_COMPACT ="wiki-popup-compact";
+
 function WikiEditor(formId, id, hidden,argOptions) {
     var options = {
         autoScrollEditorIntoView: true,
@@ -911,20 +914,53 @@ WikiEditor.prototype = {
 			  menubar +
 			  HU.textarea("",contents,["spellcheck","false",STYLE,HU.css('width',width+'px','height','300px'),ID,this.domId(ID_WIKI_POPUP_EDITOR),"xrows","10","xcols","120"]) + "<br>" +
 			  HU.div([STYLE,HU.css("text-align","center","padding","4px")],
-				 HU.div([ID,this.domId(ID_WIKI_POPUP_OK)],"Ok") + SPACE1 +
-				 HU.div([ID,this.domId(ID_WIKI_POPUP_CANCEL)],"Cancel")));
+				 HU.span([TITLE,"Tidy the text",ID,this.domId(ID_WIKI_POPUP_TIDY)],HU.getIconImage("fas fa-broom")) + SPACE1 +
+				 HU.span([TITLE,"Compact the text",ID,this.domId(ID_WIKI_POPUP_COMPACT)], HU.getIconImage("fas fa-snowplow")) + SPACE1 +								 HU.span([ID,this.domId(ID_WIKI_POPUP_OK)],"Ok") + SPACE1 +
+				 HU.span([ID,this.domId(ID_WIKI_POPUP_CANCEL)],"Cancel")));
 	let dialog;
-	console.log(this.getScroller().length);
 	dialog = HU.makeDialog({content:html,anchor:this.getScroller(),title:title,header:true,
 				sticky:true,draggable:true,modal:true,modalContentsCss:HU.css('left','50px')});
 	this.popupShowing = true;
 	this.jq(ID_WIKI_POPUP_EDITOR).focus();
 
 	this.jq(ID_WIKI_POPUP_CANCEL).button().click(()=>{
-	this.popupShowing = false;
+	    this.popupShowing = false;
 	    dialog.remove();
 	});
-//	console.log(JSON.stringify(tagInfo));
+
+	let func =tidy=>{
+	    console.log("tidy");
+	    let val = this.jq(ID_WIKI_POPUP_EDITOR).val().trim();
+	    let attrs = Utils.parseAttributesAsList(val);
+	    let nval = "";
+	    let cnt = 0;
+	    for(let i=0;i<attrs.length;i+=2) {
+		let v =  attrs[i+1];
+		if(v!=null && (v.indexOf(" ")>=0 || v.indexOf("\n")>=0 || v=="")) v = "\""  + v +"\"";
+		nval+=attrs[i] +"=" +v;
+		if(tidy) {
+		    nval+="\n";
+		}  else {
+		    cnt++;		
+		    if(cnt>4) {
+			cnt=0
+			nval+="\n";
+		    } else {
+			nval+="  ";
+		    }
+		}
+	    }
+	    this.jq(ID_WIKI_POPUP_EDITOR).val(nval);	    
+	}
+	this.jq(ID_WIKI_POPUP_TIDY).button().click(()=>{
+	    func(true);
+	});
+
+	this.jq(ID_WIKI_POPUP_COMPACT).button().click(()=>{
+	    func(false);
+	});
+	
+
 	this.jq(ID_WIKI_POPUP_OK).button().click(()=>{
 	    let val = this.jq(ID_WIKI_POPUP_EDITOR).val();
 	    let tag =  tagInfo.tag;
