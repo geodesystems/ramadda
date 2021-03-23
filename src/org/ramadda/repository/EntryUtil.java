@@ -519,9 +519,7 @@ public class EntryUtil extends RepositoryManager {
         } else if (on.equals(SORTBY_CHANGEDATE)) {
             return compare(e1.getChangeDate(), e2.getChangeDate());
         } else if (on.equals(SORTBY_CREATEDATE)) {
-	    int res =   compare(e1.getCreateDate(), e2.getCreateDate());
-	    System.out.println("\t" + res +" " + e1.getName() +" " + Utils.simpleSdf.format(new Date(e1.getCreateDate())) +" " +e2.getName() +"  " + Utils.simpleSdf.format(new Date(e2.getCreateDate())));
-            return  res;
+	    return  compare(e1.getCreateDate(), e2.getCreateDate());
         } else if (on.equals(SORTBY_NAME)) {
             return e1.getName().compareToIgnoreCase(e2.getName());
         } else if (on.equals(SORTBY_ENTRYORDER)) {
@@ -565,10 +563,6 @@ public class EntryUtil extends RepositoryManager {
     public static List<Entry> sortEntriesOn(List<Entry> entries,
                                             final List<String> ons,
                                             final boolean descending) {
-	System.out.println("Sort:" + ons);
-	for(Entry e: entries)
-	    System.out.println("entry:" + e.getName());
-
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
                 Entry e1 = (Entry) o1;
@@ -594,12 +588,6 @@ public class EntryUtil extends RepositoryManager {
         Arrays.sort(array, comp);
 
 	entries = (List<Entry>) Misc.toList(array);
-
-	System.out.println("after:");
-	for(Entry e: entries)
-	    System.out.println("entry:" + e.getName());
-
-
         return entries;
     }
 

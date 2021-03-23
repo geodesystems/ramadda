@@ -2065,6 +2065,10 @@ public class HtmlOutputHandler extends OutputHandler {
             List<Entry> allEntries = new ArrayList<Entry>();
             allEntries.addAll(subGroups);
             allEntries.addAll(entries);
+	    if(request.defined(ARG_ORDERBY)) {
+		allEntries = getEntryUtil().sortEntriesOn(allEntries, request.getString(ARG_ORDERBY),!request.get(ARG_ASCENDING,false));
+	    }
+
             if (allEntries.size() > 0) {
                 getEntriesList(request, sb, allEntries, true,
                                group.isDummy(), true);
