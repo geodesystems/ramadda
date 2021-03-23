@@ -678,6 +678,9 @@ WikiEditor.prototype = {
 		let range = {start: {row:startRow,column:startCol},
 			     end: {row:endRow,column:endCol}
 			    }
+		var Range = ace.require('ace/range').Range;
+		range  = new Range(startRow, startCol, endRow, endCol)
+		
 		return {
 		    range:range,
 		    tag:tag,
@@ -929,7 +932,6 @@ WikiEditor.prototype = {
 	});
 
 	let func =tidy=>{
-	    console.log("tidy");
 	    let val = this.jq(ID_WIKI_POPUP_EDITOR).val().trim();
 	    let attrs = Utils.parseAttributesAsList(val);
 	    let nval = "";
@@ -981,6 +983,9 @@ WikiEditor.prototype = {
     setInContext:function(c) {
 	this.inContext = c;
 	let scroller = this.getScroller();
+	if(this.tagMarker)
+	    this.editor.session.removeMarker(this.tagMarker);
+	this.tagMarker = null;
 	if(c) {
 	    scroller.css("cursor","context-menu");
 	    this.showMessage("Right-click to show property menu<br>Cmd-click to edit");
@@ -1001,7 +1006,11 @@ WikiEditor.prototype = {
 	    let tagInfo = this.getTagInfo(position);
 	    if(tagInfo) {
 		this.setInContext(true);
-	    } else {
+		this.tagMarker = this.editor.session.addMarker(
+ 		    tagInfo.range, "ace_active-line wiki-editor-tag-highlight", "text"
+		);		
+		
+  	    } else {
 		this.setInContext(false);
 	    }
 	};

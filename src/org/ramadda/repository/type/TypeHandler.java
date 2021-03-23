@@ -4509,15 +4509,15 @@ public class TypeHandler extends RepositoryManager {
                         String        textId = ARG_DESCRIPTION;
                         String        wikiId = ARG_WIKITEXT + "_editor";
                         StringBuilder tmpSB  = new StringBuilder();
-                        String cbx = HtmlUtils.checkbox(
-                                         ARG_ISWIKI, "true", isTextWiki,
-                                         HtmlUtils.id(cbxId)
-                                         + HtmlUtils.title(
-                                             "Wikify text")) + HtmlUtils.getIconImage(
-                                                 getRepository().getIconUrl(
-                                                     ICON_WIKI), "title",
-                                                         "Wikify text");
-
+			String img = HtmlUtils.getIconImage(
+							    getRepository().getIconUrl(
+										       ICON_WIKI), "title",
+							    "Wikify text");
+			String cbxLabel =
+			    HU.tag("label",  HU.attrs("for",cbxId), "&nbsp;" + img);
+                        String cbx = HtmlUtils.checkbox(ARG_ISWIKI, "true", isTextWiki,
+							HtmlUtils.id(cbxId)) +   cbxLabel;
+			cbx = HU.span(cbx, HtmlUtils.title("Wikify text"));
 
 			if(isTextWiki) {
 			    HtmlUtils.open(tmpSB, "div",

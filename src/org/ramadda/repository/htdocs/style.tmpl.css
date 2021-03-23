@@ -4650,6 +4650,9 @@ h3.ui-accordion-header a {
     position:relative;
 }
 
+.wiki-editor-tag-highlight {
+}
+
 .ace_contents {
     display:relative;
 }
@@ -4797,7 +4800,8 @@ h3.ui-accordion-header a {
 }
 
 .ace_display_type {
-    background:lightblue;
+//    background:#E8FFFF;
+    text-decoration:underline;
 }
 
 .ace_editor  { 
