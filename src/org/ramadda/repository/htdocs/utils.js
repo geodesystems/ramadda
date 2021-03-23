@@ -257,6 +257,77 @@ var Utils =  {
 	}	    
 	return attrs;
     },
+
+    parseAttributesAsList: function(s) {
+        let args = [];
+	let i=0;
+        let       inQuote    = false;
+        let       prevEscape = false;
+	let sb = "";
+        for (let i = 0; i < s.length; i++) {
+            let    c            = s[i];
+            let isQuote      = (c == '\"');
+            let isEscape     = (c == '\\');
+            if (prevEscape) {
+                sb+=c;
+                prevEscape = false;
+                continue;
+            }
+
+            if (c == '\\') {
+                if (prevEscape) {
+                    sb +=c;
+                    prevEscape = false;
+                } else {
+                    prevEscape = true;
+                }
+
+                continue;
+            }
+            if (prevEscape) {
+                sb +=c;
+                prevEscape = false;
+                continue;
+            }
+            if (isQuote) {
+                if (inQuote) {
+                    inQuote = false;
+                    args.push(sb);
+                    sb="";
+                } else {
+                    inQuote = true;
+                }
+                continue;
+            }
+            if (inQuote) {
+                sb +=c;
+                continue;
+            }
+            if (c == ' ' || c=='\n') {
+                if (sb.length > 0) {
+		    args.push(sb);
+                    sb = "";
+                }
+                continue;
+            }
+            sb +=c;
+        }
+	if(sb!="")
+	    args.push(sb);
+	let attrs = [];
+	args.forEach(a=>{
+	    let idx = a.indexOf("=");
+	    let name = a;
+	    let v = "";
+	    if(idx>=0) {
+		name = a.substring(0,idx);
+		v = a.substring(idx+1);		
+	    }
+	    attrs.push(name);
+	    attrs.push(v);	    
+	});
+	return attrs;
+    },
     
     hideMore:function(base) {
 	var link = GuiUtils.getDomObject("morelink_" + base);
@@ -582,9 +653,8 @@ var Utils =  {
     wrap: function(l, prefix, suffix) {
 	let s= ""; 
 	l.forEach(item=>{
-	    s+=precix = item +suffix;
+	    s+=prefix + item +suffix;
 	});
-
         return s;
     },
 
@@ -4553,4 +4623,20 @@ $( document ).ready(function() {
     Utils.checkForResize();
 });
 
+
+/*****
+let v = "foo=bar a=2  \n a=\"x\" bar  car zooo=\"asdsad\nasdsds\"  "
+v = "addPoints=true\n"+
+    "hideFilterWidget=\"true\nfalse\" \n"+    
+    "radius=4\n"+
+    "scaleRadius=true\n"+
+    "fillColor=#800080\n"+
+    "strokeWidth=0\n"
+let attrs = Utils.parseAttributesAsList(v);
+console.log("v:" + v);
+attrs.forEach(l=>{
+    console.log("l:" + l);
+});
+
+****/
 
