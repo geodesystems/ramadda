@@ -282,6 +282,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    return "display-contents-inner display-" + this.type;
 	},
 
+        useChartableFields: function() {
+            return true;
+        },
+        defaultSelectedToAll: function() {
+            return false;
+        },
         updateUI: function(args) {
 	    if(!args) args = {};
 	    let debug = false;

@@ -1059,6 +1059,9 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
     ];
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+	displayData: function() {
+	    this.updateUI();
+	},
 	updateUI: function() {
 	    let records = this.filterData();
 	    if(!records) {
@@ -1067,6 +1070,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	    }
             let pointData = this.dataCollection.getList()[0];
             let fields = pointData.getRecordFields();
+            let selectedFields = this.getSelectedFields();
+	    fields= (selectedFields && selectedFields.length>0)?selectedFields:fields;
 	    let numRecords = this.getNumRecords();
 	    let includeGeo = this.getIncludeGeo();
 	    let includeDate = this.getIncludeGeo();	    
@@ -1091,7 +1096,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		if(includeDate) {
 		    html+=HU.td([],this.formatDate(r.getDate()));
 		}
-		d.forEach(v=>{
+		fields.forEach(f=>{
+		    let v = d[f.getIndex()]
 		    v = String(v);
 		    if(v.length>500) {
 			v = HU.div([STYLE,"max-height:200px;overflow-y:auto;"],v);

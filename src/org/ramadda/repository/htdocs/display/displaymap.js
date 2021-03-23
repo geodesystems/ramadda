@@ -121,7 +121,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'gridBounds',ex:'north,west,south,east'},	
 	{p:'mapCenter',ex:'lat,lon',tt:"initial position"},
 	{p:'zoomLevel',ex:4,tt:"initial zoom"},
-	{p:'zoomTimeout',ex:1000,tt:"initial zoom timeout delay"},
+	{p:'zoomTimeout',ex:500,tt:"initial zoom timeout delay. set this if the map is in tabs, etc, and not going to the initial zoom"},
 	{p:'fixedPosition',ex:true,tt:'Keep the initial position'},
 	{p:'linked',ex:true,tt:"Link location with other maps"},
 	{p:'linkGroup',ex:'some_name',tt:"Map groups to link with"},

@@ -1344,16 +1344,6 @@ svg > g > g:last-child { pointer-events: none }
 }
 
 
-.display-fields {
-   padding-left:10px;
-   padding-top:0px;
-   padding-bottom:4px;
-   min-width: 250px; 
-   max-width: 500px; 
-   overflow-y: auto;
-   max-height: 200px;
-}
-
 
 .chart-entry-list-wrapper { 
 
@@ -2525,4 +2515,43 @@ table.dataTable tfoot td {
 .display-dategrid-tick {
     font-size:10pt;
     position:absolute;
+}
+
+
+
+
+.xdisplay-fields {
+   padding-left:10px;
+   padding-top:0px;
+   padding-bottom:4px;
+   min-width: 250px; 
+   max-width: 500px; 
+   overflow-y: auto;
+   max-height: 200px;
+}
+
+
+
+.display-fields-field {
+    display:inline-block;
+    padding:5px;
+    margin:5px;
+    user-select:none;
+}
+
+.display-fields-field-decorated {
+    border:1px solid #ccc;
+    border-radius:4px;
+}
+
+.display-fields-field-selectable {
+    cursor:pointer;
+}
+
+.display-fields-field-selected {
+    background:#e0f0ff; 
+}
+
+.display-fields-field-selected:hover {
+    border:1px solid #000;
 }

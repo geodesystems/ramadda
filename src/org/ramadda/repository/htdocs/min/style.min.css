@@ -2474,9 +2474,20 @@ a.btn-primary:link, a.btn-primary  {
     cursor:pointer;
 }
 
+/*
 .ramadda-menu-item:hover {
     background:#eee;
 }
+*/
+
+.ui-button span i {
+    color:rgb(85, 85, 85);
+}
+
+.ui-button:hover, .ui-button:hover span i {
+    color: #0074D9 !important;
+}
+
 
 .ramadda-menu-item a {
     padding:0px;

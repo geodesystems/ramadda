@@ -2137,7 +2137,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
         },
         defaultSelectedToAll: function() {
-            return false;
+            return true;
         },
         setSelectedFields: function(fields) {
             this.clearCachedData();
@@ -3052,7 +3052,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return true;
         },
         useChartableFields: function() {
-            return true;
+            return false;
         },
         getFieldsToSelect: function(pointData) {
             if (this.useChartableFields())
@@ -4991,7 +4991,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    
 
 
-            let filterBy = this.getProperty("filterFields","",true).split(","); 
+            let filterBy = this.getProperty("filterFields","").split(","); 
 	    let hideFilterWidget = this.getProperty("hideFilterWidget",false, true);
 	    let fieldMap = {};
 	    //Have this here so it can be used in the menu change events later. May cause problems if more than  one
@@ -5606,16 +5606,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.jq(ID_DIALOG_TABS).tabs();
 
         },
-        showDialog: function(text, from, initDialog) {
+        showDialog: function(text, from, initDialog, title) {
 	    if(this.dialog) this.dialog.remove();
 	    if(!this.dialogElement) {
 //		$(document.body).append(HU.div([ATTR_CLASS, "display-dialog",ID,this.getDomId(ID_DIALOG)]));
 //		this.dialogElement = this.jq(ID_DIALOG);
 	    }
 	    let html = this.makeDialog(text);
-	    this.dialog = HU.makeDialog({content:html,title:this.getTitle(),anchor:this.jq(ID_MENU_BUTTON),draggable:true,header:true});
+	    this.dialog = HU.makeDialog({content:html,title:title||this.getTitle(),anchor:from||this.jq(ID_MENU_BUTTON),draggable:true,header:true});
 	    if(initDialog) initDialog();
             else this.initDialog();
+	    return this.dialog;
         },
         copyDisplay: function() {
             let newOne = {};
@@ -6927,7 +6928,6 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
     });
 
 }
-
 
 
 

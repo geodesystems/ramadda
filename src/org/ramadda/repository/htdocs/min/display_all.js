@@ -4952,7 +4952,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
         },
         defaultSelectedToAll: function() {
-            return false;
+            return true;
         },
         setSelectedFields: function(fields) {
             this.clearCachedData();
@@ -5867,7 +5867,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return true;
         },
         useChartableFields: function() {
-            return true;
+            return false;
         },
         getFieldsToSelect: function(pointData) {
             if (this.useChartableFields())
@@ -7806,7 +7806,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    
 
 
-            let filterBy = this.getProperty("filterFields","",true).split(","); 
+            let filterBy = this.getProperty("filterFields","").split(","); 
 	    let hideFilterWidget = this.getProperty("hideFilterWidget",false, true);
 	    let fieldMap = {};
 	    //Have this here so it can be used in the menu change events later. May cause problems if more than  one
@@ -8421,16 +8421,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.jq(ID_DIALOG_TABS).tabs();
 
         },
-        showDialog: function(text, from, initDialog) {
+        showDialog: function(text, from, initDialog, title) {
 	    if(this.dialog) this.dialog.remove();
 	    if(!this.dialogElement) {
 //		$(document.body).append(HU.div([ATTR_CLASS, "display-dialog",ID,this.getDomId(ID_DIALOG)]));
 //		this.dialogElement = this.jq(ID_DIALOG);
 	    }
 	    let html = this.makeDialog(text);
-	    this.dialog = HU.makeDialog({content:html,title:this.getTitle(),anchor:this.jq(ID_MENU_BUTTON),draggable:true,header:true});
+	    this.dialog = HU.makeDialog({content:html,title:title||this.getTitle(),anchor:from||this.jq(ID_MENU_BUTTON),draggable:true,header:true});
 	    if(initDialog) initDialog();
             else this.initDialog();
+	    return this.dialog;
         },
         copyDisplay: function() {
             let newOne = {};
@@ -9742,7 +9743,6 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
     });
 
 }
-
 
 
 
@@ -14427,6 +14427,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    return "display-contents-inner display-" + this.type;
 	},
 
+        useChartableFields: function() {
+            return true;
+        },
+        defaultSelectedToAll: function() {
+            return false;
+        },
         updateUI: function(args) {
 	    if(!args) args = {};
 	    let debug = false;
@@ -18928,6 +18934,7 @@ const DISPLAY_DOWNLOAD = "download";
 const DISPLAY_LEGEND = "legend";
 const DISPLAY_RELOADER = "reloader";
 const DISPLAY_MESSAGE = "message";
+const DISPLAY_FIELDSLIST = "fieldslist";
 const DISPLAY_TICKS = "ticks";
 
 addGlobalDisplayType({
@@ -18967,6 +18974,14 @@ addGlobalDisplayType({
     forUser: true,
     category: CATEGORY_CONTROLS,
     tooltip: makeDisplayTooltip("No data, just a formatted message",null,"")                                                    
+});
+addGlobalDisplayType({
+    type: DISPLAY_FIELDSLIST,
+    label: "Fields List",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_CONTROLS,
+//    tooltip: makeDisplayTooltip("No data, just a formatted message",null,"")                                                    
 });
 
 addGlobalDisplayType({
@@ -19156,6 +19171,105 @@ function RamaddaMessageDisplay(displayManager, id, properties) {
 	}});
 }
 
+function RamaddaFieldslistDisplay(displayManager, id, properties) {
+    const ID_POPUP = "popup";
+    const ID_POPUP_BUTTON = "popupbutton";    
+    const SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_FIELDSLIST, properties);
+    let myProps =[
+	{label:"Metadata"},
+	{p:"decorate",ex:true},
+	{p:"selectable",ex:true},
+	{p:"showFieldDetails",ex:true},
+	{p:"showPopup",d:true,ex:true,tt:"Popup the selector"},	
+    ];
+    
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+	needsData: function() {
+            return true;
+        },
+	updateUI: function() {
+	    let records = this.filterData();
+	    if(records == null) return;
+	    let html = "";
+	    let fields = this.fields = this.getData().getRecordFields();
+	    this.fieldsMap={};
+	    this.fields.forEach(f=>{
+		this.fieldsMap[f.getId()] = f;
+	    });
+	    html += HU.center("#" + records.length +" records");
+	    let fs = [];
+	    let clazz = " display-fields-field ";
+	    if(this.getDecorate(true)) clazz+= " display-fields-field-decorated ";
+	    let selectable = this.getSelectable(true);
+	    let details = this.getShowFieldDetails(false);	    
+	    fields.forEach((f,idx)=>{
+		let block  =HU.b(f.getLabel());
+		if(details) {
+		    block+= "<br>" +
+			f.getId() + f.getUnitSuffix()+"<br>" +
+			f.getType();
+		}
+		let c = clazz;
+		let selected = true;
+		if(selectable) c += " display-fields-field-selectable ";
+		if(selectable && selected) c += " display-fields-field-selected ";
+		let title = "";
+		if(selectable)
+		    title = "Click to toggle. Shift-click toggle all";
+		block =HU.div([TITLE,title,"field-selected",selected, "field-id", f.getId(),'class',c], block);
+		fs.push(block);
+	    });
+	    let fhtml = Utils.wrap(fs,"","");
+	    html += fhtml;
+
+	    if(this.getShowPopup()) {
+		html = HU.div([ID,this.domId(ID_POPUP_BUTTON)],"Select fields") +
+		    HU.div([ID,this.domId(ID_POPUP),STYLE,"display:none;width:600px;"], html);
+	    }
+	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
+	    if(this.getShowPopup()) {
+		this.jq(ID_POPUP_BUTTON).button().click(()=>{
+		    HU.makeDialog({contentId:this.domId(ID_POPUP),inPlace:true,anchor:this.domId(ID_POPUP_BUTTON),draggable:true,header:true,sticky:true});
+		});
+	    }
+	    if(selectable) {
+		let _this = this;
+		let fieldBoxes = this.jq(ID_DISPLAY_CONTENTS).find(".display-fields-field");
+		fieldBoxes.click(function(event) {
+		    let shift = event.shiftKey ;
+		    let selected  = $(this).attr("field-selected")=="true";
+		    selected = !selected;
+		    $(this).attr("field-selected",selected);
+		    if(selected) {
+			$(this).addClass("display-fields-field-selected");
+		    } else {
+			$(this).removeClass("display-fields-field-selected");
+		    }
+
+		    if(shift) {
+			fieldBoxes.attr("field-selected",selected);
+			if(selected) {
+			    fieldBoxes.addClass("display-fields-field-selected");
+			} else {
+			    fieldBoxes.removeClass("display-fields-field-selected");
+			}
+
+		    }
+		    let selectedFields = [];
+		    fieldBoxes.each(function(){
+			let selected  = $(this).attr("field-selected")=="true";
+			if(selected) {
+			    let id = $(this).attr("field-id");
+			    let field = _this.fieldsMap[id];
+			    if(field) selectedFields.push(field);
+			}
+		    });
+                    _this.propagateEvent("handleEventFieldsSelected", selectedFields);
+		});
+	    }
+	}});
+}
+
 
 function RamaddaLabelDisplay(displayManager, id, properties) {
     var ID_TEXT = "text";
@@ -19307,14 +19421,12 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 		});
 	    }
 	},
-	getCsv: function(fields) {
+	getCsv: function(fields, records) {
             fields = fields || this.getData().getRecordFields();
-	    let records = this.filterData();
 	    DataUtils.getCsv(fields, records,this.getPropertyFileName()+".csv");
 	},
-	getJson: function(fields) {
+	getJson: function(fields, records) {
             fields = fields || this.getData().getRecordFields();
-	    let records = this.filterData();
 	    DataUtils.getJson(fields, records,this.getPropertyFileName()+".json");
 	},
 
@@ -19325,14 +19437,28 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 		this.fieldOn[f.getId()] = on;
 	    });
 	},
-	getDownloadDialog: function() {
-	    let html = HU.center(HU.div([ID,this.getDomId(ID_DOWNLOAD_CSV)],"Download CSV") +"&nbsp;&nbsp;" +
-				 HU.div([ID,this.getDomId(ID_DOWNLOAD_JSON)],"Download JSON") +"&nbsp;&nbsp;" +			     			     HU.div([ID,this.getDomId(ID_CANCEL)],"Cancel"));
+	getDownloadDialog: function(records) {
+            let selectedFields = this.getSelectedFields();
+	    if(selectedFields) {
+		this.fieldOn = {};
+		this.getData().getRecordFields().forEach(f=>{
+		    this.fieldOn[f.getId()] = false;
+		});
+		selectedFields.forEach(f=>{
+		    this.fieldOn[f.getId()] = true;
+		});
+	    }
+	    
+	    let html = HU.center("#" +records.length +" records") +
+		HU.center(HU.div([ID,this.getDomId(ID_DOWNLOAD_CSV)],"Download CSV") +"&nbsp;&nbsp;" +
+			  HU.div([ID,this.getDomId(ID_DOWNLOAD_JSON)],"Download JSON") +"&nbsp;&nbsp;" +			     			     HU.div([ID,this.getDomId(ID_CANCEL)],"Cancel"));
 	    html += "<b>Include:<br></b>";
 	    let cbx = "";
 	    this.getData().getRecordFields().forEach((f,idx)=>{
 		let on = this.fieldOn[f.getId()];
-		if(!Utils.isDefined(on)) on = true;
+		if(!Utils.isDefined(on)) {
+		    on = true;
+		}
 		cbx += HU.checkbox(this.getDomId("cbx_" + f.getId()),[],on) +" " + f.getLabel() +"<br>";
 	    });
 	    
@@ -19341,6 +19467,8 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	    return html;
 	},
 	doDownload: function() {
+	    let records = this.filterData();
+
 	    let func = json=>{
 		this.jq(ID_DIALOG).hide();
 		let fields = [];
@@ -19351,16 +19479,19 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 		    }
 		});
 		if(json) 
-		    this.getJson(fields);
+		    this.getJson(fields, records);
 		else
-		    this.getCsv(fields);
-	    };
+		    this.getCsv(fields, records);
+		if(this.dialog) this.dialog.remove();
+		this.dialog =null;	    };
 	    if(this.getPropertyAskFields(true)) {
-		let html = this.getDownloadDialog();
+		let html = this.getDownloadDialog(records);
 		let init = ()=>{
 		    this.jq(ID_CANCEL).button().click(() =>{
 			this.applyFieldSelection();
 			this.jq(ID_DIALOG).hide();
+			if(this.dialog) this.dialog.remove();
+			this.dialog =null;
 		    });
 		    this.jq(ID_DOWNLOAD_CSV).button().click(() =>{
 			func(false);
@@ -19369,9 +19500,9 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 			func(true);
 		    });		
 		};
-		this.showDialog(html,this.getDomId(ID_DISPLAY_CONTENTS),init);
+		this.showDialog(html,this.getDomId(ID_DISPLAY_CONTENTS),init,this.getTitle());
 	    } else  {
-		this.getCsv();
+		this.getCsv(null, records);
 	    }
 	},
     });
@@ -29294,7 +29425,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'gridBounds',ex:'north,west,south,east'},	
 	{p:'mapCenter',ex:'lat,lon',tt:"initial position"},
 	{p:'zoomLevel',ex:4,tt:"initial zoom"},
-	{p:'zoomTimeout',ex:1000,tt:"initial zoom timeout delay"},
+	{p:'zoomTimeout',ex:500,tt:"initial zoom timeout delay. set this if the map is in tabs, etc, and not going to the initial zoom"},
 	{p:'fixedPosition',ex:true,tt:'Keep the initial position'},
 	{p:'linked',ex:true,tt:"Link location with other maps"},
 	{p:'linkGroup',ex:'some_name',tt:"Map groups to link with"},
@@ -36715,6 +36846,9 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
     ];
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+	displayData: function() {
+	    this.updateUI();
+	},
 	updateUI: function() {
 	    let records = this.filterData();
 	    if(!records) {
@@ -36723,6 +36857,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	    }
             let pointData = this.dataCollection.getList()[0];
             let fields = pointData.getRecordFields();
+            let selectedFields = this.getSelectedFields();
+	    fields= (selectedFields && selectedFields.length>0)?selectedFields:fields;
 	    let numRecords = this.getNumRecords();
 	    let includeGeo = this.getIncludeGeo();
 	    let includeDate = this.getIncludeGeo();	    
@@ -36747,7 +36883,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		if(includeDate) {
 		    html+=HU.td([],this.formatDate(r.getDate()));
 		}
-		d.forEach(v=>{
+		fields.forEach(f=>{
+		    let v = d[f.getIndex()]
 		    v = String(v);
 		    if(v.length>500) {
 			v = HU.div([STYLE,"max-height:200px;overflow-y:auto;"],v);
