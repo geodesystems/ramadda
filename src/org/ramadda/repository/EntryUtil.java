@@ -499,7 +499,6 @@ public class EntryUtil extends RepositoryManager {
         } else if (l1 > l2) {
             return 1;
         }
-
         return 0;
     }
 
@@ -520,14 +519,16 @@ public class EntryUtil extends RepositoryManager {
         } else if (on.equals(SORTBY_CHANGEDATE)) {
             return compare(e1.getChangeDate(), e2.getChangeDate());
         } else if (on.equals(SORTBY_CREATEDATE)) {
-            return compare(e1.getCreateDate(), e2.getCreateDate());
+	    int res =   compare(e1.getCreateDate(), e2.getCreateDate());
+	    System.out.println("\t" + res +" " + e1.getName() +" " + Utils.simpleSdf.format(new Date(e1.getCreateDate())) +" " +e2.getName() +"  " + Utils.simpleSdf.format(new Date(e2.getCreateDate())));
+            return  res;
         } else if (on.equals(SORTBY_NAME)) {
             return e1.getName().compareToIgnoreCase(e2.getName());
         } else if (on.equals(SORTBY_ENTRYORDER)) {
             return e1.getEntryOrder() - e2.getEntryOrder();
         } else if (on.equals(SORTBY_TYPE)) {
-            return e1.getTypeHandler().getType().compareToIgnoreCase(
-                e2.getTypeHandler().getType());
+            return e1.getTypeHandler().getLabel().compareToIgnoreCase(
+                e2.getTypeHandler().getLabel());
         } else if (on.equals(SORTBY_SIZE)) {
             return compare(e1.getResource().getFileSize(),
                            e2.getResource().getFileSize());
@@ -564,6 +565,10 @@ public class EntryUtil extends RepositoryManager {
     public static List<Entry> sortEntriesOn(List<Entry> entries,
                                             final List<String> ons,
                                             final boolean descending) {
+	System.out.println("Sort:" + ons);
+	for(Entry e: entries)
+	    System.out.println("entry:" + e.getName());
+
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
                 Entry e1 = (Entry) o1;
@@ -588,9 +593,14 @@ public class EntryUtil extends RepositoryManager {
         Object[] array = entries.toArray();
         Arrays.sort(array, comp);
 
+	entries = (List<Entry>) Misc.toList(array);
+
+	System.out.println("after:");
+	for(Entry e: entries)
+	    System.out.println("entry:" + e.getName());
 
 
-        return (List<Entry>) Misc.toList(array);
+        return entries;
     }
 
 

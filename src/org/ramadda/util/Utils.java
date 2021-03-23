@@ -114,10 +114,13 @@ public class Utils extends IO {
 
     /** _more_ */
     public static final SimpleDateFormat sdf;
+    public static final SimpleDateFormat simpleSdf;
 
     static {
         sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         sdf.setTimeZone(TIMEZONE_DEFAULT);
+        simpleSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        simpleSdf.setTimeZone(TIMEZONE_DEFAULT);	
     }
 
 
