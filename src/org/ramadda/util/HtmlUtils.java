@@ -6046,7 +6046,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
         StringBuilder menu = new StringBuilder();
         if (makeClose) {
             String cLink = HtmlUtils.jsLink(
-                               HtmlUtils.onMouseClick("hidePopupObject(event);"),
+                               HtmlUtils.onMouseClick("HtmlUtils.hidePopupObject(event);"),
                                getIconImage(
                                    ICON_CLOSE, "title", "Close", "class",
                                    "ramadda-popup-close"), "");
