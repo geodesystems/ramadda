@@ -58,6 +58,11 @@ import javax.servlet.http.*;
 public class RepositoryServlet extends HttpServlet implements Constants {
 
 
+    public static boolean debugRequests = false;
+
+    public static boolean debugMultiPart = false;    
+
+
     /** _more_ */
     private SimpleDateFormat sdf =
         RepositoryUtil.makeDateFormat("E, d M yyyy HH:m Z");
@@ -474,7 +479,9 @@ public class RepositoryServlet extends HttpServlet implements Constants {
         public void getFormArgs(HttpServletRequest request)
                 throws IOException {
 
+
             if (ServletFileUpload.isMultipartContent(request)) {
+		if(debugMultiPart || debugRequests) System.err.println("RepositoryServlet:multipart:" + request.getRequestURI());
                 ServletFileUpload upload =
                     new ServletFileUpload(new DiskFileItemFactory());
                 try {
@@ -495,6 +502,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
             } else {
                 // Map containing parameter names as keys and parameter values as map values. 
                 // The keys in the parameter map are of type String. The values in the parameter map are of type String array. 
+		if(debugRequests) System.err.println("RepositoryServlet:request:" + request.getRequestURI());
                 Map      p  = request.getParameterMap();
                 Iterator it = p.entrySet().iterator();
                 // Convert Map values into type String. 
@@ -503,6 +511,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                     Map.Entry pairs = (Map.Entry) it.next();
                     String    key   = (String) pairs.getKey();
                     String[]  vals  = (String[]) pairs.getValue();
+		    if(debugRequests) System.err.println("\t" + key +"=" + (vals.length>0?vals[0]:"no value"));
                     if (vals.length == 1) {
                         formArgs.put(key, vals[0]);
                     } else if (vals.length > 1) {
@@ -542,6 +551,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
 
                 return;
             }
+	    if(debugRequests || debugMultiPart) System.err.println("\tfield:" + item.getFieldName() +"=" + value);
             formArgs.put(name, value);
         }
 
@@ -560,6 +570,8 @@ public class RepositoryServlet extends HttpServlet implements Constants {
             String fieldName = item.getFieldName();
             String fileName  = item.getName();
             if ((fileName == null) || (fileName.trim().length() == 0)) {
+		if(debugMultiPart || debugRequests) System.err.println("\tfile: no file");
+		    
                 return;
             }
 
@@ -578,6 +590,8 @@ public class RepositoryServlet extends HttpServlet implements Constants {
             //TODO: what should we do with the fileName to ensure against XSS
             //            fileName = HtmlUtils.encode(fileName);
 
+
+	    if(debugMultiPart || debugRequests) System.err.println("\tfile:"+ fileName);
 
             String contentType = item.getContentType();
             File uploadedFile =

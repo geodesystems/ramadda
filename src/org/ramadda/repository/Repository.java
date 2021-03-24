@@ -62,6 +62,8 @@ import org.ramadda.repository.output.ZipOutputHandler;
 import org.ramadda.repository.search.SearchManager;
 
 
+import org.ramadda.repository.server.RepositoryServlet;
+
 import org.ramadda.repository.type.Column;
 import org.ramadda.repository.type.GroupTypeHandler;
 import org.ramadda.repository.type.ProcessFileTypeHandler;
@@ -1022,9 +1024,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
         initProperties(properties);
         //Clear the tmp dir as it gets set by the plugin manager and any tmp dir set in a properties file will be ignored
         getStorageManager().clearTmpDir();
-
-
         initServer();
+
+
+	RepositoryServlet.debugRequests = getProperty("ramadda.debug.requests",false);
+	RepositoryServlet.debugMultiPart = getProperty("ramadda.debug.multipart",false);	
+	
+
+
         repositoryInitialized = true;
         //Call this here to load initial properties
         initAttributes();
