@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -20,12 +20,12 @@ package org.ramadda.util.text;
 import org.json.*;
 
 import org.ramadda.util.GeoUtils;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.ramadda.util.IO;
 import org.ramadda.util.Json;
 import org.ramadda.util.Place;
-import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
 import ucar.unidata.util.Misc;
@@ -2919,7 +2919,7 @@ public abstract class Converter extends Processor {
             }
             //            row.remove(index);
             int          colOffset = 0;
-            List<String> toks = Utils.split(row.get(index), delimiter);
+            List<String> toks      = Utils.split(row.get(index), delimiter);
             while (toks.size() < names.size()) {
                 toks.add("");
             }
@@ -3374,6 +3374,9 @@ public abstract class Converter extends Processor {
     }
 
 
+
+
+
     /**
      * Class description
      *
@@ -3381,30 +3384,37 @@ public abstract class Converter extends Processor {
      * @version        $version$, Fri, Jan 16, '15
      * @author         Enter your name here...
      */
-    public static class GeoNamer extends Converter {
+    public static class Elevation extends Converter {
 
 
-        private int rowIdx=0;
-	private String where;
+        /** _more_          */
+        private int rowIdx = 0;
 
-	private String lat;
-	private String lon;
+        /** _more_          */
+        private String lat;
+
+        /** _more_          */
+        private String lon;
 
 
         /** _more_ */
         private int latColumn = -1;
+
+        /** _more_          */
         private int lonColumn = -1;
-	
+
 
         /**
          *
          * @param col _more_
+         *
+         * @param lat _more_
+         * @param lon _more_
          */
-        public GeoNamer(String where, String lat, String lon) {
+        public Elevation(String lat, String lon) {
             super();
-	    this.where  = where;
-	    this.lat = lat;
-	    this.lon =lon;
+            this.lat = lat;
+            this.lon = lon;
         }
 
         /**
@@ -3420,20 +3430,32 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row) {
-	    if(rowIdx++==0) {
-		latColumn  = getIndex(info,lat);
-		lonColumn  = getIndex(info,lon);		
-		String label = where.equals("counties")?"County":where.equals("states")?"State":where;
-		row.add(label);
-		return row;
-	    }
+            if (rowIdx++ == 0) {
+                latColumn = getIndex(info, lat);
+                lonColumn = getIndex(info, lon);
+                row.add("Elevation");
+
+                return row;
+            }
             try {
-		double latValue = Double.parseDouble(row.getString(latColumn));
-		double lonValue = Double.parseDouble(row.getString(lonColumn));		
-		String name = GeoUtils.findFeatureName(where, latValue,lonValue,"");
-		name = name.trim();
-		System.err.println("name:" + name);
-		row.add(name);
+                double latValue =
+                    Double.parseDouble(row.getString(latColumn));
+                double lonValue =
+                    Double.parseDouble(row.getString(lonColumn));
+                String result =
+                    IO.readUrl(
+                        new URL(
+                            "https://nationalmap.gov/epqs/pqs.php?x="
+                            + lonValue + "&y=" + latValue
+                            + "&units=feet&output=xml"));
+                String elev = StringUtil.findPattern(result,
+                                  "<Elevation>([^<]+)</Elevation>");
+                if (elev != null) {
+                    row.add(elev);
+                } else {
+                    row.add("NaN");
+                }
+
                 return row;
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
@@ -3441,7 +3463,97 @@ public abstract class Converter extends Processor {
         }
 
     }
-    
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Jan 16, '15
+     * @author         Enter your name here...
+     */
+    public static class GeoNamer extends Converter {
+
+
+        /** _more_          */
+        private int rowIdx = 0;
+
+        /** _more_          */
+        private String where;
+
+        /** _more_          */
+        private String lat;
+
+        /** _more_          */
+        private String lon;
+
+
+        /** _more_ */
+        private int latColumn = -1;
+
+        /** _more_          */
+        private int lonColumn = -1;
+
+
+        /**
+         *
+         * @param col _more_
+         *
+         * @param where _more_
+         * @param lat _more_
+         * @param lon _more_
+         */
+        public GeoNamer(String where, String lat, String lon) {
+            super();
+            this.where = where;
+            this.lat   = lat;
+            this.lon   = lon;
+        }
+
+        /**
+         *
+         *
+         *
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row) {
+            if (rowIdx++ == 0) {
+                latColumn = getIndex(info, lat);
+                lonColumn = getIndex(info, lon);
+                String label = where.equals("counties")
+                               ? "County"
+                               : where.equals("states")
+                                 ? "State"
+                                 : where;
+                row.add(label);
+
+                return row;
+            }
+            try {
+                double latValue =
+                    Double.parseDouble(row.getString(latColumn));
+                double lonValue =
+                    Double.parseDouble(row.getString(lonColumn));
+                String name = GeoUtils.findFeatureName(where, latValue,
+                                  lonValue, "");
+                name = name.trim();
+                System.err.println("name:" + name);
+                row.add(name);
+
+                return row;
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
+        }
+
+    }
+
 
     /**
      * Class description
@@ -4563,6 +4675,13 @@ public abstract class Converter extends Processor {
 
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Wed, Mar 24, '21
+     * @author         Enter your name here...    
+     */
     public static class StripTags extends Converter {
 
         /**
@@ -4583,8 +4702,8 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader info, Row row) {
             if (rowCnt++ == 0) {
-		return row;
-	    }
+                return row;
+            }
             List<Integer> indices = getIndices(info);
             for (Integer idx : indices) {
                 int index = idx.intValue();
@@ -4592,15 +4711,23 @@ public abstract class Converter extends Processor {
                     continue;
                 }
                 String s = (String) row.getValues().get(index);
-		s = Utils.stripTags(s);
-		row.set(index,s);
-	    }
-	    return row;
+                s = Utils.stripTags(s);
+                row.set(index, s);
+            }
+
+            return row;
         }
 
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Wed, Mar 24, '21
+     * @author         Enter your name here...    
+     */
     public static class Decoder extends Converter {
 
         /**
@@ -4621,8 +4748,8 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader info, Row row) {
             if (rowCnt++ == 0) {
-		return row;
-	    }
+                return row;
+            }
             List<Integer> indices = getIndices(info);
             for (Integer idx : indices) {
                 int index = idx.intValue();
@@ -4630,13 +4757,14 @@ public abstract class Converter extends Processor {
                     continue;
                 }
                 String s = (String) row.getValues().get(index);
-		row.set(index,HtmlUtils.entityDecode(s));
-	    }
-	    return row;
+                row.set(index, HtmlUtils.entityDecode(s));
+            }
+
+            return row;
         }
 
     }
-    
+
 
     /**
      * Class description
@@ -5266,14 +5394,20 @@ public abstract class Converter extends Processor {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Wed, Mar 24, '21
+     * @author         Enter your name here...    
+     */
     public static class MakeIds extends Converter {
 
 
         /**
          *
          */
-        public MakeIds() {
-        }
+        public MakeIds() {}
 
         /**
          *
@@ -5284,16 +5418,19 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row) {
-	    if(rowCnt++==0) {
-		Row newRow =new Row();
-		for(int i=0;i<row.size();i++)
-		    newRow.add(Utils.makeID(row.getString(i)));
-		return newRow;
-	    }
-	    return row;
-	}
+            if (rowCnt++ == 0) {
+                Row newRow = new Row();
+                for (int i = 0; i < row.size(); i++) {
+                    newRow.add(Utils.makeID(row.getString(i)));
+                }
+
+                return newRow;
+            }
+
+            return row;
+        }
     }
-    
+
 
     /**
      * Class description

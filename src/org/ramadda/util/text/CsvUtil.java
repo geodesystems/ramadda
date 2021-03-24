@@ -1584,6 +1584,10 @@ public class CsvUtil {
                 new Arg("lookup","('counties' or 'states' or 'countries')"),
                 new Arg("lat", "Latitude column", "type", "column"),
                 new Arg("lon", "Longitude column", "type", "column")),	
+	new Cmd("-elevation", "Look up elevation(using 1/3 arc-second DEM)",
+                new Arg("lat", "Latitude column", "type", "column"),
+                new Arg("lon", "Longitude column", "type", "column")),	
+
         new Cmd("-mercator", "Convert x/y to lon/lat", new Arg("columns")),
         new Cmd("-region", "Add the state's region",
                 new Arg("columns", "", "type", "columns")),
@@ -2326,7 +2330,11 @@ public class CsvUtil {
 	defineFunction("-geoname",3,(ctx,args,i) -> {
 		ctx.getProcessor().addProcessor(new Converter.GeoNamer(args.get(++i),args.get(++i),args.get(++i)));
 		return i;
-	    });	
+	    });
+	defineFunction("-elevation",2,(ctx,args,i) -> {
+		ctx.getProcessor().addProcessor(new Converter.Elevation(args.get(++i),args.get(++i)));
+		return i;
+	    });		
 
 	defineFunction("-geocode",3,(ctx,args,i) -> {
 		ctx.getProcessor().addProcessor(new Converter.Geocoder(getCols(args.get(++i)), args.get(++i).trim(),args.get(++i).trim()));
