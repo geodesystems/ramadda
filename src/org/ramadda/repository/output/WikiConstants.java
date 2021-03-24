@@ -194,6 +194,12 @@ public interface WikiConstants {
     /** sort order attribute */
     public static final String ATTR_SORT_ORDER = "sortorder";
 
+    /** sort attribute */
+    public static final String ATTR_SORT_BY = "sortby";
+
+    /** sort order attribute */
+    public static final String ATTR_SORT_DIR = "sortdir";    
+
 
     /** the message attribute */
     public static final String ATTR_MESSAGE = "message";

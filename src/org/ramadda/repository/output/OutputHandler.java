@@ -1565,7 +1565,7 @@ public class OutputHandler extends RepositoryManager {
 		try {
 		    HU.tag(sb,HU.TAG_TD,
 			   HU.attrs(HU.ATTR_CLASS,
-				    "entry-list-header-column",
+				    "entry-list-header-column ramadda-clickable",
 				    HU.ATTR_WIDTH, width), HU.href(url, extra +msg(name)));
 		} catch(Exception exc) {
 		    throw new RuntimeException(exc);
