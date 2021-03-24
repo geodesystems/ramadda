@@ -381,7 +381,16 @@ public class HtmlOutputHandler extends OutputHandler {
             contents = getEntryManager().getEntryActionsTable(request, entry,
 							      OutputType.TYPE_MENU);
         } else {
-            contents = getInformationTabs(request, entry, true);
+	    StringBuilder sb = new StringBuilder();
+	    String snippet = getWikiManager().getSnippet(request, entry, true);
+	    if(Utils.stringDefined(snippet)) {
+		sb.append(snippet);
+		sb.append(HU.br());
+	    }
+	    request.put(WikiConstants.ATTR_SHOWTITLE, "false");
+	    sb.append(entry.getTypeHandler().getEntryContent(request, entry,
+								  false, true, null));
+            contents = sb.toString();
         }
         StringBuffer xml = new StringBuffer("<content>\n");
         XmlUtil.appendCdata(xml,
@@ -408,7 +417,7 @@ public class HtmlOutputHandler extends OutputHandler {
         String links = getEntryManager().getEntryActionsTable(request, entry,
 							      OutputType.TYPE_ALL);
         StringBuffer inner = new StringBuffer();
-        String cLink = HU.jsLink(HU.onMouseClick("hidePopupObject();"),
+        String cLink = HU.jsLink(HU.onMouseClick("HtmlUtils.hidePopupObject();"),
                                  getIconImage(ICON_CLOSE), "");
         inner.append(cLink);
         inner.append(HU.br());
@@ -464,7 +473,6 @@ public class HtmlOutputHandler extends OutputHandler {
         if (outputType.equals(OUTPUT_INLINE)) {
             request.setCORSHeaderOnResponse();
             String inline = typeHandler.getInlineHtml(request, entry);
-
             if (inline != null) {
                 inline = getRepository().translate(request, inline);
                 StringBuffer xml = new StringBuffer("<content>\n");
@@ -474,27 +482,6 @@ public class HtmlOutputHandler extends OutputHandler {
 
                 return new Result("", xml, "text/xml");
             }
-
-            /**
-             * String wikiTemplate = getWikiText(request, entry);
-             * if (wikiTemplate == null) {
-             *   wikiTemplate = getPageHandler().getWikiTemplate(request,
-             *           entry, PageHandler.TEMPLATE_DEFAULT);
-             * }
-             *
-             * if (wikiTemplate != null) {
-             *   String wiki = getWikiManager().wikifyEntry(request, entry,
-             *                     wikiTemplate);
-             *   wiki = getRepository().translate(request, wiki);
-             *   StringBuffer xml = new StringBuffer("<content>\n");
-             *   XmlUtil.appendCdata(xml,
-             *                       "<div class=entry-inline>" + wiki
-             *                       + "</div>");
-             *   xml.append("\n</content>");
-             *
-             *   return new Result("", xml, "text/xml");
-             * }
-             */
             return getMetadataXml(request, entry, false);
         }
 
@@ -889,7 +876,6 @@ public class HtmlOutputHandler extends OutputHandler {
         boolean showDetails = request.get(ARG_DETAILS, true);
         boolean showIcon = request.get("showIcon", true);	
 
-
         for (Entry subGroup : subGroups) {
             cnt++;
             addEntryTableRow(request, subGroup, sb, jsSB, showDetails, showIcon);
@@ -906,19 +892,14 @@ public class HtmlOutputHandler extends OutputHandler {
 
         if (cnt == 0) {
             parent.getTypeHandler().handleNoEntriesHtml(request, parent, sb);
-            String tabs = getInformationTabs(request, parent, true);
-            sb.append(tabs);
-            //            sb.append(entry.getDescription());
-            if (getAccessManager().hasPermissionSet(parent,
-                    Permission.ACTION_VIEWCHILDREN)) {
-                if ( !getAccessManager().canDoAction(request, parent,
-                        Permission.ACTION_VIEWCHILDREN)) {
-                    sb.append(HU.space(1));
-                    sb.append(
-                        msg(
-                        "You do not have permission to view the sub-folders of this entry"));
-                }
-            }
+	    String snippet = getWikiManager().getSnippet(request, parent, true);
+	    if(Utils.stringDefined(snippet)) {
+		sb.append(snippet);
+		sb.append(HU.br());
+	    }
+	    request.put(WikiConstants.ATTR_SHOWTITLE, "false");
+	    sb.append(parent.getTypeHandler().getEntryContent(request, parent,
+								  false, true, null));
         }
 
         StringBuffer xml = new StringBuffer("<response><content>\n");
@@ -1203,16 +1184,17 @@ public class HtmlOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public String getInformationTabs(Request request, Entry entry,
-                                     boolean includeDescription)
+                                     boolean includeSnippet)
             throws Exception {
         List         tabTitles   = new ArrayList<String>();
         List         tabContents = new ArrayList<String>();
         StringBuffer basicSB     = new StringBuffer();
-        String       desc        = entry.getDescription();
-        if (includeDescription && (desc.length() > 0)) {
-            desc = processText(request, entry, desc);
-            basicSB.append(desc);
-            basicSB.append(HU.br());
+        if (includeSnippet) {
+	    String snippet = getWikiManager().getSnippet(request, entry, true);
+	    if(Utils.stringDefined(snippet)) {
+		basicSB.append(snippet);
+		basicSB.append(HU.br());
+	    }
         }
         request.put(WikiConstants.ATTR_SHOWTITLE, "false");
         basicSB.append(entry.getTypeHandler().getEntryContent(request, entry,
@@ -1943,19 +1925,6 @@ public class HtmlOutputHandler extends OutputHandler {
 
         if (outputType.equals(OUTPUT_INLINE)) {
             request.setCORSHeaderOnResponse();
-            /*
-            String wikiTemplate = getWikiText(request, group);
-            if (wikiTemplate != null) {
-                String wiki = getWikiManager().wikifyEntry(request, group, wikiTemplate, true, subGroups,
-                                          entries);
-                wiki = getRepository().translate(request, wiki);
-                StringBuffer xml = new StringBuffer("<content>\n");
-                XmlUtil.appendCdata(xml,
-                                    "<div class=inline>" +wiki+"</div>");
-                xml.append("\n</content>");
-                return new Result("", xml, "text/xml");
-                }*/
-
             return getChildrenXml(request, group, subGroups, entries);
         }
 
