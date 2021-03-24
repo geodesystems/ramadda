@@ -265,7 +265,7 @@ public class DbaseDataWrapper {
     }
 
     /**
-     * _more_
+     * _more_a
      *
      * @param index _more_
      *

@@ -214,7 +214,7 @@ public class FeatureCollection {
         Hashtable extraProps = new Hashtable();
         Hashtable<String, Object> collectionProps = new Hashtable<String,
                                                         Object>();
-        EsriShapefile shapefile = new EsriShapefile(file.toString());
+        EsriShapefile shapefile = new EsriShapefile(file,null, 0.0f);
 
         return makeFeatureCollection("", "", shapefile, extraProps,
                                      collectionProps);
@@ -321,8 +321,11 @@ public class FeatureCollection {
             Feature feature = new Feature(name, geom, featureProps,
                                           collectionProps);
 	    if(fieldDatum!=null) {
-	 	DbaseDataWrapper ddw = fieldDatum.get(i);
-		feature.setData(ddw);
+		Hashtable data = new Hashtable();
+		for(DbaseDataWrapper ddw: fieldDatum) {
+		    data.put(ddw.getName(),ddw.getData(i));
+		}
+		feature.setData(data);
 	    }
             fcfeatures.add(feature);
         }

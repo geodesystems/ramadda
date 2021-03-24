@@ -66,7 +66,7 @@ public class Feature {
 
     private Hashtable<String, Object> featureProperties;
 
-    private DbaseDataWrapper data;
+    private Hashtable data;
     
     /** _more_ */
     private Hashtable allProperties;
@@ -114,7 +114,7 @@ public class Feature {
 
        @param value The new value for Data
     **/
-    public void setData (DbaseDataWrapper value) {
+    public void setData (Hashtable value) {
 	data = value;
     }
 
@@ -123,10 +123,14 @@ public class Feature {
 
        @return The Data
     **/
-    public DbaseDataWrapper getData () {
+    public Hashtable getData () {
 	return data;
     }
 
+
+    public String toString() {
+	return "feature:" + data;
+    }
 
     /**
      * _more_
