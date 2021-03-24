@@ -28,7 +28,7 @@ import org.ramadda.repository.output.KmlOutputHandler;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.output.WikiConstants;
-import org.ramadda.util.geom.*;
+import org.ramadda.util.geo.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
 import org.ramadda.util.KmlUtil;
@@ -146,6 +146,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         addType(OUTPUT_FIELDS_LIST);
         //Create the cache with a 1 minute TTL
         cache = new TTLCache<String, EsriShapefile>(60 * 1000);
+	
 
     }
 

@@ -31,7 +31,7 @@ import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.type.GenericTypeHandler;
 
-import org.ramadda.util.geom.*;
+import org.ramadda.util.geo.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
