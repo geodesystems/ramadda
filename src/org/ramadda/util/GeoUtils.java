@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package org.ramadda.util;
 
 
+import org.ramadda.util.geo.*;
+
 import org.w3c.dom.*;
 
 import ucar.unidata.util.IOUtil;
@@ -32,8 +34,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
-import java.util.Hashtable;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 import java.util.TimeZone;
@@ -288,47 +290,6 @@ public class GeoUtils {
 
 
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
-    public static void main(String[] args) throws Exception {
-        String key = null;
-        try {
-            for (String arg : args) {
-                if (key == null) {
-                    key = arg;
-                    continue;
-                }
-                Place place = getLocationFromAddress(arg, key);
-                if (place == null) {
-                    System.out.println(arg + ": NA");
-                } else {
-                    System.out.println(arg + ": " + place);
-                }
-            }
-        } catch (Exception exc) {
-            System.out.println(exc);
-        }
-        if (true) {
-            return;
-        }
-
-        double[][] xyz = {
-            { -2307792.824, -4160678.918, 4235698.873 }
-        };
-        double[]   result;
-        for (int i = 0; i < xyz.length; i++) {
-            result = wgs84XYZToLatLonAlt(xyz[i][0], xyz[i][1], xyz[i][2]);
-            //            result = wgs84XYZToLatLonAlt(xyz[i][1], xyz[i][0], xyz[i][2]);
-            System.out.println(result[0] + "/" + result[1] + "/" + result[2]);
-        }
-
-    }
-
     /** _more_ */
     private static Hashtable<String, Place> addressToLocation = null;
 
@@ -390,7 +351,110 @@ public class GeoUtils {
     private static final String[] citySuffixes = new String[] { " city",
             " town", " cdp", " village" };
 
-    private static final String[] countySuffixes = new String[]{"county","city", "borough","municipality","parish","census area","city and borough"};  
+    /** _more_          */
+    private static final String[] countySuffixes = new String[] {
+        "county", "city", "borough", "municipality", "parish", "census area",
+        "city and borough"
+    };
+
+
+
+
+    /**
+     * _more_
+     *
+     * @param path _more_
+     * @param lat _more_
+     * @param lon _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static Feature findFeature(String path, double lat, double lon)
+            throws Exception {
+        FeatureCollection fc = FeatureCollection.getFeatureCollection(path,
+                                   null);
+        if (fc == null) {
+            if (path.equals("counties")) {
+                path = "/org/ramadda/util/geo/resources/counties.zip";
+            } else if (path.equals("states")) {
+                path = "/org/ramadda/util/geo/resources/states.zip";
+            }
+            if ( !path.endsWith(".zip") && !path.startsWith("/")) {
+                path = "/org/ramadda/util/geo/resources/" + path + ".zip";
+            }
+            fc = FeatureCollection.getFeatureCollection(path,
+                    IO.getInputStream(path));
+        }
+
+        return fc.find((float) lat, (float) lon);
+    }
+
+    /**
+     * _more_
+     *
+     * @param path _more_
+     * @param field _more_
+     * @param lat _more_
+     * @param lon _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static Object findFeatureField(String path, String field,
+                                          double lat, double lon, Object dflt)
+            throws Exception {
+        Feature feature = findFeature(path, lat, lon);
+        if (feature != null) {
+            System.err.println("F:" + feature);
+            Hashtable data = feature.getData();
+            if (data != null) {
+                return data.get(field);
+            }
+        }
+
+        return dflt;
+    }
+
+    /** _more_          */
+    private static final String[] NAME_FIELDS = new String[] { "name",
+            "state_name", "cntry_name" };
+
+    /**
+     * _more_
+     *
+     * @param path _more_
+     * @param lat _more_
+     * @param lon _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static String findFeatureName(String path, double lat, double lon,
+                                         String dflt)
+            throws Exception {
+        Feature feature = findFeature(path, lat, lon);
+        if (feature != null) {
+            Hashtable data = feature.getData();
+            //      System.err.println(data);
+            if (data != null) {
+                for (String f : NAME_FIELDS) {
+                    String name = (String) data.get(f);
+                    if (name != null) {
+                        return name;
+                    }
+                }
+            }
+        }
+
+        return dflt;
+    }
+
 
 
     /**
@@ -404,13 +468,11 @@ public class GeoUtils {
      *
      * @throws Exception _more_
      */
-
-
     public static Hashtable getStatesMap() throws Exception {
         if (statesMap == null) {
             InputStream inputStream =
                 IO.getInputStream("/org/ramadda/util/states.properties",
-                                      GeoUtils.class);
+                                  GeoUtils.class);
             String    s    = IOUtil.readContents(inputStream);
             Hashtable tmp  = Utils.getProperties(s);
             Hashtable tmp2 = new Hashtable();
@@ -426,6 +488,7 @@ public class GeoUtils {
         return statesMap;
     }
 
+    /** _more_          */
     private static HashSet noPlaceSet = new HashSet();
 
 
@@ -587,67 +650,87 @@ public class GeoUtils {
         }
 
         if (doCounty) {
-	    boolean debug = false;
+            boolean debug = false;
             resource = Place.getResource("counties");
-            
+
             int index = _address.indexOf(",");
             if (index < 0) {
-		return resource.getPlace(_address);
-	    }
-	    getStatesMap();
-	    List<String> toks   = StringUtil.split(_address, ",");
-	    String       county = toks.get(0).trim();
-	    String       state  = toks.get(1).trim();
-	    if(place!=null) return place;
-	    if(debug)
-		System.out.println("trying:" + county + "," + state);
-	    place = resource.getPlace(county + "," + state);
-	    if (place != null)  return place;
-	    state = (String) statesMap.get(state);
-	    if(debug)
-		System.out.println("state after:" +county+"," + state);
-	    if (state != null) {
-		if(debug)
-		    System.out.println("trying:" + county + "," + state);
-		place = resource.getPlace(county + "," + state);
-		if(place!=null) return place;
-		if(debug)
-		    System.out.println("try 2:" +county+"," + state +" place:" + place);
-		for(String suffix: countySuffixes) {
-		    if(debug)
-			System.out.println("suffix: " + county + " " + suffix+"," + state);
-		    place = resource.getPlace(county + " " + suffix+"," + state);
-		    if(place!=null) return place;
-                }
-		//                return place;
+                return resource.getPlace(_address);
             }
-	    doState = true;
+            getStatesMap();
+            List<String> toks   = StringUtil.split(_address, ",");
+            String       county = toks.get(0).trim();
+            String       state  = toks.get(1).trim();
+            if (place != null) {
+                return place;
+            }
+            if (debug) {
+                System.out.println("trying:" + county + "," + state);
+            }
+            place = resource.getPlace(county + "," + state);
+            if (place != null) {
+                return place;
+            }
+            state = (String) statesMap.get(state);
+            if (debug) {
+                System.out.println("state after:" + county + "," + state);
+            }
+            if (state != null) {
+                if (debug) {
+                    System.out.println("trying:" + county + "," + state);
+                }
+                place = resource.getPlace(county + "," + state);
+                if (place != null) {
+                    return place;
+                }
+                if (debug) {
+                    System.out.println("try 2:" + county + "," + state
+                                       + " place:" + place);
+                }
+                for (String suffix : countySuffixes) {
+                    if (debug) {
+                        System.out.println("suffix: " + county + " " + suffix
+                                           + "," + state);
+                    }
+                    place = resource.getPlace(county + " " + suffix + ","
+                            + state);
+                    if (place != null) {
+                        return place;
+                    }
+                }
+                //                return place;
+            }
+            doState = true;
         }
 
 
         if (doState) {
             resource = Place.getResource("states");
-            place = resource.getPlace(address);
-	    if(place!=null) return place;
-	    doCountry =true;
+            place    = resource.getPlace(address);
+            if (place != null) {
+                return place;
+            }
+            doCountry = true;
         }
 
 
-	if (doCountry) {
+        if (doCountry) {
             resource = Place.getResource("countries");
-            place = resource.getPlace(address);
-	    return place;
+            place    = resource.getPlace(address);
+
+            return place;
         }
 
 
         if (resource != null) {
             place = resource.getPlace(address);
             if (place == null) {
-		if(!noPlaceSet.contains(address)) {
-		    noPlaceSet.add(address);
-		    System.err.println("no place:" + address);
-		}
+                if ( !noPlaceSet.contains(address)) {
+                    noPlaceSet.add(address);
+                    System.err.println("no place:" + address);
+                }
             }
+
             return place;
         }
 
@@ -925,6 +1008,59 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
 
         return Misc.decodeLatLon(s);
     }
+
+
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void main(String[] args) throws Exception {
+        String path = "uscounties";
+        path = "states";
+        Object f = findFeatureName(path, 40, -105, null);
+        System.err.println("f:" + f);
+        if (true) {
+            return;
+        }
+
+
+        String key = null;
+        try {
+            for (String arg : args) {
+                if (key == null) {
+                    key = arg;
+                    continue;
+                }
+                Place place = getLocationFromAddress(arg, key);
+                if (place == null) {
+                    System.out.println(arg + ": NA");
+                } else {
+                    System.out.println(arg + ": " + place);
+                }
+            }
+        } catch (Exception exc) {
+            System.out.println(exc);
+        }
+        if (true) {
+            return;
+        }
+
+        double[][] xyz = {
+            { -2307792.824, -4160678.918, 4235698.873 }
+        };
+        double[]   result;
+        for (int i = 0; i < xyz.length; i++) {
+            result = wgs84XYZToLatLonAlt(xyz[i][0], xyz[i][1], xyz[i][2]);
+            //            result = wgs84XYZToLatLonAlt(xyz[i][1], xyz[i][0], xyz[i][2]);
+            System.out.println(result[0] + "/" + result[1] + "/" + result[2]);
+        }
+
+    }
+
+
 
 
 }
