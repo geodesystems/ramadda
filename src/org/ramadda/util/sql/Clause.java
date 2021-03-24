@@ -168,17 +168,6 @@ public class Clause {
         this.value = value;
     }
 
-    /**
-     * utility to make a 2 element OR clause
-     *
-     * @param clause1 child clause
-     * @param clause2 child clause
-     *
-     * @return a new OR clause
-     */
-    public static Clause or(Clause clause1, Clause clause2) {
-        return new Clause(EXPR_OR, new Clause[] { clause1, clause2 });
-    }
 
 
 
@@ -201,11 +190,10 @@ public class Clause {
      *
      * @return new OR clause
      */
-    public static Clause or(Clause[] clauses) {
+    public static Clause or(Clause... clauses) {
         if ((clauses == null) || (clauses.length == 0)) {
             return null;
         }
-
         return new Clause(EXPR_OR, clauses);
     }
 
