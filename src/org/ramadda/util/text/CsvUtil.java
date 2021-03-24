@@ -1580,6 +1580,10 @@ public class CsvUtil {
                         "file"), "name idx", "lat idx", "lon idx"),
         new Cmd("-statename", "Add state name from state ID",
                 new Arg("column")),
+	new Cmd("-geoname", "Look up location name",
+                new Arg("lookup","('counties' or 'states')"),
+                new Arg("lat", "Latitude column", "type", "column"),
+                new Arg("lon", "Longitude column", "type", "column")),	
         new Cmd("-mercator", "Convert x/y to lon/lat", new Arg("columns")),
         new Cmd("-region", "Add the state's region",
                 new Arg("columns", "", "type", "columns")),
@@ -2319,6 +2323,10 @@ public class CsvUtil {
 		ctx.getProcessor().addProcessor(new Converter.StateNamer(args.get(++i)));
 		return i;
 	    });
+	defineFunction("-geoname",3,(ctx,args,i) -> {
+		ctx.getProcessor().addProcessor(new Converter.GeoNamer(args.get(++i),args.get(++i),args.get(++i)));
+		return i;
+	    });	
 
 	defineFunction("-geocode",3,(ctx,args,i) -> {
 		ctx.getProcessor().addProcessor(new Converter.Geocoder(getCols(args.get(++i)), args.get(++i).trim(),args.get(++i).trim()));

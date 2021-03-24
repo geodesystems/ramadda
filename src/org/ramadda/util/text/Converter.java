@@ -3378,6 +3378,75 @@ public abstract class Converter extends Processor {
      * Class description
      *
      *
+     * @version        $version$, Fri, Jan 16, '15
+     * @author         Enter your name here...
+     */
+    public static class GeoNamer extends Converter {
+
+
+        private int rowIdx=0;
+	private String where;
+
+	private String lat;
+	private String lon;
+
+
+        /** _more_ */
+        private int latColumn = -1;
+        private int lonColumn = -1;
+	
+
+        /**
+         *
+         * @param col _more_
+         */
+        public GeoNamer(String where, String lat, String lon) {
+            super();
+	    this.where  = where;
+	    this.lat = lat;
+	    this.lon =lon;
+        }
+
+        /**
+         *
+         *
+         *
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row) {
+	    if(rowIdx++==0) {
+		latColumn  = getIndex(info,lat);
+		lonColumn  = getIndex(info,lon);		
+		String label = where.equals("counties")?"County":where.equals("states")?"State":where;
+		row.add(label);
+		return row;
+	    }
+            try {
+		double latValue = Double.parseDouble(row.getString(latColumn));
+		double lonValue = Double.parseDouble(row.getString(lonColumn));		
+		String name = GeoUtils.findFeatureName(where, latValue,lonValue,"");
+		name = name.trim();
+		System.err.println("name:" + name);
+		row.add(name);
+                return row;
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
+        }
+
+    }
+    
+
+    /**
+     * Class description
+     *
+     *
      * @version        $version$, Sat, Mar 14, '20
      * @author         Enter your name here...
      */
