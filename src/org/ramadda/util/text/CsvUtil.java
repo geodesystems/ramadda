@@ -1581,7 +1581,7 @@ public class CsvUtil {
         new Cmd("-statename", "Add state name from state ID",
                 new Arg("column")),
 	new Cmd("-geoname", "Look up location name",
-                new Arg("lookup","('counties' or 'states')"),
+                new Arg("lookup","('counties' or 'states' or 'countries')"),
                 new Arg("lat", "Latitude column", "type", "column"),
                 new Arg("lon", "Longitude column", "type", "column")),	
         new Cmd("-mercator", "Convert x/y to lon/lat", new Arg("columns")),

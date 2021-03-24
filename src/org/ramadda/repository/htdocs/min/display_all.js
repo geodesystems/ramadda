@@ -35969,7 +35969,7 @@ addGlobalDisplayType({
     label: "Preformat",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CONTROLS,
+    category: CATEGORY_TABLE,
     tooltip: makeDisplayTooltip("Shows records in an HTML PRE tag",null,"Useful for looking at the data")                                                
 });
 addGlobalDisplayType({
@@ -35977,7 +35977,7 @@ addGlobalDisplayType({
     label: "HTML Table",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CONTROLS,
+    category: CATEGORY_TABLE,
     tooltip: makeDisplayTooltip("Shows records in an HTML table",null,"Useful for looking at the data")                                                    
 });
 addGlobalDisplayType({

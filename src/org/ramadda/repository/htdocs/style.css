@@ -1,4 +1,3 @@
-
 /* @import url(//fonts.googleapis.com/css?family=Open+Sans); */
 
 body {
@@ -203,18 +202,6 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
 i.fa, i.fas,i.fab {
     color:#aaa;
     font-size:12pt;
-}
-
-
-
-
-.ramadda-clickable:hover span i, .ramadda-clickable:hover {
-    cursor:pointer;
-    color: #0074D9 !important;
-}
-
-.ramadda-highlightable:hover span i, a.ramadda-highlightable:hover {
-    color: #0074D9 !important;
 }
 
 a:hover span i {
@@ -4812,3 +4799,20 @@ h3.ui-accordion-header a {
 }
 
 
+
+
+
+
+/** Put the clickable and highlightable here so they take precedence */
+.ramadda-clickable:hover span i, .ramadda-clickable:hover a, .ramadda-clickable:hover {
+    cursor:pointer;
+    color: #0074D9 !important;
+}
+
+.ramadda-highlightable:hover span i, .ramadda-highlightable:hover a, a.ramadda-highlightable:hover {
+    color: #0074D9 !important;
+}
+
+.ramadda-hoverable:hover {
+    background-color : #efefef;
+}

@@ -237,16 +237,15 @@ function insertTagsInner(id, txtarea, tagOpen, tagClose, sampleText) {
 
 let groupAttributes = [
     {label:'Collection Properties'},
-    {p:'sort',ex:'name|date|changedate|createdate'},
-    {p:'sortorder',ex:'up|down'},
-    {p:'entries',ex:'entryid1,entryid2,entryid3..'},
-    {p:'entries.filter',ex:'file|folder|image|type:some type|geo|name:name pattern|suffix:file suffixes'},
-    {p:'exclude',ex:'entryid1,entryid2,entryid3..'},
-    {p:'first',ex:'entryid1,entryid2,entryid3..'},
-    {p:'last',ex:'entryid1,entryid2,entryid3..'},
-    {p:'sort',ex:'name|date'},
-    {p:'sortorder',ex:'up|down'},
-    {p:'max',ex:'number of entries to use'},
+    {p:'sortby',ex:'name|date|changedate|createdate',tt:'sort type -name,date, change date, create date'},
+    {p:'sortdir',ex:'up|down',tt:'direction of sort. use up for oldest to youngest'},
+    {p:'entries',ex:'entryid1,entryid2,entryid3..',tt:'comma separated list of entry ids to use' },
+    {p:'entries.filter',ex:'file|folder|image|type:some type|geo|name:name pattern|suffix:file suffixes',tt:'allows you to select what entries to use'},
+    {p:'exclude',ex:'entryid1,entryid2,entryid3..',tt:'comma separated list of entry ids to not use'},
+    {p:'first',ex:'entryid1,entryid2,entryid3..',tt:'comma separated list of entry ids to use first'},
+
+    {p:'last',ex:'entryid1,entryid2,entryid3..',tt:'comma separated list of entry ids to use last'},
+    {p:'max',ex:'number of entries to use',tt:'max number of entries to use'},
 ];
 
 let wikiAttributesFromServer = null;
@@ -537,16 +536,18 @@ WikiEditor.prototype = {
     insertAtCursor:function(value) {
 	value = Utils.decodeText(value);    
 	if(this.popupShowing) {
-	    
-	    insertAtCursor(null, this.jq(ID_WIKI_POPUP_EDITOR)[0], value);
-	    this.jq(ID_WIKI_POPUP_EDITOR).focus();
-	    //We do this because the  SF menu stays popped up after clicking so we hide it
-	    //then after a second we remove the style so subsequent menu clicks will work
-	    this.jq(ID_WIKI_MENUBAR).find(".wiki-popup-menu-item").css("display","none");
-	    setTimeout(()=> {
-		this.jq(ID_WIKI_MENUBAR).find(".wiki-popup-menu-item").removeAttr("style");
-	    },1000);
-	    return;
+	    let popup = this.jq(ID_WIKI_POPUP_EDITOR)[0];
+	    if(popup) {
+		insertAtCursor(null,popup , value);
+		popup.focus();
+		//We do this because the  SF menu stays popped up after clicking so we hide it
+		//then after a second we remove the style so subsequent menu clicks will work
+		this.jq(ID_WIKI_MENUBAR).find(".wiki-popup-menu-item").css("display","none");
+		setTimeout(()=> {
+		    this.jq(ID_WIKI_MENUBAR).find(".wiki-popup-menu-item").removeAttr("style");
+		},1000);
+		return;
+	    }
 	}
         var cursor = this.getEditor().getCursorPosition();
         this.getEditor().insert(value);
@@ -744,7 +745,7 @@ WikiEditor.prototype = {
 	      );
     },
 
-    getAttributeBlocks:function(tagInfo, finalCallback) {
+    getAttributeBlocks:function(tagInfo, forPopup, finalCallback) {
 	if(!tagInfo) {
 	    return null;
 	}
@@ -756,12 +757,8 @@ WikiEditor.prototype = {
 	};
 
 	let { attrs, title, display }  = this.getDisplayAttributes(tagInfo);
-	let extra;
-	if(display)
-	    extra = Utils.getColorTablePopup(this);
-
 	let callback =a => {
-	    this.getAttributeBlocks(tagInfo, finalCallback);
+	    this.getAttributeBlocks(tagInfo, forPopup, finalCallback);
 	};
 	let wikiAttrs = this.getWikiAttributes(tagInfo,callback);
 	//Callback later
@@ -770,6 +767,7 @@ WikiEditor.prototype = {
 	    attrs = Utils.mergeLists(attrs, wikiAttrs);
 	}
 
+	let itemClass = "ramadda-menu-item " + (forPopup?" ramadda-hoverable ramadda-highlightable ":"")
 	let processAttr =(tag)=>{
 	    if(tag.inline|| tag.inlineLabel) {
 		addBlock(tag.inline || tag.inlineLabel);
@@ -780,7 +778,7 @@ WikiEditor.prototype = {
 		return;
 	    }
 	    if(tag.info) {
-		block.items.push(HU.div([CLASS,"ramadda-menu-item"], "<i>"+tag.info+"</i>"));
+		block.items.push(HU.div([CLASS, itemClass], "<i>"+tag.info+"</i>"));
 		return;
 	    }
 	    if(!tag.p)  {
@@ -803,15 +801,19 @@ WikiEditor.prototype = {
 	    }
 	    attr=" " +tag.p+"=" + attr +" ";
 	    attr  =attr.replace(/\"/g,"&quot;");
-	    block.items.push(HU.div([CLASS,"ramadda-menu-item",TITLE,tag.tt||""], HtmlUtils.onClick("insertText('" + this.getId() +"','"+attr+"')",label)));
+	    block.items.push(HU.div([CLASS,itemClass,TITLE,tag.tt||""], HtmlUtils.onClick("insertText('" + this.getId() +"','"+attr+"')",label)));
 	};
 	
 	attrs.forEach(attr=>{
 	    processAttr(attr);
 	});
-	if(extra) {
-	    blocks.push(extra);
+
+
+	if(display) {
+	    let ctItems =  Utils.getColorTablePopup(this, true);
+	    blocks.push({title:"Color table",items:ctItems});
 	}
+
 	if(!title) {
 	    title = Utils.makeLabel(tagInfo.tag) +" Properties";
 	}
@@ -829,7 +831,7 @@ WikiEditor.prototype = {
 	}
 
 	if(!result) {
-	    this.getAttributeBlocks(tagInfo,(r)=>{
+	    this.getAttributeBlocks(tagInfo,true, (r)=>{
 		this.handlePopupMenu(event,r);
 	    });
 	    return;
@@ -884,7 +886,7 @@ WikiEditor.prototype = {
 	if(!tagInfo) return;
 
 	if(!result) {
-	    this.getAttributeBlocks(tagInfo,r=>{
+	    this.getAttributeBlocks(tagInfo,false, r=>{
 		this.handleMouseUp(e,r);
 	    });
 	    return
@@ -898,14 +900,18 @@ WikiEditor.prototype = {
 	let prefix = tagInfo.type|| tagInfo.tag;
 	blocks.forEach((block,idx)=>{
 	    if(typeof block=="string") {
+		console.log(block);
 		//TODO: this is the color tables
 		//		menu+=block;
 		return;
 	    }
 	    let title = block.title;
-
 	    //remove the display name from the title of the menu 
-	    if(title.toLowerCase().startsWith(prefix)) title = title.substring(prefix.length).trim();
+	    if(title.toLowerCase().startsWith(prefix)) {
+		let tmp = Utils.makeLabel(title.substring(prefix.length).trim());
+		if(tmp!="") title = tmp;
+	    }
+	    if(block.items.length==0) return
 	    let sub = Utils.wrap(block.items,"<li>","");
 	    menu += HU.tag(TAG_LI, [],HU.div([CLASS,"wiki-popup-menu-header"],title) + HU.tag("ul", [CLASS,"wiki-popup-menu-item"], sub));
 	});

@@ -2018,11 +2018,15 @@ var Utils =  {
             cnt++;
         }
     },
-    getColorTablePopup: function(wikiEditor) {
+    getColorTablePopup: function(wikiEditor, itemize) {
 	let popup = "<div class=wiki-editor-popup-items>"
+	let items = [];
+	let item;
 	for (a in Utils.ColorTables) {
 	    if(Utils.ColorTables[a].label) {
-		popup+=HU.div(["style","text-decoration: underline;font-weight:bold"],Utils.ColorTables[a].label);
+		item = HU.div(["style","text-decoration: underline;font-weight:bold"],Utils.ColorTables[a].label);
+		popup+=item;
+		items.push(item);
 		continue;
 	    }
 	    var ct = Utils.getColorTableDisplay(Utils.ColorTables[a],  0, 1, {
@@ -2032,13 +2036,16 @@ var Utils =  {
 	    ct = HtmlUtils.div([STYLE,HU.css('width','150px'),TITLE,a,CLASS, "ramadda-colortable-select","colortable",a],ct);
 	    if(wikiEditor) {
 		var call = "insertText(" + HtmlUtils.squote(wikiEditor.getId()) +","+HtmlUtils.squote("colorTable=" + a)+")";
-		popup+=HtmlUtils.onClick(call,ct);
+		item = HtmlUtils.onClick(call,ct);
+		popup+=item;
+		items.push(item);
 	    } else {
 		popup+=ct;
 	    }
 	}
 	popup+="</div>";
 	popup = HU.toggleBlock(HU.div([CLASS,"wiki-editor-popup-header"], "Color Table"),popup);
+	if(itemize) return items;
 	return popup;
     },
 
@@ -4196,7 +4203,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         var args = HtmlUtils.join([HtmlUtils.squote(id), HtmlUtils.squote(imgid), HtmlUtils.squote(img1), HtmlUtils.squote(img2)], ",");
         var click = "toggleBlockVisibility(" + args + ");";
 
-        var header = HtmlUtils.div(["class", "entry-toggleblock-label", "onClick", click],
+        var header = HtmlUtils.div(["class", "entry-toggleblock-label ramadda-hoverable", "onClick", click],
 				   HtmlUtils.image((visible ? img1 : img2), ["align", "bottom", "id", imgid]) +
 				   " " + label);
         var style = (visible ? "display:block;visibility:visible" : "display:none;");

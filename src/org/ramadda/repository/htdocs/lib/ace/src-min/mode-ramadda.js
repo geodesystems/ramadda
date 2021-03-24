@@ -1565,12 +1565,10 @@ var tagMap = lang.createMap({
 		{token : "keyword",
 		 regex : "\\+(div|frame.*|gridboxes.*|gridbox|centerdiv|center|row|col(-md)*(-[0-9]+)*|tabs|tab(-[^ ]+)*|accordian|segment(-[^ ]+)*|accordian|accordianblock(-[^ ]+)*|section(-[^ ]+)*|inset(-[^ ]+)*|blurb(-[^ ]+)*|heading(-[^ ]+)*|note(-[^ ]+)*)"
 		}, {
-                    token : [
-			"","display_type",""
-		    ],
-		    regex: "(type *= *\")([^ \"]+)(\")",
+                    token : ["","display_type",""],
+ 		    regex: "(type *= *\")([^ \"]+)(\")",
 		}, {
-                    token : ["bracket","display_type"],
+                    token : ["bracket","macro"],
 		    regex: "({{ *)(display_[^ }]+)"
 		}, {
                     token : ["bracket","macro"],
