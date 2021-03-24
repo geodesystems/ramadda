@@ -25,8 +25,6 @@ h3 {
     font-size:140%;
 }
 
-
-
 p {margin-top:1.5em;}
 
 a {
@@ -34,14 +32,11 @@ a {
     text-decoration: underline;
 }
 
-
 a:hover {
     @A-HOVER@
 }
 
-
 a.btn:link {color: #000;}
-
 
 h2 a,   h2 a:visited, h2 a:link  {color: #000;}
 
@@ -204,9 +199,7 @@ i.fa, i.fas,i.fab {
     font-size:@FONT-SIZE@;
 }
 
-a:hover span i {
-    @I-HOVER@
-}
+
 
 .ramadda-nav-popup-link span i:hover {
     @I-HOVER@
@@ -479,9 +472,13 @@ div:hover .ramadda-snippet, .ramadda-entry-nav-page-outer .ramadda-snippet {
     display:inline-block;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;  
+
+    border:1px solid #ccc;
+    border-bottom:0px;
+
     background:#F0F0F0;
     margin-top:6px;
-    padding:5px;
+    padding-top:2px;
     padding-bottom:0px;
 }
 
@@ -1622,6 +1619,16 @@ select, input, password, fileinput, textarea {
 }
 
 
+.ramadda-search-popup {
+    background:#fff;
+    display:none;
+    border-top:1px solid #ccc;
+    margin-top:2px;
+    width:250px;
+    max-height:300px;
+    overflow-y:auto;
+}
+
 input:focus, textarea:focus, .ramadda-search-input:focus {
     border:@BORDER-HIGHLIGHT@;
     outline:none;
@@ -2092,7 +2099,8 @@ td.entry-table-block {
 }
 
 .entry-arrow {
-    margin-right: 5px;
+    padding-right: 8px;
+    padding-left: 2px;    
     margin-bottom:0px;
 }
 
@@ -2327,7 +2335,6 @@ a.btn-primary:link, a.btn-primary  {
 
 .ramadda-popup, .ramadda-selectdiv {
     position: absolute; 
-//    display: none;
     @SHADOW-POPUP@
 }
 
@@ -2353,7 +2360,6 @@ a.btn-primary:link, a.btn-primary  {
   top: 0;
   width: 100%; /* Full width */
   height: 100%; /* Full height */
-//  overflow: auto; /* Enable scroll if needed */
   background-color: rgb(0,0,0); /* Fallback color */
   background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 }
@@ -3281,7 +3287,6 @@ snippet-hide {
 
 .ramadda-linksheader-links {
     display:inline-block;
-    border-bottom:1px solid #ccc;
     margin-bottom:8px;
     font-size:130%;
     padding-bottom: 4px;
@@ -3523,7 +3528,7 @@ nowiki {
 
 .ramadda-search-suggestion {
     color:rgb(59, 69, 78);
-    max-width:300px;
+    width:100%;
     overflow-x:hidden;
     white-space: nowrap;
     padding:4px;
@@ -4774,21 +4779,15 @@ h3.ui-accordion-header a {
     font-weight: bold;
 }
 
-.ace_display_macro {
-    background:#eee;
+.ace_macro, .ace_display_macro {
 }
 
-.ace_macro {
-    background:#ccc;
-}
 
 .ace_bracket {
     color:blue;
 }
 
 .ace_display_type {
-//    background:#E8FFFF;
-    text-decoration:underline;
 }
 
 .ace_editor  { 
@@ -4800,17 +4799,20 @@ h3.ui-accordion-header a {
 
 
 
-
-
-
 /** Put the clickable and highlightable here so they take precedence */
 .ramadda-clickable:hover span i, .ramadda-clickable:hover a, .ramadda-clickable:hover {
     cursor:pointer;
     @I-HOVER@
 }
 
+a:hover span i {
+    @I-HOVER@
+}
+
+
 .ramadda-highlightable:hover span i, .ramadda-highlightable:hover a, a.ramadda-highlightable:hover {
     @I-HOVER@
+    text-decoration:none;
 }
 
 .ramadda-hoverable:hover {
