@@ -1888,18 +1888,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    });
 		    html+="</tr></table>"
 		    //set the global 
-		    popupObject = getTooltip();
+		    let popup = HtmlUtils.setPopupObject(getTooltip());
 		    html = HU.div([ID,id],html);
-		    popupObject.html(HU.div([CLASS, "ramadda-popup-inner"], html));
-		    popupObject.show();
-		    popupObject.position({
+		    popup.html(HU.div([CLASS, "ramadda-popup-inner"], html));
+		    popup.show();
+		    popup.position({
 			of: $(this),
 			my: "left top",
 			at: "left bottom",
 		    });
 		    _this.jq(ID_REGION_SELECTOR).find(".ramadda-menu-item").click(function() {
 			let region = ramaddaMapRegions[+$(this).attr("idx")];
-			popupObject.hide();
+			HtmlUtils.hidePopupObject();
 			_this.map.setViewToBounds(new RamaddaBounds(region.north, region.west, region.south, region.east));
 		    });
 		});

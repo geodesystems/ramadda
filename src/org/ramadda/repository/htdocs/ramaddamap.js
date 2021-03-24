@@ -2661,7 +2661,7 @@ RepositoryMap.prototype = {
                 var at = "left top";
                 result += HtmlUtils.closeTag("div");
                 searchPopup.html(result);
-                popupObject = searchPopup;
+                HtmlUtils.setPopupObject(searchPopup);
                 searchPopup.show();
                 searchPopup.position({
                     of: searchInput,

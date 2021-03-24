@@ -27,6 +27,7 @@ var icon_zoom = ramaddaBaseUrl + "/icons/magnifier.png";
 var icon_zoom_in = ramaddaBaseUrl + "/icons/magnifier_zoom_in.png";
 var icon_zoom_out = ramaddaBaseUrl + "/icons/magnifier_zoom_out.png";
 var icon_menuarrow = ramaddaBaseUrl + "/icons/downdart.gif";
+var icon_blank16 = ramaddaBaseUrl + "/icons/blank16.png";
 var icon_blank = ramaddaBaseUrl + "/icons/blank.gif";
 var icon_menu = ramaddaBaseUrl + "/icons/menu.png";
 
@@ -1584,22 +1585,34 @@ var Utils =  {
         /* for select menus with icons */
         $(parent + ".ramadda-pulldown-with-icons").iconselectmenu().iconselectmenu("menuWidget").addClass("ui-menu-icons ramadda-select-icon");
     },
-
-
     searchLastInput:"",
-    searchSuggestInit:function(id, type, icon) {
-	let searching = false;
-	let input = $("#" + id);
+    searchAscending:false,
+    searchCnt:0,
+    searchSuggestInit:function(id, type, icon, resultsId) {
+	let input = $("#"+ id);
+	if(!Utils.isDefined(icon)) icon = true;
+	let submitForm = false;
+	if(!resultsId) {
+	    submitForm = true;
+	    resultsId = HU.getUniqueId();
+	    let width = input.width();
+	    let results = HU.div([ID,resultsId,STYLE,HU.css("width",width+"px","position","absolute"), CLASS,'ramadda-popup ramadda-search-popup'],"");
+	    $(results).appendTo("body");
+	    $("#" + resultsId).position({
+		of: $("#" + id),
+		my: "left top",
+		at: "left bottom"
+	    });
+	}
 	Utils.searchLastInput = input.val();
-	input.keyup(function(e) {
+	input.keyup(e=> {
             var keyCode = e.keyCode || e.which;
-	    let results = $("#searchresults");
+//	    console.log("k:" + keyCode);
+	    let results = $("#" + resultsId);
 	    let closer = () =>{
+		HtmlUtils.clearPopupObject();
 		results.slideUp(250);
 	    };
-	    let opener = () =>{
-		results.slideDown(250);
-	    };	    
             if (keyCode == 27) {
 		closer();
 		return;
@@ -1610,54 +1623,85 @@ var Utils =  {
 		return;
             }
             e.stopPropagation();
-            if (searching) return;
+            let newVal = input.val()||"";
+	    this.searchCnt++;
 
-            var newVal = input.val()||"";
+	    if(this.pendingSearch) {
+		clearTimeout(this.pendingSearch);
+		this.pendingSearch = null;
+	    }	    
+
 	    if(newVal.length==0) {
 		closer();
 		return;
 	    }
 
-            if (newVal != Utils.searchLastInput) {
-		Utils.searchLastInput = newVal;
-		searching = true;
-		var url = ramaddaBaseUrl + "/search/suggest?string=" + encodeURIComponent(newVal);
-		if (type) url += "&type=" + type;
+	    //wait a bit
+	    this.pendingSearch = setTimeout(()=> {
+		this.pendingSearch = null;
+		Utils.doSearchSuggest(this.searchCnt, input, results, type,submitForm);
+	    },200);
 
-		var jqxhr = $.getJSON(url, function(data) {
-                    var results = $("#searchresults");
-                    searching = false;
-                    if (data.values.length == 0) {
-			results.html(HtmlUtils.div([CLASS, "ramadda-search-suggestion "],"No results"))
-			opener();
-			return;
-                    }
-                    let html = "";
-                    let even = true;
-                    for (let i = 0; i < data.values.length; i++) {
-			let value = data.values[i];
-			let name = value.name;
-			let id = value.id;
-			let v = name.replace(/\"/g, "_quote_");
-			let entryLink =  HU.href(ramaddaBaseUrl + "/entry/show?entryid=" + id,name,[TITLE,"View entry"]);
-			let searchLink =  HU.href(ramaddaBaseUrl + "/search/do?text=" + encodeURIComponent("name:" + v),HtmlUtils.getIconImage("fa-search"),[TITLE,"Search for"]);
-			let row =  searchLink +  SPACE + entryLink;
-			//			html += HtmlUtils.div([CLASS, 'ramadda-search-suggestion ' + (even ? 'ramadda-row-even' : 'ramadda-row-odd')], row);
-			html += HtmlUtils.div([CLASS, 'ramadda-search-suggestion '], row);			
-			even = !even;
-                    }
-                    results.html(html);
-		    /*
-                      results.find(".ramadda-search-suggestion-item").mousedown(function(e) {
-		      e.stopPropagation();
-                      });
-		    */
-		    opener();
-		}).fail(function(jqxhr, textStatus, error) {
-                    console.log("fail");
-		});
+	});
+    },
 
+    doSearchSuggest:function(searchCnt,input, results, type, submitForm) {
+	let _this = this;
+	let newVal = input.val()||"";
+	Utils.searchLastInput = newVal;
+	let url = ramaddaBaseUrl + "/search/suggest?string=" + encodeURIComponent(newVal);
+	if (type) url += "&type=" + type;
+	url+="&ascending=" + Utils.searchAscending;
+	let jqxhr = $.getJSON(url, function(data) {
+	    if(searchCnt!=_this.searchCnt) {
+		return;
+	    }
+	    let opener = () =>{
+		if(!HtmlUtils.isPopupObject(results)) {
+		    HtmlUtils.setPopupObject(results);
+		    results.slideDown(400);
+		}
+	    };	    
+
+            if (data.values.length == 0) {
+		results.html(HtmlUtils.div([CLASS, "ramadda-search-suggestion "],"No results"))
+		opener();
+		return;
             }
+            let html = "";
+            let even = true;
+            for (let i = 0; i < data.values.length; i++) {
+		let value = data.values[i];
+		let name = value.name;
+		let id = value.id;
+		let v = name.replace(/\"/g, "_quote_");
+		let entryLink =  HU.href(ramaddaBaseUrl + "/entry/show?entryid=" + id,HU.getIconImage(value.icon||icon_blank16) + SPACE+name,[TITLE,"View entry",STYLE,HU.css("display","inline-block","width","100%"), CLASS,"ramadda-highlightable"]);
+		let searchLink;
+		if(submitForm) {
+		    searchLink =  HU.span([CLASS,"ramadda-highlightable ramadda-search-input","index",i,TITLE,"Search for"],HtmlUtils.getIconImage("fa-search"));
+		} else {
+		    searchLink =  HU.href(ramaddaBaseUrl + "/search/do?text=" + encodeURIComponent(v),HtmlUtils.getIconImage("fa-search"),[TITLE,"Search for"]);
+		}
+		let row =  searchLink +  SPACE + entryLink;
+		//			html += HtmlUtils.div([CLASS, 'ramadda-search-suggestion ' + (even ? 'ramadda-row-even' : 'ramadda-row-odd')], row);
+		html += HtmlUtils.div([CLASS, 'ramadda-search-suggestion '], row);			
+		even = !even;
+            }
+            results.html(html);
+	    if(submitForm) {
+		let links = results.find(".ramadda-search-input");
+		links.css("cursor","pointer");
+		links.click(function(e) {
+		    e.stopPropagation();
+		    let v = data.values[$(this).attr("index")].name;
+		    input.val(v);
+		    input.closest("form").submit();
+
+		});
+	    }
+	    opener();
+	}).fail(function(jqxhr, textStatus, error) {
+            console.log("fail");
 	});
     },
 
@@ -1683,7 +1727,8 @@ var Utils =  {
 	let links =  HU.div(["id", linksId,STYLE,"text-align:right"],
 			    HU.link(ramaddaBaseUrl + '/search/form', 'Advanced', [TITLE, 'Go to form', STYLE,HU.css('color','#888','font-size','13px')]));
 
-	let results = "<div id=searchresults style='display:none;border-top:1px solid #ccc;margin-top:2px;max-width:250px; width:250px;max-height:300px;overflow-y:auto;'></div>";
+	let resultsId = HU.getUniqueId('searchresults');
+	let results = HU.div([ID,resultsId,CLASS,'ramadda-search-popup']);
 	let html = HU.div([],form+results);
 	let icon = $("#" + id);
 	this.dialog = HU.makeDialog({content:html,my:"right top",at:"right bottom",title:links,anchor:anchor,draggable:true,header:true,inPlace:false});
@@ -1692,27 +1737,23 @@ var Utils =  {
 	input.mousedown(function(evt) {
             evt.stopPropagation();
 	});
-	Utils.searchSuggestInit('popup_search_input', null, true);
+	Utils.searchSuggestInit('popup_search_input', null, true, resultsId);
 	input.focus();
     },
     handleKeyPress:function(event) {
 	getTooltip().hide();
     },
     handleMouseDown:function(event) {
-	if (popupObject || tooltipObject) {
+	if (HtmlUtils.hasPopupObject() || tooltipObject) {
 	    setTimeout(() => {
 		if(tooltipObject) {
 		    tooltipObject.hide();
 		    tooltipObject = null;
 		}
-		if(popupObject) {
-		    var thisId = popupObject.attr("id");
-		    if(dontHideObject) {
-			dontHideObject= false;
-			return;
-		    }
-		    if (checkToHidePopup() && popupObject && thisId == popupObject.attr("id")) {
-			hidePopupObject();
+		if(HtmlUtils.hasPopupObject()) {
+		    let thisId = HtmlUtils.getPopupObject().attr("id");
+		    if (HtmlUtils.checkToHidePopup() && thisId == HtmlUtils.getPopupObject().attr("id")) {
+			HtmlUtils.hidePopupObject();
 		    }
 		}
 	    }, 250);
@@ -2812,6 +2853,59 @@ var SPACE4 = "&nbsp;&nbsp;&nbsp;&nbsp;";
 
 var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     me:"HtmlUtils",
+
+
+    checkToHidePopup:function() {
+	if (this.popupTime) {
+            var now = new Date();
+            timeDiff = now - this.popupTime;
+            if (timeDiff > 1000) {
+		return true;
+            }
+            return false;
+	}
+	return true;
+    },
+    getPopupObject: function() {
+	return this.popupObject;
+    },
+    hasPopupObject: function() {
+	return this.popupObject !=null;
+    },
+    clearPopupObject: function() {
+	this.popupObject = null;
+    },
+    isPopupObject: function(obj) {
+	if(this.popupObject && obj) {
+	    return this.popupObject.attr("id") == obj.attr("id");
+	}
+	return false;
+    },
+    setPopupObject: function(obj) {
+	if(this.isPopupObject(obj)) {
+	    return obj;
+	}
+
+	if(this.popupObject) {
+	    this.hidePopupObject();
+	}
+	this.popupObject = obj;
+	return obj;
+    },
+    hidePopupObject: function(event) {
+	if (this.popupObject) {
+            this.popupObject.hide();
+	    if(this.popupObject.attr("removeonclose")== "true") {
+		this.popupObject.remove();
+	    }
+            this.popupObject = null;
+	}
+	this.popupTime = new Date();
+	if(event) {
+            event.stopPropagation();
+	}
+    },
+
     tabLoaded: function(event, ui) {
         if (window["ramaddaDisplayCheckLayout"]) {
             ramaddaDisplayCheckLayout();
@@ -3209,7 +3303,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	})
     },
     makeDialog: function(args) {
-	hidePopupObject();
+	HtmlUtils.hidePopupObject();
 	let opts  = {
 	    modal:false,
 	    modalContentsCss:"",
@@ -3323,7 +3417,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		//	    popup.resizable({containment: "parent",handles: 'se',});
 	    }
 	} else if(!opts.sticky) {
-	    popupObject = popup;
+	    HtmlUtils.setPopupObject(popup);
 	}
 	if(opts.header) {
 	    $("#" + id +"_close").click(function() {
@@ -3361,6 +3455,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         }
     },
     initSearchPopup:function(id,target) {
+	console.log("s:" + id);
 	let input = HU.input("","",["id",id+"_input",CLASS,"input","placeholder","Search", "style",
 				    HU.css("width","200px")]);
 	input = HU.center(input);
@@ -3569,7 +3664,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	};
 	if(args) $.extend(opts, args);
 	$("#"+id).click(function() {
-	    let popup = popupObject = $("#"+ id+"-popup");
+	    let popup = HtmlUtils.setPopupObject($("#"+ id+"-popup"));
 	    let my,at;
 	    if(opts.align=="right") {
 		my = "right top";

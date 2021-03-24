@@ -84,7 +84,7 @@ function insertDisplayText(id, value) {
 
 
 function insertText(id, value) {
-    hidePopupObject();
+    HtmlUtils.hidePopupObject();
     var popup = getTooltip();
     if(popup)
 	popup.hide();
@@ -138,7 +138,7 @@ function insertAtCursor(id, myField, value) {
 }
 
 function insertTags(id, tagOpen, tagClose, sampleText) {
-    hidePopupObject();
+    HtmlUtils.hidePopupObject();
     var handler = getHandler(id);
     if (handler) {
         handler.insertTags(tagOpen, tagClose, sampleText);
@@ -867,10 +867,10 @@ WikiEditor.prototype = {
 
 
 	//	HU.makeDialog({content:menu,anchor:this.getScroller(),title:title,header:true,sticky:true,draggable:true,modal:true});
-	popupObject = getTooltip();
-	popupObject.html(menu);
-	popupObject.show();
-	popupObject.position({
+	let popup = HtmlUtils.setPopupObject(getTooltip());
+	popup.html(menu);
+	popup.show();
+	popup.position({
 	    of: $(window),
             my: "left top",
             at: "left+" +event.x +" top+" + (event.y),

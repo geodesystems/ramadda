@@ -1,13 +1,10 @@
 /**
- * Copyright (c) 2008-2019 Geode Systems LLC
+ * Copyright (c) 2008-2021 Geode Systems LLC
  */
 
 
-var popupObject;
-var dontHideObject=false;
+
 var tooltipObject;
-var popupTime;
-var popupId;
 var entryDragInfo;
 
 function mouseOverOnEntry(event, entryId, targetId) {
@@ -342,7 +339,6 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails,args) {
     }
 }
 
-
 function hideEntryPopup() {
     getTooltip().hide();
 }
@@ -435,7 +431,6 @@ function checkboxClicked(event, cbxPrefix, id) {
 
 
 function toggleBlockVisibility(id, imgid, showimg, hideimg) {
-    dontHideObject = true;
     if (toggleVisibility(id, 'block')) {
         if(StringUtil.startsWith(showimg,"fa-")) {
             $("#" + imgid).html(HtmlUtils.getIconImage(showimg,[]));
@@ -559,7 +554,7 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
 
     this.handleClick = function(event) {
         var srcId = this.id + '_selectlink';
-        hidePopupObject(event);
+        HtmlUtils.hidePopupObject(event);
         this.div = GuiUtils.getDomObject('ramadda-selectdiv');
         var selectDiv = $("#ramadda-selectdiv");
         selectDiv.show();
@@ -705,35 +700,6 @@ function hide(id) {
     $("#" + id).hide();
 }
 
-function hideElementById(id) {
-    hideObject(GuiUtils.getDomObject(id));
-}
-
-function hidePopupObject(event) {
-    if (popupObject) {
-        popupObject.hide();
-	if(popupObject.attr("removeonclose")== "true") {
-	    popupObject.remove();
-	}
-        popupObject = null;
-    }
-    popupTime = new Date();
-    if(event) {
-        event.stopPropagation();
-    }
-}
-
-function checkToHidePopup() {
-    if (popupTime) {
-        var now = new Date();
-        timeDiff = now - popupTime;
-        if (timeDiff > 1000) {
-            return true;
-        }
-        return false;
-    }
-    return true;
-}
 
 
 function showStickyPopup(event, srcId, popupId, alignLeft) {

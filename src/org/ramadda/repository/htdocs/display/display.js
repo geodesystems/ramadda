@@ -389,8 +389,8 @@ function DisplayThing(argId, argProperties) {
 	},
 
 
-        popup: function(srcId, popupId, srcObj, popupObject) {
-            var popup = popupObject || $("#"+popupId);
+        popup: function(srcId, popupId, srcObj, popup) {
+            popup = popup || $("#"+popupId);
             var src = srcObj || $("#"+srcId);
             var myalign = 'left top';
             var atalign = 'left bottom';
@@ -1340,7 +1340,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.jq(domId).find(".display-colortable-slice").click(function(e) {
 		let val = $(this).attr("data-value");
 		let popup = getTooltip();
-		popupObject = popup;
+		HtmlUtils.setPopupObject(popup);
 		let html = "";
 		html += HU.div([CLASS,"ramadda-menu-item","what","setmin"],"Set range min to " + Utils.formatNumber(val));
 		html += HU.div([CLASS,"ramadda-menu-item","what","setmax"],"Set range max to " + Utils.formatNumber(val));
@@ -3082,7 +3082,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
         showWikiText: function(type) {
 	    var wiki =  this.assembleWikiText();
-	    popupObject = getTooltip();
+	    HtmlUtils.setPopupObject(getTooltip());
 	    wiki = wiki.replace(/</g,"&lt;").replace(/>/g,"&gt;");
 	    wiki = HU.pre([STYLE,HU.css("max-width","500px","max-height","400px","overflow-x","auto","overflow-y","auto")], wiki);
 	    this.showDialog(wiki);
@@ -5148,7 +5148,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.jq(ID_FILTERBAR).find(".display-filter-input").keyup(function(e) {
 		var keyCode = e.keyCode || e.which;
 		if (keyCode == 13) {return;}
-		hidePopupObject();
+		HtmlUtils.hidePopupObject();
 		var input = $(this);
 		var val = $(this).val().trim();
 		if(val=="") return;
@@ -5184,16 +5184,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			itemCnt++;
 		    });	
 		    if(itemCnt>0) {
-			popupObject = getTooltip();
-			popupObject.html(HU.div([CLASS, "ramadda-popup-inner ramadda-snippet-popup"], html));
-			popupObject.show();
-			popupObject.position({
+			let popup =HtmlUtils.setPopupObject(getTooltip());
+			popup.html(HU.div([CLASS, "ramadda-popup-inner ramadda-snippet-popup"], html));
+			popup.show();
+			popup.position({
 			    of: $(this),
 			    my: "left top",
 			    at: "left bottom",
 			});
 			$(".display-filter-popup-item").click(function(){
-			    hidePopupObject();
+			    HtmlUtils.hidePopupObject();
 			    input.val($(this).attr("item"));
 			    inputFunc(input);
 			});
@@ -5517,13 +5517,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		popupTemplate = this.getProperty("popupTemplate");
 	    if(!popupTemplate) return;
 	    let _this = this;
-	    hidePopupObject();
+	    HtmlUtils.hidePopupObject();
 	    var html =  _this.getRecordHtml(record,null,popupTemplate);
 	    html = HU.div([CLASS, "display-popup " + _this.getProperty("popupClass",""),STYLE, _this.getProperty("popupStyle","")],html);
-	    popupObject = getTooltip();
-	    popupObject.html(html);
-	    popupObject.show();
-	    popupObject.position({
+	    let popup = HtmlUtils.setPopupObject(getTooltip());
+	    popup.html(html);
+	    popup.show();
+	    popup.position({
 		of: element,
 		my: _this.getProperty("popupPositionMy", "left top"),
 		at: _this.getProperty("popupPositionAt", "left bottom+2"),
