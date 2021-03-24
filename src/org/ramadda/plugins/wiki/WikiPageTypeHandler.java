@@ -107,24 +107,6 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
         return (String) entry.getValue(0);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public String getInlineHtml(Request request, Entry entry)
-            throws Exception {
-        Result result = getRepository().getOutputHandler(
-                            WikiPageOutputHandler.OUTPUT_WIKI).outputEntry(
-                            request, request.getOutput(), entry);
-
-        return new String(result.getContent());
-    }
 
 
     /**
