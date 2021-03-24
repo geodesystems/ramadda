@@ -28,14 +28,17 @@ import org.ramadda.repository.output.KmlOutputHandler;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.output.WikiConstants;
+import org.ramadda.util.geom.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
 import org.ramadda.util.KmlUtil;
+import org.ramadda.util.ColorTable;
 
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
 import org.ramadda.util.text.CsvUtil;
 
+import org.w3c.dom.CDATASection;
 import org.w3c.dom.Element;
 
 import ucar.unidata.gis.GisPart;
@@ -49,7 +52,10 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
+import java.util.Map;
+import java.util.Iterator;
 import java.awt.geom.Rectangle2D;
+import java.awt.Color;
 
 
 import java.io.*;
@@ -58,7 +64,6 @@ import java.text.DecimalFormat;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
@@ -258,7 +263,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
      *
      * @throws Exception _more_
      */
-    public Properties getExtraProperties(Request request, Entry entry)
+    public Hashtable getExtraProperties(Request request, Entry entry)
             throws Exception {
         List<Metadata> metadataList =
             getMetadataManager().findMetadata(request, entry,
@@ -272,7 +277,9 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                 getRepository().loadProperties(properties, f.toString());
             }
 
-            return properties;
+	    Hashtable props = new Hashtable();
+	    props.putAll(properties);
+	    return props;
         }
 
         return null;
@@ -292,68 +299,9 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
     public List<DbaseDataWrapper> getDatum(Request request, Entry entry,
                                            DbaseFile dbfile)
             throws Exception {
-        Properties             properties = getExtraProperties(request,
-                                                entry);
+        Hashtable          properties = getExtraProperties(request,   entry);
         Properties pluginProperties = getRepository().getPluginProperties();
-        List<DbaseDataWrapper> fieldDatum = null;
-        if (dbfile != null) {
-            List<String> extraFields = null;
-            String       extraKey    = (properties != null)
-                                       ? (String) properties.get("map.key")
-                                       : null;
-            if (properties != null) {
-                String fields = (String) properties.get("map.fields");
-                if (fields != null) {
-                    extraFields = StringUtil.split(fields, ",");
-                }
-            }
-            DbaseDataWrapper keyWrapper = null;
-            String[]         fieldNames = dbfile.getFieldNames();
-            fieldDatum = new ArrayList<DbaseDataWrapper>();
-            Hashtable<String, DbaseDataWrapper> wrapperMap =
-                new Hashtable<String, DbaseDataWrapper>();
-            for (int j = 0; j < fieldNames.length; j++) {
-                DbaseDataWrapper dbd =
-                    new DbaseDataWrapper(fieldNames[j].toLowerCase(),
-                                         dbfile.getField(j), properties,
-                                         pluginProperties);
-                wrapperMap.put(dbd.getName(), dbd);
-                if (properties != null) {
-                    if (Misc.equals((String) properties.get("map."
-                            + dbd.getName() + ".drop"), "true")) {
-                        continue;
-                    }
-                }
-                fieldDatum.add(dbd);
-            }
-            if (extraFields != null) {
-                if (extraKey != null) {
-                    keyWrapper = wrapperMap.get(extraKey);
-                }
-                for (String extraField : extraFields) {
-                    DbaseDataWrapper dbd = new DbaseDataWrapper(extraField,
-                                               keyWrapper, properties,
-                                               pluginProperties);
-                    String combine = (String) properties.get("map."
-                                         + extraField + ".combine");
-                    if (combine != null) {
-                        List<DbaseDataWrapper> combineList = new ArrayList();
-                        for (String id :
-                                StringUtil.split(combine, ",", true, true)) {
-                            DbaseDataWrapper other = wrapperMap.get(id);
-                            if (other != null) {
-                                combineList.add(other);
-                            }
-                        }
-                        dbd.setCombine(combineList);
-                    }
-                    fieldDatum.add(dbd);
-                    wrapperMap.put(dbd.getName(), dbd);
-                }
-            }
-        }
-
-        return fieldDatum;
+	return FeatureCollection.getDatum(dbfile, properties, pluginProperties);
     }
 
 
@@ -376,20 +324,19 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             shapefile = getShapefile(entry);
         }
         DbaseFile              dbfile    = shapefile.getDbFile();
-        DbaseDataWrapper       nameField = null;
         String                 schemaName;
         String                 schemaId;
         List<DbaseDataWrapper> fieldDatum = null;
-        HashMap                props      = new HashMap<String, Object>();
-        props.put("dbfile", dbfile);
-        props.put("shapefile", shapefile);
+        DbaseDataWrapper       nameField = null;
+
+        Hashtable                collectionProps      = new Hashtable<String, Object>();
         Metadata       colorBy = null;
         List<Metadata> metadataList;
         metadataList = getMetadataManager().findMetadata(request, entry,
                 "shapefile_color", true);
         if ((metadataList != null) && (metadataList.size() > 0)) {
             colorBy = metadataList.get(0);
-            props.put("colorby", colorBy);
+            collectionProps.put("colorby", colorBy);
         }
 
         String balloonTemplate = null;
@@ -407,140 +354,26 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             schemaId = schemaName = entry.getId();
         }
 
-
+        collectionProps.putAll(getRepository().getPluginProperties());
         if (dbfile != null) {
-            fieldDatum = getDatum(request, entry, dbfile);
-            int firstChar = -1;
-            for (int i = 0; i < fieldDatum.size(); i++) {
-                DbaseDataWrapper dbd = fieldDatum.get(i);
-                if (dbd.getType() == DbaseData.TYPE_CHAR) {
-                    if (firstChar < 0) {
-                        firstChar = i;
-                    }
-                    if (dbd.getName().toLowerCase().indexOf("name") >= 0) {
-                        if (nameField == null) {
-                            nameField = dbd;
-                        }
-                    }
-                }
-            }
-            if ((nameField == null) && (firstChar >= 0)) {
-                nameField = fieldDatum.get(firstChar);
-            }
-        }
-
-
-
-        props.putAll(getRepository().getPluginProperties());
-
-        if (dbfile != null) {
-            props.put(FeatureCollection.PROP_SCHEMANAME, schemaName);
-            props.put(FeatureCollection.PROP_SCHEMAID, schemaId);
-            props.put(FeatureCollection.PROP_STYLEID, schemaId);
+	    Hashtable     extraProperties = getExtraProperties(request,   entry);
+	    fieldDatum =  FeatureCollection.getDatum(dbfile, extraProperties, (Hashtable<String,Object>) collectionProps);
+	    nameField = FeatureCollection.getNameField(fieldDatum);
+            collectionProps.put(FeatureCollection.PROP_SCHEMANAME, schemaName);
+            collectionProps.put(FeatureCollection.PROP_SCHEMAID, schemaId);
+            collectionProps.put(FeatureCollection.PROP_STYLEID, schemaId);
             if (balloonTemplate != null) {
-                props.put(FeatureCollection.PROP_BALLOON_TEMPLATE,
+                collectionProps.put(FeatureCollection.PROP_BALLOON_TEMPLATE,
                           balloonTemplate);
             }
-            HashMap<String, String[]> schema = new HashMap<String,
-                                                   String[]>();
-            for (DbaseDataWrapper dbd : fieldDatum) {
-                String[] attrs = new String[4];
-                String   dtype = null;
-                switch (dbd.getType()) {
-
-                  case DbaseData.TYPE_BOOLEAN :
-                      dtype = "bool";
-
-                      break;
-
-                  case DbaseData.TYPE_CHAR :
-                      dtype = "string";
-
-                      break;
-
-                  case DbaseData.TYPE_NUMERIC :
-                      dtype = "double";
-
-                      break;
-                }
-                attrs[0] = KmlUtil.ATTR_TYPE;
-                attrs[1] = dtype;
-                attrs[2] = KmlUtil.ATTR_NAME;
-                attrs[3] = dbd.getName();
-                schema.put(dbd.getName(), attrs);
-            }
-            props.put(FeatureCollection.PROP_SCHEMA, schema);
         }
-        FeatureCollection fc = new FeatureCollection(entry.getName(),
-                                   entry.getDescription(),
-                                   (HashMap<String, Object>) props,
-                                   fieldDatum);
 
-        List          features   = shapefile.getFeatures();
-        List<Feature> fcfeatures = new ArrayList<Feature>(features.size());
-        for (int i = 0; i < features.size(); i++) {
-            EsriShapefile.EsriFeature gf =
-                (EsriShapefile.EsriFeature) features.get(i);
-            String type = getGeometryType(gf, gf.getNumParts());
-            if (type == null) {
-                System.err.println("Can't handle feature type "
-                                   + gf.getClass().toString());
-
-                continue;
-            }
-            List<float[][]> parts =
-                new ArrayList<float[][]>(gf.getNumParts());
-            java.util.Iterator pi = gf.getGisParts();
-            while (pi.hasNext()) {
-                GisPart  gp = (GisPart) pi.next();
-                double[] xx = gp.getX();
-                double[] yy = gp.getY();
-                // TODO:  Why are we down casting to floats?
-                // pts is in x,y order
-                float[][] pts = new float[2][xx.length];
-                for (int ptIdx = 0; ptIdx < xx.length; ptIdx++) {
-                    pts[0][ptIdx] = (float) xx[ptIdx];
-                    pts[1][ptIdx] = (float) yy[ptIdx];
-                }
-                parts.add(pts);
-            }
-            Geometry geom = new Geometry(type, parts);
-            String   name = "";
-            if (dbfile != null) {
-                if (nameField != null) {
-                    name = nameField.getString(i).trim();
-                }
-            }
-            HashMap<String, Object> fprops = new HashMap<String, Object>();
-            if (dbfile != null) {
-                fprops.put(FeatureCollection.PROP_SCHEMANAME, schemaName);
-                fprops.put(FeatureCollection.PROP_SCHEMAID, schemaId);
-                HashMap<String, Object> schemaData =
-                    new HashMap<String, Object>(fieldDatum.size());
-                for (int j = 0; j < fieldDatum.size(); j++) {
-                    // since shapefile parser makes no distinction between ints & doubles,
-                    // this hack will fix that.
-                    Object data = fieldDatum.get(j).getData(i);
-                    if (data instanceof Double) {
-                        double d = ((Double) data).doubleValue();
-                        if ((int) d == d) {
-                            data = new Integer((int) d);
-                        }
-                    }
-                    schemaData.put(fieldDatum.get(j).getName(), data);
-                }
-                fprops.put(FeatureCollection.PROP_SCHEMADATA, schemaData);
-            }
-            Feature feature = new Feature(name, geom, fprops, props);
-            fcfeatures.add(feature);
-        }
-        fc.setFeatures(fcfeatures);
-        //System.out.println(fc.toGeoJson());
-
-        return fc;
-
-
+        Hashtable  properties = getExtraProperties(request,    entry);
+	return  FeatureCollection.makeFeatureCollection(entry.getName(), entry.getDescription(), shapefile,
+							 properties,
+							 collectionProps);
     }
+
 
     /**
      * _more_
@@ -643,7 +476,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         }
 
         //        System.err.println("fieldValues:" + fieldValues);
-        Element      root = fc.toKml(forMap, bounds, fieldValues);
+        Element      root = toKml(fc, forMap, bounds, fieldValues);
         long         t2   = System.currentTimeMillis();
         StringBuffer sb   = new StringBuffer(XmlUtil.XML_HEADER);
         String       xml  = XmlUtil.toString(root, false);
@@ -1219,5 +1052,491 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
     }
 
 
+
+
+    /**
+     * Turn this into KML
+     *
+     *
+     * @param decimate _more_
+     * @param bounds _more_
+     * @param fieldValues _more_
+     * @return the KML Element
+     *
+     * @throws Exception _more_
+     */
+    public Element toKml(FeatureCollection fc, boolean decimate, Rectangle2D.Double bounds,
+                         List<String> fieldValues)
+            throws Exception {
+	Hashtable properties = fc.getProperties();
+	List<Feature> features = fc.getFeatures();
+
+	List<DbaseDataWrapper> fieldDatum = fc.getDatum();
+        Element root       = KmlUtil.kml(getName());
+        Element doc        = KmlUtil.document(root, getName(), true);
+        boolean haveSchema = false;
+        if ( !properties.isEmpty()
+                && (properties.get(FeatureCollection.PROP_SCHEMANAME) != null)
+                && (properties.get(FeatureCollection.PROP_SCHEMAID) != null)
+                && (properties.get(FeatureCollection.PROP_SCHEMA) != null)) {
+            makeKmlSchema(properties, doc);
+            haveSchema = true;
+        }
+        Element folder = KmlUtil.folder(doc, getName(), true);
+        // Apply one style to the entire document
+        String styleName = (String) properties.get(FeatureCollection.PROP_STYLEID);
+        if (styleName == null) {
+            styleName = "" + (int) (Math.random() * 1000);
+        }
+
+
+
+        Metadata      colorBy   = (Metadata) properties.get("colorby");
+        DbaseFile     dbfile    = (DbaseFile) properties.get("dbfile");
+        EsriShapefile shapefile = (EsriShapefile) properties.get("shapefile");
+        //Correspond to the index
+        List<Color>  colors    = null;
+        List<String> styleUrls = null;
+        int[]        styleCnt  = { 0 };
+        String balloonTemplate =
+            (String) properties.get(FeatureCollection.PROP_BALLOON_TEMPLATE);
+
+        if ((colorBy != null) && (dbfile != null)) {
+            Hashtable<Color, String> colorMap = new Hashtable<Color,
+                                                    String>();
+
+            String           colorByFieldAttr = colorBy.getAttr1().trim();
+            DbaseDataWrapper colorByField     = null;
+            for (int j = 0; j < fieldDatum.size(); j++) {
+                if (fieldDatum.get(j).getName().equalsIgnoreCase(
+                        colorByFieldAttr)) {
+                    colorByField = fieldDatum.get(j);
+                    break;
+                }
+            }
+            double     min = Double.NaN;
+            double     max = Double.NaN;
+            ColorTable ct  = null;
+            if (Utils.stringDefined(colorBy.getAttr2())) {
+                ct = ColorTable.getColorTable(colorBy.getAttr2().trim());
+            }
+
+            String lineColorAttr = colorBy.getAttr3().trim();
+            Color  lineColor     = ((lineColorAttr.length() == 0)
+                                    ? null
+                                    : lineColorAttr.equals("none")
+                                      ? null
+                                      : Utils.decodeColor(lineColorAttr,
+                                          null));
+
+            if (Utils.stringDefined(colorBy.getAttr(4))) {
+                min = Double.parseDouble(colorBy.getAttr(4));
+            }
+            if (Utils.stringDefined(colorBy.getAttr(5))) {
+                max = Double.parseDouble(colorBy.getAttr(5));
+            }
+
+	    //            List features = shapefile.getFeatures();
+            styleUrls = new ArrayList<String>();
+
+
+            Hashtable<String, Color> valueMap = new Hashtable<String,
+                                                    Color>();
+            if ((ct != null) && (colorByField != null)) {
+                if (colorByField.isNumeric()) {
+                    boolean needMin = Double.isNaN(min);
+                    boolean needMax = Double.isNaN(max);
+                    if (needMin || needMax) {
+                        if (needMin) {
+                            min = Double.MAX_VALUE;
+                        }
+                        if (needMax) {
+                            max = Double.MIN_VALUE;
+                        }
+
+                        for (int i = 0; i < features.size(); i++) {
+                            double value = colorByField.getDouble(i);
+                            if (needMin) {
+                                min = Math.min(min, value);
+                            }
+                            if (needMax) {
+                                max = Math.max(max, value);
+                            }
+                        }
+                    }
+                }
+            } else {
+                String enums = colorBy.getAttr(6);
+                for (String line :
+                        StringUtil.split(enums, "\n", true, true)) {
+                    List<String> toks = StringUtil.splitUpTo(line, ":", 2);
+                    if (toks.size() > 1) {
+                        Color c = Utils.decodeColor(toks.get(1).trim(),
+                                      (Color) null);
+                        if (c != null) {
+                            valueMap.put(toks.get(0), c);
+                        } else {
+                            System.err.println("Bad color:" + toks.get(1));
+                        }
+                    }
+                }
+            }
+            if (colorByField != null) {
+                int cnt = 0;
+                Hashtable<String, Integer> indexMap = new Hashtable<String,
+                                                          Integer>();
+                for (int i = 0; i < features.size(); i++) {
+                    Color color = null;
+                    if (ct != null) {
+                        if (colorByField.isNumeric()) {
+                            double value = colorByField.getDouble(i);
+                            color = ct.getColor(min, max, value);
+                        } else {
+                            String  value = "" + colorByField.getData(i);
+                            Integer index = indexMap.get(value);
+                            if (index == null) {
+                                index = new Integer(cnt++);
+                                indexMap.put(value, index);
+                            }
+                            color = ct.getColorByIndex(index);
+                        }
+                    } else {
+                        String value = "" + colorByField.getData(i);
+                        color = valueMap.get(value);
+                    }
+                    if (color != null) {
+                        String styleUrl = makeFillStyle(fc, color, colorMap,
+                                              lineColor,
+                                              !lineColorAttr.equals("none"),
+                                              folder, styleCnt, styleName,
+                                              balloonTemplate);
+                        styleUrls.add(styleUrl);
+                    } else {
+                        styleUrls.add(styleName);
+                    }
+                }
+            }
+        }
+
+        KmlUtil.open(folder, false);
+        if (fc.getDescription().length() > 0) {
+            KmlUtil.description(folder, fc.getDescription());
+        }
+
+        // could try to set these dynamically
+        Color lineColor =
+            Utils.decodeColor((String) properties.get("lineColor"),
+                              Color.gray);
+        int    lineWidth     = 1;
+        String polyColorMode = "random";
+        Color polyColor =
+            Utils.decodeColor((String) properties.get("fillColor"),
+                              Color.lightGray);
+
+        Element style = KmlUtil.style(folder, styleName);
+        if (haveSchema) {
+            makeBalloonForDB(fc, style, balloonTemplate);
+        }
+        String featureType = features.get(0).getGeometry().getGeometryType();
+
+        if (featureType.equals(Geometry.TYPE_POLYGON)
+                || featureType.equals(Geometry.TYPE_MULTIPOLYGON)
+                || featureType.equals(Geometry.TYPE_LINESTRING)
+                || featureType.equals(Geometry.TYPE_MULTILINESTRING)) {
+            Element linestyle = KmlUtil.makeElement(style,
+                                    KmlUtil.TAG_LINESTYLE);
+            if (lineColor != null) {
+                KmlUtil.makeText(
+                    linestyle, KmlUtil.TAG_COLOR,
+                    "ff" + KmlUtil.toBGRHexString(lineColor).substring(1));
+                KmlUtil.makeText(linestyle, KmlUtil.TAG_COLORMODE, "normal");
+            }
+            if (lineWidth > 0) {
+                KmlUtil.makeText(linestyle, KmlUtil.TAG_WIDTH,
+                                 "" + lineWidth);
+            }
+            if (featureType.equals(Geometry.TYPE_POLYGON)
+                    || featureType.equals(Geometry.TYPE_MULTIPOLYGON)) {
+                Element polystyle = KmlUtil.makeElement(style,
+                                        KmlUtil.TAG_POLYSTYLE);
+                if (polyColor != null) {
+                    KmlUtil.makeText(
+                        polystyle, KmlUtil.TAG_COLOR,
+                        "66"
+                        + KmlUtil.toBGRHexString(polyColor).substring(1));
+                    KmlUtil.makeText(polystyle, KmlUtil.TAG_COLORMODE,
+                                     "normal");
+                } else {
+                    KmlUtil.makeText(polystyle, KmlUtil.TAG_COLORMODE,
+                                     polyColorMode);
+                }
+                if (polyColorMode.equals("normal")) {
+                    //                    KmlUtil.makeText(polystyle, KmlUtil.TAG_COLOR,
+                    //"66" + KmlUtil.toBGRHexString(polyColor).substring(1));
+                    //                    "66E6E6E6");
+                }
+            }
+        }
+        int points = 0;
+        if (decimate) {
+            float epsilon = 0.005f;
+            while (true) {
+                points = 0;
+                if (epsilon > 360.0f) {
+                    break;
+                }
+                for (Feature feature : features) {
+                    points += feature.getNumPoints();
+                }
+                if (points < ShapefileTypeHandler.MAX_POINTS) {
+                    //                    System.err.println("points:" + points);
+                    break;
+                }
+                //                System.err.println("points:" + points +" epsilon:" + epsilon);
+                for (Feature feature2 : features) {
+                    feature2.applyEpsilon(epsilon);
+                }
+                epsilon = epsilon * 2.0f;
+            }
+        }
+        int cnt = 0;
+        for (Feature feature : features) {
+            String  styleUrl = (styleUrls == null)
+                               ? styleName
+                               : styleUrls.get(cnt);
+            boolean ok       = true;
+            if ((fieldValues != null) && (fieldValues.size() > 0)
+                    && (dbfile != null)) {
+                for (int i = 0; i < fieldValues.size(); i += 3) {
+                    String fieldName  = fieldValues.get(i);
+                    String operator   = fieldValues.get(i + 1);
+                    String fieldValue = fieldValues.get(i + 2);
+                    for (DbaseDataWrapper wrapper : fieldDatum) {
+                        if (wrapper.getName().trim().equalsIgnoreCase(
+                                fieldName)) {
+                            Object obj = wrapper.getData(cnt);
+                            if ((obj instanceof Double)
+                                    || (obj instanceof Integer)) {
+                                double v = Double.parseDouble(fieldValue);
+                                double opValue;
+                                if (obj instanceof Double) {
+                                    opValue = ((Double) obj).doubleValue();
+                                } else {
+                                    opValue = ((Integer) obj).intValue();
+                                }
+                                if (operator.equals("<")) {
+                                    ok = opValue < v;
+                                } else if (operator.equals("<=")) {
+                                    ok = opValue <= v;
+                                } else if (operator.equals(">")) {
+                                    ok = opValue > v;
+                                } else if (operator.equals(">=")) {
+                                    ok = opValue >= v;
+                                } else if (operator.equals("=")) {
+                                    ok = opValue == v;
+                                }
+                            } else {
+                                String value = obj.toString().trim();
+                                ok = value.equals(fieldValue);
+                            }
+                            if ( !ok) {
+                                break;
+                            }
+                        }
+                    }
+                    if ( !ok) {
+                        break;
+                    }
+                }
+            }
+            if (ok) {
+                feature.makeKmlElement(folder, "#" + styleUrl, bounds);
+            }
+            cnt++;
+        }
+
+        return root;
+    }
+
+
+    private String makeFillStyle(FeatureCollection fc, Color color,
+                                 Hashtable<Color, String> colorMap,
+                                 Color lineColor, boolean doLine,
+                                 Element folder, int[] styleCnt,
+                                 String balloonSchema, String balloonTemplate)
+            throws Exception {
+        String styleUrl = colorMap.get(color);
+        if (styleUrl == null) {
+            styleUrl = "colorStyle" + (styleCnt[0]++);
+            colorMap.put(color, styleUrl);
+            //            System.err.println("making style:" + styleUrl);
+            //make style
+            Element style = KmlUtil.style(folder, styleUrl);
+            if (Utils.stringDefined(balloonTemplate)) {
+                balloonTemplate = balloonTemplate.replaceAll("\\["
+                        + balloonSchema + "/", "[" + styleUrl + "/");
+                makeBalloonForDB(fc,style, balloonTemplate);
+            }
+            Element polystyle = KmlUtil.makeElement(style,
+                                    KmlUtil.TAG_POLYSTYLE);
+            Element linestyle = KmlUtil.makeElement(style,
+                                    KmlUtil.TAG_LINESTYLE);
+            KmlUtil.makeText(polystyle, KmlUtil.TAG_COLOR,
+                             "66"
+                             + KmlUtil.toBGRHexString(color).substring(1));
+            KmlUtil.makeText(polystyle, KmlUtil.TAG_COLORMODE, "normal");
+
+            if ( !doLine) {
+                KmlUtil.makeText(polystyle, "outline", "0");
+            } else {
+                KmlUtil.makeText(linestyle, KmlUtil.TAG_WIDTH, "1");
+                if (lineColor != null) {
+                    KmlUtil.makeText(
+                        linestyle, KmlUtil.TAG_COLOR,
+                        "ff"
+                        + KmlUtil.toBGRHexString(lineColor).substring(1));
+                }
+            }
+        }
+
+        return styleUrl;
+    }
+
+
+
+    /**
+     * Get the KML tag corresponding the the EsriShapefileFeature
+     *
+     * @param featureType feature type
+     * @return the corresponding KML tag or null
+     */
+    public static String getKmlTag(int featureType) {
+        String tag = null;
+        switch (featureType) {
+
+          case EsriShapefile.POINT :      // 1
+          case EsriShapefile.POINTZ :     // 11
+              tag = KmlUtil.TAG_POINT;
+
+              break;
+
+          case EsriShapefile.POLYLINE :   // 3
+          case EsriShapefile.POLYLINEZ :  // 13
+              tag = KmlUtil.TAG_LINESTRING;
+
+              break;
+
+          case EsriShapefile.POLYGON :    // 5
+          case EsriShapefile.POLYGONZ :   // 15
+              tag = KmlUtil.TAG_POLYGON;
+
+              break;
+
+          default :
+              tag = null;
+
+              break;
+        }
+
+        return tag;
+    }
+
+
+
+    /**
+     * Get the KML tag corresponding the the EsriFeature
+     * @param feature the feature
+     * @return the corresponding KML tag or null
+     */
+    public static String getKmlTag(EsriShapefile.EsriFeature feature) {
+        String tag = null;
+        if ((feature instanceof EsriShapefile.EsriPoint)
+                || (feature instanceof EsriShapefile.EsriPointZ)) {
+            tag = KmlUtil.TAG_POINT;
+        } else if ((feature instanceof EsriShapefile.EsriPolyline)
+                   || (feature instanceof EsriShapefile.EsriPolylineZ)) {
+            tag = KmlUtil.TAG_LINESTRING;
+        } else if ((feature instanceof EsriShapefile.EsriPolygon)
+                   || (feature instanceof EsriShapefile.EsriPolygonZ)) {
+            tag = KmlUtil.TAG_POLYGON;
+        }
+
+        return tag;
+    }
+
+    /**
+     * Make the KML schema element
+     *
+     * @param parent  the one to add to
+     *
+     * @return  the element
+     */
+    public Element makeKmlSchema(Hashtable properties, Element parent) {
+        Element schema = KmlUtil.makeElement(parent, KmlUtil.TAG_SCHEMA);
+        schema.setAttribute(KmlUtil.ATTR_NAME,
+                            (String) properties.get(FeatureCollection.PROP_SCHEMANAME));
+        schema.setAttribute(KmlUtil.ATTR_ID,
+                            (String) properties.get(FeatureCollection.PROP_SCHEMAID));
+        Hashtable<String, String[]> data =
+            (Hashtable<String, String[]>) properties.get(FeatureCollection.PROP_SCHEMA);
+        Iterator<Map.Entry<String, String[]>> entries =
+            data.entrySet().iterator();
+        while (entries.hasNext()) {
+            Map.Entry<String, String[]> entry = entries.next();
+            Element simple = KmlUtil.makeElement(schema,
+                                 KmlUtil.TAG_SIMPLEFIELD);
+            String[] attrs = entry.getValue();
+            for (int i = 0; i < attrs.length; i += 2) {
+                if (attrs[i].equals("name")) {
+                    attrs[i + 1] = attrs[i + 1].toLowerCase();
+                }
+            }
+            XmlUtil.setAttributes(simple, attrs);
+            KmlUtil.makeText(simple, KmlUtil.TAG_DISPLAYNAME,
+                             "&lt;b&gt;" + Utils.makeLabel(entry.getKey())
+                             + "&lt;/b&gt;");
+        }
+
+        return schema;
+    }
+
+    /**
+     * Make a balloon style for the db schema
+     *
+     * @param parent  the parent to add to
+     * @param template _more_
+     *
+     * @return the balloon element
+     */
+    private Element makeBalloonForDB(FeatureCollection fc, Element parent, String template) {
+	List<DbaseDataWrapper> fieldDatum = fc.getDatum();
+        Element balloon = KmlUtil.makeElement(parent,
+                              KmlUtil.TAG_BALLOONSTYLE);
+        StringBuilder sb = new StringBuilder();
+        if (template != null) {
+            sb.append(template);
+        } else {
+            sb.append("<table cellpadding=\"5\" border=\"0\">\n");
+            //            Hashtable<String, String[]> schema =   (Hashtable<String, String[]>) properties.get(PROP_SCHEMA);
+	    Hashtable properties = fc.getProperties();
+	    for (DbaseDataWrapper dbd : fieldDatum) {
+                //            String label = props.get
+                sb.append("<tr><td align=right><b>");
+                sb.append(dbd.getLabel());
+                sb.append(":</b>&nbsp;&nbsp;</td><td>$[");
+                sb.append(properties.get(FeatureCollection.PROP_SCHEMANAME));
+                sb.append("/");
+                sb.append(dbd.getName());
+                sb.append("]</td></tr>\n");
+            }
+            sb.append("</table>");
+        }
+        Element node = KmlUtil.makeElement(balloon, KmlUtil.TAG_TEXT);
+        CDATASection cdata =
+            parent.getOwnerDocument().createCDATASection(sb.toString());
+        node.appendChild(cdata);
+
+        return balloon;
+    }
 
 }
