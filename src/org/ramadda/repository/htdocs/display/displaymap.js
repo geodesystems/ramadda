@@ -1888,7 +1888,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    });
 		    html+="</tr></table>"
 		    //set the global 
-		    let popup = HtmlUtils.setPopupObject(getTooltip());
+		    let popup = HtmlUtils.setPopupObject(HtmlUtils.getTooltip());
 		    html = HU.div([ID,id],html);
 		    popup.html(HU.div([CLASS, "ramadda-popup-inner"], html));
 		    popup.show();

@@ -1539,7 +1539,7 @@ var Utils =  {
                 if (offset > parent.parent().height()) {
                     offset = parent.parent().height();
                 }
-                let popup = getTooltip();
+                let popup = HtmlUtils.getTooltip();
                 popup.html(HtmlUtils.div(["class", "ramadda-popup-inner ramadda-snippet-popup"], snippet.html()));
                 popup.show();
                 popup.position({
@@ -1550,7 +1550,7 @@ var Utils =  {
                 });
             },
 				   function() {
-				       getTooltip().hide();
+				       HtmlUtils.getTooltip().hide();
 				   }
 				  );
         });
@@ -1741,7 +1741,7 @@ var Utils =  {
 	input.focus();
     },
     handleKeyPress:function(event) {
-	getTooltip().hide();
+	HtmlUtils.getTooltip().hide();
     },
     handleMouseDown:function(event) {
 	if (HtmlUtils.hasPopupObject() || tooltipObject) {
@@ -2853,8 +2853,6 @@ var SPACE4 = "&nbsp;&nbsp;&nbsp;&nbsp;";
 
 var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     me:"HtmlUtils",
-
-
     checkToHidePopup:function() {
 	if (this.popupTime) {
             var now = new Date();
@@ -2865,6 +2863,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             return false;
 	}
 	return true;
+    },
+    getTooltip: function() {
+	return $("#ramadda-popupdiv");
     },
     getPopupObject: function() {
 	return this.popupObject;
@@ -2890,6 +2891,12 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    this.hidePopupObject();
 	}
 	this.popupObject = obj;
+	if(!this.popupObject.attr("addedMouseListener")) {
+	    this.popupObject.attr("addedMouseListener","true");
+	    this.popupObject.mousedown(function(event) {
+		event.stopPropagation();
+	    });
+	}
 	return obj;
     },
     hidePopupObject: function(event) {
@@ -2919,7 +2926,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	var docBottom = docTop + $(window).height();
 	var elemTop = $(elem).offset().top;	
 	var elemBottom = elemTop + $(elem).outerHeight(true); 
-	//	console.log("doc:" + docTop + " " + docBottom +"  "+ elemTop +" " + elemBottom);
 	if((elemTop <= docBottom) && (elemTop >= docTop)) return true;	
 	if((elemBottom <= docBottom) && (elemBottom >= docTop)) return true;
 	if((elemBottom >= docBottom) && (elemTop <= docTop)) return true;
@@ -3455,7 +3461,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         }
     },
     initSearchPopup:function(id,target) {
-	console.log("s:" + id);
 	let input = HU.input("","",["id",id+"_input",CLASS,"input","placeholder","Search", "style",
 				    HU.css("width","200px")]);
 	input = HU.center(input);

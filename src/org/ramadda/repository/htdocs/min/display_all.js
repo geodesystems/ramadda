@@ -4154,7 +4154,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }		
 	    this.jq(domId).find(".display-colortable-slice").click(function(e) {
 		let val = $(this).attr("data-value");
-		let popup = getTooltip();
+		let popup = HtmlUtils.getTooltip();
 		HtmlUtils.setPopupObject(popup);
 		let html = "";
 		html += HU.div([CLASS,"ramadda-menu-item","what","setmin"],"Set range min to " + Utils.formatNumber(val));
@@ -5897,7 +5897,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
         showWikiText: function(type) {
 	    var wiki =  this.assembleWikiText();
-	    HtmlUtils.setPopupObject(getTooltip());
+	    HtmlUtils.setPopupObject(HtmlUtils.getTooltip());
 	    wiki = wiki.replace(/</g,"&lt;").replace(/>/g,"&gt;");
 	    wiki = HU.pre([STYLE,HU.css("max-width","500px","max-height","400px","overflow-x","auto","overflow-y","auto")], wiki);
 	    this.showDialog(wiki);
@@ -7554,7 +7554,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let minValue = parseFloat(min.val());
 		let maxValue = parseFloat(max.val());
 		let html = HU.div([ID,"filter-range",STYLE,HU.css("width","200px")],"");
-		let popup = getTooltip();
+		let popup = HtmlUtils.getTooltip();
 		popup.html(html);
 		popup.show();
 		popup.position({
@@ -7585,7 +7585,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			}
 		    },
 		    stop: function() {
-			var popup = getTooltip();
+			var popup = HtmlUtils.getTooltip();
 			popup.hide();
 			_this.checkFilterField(max);
 			inputFunc(min,max);
@@ -7999,7 +7999,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			itemCnt++;
 		    });	
 		    if(itemCnt>0) {
-			let popup =HtmlUtils.setPopupObject(getTooltip());
+			let popup =HtmlUtils.setPopupObject(HtmlUtils.getTooltip());
 			popup.html(HU.div([CLASS, "ramadda-popup-inner ramadda-snippet-popup"], html));
 			popup.show();
 			popup.position({
@@ -8335,7 +8335,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    HtmlUtils.hidePopupObject();
 	    var html =  _this.getRecordHtml(record,null,popupTemplate);
 	    html = HU.div([CLASS, "display-popup " + _this.getProperty("popupClass",""),STYLE, _this.getProperty("popupStyle","")],html);
-	    let popup = HtmlUtils.setPopupObject(getTooltip());
+	    let popup = HtmlUtils.setPopupObject(HtmlUtils.getTooltip());
 	    popup.html(html);
 	    popup.show();
 	    popup.position({
@@ -31192,7 +31192,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    });
 		    html+="</tr></table>"
 		    //set the global 
-		    let popup = HtmlUtils.setPopupObject(getTooltip());
+		    let popup = HtmlUtils.setPopupObject(HtmlUtils.getTooltip());
 		    html = HU.div([ID,id],html);
 		    popup.html(HU.div([CLASS, "ramadda-popup-inner"], html));
 		    popup.show();

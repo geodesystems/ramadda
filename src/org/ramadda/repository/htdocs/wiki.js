@@ -85,7 +85,7 @@ function insertDisplayText(id, value) {
 
 function insertText(id, value) {
     HtmlUtils.hidePopupObject();
-    var popup = getTooltip();
+    var popup = HtmlUtils.getTooltip();
     if(popup)
 	popup.hide();
     var handler = getHandler(id);
@@ -864,10 +864,8 @@ WikiEditor.prototype = {
 	});
 	menu += "</div>";
 
-
-
 	//	HU.makeDialog({content:menu,anchor:this.getScroller(),title:title,header:true,sticky:true,draggable:true,modal:true});
-	let popup = HtmlUtils.setPopupObject(getTooltip());
+	let popup = HtmlUtils.setPopupObject(HtmlUtils.getTooltip());
 	popup.html(menu);
 	popup.show();
 	popup.position({

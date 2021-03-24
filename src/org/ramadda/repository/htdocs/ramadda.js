@@ -82,11 +82,6 @@ function mouseUpOnEntry(event, entryId, targetId) {
     }
 }
 
-function getTooltip() {
-    return $("#ramadda-popupdiv");
-}
-
-
 var groups = new Array();
 var groupList = new Array();
 
@@ -312,14 +307,14 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails,args) {
 	let label = HU.image(entryRow.args.icon)+ SPACE +entryRow.args.name;
 	let header =  HU.div([CLASS,"ramadda-popup-header"],close +SPACE2 +label);
 	let html = HU.div([CLASS,"ramadda-popup",STYLE,"display:block;"],   header + "<table>" + text + "</table>");
-	let popup =  getTooltip();
+	let popup =  HtmlUtils.getTooltip();
 	popup.html(html);
 	popup.draggable();
         Utils.checkTabs(text);
         let pos = entryRow.getRow().offset();
         let eWidth = entryRow.getRow().outerWidth();
         let eHeight = entryRow.getRow().outerHeight();
-        let mWidth = getTooltip().outerWidth();
+        let mWidth = HtmlUtils.getTooltip.outerWidth();
         let wWidth = $(window).width();
 
         let x = entryRow.lastClick;
@@ -340,7 +335,7 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails,args) {
 }
 
 function hideEntryPopup() {
-    getTooltip().hide();
+    HtmlUtils.getTooltip().hide();
 }
 
 function findEntryRow(rowId) {
