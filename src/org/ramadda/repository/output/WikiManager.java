@@ -1112,7 +1112,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             return HU.makeShowHideBlock(
                 blockTitle, sb.toString(), blockOpen,
-                HU.cssClass("entry-toggleblock-label"), "",
+                HU.cssClass("entry-toggleblock-label ramadda-hoverable"), "",
                 getIconUrl(ICON_TOGGLEARROWDOWN),
                 getIconUrl(ICON_TOGGLEARROWRIGHT));
 
@@ -4427,8 +4427,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             sort = request.getString(ARG_ORDERBY, SORTBY_NAME);
         }
         if (sort == null) {
-            sort = getProperty(wikiUtil, props, attrPrefix + ATTR_SORT,
-                               (String) null);
+            sort = getProperty(wikiUtil, props, attrPrefix + ATTR_SORT_BY,
+			       getProperty(wikiUtil, props, attrPrefix + ATTR_SORT,
+					   (String) null));
         }
 
         if (sort != null) {
@@ -4440,8 +4441,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             }
             if (dir == null) {
-                dir = getProperty(wikiUtil, props,
-                                  attrPrefix + ATTR_SORT_ORDER, null);
+                dir = getProperty(wikiUtil, props,  attrPrefix + ATTR_SORT_DIR,
+				  getProperty(wikiUtil, props,  attrPrefix + ATTR_SORT_ORDER, null));
             }
             //If no dir specified then do ascending if we are sorting by name else do descending
             if (dir == null) {
@@ -4955,7 +4956,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             orderBy = (String) props.get("sort");
         }
 
-        if (props.get(ATTR_SORT_ORDER) != null) {
+        if (props.get(ATTR_SORT_DIR) != null) {
+            orderDir = new Boolean(props.get(ATTR_SORT_DIR).equals("down"));
+        } else  if (props.get(ATTR_SORT_ORDER) != null) {
             orderDir = new Boolean(props.get(ATTR_SORT_ORDER).equals("down"));
         }
 
