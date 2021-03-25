@@ -43,7 +43,7 @@
 
 
     <type name="Acknowledgement" id="content.acknowledgement" searchable="true" browsable="true" displaygroup="Acknowledgements"  >
-      <element name="Acknowledgement" />
+      <element name="Acknowledgement" rows="5"/>
 <!-- todo -->
       <template type="thredds"><![CDATA[<keyword>${attr1}</keyword>]]></template>
       <template type="dif"><![CDATA[<Keyword>${attr1}</Keyword>]]></template>
