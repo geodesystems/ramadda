@@ -154,8 +154,8 @@ public interface WikiConstants {
     public static final String ATTR_IF = "if";
 
 
-    /** include icon attribute */
-    public static final String ATTR_INCLUDEICON = "includeIcon";
+
+    public static final String ATTR_SHOWICON = "showIcon";    
 
     /** _more_ */
     public static final String ATTR_SHOWDESCRIPTION = "showdescription";
