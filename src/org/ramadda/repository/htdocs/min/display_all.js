@@ -3650,7 +3650,7 @@ function DisplayThing(argId, argProperties) {
 	    });
             values += "</tr><table>";
 	    if(this.getProperty("recordHtmlStyle")){
-		values = HU.div([CLASS,"display-tooltip", STYLE,this.getProperty("recordHtmlStyle")], values);
+		values = HU.div([CLASS,"ramadda-shadow-box display-tooltip", STYLE,this.getProperty("recordHtmlStyle")], values);
 	    }
             return values;
         },
@@ -8287,7 +8287,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    
 		},
 		classes: {
-		    "ui-tooltip": _this.getProperty("tooltipClass", "display-tooltip")
+		    "ui-tooltip": _this.getProperty("tooltipClass", "ramadda-shadow-box  display-tooltip")
 		}
 	    };
 	    if(selector.length>500) {
@@ -35107,7 +35107,7 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 	makeTooltipDiv: function() {
 	    if(!this.tooltipDiv) {
 		this.tooltipDiv = d3.select("body").append("div")
-		    .attr("class", "display-tooltip")
+		    .attr("class", "ramadda-shadow-box  display-tooltip")
 		    .style("opacity", 0)
 		    .style("position", "absolute")
 		    .style("background", "#fff")

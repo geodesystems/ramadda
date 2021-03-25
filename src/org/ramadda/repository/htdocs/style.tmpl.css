@@ -2,24 +2,75 @@
 
 :root {
     --font-size:12pt;
+    --font-family:  'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif;
+
     --basic-border:1px #ccc solid;
-    --highlight-border:1px #888 solid;
-    --color-mellow-yellow:#fffeec;
+    --highlight-border:1px #aaa solid;
+
     --nav-color:#000;
     --nav-link-color:#000;
 
+
+    --highlight-color:#9B1E25;
+    --highlight-color:#398B54;
+    --highlight-color:#FA2900;
+    --highlight-color:#0657F9;
+    --highlight-color:#213E86;
+    --highlight-color:#8D8BBD;
+    --highlight-color:#4946DD;
+    --highlight-color:#1D9EAE;
+    --highlight-color:#95D0B3;
     --highlight-color:#0074D9;
+
+    --hover-color:var(--highlight-color);
+
     --highlight-background: #eee;
+    --highlight-background: #efefef;
+    --header-background:  #eaeaea;
 
-    --nav-hover-color:var(--highlight-color);
+
+    --href-decoration:none;   
+    --href-color: var(--highlight-color);
+    --href-decoration:underline;
+    --href-color: #000;
+
+    --color-mellow-yellow:#fffeec;
+
+   --nav-hover-color:var(--highlight-color);
+   --cal-font-size:10pt;
+   --cal-background:#C5E5F5;
+
+   --nav-left-z-index: 50;
+   --nav-page-fixed-z-index:200; 
+   --block-z-index:1;
+   --draggable-z-index:1000;
+   --expandable-z-index:500;
+   --draft-z-index:3000;
+   --ol-z-index:0;
+   --ol-popup-z-index:1000;
+   --animation-tick-z-index:0;    
+   --animation-tick-hover-z-index:50;
+   --ui-dialog-z-index: 10000;
+
+   --selectdiv-z-index: 900;
+   --floatdiv-z-index:1;
+   --hideshow-z-index:2;
+    
+   --wikieditor-message-z-index:1000;
+   --wikieditor-preview-z-index:1000;
+   --wikieditor-preview-handle-z-index:1001;
+
+   --popup-z-index:  3000;
+   --modal-z-index:4000;
+   --header-z-index:100;
+   --image-edit-z-index:1000;
 
 
-    --cal-font-size:10pt;
-    --cal-background:#C5E5F5;
+
 }
 
 body {
-    font-family: 'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif;
+    font-family: var(--font-family);
     font-size: var(--font-size);
     margin: 0px;
     padding: 0px;
@@ -28,6 +79,32 @@ body {
 html, body {
   height: 100%;
 }
+
+
+form {
+    margin:0px;
+    padding: 0px;
+}
+
+
+textarea, input {
+    resize:both !important;
+}
+
+select, input, password, fileinput, textarea {
+    border : var(--basic-border)
+}
+
+input:focus, textarea:focus, .ramadda-search-input:focus {
+    border:var(--highlight-border);
+    outline:none;
+}
+
+select:focus {
+    border:var(--highlight-border);
+    outline:none;
+}
+
 
 
 /*Resets for bootstrap*/
@@ -62,11 +139,11 @@ h3 {
     position:relative;
 }
 
+
 .ramadda-error {
     font-weight: bold; 
     background: #BA3B28;
 }
-
 
 .ramadda-shadow-box {
     background-color : #FFF; 
@@ -84,8 +161,8 @@ h3 {
 p {margin-top:1.5em;}
 
 a {
-    color: #000;
-    text-decoration: underline;
+    color: var(--href-color);
+    text-decoration: var(--href-decoration);
 }
 
 a:hover {
@@ -269,7 +346,7 @@ i.fa, i.fas,i.fab {
     position:fixed;
     top:0px;
     left:0px;
-    z-index: 50;
+    z-index: var(--nav-left-z-index);
 }
 
 .ramadda-nav-left-links {
@@ -316,6 +393,11 @@ i.fa, i.fas,i.fab {
 .ramadda-links a {
     color: var(--nav-link-color);
 }
+
+.ramadda-links a:hover {
+    color: var(--hover-color) !important;    
+}
+
 
 .ramadda-links h3 {
     text-align:center;
@@ -364,7 +446,7 @@ i.fa, i.fas,i.fab {
 
 
 .ramadda-nav-left-toggle i:hover  {
-    @I-HOVER@
+    color: var(--hover-color) !important;    
 }
 
 .ramadda-nav-right {
@@ -426,7 +508,7 @@ a.ramadda-entry-nav-page {
 }
 
 .ramadda-entry-nav-page-outer:hover {
-    @I-HOVER@
+    color: var(--hover-color) !important;    
 }
 
 
@@ -470,7 +552,7 @@ div:hover .ramadda-snippet, .ramadda-entry-nav-page-outer .ramadda-snippet {
     margin-left:10px;
     position:fixed;
     top:55px;
-    z-index:200;
+    z-index:var(--nav-page-fixed-z-index);
 }
 
 .ramadda-nav-page-fixed-next {
@@ -479,6 +561,7 @@ div:hover .ramadda-snippet, .ramadda-entry-nav-page-outer .ramadda-snippet {
     position:fixed;
     right:0%;
     top:55px;
+    z-index:var(--nav-page-fixed-z-index);
 }
 
 .ramadda-nav-right .ramadda-block {
@@ -494,10 +577,8 @@ div:hover .ramadda-snippet, .ramadda-entry-nav-page-outer .ramadda-snippet {
     display:inline-block;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;  
-
     border:1px solid #ccc;
     border-bottom:0px;
-
     background:#F0F0F0;
     margin-top:6px;
     padding-top:2px;
@@ -719,7 +800,7 @@ a.ramadda-menubar-button:hover {
     border-radius: 4px;
     overflow-y: auto;
     color:#000;
-    z-index: 1;
+    z-index: var(--block-z-index);
 }
 
 .ramadda-block ul {
@@ -780,7 +861,7 @@ a.ramadda-menubar-button:hover {
 
 
 .ramadda-draggable-frame {
-    z-index:1000;
+    z-index:var(--draggable-z-index);
     border:var(--basic-border);
     padding:4px;
     position:relative;
@@ -788,7 +869,7 @@ a.ramadda-menubar-button:hover {
 
 
 .ramadda-draggable-header {
-    background:#efefef;
+    background:var(--header-background);
     border:var(--basic-border);    
     border-bottom:var(--basic-border);
     cursor:grab;
@@ -796,14 +877,14 @@ a.ramadda-menubar-button:hover {
 }
 
 .ramadda-expandable-frame {
-    z-index:500;
+    z-index:var(--expandable-z-index);
     border:var(--basic-border);
     padding:4px;
 }
 
 
 .ramadda-expandable-header {
-    background:#efefef;
+    background:var(--header-background);
     border:var(--basic-border);    
     border-bottom:0px solid #ccc;
     cursor:grab;
@@ -921,9 +1002,7 @@ a.ramadda-menubar-button:hover {
     border : var(--basic-border);
     background: #FbFbFb;
     border-radius: 4px;
-
 }
-
 
 .ramadda-note-outer {
     text-align:center;
@@ -964,7 +1043,7 @@ a.ramadda-menubar-button:hover {
 .ramadda-draft-container {
     pointer-events: none;
     position:absolute;
-    z-index:3000;
+    z-index:var(--draft-z-index);
     display:block;
     height:200px;
     width:50%;
@@ -995,18 +1074,18 @@ a.ramadda-menubar-button:hover {
 }
 
 .olButton, div.olMap {
-    z-index:0;
+    z-index:var(--ol-z-index);
     position:relative;
 }
 
 .olPopup, .olFramedCloudPopupContent {
-    z-index:1000 !important;
+    z-index:var(--ol-popup-z-index)  !important;
 }
 
 
 .olPopupContent {
     padding:0px !important;
-    z-index:1000 !important;
+    z-index:var(--ol-popup-z-index)  !important;
 }
 
 .ramadda-map {
@@ -1073,11 +1152,11 @@ a.ramadda-menubar-button:hover {
     height:20px;
     background-color:#888;
     display:inline-block;
-    z-index:0;
+    z-index:var(--animation-tick-z-index);
 }
 .ramadda-map-animation-tick:hover {
     background-color:blue;
-    z-index:50;
+    z-index:var(--animation-tick-hover-z-index);
 }
 
 .ramadda-map-search {
@@ -1539,13 +1618,9 @@ thin_hr {
     padding-left:22px;
 }
 
-
-
 .ui-dialog {
-    z-index: 10000;
+    z-index:var(--ui-dialog-z-index);
 }
-
-
 
 ul {
     margin-top:0px;
@@ -1558,7 +1633,6 @@ ul {
 .slick-prev:before, .slick-next:before {
     color:#aaa !important;
 }
-
 
 .ramadda-slides {
     margin-left:25px;
@@ -1579,14 +1653,10 @@ ul {
     cursor:pointer;
 }
 
-data {
-    display:none;
-}
-
 
 .ramadda-slides-header-item-selected {
     font-weight:500;
-    background:#efefef;
+    background:var(--header-background);
 }
 
 .ramadda-slides-bigarrow {
@@ -1606,32 +1676,10 @@ data {
     left: -30px !important;
 }
 
-
-
-
 .ramadda-slider-value {
     font-family: Verdana, Arial, sans-serif;
     font-size: 12px;
 }
-
-
-
-
-
-form {
-    margin:0px;
-    padding: 0px;
-}
-
-
-textarea, input {
-    resize:both !important;
-}
-
-select, input, password, fileinput, textarea {
-    border : var(--basic-border)
-}
-
 
 .ramadda-search-popup {
     background:#fff;
@@ -1642,17 +1690,6 @@ select, input, password, fileinput, textarea {
     max-height:300px;
     overflow-y:auto;
 }
-
-input:focus, textarea:focus, .ramadda-search-input:focus {
-    border:var(--highlight-border);
-    outline:none;
-}
-
-select:focus {
-    border:var(--highlight-border);
-    outline:none;
-}
-
 
 .ramadda-confirm {
     margin:15px;
@@ -1712,18 +1749,12 @@ select:focus {
     margin-bottom: 1em;
 }
 
-
-
 .ramadda-entry-select  {
     margin-right:4px !important;
 }
 
 .entry-row-table  {
     table-layout: fixed;
-}
-
-.xentry-name  {
-    white-space:nowrap;
 }
 
 .entry-row-table .entry-name .entry-link {
@@ -1741,16 +1772,13 @@ select:focus {
     overflow-x:hidden;
 }
 
-
-
-
 .type-group-container {
     margin-top:10px;
 }
 			    
 .type-group-header {
     font-size:140%;
-    background:#efefef;
+    background:var(--header-background);
     padding-left:10px;
 }
 
@@ -1791,6 +1819,7 @@ select:focus {
 
 .type-list-item:hover {
     background:#eee;
+    color: var(--hover-color);
 }
 
 .entry-type-search {
@@ -1915,14 +1944,14 @@ table.dataTable tbody td {
 
 
 .ramadda-table th {
-    background-color: #efefef;
+    background-color: var(--header-background);
 }
 
 .ramadda-table-header, .entry-list-header {
     padding-left: 5px;
     padding-right: 5px;
     border : 1px #d8d8d8 solid;
-    background-color: #efefef;
+    background-color: var(--header-background);
     margin-top: 2px;
     padding-top: 0px;
 }
@@ -1931,7 +1960,7 @@ table.dataTable tbody td {
     padding:4px;
     font-weight: bold; 
     padding-left:8px;
-    background-color: #efefef;
+    background-color: var(--header-background);
 }
 
 
@@ -1959,7 +1988,20 @@ table.dataTable tbody td {
     padding: 5px;
     padding-right: 0px;
     border-bottom:1px #f0f0f0 solid;
+    border-top:1px transparent solid;    
 }
+
+
+.entry-list-row-selected {
+    background:var(--color-mellow-yellow);
+}
+
+.entry-list-row:hover {
+    background: var(--highlight-background);
+    border-bottom:  var(--highlight-border);
+    border-top:  var(--highlight-border);    
+}
+
 
 .entry-tree-row {
     margin-top:2px;
@@ -2136,6 +2178,7 @@ td.entry-table-block {
 
 
 pre {
+    border : var(--basic-border);
     background:rgb(245,245,245);
     padding:4px;
     border-radius: 4px;
@@ -2289,7 +2332,6 @@ pre {
     border :4px #ccc solid;
 }
 
-
 .map-pan-box {
     border :0px #ccc solid;
 }
@@ -2329,11 +2371,11 @@ a.btn-primary:link, a.btn-primary  {
 
 
 .ramadda-selectdiv {
-    z-index: 900;
+    z-index:var(--selectdiv-z-index);
 }
 
 .ramadda-popup {
-    z-index: 3000;
+    z-index:var(--popup-z-index);
     font-size:var(--font-size);
 }
 
@@ -2358,7 +2400,7 @@ a.btn-primary:link, a.btn-primary  {
 .ramadda-modal {
   display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
-  z-index: 4000; /* Sit on top */
+  z-index:var(--modal-z-index);
   left: 0;
   top: 0;
   width: 100%; /* Full width */
@@ -2386,7 +2428,7 @@ a.btn-primary:link, a.btn-primary  {
 
 
 .ramadda-popup-header a:hover, .ramadda-popup-header .ramadda-link:hover {
-    @I-HOVER@
+    color: var(--hover-color) !important;    
 }
 
 
@@ -2406,7 +2448,7 @@ a.btn-primary:link, a.btn-primary  {
 }
 
 .ramadda-popup-link:hover, .ramadda-popup-link:hover span i   {
-    @I-HOVER@
+    color: var(--hover-color) !important;    
 }
 
 
@@ -2473,7 +2515,7 @@ a.btn-primary:link, a.btn-primary  {
 }
 
 .ui-button:hover, .ui-button:hover span i {
-    @I-HOVER@
+    color: var(--hover-color) !important;    
 }
 
 
@@ -2482,7 +2524,7 @@ a.btn-primary:link, a.btn-primary  {
 }
 
 .ramadda-menu-item:hover a, .ramadda-menu-item a:hover {
-    @I-HOVER@
+    color: var(--hover-color) !important;    
 }
 
 .ramadda-tooltip-icon:hover { 
@@ -2500,7 +2542,7 @@ a.btn-primary:link, a.btn-primary  {
 .ramadda-select-header {
     padding-left:4px;
     display:inline-block;
-    background:#efefef;
+    background:var(--header-background);
 }
 
 
@@ -2650,7 +2692,7 @@ label {
 
 
 .ramadda-header {
-    z-index:100;
+    z-index:var(--header-z-index);
     background-repeat: repeat; 
     background-image:url(${root}/images/background.png);
     padding-bottom: 0px;
@@ -2838,7 +2880,7 @@ label {
 
 
 .ramadda-user-link:hover, .ramadda-user-link:hover span i, .ramadda-user-link span i:hover {
-    @I-HOVER@
+    color: var(--hover-color) !important;    
 }
 
 .ramadda-user-link:last-child {
@@ -3028,7 +3070,7 @@ a.ramadda-heading-2-link:visited {
 .entry-sidebox {
     border: var(--basic-border);
     padding: 4px;
-    border-radius: 6px;
+    border-radius: 4px;
     max-width: 300px;
     overflow-x:auto;
 }
@@ -3039,8 +3081,8 @@ a.ramadda-heading-2-link:visited {
     padding-bottom: 2px;
     padding-top: 6px;
     margin-bottom:10px;
-    border-radius: 6px;
-    -webkit-border-radius: 6px;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
 }
 
 .entry-tools-box a:hover {
@@ -3077,7 +3119,7 @@ a.ramadda-entries-link {
 
 
 .ramadda-menuitem:hover span i {
-    @I-HOVER@
+    color: var(--hover-color) !important;    
 }
 
 .ramadda-menuitem-separator {
@@ -3332,7 +3374,7 @@ snippet-hide {
 }
 
 .subnavoffcomp  {
-    background-color:#efefef;
+    background-color:var(--header-background);
     border: 1px #000 solid; 
     border-top: 1px #999 solid; 
     border-left: 1px #999 solid; 
@@ -3345,10 +3387,10 @@ snippet-hide {
 }
 
 .subnavoffcomp, .subnavoncomp    {
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-    -webkit-border-top-left-radius: 6px;
-    -webkit-border-top-right-radius: 6px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    -webkit-border-top-left-radius: 4px;
+    -webkit-border-top-right-radius: 4px;
     margin-left:3px;
     margin-right:3px;
     padding-top:3px;
@@ -3380,6 +3422,7 @@ snippet-hide {
     font-style:italic;
     margin-bottom:10px;
 }
+
 
 .pagetitle {
     font-size: 130%;
@@ -3419,7 +3462,6 @@ snippet-hide {
     border:2px #888 solid;
 }
 
-
 .ramadda-code {
     font-style:italic;
 }
@@ -3432,21 +3474,21 @@ nowiki {
     display: inline;
 }
 
+data {
+    display:none;
+}
+
+wiki {
+    display: inline;
+}
+
 .wikicontent {
     margin:0px;
     padding:0px;
 }
 
-
 .wiki-image {
     padding-bottom:0px;
-}
-
-.wiki-embed-decorated {
-}
-
-.wiki-image-caption {
-    font-style:italic;
 }
 
 .wiki-text-raw {
@@ -3585,8 +3627,8 @@ nowiki {
     padding-left: 5px;
     padding-right: 5px;
     margin: 4px;
-    border: 1px #888 solid;
-    border-radius: 3px;
+    border : var(--basic-border);
+    border-radius: 4px;
     background-color: #eee;
     color: #000;
 }
@@ -3704,12 +3746,10 @@ nowiki {
     padding-right: 8px;
 }
 
-
 .description {
     margin-left:20px;
     margin-bottom:10px;
 }
-
 
 .browseblock {
     margin-left:20px;
@@ -3725,7 +3765,6 @@ nowiki {
     max-height: 350px; 
     overflow-y: auto;
 }
-
 
 .toolbar-selected {
     margin:2px;
@@ -3752,7 +3791,7 @@ nowiki {
 .image_edit_box {
     border : 3px red solid;
     position: absolute; 
-    z-index: 1000;
+    z-index:var(--image-edit-z-index);
 }
 
 .latlon_box {
@@ -3763,14 +3802,13 @@ nowiki {
     visibility: hidden; 
 }
 
-
 .ramadda-floatdiv {
     filter:alpha(opacity=80);
     -khtml-opacity: 0.80;
     opacity: 0.80;
     position: absolute; 
     display:none;
-    z-index: 1;
+    z-index:var(--floatdiv-z-index);
     background-color:     #67a7e3;
     border: 1px #666666 solid;   
     color: #fff;
@@ -3807,12 +3845,9 @@ nowiki {
 
 .ramadda-innercontent {
    padding-top: 0px;
-    margin: 0px;
+   margin: 0px;
 }
 
-wiki {
-    display: inline;
-}
 
 .ramadda-content {
     min-height:800px;
@@ -3837,17 +3872,10 @@ wiki {
     color:black;
 }
 
-h3 a {
-    color:black;
-}
-
-h3 a:visited {
-    color:black;
-}
 
 .hideshowblock {
     margin-top:0px;
-    z-index: 2;
+    z-index:var(--hideshow-z-index);
 }
 
 .block {
@@ -4544,8 +4572,8 @@ h3.ui-accordion-header a {
     padding-left:6px;
     padding-right:6px;    
     background:rgba(255, 254, 236,0.9);
-    z-index:1000;
-    font-family: 'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif;
+    z-index:var(--wikieditor-message-z-index);
+    font-family: var(--font-family);
     border-bottom:1px solid #ccc;
     border-left:1px solid #ccc;    
 }
@@ -4556,12 +4584,12 @@ h3.ui-accordion-header a {
     position:fixed;
     left:100px;
     top:40px;
-    z-index:1000;
+    z-index:var(--wikieditor-preview-z-index);
     overflow-x:auto
 }
 
 .wiki-editor-preview .ui-resizable-handle {
-    z-index:1001;
+    z-index:var(--wikieditor-preview-handle-z-index);
     height:10px;
     width:10px;
     background:#888;
@@ -4623,7 +4651,7 @@ h3.ui-accordion-header a {
 }
 
 .wiki-editor-popup-link:hover a, .wiki-editor-popup a:hover {
-    @I-HOVER@
+    color: var(--hover-color) !important;    
     background:var(--highlight-background);
     text-decoration:none;
 
@@ -4656,7 +4684,6 @@ h3.ui-accordion-header a {
     background:#efefef;
 }
 
-
 .ace_attribute-name {
     font-style:italic;
 }
@@ -4670,12 +4697,8 @@ h3.ui-accordion-header a {
 .ace_macro, .ace_display_macro {
 }
 
-
 .ace_bracket {
     color:blue;
-}
-
-.ace_display_type {
 }
 
 .ace_editor  { 
@@ -4741,7 +4764,7 @@ h3.ui-accordion-header a {
     text-decoration:none;
 }
 .calnavmonthheader a:hover {
-    @I-HOVER@
+    color: var(--hover-color) !important;    
 }
 
 .calnavdayheader {
@@ -4773,7 +4796,6 @@ h3.ui-accordion-header a {
     padding-right:1px;
 }
 
-
 .calnavoffday {
     text-align:right;
     font-size: var(--cal-font-size);
@@ -4791,16 +4813,16 @@ h3.ui-accordion-header a {
 /** Put the clickable and highlightable here so they take precedence */
 .ramadda-clickable:hover span i, .ramadda-clickable:hover a, .ramadda-clickable:hover {
     cursor:pointer;
-    @I-HOVER@
+    color: var(--hover-color) !important;    
 }
 
 a span i:hover, a:hover span i {
-    @I-HOVER@
+    color: var(--hover-color) !important;    
 }
 
 
 .ramadda-highlightable:hover span i, .ramadda-highlightable:hover a, a.ramadda-highlightable:hover {
-    @I-HOVER@
+    color: var(--hover-color) !important;    
     text-decoration:none;
 }
 
@@ -4820,3 +4842,10 @@ a.ramadda-link:hover, .ramadda-link:hover {
     background:var(--highlight-background);
 }
 
+h3 a {
+    color:black;
+}
+
+h3 a:visited {
+    color:black;
+}

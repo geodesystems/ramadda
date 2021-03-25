@@ -2437,7 +2437,7 @@ table.dataTable tfoot td {
 }
 
 .display-simplesearch-entry:hover a {
-    color: var(--highlight-color) !important;
+    @I-HOVER@
 }
 
 

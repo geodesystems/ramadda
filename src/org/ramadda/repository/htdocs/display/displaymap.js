@@ -5803,7 +5803,7 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 	makeTooltipDiv: function() {
 	    if(!this.tooltipDiv) {
 		this.tooltipDiv = d3.select("body").append("div")
-		    .attr("class", "display-tooltip")
+		    .attr("class", "ramadda-shadow-box  display-tooltip")
 		    .style("opacity", 0)
 		    .style("position", "absolute")
 		    .style("background", "#fff")

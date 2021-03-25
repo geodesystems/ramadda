@@ -259,17 +259,19 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails,args) {
     }
 
     this.setRowColor = function() {
+        this.getRow().removeClass("entry-row-hover");	    
         if (this.isSelected()) {
-            this.getRow().css("background-color", this.onColor);
+            this.getRow().addClass("entry-list-row-selected");
         } else {
-            this.getRow().css("background-color", "#ffffff");
+            this.getRow().removeClass("entry-list-row-selected");	    
         }
     }
 
 
     this.mouseOver = function(event) {
         $("#" + "entrymenuarrow_" + rowId).attr('src', icon_menuarrow);
-        this.getRow().css('background-color', this.overColor);
+        this.getRow().addClass("entry-row-hover");
+//        this.getRow().css('background-color', this.overColor);
     }
 
     this.mouseOut = function(event) {
