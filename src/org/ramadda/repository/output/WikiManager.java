@@ -102,7 +102,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag(WIKI_TAG_INFORMATION, null, ATTR_DETAILS, "false",ATTR_SHOWTITLE,"false"),
                             new WikiTag(WIKI_TAG_NAME,null,"link","true"), 
                             new WikiTag(WIKI_TAG_DESCRIPTION),
-                            new WikiTag(WIKI_TAG_RESOURCE, null, ATTR_TITLE,"",ATTR_INCLUDEICON,"true"), 
+                            new WikiTag(WIKI_TAG_RESOURCE, null, ATTR_TITLE,"",ATTR_SHOWICON,"true"), 
                             new WikiTag(WIKI_TAG_DATERANGE,"Date Range", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT),
                             new WikiTag(WIKI_TAG_DATE_FROM, "From Date", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT),
                             new WikiTag(WIKI_TAG_DATE_TO,"To Date", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT), 
@@ -118,22 +118,27 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag(WIKI_TAG_FIELD, null, "name", "")),
         new WikiTagCategory("Layout", 
                             new WikiTag(WIKI_TAG_TREE, null, ATTR_DETAILS, "true"),
-                            new WikiTag(WIKI_TAG_FULLTREE, null,"depth","10","addprefix","false","showroot","true","labelWidth","20", "showicon","true","types","group,feile,...."),
-                            new WikiTag(WIKI_TAG_MENUTREE, null,"depth","10","addprefix","false","showroot","true","menuStyle","","labelWidth","20", "showicon","true","types","group,file,...."), 			    			    
+                            new WikiTag(WIKI_TAG_FULLTREE, null,"depth","10","addprefix","false","showroot","true","labelWidth","20", ATTR_SHOWICON,"true","types","group,feile,...."),
+                            new WikiTag(WIKI_TAG_MENUTREE, null,"depth","10","addprefix","false","showroot","true","menuStyle","","labelWidth","20", ATTR_SHOWICON,"true","types","group,file,...."), 			    			    
                             new WikiTag(WIKI_TAG_LINKS, null),
                             new WikiTag(WIKI_TAG_LIST), 
                             new WikiTag(WIKI_TAG_TABS, null), 
                             new WikiTag(WIKI_TAG_GRID, null, 
                                         ATTR_TAG, WIKI_TAG_CARD, 
                                         "inner-height","100", 
-                                        ATTR_COLUMNS, "3", ATTR_INCLUDEICON, "true", "weights","",
+					"width","200px",
+                                        ATTR_COLUMNS, "3",
+					ATTR_SHOWICON, "true",
+					"includeChildren","false",
+					"#childrenWiki","wiki text to display children, e.g. {{tree details=false}}",
+					"#weights","3,6,3",
                                         "showSnippet","false",
                                         "showSnippetHover","true",
-                                        "showLink","false","showHeading","true","showLine","true"), 
+                                        "showLink","false","showHeading","true"), 
                             new WikiTag(WIKI_TAG_MAP,
                                         null, ATTR_WIDTH, "100%", ATTR_HEIGHT, "400"), 
                             new WikiTag(WIKI_TAG_FRAMES, null, ATTR_WIDTH,"100%", ATTR_HEIGHT,"500"), 
-                            new WikiTag(WIKI_TAG_ACCORDION, null, ATTR_TAG, WIKI_TAG_HTML, ATTR_COLLAPSE, "false", "border", "0", ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false",ATTR_TEXTPOSITION, POS_LEFT), 
+                            new WikiTag(WIKI_TAG_ACCORDION, null, ATTR_TAG, WIKI_TAG_HTML, ATTR_COLLAPSE, "false", "border", "0", ATTR_SHOWLINK, "true", ATTR_SHOWICON, "false",ATTR_TEXTPOSITION, POS_LEFT), 
                             //                            new WikiTag(WIKI_TAG_GRID), 
                             new WikiTag(WIKI_TAG_TABLE), 
                             new WikiTag(WIKI_TAG_RECENT, null, ATTR_DAYS, "3"), 
@@ -190,7 +195,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                         ARG_SEARCH_SHOWFORM, "false",
                                         SpecialSearch.ATTR_TABS,
                                         SpecialSearch.TAB_LIST),
-                            new WikiTag(WIKI_TAG_UPLOAD,null, ATTR_TITLE,"Upload file", ATTR_INCLUDEICON,"false"), 
+                            new WikiTag(WIKI_TAG_UPLOAD,null, ATTR_TITLE,"Upload file", ATTR_SHOWICON,"false"), 
                             new WikiTag(WIKI_TAG_ROOT)),
     };
     //J++
@@ -243,6 +248,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
         WikiUtil.setGlobalProperties(wikiMacros);
 
+    }
+
+
+    public boolean getShowIcon(WikiUtil wikiUtil, Hashtable props, boolean dflt) {
+	// for backwards compatability
+	return  getProperty(wikiUtil, props, ATTR_SHOWICON,
+				       getProperty(wikiUtil, props,"showicon",true));
     }
 
 
@@ -1445,6 +1457,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             } else {
                 other = parent;
             }
+            if (other == null) {
+		return "";
+	    }
             boolean decorate = getProperty(wikiUtil, props, "decorate",
                                            false);
             boolean showName = getProperty(wikiUtil, props, "showName",
@@ -1515,7 +1530,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
             String clazz = " ramadda-nav-page ";
             if (decorate) {
-                clazz += " ramadda-nav-page-decorated ";
+                clazz += " ramadda-shadow-box ramadda-nav-page-decorated ";
             }
             result = HU.div(result,
                             HU.attrs("style", style, "class",
@@ -1606,9 +1621,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             boolean simple = getProperty(wikiUtil, props, "simple", false);
 
-            boolean includeIcon = getProperty(wikiUtil, props,
-                                      ATTR_INCLUDEICON, false);
-            if (includeIcon) {
+            boolean showicon = getShowIcon(wikiUtil, props, false);
+            if (showicon) {
                 label = HU.img(getIconUrl("/icons/download.png"))
                         + HU.space(2) + label;
             }
@@ -1648,7 +1662,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 return "";
             }
             String img = "";
-            if (getProperty(wikiUtil, props, ATTR_INCLUDEICON, false)) {
+            if (getShowIcon(wikiUtil, props, false)) {
                 String icon = typeHandler.getIconProperty(null);
                 if (icon == null) {
                     icon = ICON_BLANK;
@@ -2372,8 +2386,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             List<String> titles   = new ArrayList<String>();
 
 
-            boolean includeIcon = getProperty(wikiUtil, props,
-                                      APPLY_PREFIX + ATTR_INCLUDEICON, false);
+            boolean showicon = getProperty(wikiUtil, props,
+					   APPLY_PREFIX + ATTR_SHOWICON, false);
             String divClass = getProperty(wikiUtil, props,
                                           APPLY_PREFIX + "divclass", "");
 
@@ -2396,7 +2410,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 String prefix   = prefixTemplate;
                 String suffix   = suffixTemplate;
                 String urlLabel = getEntryDisplayName(child);
-                if (includeIcon) {
+                if (showicon) {
                     urlLabel = HU.img(getPageHandler().getIconUrl(request,
                             child)) + " " + urlLabel;
                 }
@@ -2447,7 +2461,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     //                    contents.add(content.toString());
                     String title = getEntryDisplayName(child);
                     contents.add(title);
-                    if (includeIcon) {
+                    if (showicon) {
                         title = HU.img(getPageHandler().getIconUrl(request,
                                 child)) + " " + title;
                     }
@@ -2513,11 +2527,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 }
             }
 
-
-            boolean includeIcon = getProperty(wikiUtil, props,
-                                      ATTR_INCLUDEICON, false);
+            boolean showicon = getShowIcon(wikiUtil, props, false);
             if (doingGrid) {
-                includeIcon = false;
+		//                showicon = false;
                 if (props.get("showLink") == null) {
                     props.put("showLink", "false");
                 }
@@ -2570,8 +2582,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             tmpProps.remove(ATTR_FIRST);
             if (doingGrid) {
                 tmpProps.put("showHeading", "false");
-                if (tmpProps.get("includeIcon") == null) {
-                    tmpProps.put("includeIcon", "true");
+                if (tmpProps.get(ATTR_SHOWICON) == null) {
+                    tmpProps.put(ATTR_SHOWICON, "true");
                 }
             }
             if (children.size() > 0) {
@@ -2580,9 +2592,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             for (Entry child : children) {
                 String title = getEntryDisplayName(child);
-                if (includeIcon) {
-                    title = HU.img(getPageHandler().getIconUrl(request,
-                            child)) + " " + title;
+                if (showicon) {
+		    //                    title = HU.img(getPageHandler().getIconUrl(request,  child)) + " " + title;
                 }
                 titles.add(title);
                 //                urls.add(request.entryUrl(getRepository().URL_ENTRY_SHOW, child));
@@ -2673,8 +2684,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 width = getProperty(wikiUtil, props, ATTR_WIDTH,
                                     (String) null);
                 if (width != null) {
-                    boxStyle = HU.style("width:" + width + "px;"
-                                        + "display:inline-block;margin:6px;");
+                    boxStyle = HU.style(HU.css("width", HU.makeDim(width,"px"), "display","inline-block","margin","6px"));
                 }
                 for (int i = 0; i < titles.size(); i++) {
                     Entry child = children.get(i);
@@ -2703,8 +2713,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     }
                     HU.open(sb, HU.TAG_DIV, boxClass + boxStyle);
                     if (showHeading) {
-                        HU.div(sb, HU.href(urls.get(i), titles.get(i)),
-                               HU.title(titles.get(i)) + headingClass);
+			String title  = titles.get(i);
+			String label = title;
+			if (showicon) {
+			    label = HU.img(getPageHandler().getIconUrl(request,  child)) + " " + label;
+			}
+                        HU.div(sb, HU.href(urls.get(i), label),  HU.title(title) + headingClass);
                     }
                     String displayHtml = contents.get(i);
                     HU.div(sb, displayHtml,
@@ -3004,8 +3018,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                             false);
             boolean showRoot = getProperty(wikiUtil, props, "showroot",
                                            false);
-            boolean showIcon = getProperty(wikiUtil, props, "showicon",
-                                           false);
+            boolean showIcon = getShowIcon(wikiUtil, props, false);
             List<String> types = Utils.split(getProperty(wikiUtil,
                                      props, "types", ""), ",", true, true);
 
@@ -3056,7 +3069,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                            true);
             boolean showDetails = getProperty(wikiUtil, props, ATTR_DETAILS,
                                       true);
-            boolean showIcon = getProperty(wikiUtil, props, "showIcon", true);
+            boolean showIcon = getShowIcon(wikiUtil, props, true);
 
             Request newRequest = request.cloneMe();
 
@@ -3123,8 +3136,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                              false);
             boolean includeSnippet = getProperty(wikiUtil, props,
 						 "includeSnippet", false);
-            boolean includeIcon = getProperty(wikiUtil, props,
-                                      ATTR_INCLUDEICON, false);
+            boolean showicon = getShowIcon(wikiUtil, props, false);
 
 
             boolean linkResource = getProperty(wikiUtil, props,
@@ -3156,7 +3168,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 		tagOpen = "<div class=' ramadda-entry-nav-page  ramadda-entry-nav-page-decorated '><div class='ramadda-nav-page-label'>";
 		tagClose = "</div></div>";
 	    } else {
-		if (includeIcon) {
+		if (showicon) {
 		    tagOpen  = "";
 		    tagClose = "<br>";
 		}
@@ -3189,7 +3201,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 }
 
                 String linkLabel = getEntryDisplayName(child);
-                if (includeIcon) {
+                if (showicon) {
                     linkLabel = HU.img(getPageHandler().getIconUrl(request,
                             child)) + HU.space(1) + linkLabel;
                 }
@@ -3198,13 +3210,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 		    linkLabel =  "<div class=' ramadda-entry-nav-page  ramadda-entry-nav-page-decorated '><div class='ramadda-entry-nav-page-label'>" + linkLabel +"</div>" + (snippet!=null?snippet:"") + "</div>";
 		}
                 String href = HU.href(url, linkLabel,
-                                      HU.cssClass(cssClass)
+                                      HU.cssClass("ramadda-link " + cssClass)
                                       + HU.style(style));
                 boolean highlight =
                     highlightThis && (originalEntry != null)
                     && child.getId().equals(originalEntry.getId());
                 if (highlight) {
-                    href = HU.div(href, HU.clazz("ramadda-links-highlight"));
+                    href = HU.span(href, HU.clazz("ramadda-links-highlight"));
                 }
                 StringBuilder link = new StringBuilder();
 		if(decorate) {
@@ -3710,6 +3722,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                            entry);
         boolean showHeading = getProperty(wikiUtil, props, "showHeading",
                                           true);
+        boolean includeChildren = getProperty(wikiUtil, props, "includeChildren",
+					      false);
         if (showHeading) {
             HU.div(card, HU.href(entryUrl, entry.getName()),
                    HU.title(entry.getName())
@@ -3736,9 +3750,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                            HU.cssClass("ramadda-snippet-hover"));
 
                 }
-
             }
         }
+
+
 
         String imageUrl = null;
         if (useThumbnail) {
@@ -3750,19 +3765,32 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 imageUrl = getRepository().getHtmlOutputHandler().getImageUrl(
                     request, entry);
             } else if ( !useThumbnail) {
-                imageUrl = getMetadataManager().getThumbnailUrl(request,
-                        entry);
+                imageUrl = getMetadataManager().getThumbnailUrl(request, entry);
             }
         }
 
-        //Default to the type icon
-        if (imageUrl == null) {
-            imageUrl = entry.getTypeHandler().getTypeIconUrl();
-        }
+	if(includeChildren) {
+	    List<Entry> children = getEntryManager().getChildren(request,
+								 entry);
+	    if(children.size()>0) {
+
+		boolean showicon = getShowIcon(wikiUtil, props, false);
+		String wiki = getProperty(wikiUtil, props,"childrenWiki",
+					  "{{links showIcon=" + showicon+"}}"); 
+		String  list = wikifyEntry(request,  entry,
+					   wiki, false,children,new ArrayList<Entry>());
+
+		HU.div(card,list,HU.style(HU.css("max-height","200px","overflow-y","auto")));
+		imageUrl = null;
+	    }
+	}
+
+
 
         if (imageUrl != null) {
             String img = HU.img(imageUrl, "",
-                                HU.attr("loading", "lazy")
+				HU.cssClass("ramadda-card-image") 
+                                +HU.attr("loading", "lazy")
                                 + HU.style("width:100%;"));
             String  inner;
             boolean popup = getProperty(wikiUtil, props, "popup", true);
@@ -3790,9 +3818,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             + HU.cssClass("popup_image"));
             } else {
                 inner = HU.href(entryUrl, img, HU.cssClass(""));
-            }
+	    }
             card.append(HU.div(inner, HU.cssClass("ramadda-imagewrap")));
-
             if (popup) {
                 addImagePopupJS(request, wikiUtil, card, props);
             }
