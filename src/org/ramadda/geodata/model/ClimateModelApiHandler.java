@@ -23,6 +23,7 @@ import org.ramadda.repository.RepositoryManager;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.RequestHandler;
 import org.ramadda.repository.Result;
+import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.database.Tables;
 import org.ramadda.repository.type.CollectionTypeHandler;
 import org.ramadda.repository.type.Column;
@@ -987,7 +988,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         sb.append(HtmlUtils.open("div", HtmlUtils.id("content")));
         int          collectionNumber = 0;
 
-
+	StringBuilder ack = new StringBuilder();
+	HashSet seenAck = new HashSet();
 
         List<String> datasets = new ArrayList<String>(collectionArgs.length);
         List<String> datasetTitles =
@@ -1031,6 +1033,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 selectors.add(select);
             }
 
+
             //Entry        entry   = collections.get(0);
             List<Column> columns = null;
             Entry collectionEntry = getEntryManager().getEntry(request,
@@ -1039,6 +1042,31 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             if (collectionEntry != null) {
                 columns =
                     ((CollectionTypeHandler) (collectionEntry.getTypeHandler())).getGranuleColumns();
+		//Add the ack
+		//This metadadata type is define in repository/resources/metadata/metadata.xml
+		//bit a different one could be used
+		List<Metadata> metadataList =
+		    getMetadataManager().findMetadata(request, collectionEntry, "content.acknowledgement",true);
+		if (metadataList != null) {
+		for (Metadata metadata : metadataList) {
+		    //Check for duplicates
+		    if(seenAck.contains(metadata.getId())) continue;
+		    seenAck.add(metadata.getId());
+		    if(ack.length()==0) {
+			//some verbiage
+			ack.append("\n");
+			HtmlUtils.open(ack, "div",HtmlUtils.attrs("style","margin:10px;"));
+ 			ack.append("<h3>Citation</h3>\n");
+			ack.append("<br>When using this data please cite the below blah blah blah...\n");
+			HtmlUtils.open(ack, "div",HtmlUtils.attrs("style","margin:10px;"));
+		    }
+		    //Style the div to your liking
+		    HtmlUtils.div(ack,metadata.getAttr1(),HtmlUtils.attrs("class","someclass","style",""));
+		}
+	    }
+
+
+
             } else {
                 ClimateCollectionTypeHandler typeHandler = getTypeHandler();
                 columns = typeHandler.getGranuleColumns();
@@ -1266,6 +1294,17 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         sb.append("\n");
 
         sb.append(HtmlUtils.formClose());
+
+	
+
+	//Tack on the acknowldgement
+	if(ack.length()>=0) {
+	    ack.append(HtmlUtils.close("div"));
+	    ack.append(HtmlUtils.close("div"));
+	}
+		       
+	sb.append(ack);
+
         sb.append("\n-section\n");
 
         StringBuffer sb2 = new StringBuffer();
