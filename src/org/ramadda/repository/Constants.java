@@ -2121,7 +2121,7 @@ public interface Constants {
     public static final String CSS_CLASS_HIGHLIGHT = "ramadda-highlight";
 
     /** _more_ */
-    public static final String CSS_CLASS_ERROR_LABEL = "ramadda-error-label";
+    public static final String CSS_CLASS_ERROR_LABEL = "ramadda-error";
 
     /** _more_ */
     public static final String CSS_CLASS_HEADING_1 = "ramadda-heading-1";
