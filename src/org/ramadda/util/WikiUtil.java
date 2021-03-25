@@ -734,6 +734,18 @@ public class WikiUtil {
             sb.append("<a class=ramadda-nav-anchor name='" + id +"'></a>");
         };
 
+
+	Utils.QuadConsumer<StringBuffer,String,String,Integer> headingLinker = (sb,label,tag,level) ->{
+	    defineHeading.accept(sb,label,level);
+	    String id = "heading-" +Utils.makeID(label);
+	    sb.append(HU.anchorName(id));
+	    label += HU.span("",HU.attrs("id",id+"-hover","class","ramadda-linkable-link"));
+	    String attrs = HU.attrs("id",id,"class","ramadda-linkable");
+	    HU.tag(sb,tag,attrs, HU.div(label,HU.attrs("class","ramadda-heading-inner")));
+	};
+
+
+
         boolean              closeTheTag     = false;
         int                  ulCnt           = 0;
         int                  olCnt           = 0;
@@ -797,8 +809,13 @@ public class WikiUtil {
                 continue;
             }
             if (chunk.type == chunk.TYPE_PRE) {
+		Hashtable props = HU.parseHtmlProperties(chunk.rest!=null?chunk.rest:"");
+		String clazz = Utils.getProperty(props, "class",null);
                 buff.append("<nowiki>");
-                buff.append("\n<pre>");
+		if(clazz!=null)
+		    buff.append("\n<pre class='" + clazz+"'>");
+		else		
+		    buff.append("\n<pre>");
                 String s = chunk.buff.toString().replaceAll("\\{\\{",
                                "{<noop>{");
                 buff.append(s);
@@ -2322,8 +2339,7 @@ public class WikiUtil {
                     String       label = (toks.size() > 1)
                                          ? toks.get(1)
                                          : "";
-                    defineHeading.accept(buff, label, 1);
-                    buff.append(HU.h1(label));
+		    headingLinker.accept(buff,label,"h1",1);
                     continue;
                 }
 
@@ -2332,8 +2348,7 @@ public class WikiUtil {
                     String       label = (toks.size() > 1)
                                          ? toks.get(1)
                                          : "";
-                    defineHeading.accept(buff, label, 2);
-                    buff.append(HU.h2(label));
+		    headingLinker.accept(buff,label,"h2",2);
                     continue;
                 }
 
@@ -2344,8 +2359,7 @@ public class WikiUtil {
                     String       label = (toks.size() > 1)
                                          ? toks.get(1)
                                          : "";
-                    defineHeading.accept(buff, label, 3);
-                    buff.append(HU.h3(label));
+		    headingLinker.accept(buff,label,"h3",3);
                     continue;
                 }
 
@@ -2804,7 +2818,7 @@ public class WikiUtil {
                 if ( !left && (hb.length() > 0)) {
                     hb.append(delim);
                 }
-                String clazz = " ramadda-nav-link ";
+                String clazz = " ramadda-link ramadda-nav-link ";
                 if ((list || popup) && (level == 0)) {
                     continue;
                 }
@@ -2817,16 +2831,16 @@ public class WikiUtil {
                     clazz += "ramadda-nav-popup-link ramadda-nav-popup-link-"
                              + level;
                 }
-                String href = HU.mouseClickHref("HtmlUtils.scrollToAnchor('"
-                                  + id + "',-50)", label,
-                                      HU.attrs("class", clazz));
+                String href = HU.mouseClickHref((left?"HtmlUtils.navLinkClicked('":"HtmlUtils.scrollToAnchor('")
+						+ id + "',-50)", label,
+						HU.attrs("class", clazz,"id",id+"_href"));
                 if (left) {
                     href = HU.div(href,
                                   HU.attrs("class", "ramadda-nav-left-link",
                                            "navlink", id));
                 } else if (list || popup) {
 		}
-                hb.append(href);
+		hb.append(href);
                 hb.append("\n");
             }
             if (left) {
@@ -2850,9 +2864,10 @@ public class WikiUtil {
 		}
                 s = s.replace("${" + headingsNav + "}", "");
                 String leftLinks = HU.div(hb.toString(),
-                                          "class=ramadda-nav-left-links");
+                                          HU.attrs("class","ramadda-nav-left-links"));
+
 		if(title!=null) {
-		    leftLinks = "<div class=ramadda-links>" +HU.h3(title) + "</div>" + leftLinks;
+		    leftLinks = "<div class=ramadda-links>" +HU.h3(title) + "</div>\n" + leftLinks;
 		}
                 s = "<div class=ramadda-nav-horizontal><div class=ramadda-nav-left style='"
                     + leftStyle + "'><div id=ramadda-nav-1></div>"
@@ -2870,11 +2885,11 @@ public class WikiUtil {
                 String style = Utils.getProperty(headingsProps, "style", "");
 		String id = HU.getUniqueId("popup");
 		String p =  HU.div(hb.toString(),
-				   HU.attrs("id",id+"-popup", "class", "ramadda-nav-popup",
+				   HU.attrs("id",id+"-popup", "class", "ramadda-shadow-box  ramadda-popup ramadda-nav-popup",
 					    "style", style));
 		String icon = HU.span(HU.getIconImage("fa-align-right"),HU.attrs("id",id,"class","ramadda-nav-popup-link","title","Click to view table of contents"));
 		String container = HU.div(icon +p, HU.attrs("class","ramadda-nav-popup-container"));
-                String align = Utils.getProperty(headingsProps, "align", "right");
+                String align = Utils.getProperty(headingsProps, "align", "left");
 		String args = Json.map("align",Json.quote(align));
 		container += HU.script(JQuery.ready("HtmlUtils.initNavPopup('" + id+"',"+ args+");"));
                 s = s.replace("${" + headingsNav + "}",container);
@@ -3626,7 +3641,7 @@ public class WikiUtil {
      */
     public static void wikiError(Appendable buff, String msg) {
         try {
-            HU.span(buff, msg + "<br>", HU.cssClass("wiki-error"));
+            HU.span(buff, msg + "<br>", HU.cssClass("ramadda-error"));
         } catch (Exception exc) {
             throw new IllegalArgumentException(exc);
         }
@@ -4098,9 +4113,12 @@ public class WikiUtil {
                                             }
 
                                             break;
-                                        }
-                                    }
-                                    chunk.append(rest);
+					} else {
+					    chunk.rest = rest;
+					}
+				    } else {
+					chunk.append(rest);
+				    }
                                 }
                             }
 
@@ -4255,11 +4273,12 @@ public class WikiUtil {
                 caption = HU.div(label,HU.attrs("class","ramadda-caption"));
             if(image2) {
                 String src = getProperty(wikiUtil, props, "src",null);
-                String width = getProperty(wikiUtil, props, "width","100%");
+                String style = getProperty(wikiUtil, props, "style","");
+                String width = getProperty(wikiUtil, props, "width","none");
                 if(src==null) {
                     return errorTag("No src given");
                 }
-                String image = HU.href(src,HU.image(src,"alt",label,"width",width.equals("none")||width.equals("")?null:width)) + caption;
+                String image = HU.href(src,HU.image(src,"style",style,"alt",label,"width",width.equals("none")||width.equals("")?null:width)) + caption;
                 return HU.anchorName(src) + HU.div(image,HU.attrs("class","ramadda-image-centered"));
             }
             return caption;
