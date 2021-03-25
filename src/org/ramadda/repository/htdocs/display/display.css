@@ -2421,7 +2421,7 @@ table.dataTable tfoot td {
     padding:5px;
     max-height:300px;
     overflow-y:auto;
-    border-top:1px #ccc solid;
+    border-top:var(--basic-border);
 }
 
 
@@ -2437,7 +2437,7 @@ table.dataTable tfoot td {
 }
 
 .display-simplesearch-entry:hover a {
-    color: #0074D9 !important;
+    color: var(--highlight-color) !important;
 }
 
 

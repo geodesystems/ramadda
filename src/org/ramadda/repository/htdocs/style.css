@@ -1,8 +1,26 @@
-/* @import url(//fonts.googleapis.com/css?family=Open+Sans); */
+@charset "UTF-8";
+
+:root {
+    --font-size:12pt;
+    --basic-border:1px #ccc solid;
+    --highlight-border:1px #888 solid;
+    --color-mellow-yellow:#fffeec;
+    --nav-color:#000;
+    --nav-link-color:#000;
+
+    --highlight-color:#0074D9;
+    --highlight-background: #eee;
+
+    --nav-hover-color:var(--highlight-color);
+
+
+    --cal-font-size:10pt;
+    --cal-background:#C5E5F5;
+}
 
 body {
     font-family: 'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif;
-    font-size: 12pt;
+    font-size: var(--font-size);
     margin: 0px;
     padding: 0px;
 }
@@ -13,17 +31,55 @@ html, body {
 
 
 /*Resets for bootstrap*/
-h1 {font-size: 170%;}
-h2 {font-size:150%;}
+h1 {
+    margin-top:1em;
+    margin-bottom:0px;    
+    font-size: 170%;
+}
+h2 {
+    margin-top:1em;
+    margin-bottom:0px;    
+    font-size:150%;
+}
 h3 {
     font-size: 125%;
-    margin-top:8px;
-    margin-bottom:4px;    
+    margin-top:1em;
+    margin-bottom:0px;    
 }
-
 .ramadda-page-heading, .ramadda-heading, .ramadda-blurb {
     font-size:140%;
 }
+
+.ramadda-page-heading, .ramadda-heading  {
+    padding: 0px;
+    margin: 0px;
+    color: #000;
+    text-align: center;
+}
+
+.ramadda-heading-inner {
+    display:inline-block;
+    position:relative;
+}
+
+.ramadda-error {
+    font-weight: bold; 
+    background: #BA3B28;
+}
+
+
+.ramadda-shadow-box {
+    background-color : #FFF; 
+    display:inline-block;
+    padding:5px;
+    box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px;
+    -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px;
+    border-radius:4px;
+    border:1px solid rgb(211, 220, 228); 
+}
+
+
+
 
 p {margin-top:1.5em;}
 
@@ -33,7 +89,8 @@ a {
 }
 
 a:hover {
-    color:#0074D9;    cursor:pointer;
+    color:var(--highlight-color);
+    cursor:pointer;
 }
 
 a.btn:link {color: #000;}
@@ -112,6 +169,7 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
 
 .ramadda-nav-link-active {
     background:#eee;
+    font-weight:500;
 }
 
 .ramadda-nav-link-0 {
@@ -120,15 +178,15 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
 }    
 
 .ramadda-nav-link-1 {
-    margin-left:10px;
+    padding-left:10px;
 }    
 
 .ramadda-nav-link-2 {
-    margin-left:20px;
+    padding-left:20px;
 }    
 
 .ramadda-nav-link-3 {
-    margin-left:30px;
+    padding-left:30px;
 }    
 
 
@@ -163,25 +221,18 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     display:inline-block;
 }
 
-.ramadda-links-horizontal:hover {
-    background:#eee;
-}
-
 .ramadda-nav-popup-container {
     display:inline-block;
     position:relative;
 }
 
 .ramadda-nav-popup {
-    font-size:12pt;
-    background:#fff;
+    font-size: var(--font-size);
     display:none;
     position:absolute;
     width:200px;
     padding:5px 10px;
-    z-index: 100;
     text-align:left;
-    background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
 }
 
 .ramadda-nav-popup-link {
@@ -191,47 +242,27 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
 }
 
 .ramadda-nav-popup a {
-    color: rgb(116, 129, 141);
+    color: var(--nav-link-color);
 }
 
 i.fa, i.fas,i.fab {
     color:#aaa;
-    font-size:12pt;
+    font-size:var(--font-size);
 }
 
-
-
-.ramadda-nav-popup-link span i:hover {
-    color: #0074D9 !important;
-}
-
-
-.ramadda-popup-link:hover  span i:hover {
-    color: #0074D9 !important;
-}
-
-.ramadda-nav-horizontal {
-}
 
 .ramadda-nav-horizontal .ramadda-links a {
     display:inline-block;
     width:100%;
 }
 
-.ramadda-nav-horizontal .ramadda-links a:hover {
-text-decoration:none; color:#0074D9;    cursor:pointer;
-}
-
-.ramadda-nav-link:hover {
-text-decoration:none; color:#0074D9;    cursor:pointer;
-}
 
 
 .ramadda-nav-left {
     padding:20px;
     padding-top:80px;
     width:250px;
-    border-right:1px #ccc solid;
+    border-right:var(--basic-border);
     background:#FAFAFA;
     min-height:100vh;
     height:100vh;
@@ -261,8 +292,13 @@ text-decoration:none; color:#0074D9;    cursor:pointer;
 }
 
 
+.ramadda-nav-link:hover {
+    background:var(--highlight-background);
+}
+
+
 .ramadda-nav-left-extra .ramadda-links {
-   color:rgb(116, 129, 141);
+    color:var(--nav-link-color);
    min-height:40vh;
    max-height:40vh;
    overflow-y:auto;
@@ -270,15 +306,15 @@ text-decoration:none; color:#0074D9;    cursor:pointer;
 }
 
 .ramadda-nav-left a, .ramadda-nav-left a:visited {
-    color:rgb(116, 129, 141);
+    color:var(--nav-link-color);
 }
 
 .ramadda-nav-left-extra .ramadda-links  a {
-    color:rgb(116, 129, 141);
+    color:var(--nav-link-color);
 }
 
 .ramadda-links a {
-    color: rgb(116, 129, 141);
+    color: var(--nav-link-color);
 }
 
 .ramadda-links h3 {
@@ -289,8 +325,8 @@ text-decoration:none; color:#0074D9;    cursor:pointer;
     margin-top:1em;
     margin-bottom:4px;
     border-bottom: 1px #e8e8e8 solid;
-    border-bottom: 1px #ccc solid;    
-    color: #000;
+    border-bottom: var(--basic-border);    
+    color: var(--nav-color);
 }
 
 
@@ -299,9 +335,8 @@ text-decoration:none; color:#0074D9;    cursor:pointer;
 }
 
 .ramadda-nav-left-extra .ramadda-links-highlight {
-    display:block;
     background:#ddd;
-    color: #000;
+    display:inline-bloxk;
 }
 
 .ramadda-links-inner ul {
@@ -316,7 +351,7 @@ text-decoration:none; color:#0074D9;    cursor:pointer;
     overflow-x:auto;
     max-width:100%;
     white-space: nowrap;
-    color: #000;
+    color: var(--nav-color);
 }
 
 .ramadda-nav-left-toggle  {
@@ -327,12 +362,9 @@ text-decoration:none; color:#0074D9;    cursor:pointer;
 }
 
 
-a span i:hover  {
-    color: #0074D9 !important;
-}
 
 .ramadda-nav-left-toggle i:hover  {
-    color: #0074D9 !important;
+    color: var(--highlight-color) !important;
 }
 
 .ramadda-nav-right {
@@ -346,7 +378,7 @@ a span i:hover  {
 }
 
 .ramadda-nav-arrow:hover {
-    text-decoration:none; color:#0074D9;    cursor:pointer;
+    text-decoration:none; color:var(--highlight-color);    cursor:pointer;
 }
 
 
@@ -380,7 +412,6 @@ a.ramadda-entry-nav-page {
     margin-right:40px;
     vertical-align:center;
     background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
-
 }
 
 .ramadda-entry-nav-page-decorated a {
@@ -395,7 +426,7 @@ a.ramadda-entry-nav-page {
 }
 
 .ramadda-entry-nav-page-outer:hover {
-    color: #0074D9 !important;
+    color: var(--highlight-color) !important;
 }
 
 
@@ -404,35 +435,26 @@ div:hover .ramadda-snippet, .ramadda-entry-nav-page-outer .ramadda-snippet {
 }
 
 .ramadda-entry-nav-page-decorated:hover {
-    /*border: 1px solid #aaa;*/
-    border:1px solid #0074D9;
+    border:1px solid var(--nav-hover-color);
 }
-
-
 
 .ramadda-nav-page {
     display:inline-block;
     vertical-align:top;
 }
 
-
-
 .ramadda-nav-page-decorated {
     min-width:200px;
     padding:10px;
     padding-bottom:0px;
-    background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
 }
 
 .ramadda-nav-page-decorated:hover {
-    /*border: 1px solid #aaa;*/
-    border:1px solid #0074D9;
+    border:1px solid var(--nav-hover-color);
 }
 
-
-
 .ramadda-nav-page:hover i {
-    color:#0074D9;
+    color:var(--nav-hover-color);
 }
 
 .ramadda-nav-page-label {
@@ -518,7 +540,7 @@ a.ramadda-menubar-button:hover {
 
 .ramadda-menubar-button {
     display:inline-block;
-    border-right:1px #ccc solid;
+    border-right:var(--basic-border);
     padding-left:8px;
     padding-right:8px;
     padding-top:5px;
@@ -534,7 +556,7 @@ a.ramadda-menubar-button:hover {
 }
 
 .ramadda-page-subtitle  {
-    font-size:12pt;
+    font-size:var(--font-size);
     text-align:center;
 }
 
@@ -598,19 +620,7 @@ a.ramadda-menubar-button:hover {
 }
 
 
-.ramadda-page-heading, .ramadda-heading  {
-    padding: 0px;
-    margin: 0px;
-    color: #000;
-    text-align: center;
-}
 
-
-.ramadda-shadow {
-    display:inline-block;
-    padding:5px;
-    box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; border-radius:4px;border:1px solid rgb(211, 220, 228); 
-}
 
 
 
@@ -656,7 +666,7 @@ a.ramadda-menubar-button:hover {
 
 
 .ramadda-callout {
-    border:1px #ccc solid;
+    border:var(--basic-border);
     border-left: 4px solid;
     padding:10px;
     border-radius:4px;
@@ -723,7 +733,7 @@ a.ramadda-menubar-button:hover {
 }
 
 .ramadda-block  {
-    border-bottom: 1px #ccc solid;
+    border-bottom: var(--basic-border);
     margin-bottom: 5px;
 }
 
@@ -757,7 +767,7 @@ a.ramadda-menubar-button:hover {
     margin-top:2px;
     margin-bottom:2px;
     padding:10px;
-    border : 1px #ccc solid;
+    border : var(--basic-border);
     background: #F3F3F3;
 }
 
@@ -771,7 +781,7 @@ a.ramadda-menubar-button:hover {
 
 .ramadda-draggable-frame {
     z-index:1000;
-    border:1px #ccc solid;
+    border:var(--basic-border);
     padding:4px;
     position:relative;
 }
@@ -779,22 +789,22 @@ a.ramadda-menubar-button:hover {
 
 .ramadda-draggable-header {
     background:#efefef;
-    border:1px #ccc solid;    
-    border-bottom:1px #ccc solid;
+    border:var(--basic-border);    
+    border-bottom:var(--basic-border);
     cursor:grab;
     padding:4px;
 }
 
 .ramadda-expandable-frame {
     z-index:500;
-    border:1px #ccc solid;
+    border:var(--basic-border);
     padding:4px;
 }
 
 
 .ramadda-expandable-header {
     background:#efefef;
-    border:1px #ccc solid;    
+    border:var(--basic-border);    
     border-bottom:0px solid #ccc;
     cursor:grab;
     padding:4px;
@@ -881,6 +891,10 @@ a.ramadda-menubar-button:hover {
     flex-grow:1;
 }
 
+.ramadda-grid-box:hover {
+    border:   var(--highlight-border)
+}
+
 .ramadda-grid-box .ramadda-subheading {
     max-width:100%;
     overflow-x:auto;
@@ -892,8 +906,8 @@ a.ramadda-menubar-button:hover {
     overflow-y:auto;
 }    
 
-.ramadda-card img {
-    border : 1px #ccc solid;
+.ramadda-card-image {
+    border : var(--basic-border);
     margin-top:4px;
 }
 
@@ -904,7 +918,7 @@ a.ramadda-menubar-button:hover {
     padding:10px;
     padding-bottom:6px;
     padding-top:6px;
-    border : 1px #ccc solid;
+    border : var(--basic-border);
     background: #FbFbFb;
     border-radius: 4px;
 
@@ -924,9 +938,9 @@ a.ramadda-menubar-button:hover {
     padding:8px;
     padding-left:14px;
     padding-right:14px;
-    border : 1px #ccc solid;
+    border : var(--basic-border);
     display: inline-block;
-    background-color : #fffeec;
+    background-color : var(--color-mellow-yellow);
 }
 
 
@@ -939,7 +953,7 @@ a.ramadda-menubar-button:hover {
     margin-bottom:4px;
     display:inline-block;
     border: 0px;
-    border: 1px #ccc solid;
+    border: var(--basic-border);
     background:#fff;
     padding: 6px; 
     padding-left:12px;
@@ -1006,7 +1020,7 @@ a.ramadda-menubar-button:hover {
 }
 
 .ramadda-map-loc {
-    border-bottom: 1px #ccc solid;
+    border-bottom: var(--basic-border);
     padding-left:4px;
     padding-right:4px;
     padding-bottom:2px;
@@ -1080,7 +1094,7 @@ a.ramadda-menubar-button:hover {
     display: inline-block;
     border-radius: 4px;
     border: 1px #aaa solid;
-    background-color : #fffeec;
+    background-color : var(--color-mellow-yellow);
     margin:10px;
     padding:5px;
     min-width: 400px;
@@ -1174,7 +1188,7 @@ a.ramadda-menubar-button:hover {
 
 
 .ramadda-background-yellow , .ramadda-block-yellow , .ramadda-heading-yellow , .ramadda-box-yellow , .ramadda-note-yellow , .ramadda-blurb-yellow ,  .ramadda-section-yellow  {
-    background-color: #fffeec;
+    background-color: var(--color-mellow-yellow);
 }
 
 
@@ -1363,13 +1377,13 @@ a.ramadda-menubar-button:hover {
 /* superfish menu styling */
 
 .sf-menu   {
-    font-size: 12pt;
+    font-size: var(--font-size);
     margin:0px;
     padding:0px;
 }
 
 .sf-menu a {
-    font-size: 12pt;
+    font-size: var(--font-size);
     padding: 6px;
 }
 
@@ -1459,15 +1473,15 @@ a.ramadda-menubar-button:hover {
 }
 
 .ramadda-section-border  {
-    border-top:1px #ccc solid;
+    border-top:var(--basic-border);
 }
 
 .ramadda-line  {
-    border-bottom:1px #ccc solid;
+    border-bottom:var(--basic-border);
 }
 
 .ramadda-section-line  {
-    border-bottom:1px #ccc solid;
+    border-bottom:var(--basic-border);
 }
 
 .ramadda-hr {
@@ -1476,7 +1490,7 @@ a.ramadda-menubar-button:hover {
 }
 
 thin_hr {
-    border-top:1px #ccc solid;
+    border-top:var(--basic-border);
     height:1px;
     display:block;
 }
@@ -1615,7 +1629,7 @@ textarea, input {
 }
 
 select, input, password, fileinput, textarea {
-    border : 1px #ccc solid
+    border : var(--basic-border)
 }
 
 
@@ -1630,12 +1644,12 @@ select, input, password, fileinput, textarea {
 }
 
 input:focus, textarea:focus, .ramadda-search-input:focus {
-    border:1px #888 solid;
+    border:var(--highlight-border);
     outline:none;
 }
 
 select:focus {
-    border:1px #888 solid;
+    border:var(--highlight-border);
     outline:none;
 }
 
@@ -1671,7 +1685,7 @@ select:focus {
 }
 
 .ramadda-action-results {
-    border:1px #ccc solid;
+    border:var(--basic-border);
     width:500px;
     height:100px; 
     max-height:100px;
@@ -1880,15 +1894,15 @@ table.dataTable tbody th, table.dataTable tbody td {
 }
 
 table.dataTable thead th, table.dataTable thead td {
-    border-bottom:1px #ccc solid;
+    border-bottom:var(--basic-border);
 }
 
 table.dataTable.no-footer {
-    border-bottom:1px #ccc solid;
+    border-bottom:var(--basic-border);
 }
 
 .dataTables_wrapper.no-footer .dataTables_scrollBody {
-    border-bottom:1px #ccc solid;
+    border-bottom:var(--basic-border);
 }
 
 .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody > table > thead > tr > th, .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody > table > thead > tr > td, .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody > table > tbody > tr > th, .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody > table > tbody > tr > td {
@@ -1996,7 +2010,7 @@ table.dataTable tbody td {
 }
 
 .entry-table  {
-    border: 1px #ccc solid;
+    border: var(--basic-border);
 }
 
 .entry-table tr {
@@ -2033,14 +2047,14 @@ td.entry-table-block {
 .entry-table thead th {
     background-color:#f0f0f0;
     padding: 3px 10px 3px 10px;
-    border-bottom: 1px #ccc solid;
-    border-right: 1px #ccc solid;
+    border-bottom: var(--basic-border);
+    border-right: var(--basic-border);
     font-weight: bold;
 }
 
 .entry-table tfoot th {
     padding: 3px 10px 3px 10px;
-    border-top: 1px #ccc solid;
+    border-top: var(--basic-border);
     font-weight: bold;
 }
 
@@ -2122,11 +2136,19 @@ td.entry-table-block {
 
 
 pre {
-    background:#eee;
+    background:rgb(245,245,245);
     padding:4px;
     border-radius: 4px;
     margin-bottom:5px;
     margin-top:5px;
+}
+
+.wikitext {
+    margin-left:20px;
+    margin-right:20px;    
+    padding-left:10px;
+    padding-right:10px;    
+    margin-bottom:10px;
 }
 
 .thin_pre {
@@ -2207,12 +2229,6 @@ pre {
     overflow-x: hidden;
 }
 
-.shadow-box {
-    padding: 10px;
-    margin:5px;
-    background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
-}
-
 .ramadda-system-message {
     margin:4px;
     padding:4px;
@@ -2248,7 +2264,7 @@ pre {
 }
 
 .ramadda-hline {
-    border-top:1px #ccc solid;
+    border-top:var(--basic-border);
 }
 
 .ramadda-highlight {
@@ -2268,9 +2284,6 @@ pre {
     margin-bottom:8px;
 }
 
-
-
-.ramadda-error-label {font-weight: bold; background: #BA3B28;}
 
 .map-drag-box {
     border :4px #ccc solid;
@@ -2306,21 +2319,12 @@ a.btn-primary:link, a.btn-primary  {
     text-decoration:none;
 }
 
-.ramadda-link {
-    text-decoration: none;
-    display:inline-block;
-}
-
 .ramadda-image-link {
     display:inline-block;
 }
 
 .ramadda-image-link:hover {
     cursor:pointer;
-}
-
-.ramadda-link:hover {
-    text-decoration:none; color:#0074D9;    cursor:pointer;
 }
 
 
@@ -2330,14 +2334,13 @@ a.btn-primary:link, a.btn-primary  {
 
 .ramadda-popup {
     z-index: 3000;
-    font-size:12pt;
+    font-size:var(--font-size);
 }
 
 .ramadda-popup, .ramadda-selectdiv {
     position: absolute; 
     background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
 }
-
 
 .ramadda-popup-contents {
     display:none;
@@ -2375,7 +2378,7 @@ a.btn-primary:link, a.btn-primary  {
     position:relative;
     padding:4px;
     padding-bottom:0px;
-    border-bottom:1px #ccc solid; 
+    border-bottom:var(--basic-border); 
     background-color: #f0f0f0;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
@@ -2383,7 +2386,7 @@ a.btn-primary:link, a.btn-primary  {
 
 
 .ramadda-popup-header a:hover, .ramadda-popup-header .ramadda-link:hover {
-    color: #0074D9 !important;
+    color: var(--highlight-color) !important;
 }
 
 
@@ -2403,7 +2406,7 @@ a.btn-primary:link, a.btn-primary  {
 }
 
 .ramadda-popup-link:hover, .ramadda-popup-link:hover span i   {
-    color: #0074D9 !important;
+    color: var(--highlight-color) !important;
 }
 
 
@@ -2451,10 +2454,6 @@ a.btn-primary:link, a.btn-primary  {
     margin: 5px;
 }
 
-.ramadda-popup a:hover {
-    text-decoration: underline;
-    color:black;
-}
 
 .ramadda-popup-box {
     padding:1px;
@@ -2467,18 +2466,14 @@ a.btn-primary:link, a.btn-primary  {
     cursor:pointer;
 }
 
-/*
-.ramadda-menu-item:hover {
-    background:#eee;
-}
-*/
+
 
 .ui-button span i {
     color:rgb(85, 85, 85);
 }
 
 .ui-button:hover, .ui-button:hover span i {
-    color: #0074D9 !important;
+    color: var(--highlight-color) !important;
 }
 
 
@@ -2487,7 +2482,7 @@ a.btn-primary:link, a.btn-primary  {
 }
 
 .ramadda-menu-item:hover a, .ramadda-menu-item a:hover {
-    color: #0074D9 !important;
+    color: var(--highlight-color) !important;
 }
 
 .ramadda-tooltip-icon:hover { 
@@ -2544,9 +2539,6 @@ label {
 .harvester-active {
     background: #FFFFCC;
 }
-
-
-
 
 .ramadda-bubble {
   position:relative;
@@ -2686,7 +2678,7 @@ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;
 }
 
 .ramadda-header a:hover  {
-    text-decoration:none; color:#0074D9;    cursor:pointer;
+    text-decoration:none; color:var(--highlight-color);    cursor:pointer;
 }
 
 .ramadda-header-layoutbar {
@@ -2731,6 +2723,23 @@ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;
     font-size: inherit;
 }
 
+.breadcrumbs {
+    margin-top:5px;
+    text-decoration: none;
+    vertical-align: bottom;
+}
+
+.breadcrumbs a {
+    text-decoration: none;
+    color: #000;
+}
+
+
+.breadcrumbs a:hover {
+    color:var(--highlight-color);
+}
+
+
 .chevronOverlay {
     background: url(${root}/icons/arrow_right_blue.png) no-repeat 100% center;
 }
@@ -2755,22 +2764,7 @@ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;
 
 .ramadda-breadcrumbs-menu-button:hover {
     background-color:#ccc;
-    border-color: #0074D9;
-}
-
-.breadcrumbs {
-    margin-top:5px;
-    text-decoration: none;
-    vertical-align: bottom;
-}
-
-.breadcrumbs a {
-    text-decoration: none;
-    color: #000;
-}
-
-.breadcrumbs a:hover {
-    text-decoration:none; color:#0074D9;    cursor:pointer;
+    border-color: var(--nav-hover-color);
 }
 
 
@@ -2779,7 +2773,7 @@ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;
 }
 
 .ramadda-user-admin {
-    background:#fffeec;
+    background:var(--color-mellow-yellow);
 }
 
 .ramadda-user-row  {
@@ -2844,7 +2838,7 @@ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;
 
 
 .ramadda-user-link:hover, .ramadda-user-link:hover span i, .ramadda-user-link span i:hover {
-    color: #0074D9 !important;
+    color: var(--highlight-color) !important;
 }
 
 .ramadda-user-link:last-child {
@@ -2852,7 +2846,7 @@ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;
 }
 
 .ramadda-user-link:hover {
-    background-color: #eee;
+    background:var(--highlight-background);
     cursor:pointer;
 }
 
@@ -2960,7 +2954,7 @@ a.ramadda-heading-2-link:visited {
 }
 
 .entryheader {
-    border-bottom : 1px #ccc solid;
+    border-bottom : var(--basic-border);
     margin-bottom:5px;
 }
 
@@ -3032,7 +3026,7 @@ a.ramadda-heading-2-link:visited {
 }
 
 .entry-sidebox {
-    border: 1px #ccc solid;
+    border: var(--basic-border);
     padding: 4px;
     border-radius: 6px;
     max-width: 300px;
@@ -3078,12 +3072,12 @@ a.ramadda-entries-link {
 
 
 .ramadda-menuitem:hover {
-    background-color: #eee;
+    background:var(--highlight-background);
 }
 
 
 .ramadda-menuitem:hover span i {
-    color: #0074D9 !important;
+    color: var(--highlight-color) !important;
 }
 
 .ramadda-menuitem-separator {
@@ -3092,7 +3086,7 @@ a.ramadda-entries-link {
     padding:0px;
     color:black;
     margin-right:30px;
-    border-bottom: 1px #ccc solid;
+    border-bottom: var(--basic-border);
 }
 
 a.ramadda-menuitem-link {
@@ -3111,7 +3105,7 @@ a.ramadda-menuitem-link {
 
 
 a.ramadda-menuitem-link:hover {
-text-decoration:none; color:#0074D9;    cursor:pointer;
+text-decoration:none; color:var(--highlight-color);    cursor:pointer;
 }
 
 
@@ -3123,7 +3117,7 @@ text-decoration:none; color:#0074D9;    cursor:pointer;
 
 
 .ramadda-menu  { 
-    font-size: 12pt !important;;
+    font-size: var(--font-size) !important;;
     margin: 5px;
     background: #fff;
     border: 0px #ccc solid;
@@ -3142,11 +3136,11 @@ text-decoration:none; color:#0074D9;    cursor:pointer;
     padding-left:4px;
     padding-top:4px;
     padding-bottom:4px;
-    font-size: 12pt;
+    font-size: var(--font-size);
 }
 
 .ramadda-menu-block a {
-    font-size: 12pt;
+    font-size: var(--font-size);
     display: inline;
     border: 0px #ccc solid;
     padding:0px;
@@ -3165,7 +3159,7 @@ text-decoration:none; color:#0074D9;    cursor:pointer;
     background-color: #f0f0f0;
     padding:px;
     margin-bottom:4px;
-    border-bottom : 1px #ccc solid;
+    border-bottom : var(--basic-border);
 }
 
 .ramadda-menugroup  {
@@ -3257,7 +3251,7 @@ a.image-link {
 }
 
 .sortlink a:hover {
-    color:#0074D9;
+    color:var(--nav-hover-color);
 }
 
 .sortlinkon  {
@@ -3301,7 +3295,7 @@ snippet-hide {
 }
 
 .ramadda-linksheader-on {
-    background-color: #eee;
+    background:var(--highlight-background);
 }
 
 
@@ -3322,7 +3316,7 @@ snippet-hide {
 }
 
 .subnav a:hover  {
-    text-decoration:none; color:#0074D9;    cursor:pointer;
+    text-decoration:none; color:var(--highlight-color);    cursor:pointer;
 }
 
 .subnavoncomp  {
@@ -3365,7 +3359,7 @@ snippet-hide {
 }
 
 .subnavoffcomp a:hover {
-    text-decoration:none; color:#0074D9;    cursor:pointer;
+    text-decoration:none; color:var(--highlight-color);    cursor:pointer;
 }
 
 .cimg {
@@ -3443,7 +3437,6 @@ nowiki {
     padding:0px;
 }
 
-.wiki-error {font-weight: bold; background: #BA3B28;}
 
 .wiki-image {
     padding-bottom:0px;
@@ -3635,7 +3628,7 @@ nowiki {
 }
 
 .kml-description {
-    border: 1px #ccc solid;
+    border: var(--basic-border);
     max-height: 150px; 
     overflow-y: auto;
     padding:4px;
@@ -3691,112 +3684,6 @@ nowiki {
 }
 
 
-.calnavtable {
-    border-width: 0px;
-}
-
-
-.calnavday, .calheader, .calentry, .daycalendartable td, .dategrid>tr>td  {
-    border-color: #888;
-    border-width: 1px 1px 0px 0px;
-    border-style: solid;
-    margin: 0px;
-}
-
-.calentry {
-}
-
-
-.calheader {
-    padding-top:10px;
-    padding-left:10px;
-    background-color:#C5E5F5;
-    font-weight: bold;
-}
-
-.cal-day-link, .cal-day-link a {
-    text-decoration: none;
-    color: #000;
-}
-
-.cal-day-link {
-    height:100%;
-    font-size: 8pt;
-}
-
-
-.cal-day {
-    display:inline-block;
-    max-width:100%;
-    overflow-x:auto;
-}
-
-.calcontents {
-    max-height: 200px; 
-    overflow-y: auto;
-}
-
-.calnav {
-}
-
-.calnavmonthheader {
-    border-width: 0px 0px 0 0;
-    text-align:center;
-    background-color:#C5E5F5;
-    font-weight: bold;
-    font-size: 10pt;
-}
-
-.calnavmonthheader a {
-    text-decoration:none;
-}
-.calnavmonthheader a:hover {
-    color: #0074D9 !important;
-}
-
-.calnavdayheader {
-    text-align:center;
-    background-color:#C5E5F5;
-    font-weight: bold;
-    font-size: 10pt;
-}
-
-.calnavday {
-    text-align:right;
-    font-size: 10pt;
-    background-color:#fff;
-    padding-left:20px;
-    padding-top:5px;
-    padding-right:1px;
-}
-
-.calnavoffday a, .calnavtheday a {
-    font-size: 10pt;
-}
-
-.calnavtheday {
-    text-align:right;
-    font-size: 10pt;
-    background-color:#C5E5F5;
-    padding-left:20px;
-    padding-top:5px;
-    padding-right:1px;
-}
-
-
-.calnavoffday {
-    text-align:right;
-    font-size: 10pt;
-    background-color:#cccccc;
-    padding-left:20px;
-    padding-top:5px;
-    padding-right:1px;
-    border-width: 1px 1px 0 0;
-    border-style: solid;
-}
-
-
-
 .browseblock  a {
     color:#000000;
 }
@@ -3842,7 +3729,7 @@ nowiki {
 
 .toolbar-selected {
     margin:2px;
-    border : 1px #ccc solid;
+    border : var(--basic-border);
     padding-left:1px;
     padding-right:1px;
 }
@@ -3907,7 +3794,7 @@ nowiki {
     padding-bottom: 0px;
     color: #000;
     background-color : #eee;
-    border-bottom: 1px #ccc solid;
+    border-bottom: var(--basic-border);
     font-weight: bold;
     border-top-left-radius: 8px;
     -webkit-border-top-left-radius: 8px;
@@ -4121,7 +4008,7 @@ a.toggleblocklabellink:visited {
     border: 1px #EFEFEF solid;
     border: 1px #eaeaea solid;
     border-top: 0px;
-    background: #fffeec;
+    background: var(--color-mellow-yellow);
     background: #f8f8f8;
     padding:5px;
     max-height: 100px; 
@@ -4648,6 +4535,7 @@ h3.ui-accordion-header a {
 .ace_contents {
     display:relative;
 }
+
 .wiki-editor-message {
     position:absolute;
     right:0px;
@@ -4735,8 +4623,8 @@ h3.ui-accordion-header a {
 }
 
 .wiki-editor-popup-link:hover a, .wiki-editor-popup a:hover {
-    color: #0074D9 !important;
-    background-color: #eee;
+    color: var(--highlight-color) !important;
+    background:var(--highlight-background);
     text-decoration:none;
 
 }
@@ -4798,23 +4686,137 @@ h3.ui-accordion-header a {
 }
 
 
+/** Calendar styles **/
+ 
+.calnavtable {
+    border-width: 0px;
+}
+
+
+.calnavday, .calheader, .calentry, .daycalendartable td, .dategrid>tr>td  {
+    border-color: #888;
+    border-width: 1px 1px 0px 0px;
+    border-style: solid;
+    margin: 0px;
+}
+
+.calheader {
+    padding-top:10px;
+    padding-left:10px;
+    background-color:var(--cal-background);
+    font-weight: bold;
+}
+
+.cal-day-link, .cal-day-link a {
+    text-decoration: none;
+    color: #000;
+}
+
+.cal-day-link {
+    height:100%;
+    font-size: 8pt;
+}
+
+
+.cal-day {
+    display:inline-block;
+    max-width:100%;
+    overflow-x:auto;
+}
+
+.calcontents {
+    max-height: 200px; 
+    overflow-y: auto;
+}
+
+.calnavmonthheader {
+    border-width: 0px 0px 0 0;
+    text-align:center;
+    background-color:var(--cal-background);
+    font-weight: bold;
+    font-size: var(--cal-font-size);
+}
+
+.calnavmonthheader a {
+    text-decoration:none;
+}
+.calnavmonthheader a:hover {
+    color: var(--highlight-color) !important;
+}
+
+.calnavdayheader {
+    text-align:center;
+    background-color:var(--cal-background);
+    font-weight: bold;
+    font-size: var(--cal-font-size);
+}
+
+.calnavday {
+    text-align:right;
+    font-size: var(--cal-font-size);
+    background-color:#fff;
+    padding-left:20px;
+    padding-top:5px;
+    padding-right:1px;
+}
+
+.calnavoffday a, .calnavtheday a {
+    font-size: var(--cal-font-size);
+}
+
+.calnavtheday {
+    text-align:right;
+    font-size: var(--cal-font-size);
+    background-color:var(--cal-background);
+    padding-left:20px;
+    padding-top:5px;
+    padding-right:1px;
+}
+
+
+.calnavoffday {
+    text-align:right;
+    font-size: var(--cal-font-size);
+    background-color:#cccccc;
+    padding-left:20px;
+    padding-top:5px;
+    padding-right:1px;
+    border-width: 1px 1px 0 0;
+    border-style: solid;
+}
+
+
+
 
 /** Put the clickable and highlightable here so they take precedence */
 .ramadda-clickable:hover span i, .ramadda-clickable:hover a, .ramadda-clickable:hover {
     cursor:pointer;
-    color: #0074D9 !important;
+    color: var(--highlight-color) !important;
 }
 
-a:hover span i {
-    color: #0074D9 !important;
+a span i:hover, a:hover span i {
+    color: var(--highlight-color) !important;
 }
 
 
 .ramadda-highlightable:hover span i, .ramadda-highlightable:hover a, a.ramadda-highlightable:hover {
-    color: #0074D9 !important;
+    color: var(--highlight-color) !important;
     text-decoration:none;
 }
 
 .ramadda-hoverable:hover {
-    background-color : #efefef;
+    background:var(--highlight-background);
 }
+
+.ramadda-link {
+    text-decoration: none;
+    display:inline-block;
+}
+
+a.ramadda-link:hover, .ramadda-link:hover {
+    text-decoration:none; 
+    color: var(--highlight-color);
+    cursor:pointer;
+    background:var(--highlight-background);
+}
+
