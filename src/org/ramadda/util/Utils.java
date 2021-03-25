@@ -2072,6 +2072,24 @@ public class Utils extends IO {
     }
 
 
+    private static final String[] DATE_PATTERNS = {"\\d\\d\\d\\d-\\d\\d-\\d\\d","(january|february|march|april|may|june|july|august|septembe|october|november|december).*"};
+    public static boolean isDate(String s) {
+	for(String p: DATE_PATTERNS) {
+	    if(Pattern.matches(p,s)) return true;
+	}
+	return false;
+    }
+
+    public static boolean isNumber(String s) {
+	if(s.equals("nan") || s.equals("NaN")) return true;
+	try {
+	    Double.parseDouble(s);
+	    return true;
+	}catch(Exception ignore) {}
+	return false;
+    }
+
+
     /**
      * _more_
      *
