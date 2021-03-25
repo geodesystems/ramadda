@@ -184,12 +184,12 @@ YEAR,DATE,0.0,0.25,0.5,0.75,1.0,2.0,3.0,4.0
         String tempAttrs = attrChartable() + attrSearchable()
                            + attrUnit("Celsius");
         String fields = makeFields(new String[] {
-            makeField(FIELD_SITE_ID, attrType(TYPE_STRING),
+            makeField(FIELD_SITE_ID, attrType(RecordField.TYPE_STRING),
                       attrValue(siteId.trim())),
             makeField(FIELD_LATITUDE, attrValue(lat)),
             makeField(FIELD_LONGITUDE, attrValue(lon)),
             makeField(FIELD_YEAR, ""),
-            makeField(FIELD_DATE, attrType(TYPE_DATE),
+            makeField(FIELD_DATE, attrType(RecordField.TYPE_DATE),
                       attrFormat("dd-MMM-yyyy")),
             makeField("Temperature_0_Meter", tempAttrs),
             makeField("Temperature_025_Meter", tempAttrs),

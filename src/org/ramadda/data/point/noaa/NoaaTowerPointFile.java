@@ -122,12 +122,12 @@ public class NoaaTowerPointFile extends NoaaPointFile {
         setFileMetadata(new Object[] { siteId, });
 
         putFields(new String[] {
-            makeField(FIELD_SITE_ID, attrType(TYPE_STRING)),
+            makeField(FIELD_SITE_ID, attrType(RecordField.TYPE_STRING)),
             makeField(FIELD_YEAR, ""), makeField(FIELD_MONTH, ""),
             makeField(FIELD_DAY, ""),
-            makeField(FIELD_HOUR, attrType(TYPE_STRING)),
-            makeField(FIELD_MINUTE, attrType(TYPE_STRING)),
-            makeField(FIELD_SECOND, attrType(TYPE_STRING)),
+            makeField(FIELD_HOUR, attrType(RecordField.TYPE_STRING)),
+            makeField(FIELD_MINUTE, attrType(RecordField.TYPE_STRING)),
+            makeField(FIELD_SECOND, attrType(RecordField.TYPE_STRING)),
             makeField(FIELD_LATITUDE), makeField(FIELD_LONGITUDE),
             makeField(FIELD_INTAKE_HEIGHT),
             makeField(parameter, attrChartable(), attrMissing(MISSING1)),
@@ -138,7 +138,7 @@ public class NoaaTowerPointFile extends NoaaPointFile {
                       attrMissing(MISSING2)),
             makeField("scale_uncertainty", attrChartable(),
                       attrMissing(MISSING2)),
-            makeField(FIELD_QC_FLAG, attrType(TYPE_STRING)),
+            makeField(FIELD_QC_FLAG, attrType(RecordField.TYPE_STRING)),
         });
         setYMDHMSIndices(new int[] {
             IDX_YEAR, IDX_MONTH, IDX_DAY, IDX_HOUR, IDX_MINUTE, IDX_SECOND

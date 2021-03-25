@@ -223,10 +223,10 @@ public class SocrataSeriesTypeHandler extends PointTypeHandler {
                     //                    sb.append(file.attr("index", index.toString()));
 
                     if (type.equals("text")) {
-                        sb.append(file.attrType(file.TYPE_STRING));
+                        sb.append(file.attrType(RecordField.TYPE_STRING));
                     } else if (type.equals("location")) {
                         //For now
-                        sb.append(file.attrType(file.TYPE_STRING));
+                        sb.append(file.attrType(RecordField.TYPE_STRING));
                     } else if (type.equals("number")) {
                         sb.append(file.attrChartable());
                     } else if (type.equals("percent")) {
@@ -235,11 +235,11 @@ public class SocrataSeriesTypeHandler extends PointTypeHandler {
                     } else if (type.equals("money")) {
                         sb.append(file.attrChartable());
                     } else if (type.equals("calendar_date")) {
-                        sb.append(file.attrType(file.TYPE_DATE));
+                        sb.append(file.attrType(RecordField.TYPE_DATE));
                         sb.append(file.attrFormat("yyyy-MM-dd'T'HH:mm:ss"));
                         //                        sb.append(file.attrFormat("MM/dd/yyyy"));
                     } else {
-                        sb.append(file.attrType(file.TYPE_STRING));
+                        sb.append(file.attrType(RecordField.TYPE_STRING));
                     }
                     sb.append("]");
                     fieldList.add(sb.toString());

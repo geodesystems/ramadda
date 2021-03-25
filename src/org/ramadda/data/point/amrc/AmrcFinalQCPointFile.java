@@ -157,14 +157,14 @@ public class AmrcFinalQCPointFile extends CsvFile {
         //We define that there are fields but they have a fixed value derived from
         //a regexp pattern applied to the header 
         putFields(new String[] {
-            makeField(FIELD_SITE_ID, attrType(TYPE_STRING),
+            makeField(FIELD_SITE_ID, attrType(RecordField.TYPE_STRING),
                       attrPattern("ID:\\s(.*)ARGOS:")),
             makeField(FIELD_LATITUDE, attrPattern("Lat:\\s(.*)Lon:")),
             makeField(FIELD_LONGITUDE, attrPattern("Lon:\\s(.*)Elev:")),
             makeField(FIELD_ELEVATION, attrPattern("Elev:(.*)")),
             makeField(FIELD_YEAR, ""), makeField(FIELD_JULIAN_DAY, ""),
             makeField(FIELD_MONTH, ""), makeField(FIELD_DAY, ""),
-            makeField(FIELD_TIME, attrType(TYPE_STRING)),
+            makeField(FIELD_TIME, attrType(RecordField.TYPE_STRING)),
             makeField(FIELD_TEMPERATURE, attrUnit(UNIT_CELSIUS),
                       attrChartable(), attrMissing(MISSING)),
             makeField(FIELD_PRESSURE, attrUnit(UNIT_HPA), attrChartable(),

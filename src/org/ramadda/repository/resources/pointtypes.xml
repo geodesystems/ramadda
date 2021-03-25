@@ -49,13 +49,25 @@
   </type>
 
 
-  <type name="point_text"  description="Text Data"  super="type_point" priority="1"
-	help="A structured text data file"
+  <type name="point_text_csv"  description="CSV Data"  super="type_point" priority="1"
+	help="A structured CSV data file"> 
+     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+ <property name="record.properties">
+<![CDATA[
+firstLineDefinesFields=true
+commentLineStart=#
+]]>
+     </property>
+  </type>
+
+
+  <type name="point_text"  description="RAMADDA CSV Data"  super="type_point" priority="1"
+	help="RAMADDA's CSV format"
 	> 
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
   </type>
 
-
+  
 
   <type name="type_point_fetch"  description="Fetch Points" super="type_point" foruser="true" handler="org.ramadda.data.services.FetchPointTypeHandler"
 	priority="4"	

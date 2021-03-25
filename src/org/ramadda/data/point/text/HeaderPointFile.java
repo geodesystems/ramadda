@@ -89,13 +89,13 @@ public class HeaderPointFile extends CsvFile {
 
             String type = Misc.getProperty(props, fieldId + ".type",
                                            "double");
-            if (type.equals(TYPE_DATE)) {
-                fields.add(makeField(fieldId, attrType(TYPE_DATE),
+            if (type.equals(RecordField.TYPE_DATE)) {
+                fields.add(makeField(fieldId, attrType(RecordField.TYPE_DATE),
                                      attrFormat(Misc.getProperty(props,
                                          fieldId + ".format",
                                          "yyyyMMdd")), attrLabel(label)));
-            } else if (type.equals(TYPE_STRING)) {
-                fields.add(makeField(fieldId, attrType(TYPE_STRING),
+            } else if (type.equals(RecordField.TYPE_STRING)) {
+                fields.add(makeField(fieldId, attrType(RecordField.TYPE_STRING),
                                      attrLabel(label)));
             } else {
                 boolean chartable = Misc.getProperty(props,

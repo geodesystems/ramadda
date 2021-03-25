@@ -54,12 +54,6 @@ public abstract class TextFile extends PointFile {
 
 
     /** _more_ */
-    public static final String TYPE_STRING = "string";
-
-    /** _more_ */
-    public static final String TYPE_DATE = "date";
-
-    /** _more_ */
     public static final String DFLT_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm Z";
 
     /** _more_ */
@@ -440,14 +434,18 @@ public abstract class TextFile extends PointFile {
                 skipCnt--;
             }
 
-
             if (line != null) {
-                List<String> toks    = Utils.tokenizeColumns(line, ",");
+		String delim =  getProperty(PROP_DELIMITER,",");
+                String sampleLine = visitInfo.getRecordIO().readLine();
+		visitInfo.getRecordIO().putBackLine(sampleLine);
+                List<String> toks    = Utils.tokenizeColumns(line, delim);
+                List<String> sampleToks    = Utils.tokenizeColumns(sampleLine, delim);
                 List<String> cleaned = new ArrayList<String>();
                 //                System.err.println ("\nline:" + line);
                 boolean didDate = false;
                 for (int tokIdx = 0; tokIdx < toks.size(); tokIdx++) {
                     String tok = toks.get(tokIdx);
+                    String sample = sampleToks.get(tokIdx).toLowerCase();		    
                     tok = tok.replaceAll("\"", "");
                     String        name  = tok;
                     String        id    = Utils.makeID(tok);
@@ -458,6 +456,18 @@ public abstract class TextFile extends PointFile {
                         id.matches(
                             "^(timestamp|week_ended|date|month|year|as_of|end_date|per_end_date|obs_date|quarter|time)$");
                     //                    System.err.println("id:" + id +" isDate:" + isDate);
+		    if(!isDate) {
+			isDate = Utils.isDate(sample);
+		    }
+		    
+		    if(!isDate) {
+			if(Utils.isNumber(sample)) {
+                            attrs.append(attrType(RecordField.TYPE_DOUBLE));
+			} else {
+			    attrs.append(attrType(RecordField.TYPE_STRING));
+			}
+		    }
+
                     if (isDate) {
                         if ( !didDate) {
                             String format = (String) getProperty(id
@@ -472,11 +482,11 @@ public abstract class TextFile extends PointFile {
                                     format = "yyyy-MM-dd";
                                 }
                             }
-                            attrs.append(attrType(TYPE_DATE));
+                            attrs.append(attrType(RecordField.TYPE_DATE));
                             attrs.append(attrFormat(format));
                             didDate = true;
                         } else {
-                            attrs.append(attrType(TYPE_STRING));
+                            attrs.append(attrType(RecordField.TYPE_STRING));
                         }
                     } else {
                         attrs.append(attrChartable());
@@ -488,7 +498,6 @@ public abstract class TextFile extends PointFile {
                     cleaned.add(id + "[" + attrs + "]");
                 }
                 String f = makeFields(cleaned);
-                //              System.err.println("fields:" + f);
                 putProperty(PROP_FIELDS, f);
             }
         } else if (headerDelimiter != null) {

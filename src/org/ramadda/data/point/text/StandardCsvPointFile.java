@@ -75,8 +75,24 @@ public abstract class StandardCsvPointFile extends TextFile {
      */
     public StandardCsvPointFile(String filename, Hashtable properties)
             throws IOException {
-        super(filename, properties);
+	//        super(filename, properties);
+	System.err.println("STD");
     }
+
+
+
+    /**
+     * _more_
+     *
+     * @param filename _more_
+     * @param context _more_
+     * @param properties _more_
+     */
+    public StandardCsvPointFile(String filename, RecordFileContext context,
+                   Hashtable properties) {
+        super(filename, context, properties);
+    }
+    
 
 
     /**

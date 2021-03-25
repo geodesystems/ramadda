@@ -124,28 +124,28 @@ public class NoaaCarbonPointFile extends NoaaPointFile {
             setYMDHMSIndices(new int[] { IDX_YEAR, IDX_MONTH, IDX_DAY,
                                          IDX_HOUR });
             putFields(new String[] {
-                makeField(FIELD_SITE_ID, attrType(TYPE_STRING)),
+                makeField(FIELD_SITE_ID, attrType(RecordField.TYPE_STRING)),
                 makeField(FIELD_LATITUDE,
                           attrValue("" + station.getLatitude())),
                 makeField(FIELD_LONGITUDE,
                           attrValue("" + station.getLongitude())),
                 makeField(FIELD_YEAR, ""), makeField(FIELD_MONTH, ""),
                 makeField(FIELD_DAY, ""),
-                makeField(FIELD_HOUR, attrType(TYPE_STRING)),
+                makeField(FIELD_HOUR, attrType(RecordField.TYPE_STRING)),
                 makeField(parameter, attrSortOrder(10), attrChartable(),
                           attrMissing(-999.990)),
                 makeField(FIELD_STANDARD_DEVIATION, attrChartable(),
                           attrMissing(-99.990)),
                 makeField(FIELD_NUMBER_OF_MEASUREMENTS, attrSortOrder(5),
                           attrChartable()),
-                makeField(FIELD_QC_FLAG, attrType(TYPE_STRING)),
+                makeField(FIELD_QC_FLAG, attrType(RecordField.TYPE_STRING)),
                 makeField(FIELD_INTAKE_HEIGHT),
-                makeField(FIELD_INSTRUMENT, attrType(TYPE_STRING)),
+                makeField(FIELD_INSTRUMENT, attrType(RecordField.TYPE_STRING)),
             });
         } else if (type == TYPE_DAILY) {
             setYMDHMSIndices(new int[] { IDX_YEAR, IDX_MONTH, IDX_DAY });
             putFields(new String[] {
-                makeField(FIELD_SITE_ID, attrType(TYPE_STRING)),
+                makeField(FIELD_SITE_ID, attrType(RecordField.TYPE_STRING)),
                 makeField(FIELD_LATITUDE,
                           attrValue("" + station.getLatitude())),
                 makeField(FIELD_LONGITUDE,
@@ -158,12 +158,12 @@ public class NoaaCarbonPointFile extends NoaaPointFile {
                           attrSortOrder(4), attrMissing(-99.990)),
                 makeField(FIELD_NUMBER_OF_MEASUREMENTS, attrChartable(),
                           attrSortOrder(3)),
-                makeField(FIELD_QC_FLAG, attrType(TYPE_STRING)),
+                makeField(FIELD_QC_FLAG, attrType(RecordField.TYPE_STRING)),
             });
         } else {
             setYMDHMSIndices(new int[] { IDX_YEAR, IDX_MONTH });
             putFields(new String[] {
-                makeField(FIELD_SITE_ID, attrType(TYPE_STRING)),
+                makeField(FIELD_SITE_ID, attrType(RecordField.TYPE_STRING)),
                 makeField(FIELD_LATITUDE,
                           attrValue("" + station.getLatitude())),
                 makeField(FIELD_LONGITUDE,
@@ -173,7 +173,7 @@ public class NoaaCarbonPointFile extends NoaaPointFile {
                 makeField(FIELD_STANDARD_DEVIATION, attrChartable(),
                           attrMissing(-99.990)),
                 makeField(FIELD_NUMBER_OF_MEASUREMENTS, attrChartable()),
-                makeField(FIELD_QC_FLAG, attrType(TYPE_STRING)),
+                makeField(FIELD_QC_FLAG, attrType(RecordField.TYPE_STRING)),
             });
         }
 

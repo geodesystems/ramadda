@@ -203,16 +203,16 @@ public class GgpPointFile extends CsvFile {
 
         putFields(new String[] {
             //Embed the values for site, lat, lon and elevation
-            makeField(FIELD_STATION, attrType(TYPE_STRING),
+            makeField(FIELD_STATION, attrType(RecordField.TYPE_STRING),
                       attrValue(station.trim())),
             makeField(FIELD_LATITUDE, attrValue(latitude)),
             makeField(FIELD_LONGITUDE, attrValue(longitude)),
             makeField(FIELD_ELEVATION, attrValue(elevation)),
             makeField(FIELD_DATE,
-                      attrType(TYPE_STRING) + attr("isdate", "true")
+                      attrType(RecordField.TYPE_STRING) + attr("isdate", "true")
                       + attrWidth(8)),
             makeField(FIELD_TIME,
-                      attrType(TYPE_STRING) + attr("istime", "true")
+                      attrType(RecordField.TYPE_STRING) + attr("istime", "true")
                       + attrWidth(7)),
             //TODO: What is the unit for gravity and pressure
             makeField("gravity", attrUnit(gravityUnit), attrChartable(),

@@ -157,12 +157,12 @@ public class SwitchyardPointFile extends SingleSiteTextFile {
             boolean addPotentialTemp = year == 2005;
             String  attrs            = attrChartable() + attrSearchable();
             putFields(new String[] {
-                makeField(FIELD_SITE_ID, attrType(TYPE_STRING),
+                makeField(FIELD_SITE_ID, attrType(RecordField.TYPE_STRING),
                           attrValue(siteId.trim())),
-                makeField("Cast", attrValue(cast), attrType(TYPE_STRING)),
+                makeField("Cast", attrValue(cast), attrType(RecordField.TYPE_STRING)),
                 makeField(FIELD_LATITUDE, attrValue(lat)),
                 makeField(FIELD_LONGITUDE, attrValue(lon)),
-                makeField(FIELD_DATE, attrType(TYPE_DATE), attrValue(dttm),
+                makeField(FIELD_DATE, attrType(RecordField.TYPE_DATE), attrValue(dttm),
                           attrFormat("yyyy-MM-dd HH:mm")),
                 makeField(FIELD_DEPTH, attrs + attrUnit(UNIT_METERS)),
                 makeField(FIELD_PRESSURE, attrs + attrUnit("dbar")),

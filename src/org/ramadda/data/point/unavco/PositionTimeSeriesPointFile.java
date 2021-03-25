@@ -147,7 +147,7 @@ public class PositionTimeSeriesPointFile extends CsvFile {
 
 
         putFields(new String[] {
-            makeField(FIELD_SITE_ID, attrType(TYPE_STRING),
+            makeField(FIELD_SITE_ID, attrType(RecordField.TYPE_STRING),
                       attrValue(fourCharId.trim())),
             makeField(FIELD_LATITUDE, attrValue(lat)),
             makeField(FIELD_LONGITUDE, attrValue(lon)),

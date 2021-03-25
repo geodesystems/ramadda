@@ -395,13 +395,11 @@ public class CsvFile extends TextFile {
                 if (failureOk) {
                     return new ArrayList<RecordField>();
                 }
-
                 throw new IllegalArgumentException("Properties must have a "
                         + PROP_FIELDS + " value");
             }
             fieldString = "";
         }
-
         return doMakeFields(fieldString);
     }
 

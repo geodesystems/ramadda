@@ -693,10 +693,10 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         }
         Class c = Misc.findClass(className);
         Constructor ctor = Misc.findConstructor(c, new Class[] { String.class,
-                Hashtable.class });
+								 Hashtable.class });
         if (ctor != null) {
             return (RecordFile) ctor.newInstance(new Object[] { path,
-                    properties });
+								properties });
         }
         ctor = Misc.findConstructor(c, new Class[] { String.class });
 

@@ -133,7 +133,7 @@ public class CnvPointFile extends CsvFile {
         if (time != null) {
             fields.append(",");
             fields.append(makeField(FIELD_TIME, attrValue(time),
-                                    attrType(TYPE_DATE)));
+                                    attrType(RecordField.TYPE_DATE)));
         }
 
 

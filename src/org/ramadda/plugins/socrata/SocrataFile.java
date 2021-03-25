@@ -116,7 +116,7 @@ public class SocrataFile extends CsvFile {
                     sb.append("[");
                     sb.append(attrLabel(name));
                     if (type.equals("text")) {
-                        sb.append(attrType(TYPE_STRING));
+                        sb.append(attrType(RecordField.TYPE_STRING));
                     } else if (type.equals("number")) {
                         sb.append(attrChartable());
                     } else if (type.equals("percent")) {
@@ -125,10 +125,10 @@ public class SocrataFile extends CsvFile {
                     } else if (type.equals("money")) {
                         sb.append(attrChartable());
                     } else if (type.equals("calendar_date")) {
-                        sb.append(attrType(TYPE_DATE));
+                        sb.append(attrType(RecordField.TYPE_DATE));
                         sb.append(attrFormat("yyyy-MM-dd'T'HH:mm:ss"));
                     } else {
-                        sb.append(attrType(TYPE_STRING));
+                        sb.append(attrType(RecordField.TYPE_STRING));
                     }
                     sb.append("]");
                 }

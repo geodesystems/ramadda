@@ -123,10 +123,10 @@ public class AmerifluxLevel2PointFile extends CsvFile {
 
         StringBuffer fields = new StringBuffer(makeFields(new String[] {
                                   makeField(FIELD_SITE_ID,
-                                            attrType(TYPE_STRING),
+                                            attrType(RecordField.TYPE_STRING),
                                             attrValue(siteId.trim())),
                                   makeField("Ecosystem_Type",
-                                            attrType(TYPE_STRING),
+                                            attrType(RecordField.TYPE_STRING),
                                             attrValue(ecosystemType)),
                                   makeField(FIELD_LATITUDE, attrValue(lat)),
                                   makeField(FIELD_LONGITUDE, attrValue(lon)),

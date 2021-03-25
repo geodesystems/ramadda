@@ -114,7 +114,7 @@ OutCard = tablename in the program on the data logger where the data was collect
 
 
         String fields = makeFields(new String[] {
-                            makeField(FIELD_SITE_ID, attrType(TYPE_STRING),
+                            makeField(FIELD_SITE_ID, attrType(RecordField.TYPE_STRING),
                                       attrValue(siteId.trim())),
                             makeField(FIELD_LATITUDE,
                                       attrValue(station.getLatitude())),
