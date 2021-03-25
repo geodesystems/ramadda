@@ -1336,7 +1336,6 @@ public class EntryManager extends RepositoryManager {
 
             FormInfo formInfo = new FormInfo(formId);
             typeHandler.addToEntryForm(request, sb, group, entry, formInfo);
-
             formInfo.addToForm(sb);
             HU.row(sb, HU.colspan(buttons, 2));
 

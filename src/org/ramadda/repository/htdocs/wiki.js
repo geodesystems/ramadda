@@ -515,7 +515,6 @@ WikiEditor.prototype = {
     clearMessage: function(msg) {
 	this.jq(ID_WIKI_MESSAGE).css("display","none");
     },
-
     getEditor:function() {
 	return this.editor;
     },    

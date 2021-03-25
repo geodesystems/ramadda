@@ -21,6 +21,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
+import org.ramadda.util.FormInfo;
 import org.ramadda.util.sql.SqlUtil;
 
 
@@ -1212,7 +1213,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
      *
      * @throws Exception _more_
      */
-    public String[] getForm(MetadataHandler handler, Request request,
+    public String[] getForm(MetadataHandler handler, Request request, FormInfo formInfo,
                             Entry entry, Metadata metadata, String suffix,
                             boolean forEdit)
             throws Exception {
@@ -1254,7 +1255,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
             }
             String elementLbl = msgLabel(element.getLabel());
             String widget =
-                element.getForm(request, entry, metadata, suffix,
+                element.getForm(request, entry, formInfo,metadata, suffix,
                                 metadata.getAttr(element.getIndex()),
                                 forEdit);
             if ((widget == null) || (widget.length() == 0)) {}

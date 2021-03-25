@@ -23,6 +23,7 @@ import org.ramadda.repository.map.MapManager;
 import org.ramadda.repository.map.MapInfo;
 import org.ramadda.util.ColorTable;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.FormInfo;
 import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
@@ -838,7 +839,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
      *
      * @throws Exception _more_
      */
-    public String getForm(Request request, Entry entry, Metadata metadata,
+    public String getForm(Request request, Entry entry, FormInfo formInfo, Metadata metadata,
                           String suffix, String value, boolean forEdit)
             throws Exception {
 
@@ -853,13 +854,18 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
         if (isString(dataType)) {
             if (dataType.equals(DATATYPE_WIKI)) {
+		/*
                 String buttons =
                     getRepository().getWikiManager().makeWikiEditBar(request,
                         entry, arg) + HtmlUtils.br();
-
                 return buttons
                        + HtmlUtils.textArea(arg, value, rows, columns,
                                             HtmlUtils.id(arg));
+		*/
+		StringBuilder sb = new StringBuilder();
+		entry.getTypeHandler().addWikiEditor(request, entry, sb, formInfo,arg,value,null,!forEdit,25000);
+		return sb.toString();
+		//                      wikiText, null, false, 256000);
             } else {
                 if (rows > 1) {
                     return HtmlUtils.textArea(arg, value, rows, columns);
@@ -997,8 +1003,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                     if (subValue == null) {
                         subValue = "";
                     }
-                    String widget = element.getForm(request, entry, metadata,
-                                        subArg, subValue, forEdit);
+                    String widget = element.getForm(request, entry, formInfo,metadata,
+						    subArg, subValue, forEdit);
                     if ((widget == null) || (widget.length() == 0)) {
                         continue;
                     }

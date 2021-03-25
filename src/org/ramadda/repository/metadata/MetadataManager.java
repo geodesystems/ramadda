@@ -22,6 +22,7 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
 import org.ramadda.repository.util.FileWriter;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.FormInfo;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.Json;
 import org.ramadda.util.Utils;
@@ -1725,7 +1726,11 @@ public class MetadataManager extends RepositoryManager {
             makeAddList(request, entry, sb);
         } else {
             sb.append("\n");
-            request.uploadFormWithAuthToken(sb, URL_METADATA_CHANGE);
+	    String formId = HU.getUniqueId("metadata_");
+            FormInfo formInfo = new FormInfo(formId);
+            request.uploadFormWithAuthToken(sb, URL_METADATA_CHANGE,
+					    HU.attr("name", "metadataform") + HU.id(formId));
+
             sb.append("\n");
             sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
             sb.append("\n");
@@ -1747,7 +1752,7 @@ public class MetadataManager extends RepositoryManager {
                 if (metadataHandler == null) {
                     continue;
                 }
-                String[] html = metadataHandler.getForm(request, entry,
+                String[] html = metadataHandler.getForm(request, formInfo, entry,
                                     metadata, true);
                 if (html == null) {
                     continue;
@@ -1791,6 +1796,7 @@ public class MetadataManager extends RepositoryManager {
             sb.append(HtmlUtils.endInset());
             sb.append(buttons);
             HtmlUtils.comment(sb, "Metadata form end");
+            formInfo.addToForm(sb);
             sb.append(HtmlUtils.formClose());
             sb.append("\n");
         }

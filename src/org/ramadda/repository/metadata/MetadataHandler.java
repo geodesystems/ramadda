@@ -19,7 +19,9 @@ package org.ramadda.repository.metadata;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.util.FileWriter;
+
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.FormInfo;
 import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
@@ -649,7 +651,7 @@ public class MetadataHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public String[] getForm(Request request, Entry entry, Metadata metadata,
+    public String[] getForm(Request request, FormInfo formInfo, Entry entry, Metadata metadata,
                             boolean forEdit)
             throws Exception {
         MetadataType type = getType(metadata.getType());
@@ -661,7 +663,7 @@ public class MetadataHandler extends RepositoryManager {
             suffix = "_" + metadata.getId();
         }
 
-        return type.getForm(this, request, entry, metadata, suffix, forEdit);
+        return type.getForm(this, request, formInfo,entry, metadata, suffix, forEdit);
     }
 
 
@@ -913,7 +915,7 @@ public class MetadataHandler extends RepositoryManager {
         }
         Metadata metadata = new Metadata(type);
         metadata.setEntry(entry);
-        String[] html = getForm(request, entry, metadata, false);
+        String[] html = getForm(request,null, entry, metadata, false);
         if (html == null) {
             return;
         }

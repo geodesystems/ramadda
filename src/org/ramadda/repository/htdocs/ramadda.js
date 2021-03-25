@@ -314,7 +314,7 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails,args) {
         let pos = entryRow.getRow().offset();
         let eWidth = entryRow.getRow().outerWidth();
         let eHeight = entryRow.getRow().outerHeight();
-        let mWidth = HtmlUtils.getTooltip.outerWidth();
+        let mWidth = HtmlUtils.getTooltip().outerWidth();
         let wWidth = $(window).width();
 
         let x = entryRow.lastClick;

@@ -2591,7 +2591,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                     if (isWiki) {
                         StringBuilder tmp = new StringBuilder();
                         typeHandler.addWikiEditor(request, entry, tmp,
-                                formInfo, urlArg + "_editor", urlArg, value,
+                                formInfo,  urlArg, value,
                                 null, false, size);
                         widget = tmp.toString();
                     } else {
