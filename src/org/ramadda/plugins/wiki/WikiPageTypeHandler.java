@@ -462,7 +462,7 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
 
 	StringBuilder tmpSB  = new StringBuilder();
         addWikiEditor(request, entry, tmpSB, formInfo,  ARG_WIKI_TEXTAREA,
-                      wikiText, null, false, 256000);
+                      wikiText, null, false, 256000, true);
 	sb.append(formEntryTop(request,
 			       getFormLabel(entry, ARG_WIKI_TEXTAREA,
 					    "Wiki Text"), tmpSB.toString()));

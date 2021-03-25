@@ -4496,7 +4496,7 @@ public class TypeHandler extends RepositoryManager {
                     if (isWiki) {
                         addWikiEditor(request, entry, sb, formInfo,
 				      ARG_DESCRIPTION, desc, "Description",
-                                      false, Entry.MAX_DESCRIPTION_LENGTH);
+                                      false, Entry.MAX_DESCRIPTION_LENGTH,true);
                     } else {
                         desc = desc.trim();
                         boolean isTextWiki = isWikiText(desc);
@@ -4517,10 +4517,16 @@ public class TypeHandler extends RepositoryManager {
 							HtmlUtils.id(cbxId)) +   cbxLabel;
 			cbx = HU.span(cbx, HtmlUtils.title("Wikify text"));
 
-
+			/*
+                        HtmlUtils.open(tmpSB, "div",
+                                       HtmlUtils.attrs("style", isTextWiki
+                                ? ""
+                                : "display:none;", "id", wikiId + "_block"));
+			*/
                         String wikiId = addWikiEditor(request, entry, tmpSB, formInfo,
 						      ARG_WIKITEXT, desc, null,
-						      false, Entry.MAX_DESCRIPTION_LENGTH);
+						      false, Entry.MAX_DESCRIPTION_LENGTH,isTextWiki);
+			//                        HtmlUtils.close(tmpSB, "div");
                         HtmlUtils.open(tmpSB, "div",
                                        HtmlUtils.attrs("style", !isTextWiki
                                 ? ""
@@ -4534,6 +4540,7 @@ public class TypeHandler extends RepositoryManager {
                                          + HtmlUtils.squote(cbxId) + ");");
 
                         HtmlUtils.close(tmpSB, "div");
+			
                         sb.append(formEntryTop(request,
                                 getFormLabel(entry, ARG_DESCRIPTION,
                                              "Description:<br>"
@@ -4920,7 +4927,7 @@ public class TypeHandler extends RepositoryManager {
             throws Exception {
         String dummyId = Utils.getGuid();
         addWikiEditor(request, entry, sb, null, dummyId, text, null,
-                      true, 0);
+                      true, 0,true);
     }
 
 
@@ -4943,9 +4950,11 @@ public class TypeHandler extends RepositoryManager {
     public String addWikiEditor(Request request, Entry entry, Appendable sb,
 				FormInfo formInfo, 
 				String hiddenId, String text, String label,
-				boolean readOnly, int length)
+				boolean readOnly, int length,boolean visible)
             throws Exception {
 
+
+	//	System.err.println("visible:" + visible  +" readOnly:" + readOnly);
 	String editorId = hiddenId+"_editor";
         if (text.startsWith(WIKI_PREFIX)) {
             if ( !isDescriptionWiki(entry)) {
@@ -4963,7 +4972,9 @@ public class TypeHandler extends RepositoryManager {
                 sb.append(HtmlUtils.b(msgLabel(label)));
                 sb.append(HtmlUtils.br());
             }
-	    HtmlUtils.open(sb, "div",   HtmlUtils.attrs("class", "wiki-editor", "id", editorId +"_block"));
+
+	    HtmlUtils.open(sb, "div",
+			   HtmlUtils.attrs("class", "wiki-editor", "style",(visible ?  "display:block;":"display:none;"), "id", editorId + "_block"));	    
             sb.append(buttons);
         }
         if ((length > 0) && (formInfo != null)) {

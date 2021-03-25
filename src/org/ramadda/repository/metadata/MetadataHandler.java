@@ -915,13 +915,16 @@ public class MetadataHandler extends RepositoryManager {
         }
         Metadata metadata = new Metadata(type);
         metadata.setEntry(entry);
-        String[] html = getForm(request,null, entry, metadata, false);
+	String formId = HU.getUniqueId("metadata_");
+	FormInfo formInfo = new FormInfo(formId);
+        String[] html = getForm(request,formInfo, entry, metadata, false);
         if (html == null) {
             return;
         }
         if (entry != null) {
             request.uploadFormWithAuthToken(
-                sb, getMetadataManager().URL_METADATA_ADD);
+					    sb, getMetadataManager().URL_METADATA_ADD,
+					    HU.attr("name", "metadataform") + HU.id(formId));
             sb.append("\n");
             sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
             sb.append("\n");
@@ -943,6 +946,7 @@ public class MetadataHandler extends RepositoryManager {
         sb.append("\n");
 
         if (entry != null) {
+            formInfo.addToForm(sb);
             sb.append(HtmlUtils.formClose());
             sb.append("\n");
         }

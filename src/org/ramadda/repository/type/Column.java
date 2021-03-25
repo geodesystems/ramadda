@@ -2592,7 +2592,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                         StringBuilder tmp = new StringBuilder();
                         typeHandler.addWikiEditor(request, entry, tmp,
                                 formInfo,  urlArg, value,
-                                null, false, size);
+						  null, false, size,true);
                         widget = tmp.toString();
                     } else {
                         int areaRows = rows;

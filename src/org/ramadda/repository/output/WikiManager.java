@@ -181,6 +181,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag(WIKI_TAG_COMMENTS),
                             new WikiTag(WIKI_TAG_TAGCLOUD, null, "#type", "", "threshold","0"), 
                             new WikiTag(WIKI_TAG_PROPERTIES, null, "message","","metadata.types","",ATTR_METADATA_INCLUDE_TITLE,"true","separator","html"),
+			    new WikiTag(WIKI_TAG_WIKITEXT,null,"showToolbar","false"),
                             new WikiTag(WIKI_TAG_BREADCRUMBS),
                             new WikiTag(WIKI_TAG_TOOLS),
                             new WikiTag(WIKI_TAG_TOOLBAR),
@@ -2877,15 +2878,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_WIKITEXT)) {
             StringBuilder editor = new StringBuilder();
-
             boolean showToolbar = getProperty(wikiUtil, props, "showToolbar",
-                                      false);
+					      false);
 
             String text = entry.getTypeHandler().getTextForWiki(request,
                               entry, props);
             entry.getTypeHandler().addWikiEditor(request, entry, editor,
-                    null, HU.getUniqueId(""), text, null, !showToolbar,
-                    0);
+						 null, HU.getUniqueId(""), text, null, !showToolbar,
+						 0,true);
 
             return editor.toString();
         } else if (theTag.equals(WIKI_TAG_RECENT)) {

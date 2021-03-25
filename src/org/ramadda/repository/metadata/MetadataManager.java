@@ -1753,7 +1753,7 @@ public class MetadataManager extends RepositoryManager {
                     continue;
                 }
                 String[] html = metadataHandler.getForm(request, formInfo, entry,
-                                    metadata, true);
+							metadata, true);
                 if (html == null) {
                     continue;
                 }

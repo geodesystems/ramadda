@@ -695,6 +695,9 @@ WikiEditor.prototype = {
 	return null;
     },
     handleSubmit:function() {
+	if($("#" + this.hidden).length==0) {
+	    console.log("WikiEdit.handleSubmit: no hidden value");
+	}
 	$("#" + this.hidden).val(this.getEditor().getValue());
     },
     doPreview: async  function(entry,  inPlace) {

@@ -843,6 +843,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                           String suffix, String value, boolean forEdit)
             throws Exception {
 
+
+
         if (dataType.equals(DATATYPE_SKIP)) {
             return "";
         }
@@ -863,7 +865,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                                             HtmlUtils.id(arg));
 		*/
 		StringBuilder sb = new StringBuilder();
-		entry.getTypeHandler().addWikiEditor(request, entry, sb, formInfo,arg,value,null,!forEdit,25000);
+
+		entry.getTypeHandler().addWikiEditor(request, entry, sb, formInfo,arg,value,null,false,25000,true);
 		return sb.toString();
 		//                      wikiText, null, false, 256000);
             } else {
