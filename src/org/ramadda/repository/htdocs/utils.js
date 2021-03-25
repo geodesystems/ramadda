@@ -1561,9 +1561,12 @@ var Utils =  {
 
 	//Headers
 	let headings = $(parent + '.ramadda-linkable');
+
 	headings.mouseenter(function(){
 	    let id = $(this).attr("id");
 	    if(!id) return;
+	    console.log("h:" + 	    $("#" + id +"-hover").length);
+
 	    $("#" + id +"-hover").html(HtmlUtils.getIconImage("fa-link",null,[STYLE,"font-size:10pt;"]));
 	    $("#" + id +"-hover").show();
 	});
@@ -3673,10 +3676,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    let my,at;
 	    if(opts.align=="right") {
 		my = "right top";
-		at = "right bottom";
+		at = "right top";
 	    } else {
 		my = "left top";
-		at = "left bottom";
+		at = "right+5 top";
 	    }
 	    popup.show();
             popup.position({
@@ -3689,6 +3692,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	});
     },
 
+
+    navLinkClicked: function(id,offset) {
+	let links =  	$(".ramadda-nav-left-link");	
+	links.removeClass("ramadda-nav-link-active");
+	$("#" + id+"_href").parent().addClass("ramadda-nav-link-active");
+	HtmlUtils.scrollToAnchor(id,offset);
+    },
     initNavLinks: function(args) {
 	let opts = {
 	    leftOpen:true,
