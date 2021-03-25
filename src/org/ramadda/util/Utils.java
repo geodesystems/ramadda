@@ -4332,7 +4332,16 @@ public class Utils extends IO {
         void accept(T t, U u, V v);
     }
 
-
+    public interface QuadConsumer < T, U, V, W > {
+	/**
+         * _more_
+         *
+         * @param t _more_
+         * @param u _more_
+         * @param v _more_
+         */
+	void		accept    (T t, U u, V v, W w);
+    }
 
 
 }
