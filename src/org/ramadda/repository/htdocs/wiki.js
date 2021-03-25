@@ -377,7 +377,7 @@ let wikiAttributes = {
 	{p:'tag',ex:'card'},
 	{p:'inner-height',ex:'100'},
 	{p:'columns',ex:'3'},
-	{p:'includeIcon',ex:'true'},
+	{p:'showIcon',ex:'true'},
 	{p:'weights',ex:''},
 	{p:'showSnippet',ex:'false'},
 	{p:'showSnippetHover',ex:'true'},
@@ -714,7 +714,6 @@ WikiEditor.prototype = {
 				SPACE2 +
 				HU.span([CLASS, "ramadda-clickable",ID,this.domId(ID_WIKI_PREVIEW_CLOSE)], HtmlUtils.getIconImage("fa-window-close",["title","Close Preview"])));
 
-
 	let wikiCallback = (html,status,xhr) =>{
 	    if(inPlace) {
 		$("#" + this.domId(ID_WIKI_PREVIEW_INNER)).html(html);
@@ -722,9 +721,13 @@ WikiEditor.prototype = {
 		html = HtmlUtils.div([ID,this.domId(ID_WIKI_PREVIEW_INNER), CLASS,"wiki-editor-preview-inner"], html);
 		html = bar + html;
 		let preview = $("#"+this.domId(ID_WIKI_PREVIEW));
-		preview.html(html).show();
+		try {
+		    preview.html(html).show();
+		} catch(err) {
+		    preview.html(HU.getErrorDialog("An error occurred:" + err));
+		}
 		preview.draggable();
-		preview.resizable({xcontainment: "parent",handles: 'ne, nw'});	    
+		preview.resizable({handles: 'ne, nw'});	    
 
 		$("#" + this.domId(ID_WIKI_PREVIEW_OPEN)).click(() =>{
 		    this.doPreview(entry,true);
@@ -734,15 +737,16 @@ WikiEditor.prototype = {
 		});		
 	    }
 	}
+	let wikiError = (html,status,xhr) =>{
+	    console.log("error");
+	};
 	let text = this.getValue();
 	let url = ramaddaBaseUrl + "/wikify";
 	$.post(url,{
 	    doImports:"false",
 	    entryid:entry,
-//	    text:encodeURIComponent(text)},
 	    text:text},
-	       wikiCallback
-	      );
+	       wikiCallback).fail(wikiError);
     },
 
     getAttributeBlocks:function(tagInfo, forPopup, finalCallback) {
