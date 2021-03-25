@@ -18,6 +18,7 @@ proc wiki::tagdef {t {attrs {}}} {
     } else {
         set block   "{{$t <i>$attrs</i>}}"
     }
+    set block [wiki::text $block]
     return "<a name=\"$t\"></a>Tag: <a href=\"#${t}\">$t</a><div class='ramadda-wiki-tag'>$block</div>"
 }
 
@@ -25,23 +26,28 @@ proc wiki::tagdefBlock {t {attrs {}}} {
     set block  ""
     set attrs [string trim $attrs]
     if {$attrs==""} {
-        set   block  [ht::pre "{{$t}}"]
+        set   block  [wiki::text  "{{$t}}"]
     } else {
-        set block   [ht::pre "{{$t $attrs}}"]
+        set block   [wiki::text  "{{$t $attrs}}"]
     }
+    set block [wiki::text $block]
     return "<a name=\"$t\"></a>$block"
 }
 
 proc wiki::tag {t {attrs {}}} {
     if {$attrs==""} {
-        return "{{$t}}"
+        return "{<noop>{$t}}"
     } else {
-        return "{{$t <i>$attrs</i>}}"
+        return "{<noop>{$t <i>$attrs</i>}}"
     }
 }
 
 proc wiki::text {t} {
-    return "<div style=\"margin:10px;\"><pre>$t</pre></div>"
+if {$::doXml} {
+    set t [string trim $t]
+    return "\n+pre class=wikitext\n$t\n-pre\n"
+}
+    return "<pre>$t</pre>"
 }
 
 proc class {c} {

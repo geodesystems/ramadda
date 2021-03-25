@@ -30,7 +30,7 @@
       <antcall target="plugin"/>
     </target>
 
-    <target name="xml">
+    <target name="xml" depends="docs">
       <echo message="Generating entries.xml"/>
       <property file="${basedir}/build.properties"/>
       <exec dir="${basedir}/src/org/ramadda/plugins/userguide/content" executable="${tclsh}">

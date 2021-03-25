@@ -10,23 +10,23 @@ There are a number of
 [ug::subheading {The Basics} basics]
 The charts and information displays follow the RAMADDA wiki tag format:
 
-[ht::pre {{{display_&lt;display type&gt;  &lt;name=value pairs&gt;}}}]
+[wiki::text {{{display_&lt;display type&gt;  &lt;name=value pairs&gt;}}}]
 
 Each of these tags support the following attributes:
-<pre>
+[wiki::text {
 layoutHere=&quot;true&quot;  
 showMenu=&quot;true&quot;  
 showTitle=&quot;true&quot;
 title=&quot;Title to display&quot;
-</pre>
+}]
 If [ug::attr layoutHere] is set to false then the component is laid out by the container group (below). 
 Otherwise it is displayed in place.
 <p>
 
 Some of the displays use a color table: 
-<pre>
+[wiki::text {
 colorTable=&quot;rainbow|grayscale|inversegrayscale|blues|blue_green_red|white_blue|blue_red&quot;
-</pre>
+}]
 The full set of color tables can be viewed at 
 <a href="${root}/colortables">here</a>.
 
@@ -38,17 +38,17 @@ Each field has  a certain type - double, integer, string,  date.
 Many of the displays below use a <i>fields</i> attribute to specify the fields that are displayed. 
 These are either the field ids of the point data or a 1-based index into the field list.
 
-<pre>
+[wiki::text {
 fields="active_voters,total_ballots"
 Or:
 fields="1,#2,#3"
-</pre>
+}]
 
 The field ids for a point data entry can be viewed with the  Metadata view, e.g. -  
 (<a href="https://geodesystems.com/repository/entry/show/Home/RAMADDA+Information/Site+Content/Development/Example+Charts?entryid=e8af924a-2194-4fd0-83be-92d006837c00&output=points.metadata">example</a>).
 
 
-[ht::pre {{<noop>{display_linechart fields="#5,#6,#7,#8,#9,#10" }}}]
+[wiki::text {{<noop>{display_linechart fields="#5,#6,#7,#8,#9,#10" }}}]
 
 [ug::subheading {Filtering Data} filters]
 A display can present a set of widgets that allow the user to filter the data being shown. For example, in the image below (See <a href="https://geodesystems.com/repository/alias/14ers">here<a>) the data has a set of fields - elev, elev_gain, distance, range and class. 
@@ -56,7 +56,7 @@ A display can present a set of widgets that allow the user to filter the data be
 [ht::cimg images/filters.png {Filtering Data}]
 
 Below is the wiki text that creates the above display. The map display defines which fields should be used with the filterFields="..." attribute. The ranking display specifies the same set of filter fields but also has a hideFilterWidget=true which specifies to actually not show the widgets. The filter values the user enters in the map display are then applied to the ranking display.
-<pre>+row
+[wiki::text {+row
 +col-3
 {<noop>{display  type=&quot;ranking&quot;  
 ...
@@ -70,7 +70,7 @@ filterFields=&quot;elev,elev_gain,distance,class,range&quot;
 }} 
  -col
  -row
-</pre>
+}]
 
 Filter attributes:
 
@@ -110,11 +110,8 @@ Specify extra text to wrap the filter value
 
 </ul>
 
-
-
-
 [ug::subheading {Converting Data} converting]
-<pre>
+[wiki::text {
 convertData="command1;command2;...;"
 
 Where commands can be:
@@ -125,12 +122,12 @@ e.g.:
   rotateData(includeFields=true,includeDate=true,flipColumns=true)
   addPercentIncrease(replaceValues=false)
 
-</pre>
+}]
 
 
 [ug::subheading {Subsetting Data} subsetting]
 You can specify various filters applied to the data
-<pre>
+[wiki::text {
 By date:
 startDate="yyyy-MM-dd"
 endDate="yyyy-MM-dd"
@@ -150,27 +147,27 @@ notequals
 
 If the label is specified then a selector checkbox will be shown to turn on/off this filter
 
-</pre>
+}]
 
 
 
 
 You can also sample the data with:
-<pre>
+[wiki::text {
 stride=1 -  take every other point
 maxDisplayedPoints= - if set, then set the stride so we at most have  maxDisplayedPoints points
-</pre>
+}]
 
 You can bin the data based on dates with:
-<pre>
+[wiki::text {
 binDate=day|week|month|year
 binType=total|count|average
-</pre>
+}]
 
 Only show unique rows with:
-<pre>
+[wiki::text {
 uniqueField=&lt;field id&gt;
-</pre>
+}]
 
 
 
@@ -182,7 +179,7 @@ When editing the wiki text if you right-lick inside
 of a <i>{<noop>{display ...}}</i> tag a context menu will be shown that will list the available color tables.
 Colors are defined and can also be modified the following ways.
 
-<pre>
+[wiki::text {
 colorTable="some color table name" - specify the color table
 
 colorTable="colors:red,green,blue,...."   - explicit list of colors
@@ -197,7 +194,7 @@ colorBy=&lt;field name&gt; - specify a data field to color by
 
 colorByFields=&lt;field1,field2,...,fieldN&gt; - specify a number of fields to allow the user to choose how to color
 
-</pre>
+}]
 
 
 [ug::subheading {Display Groups} groups] 
@@ -211,7 +208,7 @@ added automatically.
 
 
 
-<pre>
+[wiki::text {
 {<noop>{group group 1 ...}}
 {<noop>{display display 1}}
 {<noop>{display display 2}}
@@ -220,7 +217,7 @@ added automatically.
 {<noop>{group group 2...}}
 {<noop>{display display 4}}
 {<noop>{display display 5}}
-</pre>
+}]
 
 If [ug::attr  showMenu] is set to true for a group then the below menu is displayed. This supports the interactive creation of new charts and displays. The layout of these displays can be changed interactively, their state can be changed and they
 can be deleted. 
@@ -235,17 +232,17 @@ through the group menu as seen below:
 Each child display may be located in a fixed location (using [ug::attr layoutHere=false]) in the web page 
 or the group can manage the layout of the children displays. Different layouts can be 
 specified with the <i>layoutType</i> attribute. The available layouts are:
-<pre>
+[wiki::text {
 layoutType=tabs
 layoutType=table
 layoutType=columns
 layoutType=rows
-</pre>
+}]
 
 Using the table layout the number of columns is specified with the <i>layoutColumns</i> attribute.
 For the <i>columns</i> and <i>rows</i> layout type each child display can specify the <i>column</i> number of
 <i>row</i> number it should be placed in. For example, for the <i>rows</i> layout if you had:
-<pre>
+[wiki::text {
 {<noop>{group layoutType="rows"}}
 {<noop>{display display1  row="1"}}
 {<noop>{display display2  row="1"}}
@@ -253,7 +250,7 @@ For the <i>columns</i> and <i>rows</i> layout type each child display can specif
 {<noop>{display display4  row="2"}}
 {<noop>{display display5  row="2"}}
 {<noop>{display display6  row="3"}}
-</pre>
+}]
 
 Would result in (without the border):
 <p>
@@ -377,9 +374,9 @@ use and the <i>colorByMin</i> and <i>colorByMax</i> attributes are option and ar
 <li> The displayDiv, when specified, is the id of a div tag  that the map will display the details of
 a point or map segment as the user mouses over it. The [ug::attr {displayDiv="mapDisplay${entryid}"}] macro
 allows one to specify a unique div id for pages that may have multiple map displays. The div looks like:
-<pre>
+[wiki::text {
 &lt;div id="mapDisplay{<noop>{entryid}}" style="max-height:500px;"&gt;&lt;/div&gt;
-</pre>
+}]
 There is a full example shown below.
 </ul>
 } {
@@ -406,7 +403,7 @@ https://geodesystems.com/repository/entry/show?entryid=1c99bcff-94a9-43a8-beb5-4
 
 This is the wiki text used in the above example:
 
-[ht::pre { 
+[wiki::text { 
 :heading Map
 +row
 +col-md-6
@@ -432,7 +429,7 @@ displayDiv="mapDisplay${entryid}"
 <b>Map Animation:</b><br>
 The map display can be configured to provide a time-based animation of the points with the following attributes.
 
-<pre>
+[wiki::text {
 doAnimation="true" - enable animation
 animationShowSlider="true" - show the slider
 animationDateFormat="yyyyMMdd" or "yyyy" - default is the fully formatted date
@@ -440,11 +437,11 @@ animationMode="cumulative" or "sliding" - how the time window is moved
 animationSteps="60"   - how many steps
 animationWindow="year" or "month" or "day" or "hour" or "minute" or "second"  - override the animationSteps
 animationSpeed="250" - time in milliseconds between each step
-</pre>
+}]
 
 <b>Map Labels:</b><br>
 You can display text labels at each point with the following attributes:
-<pre>
+[wiki::text {
 labelTemplate="text template with ${field id} macros. Use _nl_ for new lines"
 labelFontColor="#000"
 labelFontSize="12px"
@@ -456,11 +453,11 @@ labelXOffset="0"
 labelYOffset="0"
 labelOutlineColor="#fff")
 labelOutlineWidth="0"
-</pre>
+}]
 
 
 <b>Map Sizes</b><br>
-<pre>
+[wiki::text {
 //Define the point radius
 radius="4" 
 //define a field to size by
@@ -470,10 +467,10 @@ sizeByLog=true
 //Size min/max
 sizeByRadiusMin=1
 sizeByRadiusMax=15
-</pre>
+}]
 
 <b>Map Colors</b><br>
-<pre>
+[wiki::text {
 //Field to color by
 colorBy="&lt;field&gt;cnt"
 //Color table
@@ -495,13 +492,13 @@ doCountLabel="clubs"
 
 //If true then prune out the features that don't have any data points in them
 pruneFeatures="true"
-</pre>
+}]
 
 
 <b>Map Shapes</b><br>
 Define different shapes to display in the map.
 
-<pre>
+[wiki::text {
 //Define a different icon to use 
 pointIcon="/repository/dutchbrothers.png" 
 //Define a different shape
@@ -510,7 +507,7 @@ shape="star|cross|x|square|triangle|circle|lightning|rectangle|church"
 shapeBy=&lt;field&gt;
 shapeByMap="value1:shape1,...,valueN:shapeN"
 
-</pre>
+}]
 
 [displayType { Line chart} linechart {
 Displays time series or indexed point data. The vAxisMinValue and vAxisMaxValue are used as the range instead of the min/max from the data.
@@ -529,7 +526,7 @@ images/charts/linechart.png
 <a name="colors"></a>
 You can set various colors of the chart with the following properties:
 
-<pre>
+[wiki::text {
 chart.fill="color or 'transparent'"
 chart.stroke="stroke color"
 chart.strokeWidth="width"
@@ -541,35 +538,35 @@ chartArea.strokeWidth="width"
 hAxis.gridlines.color="color"
 vAxis.gridlines.color="color"
 
-</pre>
+}]
 
 
 <a name="annotations"></a>
 <b>Annotating Charts</b><br>
 Annotations for a chart can be specified in two ways. 
 The first is to specify one or more data fields to create the annotation from:
-<pre>
+[wiki::text {
   annotationFields="field1,field2,..."
   annotationLabelField="field" //optional for the label
-</pre>
+}]
 
 The second way is to specify the annotations using an <i>annotations</i> attribute:
-<pre>
+[wiki::text {
 annotations="
 &lt,index1&gt,label1,description1;
 &lt,index2&gt,label2,description2;
 ...
 "
-</pre>
+}]
 Where &lt;index&gt; is either a date or a numeric index, e.g;
-<pre>
+[wiki::text {
  annotations="
 2,A,annotation 1;
 2016-06-24,B,annotation 2;
 2016-06-24,C,&lt,h1&gt,annotation 3&lt/h1&gt;
 2017-01-02,D,annotation 4
 "
-</pre>
+}]
 
 
 [displayType {Bar chart} {barchart}  {

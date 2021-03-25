@@ -1,0 +1,692 @@
+<html>
+<head>
+<title>Wiki Display of Entries</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
+<a href="wikitext.html"><span title="Previous: Wiki Text"><i class="fa fa-caret-left "></i></span></a> <a href="wikidisplay.html"><span title="Next: Wiki Display Components"><i class="fa fa-caret-right "></i></span></a>  <a href="toc.html#wikientries.html"><span title="Table of contents"><i class="fa fa-list "></i></span></a>
+</td>
+<td width=40% align=center>
+<div class="ramadda-page-title"><a href="${root}/userguide/index.html">RAMADDA User Guide</a></div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="ramadda-page-heading">Section 5.2: Wiki Display of Entries</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+<div style="margin-left:20px;">
+
+
+
+
+
+<a name="entry"></a>
+<div class="ramadda-help-subsubheading"><a href="#entry">Linking to other entries</a>
+</div> 
+Normally in a wiki a link to another page is of the form:
+<pre>
+[[Page name]]
+</pre>
+
+In RAMADDA you can use the name of another entry to create the link.
+You can use the Add entry link menu to select an entry. 
+This produces wiki text of the form:
+<pre>
+[[entry id|Label to show for link]]
+</pre>
+
+e.g.:
+<pre>
+[[7ca13e52-8efb-4d17-863f-e17027dbcc22|Earthquake data]]
+</pre>
+
+You can also just specify an entry by name. Either an absolute path:
+<pre>
+[[Top entry/Some other entry]]
+</pre>
+
+Or relative to the wiki entry:
+<pre>
+[[Some entry]]
+</pre>
+
+You can also set the output type for an entry using the hashtag (#) symbol after the entry id:
+
+<pre>
+[[7ca13e52-8efb-4d17-863f-e17027dbcc22#html.table|Earthquake data as a table]]
+</pre>
+
+which will override the default display.
+
+
+If the entry with the given name does not exist then the link will take one to the
+create entry form.
+
+
+<a name="properties"></a>
+<div class="ramadda-help-subsubheading"><a href="#properties">Wiki Properties</a>
+</div> 
+You can also import content from the current Wiki Page entry or any other entry with the import  
+syntax:
+<pre>{<noop>{&lt;property&gt;  &lt;name="value" pairs&gt;}}</pre>
+
+e.g., if we wanted to show the information tabs for an entry we'd do:
+<pre>{<noop>{information}}</pre>
+
+
+For example, if we want to import the information block with it open:
+<pre>{<noop>{information <i>open="true"</i>}}</pre>
+
+This would give us:
+<div class="userguide-image-centered"><a href="images/wikiinformation.png"><img  src="images/wikiinformation.png" border=0 alt="images/wikiinformation.png" ></a></div>
+
+
+<a name="entry"></a>
+<div class="ramadda-help-subsubheading"><a href="#entry">Specify other entries with the <i>entry</i> attribute</a>
+</div> 
+Normally, all property tags refer to the current entry. However, another entry can be specified  with the "entry" attribute, e.g:
+<pre>{<noop>{information <i>entry="some other entry id or name or 'parent' or 'grandparent'"</i>}}</pre>
+
+
+
+The entry value can be:
+<ul>
+<p>
+<li> The ID of an entry
+<p>
+<li> Its full path, e.g., /Top/.../entry_name
+<p>
+<li> The parent entry - "parent" 
+<p>
+<li> The parent of the parent entry  -"grandparent"
+<p>
+<li> The entry itself - "this"
+<p>
+<li> An entry linked to the entry. Either "link" to find the first one or to specify an entry type use "link:entry_type"
+</ul>
+
+
+The <i>Add Entry ID</i> menu in the editor toolbar allows you to select the entry to use. As a convenience this
+adds both the ID of the entry as well as its name. 
+
+<a name="property"></a>
+<div class="ramadda-help-subsubheading"><a href="#property">Property tag</a>
+</div> 
+The <i>property</i> tag supports defining 
+an attribute property that is shared by all tags in the page. 
+
+<pre>{<noop>{property <i>name="property name" value="property value"</i>}}</pre>
+
+For example, if you are creating a wiki page full of charts 
+(e.g., <a href="https://geodesystems.com/repository/entry/form?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb">here</a>) 
+that refer to another point data entry for their data then you use the property like, e.g.:
+<pre>{<noop>{property <i>name="entry" value="9b2f87fc-91f2-485c-8035-7ef588c35fda"</i>}}</pre>
+
+<a name="message"></a>
+<div class="ramadda-help-subsubheading"><a href="#message">Message attribute</a>
+</div> 
+Some of the tags can result in an error message (e.g., image not found, entry not found, etc). You can specify a different message (or blank) with message attribute:
+
+<pre>{<noop>{someproperty <i>message="some message"</i>}}</pre>
+
+For example, you can set up a wiki template that shows an image attachment 
+and a list of entries in a sub-folder called "Links". If you used the below wiki text then you would see displayed 
+"Could not find image" 
+and "Could not find entry" error messages. 
+
+<pre>
+{{image src="::*"}}
+{{links entry="Links"}}
+</pre>
+
+If, however, you specify a blank message then nothing will be shown:
+
+<pre>
+{{image src="::*" message=""}}
+{{links entry="Links" message=""}}
+</pre>
+
+<a name="prefix"></a>
+<div class="ramadda-help-subsubheading"><a href="#prefix">Prefix and suffix attributes</a>
+</div> 
+
+You can specify  prefix and suffix attributes that are only used if the tag was successful. So for example you could specify a heading for the links: 
+
+<pre>
+{{links entry="Links" message="" prefix="Here are the links:&lt;br&gt;"}}
+</pre>
+
+This would only show when there is a Links sub-folder.
+
+<a name="basic"></a>
+<div class="ramadda-help-subsubheading"><a href="#basic">Basic Wiki Tags</a>
+</div> 
+
+The first set of tags show some information for the entry. Note: the attributes are all optional.
+
+<ul>
+<li> <a name="name"></a>Tag: <a href="#name">name</a><div class='ramadda-wiki-tag'><pre>{{name}}</pre></div> Entry name
+<p>
+<li> <a name="entryid"></a>Tag: <a href="#entryid">entryid</a><div class='ramadda-wiki-tag'><pre>{{entryid}}</pre></div>  Entry ID
+<p>
+<li> <a name="description"></a>Tag: <a href="#description">description</a><div class='ramadda-wiki-tag'><pre>{{description <i>wikify="true|false"</i>}}</pre></div> Entry description. If wikify=true then treat the description as
+wiki text.
+
+<p>
+<li> 
+<a name="fromdate"></a>Tag: <a href="#fromdate">fromdate</a><div class='ramadda-wiki-tag'><pre>{{fromdate <i>format="date time format"</i>}}</pre></div><br> 
+<a name="todate"></a>Tag: <a href="#todate">todate</a><div class='ramadda-wiki-tag'><pre>{{todate <i>format="date time format"</i>}}</pre></div><br> 
+<a name="daterange"></a>Tag: <a href="#daterange">daterange</a><div class='ramadda-wiki-tag'><pre>{{daterange <i>format="date time format" separator=" -- "</i>}}</pre></div><br> 
+<a name="createdate"></a>Tag: <a href="#createdate">createdate</a><div class='ramadda-wiki-tag'><pre>{{createdate <i>format="date time format"</i>}}</pre></div><br>  
+<a name="changedate"></a>Tag: <a href="#changedate">changedate</a><div class='ramadda-wiki-tag'><pre>{{changedate <i>format="date time format"</i>}}</pre></div><br>  
+Show the different dates available for an entry.
+If specified, format the date with the given date time format.
+This follows the
+Java <a href="http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html">date format</a> conventions.
+
+
+<p>
+<li> <a name="information"></a>Tag: <a href="#information">information</a><div class='ramadda-wiki-tag'><pre>{{information}}</pre></div> The information tabs.
+<p>
+<li> <a name="properties"></a>Tag: <a href="#properties">properties</a><div class='ramadda-wiki-tag'><pre>{{properties <i>metadata.types="types to show or not show"</i>}}</pre></div> Show the properties listing.
+The attribute metadata.types is an optional comma separated list of the metata (or property) types that should be shown or not shown.
+
+For example, if you wanted to show all of the properties except for the Project PI property do:
+<pre>
+{{properties metadata.types="!project_pi" message="" }}
+</pre>
+
+Then if you wanted to just show  the Project PI property then do:
+<pre>
+{{properties metadata.types="project_pi" message="" }}
+</pre>
+
+
+<li> <a name="html"></a>Tag: <a href="#html">html</a><div class='ramadda-wiki-tag'><pre>{{html}}</pre></div> Shows the default html view of the entry. Note: this requires an entry="..." to specify a different entry.
+<p>
+<li> <a name="link"></a>Tag: <a href="#link">link</a><div class='ramadda-wiki-tag'><pre>{{link <i>linkresource=true|false button=true|false output=someoutput</i>}}</pre></div> Makes a link to the entry. Set button=true to buttonize the link. Link to the file with linkresource=true. Link to some other view with output=
+<p>
+<li> <a name="map"></a>Tag: <a href="#map">map</a><div class='ramadda-wiki-tag'><pre>{{map <i>width="width of map" height="height of map" listentries="true|false" listwidth="width or percent"</i>}}</pre></div> Display a map. If the entry is a folder then display the children entries of the folder.
+
+If you do not specify a width then the map will be sized to fit its page. 
+
+The listwidth is the width devoted to the entry list. This may be a fixed pixel value or a percentage:
+
+<pre>
+{{map listentries="true" listwidth="25%"}}
+</pre>
+
+
+If you have a Folder (or other group) and want to just show the Folder and nots it children then do:
+<pre>
+{{map entries="this"}}
+</pre>
+
+
+<li> <a name="earth"></a>Tag: <a href="#earth">earth</a><div class='ramadda-wiki-tag'><pre>{{earth <i>width="width of map" height="height of map"</i>}}</pre></div> 
+Display the Google Earth plugin. 
+<p>
+<li> <a name="comments"></a>Tag: <a href="#comments">comments</a><div class='ramadda-wiki-tag'><pre>{{comments}}</pre></div> Show the comments.
+<p>
+<li> <a name="breadcrumbs"></a>Tag: <a href="#breadcrumbs">breadcrumbs</a><div class='ramadda-wiki-tag'><pre>{{breadcrumbs}}</pre></div> Show the breadcrumb path.
+<p>
+<li> <a name="layout"></a>Tag: <a href="#layout">layout</a><div class='ramadda-wiki-tag'><pre>{{layout}}</pre></div> This shows the "Layout:" toolbar bar for an entry.
+<p>
+<li> <a name="toolbar"></a>Tag: <a href="#toolbar">toolbar</a><div class='ramadda-wiki-tag'><pre>{{toolbar}}</pre></div> Show the entry toolbar.
+<p>
+<li> <a name="image"></a>Tag: <a href="#image">image</a><div class='ramadda-wiki-tag'><pre>{{image <i>src="image source" alt="alt text" width="image width" link="true|false" left="absolute position" top="absolute position" linkresource="true|false" alt="image alt label"</i>}}</pre></div> <br>
+Include an image. If src is not given then this shows the image (if there is one) 
+from the entry.  If src is specified it can take on the form: 
+<pre>
+src="entry name"
+</pre>
+to show an entry. This is equivalent to using entry="...". You can also specify the name of a file attachment to an entry with:
+
+<pre>
+entry="entryid" src="::attachment name"
+</pre>
+
+Or any attachment with:
+<pre>
+entry="entryid" src="::*"
+</pre>
+
+If link is true, the image displayed will be linked to the entry page, if 
+linkresource is true, it will be linked to the full sized image (the entry
+resource).  height and width can be used to scale the image, the alt 
+attribute will be used in place of the entry id as a label on the image
+for accessibility.
+
+<p>
+<li> <a name="menu"></a>Tag: <a href="#menu">menu</a><div class='ramadda-wiki-tag'><pre>{{menu <i>popup="true|false" title="title to use" menus="file,edit,feeds,view,other"</i>}}</pre></div> 
+Show the menu actions. If menus is not specified
+show all of the menus. If menus is specified only show those menus listed.
+Show all menus in a toggle block:
+<pre>
+{{menu}}
+</pre>
+
+
+You can specify which menus to show with a comma separated list of menu names. Only show the
+file and view menu:
+<pre>
+{{menu menus="file,view"}}
+</pre>
+
+
+Show the menu actions in a popup:
+<pre>
+{{menu popup="true" title="Click here"}}
+</pre>
+
+</ul>
+
+
+<a name="entries"></a>
+<div class="ramadda-help-subsubheading"><a href="#entries">Collection Wiki Tags</a>
+</div> 
+
+The following tags display a collection of entries. By default they
+are the children entries of the wiki entry but you can specify
+other groups of entries with any of the following arguments:
+<pre>{{<i>tag</i> entry="some other entry" 
+               entries="entryid1,entryid2,entryid3.." 
+               entries.filter="file|folder|image|type:some type|geo|name:name aptterh|suffix:file suffixes"
+               exclude="entryid1,entryid2,entryid3.."  
+               first="entryid1,entryid2,entryid3.."  
+               last="entryid1,entryid2,entryid3.."  
+               sort="name|date"  sortorder="up|down"
+               max="number of entries to use" }}</pre>
+
+The entries attribute is a comma separated list of entry identifiers. They can be specific entry ids or they can be one of a set of relative descriptors:
+<ul>
+<li> <i>this</i> - the current entry
+<li> <i>children</i> - the children entry
+<li> <i>grandchildren</i> - the grandchildren entries
+<li> <i>greatgrandchildren</i> - the great-grandchildren entries
+<li> <i>parent</i>  - the parent entry
+<li> <i>grandparent</i> - the grandparent entry
+<li> <i>ancestors</i> - the ancestors up to the top-level entry
+<li> <i>siblings</i> - the sibling entries
+<li> <i>links</i>  - the associated or linked entries
+<li> <i>search</i>  - search the entire repository. The search terms are defined as attributes and described below.
+
+</ul>
+
+The relative descriptors are applied to the base entry specified with the <i>entry</i> attribute. You can specify an alternative
+base entry for each descriptor with the syntax:
+<pre>
+descriptor:baseEntryId
+</pre>
+
+
+So, for example, if you had 2 different Folder entries - folder1 and folder2 and you wanted to list all of the children of each folder you could do:
+
+<pre>
+{{tree  entries="children:folder1_id,children:folder2_id"}}
+</pre>
+
+
+You can combine different relative descriptors, e.g.:
+<pre>
+{{tree  entries="children:folder1_id,grandchildren:folder2_id"}}
+</pre>
+
+
+
+
+
+<h3>Search for entries</h3>
+
+When using the term "search" when specifying entries 
+you can specify the following search attributes.
+
+<ul>
+<li> search.text="text to search"
+<li> search.type="entry type"
+<li> search.bbox="north,west,south,east"   spatial bounds
+<li> search.group="parent entry id" or "this" for the current entry
+<li> search.filesuffix="file suffix" 
+<li> search.datadate.from="from date" 
+<li> search.datadate.to="to date" 
+<li> search.datadate.relative="relative date, e.g., -3 days, -12 hours, -1 week" 
+<li> search.createdate.from="from date" 
+<li> search.createdate.to="to date" 
+<li> search.createdate.relative="relative date, e.g., -3 days, -12 hours, -1 week" 
+<li> search.changedate.from="from date" 
+<li> search.changedate.to="to date" 
+<li> search.changedate.relative="relative date, e.g., -3 days, -12 hours, -1 week" 
+</ul>
+
+<p>
+Here are some examples:
+<p>
+Find all entries with text 'climate':
+<pre>
+{{tree search.text="climate" entries="search"}}
+</pre>
+
+
+Find all entries with file suffix 'pdf' that have been created in the last 2 days:
+<pre>
+{{tree search.suffix="pdf" search.createdate.relative="-2 days" entries="search"}}
+</pre>
+
+
+
+
+<h3>Filtering Entries</h3>
+
+You can filter what entries to use with <i>entries.filter</i>, e.g.:
+<pre>
+entries.filter=file|folder|image|type:some type|geo|suffix:file suffixes
+</pre>
+
+If you specify <i>suffix:file suffixes</i> then this will only match entries that have files with the given suffix. This
+ can be a comma separated list of suffixes, e.g.:
+<pre>
+entries.filter="suffix:.ppt,.pptx,.pdf" 
+</pre>
+
+
+Or negate them with "!":
+
+<pre>
+entries.filter=!file|!folder|!image|!type:some type|!geo
+</pre>
+So,  you could show all of the georeferenced entries in a map and all of the non-georeferenced entries in a list:
+
+<pre>
+{{map  message="" prefix="==Map=="}}
+
+{{tree message="" prefix="==Non georeferenced entries==" entries.filter="!geo"}}
+</pre>
+
+You can also:
+<ul>
+<li> If <i>first</i> is defined then these entry ids are put at the front of the list.
+
+<li> If <i>last</i> is defined then these entry ids are put at the end of the list.
+
+<li> Exclude any entries in the <i>exclude</i> comma separated list of entry ids.
+
+<li> Sort entries by name or date with <i>sort</i>
+<li> If <i>images</i> is set to true then only entries that are image files are included
+
+</ul>
+
+
+<a name="virtual_groups"></a>
+<div class="ramadda-help-subsubheading"><a href="#virtual_groups">Virtual Groups</a>
+</div> 
+RAMADDA provides a "Virtual Group" entry type. This acts as a Folder except a set of entry IDs or searches can be specified. There are a number of examples available <a href="http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples/Miscellany/Virtual+Groups?entryid=f5ccdc47-62f7-481a-b67d-bf76e5b34359">here</a>.
+
+The Entry IDs field of the Virtual Group can be a list of specific entries, e.g.:
+<pre>
+67259186-574e-4453-a2af-969e1cf658c8
+f5ccdc47-62f7-481a-b67d-bf76e5b34359
+...
+</pre>
+
+If an entry id has a "+" prefix then the children entries of the specified entry is used
+<pre>
++67259186-574e-4453-a2af-969e1cf658c8
++f5ccdc47-62f7-481a-b67d-bf76e5b34359
+...
+</pre>
+
+
+You can also specify a  search.  This is a set of search terms followed by  &quot;search&quot;. You can specify text to search for, the entry type, spatial bounds and date based search.
+<pre>
+search.text=text to search
+search.type=entry type
+search.bbox=north,west,south,east  
+search.createdate.relative=-1 day
+search
+</pre>
+
+
+
+<a name="collection_tags"></a>
+<div class="ramadda-help-subsubheading"><a href="#collection_tags">Collection Tags</a>
+</div> 
+<ul>
+
+<li> <a name="tree"></a>Tag: <a href="#tree">tree</a><div class='ramadda-wiki-tag'><pre>{{tree}}</pre></div>
+The tree tag is used to display the children entries of a folder.
+It can take the form:
+<pre>{{tree title="Links" showtoggle="false" open="true" }}</pre>
+
+The title attribute is used in place of "Children". 
+If showtoggle="false" then the show/hide toggle link is not shown.
+
+<li> <a name="grid"></a>Tag: <a href="#grid">grid</a><div class='ramadda-wiki-tag'><pre>{{grid}}</pre></div> Show the children in a grid. e.g., show 
+the grandchildren as a grid:
+<pre>{{grid entries="grandchildren"}}</pre>
+
+
+<li> <a name="recent"></a>Tag: <a href="#recent">recent</a><div class='ramadda-wiki-tag'><pre>{{recent <i>days="number of days to show"</i>}}</pre></div>
+Show the most recent N days in a list organized by day.
+
+<li> <a name="imageplayer"></a>Tag: <a href="#imageplayer">imageplayer</a><div class='ramadda-wiki-tag'><pre>{{imageplayer <i>width="image width" loopdelay="delay in milliseconds" loopstart="true|false" useAttachment="true|false"</i>}}</pre></div>
+Show images in an image player, e.g.
+<pre>{{imageplayer loopdelay="500" loopstart="true"}}</pre> 
+
+If <i>useAttachment</i> is true then, if the entry's file is not an image but it has
+an attachment that is an image then use the attachment image.
+
+
+<li> <a name="gallery"></a>Tag: <a href="#gallery">gallery</a><div class='ramadda-wiki-tag'><pre>{{gallery <i>width="image width" columns="number of columns" showdescription="true"</i>}}</pre></div>
+Show a 3 column gallery:
+<pre>{{gallery columns="3"}}</pre> 
+
+Show a vertical listing of the children entry images:
+<pre>{{gallery columns="1"}}</pre> 
+
+Set the image width and only show up to 5 images:
+<pre>{{gallery  width="300" max="5"}}</pre>
+
+<li> <a name="tabs"></a>Tag: <a href="#tabs">tabs</a><div class='ramadda-wiki-tag'><pre>{{tabs}}</pre></div> Show the children as tabs:
+<pre>{{tabs}}</pre> 
+
+Show only the 3 specified entries in tabs:
+<pre>{{tabs entries="0af4d166-5723-4775-88fc-b83b72ab47a4,
+                 83539d5c-e9d9-408e-b0af-35f480000ae6,
+                 49684d25-6af1-4188-a0ae-4d5302d22f2a" }}</pre> 
+
+Show only the children of type wikipage in tabs:
+<pre>{{tabs entries="type:wikipage"}}</pre>
+
+Additional arguments:
+
+<ul>
+<li>tag="some tag name" - The wiki tag to use to show the children. e.g., tag="simple" tag="html"
+<li>includeicon="true|false" - if true, include the appropriate icon in the tab
+<li>showlink="true|false" - show a link to the entry (default: true)
+<li>linklabel="label" - if showlink is true, use label in place of the entry
+    name
+<li>imagewidth="width" - width of images
+<li>maximageheight="max height" - maximum height of images
+<li>linkresource="true|false" - if true, link to the entry resource
+</ul>
+
+
+
+<li> <a name="slideshow"></a>Tag: <a href="#slideshow">slideshow</a><div class='ramadda-wiki-tag'><pre>{{slideshow}}</pre></div> Show the children in a slideshow:
+<pre>{{slideshow}}</pre> 
+<p>
+Uses the same arguments as tabs, plus:
+<ul>
+<li>autoplay="true|false" - if true, start the slideshow (default: false)
+<li>speed="secs" - number of seconds to pause on each entry in slideshow
+<li>border="pixs" - border size in pixels
+<li>bordercolor="color" - border color (name or hexadecimal value)
+<li>width="width" - width of the display 
+<li>height="height" - height of the display
+</ul>
+
+<p>
+
+<li> <a name="links"></a>Tag: <a href="#links">links</a><div class='ramadda-wiki-tag'><pre>{{links <i>separator="separator text to use" 
+                          style="inline css style for the link"
+                          class="css class for the link"
+                          tagopen="html to prepend to the link - default is li" 
+                          tagclose="close html"
+                          linkresource="true|false if true link to the entry's file or URL; If false link to the entry"</i>}}</pre></div> Layout links to the entries.<br>
+This produces a set of links to the entries. 
+
+A bulleted list:
+<pre>
+&lt;ul&gt;
+{{links}}
+&lt;/ul&gt;
+</pre>
+
+A bulleted list with the links to the entry's file:
+<pre>
+&lt;ul&gt;
+{{links linkresource="true"}}
+&lt;/ul&gt;
+</pre>
+
+If you wanted to make a vertical list do:
+<pre>
+{{links tagopen="&lt;div&gt;" tagclose="&lt;/div&gt;"}}
+</pre>
+
+You can create a header with wiki text like:
+<pre>
+&lt;center&gt;
+{{links separator="&amp;nbsp;|&amp;nbsp" tagopen=""}}
+&lt;/center&gt;
+</pre>
+
+
+<li> <a name="search"></a>Tag: <a href="#search">search</a><div class='ramadda-wiki-tag'><pre>{{search <i>type="entry type" 
+                  search.showform="true|false"
+                  search.showheader="true|false"</i>}}</pre></div>
+
+The "search" tag performs an entry type specific search and embed it into the wiki. This is the same as the top-level type specific search. You can use any of the "search." attributes defined above, e.g., search.text.
+
+The default is to not show the form.
+
+
+<li> <a name="apply"></a>Tag: <a href="#apply">apply</a><div class='ramadda-wiki-tag'><pre>{{apply}}</pre></div>
+The apply tag allows you to apply some tag (e.g., links, map) to a set of entries in turn. You can then layout
+the results in a variety of ways (e.g.,  table, tabs);
+The apply tag is of the form:
+
+<pre>
+{{apply
+apply.entry="the entry to find the children of"
+apply.tag="some tag to apply to the entries"
+apply.layout="table, accordion or tabs"
+apply.columns="number of columns in table"
+apply.header="text to go before can contain macros ${name} ${url}"
+apply.footer="text to go after"
+apply.border="border width - defaults to 0"
+apply.bordercolor="border color"
+apply.includeicon="true|false"
+...
+&lt;arguments for the apply tag&gt;
+}}
+</pre>
+
+All of the arguments, including the entry argument are the same as described above but have the prefix "apply.". This way you can
+mix the arguments that control the apply function with the arguments that you are using for each entry.
+
+
+Say you have the following entries:
+<pre>
+parent
+     entry1
+            sub-entry1
+            sub-entry2
+     entry2
+            sub-entry3
+            sub-entry4
+</pre>
+
+If you used the apply tag:
+
+<pre>
+{{apply
+apply.entry="parent"
+apply.layout="tabs"
+apply.tag="links"
+linkresource="true"
+}}
+</pre>
+
+This applies the tag "links" to each main entry. It puts each result in a tab.
+
+This tag would make a 2 column table of maps with links to the entries show in the header.
+
+<pre>
+{{apply
+apply.layout="table"
+apply.columns="2"
+apply.tag="map"
+apply.border="1"
+apply.header="${url}"
+&lt;any map arguments*gt;
+}}
+</pre>
+
+
+
+</ul>
+
+
+
+
+
+
+<div class="ramadda-help-subsubheading">Importing any page</div> 
+
+You can also import any of the views of an entry, e.g., the map view, 
+the calendar view, etc., with the  
+{<noop>{import}} tag:<br>
+<a name="import"></a>Tag: <a href="#import">import</a><div class='ramadda-wiki-tag'><pre>{{import <i>output="<any of the output types>"</i>}}</pre></div>
+<p>
+
+So, if you wanted to show the calendar view of an entry you would do:
+<pre>{<noop>{import <i>output="calendar.calendar"</i>}}</pre>
+
+To find the correct output identifier just navigate to the page you 
+want to include and look at the url for the output=... url argument 
+and use that.
+
+
+<a name="snippet"></a>
+<div class="ramadda-help-subsubheading"><a href="#snippet">Snippet</a>
+</div> 
+A number of the layouts below (e.g,, table layout) will include a snippet of descriptive text from the entry that is being displayed. The snippet text is defined in the description of the entry with:
+<pre>
+Some description here.
+&lt;snippet&gt;This is the snippet&lt;/snippet&gt;
+More description
+</pre>
+
+
+
+
+</div>
+<p>
+
+<p>&nbsp;<p>
+<a href="wikitext.html"><span title="Previous: Wiki Text"><i class="fa fa-caret-left "></i></span></a> <a href="wikidisplay.html"><span title="Next: Wiki Display Components"><i class="fa fa-caret-right "></i></span></a>  <a href="toc.html#wikientries.html"><span title="Table of contents"><i class="fa fa-list "></i></span></a>
+<p>
+</div>
+</body>
+</html>
+
