@@ -4494,10 +4494,13 @@ public class TypeHandler extends RepositoryManager {
                         rows = rows * 2;
                     }
                     if (isWiki) {
+			HtmlUtils.open(sb, "div",
+				       HtmlUtils.attrs("class", "wiki-editor", "id", ARG_DESCRIPTION + "_editor" +"_block"));
                         addWikiEditor(request, entry, sb, formInfo,
                                       ARG_DESCRIPTION + "_editor",
                                       ARG_DESCRIPTION, desc, "Description",
                                       false, Entry.MAX_DESCRIPTION_LENGTH);
+                        HtmlUtils.close(sb, "div");
                     } else {
                         desc = desc.trim();
                         boolean isTextWiki = isWikiText(desc);
