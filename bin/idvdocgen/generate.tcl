@@ -136,12 +136,19 @@ proc ht::doImage {img class {caption ""} {extra ""}} {
 proc ht::cimg {img {caption ""} {extra ""}} {
     if {$::doXml} {
 	   set ex " width=\"\" ";
-	   if {[regexp  {width=(.*)} $extra match width]} {
-		  if {[regexp {^\d*$} $width]} {
-			 set width "${width}px"
+	   if {$extra==""} {
+		  set extra { style="max-width:90%;" }
+	      }
+	   if {[regexp  {max-width} $extra match ]} {
+		  set ex  $extra
+           } else {
+		  if {[regexp  {width=(.*)} $extra match width]} {
+			 if {[regexp {^\d*$} $width]} {
+				set width "${width}px"
+			    }
+			    set ex  " width=\"$width\" "
 		     }
-		     set ex  " width=\"$width\" "
-            }
+	      }
 	   return "{{image2 src=\"$img\" label=\"$caption\" $ex}}"
     }
     if {[gen::getDoAll]} {
@@ -319,7 +326,7 @@ proc displayType {name id desc args {img ""} {url ""} } {
    set img [string trim $img]
    if {$img!=""} {
          set toks [split $img " "]
-         set extra ""
+         set extra { style="max-width:90%; "} 
           if {[llength $toks]>1} {
                set img [lindex $toks 0]
                set extra [lindex $toks 1]
@@ -698,6 +705,9 @@ proc gen::addSubHead {from content} {
 
             set idcnt 0
             foreach id [split $id ,] {
+		if ($::doXml) {
+		       break
+		   }
                 if {$idcnt == 0} {
                        set label "<a href=\"#$id\">$label</a>"
                  }
@@ -705,7 +715,7 @@ proc gen::addSubHead {from content} {
                 incr idcnt
             }
 	    if ($::doXml) {
-		   append body "\n:h2: $label"
+		   append body "\n:h2 $label"
 	       } else {
 		   append body "<p>"
 		   append body "<div class=\"ramadda-help-heading\">$levelLabel.$cnt $label</div> "
@@ -1433,7 +1443,7 @@ proc gen::getDotPath {depth} {
 proc gen::getCss {depth} {
     set html ""
     if {$::doXml} {
-           append html  "  <link rel=\"stylesheet\" type=\"text/css\" href=\"/repository/userguide.css\" title=\"Style\">\n"
+           append html  "  <link rel=\"stylesheet\" type=\"text/css\" href=\"/repository/userguide/userguide.css\" title=\"Style\">\n"
      } else {
 	   foreach cssFile [gen::getCssFiles] {
                append html  "  <link rel=\"stylesheet\" type=\"text/css\" href=\"[gen::getDotPath $depth][file tail $cssFile]\" title=\"Style\">\n"
@@ -1829,7 +1839,7 @@ proc gen::processFile {from to fileIdx template} {
 	  regsub -all "\n+\n" $b "\n" v
 	  regsub -all "\n *\n" $b {} v
 	  regsub -all "<pre>" $b "\n<pre>" b
-	  regsub -all \"images/ $b \"/userguide/images/ b
+	  regsub -all \"images/ $b \"/repository/userguide/images/ b
 	  regsub -all {<category.*?>} $b {} b
 	  if {$parent!=""} {
 		 append ::xml " parent=\"$parent\" "
@@ -1840,6 +1850,9 @@ proc gen::processFile {from to fileIdx template} {
 	     set b [string trim $b]
 	     append ::xml " entryorder=\"$entryOrder\" "
 	     append ::xml ">\n"
+	     if {[string length $b]>15000} {
+		    puts "$title [string length $b]"
+		}
 	     append ::xml "<description><!\[CDATA\[$b\]\]></description>\n" 
 	     append ::xml "</entry>\n"
       }
