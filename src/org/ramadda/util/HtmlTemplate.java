@@ -64,6 +64,8 @@ public class HtmlTemplate {
     /** _more_ */
     private String path;
 
+    boolean wikify;
+
     /** _more_ */
     private Hashtable properties = new Hashtable();
 
@@ -106,6 +108,7 @@ public class HtmlTemplate {
             }
             name = (String) properties.get("name");
             id   = (String) properties.get("id");
+	    wikify  =Utils.getProperty(properties,"wikify",false);
             String tmp = (String) properties.get(PROP_PROPERTIES);
             if (tmp != null) {
                 propertyIds = StringUtil.split(tmp, ",", true, true);
@@ -146,14 +149,18 @@ public class HtmlTemplate {
      */
     public List<String> getToks() {
         if (toks == null) {
-            toks = StringUtil.splitMacros(template);
-            for (int i = 0; i < toks.size(); i++) {
-                if (2 * (i / 2) != i) {
-                    hasMacro.add(toks.get(i));
-                }
-            }
-        }
+	    toks = getToks(template);
+	}
+	return toks;
+    }
 
+    public List<String> getToks(String what) {	
+	List<String> toks = StringUtil.splitMacros(what);
+	for (int i = 0; i < toks.size(); i++) {
+	    if (2 * (i / 2) != i) {
+		hasMacro.add(toks.get(i));
+	    }
+        }
         return toks;
     }
 
@@ -177,6 +184,25 @@ public class HtmlTemplate {
      */
     public String getId() {
         return id;
+    }
+
+
+    /**
+       Set the Wikify property.
+
+       @param value The new value for Wikify
+    **/
+    public void setWikify (boolean value) {
+	wikify = value;
+    }
+
+    /**
+       Get the Wikify property.
+
+       @return The Wikify
+    **/
+    public boolean getWikify () {
+	return wikify;
     }
 
 
