@@ -633,6 +633,14 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
             path = path.replace("${latitude}", "40");
             path = path.replace("${longitude}", "-105.2");
         }
+        if (path.indexOf("${north}") >= 0) {
+	    path = path.replace("${north}", entry.getNorth() + "");
+	    path = path.replace("${west}", entry.getWest() + "");
+	    path = path.replace("${south}", entry.getSouth() + "");
+	    path = path.replace("${east}", entry.getEast() + "");	    
+
+        }
+
 
 
         return path;
