@@ -29,9 +29,9 @@ var Csv = {
 	html += ".ace_csv_comment {color:#B7410E;}\n";
 	html += ".ace_csv_command {color:blue;}\n";
 	html += "</style>";
-	let topLeft = HU.getIconImage("fa-plus",[ID,"csvconvert_add",TITLE,"Add a command",STYLE,HU.css("cursor","pointer")]) + SPACE2 +
+	let topLeft = HU.href("#",HU.getIconImage("fa-plus"),[ID,"csvconvert_add",TITLE,"Add a command",STYLE,HU.css("cursor","pointer")]) + SPACE2 +
 	    HtmlUtil.href("javascript:void(0);",HtmlUtils.getIconImage("fa-file"),[TITLE, "Select file", "onClick", "selectInitialClick(event,'convertcsv_file1','convertcsv_input','true','entry:entryid','" + convertCsvEntry+"');",  ID,"convertcsv_file1_selectlink"]);
-	let topRight = 	 HU.getIconImage("fa-sliders-h",[ID,"convertcsv_settings",TITLE,"Settings",STYLE,HU.css("cursor","pointer")]) +SPACE2 +
+	let topRight = 	 HU.href("#", HU.getIconImage("fa-sliders-h"),[ID,"convertcsv_settings",TITLE,"Settings",STYLE,HU.css("cursor","pointer")]) +SPACE2 +
 	    HtmlUtil.href("javascript:Csv.call('-help')",HtmlUtils.getIconImage("fa-question-circle"))+SPACE2;
 	    
 	html += HU.leftRightTable(topLeft,topRight);
@@ -63,11 +63,9 @@ var Csv = {
 	    html += HtmlUtil.checkbox("convertcsv_applytosiblings",[], Csv.applyToSiblings) + " Apply to siblings" +"<br>";
 	    html +=  HtmlUtil.checkbox("",[ID,"convertcsv_save"],Csv.save) +" Save" +"<br>";
 	    html += HtmlUtil.checkbox("",[ID,"convertcsv_docommands"],Csv.doCommands) +" Do commands";
-	    let dialog = HU.makeDraggableDialog($(this),html,{my:"right top",at:"right bottom",
-						 callback:(dialog)=>{
-						     Csv.maxRows = $("#convertcsv_maxrows").val();
-						     dialog.remove();
-						 }});
+	    html = HU.div(["style",HU.css("margin","10px")],html);
+
+	    let dialog = HU.makeDialog({content:html,my:"right top",at:"right bottom",xtitle:"",anchor:$(this),draggable:true,header:true,inPlace:false});
 	    HU.onReturnEvent("#convertcsv_maxrows",input=>{
 		Csv.maxRows = input.val();
 		dialog.remove();
@@ -131,8 +129,8 @@ var Csv = {
 		    var label = cmd.label ||  Utils.camelCase(cmd.command.replace("-",""));
 		    html +=HU.div([CLASS,"convert_add",TITLE,tooltip],HtmlUtil.onClick("Csv.addCommand('" + command +"')",label));
 		});
-		html = HU.div([STYLE,HU.css("max-height","300px","overflow-y","auto")], html);
-		Csv.addDialog= HU.makeDraggableDialog($(this),html);
+		html = HU.div([STYLE,HU.css("margin-left","10px","max-height","300px","overflow-y","auto")], html);
+		Csv.addDialog =  HU.makeDialog({content:html,my:"left top",at:"right+10 top",anchor:$(this),draggable:true,header:true,inPlace:false});
 	    }
 	    Csv.addDialog.show();
 	});
@@ -871,7 +869,7 @@ var Csv = {
 	    }
 	});
 	inner+=HU.formTableClose();
-	inner += HU.div([STYLE,HU.css("margin-top","5px")], HU.center(HU.div([STYLE,HU.css("display","inline-block"), ID,"csvaddcommand"],opts.add?"Add Command":"Change Command") +SPACE2+HU.div([STYLE,HU.css("display","inline-block"), ID,"csvcancelcommand"],"Cancel")));
+	inner += HU.div([STYLE,HU.css("margin-bottom","10px")], HU.center(HU.div([STYLE,HU.css("display","inline-block"), ID,"csvaddcommand"],opts.add?"Add Command":"Change Command") +SPACE2+HU.div([STYLE,HU.css("display","inline-block"), ID,"csvcancelcommand"],"Cancel")));
 
 
 	if(Csv.addDialog) {
@@ -884,7 +882,7 @@ var Csv = {
 	    at = "left " + "top+" + (opts.event.offsetY+10);
 	    target = $(opts.event.target);
 	}
-	let dialog = HU.makeDraggableDialog(target,inner,{at:at,remove:true});
+	let dialog =   HU.makeDialog({content:inner,my:"left top",at:at,anchor:target,draggable:true,header:true,inPlace:false});
 	let submit = () =>{
 	    Csv.columnInput = null;
 	    let args = "";
