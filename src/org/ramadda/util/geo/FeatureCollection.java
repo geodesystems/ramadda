@@ -630,9 +630,6 @@ public class FeatureCollection {
                 sb.append(",\n");
             }
             feature.toGeoJson(sb);
-            if (cnt > 10) {
-                break;
-            }
         }
         sb.append(Json.listClose());
         sb.append(Json.mapClose());
