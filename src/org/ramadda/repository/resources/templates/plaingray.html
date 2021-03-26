@@ -6,97 +6,30 @@
 <properties>
 name=Plain Gray
 id=plaingray
-
-ramadda.template.link.wrapper =<a href="${url}">${label}</a>
-ramadda.template.link.separator=&nbsp;|&nbsp;
-
-ramadda.template.userlink.popup=true
-
-ramadda.template.favorites = <b>Favorites:</b><div class="favorites">${entries}</div>
-ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
-
 </properties>
-
 ${imports}
-
 <style type="text/css">
-body {
-   color: black;
-   margin: 0px;
-}
-.breadcrumbs {
-   margin-left:4px;
-}
-
-.ramadda-breadcrumbs {
-   border: 0px #666 solid;
-}
-
-
 .ramadda-header {
   background:#efefef !important;
-}
-
-.ramadda-header {
   border-bottom: 1px #aaa solid;
 }
-
-.ramadda-footer {
-   margin:0px;
-   padding:0px;
-   align:center;
-   text-align:center;
-   border-top: 1px #000 solid;
-}
-
-.ramadda-outercontents {
-   padding-top: 0px;
-}
-
-.ramadda-innercontent {
-   padding-top: 0px;
-}
-
-.ramadda-menubar {
-//   border-bottom: 1px #aaa solid; 
-//   margin-top:2px;
-//   margin-bottom:2px;
-//   background-image:none;
-//   padding-top:2px;
-//   padding-bottom:2px;
-}
-
-.ramadda-content {
-  border: 0px #aaa solid;
-}
-
-.navlinks {
-  margin-top:10px;
-  border-bottom: 1px #444 solid;
-}
-.ramadda-header-links {
-    font-size: 100%;
-}
-
 </style>
 ${headfinal}
 </head>
-
 <body>
-<div class="ramadda-outercontents">
-<div class="ramadda-content">
-<div class=ramadda-header>
+<div class="ramadda-header">
 <table border="0" width="100%" cellspacing="0" cellpadding="0"><tr valign="bottom">
-<td width=90%>${header}</td>
-<td width=10% align=right><div class=ramadda-breadcrumbs>${links}</div></td>
-</tr></table>
+<td>${entry.header} </td>
+<td align="right">${links}</td></tr></table>
 </div>
-<div class="ramadda-innercontent">${content}</div>
+<div class="ramadda-outercontents">
+<div class="ramadda-innercontent">
+${content}
 </div>
 </div>
-<div class="ramadda-footer">${footer}</div>
-<div class="ramadda-acknowledgement">
-Powered by <a href="https://geodesystems.com">Geode Systems and RAMADDA</a>  
+<div class="ramadda-footer">${footer}
+<div class="ramadda-acknowledgement">Powered by <a href="https://geodesystems.com">Geode Systems and RAMADDA</a>  
+</div>
 </div>
 ${bottom}
 </body>

@@ -2,46 +2,27 @@
 <html  xmlns="http://www.w3.org/1999/xhtml">
 <head><title>${title}</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-
 <properties>
 name=AODN Style
 id=aodnStyle
-	
-ramadda.template.link.wrapper =<div class="navlink"><a href="${url}">${label}</a></div>
-ramadda.template.link.separator=
-	
-ramadda.template.userlink.wrapper =<div class="navlink"><a href="${url}">${label}</a></div>
-ramadda.template.userlink.separator=
-	
-ramadda.template.favorites = <span class="linkslabel"><a href="${root}/user/home" ><img border="0"  src="${root}/icons/star.png" align="center" /> Favorites</a></spam><div class="favorites">${entries}</div>
-ramadda.template.cart = <span class="linkslabel"><a href="${root}/user/cart"><img border="0"  src="${root}/icons/cart.png" align="center" /> Cart</a></spam><div class="favorites">${entries}</div>
+wikify=true
 </properties>
 
 ${imports}
 
 <style type="text/css">
 
-/* General styles  */
-body {
-background-color: #a2bdcf;
-font-size: 11pt;
+:root {
+    --thecolor:#a2bdcf;
+    --font-size:11pt;
+    --font-family:  Verdana,Arial, Helvetica, sans-serif;
 }
 
-/* Top menu bar */
-
-.ramadda-menubar {
-border-bottom: 1px #000 solid; 
-margin-top: 0px;
-padding-right: 10px;
-padding-bottom: 1px;
-padding-left: 10px;
-/* Overwrite previous styles*/
-background-image: none;
-background-repeat: none;  
+body {
+    background-color: var(--thecolor);
 }
 
 .entryheader {
-   font-family: Arial;
    font-size: smaller;
    margin-top: 0px;
    padding-bottom:3px;
@@ -49,7 +30,6 @@ background-repeat: none;
 }
 
 .entryFooter {
-   font-family: Arial;
    font-size: smaller;
    padding:5px;
    padding-left:20px;
@@ -57,32 +37,25 @@ background-repeat: none;
    margin-top:200px;
 }
 
-
-
-
 .ramadda-menubutton, .ramadda-menubutton:hover {
-//  color: white;
-color: #3c668d;
-  font-weight: bold;
+    color: #3c668d;
+    font-weight: bold;
 }
 
 .ramadda-menubutton-separator {
-	margin-left: 2px;
-	margin-right: 2px;
-	padding-bottom: 2px;
-	color: white;
+    margin-left: 2px;
+    margin-right: 2px;
+    padding-bottom: 2px;
+    color: white;
 }
 
-
 .wikicontent {
-	font-family: Verdana,Tahoma,Arial,Helvetica,sans-serif;
-	font-weight: normal;
-	text-decoration: none;
-	padding:0px;
+    font-weight: normal;
+    text-decoration: none;
+    padding:0px;
 }
 
 .wiki-h1 {
-	font-family: Verdana,Tahoma,Arial,Helvetica,sans-serif;
 	font-size: 18px;
 	font-weight: bold;
 	text-decoration: none;
@@ -92,14 +65,12 @@ color: #3c668d;
 	color : #3c668d;
 } 
 .wiki-h2 {
-font-family: Verdana,Tahoma,Arial,Helvetica,sans-serif;
 	font-size: 16px;
 	font-weight: bold;
 	text-decoration: none;
 	color : #3c668d;
 } 
 .wiki-h3{
-	font-family: Verdana,Tahoma,Arial,Helvetica,sans-serif;
 	font-size: 14x;
 	font-weight: bold;
 	text-decoration: none;
@@ -107,7 +78,6 @@ font-family: Verdana,Tahoma,Arial,Helvetica,sans-serif;
 } 
 
 .wiki-h4, .wiki-h5, .wiki-h6, .wiki-h7 {
-	font-family: Verdana,Tahoma,Arial,Helvetica,sans-serif;
 	font-weight: bold;
 	text-decoration: none;
 	color : #3c668d;
@@ -120,12 +90,11 @@ font-family: Verdana,Tahoma,Arial,Helvetica,sans-serif;
 
 .ramadda-content {
   border-top: 0px #aaa solid;
-  margin:5px;
+  margin:8px;
   padding:0px;
-  color: #435e78;
+  color: var(--thecolor);
   height:auto;
   width:auto;
-  //Shadow effect
   /* offset left, top, thickness, color with alpha */
   -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
   -moz-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
@@ -137,45 +106,21 @@ font-family: Verdana,Tahoma,Arial,Helvetica,sans-serif;
 }
 
 .ramadda-content a, .ramadda-content a:hover, .ramadda-content a:visited, .ramadda-content a:link ,.ramadda-content td {
-	font-family: Verdana,Tahoma,Arial,Helvetica,sans-serif;
-	font-weight: normal;
-	text-decoration: none;
-	color: #435e78;
+    font-weight: normal;
+    text-decoration: none;
+    color: #435e78;
 }
-
-
 
 .ramadda-innercontent a, .ramadda-innercontent a:hover, .ramadda-innercontent a:visited, .ramadda-innercontent a:link {
-    color: #435ecc;
     color: #105ECC;
-//    text-decoration: underline;
 }
 
-
 .block a, .block a:hover, .block a:visited, .block a:link {
-     color: #435e78;
+    color: #435e78;
 }
 
 .ramadda-content a:hover { 
-	text-decoration: underline;
-}
-
-.entryrow:hover {
-	border-bottom-width: 1px;
-	border-bottom-style: dotted;
-	border-bottom-color: #cccccc;
-}
-
-.breadcrumbs {
-   margin-left:5px;
-}
-
-.subnavoncomp  {
-   padding-bottom:0px; 
-}
-
-.subnavoffcomp  {
-   padding-bottom:0px; 
+    text-decoration: underline;
 }
 
 .topbox {
@@ -184,12 +129,9 @@ font-family: Verdana,Tahoma,Arial,Helvetica,sans-serif;
 }
 
 .ramadda-innercontent {
-  margin-left:30px;
+  margin-left:5px;
   margin-right:5px;
 }
-
-
-
 
 /* Left Column  */
 .ramadda-header-leftcolumn {
@@ -221,7 +163,9 @@ a.ramadda-header-leftcolumn  {
 }
 
 .leftside {
-   margin:5px;
+   width:175px;
+   position:fixed;
+   margin:8px;
    margin-right:3px;
    padding:5px;
    background-color:#ffffff;
@@ -246,45 +190,36 @@ a.ramadda-header-leftcolumn  {
    padding-bottom:20px;
 }
 
-.leftcolumn{
-	vertical-align: middle
+.leftcolumn {
+    vertical-align: middle
 }
 
 .leftbox {
    padding: 5px;
    padding-top: 2px;
    padding-bottom:2px;
-   background-color: #efefef;
    height:auto;
    width:auto;
    
 }
 
-.navlink , .navlink a ,.navlink a:hover ,.navlink a:visited, .navlink a:link {
-  border-bottom : 1px #cccccc dotted;
-  color: #435e78;
-  font-family: Verdana,Tahoma,Arial,Helvetica,sans-serif;
-//  font-size: 12px;
-  font-weight: normal;
-  padding-bottom:5px;
-  height:auto;
-  width:auto;
-}
 
 .linkslabel, .linkslabel a, .linkslabel a:hover {
     color: #0079c2;
-	font-size: 14px;
-	font-weight: bold;
-	padding-bottom: 5px;
-	padding-top: 5px;
-	margin-top:5px;
-	margin-bottom:10px;
-	width:150px;
+    font-size: 14px;
+    font-weight: bold;
+    padding-bottom: 5px;
+    padding-top: 5px;
+    margin-top:5px;
+    margin-bottom:10px;
+    width:150px;
+    text-decoration:none;
 }
 
 .linkslabel img {
-	vertical-align:text-top;
+    vertical-align:text-top;
 }
+
 .favorites {
    max-width: 525px; 
    overflow-x: auto;
@@ -300,49 +235,44 @@ a.ramadda-header-leftcolumn  {
   border-bottom : 1px #cccccc dotted;
   color: #435e78;
   font-family: Verdana,Tahoma,Arial,Helvetica,sans-serif;
-//  font-size: 12px;
   font-weight: normal;
-  
 }
 
 
 /* Header for the subpages*/
 .subheader-container {
-	background-color: #3c668d;
-	//opacity: 0.9;
-	padding-top: 5px;
-	//padding-right: 20px;
-	padding-bottom: 6px;
-//	padding-left: 20px;
-        margin:0px;
-        margin-left:-30px;
-        margin-right:-4px;
-	//margin-top:-5px;
-	background-image: none;
-	background-repeat: none;
-        color: #fff;
+    background-color: #3c668d;
+    padding-top: 5px;
+    padding-bottom: 6px;
+    margin:0px;
+    margin-left:-30px;
+    margin-right:-4px;
+    background-image: none;
+    background-repeat: none;
+    color: #fff;
 }
 
 .subheader-container a , subheader-container a:hover, .subheader-container a:link, .subheader-container a:visited, .subheader-container a:active, a  {
-        color: #fff;
-//	color:black;
+    color: #fff;
 }
 
 .ramadda-footer {
-	margin:10px;
-	padding:10px;
-	margin-right: 10px;
-	margin-bottom: 0px;
-	margin-left: 0px;
-	overflow-x: auto;
-	font-family: Arial,Helvetica,sans-serif;
-	font-size: 10px;
-	color: #435e78;
+    margin:10px;
+    padding:10px;
+    margin-right: 10px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    overflow-x: auto;
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 10px;
+    color: #435e78;
+    background:none;
+    border-width:0px;
 }
 
-.ramadda-footer a, .ramadda-footer a:hover, .ramadda-footer td{
-font-size: 10px;
-color: #435e78;
+.ramadda-footer a, .ramadda-footer a:hover, .ramadda-footer td {
+    font-size: 10px;
+    color: #435e78;
 }
 
 .ui-tabs, .block.ui-widget-content, 
@@ -354,18 +284,15 @@ color: #435e78;
 }
 
 hr {
-	color: #435e78;
+    color: #435e78;
 }
 </style>
-
-
 ${headfinal}
 </head>
 <body>
-
 <table  border="0"  width="100%" cellspacing="0" cellpadding="0"  >
 <tr valign="top">
-<td width="100">
+<td width="190">
 <div class="leftside">
 <div class="ramadda-logo">
 <a href="${logo.url}" ><img border="0" width="150px" src="${logo.image}" alt="${logo.url}" /></a>
@@ -376,6 +303,13 @@ ${headfinal}
 <span class="linkslabel"><a href="${root}/user/login" ><img border="0"  src="${root}/icons/user.png" alt="User Home" /> User </a> </span>
 <div class="leftbox">${links}</div>
 <br />
+<div xstyle="margin:5px;">
+<h3>Links</h3>
+<div style="border-top:1px solid var(--wikicolor);max-width:150px;overflow-x:auto;width:150px;max-height:300px;overflow-y:auto;">
+{{list sort=name}}
+</div>
+</div>
+
 ${favorites}
 </div>
 </div>
@@ -386,18 +320,13 @@ ${entry.header}
 <div class="ramadda-innercontent">${content}</div> 
 <div class="entryFooter">${entry.footer}</div>
 </div>
-<div class="ramadda-footer">${footer}</div>
+<div class="ramadda-footer">
+${footer}
+<div class="ramadda-acknowledgement">Powered by <a href="https://geodesystems.com">Geode Systems and RAMADDA</a></div>
+</div>
 </td>
 </tr>
 </table>
-
-
-<div class="ramadda-acknowledgement">
-Powered by <a href="https://geodesystems.com">Geode Systems and RAMADDA</a>
-</div>
 ${bottom}
-
-
 </body>
-
 </html>

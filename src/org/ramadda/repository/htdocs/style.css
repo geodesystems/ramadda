@@ -71,7 +71,7 @@
 
 body {
     font-family: var(--font-family);
-    font-size: var(--font-size);
+    font-size: var(--font-size) !important;
     margin: 0px;
     padding: 0px;
 }
@@ -2690,14 +2690,18 @@ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;
 .ramadda-earth-link:hover {
 }
 
-
 .ramadda-header {
     z-index:var(--header-z-index);
     background-repeat: repeat; 
     background-image:url(${root}/images/background.png);
     padding-bottom: 0px;
-    border-bottom : 1px #e0e0e0 solid;
+    border-bottom : var(--basic-border);
     position:relative;
+}
+.ramadda-user-menu {
+    margin-right:10px;
+}
+.ramadda-logo-image {
 }
 
 .ramadda-header-label {
@@ -2735,7 +2739,7 @@ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;
     padding-bottom: 1px;
     line-height:0.5em;
     vertical-align: top;
-    font-size: 80%;
+    font-size: 80% !important;
 }
 
 .breadcrumbs-separator {
@@ -2787,6 +2791,7 @@ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;
 }
 
 .ramadda-breadcrumbs-list {
+   margin-left:4px;
 }
 
 .ramadda-breadcrumbs-menu {
@@ -2850,10 +2855,6 @@ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;
 .ramadda-user-activity td {
     padding: 5px;
 }
-
-.ramadda-user-menu-item {
-}
-
 
 .ramadda-user-menu-image {
     margin-bottom: 0px;
@@ -2963,8 +2964,8 @@ a.ramadda-heading-2-link:visited {
 .ramadda-acknowledgement, .ramadda-acknowledgement a {
     text-align: center;
     font-style:italic;
-    font-size: smaller;
-    padding-bottom:10px;
+    font-size:10pt;
+    margin-bottom:10px;
 }
 
 .ramadda-footer {
@@ -2973,12 +2974,12 @@ a.ramadda-heading-2-link:visited {
     margin-left: auto;
     margin-right: auto;
     text-align:center;
-    font-size:90%;
-    padding:20px;
+    font-size:10pt;
+    padding:10px;
     text-align:center;
     background-repeat: repeat; 
     background-image:url(${root}/images/background.png);
-    border-top: 1px #e0e0e0  solid;
+    border-top : var(--basic-border);
 }
 
 .ramadda-smalllink {
@@ -3846,8 +3847,10 @@ wiki {
 .ramadda-innercontent {
    padding-top: 0px;
    margin: 0px;
+   min-height:800px;
+   margin:0px;
+   background-color:#ffffff;
 }
-
 
 .ramadda-content {
     min-height:800px;
