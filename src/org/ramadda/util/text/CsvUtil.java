@@ -55,7 +55,7 @@ public class CsvUtil {
     private static boolean debugFiles = false;
 
     /** _more_          */
-    private static boolean debugArgs = false;
+    private static boolean debugArgs = true;
 
     /** _more_ */
     private List<String> args;
@@ -391,8 +391,38 @@ public class CsvUtil {
 
         boolean      printArgs = false;
         List<String> extra     = new ArrayList<String>();
+	boolean doArgs = false;
+	int                doArgsCnt     = 0;
+	int                doArgsIndex   = 1;
+	PrintWriter pw        = null;
         for (int i = 0; i < args.size(); i++) {
             String arg = args.get(i);
+	    if(arg.equals("-args")) {
+		doArgs = true;
+		continue;
+	    }
+		if (doArgs) {
+		    if (pw == null) {
+			pw = new PrintWriter(getOutputStream());
+			pw.print("csvcommands1=");
+		    } else {
+			doArgsCnt++;
+			if (doArgsCnt > 4) {
+			    pw.print("\n");
+			    doArgsCnt = 0;
+			    doArgsIndex++;
+			    pw.print("csvcommands" + doArgsIndex + "=");
+			} else {
+			    pw.print(",");
+			}
+		    }
+		    arg = arg.replaceAll(",", "\\\\,");
+		    pw.print(arg);
+		    continue;
+		}
+
+
+
             //      System.out.println("ARG:" + arg);
             //      if(true) continue;
             if (arg.equals("-printargs")) {
@@ -470,6 +500,16 @@ public class CsvUtil {
             }
             extra.add(arg);
         }
+
+
+	if (doArgs) {
+	    if (pw != null) {
+		pw.print("\n");
+	    }
+	    pw.close();
+	    return;
+	}
+
 
 
         if ( !parseArgs(extra, myTextReader, files)) {

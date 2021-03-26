@@ -3543,9 +3543,7 @@ public abstract class Converter extends Processor {
                 String name = GeoUtils.findFeatureName(where, latValue,
                                   lonValue, "");
                 name = name.trim();
-                System.err.println("name:" + name);
                 row.add(name);
-
                 return row;
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
