@@ -136,6 +136,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'centerOnHighlight',ex:true,tt:'Center map when a record is highlighted'},
 	{p:'boundsAnimation',ex:true,tt:'Animate when map is centered'},
 	{p:'iconField',ex:'""',tt:'Field id for the image icon url'},
+	{p:'rotateField',ex:'""',tt:'Field id for degrees rotation'},	
 
 	{label:"Map GUI"},
 	{p:'showMarkersToggle',ex:'true',tt:'Show the toggle checkbox for the marker layer'},
@@ -2474,6 +2475,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let lineCap = this.getProperty('lineCap', 'round');
 	    let pointIcon = this.getProperty("pointIcon");
             let iconField = this.getFieldById(fields, this.getProperty("iconField"));
+            let rotateField = this.getFieldById(fields, this.getProperty("rotateField"));	    
 	    let usingIcon = pointIcon || iconField;
             let iconSize = parseFloat(this.getProperty("iconSize",32));
 	    let iconMap = this.getIconMap();
@@ -3015,7 +3017,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			    mapPoint.isMarker = true;
 			    mapPoints.push(mapPoint);
 			} else  if(pointIcon) {
-			    mapPoint = this.map.addMarker("pt-" + i, point, pointIcon, "pt-" + i,null,null,props.pointRadius);
+			    let attrs = {
+				rotation:45
+			    }
+			    if(rotateField) attrs.rotation = record.getValue(rotateField.getIndex());
+			    mapPoint = this.map.addMarker("pt-" + i, point, pointIcon, "pt-" + i,null,null,props.pointRadius,null,null,attrs);
 			    mapPoint.isMarker = true;
 			    mapPoints.push(mapPoint);
 			}
