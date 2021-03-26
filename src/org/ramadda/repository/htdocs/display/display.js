@@ -5744,6 +5744,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         pointDataLoaded: function(pointData, url, reload) {
 //	    console.log(this.type +".pointDataLoaded");
 	    let debug = displayDebug.pointDataLoaded;
+
 	    this.clearProgress();
             this.inError = false;
             this.clearCache();

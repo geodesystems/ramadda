@@ -625,6 +625,9 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
 		    this.setTimer(this.lastTime);
 		}
 	    });
+	    this.jq(ID_COUNTDOWN).css("cursor","pointer").attr("title","Reload").click(()=>{
+		this.checkReload(-1);
+	    });
 	    this.setTimer(this.getPropertyInterval());
 	},
 	okToRun: function() {
@@ -635,6 +638,13 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
 	getCountdownLabel: function(time) {
 	    let pad = "";
 	    if(time<10) pad = "&nbsp;";
+	    if(time>60) {
+		let minutes = Math.round((time-time%60)/60);
+		let seconds = time%60;
+		if(minutes<10) minutes  = "0" + String(minutes);
+		if(seconds<10) seconds = "0"+String(seconds);
+		return "Reload in " + minutes +":" + seconds+pad;
+	    }
 	    return "Reload in " + time +" seconds"+pad;
 	},
 	updateCountdown(time) {

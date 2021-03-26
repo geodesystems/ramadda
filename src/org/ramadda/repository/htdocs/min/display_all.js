@@ -8559,6 +8559,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         pointDataLoaded: function(pointData, url, reload) {
 //	    console.log(this.type +".pointDataLoaded");
 	    let debug = displayDebug.pointDataLoaded;
+
 	    this.clearProgress();
             this.inError = false;
             this.clearCache();
@@ -10869,7 +10870,7 @@ function PointData(name, recordFields, records, url, properties) {
 	    }
 	    //If we are reloading then clear the data
 	    //Don't do this for now
-	    if(false && reload) {
+	    if(reload) {
 		//If its a reload then add all dependent displays to the pending list
 		cacheObject.pointData = null;
 		cacheObject.pending = [];
@@ -19549,6 +19550,9 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
 		    this.setTimer(this.lastTime);
 		}
 	    });
+	    this.jq(ID_COUNTDOWN).css("cursor","pointer").attr("title","Reload").click(()=>{
+		this.checkReload(-1);
+	    });
 	    this.setTimer(this.getPropertyInterval());
 	},
 	okToRun: function() {
@@ -19559,6 +19563,13 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
 	getCountdownLabel: function(time) {
 	    let pad = "";
 	    if(time<10) pad = "&nbsp;";
+	    if(time>60) {
+		let minutes = Math.round((time-time%60)/60);
+		let seconds = time%60;
+		if(minutes<10) minutes  = "0" + String(minutes);
+		if(seconds<10) seconds = "0"+String(seconds);
+		return "Reload in " + minutes +":" + seconds+pad;
+	    }
 	    return "Reload in " + time +" seconds"+pad;
 	},
 	updateCountdown(time) {
@@ -31840,6 +31851,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    let dates = [];
             let justOneMarker = this.getPropertyJustOneMarker();
+
+
             for (let i = 0; i < records.length; i++) {
                 let pointRecord = records[i];
 		dates.push(pointRecord.getDate());

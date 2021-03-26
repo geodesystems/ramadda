@@ -348,7 +348,7 @@ function PointData(name, recordFields, records, url, properties) {
 	    }
 	    //If we are reloading then clear the data
 	    //Don't do this for now
-	    if(false && reload) {
+	    if(reload) {
 		//If its a reload then add all dependent displays to the pending list
 		cacheObject.pointData = null;
 		cacheObject.pending = [];

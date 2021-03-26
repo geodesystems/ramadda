@@ -2536,6 +2536,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    let dates = [];
             let justOneMarker = this.getPropertyJustOneMarker();
+
+
             for (let i = 0; i < records.length; i++) {
                 let pointRecord = records[i];
 		dates.push(pointRecord.getDate());
