@@ -55,7 +55,7 @@ public class CsvUtil {
     private static boolean debugFiles = false;
 
     /** _more_          */
-    private static boolean debugArgs = true;
+    private static boolean debugArgs = false;
 
     /** _more_ */
     private List<String> args;
