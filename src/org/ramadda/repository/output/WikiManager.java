@@ -6008,6 +6008,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         return wikifyEntry(request, entry, wikiContent, true, null, null);
     }
 
+    public String wikifyEntry(Request request, Entry entry,
+                              String wikiContent,boolean wrap)
+            throws Exception {
+        return wikifyEntry(request, entry, wikiContent, wrap, null, null);
+    }    
+
 
     /**
      * Wikify the entry
