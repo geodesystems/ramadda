@@ -75,19 +75,6 @@ function createProjection(name) {
     return new OpenLayers.Projection(name);
 }
 
-function get_my_url(bounds) {
-    var res = this.getMap().getResolution();
-    var x = Math.round((bounds.left - this.maxExtent.left) / (res * this.tileSize.w));
-    var y = Math.round((this.maxExtent.top - bounds.top) / (res * this.tileSize.h));
-    var z = this.getMap().getZoom();
-    var path = z + "/" + x + "/" + y + "." + this.type + "?" + parseInt(Math.random() * 9999);
-    var url = this.url;
-    if (url instanceof Array) {
-        url = this.selectUrl(path, url);
-    }
-    return url + this.service + "/" + this.layername + "/" + path;
-}
-
 
 
 var positionMarkerID = "location";
@@ -2045,13 +2032,12 @@ RepositoryMap.prototype = {
             }),
             //xxstyleMap: this.getVectorLayerStyleMap(args)
         });
-        if (!args) {
-            args = {
-                strokeColor: 'blue',
-                strokeWidth: 1
-            }
+	let opts =  {
+            strokeColor: 'blue',
+            strokeWidth: 1,
         }
-        layer.styleMap = this.getVectorLayerStyleMap(layer, args);
+	if(args) $.extend(opts, args);
+        layer.styleMap = this.getVectorLayerStyleMap(layer, opts);
         this.initMapVectorLayer(layer, canSelect, selectCallback, unselectCallback, loadCallback, zoomToExtent);
         return layer;
     },
@@ -2132,6 +2118,7 @@ RepositoryMap.prototype = {
         this.hybridLayer = null;
         this.defaultOLMapLayer = null;
 
+	this.baseLayers = {};
 	this.numberOfBaseLayers = 0;
 
         for (let i = 0; i < this.mapLayers.length; i++) {
@@ -2160,15 +2147,32 @@ RepositoryMap.prototype = {
             } else if (mapLayer == map_opentopo) {
                 newLayer = this.createXYZLayer("OpenTopo", "//a.tile.opentopomap.org/${z}/${x}/${y}.png}");
             } else if (mapLayer == map_weather) {
-                var wlayers = ['NWS Radar', 'nexrad-n0q-900913', 'GOES Infrared', 'goes-ir-4km-900913', 'GOES Water Vapor', 'goes-wv-4km-900913', 'GOES Visible', 'goes-vis-1km-900913', '24 hr precip', 'q2-p24h-900913'];
+                var wlayers = [ 
+		    {name:'GOES Infrared', id:'goes-ir-4km-900913', alias:'goes-ir'},
+		    {name:'GOES Water Vapor', id:'goes-wv-4km-900913', alias:'goes-wv'},
+		    {name:'GOES Visible', id:'goes-vis-1km-900913', alias:'goes-visible'},
+		    {name:'NWS Radar', id:'nexrad-n0q-900913',alias:'nexrad'},
+		    {name:'24 hr precip', id:'q2-p24h-900913',alias:'precipition'}];
 
-                for (var wi = 0; wi < wlayers.length; wi += 2) {
-                    var name = wlayers[wi];
-                    var id = wlayers[wi + 1];
+		let _this = this;
+		let get_my_url = function(bounds) {
+		    var res = _this.getMap().getResolution();
+		    var z = _this.getMap().getZoom();
+		    var x = Math.round((bounds.left - this.maxExtent.left) / (res * this.tileSize.w));
+		    var y = Math.round((this.maxExtent.top - bounds.top) / (res * this.tileSize.h));
+		    var path = z + "/" + x + "/" + y + "." + this.type + "?" + parseInt(Math.random() * 9999);
+		    var url = this.url;
+		    if (url instanceof Array) {
+			url = this.selectUrl(path, url);
+		    }
+		    return url + this.service + "/" + this.layername + "/" + path;
+		};
+
+		wlayers.forEach(l=>{
                     var layer = new OpenLayers.Layer.TMS(
-                        name,
+                        l.name,
                         'https://mesonet.agron.iastate.edu/cache/tile.py/', {
-                            layername: id,
+                            layername: l.id,
                             service: '1.0.0',
                             type: 'png',
                             visibility: false,
@@ -2176,9 +2180,12 @@ RepositoryMap.prototype = {
                             isBaseLayer: false
                         }, {}
                     );
-                    layer.ramaddaId = id;
-                    this.addLayer(layer);
-                }
+		    this.baseLayers[l.id] = layer;
+		    if(l.alias) this.baseLayers[l.alias] = layer;		    
+                    layer.ramaddaId = l.id;
+                    this.addLayer(layer,true);
+                });
+
             } else if (mapLayer == map_white || mapLayer== map_lightblue || mapLayer == map_gray || mapLayer == map_blue || mapLayer == map_black || mapLayer == map_gray) {
 		this.makeSimpleWms(mapLayer);
 		continue;
@@ -2288,6 +2295,9 @@ RepositoryMap.prototype = {
         this.getMap().addControl(this.graticule);
     },
 
+    getBaseLayer: function(id) {
+	if(this.baseLayers) return this.baseLayers[id];
+    },
     makeSimpleWms:  function(mapLayer) {
 	let url = "/repository/wms?version=1.1.1&request=GetMap&layers=" + mapLayer +"&FORMAT=image%2Fpng&SRS=EPSG%3A4326&BBOX=-180.0,-80.0,180.0,80.0&width=400&height=400"
 	this.addWMSLayer(Utils.makeLabel(mapLayer) +" background", url, mapLayer, true);
@@ -2579,6 +2589,7 @@ RepositoryMap.prototype = {
             this.removeMarker(this.searchMarkerList[i]);
         }
     },
+
 
     addAllLocationResults:  function() {
         this.removeSearchMarkers();
