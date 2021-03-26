@@ -3541,11 +3541,7 @@ RepositoryMap.prototype = {
         let projPoint = this.transformLLPoint(location);
         let marker = new OpenLayers.Marker(projPoint, icon);
 	let pt = new OpenLayers.Geometry.Point(location.lon, location.lat).transform(this.displayProjection, this.sourceProjection);
-        let feature = new OpenLayers.Feature.Vector(
-            pt,
-	    {
-                description: ''
-            }, {
+	let style = {
                 externalGraphic: iconUrl,
                 graphicHeight: size,
                 graphicWidth: size,
@@ -3553,8 +3549,15 @@ RepositoryMap.prototype = {
                 graphicYOffset: -size / 2,
 		labelYOffset:-size,
 		label:attrs.label
-
-            });
+        };
+	if(Utils.isDefined(attrs.rotation)) {
+	    style.rotation = attrs.rotation;
+	}
+        let feature = new OpenLayers.Feature.Vector(
+            pt,
+	    {
+                description: ''
+            }, style);
 
         feature.ramaddaId = id;
         feature.parentId = parentId;
