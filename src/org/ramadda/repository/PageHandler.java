@@ -39,6 +39,9 @@ import org.ramadda.util.JQuery;
 import org.ramadda.util.MapRegion;
 import org.ramadda.util.Utils;
 
+import java.util.Comparator;
+
+
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -395,7 +398,7 @@ public class PageHandler extends RepositoryManager {
             }
         }
         template = htmlTemplate.getTemplate();
-        List<String> templateToks  = htmlTemplate.getToks();
+
 
         String       systemMessage =
             getRepository().getSystemMessage(request);
@@ -540,6 +543,13 @@ public class PageHandler extends RepositoryManager {
 
         StringBuilder sb = new StringBuilder();
         //Toks are [html,macro,html,macro,...,html]
+        List<String> templateToks;
+	if(htmlTemplate.getWikify()) {
+	    template = getWikiManager().wikifyEntry(request, getEntryManager().getRootEntry(), template,false);
+	    templateToks  = htmlTemplate.getToks(template);
+	} else {
+	    templateToks  = htmlTemplate.getToks();
+	}
         for (int i = 0; i < templateToks.size(); i++) {
             String v = templateToks.get(i);
             //Check if even or odd
@@ -1471,6 +1481,12 @@ public class PageHandler extends RepositoryManager {
             tfos.add(new TwoFacedObject(template.getName(),
                                         template.getId()));
         }
+	tfos.sort(new Comparator() {
+            public int compare(Object o1, Object o2) {
+                String s1 = (String) ((TwoFacedObject)o1).getLabel();
+                String s2 = (String) ((TwoFacedObject)o2).getLabel();		
+                return s1.compareToIgnoreCase(s2);
+	    }});
 
         return tfos;
 
