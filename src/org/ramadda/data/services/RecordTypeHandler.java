@@ -641,7 +641,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
 
         }
 
-
+	//	System.err.println(path);
 
         return path;
     }
