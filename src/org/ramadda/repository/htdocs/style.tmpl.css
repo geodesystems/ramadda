@@ -17,8 +17,9 @@
     --highlight-color:#4946DD;
     --highlight-color:#1D9EAE;
     --highlight-color:#0657F9;
-    --highlight-color:#0074D9;
     --highlight-color:#9B1E25;
+    --highlight-color:#0074D9;
+
     --hover-color:var(--highlight-color);
 
     --highlight-background: #eee;
