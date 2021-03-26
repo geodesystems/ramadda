@@ -560,11 +560,12 @@ public abstract class DataProvider {
             for (int arrayIdx = 0; arrayIdx < array.length(); arrayIdx++) {
                 Hashtable       primary   = new Hashtable();
                 List<Hashtable> secondary = new ArrayList<Hashtable>();
+		List<String> arrayKeys = new ArrayList<String>();
                 if (objectPathList != null) {
                     JSONObject jrow = array.getJSONObject(arrayIdx);
                     for (String tok : objectPathList) {
                         if (tok.equals("*")) {
-                            primary.putAll(Json.getHashtable(jrow, true));
+                            primary.putAll(Json.getHashtable(jrow, true,arrayKeys));
                         } else if (tok.endsWith("[]")) {
                             JSONArray a = Json.readArray(jrow,
                                               tok.substring(0,
@@ -572,20 +573,20 @@ public abstract class DataProvider {
                             for (int j = 0; j < a.length(); j++) {
                                 secondary.add(
                                     Json.getHashtable(
-                                        a.getJSONObject(j), true));
+						      a.getJSONObject(j), true,arrayKeys));
                             }
                         } else {
                             try {
                                 Object o = Json.readObject(jrow, tok);
                                 if (o != null) {
                                     primary.putAll(Json.getHashtable(o,
-								     false));
+								     false,arrayKeys));
                                 }
                             } catch (Exception exc) {
                                 Object o = Json.readArray(jrow, tok);
                                 if (o != null) {
                                     primary.putAll(Json.getHashtable(o,
-                                            true));
+								     true,arrayKeys));
                                 }
                             }
                         }
@@ -594,11 +595,11 @@ public abstract class DataProvider {
                     try {
                         primary.putAll(
                             Json.getHashtable(
-                                array.getJSONArray(arrayIdx), true));
+                                array.getJSONArray(arrayIdx), true,arrayKeys));
                     } catch (Exception exc) {
                         primary.putAll(
                             Json.getHashtable(
-                                array.getJSONObject(arrayIdx), true));
+                                array.getJSONObject(arrayIdx), true,arrayKeys));
                     }
                 }
 
@@ -613,11 +614,15 @@ public abstract class DataProvider {
                     names = new ArrayList<String>();
                     Row row = new Row();
                     addRow(row);
-                    for (Enumeration keys = secondary.get(0).keys();
-                            keys.hasMoreElements(); ) {
-                        names.add((String) keys.nextElement());
-                    }
-                    names = (List<String>) Utils.sort(names);
+		    if(arrayKeys.size()>0) {
+			names.addAll(arrayKeys);
+		    } else {
+			for (Enumeration keys = secondary.get(0).keys();
+			     keys.hasMoreElements(); ) {
+			    names.add((String) keys.nextElement());
+			}
+		    }
+		    //		    names = (List<String>) Utils.sort(names);
                     for (String name : names) {
                         row.add(name);
                     }
@@ -625,7 +630,7 @@ public abstract class DataProvider {
                 /*
                   JSONArray fields = root.optJSONArray("fields");
                   if(fields!=null) {
-r                  for(int k=0;k<fields.length();k++)
+                  for(int k=0;k<fields.length();k++)
                   row.add(fields.getString(k));
                   } else  {
                   for (int k = 0; k < jarray.length(); k++) {
