@@ -1558,6 +1558,9 @@ var Utils =  {
 	let pageTitle = $(parent+".ramadda-page-title");
 	let headerCenter = $(parent +".ramadda-header-center");
 	if(pageTitle.length && headerCenter.length) {
+	    //There might be more than one so take the first
+	    pageTitle= pageTitle.first();
+	    headerCenter = headerCenter.first();
 	    $(window).scroll(()=>{
 		let titleTop = pageTitle.offset().top;
 		let bottom = headerCenter.offset().top + headerCenter.height();
