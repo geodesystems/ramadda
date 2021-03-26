@@ -4782,7 +4782,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(this.filters) {
 		for(let i=0;i<this.filters.length;i++) {
 		    let filter = this.filters[i];
-		    if(filter.field.getId() == fieldId) return this.filters[i];
+		    if(filter.field && filter.field.getId() == fieldId) return this.filters[i];
 		}
 	    }
 	    return null;
@@ -5008,6 +5008,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let bottom = [""];
 		this.filters.forEach(filter=>{
 		    let widget = filter.getWidget(fieldMap, bottom,records);
+		    widget = HU.span([ID,this.domId("filtercontainer_" + filter.id)], widget);
 		    searchBar +=widget;
 		});
 		style = (hideFilterWidget?"display:none;":"") + this.getProperty("filterByStyle","");
@@ -5030,13 +5031,41 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.callUpdateUI();
 	    });
 	    this.createRequestProperties();
- 	    let inputFunc = function(input, input2, value){
+ 	    let inputFunc = (input, input2, value) =>{
 		if(this.ignoreFilterChange) return;
                 var id = input.attr(ID);
 		if(!id) {
 		    console.log("No ID attribute");
 		    return;
 		}
+
+		let changedFilter;
+		let changedFilterId;
+		_this.filters.every(filter=>{
+		    if(filter.widgetId == id) {
+			changedFilter = filter;
+			changedFilterId = filter.id;
+			return false;
+		    }
+		    return true;
+		});
+
+//		console.log("changed filter:" + changedFilter)
+		let dependentFilters =[];
+		if(changedFilter) {
+		    this.filters.forEach(filter=>{
+			if(filter.depends == changedFilter.id) {
+			    dependentFilters.push(filter);
+			    let widget = $("#" + filter.widgetId);
+			    this.ignoreFilterChange = true; 
+			    filter.lastValue = widget.val();
+			    widget.val(FILTER_ALL);
+			    this.ignoreFilterChange = false; 
+			}
+		    });
+		}
+
+
 		if(!input2) {
 		    if(id.endsWith("_min")) {
 			input2 = $("#" + id.replace(/_min$/,"_max"));
@@ -5084,10 +5113,42 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    return;
 		}
 		_this.settingFilterValue = true;
+		this.filteredRecords = null;
 		_this.dataFilterChanged();
 
-//		console.log("id:" + fieldId +" value:" + value);
-		_this.addToDocumentUrl(fieldId+".filterValue",value);
+
+		let records =[];
+		let predecessorChanged = false;
+		dependentFilters.forEach(filter=>{
+		    if(this.filteredRecords == null )
+			this.filteredRecords =  this.filterRecords();
+		    let widget = filter.getWidget({}, [],this.filteredRecords);
+		    this.jq("filtercontainer_" + filter.id).html(widget);
+		    if(filter.initWidget)
+			filter.initWidget(inputFunc);
+		    if(filter.widgetId) {
+			let widget = $("#" + filter.widgetId);
+			if(!widget.length) {
+			    console.log("Could not find dependent widget:" + filter.id);
+			    return;
+			}
+			if(filter.lastValue) {
+			    if(widget[0].options) {
+				let values= $.map(widget[0].options,(option)=>{return option.value});
+				if(!values.includes(filter.lastValue)) filter.lastValue = FILTER_ALL;
+			    }
+			    widget.val(filter.lastValue);
+			}
+			widget.change(function() {
+			    inputFunc($(this));
+			});
+		    }
+		    return true;
+		});
+
+
+
+		this.addToDocumentUrl(fieldId+".filterValue",value);
 		var args = {
 		    property: PROP_FILTER_VALUE,
 		    id:id,
@@ -5107,6 +5168,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 	    });
 
+	    
 	    this.filters.forEach(f=>{
 		if(f.initWidget)
 		    f.initWidget(inputFunc);

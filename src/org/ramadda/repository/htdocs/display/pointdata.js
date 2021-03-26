@@ -1160,19 +1160,30 @@ function RecordFilter(display,filterFieldId, properties) {
     let filterField = display.getFieldById(null, filterFieldId);
     RamaddaUtil.inherit(this, new BaseFilter(display, properties));
     this.id = filterFieldId;
+    let getAttr = (suffix,dflt)=>{
+	if(filterField==null) return dflt;
+	let key = filterField.getId()+"." + suffix;
+	let v = display.getProperty(key,dflt);
+	return v;
+    };
+	
+
+
     $.extend(this, {
 	field: filterField,
 	values:[],
 	hideFilterWidget: display.getProperty("hideFilterWidget",false, true),
-	displayType:display.getProperty(filterField +".filterDisplay","menu"),
-	label:   filterField==null?"":display.getProperty(filterField.getId()+".filterLabel",filterField.getLabel()+":"),
-	suffix:  filterField==null?"":display.getProperty(filterField.getId()+".filterSuffix",""),
+	displayType:getAttr("filterDisplay","menu"),
+	label:   getAttr("filterLabel",filterField?filterField.getLabel()+":":""),
+	suffix:  getAttr("filterSuffix",""),
+	depends: getAttr("filterDepends",null),
 	dateIds: [],
 	prefix:display.getProperty(this.id +".filterPrefix"),
 	suffix:display.getProperty(this.id +".filterSuffix"),
 	startsWith:display.getProperty(this.id +".filterStartsWith",false),
 	ops:Utils.split(display.getProperty(this.id +".filterOps"),";",true,true)
     });
+
 
     if(this.ops) {
 	let tmp = [];
@@ -1400,7 +1411,10 @@ function RecordFilter(display,filterFieldId, properties) {
 	    }
 	},
 	checkDependency: function() {
-	    if(!this.depend || !this.records || !this.dependMySearch || !this.depend.mySearch || !this.dependMySearch.values || !this.depend.mySearch.values) return;
+	    if(!this.depend || !this.records || !this.dependMySearch || !this.depend.mySearch || !this.dependMySearch.values || !this.depend.mySearch.values) {
+		console.log("no depend:" + this.depend +" " + (this.records!=null) + " " + this.dependMySearch);
+		return;
+	    }
 
 	    let v1 = this.dependMySearch.values;
 	    let v2 = this.depend.mySearch.values;
@@ -1438,12 +1452,13 @@ function RecordFilter(display,filterFieldId, properties) {
 		values:[],
 	    };
             let widget;
-	    let widgetId = this.getFilterId(filterField.getId());
+	    let widgetId = this.widgetId = this.getFilterId(filterField.getId());
             if(this.ops) {
 		let labels =[];
 		this.ops.forEach((op,idx)=>{
 		    labels.push([String(idx),op.label]);
 		});
+
 		let selected = this.getPropertyFromUrl(filterField.getId() +".filterValue",FILTER_ALL);
 		let showLabel = this.getProperty(filterField.getId() +".showFilterLabel",this.getProperty("showFilterLabel",true));
 		let allName = this.getProperty(filterField.getId() +".allName",!showLabel?filterField.getLabel():"All");
@@ -1655,7 +1670,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		label = this.display.makeFilterLabel(label,tt);
 		widget = HtmlUtils.div(["style","display:inline-block;"],label + (vertical?"<br>":"") + widget+suffix);
 	    }
-            return widget +(this.hideFilterWidget?"":"&nbsp;&nbsp;");
+            widget= widget +(this.hideFilterWidget?"":"&nbsp;&nbsp;");
+	    return widget;
 	},
 	getEnums: function(records) {
 	    let counts = {};
@@ -3570,6 +3586,9 @@ function makeInlineData(display, src) {
 	let label = Utils.makeLabel(tok);
 	let type = "string";
 	let sample = samples[idx];
+	if(display.getProperty(id+".label")) {
+	    label =display.getProperty(id+".label");
+	}
 	if(display.getProperty(id+".type")) {
 	    type =  display.getProperty(id+".type");
 	    if(type=="enum") type = "enumeration";
