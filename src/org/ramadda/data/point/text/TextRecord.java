@@ -562,7 +562,9 @@ public class TextRecord extends DataRecord {
         String sfmt = field.getSDateFormat();
         if (sfmt != null) {
             if (sfmt.equals("SSS")) {
-                return new Date(new Long(tok));
+		long l = new Long(tok)*1000;
+		Date d =  new Date(l);
+		return d;
             } else if (sfmt.equals("yyyy")) {
                //              System.out.println("tok:" + tok + " dttm:" + yearFormat.parse(tok + "-06"));
                 return yearFormat.parse(tok + "-06");
@@ -573,6 +575,8 @@ public class TextRecord extends DataRecord {
         Date date   = null;
         int  offset = field.getUtcOffset();
         try {
+	    
+
 	    date = getDateFormat(field).parse(tok);
         } catch (java.text.ParseException ignore) {
 	    //Try to guess
