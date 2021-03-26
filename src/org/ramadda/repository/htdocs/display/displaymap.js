@@ -550,6 +550,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
             }
 
+
             var currentFeatures = this.features;
             this.features = [];
             for (var i = 0; i < currentFeatures.length; i++) {
@@ -630,7 +631,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 
 
-	    
+
+
 	    this.getProperty("extraLayers","").split(",").forEach(tuple=>{
 		let toks = tuple.split(":");
 		toks = toks.map(tok=>{return tok.replace(/_semicolon_/g,":")});
@@ -669,6 +671,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    } else {
 			this.map.addGeoJsonLayer(name, url, false, null, null, args, null);
 		    }
+		} else if(type=="wms") {
+		    let name = toks[1];
+		    let url = toks[2];
+		    let layer=toks[3];
+                    this.map.addWMSLayer(name,url,layer, false,true);
+		  //  "wms:ESRI Aeronautical,https://wms.chartbundle.com/mp/service,sec",
 		} else {
 		    console.log("Unknown map type:" + type)
 		}
@@ -1733,11 +1741,58 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		html += HU.checkbox("",[ID,this.domId("showVectorLayerToggle")],!this.showVectorLayer) +" " +
 		    this.getProperty("showVectorLayerToggleLabel","Show Points") +SPACE4;
 	    }
+	    html += HU.span([ID,this.domId("locations")]);
 
 	    return html;
 	},
+	locationMenuCnt:0,
+	addLocationMenu:function(data) {
+	    let html = "";
+	    let idx = this.locationMenuCnt++;
+	    html += HU.div([CLASS,"ramadda-menu-button ramadda-clickable",ID,this.domId("location_" + idx)],"Select " + (data.label||data.name)) +SPACE;
+	    this.jq("locations").append(html);
+	    let _this = this;
+	    this.jq("location_" + idx).click(function() {
+		let inner = "";
+		data.locations.sort((a,b)=>{
+		    return a.name.localeCompare(b.name);
+		});
+		data.locations.forEach(loc=>{
+		    if(Utils.isDefined(loc.latitude)) {
+			inner+=HU.div([CLASS,"ramadda-clickable ramadda-hoverable", "latitude",loc.latitude,"longitude",loc.longitude,CLASS,"display-map-location"], loc.name);
+		    } else if(Utils.isDefined(loc.north)) {
+			inner+=HU.div([CLASS,"ramadda-clickable ramadda-hoverable", "north",loc.north,"west",loc.west,"south",loc.south,"east",loc.east, CLASS,"display-map-location"], loc.name);
+		    }
+		});
+		inner = HU.div([ID,_this.domId("locationmenu"),STYLE,HU.css("max-height","200px","overflow-y","auto","padding","5px")],inner);
+		let dialog = HU.makeDialog({content:inner,my:"left top",at:"left bottom",anchor:$(this),draggable:false,header:false});
+		_this.jq("locationmenu").find(".ramadda-clickable").click(function() {
+		    if($(this).attr("longitude")) {
+			let point = createLonLat(+$(this).attr("longitude"),+$(this).attr("latitude"));
+			_this.map.getMap().zoomTo(9);
+			_this.map.setCenter(point);
+		    } else {
+			_this.map.setViewToBounds(new RamaddaBounds(+$(this).attr("north"),+$(this).attr("west"),+$(this).attr("south"),+$(this).attr("east")));
+		    }
+		    dialog.remove();
+		});
+	    });
+	},
 	initHeader2:function() {
 	    let _this = this;
+	    this.getProperty("locations","").split(",").forEach(url=>{
+		url  =url.trim();
+		if(!url.startsWith("/") && !url.startsWith("http")) {
+		    url = ramaddaBaseUrl + "/resources/" +url;			
+		}
+		let jqxhr = $.getJSON(url, (data) =>{
+		    this.addLocationMenu(data);
+		}).fail(err=>{
+		    console.log("Error loading location json:" + url+"\n" + err);
+		});
+	    });
+
+
 	    this.jq("showMarkersToggle").change(function() {
 		_this.map.setPointsVisibility($(this).is(':checked'));
 	    });
@@ -1917,8 +1972,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    });
 		}		    
 		let label = this.getProperty("regionSelectorLabel") || HU.getIconImage("fa-globe-americas");
-		let button = HU.div([CLASS,"ramadda-menu-item", STYLE,
-				     HU.css("display","inline-block","cursor","pointer","padding","1px","border","1px solid rgba(0,0,0,0)"), TITLE,"Select region", ID,this.domId("selectregion")],label)+SPACE2;
+		let button = HU.div([CLASS,"ramadda-menu-button ramadda-clickable",  TITLE,"Select region", ID,this.domId("selectregion")],label)+SPACE2;
 		this.writeHeader(ID_HEADER2_PREPREFIX, button);
 		this.jq("selectregion").click(function() {
 		    let id = _this.domId(ID_REGION_SELECTOR);

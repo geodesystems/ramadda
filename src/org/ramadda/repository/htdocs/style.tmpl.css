@@ -187,6 +187,22 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
     cursor:pointer;
 }
 
+.ramadda-menu-button {
+    display:inline-block;
+    margin-left:4px;
+    margin-right:4px;
+    margin-bottom:2px;
+    margin-bottom:2px;
+    cursor:pointer;
+    padding:4px;
+    border:var(--basic-border);
+    border-radius: 2px;
+}
+.ramadda-menu-button:hover {
+    background:var(--highlight-background);
+}
+
+
 .ramadda-button a, .ramadda-button a:hover {
     color:rgb(85, 85, 85);
     text-decoration:none;
@@ -4828,6 +4844,7 @@ a span i:hover, a:hover span i {
 .ramadda-hoverable:hover {
     background:var(--highlight-background);
 }
+
 
 .ramadda-link {
     text-decoration: none;

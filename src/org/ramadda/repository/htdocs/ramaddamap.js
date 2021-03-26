@@ -15,6 +15,7 @@ const map_esri_shaded = "esri.shaded";
 const map_esri_lightgray = "esri.lightgray";
 const map_esri_darkgray = "esri.darkgray";
 const map_esri_physical = "esri.physical";
+const map_esri_aeronautical = "esri.aeronautical";
 const map_opentopo = "opentopo";
 const map_usgs_topo = "usgs.topo";
 const map_usgs_imagery = "usgs.imagery";
@@ -1181,7 +1182,7 @@ RepositoryMap.prototype = {
 	    });
 	},1000);
     },
-    addWMSLayer: function(name, url, layer, isBaseLayer) {
+    addWMSLayer: function(name, url, layer, isBaseLayer, nonSelectable) {
         var layer = new OpenLayers.Layer.WMS(name, url, {
             layers: layer,
             format: "image/png",
@@ -1202,7 +1203,7 @@ RepositoryMap.prototype = {
         //If we have this here we get this error: 
         //http://lists.osgeo.org/pipermail/openlayers-users//2012-August/026025.html
         //        layer.reproject = true;
-        this.addLayer(layer);
+        this.addLayer(layer,nonSelectable);
     },
     addMapLayer: function(name, url, layer, isBaseLayer, isDefault) {
         var layer;
@@ -2089,6 +2090,7 @@ RepositoryMap.prototype = {
 		map_esri_darkgray,
 		map_esri_physical,
 		map_esri_terrain,
+		map_esri_aeronautical,
                 map_opentopo,
                 map_usfs_ownership,
                 map_usgs_topo,
@@ -2168,6 +2170,8 @@ RepositoryMap.prototype = {
 		    return url + this.service + "/" + this.layername + "/" + path;
 		};
 
+
+
 		wlayers.forEach(l=>{
                     var layer = new OpenLayers.Layer.TMS(
                         l.name,
@@ -2212,6 +2216,8 @@ RepositoryMap.prototype = {
             } else if (mapLayer == map_esri_topo) {
                 newLayer = this.createXYZLayer("ESRI Topo",
 					       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}");
+	    } else if(mapLayer==map_esri_aeronautical) {
+                this.addWMSLayer("ESRI Aeronautical","https://wms.chartbundle.com/mp/service","sec", true);
             } else if (mapLayer == map_esri_darkgray) {
 		newLayer = this.createXYZLayer("ESRI Dark Gray",
 					       "https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/${z}/${y}/${x}");
@@ -2302,6 +2308,8 @@ RepositoryMap.prototype = {
 	let url = "/repository/wms?version=1.1.1&request=GetMap&layers=" + mapLayer +"&FORMAT=image%2Fpng&SRS=EPSG%3A4326&BBOX=-180.0,-80.0,180.0,80.0&width=400&height=400"
 	this.addWMSLayer(Utils.makeLabel(mapLayer) +" background", url, mapLayer, true);
     },
+
+
 
 
     initSearch:  function(inputId) {

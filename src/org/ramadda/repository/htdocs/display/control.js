@@ -656,23 +656,22 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
 	},
 	setTimer(time) {
 	    if(!this.okToRun()) return;
-	    if(this.timerPending) return;
 	    this.lastTime = time;
 	    this.updateCountdown(time);
-	    this.timerPending = true;
-	    setTimeout(()=>{
-		this.timerPending = false;
+	    if(this.lastTimeout) clearTimeout(this.lastTimeout);
+	    this.lastTimeout = setTimeout(()=>{
 		this.checkReload(time);
 	    },1000);
 	},
 	checkReload: function(time) {
 	    time--;
 	    if(time<=0) {
-		this.jq(ID_COUNTDOWN).html("Reloading..." +HU.span([STYLE,"color:transparent;"],"xseconds"));
+		this.jq(ID_COUNTDOWN).html("Reloading..." +HU.span([STYLE,"color:transparent;"],""));
 		this.reloadData();
 		time = this.getPropertyInterval();
 		//Start up again in a bit so the reloading... label is shown
-		setTimeout(()=>{
+		if(this.lastTimeout) clearTimeout(this.lastTimeout);
+		this.lastTimeout = setTimeout(()=>{
 		    this.setTimer(time);
 		},1000);
 	    } else {

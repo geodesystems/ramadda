@@ -4013,7 +4013,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (newMenuItems.length > 0)
                 menus.push(newMenu);
 
-
             var topMenus = "";
             for (var i = 0; i < menus.length; i++) {
                 topMenus += HU.tag(TAG_LI, [], menus[i]);
