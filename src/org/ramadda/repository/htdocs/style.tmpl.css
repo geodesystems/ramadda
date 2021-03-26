@@ -11,17 +11,14 @@
     --nav-link-color:#000;
 
 
-    --highlight-color:#9B1E25;
     --highlight-color:#398B54;
     --highlight-color:#FA2900;
-    --highlight-color:#0657F9;
     --highlight-color:#213E86;
-    --highlight-color:#8D8BBD;
     --highlight-color:#4946DD;
     --highlight-color:#1D9EAE;
-    --highlight-color:#95D0B3;
+    --highlight-color:#0657F9;
     --highlight-color:#0074D9;
-
+    --highlight-color:#9B1E25;
     --hover-color:var(--highlight-color);
 
     --highlight-background: #eee;
@@ -439,7 +436,7 @@ i.fa, i.fas,i.fab {
 .ramadda-nav-left-toggle  {
     position:absolute;
     left:5px;
-    top:0px;
+    top:10px;
     cursor:pointer;
 }
 
@@ -1998,8 +1995,6 @@ table.dataTable tbody td {
 
 .entry-list-row:hover {
     background: var(--highlight-background);
-    border-bottom:  var(--highlight-border);
-    border-top:  var(--highlight-border);    
 }
 
 

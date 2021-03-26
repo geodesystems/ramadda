@@ -18,6 +18,19 @@ ${imports}
    left:0;
    top:0;
 }
+.ramadda-header-center {
+    position: absolute;
+    top:0px;
+    left:50%;
+    transform: translateX(-50%);
+    font-size:150%;
+    max-width:50%;
+    overflow-x:hidden;
+    white-space:nowrap; 
+}
+.ramadda-header-center a {
+    text-decoration:none !important;
+}
 .ramadda-breadcrumbs {
     border-bottom : 0px transparent;
 }
@@ -33,10 +46,12 @@ ${headfinal}
 </head>
 <body>
 <div class="ramadda-header">
+<div class="ramadda-header-center"></div>
 <table border="0" width="100%" cellspacing="0" cellpadding="0"><tr valign="bottom">
 <td width="5%"><a href="${logo.url}"><img valign="bottom" class="ramadda-logo-image"  src="${logo.image}" ></a></td>
-<td>${entry.header} </td>
-<td align="right">${links}</td></tr></table>
+<td>${entry.header}</td>
+<td align=right>${links}</td>
+</table>
 </div>
 <div class="ramadda-outercontents">
 <div class="ramadda-innercontent">

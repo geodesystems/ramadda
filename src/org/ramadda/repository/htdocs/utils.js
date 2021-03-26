@@ -1555,6 +1555,27 @@ var Utils =  {
 				  );
         });
 
+	let pageTitle = $(parent+".ramadda-page-title");
+	let headerCenter = $(parent +".ramadda-header-center");
+	if(pageTitle.length && headerCenter.length) {
+	    $(window).scroll(()=>{
+		let titleTop = pageTitle.offset().top;
+		let bottom = headerCenter.offset().top + headerCenter.height();
+		if(titleTop<bottom-10) {
+		    if(!this.showingHeaderCenter) {
+			this.showingHeaderCenter = true; 
+			headerCenter.html(pageTitle.html());
+			pageTitle.html("&nbsp;");
+		    }
+		} else {
+		    if(this.showingHeaderCenter) {
+			this.showingHeaderCenter = false
+			pageTitle.html(headerCenter.html());
+			headerCenter.html("&nbsp;");
+		    }
+		}
+	    });
+	}
         //Buttonize
         $(parent + ':submit').button().click(function(event) {});
         $(parent + '.ramadda-button').button().click(function(event) {});
