@@ -251,6 +251,7 @@ function RepositoryMap(mapId, params) {
         layer: null,
         markers: null,
         vectors: null,
+	allLayers: [],
         loadedLayers: [],
 	nonSelectLayers: [],
 	doPopup:true,
@@ -742,6 +743,7 @@ RepositoryMap.prototype = {
                 _this.baseLayerChanged();
             });
             _this.getMap().events.register("zoomend", "", function() {
+		_this.zoomChanged();
                 _this.locationChanged();
 		_this.setNoPointerEvents();
             });
@@ -780,6 +782,30 @@ RepositoryMap.prototype = {
     getBounds: function() {
 	return  this.transformProjBounds(this.getMap().getExtent());
     },
+    zoomChanged: function() {
+	//Don't do anything for now
+	return;
+	let zoom = this.map.getZoom();
+	console.log("zoom:" + zoom);
+	this.allLayers.forEach(layer=>{
+	    if(!Utils.isDefined(layer.minZoomLevel) && !Utils.isDefined(layer.maxZoomLevel)) return;
+	    let current = layer.getVisibility();
+	    let withinRange = true;
+	    if(Utils.isDefined(layer.minZoomLevel)) {
+		withinRange= layer.minZoomLevel<zoom;
+	    }
+	    if(Utils.isDefined(layer.maxZoomLevel)) {
+		withinRange= withinRange && layer.maxZoomLevel>zoom
+	    }
+	    if(withinRange) {
+		if(!current) layer.setVisibility(true);
+		return;
+	    }
+	    if(current) layer.setVisibility(false);
+//	    layer.previousVisibility = current;
+	});
+    },
+
     locationChanged: function() {
 	var latlon = this.getBounds();
 	var bits = 100000;
@@ -1077,6 +1103,8 @@ RepositoryMap.prototype = {
 	return null;
     },
     addLayer: function(layer,nonSelectable) {
+	this.allLayers.push(layer);
+	layer.initialVisibility  = layer.getVisibility();
 	if (this.map != null) {
             this.getMap().addLayer(layer);
 	    if(nonSelectable)
@@ -1675,6 +1703,7 @@ RepositoryMap.prototype = {
 	this.removeLayer(layer);
     },
     removeLayer:  function(layer) {
+	this.allLayers = OpenLayers.Util.removeItem(this.allLayers, layer);
 	if(this.nonSelectLayers)
 	    this.nonSelectLayers = OpenLayers.Util.removeItem(this.nonSelectLayers, layer);
 	if(this.loadedLayers)
@@ -2152,7 +2181,7 @@ RepositoryMap.prototype = {
 		    {name:'GOES Infrared', id:'goes-ir-4km-900913', alias:'goes-ir'},
 		    {name:'GOES Water Vapor', id:'goes-wv-4km-900913', alias:'goes-wv'},
 		    {name:'GOES Visible', id:'goes-vis-1km-900913', alias:'goes-visible'},
-		    {name:'NWS Radar', id:'nexrad-n0q-900913',alias:'nexrad'},
+		    {name:'NWS Radar', maxZoom:8,id:'nexrad-n0q-900913',alias:'nexrad'},
 		    {name:'24 hr precip', id:'q2-p24h-900913',alias:'precipition'}];
 
 		let _this = this;
@@ -2179,7 +2208,9 @@ RepositoryMap.prototype = {
                             type: 'png',
                             visibility: false,
                             getURL: get_my_url,
-                            isBaseLayer: false
+                            isBaseLayer: false,
+			    maxZoomLevel: l.maxZoom,
+			    minZoomLevel: l.minZoom,			    
                         }, {}
                     );
 		    this.baseLayers[l.id] = layer;
