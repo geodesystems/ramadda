@@ -380,6 +380,8 @@ public class GeoUtils {
                 path = "/org/ramadda/util/geo/resources/counties.zip";
             } else if (path.equals("states")) {
                 path = "/org/ramadda/util/geo/resources/states.zip";
+            } else if (path.equals("timezones")) {
+                path = "/org/ramadda/util/geo/resources/timezones.zip";		
             }
             if ( !path.endsWith(".zip") && !path.startsWith("/")) {
                 path = "/org/ramadda/util/geo/resources/" + path + ".zip";
@@ -409,7 +411,6 @@ public class GeoUtils {
             throws Exception {
         Feature feature = findFeature(path, lat, lon);
         if (feature != null) {
-            System.err.println("F:" + feature);
             Hashtable data = feature.getData();
             if (data != null) {
                 return data.get(field);
@@ -421,7 +422,7 @@ public class GeoUtils {
 
     /** _more_          */
     private static final String[] NAME_FIELDS = new String[] { "name",
-            "state_name", "cntry_name" };
+							       "state_name", "cntry_name","tzid" };
 
     /**
      * _more_
@@ -1020,6 +1021,7 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
     public static void main(String[] args) throws Exception {
         String path = "uscounties";
         path = "states";
+	path="timezones";
         Object f = findFeatureName(path, 40, -105, null);
         System.err.println("f:" + f);
         if (true) {

@@ -1621,7 +1621,7 @@ public class CsvUtil {
         new Cmd("-statename", "Add state name from state ID",
                 new Arg("column")),
 	new Cmd("-geoname", "Look up location name",
-                new Arg("lookup","('counties' or 'states' or 'countries')"),
+                new Arg("lookup","('counties' or 'states' or 'countries' or 'timezones')"),
                 new Arg("lat", "Latitude column", "type", "column"),
                 new Arg("lon", "Longitude column", "type", "column")),	
 	new Cmd("-elevation", "Look up elevation(using 1/3 arc-second DEM)",
