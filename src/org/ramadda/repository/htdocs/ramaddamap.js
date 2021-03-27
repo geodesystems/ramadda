@@ -59,6 +59,41 @@ OpenLayers.Renderer.symbol.plane = [5,0,5,0,4,1,4,3,0,5,0,6,4,5,4,8,2,10,3,10,5,
 
 /*
   to render a new shape this mirrors the pts about the y axis
+
+//This is the web page code for grabbing the outline
+
+<img src=/plane.png width=200 id=plane>
+<div id=click>click</div>
++javascript
+var pts =[]
+$("#click").click(()=>{
+    let w2 =$("#plane").width()/2
+    let h2 =$("#plane").height()/2
+    let all = [];
+    for(let i=0;i<pts.length;i+=2) {
+      let x = pts[i];
+      let y  = pts[i+1];
+      let x2 = w2-(x-w2)    
+       all.push(x2,y)
+    }
+for(let i=pts.length-1;i>=0;i-=2) {
+    all.push(pts[i-1],pts[i]);
+    }
+//pts=all;
+
+pts = pts.map(p=>{
+return p
+    return Math.round(p/8);
+})
+    let csv = pts.join(",");
+    console.log(csv)
+});
+$("#plane").click(function(e) {
+    pts.push(e.offsetX,e.offsetY);
+    console.log(e.offsetX+"," +e.offsetY)
+-javascript
+
+//this is the code that runs here with pts coming from the web page code
 let pts = [99,2,109,4,117,17,117,68,192,107,192,123,117,106,117,157,151,190,150,197,102,183]
 let w2 =100;
 let all = [];

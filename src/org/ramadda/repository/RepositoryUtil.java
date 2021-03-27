@@ -43,7 +43,8 @@ import java.util.TimeZone;
  */
 public class RepositoryUtil {
 
-    //Make sure to change the version properties in the top-level build.properties
+    //When changing the major version make sure to change the version properties in the top-level build.properties
+    //and in the /bin/releasecode.sh script
 
     /** _more_ */
     private static final double MAJOR_VERSION = 5.0;
