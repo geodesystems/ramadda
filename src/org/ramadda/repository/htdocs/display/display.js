@@ -473,12 +473,11 @@ function DisplayThing(argId, argProperties) {
 	    if(this.dateFormat) {
 		let dttm = Utils.formatDateWithFormat(date,this.dateFormat,true);
 		if(dttm) {
-		    //Force a toString
-		    return dttm+"";
+		    return String(dttm);
 		}
 	    }
             if (!date.toLocaleDateString) {
-                return "" + date;
+                return String(date);
             }
             var suffix;
             if (args && !Utils.isDefined(args.suffix))
@@ -684,6 +683,7 @@ function DisplayThing(argId, argProperties) {
 	    if(!fields) return "";
 	    let linkField = this.getFieldById(null,this.getProperty("linkField"));
 	    let titleField = this.getFieldById(null,this.getProperty("titleField"));
+	    let titleTemplate = this.getProperty("titleTemplate");	    
 	    let descField = this.getFieldById(null,this.getProperty("descriptionField"));
 	    let link  = linkField?record.getValue(linkField.getIndex()):null;
 	    let showDate = this.getProperty("showDate", true);
@@ -707,18 +707,28 @@ function DisplayThing(argId, argProperties) {
 
 	    let templateProps = {};
 	    let itemsPerColumn=this.getProperty("itemsPerColumn",50);
+
+	    let attrs={};
 	    if(template) {
-		let attrs = Utils.tokenizeMacros(template,{dateFormat:this.getProperty("dateFormat")}).getAttributes("default");
-		if(attrs) {
-		    itemsPerColumn = attrs["itemsPerColumn"] || itemsPerColumn;
-		}
+		attrs = Utils.tokenizeMacros(template,{dateFormat:this.getProperty("dateFormat")}).getAttributes("default");
 	    }
+	    itemsPerColumn = attrs["itemsPerColumn"] || itemsPerColumn;
 	    let values = "";
-	    if(titleField) {
-		let title = record.getValue(titleField.getIndex());
+	    if(titleField || titleTemplate) {
+		let title="";
+		if(titleTemplate) {
+		    if(!titleTemplate.startsWith("${default")) {
+			title = this.getRecordHtml(record, fields, titleTemplate, debug);
+		    }
+		} else {
+		    title = record.getValue(titleField.getIndex());
+		    if(title.getTime)
+			title = this.formatDate(title);
+		    title = HU.center(HU.h3(title));
+		}
 		if(link)
 		    title = HU.href(link,title);
-		values+=HU.center(HU.h3(title));
+		values+=title;
 		link = null;
 	    }
 
@@ -744,6 +754,9 @@ function DisplayThing(argId, argProperties) {
                 for (let i = 0; i < fields.length; i++) {
                     var field = fields[i];
 		    if(tooltipNots[field.getId()]) continue;
+		    if(attrs[field.getId()+".hide"]) {
+			continue;
+		    }
 		    if(field==titleField || field==descField) continue;
                     if (doDerived == 0 && !field.derived) continue;
                     else if (doDerived == 1 && field.derived) continue;
@@ -1090,6 +1103,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:"tooltip",doGetter:false,ex:"${default}"},
 	{p:"tooltipPositionMy",ex:"left top"},
 	{p:"tooltipPositionAt",ex:"left bottom+2"},		
+	{p:"recordTemplate",doGetter:false,ex:"${default}",tt:"Template for popups etc. Can be ${default attrs} or '${field} .. ${fieldn}...'"},
+	{p:"titleTemplate",doGetter:false,ex:"${field1}",tt:"Template for title in ${default} template display"},	
 	{p:"itemsPerColumn",ex:10,tt:'How many items to show in each column in a tooltip'},
 	{p:"labelColumnAttrs",ex:"align,right",tt:"Attributes of the label column in the record templates"},
 	{p:"labelWidth",ex:"10",tt:"Width of labels the record templates"},	
