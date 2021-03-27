@@ -55,6 +55,33 @@ OpenLayers.Renderer.symbol.lightning = [0, 0, 4, 2, 6, 0, 10, 5, 6, 3, 4, 5, 0, 
 OpenLayers.Renderer.symbol.rectangle = [0, 0, 4, 0, 4, 10, 0, 10, 0, 0];
 OpenLayers.Renderer.symbol.church = [4, 0, 6, 0, 6, 4, 10, 4, 10, 6, 6, 6, 6, 14, 4, 14, 4, 6, 0, 6, 0, 4, 4, 4, 4, 0];
 OpenLayers.Renderer.symbol._x = [0, 0, 6,6,3,3,6,0,0,6,3,3];
+OpenLayers.Renderer.symbol.plane = [5,0,5,0,4,1,4,3,0,5,0,6,4,5,4,8,2,10,3,10,5,9,5,9,8,10,8,10,6,8,6,5,10,6,10,5,6,3,6,1,5,0,5,0];
+
+/*
+  to render a new shape this mirrors the pts about the y axis
+let pts = [99,2,109,4,117,17,117,68,192,107,192,123,117,106,117,157,151,190,150,197,102,183]
+let w2 =100;
+let all = [];
+for(let i=0;i<pts.length;i+=2) {
+    let x = pts[i];
+    let y  = pts[i+1];
+    let x2 = w2-(x-w2)    
+    all.push(x2,y)
+}
+for(let i=pts.length-1;i>=0;i-=2) {
+    all.push(pts[i-1],pts[i]);
+}
+pts = all;
+pts = pts.map(p=>{
+    return Math.round(p/20);
+})
+console.log(pts.join(","));
+*/
+
+
+
+
+
 
 
 
@@ -611,6 +638,15 @@ RepositoryMap.prototype = {
 		    console.log("centerOnMarkers using markers.getDataExtent");
                 bounds = this.transformProjBounds(dataBounds);
             }
+            if (this.circles) {
+                var dataBounds = this.circles.getDataExtent();
+                var b = this.transformProjBounds(dataBounds);
+                if (bounds)
+                    bounds.extend(b);
+                else
+                    bounds = b;
+	    }
+
             if (!justMarkerLayer) {
                 if (this.lines) {
                     var dataBounds = this.lines.getDataExtent();
@@ -747,6 +783,7 @@ RepositoryMap.prototype = {
 	$("#" + this.mapDivId).html(HtmlUtils.div(["style","width:100%;height:100%;position:relative;","id",this.mapDivId+"_themap"]));
 	$("#" + this.mapDivId+"_themap").append(HtmlUtils.div(["id",this.mapDivId+"_progress", "style","z-index:2000;position:absolute;top:10px;left:50px;"],""));
 	$("#" + this.mapDivId+"_themap").append(HtmlUtils.div(["id",this.mapDivId+"_label", "style","z-index:2000;position:absolute;bottom:10px;left:10px;"],""));
+	$("#" + this.mapDivId+"_themap").append(HtmlUtils.div(["id",this.mapDivId+"_toolbar", "style","z-index:2000;position:absolute;top:10px;left:50%;    transform: translateX(-50%);"],""));
 	if(this.showBookmarks || true) {
 	    //		$("#" + this.mapDivId+"_themap").append(HtmlUtils.div(["id",this.mapDivId+"_bookmarks", "style","z-index:2000;position:absolute;top:140px;left:20px;"],HtmlUtils.getIconImage("fa-bookmark")));
 	}
@@ -849,6 +886,10 @@ RepositoryMap.prototype = {
         }
 	ramaddaMapShareState(this,"baseLayer");
     },
+    appendToolbar: function(html) {
+	$("#" + this.mapDivId+"_toolbar").append(html);
+    },
+
     setMapDiv: function(divid) {
         this.mapHidden = false;
         this.mapDivId = divid;
@@ -1204,6 +1245,7 @@ RepositoryMap.prototype = {
         //http://lists.osgeo.org/pipermail/openlayers-users//2012-August/026025.html
         //        layer.reproject = true;
         this.addLayer(layer,nonSelectable);
+	return layer;
     },
     addMapLayer: function(name, url, layer, isBaseLayer, isDefault) {
         var layer;
@@ -2171,7 +2213,6 @@ RepositoryMap.prototype = {
 		};
 
 
-
 		wlayers.forEach(l=>{
                     var layer = new OpenLayers.Layer.TMS(
                         l.name,
@@ -2217,7 +2258,7 @@ RepositoryMap.prototype = {
                 newLayer = this.createXYZLayer("ESRI Topo",
 					       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}");
 	    } else if(mapLayer==map_esri_aeronautical) {
-                this.addWMSLayer("ESRI Aeronautical","https://wms.chartbundle.com/mp/service","sec", true);
+                newLayer = this.addWMSLayer("ESRI Aeronautical","https://wms.chartbundle.com/mp/service","sec", true);
             } else if (mapLayer == map_esri_darkgray) {
 		newLayer = this.createXYZLayer("ESRI Dark Gray",
 					       "https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/${z}/${y}/${x}");
@@ -2281,6 +2322,7 @@ RepositoryMap.prototype = {
                 this.firstLayer = newLayer;
             }
             if (newLayer != null) {
+		this.baseLayers[mapLayer] = newLayer;
                 newLayer.ramaddaId = mapLayer;
                 if (mapLayer == this.defaultMapLayer) {
                     this.defaultOLMapLayer = newLayer;

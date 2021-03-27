@@ -188,6 +188,7 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
 }
 
 .ramadda-menu-button {
+    background:#fff;
     display:inline-block;
     margin-left:4px;
     margin-right:4px;
@@ -196,8 +197,13 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
     cursor:pointer;
     padding:4px;
     border:var(--basic-border);
-    border-radius: 2px;
+    border-radius: 4px;
 }
+
+.ramadda-menu-button.bold {
+    border:1px solid #888;
+}
+
 .ramadda-menu-button:hover {
     background:var(--highlight-background);
 }

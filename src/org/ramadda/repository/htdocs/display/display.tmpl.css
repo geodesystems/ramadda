@@ -1292,7 +1292,7 @@ svg > g > g:last-child { pointer-events: none }
 .display-map-map {
      min-width:200px; 
      min-height:200px; 
-     /*border:1px #ccc solid; */
+     border:var(--basic-border);
 }
 
 .display-map-latlon {
