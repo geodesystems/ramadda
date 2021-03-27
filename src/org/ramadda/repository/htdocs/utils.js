@@ -854,12 +854,9 @@ var Utils =  {
 	    fmt = "yyyymmdd";
 	}
 	let _fmt = fmt.toLowerCase();
-        if (_fmt == "yyyy") {
-            return Utils.formatDateYYYY(date);
-        } else if (_fmt == "yyyymmdd") {
+	//Keep these formats for backwards compat
+	if (_fmt == "yyyymmdd") {
             return Utils.formatDateYYYYMMDD(date);
-        } else if (_fmt == "yyyy-mm-dd") {
-            return Utils.formatDateYYYYMMDD(date);	    
 	} else if (_fmt == "yyyymmddhh") { 
 	    return Utils.formatDateYYYYMMDDHH(date);
 	} else if (_fmt == "yyyymmddhhmm") { 
@@ -879,12 +876,7 @@ var Utils =  {
 	} else if (_fmt == "hhmm") {
             return Utils.formatDateHHMM(date);
 	} else {
-	    //Use the new date formatter
-	    return String(date.format(fmt));
-	    if(returnNullIfNotFound) {
-		return null;
-	    }
-	    //	    return Utils.formatDate(date);
+	    return String(date.format(fmt,"UTC:",true));
 	}
     },
     formatDate: function(date, options, args) {
@@ -1129,155 +1121,172 @@ var Utils =  {
 		apply: function(source, debug) {
 		    //		    if(debug) console.log("macro:" + JSON.stringify(source,null,2));
 		    let cnt = 0;
-		    let s ="";
+		    let tokenFunc = t=>{
+			let value = source[t.tag];
+			let s = "";
+			if(t.tag=="func") {
+			    let f = t.attrs.f;
+			    if(!f) {
+				return "&lt;no function defined&gt;";
+			    }
+			    let code = "function macroFunc() {\n"
+			    for(a in source) {
+				let v = source[a];
+				if((typeof v)!="number") v = '"' + v +'"';
+				code += a +"=" + v+";\n";
+			    }
+			    code+= "return " + f+";\n}\n"
+			    code+="macroFunc()";
+			    try {
+				value=  eval(code);
+			    } catch(err) {
+				return "&lt;Error:" + err+"&gt;";
+			    }
+			}
+			if(t.attrs["nonblank"]) {
+			    if(String(value).length==0) return "";
+			}
+			if(!Utils.isDefined(value)) {
+			    return "${" + t.macro+"}";
+			} 
+			if(value.getTime) {
+			    return  Utils.formatDateWithFormat(value,t.attrs["format"]||opts.dateFormat);
+			} 
+			if(t.attrs["missing"] && isNaN(value)) {
+			    return  t.attrs["missing"]
+			} 
+			if(t.attrs["youtube"]) {
+			    let toks = value.match(/.*watch\?v=(.*)$/);
+			    if(!toks || toks.length!=2) {
+				s +=  HU.href(value,value);
+			    } else {
+				let id = toks[1];
+				let autoplay  = t.attrs["autoplay"]||"false";
+				let playerId = "video_1";
+				let embedUrl = "//www.youtube.com/embed/" + id +
+				    "?enablejsapi=1&autoplay=" + (autoplay=="true"?"1":"0") +"&playerapiid=" + playerId;
+				s +=  HU.href(value,"Link") +"<br>";
+				s+=  HU.tag("iframe",[ID,"ytplayer", 'type','text/html','frameborder','0',
+						      WIDTH,t.attrs['width']||400,HEIGHT,t.attrs["height"]||400, 
+						      SRC,embedUrl
+						     ]);
+			    }
+			    return s;
+			}
+
+			if(t.attrs["list"]) {
+			    value = String(value);
+			    s+="<ul>"
+			    value.split("\n").forEach(line=>{
+				line = line.trim();
+				if(line!="") {
+				    s+="<li> " + line
+				}
+			    });
+			    s+="</ul>"
+			    return s;
+			}
+			if(t.attrs["pre"]) {
+			    value = String(value);
+			    if(value.trim()!="") 
+				value = "<pre class=thin_pre>" + value.trim()+"</pre>"
+			    return value;
+			}
+			if(t.attrs["urlField"]) {
+			    let url =  source[t.attrs["urlField"]];
+			    if(Utils.stringDefined(url)) {
+				value = HU.href(url,value);
+			    }
+			}
+			if(t.attrs["offset1"]) {
+			    value = value+ parseFloat(t.attrs["offset1"]);
+			}
+			if(t.attrs["scale"]) {
+			    value = value* parseFloat(t.attrs["scale"]);
+			}
+			if(t.attrs["offset2"]) {
+			    value = value+ parseFloat(t.attrs["offset2"]);
+			}
+			if(t.attrs["decimals"]) {
+			    value = parseFloat(value);
+			    let scale = Math.pow(10,t.attrs["decimals"]);
+			    value = (Math.floor(value * scale) /scale);
+			}
+			if(t.attrs["format"]) {
+			    let fmt = t.attrs["format"]
+			    if(fmt == "comma") {
+				if(isNaN(value)) value=0;
+				else if(value!=0)
+				    value = Utils.formatNumberComma(value);
+			    }
+			}
+			if(t.attrs["lowercase"]) {
+			    value = String(value).toLowerCase();
+			}
+			if(t.attrs["uppercase"]) {
+			    value = String(value).toUpperCase();
+			}			
+			if(t.attrs["camelcase"]) {
+			    value = Utils.camelCase(String(value), true);
+			}
+			if(t.attrs["suffix"]) {
+			    value = value+t.attrs["suffix"];
+			}
+			if(t.attrs["prefix"]) {
+			    value = t.attrs["prefix"]+value;
+			}
+			if(t.attrs["toggle"]) {
+			    value = HtmlUtils.toggleBlock(t.attrs["label"]||"More", value,false);
+			}
+			if(t.attrs["image"]) {
+			    if(value!="") {
+				let title = "";
+				if(t.attrs["title"]) {
+				    title = t.attrs["title"];
+				    for(a in source)
+					title = title.replace("{" + a+"}",source[a]);
+				}
+				let attrs = ["title", title];
+				if(t.attrs["height"]) {
+				    attrs.push("height");
+				    attrs.push(t.attrs["height"]);
+				} else {
+				    attrs.push("width");
+				    attrs.push(t.attrs["width"]||"100%");
+				}
+
+				value = HtmlUtils.image(value,attrs);
+			    }
+			}
+
+			if(t.attrs["template"]) {
+			    value = t.attrs["template"].replace("{value}",value);
+			}
+			if(t.attrs["templateif"]) {
+			    let toks = t.attrs["templateif"].split(":");
+			    let pattern = toks[0];
+			    let template = toks.slice(1).join(":");
+			    value = String(value);
+			    if(value.match(pattern)) {
+				value = template.replace("{value}",value);
+			    }
+			}
+
+			if(t.attrs["maxwidth"]) {
+			    let width = t.attrs["maxwidth"];
+			    value =  HU.div([STYLE,HU.css("display","inline-block","white-space","nowrap","max-width",HU.getDimension(width),"overflow-x","auto")],value);
+			}
+			s+=value;
+			return s;
+		    };
+		    let s = "";
 		    this.tokens.forEach(t=>{
 			if(t.type=="string") {
 			    s+=t.s;
 			} else {
-			    let value = source[t.tag];
-			    //			    if(debug) console.log("macro tag:" + t.tag +" value:" + value);
-			    if(t.tag=="func") {
-				let f = t.attrs.f;
-				if(!f) {
-				    s+="&lt;no function defined&gt;";
-				    return;
-				}
-				let code = "function macroFunc() {\n"
-				for(a in source) {
-				    let v = source[a];
-				    if((typeof v)!="number") v = '"' + v +'"';
-				    code += a +"=" + v+";\n";
-				}
-				code+= "return " + f+";\n}\n"
-				code+="macroFunc()";
-				try {
-				    let result = eval(code);
-				    s+=result;
-				    return;
-				} catch(err) {
-				    s+="&lt;Error:" + err+"&gt;";
-				    return;
-				}
-			    }
-			    if(!Utils.isDefined(value)) {
-				s+="${" + t.macro+"}";
-				return;
-			    } 
-			    if(value.getTime) {
-				value =  Utils.formatDateWithFormat(value,t.attrs["format"]||opts.dateFormat);
-			    } else {
-				if(t.attrs["missing"] && isNaN(value)) {
-				    s+= t.attrs["missing"]
-				    return;
-				} 
-				if(t.attrs["pre"]) {
-				    value = String(value);
-				    if(value.trim()!="") 
-					value = "<pre class=thin_pre>" + value.trim()+"</pre>"
-				    s+=value;
-				    return;
-				}
-				if(t.attrs["list"]) {
-				    value = String(value);
-				    s+="<ul>"
-				    value.split("\n").forEach(line=>{
-					line = line.trim();
-					if(line!="") {
-					    s+="<li> " + line
-					}
-				    });
-				    s+="</ul>"
-				    return;
-				}
-				if(t.attrs["youtube"]) {
-				    let toks = value.match(/.*watch\?v=(.*)$/);
-				    if(!toks || toks.length!=2) {
-					s +=  HU.href(value,value);
-				    } else {
-					let id = toks[1];
-					let autoplay  = t.attrs["autoplay"]||"false";
-					let playerId = "video_1";
-					let embedUrl = "//www.youtube.com/embed/" + id +
-					    "?enablejsapi=1&autoplay=" + (autoplay=="true"?"1":"0") +"&playerapiid=" + playerId;
-					s +=  HU.href(value,"Link") +"<br>";
-					s+=  HU.tag("iframe",[ID,"ytplayer", 'type','text/html','frameborder','0',
-							      WIDTH,t.attrs['width']||400,HEIGHT,t.attrs["height"]||400, 
-							      SRC,embedUrl
-							     ]);
-				    }
-				    return;
-				}
-				if(t.attrs["urlField"]) {
-				    let url =  source[t.attrs["urlField"]];
-				    if(Utils.stringDefined(url)) {
-					value = HU.href(url,value);
-				    }
-				}
-				if(t.attrs["nonblank"]) {
-				    if(String(value).length==0) return;
-				}
-				if(t.attrs["suffix"]) {
-				    value = value+t.attrs["suffix"];
-				}
-				if(t.attrs["prefix"]) {
-				    value = t.attrs["prefix"]+value;
-				}
-
-				if(t.attrs["offset1"]) {
-				    value = value+ parseFloat(t.attrs["offset1"]);
-				}
-				if(t.attrs["scale"]) {
-				    value = value* parseFloat(t.attrs["scale"]);
-				}
-				if(t.attrs["offset2"]) {
-				    value = value+ parseFloat(t.attrs["offset2"]);
-				}
-				if(t.attrs["decimals"]) {
-				    value = parseFloat(value);
-				    let scale = Math.pow(10,t.attrs["decimals"]);
-				    value = (Math.floor(value * scale) /scale);
-				}
-				if(t.attrs["format"]) {
-				    let fmt = t.attrs["format"]
-				    if(fmt == "comma") {
-					if(isNaN(value)) value=0;
-					else if(value!=0)
-					    value = Utils.formatNumberComma(value);
-				    }
-				}
-				if(t.attrs["toggle"]) {
-				    value = HtmlUtils.toggleBlock(t.attrs["label"]||"More", value,false);
-				}
-				if(t.attrs["image"]) {
-				    if(value!="") {
-					let title = "";
-					if(t.attrs["title"]) {
-					    title = t.attrs["title"];
-					    for(a in source)
-						title = title.replace("{" + a+"}",source[a]);
-					}
-					let attrs = ["title", title];
-					if(t.attrs["height"]) {
-					    attrs.push("height");
-					    attrs.push(t.attrs["height"]);
-					} else {
-					    attrs.push("width");
-					    attrs.push(t.attrs["width"]||"100%");
-					}
-
-					value = HtmlUtils.image(value,attrs);
-				    }
-				}
-			    }
-			    if(t.attrs["template"]) {
-				value = t.attrs["template"].replace("{value}",value);
-			    }
-			    if(t.attrs["maxwidth"]) {
-				let width = t.attrs["maxwidth"];
-				value =  HU.div([STYLE,HU.css("display","inline-block","white-space","nowrap","max-width",HU.getDimension(width),"overflow-x","auto")],value);
-			    }
-
-			    s+=value;
+			    let v = tokenFunc(t);
+			    if(!v) return;
+			    s+=v;
 			}
 		    });
 		    return s;
@@ -4660,6 +4669,7 @@ var dateFormat = function() {
 
     // Regexes and supporting functions are cached through closure
     return function(date, mask, utc) {
+
 	var dF = dateFormat;
 
 	// You can't provide utc if you skip other args (use the "UTC:" mask prefix)
@@ -4679,6 +4689,7 @@ var dateFormat = function() {
 	    mask = mask.slice(4);
 	    utc = true;
 	}
+
 
 	var _ = utc ? "getUTC" : "get",
 	    d = date[_ + "Date"](),
@@ -4781,3 +4792,13 @@ attrs.forEach(l=>{
 
 ****/
 
+
+
+/*
+let dttm  =new Date();
+["yyyymmdd", "yyyy-mm-dd",  "yyyymmddhh","yyyymmddhhmm", "yyyymm", "yearmonth", "monthdayyear", "monthday", "mon_day", "mdy", "hhmm"].forEach(fmt=>{
+    let d1 =  Utils.formatDateWithFormat(dttm,fmt);
+    let d2 =  dttm.format(fmt);
+    console.log("d1:" + d1 +"    d2:" + d2);
+});
+*/
