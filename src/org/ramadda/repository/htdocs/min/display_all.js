@@ -31095,13 +31095,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.haveCalledUpdateUI = false;
 	    this.setProperty("colorBy", field);
 	    this.vectorMapApplied  = false;
-	    this.updateUI();
+	    this.updateUI({fieldChanged:true});
 	},
 	sizeByFieldChanged:function(field) {
 	    this.haveCalledUpdateUI = false;
 	    this.setProperty("sizeBy", field);
 	    this.vectorMapApplied  = false;
-	    this.updateUI();
+	    this.updateUI({fieldChanged:true});
 	},
 	dataFilterChanged: function(args) {
 	    if(!args) args = {};
@@ -31265,7 +31265,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.map.setLabel(HU.div([ATTR_CLASS, "display-map-message"], msg));
 	},	
 	startProgress: function() {
-	    this.setMessage(this.getProperty("loadingMessage","Loading map..."));
+	    this.setMessage(this.getProperty("loadingMessage","Creating map..."));
 	},
 	clearProgress: function() {
 	    if(this.errorMessage) {
@@ -31356,22 +31356,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.loadShapes(records);
 	    }
 
-//	    this.startProgress();
-//	    if(args.reload) return;
-
-
 	    if(debug) console.log("displaymap.updateUI reload=" +args.reload);
             if (records == null) {
 		if(debug) console.log("\tno data");
                 return;
             }
 
-	    if(!args.dataFilterChanged) {
-		if(!this.updatingFromClip) {
-		    this.setMessage(args.reload?"Reloading map...":"Creating display...");
-		}
-		this.updatingFromClip = false;
+	    if(!this.updatingFromClip) {
+		this.setMessage(args.dataFilterChanged|| args.fieldChanged|| args.reload?"Reloading map...":"Creating map...");
 	    }
+	    this.updatingFromClip = false;
+
 	    setTimeout(()=>{
 		try {
 		    this.updateUIInner(args, pointData, records,debug);
@@ -31604,7 +31599,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.checkHeatmapReloadTime = null;
 	    this.reloadHeatmap = true;
 	    this.haveCalledUpdateUI = false;
-	    console.log("updateUI");
 	    this.updateUI();
 	},
 	createHeatmap(records, fields, bounds) {
@@ -32885,7 +32879,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	    this.haveCalledUpdateUI = false;
 	    this.setProperty("colorBy", field);
 	    this.vectorMapApplied  = false;
-	    this.updateUI();
+	    this.updateUI({colorByFieldChanged:true});
 	},
 	updateUI: function() {
 	    let records = this.filterData();
