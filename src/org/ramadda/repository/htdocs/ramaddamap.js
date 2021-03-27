@@ -1041,8 +1041,12 @@ RepositoryMap.prototype = {
     handleFeatureclick: function(layer, feature, center) {
         if (!layer)
             layer = feature.layer;
+
+
         this.dateFeatureSelect(feature);
-        if (layer.canSelect === false) return;
+        if (layer.canSelect === false) {
+	    return;
+	}
         if (layer.selectedFeature) {
             this.unselectFeature(layer.selectedFeature);
         }
@@ -3922,6 +3926,7 @@ RepositoryMap.prototype = {
 	    this.circles.layerName = "circles";
             this.circles.setZIndex(1);
             this.addVectorLayer(this.circles);
+	    this.circles.canSelect = true;
         }
 	return this.circles;
     },

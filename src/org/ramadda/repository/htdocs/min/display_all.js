@@ -31140,7 +31140,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			let layer = this.map.baseLayers[a];
 			if(!layer.isBaseLayer) continue;
 			if(layer.getVisibility()) on = a;
-			console.log(layer.name +" " + on);
 			items.push([a,layer.name]);
 		    }
 		    html += HU.span([TITLE,"Choose base layer", CLASS,"display-filter"],  HU.select("",[ID,this.domId("baselayers")],items,on));
@@ -31194,7 +31193,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.jq("baselayers").change(function() {
 		let on = $(this).val();
 		for(let id in _this.map.baseLayers) {
-		    _this.map.baseLayers[id].setVisibility(id==on);
+		    if(id==on) {
+			_this.map.getMap().setBaseLayer(_this.map.baseLayers[id]);
+			break;
+		    }
 		}
 	    });
 
