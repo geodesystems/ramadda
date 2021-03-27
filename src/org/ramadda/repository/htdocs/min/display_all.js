@@ -29528,6 +29528,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'doPopup', ex:'false',tt:"Don't show popups"},
 	{p:'showRegionSelector',ex:true},
 	{p:'regionSelectorLabel'},	
+	{p:'showBaseLayersSelect',ex:true},
 	{p:'centerOnFilterChange',ex:true,tt:'Center map when the data filters change'},
 	{p:'centerOnHighlight',ex:true,tt:'Center map when a record is highlighted'},
 	{p:'boundsAnimation',ex:true,tt:'Animate when map is centered'},
@@ -30028,6 +30029,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 	    this.getProperty("extraLayers","").split(",").forEach(tuple=>{
+		if(tuple.trim().length==0) return;
 		let toks = tuple.split(":");
 		toks = toks.map(tok=>{return tok.replace(/_semicolon_/g,":")});
 		let getUrl = url =>{
@@ -31132,7 +31134,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    this.getProperty("showMarkersToggleLabel","Show Markers") +SPACE2;
 	    }
 
-	    if(this.getProperty("showBaseLayersSelect",true)) {
+	    if(this.getProperty("showBaseLayersSelect",false)) {
 		if(this.map.baseLayers) {
 		    let items = [];
 		    let on = false;
@@ -31203,6 +31205,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    this.getProperty("locations","").split(",").forEach(url=>{
 		url  =url.trim();
+		if(url.length==0) return;
 		if(!url.startsWith("/") && !url.startsWith("http")) {
 		    url = ramaddaBaseUrl + "/resources/" +url;			
 		}
@@ -31378,6 +31381,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    debug = debug || displayDebug.displayMapUpdateUI;
 	    if(debug) console.log("displaymap.updateUIInner:" + records.length);
 	    this.haveCalledUpdateUI = true;
+
 
 
 	    if(this.getProperty("showRegionSelector")) {
@@ -32581,7 +32585,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			    props.graphicName = graphicName;
 			if(rotateField) props.rotation = record.getValue(rotateField.getIndex());
 			props.pointRadius= radius;
-			props.fillColor =   colorBy.getColorFromRecord(record, "blue");
+			props.fillColor =   colorBy.getColorFromRecord(record, props.fillColor);
 			if(radius>0) {
 			    mapPoint = this.map.addPoint("pt-" + i, point, props, null, dontAddPoint);
 			    if(mapPoint)
