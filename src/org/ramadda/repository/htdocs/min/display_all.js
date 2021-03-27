@@ -82,10 +82,10 @@ function AreaWidget(display) {
             $("#" + this.display.getDomId(ID_AREA_LINK)).attr("src", image);
             if (this.linkArea && this.lastBounds) {
                 var b = this.lastBounds;
-                $("#" + this.display.getDomId(ID_NORTH)).val(formatLocationValue(b.top));
-                $("#" + this.display.getDomId(ID_WEST)).val(formatLocationValue(b.left));
-                $("#" + this.display.getDomId(ID_SOUTH)).val(formatLocationValue(b.bottom));
-                $("#" + this.display.getDomId(ID_EAST)).val(formatLocationValue(b.right));
+                $("#" + this.display.getDomId(ID_NORTH)).val(MapUtils.formatLocationValue(b.top));
+                $("#" + this.display.getDomId(ID_WEST)).val(MapUtils.formatLocationValue(b.left));
+                $("#" + this.display.getDomId(ID_SOUTH)).val(MapUtils.formatLocationValue(b.bottom));
+                $("#" + this.display.getDomId(ID_EAST)).val(MapUtils.formatLocationValue(b.right));
             }
         },
         linkArea: false,
@@ -94,10 +94,10 @@ function AreaWidget(display) {
             bounds = args.bounds;
             this.lastBounds = bounds;
             if (!args.force && !this.linkArea) return;
-            $("#" + this.display.getDomId(ID_NORTH)).val(formatLocationValue(bounds.top));
-            $("#" + this.display.getDomId(ID_WEST)).val(formatLocationValue(bounds.left));
-            $("#" + this.display.getDomId(ID_SOUTH)).val(formatLocationValue(bounds.bottom));
-            $("#" + this.display.getDomId(ID_EAST)).val(formatLocationValue(bounds.right));
+            $("#" + this.display.getDomId(ID_NORTH)).val(MapUtils.formatLocationValue(bounds.top));
+            $("#" + this.display.getDomId(ID_WEST)).val(MapUtils.formatLocationValue(bounds.left));
+            $("#" + this.display.getDomId(ID_SOUTH)).val(MapUtils.formatLocationValue(bounds.bottom));
+            $("#" + this.display.getDomId(ID_EAST)).val(MapUtils.formatLocationValue(bounds.right));
         },
         setSearchSettings: function(settings) {
             var cbx = $("#" + this.display.getDomId(ID_CONTAINS));
@@ -1991,13 +1991,13 @@ var Gfx = {
 	let scaleY;
 	if(opts.display && opts.display.map) {
 	    //Get the global bounds so we can map down to the image
-	    var n1 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,85));
-	    var s1 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,-85));
-	    var n2 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,opts.bounds.north));
-	    var s2 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,opts.bounds.south));
+	    var n1 = opts.display.map.transformLLPoint(MapUtils.createLonLat(opts.bounds.east,85));
+	    var s1 = opts.display.map.transformLLPoint(MapUtils.createLonLat(opts.bounds.east,-85));
+	    var n2 = opts.display.map.transformLLPoint(MapUtils.createLonLat(opts.bounds.east,opts.bounds.north));
+	    var s2 = opts.display.map.transformLLPoint(MapUtils.createLonLat(opts.bounds.east,opts.bounds.south));
 //	    console.log("n1:" + n1 +" s2:" + s1 +" n2:" + n2 +" s2:" + s2 +" bounds:" + JSON.stringify(opts.bounds));
 	    scaleY = (lat,lon)=> {
-		var pt = opts.display.map.transformLLPoint(createLonLat(lon,lat));
+		var pt = opts.display.map.transformLLPoint(MapUtils.createLonLat(lon,lat));
 		var dy = n2.lat-pt.lat;
 		var perc = dy/(n2.lat-s2.lat)
 		return Math.floor(perc*opts.h);
@@ -29730,7 +29730,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    this.map.getMap().zoomTo(this.mapParams.initialZoom);
 		}
 		if(this.mapParams.initialLocation) {
-		    let loc = createLonLat(this.mapParams.initialLocation.lon, this.mapParams.initialLocation.lat);
+		    let loc = MapUtils.createLonLat(this.mapParams.initialLocation.lon, this.mapParams.initialLocation.lat);
 		    this.map.setCenter(loc);
 		}
 
@@ -29939,7 +29939,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			}
 			_this.didAnimationBounds = true;
 			var a = animationBounds;
-			var b = createBounds(parseFloat(a[1]),parseFloat(a[2]),parseFloat(a[3]),parseFloat(a[0]));
+			var b = MapUtils.createBounds(parseFloat(a[1]),parseFloat(a[2]),parseFloat(a[3]),parseFloat(a[0]));
 			_this.map.animateViewToBounds(b);
 		    },pause);
 		}
@@ -30289,7 +30289,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
             var type = entry.getType().getId();
             if (type == "geo_shapefile" || type == "geo_geojson") {
-                var bounds = createBounds(entry.getWest(), entry.getSouth(), entry.getEast(), entry.getNorth());
+                var bounds = MapUtils.createBounds(entry.getWest(), entry.getSouth(), entry.getEast(), entry.getNorth());
                 if (bounds.left < -180 || bounds.right > 180 || bounds.bottom < -90 || bounds.top > 90) {
                     bounds = null;
                 }
@@ -30552,7 +30552,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     didOne = true;
                 }
             }
-            var bounds = (didOne ? createBounds(west, south, east, north) : null);
+            var bounds = (didOne ? MapUtils.createBounds(west, south, east, north) : null);
             //debug                    this.map.centerOnMarkers(bounds, true);
         },
         handleEventEntrySelection: function(source, args) {
@@ -31180,7 +31180,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let dialog = HU.makeDialog({content:inner,my:"left top",at:"left bottom",anchor:$(this),draggable:false,header:false});
 		_this.jq("locationmenu").find(".ramadda-clickable").click(function() {
 		    if($(this).attr("longitude")) {
-			let point = createLonLat(+$(this).attr("longitude"),+$(this).attr("latitude"));
+			let point = MapUtils.createLonLat(+$(this).attr("longitude"),+$(this).attr("latitude"));
 			_this.map.getMap().zoomTo(9);
 			_this.map.setCenter(point);
 		    } else {
@@ -32362,7 +32362,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         this.justOneMarker= this.map.addMarker(id, [point.x,point.y], null, "", "");
 			if(debug) console.log("\tadding justOneMarker had initial position:" + this.hadInitialPosition);
 			if(!this.hadInitialPosition) {
-			    let loc = createLonLat(point.x,point.y);
+			    let loc = MapUtils.createLonLat(point.x,point.y);
 			    if(debug) console.log("\tsetting center:" + loc);
 			    this.map.setCenter(loc);
 			}

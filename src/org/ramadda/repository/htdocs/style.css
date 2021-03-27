@@ -1102,10 +1102,24 @@ a.ramadda-menubar-button:hover {
     z-index:var(--ol-popup-z-index)  !important;
 }
 
+.olPopup {
+    padding:5px;
+    padding-right:5px;    
+    border:1px solid #888 !important;
+    border-radius:4px;
+    box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
+    
+}
 
 .olPopupContent {
+    font-size:8pt;
     padding:0px !important;
+    padding-right:8px !important;    
     z-index:var(--ol-popup-z-index)  !important;
+}
+
+.olFramedCloudPopupContent {
+    font-size:8pt;
 }
 
 .ramadda-map {

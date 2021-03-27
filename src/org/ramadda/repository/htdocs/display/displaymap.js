@@ -336,7 +336,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    this.map.getMap().zoomTo(this.mapParams.initialZoom);
 		}
 		if(this.mapParams.initialLocation) {
-		    let loc = createLonLat(this.mapParams.initialLocation.lon, this.mapParams.initialLocation.lat);
+		    let loc = MapUtils.createLonLat(this.mapParams.initialLocation.lon, this.mapParams.initialLocation.lat);
 		    this.map.setCenter(loc);
 		}
 
@@ -545,7 +545,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			}
 			_this.didAnimationBounds = true;
 			var a = animationBounds;
-			var b = createBounds(parseFloat(a[1]),parseFloat(a[2]),parseFloat(a[3]),parseFloat(a[0]));
+			var b = MapUtils.createBounds(parseFloat(a[1]),parseFloat(a[2]),parseFloat(a[3]),parseFloat(a[0]));
 			_this.map.animateViewToBounds(b);
 		    },pause);
 		}
@@ -895,7 +895,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
             var type = entry.getType().getId();
             if (type == "geo_shapefile" || type == "geo_geojson") {
-                var bounds = createBounds(entry.getWest(), entry.getSouth(), entry.getEast(), entry.getNorth());
+                var bounds = MapUtils.createBounds(entry.getWest(), entry.getSouth(), entry.getEast(), entry.getNorth());
                 if (bounds.left < -180 || bounds.right > 180 || bounds.bottom < -90 || bounds.top > 90) {
                     bounds = null;
                 }
@@ -1158,7 +1158,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     didOne = true;
                 }
             }
-            var bounds = (didOne ? createBounds(west, south, east, north) : null);
+            var bounds = (didOne ? MapUtils.createBounds(west, south, east, north) : null);
             //debug                    this.map.centerOnMarkers(bounds, true);
         },
         handleEventEntrySelection: function(source, args) {
@@ -1786,7 +1786,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let dialog = HU.makeDialog({content:inner,my:"left top",at:"left bottom",anchor:$(this),draggable:false,header:false});
 		_this.jq("locationmenu").find(".ramadda-clickable").click(function() {
 		    if($(this).attr("longitude")) {
-			let point = createLonLat(+$(this).attr("longitude"),+$(this).attr("latitude"));
+			let point = MapUtils.createLonLat(+$(this).attr("longitude"),+$(this).attr("latitude"));
 			_this.map.getMap().zoomTo(9);
 			_this.map.setCenter(point);
 		    } else {
@@ -2968,7 +2968,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         this.justOneMarker= this.map.addMarker(id, [point.x,point.y], null, "", "");
 			if(debug) console.log("\tadding justOneMarker had initial position:" + this.hadInitialPosition);
 			if(!this.hadInitialPosition) {
-			    let loc = createLonLat(point.x,point.y);
+			    let loc = MapUtils.createLonLat(point.x,point.y);
 			    if(debug) console.log("\tsetting center:" + loc);
 			    this.map.setCenter(loc);
 			}

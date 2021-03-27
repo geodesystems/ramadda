@@ -5,8 +5,11 @@
 var debugBounds = false;
 var getMapDebug = false;
 
+//This gets set by Java
 var ramaddaMapRegions = null;
 
+
+/* base maps to add */
 const map_esri_topo = "esri.topo";
 const map_esri_street = "esri.street";
 const map_esri_worldimagery = "esri.worldimagery";
@@ -40,120 +43,115 @@ const map_ms_aerial = "ms.aerial";
 
 const map_default_layer = map_osm;
 
-const ramaddaCircleHiliteAttrs = {
-    strokeColor: 'black',
-    strokeWidth: 1,
-    fill: true,
-    fillOpacity: 0.5,
-    fillColor: 'red'
-};
 
+/*
+Define new symbols
+To make a new shape see errata.js 
+*/
 
-
-//Define new symbols
 OpenLayers.Renderer.symbol.lightning = [0, 0, 4, 2, 6, 0, 10, 5, 6, 3, 4, 5, 0, 0];
 OpenLayers.Renderer.symbol.rectangle = [0, 0, 4, 0, 4, 10, 0, 10, 0, 0];
 OpenLayers.Renderer.symbol.church = [4, 0, 6, 0, 6, 4, 10, 4, 10, 6, 6, 6, 6, 14, 4, 14, 4, 6, 0, 6, 0, 4, 4, 4, 4, 0];
 OpenLayers.Renderer.symbol._x = [0, 0, 6,6,3,3,6,0,0,6,3,3];
 OpenLayers.Renderer.symbol.plane = [5,0,5,0,4,1,4,3,0,5,0,6,4,5,4,8,2,10,3,10,5,9,5,9,8,10,8,10,6,8,6,5,10,6,10,5,6,3,6,1,5,0,5,0];
 
-/*
-  to render a new shape this mirrors the pts about the y axis
 
-//This is the web page code for grabbing the outline
+var MapUtils =  {
+    me:"MapUtils",
+    CUSTOM_MAP : "CUSTOM",
+    POSITIONMARKERID: "location",
+    formatLocationValue:function(value) {
+	return number_format(value, 3, ".", "");
+    },
+    createLonLat: function(lon, lat) {
+	lon = parseFloat(lon);
+	lat = parseFloat(lat);
+	return new OpenLayers.LonLat(lon, lat);
+    },
+    createBounds:function (v1, v2, v3, v4) {
+	v1 = parseFloat(v1);
+	v2 = parseFloat(v2);
+	v3 = parseFloat(v3);
+	v4 = parseFloat(v4);
+	return new OpenLayers.Bounds(v1, v2, v3, v4);
+    },
+    createProjection: function(name) {
+	return new OpenLayers.Projection(name);
+    },
+    mapRegionSelected: function(selectId, baseId) {
+        let value = $("#" + selectId).val();
+        if (value == null) {
+            console.log("Error: No map region value");
+            return;
+        }
+        if (value == "") {
+            this.toggleMapWidget(baseId, false);
+            return;
+        }
+        let toks = value.split(",");
 
-<img src=/plane.png width=200 id=plane>
-<div id=click>click</div>
-+javascript
-var pts =[]
-$("#click").click(()=>{
-    let w2 =$("#plane").width()/2
-    let h2 =$("#plane").height()/2
-    let all = [];
-    for(let i=0;i<pts.length;i+=2) {
-      let x = pts[i];
-      let y  = pts[i+1];
-      let x2 = w2-(x-w2)    
-       all.push(x2,y)
-    }
-for(let i=pts.length-1;i>=0;i-=2) {
-    all.push(pts[i-1],pts[i]);
-    }
-//pts=all;
-
-pts = pts.map(p=>{
-return p
-    return Math.round(p/8);
-})
-    let csv = pts.join(",");
-    console.log(csv)
-});
-$("#plane").click(function(e) {
-    pts.push(e.offsetX,e.offsetY);
-    console.log(e.offsetX+"," +e.offsetY)
--javascript
-
-//this is the code that runs here with pts coming from the web page code
-let pts = [99,2,109,4,117,17,117,68,192,107,192,123,117,106,117,157,151,190,150,197,102,183]
-let w2 =100;
-let all = [];
-for(let i=0;i<pts.length;i+=2) {
-    let x = pts[i];
-    let y  = pts[i+1];
-    let x2 = w2-(x-w2)    
-    all.push(x2,y)
-}
-for(let i=pts.length-1;i>=0;i-=2) {
-    all.push(pts[i-1],pts[i]);
-}
-pts = all;
-pts = pts.map(p=>{
-    return Math.round(p/20);
-})
-console.log(pts.join(","));
-*/
+        if (toks.length == 1) {
+            if (toks[0] != this.CUSTOM_MAP) {
+                return;
+            } else {
+                if (!firstCustom) {
+                    this.setMapRegion(baseId, "", "", "", "", "");
+                }
+                firstCustom = false;
+                this.toggleMapWidget(baseId, true);
+                return;
+            }
+        }
+        if (toks.length != 5) {
+            return;
+        }
+        this.toggleMapWidget(baseId, false);
+        this.setMapRegion(baseId, toks[0], toks[1], toks[2], toks[3], toks[4]);
+    },
 
 
+    setMapRegion: function(baseId, regionid, north, west, south, east) {
+        $("#" + baseId + "_regionid").val(regionid);
+        $("#" + baseId + "_north").val(north);
+        $("#" + baseId + "_west").val(west);
+        $("#" + baseId + "_south").val(south);
+        $("#" + baseId + "_east").val(east);
 
+    },
 
-
-
-
-
-function createLonLat(lon, lat) {
-    lon = parseFloat(lon);
-    lat = parseFloat(lat);
-    return new OpenLayers.LonLat(lon, lat);
-}
-
-function createBounds(v1, v2, v3, v4) {
-    v1 = parseFloat(v1);
-    v2 = parseFloat(v2);
-    v3 = parseFloat(v3);
-    v4 = parseFloat(v4);
-    return new OpenLayers.Bounds(v1, v2, v3, v4);
-}
-
-function createProjection(name) {
-    return new OpenLayers.Projection(name);
+    toggleMapWidget: function(baseId, onOrOff) {
+        if (onOrOff) {
+            // check if the map has been initialized
+            let mapVar = window[baseId];
+            if (mapVar && !mapVar.inited) {
+                mapVar.initMap(true);
+            }
+            $("#" + baseId + "_mapToggle").show();
+        } else {
+            $("#" + baseId + "_mapToggle").hide();
+        }
+    },
 }
 
-
-
-var positionMarkerID = "location";
-
-var mapDefaults = {
+MapUtils.defaults = {
     maxLatValue: 85,
     zoomLevels: 40,
     defaultZoomLevel: -1,
-    maxExtent: createBounds(-20037508, -20037508, 20037508, 20037508),
-    sourceProjection: createProjection("EPSG:900913"),
-    displayProjection: createProjection("EPSG:4326"),
+    maxExtent: MapUtils.createBounds(-20037508, -20037508, 20037508, 20037508),
+    sourceProjection: MapUtils.createProjection("EPSG:900913"),
+    displayProjection: MapUtils.createProjection("EPSG:4326"),
     units: "m",
     doSphericalMercator: true,
     wrapDateline: true,
-    //    location: createLonLat(-100, 40)
-    location: createLonLat(0, 0)
+    location: MapUtils.createLonLat(0, 0)
+}
+
+MapUtils.circleHiliteAttrs =  {
+    strokeColor: 'black',
+    strokeWidth: 1,
+    fill: true,
+    fillOpacity: 0.5,
+    fillColor: 'red'
 }
 
 
@@ -169,8 +167,6 @@ function ramaddaMapAdd(map) {
 }
 
 
-
-
 function ramaddaMapCheckLayout() {
     setTimeout(()=>{
 	if (window.globalMapList != null) {
@@ -182,7 +178,7 @@ function ramaddaMapCheckLayout() {
 }
 
 
-var cnt = 0;
+
 var ramaddaMapLastShareTime=0;
 var ramaddaMapLastShareMap = "";
 function ramaddaMapShareState(source, state) {
@@ -214,16 +210,11 @@ function ramaddaMapShareState(source, state) {
     }
 }
 
-function formatLocationValue(value) {
-    return number_format(value, 3, ".", "");
-}
-
 
 
 
 function RepositoryMap(mapId, params) {
     let _this = this;
-
     if (!params) params = {};
     this.params = params;
     this.mapId = mapId || "map";
@@ -236,9 +227,9 @@ function RepositoryMap(mapId, params) {
 
     $.extend(this, {
         name: "map",
-        sourceProjection: mapDefaults.sourceProjection,
-        displayProjection: mapDefaults.displayProjection,
-        projectionUnits: mapDefaults.units,
+        sourceProjection: MapUtils.defaults.sourceProjection,
+        displayProjection: MapUtils.defaults.displayProjection,
+        projectionUnits: MapUtils.defaults.units,
         mapDivId: this.mapId,
         showScaleLine: true,
         showLayerSwitcher: true,
@@ -246,8 +237,8 @@ function RepositoryMap(mapId, params) {
         showZoomOnlyControl: true,
         showLatLonPosition: true,
         enableDragPan: true,
-        defaultLocation: mapDefaults.location,
-        initialZoom: Utils.isDefined(params.zoomLevel)?params.zoomLevel:mapDefaults.defaultZoomLevel,
+        defaultLocation: MapUtils.defaults.location,
+        initialZoom: Utils.isDefined(params.zoomLevel)?params.zoomLevel:MapUtils.defaults.defaultZoomLevel,
         latlonReadout: null,
         map: null,
         showBounds: true,
@@ -336,9 +327,9 @@ function RepositoryMap(mapId, params) {
     }
     if (params.initialLocation) {
 	if(!Array.isArray(params.initialLocation)) {
-            this.defaultLocation = createLonLat(params.initialLocation.lon, params.initialLocation.lat);
+            this.defaultLocation = MapUtils.createLonLat(params.initialLocation.lon, params.initialLocation.lat);
 	} else {
-            this.defaultLocation = createLonLat(params.initialLocation[1], params.initialLocation[0]);
+            this.defaultLocation = MapUtils.createLonLat(params.initialLocation[1], params.initialLocation[0]);
 	}
 	
 	if(debugBounds)
@@ -348,7 +339,7 @@ function RepositoryMap(mapId, params) {
             params.initialBounds = params.initialBounds.split(",");
         }
 	//xxxxx
-        this.defaultBounds = createBounds(params.initialBounds[1], params.initialBounds[2], params.initialBounds[3], params.initialBounds[0]);
+        this.defaultBounds = MapUtils.createBounds(params.initialBounds[1], params.initialBounds[2], params.initialBounds[3], params.initialBounds[0]);
 	this.defaultLocation = null;
 	if(debugBounds)
 	    console.log("setting default bounds-1:" + this.defaultBounds);
@@ -361,7 +352,7 @@ function RepositoryMap(mapId, params) {
         units: this.projectionUnits,
         controls: [],
         maxResolution: 156543.0339,
-        maxExtent: mapDefaults.maxExtent,
+        maxExtent: MapUtils.defaults.maxExtent,
         div: this.mapDivId,
         eventListeners: {
             featureover: function(e) {
@@ -398,30 +389,6 @@ function RepositoryMap(mapId, params) {
             _this.getMap().updateSize();
         }
     });
-
-    
-    if (false) {
-    this.polygon="";
-    this.polyPoints = [];
-    //addclick
-    this.clickHandler =  this.addClickHandler();
-    this.clickHandler.addListener(ll=>{
-	if(this.poly) this.removePolygon(this.poly);
-	this.polyPoints.push(ll);
-	let tmp = [];
-	this.polyPoints.forEach(ll=>{
-	    tmp.push(new OpenLayers.Geometry.Point(ll.lon,ll.lat));
-	});
-	this.poly = this.addPolygon("poly","poly",tmp,{strokeColor:'red',strokeWidth:2});
-	if(this.polygon!="")this.polygon+=" ";
-	ll.lat = Math.round(ll.lat*100000)/100000.0;
-	ll.lon = Math.round(ll.lon*100000)/100000.0;	
-	this.polygon+=ll.lon+","+ll.lat;
-	console.log("defineLine {} {Main Ditch} {"+this.polygon+"}");
-    });
-    }
-
-
 }
 
 
@@ -478,8 +445,8 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         latFld = GuiUtils.getDomObject(this.latFldId);
         zoomFld = GuiUtils.getDomObject(this.zoomFldId);
         if (latFld && lonFld) {
-            latFld.obj.value = formatLocationValue(lonlat.lat);
-            lonFld.obj.value = formatLocationValue(lonlat.lon);
+            latFld.obj.value = MapUtils.formatLocationValue(lonlat.lat);
+            lonFld.obj.value = MapUtils.formatLocationValue(lonlat.lon);
         }
         if (zoomFld) {
             zoomFld.obj.value = this.theMap.getMap().getZoom();
@@ -498,66 +465,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
 
 
 
-
-var CUSTOM_MAP = "CUSTOM";
 var firstCustom = true;
-
-var MapUtils = {
-    mapRegionSelected: function(selectId, baseId) {
-        var value = $("#" + selectId).val();
-        if (value == null) {
-            console.log("Error: No map region value");
-            return;
-        }
-        if (value == "") {
-            this.toggleMapWidget(baseId, false);
-            return;
-        }
-        var toks = value.split(",");
-
-        if (toks.length == 1) {
-            if (toks[0] != CUSTOM_MAP) {
-                return;
-            } else {
-                if (!firstCustom) {
-                    this.setMapRegion(baseId, "", "", "", "", "");
-                }
-                firstCustom = false;
-                this.toggleMapWidget(baseId, true);
-                return;
-            }
-        }
-        if (toks.length != 5) {
-            return;
-        }
-        this.toggleMapWidget(baseId, false);
-        this.setMapRegion(baseId, toks[0], toks[1], toks[2], toks[3], toks[4]);
-    },
-
-
-    setMapRegion: function(baseId, regionid, north, west, south, east) {
-        $("#" + baseId + "_regionid").val(regionid);
-        $("#" + baseId + "_north").val(north);
-        $("#" + baseId + "_west").val(west);
-        $("#" + baseId + "_south").val(south);
-        $("#" + baseId + "_east").val(east);
-
-    },
-
-    toggleMapWidget: function(baseId, onOrOff) {
-        if (onOrOff) {
-            // check if the map has been initialized
-            var mapVar = window[baseId];
-            if (mapVar && !mapVar.inited) {
-                mapVar.initMap(true);
-            }
-            $("#" + baseId + "_mapToggle").show();
-        } else {
-            $("#" + baseId + "_mapToggle").hide();
-        }
-    }
-
-}
 
 
 var markerMap = {};
@@ -569,7 +477,7 @@ function highlightMarkers(selector, mapVar, background1, background2, id) {
                 $(this).css('background', background1);
             if (!$(this).data('mapid'))
                 return;
-            if (mapVar.circleMarker($(this).data('mapid'), ramaddaCircleHiliteAttrs)) {
+            if (mapVar.circleMarker($(this).data('mapid'), MapUtils.circleHiliteAttrs)) {
                 return;
             }
             if (id == null)
@@ -661,7 +569,7 @@ RepositoryMap.prototype = {
                 dfltBounds.right < -180 || dfltBounds.right > 180 ||
                 dfltBounds.bottom < -90 || dfltBounds.bottom > 90 ||
                 dfltBounds.top < -90 || dfltBounds.top > 90) {
-                dfltBounds = createBounds(-180, -90, 180, 90);
+                dfltBounds = MapUtils.createBounds(-180, -90, 180, 90);
             }
         }
         this.dfltBounds = dfltBounds;
@@ -788,14 +696,14 @@ RepositoryMap.prototype = {
         this.getMap().setCenter(bounds.getCenterLonLat());
     },
     setInitialCenterAndZoom: function(lon, lat, zoomLevel) {
-        this.defaultLocation = createLonLat(lon, lat);
+        this.defaultLocation = MapUtils.createLonLat(lon, lat);
         this.initialZoom = zoomLevel;
     },
     setInitialZoom: function(zoomLevel) {
         this.initialZoom = zoomLevel;
     },
     setInitialCenter: function(lon,lat) {
-        this.defaultLocation = createLonLat(lon, lat);
+        this.defaultLocation = MapUtils.createLonLat(lon, lat);
     },
     finishMapInit: function() {
         let _this = this;
@@ -932,6 +840,21 @@ RepositoryMap.prototype = {
         this.getMap().updateSize();
         this.centerOnMarkers(this.dfltBounds);
     },
+    makePopup: function(projPoint, text) {
+	return  new OpenLayers.Popup("popup",
+				     projPoint,
+				     null,
+				     text,
+				     true,
+				     ()=>{this.onPopupClose()});
+	/** If we uses a FramedCloud then the olPopup class css in style.css needs to be changed to not have a border 
+        return  new OpenLayers.Popup.FramedCloud("popup", projPoint,
+						     null, text, null, true,
+						     ()=>{this.onPopupClose()});
+	**/
+
+    },
+
     handleFeatureover: function(feature, skipText) {
 	if(this.doMouseOver || feature.highlightText || feature.highlightTextGetter) {
 	    var location = feature.location;
@@ -1203,7 +1126,7 @@ RepositoryMap.prototype = {
         //Things go blooeey with lat up to 90
         if (north > 88) north = 88;
         if (south < -88) south = -88;
-        var latLonBounds = createBounds(west, south, east, north);
+        var latLonBounds = MapUtils.createBounds(west, south, east, north);
         var imageBounds = this.transformLLBounds(latLonBounds);
         var image = new OpenLayers.Layer.Image(
             name, url,
@@ -1221,7 +1144,7 @@ RepositoryMap.prototype = {
         if (theArgs.forSelect) {
             this.selectImage = image;
         }
-        var lonlat = new createLonLat(west, north);
+        var lonlat = new MapUtils.createLonLat(west, north);
         image.lonlat = this.transformLLPoint(lonlat);
         image.setVisibility(visible);
         image.id = layerId;
@@ -1270,7 +1193,7 @@ RepositoryMap.prototype = {
             srs: "epse:4326",
             transparent: true
         }, {
-            wrapDateLine: mapDefaults.wrapDateline
+            wrapDateLine: MapUtils.defaults.wrapDateline
         });
         if (isBaseLayer) {
             layer.isBaseLayer = true;
@@ -1291,16 +1214,16 @@ RepositoryMap.prototype = {
         if (/\/tile\//.exec(url)) {
             layer = new OpenLayers.Layer.XYZ(
                 name, url, {
-                    sphericalMercator: mapDefaults.doSphericalMercator,
-                    numZoomLevels: mapDefaults.zoomLevels,
-                    wrapDateLine: mapDefaults.wrapDateline
+                    sphericalMercator: MapUtils.defaults.doSphericalMercator,
+                    numZoomLevels: MapUtils.defaults.zoomLevels,
+                    wrapDateLine: MapUtils.defaults.wrapDateline
                 });
         } else {
             layer = new OpenLayers.Layer.WMS(name, url, {
                 layers: layer,
                 format: "image/png"
             }, {
-                wrapDateLine: mapDefaults.wrapDateline
+                wrapDateLine: MapUtils.defaults.wrapDateline
             });
         }
         if (isBaseLayer)
@@ -1737,12 +1660,7 @@ RepositoryMap.prototype = {
             this.currentPopup.destroy();
         }
 
-        var popup = new OpenLayers.Popup.FramedCloud("popup", feature.geometry.getBounds().getCenterLonLat(),
-						     null, out, null, true,
-						     function() {
-							 _this.onPopupClose()
-						     });
-
+        var popup = this.makePopup(feature.geometry.getBounds().getCenterLonLat(),out);
         feature.popup = popup;
         popup.feature = feature;
         this.getMap().addPopup(popup);
@@ -2151,9 +2069,9 @@ RepositoryMap.prototype = {
 
     createXYZLayer:  function(name, url, attribution) {
         var options = {
-            sphericalMercator: mapDefaults.doSphericalMercator,
-            numZoomLevels: mapDefaults.zoomLevels,
-            wrapDateLine: mapDefaults.wrapDateline
+            sphericalMercator: MapUtils.defaults.doSphericalMercator,
+            numZoomLevels: MapUtils.defaults.zoomLevels,
+            wrapDateLine: MapUtils.defaults.wrapDateline
         };
         if (attribution)
             options.attribution = attribution;
@@ -2320,33 +2238,33 @@ RepositoryMap.prototype = {
                 var layerURL = mapLayer;
                 newLayer = new OpenLayers.Layer.XYZ(
                     "ESRI China Map", layerURL, {
-                        sphericalMercator: mapDefaults.doSphericalMercator,
-                        numZoomLevels: mapDefaults.zoomLevels,
-                        wrapDateLine: mapDefaults.wrapDateline
+                        sphericalMercator: MapUtils.defaults.doSphericalMercator,
+                        numZoomLevels: MapUtils.defaults.zoomLevels,
+                        wrapDateLine: MapUtils.defaults.wrapDateline
                     });
             } else if (mapLayer == map_ms_shaded) {
                 newLayer = new OpenLayers.Layer.VirtualEarth(
                     "Virtual Earth - Shaded", {
                         'type': VEMapStyle.Shaded,
-                        sphericalMercator: mapDefaults.doSphericalMercator,
-                        wrapDateLine: mapDefaults.wrapDateline,
-                        numZoomLevels: mapDefaults.zoomLevels
+                        sphericalMercator: MapUtils.defaults.doSphericalMercator,
+                        wrapDateLine: MapUtils.defaults.wrapDateline,
+                        numZoomLevels: MapUtils.defaults.zoomLevels
                     });
             } else if (mapLayer == map_ms_hybrid) {
                 newLayer = new OpenLayers.Layer.VirtualEarth(
                     "Virtual Earth - Hybrid", {
                         'type': VEMapStyle.Hybrid,
-                        sphericalMercator: mapDefaults.doSphericalMercator,
-                        numZoomLevels: mapDefaults.zoomLevels,
-                        wrapDateLine: mapDefaults.wrapDateline
+                        sphericalMercator: MapUtils.defaults.doSphericalMercator,
+                        numZoomLevels: MapUtils.defaults.zoomLevels,
+                        wrapDateLine: MapUtils.defaults.wrapDateline
                     });
             } else if (mapLayer == map_ms_aerial) {
                 newLayer = new OpenLayers.Layer.VirtualEarth(
                     "Virtual Earth - Aerial", {
                         'type': VEMapStyle.Aerial,
-                        sphericalMercator: mapDefaults.doSphericalMercator,
-                        numZoomLevels: mapDefaults.zoomLevels,
-                        wrapDateLine: mapDefaults.wrapDateline
+                        sphericalMercator: MapUtils.defaults.doSphericalMercator,
+                        numZoomLevels: MapUtils.defaults.zoomLevels,
+                        wrapDateLine: MapUtils.defaults.wrapDateline
                     });
             } else {
                 var match = /wms:(.*),(.*),(.*)/.exec(mapLayer);
@@ -2599,7 +2517,7 @@ RepositoryMap.prototype = {
         if (false && this.defaultLocation && !this.defaultBounds) {
             var center = this.defaultLocation;
             var offset = 10.0;
-            this.defaultBounds = createBounds(center.lon - offset, center.lat - offset, center.lon + offset, center.lat + offset);
+            this.defaultBounds = MapUtils.createBounds(center.lon - offset, center.lat - offset, center.lon + offset, center.lat + offset);
 	    if(debugBounds)
 		console.log("setting default bounds-2:" + center.lon +" " + center.lat +" bounds:" + this.defaultBounds);
             this.defaultLocation = null;
@@ -2687,7 +2605,7 @@ RepositoryMap.prototype = {
         let east, west, north, south;
         for (var i = 0; i < this.locationSearchResults.length; i++) {
             let result = this.locationSearchResults[i];
-            let lonlat = new createLonLat(result.longitude, result.latitude);
+            let lonlat = new MapUtils.createLonLat(result.longitude, result.latitude);
             let icon = result.icon;
             if (!icon)
                 icon = ramaddaBaseUrl + "/icons/green-dot.png";
@@ -2697,7 +2615,7 @@ RepositoryMap.prototype = {
             north = i == 0 ? result.latitude : Math.max(north, result.latitude);
             south = i == 0 ? result.latitude : Math.min(south, result.latitude);
         }
-        let bounds = this.transformLLBounds(createBounds(west, south, east, north));
+        let bounds = this.transformLLBounds(MapUtils.createBounds(west, south, east, north));
         this.zoomToExtent(bounds);
     },
 
@@ -2780,8 +2698,8 @@ RepositoryMap.prototype = {
                     var lon = parseFloat($(this).attr("longitude"));
                     var icon = $(this).attr("icon");
                     var offset = 0.05;
-                    var bounds = _this.transformLLBounds(createBounds(lon - offset, lat - offset, lon + offset, lat + offset));
-                    var lonlat = new createLonLat(lon, lat);
+                    var bounds = _this.transformLLBounds(MapUtils.createBounds(lon - offset, lat - offset, lon + offset, lat + offset));
+                    var lonlat = new MapUtils.createLonLat(lon, lat);
                     _this.removeSearchMarkers();
                     _this.searchMarkerList = [];
                     _this.searchMarkerList.push(_this.addMarker("search", lonlat, icon, "", name, 20, 20));
@@ -2790,7 +2708,7 @@ RepositoryMap.prototype = {
                     if (Math.abs(b.top - b.bottom) > offset) {
                         _this.zoomToExtent(bounds);
                     } else {
-                        _this.setCenter(createLonLat(lon, lat));
+                        _this.setCenter(MapUtils.createLonLat(lon, lat));
                     }
                 });
             }).fail(function(jqxhr, textStatus, error) {
@@ -2994,8 +2912,8 @@ RepositoryMap.prototype = {
     setSelectionBox:  function(north, west, south, east, centerView) {
         if (north == "" || west == "" || south == "" || east == "")
             return;
-        var bounds = createBounds(west, Math.max(south,
-						 -mapDefaults.maxLatValue), east, Math.min(north, mapDefaults.maxLatValue));
+        var bounds = MapUtils.createBounds(west, Math.max(south,
+						 -MapUtils.defaults.maxLatValue), east, Math.min(north, MapUtils.defaults.maxLatValue));
         if (!this.selectorBox) {
             var args = {
                 "color": "red",
@@ -3017,7 +2935,7 @@ RepositoryMap.prototype = {
         }
 
         if (this.selectImage) {
-            var imageBounds = createBounds(west, south, east, north);
+            var imageBounds = MapUtils.createBounds(west, south, east, north);
             imageBounds = this.transformLLBounds(imageBounds);
             this.selectImage.extent = imageBounds;
             this.selectImage.redraw();
@@ -3047,14 +2965,14 @@ RepositoryMap.prototype = {
         if (!lon || !lat || lon == "" || lat == "")
             return;
         if (this.lonFldId != null) {
-            $("#" + this.lonFldId).val(formatLocationValue(lon));
-            $("#" + this.latFldId).val(formatLocationValue(lat));
+            $("#" + this.lonFldId).val(MapUtils.formatLocationValue(lon));
+            $("#" + this.latFldId).val(MapUtils.formatLocationValue(lat));
         }
 
 
-        var lonlat = new createLonLat(lon, lat);
+        var lonlat = new MapUtils.createLonLat(lon, lat);
         if (this.selectorMarker == null) {
-            this.selectorMarker = this.addMarker(positionMarkerID, lonlat, "", "", "", 20, 10);
+            this.selectorMarker = this.addMarker(MapUtils.POSITIONMARKERID, lonlat, "", "", "", 20, 10);
         } else {
             this.selectorMarker.lonlat = this.transformLLPoint(lonlat);
         }
@@ -3089,7 +3007,7 @@ RepositoryMap.prototype = {
 
             var offset = zoom.offset;
             if (offset) {
-                var bounds = this.transformLLBounds(createBounds(lon - offset, lat - offset, lon + offset, lat + offset));
+                var bounds = this.transformLLBounds(MapUtils.createBounds(lon - offset, lat - offset, lon + offset, lat + offset));
                 this.zoomToExtent(bounds);
             }
         }
@@ -3099,7 +3017,7 @@ RepositoryMap.prototype = {
         if (!bounds)
             return;
 	if(Utils.isDefined(bounds.north))
-            bounds= createBounds(bounds.west,bounds.south, bounds.east,bounds.north);
+            bounds= MapUtils.createBounds(bounds.west,bounds.south, bounds.east,bounds.north);
         var llbounds = bounds.clone();
         return llbounds.transform(this.displayProjection, this.sourceProjection);
     },
@@ -3158,7 +3076,7 @@ RepositoryMap.prototype = {
         }
         newLeft = Math.max(newLeft, extentBounds.left);
         newRight = Math.min(newRight, extentBounds.right);
-        newBounds = createBounds(newLeft, bounds.bottom, newRight,
+        newBounds = MapUtils.createBounds(newLeft, bounds.bottom, newRight,
 				 bounds.top);
         return newBounds;
     },
@@ -3233,7 +3151,7 @@ RepositoryMap.prototype = {
                     bounds.right, bounds.top));
                 ll = _this.transformProjPoint(ll);
                 ur = _this.transformProjPoint(ur);
-                var bounds = createBounds(ll.lon, ll.lat, ur.lon,
+                var bounds = MapUtils.createBounds(ll.lon, ll.lat, ur.lon,
 					  ur.lat);
                 bounds = _this.normalizeBounds(bounds);
                 _this.setSelectionBox(bounds.top, bounds.left, bounds.bottom, bounds.right, false);
@@ -3242,10 +3160,10 @@ RepositoryMap.prototype = {
                     listener(bounds);
                 }
                 if (_this.fldNorth) {
-                    _this.fldNorth.obj.value = formatLocationValue(bounds.top);
-                    _this.fldSouth.obj.value = formatLocationValue(bounds.bottom);
-                    _this.fldWest.obj.value = formatLocationValue(bounds.left);
-                    _this.fldEast.obj.value = formatLocationValue(bounds.right);
+                    _this.fldNorth.obj.value = MapUtils.formatLocationValue(bounds.top);
+                    _this.fldSouth.obj.value = MapUtils.formatLocationValue(bounds.bottom);
+                    _this.fldWest.obj.value = MapUtils.formatLocationValue(bounds.left);
+                    _this.fldEast.obj.value = MapUtils.formatLocationValue(bounds.right);
                 }
             }
         });
@@ -3329,7 +3247,7 @@ RepositoryMap.prototype = {
                     newEast += dx;
                 if (this.doNorth)
                     newNorth += dy;
-                var bounds = createBounds(newWest, newSouth, newEast, newNorth);
+                var bounds = MapUtils.createBounds(newWest, newSouth, newEast, newNorth);
                 bounds = _this.normalizeBounds(bounds);
                 _this.setSelectionBox(bounds.top, bounds.left, bounds.bottom, bounds.right, false);
                 _this.findSelectionFields();
@@ -3570,7 +3488,7 @@ RepositoryMap.prototype = {
 	}
 	var p = steps/numSteps; 
 	steps++;
-	newBounds = createBounds(
+	newBounds = MapUtils.createBounds(
 	    ob.left+(bounds.left- ob.left)*p,
 	    ob.bottom+(bounds.bottom- ob.bottom)*p,
 	    ob.right+(bounds.right- ob.right)*p,
@@ -3619,7 +3537,7 @@ RepositoryMap.prototype = {
     createMarker:  function(id, location, iconUrl, markerName, text, parentId, size, xoffset, yoffset, canSelect,attrs) {
 	if(!attrs) attrs  = {};
         if (Array.isArray(location)) {
-            location = createLonLat(location[0], location[1]);
+            location = MapUtils.createLonLat(location[0], location[1]);
         }
         if (size == null) size = 16;
         if (xoffset == null) xoffset = 0;
@@ -3701,7 +3619,7 @@ RepositoryMap.prototype = {
 
     addMarker:  function(id, location, iconUrl, markerName, text, parentId, size, yoffset, canSelect, attrs) {
 	if(Utils.isDefined(location.x)) {
-	    location = createLonLat(location.x,location.y);
+	    location = MapUtils.createLonLat(location.x,location.y);
 	}
         let marker = this.createMarker(id, location, iconUrl, markerName, text, parentId, size, 0, yoffset, canSelect,attrs);
         this.addMarkers([marker]);
@@ -3743,7 +3661,7 @@ RepositoryMap.prototype = {
     addBox:  function(box) {
         if (!this.boxes) {
             this.boxes = new OpenLayers.Layer.Boxes("Boxes", {
-                wrapDateLine: mapDefaults.wrapDateline,
+                wrapDateLine: MapUtils.defaults.wrapDateline,
             });
             if (!this.getMap()) {
                 this.initialBoxes = this.boxes;
@@ -3771,8 +3689,8 @@ RepositoryMap.prototype = {
             args[i] = params[i];
         }
 	if(!args.color) args.color = this.params.boxColor || "blue";
-        var bounds = createBounds(west, Math.max(south, -mapDefaults.maxLatValue),
-				  east, Math.min(north, mapDefaults.maxLatValue));
+        var bounds = MapUtils.createBounds(west, Math.max(south, -MapUtils.defaults.maxLatValue),
+				  east, Math.min(north, MapUtils.defaults.maxLatValue));
         var projBounds = this.transformLLBounds(bounds);
         box = new OpenLayers.Marker.Box(projBounds);
         box.sticky = args.sticky;
@@ -3785,7 +3703,7 @@ RepositoryMap.prototype = {
             });
         }
 
-        var lonlat = new createLonLat(west, north);
+        var lonlat = new MapUtils.createLonLat(west, north);
         box.lonlat = this.transformLLPoint(lonlat);
         box.text = this.getPopupText(text);
         box.name = name;
@@ -3873,7 +3791,7 @@ RepositoryMap.prototype = {
         if (typeof point.x === 'undefined') {
             point = new OpenLayers.Geometry.Point(point.lon, point.lat);
         } else {
-            location = createLonLat(point.x, point.y);
+            location = MapUtils.createLonLat(point.x, point.y);
         }
 
         let _this = this;
@@ -4105,19 +4023,19 @@ RepositoryMap.prototype = {
         if (marker.inputProps) {
             marker.text = this.getPopupText(marker.inputProps.text);
         }
-        let markertext;
+        let markerText;
 
 	if(marker.textGetter) {
-	    markertext =marker.textGetter(marker);
+	    markerText =marker.textGetter(marker);
 	} else if(this.textGetter) {
-	    markertext = this.textGetter(marker.layer, marker);
+	    markerText = this.textGetter(marker.layer, marker);
 	}
-	if(!markertext) {
-	    markertext =marker.text;
+	if(!markerText) {
+	    markerText =marker.text;
 	}
-	if(!markertext) return;
+	if(!markerText) return;
 	if(this.displayDiv) {
-	    $("#" + this.displayDiv).html(markertext);
+	    $("#" + this.displayDiv).html(markerText);
 	    return;
 	}
 
@@ -4126,16 +4044,16 @@ RepositoryMap.prototype = {
         if (fromClick && marker.locationKey != null) {
             markers = this.seenMarkers[marker.locationKey];
             if (markers && markers.length > 1) {
-                markertext = "";
+                markerText = "";
                 for (var i = 0; i < markers.length; i++) {
                     otherMarker = markers[i];
                     if (i > 0)
-                        markertext += '<hr>';
+                        markerText += '<hr>';
                     if (otherMarker.inputProps) {
 			otherMarker.text = otherMarker.textGetter?otherMarker.textGetter(marker):this.getPopupText(otherMarker.inputProps.text);
                     }
 		    let text = otherMarker.text?otherMarker.text:otherMarker.textGetter?otherMarker.textGetter(marker):"NA";
-                    markertext += text;
+                    markerText += text;
                     if (i > 10) break;
                 }
             }
@@ -4155,12 +4073,12 @@ RepositoryMap.prototype = {
 	    }
 	} else {
             if (typeof location.lon === 'undefined') {
-		location = createLonLat(location.x, location.y);
+		location = MapUtils.createLonLat(location.x, location.y);
             }
-            if (!markertext || markertext == "") {
+            if (!markerText || markerText == "") {
 		//            marker.location = this.transformProjPoint(marker.lonlat);
 		if (location.lat == location.lat) {
-                    markertext = "Lon: " + location.lat + "<br>" + "Lat: " + location.lon;
+                    markerText = "Lon: " + location.lat + "<br>" + "Lat: " + location.lon;
 		}
             }
 	    
@@ -4170,7 +4088,7 @@ RepositoryMap.prototype = {
                     this.currentEntryMarker = marker;
                     var call = "ramaddaMapMap['" + this.mapId + "'].handleMarkerLayer();";
                     var label = marker.entryLayer ? "Remove Layer" : "Load Layer";
-                    markertext = "<center>" + HtmlUtils.onClick(call, label) + "</center>" + markertext;
+                    markerText = "<center>" + HtmlUtils.onClick(call, label) + "</center>" + markerText;
 		}
             }
 	    projPoint = this.transformLLPoint(location);
@@ -4183,19 +4101,13 @@ RepositoryMap.prototype = {
 
 
 	if(simplePopup || this.simplePopup) {
-	    popup = new OpenLayers.Popup("popup",
-					 projPoint,
-					 null,
-					 HtmlUtils.div(["style",""],markertext),
-					 true);
+	    /* makePopup always makes a simpler popup just keep this here as fallback
+	      popup = new OpenLayers.Popup("popup",
+	      projPoint, null, HtmlUtils.div(["style",""],markerText), true);*/
+            popup = this.makePopup( projPoint,markerText);
 	} else {
-            popup = new OpenLayers.Popup.FramedCloud("popup", projPoint,
-						     null, markertext, null, true,
-						     function() {
-							 _this.onPopupClose()
-						     });
+            popup = this.makePopup( projPoint,markerText);
 	} 
-
 
         if (marker.inputProps && marker.inputProps.minSizeX) {
             popup.minSize = new OpenLayers.Size(marker.inputProps.minSizeX, marker.inputProps.minSizeY);

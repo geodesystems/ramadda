@@ -82,10 +82,10 @@ function AreaWidget(display) {
             $("#" + this.display.getDomId(ID_AREA_LINK)).attr("src", image);
             if (this.linkArea && this.lastBounds) {
                 var b = this.lastBounds;
-                $("#" + this.display.getDomId(ID_NORTH)).val(formatLocationValue(b.top));
-                $("#" + this.display.getDomId(ID_WEST)).val(formatLocationValue(b.left));
-                $("#" + this.display.getDomId(ID_SOUTH)).val(formatLocationValue(b.bottom));
-                $("#" + this.display.getDomId(ID_EAST)).val(formatLocationValue(b.right));
+                $("#" + this.display.getDomId(ID_NORTH)).val(MapUtils.formatLocationValue(b.top));
+                $("#" + this.display.getDomId(ID_WEST)).val(MapUtils.formatLocationValue(b.left));
+                $("#" + this.display.getDomId(ID_SOUTH)).val(MapUtils.formatLocationValue(b.bottom));
+                $("#" + this.display.getDomId(ID_EAST)).val(MapUtils.formatLocationValue(b.right));
             }
         },
         linkArea: false,
@@ -94,10 +94,10 @@ function AreaWidget(display) {
             bounds = args.bounds;
             this.lastBounds = bounds;
             if (!args.force && !this.linkArea) return;
-            $("#" + this.display.getDomId(ID_NORTH)).val(formatLocationValue(bounds.top));
-            $("#" + this.display.getDomId(ID_WEST)).val(formatLocationValue(bounds.left));
-            $("#" + this.display.getDomId(ID_SOUTH)).val(formatLocationValue(bounds.bottom));
-            $("#" + this.display.getDomId(ID_EAST)).val(formatLocationValue(bounds.right));
+            $("#" + this.display.getDomId(ID_NORTH)).val(MapUtils.formatLocationValue(bounds.top));
+            $("#" + this.display.getDomId(ID_WEST)).val(MapUtils.formatLocationValue(bounds.left));
+            $("#" + this.display.getDomId(ID_SOUTH)).val(MapUtils.formatLocationValue(bounds.bottom));
+            $("#" + this.display.getDomId(ID_EAST)).val(MapUtils.formatLocationValue(bounds.right));
         },
         setSearchSettings: function(settings) {
             var cbx = $("#" + this.display.getDomId(ID_CONTAINS));
@@ -1991,13 +1991,13 @@ var Gfx = {
 	let scaleY;
 	if(opts.display && opts.display.map) {
 	    //Get the global bounds so we can map down to the image
-	    var n1 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,85));
-	    var s1 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,-85));
-	    var n2 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,opts.bounds.north));
-	    var s2 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,opts.bounds.south));
+	    var n1 = opts.display.map.transformLLPoint(MapUtils.createLonLat(opts.bounds.east,85));
+	    var s1 = opts.display.map.transformLLPoint(MapUtils.createLonLat(opts.bounds.east,-85));
+	    var n2 = opts.display.map.transformLLPoint(MapUtils.createLonLat(opts.bounds.east,opts.bounds.north));
+	    var s2 = opts.display.map.transformLLPoint(MapUtils.createLonLat(opts.bounds.east,opts.bounds.south));
 //	    console.log("n1:" + n1 +" s2:" + s1 +" n2:" + n2 +" s2:" + s2 +" bounds:" + JSON.stringify(opts.bounds));
 	    scaleY = (lat,lon)=> {
-		var pt = opts.display.map.transformLLPoint(createLonLat(lon,lat));
+		var pt = opts.display.map.transformLLPoint(MapUtils.createLonLat(lon,lat));
 		var dy = n2.lat-pt.lat;
 		var perc = dy/(n2.lat-s2.lat)
 		return Math.floor(perc*opts.h);
