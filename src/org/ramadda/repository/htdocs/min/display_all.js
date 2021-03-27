@@ -4401,7 +4401,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return Utils.parseMap(prop);
         },
         toString: function() {
-            return "RamaddaDisplay:" + this.type + " - " + this.getId();
+            return  this.type + " - " + this.getId();
         },
         getType: function() {
             return this.type;
@@ -10894,6 +10894,7 @@ function PointData(name, recordFields, records, url, properties) {
         },
         loadPointJson: function(url, display, reload) {
 	    let debug =  displayDebug.loadPointJson;
+	    let debug2 = false;
             let pointData = this;
             this.startLoading();
             let _this = this;
@@ -10927,6 +10928,8 @@ function PointData(name, recordFields, records, url, properties) {
 		}
 	    }		
 	    if(cacheObject.displays.indexOf(display)<0) {
+		if(debug2)
+		    console.log("adding to displays-1:" + display);
 		cacheObject.displays.push(display);
 	    }
 	    //If we are reloading then clear the data
@@ -10936,14 +10939,18 @@ function PointData(name, recordFields, records, url, properties) {
 		cacheObject.pointData = null;
 		cacheObject.pending = [];
 		if(debug)
-		    console.log("\treloading adding to pending");
+		    console.log("\treloading adding to pending:" + cacheObject.displays);
 		cacheObject.displays.forEach(d=>{
 		    if(debug)
 			console.log("\tdisplay:" + d.type +" " + d.getId());
 		    cacheObject.pending.push(d);
 		});
 	    } else {
-		cacheObject.displays.push(display);
+		if(cacheObject.displays.indexOf(display)<0) {
+		    if(debug2)
+			console.log("adding to displays-2:" + display);
+		    cacheObject.displays.push(display);
+		}
 		if (cacheObject.pointData != null) {
 		    if(debug)
 			console.log("\tdata was in cache:" +cacheObject.pointData.getRecords().length+" url:" + url);
@@ -11009,13 +11016,12 @@ function PointData(name, recordFields, records, url, properties) {
 		    display.applyRequestProperties(data.properties);
 		}
 		if(debug)
-                    console.log("\tpending:" + cacheObject.pending.length);
+		    console.log("\tcalling pointDataLoaded on  " + tmp.length + " displays");
                 var tmp = cacheObject.pending;
                 cacheObject.pending = [];
-                for (var i = 0; i < tmp.length; i++) {
+                for (let i = 0; i < tmp.length; i++) {
 		    if(debug)
-			console.log("\tcalling pointDataLoaded:" + tmp[i].type +" " + tmp[i].getId() +" #:" + pointData.getRecords().length);
-
+			console.log("\tcalling pointDataLoaded:" + tmp[i] +" #:" + pointData.getRecords().length);
                     tmp[i].pointDataLoaded(pointData, url, reload);
                 }
 
@@ -31341,15 +31347,20 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.shapesField = this.getFieldById(null,this.getProperty("shapesField"));
 	    this.shapesTypeField = this.getFieldById(null,this.getProperty("shapesTypeField"));
 
+
+
+
             let records = this.records =  this.filterData();
-
-
 	    if(this.shapesTypeField && this.shapesField) {
 		this.setProperty("tooltipNotFields",this.shapesTypeField.getId()+"," + this.shapesField);
 		this.loadShapes(records);
 	    }
 
-	    if(debug) console.log("map.updateUI");
+//	    this.startProgress();
+//	    if(args.reload) return;
+
+
+	    if(debug) console.log("displaymap.updateUI reload=" +args.reload);
             if (records == null) {
 		if(debug) console.log("\tno data");
                 return;
@@ -31357,7 +31368,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    if(!args.dataFilterChanged) {
 		if(!this.updatingFromClip) {
-		    this.setMessage("Creating display...");
+		    this.setMessage(args.reload?"Reloading map...":"Creating display...");
 		}
 		this.updatingFromClip = false;
 	    }
@@ -31368,7 +31379,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		} catch(exc) {
 		    console.log(exc)
 		    console.log(exc.stack);
-		    this.setMessage("" + exc);
+		    this.setMessage("Error:" + exc);
 		    return;
 		}
 		this.clearProgress();

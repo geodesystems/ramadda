@@ -1586,7 +1586,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return Utils.parseMap(prop);
         },
         toString: function() {
-            return "RamaddaDisplay:" + this.type + " - " + this.getId();
+            return  this.type + " - " + this.getId();
         },
         getType: function() {
             return this.type;

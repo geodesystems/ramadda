@@ -724,9 +724,9 @@ RepositoryMap.prototype = {
 
 
 	$("#" + this.mapDivId).html(HtmlUtils.div(["style","width:100%;height:100%;position:relative;","id",this.mapDivId+"_themap"]));
-	$("#" + this.mapDivId+"_themap").append(HtmlUtils.div(["id",this.mapDivId+"_progress", "style","z-index:2000;position:absolute;top:10px;left:50px;"],""));
-	$("#" + this.mapDivId+"_themap").append(HtmlUtils.div(["id",this.mapDivId+"_label", "style","z-index:2000;position:absolute;bottom:10px;left:10px;"],""));
-	$("#" + this.mapDivId+"_themap").append(HtmlUtils.div(["id",this.mapDivId+"_toolbar", "style","z-index:2000;position:absolute;top:10px;left:50%;    transform: translateX(-50%);"],""));
+	$("#" + this.mapDivId+"_themap").append(HtmlUtils.div(["id",this.mapDivId+"_progress", CLASS,"ramadda-map-progesss", "style","z-index:3000;position:absolute;top:10px;left:50px;"],""));
+	$("#" + this.mapDivId+"_themap").append(HtmlUtils.div(["id",this.mapDivId+"_label", "style","z-index:1000;position:absolute;bottom:10px;left:10px;"],""));
+	$("#" + this.mapDivId+"_themap").append(HtmlUtils.div(["id",this.mapDivId+"_toolbar", "style","z-index:1000;position:absolute;top:10px;left:50%;    transform: translateX(-50%);"],""));
 	if(this.showBookmarks || true) {
 	    //		$("#" + this.mapDivId+"_themap").append(HtmlUtils.div(["id",this.mapDivId+"_bookmarks", "style","z-index:2000;position:absolute;top:140px;left:20px;"],HtmlUtils.getIconImage("fa-bookmark")));
 	}

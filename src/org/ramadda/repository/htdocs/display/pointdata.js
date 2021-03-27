@@ -311,6 +311,7 @@ function PointData(name, recordFields, records, url, properties) {
         },
         loadPointJson: function(url, display, reload) {
 	    let debug =  displayDebug.loadPointJson;
+	    let debug2 = false;
             let pointData = this;
             this.startLoading();
             let _this = this;
@@ -344,6 +345,8 @@ function PointData(name, recordFields, records, url, properties) {
 		}
 	    }		
 	    if(cacheObject.displays.indexOf(display)<0) {
+		if(debug2)
+		    console.log("adding to displays-1:" + display);
 		cacheObject.displays.push(display);
 	    }
 	    //If we are reloading then clear the data
@@ -353,14 +356,18 @@ function PointData(name, recordFields, records, url, properties) {
 		cacheObject.pointData = null;
 		cacheObject.pending = [];
 		if(debug)
-		    console.log("\treloading adding to pending");
+		    console.log("\treloading adding to pending:" + cacheObject.displays);
 		cacheObject.displays.forEach(d=>{
 		    if(debug)
 			console.log("\tdisplay:" + d.type +" " + d.getId());
 		    cacheObject.pending.push(d);
 		});
 	    } else {
-		cacheObject.displays.push(display);
+		if(cacheObject.displays.indexOf(display)<0) {
+		    if(debug2)
+			console.log("adding to displays-2:" + display);
+		    cacheObject.displays.push(display);
+		}
 		if (cacheObject.pointData != null) {
 		    if(debug)
 			console.log("\tdata was in cache:" +cacheObject.pointData.getRecords().length+" url:" + url);
@@ -426,13 +433,12 @@ function PointData(name, recordFields, records, url, properties) {
 		    display.applyRequestProperties(data.properties);
 		}
 		if(debug)
-                    console.log("\tpending:" + cacheObject.pending.length);
+		    console.log("\tcalling pointDataLoaded on  " + tmp.length + " displays");
                 var tmp = cacheObject.pending;
                 cacheObject.pending = [];
-                for (var i = 0; i < tmp.length; i++) {
+                for (let i = 0; i < tmp.length; i++) {
 		    if(debug)
-			console.log("\tcalling pointDataLoaded:" + tmp[i].type +" " + tmp[i].getId() +" #:" + pointData.getRecords().length);
-
+			console.log("\tcalling pointDataLoaded:" + tmp[i] +" #:" + pointData.getRecords().length);
                     tmp[i].pointDataLoaded(pointData, url, reload);
                 }
 

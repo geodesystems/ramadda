@@ -1279,6 +1279,7 @@ svg > g > g:last-child { pointer-events: none }
 }
 
 .display-map-message {
+    position:relative;
     border-radius: 4px;
     display:inline-block;
     border: 1px #aaa solid;
