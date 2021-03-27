@@ -3530,6 +3530,8 @@ public abstract class Converter extends Processor {
                                ? "County"
                                : where.equals("states")
                                  ? "State"
+                               : where.equals("timezones")
+                                 ? "Timezone"
                                  : where;
                 row.add(label);
 
