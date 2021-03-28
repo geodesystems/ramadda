@@ -29,6 +29,9 @@ import java.io.*;
 
 import java.net.*;
 
+import java.nio.*;
+import java.nio.channels.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.*;
@@ -188,6 +191,29 @@ public class IO {
      */
     public static String readInputStream(InputStream is) throws IOException {
         return IOUtil.readContents(is);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param channel _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static String readChannel(ReadableByteChannel channel)
+            throws Exception {
+        ByteArrayOutputStream bos       = new ByteArrayOutputStream();
+        ByteBuffer            buffer    = ByteBuffer.allocate(32000);
+        int                   bytesRead = 0;
+        while ((bytesRead = channel.read(buffer)) > 0) {
+            bos.write(buffer.array(), 0, bytesRead);
+            buffer.clear();
+        }
+
+        return bos.toString();
     }
 
 
@@ -646,7 +672,7 @@ public class IO {
                     || (response == HttpURLConnection.HTTP_MOVED_PERM)
                     || (response == HttpURLConnection.HTTP_SEE_OTHER)) {
                 String newUrl = connection.getHeaderField("Location");
-		//                System.err.println(newUrl);
+                //                System.err.println(newUrl);
                 //Don't follow too many redirects
                 if (tries > 10) {
                     throw new IllegalArgumentException(
@@ -1021,20 +1047,28 @@ public class IO {
     }
 
 
+    /** _more_          */
     private static boolean debuggingStderr = false;
 
+    /**
+     * _more_
+     *
+     * @throws Exception _more_
+     */
     public static void debugStderr() throws Exception {
-	if(debuggingStderr) return;
-	debuggingStderr = true;
+        if (debuggingStderr) {
+            return;
+        }
+        debuggingStderr = true;
         final PrintStream oldErr = System.err;
-	final PrintStream oldOut = System.out;
-	System.setErr(new PrintStream(oldOut){
-		public void     println(String x) {
-		    new RuntimeException("stderr").printStackTrace();
-		    oldErr.println(x);
-		}
-	    });
-    }	
+        final PrintStream oldOut = System.out;
+        System.setErr(new PrintStream(oldOut) {
+            public void println(String x) {
+                new RuntimeException("stderr").printStackTrace();
+                oldErr.println(x);
+            }
+        });
+    }
 
 
 
