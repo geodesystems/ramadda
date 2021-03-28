@@ -688,6 +688,22 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+    public Result processMakeBundle(Request request, Entry entry) throws Exception {
+	request.putExtraProperty(ARG_MAKEBUNDLE,"true");
+	request.put(ARG_OUTPUT,OutputHandler.OUTPUT_HTML.getId());
+	request.put("ramadda.showjsonld", "false");
+	StringBuilder sb  = new StringBuilder();
+	request.put(ARG_TEMPLATE,"empty");
+	getRepository().getHtmlOutputHandler().handleDefaultWiki(request, entry,sb,null,null);
+	Result tmpResult = new Result("",sb);
+	getPageHandler().decorateResult(request, tmpResult);
+	String html = tmpResult.getStringContent();
+	Result result= new Result("",new StringBuilder(html));
+	result.setShouldDecorate(false);
+	return result;
+    }
+
+
     /**
      * _more_
      *

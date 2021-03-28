@@ -217,6 +217,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
                        OutputType.TYPE_ACTION | OutputType.TYPE_EDIT, "",
                        "/icons/shape_rotate_clockwise.png");
 
+    /** Change type output type */
+    public static final OutputType OUTPUT_MAKEBUNDLE =
+        new OutputType("Make Bundle", "repository.makebundle",
+                       OutputType.TYPE_OTHER| OutputType.TYPE_FILE, "",
+                       "fas fa-save");    
+
     /** Publish OutputType */
     public static final OutputType OUTPUT_PUBLISH =
         new OutputType("Make Public", "repository.makepublic",
@@ -684,12 +690,19 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public int getPort() {
+	if(overridePort>0) return overridePort;
         String port = getProperty(PROP_PORT, (String) null);
         if (Utils.stringDefined(port)) {
             return Integer.decode(port.trim()).intValue();
         }
-
         return super.getPort();
+    }
+
+
+    private int overridePort = -1;
+    public void setPort(int value) {
+	super.setPort(value);
+	overridePort = value;
     }
 
 
@@ -812,6 +825,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             throws Exception {
         childRepositories.add(childRepository);
         childRepository.setParentRepository(this);
+
         int sslPort = getHttpsPort();
         if (sslPort > 0) {
             childRepository.setHttpsPort(sslPort);
@@ -1061,8 +1075,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         getMetadataManager().loadMetadataHandlers(getPluginManager());
         clearAllCaches();
         StringBuilder statusMsg =
-            new StringBuilder("RAMADDA: repository started:");
-        statusMsg.append("  Home dir: "
+            new StringBuilder("RAMADDA: repository started at:" + new Date());
+	statusMsg.append("\n");
+        statusMsg.append("\tHome dir: "
                          + getStorageManager().getRepositoryDir());
 
         statusMsg.append("  Version: "
@@ -1071,6 +1086,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                          + getProperty(PROP_BUILD_DATE, "N/A"));
         statusMsg.append("  Java version: "
                          + getProperty(PROP_JAVA_VERSION, "N/A"));
+        statusMsg.append("\n");
+	statusMsg.append("\tRunning on port:" + getPort() +" " +(isSSLEnabled(null)?"SSL port:" + getHttpsPort():" SSL not enabled"));
         getLogManager().logInfoAndPrint(statusMsg.toString());
 
 
@@ -3090,6 +3107,52 @@ public class Repository extends RepositoryBase implements RequestHandler,
         copyHandler.addType(OUTPUT_COPY);
         addOutputHandler(copyHandler);
 
+
+        OutputHandler bundleHandler = new OutputHandler(getRepository(),
+                                        "Entry Bundler") {
+            public boolean canHandleOutput(OutputType output) {
+                return output.equals(OUTPUT_MAKEBUNDLE);
+            }
+            public void getEntryLinks(Request request, State state,
+                                      List<Link> links)
+                    throws Exception {
+                if ((request.getUser() == null)
+                        || request.getUser().getAnonymous()) {
+                    return;
+                }
+                links.add(makeLink(request, state.getEntry(), OUTPUT_MAKEBUNDLE));
+            }
+
+            public String toString() {
+                return "Bundle handler";
+            }
+
+            public Result outputEntry(Request request, OutputType outputType,
+                                      Entry entry)
+                    throws Exception {
+		return outputBundle(request, entry);
+            }
+
+
+            public Result outputGroup(Request request, OutputType outputType,
+                                      Entry group, List<Entry> subGroups,
+                                      List<Entry> entries)
+                    throws Exception {
+		return outputBundle(request, group);
+            }
+
+            public Result outputBundle(Request request,  Entry entry)
+                    throws Exception {
+                if (request.getUser().getAnonymous()) {
+                    return new Result("", "");
+                }
+		return getEntryManager().processMakeBundle(request, entry);
+            }
+		
+        };
+        bundleHandler.addType(OUTPUT_MAKEBUNDLE);
+        addOutputHandler(bundleHandler);
+	
 
 
         OutputHandler typeChangeHandler = new OutputHandler(getRepository(),
@@ -6976,6 +7039,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(
                 sc.getSocketFactory());
+	    HttpsURLConnection.setDefaultHostnameVerifier( new HostnameVerifier(){
+		    public boolean verify(String string,SSLSession ssls) {
+			System.err.println("vertify:" + string);
+			return true;
+		    }
+		});
         } catch (Exception e) {}
 
     }

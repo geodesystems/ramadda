@@ -52,6 +52,7 @@ import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.util.Bounds;
 import org.ramadda.util.BufferMapList;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.Json;
 import org.ramadda.util.NamedValue;
@@ -63,13 +64,8 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 
-import java.io.BufferedReader;
+import java.io.*;
 
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import java.net.URL;
 
@@ -213,6 +209,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
     /** _more_ */
     private String displayImports;
+    private String displayInits;
 
 
     /** _more_ */
@@ -2035,6 +2032,33 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             props, displayProps);
                 }
             }
+	    if(Misc.equals("true",request.getExtraProperty(ARG_MAKEBUNDLE))) {
+		if(request.isAnonymous()) throw new RuntimeException("Anonymous users cannot make bundles");
+		List<String[]> bundleUrls = (List<String[]>) request.getExtraProperty("bundleurls");
+		if(bundleUrls ==null) {
+		    bundleUrls = new ArrayList<String[]>();
+		    request.putExtraProperty("bundleurls", bundleUrls);
+		}
+
+		String fileName = jsonUrl.replaceAll("^/.*\\?","");
+		fileName = fileName.replace("output=points.product&product=points.json&","");
+		fileName = fileName.replaceAll("[&=\\?]+","_");
+		fileName+=".json";
+		System.err.println("incoming url:" + jsonUrl);
+		URL url = new URL(request.getAbsoluteUrl(jsonUrl).replace("localhost:","127.0.0.1:"));
+		jsonUrl = getRepository().getUrlBase()+"/bundles/data/" + fileName;
+		System.err.println("new url:" + jsonUrl);
+		System.err.println("abs url:" + url);
+
+
+		String fullFileName = getStorageManager().getHtdocsDir()+"/bundles/data/" + fileName;
+		OutputStream fos = getStorageManager().getFileOutputStream(new File(fullFileName));
+		InputStream fis = IO.getInputStream(url);
+		IOUtil.writeTo(fis, fos);
+		IOUtil.close(fos);
+	    }
+
+
             getEntryDisplay(request, wikiUtil, entry, originalEntry, theTag,
                             entry.getName(), jsonUrl, sb, props,
                             displayProps);
@@ -6499,8 +6523,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                          "linechart");
         this.addDisplayImports(request, sb);
         if (request.getExtraProperty("added plotly") == null) {
-            HU.importJS(sb, getHtdocsUrl("/lib/plotly/plotly-latest.min.js"));
-            request.putExtraProperty("added plotly", "true");
+	    //We do this in displayImports
+	    //	    request.appendHead(HU.importJS(getHtdocsUrl("/lib/plotly/plotly-latest.min.js")));
+	    //            request.putExtraProperty("added plotly", "true");
         }
         List<String> topProps = new ArrayList<String>();
         if (propList == null) {
@@ -6978,10 +7003,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             Utils.add(propList, "theMap", mapVar);
         }
 
-        HU.commentJS(
-            js,
-            "This gets the global display manager or creates it if not created");
-
         if (needToCreateGroup) {
             request.putExtraProperty(PROP_ADDED_GROUP, "true");
             Utils.concatBuff(
@@ -6993,9 +7014,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 && getProperty(wikiUtil, props, "includeData", true)) {
             Utils.add(propList, "data",
                       Utils.concatString("new PointData(", HU.quote(name),
-                                         ",  null,null,",
+                                         ",  null,null,\n",
                                          HU.quote(pointDataUrl), ",",
-                                         "{entryId:'", entry.getId(), "'}",
+                                         "\n{entryId:'", entry.getId(), "'}",
                                          ")"));
         }
 
@@ -7065,6 +7086,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
         wikiUtil.addWikiAttributes(propList);
+	js.append("\n");
         js.append("displayManager.createDisplay(" + HU.quote(displayType)
                   + "," + Json.map(propList, false) + ");\n");
         wikiUtil.appendJavascript(js.toString());
@@ -7084,7 +7106,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         getMapManager().addMapImports(request, sb);
         if (request.getExtraProperty("initchart") == null) {
             request.putExtraProperty("initchart", "added");
-            sb.append(displayImports);
+	    request.appendHead(displayImports);
         }
     }
 
@@ -7097,23 +7119,22 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         try {
             Appendable sb = Utils.makeAppendable();
             HU.importJS(sb, "https://www.gstatic.com/charts/loader.js");
-            HU.script(sb, "HU.loadGoogleCharts();\n");
+	    sb.append("\n");
+	    HU.importJS(sb, getPageHandler().getCdnPath("/initgoogle.js"));
+	    sb.append("\n");
             HU.importJS(sb, getPageHandler().getCdnPath("/lib/d3/d3.min.js"));
+	    sb.append("\n");
             HU.importJS(sb, getPageHandler().getCdnPath("/lib/jquery.handsontable.full.min.js"));
-            HU.cssLink(
-                sb,
-                getPageHandler().getCdnPath(
-                    "/lib/jquery.handsontable.full.min.css"));
-
-            //Put this here after the google load
+	    sb.append("\n");
+            HU.cssLink(sb,getPageHandler().getCdnPath("/lib/jquery.handsontable.full.min.css"));
+	    sb.append("\n");
             HU.importJS(sb, getPageHandler().getCdnPath("/lib/dom-drag.js"));
-
             if (getRepository().getMinifiedOk()) {
-                HU.importJS(
-                    sb,
+                HU.importJS(sb,
                     getPageHandler().getCdnPath("/min/display_all.min.js"));
                 HU.cssLink(
                     sb, getPageHandler().getCdnPath("/min/display.min.css"));
+		sb.append("\n");
             } else {
 		sb.append("\n");
                 HU.cssLink(
@@ -7162,14 +7183,18 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 		sb.append("\n");
                 HU.importJS(
                     sb, getPageHandler().getCdnPath("/display/notebook.js"));
+		sb.append("\n");
                 HU.importJS(
                     sb,
                     getPageHandler().getCdnPath("/display/displayplotly.js"));
+		sb.append("\n");
                 HU.importJS(
                     sb, getPageHandler().getCdnPath("/display/displayd3.js"));
+		sb.append("\n");
                 HU.importJS(
                     sb,
                     getPageHandler().getCdnPath("/display/displaytext.js"));
+		sb.append("\n");
                 HU.importJS(
                     sb,
                     getPageHandler().getCdnPath("/display/displayext.js"));
@@ -7186,8 +7211,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                         Utils.split(includes, ",", true, true)) {
                     HU.importJS(sb, getFileUrl(include));
                 }
+		sb.append("\n");
             }
-	    sb.append("\n");
 
             return sb.toString();
         } catch (Exception exc) {
