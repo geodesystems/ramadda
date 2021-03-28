@@ -688,13 +688,13 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    public Result processMakeBundle(Request request, Entry entry) throws Exception {
+    public Result processMakeSnapshot(Request request, Entry entry) throws Exception {
 	Date now = new Date();
 	String cleanName = Utils.makeID(entry.getName());
-	String bundleFile =cleanName +"_"+ entry.getId() +"_"+  now.getTime() +".html";
-	String bundleFilePath  =getRepository().getUrlBase()+"/bundles/pages/" + bundleFile;
-	request.putExtraProperty(PROP_OVERRIDE_URL,bundleFilePath);
-	request.putExtraProperty(PROP_MAKEBUNDLE,"true");
+	String snapshotFile =cleanName +"_"+ entry.getId() +"_"+  now.getTime() +".html";
+	String snapshotFilePath  =getRepository().getUrlBase()+"/snapshots/pages/" + snapshotFile;
+	request.putExtraProperty(PROP_OVERRIDE_URL,snapshotFilePath);
+	request.putExtraProperty(PROP_MAKESNAPSHOT,"true");
 	request.put(ARG_OUTPUT,OutputHandler.OUTPUT_HTML.getId());
 	request.put("ramadda.showjsonld", "false");
 	StringBuilder sb  = new StringBuilder();
@@ -706,9 +706,9 @@ public class EntryManager extends RepositoryManager {
 	tmpRequest.setUser(getUserManager().getAnonymousUser());
 	getPageHandler().decorateResult(tmpRequest, tmpResult);
 	String html = tmpResult.getStringContent();
-	File file  = new File(getStorageManager().getHtdocsDir()+"/bundles/pages/" + bundleFile);
+	File file  = new File(getStorageManager().getHtdocsDir()+"/snapshots/pages/" + snapshotFile);
 	getStorageManager().writeFile(file, html);
-	return new Result(bundleFilePath);
+	return new Result(snapshotFilePath);
     }
 
 

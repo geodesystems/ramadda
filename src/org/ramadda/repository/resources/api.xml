@@ -181,6 +181,7 @@
       <api request="/admin/cleanup"      method="adminCleanup"       />
       <api request="/admin/scan"         method="adminScanForBadParents" />
       <api request="/admin/stack"        method="adminPrintStack" />
+      <api request="/admin/snapshots"      method="adminSnapshots"           />
   </group>
 
   <group handler="harvestermanager">

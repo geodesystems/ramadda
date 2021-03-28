@@ -1713,7 +1713,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         } else if (theTag.equals(WIKI_TAG_NAME)) {
             String name = getEntryDisplayName(entry);
             if (getProperty(wikiUtil, props, "link", false)) {
-		//In case we are making a bundle we use the overrideurl
+		//In case we are making a snapshot we use the overrideurl
 		String url = (String)request.getExtraProperty(PROP_OVERRIDE_URL);
 		if(url==null)
 		    url = getEntryManager().getEntryUrl(request, entry);
@@ -2035,25 +2035,25 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             props, displayProps);
                 }
             }
-	    if(Misc.equals("true",request.getExtraProperty(PROP_MAKEBUNDLE))) {
-		if(request.isAnonymous()) throw new RuntimeException("Anonymous users cannot make bundles");
-		List<String[]> bundleUrls = (List<String[]>) request.getExtraProperty("bundleurls");
-		if(bundleUrls ==null) {
-		    bundleUrls = new ArrayList<String[]>();
-		    request.putExtraProperty("bundleurls", bundleUrls);
+	    if(Misc.equals("true",request.getExtraProperty(PROP_MAKESNAPSHOT))) {
+		if(request.isAnonymous()) throw new RuntimeException("Anonymous users cannot make snapshots");
+		List<String[]> snapshotUrls = (List<String[]>) request.getExtraProperty("snapshoturls");
+		if(snapshotUrls ==null) {
+		    snapshotUrls = new ArrayList<String[]>();
+		    request.putExtraProperty("snapshoturls", snapshotUrls);
 		}
 		Date now = new Date();
 		String fileName = jsonUrl.replaceAll("^/.*\\?","").replace("output=points.product&product=points.json&","").replaceAll("[&=\\?]+","_").replace("entryid_","");
 		fileName += "_"+  now.getTime() +".json";
 		fileName =  Utils.makeID(entry.getName()) +"_"+fileName;
 		URL url = new URL(request.getAbsoluteUrl(jsonUrl).replace("localhost:","127.0.0.1:"));
-		jsonUrl = getRepository().getUrlBase()+"/bundles/data/" + fileName;
+		jsonUrl = getRepository().getUrlBase()+"/snapshots/data/" + fileName;
 
 		//		System.err.println("new url:" + jsonUrl);
 		//System.err.println("abs url:" + url);
 
 
-		String fullFileName = getStorageManager().getHtdocsDir()+"/bundles/data/" + fileName;
+		String fullFileName = getStorageManager().getHtdocsDir()+"/snapshots/data/" + fileName;
 		OutputStream fos = getStorageManager().getFileOutputStream(new File(fullFileName));
 		InputStream fis = IO.getInputStream(url);
 		IOUtil.writeTo(fis, fos);
@@ -3982,7 +3982,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             wikiUtil.setUser(request.getUser().getId());
         }
         if (entry != null) {
-	    //In case we are making a bundle
+	    //In case we are making a snapshot
 	    String url = (String)request.getExtraProperty(PROP_OVERRIDE_URL);
             if(url==null)
 		url = getEntryManager().getEntryUrl(request, entry);

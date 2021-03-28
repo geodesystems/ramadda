@@ -166,6 +166,12 @@ public class Admin extends RepositoryManager {
                                               "/admin/cleanup",
                                               "Maintenance");
 
+    /** _more_ */
+    public RequestUrl URL_ADMIN_SNAPSHOTS = new RequestUrl(this,
+                                              "/admin/snapshots",
+                                              "Snapshots");
+
+
 
     /** _more_ */
     public RequestUrl URL_ADMIN_STARTSTOP = new RequestUrl(this,
@@ -224,7 +230,7 @@ public class Admin extends RepositoryManager {
         getRegistryManager().URL_REGISTRY_REMOTESERVERS,
         /*URL_ADMIN_STARTSTOP,*/
         /*URL_ADMIN_TABLES, */
-        URL_ADMIN_LOG, URL_ADMIN_STACK, URL_ADMIN_CLEANUP
+        URL_ADMIN_LOG, URL_ADMIN_STACK, URL_ADMIN_SNAPSHOTS,URL_ADMIN_CLEANUP
     });
 
 
@@ -1947,6 +1953,23 @@ public class Admin extends RepositoryManager {
 
         return makeResult(request, msg("System"), sb);
     }
+
+
+    public Result adminSnapshots(Request request) throws Exception {
+        StringBuffer sb = new StringBuffer("");
+        sb.append(HtmlUtils.sectionOpen(null, false));
+	File dir = new File(getStorageManager().getHtdocsDir() +"/snapshots/pages");
+	File []files = dir.listFiles();
+	if(files.length==0) sb.append("No snapshot files");
+	sb.append("<ul>");
+	for(File f: files) {
+	    sb.append("<li> " + HU.href(getRepository().getUrlBase()+"/snapshots/pages/" + f.getName(),f.getName()));
+	}
+	sb.append("</ul>");
+        return makeResult(request, msg("Snapshots"), sb);
+    }
+
+
 
 
     /**

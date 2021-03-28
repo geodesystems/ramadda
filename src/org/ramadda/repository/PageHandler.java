@@ -1880,10 +1880,10 @@ public class PageHandler extends RepositoryManager {
                 label = requestUrl.toString();
             }
             String url   = request.makeUrl(requestUrl) + arg;
-            String clazz = "ramadda-linksheader-off";
+            String clazz = "ramadda-highlightable ramadda-linksheader-off";
             if (type.endsWith(requestUrl.getPath())) {
                 onLabel = label;
-                clazz   = "ramadda-linksheader-on";
+                clazz   = "ramadda-highlightable ramadda-linksheader-on";
             }
             links.add(HU.span(HU.href(url, label),
                                      HU.cssClass(clazz)));

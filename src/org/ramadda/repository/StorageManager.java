@@ -415,9 +415,9 @@ public class StorageManager extends RepositoryManager implements PointFile
 
         htdocsDir = IOUtil.joinDir(repositoryDir, DIR_HTDOCS);
         makeDir(htdocsDir);
-        makeDir(htdocsDir+"/bundles");
-        makeDir(htdocsDir+"/bundles/data");
-        makeDir(htdocsDir+"/bundles/pages");			
+        makeDir(htdocsDir+"/snapshots");
+        makeDir(htdocsDir+"/snapshots/data");
+        makeDir(htdocsDir+"/snapshots/pages");			
         String resourcesDir = IOUtil.joinDir(repositoryDir, DIR_RESOURCES);
         makeDir(resourcesDir);
 

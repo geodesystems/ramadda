@@ -218,8 +218,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                        "/icons/shape_rotate_clockwise.png");
 
     /** Change type output type */
-    public static final OutputType OUTPUT_MAKEBUNDLE =
-        new OutputType("Make Bundle", "repository.makebundle",
+    public static final OutputType OUTPUT_MAKESNAPSHOT =
+        new OutputType("Make Snapshot", "repository.makesnapshot",
                        OutputType.TYPE_OTHER| OutputType.TYPE_FILE, "",
                        "fas fa-save");    
 
@@ -3108,10 +3108,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         addOutputHandler(copyHandler);
 
 
-        OutputHandler bundleHandler = new OutputHandler(getRepository(),
-                                        "Entry Bundler") {
+        OutputHandler snapshotHandler = new OutputHandler(getRepository(),
+                                        "Entry Snapshotr") {
             public boolean canHandleOutput(OutputType output) {
-                return output.equals(OUTPUT_MAKEBUNDLE);
+                return output.equals(OUTPUT_MAKESNAPSHOT);
             }
             public void getEntryLinks(Request request, State state,
                                       List<Link> links)
@@ -3119,17 +3119,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		if(!request.isAdmin()) {
                     return;
                 }
-                links.add(makeLink(request, state.getEntry(), OUTPUT_MAKEBUNDLE));
+                links.add(makeLink(request, state.getEntry(), OUTPUT_MAKESNAPSHOT));
             }
 
             public String toString() {
-                return "Bundle handler";
+                return "Snapshot handler";
             }
 
             public Result outputEntry(Request request, OutputType outputType,
                                       Entry entry)
                     throws Exception {
-		return outputBundle(request, entry);
+		return outputSnapshot(request, entry);
             }
 
 
@@ -3137,20 +3137,20 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                       Entry group, List<Entry> subGroups,
                                       List<Entry> entries)
                     throws Exception {
-		return outputBundle(request, group);
+		return outputSnapshot(request, group);
             }
 
-            public Result outputBundle(Request request,  Entry entry)
+            public Result outputSnapshot(Request request,  Entry entry)
                     throws Exception {
 		if(!request.isAdmin()) {
                     return new Result("", "");
                 }
-		return getEntryManager().processMakeBundle(request, entry);
+		return getEntryManager().processMakeSnapshot(request, entry);
             }
 		
         };
-        bundleHandler.addType(OUTPUT_MAKEBUNDLE);
-        addOutputHandler(bundleHandler);
+        snapshotHandler.addType(OUTPUT_MAKESNAPSHOT);
+        addOutputHandler(snapshotHandler);
 	
 
 
