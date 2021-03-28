@@ -363,7 +363,8 @@ public interface Constants {
     public static final String ARG_SERVICEID = "serviceid";
 
 
-    public static final String ARG_MAKEBUNDLE = "makebundle";
+    public static final String PROP_MAKEBUNDLE = "makebundle";
+    public static final String PROP_OVERRIDE_URL = "overrideurl";    
 
     /** _more_ */
     public static final String ARG_SHOWCATEGORIES = "showCategories";

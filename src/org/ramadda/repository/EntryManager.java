@@ -689,18 +689,26 @@ public class EntryManager extends RepositoryManager {
 
 
     public Result processMakeBundle(Request request, Entry entry) throws Exception {
-	request.putExtraProperty(ARG_MAKEBUNDLE,"true");
+	Date now = new Date();
+	String cleanName = Utils.makeID(entry.getName());
+	String bundleFile =cleanName +"_"+ entry.getId() +"_"+  now.getTime() +".html";
+	String bundleFilePath  =getRepository().getUrlBase()+"/bundles/pages/" + bundleFile;
+	request.putExtraProperty(PROP_OVERRIDE_URL,bundleFilePath);
+	request.putExtraProperty(PROP_MAKEBUNDLE,"true");
 	request.put(ARG_OUTPUT,OutputHandler.OUTPUT_HTML.getId());
 	request.put("ramadda.showjsonld", "false");
 	StringBuilder sb  = new StringBuilder();
-	request.put(ARG_TEMPLATE,"empty");
+	//	request.put(ARG_TEMPLATE,"empty");
 	getRepository().getHtmlOutputHandler().handleDefaultWiki(request, entry,sb,null,null);
 	Result tmpResult = new Result("",sb);
-	getPageHandler().decorateResult(request, tmpResult);
+	tmpResult.setTitle(entry.getName());
+	Request tmpRequest = request.cloneMe();
+	tmpRequest.setUser(getUserManager().getAnonymousUser());
+	getPageHandler().decorateResult(tmpRequest, tmpResult);
 	String html = tmpResult.getStringContent();
-	Result result= new Result("",new StringBuilder(html));
-	result.setShouldDecorate(false);
-	return result;
+	File file  = new File(getStorageManager().getHtdocsDir()+"/bundles/pages/" + bundleFile);
+	getStorageManager().writeFile(file, html);
+	return new Result(bundleFilePath);
     }
 
 

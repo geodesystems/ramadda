@@ -1713,7 +1713,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         } else if (theTag.equals(WIKI_TAG_NAME)) {
             String name = getEntryDisplayName(entry);
             if (getProperty(wikiUtil, props, "link", false)) {
-                String url = getEntryManager().getEntryUrl(request, entry);
+		//In case we are making a bundle we use the overrideurl
+		String url = (String)request.getExtraProperty(PROP_OVERRIDE_URL);
+		if(url==null)
+		    url = getEntryManager().getEntryUrl(request, entry);
                 name = HU.href(url, name, HU.cssClass("ramadda-link"));
             }
             return name;
@@ -2032,23 +2035,22 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             props, displayProps);
                 }
             }
-	    if(Misc.equals("true",request.getExtraProperty(ARG_MAKEBUNDLE))) {
+	    if(Misc.equals("true",request.getExtraProperty(PROP_MAKEBUNDLE))) {
 		if(request.isAnonymous()) throw new RuntimeException("Anonymous users cannot make bundles");
 		List<String[]> bundleUrls = (List<String[]>) request.getExtraProperty("bundleurls");
 		if(bundleUrls ==null) {
 		    bundleUrls = new ArrayList<String[]>();
 		    request.putExtraProperty("bundleurls", bundleUrls);
 		}
-
-		String fileName = jsonUrl.replaceAll("^/.*\\?","");
-		fileName = fileName.replace("output=points.product&product=points.json&","");
-		fileName = fileName.replaceAll("[&=\\?]+","_");
-		fileName+=".json";
-		System.err.println("incoming url:" + jsonUrl);
+		Date now = new Date();
+		String fileName = jsonUrl.replaceAll("^/.*\\?","").replace("output=points.product&product=points.json&","").replaceAll("[&=\\?]+","_").replace("entryid_","");
+		fileName += "_"+  now.getTime() +".json";
+		fileName =  Utils.makeID(entry.getName()) +"_"+fileName;
 		URL url = new URL(request.getAbsoluteUrl(jsonUrl).replace("localhost:","127.0.0.1:"));
 		jsonUrl = getRepository().getUrlBase()+"/bundles/data/" + fileName;
-		System.err.println("new url:" + jsonUrl);
-		System.err.println("abs url:" + url);
+
+		//		System.err.println("new url:" + jsonUrl);
+		//System.err.println("abs url:" + url);
 
 
 		String fullFileName = getStorageManager().getHtdocsDir()+"/bundles/data/" + fileName;
@@ -3980,7 +3982,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             wikiUtil.setUser(request.getUser().getId());
         }
         if (entry != null) {
-            String url = getEntryManager().getEntryUrl(request, entry);
+	    //In case we are making a bundle
+	    String url = (String)request.getExtraProperty(PROP_OVERRIDE_URL);
+            if(url==null)
+		url = getEntryManager().getEntryUrl(request, entry);
             wikiUtil.setTitleUrl(url);
         }
 
@@ -5899,6 +5904,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             Request request = (Request) wikiUtil.getProperty(ATTR_REQUEST);
             Entry   parent  = entry.getParentEntry();
 
+	    
 
             name = name.trim();
             String outputType = null;
