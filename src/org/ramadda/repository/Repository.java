@@ -3116,8 +3116,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             public void getEntryLinks(Request request, State state,
                                       List<Link> links)
                     throws Exception {
-                if ((request.getUser() == null)
-                        || request.getUser().getAnonymous()) {
+		if(!request.isAdmin()) {
                     return;
                 }
                 links.add(makeLink(request, state.getEntry(), OUTPUT_MAKEBUNDLE));
@@ -3143,7 +3142,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
             public Result outputBundle(Request request,  Entry entry)
                     throws Exception {
-                if (request.getUser().getAnonymous()) {
+		if(!request.isAdmin()) {
                     return new Result("", "");
                 }
 		return getEntryManager().processMakeBundle(request, entry);
