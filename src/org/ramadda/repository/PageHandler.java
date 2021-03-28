@@ -384,7 +384,6 @@ public class PageHandler extends RepositoryManager {
             throws Exception {
 
         long t0 = System.currentTimeMillis();
-
         if ( !request.get(ARG_DECORATE, true)) {
             return;
         }
@@ -398,8 +397,6 @@ public class PageHandler extends RepositoryManager {
             }
         }
         template = htmlTemplate.getTemplate();
-
-
         String       systemMessage =
             getRepository().getSystemMessage(request);
 
@@ -435,14 +432,12 @@ public class PageHandler extends RepositoryManager {
         Utils.append(contents, result.getStringContent(), jsContent);
         String content = contents.toString();
 
-        String head    = (String) result.getProperty(PROP_HTML_HEAD);
-        if (head == null) {
-            head = (String) request.getExtraProperty(PROP_HTML_HEAD);
-        }
-        if (head == null) {
-            head = "";
-        }
-        if (showJsonLd && (currentEntry != null)) {
+	String head = "";
+        String head1    = (String) result.getProperty(PROP_HTML_HEAD);
+	if(head1!=null) head+=head1;
+	String head2 = (String) request.getExtraProperty(PROP_HTML_HEAD);
+	if(head2!=null) head+=head2;
+        if (request.get("ramadda.showjsonld", true)&& showJsonLd && (currentEntry != null)) {
             head += getMetadataManager().getJsonLD(request, currentEntry);
         }
         String logoImage = getLogoImage(result);
