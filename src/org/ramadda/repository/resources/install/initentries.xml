@@ -19,22 +19,6 @@
 
 
 
-<entry parent="utilities" name="Metadata List" type="wikipage" >
-<wikitext><![CDATA[
-+section label="{{name}}"
-{{display   
-type="metadata"  
-orientation="vertical"
-formOpen="true"
-layoutHere="true"  
-showMetadata="false"
-innerHeight="200" 
-}}
--section
-]]></wikitext>
-</entry>
-
-
 <entry parent="utilities" name="All entries created in the last 1 days" type="type_virtual" >
 <description>Entries created in the last day</description>
 <entry_ids>
@@ -68,7 +52,7 @@ search
 {{display   
 type="entrylist"  
 orientation="vertical"
-showForm="false"
+showForm="true"
 formOpen="false"
 layoutHere="true"  
 showMetadata="false"

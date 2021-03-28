@@ -20,6 +20,7 @@ President, Geode Systems
 * <a href="${root}/entry/form?entryid=${topid}">Edit</a> this page (you must login to edit) - <a target="_docs" href="http://geodesystems.com/repository/userguide/wikitext.html">Documentation</a>
 * Create new <a href="${root}/entry/form?group=${topid}&type=group">folders</a> or upload <a href="${root}/entry/form?group=${topid}&type=file">files</a>. 
 * Lots of ways to view and edit this page with the <img src="${root}/icons/menu_arrow.gif"> menu above. 
+* <a href="${root}/search/form">Search</a> this repository
 <p>
 -col
 -row
