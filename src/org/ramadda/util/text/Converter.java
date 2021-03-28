@@ -5352,7 +5352,7 @@ public abstract class Converter extends Processor {
          */
         public ColumnSetter(List<String> cols, List<String> rows,
                             String value) {
-            this.cols  = Utils.toInt(cols);
+	    super(cols);
             this.rows  = Utils.toInt(rows);
             this.value = value;
         }
@@ -5370,6 +5370,8 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row) {
+	    if(cols==null) cols =  getIndices(info);
+
             boolean gotRow = false;
             for (int rowIdx : rows) {
                 if (rowCnt == rowIdx) {

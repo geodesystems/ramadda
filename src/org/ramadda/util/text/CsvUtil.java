@@ -21,6 +21,7 @@ import org.json.*;
 import org.ramadda.util.IO;
 import org.ramadda.util.Json;
 import org.ramadda.util.NamedInputStream;
+import org.ramadda.util.NamedChannel;
 import org.ramadda.util.PropertyProvider;
 import org.ramadda.util.Utils;
 import org.ramadda.util.XlsUtil;
@@ -30,6 +31,8 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
+import java.nio.*;
+import java.nio.channels.*;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -65,6 +68,9 @@ public class CsvUtil {
 
     /** _more_ */
     private InputStream inputStream;
+
+    private ReadableByteChannel channel;
+    
 
     /** _more_ */
     private File destDir = new File(".");
@@ -245,6 +251,11 @@ public class CsvUtil {
     public void setInputStream(InputStream inputStream) {
         this.inputStream = inputStream;
     }
+
+    public void setChannel(ReadableByteChannel channel)  {
+        this.channel = channel;
+    }    
+
 
     /**
      * _more_
@@ -550,15 +561,28 @@ public class CsvUtil {
                 if (iteratePattern != null) {
                     iteratePattern.setPattern(pattern);
                 }
+		boolean newWay = true;
+		//		newWay=false;
                 for (DataProvider provider : providers) {
-                    for (NamedInputStream input : getStreams(files)) {
-                        myTextReader.getProcessor().reset();
-                        TextReader clone = myTextReader.cloneMe(input,
-							      outputFile, outputStream);
-			process(clone, provider);
-                        input.close();
-                        provider.finish();
-                    }
+		    if(newWay) {
+			for (NamedChannel input : getChannels(files)) {
+			    myTextReader.getProcessor().reset();
+			    TextReader clone = myTextReader.cloneMe(input,
+								    outputFile, outputStream);
+			    process(clone, provider);
+			    input.close();
+			    provider.finish();
+			}
+		    } else {
+			for (NamedInputStream input : getStreams(files)) {
+			    myTextReader.getProcessor().reset();
+			    TextReader clone = myTextReader.cloneMe(input,
+								    outputFile, outputStream);
+			    process(clone, provider);
+			    input.close();
+			    provider.finish();
+			}
+		    }
                 }
             }
         }
@@ -587,7 +611,7 @@ public class CsvUtil {
      */
     public void process(TextReader ctx, DataProvider provider)
 	throws Exception {
-	provider.initialize(this, ctx, ctx.getInput());
+	provider.initialize(this, ctx);
         try {
             errorDescription = null;
             processInner(ctx, provider);
@@ -623,6 +647,7 @@ public class CsvUtil {
         }
         Row row;
         while ((row = provider.readRow()) != null) {
+	    if(row==null) break;
             rowCnt++;
             if (rowCnt <= ctx.getSkip()) {
                 continue;
@@ -715,6 +740,33 @@ public class CsvUtil {
             streams.add(new NamedInputStream("stdin", System.in));
         }
         return streams;
+    }
+
+
+    private List<NamedChannel> getChannels(List<String> files)
+	throws Exception {
+        if (debugFiles) {
+            System.err.println("getChannels:" + files);
+        }
+        ArrayList<NamedChannel> channels=
+            new ArrayList<NamedChannel>();
+        for (String file : files) {
+            channels.add(new NamedChannel(file, new RandomAccessFile(file,"r").getChannel()));
+        }
+        if (inputStream != null) {
+	    ReadableByteChannel in = Channels.newChannel(inputStream);
+	    channels.add(new NamedChannel("input", in));
+        }
+        if (channel != null) {
+            channels.add(new NamedChannel("input", channel));
+	    
+        }	
+        if (channels.size() == 0) {
+	    FileInputStream stdin = new FileInputStream(FileDescriptor.in);
+	    FileChannel stdinChannel = stdin.getChannel();
+            channels.add(new NamedChannel("stdin", stdinChannel));
+        }
+        return channels;
     }
 
 
@@ -1733,6 +1785,7 @@ public class CsvUtil {
                                       "size", "40"), new Arg("suffix", "",
 							     "size", "40")),
         new Cmd("-raw", "Print the file raw"),
+        new Cmd("-stats", "Print stats"),	
         new Cmd("-record", "Print records"),
         new Cmd("-printheader", "Print the first line"),
         new Cmd("-pointheader", "Generate the RAMADDA point properties"),
@@ -2661,6 +2714,13 @@ public class CsvUtil {
 		return i;
 	    });
 
+	defineFunction("-stats",0,(ctx,args,i) -> {
+		ctx.getProcessor().addProcessor(new Processor.Stats());
+		return i;
+	    });
+	
+
+
 	defineFunction("-template",4,(ctx,args,i) -> {
 		try {
 		    String prefix   = args.get(++i).replaceAll("_nl_", "\n");
@@ -3309,6 +3369,26 @@ public class CsvUtil {
      * @throws Exception On badness
      */
     public static void main(String[] args) throws Exception {
+	/*
+	FileInputStream stdin = new FileInputStream(FileDescriptor.in);
+	ReadableByteChannel inChannel = stdin.getChannel();
+	//	FileChannel inChannel = aFile.getChannel();
+	ByteBuffer buf = ByteBuffer.allocate(32000);
+	int bytesRead = inChannel.read(buf); //read into buffer.
+	int bc= 0;
+	while (bytesRead != -1) {
+	    buf.flip(); 
+	    while(buf.hasRemaining()) {
+		buf.get();
+		bc++;
+	    }
+	    buf.clear(); 
+	    bytesRead = inChannel.read(buf);
+	}
+	System.err.println("bc:" +bc);
+	System.exit(0);
+	*/
+
 	CsvUtil csvUtil = new CsvUtil(args);
 	csvUtil.run(null);
 	System.exit(0);

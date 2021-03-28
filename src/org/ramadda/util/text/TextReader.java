@@ -18,6 +18,8 @@ package org.ramadda.util.text;
 
 
 import org.ramadda.util.NamedInputStream;
+import org.ramadda.util.NamedChannel;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
 import ucar.unidata.util.IOUtil;
@@ -26,6 +28,8 @@ import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 import java.io.File;
+import java.nio.*;
+import java.nio.channels.*;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -71,11 +75,17 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private NamedInputStream input;
 
+    private NamedChannel inputChannel;    
+
     /** _more_ */
     private String inputFile;
 
     /** _more_ */
     private BufferedReader prependReader;
+
+    private ReadableByteChannel channel;
+    private ByteBuffer buff;
+
 
     /** _more_ */
     private String prepend;
@@ -418,6 +428,12 @@ public boolean getVerbose () {
         return s;
     }
 
+    public String readContents() throws Exception {
+	if(input!=null) {
+	    return IO.readInputStream(input.getInputStream());
+	}
+	return IO.readChannel(inputChannel.getChannel());
+    }
 
     /**
      * Get the ChangeFrom property.
@@ -645,6 +661,36 @@ public boolean getVerbose () {
         return that;
     }
 
+
+    public TextReader cloneMe(NamedChannel inputChannel, File outputFile,
+                              OutputStream output)
+            throws CloneNotSupportedException {
+        TextReader that = (TextReader) super.clone();
+        that.debug      = this.debug;
+        that.inputChannel      = inputChannel;
+        that.output     = output;
+        that.outputFile = outputFile;
+        that.writer     = null;
+
+        if (debug) {
+            that.debugSB = this.debugSB;
+            if ((that.output != null) && (that.debugSB != null)
+                    && (that.debugSB.length() > 0)) {
+                that.getWriter().print(that.debugSB);
+                that.debugSB = new StringBuilder();
+            }
+        }
+        that.skipStrings   = this.skipStrings;
+        that.changeStrings = this.changeStrings;
+        that.setPrepend(this.prepend);
+        that.allData = this.allData;
+        if (that.outputFile != null) {
+            that.output = null;
+        }
+
+        return that;
+    }
+    
     /**
      * _more_
      *
@@ -701,6 +747,49 @@ public boolean getVerbose () {
         changeStrings.add(to);
     }
 
+
+   
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private int readCharNew() throws Exception {
+	ByteBuffer buff  = getBuffer();
+	if(buff==null) return UNDEF;
+        while (true) {
+	    if(!buff.hasRemaining()) return UNDEF;
+            int c  = UNDEF;
+            if (prependReader != null) {
+                c = prependReader.read();
+                if (c == -1) {
+                    this.prependReader = null;
+                    c = getReader().read();
+                }
+            } else {
+		while(pruneBytes>0) {
+		    if(!buff.hasRemaining()) buff= getBuffer();
+		    if(buff==null) return UNDEF;
+		    buff.get();
+		    pruneBytes--;
+		}
+		if(!buff.hasRemaining()) buff= getBuffer();
+		if(buff==null) return UNDEF;
+		if(!buff.hasRemaining()) return UNDEF;
+		c = buff.get();
+	    }
+	    if (c != 0x00) {
+		return c;
+	    }
+	}
+    }
+
+
+
+
     /**
      * _more_
      *
@@ -709,9 +798,17 @@ public boolean getVerbose () {
      * @throws Exception _more_
      */
     private int readChar() throws Exception {
+	if(inputChannel!=null)
+	    return readCharNew();
+	else
+	    return readCharOld();
+    }
+
+
+    private int readCharOld() throws Exception {	
         int cnt = 0;
         while (true) {
-            int c;
+            int c=-1;
             if (prependReader != null) {
                 c = prependReader.read();
                 if (c == -1) {
@@ -735,6 +832,12 @@ public boolean getVerbose () {
             cnt++;
         }
     }
+
+
+
+
+
+
 
     /**
      * _more_
@@ -764,26 +867,24 @@ public boolean getVerbose () {
      * @throws Exception _more_
      */
     public String readLine() throws Exception {
-
         lb.setLength(0);
         int           c;
         boolean       inQuote = false;
-        StringBuilder sb      = new StringBuilder();
+        StringBuilder sb      = null;
         boolean       debug   = true;
         debug = false;
+        if(debug) sb      = new StringBuilder();
         while (true) {
             if (debug && (lb.length() > 750)) {
                 System.err.println("***** Whoa:" + lb);
                 System.err.println("***" + sb);
             }
-
             if (nextChar >= 0) {
                 c        = nextChar;
                 nextChar = UNDEF;
                 if (debug) {
                     sb.append("\tread from before:" + (char) c + "\n");
                 }
-
             } else {
                 c = readChar();
                 if (debug) {
@@ -795,9 +896,7 @@ public boolean getVerbose () {
                 if (result.length() == 0) {
                     return null;
                 }
-
                 return result;
-                //                break;
             }
 
             if (c == NEWLINE) {
@@ -1256,6 +1355,13 @@ public boolean getVerbose () {
         return input;
     }
 
+    public InputStream getInputStream() {
+	if(input!=null) 
+	    return input.getInputStream();
+	else
+	    return null;
+    }    
+
     /**
      * _more_
      *
@@ -1266,9 +1372,40 @@ public boolean getVerbose () {
             reader = new BufferedReader(
                 new InputStreamReader(getInput().getInputStream()));
         }
-
         return reader;
     }
+
+    public ByteBuffer getBuffer() throws Exception {
+	if(buff==null) {
+	    channel = getChannel();
+	    buff = ByteBuffer.allocate(32000);
+	    int bytesRead = channel.read(buff);
+	    if(bytesRead<0) return null;
+	    buff.flip();
+	    if(!buff.hasRemaining()) {
+		return null;
+	    }
+	    return buff;
+	} 
+	if(!buff.hasRemaining()) {
+	    buff.clear(); 
+	    int bytesRead = channel.read(buff);
+	    if(bytesRead<0) return null;
+	    buff.flip();
+	}
+	return buff;
+    }
+
+
+    private ReadableByteChannel getChannel() throws Exception {
+	if(channel==null) {
+	    channel=  inputChannel.getChannel();
+	    buff = ByteBuffer.allocate(32000);
+	}
+	return channel;
+    }
+	
+
 
     /**
      * _more_

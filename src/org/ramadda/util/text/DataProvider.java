@@ -17,6 +17,8 @@
 package org.ramadda.util.text;
 
 
+import org.apache.commons.lang3.text.StrTokenizer;
+
 import org.json.*;
 
 import org.ramadda.util.HtmlUtils;
@@ -77,9 +79,8 @@ public abstract class DataProvider {
      *
      * @throws Exception _more_
      */
-    public void initialize(CsvUtil csvUtil, TextReader info,
-                           NamedInputStream stream)
-            throws Exception {}
+    public void initialize(CsvUtil csvUtil, TextReader info)
+	throws Exception {}
 
 
     /**
@@ -168,13 +169,10 @@ public abstract class DataProvider {
          *
          * @throws Exception _more_
          */
-        public void initialize(CsvUtil csvUtil, TextReader textReader,
-                               NamedInputStream stream)
+        public void initialize(CsvUtil csvUtil, TextReader textReader)
                 throws Exception {
-            textReader.setInput(stream);
-            String s = textReader.convertContents(
-                           IO.readInputStream(stream.getInputStream()));
-            tokenize(textReader, s);
+	    String s = textReader.convertContents(textReader.readContents());
+	    tokenize(textReader, s);
         }
 
         /**
@@ -719,8 +717,7 @@ public abstract class DataProvider {
          *
          * @throws Exception _more_
          */
-        public void initialize(CsvUtil csvUtil, TextReader ctx,
-                               NamedInputStream stream)
+        public void initialize(CsvUtil csvUtil, TextReader ctx)
                 throws Exception {
             String jdbcUrl = csvUtil.getProperty("csv_" + db + "_url");
             if (jdbcUrl == null) {
@@ -1009,13 +1006,12 @@ public abstract class DataProvider {
 
 
 	@Override
-        public void initialize(CsvUtil csvUtil, TextReader textReader,
-                               NamedInputStream stream)
+        public void initialize(CsvUtil csvUtil, TextReader textReader)
                 throws Exception {
 	    List<String> files = csvUtil.getInputFiles();
 	    if(files.size()==0) return;
 	    String path = files.get(0);
-	    Element root = KmlUtil.readKml(path,textReader.getInput().getInputStream());
+	    Element root = KmlUtil.readKml(path,textReader.getInputStream());
 	    read(root);
         }
 
@@ -1499,6 +1495,10 @@ public abstract class DataProvider {
         /** _more_          */
         boolean deHeader = false;
 
+	private StrTokenizer   tokenizer;
+
+
+
         /**
          * _more_
          *
@@ -1511,7 +1511,6 @@ public abstract class DataProvider {
                 this.deHeader = Misc.equals("true",
                                             ctx.getProperty("deheader"));
             }
-
             this.rawLines = rawLines;
         }
 
@@ -1547,11 +1546,9 @@ public abstract class DataProvider {
          *
          * @throws Exception _more_
          */
-        public void initialize(CsvUtil csvUtil, TextReader ctx,
-                               NamedInputStream stream)
+        public void initialize(CsvUtil csvUtil, TextReader ctx)
                 throws Exception {
             this.ctx = ctx;
-            this.ctx.setInput(stream);
         }
 
         /**
@@ -1564,14 +1561,15 @@ public abstract class DataProvider {
         public Row readRow() throws Exception {
             while (true) {
                 String line = ctx.readLine();
-                if (line == null) {
-                    return null;
+		if (line == null) {
+		   return null;
                 }
-                line = line.replaceAll("\\u000d", " ");
+
+		//		line = line.replaceAll("\\u000d", " ");
+
                 if (rawLines > 0) {
                     ctx.getWriter().println(line);
                     rawLines--;
-
                     continue;
                 }
                 if (ctx.getVerbose()) {
@@ -1587,14 +1585,15 @@ public abstract class DataProvider {
                     }
                 }
 
+
                 if ( !ctx.lineOk(ctx, line)) {
                     continue;
                 }
 
+
                 rowCnt++;
                 if (rowCnt <= ctx.getSkip()) {
                     ctx.addHeaderLine(line);
-
                     continue;
                 }
                 List<Integer> widths = ctx.getWidths();
@@ -1618,9 +1617,16 @@ public abstract class DataProvider {
                 } else if (ctx.getSplitOnSpaces()) {
                     row = new Row(Utils.split(line, " ", true, true));
                 } else {
-                    row = new Row(Utils.tokenizeColumns(line,
-                            ctx.getDelimiter()));
-                }
+		    if(tokenizer==null) {
+			tokenizer = StrTokenizer.getCSVInstance();
+			tokenizer.setEmptyTokenAsNull(true);
+			if ( !ctx.getDelimiter().equals(",")) {
+			    tokenizer.setDelimiterChar(ctx.getDelimiter().charAt(0));
+			}
+		    }
+		    List<String> toks = Utils.tokenizeColumns(line,tokenizer);
+		    row = new Row(toks);
+		}
 
                 return row;
             }

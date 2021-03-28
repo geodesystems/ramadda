@@ -1467,6 +1467,135 @@ rotate -> pass -> pass -> rotate -> pass
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Wed, Jul 8, '15
+     * @author         Enter your name here...
+     */
+    public static class Stats extends Processor {
+	private static class ColStat {
+	    String name;
+	    String type;
+	    String sample;
+	    String sampleError;
+	    double  min=Double.NaN;
+	    double  max=Double.NaN;
+	    int numErrors = 0;
+	    int numMissing = 0;
+	    HashSet uniques = new HashSet();
+	    public ColStat(String name, String sample) {
+		this.name = name.toLowerCase();
+		try {
+		    Double.parseDouble(sample);
+		    this.type = "numeric";
+		} catch(Exception ignore) {
+		    this.type = "string";
+		}
+	    }
+
+	    public void addValue(String v) {
+		if(sample==null) sample = v;
+		if(type.equals("numeric")) {
+		    try {
+			double d = Double.parseDouble(v);
+			min  = Utils.min(min,d);
+			max  = Utils.max(max,d);			
+			if(Double.isNaN(d)) numMissing++;
+		    } catch(Exception exc) {
+			numErrors++;
+			if(sampleError==null) sampleError=v;
+		    }
+		} else {
+		    uniques.add(v);
+		}
+	    }
+	    public void finish(PrintWriter writer) {
+		writer.print(name +" [" + type+"]  ");
+		writer.print("sample:" + sample +"  ");
+		if(type.equals("numeric")) {
+		    writer.print("min:" + min +"  max:" + max);
+		    writer.print("  #missing:" + numMissing +"  #errors:" + numErrors);
+		    if(sampleError!=null)
+			writer.print("  eg:" + (sampleError.trim().length()==0?"<blank>":sampleError));
+		} else {
+		    writer.print("#uniques:" + uniques.size());
+		}
+		writer.print("\n");
+	    }
+
+	}
+
+	private List<ColStat> cols;
+	private Row headerRow;
+	int rowCnt=0;
+
+
+        /**
+         * ctor
+         */
+        public Stats() {
+        }
+
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param row _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row) throws Exception {
+	    rowCnt++;
+	    if(headerRow==null) {
+		headerRow = row;
+		return row;
+	    }
+	    if(cols==null) {
+		cols =new ArrayList<ColStat>();
+		for(int i=0;i<row.size();i++) {
+		    cols.add(new ColStat(headerRow.getString(i), row.getString(i)));
+		}
+	    }
+	    for(int i=0;i<row.size();i++) {
+		cols.get(i).addValue(row.getString(i));
+	    }
+
+	    return row;
+	}
+
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param rows _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public List<Row> finish(TextReader info, List<Row> rows)
+                throws Exception {
+	    info.getWriter().println("#rows:" + rowCnt);
+	    int cnt=0;
+	    for(ColStat col: cols) {
+		cnt++;
+		info.getWriter().print("#" + cnt +" " );
+		col.finish(info.getWriter());
+	    }
+	    return rows;
+	}
+    }
+
+
+
     public static class ToJson extends Processor {
 
 	private Row headerRow;
