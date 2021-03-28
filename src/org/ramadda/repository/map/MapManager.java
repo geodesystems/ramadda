@@ -407,8 +407,8 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             throws Exception {
         String key = ADDED_IMPORTS;
         if (request.getExtraProperty(key) == null) {
-            sb.append(HtmlUtils.comment("map imports"));
-            sb.append(getHtmlImports(request));
+	    request.appendHead(getHtmlImports(request));
+	    //            sb.append(getHtmlImports(request));
             request.putExtraProperty(key, "added");
         }
 
@@ -443,6 +443,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
      */
     private String getHtmlImports(Request request) throws Exception {
         StringBuilder sb       = new StringBuilder();
+	sb.append("\n");
         boolean       minified = getRepository().getMinifiedOk();
         if (OPENLAYERS_VERSION == OPENLAYERS_V2) {
             if (minified) {
@@ -451,19 +452,23 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                     getRepository().getHtdocsUrl(
                         OPENLAYERS_BASE_V2
                         + "/theme/default/style.mini.css"));
+		sb.append("\n");
                 HtmlUtils.importJS(
                     sb,
                     getRepository().getHtdocsUrl(
                         OPENLAYERS_BASE_V2 + "/OpenLayers.mini.js"));
+		sb.append("\n");
             } else {
                 HtmlUtils.cssLink(
                     sb,
                     getRepository().getHtdocsUrl(
                         OPENLAYERS_BASE_V2 + "/theme/default/style.css"));
+		sb.append("\n");
                 HtmlUtils.importJS(
                     sb,
                     getRepository().getHtdocsUrl(
                         OPENLAYERS_BASE_V2 + "/OpenLayers.debug.js"));
+		sb.append("\n");
             }
         } else {
             /*
@@ -490,20 +495,25 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                 HtmlUtils.importJS(
                     sb,
                     getPageHandler().getCdnPath("/min/ramaddamap.min.js"));
+		sb.append("\n");
             } else {
                 HtmlUtils.importJS(
                     sb, getPageHandler().getCdnPath("/ramaddamap.js"));
+		sb.append("\n");
             }
         } else {
             HtmlUtils.importJS(
                 sb, getPageHandler().getCdnPath("/ramaddamap3.js"));
+	    sb.append("\n");
         }
         if (minified) {
             HtmlUtils.cssLink(
                 sb, getPageHandler().getCdnPath("/min/ramaddamap.min.css"));
+	    sb.append("\n");
         } else {
             HtmlUtils.cssLink(sb,
                               getPageHandler().getCdnPath("/ramaddamap.css"));
+	    sb.append("\n");
         }
 
         return sb.toString();
