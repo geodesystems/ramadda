@@ -94,7 +94,7 @@ public class RepositoryUtil {
      * @return _more_
      */
     public static String getHtdocsVersion() {
-        return HTDOCS_VERSION;//+"_"+(requestCnt++);
+        return HTDOCS_VERSION;
     }
 
     /**
@@ -103,7 +103,7 @@ public class RepositoryUtil {
      * @return _more_
      */
     public static String getHtdocsVersionSlash() {
-        return HTDOCS_VERSION_SLASH+"_";//+(requestCnt++);
+        return HTDOCS_VERSION_SLASH;
     }
 
 
