@@ -3619,7 +3619,8 @@ function DisplayThing(argId, argProperties) {
 			value = HU.movie(value,movieAttrs);
 		    }		    
 		    if(field.getType() == "url") {
-			value = HU.href(value,value);
+			let label = attrs[field.getId()+".label"] || attrs["url.label"] ||"Link";
+			value = HU.href(value,label,["target","_flights"]);
 		    }
 		    value = value + field.getUnitSuffix();
 		    if(value.length>200) {
