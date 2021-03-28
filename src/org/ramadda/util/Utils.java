@@ -438,28 +438,29 @@ public class Utils extends IO {
      *
      * @return _more_
      */
+
     public static List<String> tokenizeColumns(String line,
-            String columnDelimiter) {
-        //      System.err.println("line:" + line);
-        //        System.err.println("line:" + line.replaceAll("\t","_TAB_"));
+					       String columnDelimiter) {
+	StrTokenizer tokenizer  =  StrTokenizer.getCSVInstance();
+	tokenizer.setEmptyTokenAsNull(true);
+	if ( !columnDelimiter.equals(",")) {
+	    tokenizer.setDelimiterChar(columnDelimiter.charAt(0));
+	}
+	return tokenizeColumns(line, tokenizer);
+    }
+
+    public static List<String> tokenizeColumns(String line,  StrTokenizer tokenizer) {
+	tokenizer.reset(line);
         List<String> toks      = new ArrayList<String>();
-        StrTokenizer tokenizer = StrTokenizer.getCSVInstance(line);
-        tokenizer.setEmptyTokenAsNull(true);
-        //        StrTokenizer tokenizer = new StrTokenizer(line, columnDelimiter);
-        if ( !columnDelimiter.equals(",")) {
-            tokenizer.setDelimiterChar(columnDelimiter.charAt(0));
-        }
         //        tokenizer.setQuoteChar('"');
         while (tokenizer.hasNext()) {
             String tok = tokenizer.nextToken();
-
             if (tok == null) {
                 tok = "";
             }
-            //      System.err.println("\ttok:" + tok);
             toks.add(tok);
         }
-
+	//	if(true) return toks;
         return toks;
     }
 
