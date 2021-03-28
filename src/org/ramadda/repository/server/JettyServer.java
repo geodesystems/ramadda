@@ -87,15 +87,6 @@ public class JettyServer implements Constants {
     public JettyServer(String[] args) throws Throwable {
         this.args = args;
 
-        context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        context.setContextPath("/");
-        GzipHandler gzipHandler = new GzipHandler();
-        //        gzipHandler.addIncludedMimeTypes("application/vnd.google-earth.kml+xml","application/vnd.google-earth.kmz");
-        gzipHandler.addIncludedMethods("GET", "POST");
-        context.setGzipHandler(gzipHandler);
-        baseServlet = addServlet();
-        baseRepository = baseServlet.getRepository();
-
 	boolean hadPort = false;
         port      = 8080;
         for (int i = 0; i < args.length; i++) {
@@ -106,6 +97,17 @@ public class JettyServer implements Constants {
                 //Keep looping so we get the last -port in the arg list
             }
         }
+
+        context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+        context.setContextPath("/");
+        GzipHandler gzipHandler = new GzipHandler();
+        //        gzipHandler.addIncludedMimeTypes("application/vnd.google-earth.kml+xml","application/vnd.google-earth.kmz");
+        gzipHandler.addIncludedMethods("GET", "POST");
+        context.setGzipHandler(gzipHandler);
+        baseServlet = addServlet();
+        baseRepository = baseServlet.getRepository();
+
+
 	if(!hadPort) {
 	    //	    Repository.propdebug = true;
 	    port = baseRepository.getProperty("ramadda.port", port);
@@ -149,7 +151,6 @@ public class JettyServer implements Constants {
     public RepositoryServlet addServlet() throws Exception {
         Properties properties  = new Properties();
         String[]   cmdLineArgs = args;
-
         return addServlet(new RepositoryServlet(this, cmdLineArgs, port,
                 properties));
     }
