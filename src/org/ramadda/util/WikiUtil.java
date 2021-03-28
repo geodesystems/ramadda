@@ -780,38 +780,38 @@ public class WikiUtil {
 
         for (Chunk chunk : chunks) {
             if (chunk.type == chunk.TYPE_CODE) {
-                buff.append("<nowiki>");
+		//                buff.append("<nowiki>");
                 handleCode(buff, chunk, handler, true);
-                buff.append("</nowiki>");
+		//                buff.append("</nowiki>");
                 continue;
             }
 
             if (chunk.type == chunk.TYPE_NOWIKI) {
-                buff.append("<nowiki>");
+		//                buff.append("<nowiki>");
                 buff.append(chunk.buff);
-                buff.append("</nowiki>");
+		//                buff.append("</nowiki>");
                 continue;
             }
             if (chunk.type == chunk.TYPE_CSS) {
-                buff.append("<nowiki>");
+		//                buff.append("<nowiki>");
                 buff.append("<style type='text/css'>\n");
                 buff.append(chunk.buff);
                 buff.append("</style>\n");
-                buff.append("</nowiki>");
+		//                buff.append("</nowiki>");
                 continue;
             }
             if (chunk.type == chunk.TYPE_JS) {
-                buff.append("<nowiki>");
+		//                buff.append("<nowiki>");
                 buff.append("\n<script type='text/JavaScript'>\n");
                 buff.append(chunk.buff);
                 buff.append("\n</script>\n");
-                buff.append("</nowiki>");
+		//                buff.append("</nowiki>");
                 continue;
             }
             if (chunk.type == chunk.TYPE_PRE) {
 		Hashtable props = HU.parseHtmlProperties(chunk.rest!=null?chunk.rest:"");
 		String clazz = Utils.getProperty(props, "class",null);
-                buff.append("<nowiki>");
+		//                buff.append("<nowiki>");
 		if(clazz!=null)
 		    buff.append("\n<pre class='" + clazz+"'>");
 		else		
@@ -820,7 +820,7 @@ public class WikiUtil {
                                "{<noop>{");
                 buff.append(s);
                 buff.append("</pre>\n");
-                buff.append("</nowiki>");
+		//                buff.append("</nowiki>");
                 continue;
             }
 
@@ -3916,6 +3916,8 @@ public class WikiUtil {
         /** _more_ */
         static int TYPE_JS = TYPE++;
 
+        static int TYPE_JSTAG = TYPE++;	
+
         /** _more_ */
         static int TYPE_PRE = TYPE++;
 
@@ -3998,6 +4000,9 @@ public class WikiUtil {
             if (type == TYPE_JS) {
                 return "JS";
             }
+            if (type == TYPE_JSTAG) {
+                return "JS";
+            }	    
             if (type == TYPE_PRE) {
                 return "PRE";
             }
@@ -4040,13 +4045,13 @@ public class WikiUtil {
             String[] lines           = s.split("\n");
             Chunk    chunk           = null;
             String[] prefixes        = new String[] {
-                "<nowiki>", "+css", "+javascript", "+pre", "<pre>", "```"
+                "<nowiki>", "+css", "+javascript", "<script", "+pre", "<pre>", "```"
             };
             String[] suffixes        = new String[] {
-                "</nowiki>", "-css", "-javascript", "-pre", "</pre>", "```"
+                "</nowiki>", "-css", "-javascript", "</script>", "-pre", "</pre>", "```"
             };
             int[]    types           = new int[] {
-                TYPE_NOWIKI, TYPE_CSS, TYPE_JS, TYPE_PRE, TYPE_PRE, TYPE_CODE
+                TYPE_NOWIKI, TYPE_CSS, TYPE_JS, TYPE_JSTAG,TYPE_PRE, TYPE_PRE, TYPE_CODE
             };
             String   lookingForClose = null;
             for (String line : lines) {
@@ -4067,6 +4072,16 @@ public class WikiUtil {
                         line  = line.substring(index + 6).trim();
                     }
                 }
+                if (currentType == TYPE_JSTAG) {
+                    int index = line.indexOf("</script>");
+                    if (index > 0) {
+                        String jsStuff = line.substring(0, index);
+                        chunk.append(jsStuff, false);
+                        chunk = null;
+                        line  = line.substring(index + 6).trim();
+                    }
+                }
+
                 if ((currentType == TYPE_WIKI) || (currentType == TYPE_NA)) {
                     for (int i = 0; i < prefixes.length; i++) {
                         String prefix = prefixes[i];

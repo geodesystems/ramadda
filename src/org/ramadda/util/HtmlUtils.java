@@ -4427,10 +4427,10 @@ public class HtmlUtils implements HtmlUtilsConstants {
             return;
         }
         try {
-            js.append("\n<nowiki>\n");
+            js.append("\n");
             js.append(tag(TAG_SCRIPT, attrs(ATTR_TYPE, "text/JavaScript"),
-                          s));
-            js.append("\n</nowiki>\n");
+                          "\n" + s+"\n"));
+            js.append("\n");
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }
@@ -4546,7 +4546,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static String importJS(String jsUrl) {
         StringBuilder sb = new StringBuilder("\n");
         importJS(sb, jsUrl);
-
         return sb.toString();
     }
 
