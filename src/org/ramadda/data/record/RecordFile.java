@@ -651,12 +651,6 @@ public abstract class RecordFile {
         String path = getNormalizedFilename();
 	if(debug)
 	    System.err.println("RecordFile.doMakeInputStream path:" + path);
-        //A hack for snotel data
-        if (path.startsWith("http://www.wcc.nrcs.usda.gov")) {
-            path = path.replace("http://www.wcc.nrcs.usda.gov",
-                                "https://wcc.sc.egov.usda.gov");
-        }
-
 
         if (path.endsWith(".zip") || getProperty("isZip", false)) {
             InputStream    fis = IO.getInputStream(path);
@@ -675,7 +669,6 @@ public abstract class RecordFile {
 		    return zin;
 		}
             }
-
             throw new IllegalArgumentException(
                 "Could not find csv file in source zip file");
         }
@@ -1354,7 +1347,13 @@ public abstract class RecordFile {
      * @return _more_
      */
     public String getNormalizedFilename() {
-        return Utils.normalizeTemplateUrl(filename);
+	String path =  Utils.normalizeTemplateUrl(filename);
+        //A hack for snotel data
+        if (path.startsWith("http://www.wcc.nrcs.usda.gov")) {
+            path = path.replace("http://www.wcc.nrcs.usda.gov",
+                                "https://wcc.sc.egov.usda.gov");
+        }
+	return path;
     }
 
 
