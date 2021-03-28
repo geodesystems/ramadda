@@ -783,29 +783,7 @@ RepositoryMap.prototype = {
 	return  this.transformProjBounds(this.getMap().getExtent());
     },
     zoomChanged: function() {
-	//Don't do anything for now
-	return;
-	let zoom = this.map.getZoom();
-	console.log("zoom:" + zoom);
-	this.allLayers.forEach(layer=>{
-	    if(!Utils.isDefined(layer.minZoomLevel) && !Utils.isDefined(layer.maxZoomLevel)) return;
-	    let current = layer.getVisibility();
-	    let withinRange = true;
-	    if(Utils.isDefined(layer.minZoomLevel)) {
-		withinRange= layer.minZoomLevel<zoom;
-	    }
-	    if(Utils.isDefined(layer.maxZoomLevel)) {
-		withinRange= withinRange && layer.maxZoomLevel>zoom
-	    }
-	    if(withinRange) {
-		if(!current) layer.setVisibility(true);
-		return;
-	    }
-	    if(current) layer.setVisibility(false);
-//	    layer.previousVisibility = current;
-	});
     },
-
     locationChanged: function() {
 	var latlon = this.getBounds();
 	var bits = 100000;
@@ -2173,16 +2151,20 @@ RepositoryMap.prototype = {
             } else if (mapLayer == map_watercolor) {
                 urls = ["http://c.tile.stamen.com/watercolor/${z}/${x}/${y}.jpg"];
                 newLayer = new OpenLayers.Layer.OSM("Watercolor", urls);
-
             } else if (mapLayer == map_opentopo) {
                 newLayer = this.createXYZLayer("OpenTopo", "//a.tile.opentopomap.org/${z}/${x}/${y}.png}");
             } else if (mapLayer == map_weather) {
+		let maxZoom =  8;
                 var wlayers = [ 
-		    {name:'GOES Infrared', id:'goes-ir-4km-900913', alias:'goes-ir'},
-		    {name:'GOES Water Vapor', id:'goes-wv-4km-900913', alias:'goes-wv'},
-		    {name:'GOES Visible', id:'goes-vis-1km-900913', alias:'goes-visible'},
-		    {name:'NWS Radar', maxZoom:8,id:'nexrad-n0q-900913',alias:'nexrad'},
-		    {name:'24 hr precip', id:'q2-p24h-900913',alias:'precipition'}];
+		    {name:'GOES Infrared',maxZoom:maxZoom,		    id:'goes-ir-4km-900913', alias:'goes-ir'},
+		    {name:'GOES Water Vapor', maxZoom:maxZoom,id:'goes-wv-4km-900913', alias:'goes-wv'},
+		    {name:'GOES Visible', maxZoom:maxZoom,id:'goes-vis-1km-900913', alias:'goes-visible'},
+		    {name:'NWS Radar', maxZoom:maxZoom,id:'nexrad-n0q-900913',alias:'nexrad'},
+		    {name:'24 hr precip', maxZoom:maxZoom,id:'q2-p24h-900913',alias:'precipition'}];
+
+                var wlayers = [ 
+		    {name:'NWS Radar', maxZoom:maxZoom,id:'nexrad-n0q-900913',alias:'nexrad'}]
+
 
 		let _this = this;
 		let get_my_url = function(bounds) {
@@ -2213,6 +2195,15 @@ RepositoryMap.prototype = {
 			    minZoomLevel: l.minZoom,			    
                         }, {}
                     );
+		    let redrawFunc = () =>{
+			if(layer.getVisibility()) {
+			    console.log("calling redraw");
+			    layer.redraw(true);
+			}
+			setTimeout(redrawFunc,1000*60*5);
+		    };
+		    setTimeout(redrawFunc,1000*60*5);
+
 		    this.baseLayers[l.id] = layer;
 		    if(l.alias) this.baseLayers[l.alias] = layer;		    
                     layer.ramaddaId = l.id;
