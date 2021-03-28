@@ -540,7 +540,7 @@ public class HtmlOutputHandler extends OutputHandler {
             StringBuilder suffix = new StringBuilder();
             addDescription(request, entry, sb, true, suffix);
             String informationBlock = getInformationTabs(request, entry,
-                                          false);
+							 false);
             sb.append(informationBlock);
             sb.append(suffix);
             getPageHandler().entrySectionClose(request, entry, sb);
@@ -564,15 +564,12 @@ public class HtmlOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    private void handleDefaultWiki(Request request, Entry entry,
-                                   Appendable sb, List<Entry> folders,
-                                   List<Entry> files)
+    public void handleDefaultWiki(Request request, Entry entry,
+				  Appendable sb, List<Entry> folders,
+				  List<Entry> files)
             throws Exception {
         String wikiTemplate = getWikiText(request, entry);
-
         String innerContent = null;
-
-
         if ((wikiTemplate != null)
                 && wikiTemplate.startsWith("<wiki_inner>")) {
             innerContent = wikiTemplate;
