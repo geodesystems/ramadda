@@ -541,8 +541,7 @@ public class UserManager extends RepositoryManager {
                 System.err.println("Creating new admin user:" + user);
                 makeOrUpdateUser(user, true);
             } else {
-                System.err.println("Updating password for admin user:"
-                                   + user);
+		//                System.err.println("Updating password for admin user:" + user);
                 changePassword(user);
                 //And set the admin flag to true
                 getDatabaseManager().update(
