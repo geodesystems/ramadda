@@ -2617,6 +2617,21 @@ public class Request implements Constants, Cloneable {
     /**
      * _more_
      *
+     * @param head _more_
+     */
+    public void appendHead(String head) {
+        String existing = (String) getExtraProperty(PROP_HTML_HEAD);
+        if (existing == null) {
+            existing = "";
+        }
+        existing += head + "\n";
+        putExtraProperty(PROP_HTML_HEAD, existing);
+    }
+
+
+    /**
+     * _more_
+     *
      * @param key _more_
      */
     public void removeExtraProperty(Object key) {
