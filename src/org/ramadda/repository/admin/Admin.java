@@ -652,7 +652,7 @@ public class Admin extends RepositoryManager {
                     //                    getRegistryManager().applyInstallForm(request);
 
                     sb.append(
-                        note("Initial configuration process is complete."));
+                        note("Initial configuration process is complete. Please login."));
 
                     Entry topEntry = request.getRootEntry();
                     topEntry.setName(request.getString(PROP_REPOSITORY_NAME,
