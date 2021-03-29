@@ -1060,6 +1060,7 @@ var Utils =  {
 	let opts = {
 	};
 	if(args) $.extend(opts,args);
+	let hook   = opts.hook;
 	let tokens = [];
 	let tokenMap = {};
 	let cnt = 0;
@@ -1284,7 +1285,9 @@ var Utils =  {
 			if(t.type=="string") {
 			    s+=t.s;
 			} else {
-			    let v = tokenFunc(t);
+			    let v=null;
+			    if(hook) v = hook(t,  source[t.tag]);
+			    if(!v) v = tokenFunc(t);
 			    if(!v) return;
 			    s+=v;
 			}
@@ -3323,7 +3326,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         }
         return "col-md-1";
     },
-    initWikiEditor(wikiId, textId,cbxId) {
+    initWikiEditor(entry, wikiId, textId,cbxId) {
 	var textBlock = textId +"_block";
 	var wikiBlock = wikiId +"_block";
 	$("#" + cbxId).click(() => {
