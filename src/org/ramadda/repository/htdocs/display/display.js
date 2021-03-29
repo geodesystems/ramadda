@@ -524,12 +524,15 @@ function DisplayThing(argId, argProperties) {
 		colorByMap: this.getColorByMap()
 	    }
 	},
-	applyRecordTemplate: function(row, fields, template, props,macros, debug) {
+	macroHook: function(token,value) {
+	    return null;
+	},
+	applyRecordTemplate: function(record, row, fields, template, props,macros, debug) {
 	    fields = this.getFields(fields);
 	    if(!props) {
 		props = this.getTemplateProps(fields);
 	    }
-	    if(!macros) macros = Utils.tokenizeMacros(template,{dateFormat:this.getProperty("dateFormat")});
+	    if(!macros) macros = Utils.tokenizeMacros(template,{hook:(token,value)=>{return this.macroHook(record, token,value)},dateFormat:this.getProperty("dateFormat")});
 	    let attrs = {};
 	    if(props.iconMap && props.iconField) {
 		var value = row[props.iconField.getIndex()];
@@ -678,6 +681,11 @@ function DisplayThing(argId, argProperties) {
 	    }
 	    return fields;
 	},
+	getRecordUrlHtml: function(attrs, field, record) {
+	    let value = record.getValue(field.getIndex());
+	    let label = attrs[field.getId()+".label"] || attrs["url.label"] ||"Link";
+	    return  HU.href(value,label,["target","_link"]);
+	},
         getRecordHtml: function(record, fields, template, debug) {
 	    fields = this.getFields(fields);
 	    if(!fields) return "";
@@ -698,7 +706,7 @@ function DisplayThing(argId, argProperties) {
 		template = this.getProperty("recordTemplate");
 	    if(template) {
 		if(!template.startsWith("${default") && template!="${fields}") {
-		    return this.applyRecordTemplate(this.getDataValues(record), fields, template, null, null,debug);
+		    return this.applyRecordTemplate(record,this.getDataValues(record), fields, template, null, null,debug);
 		}
 	    }
 	    if(template=="${fields}") {
@@ -710,7 +718,7 @@ function DisplayThing(argId, argProperties) {
 
 	    let attrs={};
 	    if(template) {
-		attrs = Utils.tokenizeMacros(template,{dateFormat:this.getProperty("dateFormat")}).getAttributes("default");
+		attrs = Utils.tokenizeMacros(template,{hook:(token,value)=>{return this.macroHook(record, token,value)},dateFormat:this.getProperty("dateFormat")}).getAttributes("default");
 	    }
 	    itemsPerColumn = attrs["itemsPerColumn"] || itemsPerColumn;
 	    let values = "";
@@ -804,8 +812,7 @@ function DisplayThing(argId, argProperties) {
 			value = HU.movie(value,movieAttrs);
 		    }		    
 		    if(field.getType() == "url") {
-			let label = attrs[field.getId()+".label"] || attrs["url.label"] ||"Link";
-			value = HU.href(value,label,["target","_flights"]);
+			value = this.getRecordUrlHtml(attrs, field, record);
 		    }
 		    value = value + field.getUnitSuffix();
 		    if(value.length>200) {
@@ -4373,19 +4380,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let sideWidth = "1%";
             let contents = this.getContentsDiv();
 	    //display table
-            let table =   HU.open("table", [CLASS, "display-ui-table", "width","100%","border","0","cellpadding","0","cellspacing","0"]);
-	    if(this.getProperty("showDisplayTop",true)) {
-		table+= HU.tr([],HU.td(["width",sideWidth]) + HU.td(["width","99%"],top) +HU.td(["width",sideWidth]));
+            let table =   HU.open('table', [CLASS, 'display-ui-table', 'width','100%','border','0','cellpadding','0','cellspacing','0']);
+	    if(this.getProperty('showDisplayTop',true)) {
+		table+= HU.tr([],HU.td(['width',sideWidth]) + HU.td(['width','99%'],top) +HU.td(['width',sideWidth]));
 	    }
-	    table+= HU.tr([],HU.td(["width",sideWidth],left) + HU.td(["width","99%"],contents) +HU.td(["width",sideWidth],right));
-	    if(this.getProperty("showDisplayBottom",true)) {
-		table+= HU.tr([],HU.td(["width",sideWidth]) + HU.td(["width","99%"],bottom) +HU.td(["width",sideWidth]));
+	    table+= HU.tr([],HU.td(['width',sideWidth],left) + HU.td(['width','99%'],contents) +HU.td(['width',sideWidth],right));
+	    if(this.getProperty('showDisplayBottom',true)) {
+		table+= HU.tr([],HU.td(['width',sideWidth]) + HU.td(['width','99%'],bottom) +HU.td(['width',sideWidth]));
 	    }
-	    table+=HU.close("table");
+	    table+=HU.close('table');
 
-            let html =  HU.div([ATTR_CLASS, "ramadda-popup", ATTR_ID, this.getDomId(ID_MENU_OUTER)], "");
-            let style = this.getProperty("displayStyle", "");
-            html += HU.div([CLASS, "display-contents", STYLE, "position:relative;" + style],table);
+            let html =  HU.div([ATTR_CLASS, 'ramadda-popup', ATTR_ID, this.getDomId(ID_MENU_OUTER)], '');
+            let style = this.getProperty('displayStyle', '');
+            html += HU.div([CLASS, 'display-contents', STYLE, HU.css('position','relative') + style],table);
             return html;
         },
         getWidthForStyle: function(dflt) {

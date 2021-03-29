@@ -1494,7 +1494,7 @@ function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
     let circleRadius = attrs.circleRadius ||display.getProperty("sparklineCircleRadius",1);
     let getColor = (d,i,dflt)=>{
 	return "#000"
-	return colorBy?colorBy.getColorFromRecord(records[i], dflt):dflt;
+//	return colorBy?colorBy.getColorFromRecord(records[i], dflt):dflt;
     };
     console.log(JSON.stringify(range));
 
@@ -3339,12 +3339,15 @@ function DisplayThing(argId, argProperties) {
 		colorByMap: this.getColorByMap()
 	    }
 	},
-	applyRecordTemplate: function(row, fields, template, props,macros, debug) {
+	macroHook: function(token,value) {
+	    return null;
+	},
+	applyRecordTemplate: function(record, row, fields, template, props,macros, debug) {
 	    fields = this.getFields(fields);
 	    if(!props) {
 		props = this.getTemplateProps(fields);
 	    }
-	    if(!macros) macros = Utils.tokenizeMacros(template,{dateFormat:this.getProperty("dateFormat")});
+	    if(!macros) macros = Utils.tokenizeMacros(template,{hook:(token,value)=>{return this.macroHook(record, token,value)},dateFormat:this.getProperty("dateFormat")});
 	    let attrs = {};
 	    if(props.iconMap && props.iconField) {
 		var value = row[props.iconField.getIndex()];
@@ -3493,6 +3496,11 @@ function DisplayThing(argId, argProperties) {
 	    }
 	    return fields;
 	},
+	getRecordUrlHtml: function(attrs, field, record) {
+	    let value = record.getValue(field.getIndex());
+	    let label = attrs[field.getId()+".label"] || attrs["url.label"] ||"Link";
+	    return  HU.href(value,label,["target","_link"]);
+	},
         getRecordHtml: function(record, fields, template, debug) {
 	    fields = this.getFields(fields);
 	    if(!fields) return "";
@@ -3513,7 +3521,7 @@ function DisplayThing(argId, argProperties) {
 		template = this.getProperty("recordTemplate");
 	    if(template) {
 		if(!template.startsWith("${default") && template!="${fields}") {
-		    return this.applyRecordTemplate(this.getDataValues(record), fields, template, null, null,debug);
+		    return this.applyRecordTemplate(record,this.getDataValues(record), fields, template, null, null,debug);
 		}
 	    }
 	    if(template=="${fields}") {
@@ -3525,7 +3533,7 @@ function DisplayThing(argId, argProperties) {
 
 	    let attrs={};
 	    if(template) {
-		attrs = Utils.tokenizeMacros(template,{dateFormat:this.getProperty("dateFormat")}).getAttributes("default");
+		attrs = Utils.tokenizeMacros(template,{hook:(token,value)=>{return this.macroHook(record, token,value)},dateFormat:this.getProperty("dateFormat")}).getAttributes("default");
 	    }
 	    itemsPerColumn = attrs["itemsPerColumn"] || itemsPerColumn;
 	    let values = "";
@@ -3619,8 +3627,7 @@ function DisplayThing(argId, argProperties) {
 			value = HU.movie(value,movieAttrs);
 		    }		    
 		    if(field.getType() == "url") {
-			let label = attrs[field.getId()+".label"] || attrs["url.label"] ||"Link";
-			value = HU.href(value,label,["target","_flights"]);
+			value = this.getRecordUrlHtml(attrs, field, record);
 		    }
 		    value = value + field.getUnitSuffix();
 		    if(value.length>200) {
@@ -7188,19 +7195,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let sideWidth = "1%";
             let contents = this.getContentsDiv();
 	    //display table
-            let table =   HU.open("table", [CLASS, "display-ui-table", "width","100%","border","0","cellpadding","0","cellspacing","0"]);
-	    if(this.getProperty("showDisplayTop",true)) {
-		table+= HU.tr([],HU.td(["width",sideWidth]) + HU.td(["width","99%"],top) +HU.td(["width",sideWidth]));
+            let table =   HU.open('table', [CLASS, 'display-ui-table', 'width','100%','border','0','cellpadding','0','cellspacing','0']);
+	    if(this.getProperty('showDisplayTop',true)) {
+		table+= HU.tr([],HU.td(['width',sideWidth]) + HU.td(['width','99%'],top) +HU.td(['width',sideWidth]));
 	    }
-	    table+= HU.tr([],HU.td(["width",sideWidth],left) + HU.td(["width","99%"],contents) +HU.td(["width",sideWidth],right));
-	    if(this.getProperty("showDisplayBottom",true)) {
-		table+= HU.tr([],HU.td(["width",sideWidth]) + HU.td(["width","99%"],bottom) +HU.td(["width",sideWidth]));
+	    table+= HU.tr([],HU.td(['width',sideWidth],left) + HU.td(['width','99%'],contents) +HU.td(['width',sideWidth],right));
+	    if(this.getProperty('showDisplayBottom',true)) {
+		table+= HU.tr([],HU.td(['width',sideWidth]) + HU.td(['width','99%'],bottom) +HU.td(['width',sideWidth]));
 	    }
-	    table+=HU.close("table");
+	    table+=HU.close('table');
 
-            let html =  HU.div([ATTR_CLASS, "ramadda-popup", ATTR_ID, this.getDomId(ID_MENU_OUTER)], "");
-            let style = this.getProperty("displayStyle", "");
-            html += HU.div([CLASS, "display-contents", STYLE, "position:relative;" + style],table);
+            let html =  HU.div([ATTR_CLASS, 'ramadda-popup', ATTR_ID, this.getDomId(ID_MENU_OUTER)], '');
+            let style = this.getProperty('displayStyle', '');
+            html += HU.div([CLASS, 'display-contents', STYLE, HU.css('position','relative') + style],table);
             return html;
         },
         getWidthForStyle: function(dflt) {
@@ -11220,7 +11227,6 @@ function RecordField(props, source) {
 	},
 	toString: function() {
 	    return this.getId();
-	    return "Field:" + this.getId() +" label:" + this.getLabel() +" type:" + this.getType()+" " + this.isNumeric();
 	},
 	getForDisplay: function() {
 	    return this.forDisplay;
@@ -19012,7 +19018,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 		this.jq(ID_NEXT).show();
 	    var record = this.records[this.slideIndex];
 	    var row = this.getDataValues(record);
-	    var html = this.applyRecordTemplate(row,this.fields,this.getProperty("template",""));
+	    var html = this.applyRecordTemplate(record, row,this.fields,this.getProperty("template",""));
 	    html = html.replace(/\${recordIndex}/g,(this.slideIndex+1));
 	    this.jq(ID_SLIDE).html(html);
 	    var args = {highlight:true,record: record};
@@ -24640,8 +24646,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 
 	    if(selected.length==1) {
 		var row = this.getDataValues(selected[0]);
-		headerTemplate = this.applyRecordTemplate(row,fields,headerTemplate);
-		footerTemplate = this.applyRecordTemplate(row,fields,footerTemplate);
+		headerTemplate = this.applyRecordTemplate(selected[0],row,fields,headerTemplate);
+		footerTemplate = this.applyRecordTemplate(selected[0],row,fields,footerTemplate);
 	    }
 
 	    if(this.filters) {
@@ -24735,10 +24741,10 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
                     }
 		    let s = template.trim();
 		    let row = this.getDataValues(record);
-		    if(s=="${default}") {
+		    if(s.startsWith("${default")) {
 			s = this.getRecordHtml(record,fields,s);
 		    } else {
-			s= this.applyRecordTemplate(row,fields,s,props);
+			s= this.applyRecordTemplate(record, row,fields,s,props);
 		    }
 
 
@@ -26149,7 +26155,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 		line = HU.div(lineAttrs,line);
                 if (labelTemplate) {
 		    let row = this.getDataValues(record);
-		    let label = this.applyRecordTemplate(row, templateFields,labelTemplate, templateProps,templateMacros);
+		    let label = this.applyRecordTemplate(record, row, templateFields,labelTemplate, templateProps,templateMacros);
 		    var num = record.lineNumber;
 		    if(!Utils.isDefined(num)) {
 			num - lineCnt;
@@ -29503,7 +29509,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
     const ID_HEATMAP_TOGGLE = "heatmaptoggle";    
     const ID_REGION_SELECTOR = "regionselector";
     const ID_HTMLLAYER = "htmllayer";
-    
+    const ID_TRACK_VIEW = "trackview";
 
     $.extend(this, {
         showBoxes: true,
@@ -29614,6 +29620,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'lonField1',tt:'Field id for segments'},
 	{p:'latField2',tt:'Field id for segments'},
 	{p:'lonField2',tt:'Field id for segments'},
+	{p:'trackUrlField',ex:'field id',tt:'The data can contain a URL that points to data'},
 
 	{label:"Map Labels"},
 	{p:"labelFontColor",ex:"#000"},
@@ -29677,6 +29684,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         features: [],
         myMarkers: {},
         mapEntryInfos: {},
+	tracks:{},
         initDisplay: function() {
             SUPER.initDisplay.call(this);
 	    if(!HU.documentReady) {
@@ -29757,10 +29765,64 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 
 	    }
-
-
         },
 
+	handlePopup: function(feature, popup) {
+	    if(!this.trackUrlField) return;
+	    let func = ()=>{
+		if(feature.record) {
+		    if(this.tracks[feature.record.getId()]) {
+			this.map.removePolygon(this.tracks[feature.record.getId()]);
+			this.tracks[feature.record.getId()] = null;
+			this.jq(ID_TRACK_VIEW).html("View track");
+			this.jq(ID_TRACK_VIEW+"_1").html("View track");			
+		    } else {
+			let url = feature.record.getValue(this.trackUrlField.getIndex());
+			$.getJSON(url, data=>{this.loadTrack(feature.record, data)}).fail(err=>{console.log("url failed:" + url +"\n" + err)});
+		    }
+		}
+	    };
+	    this.jq(ID_TRACK_VIEW).click(func);
+	    this.jq(ID_TRACK_VIEW+"_1").click(func);	    
+	},
+
+	macroHook: function(record, token,value) {
+	    if(!this.trackUrlField) {
+		return;
+	    }
+	    if(token.tag!=this.trackUrlField.getId()) {
+		return null;
+	    }
+	    this.currentPopupRecord = record;
+	    let haveTrack = this.tracks[record.getId()]!=null;
+	    let label =haveTrack?"Remove track":(token.attrs["label"] ||  "View track");
+	    return SPACE + HU.span([CLASS,"ramadda-clickable",ID,this.domId(ID_TRACK_VIEW)],label);
+	}, 
+	getRecordUrlHtml: function(attrs, field, record) {
+	    this.currentPopupRecord = record;
+	    if(!this.trackUrlField || this.trackUrlField.getId()!=field.getId()) {
+		return SUPER.getRecordUrlHtml.call(this, attrs, field, record);
+	    }
+	    let value = record.getValue(field.getIndex());
+	    let haveTrack = this.tracks[record.getId()]!=null;
+	    let label = haveTrack?"Remove track":(attrs[field.getId()+".label"] || "View track");
+	    return  HU.span([CLASS,"ramadda-clickable",ID,this.domId(ID_TRACK_VIEW+"_1")],label);
+	},
+	loadTrack: function(record, data) {
+            var newData = makePointData(data, null,this,"");
+	    let points = RecordUtil.getPoints(newData.getRecords(),{});
+	    let bounds = {};
+	    let attrs = {
+		strokeColor:this.getStrokeColor("blue")
+	    };
+            let polygon = this.map.addPolygon("", "", points, attrs);
+	    polygon.record = record;
+	    this.tracks[record.getId()]=polygon;
+	    if(polygon.geometry) {
+		this.map.zoomToExtent(polygon.geometry.getBounds());
+	    }
+	    this.map.closePopup();
+	},
         createMap: function() {
             let _this = this;
             var params = {
@@ -29838,7 +29900,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             this.map.addRegionSelectorControl(function(bounds) {
                 _this.getDisplayManager().handleEventMapBoundsChanged(this, bounds, true);
             });
+	    this.map.popupHandler = (feature,popup) =>{
+		this.handlePopup(feature, popup);
+	    };
 	    this.map.addFeatureSelectHandler(feature=>{
+
 		this.lastFeatureSelectTime = new Date();
 		if(feature.collisionInfo)  {
 		    if(this.getCollisionFixed()) return;
@@ -31363,8 +31429,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.shapesField = this.getFieldById(null,this.getProperty("shapesField"));
 	    this.shapesTypeField = this.getFieldById(null,this.getProperty("shapesTypeField"));
 
-
-
+	    this.trackUrlField  =  this.getFieldById(null,this.getProperty("trackUrlField"));
 
             let records = this.records =  this.filterData();
 	    if(this.shapesTypeField && this.shapesField) {
@@ -35968,7 +36033,7 @@ function RamaddaMapshrinkDisplay(displayManager, id, properties) {
 function RamaddaMapimagesDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaBasemapDisplay(displayManager, id, DISPLAY_MAPIMAGES, properties);
     let myProps = [
-	{label:'Map images Properties'},
+	{label:'Map Images Properties'},
 	{p:'imageField',ex:''},
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {

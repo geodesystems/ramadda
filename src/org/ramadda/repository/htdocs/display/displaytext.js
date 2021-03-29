@@ -735,8 +735,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 
 	    if(selected.length==1) {
 		var row = this.getDataValues(selected[0]);
-		headerTemplate = this.applyRecordTemplate(row,fields,headerTemplate);
-		footerTemplate = this.applyRecordTemplate(row,fields,footerTemplate);
+		headerTemplate = this.applyRecordTemplate(selected[0],row,fields,headerTemplate);
+		footerTemplate = this.applyRecordTemplate(selected[0],row,fields,footerTemplate);
 	    }
 
 	    if(this.filters) {
@@ -830,10 +830,10 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
                     }
 		    let s = template.trim();
 		    let row = this.getDataValues(record);
-		    if(s=="${default}") {
+		    if(s.startsWith("${default")) {
 			s = this.getRecordHtml(record,fields,s);
 		    } else {
-			s= this.applyRecordTemplate(row,fields,s,props);
+			s= this.applyRecordTemplate(record, row,fields,s,props);
 		    }
 
 
@@ -2244,7 +2244,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 		line = HU.div(lineAttrs,line);
                 if (labelTemplate) {
 		    let row = this.getDataValues(record);
-		    let label = this.applyRecordTemplate(row, templateFields,labelTemplate, templateProps,templateMacros);
+		    let label = this.applyRecordTemplate(record, row, templateFields,labelTemplate, templateProps,templateMacros);
 		    var num = record.lineNumber;
 		    if(!Utils.isDefined(num)) {
 			num - lineCnt;

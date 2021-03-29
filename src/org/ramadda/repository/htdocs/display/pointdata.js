@@ -621,7 +621,6 @@ function RecordField(props, source) {
 	},
 	toString: function() {
 	    return this.getId();
-	    return "Field:" + this.getId() +" label:" + this.getLabel() +" type:" + this.getType()+" " + this.isNumeric();
 	},
 	getForDisplay: function() {
 	    return this.forDisplay;

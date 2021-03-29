@@ -1494,7 +1494,7 @@ function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
     let circleRadius = attrs.circleRadius ||display.getProperty("sparklineCircleRadius",1);
     let getColor = (d,i,dflt)=>{
 	return "#000"
-	return colorBy?colorBy.getColorFromRecord(records[i], dflt):dflt;
+//	return colorBy?colorBy.getColorFromRecord(records[i], dflt):dflt;
     };
     console.log(JSON.stringify(range));
 

@@ -931,7 +931,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 		this.jq(ID_NEXT).show();
 	    var record = this.records[this.slideIndex];
 	    var row = this.getDataValues(record);
-	    var html = this.applyRecordTemplate(row,this.fields,this.getProperty("template",""));
+	    var html = this.applyRecordTemplate(record, row,this.fields,this.getProperty("template",""));
 	    html = html.replace(/\${recordIndex}/g,(this.slideIndex+1));
 	    this.jq(ID_SLIDE).html(html);
 	    var args = {highlight:true,record: record};
