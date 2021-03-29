@@ -2601,9 +2601,11 @@ public class EntryManager extends RepositoryManager {
             entry.setLatitude(request.get(ARG_LOCATION_LATITUDE, 0.0));
             entry.setLongitude(request.get(ARG_LOCATION_LONGITUDE, 0.0));
 
-            getSessionManager().putSessionProperty(request,
-                    ARG_LOCATION_LATITUDE,
-                    entry.getLatitude() + ";" + entry.getLongitude());
+	    if(entry.hasLocationDefined()) {
+		getSessionManager().putSessionProperty(request,
+						       ARG_LOCATION_LATITUDE,
+						       entry.getLatitude() + ";" + entry.getLongitude());
+	    }
         } else if (request.exists(ARG_AREA + "_south")) {
             boolean hasSouth = request.defined(ARG_AREA + "_south");
             boolean hasNorth = request.defined(ARG_AREA + "_north");
@@ -2630,9 +2632,11 @@ public class EntryManager extends RepositoryManager {
                 entry.setEast(request.getLatOrLonValue(ARG_AREA + "_east",
                         Entry.NONGEO));
             }
-            getRepository().getSessionManager().setArea(request,
-                    entry.getNorth(), entry.getWest(), entry.getSouth(),
+	    if(entry.hasAreaDefined()) {
+		getRepository().getSessionManager().setArea(request,
+							    entry.getNorth(), entry.getWest(), entry.getSouth(),
                     entry.getEast());
+	    }
 
         }
 
