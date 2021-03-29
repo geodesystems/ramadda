@@ -198,9 +198,9 @@
  </type>
 
 
-  <type name="type_document_html"  description="HTML File" pattern="(.*\.html|.*\.htm)" super="type_convertible" handler="org.ramadda.plugins.media.HtmlDocTypeHandler">
+  <type name="type_document_html"  description="HTML File" pattern="(.*\.html|.*\.htm)" super="type_document" handler="org.ramadda.plugins.media.HtmlDocTypeHandler">
      <property name="icon" value="/icons/html.png"/>
-     <column name="embed_type" type="enumeration" values="frame,full,partial,none" default="full" label="Embed style"  showinhtml="false"/>
+     <column name="embed_type" type="enumeration" values="none,embed,frame" default="full" label="Embed style"  showinhtml="false"/>
 </type>
 
 
