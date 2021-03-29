@@ -29561,6 +29561,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	 ex:'baselayer:goes-visible,baselayer:nexrad,geojson:US States:/resources/usmap.json:fillColor:transparent'},
 	{p:'doPopup', ex:'false',tt:"Don't show popups"},
 	{p:'showTableOfContents',ex:'true',tt:'Show left table of contents'},
+	{p:'tableOfContentsTitle'},
+	{p:'labelField',ex:'',tt:'field to show in TOC'},
 	{p:'showRegionSelector',ex:true},
 	{p:'regionSelectorLabel'},	
 	{p:'showBaseLayersSelect',ex:true},
@@ -29840,7 +29842,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    let bounds = {};
 	    let attrs = {
-		strokeColor:this.getStrokeColor("blue")
+		strokeColor:this.getStrokeColor("blue"),
+		strokeWidth:this.getStrokeWidth(1)
 	    };
             let polygon = this.map.addPolygon("", "", points, attrs);
 	    polygon.record = record;
@@ -30467,14 +30470,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			   this.domId(ID_DISPLAY_CONTENTS)], "");
 	    return html;
         },
-	highlightPoint: function(lat,lon,highlight,andCenter) {
-	    if(!this.map) return;
+	removeHighlight: function() {
 	    if(this.highlightMarker) {
 		this.map.removePoint(this.highlightMarker);
 		this.map.removeMarker(this.highlightMarker);
 		this.map.removePolygon(this.highlightMarker);		
 		this.highlightMarker = null;
 	    }
+	},
+	highlightPoint: function(lat,lon,highlight,andCenter) {
+	    if(!this.map) return;
+	    this.removeHighlight();
 	    if(highlight) {
 		var point = new OpenLayers.LonLat(lon,lat);
                 var attrs = {
@@ -31448,12 +31454,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.map.removePolygon(this.tracks[record.getId()]);
 		this.tracks[record.getId()] = null;
 		if(item) {
-		    item.attr(TITLE,"View track");
+		    item.attr(TITLE,"Click to view; Double-click to view track");
 		}
 	    } else {
 		if(item) {
 		    item.addClass("display-map-toc-item-on");
-		    item.attr(TITLE,"Remove track");
+		    item.attr(TITLE,"Click to view; Double-click to remove track");
 		}
 		let url = record.getValue(this.trackUrlField.getIndex());
 		if(url!="")
@@ -31462,16 +31468,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.map.setCenter(new OpenLayers.LonLat(record.getLongitude(),record.getLatitude()));
 	},
 	makeToc:function(records) {
-	    let nameField = this.getFieldById(null,this.getProperty("nameField","name"));
-	    if(!nameField) nameField = this.getFieldByType(null,"string");
-	    if(nameField) {
+	    let labelField = this.getFieldById(null,this.getProperty("labelField","name"));
+	    if(!labelField) labelField = this.getFieldByType(null,"string");
+	    if(labelField) {
 		let html = "";
+		let title = this.getProperty("tableOfContentsTitle");
+		if(title) html +=HU.center(HU.b(title));
 		let iconField = this.getFieldById(null,"icon");
 		records.forEach((record,idx)=>{
 		    let title = "View record";
-		    if(this.trackUrlField) title = "View track";
-		    let clazz = "ramadda-clickable  display-map-toc-item";
-		    let value = nameField.getValue(record);
+		    if(this.trackUrlField) title = "Click to view; Double-click to view track";
+		    let clazz = "ramadda-clickable  display-map-toc-item ramadda-noselect";
+		    let value = labelField.getValue(record);
 		    if(!iconField) {
 			clazz+=" ramadda-nav-list-link ";
 		    } else {
@@ -31484,6 +31492,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let items = this.jq(ID_LEFT).find(".display-map-toc-item");
 		this.makeTooltips(items,records);
 		items.click(function() {
+		    let idx = $(this).attr(RECORD_INDEX);
+		    let record = records[idx];
+		    if(!record) return;
+		    _this.highlightPoint(record.getLatitude(), record.getLongitude(),true, false);
+		    _this.map.setCenter(new OpenLayers.LonLat(record.getLongitude(),record.getLatitude()));
+		});
+
+		items.dblclick(function() {
+		    _this.removeHighlight();
 		    let idx = $(this).attr(RECORD_INDEX);
 		    let record = records[idx];
 		    if(!record) return;
