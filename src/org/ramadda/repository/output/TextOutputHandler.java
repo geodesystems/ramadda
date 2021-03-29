@@ -269,7 +269,7 @@ public class TextOutputHandler extends OutputHandler {
         sb.append(HtmlUtils.script(js.toString()));
         Result result = makeLinksResult(request, msg("Word Cloud"), sb,
                                         new State(entry));
-        result.putProperty(PROP_HTML_HEAD, head.toString());
+        request.appendHead(head.toString());
 
         return result;
     }
