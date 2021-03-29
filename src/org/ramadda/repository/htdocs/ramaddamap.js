@@ -3284,6 +3284,19 @@ RepositoryMap.prototype = {
         _this.map.addControl(_this.panControl);
     },
 
+    closePopup:  function(evt) {
+        if (this.currentPopup) {
+	    this.getMap().removePopup(this.currentPopup);
+            this.currentPopup.destroy();
+            this.currentPopup = null;
+            this.hiliteBox('');
+            if (this.selectedFeature) {
+                this.unselectFeature(this.selectedFeature);
+            }
+        }
+    },
+
+
     onPopupClose:  function(evt) {
 	if(this.displayDiv) {
 	    $("#" + this.displayDiv).html("");
@@ -4143,6 +4156,12 @@ RepositoryMap.prototype = {
         if (marker.inputProps && marker.inputProps.chartType) {
             this.popupChart(marker.inputProps);
         }
+
+	if(this.popupHandler) {
+	    this.popupHandler(marker,popup);
+	}
+	
+
 
     },
 
