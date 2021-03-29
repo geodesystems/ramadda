@@ -401,8 +401,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let points = RecordUtil.getPoints(newData.getRecords(),{});
 	    let feature = this.markers?this.markers[record.getId()]:null;
 	    let item = this.jq(ID_LEFT).find(HU.attrSelect(RECORD_ID,record.getId()));
+	    record.trackData = newData;
 	    item.addClass("display-map-toc-item-on");
 	    try {
+		record.setLocation(points[0].y, points[0].x);
 		let loc =  new OpenLayers.LonLat(points[0].x, points[0].y);
 		loc = this.map.transformLLPoint(loc);
 		if(feature)
@@ -410,7 +412,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    } catch(err) {
 		console.log(err);
 	    }
-
 
 	    let bounds = {};
 	    let attrs = {
@@ -424,6 +425,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.map.zoomToExtent(polygon.geometry.getBounds());
 	    }
 	    this.map.closePopup();
+	    setTimeout(()=>{
+		this.getDisplayManager().notifyEvent("handleEventDataSelection", this, {data:newData});
+	    },100);
 	},
         createMap: function() {
             let _this = this;
@@ -2059,7 +2063,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		});
 
 		html = HU.div([CLASS, "display-map-toc",STYLE,HU.css("max-height","calc(" +this.getHeightForStyle()+" - 1em)"),ID, this.domId("toc")],html);
-		let title = this.getProperty("tableOfContentsTitle","XX");
+		let title = this.getProperty("tableOfContentsTitle","");
 		if(title) html = HU.center(HU.b(title)) + html;
 		this.jq(ID_LEFT).html(html);
 		let _this = this;
@@ -2071,6 +2075,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(!record) return;
 		    _this.highlightPoint(record.getLatitude(), record.getLongitude(),true, false);
 		    _this.map.setCenter(new OpenLayers.LonLat(record.getLongitude(),record.getLatitude()));
+		    if(record.trackData) {
+			setTimeout(()=>{
+			    _this.getDisplayManager().notifyEvent("handleEventDataSelection", _this, {data:record.trackData});
+			},100);
+		    }
 		});
 
 		items.dblclick(function() {

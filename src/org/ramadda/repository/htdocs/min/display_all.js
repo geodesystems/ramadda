@@ -3282,7 +3282,6 @@ function DisplayThing(argId, argProperties) {
 	    if(!this.dateFormat && useToStringIfNeeded) {
 		return String(date);
 	    }
-
             //Check for date object from charts
             if (!date.getTime && date.v) date = date.v;
 	    if(this.dateFormat) {
@@ -3301,10 +3300,10 @@ function DisplayThing(argId, argProperties) {
                 suffix = this.getProperty("dateSuffix");
             var timeZone = this.getTimeZone();
             if (!suffix && timeZone) suffix = timeZone;
-            return Utils.formatDate(date, args?args.options:null, {
+	    return Utils.formatDate(date, args?args.options:null, {
                 timeZone: timeZone,
                 suffix: suffix
-            });
+	    });
         },
         getUniqueId: function(base) {
             return HU.getUniqueId(base);
@@ -3951,7 +3950,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:"showDisplayFieldsMenu",ex:true},
 	{p:"displayFieldsMenuMultiple",ex:true},
 	{p:"displayFieldsMenuSide",ex:"left"},
-	{p:"acceptEventDisplayFieldsChange",ex:true},
 	{label:"Formatting"},
 	{p:"dateFormat",ex:"yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm"},
 	{p:"dateFormatDaysAgo",ex:true},
@@ -3968,10 +3966,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:"filterHighlight",ex:true,tt:"Highlight the records"},
 	{p:"showFilterHighlight",ex:false,tt:"show/hide the filter highlight widget"},
 	{p:"acceptEventFilter",ex:false},
+	{p:"acceptEventDisplayFieldsChange",ex:true},
+	{p:'acceptEventDataSelection',ex:true,tt:'accept new data coming from other displays'},
+	{p:"acceptEventRecordList",ex:true},
 	{p:"propagateEventRecordHighlight",ex:true},
 	{p:"acceptEventRecordHighlight",ex:true},		
 	{p:"propagateEventRecordList",ex:true},
-	{p:"acceptEventRecordList",ex:true},
 	{p:"filterSliderImmediate",ex:true,tt:"Apply the change while sliding"},
 	{p:"filterLogic",ex:"and|or",tt:"Specify logic to apply filters"},		
 	{p:"&lt;field&gt;.filterValue"},
@@ -4757,6 +4757,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return HU.image(ramaddaBaseUrl + "/icons/progress.gif");
         },
         getLoadingMessage: function(msg) {
+	    if(this.getAcceptEventDataSelection()) {
+		return "";
+	    }
+
 	    //Check if we didn't have any data specified
 	    if(!msg && !this.getProperty("theData")) {
 		msg = "No data specified"
@@ -8640,6 +8644,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         //callback from the pointData.loadData call
         clearCache: function() {},
+	handleEventDataSelection: function(source, args) {
+	    if(this.getAcceptEventDataSelection()) {
+		this.pointDataLoaded(args.data,"",true);
+	    }
+	},
         pointDataLoaded: function(pointData, url, reload) {
 //	    console.log(this.type +".pointDataLoaded");
 	    let debug = displayDebug.pointDataLoaded;
@@ -8998,6 +9007,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             //console.log(fieldNames);
 
 
+
             groupByList.push("");
 	    groupByRecords.push(null);
 	    if(!this.minDateObj) {
@@ -9033,10 +9043,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let date_formatter = null;
             let rowCnt = -1;
             let indexField = this.getFieldById(null,this.getProperty("indexField"));
+	    var t1 = new Date();
             for (let rowIdx = 0; rowIdx < records.length; rowIdx++) {
                 let record = records[rowIdx];
                 let date = record.getDate();
-		
                 if (!this.dateInRange(date)) {
 		    continue;
 		}
@@ -9044,6 +9054,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.recordToIndex[record.getId()] = rowCnt;
 		this.indexToRecord[rowCnt] = record;
                 let values = [];
+
+
                 if (props && (props.includeIndex || props.includeIndexIfDate)) {
                     var indexName = null;
                     if (indexField) {
@@ -9052,7 +9064,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         indexName = indexField.getLabel();
                     } else {
                         if (this.hasDate) {
-                            values.push(this.getDateValue(date, date_formatter));
+			    let dttm = this.getDateValue(date, date_formatter);
+                            values.push(dttm);
                             indexName = "Date";
                         } else {
                             if (!props.includeIndexIfDate) {
@@ -9065,9 +9078,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         fieldNames.unshift(indexName);
                     }
                 }
-
-		
-
 
                 let allNull = true;
                 let allZero = true;
@@ -9133,6 +9143,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
 	    }
 
+	    var t2= new Date();
+//	    console.log("#records:" + records.length);
+//	    Utils.displayTimes("chart.standardData loop:",[t1,t2], true);
             if (nonNullRecords == 0) {
 		//		console.log("Num non null:" + nonNullRecords);
 		console.log("no nonNull records");
@@ -9342,6 +9355,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let diff = Math.round((now.getTime()-date.getTime())/1000/60/60/24);
 		return {v:date,f:diff+" days ago"};
 	    }
+
             return  {
                 v: date,
                 f: this.formatDate(date)
@@ -11453,6 +11467,10 @@ PointRecord.prototype =  {
     },
     hasElevation: function() {
         return this.elevation !=null && !isNaN(this.elevation);
+    },
+    setLocation: function(lat,lon) {
+	this.latitude=lat;
+	this.longitude=lon;
     },
     getLatitude: function() {
         return this.latitude;
@@ -14559,12 +14577,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    console.log("\tdisplay not ready");
                 return;
             }
-	    //	    var t1= new Date();
 	    if(debug)
 		console.log("\tcalling displayData");
             this.displayData(args.reload, debug);
-	    //	    var t2= new Date();
-	    //	    Utils.displayTimes("chart.displayData",[t1,t2]);
         },
         getWikiAttributes: function(attrs) {
             this.defineWikiAttributes(["vAxisMinValue", "vAxisMaxValue"]);
@@ -14839,8 +14854,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
 
-            this.setContents(HU.div([ATTR_CLASS, "display-output-message"],
-				    "Building display..."));
+	    if(!this.getAcceptEventDataSelection()) {
+		this.setContents(HU.div([ATTR_CLASS, "display-output-message"],
+					"Building display..."));
+	    }
 
 	    if(debug)
 		console.log("\tpointData #records:" +(!pointData?"NULL": pointData.getRecords().length));
@@ -14885,7 +14902,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 
             if (selectedFields.length == 0) {
-                this.setContents("No fields selected");
+		if(!this.getAcceptEventDataSelection()) {
+                    this.setContents("No fields selected");
+		}
                 return;
             }
 
@@ -14932,7 +14951,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             props.includeIndexIfDate = this.getIncludeIndexIfDate();
 
             var dataHasIndex = props.includeIndex;
+
+	    var t1= new Date();
             let dataList = this.getStandardData(this.getFieldsToDisplay(fieldsToSelect), props);
+	    var t2= new Date();
+//	    Utils.displayTimes("chart.getStandardData",[t1,t2],true);
 	    if(debug)
 		console.log(this.type +" fields:" + fieldsToSelect.length +" dataList:" + dataList.length);
             if (dataList.length == 0 && !this.userHasSelectedAField) {
@@ -16107,6 +16130,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			['2030', 28, 19]
 		    ]);
 
+		    
 		    chart.draw(this.useTestData?testData:dataTable, this.chartOptions);
 		} catch(err) {
 		    this.setErrorMessage("Error creating chart: " + err);
@@ -29829,8 +29853,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let points = RecordUtil.getPoints(newData.getRecords(),{});
 	    let feature = this.markers?this.markers[record.getId()]:null;
 	    let item = this.jq(ID_LEFT).find(HU.attrSelect(RECORD_ID,record.getId()));
+	    record.trackData = newData;
 	    item.addClass("display-map-toc-item-on");
 	    try {
+		record.setLocation(points[0].y, points[0].x);
 		let loc =  new OpenLayers.LonLat(points[0].x, points[0].y);
 		loc = this.map.transformLLPoint(loc);
 		if(feature)
@@ -29838,7 +29864,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    } catch(err) {
 		console.log(err);
 	    }
-
 
 	    let bounds = {};
 	    let attrs = {
@@ -29852,6 +29877,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.map.zoomToExtent(polygon.geometry.getBounds());
 	    }
 	    this.map.closePopup();
+	    setTimeout(()=>{
+		this.getDisplayManager().notifyEvent("handleEventDataSelection", this, {data:newData});
+	    },100);
 	},
         createMap: function() {
             let _this = this;
@@ -31487,7 +31515,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		});
 
 		html = HU.div([CLASS, "display-map-toc",STYLE,HU.css("max-height","calc(" +this.getHeightForStyle()+" - 1em)"),ID, this.domId("toc")],html);
-		let title = this.getProperty("tableOfContentsTitle","XX");
+		let title = this.getProperty("tableOfContentsTitle","");
 		if(title) html = HU.center(HU.b(title)) + html;
 		this.jq(ID_LEFT).html(html);
 		let _this = this;
@@ -31499,6 +31527,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(!record) return;
 		    _this.highlightPoint(record.getLatitude(), record.getLongitude(),true, false);
 		    _this.map.setCenter(new OpenLayers.LonLat(record.getLongitude(),record.getLatitude()));
+		    if(record.trackData) {
+			setTimeout(()=>{
+			    _this.getDisplayManager().notifyEvent("handleEventDataSelection", _this, {data:record.trackData});
+			},100);
+		    }
 		});
 
 		items.dblclick(function() {

@@ -299,12 +299,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    console.log("\tdisplay not ready");
                 return;
             }
-	    //	    var t1= new Date();
 	    if(debug)
 		console.log("\tcalling displayData");
             this.displayData(args.reload, debug);
-	    //	    var t2= new Date();
-	    //	    Utils.displayTimes("chart.displayData",[t1,t2]);
         },
         getWikiAttributes: function(attrs) {
             this.defineWikiAttributes(["vAxisMinValue", "vAxisMaxValue"]);
@@ -579,8 +576,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
 
-            this.setContents(HU.div([ATTR_CLASS, "display-output-message"],
-				    "Building display..."));
+	    if(!this.getAcceptEventDataSelection()) {
+		this.setContents(HU.div([ATTR_CLASS, "display-output-message"],
+					"Building display..."));
+	    }
 
 	    if(debug)
 		console.log("\tpointData #records:" +(!pointData?"NULL": pointData.getRecords().length));
@@ -625,7 +624,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 
             if (selectedFields.length == 0) {
-                this.setContents("No fields selected");
+		if(!this.getAcceptEventDataSelection()) {
+                    this.setContents("No fields selected");
+		}
                 return;
             }
 
@@ -672,7 +673,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             props.includeIndexIfDate = this.getIncludeIndexIfDate();
 
             var dataHasIndex = props.includeIndex;
+
+	    var t1= new Date();
             let dataList = this.getStandardData(this.getFieldsToDisplay(fieldsToSelect), props);
+	    var t2= new Date();
+//	    Utils.displayTimes("chart.getStandardData",[t1,t2],true);
 	    if(debug)
 		console.log(this.type +" fields:" + fieldsToSelect.length +" dataList:" + dataList.length);
             if (dataList.length == 0 && !this.userHasSelectedAField) {
@@ -1847,6 +1852,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			['2030', 28, 19]
 		    ]);
 
+		    
 		    chart.draw(this.useTestData?testData:dataTable, this.chartOptions);
 		} catch(err) {
 		    this.setErrorMessage("Error creating chart: " + err);

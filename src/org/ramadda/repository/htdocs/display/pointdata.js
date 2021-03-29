@@ -848,6 +848,10 @@ PointRecord.prototype =  {
     hasElevation: function() {
         return this.elevation !=null && !isNaN(this.elevation);
     },
+    setLocation: function(lat,lon) {
+	this.latitude=lat;
+	this.longitude=lon;
+    },
     getLatitude: function() {
         return this.latitude;
     },
