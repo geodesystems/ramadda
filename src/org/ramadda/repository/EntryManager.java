@@ -698,7 +698,7 @@ public class EntryManager extends RepositoryManager {
 	request.put(ARG_OUTPUT,OutputHandler.OUTPUT_HTML.getId());
 	request.put("ramadda.showjsonld", "false");
 	StringBuilder sb  = new StringBuilder();
-	//	request.put(ARG_TEMPLATE,"empty");
+	request.put(ARG_TEMPLATE,"empty");
 	getRepository().getHtmlOutputHandler().handleDefaultWiki(request, entry,sb,null,null);
 	Result tmpResult = new Result("",sb);
 	tmpResult.setTitle(entry.getName());
