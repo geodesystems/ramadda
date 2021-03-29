@@ -1994,6 +1994,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 if (getProperty(wikiUtil, props, "addAttributes", false)) {
                     jsonUrl += "&addAttributes=true";
                 }
+                if (getProperty(wikiUtil, props, "addPointUrl", false)) {
+                    jsonUrl += "&addPointUrl=true";
+                }		
                 if (getProperty(wikiUtil, props, "addThumbnails", false)) {
                     jsonUrl += "&addThumbnails=true";
                 }
@@ -3845,7 +3848,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             } else {
                 inner = HU.href(entryUrl, img, HU.cssClass(""));
 	    }
+	    //	    card.append("<div class='ramadda-flip-card'><div class='ramadda-flip-card-inner'><div class='ramadda-flip-card-front'>");
             card.append(HU.div(inner, HU.cssClass("ramadda-imagewrap")));
+	    //	    card.append("</div><div class='ramadda-flip-card-back'>");
+	    //	    card.append("The back");
+	    //	    card.append("</div></div></div>");
             if (popup) {
                 addImagePopupJS(request, wikiUtil, card, props);
             }
@@ -5679,10 +5686,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                     HU.attrs(
                                         "id", "displays_button" + textAreaId,
                                         "class",
-                                        "ramadda-menubar-button")) + HU
-                                            .script(
-                                                "wikiInitDisplaysButton('"
-                                                + textAreaId + "')");
+                                        "ramadda-menubar-button"));
+
 
         String addEntry = OutputHandler.getSelect(request, textAreaId,
                               "Entry ID", true, "entryid", entry, false,
@@ -5716,17 +5721,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
         buttons.append(helpButton);
-        String previewCall = HU.call("wikiPreview", ((entry != null)
-                ? HU.squote(entry.getId())
-                : "null"), HU.squote(textAreaId));
         String previewButton =
             HU.href("#", "Preview",
-                HU.attrs("onclick", previewCall, "id",
-                    "wikieditpreviewbutton ", "style", "padding:5px;",
-                    "class",
-                    " ramadda-menubar-button ramadda-menubar-button-last")) + HU.div("",
-                        HU.attrs("id", "wikieditpreview", "style",
-                            "display:none;height:800px;overflow-y:auto;position:absolute;left:100px;top:10px;"));
+                HU.attrs("id", textAreaId+"_previewbutton", "style", "padding:5px;",
+			 "class",
+			 "ramadda-menubar-button ramadda-menubar-button-last")) +
+	    HU.div("",HU.attrs("id", textAreaId+"_preview", "class", "wiki-editor-preview"));
 
         buttons.append(previewButton);
         HU.close(buttons, "div");
@@ -6528,11 +6528,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         String displayType = getProperty(wikiUtil, props, "type",
                                          "linechart");
         this.addDisplayImports(request, sb);
-        if (request.getExtraProperty("added plotly") == null) {
-	    //We do this in displayImports
-	    //	    request.appendHead(HU.importJS(getHtdocsUrl("/lib/plotly/plotly-latest.min.js")));
-	    //            request.putExtraProperty("added plotly", "true");
-        }
         List<String> topProps = new ArrayList<String>();
         if (propList == null) {
             propList = new ArrayList<String>();
