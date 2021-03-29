@@ -29584,8 +29584,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'extraLayers',tt:'comma separated list of layers to display',
 	 ex:'baselayer:goes-visible,baselayer:nexrad,geojson:US States:/resources/usmap.json:fillColor:transparent'},
 	{p:'doPopup', ex:'false',tt:"Don't show popups"},
-	{p:'showTableOfContents',ex:'true',tt:'Show left table of contents'},
-	{p:'tableOfContentsTitle'},
 	{p:'labelField',ex:'',tt:'field to show in TOC'},
 	{p:'showRegionSelector',ex:true},
 	{p:'regionSelectorLabel'},	
@@ -29597,6 +29595,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'rotateField',ex:'""',tt:'Field id for degrees rotation'},	
 
 	{label:"Map GUI"},
+	{p:'showTableOfContents',ex:'true',tt:'Show left table of contents'},
+	{p:'tableOfContentsTitle'},
 	{p:'showMarkersToggle',ex:'true',tt:'Show the toggle checkbox for the marker layer'},
 	{p:'showMarkersToggleLabel',ex:'label',tt:'Label to use for checkbox'},
 	{p:'showClipToBounds',ex:'true',tt:'Show the clip bounds checkbox'},
@@ -31580,7 +31580,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 return;
             }
 
-	    if(this.getProperty("showTableOfContents",false)) {
+	    if(this.getShowTableOfContents(false)) {
 		this.makeToc(records);
 	    }
  
