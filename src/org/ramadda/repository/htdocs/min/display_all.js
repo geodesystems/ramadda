@@ -31472,8 +31472,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(!labelField) labelField = this.getFieldByType(null,"string");
 	    if(labelField) {
 		let html = "";
-		let title = this.getProperty("tableOfContentsTitle");
-		if(title) html +=HU.center(HU.b(title));
 		let iconField = this.getFieldById(null,"icon");
 		records.forEach((record,idx)=>{
 		    let title = "View record";
@@ -31487,7 +31485,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
 		    html+= HU.span([TITLE, title, CLASS,clazz,RECORD_ID,record.getId(),RECORD_INDEX,idx], value);
 		});
-		this.jq(ID_LEFT).html(HU.div([STYLE,HU.css("max-height",this.getHeightForStyle()),ID, this.domId("toc"),CLASS, "display-map-toc"], html));
+
+		html = HU.div([CLASS, "display-map-toc",STYLE,HU.css("max-height","calc(" +this.getHeightForStyle()+" - 1em)"),ID, this.domId("toc")],html);
+		let title = this.getProperty("tableOfContentsTitle","XX");
+		if(title) html = HU.center(HU.b(title)) + html;
+		this.jq(ID_LEFT).html(html);
 		let _this = this;
 		let items = this.jq(ID_LEFT).find(".display-map-toc-item");
 		this.makeTooltips(items,records);
