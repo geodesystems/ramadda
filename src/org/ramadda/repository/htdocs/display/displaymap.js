@@ -2044,7 +2044,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    html+="<li> " + HU.span([TITLE, title, CLASS,"ramadda-clickable display-map-toc-item",RECORD_ID,record.getId(),RECORD_INDEX,idx], record.getValue(nameField.getIndex()));
 		});
 		html+="</ul>";
-		this.jq(ID_LEFT).html(HU.div([ID, this.domId("toc"),CLASS, "display-map-toc"], html));
+		this.jq(ID_LEFT).html(HU.div([STYLE,HU.css("max-height",this.getHeightForStyle()),ID, this.domId("toc"),CLASS, "display-map-toc"], html));
 		let _this = this;
 		this.jq(ID_LEFT).find(".display-map-toc-item").click(function() {
 		    let idx = $(this).attr(RECORD_INDEX);

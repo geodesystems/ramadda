@@ -666,7 +666,7 @@ RepositoryMap.prototype = {
     setCenter:function(to) {
 	if(debugBounds)
 	    console.log("setCenter");
-        this.getMap().panTo(this.transformLLPoint(to));
+	this.getMap().panTo(this.transformLLPoint(to));
 //        this.getMap().setCenter(this.transformLLPoint(to));
     },
     setZoom: function(zoom) {
@@ -686,9 +686,6 @@ RepositoryMap.prototype = {
 	if(debugBounds) {
 	    console.log("zoomToExtent:" );
 	}
-	let zoom = this.getMap().getZoomForExtent(bounds);
-	let center = bounds.getCenterLonLat();
-	//	this.getMap().zoomTo(zoom, center);
 	this.getMap().zoomToExtent(bounds,flag);
     },
     centerToMarkers: function() {
@@ -2606,7 +2603,7 @@ RepositoryMap.prototype = {
 	    this.initialZoom=-1;
 	    this.getMap().zoomTo(zoom);
 	    //In case we are in tabs then set the zoom level later
-	    if(this.initialZoomTimeout) {
+	    if(true || this.initialZoomTimeout) {
 		setTimeout(()=>{
 		    this.getMap().zoomTo(zoom);
 		},this.initialZoomTimeout);
