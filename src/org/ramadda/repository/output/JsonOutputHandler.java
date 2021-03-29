@@ -288,8 +288,13 @@ public class JsonOutputHandler extends OutputHandler {
                        "false");
 
         boolean      addAttributes = request.get("addAttributes", false);
+        boolean      addPointUrl = request.get("addPointUrl", false);	
         boolean      addThumbnails = request.get("addThumbnails", false);
         boolean      addImages = request.get("addImages", false);	
+	if(addPointUrl)
+	    addPointHeader(fields, "pointurl", "Point URL", "url", "forDisplay",
+			   "true");
+
 	if(addThumbnails)
 	    addPointHeader(fields, "thumbnail", "Thumbnail", "image", "forDisplay",
 			   "false");
@@ -339,7 +344,7 @@ public class JsonOutputHandler extends OutputHandler {
             List<String> entryArray = new ArrayList<String>();
             //Note: if the entry is a different type than the first one then
             //the columns will mismatch
-            String array = toPointJson(request, entry, addSnippets, addAttributes,addThumbnails, addImages,
+            String array = toPointJson(request, entry, addSnippets, addAttributes,addPointUrl, addThumbnails, addImages,
                                        columns, showFileUrl);
             entryArray.add("values");
             entryArray.add(array);
@@ -709,7 +714,7 @@ public class JsonOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     private String toPointJson(Request request, Entry entry,boolean addSnippets,
-                               boolean addAttributes, boolean addThumbnails, boolean addImages, List<Column> columns,
+                               boolean addAttributes, boolean addPointUrl, boolean addThumbnails, boolean addImages, List<Column> columns,
                                boolean showFileUrl)
             throws Exception {
 
@@ -731,6 +736,14 @@ public class JsonOutputHandler extends OutputHandler {
                 request.getAbsoluteUrl(
                     getPageHandler().getIconUrl(request, entry))));
         items.add(Json.quote(getEntryManager().getEntryUrl(request, entry)));
+
+	if(addPointUrl) {
+	    String jsonUrl = entry.getTypeHandler().getUrlForWiki(request,
+								  entry, WikiConstants.WIKI_TAG_DISPLAY, new Hashtable(), new ArrayList<String>());
+	    
+	    items.add(Json.quote(jsonUrl==null?"":jsonUrl));
+	}
+
 
 	if(addThumbnails) {
             List<String> urls = new ArrayList<String>();
