@@ -762,10 +762,7 @@ class  WikiEditor {
 	    let tagInfo = this.getTagInfo(position);
 	    if(tagInfo) {
 		this.setInContext(true);
-		this.tagMarker = this.editor.session.addMarker(
- 		    tagInfo.range, "ace_active-line wiki-editor-tag-highlight", "text"
-		);		
-		
+		//		this.tagMarker = this.editor.session.addMarker(tagInfo.range, "ace_active-line wiki-editor-tag-highlight", "text");
   	    } else {
 		this.setInContext(false);
 	    }

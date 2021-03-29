@@ -10885,7 +10885,7 @@ function PointData(name, recordFields, records, url, properties) {
                     else if(record.record)
                         data = record.record.getData();
                     console.log("data:" + data);
-                    var value = groupField.getValue(data);
+                    var value = groupField.getValue(record);
                     if(!seen[value]) {
                         seen[value] = true;
                         this.groupData.push(value);
@@ -11234,8 +11234,14 @@ function RecordField(props, source) {
         getIndex: function() {
             return this.index;
         },
-        getValue: function(row) {
-            return row[this.index];
+        getValue: function(record,dflt) {
+	    let v;
+	    if(record.getValue)
+		v= record.getValue(this.index);
+	    else
+		v = row[this.index];
+	    if(!v && !Utils.isDefined(v)) return dflt;
+	    return v;
         },
         getEnumeratedValues: function(row) {
 	    return this.enumeratedValues;
@@ -18296,9 +18302,8 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                         if(field.isNumeric() && !field.range) {
                             var min = Number.MAX_VALUE;
                             var max = Number.MIN_VALUE;
-                            records.map(r=>{
-                                r  =  this.getDataValues(r);
-                                var v =field.getValue(r);
+                            records.map(record=>{
+                                var v =field.getValue(record);
                                 if(isNaN(v)) return;
                                 if(v<min) min  = v;
                                 if(v > max) max =v;
@@ -18351,12 +18356,13 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             var colorCnt = 0;
 	    var imgCnt = 0;
             for (var rowIdx = 0; rowIdx <records.length; rowIdx++) {
+		let record = records[rowIdx];
                 var row = this.getDataValues(records[rowIdx]);
                 var contents = "";
                 var tooltip = "";
                 this.tooltipFields.map(field=>{
                     if(tooltip!="") tooltip+="&#10;";
-                    tooltip+=field.getValue(row);
+                    tooltip+=field.getValue(record);
                 });
 		tooltip =tooltip.replace(/\"/g,"&quot;");
                 var label = "";
@@ -18364,14 +18370,14 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                 if(this.captionFields.length>0) {
                     if(this.captionTemplate) caption  = this.captionTemplate;
                     this.captionFields.map(field=>{
-			var value = (""+field.getValue(row)).replace(/\"/g,"&quot;");
+			var value = (""+field.getValue(record)).replace(/\"/g,"&quot;");
                         if(this.captionTemplate)
                             caption = caption.replace("\${" + field.getId()+"}",value);
                         else
                             caption+=value+"<br>";
                     });
                     if(this.urlField) {
-                        var url = this.urlField.getValue(row);
+                        var url = this.urlField.getValue(record);
                         if(url && url!="") {
                             caption = "<a style='color:inherit;'  href='" +url+"' target=_other>" +caption+"</a>";
                         }
@@ -18403,7 +18409,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                         style+= " font-size:" + fontSize +"; ";
                     }
                     if(this.colorByField && this.colorList) {
-                        var value = this.colorByField.getValue(row);
+                        var value = this.colorByField.getValue(record);
                         if(!Utils.isDefined(colorMap[value])) {
                             colorMap[value] = colorCnt++;
                         }
@@ -18424,7 +18430,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                         style +=cardStyle;
                     var attrs = [TITLE,tooltip,CLASS,"ramadda-gridbox display-cards-card",STYLE,style];
                     if(this.altLabelField) {
-                        html = HU.div(attrs,this.altLabelField.getValue(row));
+                        html = HU.div(attrs,this.altLabelField.getValue(record));
                     } else {
                         html = HU.div(attrs,caption);
                     }
@@ -18845,7 +18851,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    if(this.labelFields.length>0) {
 		this.labelFields.map(l=>{label += " " + row[l.getIndex()]});
 		if(this.urlField) {
-                    var url = this.urlField.getValue(row);
+                    var url = this.urlField.getValue(record);
                     if(url && url!="") {
                         label = "<a style='color:inherit;'  href='" +url+"' target=_other>" +label+ "</a>";
 
@@ -29785,11 +29791,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 	macroHook: function(record, token,value) {
 	    if(!this.trackUrlField) {
-		return;
+		return null;
 	    }
 	    if(token.tag!=this.trackUrlField.getId()) {
 		return null;
 	    }
+	    if(String(value).trim().length==0) return "";
 	    this.currentPopupRecord = record;
 	    let haveTrack = this.tracks[record.getId()]!=null;
 	    let label =haveTrack?"Remove track":(token.attrs["label"] ||  "View track");
@@ -31459,24 +31466,35 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(!nameField) nameField = this.getFieldByType(null,"string");
 	    if(nameField) {
 		let html = "";
+		let iconField = this.getFieldById(null,"icon");
 		records.forEach((record,idx)=>{
-		    if(html=="") html = "<ul>";
 		    let title = "View record";
 		    if(this.trackUrlField) title = "View track";
-		    html+="<li> " + HU.span([TITLE, title, CLASS,"ramadda-clickable display-map-toc-item",RECORD_ID,record.getId(),RECORD_INDEX,idx], record.getValue(nameField.getIndex()));
+		    let clazz = "ramadda-clickable  display-map-toc-item";
+		    let value = nameField.getValue(record);
+		    if(!iconField) {
+			clazz+=" ramadda-nav-list-link ";
+		    } else {
+			value = HU.getIconImage(iconField.getValue(record,icon_blank16),["width",16]) + SPACE + value;
+		    }
+		    html+= HU.span([TITLE, title, CLASS,clazz,RECORD_ID,record.getId(),RECORD_INDEX,idx], value);
 		});
-		html+="</ul>";
 		this.jq(ID_LEFT).html(HU.div([STYLE,HU.css("max-height",this.getHeightForStyle()),ID, this.domId("toc"),CLASS, "display-map-toc"], html));
 		let _this = this;
-		this.jq(ID_LEFT).find(".display-map-toc-item").click(function() {
+		let items = this.jq(ID_LEFT).find(".display-map-toc-item");
+		this.makeTooltips(items,records);
+		items.click(function() {
 		    let idx = $(this).attr(RECORD_INDEX);
 		    let record = records[idx];
 		    if(!record) return;
 		    if(_this.trackUrlField) {
-			_this.toggleTrack(record,$(this));
-		    } else {
-			_this.map.setCenter(new OpenLayers.LonLat(record.getLongitude(),record.getLatitude()));
-		    }
+			let url = record.getValue(_this.trackUrlField.getIndex());
+			if(url && url.length>0) {
+			    _this.toggleTrack(record,$(this));
+			    return;
+			}
+		    } 
+		    _this.map.setCenter(new OpenLayers.LonLat(record.getLongitude(),record.getLatitude()));
 		});
 	    }
 	},	    
@@ -32894,12 +32912,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 pointFeature.attributes[RECORD_INDEX] = (i+1);
                 for (var fieldIdx = 0;fieldIdx < fields.length; fieldIdx++) {
                     var field = fields[fieldIdx];
-                    pointFeature.attributes[field.getId()] = field.getValue(tuple);
+                    pointFeature.attributes[field.getId()] = field.getValue(record);
 		    if(colorBy && field.getId() == colorBy) {
-			pointFeature.attributes["colorBy"] = field.getValue(tuple);
+			pointFeature.attributes["colorBy"] = field.getValue(record);
 		    }
 		    if(sizeBy && field.getId() == sizeBy) {
-			pointFeature.attributes["sizeBy"] = field.getValue(tuple);
+			pointFeature.attributes["sizeBy"] = field.getValue(record);
 		    }
                 }
                 features.push(pointFeature);

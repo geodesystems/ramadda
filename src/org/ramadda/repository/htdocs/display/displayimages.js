@@ -209,9 +209,8 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                         if(field.isNumeric() && !field.range) {
                             var min = Number.MAX_VALUE;
                             var max = Number.MIN_VALUE;
-                            records.map(r=>{
-                                r  =  this.getDataValues(r);
-                                var v =field.getValue(r);
+                            records.map(record=>{
+                                var v =field.getValue(record);
                                 if(isNaN(v)) return;
                                 if(v<min) min  = v;
                                 if(v > max) max =v;
@@ -264,12 +263,13 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             var colorCnt = 0;
 	    var imgCnt = 0;
             for (var rowIdx = 0; rowIdx <records.length; rowIdx++) {
+		let record = records[rowIdx];
                 var row = this.getDataValues(records[rowIdx]);
                 var contents = "";
                 var tooltip = "";
                 this.tooltipFields.map(field=>{
                     if(tooltip!="") tooltip+="&#10;";
-                    tooltip+=field.getValue(row);
+                    tooltip+=field.getValue(record);
                 });
 		tooltip =tooltip.replace(/\"/g,"&quot;");
                 var label = "";
@@ -277,14 +277,14 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                 if(this.captionFields.length>0) {
                     if(this.captionTemplate) caption  = this.captionTemplate;
                     this.captionFields.map(field=>{
-			var value = (""+field.getValue(row)).replace(/\"/g,"&quot;");
+			var value = (""+field.getValue(record)).replace(/\"/g,"&quot;");
                         if(this.captionTemplate)
                             caption = caption.replace("\${" + field.getId()+"}",value);
                         else
                             caption+=value+"<br>";
                     });
                     if(this.urlField) {
-                        var url = this.urlField.getValue(row);
+                        var url = this.urlField.getValue(record);
                         if(url && url!="") {
                             caption = "<a style='color:inherit;'  href='" +url+"' target=_other>" +caption+"</a>";
                         }
@@ -316,7 +316,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                         style+= " font-size:" + fontSize +"; ";
                     }
                     if(this.colorByField && this.colorList) {
-                        var value = this.colorByField.getValue(row);
+                        var value = this.colorByField.getValue(record);
                         if(!Utils.isDefined(colorMap[value])) {
                             colorMap[value] = colorCnt++;
                         }
@@ -337,7 +337,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                         style +=cardStyle;
                     var attrs = [TITLE,tooltip,CLASS,"ramadda-gridbox display-cards-card",STYLE,style];
                     if(this.altLabelField) {
-                        html = HU.div(attrs,this.altLabelField.getValue(row));
+                        html = HU.div(attrs,this.altLabelField.getValue(record));
                     } else {
                         html = HU.div(attrs,caption);
                     }
@@ -758,7 +758,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    if(this.labelFields.length>0) {
 		this.labelFields.map(l=>{label += " " + row[l.getIndex()]});
 		if(this.urlField) {
-                    var url = this.urlField.getValue(row);
+                    var url = this.urlField.getValue(record);
                     if(url && url!="") {
                         label = "<a style='color:inherit;'  href='" +url+"' target=_other>" +label+ "</a>";
 

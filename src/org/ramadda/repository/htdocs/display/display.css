@@ -359,6 +359,7 @@ a.display-container {
 }
 
 .display-map-toc {
+    margin-right:6px;
     width:200px;
     max-width:200px;    
     overflow-x:auto;
@@ -370,6 +371,7 @@ a.display-container {
     padding-left:15px;
 }
 .display-map-toc-item {
+    padding:2px;
     display:inline-block;
     margin-top:2px;
     width:100%;

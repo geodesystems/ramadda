@@ -38,7 +38,7 @@
 
 
   <type name="geo_gpx"  super="type_point" description="GPX GPS File"   handler="org.ramadda.plugins.map.GpxTypeHandler" pattern=".*\.gpx$">
-     <property name="icon" value="/map/tracklog.gif"/>
+    <property name="icon" value="/map/tracks.png"/>
      <property name="point.initialize" value="false"/>
      <column name="distance" label="Distance" type="double" cansearch="true" showinhtml="true" databaseDefault="-1"/>
      <column name="total_time" label="Total Time" type="double" cansearch="true" showinhtml="true"  databaseDefault="-1"/>

@@ -279,7 +279,7 @@ function PointData(name, recordFields, records, url, properties) {
                     else if(record.record)
                         data = record.record.getData();
                     console.log("data:" + data);
-                    var value = groupField.getValue(data);
+                    var value = groupField.getValue(record);
                     if(!seen[value]) {
                         seen[value] = true;
                         this.groupData.push(value);
@@ -628,8 +628,14 @@ function RecordField(props, source) {
         getIndex: function() {
             return this.index;
         },
-        getValue: function(row) {
-            return row[this.index];
+        getValue: function(record,dflt) {
+	    let v;
+	    if(record.getValue)
+		v= record.getValue(this.index);
+	    else
+		v = row[this.index];
+	    if(!v && !Utils.isDefined(v)) return dflt;
+	    return v;
         },
         getEnumeratedValues: function(row) {
 	    return this.enumeratedValues;
