@@ -4384,7 +4384,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(this.getProperty('showDisplayTop',true)) {
 		table+= HU.tr([],HU.td(['width',sideWidth]) + HU.td(['width','99%'],top) +HU.td(['width',sideWidth]));
 	    }
-	    table+= HU.tr([],HU.td(['width',sideWidth],left) + HU.td(['width','99%'],contents) +HU.td(['width',sideWidth],right));
+	    table+= HU.tr(["valign","top"],HU.td(['width',sideWidth],left) + HU.td(['width','99%'],contents) +HU.td(['width',sideWidth],right));
 	    if(this.getProperty('showDisplayBottom',true)) {
 		table+= HU.tr([],HU.td(['width',sideWidth]) + HU.td(['width','99%'],bottom) +HU.td(['width',sideWidth]));
 	    }

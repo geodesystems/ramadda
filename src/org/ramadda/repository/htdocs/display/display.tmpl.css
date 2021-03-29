@@ -358,6 +358,28 @@ a.display-container {
     color:#000;
 }
 
+.display-map-toc {
+    width:200px;
+    max-width:200px;    
+    overflow-x:auto;
+    overflow-y:auto;
+}    
+
+.display-map-toc ul {
+    margin:0px;
+    padding-left:15px;
+}
+.display-map-toc-item {
+    display:inline-block;
+    margin-top:2px;
+    width:100%;
+		
+}
+
+.display-map-toc-item-on {
+    background:var(--highlight-background);
+}
+
 .display-map-toolbar .ramadda-button {
 }
 

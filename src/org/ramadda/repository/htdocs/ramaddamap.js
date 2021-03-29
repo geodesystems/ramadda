@@ -666,7 +666,8 @@ RepositoryMap.prototype = {
     setCenter:function(to) {
 	if(debugBounds)
 	    console.log("setCenter");
-        this.getMap().setCenter(this.transformLLPoint(to));
+        this.getMap().panTo(this.transformLLPoint(to));
+//        this.getMap().setCenter(this.transformLLPoint(to));
     },
     setZoom: function(zoom) {
 	if(debugBounds)
@@ -684,9 +685,11 @@ RepositoryMap.prototype = {
     zoomToExtent: function(bounds,flag) {
 	if(debugBounds) {
 	    console.log("zoomToExtent:" );
-//	    console.trace();
 	}
-        this.getMap().zoomToExtent(bounds,flag);
+	let zoom = this.getMap().getZoomForExtent(bounds);
+	let center = bounds.getCenterLonLat();
+	//	this.getMap().zoomTo(zoom, center);
+	this.getMap().zoomToExtent(bounds,flag);
     },
     centerToMarkers: function() {
         if (!this.markers)
@@ -3948,6 +3951,7 @@ RepositoryMap.prototype = {
         for (var i = 0; i < points.length; i++) {
             points[i].transform(this.displayProjection, this.sourceProjection);
         }
+
 
         var base_style = OpenLayers.Util.extend({},
 						OpenLayers.Feature.Vector.style['default']);
