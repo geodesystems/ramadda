@@ -3,66 +3,7 @@
  */
 
 
-let wikiPopup = null;
-
-function  wikiInitDisplaysButton(id) {
-    let button = $("#displays_button"+ id);
-    button.click(() =>{
-	if(!window.globalDisplayTypes) return;
-        var types = window.globalDisplayTypes;
-        var links = {};
-        var cats = [];
-        var displayTypes = [];
-	DISPLAY_CATEGORIES.forEach(category=>{
-            links[category] = [];
-            cats.push(category);
-	});
-	types.forEach(type=>{
-            if (Utils.isDefined(type.forUser) && !type.forUser) {
-		return;
-            }
-	    var category = type.category ||  CATEGORY_MISC;
-            if (links[category] == null) {
-                links[category] = [];
-                cats.push(category);
-            }
-	    let tooltip = type.tooltip||"";
-	    tooltip = tooltip.replace(/"/g,"&quot;");
-	    let click = "insertDisplayText('" + id + "','" + type.type+"')";
-	    let link = HU.div([CLASS,"wiki-editor-popup-link"],HU.href("#",type.label,[CLASS,"display-link ",TITLE,tooltip,"onclick", click]));
-            links[category].push(link);
-        });
-	let menu = "<table><tr valign=top>";
-        for (let i = 0; i < cats.length; i++) {
-            let cat = cats[i];
-	    let menuItems = Utils.join(links[cat],"<div>\n");
-	    menu += HU.td([],HU.div([STYLE,'margin-right:5px;'], HU.b(cat)) +"<div style='margin-right:5px;max-height:250px;overflow-y:auto;'>" + menuItems);
-        }
-	menu = HU.div([ID,"wiki-display-popup",STYLE,"font-size:10pt;width:800px;"], menu);
-	let init = ()=>{
-	    let tt  =    $("#wiki-display-popup").tooltip({
-		classes: {"ui-tooltip": "wiki-editor-tooltip"},
-		content: function () {
-		    return $(this).prop('title');
-		},
-		show: { effect: 'slide', delay: 500, duration: 400 },
-		position: { my: "left top", at: "right top" }		
-	    });
-	};
-	let popup = HU.makeDialog({content:menu,my:"left top",at:"left-200px bottom",title:"",anchor:button,draggable:true,header:true,initCall:init});
-	if(wikiPopup) 
-	    wikiPopup.hide();
-	wikiPopup =  popup;
-    });
-	
-}
-
-
-async function  wikiPreview(entry, id, inPlace) {
-    HtmlUtils.getWikiEditor(id).doPreview(entry, inPlace);
-}
-
-
+var wikiPopup = null;
 function insertDisplayText(id, value) {
     let type = window.globalDisplayTypesMap[value];
     if(!type) {
@@ -235,315 +176,116 @@ function insertTagsInner(id, txtarea, tagOpen, tagClose, sampleText) {
 }
 
 
-let groupAttributes = [
-    {label:'Collection Properties'},
-    {p:'sortby',ex:'name|date|changedate|createdate',tt:'sort type -name,date, change date, create date'},
-    {p:'sortdir',ex:'up|down',tt:'direction of sort. use up for oldest to youngest'},
-    {p:'entries',ex:'entryid1,entryid2,entryid3..',tt:'comma separated list of entry ids to use' },
-    {p:'entries.filter',ex:'file|folder|image|type:some type|geo|name:name pattern|suffix:file suffixes',tt:'allows you to select what entries to use'},
-    {p:'exclude',ex:'entryid1,entryid2,entryid3..',tt:'comma separated list of entry ids to not use'},
-    {p:'first',ex:'entryid1,entryid2,entryid3..',tt:'comma separated list of entry ids to use first'},
+class  WikiEditor {
 
-    {p:'last',ex:'entryid1,entryid2,entryid3..',tt:'comma separated list of entry ids to use last'},
-    {p:'max',ex:'number of entries to use',tt:'max number of entries to use'},
-];
+    constructor(entryId, formId, id, hidden,argOptions) {
+	this.entryId  = entryId;
+	this.ID_WIKI_PREVIEW = "preview";
+	this.ID_WIKI_PREVIEW_INNER = "preview_inner";
+	this.ID_WIKI_PREVIEW_OPEN= "preview_open";
+	this.ID_WIKI_PREVIEW_CLOSE = "preview_close";
+	this.ID_WIKI_MESSAGE = "message";
+	this.ID_WIKI_MENUBAR    = "menubar";
+	this.ID_WIKI_POPUP_EDITOR = "wiki-popup-editor";
+	this.ID_WIKI_POPUP_OK= "wiki-popup-ok";
+	this.ID_WIKI_POPUP_CANCEL= "wiki-popup-cancel";
+	this.ID_WIKI_POPUP_TIDY ="wiki-popup-tidy";
+	this.ID_WIKI_POPUP_COMPACT ="wiki-popup-compact";
 
-let wikiAttributesFromServer = null;
-let wikiAttributes = {
-    tree: 
-	Utils.mergeLists([
-	    {label:'Tree'},
-	    {p:'details',ex:'true'},
-	    {p:'showcategories',ex:'true'},
-	    {p:'decorate',ex:'true'},	
-	    {p:'form',ex:'true'},
-	    {p:'message',ex:''},
-	    {p:'treePrefix',ex:''},	
-	],groupAttributes),		   
-    links: Utils.mergeLists([
-	{label:'Links Properties'},
-	{p:'info',ex:'List children entries'},
-	{p:'includeIcon',ex:'true'},
-	{p:'linkresource',ex:'true',tt:'Link to the resource'},
-	{p:'separator',ex:'',tt:'Separator between links'},
-	{p:'horizontal',ex:'true',tt:'Display horizontallly'},
-	{p:'output',ex:'',tt:'Link to output'},
-	{p:'tagopen',ex:'html before link'},
-	{p:'tagclose',ex:'html after link'},	
-	{p:'innerClass',ex:''},
-	{p:'class',ex:'',tt:'link css class'},
-	{p:'style',ex:'',tt:'link style'}],
-			    groupAttributes),		   
-    list: Utils.mergeLists([
-	{label:'List Properties'},
-	{p:'info',ex:':List children entries'},
-	{p:'includeIcon',ex:'true'},
-	{p:'linkresource',ex:'true',tt:'Link to the resource'},
-	{p:'separator',ex:'',tt:'Separator between links'},
-	{p:'output',ex:'',tt:'Link to output'},
-	{p:'tagopen',ex:'',tt:'html before link'},
-	{p:'tagclose',ex:'',tt:'html after link'},	
-	{p:'innerClass',ex:''},
-	{p:'class',ex:'',tt:'link css class'},
-	{p:'style',ex:'',tt:'link style'}],
-			   groupAttributes),
+	this.initAttributes();
+	var options = {
+            autoScrollEditorIntoView: true,
+            copyWithEmptySelection: true,
+            //            theme:'ace/theme/solarized_light',
+	};
+	if (argOptions)
+            $.extend(options, argOptions);
+	$.extend(this,
+		 {id:id,
+		  editor:ace.edit(id),
+		  formId:formId,
+		  hidden:hidden});
+	HU.addWikiEditor(this);
+	this.editor.setBehavioursEnabled(false);
+	this.editor.setDisplayIndentGuides(false);
+	this.editor.setKeyboardHandler("emacs");
+	this.editor.setShowPrintMargin(false);
+	this.editor.getSession().setUseWrapMode(true);
+	this.editor.setOptions(options);
+	this.editor.session.setMode("ace/mode/ramadda");
+	this.toolbar = $("#" + this.getId() +"_toolbar");
+	this.editor.container.addEventListener("contextmenu", (e) =>{
+	    e.preventDefault();
+	    this.handlePopupMenu(e);
+	});
+	this.editor.container.addEventListener("mouseup", (e) =>{
+	    this.handleMouseUp(e);
+	});
+	this.editor.container.addEventListener("mouseleave", (e) => {
+	    this.handleMouseLeave(e);
+	});
+	this.editor.container.addEventListener("mousemove", (e) => {
+	    this.handleMouseMove(e);
+	});
+	this.getBlock().find("#" + this.id).append(HU.div([STYLE,HU.css("display","none"), CLASS,"wiki-editor-message",ID,this.domId(this.ID_WIKI_MESSAGE)]));
+	this.wikiInitDisplaysButton();
 
-    information: [
-	{label:'Information Properties'},
-	{p:'info',ex:'Show entry information'},
-	{p:'details',ex:'false'},
-	{p:'showTitle',ex:'true'},
-	{p:'showResource',ex:'true'},
-	{p:'showBase',ex:'true'},
-	{p:'showDetails',ex:'true'},],
-    description: [
-	{label:'Description Properties'},
-	{p:'wikify',ex:'true'},
-	{p:'prefix',ex:''},
-	{p:'suffix',ex:''},
-	{p:'convert',ex:'_newline=true'},		
-    ],
-    resource: [
-	{label:'Resource Properties'},
-	{p:'info',ex:'',tt:'Link to the resource'},
-	{p:'title',ex:''},
-	{p:'includeIcon',ex:'true'},	
-	{p:'url',ex:'true',tt:'Just include the URL'},
-	{p:'message',ex:'',tt:'Message to show when no resource'},
-    ],
-    link: [
-	{label:'Link Properties'},
-	{p:'info',ex:'Link to the entry'},
-	{p:'linkresource',ex:'true',tt:'Link to the resource'},
-	{p:'button',ex:'true',tt:'Make a button'},
-	{p:'title',ex:'',tt:'Title to use'},
-	{p:'output',ex:'output type',tt:'Link to the given output'},
-    ],
-    daterange: [
-	{label:'Date Range Properties'},
-	{p:'format',ex:'yyyy-MM-dd HH:mm:ss Z'},
-	{p:'separator',ex:''},
-    ],
-    html: [
-	{label:'HTML Properties'},
-	{p:'info',ex:'true', tt:'Include the HTML of the entry'},
-	{p:'children',ex:'true',tt:'Include HTML of children entries'},
-    ],
+	this.jq("previewbutton").click(()=>{
+	    this.doPreview(this.entryId);
+	});
+    }
 
-
-    map: [
-	{label:'Map Properties'},
-	{p:'icon',ex:'#/icons/dots/green.png' },
- 	{p:'width',ex:'100%'},
-	{p:'height',ex:'400'},
-	{p:'listentries',ex:'true'},
-	{p:'details',ex:'false'},
-	{p:'showLines',ex:'true'},
-	{p:'showBounds',ex:'false'},
-	{p:'showMarkers',ex:'false'},
-	{p:'showLocationSearch',ex:'true'},
-	{p:'showCheckbox',ex:'true'},
-	{p:'showSearch',ex:'false'},
-	{p:'icon',ex:'/icons/dots/green.png'},
-	{p:'iconsonly',ex:'false'},],
-    name:[
-	{label:'Name Properties'},
-	{p:'link',ex:'true',tt:'Link to the entry'}],
-
-    property: [
-	{label:'Property Properties'},
-	{p:'name',ex:''},
-	{p:'value',ex:''}],
-
-
-    group: Utils.mergeLists([
-	{label:'Group Properties'},
-	{p:'showMenu',ex:'true'},	      
-	{p:'showTitle',ex:'true'},
-	{p:'layoutType',ex:'table|flextable|tabs|columns|rows'},
-	{p:'layoutColumns',ex:'1'},
-	{p:'divid',ex:'',tt:'Specify a div id to write displays into'}]),
-    tabs:Utils.mergeLists([
-	{label:'Tabs Properties'},
-	{p:'tag',ex:'html'},
-	{p:'tabsStyle',ex:'min|center|minarrow'},
-	{p:'showLink',ex:'false'}, 
-        {p:'includeIcon',ex:'true'},
-	{p:'textposition',ex:'top|left|right|bottom'}, 
-    ], groupAttributes),
-
-    grid: Utils.mergeLists([
-	{label:'Grid Properties'},
-	{p:'tag',ex:'card'},
-	{p:'inner-height',ex:'100'},
-	{p:'columns',ex:'3'},
-	{p:'showIcon',ex:'true'},
-	{p:'weights',ex:''},
-	{p:'showSnippet',ex:'false'},
-	{p:'showSnippetHover',ex:'true'},
-	{p:'showLink',ex:'false'},
-	{p:'showHeading',ex:'true'},
-	{p:'showLine',ex:'true'},],
-			   groupAttributes),
-    frames: Utils.mergeLists([
-	{label:'Frames Properties'},
-	{p:'width',ex:'400'},
-	{p:'height',ex:'400'},
-	{p:'noTemplate',ex:'true',tt:'Don\'t use the page template in the frame'}],
-			     groupAttributes),
-    accordian: Utils.mergeLists([
-	{label:'Accordian Properties'},
-	{p:'tag',ex:'html'},
-	{p:'collapse',ex:'false'},
-	{p:'border',ex:'0'},
-	{p:'showLink',ex:'true'},
-	{p:'includeIcon',ex:'false'},
-	{p:'textposition',ex:'left'},],
-				groupAttributes),
-
-    table: Utils.mergeLists([
-	{label:'Table Properties'},
-	{p:'showCategories',ex:'true'},
-	{p:'showDate',ex:'true'},
-	{p:'showCreateDate',ex:'true'},
-	{p:'showChangeDate',ex:'true'},
-	{p:'show',ex:'&lt;column name&gt;=true'},],
-			     groupAttributes),
-			    
-    recent: Utils.mergeLists([
-	{label:'Recent Properties'},
-	{p:'info',ex:'',tt:'List N days recent entries by day'},
-
-	{p:'days',ex:'num days'},],
-			     groupAttributes),
-
-
-    multi: [
-	{label:'Multi Properties'},
-	{info:'Create multiple wiki tags'},
-	{p:'_tag',ex:'tag to create'},
-	{p:'_template',ex:'',tt:'wiki text template. Escape { and } with backslash'},
-	{p:'_entries',ex:'entries',tt:'entries to apply to'},
-	{p:'_headers',ex:'comma separated headers'},
-	{p:'_headerTemplate',ex:'...${header}...'},
-	{p:'_columns',ex:'number of columns'},
-	{p:'first',ex:'.&lt;some attribute&gt;=\'attr for first tag\''},
-	{p:'last',ex:'.&lt;some attribute&gt;=\'attr for last tag\''},
-	{p:'notlast',ex:'.&lt;some attribute&gt;=\'attr for first N tags\''},
-	{p:'notfirst',ex:'.&lt;some attribute&gt;=\'attr for last N tags\''},
-    ],        
-
-    menu: [
-	{label:'Menu Properties'},
-	{p:'menus',ex:'file,edit,view,feeds,other'},
-	{p:'popup',ex:'true'},
-	{p:'breadcrumbs',ex:'true'},
-
-    ],
-}
-
-
-const ID_WIKI_PREVIEW = "preview";
-const ID_WIKI_PREVIEW_INNER = "preview_inner";
-const ID_WIKI_PREVIEW_OPEN= "preview_open";
-const ID_WIKI_PREVIEW_CLOSE = "preview_close";
-const ID_WIKI_MESSAGE = "message";
-const ID_WIKI_MENUBAR    = "menubar";
-const ID_WIKI_POPUP_EDITOR = "wiki-popup-editor";
-const ID_WIKI_POPUP_OK= "wiki-popup-ok";
-const ID_WIKI_POPUP_CANCEL= "wiki-popup-cancel";
-const ID_WIKI_POPUP_TIDY ="wiki-popup-tidy";
-const ID_WIKI_POPUP_COMPACT ="wiki-popup-compact";
-
-function WikiEditor(formId, id, hidden,argOptions) {
-    var options = {
-        autoScrollEditorIntoView: true,
-        copyWithEmptySelection: true,
-        //            theme:'ace/theme/solarized_light',
-    };
-    if (argOptions)
-        $.extend(options, argOptions);
-
-
-    $.extend(this,
-	     {id:id,
-              editor:ace.edit(id),
-              formId:formId,
-              hidden:hidden});
-    HU.addWikiEditor(this);
-    this.editor.setBehavioursEnabled(false);
-    this.editor.setDisplayIndentGuides(false);
-    this.editor.setKeyboardHandler("emacs");
-    this.editor.setShowPrintMargin(false);
-    this.editor.getSession().setUseWrapMode(true);
-    this.editor.setOptions(options);
-    this.editor.session.setMode("ace/mode/ramadda");
-    this.toolbar = $("#" + this.getId() +"_toolbar");
-
-    this.editor.container.addEventListener("contextmenu", (e) =>{
-	e.preventDefault();
-	this.handlePopupMenu(e);
-    });
-
-    this.editor.container.addEventListener("mouseup", (e) =>{
-	this.handleMouseUp(e);
-    });
-
-    this.editor.container.addEventListener("mouseleave", (e) => {
-	this.handleMouseLeave(e);
-    });
-
-    this.editor.container.addEventListener("mousemove", (e) => {
-	this.handleMouseMove(e);
-    });
-    this.getBlock().find("#" + this.id).append(HU.div([STYLE,HU.css("display","none"), CLASS,"wiki-editor-message",ID,this.domId(ID_WIKI_MESSAGE)]));
-}
-
-WikiEditor.prototype = {
-    getId:function() {
-	return this.id;
-    },
-    domId: function(suffix) {
-	return this.getId() +"_"+ suffix;
-    },
-    jq: function(suffix) {
-	return $("#"+this.domId(suffix));
-    },
-    showMessage: function(msg) {
-	this.jq(ID_WIKI_MESSAGE).css("display","block").html(msg);
-    },
-    clearMessage: function(msg) {
-	this.jq(ID_WIKI_MESSAGE).css("display","none");
-    },
-    getEditor:function() {
-	return this.editor;
-    },    
-    getValue: function() {
-	return this.getEditor().getValue();
-    },
 	
-    getBlock:function() {
-	return $("#" + this.getId()+"_block");
-    },
+    getId() {
+	return this.id;
+    }
 
-    getScroller:function() {
+    domId(suffix) {
+	return this.getId() +"_"+ suffix;
+    }
+
+    jq(suffix) {
+	return $("#"+this.domId(suffix));
+    }
+
+    showMessage(msg) {
+	this.jq(this.ID_WIKI_MESSAGE).css("display","block").html(msg);
+    } 
+
+    clearMessage(msg) {
+	this.jq(this.ID_WIKI_MESSAGE).css("display","none");
+    }
+
+    getEditor() {
+	return this.editor;
+    }    
+
+    getValue() {
+	return this.getEditor().getValue();
+    }
+	
+    getBlock() {
+	return $("#" + this.getId()+"_block");
+    }
+
+    getScroller() {
 	return this.getBlock().find(".ace_scroller");
-    },
-    getSession:function() {
+    }
+    getSession() {
 	return this.getEditor().session;
-    },
-    insertAtCursor:function(value) {
+    }
+    insertAtCursor(value) {
 	value = Utils.decodeText(value);    
 	if(this.popupShowing) {
-	    let popup = this.jq(ID_WIKI_POPUP_EDITOR)[0];
+	    let popup = this.jq(this.ID_WIKI_POPUP_EDITOR)[0];
 	    if(popup) {
 		insertAtCursor(null,popup , value);
 		popup.focus();
 		//We do this because the  SF menu stays popped up after clicking so we hide it
 		//then after a second we remove the style so subsequent menu clicks will work
-		this.jq(ID_WIKI_MENUBAR).find(".wiki-popup-menu-item").css("display","none");
+		this.jq(this.ID_WIKI_MENUBAR).find(".wiki-popup-menu-item").css("display","none");
 		setTimeout(()=> {
-		    this.jq(ID_WIKI_MENUBAR).find(".wiki-popup-menu-item").removeAttr("style");
+		    this.jq(this.ID_WIKI_MENUBAR).find(".wiki-popup-menu-item").removeAttr("style");
 		},1000);
 		return;
 	    }
@@ -551,9 +293,9 @@ WikiEditor.prototype = {
         var cursor = this.getEditor().getCursorPosition();
         this.getEditor().insert(value);
         this.getEditor().focus();
-    },
+    }
 
-    insertTags:function(tagOpen, tagClose, sampleText) {
+    insertTags(tagOpen, tagClose, sampleText) {
 	var selText, isSample = false;
 	tagOpen = Utils.decodeText(tagOpen);
 	tagClose = Utils.decodeText(tagClose);    
@@ -568,8 +310,9 @@ WikiEditor.prototype = {
         }
         this.getEditor().selection.moveTo(cursor.row, cursor.column);
         this.getEditor().focus();
-    },
-    getTagInfo: function(cursor) {
+    }
+
+    getTagInfo(cursor) {
 	cursor = cursor || this.getEditor().getCursorPosition();
 	let index = this.getSession().doc.positionToIndex(cursor);
 	let text =this.getEditor().getValue();
@@ -693,36 +436,38 @@ WikiEditor.prototype = {
 	    }
 	}
 	return null;
-    },
-    handleSubmit:function() {
+    }
+
+    handleSubmit() {
 	if($("#" + this.hidden).length==0) {
 	    console.log("WikiEdit.handleSubmit: no hidden value");
 	}
 	$("#" + this.hidden).val(this.getEditor().getValue());
-    },
-    doPreview: async  function(entry,  inPlace) {
+    }
+
+    async doPreview   (entry,  inPlace) {
 	let id = this.getId();
 	let area = $("#" + id);
 	if(!inPlace) {
 	    //the left is set to 100px
 	    let width =$(window).width()-200;
-	    $("#" + this.domId(ID_WIKI_PREVIEW)).remove();
-	    $(HU.div([ID, this.domId(ID_WIKI_PREVIEW), CLASS,"wiki-editor-preview"],"")).appendTo(this.getBlock());
-	    let preview = $("#" + this.domId(ID_WIKI_PREVIEW));
+	    $("#" + this.domId(this.ID_WIKI_PREVIEW)).remove();
+	    $(HU.div([ID, this.domId(this.ID_WIKI_PREVIEW), CLASS,"wiki-editor-preview"],"")).appendTo(this.getBlock());
+	    let preview = $("#" + this.domId(this.ID_WIKI_PREVIEW));
 	    preview.css("width",width+"px");
 	}
 	let bar = HtmlUtils.div(['class','ramadda-menubar',"style","text-align:center;width:100%;border:1px solid #ccc"],
-				HU.span([CLASS, "ramadda-clickable",ID,this.domId(ID_WIKI_PREVIEW_OPEN)], HtmlUtils.getIconImage("fa-sync",["title","Preview Again"])) +
+				HU.span([CLASS, "ramadda-clickable",ID,this.domId(this.ID_WIKI_PREVIEW_OPEN)], HtmlUtils.getIconImage("fa-sync",["title","Preview Again"])) +
 				SPACE2 +
-				HU.span([CLASS, "ramadda-clickable",ID,this.domId(ID_WIKI_PREVIEW_CLOSE)], HtmlUtils.getIconImage("fa-window-close",["title","Close Preview"])));
+				HU.span([CLASS, "ramadda-clickable",ID,this.domId(this.ID_WIKI_PREVIEW_CLOSE)], HtmlUtils.getIconImage("fa-window-close",["title","Close Preview"])));
 
 	let wikiCallback = (html,status,xhr) =>{
 	    if(inPlace) {
-		$("#" + this.domId(ID_WIKI_PREVIEW_INNER)).html(html);
+		$("#" + this.domId(this.ID_WIKI_PREVIEW_INNER)).html(html);
 	    } else {
-		html = HtmlUtils.div([ID,this.domId(ID_WIKI_PREVIEW_INNER), CLASS,"wiki-editor-preview-inner"], html);
+		html = HtmlUtils.div([ID,this.domId(this.ID_WIKI_PREVIEW_INNER), CLASS,"wiki-editor-preview-inner"], html);
 		html = bar + html;
-		let preview = $("#"+this.domId(ID_WIKI_PREVIEW));
+		let preview = $("#"+this.domId(this.ID_WIKI_PREVIEW));
 		try {
 		    preview.html(html).show();
 		} catch(err) {
@@ -731,11 +476,11 @@ WikiEditor.prototype = {
 		preview.draggable();
 		preview.resizable({handles: 'ne, nw'});	    
 
-		$("#" + this.domId(ID_WIKI_PREVIEW_OPEN)).click(() =>{
+		$("#" + this.domId(this.ID_WIKI_PREVIEW_OPEN)).click(() =>{
 		    this.doPreview(entry,true);
 		});
-		$("#" + this.domId(ID_WIKI_PREVIEW_CLOSE)).click(() =>{
-		    $("#"+ this.domId(ID_WIKI_PREVIEW)).hide();
+		$("#" + this.domId(this.ID_WIKI_PREVIEW_CLOSE)).click(() =>{
+		    $("#"+ this.domId(this.ID_WIKI_PREVIEW)).hide();
 		});		
 	    }
 	}
@@ -744,21 +489,22 @@ WikiEditor.prototype = {
 	};
 	let text = this.getValue();
 	let url = ramaddaBaseUrl + "/wikify";
+
 	$.post(url,{
 	    doImports:"false",
 	    entryid:entry,
 	    text:text},
 	       wikiCallback).fail(wikiError);
-    },
+    }
 
-    getAttributeBlocks:function(tagInfo, forPopup, finalCallback) {
+    getAttributeBlocks(tagInfo, forPopup, finalCallback) {
 	if(!tagInfo) {
 	    return null;
 	}
 	let blocks = [];
 	let block = null;
 	let addBlock = (title)=> {
-	    items = [];
+	    let items = [];
 	    blocks.push(block={title:title,items:items});
 	};
 
@@ -827,10 +573,10 @@ WikiEditor.prototype = {
 	let r = {blocks:blocks, title:title,display:display};
 	if(finalCallback) finalCallback(r);
 	return r;
-    },
+    }
 
 
-    handlePopupMenu:function(event, result) {
+    handlePopupMenu(event, result) {
 	let tagInfo = this.getTagInfo();
 	if(!tagInfo) {
 	    return;
@@ -880,9 +626,9 @@ WikiEditor.prototype = {
             at: "left+" +event.x +" top+" + (event.y),
             collision: "fit fit"
 	});
-    },
+    }
 
-    handleMouseUp:function(e,result) {
+    handleMouseUp(e,result) {
 	if(!e.metaKey)  return;
 	let position = this.getEditor().renderer.screenToTextCoordinates(e.x, e.y);
 	if(!position) return;
@@ -919,30 +665,30 @@ WikiEditor.prototype = {
 	    let sub = Utils.wrap(block.items,"<li>","");
 	    menu += HU.tag(TAG_LI, [],HU.div([CLASS,"wiki-popup-menu-header"],title) + HU.tag("ul", [CLASS,"wiki-popup-menu-item"], sub));
 	});
-	let id = this.domId(ID_WIKI_MENUBAR);
+	let id = this.domId(this.ID_WIKI_MENUBAR);
 	var menubar = HU.div([CLASS,"wiki-popup-menubar",  ATTR_ID, id],
 			     HU.tag("ul", [ATTR_ID, id+"_inner", ATTR_CLASS, "sf-menu"], menu));
 	let width =$(window).width()-100;
 	let html = HU.div([ID,this.domId("wiki-editor-popup"),CLASS,"wiki-editor-editor"],
 			  menubar +
-			  HU.textarea("",contents,["spellcheck","false",STYLE,HU.css('width',width+'px','height','300px'),ID,this.domId(ID_WIKI_POPUP_EDITOR),"xrows","10","xcols","120"]) + "<br>" +
+			  HU.textarea("",contents,["spellcheck","false",STYLE,HU.css('width',width+'px','height','300px'),ID,this.domId(this.ID_WIKI_POPUP_EDITOR),"xrows","10","xcols","120"]) + "<br>" +
 			  HU.div([STYLE,HU.css("text-align","center","padding","4px")],
-				 HU.span([TITLE,"Tidy the text",ID,this.domId(ID_WIKI_POPUP_TIDY)],HU.getIconImage("fas fa-broom")) + SPACE1 +
-				 HU.span([TITLE,"Compact the text",ID,this.domId(ID_WIKI_POPUP_COMPACT)], HU.getIconImage("fas fa-snowplow")) + SPACE1 +								 HU.span([ID,this.domId(ID_WIKI_POPUP_OK)],"Ok") + SPACE1 +
-				 HU.span([ID,this.domId(ID_WIKI_POPUP_CANCEL)],"Cancel")));
+				 HU.span([TITLE,"Tidy the text",ID,this.domId(this.ID_WIKI_POPUP_TIDY)],HU.getIconImage("fas fa-broom")) + SPACE1 +
+				 HU.span([TITLE,"Compact the text",ID,this.domId(this.ID_WIKI_POPUP_COMPACT)], HU.getIconImage("fas fa-snowplow")) + SPACE1 +								 HU.span([ID,this.domId(this.ID_WIKI_POPUP_OK)],"Ok") + SPACE1 +
+				 HU.span([ID,this.domId(this.ID_WIKI_POPUP_CANCEL)],"Cancel")));
 	let dialog;
 	dialog = HU.makeDialog({content:html,anchor:this.getScroller(),title:title,header:true,
 				sticky:true,draggable:true,modal:true,modalContentsCss:HU.css('left','50px')});
 	this.popupShowing = true;
-	this.jq(ID_WIKI_POPUP_EDITOR).focus();
+	this.jq(this.ID_WIKI_POPUP_EDITOR).focus();
 
-	this.jq(ID_WIKI_POPUP_CANCEL).button().click(()=>{
+	this.jq(this.ID_WIKI_POPUP_CANCEL).button().click(()=>{
 	    this.popupShowing = false;
 	    dialog.remove();
 	});
 
 	let func =tidy=>{
-	    let val = this.jq(ID_WIKI_POPUP_EDITOR).val().trim();
+	    let val = this.jq(this.ID_WIKI_POPUP_EDITOR).val().trim();
 	    let attrs = Utils.parseAttributesAsList(val);
 	    let nval = "";
 	    let cnt = 0;
@@ -962,19 +708,19 @@ WikiEditor.prototype = {
 		    }
 		}
 	    }
-	    this.jq(ID_WIKI_POPUP_EDITOR).val(nval);	    
+	    this.jq(this.ID_WIKI_POPUP_EDITOR).val(nval);	    
 	}
-	this.jq(ID_WIKI_POPUP_TIDY).button().click(()=>{
+	this.jq(this.ID_WIKI_POPUP_TIDY).button().click(()=>{
 	    func(true);
 	});
 
-	this.jq(ID_WIKI_POPUP_COMPACT).button().click(()=>{
+	this.jq(this.ID_WIKI_POPUP_COMPACT).button().click(()=>{
 	    func(false);
 	});
 	
 
-	this.jq(ID_WIKI_POPUP_OK).button().click(()=>{
-	    let val = this.jq(ID_WIKI_POPUP_EDITOR).val();
+	this.jq(this.ID_WIKI_POPUP_OK).button().click(()=>{
+	    let val = this.jq(this.ID_WIKI_POPUP_EDITOR).val();
 	    let tag =  tagInfo.tag;
 	    //A hack
 	    if(tag == "display") {
@@ -986,11 +732,11 @@ WikiEditor.prototype = {
 	    dialog.remove();
 	    this.getSession().replace(tagInfo.range, text);
 	});	    
-    },
-    handleMouseLeave:function(e) {
+    }
+    handleMouseLeave(e) {
 	this.setInContext(false);
-    },
-    setInContext:function(c) {
+    }
+    setInContext(c) {
 	this.inContext = c;
 	let scroller = this.getScroller();
 	if(this.tagMarker)
@@ -1006,8 +752,8 @@ WikiEditor.prototype = {
 		clearTimeout(this.lastTimeout);
 	}
 	this.lastTimeout = null;
-    },
-    handleMouseMove:function(e) {
+    }
+    handleMouseMove(e) {
 	if(this.lastTimeout)
 	    clearTimeout(this.lastTimeout);
 	let func = () =>{
@@ -1028,23 +774,24 @@ WikiEditor.prototype = {
 	else {
 	    this.lastTimeout=setTimeout(func,500);
 	}
-    },
-    getWikiAttributes: function(tagInfo, callback) {
-	if(wikiAttributes[tagInfo.tag]) {
-	    return wikiAttributes[tagInfo.tag];
+    }
+
+    getWikiAttributes(tagInfo, callback) {
+	if(this.wikiAttributes[tagInfo.tag]) {
+	    return this.wikiAttributes[tagInfo.tag];
 	}
-	if(!wikiAttributesFromServer) {
+	if(!this.wikiAttributesFromServer) {
 	    let url = ramaddaBaseUrl + "/wikitags";
 	    $.getJSON(url, (data) =>{
-		wikiAttributesFromServer= data;
-		callback(wikiAttributesFromServer[tagInfo.tag]);
+		this.wikiAttributesFromServer= data;
+		callback(this.wikiAttributesFromServer[tagInfo.tag]);
 	    });
 	    return false;
 	}
-	return wikiAttributesFromServer[tagInfo.tag];
-    },
+	return this.wikiAttributesFromServer[tagInfo.tag];
+    }
 
-    getDisplayAttributes: function(tagInfo) {
+    getDisplayAttributes(tagInfo) {
 	let title = null;
 	let attrs = [];
 	let display = null;
@@ -1062,7 +809,278 @@ WikiEditor.prototype = {
 	    console.log("Error getting attrs for:" + tagInfo.type +" error:" + e  + " stack:" +e.stack);
 	}
 	return {attrs:attrs,title:title,display:display};
-    },
-};
+    }
+
+    
+    wikiInitDisplaysButton() {
+	let id = this.getId();
+	let button = $("#displays_button"+ id);
+	button.click(() =>{
+	    if(!window.globalDisplayTypes) return;
+            var types = window.globalDisplayTypes;
+            var links = {};
+            var cats = [];
+            var displayTypes = [];
+	    DISPLAY_CATEGORIES.forEach(category=>{
+		links[category] = [];
+		cats.push(category);
+	    });
+	    types.forEach(type=>{
+		if (Utils.isDefined(type.forUser) && !type.forUser) {
+		    return;
+		}
+		var category = type.category ||  CATEGORY_MISC;
+		if (links[category] == null) {
+                    links[category] = [];
+                    cats.push(category);
+		}
+		let tooltip = type.tooltip||"";
+		tooltip = tooltip.replace(/"/g,"&quot;");
+		let click = "insertDisplayText('" + id + "','" + type.type+"')";
+		let link = HU.div([CLASS,"wiki-editor-popup-link"],HU.href("#",type.label,[CLASS,"display-link ",TITLE,tooltip,"onclick", click]));
+		links[category].push(link);
+            });
+	    let menu = "<table><tr valign=top>";
+            for (let i = 0; i < cats.length; i++) {
+		let cat = cats[i];
+		let menuItems = Utils.join(links[cat],"<div>\n");
+		menu += HU.td([],HU.div([STYLE,'margin-right:5px;'], HU.b(cat)) +"<div style='margin-right:5px;max-height:250px;overflow-y:auto;'>" + menuItems);
+            }
+	    menu = HU.div([ID,"wiki-display-popup",STYLE,"font-size:10pt;width:800px;"], menu);
+	    let init = ()=>{
+		let tt  =    $("#wiki-display-popup").tooltip({
+		    classes: {"ui-tooltip": "wiki-editor-tooltip"},
+		    content: function () {
+			return $(this).prop('title');
+		    },
+		    show: { effect: 'slide', delay: 500, duration: 400 },
+		    position: { my: "left top", at: "right top" }		
+		});
+	    };
+	    let popup = HU.makeDialog({content:menu,my:"left top",at:"left-200px bottom",title:"",anchor:button,draggable:true,header:true,initCall:init});
+	    if(wikiPopup) 
+		wikiPopup.hide();
+	    wikiPopup =  popup;
+	});
+	
+    }
+
+
+
+
+    initAttributes() {
+	this.groupAttributes = [
+	    {label:'Collection Properties'},
+	    {p:'sortby',ex:'name|date|changedate|createdate',tt:'sort type -name,date, change date, create date'},
+	    {p:'sortdir',ex:'up|down',tt:'direction of sort. use up for oldest to youngest'},
+	    {p:'entries',ex:'entryid1,entryid2,entryid3..',tt:'comma separated list of entry ids to use' },
+	    {p:'entries.filter',ex:'file|folder|image|type:some type|geo|name:name pattern|suffix:file suffixes',tt:'allows you to select what entries to use'},
+	    {p:'exclude',ex:'entryid1,entryid2,entryid3..',tt:'comma separated list of entry ids to not use'},
+	    {p:'first',ex:'entryid1,entryid2,entryid3..',tt:'comma separated list of entry ids to use first'},
+	    {p:'last',ex:'entryid1,entryid2,entryid3..',tt:'comma separated list of entry ids to use last'},
+	    {p:'max',ex:'number of entries to use',tt:'max number of entries to use'},
+	];
+
+	this.wikiAttributesFromServer = null;
+	this.wikiAttributes = {
+	    tree: 
+	    Utils.mergeLists([
+		{label:'Tree'},
+		{p:'details',ex:'true'},
+		{p:'showcategories',ex:'true'},
+		{p:'decorate',ex:'true'},	
+		{p:'form',ex:'true'},
+		{p:'message',ex:''},
+		{p:'treePrefix',ex:''},	
+	    ],this.groupAttributes),		   
+	    links: Utils.mergeLists([
+		{label:'Links Properties'},
+		{p:'info',ex:'List children entries'},
+		{p:'includeIcon',ex:'true'},
+		{p:'linkresource',ex:'true',tt:'Link to the resource'},
+		{p:'separator',ex:'',tt:'Separator between links'},
+		{p:'horizontal',ex:'true',tt:'Display horizontallly'},
+		{p:'output',ex:'',tt:'Link to output'},
+		{p:'tagopen',ex:'html before link'},
+		{p:'tagclose',ex:'html after link'},	
+		{p:'innerClass',ex:''},
+		{p:'class',ex:'',tt:'link css class'},
+		{p:'style',ex:'',tt:'link style'}],
+				    this.groupAttributes),		   
+	    list: Utils.mergeLists([
+		{label:'List Properties'},
+		{p:'info',ex:':List children entries'},
+		{p:'includeIcon',ex:'true'},
+		{p:'linkresource',ex:'true',tt:'Link to the resource'},
+		{p:'separator',ex:'',tt:'Separator between links'},
+		{p:'output',ex:'',tt:'Link to output'},
+		{p:'tagopen',ex:'',tt:'html before link'},
+		{p:'tagclose',ex:'',tt:'html after link'},	
+		{p:'innerClass',ex:''},
+		{p:'class',ex:'',tt:'link css class'},
+		{p:'style',ex:'',tt:'link style'}],
+				   this.groupAttributes),
+
+	    information: [
+		{label:'Information Properties'},
+		{p:'info',ex:'Show entry information'},
+		{p:'details',ex:'false'},
+		{p:'showTitle',ex:'true'},
+		{p:'showResource',ex:'true'},
+		{p:'showBase',ex:'true'},
+		{p:'showDetails',ex:'true'},],
+	    description: [
+		{label:'Description Properties'},
+		{p:'wikify',ex:'true'},
+		{p:'prefix',ex:''},
+		{p:'suffix',ex:''},
+		{p:'convert',ex:'_newline=true'},		
+	    ],
+	    resource: [
+		{label:'Resource Properties'},
+		{p:'info',ex:'',tt:'Link to the resource'},
+		{p:'title',ex:''},
+		{p:'includeIcon',ex:'true'},	
+		{p:'url',ex:'true',tt:'Just include the URL'},
+		{p:'message',ex:'',tt:'Message to show when no resource'},
+	    ],
+	    link: [
+		{label:'Link Properties'},
+		{p:'info',ex:'Link to the entry'},
+		{p:'linkresource',ex:'true',tt:'Link to the resource'},
+		{p:'button',ex:'true',tt:'Make a button'},
+		{p:'title',ex:'',tt:'Title to use'},
+		{p:'output',ex:'output type',tt:'Link to the given output'},
+	    ],
+	    daterange: [
+		{label:'Date Range Properties'},
+		{p:'format',ex:'yyyy-MM-dd HH:mm:ss Z'},
+		{p:'separator',ex:''},
+	    ],
+	    html: [
+		{label:'HTML Properties'},
+		{p:'info',ex:'true', tt:'Include the HTML of the entry'},
+		{p:'children',ex:'true',tt:'Include HTML of children entries'},
+	    ],
+
+
+	    map: [
+		{label:'Map Properties'},
+		{p:'icon',ex:'#/icons/dots/green.png' },
+ 		{p:'width',ex:'100%'},
+		{p:'height',ex:'400'},
+		{p:'listentries',ex:'true'},
+		{p:'details',ex:'false'},
+		{p:'showLines',ex:'true'},
+		{p:'showBounds',ex:'false'},
+		{p:'showMarkers',ex:'false'},
+		{p:'showLocationSearch',ex:'true'},
+		{p:'showCheckbox',ex:'true'},
+		{p:'showSearch',ex:'false'},
+		{p:'icon',ex:'/icons/dots/green.png'},
+		{p:'iconsonly',ex:'false'},],
+	    name:[
+		{label:'Name Properties'},
+		{p:'link',ex:'true',tt:'Link to the entry'}],
+
+	    property: [
+		{label:'Property Properties'},
+		{p:'name',ex:''},
+		{p:'value',ex:''}],
+
+
+	    group: Utils.mergeLists([
+		{label:'Group Properties'},
+		{p:'showMenu',ex:'true'},	      
+		{p:'showTitle',ex:'true'},
+		{p:'layoutType',ex:'table|flextable|tabs|columns|rows'},
+		{p:'layoutColumns',ex:'1'},
+		{p:'divid',ex:'',tt:'Specify a div id to write displays into'}]),
+	    tabs:Utils.mergeLists([
+		{label:'Tabs Properties'},
+		{p:'tag',ex:'html'},
+		{p:'tabsStyle',ex:'min|center|minarrow'},
+		{p:'showLink',ex:'false'}, 
+		{p:'includeIcon',ex:'true'},
+		{p:'textposition',ex:'top|left|right|bottom'}, 
+	    ], this.groupAttributes),
+
+	    grid: Utils.mergeLists([
+		{label:'Grid Properties'},
+		{p:'tag',ex:'card'},
+		{p:'inner-height',ex:'100'},
+		{p:'columns',ex:'3'},
+		{p:'showIcon',ex:'true'},
+		{p:'weights',ex:''},
+		{p:'showSnippet',ex:'false'},
+		{p:'showSnippetHover',ex:'true'},
+		{p:'showLink',ex:'false'},
+		{p:'showHeading',ex:'true'},
+		{p:'showLine',ex:'true'},],
+				   this.groupAttributes),
+	    frames: Utils.mergeLists([
+		{label:'Frames Properties'},
+		{p:'width',ex:'400'},
+		{p:'height',ex:'400'},
+		{p:'noTemplate',ex:'true',tt:'Don\'t use the page template in the frame'}],
+				     this.groupAttributes),
+	    accordian: Utils.mergeLists([
+		{label:'Accordian Properties'},
+		{p:'tag',ex:'html'},
+		{p:'collapse',ex:'false'},
+		{p:'border',ex:'0'},
+		{p:'showLink',ex:'true'},
+		{p:'includeIcon',ex:'false'},
+		{p:'textposition',ex:'left'},],
+					this.groupAttributes),
+
+	    table: Utils.mergeLists([
+		{label:'Table Properties'},
+		{p:'showCategories',ex:'true'},
+		{p:'showDate',ex:'true'},
+		{p:'showCreateDate',ex:'true'},
+		{p:'showChangeDate',ex:'true'},
+		{p:'show',ex:'&lt;column name&gt;=true'},],
+				    this.groupAttributes),
+	    
+	    recent: Utils.mergeLists([
+		{label:'Recent Properties'},
+		{p:'info',ex:'',tt:'List N days recent entries by day'},
+
+		{p:'days',ex:'num days'},],
+				     this.groupAttributes),
+
+
+	    multi: [
+		{label:'Multi Properties'},
+		{info:'Create multiple wiki tags'},
+		{p:'_tag',ex:'tag to create'},
+		{p:'_template',ex:'',tt:'wiki text template. Escape { and } with backslash'},
+		{p:'_entries',ex:'entries',tt:'entries to apply to'},
+		{p:'_headers',ex:'comma separated headers'},
+		{p:'_headerTemplate',ex:'...${header}...'},
+		{p:'_columns',ex:'number of columns'},
+		{p:'first',ex:'.&lt;some attribute&gt;=\'attr for first tag\''},
+		{p:'last',ex:'.&lt;some attribute&gt;=\'attr for last tag\''},
+		{p:'notlast',ex:'.&lt;some attribute&gt;=\'attr for first N tags\''},
+		{p:'notfirst',ex:'.&lt;some attribute&gt;=\'attr for last N tags\''},
+	    ],        
+
+	    menu: [
+		{label:'Menu Properties'},
+		{p:'menus',ex:'file,edit,view,feeds,other'},
+		{p:'popup',ex:'true'},
+		{p:'breadcrumbs',ex:'true'},
+
+	    ],
+	}
+    }
+    
+}
+
+
+
+
+
 
 
