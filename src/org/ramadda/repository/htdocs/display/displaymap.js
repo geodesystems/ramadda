@@ -87,7 +87,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
     const ID_HEATMAP_TOGGLE = "heatmaptoggle";    
     const ID_REGION_SELECTOR = "regionselector";
     const ID_HTMLLAYER = "htmllayer";
-    
+    const ID_TRACK_VIEW = "trackview";
 
     $.extend(this, {
         showBoxes: true,
@@ -198,6 +198,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'lonField1',tt:'Field id for segments'},
 	{p:'latField2',tt:'Field id for segments'},
 	{p:'lonField2',tt:'Field id for segments'},
+	{p:'trackUrlField',ex:'field id',tt:'The data can contain a URL that points to data'},
 
 	{label:"Map Labels"},
 	{p:"labelFontColor",ex:"#000"},
@@ -261,6 +262,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         features: [],
         myMarkers: {},
         mapEntryInfos: {},
+	tracks:{},
         initDisplay: function() {
             SUPER.initDisplay.call(this);
 	    if(!HU.documentReady) {
@@ -341,10 +343,64 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 
 	    }
-
-
         },
 
+	handlePopup: function(feature, popup) {
+	    if(!this.trackUrlField) return;
+	    let func = ()=>{
+		if(feature.record) {
+		    if(this.tracks[feature.record.getId()]) {
+			this.map.removePolygon(this.tracks[feature.record.getId()]);
+			this.tracks[feature.record.getId()] = null;
+			this.jq(ID_TRACK_VIEW).html("View track");
+			this.jq(ID_TRACK_VIEW+"_1").html("View track");			
+		    } else {
+			let url = feature.record.getValue(this.trackUrlField.getIndex());
+			$.getJSON(url, data=>{this.loadTrack(feature.record, data)}).fail(err=>{console.log("url failed:" + url +"\n" + err)});
+		    }
+		}
+	    };
+	    this.jq(ID_TRACK_VIEW).click(func);
+	    this.jq(ID_TRACK_VIEW+"_1").click(func);	    
+	},
+
+	macroHook: function(record, token,value) {
+	    if(!this.trackUrlField) {
+		return;
+	    }
+	    if(token.tag!=this.trackUrlField.getId()) {
+		return null;
+	    }
+	    this.currentPopupRecord = record;
+	    let haveTrack = this.tracks[record.getId()]!=null;
+	    let label =haveTrack?"Remove track":(token.attrs["label"] ||  "View track");
+	    return SPACE + HU.span([CLASS,"ramadda-clickable",ID,this.domId(ID_TRACK_VIEW)],label);
+	}, 
+	getRecordUrlHtml: function(attrs, field, record) {
+	    this.currentPopupRecord = record;
+	    if(!this.trackUrlField || this.trackUrlField.getId()!=field.getId()) {
+		return SUPER.getRecordUrlHtml.call(this, attrs, field, record);
+	    }
+	    let value = record.getValue(field.getIndex());
+	    let haveTrack = this.tracks[record.getId()]!=null;
+	    let label = haveTrack?"Remove track":(attrs[field.getId()+".label"] || "View track");
+	    return  HU.span([CLASS,"ramadda-clickable",ID,this.domId(ID_TRACK_VIEW+"_1")],label);
+	},
+	loadTrack: function(record, data) {
+            var newData = makePointData(data, null,this,"");
+	    let points = RecordUtil.getPoints(newData.getRecords(),{});
+	    let bounds = {};
+	    let attrs = {
+		strokeColor:this.getStrokeColor("blue")
+	    };
+            let polygon = this.map.addPolygon("", "", points, attrs);
+	    polygon.record = record;
+	    this.tracks[record.getId()]=polygon;
+	    if(polygon.geometry) {
+		this.map.zoomToExtent(polygon.geometry.getBounds());
+	    }
+	    this.map.closePopup();
+	},
         createMap: function() {
             let _this = this;
             var params = {
@@ -422,7 +478,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             this.map.addRegionSelectorControl(function(bounds) {
                 _this.getDisplayManager().handleEventMapBoundsChanged(this, bounds, true);
             });
+	    this.map.popupHandler = (feature,popup) =>{
+		this.handlePopup(feature, popup);
+	    };
 	    this.map.addFeatureSelectHandler(feature=>{
+
 		this.lastFeatureSelectTime = new Date();
 		if(feature.collisionInfo)  {
 		    if(this.getCollisionFixed()) return;
@@ -1947,8 +2007,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.shapesField = this.getFieldById(null,this.getProperty("shapesField"));
 	    this.shapesTypeField = this.getFieldById(null,this.getProperty("shapesTypeField"));
 
-
-
+	    this.trackUrlField  =  this.getFieldById(null,this.getProperty("trackUrlField"));
 
             let records = this.records =  this.filterData();
 	    if(this.shapesTypeField && this.shapesField) {
@@ -6552,7 +6611,7 @@ function RamaddaMapshrinkDisplay(displayManager, id, properties) {
 function RamaddaMapimagesDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaBasemapDisplay(displayManager, id, DISPLAY_MAPIMAGES, properties);
     let myProps = [
-	{label:'Map images Properties'},
+	{label:'Map Images Properties'},
 	{p:'imageField',ex:''},
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
