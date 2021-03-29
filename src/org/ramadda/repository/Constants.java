@@ -1710,9 +1710,6 @@ public interface Constants {
         "ramadda.map.defaultlayer";
 
     /** _more_ */
-    public static final String PROP_HTML_HEAD = "html.head";
-
-    /** _more_ */
     public static final String PROP_HOSTNAME = "ramadda.hostname";
 
     /** _more_ */
