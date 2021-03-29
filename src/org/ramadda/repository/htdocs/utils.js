@@ -879,17 +879,19 @@ var Utils =  {
 	    return String(date.format(fmt,"UTC:",true));
 	}
     },
-    formatDate: function(date, options, args) {
-	if (!args) args = {};
-        if (!options) {
-            options = {
+    dateOptions:{
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',
                 hour: 'numeric',
                 minute: 'numeric'
-            };
+    },
+    formatDate: function(date, options, args) {
+	return this.formatDateWithFormat(date,"yyyy-mm-dd HH:MM");
+	if (!args) args = {};
+        if (!options) {
+            options = this.dateOptions;
         }
         let suffix = args.suffix;
         if (!suffix) suffix = "";
