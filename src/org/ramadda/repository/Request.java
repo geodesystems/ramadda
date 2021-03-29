@@ -2614,18 +2614,27 @@ public class Request implements Constants, Cloneable {
         extraProperties.put(key, value);
     }
 
+
+
     /**
      * _more_
      *
      * @param head _more_
      */
-    public void appendHead(String head) {
-        String existing = (String) getExtraProperty(PROP_HTML_HEAD);
-        if (existing == null) {
-            existing = "";
-        }
-        existing += head + "\n";
-        putExtraProperty(PROP_HTML_HEAD, existing);
+    public synchronized void appendHead(String s) {
+	StringBuilder head =	(StringBuilder)getExtraProperty("head");
+	if(head==null) {
+	    head=new StringBuilder();
+	    putExtraProperty("head", head);
+	}
+	head.append(s);
+	head.append("\n");
+    }
+
+    public String getHead() {
+	StringBuilder head =	(StringBuilder)getExtraProperty("head");
+	if(head==null) return null;
+	else return head.toString();
     }
 
 

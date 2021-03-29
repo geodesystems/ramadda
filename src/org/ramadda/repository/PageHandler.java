@@ -166,6 +166,8 @@ public class PageHandler extends RepositoryManager {
     /** html template macro */
     public static final String MACRO_CONTENT = "content";
 
+    public static final String MACRO_IMPORTS= "imports";
+
 
     /** _more_          */
     private String webImports;
@@ -432,14 +434,17 @@ public class PageHandler extends RepositoryManager {
         Utils.append(contents, result.getStringContent(), jsContent);
         String content = contents.toString();
 
-	String head = "";
-        String head1    = (String) result.getProperty(PROP_HTML_HEAD);
-	if(head1!=null) head+=head1;
-	String head2 = (String) request.getExtraProperty(PROP_HTML_HEAD);
+	String head = webImports;
+	String head2 = request.getHead();
 	if(head2!=null) head+=head2;
         if (request.get("ramadda.showjsonld", true)&& showJsonLd && (currentEntry != null)) {
             head += getMetadataManager().getJsonLD(request, currentEntry);
         }
+
+	String imports = head;
+	head  = "";
+
+
         String logoImage = getLogoImage(result);
         String logoUrl   = (String) result.getProperty(PROP_LOGO_URL);
         if ( !Utils.stringDefined(logoUrl)) {
@@ -516,7 +521,7 @@ public class PageHandler extends RepositoryManager {
             MACRO_CONTENT, content, MACRO_ENTRY_HEADER, entryHeader,
             MACRO_HEADER, header, MACRO_ENTRY_FOOTER, entryFooter,
             MACRO_ENTRY_BREADCRUMBS, entryBreadcrumbs, MACRO_REGISTER,
-            registerMessage, MACRO_HEADFINAL, head, MACRO_ROOT,
+            registerMessage, MACRO_IMPORTS, imports, MACRO_HEADFINAL, head, MACRO_ROOT,
             repository.getUrlBase(), "", ""
         };
 
@@ -1142,12 +1147,10 @@ public class PageHandler extends RepositoryManager {
                         resource = resource.replace("${" + changes[i] + "}",
                                 "${" + changes[i + 1] + "}");
                     }
-
-                    resource = resource.replace("${imports}", webImports);
+		    //                    resource = resource.replace("${imports}", webImports);
                     HtmlTemplate template = new HtmlTemplate(getRepository(),
 							     path, resource);
 		    //		    System.out.println("p: " + path + " " + template.getId()+ " " + template.getName());
-
                     //Check if we got some other ...template.html file from a plugin
                     if (template.getId() == null) {
                         System.err.println("template: no id in " + path);
