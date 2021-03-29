@@ -1363,6 +1363,7 @@ public class TypeHandler extends RepositoryManager {
     public Result getHtmlDisplay(Request request, Entry group,
                                  List<Entry> subGroups, List<Entry> entries)
             throws Exception {
+	
         if (parent != null) {
             return parent.getHtmlDisplay(request, group, subGroups, entries);
         }
@@ -4535,6 +4536,7 @@ public class TypeHandler extends RepositoryManager {
                                 desc, rows, HtmlUtils.id(textId)));
                         HtmlUtils.script(tmpSB,
                                          "HtmlUtils.initWikiEditor("
+                                         + HtmlUtils.squote(entry==null?"":entry.getId()) + ","
                                          + HtmlUtils.squote(wikiId) + ","
                                          + HtmlUtils.squote(textId) + ","
                                          + HtmlUtils.squote(cbxId) + ");");
@@ -5007,8 +5009,9 @@ public class TypeHandler extends RepositoryManager {
             }
         }
 
-        sb.append(HtmlUtils.script("new WikiEditor("
-                                   + ((formInfo == null)
+        sb.append(HtmlUtils.script("new WikiEditor(" +
+				   HU.squote(entry==null?"":entry.getId()) +"," +
+                                   ((formInfo == null)
                                       ? "null"
                                       : "'"+formInfo.getId()+"'") + ",'" + editorId
                                       + "','" + hiddenId + "');"));
