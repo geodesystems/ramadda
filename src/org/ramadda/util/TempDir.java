@@ -157,7 +157,6 @@ public class TempDir {
     public List<File> findFilesToScour() {
         List<File> results = new ArrayList<File>();
 
-        long       t1      = System.currentTimeMillis();
         List<File> allFiles;
         if (recurse) {
             allFiles = IOUtil.getFiles(dir, true);
@@ -172,33 +171,22 @@ public class TempDir {
             if ( !filesOk && f.isFile()) {
                 continue;
             }
-            if ( !dirsOk && f.isDirectory()) {
+            if (f.isDirectory()) {
                 continue;
             }
             prunedFiles.add(f);
         }
 
         allFiles = prunedFiles;
-
-        //      System.err.println("pruned files:" + prunedFiles);
-
-        long t2 = System.currentTimeMillis();
-
-        long t3 = System.currentTimeMillis();
         //Sort files oldest first
         IOUtil.FileWrapper[] files =
             IOUtil.sortFilesOnAge(IOUtil.FileWrapper.toArray(allFiles,
                 false));
-        long t4        = System.currentTimeMillis();
-
         long now       = new Date().getTime();
 
         long totalSize = 0;
         int  numFiles  = 0;
         for (int i = 0; i < files.length; i++) {
-            //            if(files[i].isDirectory()) {
-            //                continue;
-            //            } 
             numFiles++;
         }
 
@@ -207,18 +195,8 @@ public class TempDir {
                 totalSize += files[i].length();
             }
         }
-
-
-        if (files.length > 0) {
-            //            System.err.println ("    found " + files.length +" in " + (t2-t1) +" size:" + totalSize);
-        }
-
         //        System.err.println("max age:" + maxAge);
         for (int i = 0; i < files.length; i++) {
-            //            System.err.println("\tfile:" + files[i]);
-            //            if(files[i].isDirectory()) {
-            //                continue;
-            //            } 
             boolean shouldScour = false;
             if ((maxSize > 0) && (totalSize > maxSize)) {
                 shouldScour = true;
