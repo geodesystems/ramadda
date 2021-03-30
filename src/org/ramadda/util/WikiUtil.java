@@ -808,14 +808,39 @@ public class WikiUtil {
 		//                buff.append("</nowiki>");
                 continue;
             }
-            if (chunk.type == chunk.TYPE_PRE) {
-		Hashtable props = HU.parseHtmlProperties(chunk.rest!=null?chunk.rest:"");
-		String clazz = Utils.getProperty(props, "class",null);
+            if (chunk.type == chunk.TYPE_JSTAG) {
 		//                buff.append("<nowiki>");
-		if(clazz!=null)
-		    buff.append("\n<pre class='" + clazz+"'>");
-		else		
-		    buff.append("\n<pre>");
+                buff.append("\n<script");
+		if(Utils.stringDefined(chunk.attrs)) {
+		    buff.append(" ");
+		    buff.append(chunk.attrs);
+		}
+		buff.append(">");
+                buff.append(chunk.buff);
+                buff.append("\n</script>\n");
+		//                buff.append("</nowiki>");
+                continue;
+            }
+            if (chunk.type == chunk.TYPE_PRETAG) {
+		//                buff.append("<nowiki>");
+                buff.append("\n<pre");
+		if(Utils.stringDefined(chunk.attrs)) {
+		    buff.append(" ");
+		    buff.append(chunk.attrs);
+		}
+		buff.append(">");
+                buff.append(chunk.buff);
+                buff.append("</pre>\n");
+		//                buff.append("</nowiki>");
+                continue;
+            }
+            if (chunk.type == chunk.TYPE_PRE) {
+		buff.append("\n<pre");
+		if(Utils.stringDefined(chunk.rest)) {
+		    buff.append(" ");
+		    buff.append(chunk.rest);
+		}
+		buff.append(">");
                 String s = chunk.buff.toString().replaceAll("\\{\\{",
                                "{<noop>{");
                 buff.append(s);
@@ -3042,7 +3067,7 @@ public class WikiUtil {
             s = s.replace("${" + key + "}", value.toString());
         }
 
-
+	//	System.err.println("WIKI:" + s);
         return s;
 
     }
@@ -3921,6 +3946,8 @@ public class WikiUtil {
         /** _more_ */
         static int TYPE_PRE = TYPE++;
 
+        static int TYPE_PRETAG = TYPE++;	
+
 
 
         /** _more_ */
@@ -3928,6 +3955,8 @@ public class WikiUtil {
 
         /** _more_ */
         StringBuilder buff = new StringBuilder();
+
+	String attrs;
 
         /** _more_ */
         String rest;
@@ -4006,6 +4035,9 @@ public class WikiUtil {
             if (type == TYPE_PRE) {
                 return "PRE";
             }
+            if (type == TYPE_PRETAG) {
+                return "PRE";
+            }	    
             if (type == TYPE_NOWIKI) {
                 return "NOWIKI";
             }
@@ -4045,13 +4077,13 @@ public class WikiUtil {
             String[] lines           = s.split("\n");
             Chunk    chunk           = null;
             String[] prefixes        = new String[] {
-                "<nowiki>", "+css", "+javascript", "<script", "+pre", "<pre>", "```"
+                "<nowiki>", "+css", "+javascript", "<script", "+pre", "<pre", "```"
             };
             String[] suffixes        = new String[] {
                 "</nowiki>", "-css", "-javascript", "</script>", "-pre", "</pre>", "```"
             };
             int[]    types           = new int[] {
-                TYPE_NOWIKI, TYPE_CSS, TYPE_JS, TYPE_JSTAG,TYPE_PRE, TYPE_PRE, TYPE_CODE
+                TYPE_NOWIKI, TYPE_CSS, TYPE_JS, TYPE_JSTAG,TYPE_PRE, TYPE_PRETAG, TYPE_CODE
             };
             String   lookingForClose = null;
             for (String line : lines) {
@@ -4063,7 +4095,7 @@ public class WikiUtil {
                                        + " LINE:" + line);
                 }
                 boolean gotIt = false;
-                if (currentType == TYPE_PRE) {
+                if (currentType == TYPE_PRETAG) {
                     int index = line.indexOf("</pre>");
                     if (index > 0) {
                         String preStuff = line.substring(0, index);
@@ -4078,18 +4110,19 @@ public class WikiUtil {
                         String jsStuff = line.substring(0, index);
                         chunk.append(jsStuff, false);
                         chunk = null;
-                        line  = line.substring(index + 6).trim();
+                        line  = line.substring(index + 9).trim();
                     }
                 }
 
                 if ((currentType == TYPE_WIKI) || (currentType == TYPE_NA)) {
                     for (int i = 0; i < prefixes.length; i++) {
                         String prefix = prefixes[i];
-                        if (Utils.startsWithIgnoreCase(line, prefix)) {
+			String tline = line.trim();
+                        if (Utils.startsWithIgnoreCase(tline, prefix)) {
                             gotIt = true;
                             int type = types[i];
                             String rest =
-                                line.substring(prefix.length()).trim();
+                                tline.substring(prefix.length()).trim();
                             lookingForClose = suffixes[i];
                             if (debug) {
                                 System.err.println("opened:"
@@ -4097,43 +4130,47 @@ public class WikiUtil {
                                         + " looking for close:"
                                         + lookingForClose);
                             }
-                            if (type == TYPE_CODE) {
+                            if (type == TYPE_CODE||type==TYPE_PRE) {
                                 chunks.add(chunk = new Chunk(type, rest));
                             } else {
                                 chunks.add(chunk = new Chunk(type));
-                                //Can't handle <pre>...</pre> on one line
-                                if (rest.length() > 0) {
-                                    if (type == TYPE_PRE) {
-                                        int index = rest.indexOf("</pre>");
-                                        if (index >= 0) {
-                                            lookingForClose = null;
-                                            //                                      <pre>.....</pre>
-                                            String preStuff =
-                                                rest.substring(0, index);
-                                            chunk.append(preStuff, false);
-                                            line = rest.substring(index
-                                                    + 6).trim();
-                                            chunk = null;
-                                            if (debug) {
-                                                System.err.println(
-                                                    "<pre> tag had a close pre. rest of line:"
-                                                    + line);
-                                            }
-                                            if (line.length() > 0) {
-                                                if (debug) {
-                                                    System.err.println(
-                                                        "setting gotit to false so we continue processing line");
-                                                }
-                                                gotIt = false;
-                                            }
-
-                                            break;
-					} else {
-					    chunk.rest = rest;
-					}
-				    } else {
-					chunk.append(rest);
+				if (type == TYPE_PRETAG || type==TYPE_JSTAG) {
+				    String theTag = (type == TYPE_PRETAG?"pre":"script");
+				    int gtIndex = rest.indexOf(">");
+				    if(gtIndex>=0) {
+					String attrs = rest.substring(0,gtIndex);
+					chunk.attrs = attrs;
+					rest = rest.substring(gtIndex+1);
 				    }
+				    int index = rest.indexOf("</" + theTag+">");
+				    if (index<0) {
+					//Strip off the '>'
+					chunk.append(rest);
+				    } else {
+					lookingForClose = null;
+					//                                      <theTag>.....</theTag>
+					String preStuff =
+					    rest.substring(0, index);
+					chunk.append(preStuff, false);
+					line = rest.substring(index + 2 +theTag.length()+1).trim();
+					chunk = null;
+					if (debug) {
+					    System.err.println(
+							       theTag +" tag had a close pre. rest of line:"
+							       + line);
+					}
+					if (line.length() > 0) {
+					    if (debug) {
+						System.err.println(
+								   "setting gotit to false so we continue processing line");
+					    }
+					    gotIt = false;
+					}
+
+					break;
+				    }
+				} else {
+				    chunk.append(rest);
                                 }
                             }
 
@@ -4176,6 +4213,10 @@ public class WikiUtil {
                 }
                 chunk.append(line);
             }
+	    for(Chunk c: chunks) {
+		//		System.err.println("chunk: "+ c.getTypeName(c.type)+" attrs:" + c.attrs +"\nrest:" + c.rest+":\nchunk:" + c.buff +":");
+	    }
+
 
             if (debug) {
                 System.err.println("done:" + chunks);
