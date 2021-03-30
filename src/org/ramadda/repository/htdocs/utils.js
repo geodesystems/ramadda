@@ -1603,8 +1603,6 @@ var Utils =  {
 	headings.mouseenter(function(){
 	    let id = $(this).attr("id");
 	    if(!id) return;
-	    console.log("h:" + 	    $("#" + id +"-hover").length);
-
 	    $("#" + id +"-hover").html(HtmlUtils.getIconImage("fa-link",null,[STYLE,"font-size:10pt;"]));
 	    $("#" + id +"-hover").show();
 	});
