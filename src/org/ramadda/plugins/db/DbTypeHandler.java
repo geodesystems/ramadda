@@ -6107,14 +6107,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                    + " limit:" + limitString);
             }
 	    long t1 = System.currentTimeMillis();
-	    SqlUtil.debug = true;
+	    //	    SqlUtil.debug = true;
             stmt = getDatabaseManager().select(SqlUtil.comma(colNames),
                     Misc.newList(tableHandler.getTableName()), clause, extra,
                     max);
-	    SqlUtil.debug = false;
+	    //	    SqlUtil.debug = false;
 	    long t2 = System.currentTimeMillis();
-	    Utils.printTimes(
-			     "DbTypeHandler select: "+ clause,t1,t2);
+	    //	    Utils.printTimes("DbTypeHandler select: "+ clause,t1,t2);
 
         } catch (Exception exc) {
             System.err.println("Error in select:");
