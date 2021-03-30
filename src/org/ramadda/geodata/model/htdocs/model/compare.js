@@ -125,8 +125,8 @@ function CollectionForm(formId, plottype, args) {
 
                             //Now, one more callback function (just a function, not an object) that will
                             //get called when the children entries are retrieved
-                            var count = 10;
-                            var finalCallback  = function(entries) {
+                            let count = 10;
+                            let finalCallback  = function(entries) {
                                 if (entries.length == 0) {
                                     console.log("CollectionForm: no entries found");
                                     if (count--<0) { return; }
