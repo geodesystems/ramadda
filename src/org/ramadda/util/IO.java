@@ -299,8 +299,6 @@ public class IO {
                 connection.addRequestProperty("Accept", "*/*");
                 connection.addRequestProperty("Host", url.getHost());
                 connection.addRequestProperty("User-Agent", "ramadda");
-
-
                 if (connection instanceof HttpURLConnection) {
                     HttpURLConnection huc = (HttpURLConnection) connection;
                     int               response = huc.getResponseCode();
@@ -310,7 +308,7 @@ public class IO {
                             .HTTP_MOVED_PERM) || (response == HttpURLConnection
                             .HTTP_SEE_OTHER)) {
                         String newUrl = connection.getHeaderField("Location");
-                        //                      System.err.println("redirect:" + newUrl);
+			System.err.println("redirect:" + newUrl);
                         //Don't follow too many redirects
                         if (tries > 10) {
                             throw new IllegalArgumentException(
@@ -323,7 +321,7 @@ public class IO {
                 }
                 //              System.err.println ("OK: " + url);
                 is = connection.getInputStream();
-            } catch (Exception exc) {
+            } catch (IOException exc) {
                 System.err.println("Error URL: " + filename);
                 String msg = "An error has occurred";
                 if ((connection != null)
@@ -1106,6 +1104,14 @@ public class IO {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+	if(true) {
+	    String url = "https://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Global_onedeg/Best?var=Temperature_surface&var=Visibility_surface&var=Water_equivalent_of_accumulated_snow_depth_surface&var=Wind_speed_gust_surface&latitude=%24%7Blatitude%7D&longitude=%24%7Blongitude%7D&time_start=2021-03-30&time_end=2021-04-09&vertCoord=&accept=csv";
+	    doMakeInputStream(url,false);
+	    return;
+	}
+
+
+
         for (String f : args) {
             System.err.println("F:" + f + " childless:"
                                + getFilelessDirectories(new File(f)));
