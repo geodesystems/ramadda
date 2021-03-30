@@ -744,6 +744,8 @@ public class EntryManager extends RepositoryManager {
         if (entry == null) {
             fatalError(request, "No entry specified");
         }
+	System.err.println("entry:" + entry);
+	System.err.println("id:" + entry.getId());
 
 
 	getSessionManager().setLastEntry(request, entry);
