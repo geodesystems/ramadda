@@ -404,7 +404,11 @@
         <unjar src="${lib_dir}/abom.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/commons-lang3-3.1.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/commons-net-3.3.jar" dest="${tmpjar_dir}"/>
+<!--
         <unjar src="${lib_dir}/commons-io-1.4.jar" dest="${tmpjar_dir}"/>
+-->
+        <unjar src="${lib_dir}/commons-io-2.8.0.jar" dest="${tmpjar_dir}"/>
+
         <unjar src="${lib_dir}/commons-dbcp2-2.0.1.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/commons-pool2-2.2.jar" dest="${tmpjar_dir}"/>
 <!--
