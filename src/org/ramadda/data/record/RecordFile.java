@@ -677,10 +677,9 @@ public abstract class RecordFile {
 	    //            System.err.println("path:" + path);
             //            return Utils.doMakeInputStream(path, buffered);
             return IO.doMakeInputStream(path, buffered);
-        } catch (IOException ioe) {
-            System.err.println("Error fetching data:" + path);
-
-            throw ioe;
+        } catch (Exception exc) {
+            System.err.println("Error reading data:" + path);
+            throw exc;
         }
     }
 
