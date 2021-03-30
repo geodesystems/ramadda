@@ -15769,13 +15769,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		chartOptions.hAxis.format = this.getProperty("hAxisDateFormat");
 	    }
 
+
 	    //	    this.getPropertyShow = true;
 	    var lineColor = this.getProperty("lineColor");
 	    var backgroundColor = this.getProperty("chartBackground");
             this.setPropertyOn(chartOptions.backgroundColor, "chart.fill", "fill", backgroundColor);
             this.setPropertyOn(chartOptions.backgroundColor, "chart.stroke", "stroke", this.getProperty("chartArea.fill", ""));
             this.setPropertyOn(chartOptions.backgroundColor, "chart.strokeWidth", "strokeWidth", null);
-
             this.setPropertyOn(chartOptions.chartArea.backgroundColor, "chartArea.fill", "fill", backgroundColor);
             this.setPropertyOn(chartOptions.chartArea.backgroundColor, "chartArea.stroke", "stroke", null);
             this.setPropertyOn(chartOptions.chartArea.backgroundColor, "chartArea.strokeWidth", "strokeWidth", null);
@@ -16277,6 +16277,12 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
                 height: this.getProperty("chartHeight", "70%"),
                 width: this.getProperty("chartWidth", this.chartDimensions.width),
             });
+	    ["left","top","right","bottom"].forEach(a=>{
+		let v =chartOptions.chartArea[a];
+		if(v) v = String(v).replace("px","");
+		chartOptions.chartArea[a] = v;
+	    });						    
+
 	},
 
         makeChartOptions: function(dataList, props, selectedFields) {
@@ -16290,6 +16296,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 
             if (!chartOptions.legend)
                 chartOptions.legend = {};
+
 
 	    this.setPropertyOn(chartOptions.legend, "legend.position", "position", this.getProperty("legendPosition", 'bottom'));
 	    this.setChartArea(chartOptions);
