@@ -293,6 +293,8 @@ public class IO {
             }
             URL           url        = new URL(filename);
             URLConnection connection = null;
+	    boolean handlingRedirect = false;
+
             try {
                 //              System.err.println ("URL: " + url);
                 connection = url.openConnection();
@@ -308,20 +310,22 @@ public class IO {
                             .HTTP_MOVED_PERM) || (response == HttpURLConnection
                             .HTTP_SEE_OTHER)) {
                         String newUrl = connection.getHeaderField("Location");
-			System.err.println("redirect:" + newUrl);
+			System.err.println("redirect from:" + url);
+			System.err.println("redirect to:" + newUrl);
                         //Don't follow too many redirects
                         if (tries > 10) {
                             throw new IllegalArgumentException(
                                 "Too many nested URL fetches:" + filename);
                         }
-
                         //call this method recursively with the new URL
+			handlingRedirect= true;
                         return doMakeInputStream(newUrl, buffered, tries + 1);
                     }
                 }
                 //              System.err.println ("OK: " + url);
                 is = connection.getInputStream();
             } catch (IOException exc) {
+		if(handlingRedirect) throw exc;
                 System.err.println("Error URL: " + filename);
                 String msg = "An error has occurred";
                 if ((connection != null)
