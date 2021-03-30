@@ -153,7 +153,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
                      + HtmlUtils.arg("date_from", startDate) + "&"
                      + HtmlUtils.arg("location", location);
 
-	System.err.println(url);
+	//	System.err.println(url);
         return url;
     }
 
