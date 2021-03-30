@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -67,6 +67,8 @@ public class TempDir {
     /** _more_ */
     private boolean touched = false;
 
+
+
     /**
      * _more_
      *
@@ -114,6 +116,7 @@ public class TempDir {
     }
 
 
+
     /**
      * _more_
      *
@@ -154,7 +157,6 @@ public class TempDir {
     public List<File> findFilesToScour() {
         List<File> results = new ArrayList<File>();
 
-        long       t1      = System.currentTimeMillis();
         List<File> allFiles;
         if (recurse) {
             allFiles = IOUtil.getFiles(dir, true);
@@ -164,38 +166,27 @@ public class TempDir {
                 allFiles.add(f);
             }
         }
-
-
         List<File> prunedFiles = new ArrayList<File>();
         for (File f : allFiles) {
             if ( !filesOk && f.isFile()) {
                 continue;
             }
-            if ( !dirsOk && f.isDirectory()) {
+            if (f.isDirectory()) {
                 continue;
             }
             prunedFiles.add(f);
         }
 
         allFiles = prunedFiles;
-
-        long t2 = System.currentTimeMillis();
-
-        long t3 = System.currentTimeMillis();
         //Sort files oldest first
         IOUtil.FileWrapper[] files =
             IOUtil.sortFilesOnAge(IOUtil.FileWrapper.toArray(allFiles,
                 false));
-        long t4        = System.currentTimeMillis();
-
         long now       = new Date().getTime();
 
         long totalSize = 0;
         int  numFiles  = 0;
         for (int i = 0; i < files.length; i++) {
-            //            if(files[i].isDirectory()) {
-            //                continue;
-            //            } 
             numFiles++;
         }
 
@@ -204,18 +195,8 @@ public class TempDir {
                 totalSize += files[i].length();
             }
         }
-
-
-        if (files.length > 0) {
-            //            System.err.println ("    found " + files.length +" in " + (t2-t1) +" size:" + totalSize);
-        }
-
         //        System.err.println("max age:" + maxAge);
         for (int i = 0; i < files.length; i++) {
-            //            System.err.println("\tfile:" + files[i]);
-            //            if(files[i].isDirectory()) {
-            //                continue;
-            //            } 
             boolean shouldScour = false;
             if ((maxSize > 0) && (totalSize > maxSize)) {
                 shouldScour = true;
@@ -249,6 +230,36 @@ public class TempDir {
 
         return results;
     }
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public List<File> findEmptyDirsToScour() {
+        long       now                 = new Date().getTime();
+        List<File> results             = new ArrayList<File>();
+        List<File> filelessDirectories = IO.getFilelessDirectories(dir);
+        //      System.err.println("FILELESS: "+ filelessDirectories);
+        for (File sub : filelessDirectories) {
+            boolean shouldScour = false;
+            if (maxAge > 0) {
+                long lastModified = sub.lastModified();
+                long age          = now - lastModified;
+                if (age > maxAge) {
+                    shouldScour = true;
+                }
+            }
+            if (shouldScour) {
+                results.add(sub);
+            }
+        }
+
+        return results;
+    }
+
+
 
 
     /**
@@ -296,6 +307,16 @@ public class TempDir {
     public long getMaxSize() {
         return this.maxSize;
     }
+
+    /**
+     * _more_
+     *
+     * @param value _more_
+     */
+    public void setMaxAgeMinutes(long value) {
+        setMaxAge(1000 * 60 * value);
+    }
+
 
     /**
      *  Set the MaxAge property.

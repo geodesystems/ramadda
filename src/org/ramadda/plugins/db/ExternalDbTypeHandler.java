@@ -517,12 +517,12 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
                                                 "true").equals("true"));
             }
             extraSql      += SqlUtil.limit(max, offset);
-            SqlUtil.debug = true;
+	    //            SqlUtil.debug = true;
             Statement stmt = SqlUtil.select(connection, what,
                                             Misc.newList(table),
                                             Clause.and(andClauses), extraSql,
                                             -1, 0);
-            SqlUtil.debug = false;
+	    //            SqlUtil.debug = false;
 
             return new SqlUtil.Iterator(stmt);
 

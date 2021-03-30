@@ -302,8 +302,8 @@ public class StorageManager extends RepositoryManager implements PointFile
 
         //Add in the process tmp dir
         TempDir processTempDir = new TempDir(getProcessDir(), true);
-        //TODO: set a property but for now hard code the scour to be 3 days
-        processTempDir.setMaxAge(1000 * 60 * 60 * 24 * 3);
+	int processDirAgeMinutes = getRepository().getProperty("ramadda.storage.processdir.age", 60*24);
+        processTempDir.setMaxAgeMinutes(processDirAgeMinutes);
         tmpDirs.add(processTempDir);
 
         getUploadDir();
@@ -311,18 +311,11 @@ public class StorageManager extends RepositoryManager implements PointFile
         getScratchDir();
         getThumbDir();
 
-
         Misc.run(new Runnable() {
             public void run() {
-                scourTmpDirs();
+		scourTmpDirs();
             }
         });
-
-
-        //      putCacheObject("group1","test1", "hello there");
-        //      Object o =getCacheObject("group1", "test1");
-
-
     }
 
 
@@ -1135,7 +1128,7 @@ public class StorageManager extends RepositoryManager implements PointFile
         while (true) {
             List<TempDir> tmpTmpDirs = new ArrayList<TempDir>(tmpDirs);
             for (TempDir tmpDir : tmpTmpDirs) {
-                scourTmpDir(tmpDir);
+		scourTmpDir(tmpDir);
             }
             Misc.sleepSeconds(60 * 60);
         }
@@ -1172,20 +1165,19 @@ public class StorageManager extends RepositoryManager implements PointFile
             List<File> notDeleted = IOUtil.deleteFiles(filesToScour);
             if (notDeleted.size() > 0) {
                 logInfo("Unable to delete tmp files:" + notDeleted);
-            }
-            if (tmpDir.getFilesOk()) {
-                //Now check for empty top level dirs and get rid of the
-                for (File remainingFile : tmpDir.listFiles()) {
-                    if ( !remainingFile.isDirectory()) {
-                        continue;
-                    }
-                    if (remainingFile.listFiles().length == 0) {
-                        remainingFile.delete();
-                    }
-                }
-            }
+	    }
 
-        }
+	    if (tmpDir.getDirsOk()) {
+		List<File> dirsToScour = tmpDir.findEmptyDirsToScour();	
+                for (File dir:dirsToScour) {
+		    logInfo("StorageManager: scouring directory:" + dir.getName() 
+			    + " from:" + tmpDir.getDir().getName());
+		    dir.delete();
+                }
+	    }
+	}
+
+
         tmpDir.setTouched(false);
     }
 

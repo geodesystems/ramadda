@@ -76,7 +76,7 @@ for {set i 0} {$i < $max} {incr i} {
 #                puts "OK: Was expecting a failure for: $url"
             } else  {
                 puts "*** Error (failed): $err   URL: $url"
-                exit;
+#                exit;
                 incr errors
                 if {$errors>10} {
                     puts "Too many errors"
