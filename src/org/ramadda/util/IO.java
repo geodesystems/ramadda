@@ -1047,7 +1047,73 @@ public class IO {
     }
 
 
-    /** _more_          */
+    /**
+     * _more_
+     *
+     * @param file _more_
+     *
+     * @return _more_
+     */
+    public static List<File> getFilelessDirectories(File file) {
+        List<File> files    = new ArrayList<File>();
+        File[]     children = file.listFiles();
+        for (File child : children) {
+            if (child.isDirectory()) {
+                //              System.err.println("checking:" + child.getName());
+                getFilelessDirectories(child, files);
+            }
+        }
+
+        return files;
+    }
+
+    /**
+     * _more_
+     *
+     * @param file _more_
+     * @param dirs _more_
+     *
+     * @return _more_
+     */
+    public static boolean getFilelessDirectories(File file, List<File> dirs) {
+        File[]  children            = file.listFiles();
+        boolean haveDescendentFiles = false;
+        for (File child : children) {
+            //      System.err.println("\tchild:" + child.getName());
+            if ( !child.isDirectory()) {
+                haveDescendentFiles = true;
+            } else {
+                if ( !getFilelessDirectories(child, dirs)) {
+                    haveDescendentFiles = true;
+                }
+            }
+        }
+        if ( !haveDescendentFiles) {
+            //      System.err.println("\tno descendent files:" + file.getName());
+            dirs.add(file);
+        }
+
+        return !haveDescendentFiles;
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void main(String[] args) throws Exception {
+        for (String f : args) {
+            System.err.println("F:" + f + " childless:"
+                               + getFilelessDirectories(new File(f)));
+        }
+    }
+
+
+    /** _more_ */
     private static boolean debuggingStderr = false;
 
     /**
@@ -1069,6 +1135,22 @@ public class IO {
             }
         });
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

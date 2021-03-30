@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -67,6 +67,8 @@ public class TempDir {
     /** _more_ */
     private boolean touched = false;
 
+
+
     /**
      * _more_
      *
@@ -112,6 +114,7 @@ public class TempDir {
         this.maxSize  = maxSize;
         this.maxAge   = maxAge;
     }
+
 
 
     /**
@@ -164,8 +167,6 @@ public class TempDir {
                 allFiles.add(f);
             }
         }
-
-
         List<File> prunedFiles = new ArrayList<File>();
         for (File f : allFiles) {
             if ( !filesOk && f.isFile()) {
@@ -178,6 +179,8 @@ public class TempDir {
         }
 
         allFiles = prunedFiles;
+
+        //      System.err.println("pruned files:" + prunedFiles);
 
         long t2 = System.currentTimeMillis();
 
@@ -256,6 +259,36 @@ public class TempDir {
      *
      * @return _more_
      */
+    public List<File> findEmptyDirsToScour() {
+        long       now                 = new Date().getTime();
+        List<File> results             = new ArrayList<File>();
+        List<File> filelessDirectories = IO.getFilelessDirectories(dir);
+        //      System.err.println("FILELESS: "+ filelessDirectories);
+        for (File sub : filelessDirectories) {
+            boolean shouldScour = false;
+            if (maxAge > 0) {
+                long lastModified = sub.lastModified();
+                long age          = now - lastModified;
+                if (age > maxAge) {
+                    shouldScour = true;
+                }
+            }
+            if (shouldScour) {
+                results.add(sub);
+            }
+        }
+
+        return results;
+    }
+
+
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public File getDir() {
         return dir;
     }
@@ -296,6 +329,16 @@ public class TempDir {
     public long getMaxSize() {
         return this.maxSize;
     }
+
+    /**
+     * _more_
+     *
+     * @param value _more_
+     */
+    public void setMaxAgeMinutes(long value) {
+        setMaxAge(1000 * 60 * value);
+    }
+
 
     /**
      *  Set the MaxAge property.
