@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html  xmlns="http://www.w3.org/1999/xhtml">
+<head><title>${title}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<properties>
+name=Blue Frame
+id=blueframe
+wikify=true
+</properties>
+
+${imports}
+
+<style type="text/css">
+
+:root {
+    --thecolor:#a2bdcf;
+    --font-size:11pt;
+    --font-family:  Verdana,Arial, Helvetica, sans-serif;
+}
+
+body {
+    background-color: var(--thecolor);
+}
+
+.entryheader {
+   font-size: smaller;
+   margin-top: 0px;
+   padding-bottom:3px;
+   border-bottom:0px solid #aaa;
+}
+
+.entryFooter {
+   font-size: smaller;
+   padding:5px;
+   padding-left:20px;
+   border-top:1px solid #dddddd;
+   margin-top:200px;
+}
+
+.wikicontent {
+    font-weight: normal;
+    text-decoration: none;
+    padding:0px;
+}
+
+.ramadda-content {
+  border-top: 0px #aaa solid;
+  margin:8px;
+  padding:0px;
+  height:auto;
+  width:auto;
+  /* offset left, top, thickness, color with alpha */
+  -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  /* IE */
+  filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray');
+  /* slightly different syntax for IE8 */
+  -ms-filter:"progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray')";
+}
+
+.ramadda-content a, .ramadda-content a:hover, .ramadda-content a:visited, .ramadda-content a:link ,.ramadda-content td {
+    font-weight: normal;
+    text-decoration: none;
+}
+
+.ramadda-innercontent a, .ramadda-innercontent a:hover, .ramadda-innercontent a:visited, .ramadda-innercontent a:link {
+}
+
+.block a, .block a:hover, .block a:visited, .block a:link {
+}
+
+.ramadda-content a:hover { 
+    text-decoration: underline;
+}
+
+.topbox {
+   padding:0px;
+   margin-top: 5px;
+}
+
+.ramadda-innercontent {
+  margin-left:5px;
+  margin-right:5px;
+}
+
+/* Left Column  */
+.ramadda-header-leftcolumn {
+  border-bottom : 2px #888888 solid;
+  color: #000000;
+  padding-top:10px;
+  padding-right:5px;
+}
+
+.ramadda-header-leftcolumn-title {
+  font-size: 24px;
+  margin-top:5px;
+}
+
+
+.nav-leftcolumn {
+   font-weight: bold;
+}
+
+.leftside {
+   width:175px;
+   position:fixed;
+   margin:8px;
+   margin-right:3px;
+   padding:5px;
+   background-color:#ffffff;
+   border-top:  1px #999 solid;
+
+   //Shadow effect
+  /* offset left, top, thickness, color with alpha */
+  -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  /* IE */
+  filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray');
+  /* slightly different syntax for IE8 */
+  -ms-filter:"progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray')";
+}
+
+.leftcolumn {
+   padding-top:10px;
+   margin-left:10px;
+   margin-right:10px;
+   background-color:#ffffff;
+   padding-bottom:20px;
+}
+
+.leftcolumn {
+    vertical-align: middle
+}
+
+.leftbox {
+   padding: 5px;
+   padding-top: 2px;
+   padding-bottom:2px;
+   height:auto;
+   width:auto;
+   
+}
+
+
+.linkslabel, .linkslabel a, .linkslabel a:hover {
+    font-size: 14px;
+    font-weight: bold;
+    padding-bottom: 5px;
+    padding-top: 5px;
+    margin-top:5px;
+    margin-bottom:10px;
+    width:150px;
+    text-decoration:none;
+}
+
+.linkslabel img {
+    vertical-align:text-top;
+}
+
+.favorites {
+   max-width: 525px; 
+   overflow-x: auto;
+   padding: 5px;
+   padding-top: 2px;
+   padding-bottom:2px;
+   background-color: #efefef;
+   width: 150px;
+   overflow:scroll;
+}
+
+.favorites , .favorites a ,.favorites a:hover ,.favorites a:visited {
+  border-bottom : 1px #cccccc dotted;
+  font-family: Verdana,Tahoma,Arial,Helvetica,sans-serif;
+  font-weight: normal;
+}
+
+
+/* Header for the subpages*/
+.subheader-container {
+    background-color: #3c668d;
+    padding-top: 5px;
+    padding-bottom: 6px;
+    margin:0px;
+    margin-left:-30px;
+    margin-right:-4px;
+    background-image: none;
+    background-repeat: none;
+}
+
+.subheader-container a , subheader-container a:hover, .subheader-container a:link, .subheader-container a:visited, .subheader-container a:active, a  {
+}
+
+.ramadda-footer {
+    margin:10px;
+    padding:10px;
+    margin-right: 10px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    overflow-x: auto;
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 10px;
+    background:none;
+    border-width:0px;
+}
+
+.ramadda-footer a, .ramadda-footer a:hover, .ramadda-footer td {
+    font-size: 10px;
+}
+
+.ui-tabs, .block.ui-widget-content, 
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected,
+.ui-tabs ul.ui-tabs-nav li.ui-state-default
+{
+//this results in an extra line under the tabs
+//  position:static;
+}
+
+hr {
+    color: #435e78;
+}
+</style>
+${headfinal}
+</head>
+<body>
+<table  border="0"  width="100%" cellspacing="0" cellpadding="0"  >
+<tr valign="top">
+<td width="190">
+<div class="leftside">
+<div class="ramadda-logo">
+<a href="${logo.url}" ><img border="0" width="150px" src="${logo.image}" alt="${logo.url}" /></a>
+</div>
+<div class="leftcolumn">
+<span class="linkslabel"><a href="${root}" ><img border="0"  src="${root}/icons/folderclosed.png" alt="Home"  /> Home </a></span>
+<br />
+<span class="linkslabel"><a href="${root}/user/login" ><img border="0"  src="${root}/icons/user.png" alt="User Home" /> User </a> </span>
+<div class="leftbox">${links}</div>
+<br />
+<div xstyle="margin:5px;">
+<h3>Links</h3>
+<div style="border-top:1px solid var(--wikicolor);max-width:150px;overflow-x:auto;width:150px;max-height:300px;overflow-y:auto;">
+{{list sort=name}}
+</div>
+</div>
+
+${favorites}
+</div>
+</div>
+</td>
+<td>	
+<div class="ramadda-content">
+${entry.header}
+<div class="ramadda-innercontent">${content}</div> 
+<div class="entryFooter">${entry.footer}</div>
+</div>
+<div class="ramadda-footer">
+${footer}
+<div class="ramadda-acknowledgement">Powered by <a href="https://geodesystems.com">Geode Systems and RAMADDA</a></div>
+</div>
+</td>
+</tr>
+</table>
+${bottom}
+</body>
+</html>
