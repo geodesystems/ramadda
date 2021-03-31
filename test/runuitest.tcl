@@ -8,11 +8,20 @@ proc getUrl {url} {
 }
 
 
-set ::html "<title>UI Tests</title><div style='margin:20px;'>"
+set ::html "<title>UI Tests</title><div style='margin:20px;'>\n"
 set ::loc [file dirname [file normalize [info script]]]
 set ::cnt 0
 set ::tcnt 0
-set ::limit 50
+set ::limit 500
+
+proc finish {} {
+    set final "$::html\n</div>"
+    set fp [open uiimages.html w]
+    puts $fp $final
+    close $fp
+    
+}
+
 
 proc runit {name id} {
     append ::html "<h2>$name</h2>"
@@ -20,6 +29,7 @@ proc runit {name id} {
     puts $url
     set csv [getUrl $url]
     set  ::cnt2 0
+#    set ::limit  100
     foreach line2 [split $csv "\n"] {
 	set line2 [string trim $line2]
 	if {$line2==""} continue;
@@ -27,7 +37,7 @@ proc runit {name id} {
 	incr ::cnt2
 	incr ::cnt
 	foreach     {name id} [split $line2 ,] break
-	regsub -all {[ .'\",]+} $name _ clean
+	regsub -all {[/ .'\",]+} $name _ clean
 	puts stderr "\tprocessing $name"
 	set image image_${clean}.png
 	set thumb thumb_${clean}.png
@@ -51,15 +61,14 @@ proc runit {name id} {
 		exit
 	    }
 	}
-	append ::html "<a href=$url>$name<br><img width=1200 border=0 src=thumb${::cnt}.png></a><p>\n"
+	set line  "<a href=\"$url\">$name<br>\n<img width=1200 border=0 src=thumb_${clean}.png>\n</a><p>\n"
+	append ::html $line
+	finish
     }
 }
 
 
-proc finish {} {
-    set final "$::html </div>"
-    puts [open uiimages.html w] $final
-}
+
 
 proc processGroup {root} {
     set csv [getUrl "https://geodesystems.com/repository/entry/show?entryid=${root}&ascending=true&orderby=name&output=default.csv&fields=name,id&showheader=false"]
@@ -72,15 +81,17 @@ proc processGroup {root} {
 	runit $name $id
 	if {$name=="Features" || $name=="Latest"} continue;
     }
-    finish();
+    finish
 }
     
 
 set chartId 3ebcb4f4-fa4d-4fb3-9ede-d42ec7e0aa9d
 set mapId 1d0fa3f5-407e-4a39-a3da-9a5ed7e1e687
+set textId 23847d93-4bca-4d54-a6db-f96a19be250b
 
 #runit "Charts" $chartId
 runit "Maps" $mapId
+#runit "Text" $textId
 finish
 exit
 
