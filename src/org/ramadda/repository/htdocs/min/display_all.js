@@ -25699,12 +25699,12 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    if(count==0) continue;
 		    let perc = count/s.total;
 		    value = value.replace(/\'/g,"&apos;");
-		    let countLabel = HU.span([TITLE,"Click to select",CLASS,"display-frequency-value","data-field",s.field.getId(),"data-value",value],count);
-		    value = HU.span([TITLE,"Click to select",CLASS,"display-frequency-value","data-field",s.field.getId(),"data-value",value],label);
+		    let countLabel = count
 		    let color = s.values[i].color;
 		    if(!color) color = dfltColor;
+
 		    if(showPercent) countLabel+=" (" + Math.round(perc*100)+"%)";
-		    bannerHtml += HU.div([CLASS, "display-frequency-banner-element"], value +"<br>" + countLabel);
+		    bannerHtml += HU.div([TITLE,"Click to select",CLASS," display-frequency-item","data-field",s.field.getId(),"data-value",value], value +"<br>" + countLabel);
 		    let tdv = HU.td([], value);
 		    let tdc =  (showCount?HU.td(["align", "right"], count):"");
 		    let tdp =  showPercent?HU.td(["align", "right"], s.total==0?"0":Math.round(perc*100)+"%"):"";
@@ -25722,21 +25722,19 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 	    if(doBanner) html = HU.div([CLASS,"display-frequency-banner"], bannerHtml);
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
 	    let _this = this;
-	    this.jq(ID_DISPLAY_CONTENTS).find(".display-frequency-value").click(function(){
+	    let cnt = 0;
+	    let items = this.jq(ID_DISPLAY_CONTENTS).find(".display-frequency-item");
+	    items.click(function(){
 		let click = _this.getProperty("clickFunction")
 		let value = $(this).attr("data-value");
 		let fieldId = $(this).attr("data-field");
 		let parent = $(this).parent();
-		if(parent.hasClass("display-frequency-banner-element")) {
-		    let banner = parent.parent();
-		    let isSelected = parent.hasClass("display-frequency-banner-element-selected");
-		    banner.find(".display-frequency-banner-element").removeClass("display-frequency-banner-element-selected");
-		    if(!isSelected) {
-			parent.addClass("display-frequency-banner-element-selected");
-		    } else {
-			parent.removeClass("display-frequency-banner-element-selected");
-			value = FILTER_ALL;
-		    }
+		let isSelected = $(this).hasClass("display-frequency-item-selected");
+		items.removeClass("display-frequency-item-selected");
+		if(!isSelected) {
+		    $(this).addClass("display-frequency-item-selected");
+		} else {
+		    value = FILTER_ALL;
 		}
 		if(!click || click =="select") {
 		    _this.handleEventPropertyChanged(_this,{

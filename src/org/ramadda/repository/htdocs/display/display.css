@@ -1840,9 +1840,7 @@ text-align:center;
     cursor:pointer;
 }
 
-.display-frequency-banner-element-selected {
-    background:#efefef;
-}
+
 
 .display-frequency-table {
   margin:5px;
@@ -1850,13 +1848,22 @@ text-align:center;
   display:inline-block;
 }
 
-.display-frequency-label:hover {
-cursor:pointer;
+.display-frequency-item {
+    display:inline-block;
+    margin:5px;
+    border:1px solid transparent;
+    padding:2px;
 }
 
-.display-frequency-value:hover {
-cursor:pointer;
+.display-frequency-item:hover {
+    cursor:pointer;
+    border:var(--basic-border);
 }
+
+.display-frequency-item-selected {
+    background:#efefef;
+}
+
 
 .display-crosstab td {
   padding:5px;
