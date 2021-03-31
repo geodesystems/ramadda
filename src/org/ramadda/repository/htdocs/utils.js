@@ -3619,6 +3619,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     getDimension(d) {
 	if(!d) return null;
 	d = String(d).trim();
+	if(d.match("calc")) {
+	    //correct for calc(x-y)
+	    d = d.replace(/calc *\(/,"calc(").replace(/-/," - ").replace(/\+/," + ");
+	}
 	if(d.endsWith(")") || d.endsWith("%") || d.endsWith("px") || d.endsWith("vh")) {
 	    return d;
 	}
