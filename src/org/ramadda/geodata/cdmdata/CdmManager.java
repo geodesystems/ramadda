@@ -212,6 +212,8 @@ public class CdmManager extends RepositoryManager {
             getStorageManager().getUncheckedFileOutputStream(outputFile);
         IOUtil.writeTo(is, os);
         ThreddsConfig.init(outputFile.toString());
+        getLogManager().logInfoAndPrint("THREDDS Config initialized: "+outputFile.toString());
+
 
         // Apply settings for the NetcdfDataset
         //        ucar.nc2.dataset.NetcdfDataset.setHttpClient(getRepository().getHttpClient());
