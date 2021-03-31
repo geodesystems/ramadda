@@ -6089,6 +6089,24 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                               HashSet notTags)
             throws Exception {
 
+	
+
+	//Check for loops
+	Hashtable alreadyDoingIt  = (Hashtable) request.getExtraProperty("alreadyDoingIt");
+	if(alreadyDoingIt==null) {
+	    alreadyDoingIt = new Hashtable();
+	    request.putExtraProperty("alreadyDoingIt", alreadyDoingIt);
+	}
+	List contentList = (List) alreadyDoingIt.get(entry.getId());
+	if(contentList==null) {
+	    alreadyDoingIt.put(entry.getId(),contentList = new ArrayList());
+	}
+	if(contentList.contains(wikiContent)) {
+	    return "";
+	}
+	contentList.add(wikiContent);
+
+
         Request myRequest = request.cloneMe();
         WikiUtil wikiUtil =
             initWikiUtil(myRequest,

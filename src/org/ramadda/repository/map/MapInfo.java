@@ -419,11 +419,13 @@ public class MapInfo {
                           + HU.id(mapDiv + "_footer2"));
         String popup = HU.div("", HU.cssClass("ramadda-popup")
 			      + HU.id(mapDiv + "_loc_popup"));
+
         String readout =
             HU.div("&nbsp;",
                           HU.cssClass("ramadda-map-latlonreadout")
                           + HU.id(mapDiv + "_latlonreadout")
                           + HU.style(swidth));
+	if(!Misc.equals("true", getMapProps().get("showLatLonReadout"))) readout = "";
         String footer =
             HU.div("",
                           HU.cssClass("ramadda-map-footer")
