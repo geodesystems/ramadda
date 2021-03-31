@@ -558,8 +558,7 @@ function ramaddaFindFeature(layer, point) {
 RepositoryMap.prototype = {
     centerOnMarkers: function(dfltBounds, force, justMarkerLayer) {
 	if(debugBounds) {
-	    console.log("centerOnMarkers: force=" + force +" dflt:" + dfltBounds);
-	    console.trace();
+	    console.log("centerOnMarkers: force=" + force +" dflt:" + dfltBounds +" justMarkers:" + justMarkerLayer);
 	}
         this.centerOnMarkersCalled = true;
         this.centerOnMarkersForce = force;
@@ -575,23 +574,31 @@ RepositoryMap.prototype = {
         }
         this.dfltBounds = dfltBounds;
         if (!force) {
+	    let didMarkers = false;
             if (this.markers) {
                 // markers are in projection coordinates
                 var dataBounds = this.markers.getDataExtent();
 		if(debugBounds)
 		    console.log("centerOnMarkers using markers.getDataExtent");
                 bounds = this.transformProjBounds(dataBounds);
+		didMarkers = true;
             }
+	    if(bounds && isNaN(bounds.left)) bounds = null;
             if (this.circles) {
-                var dataBounds = this.circles.getDataExtent();
-                var b = this.transformProjBounds(dataBounds);
+                let dataBounds = this.circles.getDataExtent();
+                let b = this.transformProjBounds(dataBounds);
                 if (bounds)
                     bounds.extend(b);
                 else
                     bounds = b;
+		didMarkers = true;
+		if(debugBounds)
+		    console.log("centerOnMarkers using circles.getDataExtent:" + b);
 	    }
 
-            if (!justMarkerLayer) {
+	    if(bounds && isNaN(bounds.left)) bounds = null;
+
+            if ( !bounds || !didMarkers || !justMarkerLayer) {
                 if (this.lines) {
                     var dataBounds = this.lines.getDataExtent();
                     var fromLine = this.transformProjBounds(dataBounds);

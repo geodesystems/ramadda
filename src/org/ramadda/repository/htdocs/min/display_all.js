@@ -3404,7 +3404,7 @@ function DisplayThing(argId, argProperties) {
 	    for (var col = 0; col < fields.length; col++) {
 		var f = fields[col];
 		var value = row[f.getIndex()];
-		if(debug) console.log("macro:" + col +" field:" + f.getId() +" value:" + value);
+		if(true || debug) console.log("macro:" + col +" field:" + f.getId() +" type:" +f.getType() + " value:" + value);
 		if(props.iconMap) {
 		    var icon = props.iconMap[f.getId()+"."+value];
 		    if(icon) {
@@ -3451,6 +3451,7 @@ function DisplayThing(argId, argProperties) {
 		    if(value && value.trim().length>1) {
 			attrs[f.getId() +"_href"] =  HU.href(value,value);
 			attrs[f.getId()]=  value;
+			console.log("URL");
 		    } else {
 			attrs[f.getId() +"_href"] =  "";
 			attrs[f.getId()] =  "";
@@ -3497,7 +3498,7 @@ function DisplayThing(argId, argProperties) {
 	},
 	getRecordUrlHtml: function(attrs, field, record) {
 	    let value = record.getValue(field.getIndex());
-	    let label = attrs[field.getId()+".label"] || attrs["url.label"] ||"Link";
+	    let label = attrs[field.getId()+".label"] || attrs["url.label"] ||attrs["label"] || "Link";
 	    return  HU.href(value,label,["target","_link"]);
 	},
         getRecordHtml: function(record, fields, template, debug) {
@@ -8649,6 +8650,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.pointDataLoaded(args.data,"",true);
 	    }
 	},
+	getRequirement:function() {
+	    return null;
+	},
         pointDataLoaded: function(pointData, url, reload) {
 //	    console.log(this.type +".pointDataLoaded");
 	    let debug = displayDebug.pointDataLoaded;
@@ -8738,7 +8742,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.haveCalledUpdateUI = false;
 	    if(debug) console.log("\tcalling updateUI");
 	    try {
-		this.updateUI({reload:reload});
+		let requirement = this.getRequirement();
+		if(requirement) {
+		    console.log("waiting on:" + requirement);
+		    HU.waitForIt(requirement,()=>{
+			this.updateUI({reload:reload});
+		    });
+		} else {
+		    this.updateUI({reload:reload});
+		}
+
 	    } catch(err) {
                 this.displayError("Error creating display:<br>" + err);
 		console.log(err);
@@ -11253,7 +11266,7 @@ function RecordField(props, source) {
 	    if(record.getValue)
 		v= record.getValue(this.index);
 	    else
-		v = row[this.index];
+		v = record[this.index];
 	    if(!v && !Utils.isDefined(v)) return dflt;
 	    return v;
         },
@@ -24223,14 +24236,14 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
 		}
 		let info = [];
 		let wordToWeight = {};
-		records.every(r=>{
-		    let word =r.getValue(termField.getIndex());
+		records.every(record=>{
+		    let word =termField.getValue(record);
 		    let _word = word.toLowerCase();
                     if (stopWords && stopWords.includes(_word)) return true;
 		    if(!wordToWeight[word]) {
 			wordToWeight[word]=0;
 		    }
-		    wordToWeight[word]+=r.getValue(countField.getIndex());
+		    wordToWeight[word]+=countField.getValue(record);
 		    return true;
 		});
                 let handlers = null;
@@ -24505,22 +24518,20 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    let summary = {};
 	    let goodRecords = [];
 	    records.forEach(record=>{
-		let r  =  this.getDataValues(record);
 		if(uniqueFields.length>0) {
 		    var key= "";
 		    uniqueFields.map(uf=>{
-			key += "__" +uf.getValue(r);
+			key += "__" +uf.getValue(record);
 		    });
 		    if(Utils.isDefined(uniqueMap[key])) {
 			return;
 		    }
 		    uniqueMap[key] = true;
 		}
-
 		goodRecords.push(record);
 		for(var i=0;i<fields.length;i++) {
 		    var f = fields[i];
-		    var v =f.getValue(r);
+		    var v =f.getValue(record);
 		    if(!summary[f.getId()]) {
 			summary[f.getId()] = {
 			    total: 0,
@@ -24580,7 +24591,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		var minRecord;
 		var equalsRecord;
 		records.map(record=>{
-		    var v =record.getValue(selectField.getIndex());
+		    var v =selectField.getValue(record);
 		    if(select == "match") {
 			if(v.match(selectValue)) {
 			    selected.push(record);
@@ -24816,7 +24827,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			s = tag +s +HU.close(DIV);
 		    }
 		    if (groupByField) {
-			let groupValue =record.getValue(groupByField.getIndex());
+			let groupValue =groupByField.getValue(record);
 			if(groupValue.getTime) groupValue = this.formatDate(groupValue);
 			if(!groups[groupValue]) {
 			    groupList.push(groupValue);
@@ -25172,7 +25183,7 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 		this.total = 0;
 		fields.forEach(f=>{
 		    this.footers.push("${count} " + f.getLabel());
-		    let v = records[0].getValue(f.getIndex());
+		    let v = f.getValue(records[0]);
 		    if(!isNaN(v)) this.total+=v;
 		    this.counts.push(v);
 		});
@@ -26406,12 +26417,12 @@ function RamaddaGlossaryDisplay(displayManager, id, properties) {
                 return;
 	    }	    
 	    let letters = {};
-	    records.forEach(r=>{
-		let word = String(r.getValue(wordField.getIndex())).trim();
-		let definition = r.getValue(definitionField.getIndex());
+	    records.forEach(record=>{
+		let word = String(wordField.getValue(record)).trim();
+		let definition = definitionField.getIndex(record);
 		let letter = word.substring(0,1).toUpperCase();
 		let list = letters[letter] || (letters[letter] = []);
-		list.push({word:word,definition:definition, record:r});
+		list.push({word:word,definition:definition, record:record});
 	    });
 	    let highlight  = this.getFilterTextMatchers();
 	    let header =  HU.div([CLASS,"display-glossary-letter"], "All");
@@ -41390,8 +41401,17 @@ addGlobalDisplayType({
 function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
     const ID_PLOTY = "plotly";
     let SUPER = new RamaddaFieldsDisplay(displayManager, id, type, properties);
+    //Dynamically load plotly
+    if(!window.Plotly) {
+	let url = ramaddaBaseUrl+"/lib/plotly/plotly-latest.min.js";
+        var imports = "<script src='" + url+"'></script>";
+        $(imports).appendTo("head");
+    }
     RamaddaUtil.inherit(this, SUPER);
     RamaddaUtil.defineMembers(this, {
+	getRequirement:function() {
+	    return "Plotly";
+	},
         needsData: function() {
             return true;
         },

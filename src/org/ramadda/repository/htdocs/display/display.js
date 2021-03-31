@@ -589,7 +589,7 @@ function DisplayThing(argId, argProperties) {
 	    for (var col = 0; col < fields.length; col++) {
 		var f = fields[col];
 		var value = row[f.getIndex()];
-		if(debug) console.log("macro:" + col +" field:" + f.getId() +" value:" + value);
+		if(true || debug) console.log("macro:" + col +" field:" + f.getId() +" type:" +f.getType() + " value:" + value);
 		if(props.iconMap) {
 		    var icon = props.iconMap[f.getId()+"."+value];
 		    if(icon) {
@@ -636,6 +636,7 @@ function DisplayThing(argId, argProperties) {
 		    if(value && value.trim().length>1) {
 			attrs[f.getId() +"_href"] =  HU.href(value,value);
 			attrs[f.getId()]=  value;
+			console.log("URL");
 		    } else {
 			attrs[f.getId() +"_href"] =  "";
 			attrs[f.getId()] =  "";
@@ -682,7 +683,7 @@ function DisplayThing(argId, argProperties) {
 	},
 	getRecordUrlHtml: function(attrs, field, record) {
 	    let value = record.getValue(field.getIndex());
-	    let label = attrs[field.getId()+".label"] || attrs["url.label"] ||"Link";
+	    let label = attrs[field.getId()+".label"] || attrs["url.label"] ||attrs["label"] || "Link";
 	    return  HU.href(value,label,["target","_link"]);
 	},
         getRecordHtml: function(record, fields, template, debug) {
@@ -5834,6 +5835,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.pointDataLoaded(args.data,"",true);
 	    }
 	},
+	getRequirement:function() {
+	    return null;
+	},
         pointDataLoaded: function(pointData, url, reload) {
 //	    console.log(this.type +".pointDataLoaded");
 	    let debug = displayDebug.pointDataLoaded;
@@ -5923,7 +5927,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.haveCalledUpdateUI = false;
 	    if(debug) console.log("\tcalling updateUI");
 	    try {
-		this.updateUI({reload:reload});
+		let requirement = this.getRequirement();
+		if(requirement) {
+		    console.log("waiting on:" + requirement);
+		    HU.waitForIt(requirement,()=>{
+			this.updateUI({reload:reload});
+		    });
+		} else {
+		    this.updateUI({reload:reload});
+		}
+
 	    } catch(err) {
                 this.displayError("Error creating display:<br>" + err);
 		console.log(err);

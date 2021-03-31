@@ -121,8 +121,17 @@ addGlobalDisplayType({
 function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
     const ID_PLOTY = "plotly";
     let SUPER = new RamaddaFieldsDisplay(displayManager, id, type, properties);
+    //Dynamically load plotly
+    if(!window.Plotly) {
+	let url = ramaddaBaseUrl+"/lib/plotly/plotly-latest.min.js";
+        var imports = "<script src='" + url+"'></script>";
+        $(imports).appendTo("head");
+    }
     RamaddaUtil.inherit(this, SUPER);
     RamaddaUtil.defineMembers(this, {
+	getRequirement:function() {
+	    return "Plotly";
+	},
         needsData: function() {
             return true;
         },

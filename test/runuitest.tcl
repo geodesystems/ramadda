@@ -27,11 +27,12 @@ proc runit {name id} {
 	incr ::cnt2
 	incr ::cnt
 	foreach     {name id} [split $line2 ,] break
+	regsub -all {[ .'\",]+} $name _ clean
 	puts stderr "\tprocessing $name"
-	set image image$::cnt.png
-	set thumb thumb${::cnt}.png
+	set image image_${clean}.png
+	set thumb thumb_${clean}.png
 	set url "https://geodesystems.com/repository/entry/show?entryid=${id}"
-	set sleep 15
+	set sleep 10
 	if {![file exists $thumb]} {
 	    #Bring Firefox to the front and tell it to reload the main page
 	    set cmd "tell application \"Safari\" to set the URL of the front document to \"$url\""    

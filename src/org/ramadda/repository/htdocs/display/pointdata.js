@@ -633,7 +633,7 @@ function RecordField(props, source) {
 	    if(record.getValue)
 		v= record.getValue(this.index);
 	    else
-		v = row[this.index];
+		v = record[this.index];
 	    if(!v && !Utils.isDefined(v)) return dflt;
 	    return v;
         },
