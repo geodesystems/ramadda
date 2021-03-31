@@ -3618,8 +3618,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },	
     getDimension(d) {
 	if(!d) return null;
-	d = String(d);
-	if(d.endsWith(")") || d.endsWith("%") || d.endsWith("px")) {
+	d = String(d).trim();
+	if(d.endsWith(")") || d.endsWith("%") || d.endsWith("px") || d.endsWith("vh")) {
 	    return d;
 	}
 	return d+"px";
