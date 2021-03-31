@@ -2483,6 +2483,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		
 		controls += HU.div([STYLE,HU.css("display","inline-block","margin-left","5px","margin-right","5px")], HU.select("",[ID,this.domId(ID_HEATMAP_ANIM_LIST)],labels));
 		this.writeHeader(ID_HEADER2_PREPREFIX, controls);
+		let _this = this;
 		this.jq(ID_HEATMAP_ANIM_LIST).change(function() {
 		    let index = $(this)[0].selectedIndex;
 		    _this.applyHeatmapAnimation(index);
