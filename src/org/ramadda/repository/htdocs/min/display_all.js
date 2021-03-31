@@ -3533,7 +3533,7 @@ function DisplayThing(argId, argProperties) {
 
 	    let attrs={};
 	    if(template) {
-		attrs = Utils.tokenizeMacros(template,{hook:(token,value)=>{return this.macroHook(record, token,value)},dateFormat:this.getProperty("dateFormat")}).getAttributes("default");
+		attrs = Utils.tokenizeMacros(template,{hook:(token,value)=>{return this.macroHook(record, token,value)},dateFormat:this.getProperty("dateFormat")}).getAttributes("default")||{};
 	    }
 	    itemsPerColumn = attrs["itemsPerColumn"] || itemsPerColumn;
 	    let values = "";

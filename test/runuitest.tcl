@@ -90,9 +90,9 @@ set mapId 1d0fa3f5-407e-4a39-a3da-9a5ed7e1e687
 set textId 23847d93-4bca-4d54-a6db-f96a19be250b
 set mediaId bca6228e-3f8e-49d4-a20e-b5a0ea8a6441
 
-#runit "Charts" $chartId
-#runit "Maps" $mapId
-#runit "Text" $textId
+runit "Charts" $chartId
+runit "Maps" $mapId
+runit "Text" $textId
 runit "Media" $mediaId
 
 finish
