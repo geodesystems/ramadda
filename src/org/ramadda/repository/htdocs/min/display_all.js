@@ -35473,7 +35473,7 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 	{label:'Base map properties'},
 	{p:'regionField',ex:''},
 	{p:'valueField',ex:''},
-	{p:'mapFile',ex:'',d:ramaddaBaseUrl+"/resources/usmap.json"},
+	{p:'mapFile',ex:'usmap.json|countries.json',d:"usmap.json"},
 	{p:'skipRegions',ex:'Alaska,Hawaii'},
 	{p:'pruneMissing',ex:'true'},				
 	{p:'mapBackground',ex:'transparent'},
@@ -35674,6 +35674,9 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 		if(!this.gettingFile) {
 		    this.gettingFile = true;
 		    let mapFile = this.getPropertyMapFile();
+		    if(!mapFile.startsWith("/") && !mapFile.startsWith("http")) {
+			mapFile =ramaddaBaseUrl +"/resources/" + mapFile;
+		    }
 		    var jqxhr = $.getJSON(mapFile, (data) =>{
 			this.mapJson = data;
 			this.regionNames=[];
