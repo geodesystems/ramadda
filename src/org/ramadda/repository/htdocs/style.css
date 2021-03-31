@@ -4939,3 +4939,12 @@ h3 a {
 h3 a:visited {
     color:black;
 }
+
+
+
+.ramadda-frame-title a, .inherit-color a {
+    color:inherit;
+}
+
+.ramadda-frame-title a:hover {
+}

@@ -589,7 +589,7 @@ function DisplayThing(argId, argProperties) {
 	    for (var col = 0; col < fields.length; col++) {
 		var f = fields[col];
 		var value = row[f.getIndex()];
-		if(true || debug) console.log("macro:" + col +" field:" + f.getId() +" type:" +f.getType() + " value:" + value);
+		if(debug) console.log("macro:" + col +" field:" + f.getId() +" type:" +f.getType() + " value:" + value);
 		if(props.iconMap) {
 		    var icon = props.iconMap[f.getId()+"."+value];
 		    if(icon) {
@@ -686,6 +686,7 @@ function DisplayThing(argId, argProperties) {
 	    let label = attrs[field.getId()+".label"] || attrs["url.label"] ||attrs["label"] || "Link";
 	    return  HU.href(value,label,["target","_link"]);
 	},
+
         getRecordHtml: function(record, fields, template, debug) {
 	    fields = this.getFields(fields);
 	    if(!fields) return "";
@@ -4395,7 +4396,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	    table+=HU.close('table');
 
-            let html =  HU.div([ATTR_CLASS, 'ramadda-popup', ATTR_ID, this.getDomId(ID_MENU_OUTER)], '');
+            let html =  HU.div([ATTR_CLASS, 'ramadda-popup', STYLE,"display:none;", ATTR_ID, this.getDomId(ID_MENU_OUTER)], '');
             let style = this.getProperty('displayStyle', '');
             html += HU.div([CLASS, 'display-contents', STYLE, HU.css('position','relative') + style],table);
             return html;

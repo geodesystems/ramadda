@@ -3622,6 +3622,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	if(d.match("calc")) {
 	    //correct for calc(x-y)
 	    d = d.replace(/calc *\(/,"calc(").replace(/-/," - ").replace(/\+/," + ");
+	    d = d.replace(/([0-9]) *\)/,"$1px)");
 	}
 	if(d.endsWith(")") || d.endsWith("%") || d.endsWith("px") || d.endsWith("vh")) {
 	    return d;

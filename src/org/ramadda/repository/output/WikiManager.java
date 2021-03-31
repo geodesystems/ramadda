@@ -1717,7 +1717,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 		String url = (String)request.getExtraProperty(PROP_OVERRIDE_URL);
 		if(url==null)
 		    url = getEntryManager().getEntryUrl(request, entry);
-                name = HU.href(url, name, HU.cssClass("ramadda-link"));
+                name = HU.href(url, name, HU.cssClass("ramadda-clickable"));
             }
             return name;
         } else if (theTag.equals(WIKI_TAG_EMBED)) {

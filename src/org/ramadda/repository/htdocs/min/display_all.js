@@ -3404,7 +3404,7 @@ function DisplayThing(argId, argProperties) {
 	    for (var col = 0; col < fields.length; col++) {
 		var f = fields[col];
 		var value = row[f.getIndex()];
-		if(true || debug) console.log("macro:" + col +" field:" + f.getId() +" type:" +f.getType() + " value:" + value);
+		if(debug) console.log("macro:" + col +" field:" + f.getId() +" type:" +f.getType() + " value:" + value);
 		if(props.iconMap) {
 		    var icon = props.iconMap[f.getId()+"."+value];
 		    if(icon) {
@@ -3501,6 +3501,7 @@ function DisplayThing(argId, argProperties) {
 	    let label = attrs[field.getId()+".label"] || attrs["url.label"] ||attrs["label"] || "Link";
 	    return  HU.href(value,label,["target","_link"]);
 	},
+
         getRecordHtml: function(record, fields, template, debug) {
 	    fields = this.getFields(fields);
 	    if(!fields) return "";
@@ -7210,7 +7211,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	    table+=HU.close('table');
 
-            let html =  HU.div([ATTR_CLASS, 'ramadda-popup', ATTR_ID, this.getDomId(ID_MENU_OUTER)], '');
+            let html =  HU.div([ATTR_CLASS, 'ramadda-popup', STYLE,"display:none;", ATTR_ID, this.getDomId(ID_MENU_OUTER)], '');
             let style = this.getProperty('displayStyle', '');
             html += HU.div([CLASS, 'display-contents', STYLE, HU.css('position','relative') + style],table);
             return html;
@@ -29635,6 +29636,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'recordHighlightFillOpacity',ex:'0.5',tt:'Fill opacity to use to show other displays highlighted record'},
 	{p:'recordHighlightVerticalLine',tt:'Draw a vertical line at the location of the selected record'},
 	{p:'highlightColor',ex:'#ccc',tt:''},
+	{p:'highlightStrokeWidth',ex:'2',tt:''},	
 	{p:'unhighlightColor',ex:'#ccc',tt:'Fill color when records are unhighlighted with the filters'},
 	{p:'unhighlightStrokeWidth',ex:'1',tt:'Stroke width for when records are unhighlighted with the filters'},
 	{p:'unhighlightStrokeColor',ex:'#aaa',tt:'Stroke color for when records are unhighlighted with the filters'},
@@ -29900,7 +29902,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		showZoomPanControl: this.getShowZoomPanControl(false),
 		showZoomOnlyControl: this.getShowZoomOnlyControl(true),
 		enableDragPan: this.getEnableDragPan(true),
-		highlightColor: this.getHighlightColor("blue")
+		highlightColor: this.getHighlightColor("blue"),
+		highlightStrokeWidth: this.getHighlightStrokeWidth(1)
             };
 	    this.mapParams = params;
             var displayDiv = this.getProperty("displayDiv", null);
@@ -29971,7 +29974,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.handlePopup(feature, popup);
 	    };
 	    this.map.addFeatureSelectHandler(feature=>{
-
 		this.lastFeatureSelectTime = new Date();
 		if(feature.collisionInfo)  {
 		    if(this.getCollisionFixed()) return;
@@ -31593,9 +31595,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.makeToc(records);
 	    }
  
-
-
-
 	    if(!this.updatingFromClip) {
 		this.setMessage(args.dataFilterChanged|| args.fieldChanged|| args.reload?"Reloading map...":"Creating map...");
 	    }
@@ -32867,6 +32866,22 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    });
 		}
 	    });
+
+	    if(records.length>0 && this.getProperty("selectFirstRecord")&& !this.haveSelectedFirstRecord) {
+		this.haveSelectedFirstRecord = true;
+		let record = records[0];
+		this.propagateEventRecordSelection({record:record});
+		let displayDiv = this.getProperty("displayDiv", null);
+		if(displayDiv && this.textGetter) {
+		    $("#" + displayDiv).html(this.textGetter({record:record}));
+		}
+		let marker =  this.markers[record.getId()];
+		if(marker) {
+		    this.map.handleFeatureclick(null,marker);
+		}
+	    }
+
+
 
 	    t3  =new Date();
 //	    Utils.displayTimes("map points 2:",[t2,t3], true);

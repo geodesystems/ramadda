@@ -976,7 +976,6 @@ RepositoryMap.prototype = {
         if (!layer)
             layer = feature.layer;
 
-
         this.dateFeatureSelect(feature);
         if (layer.canSelect === false) {
 	    return;
@@ -991,6 +990,7 @@ RepositoryMap.prototype = {
 	let style = $.extend({},feature.style);
 	$.extend(style, {
 	    strokeColor:this.highlightColor,
+	    strokeWidth: this.highlightStrokeWidth,
 	    strokeOpacity: 0.75,
 	    fillOpacity: 0.75,
 	    fill: true,
@@ -4081,8 +4081,6 @@ RepositoryMap.prototype = {
 	    $("#" + this.displayDiv).html(markerText);
 	    return;
 	}
-
-
 
         if (fromClick && marker.locationKey != null) {
             markers = this.seenMarkers[marker.locationKey];

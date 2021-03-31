@@ -173,6 +173,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'recordHighlightFillOpacity',ex:'0.5',tt:'Fill opacity to use to show other displays highlighted record'},
 	{p:'recordHighlightVerticalLine',tt:'Draw a vertical line at the location of the selected record'},
 	{p:'highlightColor',ex:'#ccc',tt:''},
+	{p:'highlightStrokeWidth',ex:'2',tt:''},	
 	{p:'unhighlightColor',ex:'#ccc',tt:'Fill color when records are unhighlighted with the filters'},
 	{p:'unhighlightStrokeWidth',ex:'1',tt:'Stroke width for when records are unhighlighted with the filters'},
 	{p:'unhighlightStrokeColor',ex:'#aaa',tt:'Stroke color for when records are unhighlighted with the filters'},
@@ -438,7 +439,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		showZoomPanControl: this.getShowZoomPanControl(false),
 		showZoomOnlyControl: this.getShowZoomOnlyControl(true),
 		enableDragPan: this.getEnableDragPan(true),
-		highlightColor: this.getHighlightColor("blue")
+		highlightColor: this.getHighlightColor("blue"),
+		highlightStrokeWidth: this.getHighlightStrokeWidth(1)
             };
 	    this.mapParams = params;
             var displayDiv = this.getProperty("displayDiv", null);
@@ -509,7 +511,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.handlePopup(feature, popup);
 	    };
 	    this.map.addFeatureSelectHandler(feature=>{
-
 		this.lastFeatureSelectTime = new Date();
 		if(feature.collisionInfo)  {
 		    if(this.getCollisionFixed()) return;
@@ -2131,9 +2132,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.makeToc(records);
 	    }
  
-
-
-
 	    if(!this.updatingFromClip) {
 		this.setMessage(args.dataFilterChanged|| args.fieldChanged|| args.reload?"Reloading map...":"Creating map...");
 	    }
@@ -3405,6 +3403,22 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    });
 		}
 	    });
+
+	    if(records.length>0 && this.getProperty("selectFirstRecord")&& !this.haveSelectedFirstRecord) {
+		this.haveSelectedFirstRecord = true;
+		let record = records[0];
+		this.propagateEventRecordSelection({record:record});
+		let displayDiv = this.getProperty("displayDiv", null);
+		if(displayDiv && this.textGetter) {
+		    $("#" + displayDiv).html(this.textGetter({record:record}));
+		}
+		let marker =  this.markers[record.getId()];
+		if(marker) {
+		    this.map.handleFeatureclick(null,marker);
+		}
+	    }
+
+
 
 	    t3  =new Date();
 //	    Utils.displayTimes("map points 2:",[t2,t3], true);
