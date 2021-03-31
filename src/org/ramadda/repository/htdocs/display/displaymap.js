@@ -283,13 +283,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var html = "";
             var extraStyle="";
             var height = this.getProperty("height", 300);
-            if (height > 0) {
-                extraStyle += HU.css(HEIGHT, height + 'px');
-            } else if (height < 0) {
-                extraStyle += HU.css(HEIGHT,(-height) + '%');
-            } else if (height != "") {
-                extraStyle +=HU.css(HEIGHT, (height));
+            if (height < 0) {
+		height = (-height)+"%";
 	    }
+	    height = HU.getDimension(height);
+            extraStyle += HU.css(HEIGHT, height);
+
 	    let map =HU.div([ATTR_CLASS, "display-map-map ramadda-expandable-target", STYLE,
 			     extraStyle, ATTR_ID, this.domId(ID_MAP)]);
 

@@ -7221,29 +7221,23 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return HU.getDimension(width);
         },
         getHeightForStyle: function(dflt) {
-            var height = this.getProperty("height", -1);
+            let height = this.getProperty("height", -1);
             if (height == -1) return dflt;
-            if (new String(height).match("^[0-9]+$"))
+            if (new String(height).match("^[0-9]+$")) {
                 height = height + "px";
+	    }
             return height;
         },
         getContentsStyle: function() {
-            var style = "";
-            var height = this.getHeightForStyle();
+            let style = "";
+            let height = this.getHeightForStyle();
             if (height) {
-//                style += " height:" + height + ";overflow-y:auto;";
                 style += HU.css(HEIGHT, height);
             }
-            var maxheight = this.getProperty("maxHeight");
+            let maxheight = this.getProperty("maxHeight");
             if (maxheight) {
-//                style += " height:" + height + ";overflow-y:auto;";
                 style += HU.css("max-height", HU.getDimension(maxheight),"overflow-y","auto");
             }	    
-
-	    //            var width = this.getWidthForStyle();
-	    //            if (width) {
-	    //                style += " width:" + width + ";";
-	    //            }
             return style;
         },
 	getContentsClass: function() {
@@ -29753,13 +29747,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var html = "";
             var extraStyle="";
             var height = this.getProperty("height", 300);
-            if (height > 0) {
-                extraStyle += HU.css(HEIGHT, height + 'px');
-            } else if (height < 0) {
-                extraStyle += HU.css(HEIGHT,(-height) + '%');
-            } else if (height != "") {
-                extraStyle +=HU.css(HEIGHT, (height));
+            if (height < 0) {
+		height = (-height)+"%";
 	    }
+	    height = HU.getDimension(height);
+            extraStyle += HU.css(HEIGHT, height);
+
 	    let map =HU.div([ATTR_CLASS, "display-map-map ramadda-expandable-target", STYLE,
 			     extraStyle, ATTR_ID, this.domId(ID_MAP)]);
 

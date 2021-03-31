@@ -3619,7 +3619,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     getDimension(d) {
 	if(!d) return null;
 	d = String(d);
-	if(d.endsWith("%") || d.endsWith("px")) return d;
+	if(d.endsWith(")") || d.endsWith("%") || d.endsWith("px")) {
+	    return d;
+	}
 	return d+"px";
     },
     td: function(attrs, inner) {
