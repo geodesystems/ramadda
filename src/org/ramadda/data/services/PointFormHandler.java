@@ -58,6 +58,7 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
@@ -302,9 +303,16 @@ public class PointFormHandler extends RecordFormHandler {
                 }
             };
 
-            getRecordJobManager().visitSequential(request, recordEntry,
-                    visitor,
-                    new VisitInfo(VisitInfo.QUICKSCAN_YES, skipFactor));
+	    try {
+		getRecordJobManager().visitSequential(request, recordEntry,
+						      visitor,
+						      new VisitInfo(VisitInfo.QUICKSCAN_YES, skipFactor));
+	    } catch(Throwable thr) {
+		Throwable inner = LogUtil.getInnerException(thr);
+		if(inner instanceof Exception)
+		    throw (Exception) inner;
+		throw new RuntimeException(inner);
+	    }
             polyLine = pts;
             recordEntry.getEntry().putTransientProperty(polylineProperty,
                     polyLine);
@@ -1735,8 +1743,16 @@ ARG_WAVEFORM_DISPLAY, waveformDisplay, ARG_WAVEFORM_NAME, waveformName
 
         long t1   = System.currentTimeMillis();
         int  skip = (int) (numRecords / numPointsToPlot);
-        getRecordJobManager().visitSequential(request, pointEntry, visitor,
-                new VisitInfo(skip));
+	try {
+	    getRecordJobManager().visitSequential(request, pointEntry, visitor,
+						  new VisitInfo(skip));
+	} catch(Throwable thr) {
+	    Throwable inner = LogUtil.getInnerException(thr);
+	    if(inner instanceof Exception)
+		throw (Exception) inner;
+	    throw new RuntimeException(inner);
+	}
+
         long t2 = System.currentTimeMillis();
 
 

@@ -395,8 +395,8 @@ public class CsvFile extends TextFile {
                 if (failureOk) {
                     return new ArrayList<RecordField>();
                 }
-                throw new IllegalArgumentException("Properties must have a "
-                        + PROP_FIELDS + " value");
+		System.err.println("Error in CsvFile:" +"no " + PROP_FIELDS + " properties found for file: " + getFilename());
+                throw new IllegalArgumentException("No fields defined for file");
             }
             fieldString = "";
         }

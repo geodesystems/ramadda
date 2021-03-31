@@ -533,7 +533,7 @@ public class JobManager extends RepositoryManager {
      * @throws Exception On badness
      */
     public void invokeAndWait(Request request, Callable<Boolean> callable)
-            throws Exception {
+            throws Throwable {
         List<Callable<Boolean>> callables =
             new ArrayList<Callable<Boolean>>();
         callables.add(callable);
@@ -579,7 +579,7 @@ public class JobManager extends RepositoryManager {
      */
     public void invokeAndWait(Request request,
                               List<Callable<Boolean>> callables)
-            throws Exception {
+            throws Throwable {
         checkNewJobOK();
 
         long t1 = System.currentTimeMillis();
@@ -594,14 +594,9 @@ public class JobManager extends RepositoryManager {
                 try {
                     future.get();
                 } catch (ExecutionException ex) {
-                    throw new RuntimeException(ex.getCause());
+                    throw ex.getCause();
                 }
             }
-        } catch (Exception exc) {
-            System.err.println("RAMADDA: error: " + exc);
-            exc.printStackTrace();
-
-            throw exc;
         } finally {
             synchronized (MUTEX) {
                 long t2 = System.currentTimeMillis();

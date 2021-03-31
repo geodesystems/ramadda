@@ -581,7 +581,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                                  boolean asynch,
                                  List<? extends RecordEntry> recordEntries,
                                  Object jobId)
-            throws Exception {
+            throws Throwable {
 
         List<PointEntry> pointEntries =
             PointEntry.toPointEntryList(recordEntries);
@@ -707,28 +707,24 @@ public class PointOutputHandler extends RecordOutputHandler {
 
             return getDummyResult();
         } catch (Exception exc) {
+	    Throwable inner = LogUtil.getInnerException(exc);
             try {
-                getRecordJobManager().setError(info, exc.toString());
+                getRecordJobManager().setError(info, inner.toString());
             } catch (Exception noop) {}
-            getLogManager().logError("processing point request", exc);
+	    //            getLogManager().logError("processing point request", inner);
             //Special handling for json requests
             if ((formats.size() == 1)
                     && formats.contains(OUTPUT_JSON.getId())) {
-                Throwable inner = LogUtil.getInnerException(exc);
-                String message =
-                    "There was an error processing the request: "
-                    + inner.getMessage();
+                String message = "Error: " + inner.getMessage();
                 inner.printStackTrace();
                 String       code = "error";
                 StringBuffer json = new StringBuffer();
                 json.append(Json.map("error", Json.quote(message),
                                      "errorcode", Json.quote(code)));
                 Result errorResult = new Result("", json, Json.MIMETYPE);
-
                 return errorResult;
             }
-
-            return getRepository().makeErrorResult(request, exc.getMessage());
+            return getRepository().makeErrorResult(request, inner.getMessage());
         }
     }
 
@@ -839,11 +835,18 @@ public class PointOutputHandler extends RecordOutputHandler {
             //We want to get the LidarOutputHandler
             PointOutputHandler pointOutputHandler =
                 pointEntries.get(0).getPointOutputHandler();
-            Result result = pointOutputHandler.processEntries(request, entry,
-                                false, pointEntries, null);
-            if (result != null) {
-                return result;
-            }
+	    try {
+		Result result = pointOutputHandler.processEntries(request, entry,
+								  false, pointEntries, null);
+		if (result != null) {
+		    return result;
+		}
+	    } catch(Throwable thr) {
+		Throwable inner = LogUtil.getInnerException(thr);
+		if(inner instanceof Exception)
+		    throw (Exception) inner;
+		throw new RuntimeException(inner);
+	    }
             StringBuffer sb = new StringBuffer();
             if ( !outputType.equals(OUTPUT_FORM)) {
                 sb.append(
@@ -1151,11 +1154,18 @@ public class PointOutputHandler extends RecordOutputHandler {
             //We want to get the LidarOutputHandler
             PointOutputHandler pointOutputHandler =
                 pointEntries.get(0).getPointOutputHandler();
-            Result result = pointOutputHandler.processEntries(request, group,
-                                false, pointEntries, null);
-            if (result != null) {
-                return result;
-            }
+	    try {
+		Result result = pointOutputHandler.processEntries(request, group,
+								  false, pointEntries, null);
+		if (result != null) {
+		    return result;
+		}
+	    } catch(Throwable thr) {
+		Throwable inner = LogUtil.getInnerException(thr);
+		if(inner instanceof Exception)
+		    throw (Exception) inner;
+		throw new RuntimeException(inner);
+	    }
             StringBuffer sb = new StringBuffer();
             if ( !outputType.equals(OUTPUT_FORM)) {
                 sb.append(
@@ -2243,8 +2253,15 @@ public class PointOutputHandler extends RecordOutputHandler {
             long numRecords = pointEntry.getNumRecords();
             int  skip       = (int) (numRecords / 1000);
 
-            getRecordJobManager().visitSequential(request, pointEntry,
-                    visitor, new VisitInfo(VisitInfo.QUICKSCAN_YES, skip));
+	    try {
+		getRecordJobManager().visitSequential(request, pointEntry,
+						      visitor, new VisitInfo(VisitInfo.QUICKSCAN_YES, skip));
+	    } catch(Throwable thr) {
+		Throwable inner = LogUtil.getInnerException(thr);
+		if(inner instanceof Exception)
+		    throw (Exception) inner;
+		throw new RuntimeException(inner);
+	    }
 
             coords[0] = Misc.copy(coords[0], pointCnt[0]);
             Element folder = KmlUtil.folder(topFolder, entry.getName(),

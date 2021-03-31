@@ -1140,7 +1140,8 @@ public class IO {
         final PrintStream oldOut = System.out;
         System.setErr(new PrintStream(oldOut) {
             public void println(String x) {
-                new RuntimeException("stderr").printStackTrace();
+		oldErr.println("**************   ERROR\n" + Utils.getStack(10)+"\n************");
+		//                new RuntimeException("stderr").printStackTrace();
                 oldErr.println(x);
             }
         });

@@ -18,11 +18,7 @@ package org.ramadda.data.services;
 
 
 import org.ramadda.data.record.*;
-
-
-import org.ramadda.data.record.*;
 import org.ramadda.data.record.filter.*;
-
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
@@ -32,10 +28,8 @@ import org.ramadda.repository.job.JobManager;
 import org.ramadda.repository.map.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.TypeHandler;
+
 import org.ramadda.util.Bounds;
-
-
-
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.Utils;
@@ -49,24 +43,16 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
-
-
 import java.io.*;
-
-
 
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
-
-import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.*;
-
 import java.util.zip.*;
-
 
 
 /**
@@ -144,7 +130,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
     public void visitSequential(Request request,
                                 List<? extends RecordEntry> recordEntries,
                                 RecordVisitor visitor)
-            throws Exception {
+            throws Throwable {
         visitSequential(request, recordEntries, visitor, null);
     }
 
@@ -162,7 +148,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
             final Request request,
             final List<? extends RecordEntry> recordEntries,
             final RecordVisitor visitor, final VisitInfo visitInfo)
-            throws Exception {
+            throws Throwable {
         Callable<Boolean> callable = new Callable<Boolean>() {
             public Boolean call() {
                 try {
@@ -180,9 +166,6 @@ public class RecordJobManager extends JobManager implements RecordConstants {
 
                     return Boolean.TRUE;
                 } catch (Exception exc) {
-                    System.err.println("Badness:" + exc);
-                    exc.printStackTrace();
-
                     throw new RuntimeException(exc);
                 }
             }
@@ -204,7 +187,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
      */
     public void visitSequential(Request request, RecordEntry recordEntry,
                                 RecordVisitor visitor, VisitInfo visitInfo)
-            throws Exception {
+            throws Throwable {
         List<RecordEntry> recordEntries = new ArrayList<RecordEntry>();
         recordEntries.add(recordEntry);
         visitSequential(request, recordEntries, visitor, visitInfo);
@@ -224,7 +207,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
     public void visitConcurrent(Request request,
                                 List<? extends RecordEntry> recordEntries,
                                 RecordVisitor visitor, VisitInfo visitInfo)
-            throws Exception {
+            throws Throwable {
         for (RecordEntry recordEntry : recordEntries) {
             recordEntry.setVisitInfo(visitor, (visitInfo != null)
                     ? new VisitInfo(visitInfo)
@@ -777,7 +760,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
         jobHasStarted(jobInfo);
 
         Runnable runnable = new Runnable() {
-            public void run() {
+            public void run()  {
                 try {
                     //Note - normally the POH here is "this" POH but for Lidar types over in the nlasplugin
                     //We want to get the LidarOutputHandler
@@ -791,11 +774,12 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                     }
                     asynchRequestFinished(request, entry, recordEntries,
                                           outputType, jobInfo.getJobId());
-                } catch (Exception exc) {
+                } catch (Throwable exc) {
                     Throwable thr = LogUtil.getInnerException(exc);
-                    System.err.println("** Error:" + thr);
+                    System.err.println("Error handling async request:" + thr);
                     exc.printStackTrace();
-                    thr.printStackTrace();
+		    if(thr!=exc)
+			thr.printStackTrace();
                     setError(jobInfo,
                              "Error:" + thr + "\nStack trace outer:<pre>"
                              + LogUtil.getStackTrace(exc)

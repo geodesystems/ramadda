@@ -36,6 +36,7 @@ import org.ramadda.repository.output.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
+
 import ucar.unidata.geoloc.Bearing;
 import ucar.unidata.geoloc.LatLonPointImpl;
 
@@ -43,6 +44,7 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
@@ -524,8 +526,15 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
         VisitInfo visitInfo = new VisitInfo();
         visitInfo.setStart(start);
         visitInfo.setStop(start + step);
-        getRecordJobManager().visitSequential(request, recordEntry, visitor,
-                visitInfo);
+	try {
+	    getRecordJobManager().visitSequential(request, recordEntry, visitor,
+						  visitInfo);
+	} catch(Throwable thr) {
+	    Throwable inner = LogUtil.getInnerException(thr);
+	    if(inner instanceof Exception)
+		throw (Exception)inner;
+	    throw new RuntimeException(inner);
+	}
 
         sb.append("</table>");
         request.getRepository().getPageHandler().entrySectionClose(request,
