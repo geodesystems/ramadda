@@ -1159,10 +1159,11 @@ function RamaddaNotebookCell(notebook, id, content, props) {
 
             });
 
-            this.editor = HtmlUtils.initAceEditor("", this.getDomId(ID_INPUT), false, {
+            let wikiEditor = new WikiEditor("", "", this.getDomId(ID_INPUT), false, {
                 maxLines: 30,
                 minLines: 5
             });
+	    this.editor = wikiEditor.getEditor();
             this.editor.getSession().on('change', () => {
                 this.inputChanged();
             });

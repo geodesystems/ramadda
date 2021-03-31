@@ -102,8 +102,9 @@ function insertTagsInner(id, txtarea, tagOpen, tagClose, sampleText) {
     var selText, isSample = false;
     tagOpen = Utils.decodeText(tagOpen);
     tagClose = Utils.decodeText(tagClose);    
-    var editor = HtmlUtils.getAceEditor(id);
+    var editor = HtmlUtils.getWikiEditor(id);
     if (editor) {
+	editor=editor.getEditor();
         var text = tagOpen + tagClose + " ";
         var cursor = editor.getCursorPosition();
         editor.insert(text);
