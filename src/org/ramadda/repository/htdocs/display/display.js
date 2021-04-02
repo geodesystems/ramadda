@@ -1250,11 +1250,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:"animationStyle"},				
 	{p:"animationTooltipShow",ex:"true"},
 	{p:"animationTooltipDateFormat",ex:"yyyymmddhhmm"},		
-	{p:"animationWindow",ex:"decade|halfdecade|year|month|week|day|hour|minute"},
 	{p:"animationMode",ex:"sliding|frame|cumulative"},
+	{p:"animationWindow",ex:"1 day|2 weeks|3 months|1 year|2 decades|etc"},
+	{p:"animationStep",ex:"1 day|2 weeks|3 months|1 year|2 decades|etc"},
 	{p:"animationSpeed",ex:500},
 	{p:"animationLoop",ex:true},
 	{p:"animationDwell",ex:1000},
+	{p:'animationStartShowAll',ex:true,tt:'Show full range at start'},
 	{p:"animationShowButtons",ex:false},
 	{p:"animationShowSlider",ex:false},
 	{p:"animationWidgetShort",ex:true}
@@ -4249,7 +4251,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    var callUpdate = !this.displayReady;
             this.displayReady = true;
 	    if(callUpdate) {
-		this.callUpdateUI(true);
+		this.callUpdateUI({force:true});
 	    }
         },
         getDisplayReady: function() {
@@ -4268,7 +4270,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.getAnimation().makeControls();
             }
             this.checkSearchBar();
-	    this.callUpdateUI(true);
+	    this.callUpdateUI({force:true});
 	    if(this.getProperty("reloadSeconds")) {
 		this.runReload();
 	    }
@@ -4591,18 +4593,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.haveCalledUpdateUI = false;
 	    this.callUpdateUI();
 	},
-	callUpdateUI: function(force) {
+	callUpdateUI: function(args) {
+	    args = args || {};
 	    try {
-		if(force)
+		if(args.force)
 		    this.haveCalledUpdateUI = false;
-		this.updateUI();
+		this.updateUI(args);
 	    } catch(err) {
                 this.setContents(this.getMessage(err));
 		console.log("Error:" + err);
 		console.log(err.stack);
 	    }
 	},
-        updateUI: function() {
+        updateUI: function(args) {
 	},
 	getFilterId: function(id) {
 	    return  this.getDomId("filterby_" + id);
@@ -5457,8 +5460,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	macroChanged: function() {
 	    this.pageSkip = 0;
 	},
-	dataFilterChanged: function() {
-	    this.callUpdateUI();
+	dataFilterChanged: function(args) {
+	    this.callUpdateUI(args);
 	},
 	addFieldClickHandler: function(jq, records, addHighlight) {
 	    let _this = this;
@@ -7053,7 +7056,7 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
             }
             this.callUpdateUI();
         },
-        updateUI: function() {
+        updateUI: function(args) {
             this.addFieldsCheckboxes();
         },
         getWikiAttributes: function(attrs) {
