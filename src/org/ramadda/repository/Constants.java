@@ -363,8 +363,11 @@ public interface Constants {
     public static final String ARG_SERVICEID = "serviceid";
 
 
+    /** _more_          */
     public static final String PROP_MAKESNAPSHOT = "makesnapshot";
-    public static final String PROP_OVERRIDE_URL = "overrideurl";    
+
+    /** _more_          */
+    public static final String PROP_OVERRIDE_URL = "overrideurl";
 
     /** _more_ */
     public static final String ARG_SHOWCATEGORIES = "showCategories";
@@ -916,6 +919,9 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_GROUP = "group";
 
+    /** _more_          */
+    public static final String ARG_DEST_ENTRY = "destentry";
+
     /** _more_ */
     public static final String ARG_GROUPID = "groupid";
 
@@ -1204,7 +1210,21 @@ public interface Constants {
     public static final String ARG_PUBLISH = "publish";
 
 
+    /** _more_          */
+    public static final String ARG_SNAPSHOT_TYPE = "snapshottype";
+
+    /** _more_          */
+    public static final String SNAPSHOT_ENTRY = "snapshotentry";
+
+    /** _more_          */
+    public static final String SNAPSHOT_FILE = "snapshotfile";
+
+    /** _more_          */
+    public static final String SNAPSHOT_EXPORT = "snapshotexport";
+
+
     /** _more_ */
+
     public static final String ARG_SUBMIT_PUBLISH = "submit.publish";
 
     /** _more_ */
