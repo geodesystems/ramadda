@@ -53,7 +53,12 @@ OpenLayers.Renderer.symbol.lightning = [0, 0, 4, 2, 6, 0, 10, 5, 6, 3, 4, 5, 0, 
 OpenLayers.Renderer.symbol.rectangle = [0, 0, 4, 0, 4, 10, 0, 10, 0, 0];
 OpenLayers.Renderer.symbol.church = [4, 0, 6, 0, 6, 4, 10, 4, 10, 6, 6, 6, 6, 14, 4, 14, 4, 6, 0, 6, 0, 4, 4, 4, 4, 0];
 OpenLayers.Renderer.symbol._x = [0, 0, 6,6,3,3,6,0,0,6,3,3];
+OpenLayers.Renderer.symbol.arrow = [0,0,5,10,10,0];
+
+
 OpenLayers.Renderer.symbol.plane = [5,0,5,0,4,1,4,3,0,5,0,6,4,5,4,8,2,10,3,10,5,9,5,9,8,10,8,10,6,8,6,5,10,6,10,5,6,3,6,1,5,0,5,0];
+
+OpenLayers.Renderer.symbol.arrow = [4,0,-2,10,12,10,6,0,4,0,-2,10,12,10,6,0];
 
 
 var MapUtils =  {
@@ -2204,7 +2209,6 @@ RepositoryMap.prototype = {
                     );
 		    let redrawFunc = () =>{
 			if(layer.getVisibility()) {
-			    console.log("calling redraw");
 			    layer.redraw(true);
 			}
 			setTimeout(redrawFunc,1000*60*5);
@@ -2476,7 +2480,7 @@ RepositoryMap.prototype = {
         if (this.showScaleLine) {
             this.getMap().addControl(new OpenLayers.Control.ScaleLine());
         }
-	//        this.getMap().addControl(new OpenLayers.Control.OverviewMap());
+//	this.getMap().addControl(new OpenLayers.Control.OverviewMap());
 
         var keyboardControl = new OpenLayers.Control();
         var control = new OpenLayers.Control();
