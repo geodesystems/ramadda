@@ -1648,6 +1648,7 @@ public class CsvUtil {
                 "Apply the operator to the given columns and create new one",
                 new Arg("columns"), "new col name", "operator +,-,*,/"),
         new Cmd("-round", "round the values", "columns"),
+        new Cmd("-abs", "make absolute values", "columns"),	
         new Cmd(
 		"-sum",
 		"Sum values keying on name column value. If no value columns specified then do a count",
@@ -1752,6 +1753,8 @@ public class CsvUtil {
 							"list", "size", "30")),
         new Cmd("-xml", "Parse the input as xml",
                 new Arg("path", "Path to the elements", "size", "60")),
+        new Cmd("-shapefile", "Parse the input shapefile",
+                new Arg("props", "addPoints true addShapes false")),	
         new Cmd("-text", "Extract rows from the text",
                 new Arg("comma separated header"),
                 new Arg("chunk pattern", "", "type", "pattern"),
@@ -2672,6 +2675,11 @@ public class CsvUtil {
 		return i;
 	    });
 
+	defineFunction("-shapefile",1,(ctx,args,i) -> {
+		ctx.getProviders().add(new ShapefileProvider(parseProps(args.get(++i))));
+		return i;
+	    });
+	
 	defineFunction("-kml",0,(ctx,args,i) -> {
 		ctx.getProviders().add(new DataProvider.KmlDataProvider());
 		return i;
@@ -2912,6 +2920,10 @@ public class CsvUtil {
 		ctx.getProcessor().addProcessor(new Converter.ColumnRounder(getCols(args.get(++i))));
 		return i;
 	    });
+	defineFunction("-abs", 1,(ctx,args,i) -> {
+		ctx.getProcessor().addProcessor(new Converter.ColumnAbs(getCols(args.get(++i))));
+		return i;
+	    });	
 	defineFunction("-md", 2,(ctx,args,i) -> {
 		ctx.getProcessor().addProcessor(new Converter.MD(getCols(args.get(++i)),args.get(++i)));
 		return i;
