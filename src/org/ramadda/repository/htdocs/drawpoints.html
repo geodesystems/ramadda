@@ -1,0 +1,49 @@
+
+<link href="lib/jquery-ui-1.12.1/jquery-ui.min.css"  rel="stylesheet"  type="text/css" />
+<script  src="lib/jquery/js/jquery-3.3.1.min.js"  type="text/JavaScript"  ></script>
+<script  src="lib/jquery-ui-1.12.1/jquery-ui.min.js"  type="text/JavaScript"  ></script>
+
+
+<img src=plane.png width=200 id=plane>
+<div id=click>click</div>
+<script>
+  var pts =[]
+  $("#plane").button().click(function(e) {
+      pts.push(e.offsetX,e.offsetY);
+//      console.log(e.offsetX+"," +e.offsetY)
+  });
+
+$("#click").button().click(()=>{
+    let w2 =$("#plane").width()/2
+    let h2 =$("#plane").height()/2
+    let all = [];
+    for(let i=0;i<pts.length;i+=2) {
+      let x = pts[i];
+      let y  = pts[i+1];
+      let x2 = w2-(x-w2)    
+       all.push(x2,y)
+    }
+    for(let i=pts.length-1;i>=0;i-=2) {
+	all.push(pts[i-1],pts[i]);
+    }
+
+
+    for(let i=0;i<pts.length;i+=2) {
+	let x = pts[i];
+	let y  = pts[i+1];
+	let x2 = w2-(x-w2)    
+	all.push(x2,y)
+    }
+    for(let i=pts.length-1;i>=0;i-=2) {
+	all.push(pts[i-1],pts[i]);
+    }
+    pts = all;
+    pts = pts.map(p=>{
+	return Math.round(p/20);
+    });
+    console.log("OpenLayers.Renderer.symbol.arrow  = [" +pts.join(",") +"]");
+});
+
+</script>
+
+
