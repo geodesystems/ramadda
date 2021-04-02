@@ -1648,7 +1648,8 @@ public class CsvUtil {
                 "Apply the operator to the given columns and create new one",
                 new Arg("columns"), "new col name", "operator +,-,*,/"),
         new Cmd("-round", "round the values", "columns"),
-        new Cmd("-abs", "make absolute values", "columns"),	
+        new Cmd("-abs", "make absolute values", "columns"),
+        new Cmd("-rand", "make random value"),		
         new Cmd(
 		"-sum",
 		"Sum values keying on name column value. If no value columns specified then do a count",
@@ -2923,7 +2924,11 @@ public class CsvUtil {
 	defineFunction("-abs", 1,(ctx,args,i) -> {
 		ctx.getProcessor().addProcessor(new Converter.ColumnAbs(getCols(args.get(++i))));
 		return i;
-	    });	
+	    });
+	defineFunction("-rand", 1,(ctx,args,i) -> {
+		ctx.getProcessor().addProcessor(new Converter.ColumnRand());
+		return i;
+	    });		
 	defineFunction("-md", 2,(ctx,args,i) -> {
 		ctx.getProcessor().addProcessor(new Converter.MD(getCols(args.get(++i)),args.get(++i)));
 		return i;

@@ -4644,6 +4644,34 @@ public abstract class Converter extends Processor {
 
     }
 
+    public static class ColumnRand extends Converter {
+
+        /**
+         *
+         * @param indices _more_
+         */
+        public ColumnRand() {
+        }
+
+        /**
+         *
+         * @param info _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row) {
+            if (rowCnt++ == 0) {
+		row.add("random");
+		return row;
+            }
+	    row.add(Math.random());
+            return row;
+        }
+
+    }
+    
     
 
 
