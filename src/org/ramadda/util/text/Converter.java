@@ -4598,6 +4598,55 @@ public abstract class Converter extends Processor {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Wed, Feb 20, '19
+     * @author         Enter your name here...
+     */
+    public static class ColumnAbs extends Converter {
+
+        /**
+         *
+         * @param indices _more_
+         */
+        public ColumnAbs(List<String> indices) {
+            super(indices);
+        }
+
+        /**
+         *
+         * @param info _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row) {
+            if (rowCnt++ == 0) {
+		return row;
+            }
+            List<Integer> indices = getIndices(info);
+            for (Integer idx : indices) {
+                int index = idx.intValue();
+                if ((index < 0) || (index >= row.size())) {
+                    continue;
+                }
+                String s = (String) row.getValues().get(index);
+                double v = (s.length() == 0)
+                           ? 0
+                           : Double.parseDouble(s.replaceAll(",", ""));
+                row.set(index, "" +Math.abs(v));
+            }
+            return row;
+        }
+
+    }
+
+    
+
+
 
     /**
      * Class description
