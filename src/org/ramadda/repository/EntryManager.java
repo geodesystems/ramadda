@@ -36,6 +36,7 @@ import org.ramadda.repository.type.ProcessFileTypeHandler;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.type.TypeInsertInfo;
 import org.ramadda.repository.util.SelectInfo;
+import org.ramadda.repository.util.FileWriter;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
@@ -64,11 +65,7 @@ import ucar.unidata.xml.XmlUtil;
 import java.awt.Image;
 import java.awt.geom.Rectangle2D;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 
 import java.net.URL;
 import java.net.URLConnection;
@@ -86,6 +83,9 @@ import java.text.SimpleDateFormat;
 import java.util.function.Function;
 import java.util.function.BiFunction;
 import java.util.function.BiConsumer;
+
+
+import java.util.zip.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -689,26 +689,184 @@ public class EntryManager extends RepositoryManager {
 
 
     public Result processMakeSnapshot(Request request, Entry entry) throws Exception {
+        if (request.isAnonymous()) {
+	    return makeSnapshotForm(request, entry,getPageHandler().showDialogError("Have to be an logged in to create a file snapshot"));
+	}
+
+	if(request.defined(ARG_CANCEL)) {
+	    return new Result(getEntryUrl(request, entry));
+	}
+
+	if(request.defined(ARG_OK)) {
+	    request.ensureAuthToken();
+	    return makeSnapshot(request, entry);
+	}
+	return makeSnapshotForm(request, entry,null);
+    }
+	
+
+
+    private  Result makeSnapshotForm(Request request, Entry entry, String prefix) throws Exception {
+	StringBuilder sb = new StringBuilder();
+	getPageHandler().entrySectionOpen(request, entry, sb,
+					  "Create a snapshot");
+	Entry parent = entry.getParentEntry();
+	if(parent==null) {
+	    sb.append(getPageHandler().showDialogError("Cannot snapshot the top-level entry"));
+	    return makeEntryEditResult(request,  entry,"Snapshot", sb);
+	}
+
+	request.formPostWithAuthToken(sb, getRepository().URL_ENTRY_SHOW);
+	sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
+	sb.append(HU.hidden(ARG_OUTPUT,getRepository().OUTPUT_MAKESNAPSHOT.getId()));
+	String extraMsg = "";
+	List<TwoFacedObject> types= new ArrayList<TwoFacedObject>();
+	types.add(new TwoFacedObject("Snapshot Entry", SNAPSHOT_ENTRY));
+	if (request.isAdmin()) {
+	    types.add(new TwoFacedObject("HTML File", SNAPSHOT_FILE));
+	    extraMsg  = " 'HTML File' or ";
+	}
+	types.add(new TwoFacedObject("HTML Export", SNAPSHOT_EXPORT));
+
+
+	String msg = ":note A snapshot is a permanent HTML page of this entry. Any data that is referenced will also be saved. If you choose " + extraMsg +" 'HTML Export' as the type then the destination entry is not required.";
+        sb.append(getWikiManager().wikifyEntry(request, entry,msg));
+	if(prefix !=null) sb.append(prefix);
+
+	sb.append(HU.formTable());
+
+	HU.formEntry(sb, msgLabel("Snapshot type"), HU.select(ARG_SNAPSHOT_TYPE, types));
+	getPageHandler().addEntrySelect(request, parent, ARG_DEST_ENTRY,sb,"Destination Entry", "");
+	HU.formTableClose(sb);
+	sb.append(HU.submit(msg("Create snapshot"), ARG_OK));
+	sb.append(HU.SPACE);
+	sb.append(HU.submit(msg("Cancel"), ARG_CANCEL));
+	sb.append(HU.formClose());
+	getPageHandler().entrySectionClose(request, entry, sb);
+	return makeEntryEditResult(request,  entry,"Snapshot", sb);
+    }
+
+
+    private Result makeSnapshot(Request request, Entry entry) throws Exception {
+	String type = request.getString(ARG_SNAPSHOT_TYPE,"");
+	StringBuilder sb  = new StringBuilder();
+	boolean makeFile = type.equals(SNAPSHOT_FILE);
+	boolean makeExport = type.equals(SNAPSHOT_EXPORT);
+	boolean makeEntry = type.equals(SNAPSHOT_ENTRY);	
+	if(makeFile) {
+	    if (!request.isAdmin()) {
+		return makeSnapshotForm(request, entry,getPageHandler().showDialogError("Have to be an admin to create a file snapshot"));
+	    }
+	}
 	Date now = new Date();
 	String cleanName = Utils.makeID(entry.getName());
 	String snapshotFile =cleanName +"_"+ entry.getId() +"_"+  now.getTime() +".html";
 	String snapshotFilePath  =getRepository().getUrlBase()+"/snapshots/pages/" + snapshotFile;
-	request.putExtraProperty(PROP_OVERRIDE_URL,snapshotFilePath);
+	if(makeExport) {
+	    request.putExtraProperty(PROP_OVERRIDE_URL,"#");
+	} else if(makeFile) {
+	    request.putExtraProperty(PROP_OVERRIDE_URL,snapshotFilePath);
+	}
 	request.putExtraProperty(PROP_MAKESNAPSHOT,"true");
+	List<String[]> snapshotFiles = new ArrayList<String[]>();
+	request.putExtraProperty("snapshotfiles", snapshotFiles);
 	request.put(ARG_OUTPUT,OutputHandler.OUTPUT_HTML.getId());
 	request.put("ramadda.showjsonld", "false");
-	StringBuilder sb  = new StringBuilder();
-	request.put(ARG_TEMPLATE,"empty");
 	getRepository().getHtmlOutputHandler().handleDefaultWiki(request, entry,sb,null,null);
 	Result tmpResult = new Result("",sb);
 	tmpResult.setTitle(entry.getName());
 	Request tmpRequest = request.cloneMe();
+
+	if(makeEntry) {
+	    //use empty template when we generate a an entry 
+	    tmpRequest.put(ARG_TEMPLATE,"empty");
+	}
+	if(makeExport) {
+	    tmpRequest.appendHead0("<base href='" + request.getAbsoluteUrl("") +"' target='_blank'>\n");
+	}
 	tmpRequest.setUser(getUserManager().getAnonymousUser());
 	getPageHandler().decorateResult(tmpRequest, tmpResult);
 	String html = tmpResult.getStringContent();
-	File file  = new File(getStorageManager().getHtdocsDir()+"/snapshots/pages/" + snapshotFile);
-	getStorageManager().writeFile(file, html);
-	return new Result(snapshotFilePath);
+	if(makeExport) {
+	    //String to  = request.getAbsoluteUrl("");
+	    //	    html = html.replaceAll(getRepository().getUrlBase(),to+"/repository");
+	    //	    html = html.replaceAll("/" + RepositoryUtil.getHtdocsVersion(),"");
+	    OutputStream os = request.getHttpServletResponse().getOutputStream();
+	    request.getHttpServletResponse().setContentType("multipart/x-zip");
+	    request.setReturnFilename(IOUtil.stripExtension(entry.getName())+"_snapshot.zip");
+	    FileWriter zipFileWriter= new FileWriter(new ZipOutputStream(os));
+	    zipFileWriter.setCompressionOn();
+	    for(String[]tuple: snapshotFiles) {
+		String tmpFile =tuple[0];
+		String jsonFileName= tuple[1];
+		FileInputStream fis =new FileInputStream(tmpFile);
+                zipFileWriter.writeFile(jsonFileName, fis);
+		IOUtil.close(fis);
+	    }
+	    zipFileWriter.writeFile(IOUtil.stripExtension(entry.getName())+".html", html.getBytes());
+	    zipFileWriter.close();
+	    Result result = Result.makeNoOpResult();
+	    result.setShouldDecorate(false);
+	    return result;
+	}
+	
+	if(makeFile) {
+	    for(String[]tuple: snapshotFiles) {
+		String jsonFileName= tuple[1];
+		String tmpFile =tuple[0];
+		getStorageManager().moveFile(new File(tmpFile), new File(getStorageManager().getSnapshotsDataDir()+"/"+ jsonFileName));
+		String newPath = getRepository().getUrlBase()+"/snapshots/data/" + jsonFileName;
+		html = html.replaceAll(jsonFileName, newPath);
+	    }
+	    File file  = new File(getStorageManager().getHtdocsDir()+"/snapshots/pages/" + snapshotFile);
+	    getStorageManager().writeFile(file, html);
+	    return new Result(snapshotFilePath);
+	}
+
+	if(makeEntry) {
+	    Entry parent = getEntry(request, request.getString(ARG_DEST_ENTRY+"_hidden",""));
+	    if(parent==null) {
+		return makeSnapshotForm(request, entry,getPageHandler().showDialogError("No parent entry specified"));
+	    }
+	    if(!canAddTo(request, parent)) {
+		return makeSnapshotForm(request, entry,getPageHandler().showDialogError("You do not have permission to add to the parent entry"));
+	    }
+	    File zipFile = getStorageManager().getTmpFile(request,"snapshortimport.zip");
+	    FileOutputStream fos  = new FileOutputStream(zipFile);
+	    FileWriter zipFileWriter= new FileWriter(new ZipOutputStream(fos));
+	    StringBuilder entriesXml = new StringBuilder("<entries>\n");
+	    String htmlFileName =  IOUtil.stripExtension(entry.getName())+".html";
+	    String htmlEntryId = getRepository().getGUID();
+	    entriesXml.append(XmlUtil.tag("entry",XmlUtil.attr("name",entry.getName()+" snapshot") +
+					  XmlUtil.attr("id",htmlEntryId) +
+					  XmlUtil.attr("type","type_document_html") +
+					  XmlUtil.attr("embed_type","embed") +
+					  XmlUtil.attr("file",htmlFileName)));
+	    html = html.replaceAll("(?s)<imports>.*?</imports>","");
+	    for(String[]tuple: snapshotFiles) {
+		String tmpFile =tuple[0];
+		String jsonFileName= tuple[1];
+		String jsonFileId = IOUtil.stripExtension(jsonFileName);
+		html = html.replaceAll(jsonFileName,getRepository().getUrlBase()+"/entry/get?entryid=" + jsonFileId);
+		String dataEntryName= tuple[2];		
+		FileInputStream fis =new FileInputStream(tmpFile);
+                zipFileWriter.writeFile(jsonFileName, fis);
+		IOUtil.close(fis);
+		entriesXml.append(XmlUtil.tag("entry",XmlUtil.attr("name",dataEntryName+" data") +
+					      XmlUtil.attr("id",jsonFileId) +
+					      XmlUtil.attr("parent",htmlEntryId) +
+					      XmlUtil.attr("type","type_datafile_json") +
+					      XmlUtil.attr("file",jsonFileName)));
+		entriesXml.append("\n");
+	    }
+	    entriesXml.append("</entries>\n");
+	    zipFileWriter.writeFile(htmlFileName, html.getBytes());
+	    zipFileWriter.writeFile("entries.xml",entriesXml.toString().getBytes());
+	    zipFileWriter.close();
+	    return  processEntryImportInner(request, parent, zipFile.toString());
+	}
+
+	return makeSnapshotForm(request, entry,"");
     }
 
 
@@ -799,9 +957,7 @@ public class EntryManager extends RepositoryManager {
 
 
         Result result = processEntryShow(request, entry);
-        Result r      = addEntryHeader(request, entry, result);
-
-        return r;
+        return addEntryHeader(request, entry, result);
     }
 
 
@@ -891,8 +1047,6 @@ public class EntryManager extends RepositoryManager {
      */
     public Result addEntryHeader(Request request, Entry entry, Result result)
             throws Exception {
-        //For now don't add the entry header for the top-level entry
-        //for pages like search, etc.
         if (entry == null) {
             return result;
         }
@@ -900,13 +1054,8 @@ public class EntryManager extends RepositoryManager {
             result.setTitle(entry.getTypeHandler().getEntryName(entry));
         }
 
-        if (entry == null) {
-            entry = request.getRootEntry();
-        }
-
         //If entry is a dummy that means its from search results
         if (result.getShouldDecorate() && !entry.isDummy()) {
-
             Entry entryForHeader = entry;
 
             //If its a search result then use the top-level group for the header
@@ -996,7 +1145,7 @@ public class EntryManager extends RepositoryManager {
      */
     public Result processEntryShow(Request request, Entry entry)
             throws Exception {
-        Result result = null;
+	Result result = null;
         OutputHandler outputHandler =
             getRepository().getOutputHandler(request);
 
@@ -4813,6 +4962,11 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
+	return processEntryImportInner(request, parent, file);
+    }
+
+
+    private  Result processEntryImportInner(Request request, Entry parent, String file) throws Exception {	
         String entriesXml = null;
         Hashtable<String, File> origFileToStorage = new Hashtable<String,
                                                         File>();
@@ -4895,7 +5049,7 @@ public class EntryManager extends RepositoryManager {
 
 
         List<Entry> newEntries = processEntryXml(request, root, parent,
-                                     origFileToStorage);
+						 origFileToStorage);
 
 
         for (Entry entry : newEntries) {
@@ -5003,7 +5157,6 @@ public class EntryManager extends RepositoryManager {
 
         List<String[]> idList = new ArrayList<String[]>();
         for (Element node : entryNodes) {
-
             List<Entry> entryList = createEntryFromXml(request, node,
                                         entries, origFileToStorage, true,
                                         false);
@@ -6399,7 +6552,6 @@ public class EntryManager extends RepositoryManager {
 
         if (entryId == null) {
             debug("getEntry: id is null ");
-
             return null;
         }
         if (entryId.equals(ID_ROOT)) {
@@ -6416,14 +6568,12 @@ public class EntryManager extends RepositoryManager {
             }
             entry = getAccessManager().filterEntry(request, entry);
             debug("getEntry: after filter:" + entry);
-
             return entry;
         }
 
         try {
             if (entryId.startsWith(ID_PREFIX_REMOTE)) {
                 String[] tuple = getRemoteEntryInfo(entryId);
-
                 return getRemoteEntry(request, tuple[0], tuple[1]);
             } else if (isSynthEntry(entryId)) {
                 String[]    pair          = getSynthId(entryId);
@@ -6465,7 +6615,6 @@ public class EntryManager extends RepositoryManager {
             }
         } catch (Exception exc) {
             logError("creating entry:" + entryId, exc);
-
             return null;
         }
 

@@ -1715,8 +1715,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             if (getProperty(wikiUtil, props, "link", false)) {
 		//In case we are making a snapshot we use the overrideurl
 		String url = (String)request.getExtraProperty(PROP_OVERRIDE_URL);
-		if(url==null)
+		if(url!=null && url.equals("#"))  {
+		} else if(url==null) {
 		    url = getEntryManager().getEntryUrl(request, entry);
+		}
                 name = HU.href(url, name, HU.cssClass("ramadda-clickable"));
             }
             return name;
@@ -2040,24 +2042,16 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 	    if(Misc.equals("true",request.getExtraProperty(PROP_MAKESNAPSHOT))) {
 		if(request.isAnonymous()) throw new RuntimeException("Anonymous users cannot make snapshots");
-		List<String[]> snapshotUrls = (List<String[]>) request.getExtraProperty("snapshoturls");
-		if(snapshotUrls ==null) {
-		    snapshotUrls = new ArrayList<String[]>();
-		    request.putExtraProperty("snapshoturls", snapshotUrls);
-		}
+		List<String[]> snapshotFiles = (List<String[]>) request.getExtraProperty("snapshotfiles");
+		File tmpFile = getStorageManager().getTmpFile(request, "point.json");
 		Date now = new Date();
 		String fileName = jsonUrl.replaceAll("^/.*\\?","").replace("output=points.product&product=points.json&","").replaceAll("[&=\\?]+","_").replace("entryid_","");
 		fileName += "_"+  now.getTime() +".json";
 		fileName =  Utils.makeID(entry.getName()) +"_"+fileName;
+		snapshotFiles.add(new String[]{tmpFile.toString(), fileName, entry.getName()});
 		URL url = new URL(request.getAbsoluteUrl(jsonUrl).replace("localhost:","127.0.0.1:"));
-		jsonUrl = getRepository().getUrlBase()+"/snapshots/data/" + fileName;
-
-		//		System.err.println("new url:" + jsonUrl);
-		//System.err.println("abs url:" + url);
-
-
-		String fullFileName = getStorageManager().getHtdocsDir()+"/snapshots/data/" + fileName;
-		OutputStream fos = getStorageManager().getFileOutputStream(new File(fullFileName));
+		jsonUrl = fileName;
+		OutputStream fos = getStorageManager().getFileOutputStream(tmpFile);
 		InputStream fis = IO.getInputStream(url);
 		IOUtil.writeTo(fis, fos);
 		IOUtil.close(fos);
