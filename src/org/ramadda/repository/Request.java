@@ -419,6 +419,24 @@ public class Request implements Constants, Cloneable {
         return httpServletRequest.getMethod().equals("POST");
     }
 
+
+    /**
+     * _more_
+     *
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    public String getReferer(String dflt) {
+        String referer = httpServletRequest.getHeader("referer");
+        if (referer == null) {
+            referer = dflt;
+        }
+
+        return referer;
+    }
+
+
     /**
      * _more_
      *
@@ -2614,27 +2632,68 @@ public class Request implements Constants, Cloneable {
         extraProperties.put(key, value);
     }
 
+    /**
+     * _more_
+     *
+     * @param s _more_
+     */
+    public synchronized void appendHead0(String s) {
+        StringBuilder head0 = (StringBuilder) getExtraProperty("head0");
+        if (head0 == null) {
+            head0 = new StringBuilder();
+            putExtraProperty("head0", head0);
+        }
+        head0.append(s);
+        head0.append("\n");
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String getHead0() {
+        StringBuilder head0 = (StringBuilder) getExtraProperty("head0");
+        if (head0 == null) {
+            return null;
+        } else {
+            return head0.toString();
+        }
+    }
+
+
+
 
 
     /**
      * _more_
      *
      * @param head _more_
+     *
+     * @param s _more_
      */
     public synchronized void appendHead(String s) {
-	StringBuilder head =	(StringBuilder)getExtraProperty("head");
-	if(head==null) {
-	    head=new StringBuilder();
-	    putExtraProperty("head", head);
-	}
-	head.append(s);
-	head.append("\n");
+        StringBuilder head = (StringBuilder) getExtraProperty("head");
+        if (head == null) {
+            head = new StringBuilder();
+            putExtraProperty("head", head);
+        }
+        head.append(s);
+        head.append("\n");
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getHead() {
-	StringBuilder head =	(StringBuilder)getExtraProperty("head");
-	if(head==null) return null;
-	else return head.toString();
+        StringBuilder head = (StringBuilder) getExtraProperty("head");
+        if (head == null) {
+            return null;
+        } else {
+            return head.toString();
+        }
     }
 
 
