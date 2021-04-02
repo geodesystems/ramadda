@@ -821,6 +821,7 @@ a.ramadda-menubar-button:hover {
     overflow-y: auto;
     color:#000;
     z-index: var(--block-z-index);
+    margin-bottom: 5px;
 }
 
 .ramadda-block ul {
@@ -833,10 +834,10 @@ a.ramadda-menubar-button:hover {
     overflow-y: auto;
 }
 
-.ramadda-block  {
-    border-bottom: var(--basic-border);
-    margin-bottom: 5px;
-}
+
+
+
+
 
 
 .ramadda-snippet-popup {
@@ -1561,7 +1562,7 @@ a.ramadda-menubar-button:hover {
 
 
 .ramadda-section-map {
-    background: URL(${root}/images/background.png);
+    background: URL(images/background.png);
 }
 
 .ramadda-section-lightpink, .ramadda-section-rose {
@@ -2779,7 +2780,7 @@ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;
 .ramadda-header {
     z-index:var(--header-z-index);
     background-repeat: repeat; 
-    background-image:url(${root}/images/background.png);
+    background-image:url(images/background.png);
     padding-bottom: 0px;
     border-bottom : var(--basic-border);
     position:relative;
@@ -2849,7 +2850,7 @@ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;
 
 
 .breadCrumb ul li {
-    background: url(${root}/icons/arrow_right_blue.png) no-repeat 100% center;
+    background: url(icons/arrow_right_blue.png) no-repeat 100% center;
     margin: 0px 4px 0px 0px;
     padding: 0px 8px 0px 0px;
     font-size: inherit;
@@ -2873,7 +2874,7 @@ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;
 
 
 .chevronOverlay {
-    background: url(${root}/icons/arrow_right_blue.png) no-repeat 100% center;
+    background: url(icons/arrow_right_blue.png) no-repeat 100% center;
 }
 
 .ramadda-breadcrumbs-list {
@@ -2888,7 +2889,7 @@ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;
     width: 16px;
     height:13px;
     padding:0px;
-    background: url(${root}/icons/menu_arrow_down.png) no-repeat 50% center;
+    background: url(icons/menu_arrow_down.png) no-repeat 50% center;
     margin:0px;
     border: 1px #fff solid;
     border-color: #ccc;
@@ -3000,7 +3001,7 @@ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;
 .ramadda-user-field, .ramadda-user-field:focus  {
     padding-left: 18px;
     border : 1px #888888 solid;
-    background: URL(${root}/icons/user.png) no-repeat;
+    background: URL(icons/user.png) no-repeat;
     background-position: 1px 1px;
 }
 
@@ -3064,7 +3065,7 @@ a.ramadda-heading-2-link:visited {
     padding:10px;
     text-align:center;
     background-repeat: repeat; 
-    background-image:url(${root}/images/background.png);
+    background-image:url(images/background.png);
     border-top : var(--basic-border);
 }
 
@@ -3555,6 +3556,10 @@ snippet-hide {
 
 .ramadda-code-path {
     font-style:italic;
+}
+
+imports {
+    display: inline;
 }
 
 nowiki {
@@ -4280,7 +4285,7 @@ g.wiki-tocheader {
 
 
 .wiki-link-external {
-    background: url(${root}/icons/wiki/external.png) center right no-repeat;
+    background: url(icons/wiki/external.png) center right no-repeat;
     padding-right: 13px;
 }
 
@@ -4537,7 +4542,7 @@ h3.ui-accordion-header a {
 } 
 
 .ramadda-tabs-minarrow .ui-tabs-nav .ui-state-active { 
-    background: transparent url(${root}/icons/uiTabsArrow.png) no-repeat bottom center; 
+    background: transparent url(icons/uiTabsArrow.png) no-repeat bottom center; 
 } 
 
 .ramadda-tabs-min .ui-tabs-nav .ui-state-active { 

@@ -160,6 +160,12 @@ function DisplayAnimation(display, enabled,attrs) {
     const ID_TICKS = "ticks";
     const ID_TOOLTIP = "tooltip";    
     const ID_SHOWALL = "showall";
+    const ID_WINDOW = "window";
+    const ID_STEP = "step";        
+    const ID_SETTINGS = "settings";
+    const ID_FASTER = "faster";
+    const ID_SLOWER = "slower";
+    const ID_RESET = "reset";    
     const ID_ANIMATION_LABEL = "animationlabel";
     const MODE_FRAME = "frame";
     const MODE_SLIDING = "sliding";
@@ -179,8 +185,10 @@ function DisplayAnimation(display, enabled,attrs) {
         dateRange: 0,
         dateFormat: display.getProperty("animationDateFormat", display.getProperty("dateFormat", "yyyymmdd")),
         mode: display.getProperty("animationMode", "cumulative"),
+        startAtBeginning: display.getProperty("animationStartAtBeginning", true),	
         startAtEnd: display.getProperty("animationStartAtEnd", false),
         speed: parseInt(display.getProperty("animationSpeed", 500)),
+        dwell: parseInt(display.getProperty("animationDwell", 1000)),	
 	getEnabled: function() {
 	    return this.enabled;
 	},
@@ -192,6 +200,9 @@ function DisplayAnimation(display, enabled,attrs) {
 		this.startAnimation();
 	},
         getDomId: function(id) {
+	    return this.domId(id);
+	},
+        domId: function(id) {
 	    return this.display.getDomId(id+(this.baseDomId?this.baseDomId:""));
 	},
 	jq: function(id) {
@@ -221,48 +232,14 @@ function DisplayAnimation(display, enabled,attrs) {
 		return a.getTime() - b.getTime();
 	    });
 	    
-	    this.frameIndex = 0;
-	    if(this.startAtEnd) {
-		this.begin = this.dateMax;
-		this.end = this.dateMax;
-		if (this.mode == MODE_FRAME) {
-		    this.frameIndex = this.dates.length-1;
-		}		    
-	    }
-	    if (this.mode == MODE_FRAME) {
-		this.end = this.begin;
-	    }
-
             this.dateRange = this.dateMax.getTime() - this.dateMin.getTime();
 	    this.steps= parseFloat(this.display.getProperty("animationSteps", 60));
-	    this.windowUnit = this.display.getProperty("animationWindow", "");
-
-	    if (this.windowUnit != "") {
-		if (this.windowUnit == "decade") {
-		    this.window = 1000 * 60 * 60 * 24 * 365 * 10;// + 1000 * 60 * 60 * 24 * 365;
-		} else 	if (this.windowUnit == "century") {
-		    this.window = 1000 * 60 * 60 * 24 * 365 * 100;// + 1000 * 60 * 60 * 24 * 365;
-		} else 	if (this.windowUnit == "halfdecade") {
-		    this.window = 1000 * 60 * 60 * 24 * 365 * 5;// + 1000 * 60 * 60 * 24 * 365;
-		} else if (this.windowUnit == "year") {
-		    this.window = 1000 * 60 * 60 * 24 * 366;
-		} else if (this.windowUnit == "month") {
-		    this.window = 1000 * 60 * 60 * 24 * 32;
-		} else if (this.windowUnit == "week") {
-		    this.window = 1000 * 60 * 60 * 24*7;
-		} else if (this.windowUnit == "day") {
-		    this.window = 1000 * 60 * 60 * 24;
-		} else if (this.windowUnit == "hour") {
-		    this.window = 1000 * 60 * 60;
-		} else if (this.windowUnit == "minute") {
-		    this.window = 1000 * 61;
-		} else {
-		    this.window = 1001;
-		}
-	    } else if(this.steps>0){
-		this.window = this.dateRange / this.steps;
+	    this.setWindow();
+	    this.frameIndex = 0;
+	    if(!this.display.getProperty("animationStartShowAll",false)) { 
+		this.resetRange();
 	    }
-	    var sliderValues = this.mode != MODE_FRAME?[this.begin.getTime(),this.end.getTime()]:[this.begin.getTime()];
+	    let sliderValues = this.mode != MODE_FRAME?[this.begin.getTime(),this.end.getTime()]:[this.begin.getTime()];
 	    let tooltipFunc = {
 		    mouseleave: function(e) {
 			if(_this.tooltip)
@@ -317,6 +294,80 @@ function DisplayAnimation(display, enabled,attrs) {
 	    this.updateLabels();
 	    if(debug)console.log("animation.init-done");
 	},
+	resetRange: function() {
+	    if(this.startAtEnd) {
+		this.begin = this.dateMax;
+		this.end = this.dateMax;
+		if (this.mode == MODE_FRAME) {
+		    this.frameIndex = this.dates.length-1;
+		}		    
+	    } else   if(this.startAtBeginning) {
+		this.begin = this.dateMin;
+		this.end = new Date(this.begin.getTime()+this.window);
+	    }
+	    if (this.mode == MODE_FRAME) {
+		this.end = this.begin;
+	    }
+	},
+	setWindow: function() {
+	    let window = this.display.getProperty("animationWindow");
+	    let step = this.display.getProperty("animationStep", window);
+	    if (window) {
+		this.window = this.getMillis(window);
+	    } else if(this.steps>0){
+		this.window = this.dateRange / this.steps;
+	    }
+	    if (step) {
+		this.step = this.getMillis(step);
+	    } else {
+		this.step = this.window;
+	    }
+	},
+	timeMap: {
+	    century: 1000 * 60 * 60 * 24 * 365 * 100,
+	    centuries: 1000 * 60 * 60 * 24 * 365 * 100,	    
+	    decade: 1000 * 60 * 60 * 24 * 365 * 10,
+	    halfdecade: 1000 * 60 * 60 * 24 * 365 * 5,
+	    year: 1000 * 60 * 60 * 24 * 365 * 1,
+	    month: 1000 * 60 * 60 * 24 * 31,
+	    week: 1000 * 60 * 60 * 24 * 7,
+	    day: 1000 * 60 * 60 * 24 * 1,		    
+	    hour: 1000 * 60 * 60,
+	    hour: 1000 * 60,
+	    second: 1000		    
+	},
+	getMillis:function(window) {
+	    window =window.trim();
+	    let cnt = 1;
+	    let unit = "day";
+	    let toks = window.match("^([0-9]+)(.*)");
+	    if(toks) {
+		cnt = +toks[1];
+		unit  = toks[2].trim();
+	    } else {
+		toks = window.match("(^[0-9]+)$");
+		if(toks) {
+		    unit = "minute";
+		    cnt = +toks[1];
+		} else {
+		    unit = window;
+		}
+	    }
+	    let scale = 1;
+	    unit = unit.toLowerCase().trim();
+	    if(this.timeMap[unit]) {
+		scale = this.timeMap[unit];
+	    } else {
+		if(unit.endsWith("s"))
+		    unit = unit.substring(0, unit.length-1);
+		if(this.timeMap[unit]) {
+		    scale = this.timeMap[unit];
+		} else {
+		    console.log("Unknown unit:" + unit);
+		}
+	    }
+	    return  cnt*scale;
+	},
 	getIndex: function() {
 	    return this.frameIndex;
 	},
@@ -324,7 +375,6 @@ function DisplayAnimation(display, enabled,attrs) {
 	    return this.begin;
 	},
 	handleEventAnimationChanged(args) {
-//	    console.log(this.display.type+" animationChange " + JSON.stringify(args));
 	    this.begin = args.begin;
 	    this.end = args.end;
 	    this.stopAnimation();
@@ -369,7 +419,8 @@ function DisplayAnimation(display, enabled,attrs) {
 	    let showButtons  = this.display.getProperty("animationShowButtons",true);
 	    let showSlider = display.getProperty("animationShowSlider",true);
 	    if(showButtons) {
-		var short = display.getProperty("animationWidgetShort",false);
+		let short = display.getProperty("animationWidgetShort",false);
+		buttons +=   HtmlUtils.span([ID, this.getDomId(ID_SETTINGS),TITLE,"Settings"], HtmlUtils.getIconImage("fas fa-cog")); 
 		if(!short)
 		    buttons +=   HtmlUtils.span([ID, this.getDomId(ID_BEGIN),TITLE,"Go to beginning"], HtmlUtils.getIconImage("fa-fast-backward")); 
 		buttons += HtmlUtils.span([ID, this.getDomId(ID_PREV), TITLE,"Previous"], HtmlUtils.getIconImage("fa-step-backward")); 
@@ -378,8 +429,6 @@ function DisplayAnimation(display, enabled,attrs) {
 		buttons +=HtmlUtils.span([ID, this.getDomId(ID_NEXT), TITLE,"Next"], HtmlUtils.getIconImage("fa-step-forward"));
 		if(!short)
 		    buttons +=HtmlUtils.span([ID, this.getDomId(ID_END), TITLE,"Go to end"], HtmlUtils.getIconImage("fa-fast-forward"));
-		if(!short)
-		    buttons += HtmlUtils.span([ID, this.getDomId(ID_SHOWALL), TITLE,"Show all"], HtmlUtils.getIconImage("fa-sync"));
 	    }
 
 	    if(showButtons) {
@@ -485,12 +534,67 @@ function DisplayAnimation(display, enabled,attrs) {
 		this.tooltipDateFormat = this.display.getProperty("animationTooltipDateFormat");
 	    }
 
+
+	    let _this  =this;
+            this.jq(ID_SETTINGS).button().click(function(){
+		let window = _this.display.getProperty("animationWindow");
+		let step = _this.display.getProperty("animationStep", window);		
+		let clazz = "ramadda-hoverable ramadda-clickable";
+		let html = HU.div([ID,_this.domId(ID_FASTER),TITLE, "Faster", CLASS,clazz], "Faster") +	
+	    HU.div([ID,_this.domId(ID_SLOWER),TITLE, "Slower", CLASS,clazz], "Slower")		+
+		    HU.div([ID,_this.domId(ID_RESET),TITLE, "Reset", CLASS,clazz], "Reset") +
+		    HU.div([ID,_this.domId(ID_SHOWALL),TITLE, "Show all", CLASS,clazz], "Show all");
+		if(window) {
+		    html+=HU.div([TITLE, "Window, e.g., 1 week, 2 months, 3 days, 2 weeks, etc"], "Window:<br>" +SPACE2 + HU.input("",window,[ID,_this.domId(ID_WINDOW),"size","10"]));
+		    html+=HU.div([TITLE, "Step, e.g., 1 week, 2 months, 3 days, 2 weeks, etc"], "Step:<br>" +SPACE2+ HU.input("",step,[ID,_this.domId(ID_STEP),"size","10"]));
+		}
+		html=HU.div([STYLE,HU.css("margin","4px")], html);
+		_this.dialog = HU.makeDialog({content:html,anchor:$(this),draggable:false,header:false});
+
+		let key = (e)=>{
+		    if(Utils.isReturnKey(e)) {
+			_this.dialog.hide();
+			_this.display.setProperty("animationWindow",_this.jq(ID_WINDOW).val());
+			_this.display.setProperty("animationStep",_this.jq(ID_STEP).val());			
+			_this.setWindow();
+			_this.resetRange();
+			_this.dateRangeChanged();
+		    }
+		};
+		_this.jq(ID_WINDOW).keyup(key);
+		_this.jq(ID_STEP).keyup(key);
+		_this.jq(ID_FASTER).click(()=>{
+		    _this.dialog.hide();
+		    _this.speed = _this.speed*0.75;
+		});
+		_this.jq(ID_SLOWER).click(()=>{
+		    _this.dialog.hide();
+		    _this.speed = _this.speed*1.5;
+		});
+
+		_this.jq(ID_RESET).click(()=>{
+		    _this.dialog.hide();
+		    _this.speed =  parseInt(_this.display.getProperty("animationSpeed", 500));
+		    _this.resetRange();
+		    _this.inAnimation = false;
+		    _this.stopAnimation();
+		    _this.dateRangeChanged();
+		});		
+		_this.jq(ID_SHOWALL).click(()=>{
+		    _this.dialog.hide();
+		    _this.begin = _this.dateMin;
+		    _this.end = _this.dateMax;
+		    _this.inAnimation = false;
+		    _this.stopAnimation();
+		    _this.dateRangeChanged();
+		});		
+
+	    });
             this.btnRun = this.jq(ID_RUN);
             this.btnPrev = this.jq(ID_PREV);
             this.btnNext = this.jq(ID_NEXT);
             this.btnBegin = this.jq(ID_BEGIN);
             this.btnEnd = this.jq(ID_END);
-            this.btnShowAll = this.jq(ID_SHOWALL);
             this.label = this.jq(ID_ANIMATION_LABEL);
             this.btnRun.button().click(() => {
                 this.toggleAnimation();
@@ -533,15 +637,7 @@ function DisplayAnimation(display, enabled,attrs) {
 		this.stopAnimation();
 		this.doNext();
             });
-            this.btnShowAll.button().click(() => {
-		this.begin = this.dateMin;
-		this.end = this.dateMax;
-		this.inAnimation = false;
-		this.running = false;
-		if(this.btnRun)
-		    this.btnRun.html(HtmlUtils.getIconImage("fa-play"));
-		this.dateRangeChanged();
-            });
+
         },
 	fullRange: function() {
 	    return this.atBegin() && this.atEnd();
@@ -555,8 +651,9 @@ function DisplayAnimation(display, enabled,attrs) {
 	getDiff: function() {
 	    return  this.end.getTime()-this.begin.getTime();
 	},
-	doPrev: function() {
+	doPrev: function()  {
 	    let diff = this.getDiff()||this.window;
+	    diff = this.window||this.getDiff();
 	    if (this.mode == MODE_SLIDING) {
 		this.begin = new Date(this.begin.getTime()-diff);
 		if(this.begin.getTime()<this.dateMin.getTime())
@@ -577,13 +674,13 @@ function DisplayAnimation(display, enabled,attrs) {
 	    let wasAtEnd = this.atEnd();
 	    if(debug) console.log("animation.doNext:" + this.mode +" atEnd=" + wasAtEnd);
 	    if (this.mode == MODE_SLIDING) {
-		let diff = this.getDiff()||this.window;
-		this.begin = this.end;
-		this.end = new Date(this.begin.getTime()+diff);
+		let window = this.window||this.getDiff();
+		this.begin = new Date(this.begin.getTime()+this.step);
+		this.end = new Date(this.end.getTime()+this.step);
 		//this.end.getTime()+this.window);		
 		if(this.atEnd()) {
 		    this.end = this.dateMax;
-		    this.begin = new Date(this.end.getTime()-diff);
+		    this.begin = new Date(this.end.getTime()-window);
 		    this.inAnimation = false;
 		    this.stopAnimation();
 		}
@@ -596,7 +693,7 @@ function DisplayAnimation(display, enabled,attrs) {
 				this.begin = this.end = this.dateMin;
 				this.frameIndex=0;
 				this.updateUI();
-			    },this.display.getProperty("animationDwell",1000));
+			    },this.dwell);
 			    return;
 			} else {
 			    this.stopAnimation();
@@ -634,27 +731,6 @@ function DisplayAnimation(display, enabled,attrs) {
 		    this.doNext();
 		    return;
 		}
-                var date = this.dateMin;
-                this.begin = date;
-                var unit = this.windowUnit;
-                if (unit != "") {
-                    var tmp = 0;
-                    if (unit == "decade") {
-                        this.begin = new Date(date.getUTCFullYear(), 0);
-                    } else if (unit == "year") {
-                        this.begin = new Date(date.getUTCFullYear(), 0);
-                    } else if (unit == "month") {
-                        this.begin = new Date(date.getUTCFullYear(), date.getMonth());
-                    } else if (unit == "day") {
-                        this.begin = new Date(date.getUTCFullYear(), date.getMonth(), date.getDay());
-                    } else if (unit == "hour") {
-                        this.begin = new Date(date.getUTCFullYear(), date.getMonth(), date.getDay(), date.getHours());
-                    } else if (unit == "minute") {
-                        this.begin = new Date(date.getUTCFullYear(), date.getMonth(), date.getDay(), date.getHours(), date.getMinutes());
-                    } else {
-                        this.begin = new Date(date.getUTCFullYear(), date.getMonth(), date.getDay(), date.getHours(), date.getSeconds());
-                    }
-                } 
                 if(this.fullRange()) {
 		    this.end = new Date(this.begin.getTime()+this.window);
 		}
@@ -4065,11 +4141,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:"animationStyle"},				
 	{p:"animationTooltipShow",ex:"true"},
 	{p:"animationTooltipDateFormat",ex:"yyyymmddhhmm"},		
-	{p:"animationWindow",ex:"decade|halfdecade|year|month|week|day|hour|minute"},
 	{p:"animationMode",ex:"sliding|frame|cumulative"},
+	{p:"animationWindow",ex:"1 day|2 weeks|3 months|1 year|2 decades|etc"},
+	{p:"animationStep",ex:"1 day|2 weeks|3 months|1 year|2 decades|etc"},
 	{p:"animationSpeed",ex:500},
 	{p:"animationLoop",ex:true},
 	{p:"animationDwell",ex:1000},
+	{p:'animationStartShowAll',ex:true,tt:'Show full range at start'},
 	{p:"animationShowButtons",ex:false},
 	{p:"animationShowSlider",ex:false},
 	{p:"animationWidgetShort",ex:true}
@@ -7064,7 +7142,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    var callUpdate = !this.displayReady;
             this.displayReady = true;
 	    if(callUpdate) {
-		this.callUpdateUI(true);
+		this.callUpdateUI({force:true});
 	    }
         },
         getDisplayReady: function() {
@@ -7083,7 +7161,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.getAnimation().makeControls();
             }
             this.checkSearchBar();
-	    this.callUpdateUI(true);
+	    this.callUpdateUI({force:true});
 	    if(this.getProperty("reloadSeconds")) {
 		this.runReload();
 	    }
@@ -7406,18 +7484,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.haveCalledUpdateUI = false;
 	    this.callUpdateUI();
 	},
-	callUpdateUI: function(force) {
+	callUpdateUI: function(args) {
+	    args = args || {};
 	    try {
-		if(force)
+		if(args.force)
 		    this.haveCalledUpdateUI = false;
-		this.updateUI();
+		this.updateUI(args);
 	    } catch(err) {
                 this.setContents(this.getMessage(err));
 		console.log("Error:" + err);
 		console.log(err.stack);
 	    }
 	},
-        updateUI: function() {
+        updateUI: function(args) {
 	},
 	getFilterId: function(id) {
 	    return  this.getDomId("filterby_" + id);
@@ -8272,8 +8351,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	macroChanged: function() {
 	    this.pageSkip = 0;
 	},
-	dataFilterChanged: function() {
-	    this.callUpdateUI();
+	dataFilterChanged: function(args) {
+	    this.callUpdateUI(args);
 	},
 	addFieldClickHandler: function(jq, records, addHighlight) {
 	    let _this = this;
@@ -9868,7 +9947,7 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
             }
             this.callUpdateUI();
         },
-        updateUI: function() {
+        updateUI: function(args) {
             this.addFieldsCheckboxes();
         },
         getWikiAttributes: function(attrs) {
@@ -11010,6 +11089,7 @@ function PointData(name, recordFields, records, url, properties) {
 		}
 	    }
             var fail = function(jqxhr, textStatus, error) {
+		console.log("Point data load error:" + textStatus +" " + error);
                 var err = textStatus;
 		if(err) {
 		    if(error)
@@ -11026,9 +11106,11 @@ function PointData(name, recordFields, records, url, properties) {
             }
 
             var success=function(data) {
+		if(typeof data == "string") {
+		    data = JSON.parse(data);
+		}
 		if(debug) console.log("pointDataLoaded");
                 if (GuiUtils.isJsonError(data)) {
-		    console.log("is error");
 		    if(debug)
 			console.log("\tloadPointData failed");
                     display.pointDataLoadFailed(data);
@@ -11098,9 +11180,15 @@ function PointData(name, recordFields, records, url, properties) {
 		fullUrl = base+fullUrl;
 	    }
 
-	    console.log("loading data:" + url);
-            Utils.doFetch(url, success,fail,"text");
-            //var jqxhr = $.getJSON(url, success).fail(fail);
+	    //            Utils.doFetch(url, success,fail,"json");
+	    //Handle the snapshot relative file
+	    if(!url.startsWith("/") && !url.startsWith("http")) {
+		console.log("url:" + url);
+		let root = String(window.location).replace(/\/[^\/]+$/,"");
+		url = root + "/" + url;
+	    }
+            Utils.doFetch(url, success,fail,null);	    
+//            var jqxhr = $.getJSON(url, success,{crossDomain:true}).fail(fail);
         }
 
     });
@@ -19856,7 +19944,7 @@ var pluginDefintions = {
     "sql": {
         "languageId": "sql",
         "displayName": "SqlLite",
-        "url": "${htdocs}/lib/notebook/sqllite.js",
+        "url": ramaddaBaseHtdocs+"/lib/notebook/sqllite.js",
         "module": "SqlLite",
         "evaluator": "evaluate",
         "pluginType": "language"
@@ -29662,6 +29750,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{label:"Map Lines"},
 	{p:'showSegments',ex:'true',tt:'If data has 2 lat/lon locations draw a line'},
 	{p:'isPath',ex:'true',tt:'Make a path from the points'},	
+	{p:'showPathEndPoint',ex:true},
+	{p:'pathEndPointShape',ex:'arrow'},
 	{p:'latField1',tt:'Field id for segments'},
 	{p:'lonField1',tt:'Field id for segments'},
 	{p:'latField2',tt:'Field id for segments'},
@@ -31261,7 +31351,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	dataFilterChanged: function(args) {
 	    if(!args) args = {};
 	    this.vectorMapApplied  = false;
-	    this.updateUI({dataFilterChanged:true, dontSetBounds:true,  reload:true,callback: ()=>{
+	    this.updateUI({source:args.source, dataFilterChanged:true, dontSetBounds:true,  reload:true,callback: ()=>{
 		if(args.source=="animation") return;
 		if(this.getCenterOnFilterChange(false)) {
 		    if (this.vectorLayer && this.showVectorLayer) {
@@ -31370,11 +31460,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(!url.startsWith("/") && !url.startsWith("http")) {
 		    url = ramaddaBaseUrl + "/resources/" +url;			
 		}
-		let jqxhr = $.getJSON(url, (data) =>{
-		    this.addLocationMenu(data);
-		}).fail(err=>{
-		    console.log("Error loading location json:" + url+"\n" + err);
-		});
+		let success = (data) =>{data=JSON.parse(data);this.addLocationMenu(data);};
+		let fail = err=>{console.log("Error loading location json:" + url+"\n" + err);}
+		Utils.doFetch(url, success,fail,null);	    
 	    });
 
 
@@ -31597,7 +31685,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
  
 	    if(!this.updatingFromClip) {
-		this.setMessage(args.dataFilterChanged|| args.fieldChanged|| args.reload?"Reloading map...":"Creating map...");
+		//stop the flash
+		if(args.source!="animation")
+		    this.setMessage(args.dataFilterChanged|| args.fieldChanged|| args.reload?"Reloading map...":"Creating map...");
 	    }
 	    this.updatingFromClip = false;
 
@@ -32397,6 +32487,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let fillColor = this.getPropertyFillColor();
 	    let fillOpacity =  this.getPropertyFillOpacity();
 	    let isPath = this.getProperty("isPath", false);
+	    let groupByField = this.getFieldById(null,this.getProperty("groupByField"));
+	    let groups;
+	    if(groupByField)
+		groups =  RecordUtil.groupBy(records, this, false, groupByField);
+	    
+
 	    let showSegments = this.getProperty("showSegments", false);
 	    let tooltip = this.getProperty("tooltip");
 	    let highlight = this.getProperty("highlight");
@@ -32574,6 +32670,54 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 }
 	    };
 
+
+	    if(isPath && groups) {
+		let i=0;
+		groups.values.forEach(value=>{
+		    let firstRecord = null;
+		    let lastRecord = null;
+		    let secondRecord = null;		    
+		    groups.map[value].forEach(record=>{
+			if(!firstRecord) firstRecord=record;
+			i++;
+			if(lastRecord) {
+			    pathAttrs.strokeColor = colorBy.getColorFromRecord(record, pathAttrs.strokeColor);
+			    this.lines.push(this.map.addLine("line-" + i, "", lastRecord.getLatitude(), lastRecord.getLongitude(), record.getLatitude(),record.getLongitude(),pathAttrs));
+			}
+			secondRecord = lastRecord;
+			lastRecord = record;
+			if(secondRecord) {
+/*
+			    var angleDeg = Utils.getBearing({x:lastRecord.getLongitude(),
+							   
+							   y:lastRecord.getLatitude()},
+							  {x:secondRecord.getLongitude(),
+							   y:secondRecord.getLatitude()});							  
+//			    let endPoint = this.map.addPoint("endpoint", {x:lastRecord.getLongitude(),y:lastRecord.getLatitude()}, {fillColor:"red",strokeColor:"#000",pointRadius:6,graphicName:"arrow",rotation:angleDeg}, null);
+//                            this.points.push(endPoint);
+*/
+			}
+
+		    });
+		    if(lastRecord) {
+			let color=  colorBy.getColorFromRecord(lastRecord, pathAttrs.strokeColor);
+			if(secondRecord && this.getProperty("showPathEndPoint",false)) {
+			    let shape = this.getProperty("pathEndPointShape",null);
+			    var angleDeg = Utils.getBearing({lon:secondRecord.getLongitude(),
+							     lat:secondRecord.getLatitude()},
+							    {lon:lastRecord.getLongitude(),
+							     lat:lastRecord.getLatitude()});							  
+			    let endPoint = this.map.addPoint("endpoint", {x:lastRecord.getLongitude(),y:lastRecord.getLatitude()}, {fillColor:color,strokeColor:"#000",pointRadius:6,graphicName:shape,rotation:angleDeg}, null);
+                            this.points.push(endPoint);
+			}
+			if(this.getProperty("showPathStartPoint",false)) {
+			    let endPoint = this.map.addPoint("startpoint", {x:firstRecord.getLongitude(),y:firstRecord.getLatitude()}, {fillColor:color,pointRadius:2}, null);
+                            this.points.push(endPoint);
+			}			
+		    }
+		});
+
+	    }
 
 
 	    let colorByEnabled = colorBy.isEnabled();
@@ -32838,7 +32982,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			    }
 			}
 		    }
-		    if(isPath && lastPoint) {
+		    if(isPath && !groups && lastPoint) {
+			pathAttrs.strokeColor = colorBy.getColorFromRecord(record, pathAttrs.strokeColor);
 			this.lines.push(this.map.addLine("line-" + i, "", lastPoint.y, lastPoint.x, point.y,point.x,pathAttrs));
 		    }
 		    lastPoint = point;

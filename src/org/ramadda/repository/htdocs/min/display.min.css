@@ -1,4 +1,4 @@
-a
+
 a.display-container {
     display:inline-block;
 }
@@ -303,11 +303,6 @@ a.display-container {
     cursor:pointer;
 }
 
-.ui-corner-all {
-}
-
-
-
 .display-animation-slider {
     position:relative;
 }
@@ -317,15 +312,16 @@ a.display-container {
     z-index:200;
     background:transparent;
     position:absolute;
-    width:10px;
+    width:12px;
     border: 0px solid #bbb;
     border-radius: 0;
     margin-left:-5px;
     margin-right:10px;
-    height:13px;
+    height:15px;
     margin-top:3px;
     margin-bottom:0px;
-    background: URL(${root}/icons/downdart.gif);
+    background: URL(../icons/downdart.gif) no-repeat;
+    background-size: 12px;
 }
 
 .display-animation-label {
