@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ import org.ramadda.data.point.PointFile;
 
 import org.ramadda.repository.auth.AccessException;
 import org.ramadda.repository.job.JobManager;
-import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.type.ProcessFileTypeHandler;
+import org.ramadda.repository.type.TypeHandler;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
@@ -302,7 +302,9 @@ public class StorageManager extends RepositoryManager implements PointFile
 
         //Add in the process tmp dir
         TempDir processTempDir = new TempDir(getProcessDir(), true);
-	int processDirAgeMinutes = getRepository().getProperty("ramadda.storage.processdir.age", 60*24);
+        int processDirAgeMinutes =
+            getRepository().getProperty("ramadda.storage.processdir.age",
+                                        60 * 24);
         processTempDir.setMaxAgeMinutes(processDirAgeMinutes);
         tmpDirs.add(processTempDir);
 
@@ -313,7 +315,7 @@ public class StorageManager extends RepositoryManager implements PointFile
 
         Misc.run(new Runnable() {
             public void run() {
-		scourTmpDirs();
+                scourTmpDirs();
             }
         });
     }
@@ -408,9 +410,10 @@ public class StorageManager extends RepositoryManager implements PointFile
 
         htdocsDir = IOUtil.joinDir(repositoryDir, DIR_HTDOCS);
         makeDir(htdocsDir);
-        makeDir(htdocsDir+"/snapshots");
-        makeDir(htdocsDir+"/snapshots/data");
-        makeDir(htdocsDir+"/snapshots/pages");			
+        makeDir(getSnapshotsDir());
+        makeDir(getSnapshotsDataDir());
+        makeDir(getSnapshotsPagesDir());
+
         String resourcesDir = IOUtil.joinDir(repositoryDir, DIR_RESOURCES);
         makeDir(resourcesDir);
 
@@ -493,7 +496,7 @@ public class StorageManager extends RepositoryManager implements PointFile
     public void addOkToReadFromDirectory(File dir) {
         if ( !okToReadFromDirs.contains(dir)) {
             okToReadFromDirs.add(dir);
-	    IO.setOkToReadFromDirs(okToReadFromDirs);
+            IO.setOkToReadFromDirs(okToReadFromDirs);
         }
     }
 
@@ -507,7 +510,7 @@ public class StorageManager extends RepositoryManager implements PointFile
     public void addOkToWriteToDirectory(File dir) {
         if ( !okToWriteToDirs.contains(dir)) {
             okToWriteToDirs.add(dir);
-	    IO.setOkToWriteToDirs(okToWriteToDirs);
+            IO.setOkToWriteToDirs(okToWriteToDirs);
         }
         addOkToReadFromDirectory(dir);
     }
@@ -706,10 +709,42 @@ public class StorageManager extends RepositoryManager implements PointFile
         return iconsDir;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getHtdocsDir() {
-	return htdocsDir;
+        return htdocsDir;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String getSnapshotsDir() {
+        return getHtdocsDir() + "/snapshots";
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String getSnapshotsDataDir() {
+        return getSnapshotsDir() + "/data";
+    }
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String getSnapshotsPagesDir() {
+        return getSnapshotsDir() + "/pages";
+    }
 
 
 
@@ -723,14 +758,18 @@ public class StorageManager extends RepositoryManager implements PointFile
             tmpDir = getFileFromProperty(PROP_TMPDIR);
             addOkToWriteToDirectory(tmpDir);
         }
+
         return tmpDir;
     }
 
 
-    protected void  clearTmpDir() {
-	tmpDir = null;
+    /**
+     * _more_
+     */
+    protected void clearTmpDir() {
+        tmpDir = null;
     }
-    
+
     /**
      * Get the scratch directory
      *
@@ -942,8 +981,9 @@ public class StorageManager extends RepositoryManager implements PointFile
      * @return _more_
      */
     public String getCacheKey(Request request) {
-	HashSet<String> except = (HashSet<String>)Utils.makeHashSet(TypeHandler.ALL);
-        String key = request.getUrlArgs(null,except,null);
+        HashSet<String> except =
+            (HashSet<String>) Utils.makeHashSet(TypeHandler.ALL);
+        String key = request.getUrlArgs(null, except, null);
         key = key.replaceAll("&", "_").replaceAll("\\.",
                              "_").replaceAll("\\?", "_").replaceAll("/",
                                              "_").replaceAll("=", "_");
@@ -1013,6 +1053,7 @@ public class StorageManager extends RepositoryManager implements PointFile
             FileInputStream fis = new FileInputStream(f);
             String          xml = IOUtil.readContents(fis);
             IOUtil.close(fis);
+
             return Repository.decodeObject(xml);
         }
 
@@ -1128,7 +1169,7 @@ public class StorageManager extends RepositoryManager implements PointFile
         while (true) {
             List<TempDir> tmpTmpDirs = new ArrayList<TempDir>(tmpDirs);
             for (TempDir tmpDir : tmpTmpDirs) {
-		scourTmpDir(tmpDir);
+                scourTmpDir(tmpDir);
             }
             Misc.sleepSeconds(60 * 60);
         }
@@ -1165,17 +1206,18 @@ public class StorageManager extends RepositoryManager implements PointFile
             List<File> notDeleted = IOUtil.deleteFiles(filesToScour);
             if (notDeleted.size() > 0) {
                 logInfo("Unable to delete tmp files:" + notDeleted);
-	    }
+            }
 
-	    if (tmpDir.getDirsOk()) {
-		List<File> dirsToScour = tmpDir.findEmptyDirsToScour();	
-                for (File dir:dirsToScour) {
-		    logInfo("StorageManager: scouring directory:" + dir.getName() 
-			    + " from:" + tmpDir.getDir().getName());
-		    dir.delete();
+            if (tmpDir.getDirsOk()) {
+                List<File> dirsToScour = tmpDir.findEmptyDirsToScour();
+                for (File dir : dirsToScour) {
+                    logInfo("StorageManager: scouring directory:"
+                            + dir.getName() + " from:"
+                            + tmpDir.getDir().getName());
+                    dir.delete();
                 }
-	    }
-	}
+            }
+        }
 
 
         tmpDir.setTouched(false);
@@ -2347,8 +2389,18 @@ public class StorageManager extends RepositoryManager implements PointFile
         return IOUtil.readContents(url.toString(), getClass());
     }
 
+    /**
+     * _more_
+     *
+     * @param file _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public String readFile(String file) throws Exception {
         checkPath(file);
+
         return IOUtil.readContents(file, getClass());
     }
 
