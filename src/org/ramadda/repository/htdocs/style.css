@@ -2886,14 +2886,16 @@ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;
 }
 
 .ramadda-breadcrumbs-menu-button {
-    width: 16px;
-    height:13px;
     padding:0px;
-    background: url(icons/menu_arrow_down.png) no-repeat 50% center;
     margin:0px;
-    border: 1px #fff solid;
-    border-color: #ccc;
+    padding-left:2px;
+    padding-right:2px;
+    border: 1px #ccc solid;
     background-color:#efefef;
+}
+
+.ramadda-breadcrumbs-menu-button i {
+    line-height:10px;
 }
 
 .ramadda-breadcrumbs-menu-button:hover {

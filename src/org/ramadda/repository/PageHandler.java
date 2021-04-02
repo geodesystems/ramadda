@@ -2368,8 +2368,9 @@ public class PageHandler extends RepositoryManager {
 
 	StringBuilder popup = new StringBuilder();
         String menuLinkImg = HU.div(
-                                 "",
-                                 HU.cssClass(
+				    HU.img("fas fa-caret-down"),
+				    HU.attr("title","Entry menu") +
+				    HU.cssClass(
                                      "ramadda-breadcrumbs-menu-button"));
 
         String menuLink = HU.makePopup(popup, menuLinkImg, links,arg("title", headerLabel), arg("header",true));
