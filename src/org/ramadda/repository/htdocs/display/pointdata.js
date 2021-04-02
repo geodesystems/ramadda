@@ -382,6 +382,7 @@ function PointData(name, recordFields, records, url, properties) {
 		}
 	    }
             var fail = function(jqxhr, textStatus, error) {
+		console.log("Point data load error:" + textStatus +" " + error);
                 var err = textStatus;
 		if(err) {
 		    if(error)
@@ -398,9 +399,11 @@ function PointData(name, recordFields, records, url, properties) {
             }
 
             var success=function(data) {
+		if(typeof data == "string") {
+		    data = JSON.parse(data);
+		}
 		if(debug) console.log("pointDataLoaded");
                 if (GuiUtils.isJsonError(data)) {
-		    console.log("is error");
 		    if(debug)
 			console.log("\tloadPointData failed");
                     display.pointDataLoadFailed(data);
@@ -470,9 +473,15 @@ function PointData(name, recordFields, records, url, properties) {
 		fullUrl = base+fullUrl;
 	    }
 
-	    console.log("loading data:" + url);
-            Utils.doFetch(url, success,fail,"text");
-            //var jqxhr = $.getJSON(url, success).fail(fail);
+	    //            Utils.doFetch(url, success,fail,"json");
+	    //Handle the snapshot relative file
+	    if(!url.startsWith("/") && !url.startsWith("http")) {
+		console.log("url:" + url);
+		let root = String(window.location).replace(/\/[^\/]+$/,"");
+		url = root + "/" + url;
+	    }
+            Utils.doFetch(url, success,fail,null);	    
+//            var jqxhr = $.getJSON(url, success,{crossDomain:true}).fail(fail);
         }
 
     });
