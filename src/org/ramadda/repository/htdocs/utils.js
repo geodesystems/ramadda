@@ -60,6 +60,29 @@ var Utils =  {
     addLoadFunction: function(f) {
 	Utils.loadFunctions.push(f);
     },
+    toRadians:function(degrees) {
+	return degrees * Math.PI / 180;
+    },
+    toDegrees:function(radians) {
+	return radians * 180 / Math.PI;
+    },
+    //Get degrees bearing from p1 to p2. north =0,east=90, south=180,west=270
+    getBearing:function(p1,p2) {
+	let lat1 = Utils.toRadians(p1.lat);
+	let lon1 = Utils.toRadians(p1.lon);
+	let lat2 = Utils.toRadians(p2.lat);
+	let lon2 = Utils.toRadians(p2.lon);		
+	let X =  Math.cos(lat2) * Math.sin(lon2-lon1);
+	let Y = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(lon2-lon1);
+	let B = Math.atan2(X,Y);
+	B = Utils.toDegrees(B);
+	B = (B + 360) % 360;
+	return B;
+    },
+    isReturnKey: function(e) {
+	var keyCode = e.keyCode || e.which;
+	return keyCode == 13;
+    },
     //list of 2-tuples
     getBounds: function(polygon) {
 	if(!polygon) return null;
@@ -452,16 +475,22 @@ var Utils =  {
         path =this.replaceRoot(path);
 	let calledErr = false;
         try {
-            if(!what) what = "text";
-            await $.ajax({
+	    let args = {
                 url: path,
-                xhrFields:{
-                    responseType: what
-                },
                 success: function(data) {
                     Utils.call(callback, data);
                 }
-            }).fail((p1,p2,p3)=>{
+	    };
+	    if(!what) {
+		what = "text/plain";
+		args.beforeSend =  function( xhr ) {
+		    xhr.overrideMimeType( "text/plain; charset=x-user-defined" );
+		};
+	    }
+	    args.xhrFields = {
+                responseType: what
+            };
+            await $.ajax(args).fail((p1,p2,p3)=>{
 		calledErr=true;
 		if(err)
 		    err(p1,p2,p3)
@@ -4812,3 +4841,5 @@ let dttm  =new Date();
     console.log("d1:" + d1 +"    d2:" + d2);
 });
 */
+
+
