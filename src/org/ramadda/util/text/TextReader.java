@@ -1352,12 +1352,15 @@ public boolean getVerbose () {
      * @return The Input
      */
     public NamedInputStream getInput() {
+	
         return input;
     }
 
-    public InputStream getInputStream() {
+    public InputStream getInputStream() throws Exception {
 	if(input!=null) 
 	    return input.getInputStream();
+	else if(inputChannel!=null)
+	    return Channels.newInputStream(getChannel());
 	else
 	    return null;
     }    
