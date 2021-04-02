@@ -220,8 +220,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** Change type output type */
     public static final OutputType OUTPUT_MAKESNAPSHOT =
         new OutputType("Make Snapshot", "repository.makesnapshot",
-                       OutputType.TYPE_OTHER| OutputType.TYPE_FILE, "",
-                       "fas fa-save");    
+                       OutputType.TYPE_OTHER | OutputType.TYPE_FILE, "",
+                       "fas fa-save");
 
     /** Publish OutputType */
     public static final OutputType OUTPUT_PUBLISH =
@@ -252,7 +252,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** File Listing OutputType */
     public static final OutputType OUTPUT_FILELISTING =
         new OutputType("File Listing", "repository.filelisting",
-                       OutputType.TYPE_OTHER| OutputType.TYPE_FORSEARCH, "",
+                       OutputType.TYPE_OTHER | OutputType.TYPE_FORSEARCH, "",
                        ICON_FILELISTING);
 
 
@@ -281,7 +281,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** The EntryManager */
     private EntryManager entryManager;
 
-    /** _more_          */
+    /** _more_ */
     private ExtEditor extEditor;
 
     /** _more_ */
@@ -400,7 +400,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private String dumpFile;
 
-    private String startupScript;    
+    /** _more_          */
+    private String startupScript;
 
     /** _more_ */
     private Date startTime = new Date();
@@ -690,19 +691,29 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public int getPort() {
-	if(overridePort>0) return overridePort;
+        if (overridePort > 0) {
+            return overridePort;
+        }
         String port = getProperty(PROP_PORT, (String) null);
         if (Utils.stringDefined(port)) {
             return Integer.decode(port.trim()).intValue();
         }
+
         return super.getPort();
     }
 
 
+    /** _more_          */
     private int overridePort = -1;
+
+    /**
+     * _more_
+     *
+     * @param value _more_
+     */
     public void setPort(int value) {
-	super.setPort(value);
-	overridePort = value;
+        super.setPort(value);
+        overridePort = value;
     }
 
 
@@ -1029,7 +1040,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     public void init(Properties properties) throws Exception {
-	//	IO.debugStderr();
+
+        //      IO.debugStderr();
         //        MyTrace.startTrace();
         //This stops jython from processing jars and printing out its annoying message
         System.setProperty("python.cachedir.skip", "true");
@@ -1041,9 +1053,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
         initServer();
 
 
-	RepositoryServlet.debugRequests = getProperty("ramadda.debug.requests",false);
-	RepositoryServlet.debugMultiPart = getProperty("ramadda.debug.multipart",false);	
-	
+        RepositoryServlet.debugRequests =
+            getProperty("ramadda.debug.requests", false);
+        RepositoryServlet.debugMultiPart =
+            getProperty("ramadda.debug.multipart", false);
+
 
 
         repositoryInitialized = true;
@@ -1057,8 +1071,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
             try {
                 blacklist = new HashSet();
                 for (String ip :
-                        Utils.split(IOUtil.readContents(blacklistFile),
-                                         "\n", true, true)) {
+                        Utils.split(IOUtil.readContents(blacklistFile), "\n",
+                                    true, true)) {
                     getLogManager().logInfoAndPrint(
                         "RAMADDA: Add blacklist ip:" + ip);
                     blacklist.add(ip);
@@ -1076,7 +1090,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         clearAllCaches();
         StringBuilder statusMsg =
             new StringBuilder("RAMADDA: repository started at:" + new Date());
-	statusMsg.append("\n");
+        statusMsg.append("\n");
         statusMsg.append("\tHome dir: "
                          + getStorageManager().getRepositoryDir());
 
@@ -1087,7 +1101,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         statusMsg.append("  Java version: "
                          + getProperty(PROP_JAVA_VERSION, "N/A"));
         statusMsg.append("\n");
-	statusMsg.append("\tRunning on port:" + getPort() +" " +(isSSLEnabled(null)?"SSL port:" + getHttpsPort():" SSL not enabled"));
+        statusMsg.append("\tRunning on port:" + getPort() + " "
+                         + (isSSLEnabled(null)
+                            ? "SSL port:" + getHttpsPort()
+                            : " SSL not enabled"));
         getLogManager().logInfoAndPrint(statusMsg.toString());
 
 
@@ -1099,14 +1116,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
             Toolkit.getDefaultToolkit().beep();
         }
 
-	String script = startupScript!=null?startupScript:getProperty("ramadda.startupscript");
-	if(script!=null) {
-	    try {
-		Runtime.getRuntime().exec(script);
-	    } catch(Exception exc) {
-		System.err.println("Error running startup script:" + script+"\n" + exc);
-	    }
-	}
+        String script = (startupScript != null)
+                        ? startupScript
+                        : getProperty("ramadda.startupscript");
+        if (script != null) {
+            try {
+                Runtime.getRuntime().exec(script);
+            } catch (Exception exc) {
+                System.err.println("Error running startup script:" + script
+                                   + "\n" + exc);
+            }
+        }
         Repository theRepository = this;
         //Add a listener for the kill signal so we can shutdown gracefully
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -1125,6 +1145,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             exc.printStackTrace();
         }
         */
+
 
 
     }
@@ -1202,7 +1223,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
         for (int i = 0; i < args.length; i++) {
-	    String arg = args[i];
+            String arg = args[i];
 
 
             if (getPluginManager().checkFile(arg)) {
@@ -1214,8 +1235,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 dumpFile = args[i + 1];
                 i++;
             } else if (arg.equals("-startup")) {
-		startupScript = args[i + 1];
-                i++;		
+                startupScript = args[i + 1];
+                i++;
             } else if (arg.equals("-load")) {
                 sqlLoadFiles.add(args[i + 1]);
                 i++;
@@ -1234,8 +1255,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 String       s    = arg.substring(2);
                 List<String> toks = Utils.split(s, "=", true, true);
                 if (toks.size() == 0) {
-                    throw new IllegalArgumentException("Bad argument:"
-                            + arg);
+                    throw new IllegalArgumentException("Bad argument:" + arg);
                 } else if (toks.size() == 1) {
                     cmdLineProperties.put(toks.get(0), "");
                 } else {
@@ -1321,11 +1341,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
             File[] localFiles =
                 getStorageManager().getRepositoryDir().listFiles();
             for (File f : localFiles) {
-		
+
                 if ( !f.toString().endsWith(".properties")) {
                     continue;
                 }
-		if(f.getName().startsWith(".")) continue;
+                if (f.getName().startsWith(".")) {
+                    continue;
+                }
                 if (f.getName().equals("repository.properties")) {
                     continue;
                 }
@@ -1387,8 +1409,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
         for (String s :
-                Utils.split(getProperty("ramadda.html.htdocroots",
-                                             BLANK), ";", true, true)) {
+                Utils.split(getProperty("ramadda.html.htdocroots", BLANK),
+                            ";", true, true)) {
             htdocRoots.add(getStorageManager().localizePath(s));
         }
         initProxy();
@@ -1479,8 +1501,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         initDefaultTypeHandlers();
         boolean loadedRdb = false;
         boolean doDrop    = getProperty("db.load.drop", true);
-        sqlLoadFiles.addAll(Utils.split(getProperty("db.load.files",
-                ""), ";", true, true));
+        sqlLoadFiles.addAll(Utils.split(getProperty("db.load.files", ""),
+                                        ";", true, true));
         for (String sqlFile : (List<String>) sqlLoadFiles) {
             if (sqlFile.endsWith(".rdb")) {
                 getDatabaseManager().loadRdbFile(sqlFile, doDrop);
@@ -1572,7 +1594,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         loadPluginResources();
         getPluginManager().loadPluginsFinish();
 
-        initDefaultOutputHandlers();	
+        initDefaultOutputHandlers();
 
     }
 
@@ -2066,7 +2088,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     //TODO: use this to synchronize the getters below
 
-    /** _more_          */
+    /** _more_ */
     private Object getMutex = new Object();
 
     /**
@@ -2641,8 +2663,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
 
             if (contents != null) {
-                List<String> lines = Utils.split(contents, "\n", true,
-                                         true);
+                List<String> lines = Utils.split(contents, "\n", true, true);
                 for (String file : lines) {
                     listing.add(path + "/" + file);
                 }
@@ -2699,8 +2720,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public List<String> getResourcePaths(String propertyName) {
-        List<String> tmp = Utils.split(getProperty(propertyName, BLANK),
-                                            ";", true, true);
+        List<String> tmp = Utils.split(getProperty(propertyName, BLANK), ";",
+                                       true, true);
         List<String> paths = new ArrayList<String>();
         for (String path : tmp) {
             path = getStorageManager().localizePath(path);
@@ -2992,7 +3013,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     }
                 }
                 if (metadataOk) {
-		    //                    links.add(makeLink(request, state.getEntry(),  OUTPUT_TYPECHANGE));
+                    //                    links.add(makeLink(request, state.getEntry(),  OUTPUT_TYPECHANGE));
                     links.add(makeLink(request, state.getEntry(),
                                        OUTPUT_METADATA_SHORT));
 
@@ -3109,17 +3130,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
         OutputHandler snapshotHandler = new OutputHandler(getRepository(),
-                                        "Entry Snapshotr") {
+                                            "Entry Snapshotr") {
             public boolean canHandleOutput(OutputType output) {
                 return output.equals(OUTPUT_MAKESNAPSHOT);
             }
             public void getEntryLinks(Request request, State state,
                                       List<Link> links)
                     throws Exception {
-		if(!request.isAdmin()) {
+                if ( !request.isAdmin()) {
                     return;
                 }
-                links.add(makeLink(request, state.getEntry(), OUTPUT_MAKESNAPSHOT));
+                links.add(makeLink(request, state.getEntry(),
+                                   OUTPUT_MAKESNAPSHOT));
             }
 
             public String toString() {
@@ -3129,7 +3151,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             public Result outputEntry(Request request, OutputType outputType,
                                       Entry entry)
                     throws Exception {
-		return outputSnapshot(request, entry);
+                return outputSnapshot(request, entry);
             }
 
 
@@ -3137,21 +3159,19 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                       Entry group, List<Entry> subGroups,
                                       List<Entry> entries)
                     throws Exception {
-		return outputSnapshot(request, group);
+                return outputSnapshot(request, group);
             }
 
-            public Result outputSnapshot(Request request,  Entry entry)
+            public Result outputSnapshot(Request request, Entry entry)
                     throws Exception {
-		if(!request.isAdmin()) {
-                    return new Result("", "");
-                }
-		return getEntryManager().processMakeSnapshot(request, entry);
+                //Access is checked by the entrymanager
+                return getEntryManager().processMakeSnapshot(request, entry);
             }
-		
+
         };
         snapshotHandler.addType(OUTPUT_MAKESNAPSHOT);
         addOutputHandler(snapshotHandler);
-	
+
 
 
         OutputHandler typeChangeHandler = new OutputHandler(getRepository(),
@@ -3225,8 +3245,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                       List<Link> links)
                     throws Exception {
                 if (fileListingOK(request)) {
-		    links.add(makeLink(request, state.getEntry(),
-				       OUTPUT_FILELISTING));
+                    links.add(makeLink(request, state.getEntry(),
+                                       OUTPUT_FILELISTING));
                 }
             }
 
@@ -3279,7 +3299,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                             request, child));
                     sb.append(
                         formatFileLength(
-					 child.getResource().getFileSize(), true));
+                            child.getResource().getFileSize(), true));
                     sb.append(HtmlUtils.br());
                     didOne = true;
                 }
@@ -3449,7 +3469,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     private Result handleRequestInner(Request request) throws Exception {
 
-	//	System.err.println("r:" + request);
+        //      System.err.println("r:" + request);
         if (debugSession) {
             debugSession(request,
                          "RAMADDA.handleRequest:" + request.getRequestPath());
@@ -3646,8 +3666,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
             //            System.err.println (getUrlBase() +" setting cookie:" + sessionId);
             if (debugSession) {
-		//                debugSession(request,
-		//                             "Cookie:"+ getSessionManager().getSessionCookieName()+ "=" + sessionId + " path=" + getUrlBase());
+                //                debugSession(request,
+                //                             "Cookie:"+ getSessionManager().getSessionCookieName()+ "=" + sessionId + " path=" + getUrlBase());
             }
             String path;
 
@@ -3886,13 +3906,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public void debugSession(Request request, String msg) {
         if (debugSession) {
-	    /*
+            /*
             if ((request != null)
                     && !request.getRequestPath().equals(
                         "/repository/entry/show")) {
                 return;
-		}*/
-	    //            System.err.println(debugPrefix() + msg);
+                }*/
+            //            System.err.println(debugPrefix() + msg);
             System.err.println(msg);
         }
     }
@@ -3913,6 +3933,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (apiMethod == null) {
             return getHtdocsFile(request);
         }
+
         Result sslRedirect = checkForSslRedirect(request, apiMethod);
         if (sslRedirect != null) {
             debugSession(request, "redirecting to ssl:" + request.getUrl());
@@ -4157,6 +4178,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     protected Result getHtdocsFile(Request request) throws Exception {
 
+        request.setCORSHeaderOnResponse();
         String path       = request.getRequestPath().replaceAll("//", "/");
         String urlBase    = getUrlBase();
         String htdocsBase = getPageHandler().makeHtdocsUrl("");
@@ -4198,10 +4220,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
             return makeResult(request, path, inputStream, mimeType, true);
         }
-
-
         String cachePath = htdocsPathCache.get(path);
-
         //Go through all of the htdoc roots
         for (String root : htdocRoots) {
             String fullPath = null;
@@ -4215,17 +4234,25 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 InputStream inputStream =
                     getStorageManager().getInputStream(fullPath);
                 htdocsPathCache.put(path, fullPath);
-                if (path.endsWith(".js") || path.endsWith(".css")
-                        || path.endsWith(".json")) {
+                if (path.endsWith(".js") || path.endsWith(".css")) {
                     String js = IOUtil.readInputStream(inputStream);
-                    js = js.replace("${htdocs}", htdocsBase).replace(
-                        "${root}", urlBase).replace(
-                        "${urlroot}", urlBase).replace(
-                        "${baseentry}",
-                        getEntryManager().getRootEntry().getId()).replace(
-                            "${hostname}", request.getServerName());
                     //If its the base js then don't cache and add in the user info
                     if (path.endsWith("base.js")) {
+                        String referer = request.getReferer(null);
+                        String base    = urlBase;
+                        //For file based pages
+                        if (referer == null) {
+                            //                      base = request.getAbsoluteUrl(base);
+                        }
+                        js = js.replace(
+                            "${ramadda.htdocs}", base + "/htdocs").replace(
+                            "${ramadda.root}", base);
+                        js = js.replace("${ramadda.urlroot}", base);
+                        js = js.replace(
+                            "${ramadda.baseentry}",
+                            getEntryManager().getRootEntry().getId());
+                        js = js.replace("${hostname}",
+                                        request.getServerName());
                         js = js.replace("${ramadda.user}",
                                         request.getUser().getId());
                         bytes = js.getBytes();
@@ -4271,6 +4298,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 return makeResult(request, path, inputStream, mimeType, true);
             } catch (IOException fnfe) {
                 //noop
+                //The first time through there are lots of filenotfound exeptions but then they get cached and we're good
             }
         }
 
@@ -4390,6 +4418,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         return result;
 
+
     }
 
     /**
@@ -4496,7 +4525,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
-	
+
         if (HU.isFontAwesome(f)) {
             return f;
         }
@@ -5773,8 +5802,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
             //Check the whitelist
             boolean ok = false;
             for (String pattern :
-                    Utils.split(getProperty(PROP_PROXY_WHITELIST, ""),
-                                     ",", true, true)) {
+                    Utils.split(getProperty(PROP_PROXY_WHITELIST, ""), ",",
+                                true, true)) {
                 //            System.err.println("pattern:" + pattern);
                 if (url.matches(pattern)) {
                     ok = true;
@@ -6099,8 +6128,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         List<String> objs   = new ArrayList<String>();
         Bounds       bounds = null;
         if (request.defined("bounds")) {
-            List<String> toks = Utils.split(request.getString("bounds",
-                                    ""), ",");
+            List<String> toks = Utils.split(request.getString("bounds", ""),
+                                            ",");
             bounds = new Bounds(Double.parseDouble(toks.get(0)),
                                 Double.parseDouble(toks.get(1)),
                                 Double.parseDouble(toks.get(2)),
@@ -7038,12 +7067,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(
                 sc.getSocketFactory());
-	    HttpsURLConnection.setDefaultHostnameVerifier( new HostnameVerifier(){
-		    public boolean verify(String string,SSLSession ssls) {
-			System.err.println("vertify:" + string);
-			return true;
-		    }
-		});
+            HttpsURLConnection.setDefaultHostnameVerifier(
+                new HostnameVerifier() {
+                public boolean verify(String string, SSLSession ssls) {
+                    return true;
+                }
+            });
         } catch (Exception e) {}
 
     }
