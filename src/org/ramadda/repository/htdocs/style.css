@@ -2890,12 +2890,15 @@ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;
     margin:0px;
     padding-left:2px;
     padding-right:2px;
+    padding-top:1px;    
+    padding-bottom:1px;    
     border: 1px #ccc solid;
     background-color:#efefef;
 }
 
 .ramadda-breadcrumbs-menu-button i {
-    line-height:10px;
+    line-height:8px;
+//    font-size:8pt;
 }
 
 .ramadda-breadcrumbs-menu-button:hover {
@@ -4608,8 +4611,10 @@ h3.ui-accordion-header a {
 }
 
 .ramadda-select-icon {
+/* comment this out for now because of Don's problem
     width: 16px;
     height: unset;
+*/
 }
 
 @media only screen and (max-device-width : 600px) {
