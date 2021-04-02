@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 
 
 import org.w3c.dom.*;
@@ -33,10 +34,11 @@ import ucar.unidata.util.StringUtil;
 
 import ucar.unidata.xml.XmlUtil;
 
-import java.util.List;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import java.util.List;
 
 
 
@@ -47,9 +49,11 @@ import java.io.OutputStream;
 public class HtmlDocTypeHandler extends ExtensibleGroupTypeHandler {
 
 
-    private static int IDX=0;
+    /** _more_          */
+    private static int IDX = 0;
 
-    public static final int IDX_STYLE=IDX++;
+    /** _more_          */
+    public static final int IDX_STYLE = IDX++;
 
     /**
      * _more_
@@ -71,13 +75,15 @@ public class HtmlDocTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param fromImport _more_
      *
      * @throws Exception _more_
      */
     @Override
-    public void initializeNewEntry(Request request, Entry entry, boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry,
+                                   boolean fromImport)
             throws Exception {
-        super.initializeNewEntry(request, entry,fromImport);
+        super.initializeNewEntry(request, entry, fromImport);
         File file = entry.getFile();
         if ( !file.exists()) {
             return;
@@ -99,8 +105,55 @@ public class HtmlDocTypeHandler extends ExtensibleGroupTypeHandler {
     /**
      * _more_
      *
+     * @param newEntry _more_
+     * @param idList _more_
+     *
+     * @return _more_
+     */
+    @Override
+    public boolean convertIdsFromImport(Entry newEntry,
+                                        List<String[]> idList) {
+        super.convertIdsFromImport(newEntry, idList);
+        if (idList.size() == 0) {
+            return false;
+        }
+
+        if ( !newEntry.getResource().isFile()) {
+            return false;
+        }
+        File f = newEntry.getResource().getTheFile();
+        //Check that it is a stored file
+        File storageDir = new File(getStorageManager().getStorageDir());
+        if ( !IOUtil.isADescendent(storageDir, f)) {
+            return false;
+        }
+        try {
+            String html = IO.readContents(f.toString());
+            String orig = html;
+            for (String[] tuple : idList) {
+                if (tuple[0].trim().length() == 0) {
+                    continue;
+                }
+                html = html.replaceAll(tuple[0].trim(), tuple[1]);
+            }
+            if ( !orig.equals(html)) {
+                getStorageManager().writeFile(f, html);
+            }
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
+
+        return false;
+
+    }
+
+    /**
+     * _more_
+     *
      * @param request _more_
      * @param entry _more_
+     * @param subGroups _more_
+     * @param entries _more_
      *
      * @return _more_
      *
@@ -141,23 +194,34 @@ public class HtmlDocTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
         if (style.equals("embed") || style.equals("full")) {
-	    String content = getContent(request, entry);
-	    String head = StringUtil.findPattern(content,"(?s)<head>(.*?)</head>");
-	    //	    System.err.println("head:" + head);
-	    if(head!=null) {
-		content = content.replaceAll("(?s)<head>(.*?)</head>","");
-		head = head.replaceAll("(?s)<title>(.*?)</title>","");
-		request.appendHead(head);
-	    }
-	    String body = StringUtil.findPattern(content,"(?s)<body>(.*?)</body>");
-	    if(body!=null) content = body;
+            String content = getContent(request, entry);
+            if (content == null) {
+                content = "No HTML file";
+            }
+            String head = StringUtil.findPattern(content,
+                              "(?s)<head>(.*?)</head>");
+            //      System.err.println("head:" + head);
+            if (head != null) {
+                content = content.replaceAll("(?s)<head>(.*?)</head>", "");
+                head    = head.replaceAll("(?s)<title>(.*?)</title>", "");
+                request.appendHead(head);
+            }
+            String body = StringUtil.findPattern(content,
+                              "(?s)<body>(.*?)</body>");
+            if (body != null) {
+                content = body;
+            }
             String title = HU.href(getEntryManager().getEntryUrl(request,
-								 entry), entry.getName());
-	    content  =content.replaceAll("(?s)<div *class *= *\"ramadda-page-title\"[^>]*>(.*?)</div>","<div class=\"ramadda-page-title\">" + title +"</div>");
-	    if(true) return new Result("",new StringBuilder(content));
+                               entry), entry.getName());
+            content = content.replaceAll(
+                "(?s)<div *class *= *\"ramadda-page-title\"[^>]*>(.*?)</div>",
+                "<div class=\"ramadda-page-title\">" + title + "</div>");
+            if (true) {
+                return new Result("", new StringBuilder(content));
+            }
+
             return getEntryManager().addHeaderToAncillaryPage(request,
-                    new Result(BLANK,
-                               new StringBuilder(content)));
+                    new Result(BLANK, new StringBuilder(content)));
         }
 
         return null;
@@ -209,6 +273,7 @@ public class HtmlDocTypeHandler extends ExtensibleGroupTypeHandler {
         html = html.replace("${urlroot}",
                             getRepository().getUrlBase()).replace("${root}",
                                 getRepository().getUrlBase());
+
         return html;
     }
 
