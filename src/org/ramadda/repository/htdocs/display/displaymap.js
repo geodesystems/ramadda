@@ -198,6 +198,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{label:"Map Lines"},
 	{p:'showSegments',ex:'true',tt:'If data has 2 lat/lon locations draw a line'},
 	{p:'isPath',ex:'true',tt:'Make a path from the points'},	
+	{p:'showPathEndPoint',ex:true},
+	{p:'pathEndPointShape',ex:'arrow'},
 	{p:'latField1',tt:'Field id for segments'},
 	{p:'lonField1',tt:'Field id for segments'},
 	{p:'latField2',tt:'Field id for segments'},
@@ -1797,7 +1799,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	dataFilterChanged: function(args) {
 	    if(!args) args = {};
 	    this.vectorMapApplied  = false;
-	    this.updateUI({dataFilterChanged:true, dontSetBounds:true,  reload:true,callback: ()=>{
+	    this.updateUI({source:args.source, dataFilterChanged:true, dontSetBounds:true,  reload:true,callback: ()=>{
 		if(args.source=="animation") return;
 		if(this.getCenterOnFilterChange(false)) {
 		    if (this.vectorLayer && this.showVectorLayer) {
@@ -1906,11 +1908,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(!url.startsWith("/") && !url.startsWith("http")) {
 		    url = ramaddaBaseUrl + "/resources/" +url;			
 		}
-		let jqxhr = $.getJSON(url, (data) =>{
-		    this.addLocationMenu(data);
-		}).fail(err=>{
-		    console.log("Error loading location json:" + url+"\n" + err);
-		});
+		let success = (data) =>{data=JSON.parse(data);this.addLocationMenu(data);};
+		let fail = err=>{console.log("Error loading location json:" + url+"\n" + err);}
+		Utils.doFetch(url, success,fail,null);	    
 	    });
 
 
@@ -2133,7 +2133,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
  
 	    if(!this.updatingFromClip) {
-		this.setMessage(args.dataFilterChanged|| args.fieldChanged|| args.reload?"Reloading map...":"Creating map...");
+		//stop the flash
+		if(args.source!="animation")
+		    this.setMessage(args.dataFilterChanged|| args.fieldChanged|| args.reload?"Reloading map...":"Creating map...");
 	    }
 	    this.updatingFromClip = false;
 
@@ -2933,6 +2935,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let fillColor = this.getPropertyFillColor();
 	    let fillOpacity =  this.getPropertyFillOpacity();
 	    let isPath = this.getProperty("isPath", false);
+	    let groupByField = this.getFieldById(null,this.getProperty("groupByField"));
+	    let groups;
+	    if(groupByField)
+		groups =  RecordUtil.groupBy(records, this, false, groupByField);
+	    
+
 	    let showSegments = this.getProperty("showSegments", false);
 	    let tooltip = this.getProperty("tooltip");
 	    let highlight = this.getProperty("highlight");
@@ -3110,6 +3118,54 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 }
 	    };
 
+
+	    if(isPath && groups) {
+		let i=0;
+		groups.values.forEach(value=>{
+		    let firstRecord = null;
+		    let lastRecord = null;
+		    let secondRecord = null;		    
+		    groups.map[value].forEach(record=>{
+			if(!firstRecord) firstRecord=record;
+			i++;
+			if(lastRecord) {
+			    pathAttrs.strokeColor = colorBy.getColorFromRecord(record, pathAttrs.strokeColor);
+			    this.lines.push(this.map.addLine("line-" + i, "", lastRecord.getLatitude(), lastRecord.getLongitude(), record.getLatitude(),record.getLongitude(),pathAttrs));
+			}
+			secondRecord = lastRecord;
+			lastRecord = record;
+			if(secondRecord) {
+/*
+			    var angleDeg = Utils.getBearing({x:lastRecord.getLongitude(),
+							   
+							   y:lastRecord.getLatitude()},
+							  {x:secondRecord.getLongitude(),
+							   y:secondRecord.getLatitude()});							  
+//			    let endPoint = this.map.addPoint("endpoint", {x:lastRecord.getLongitude(),y:lastRecord.getLatitude()}, {fillColor:"red",strokeColor:"#000",pointRadius:6,graphicName:"arrow",rotation:angleDeg}, null);
+//                            this.points.push(endPoint);
+*/
+			}
+
+		    });
+		    if(lastRecord) {
+			let color=  colorBy.getColorFromRecord(lastRecord, pathAttrs.strokeColor);
+			if(secondRecord && this.getProperty("showPathEndPoint",false)) {
+			    let shape = this.getProperty("pathEndPointShape",null);
+			    var angleDeg = Utils.getBearing({lon:secondRecord.getLongitude(),
+							     lat:secondRecord.getLatitude()},
+							    {lon:lastRecord.getLongitude(),
+							     lat:lastRecord.getLatitude()});							  
+			    let endPoint = this.map.addPoint("endpoint", {x:lastRecord.getLongitude(),y:lastRecord.getLatitude()}, {fillColor:color,strokeColor:"#000",pointRadius:6,graphicName:shape,rotation:angleDeg}, null);
+                            this.points.push(endPoint);
+			}
+			if(this.getProperty("showPathStartPoint",false)) {
+			    let endPoint = this.map.addPoint("startpoint", {x:firstRecord.getLongitude(),y:firstRecord.getLatitude()}, {fillColor:color,pointRadius:2}, null);
+                            this.points.push(endPoint);
+			}			
+		    }
+		});
+
+	    }
 
 
 	    let colorByEnabled = colorBy.isEnabled();
@@ -3374,7 +3430,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			    }
 			}
 		    }
-		    if(isPath && lastPoint) {
+		    if(isPath && !groups && lastPoint) {
+			pathAttrs.strokeColor = colorBy.getColorFromRecord(record, pathAttrs.strokeColor);
 			this.lines.push(this.map.addLine("line-" + i, "", lastPoint.y, lastPoint.x, point.y,point.x,pathAttrs));
 		    }
 		    lastPoint = point;
