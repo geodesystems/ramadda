@@ -344,6 +344,8 @@ public class PageHandler extends RepositoryManager {
             }
             webImports = applyBaseMacros(cssImports.trim() + "\n"
                                          + jsImports.trim() + "\n");
+	    webImports = "<imports>\n" + webImports +"\n</imports>\n";
+	    
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
@@ -434,7 +436,8 @@ public class PageHandler extends RepositoryManager {
         Utils.append(contents, result.getStringContent(), jsContent);
         String content = contents.toString();
 
-	String head = webImports;
+	String head0 = request.getHead0();
+	String head = (head0==null?"":head0)+webImports;
 	String head2 = request.getHead();
 	if(head2!=null) head+=head2;
         if (request.get("ramadda.showjsonld", true)&& showJsonLd && (currentEntry != null)) {
@@ -1528,7 +1531,6 @@ public class PageHandler extends RepositoryManager {
             if (debugTemplates) {
                 System.err.println("getTemplate-1:" + defaultTemplate);
             }
-
             return defaultTemplate;
         }
         boolean isMobile = request.isMobile();
