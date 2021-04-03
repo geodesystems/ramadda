@@ -4330,6 +4330,21 @@ public class Utils extends IO {
     }    
     
 
+    public static Date min(Date d1, Date d2) {
+	if(d1==null) return d2;
+	if(d2==null) return d1;
+	if(d1.getTime()<d2.getTime()) return d1;
+	return d2;
+    }
+
+    public static Date max(Date d1, Date d2) {
+	if(d1==null) return d2;
+	if(d2==null) return d1;
+	if(d1.getTime()>d2.getTime()) return d1;
+	return d2;
+    }
+
+
     /**
      * Interface description
      *
