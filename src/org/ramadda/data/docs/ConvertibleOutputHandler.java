@@ -428,18 +428,27 @@ public class ConvertibleOutputHandler extends OutputHandler {
                     }
                     args.add(arg);
                 }
+		boolean hasOutput = args.contains("-tojson")  || args.contains("-toxml");
+		//		System.err.println("args:" + args);
                 if ( !args.contains("-print") && !args.contains("-p")
-                        && !args.contains("-explode")
-                        && !args.contains("-script")
-                        && !args.contains("-toxml")
-                        && !args.contains("-printheader")
-                        && !args.contains("-template")
-                        && !args.contains("-raw")
-                        && !args.contains("-record")
-                        && !args.contains("-table")
-                        && !args.contains("-db")) {
+		     && !args.contains("-explode")
+		     && !args.contains("-script")
+		     && !hasOutput
+		     && !args.contains("-printheader")
+		     && !args.contains("-template")
+		     && !args.contains("-raw")
+		     && !args.contains("-stats")
+		     && !args.contains("-record")
+		     && !args.contains("-table")
+		     && !args.contains("-db")) {
+		    //		    System.err.println("adding print");
                     args.add("-print");
                 }
+		if(hasOutput) {
+		    //		    System.err.println("removing print");
+		    args.remove("-print");
+		    args.remove("-p");
+		}
                 currentArgs = args;
                 //              for(String arg: args)
                 //                  System.err.println("arg:" + arg+":");
@@ -469,6 +478,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 }
                 newFiles = new ArrayList<String>();
                 csvUtil  = new CsvUtil(args, runDir);
+		csvUtil.setInteractive(true);
                 csvUtil.setPropertyProvider(getRepository());
                 if (prevCsvUtil != null) {
                     csvUtil.initWith(prevCsvUtil);
@@ -534,19 +544,22 @@ public class ConvertibleOutputHandler extends OutputHandler {
                         if (newFile.endsWith(".csv")) {
                             //                        url += "&output=" + OUTPUT_CONVERT_FORM;
                         }
-                        html.append(HtmlUtils.href(url, f.getName(),
-                                "target=_output"));
                         String getUrl =
                             HtmlUtils.url(
                                 request.makeUrl(
                                     getRepository().URL_ENTRY_GET) + "/"
                                         + f.getName(), ARG_ENTRYID, id);
                         html.append("  ");
-                        html.append(HtmlUtils.href(getUrl, "Download"));
+                        html.append(HtmlUtils.href(getUrl, "Download", HU.attrs("class","ramadda-button")));
                         if (request.getUser().getAdmin()) {
                             html.append(" File on server: "
-                                        + HtmlUtils.input("", f));
+                                        + HtmlUtils.input("", f,"size=80"));
                         }
+			html.append("<br>");
+			html.append("View temp file: ");
+                        html.append(HtmlUtils.href(url,  f.getName(),
+                                "target=_output"));
+
                         //If they are creating point data then add an add entry link
                         //                    if (newFile.endsWith(".csv") && args.contains("-addheader")) {
                         //                        url += "&output=" + OUTPUT_CONVERT_FORM;
