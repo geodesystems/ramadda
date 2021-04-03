@@ -60,6 +60,8 @@ public class CsvUtil {
     /** _more_          */
     private static boolean debugArgs = false;
 
+    private boolean interactive = false;
+    
     /** _more_ */
     private List<String> args;
 
@@ -242,6 +244,25 @@ public class CsvUtil {
 	}
 	return System.getenv(name);
     }
+
+    /**
+       Set the Interactive property.
+
+       @param value The new value for Interactive
+    **/
+    public void setInteractive (boolean value) {
+	interactive = value;
+    }
+
+    /**
+       Get the Interactive property.
+
+       @return The Interactive
+    **/
+    public boolean getInteractive () {
+	return interactive;
+    }
+
 
     /**
      * _more_
@@ -1348,6 +1369,65 @@ public class CsvUtil {
         new Cmd("-help:<topic search string>",
                 "print help that matches topic"),
 
+        /** * Input   * */
+        new Cmd(true, "Input"),
+        new Cmd("-delimiter", "Specify a delimiter",
+                new Arg("delimiter", "Use 'space' for space, 'tab' for tab",
+                        "size", "5")),
+        new Cmd("-tab", "Use tabs"),
+        new Cmd("-widths", "Columns are fixed widths",
+                new Arg("widths", "w1,w2,...,wN")),
+        new Cmd("-header", "Raw header",
+                new Arg("header", "Column names", "type", "list")),
+        new Cmd("-html", "Parse the table in the input html file",
+                new Arg("skip", "Number of tables to skip", "type",
+			"number"), new Arg("pattern", "Pattern to skip to",
+					   "type", "pattern", "size",
+					   "40"), new Arg("properties",
+							  "Other attributes - <br>&nbsp;&nbsp;removeEntity false removePattern pattern",
+							  "rows", "6", "size", "40")),
+        new Cmd("-htmlpattern", new Label("Extract from html"),
+                "Parse the input html file",
+                new Arg("columns", "Column names", "type", "columns"),
+                new Arg("startPattern", "", "type", "pattern"),
+                new Arg("endPattern", "", "type", "pattern"),
+                new Arg("pattern", "Row pattern. Use (...) to match columns",
+                        "type", "pattern")),
+        new Cmd("-json", "Parse the input as json",
+                new Arg("arrayPath",
+			"Path to the array e.g., obj1.arr[2].obj2", "size", "30",
+			"label", "Array path"), new Arg("objectPaths",
+							"One or more paths to the objects e.g. geometry,features",
+							"size", "30", "label", "Object paths", "type",
+							"list", "size", "30")),
+        new Cmd("-xml", "Parse the input as xml",
+                new Arg("path", "Path to the elements", "size", "60")),
+        new Cmd("-shapefile", "Parse the input shapefile",
+                new Arg("props", "addPoints true addShapes false")),	
+        new Cmd("-text", "Extract rows from the text",
+                new Arg("comma separated header"),
+                new Arg("chunk pattern", "", "type", "pattern"),
+                new Arg("token pattern", "", "type", "pattern")),
+        new Cmd("-text2", "Extract rows from the text",
+                new Arg("comma separated header"),
+                new Arg("chunk pattern", "", "type", "pattern"),
+                new Arg("token pattern", "", "type", "pattern")),
+        new Cmd("-text3", "Extract rows from the text",
+                new Arg("comma separated header"),
+                new Arg("token pattern", "", "type", "pattern")),
+        new Cmd("-tokenize", "Tokenize the input from the pattern",
+                new Arg("header", "header1,header2..."),
+                new Arg("pattern", "", "type", "pattern")),
+
+        new Cmd("-sql", "Connect to the given database",
+                new Arg("db", "The database id (defined in the environment)"),
+		new Arg("table", "The table to select from"),
+		new Arg("properties", "'columns' c1,c2,...  'where' c1,<|>|<>|like|notlike;...")),
+        new Cmd("-prune", "Prune out the first N bytes",
+                new Arg("bytes", "Number of leading bytes to remove", "type",
+                        "number")),
+
+
         /** *  Slice and dice * */
         new Cmd(true, "Slice and Dice"),
         new Cmd("-columns", new Label("Select columns"),
@@ -1504,7 +1584,7 @@ public class CsvUtil {
                 new Arg("pattern", "", "type", "pattern")),
 
         /** *  Change values * */
-        new Cmd(true, "Change Values"),
+        new Cmd(true, "Change"),
         new Cmd("-change", "Change columns",
                 new Arg("columns", "", "type", "columns"),
                 new Arg("pattern", "", "type", "pattern"),
@@ -1599,9 +1679,7 @@ public class CsvUtil {
         new Cmd("-uuid", "Add a UUID field"),
         new Cmd("-number", "Add 1,2,3... as column"),
         new Cmd("-letter", "Add 'A','B', ... as column"),
-
-        /** *  Lookup * */
-        new Cmd(true, "Lookup"),
+	//        new Cmd(true, "Lookup"),
         new Cmd("-wikidesc", "Add a description from wikipedia",
                 new Arg("column", "", "type", "columns"), "suffix"),
         new Cmd("-image", "Search for an image",
@@ -1690,7 +1768,7 @@ public class CsvUtil {
                 new Arg("prefix", "e.g., state: or county:"), "suffix"),
 
         /** * Other  * */
-        new Cmd(true, "Other Commands"),
+        new Cmd(true, "Misc."),
         new Cmd("-sort", "",
                 new Arg("column", "Column to sort on", "type", "column")),
         new Cmd("-descsort", "",
@@ -1721,63 +1799,6 @@ public class CsvUtil {
         new Cmd("-verify",
                 "Verify that all of the rows have the same # of columns"),
 
-        /** * Input   * */
-        new Cmd(true, "Input"),
-        new Cmd("-delimiter", "Specify a delimiter",
-                new Arg("delimiter", "Use 'space' for space, 'tab' for tab",
-                        "size", "5")),
-        new Cmd("-tab", "Use tabs"),
-        new Cmd("-widths", "Columns are fixed widths",
-                new Arg("widths", "w1,w2,...,wN")),
-        new Cmd("-header", "Raw header",
-                new Arg("header", "Column names", "type", "list")),
-        new Cmd("-html", "Parse the table in the input html file",
-                new Arg("skip", "Number of tables to skip", "type",
-			"number"), new Arg("pattern", "Pattern to skip to",
-					   "type", "pattern", "size",
-					   "40"), new Arg("properties",
-							  "Other attributes - <br>&nbsp;&nbsp;removeEntity false removePattern pattern",
-							  "rows", "6", "size", "40")),
-        new Cmd("-htmlpattern", new Label("Extract from html"),
-                "Parse the input html file",
-                new Arg("columns", "Column names", "type", "columns"),
-                new Arg("startPattern", "", "type", "pattern"),
-                new Arg("endPattern", "", "type", "pattern"),
-                new Arg("pattern", "Row pattern. Use (...) to match columns",
-                        "type", "pattern")),
-        new Cmd("-json", "Parse the input as json",
-                new Arg("arrayPath",
-			"Path to the array e.g., obj1.arr[2].obj2", "size", "30",
-			"label", "Array path"), new Arg("objectPaths",
-							"One or more paths to the objects e.g. geometry,features",
-							"size", "30", "label", "Object paths", "type",
-							"list", "size", "30")),
-        new Cmd("-xml", "Parse the input as xml",
-                new Arg("path", "Path to the elements", "size", "60")),
-        new Cmd("-shapefile", "Parse the input shapefile",
-                new Arg("props", "addPoints true addShapes false")),	
-        new Cmd("-text", "Extract rows from the text",
-                new Arg("comma separated header"),
-                new Arg("chunk pattern", "", "type", "pattern"),
-                new Arg("token pattern", "", "type", "pattern")),
-        new Cmd("-text2", "Extract rows from the text",
-                new Arg("comma separated header"),
-                new Arg("chunk pattern", "", "type", "pattern"),
-                new Arg("token pattern", "", "type", "pattern")),
-        new Cmd("-text3", "Extract rows from the text",
-                new Arg("comma separated header"),
-                new Arg("token pattern", "", "type", "pattern")),
-        new Cmd("-tokenize", "Tokenize the input from the pattern",
-                new Arg("header", "header1,header2..."),
-                new Arg("pattern", "", "type", "pattern")),
-
-        new Cmd("-sql", "Connect to the given database",
-                new Arg("db", "The database id (defined in the environment)"),
-		new Arg("table", "The table to select from"),
-		new Arg("properties", "'columns' c1,c2,...  'where' c1,<|>|<>|like|notlike;...")),
-        new Cmd("-prune", "Prune out the first N bytes",
-                new Arg("bytes", "Number of leading bytes to remove", "type",
-                        "number")),
 
         /*  Output   */
         new Cmd(true, "Output"), 
@@ -1804,7 +1825,7 @@ public class CsvUtil {
 		new Arg(
 			"props",
 			"Name value pairs:\n\t\ttable.id <new id> table.name <new name> table.cansearch <true|false> table.canlist <true|false> table.icon <icon, e.g., /db/database.png>\n\t\t<column name>.id <new id for column> <column name>.label <new label>\n\t\t<column name>.type <string|enumeration|double|int|date>\n\t\t<column name>.format <yyyy MM dd HH mm ss format for dates>\n\t\t<column name>.canlist <true|false> <column name>.cansearch <true|false>\n\t\tinstall <true|false install the new db table>\n\t\tnukedb <true|false careful! this deletes any prior created dbs", "rows", "6")),
-        new Cmd("-toxml", "Generate XML", new Arg("tag")),
+        new Cmd("-toxml", "Generate XML", new Arg("tag1"),new Arg("tag2")),
         new Cmd("-tojson", "Generate JSON"),	
         new Cmd("-run", "", "Name of process directory"),
         new Cmd("-cat", "One or more csv files", "*.csv"),
@@ -2340,8 +2361,10 @@ public class CsvUtil {
 		return i;
 	    });
 
-	defineFunction("-toxml",1,(ctx,args,i) -> {
-		ctx.getProcessor().addProcessor(new Processor.ToXml(args.get(++i)));
+
+
+	defineFunction("-toxml",2,(ctx,args,i) -> {
+		ctx.getProcessor().addProcessor(new Processor.ToXml(args.get(++i),args.get(++i)));
 		return i;
 	    });
 	defineFunction("-tojson",0,(ctx,args,i) -> {
@@ -2724,7 +2747,7 @@ public class CsvUtil {
 	    });
 
 	defineFunction("-stats",0,(ctx,args,i) -> {
-		ctx.getProcessor().addProcessor(new Processor.Stats());
+		ctx.getProcessor().addProcessor(new Processor.Stats(this));
 		return i;
 	    });
 	

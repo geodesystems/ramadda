@@ -18,7 +18,9 @@ package org.ramadda.util.text;
 
 
 import org.ramadda.util.GeoUtils;
+import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
+
 import org.ramadda.util.Utils;
 
 import ucar.unidata.util.StringUtil;
@@ -47,6 +49,8 @@ import java.util.regex.*;
  * @author         Jeff McWhirter
  */
 public abstract class CsvOperator {
+
+    public static final HtmlUtils HU = null;
 
     /** _more_ */
     public static int OP_LT = 0;

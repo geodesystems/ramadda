@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.ramadda.util.Json;
 import org.ramadda.util.Utils;
 
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
@@ -32,8 +33,12 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
+import java.util.function.BiConsumer;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -562,6 +567,7 @@ rotate -> pass -> pass -> rotate -> pass
                 processors          = remainderProcessors;
                 remainderProcessors = null;
                 firstProcessors     = null;
+		if(inputRows ==null) return inputRows;
                 for (Row row : inputRows) {
                     row = processRowInner(textReader, row);
                     if ( !textReader.getOkToRun()) {
@@ -687,7 +693,7 @@ rotate -> pass -> pass -> rotate -> pass
         public List<Row> finish(TextReader info, List<Row> r)
                 throws Exception {
             List          keys         = new ArrayList();
-            List<Integer> valueIndices = getIndices(info,valueCols);
+            List<Integer> valueIndices = getIndices(info, valueCols);
             List<Row>     rows         = new ArrayList<Row>();
             List<Row>     allRows      = getRows();
             Row           headerRow    = allRows.get(0);
@@ -987,6 +993,16 @@ rotate -> pass -> pass -> rotate -> pass
 
             return row;
         }
+
+        /**
+         * _more_
+         *
+         * @param row _more_
+         */
+        public void addRow(Row row) {
+            rows.add(row);
+        }
+
 
         /**
          *  Set the Rows property.
@@ -1467,144 +1483,24 @@ rotate -> pass -> pass -> rotate -> pass
     }
 
 
+
+
     /**
      * Class description
      *
      *
-     * @version        $version$, Wed, Jul 8, '15
-     * @author         Enter your name here...
+     * @version        $version$, Sat, Apr 3, '21
+     * @author         Enter your name here...    
      */
-    public static class Stats extends Processor {
-	private static class ColStat {
-	    String name;
-	    String type;
-	    String sample;
-	    String sampleError;
-	    double  min=Double.NaN;
-	    double  max=Double.NaN;
-	    int numErrors = 0;
-	    int numMissing = 0;
-	    HashSet uniques = new HashSet();
-	    public ColStat(String name, String sample) {
-		this.name = name.toLowerCase();
-		try {
-		    Double.parseDouble(sample);
-		    this.type = "numeric";
-		} catch(Exception ignore) {
-		    this.type = "string";
-		}
-	    }
-
-	    public void addValue(String v) {
-		if(sample==null) sample = v;
-		if(type.equals("numeric")) {
-		    try {
-			double d = Double.parseDouble(v);
-			min  = Utils.min(min,d);
-			max  = Utils.max(max,d);			
-			if(Double.isNaN(d)) numMissing++;
-		    } catch(Exception exc) {
-			numErrors++;
-			if(sampleError==null) sampleError=v;
-		    }
-		} else {
-		    uniques.add(v);
-		}
-	    }
-	    public void finish(PrintWriter writer) {
-		writer.print(name +" [" + type+"]  ");
-		writer.print("sample:" + sample +"  ");
-		if(type.equals("numeric")) {
-		    writer.print("min:" + min +"  max:" + max);
-		    writer.print("  #missing:" + numMissing +"  #errors:" + numErrors);
-		    if(sampleError!=null)
-			writer.print("  eg:" + (sampleError.trim().length()==0?"<blank>":sampleError));
-		} else {
-		    writer.print("#uniques:" + uniques.size());
-		}
-		writer.print("\n");
-	    }
-
-	}
-
-	private List<ColStat> cols;
-	private Row headerRow;
-	int rowCnt=0;
-
-
-        /**
-         * ctor
-         */
-        public Stats() {
-        }
-
-
-        /**
-         * _more_
-         *
-         * @param info _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
-        @Override
-        public Row processRow(TextReader info, Row row) throws Exception {
-	    rowCnt++;
-	    if(headerRow==null) {
-		headerRow = row;
-		return row;
-	    }
-	    if(cols==null) {
-		cols =new ArrayList<ColStat>();
-		for(int i=0;i<row.size();i++) {
-		    cols.add(new ColStat(headerRow.getString(i), row.getString(i)));
-		}
-	    }
-	    for(int i=0;i<row.size();i++) {
-		cols.get(i).addValue(row.getString(i));
-	    }
-
-	    return row;
-	}
-
-
-        /**
-         * _more_
-         *
-         * @param info _more_
-         * @param rows _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
-        @Override
-        public List<Row> finish(TextReader info, List<Row> rows)
-                throws Exception {
-	    info.getWriter().println("#rows:" + rowCnt);
-	    int cnt=0;
-	    for(ColStat col: cols) {
-		cnt++;
-		info.getWriter().print("#" + cnt +" " );
-		col.finish(info.getWriter());
-	    }
-	    return rows;
-	}
-    }
-
-
-
     public static class ToJson extends Processor {
 
-	private Row headerRow;
+        /** _more_          */
+        private Row headerRow;
 
         /**
          * ctor
          */
-        public ToJson() {
-        }
+        public ToJson() {}
 
         /**
          * _more_
@@ -1618,12 +1514,12 @@ rotate -> pass -> pass -> rotate -> pass
          */
         @Override
         public Row processRow(TextReader info, Row row) throws Exception {
-	    if(headerRow==null) {
-		headerRow = row;
-		info.getWriter().println("[");
-		return row;
-	    }
-            handleRow(info, info.getWriter(), row);
+            if (headerRow == null) {
+                headerRow = row;
+                info.getWriter().println("[");
+                return row;
+            }
+	    handleRow(info, info.getWriter(), row);
             return row;
         }
 
@@ -1642,7 +1538,8 @@ rotate -> pass -> pass -> rotate -> pass
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
                 throws Exception {
-	    info.getWriter().println("]");
+            info.getWriter().println("]");
+
             return rows;
         }
 
@@ -1659,20 +1556,22 @@ rotate -> pass -> pass -> rotate -> pass
          */
         private void handleRow(TextReader info, PrintWriter writer, Row row)
                 throws Exception {
-	    rowCnt++;
-	    if(rowCnt>1) writer.println(",");
-	    List<String> attrs = new ArrayList<String>();
-	    for(int i=0;i<headerRow.size();i++) {
-		String field = headerRow.getString(i);
-		String value = row.getString(i);
-		attrs.add(field);
-		attrs.add(value);		
-	    }
-	    writer.print(Json.mapAndGuessType(attrs));
+            rowCnt++;
+            if (rowCnt > 1) {
+                writer.println(",");
+            }
+            List<String> attrs = new ArrayList<String>();
+            for (int i = 0; i < headerRow.size(); i++) {
+                String field = headerRow.getString(i);
+                String value = row.getString(i);
+                attrs.add(field);
+                attrs.add(value);
+            }
+            writer.print(Json.mapAndGuessType(attrs));
         }
 
     }
-    
+
 
 
 
@@ -1748,14 +1647,19 @@ rotate -> pass -> pass -> rotate -> pass
         /** _more_ */
         String tag;
 
+	String tag2;
+
         /**
          * _more_
          *
          * @param tag _more_
          */
-        public ToXml(String tag) {
+        public ToXml(String tag, String tag2) {
             super();
+	    if(tag==null || tag.trim().length()==0) tag = "rows";
+	    if(tag2==null || tag2.trim().length()==0) tag2 = "row";
             this.tag = tag;
+	    this.tag2 = tag2;
         }
 
 
@@ -1797,7 +1701,7 @@ rotate -> pass -> pass -> rotate -> pass
 
                 return row;
             }
-            writer.println("<entry>");
+            writer.println("<" + tag2+">");
             List values = row.getValues();
             for (int i = 0; i < values.size(); i++) {
                 Object v = values.get(i);
@@ -1813,7 +1717,7 @@ rotate -> pass -> pass -> rotate -> pass
                 writer.print("]]>");
                 writer.println("</" + h + ">");
             }
-            writer.println("</entry>");
+            writer.println("</" + tag2+">");
 
             return row;
         }
@@ -2521,9 +2425,18 @@ rotate -> pass -> pass -> rotate -> pass
         @Override
         public Row processRow(TextReader info, Row row) throws Exception {
             if (headerValues == null) {
-                headerValues = row.getValues();
 
-                return row;
+		headerValues = new ArrayList();
+                for(Object obj: row.getValues()) {
+		    String name = obj.toString();
+		    if (name.startsWith("#fields=")) {
+			name = name.substring("#fields=".length());
+		    }
+		    String args = StringUtil.findPattern(name, "\\[(.*)\\]");
+		    name = name.replaceAll("\\[.*\\]", "");
+		    headerValues.add(name);
+		}
+		return row;
             }
             printRow(info, row);
 
@@ -2569,10 +2482,10 @@ rotate -> pass -> pass -> rotate -> pass
      * @version        $version$, Wed, Jan 17, '18
      * @author         Enter your name here...
      */
-    public static class Html extends Processor {
+    public static class Html extends RowCollector {
 
         /** _more_ */
-        private int cnt = 0;
+        protected int cnt = 0;
 
         /**
          * _more_
@@ -2598,8 +2511,11 @@ rotate -> pass -> pass -> rotate -> pass
          */
         @Override
         public Row processRow(TextReader info, Row row) throws Exception {
-	    if(info.getDebug()) return row;
-            printRow(info, row);
+            if (info.getDebug()) {
+                return row;
+            }
+            printRow(info, row, true);
+
             return row;
         }
 
@@ -2608,10 +2524,12 @@ rotate -> pass -> pass -> rotate -> pass
          *
          * @param info _more_
          * @param row _more_
+         * @param addCnt _more_
          *
          * @throws Exception _more_
          */
-        public void printRow(TextReader info, Row row) throws Exception {
+        public void printRow(TextReader info, Row row, boolean addCnt)
+                throws Exception {
             List values = row.getValues();
             if (cnt == 0) {
                 info.getWriter().println(
@@ -2650,7 +2568,7 @@ rotate -> pass -> pass -> rotate -> pass
             }
 
             for (int i = 0; i < values.size(); i++) {
-                if (i == 0) {
+                if ((i == 0) && addCnt) {
                     info.getWriter().print(open);
                     info.getWriter().print("<div style='" + style + "'>");
                     if (cnt == 0) {
@@ -2712,12 +2630,14 @@ rotate -> pass -> pass -> rotate -> pass
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
                 throws Exception {
-	    if(info.getDebug()) {
-		info.getWriter().print("");
-		return rows;
-	    }
+            if (info.getDebug()) {
+                info.getWriter().print("");
+
+                return rows;
+            }
             info.getWriter().println("</tbody>");
             info.getWriter().print("</table>");
+
             return rows;
         }
 
@@ -2807,7 +2727,7 @@ rotate -> pass -> pass -> rotate -> pass
                 throws Exception {
 
             if (valueIndices == null) {
-                valueIndices     = getIndices(info,valueCols);
+                valueIndices     = getIndices(info, valueCols);
                 this.unfurlIndex = getIndex(unfurlCol);
                 this.uniqueIndex = getIndex(uniqueCol);
             }
@@ -3141,10 +3061,12 @@ rotate -> pass -> pass -> rotate -> pass
         public List<Row> finish(TextReader info, List<Row> rows)
                 throws Exception {
             List<Row> newRows = new ArrayList<Row>();
-            int keyIndex = getIndices(info,Utils.split(key, ",", true,
-                               true)).get(0);
-            int valueIndex = getIndices(info,Utils.split(value, ",", true,
-                                 true)).get(0);
+            int keyIndex = getIndices(info,
+                                      Utils.split(key, ",", true,
+                                          true)).get(0);
+            int valueIndex = getIndices(info,
+                                        Utils.split(value, ",", true,
+                                            true)).get(0);
             List<Row> allRows   = getRows();
             Row       headerRow = allRows.get(0);
             headerRow.add(name);
@@ -3403,10 +3325,10 @@ rotate -> pass -> pass -> rotate -> pass
         public List<Row> finish(TextReader info, List<Row> rows)
                 throws Exception {
 
-            uniqueIndices = getIndices(info,keys);
-            valueIndices  = getIndices(info,values);
-            valueIndices  = getIndices(info,values);
-            extraIndices  = getIndices(info,extra);
+            uniqueIndices = getIndices(info, keys);
+            valueIndices  = getIndices(info, values);
+            valueIndices  = getIndices(info, values);
+            extraIndices  = getIndices(info, extra);
             List<Integer> allIndices = new ArrayList<Integer>();
             allIndices.addAll(uniqueIndices);
             allIndices.addAll(valueIndices);
@@ -3585,7 +3507,7 @@ rotate -> pass -> pass -> rotate -> pass
          * @throws Exception _more_
          */
         private void init() throws Exception {
-            List<Integer> keys1Indices = getIndices(null,keys1);
+            List<Integer> keys1Indices = getIndices(null, keys1);
             values1Indices = getIndices(null, values1);
             BufferedReader br = new BufferedReader(
                                     new InputStreamReader(
@@ -3799,6 +3721,439 @@ rotate -> pass -> pass -> rotate -> pass
             return newRows;
         }
     }
+
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Wed, Jul 8, '15
+     * @author         Enter your name here...
+     */
+    public static class Stats extends Html {
+
+        /** _more_          */
+        private static SimpleDateFormat fmtSdf =
+            new SimpleDateFormat("yyyy-MM-dd hh:mm");
+
+        /** _more_          */
+        private CsvUtil util;
+
+        /**
+         * Class description
+         *
+         *
+         * @version        $version$, Sat, Apr 3, '21
+         * @author         Enter your name here...    
+         */
+        private static class ColStat {
+
+            /** _more_          */
+            String name;
+
+            /** _more_          */
+            String label;
+
+            /** _more_          */
+            String type;
+
+            /** _more_          */
+            String sample;
+
+            /** _more_          */
+            SimpleDateFormat sdf;
+
+            /** _more_          */
+            String format;
+
+            /** _more_          */
+            String sampleError;
+
+            /** _more_          */
+            double min = Double.NaN;
+
+            /** _more_          */
+            double max = Double.NaN;
+
+            /** _more_          */
+            int numErrors = 0;
+
+            /** _more_          */
+            int numMissing = 0;
+
+            /** _more_          */
+            Hashtable<Object, Integer> uniques = new Hashtable<Object,
+                                                     Integer>();
+
+            /** _more_          */
+            Date minDate;
+
+            /** _more_          */
+            Date maxDate;
+
+            /**
+             * _more_
+             *
+             * @param util _more_
+             * @param n _more_
+             * @param sample _more_
+             */
+            public ColStat(CsvUtil util, String n, String sample) {
+                name  = n.toLowerCase();
+                label = name;
+                if (name.startsWith("#fields=")) {
+                    name = name.substring("#fields=".length());
+                }
+                String args = StringUtil.findPattern(name, "\\[(.*)\\]");
+                name = name.replaceAll("\\[.*\\]", "");
+                try {
+                    Double.parseDouble(sample);
+                    this.type = "numeric";
+                } catch (Exception ignore) {
+                    this.type = "string";
+                }
+                if (args != null) {
+                    Hashtable props = new Hashtable();
+                    for (String tok : Utils.parseCommandLine(args)) {
+                        List<String> toks = StringUtil.splitUpTo(tok, "=", 2);
+                        if (toks.size() == 2) {
+                            props.put(toks.get(0), toks.get(1));
+                        }
+                    }
+                    this.type  = Utils.getProperty(props, "type", this.type);
+                    this.label = Utils.getProperty(props, "label",
+                            this.label);
+                    this.format = Utils.getProperty(props, "format",
+                            this.format);
+                    if (this.format != null) {
+                        sdf = new SimpleDateFormat(this.format);
+
+                    }
+                }
+            }
+
+            /**
+             * _more_
+             *
+             * @param v _more_
+             *
+             * @return _more_
+             */
+            public Date getDate(Object v) {
+                try {
+                    if (format.equals("SSS")) {
+                        return new Date(Long.parseLong(v.toString()) * 1000);
+                    }
+
+                    return sdf.parse(v.toString());
+                } catch (Exception exc) {
+                    return null;
+                }
+            }
+
+            /**
+             * _more_
+             *
+             * @param v _more_
+             *
+             * @return _more_
+             */
+            public Object format(Object v) {
+                if (type.equals("date") && (format != null)) {
+                    Date date = getDate(v);
+                    if (date != null) {
+                        return fmtSdf.format(date);
+                    }
+
+                    return "bad date:" + v;
+                }
+
+                return v;
+            }
+
+            /**
+             * _more_
+             *
+             * @param v _more_
+             */
+            public void addValue(String v) {
+                if (sample == null) {
+                    sample = v;
+                }
+                if (type.equals("numeric")) {
+                    try {
+                        double d = Double.parseDouble(v);
+                        min = Utils.min(min, d);
+                        max = Utils.max(max, d);
+                        if (Double.isNaN(d)) {
+                            numMissing++;
+                        }
+                    } catch (Exception exc) {
+                        numErrors++;
+                        if (sampleError == null) {
+                            sampleError = v;
+                        }
+                    }
+                } else if (type.equals("date")) {
+                    Date date = getDate(v);
+                    if (date != null) {
+                        minDate = Utils.min(minDate, date);
+                        maxDate = Utils.max(maxDate, date);
+                    }
+                } else {
+                    Integer cnt = uniques.get(v);
+                    if (cnt == null) {
+                        cnt = new Integer(0);
+                    }
+                    cnt = new Integer(cnt + 1);
+                    uniques.put(v, cnt);
+                }
+            }
+
+            /**
+             * _more_
+             *
+             * @param writer _more_
+             */
+            public void finish(PrintWriter writer) {
+                writer.print("<pre>");
+                writer.print(name + " [" + type + "]  ");
+                writer.print("sample:" + sample + "  ");
+                if (type.equals("numeric")) {
+                    writer.print("min:" + min + "  max:" + max);
+                    writer.print("  #missing:" + numMissing + "  #errors:"
+                                 + numErrors);
+                    if (sampleError != null) {
+                        writer.print("  eg:"
+                                     + ((sampleError.trim().length() == 0)
+                                        ? "<blank>"
+                                        : sampleError));
+                    }
+                } else {
+                    writer.print("#uniques:" + uniques.size());
+                }
+                writer.print("\n");
+                writer.print("</pre>");
+            }
+
+        }
+
+        /** _more_          */
+        private List<ColStat> cols;
+
+        /** _more_          */
+        private Row headerRow;
+
+        /** _more_          */
+        int rowCnt = 0;
+
+        /** _more_          */
+        private boolean interactive;
+
+        /**
+         * ctor
+         *
+         * @param util _more_
+         */
+        public Stats(CsvUtil util) {
+            this.util   = util;
+            interactive = util.getInteractive();
+        }
+
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param row _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row) throws Exception {
+            rowCnt++;
+            if (headerRow == null) {
+                headerRow = row;
+
+                return row;
+            }
+            if (cols == null) {
+                cols = new ArrayList<ColStat>();
+                for (int i = 0; i < row.size(); i++) {
+                    cols.add(new ColStat(util, headerRow.getString(i),
+                                         row.getString(i)));
+                }
+            }
+            for (int i = 0; i < row.size(); i++) {
+                cols.get(i).addValue(row.getString(i));
+            }
+
+            addRow(row);
+
+            return row;
+        }
+
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param rows _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public List<Row> finish(TextReader info, List<Row> rows)
+                throws Exception {
+
+            PrintWriter w = info.getWriter();
+	    BiConsumer<String,String> layout = (label,value) -> {
+		w.print(HU.tag("table",
+			       HU.attrs("class", "left_right_table",
+					"cellpadding", "0", "cellspacing",
+					"0"), HU.row(HU.col(label)
+						     + HU.col(value,
+							      HU.attrs("align","right","valign","top")))));
+	    };
+
+            w.println("#rows:" + rowCnt);
+            if (interactive) {
+                w.println(
+                    "<table  width='100%' class='stripe hover display nowrap ramadda-table ramadda-csv-table' >");
+                w.println("<thead>");
+                w.println("<tr valign=top>");
+                for (ColStat col : cols) {
+                    String typeIcon = "";
+                    String tt       = "";
+                    if (col.type.equals("string")) {
+                        typeIcon = "fas fa-font";
+                    } else if (col.type.equals("date")) {
+                        typeIcon = "fas fa-calendar";
+                    } else if (col.type.equals("enumeration")) {
+                        typeIcon = "fas fa-list";
+                    } else {
+                        typeIcon = "fas fa-hashtag";
+                    }
+                    String type = HtmlUtils.faIcon(typeIcon, "",
+                                      HtmlUtils.attrs("title",
+                                          "type: " + col.type, "style",
+                                          "font-size:10pt;"));
+                    String name = col.name;
+                    w.println("<th class=csv-id fieldid='" + name
+                              + "' nowrap>" + type + "&nbsp;" + name
+                              + "</th>");
+                }
+                w.println("</tr>");
+                w.println("<tr valign=top class=th2>");
+                for (ColStat col : cols) {
+                    w.println("<th>");
+                    if (col.type.equals("numeric")) {
+                        layout.accept("min:", "" + col.min);
+			layout.accept("max:", "" + col.max);
+                        if (col.numMissing > 0) {
+                            layout.accept("#missing:",
+                                    "" + col.numMissing);
+                        }
+                        if (col.numErrors > 0) {
+                            layout.accept("#errors:",   "" + col.numErrors);
+                            if (col.sampleError != null) {
+                                layout.accept("eg:"
+                                        + ((col.sampleError.trim().length()
+                                            == 0)
+                                           ? "<blank>"
+                                           : col.sampleError), "");
+                            }
+                        }
+                    } else if (col.type.equals("date")) {
+                        if (col.minDate != null) {
+			    layout.accept("min:", fmtSdf.format(col.minDate));
+                        }
+                        if (col.maxDate != null) {
+                            layout.accept("max:",fmtSdf.format(col.maxDate));
+                        }
+                    } else {
+                        List<Object[]> values = new ArrayList<Object[]>();
+                        for (Enumeration keys = col.uniques.keys();
+                                keys.hasMoreElements(); ) {
+                            Object  key = keys.nextElement();
+                            Integer cnt = col.uniques.get(key);
+                            values.add(new Object[] { key, cnt });
+                        }
+                        Comparator comp = new Comparator() {
+                            public int compare(Object o1, Object o2) {
+                                Object[] t1 = (Object[]) o1;
+                                Object[] t2 = (Object[]) o2;
+
+                                return ((int) t2[1]) - ((int) t1[1]);
+                            }
+                        };
+
+                        Object[] array = values.toArray();
+                        Arrays.sort(array, comp);
+                        values = (List<Object[]>) Misc.toList(array);
+                        if (values.size() > 20) {
+                            w.print(values.size() + "<br>unique values");
+                        } else {
+                            w.print(
+                                "<div style='max-height:100px;overflow-y:auto;'>");
+                            w.print("<table>");
+                            for (Object[] tuple : values) {
+                                Object key = tuple[0];
+                                int    cnt = (Integer) tuple[1];
+                                double percent = Math.round(1000.0 * cnt
+							    / (double) (rowCnt-1)) / 10;
+                                w.print(
+                                    "<tr><td>" + key
+                                    + "</td><td align=right><span title='#"
+                                    + cnt + "'>" + percent
+                                    + "%</span></td></tr>");
+                            }
+                            w.print("</table>");
+                            w.print("</div>");
+                        }
+                    }
+                    w.println("</th>");
+                }
+                w.println("</tr>");
+                w.println("</thead>");
+                w.println("<tbody>");
+
+                rows = getRows(rows);
+
+                for (Row row : rows) {
+                    if (cnt++ > 200) {
+                        w.println("<tr><td colspan=" + row.size()
+                                  + ">...</td></tr>");
+
+                        break;
+                    }
+                    Row r = new Row();
+                    for (int i = 0; i < cols.size(); i++) {
+                        ColStat col = cols.get(i);
+                        r.add(col.format(row.get(i)));
+                    }
+                    printRow(info, r, false);
+                }
+                w.println("</tbody>");
+                w.println("</table>");
+            } else {
+                for (ColStat col : cols) {
+                    cnt++;
+                    info.getWriter().print("#" + cnt + " ");
+                    col.finish(info.getWriter());
+                }
+            }
+
+            return rows;
+
+        }
+    }
+
 
 
 }
