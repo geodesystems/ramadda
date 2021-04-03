@@ -60,6 +60,16 @@ var Utils =  {
     addLoadFunction: function(f) {
 	Utils.loadFunctions.push(f);
     },
+    max: function(v1,v2) {
+	if(isNaN(v1)) return v2;
+	if(isNaN(v2)) return v1;	
+	return Math.max(v1,v2);
+    },
+    min: function(v1,v2) {
+	if(isNaN(v1)) return v2;
+	if(isNaN(v2)) return v1;	
+	return Math.min(v1,v2);
+    },    
     toRadians:function(degrees) {
 	return degrees * Math.PI / 180;
     },
@@ -508,25 +518,33 @@ var Utils =  {
 	let html ="";
 	let func;
 	func = function(node, path, padding) {
+	    let pad = "";
 	    for(let i=0;i<padding;i++)
-		html +="  ";
+		pad +="  ";
 	    if(padding>5) {
-		html+="...\n";
+		html+=pad +"...\n";
 		return;
 	    }
 	    if(node.nodeName=="#text") {
-		html +="text:" + node.nodeValue+"\n";
+		let text = node.nodeValue||"";
+		text = text.trim();
+		if(Utils.stringDefined(text)) {
+		    html +=pad + "text:" + text+"\n";
+		}
 		return;
 	    } 
+	    if(node.nodeName=="#cdata-section") {
+		html+=pad + node.wholeText;
+		html+="\n";
+		return;
+	    }
 	    if(path!="") path+=".";
 	    path+=node.nodeName;
-	    html +="&lt;" + HU.span(["data-path",path, TITLE,"Add path selector",STYLE,HU.css("cursor","pointer","text-decoration","underline"), CLASS,"ramadda-xmlnode"],node.nodeName)+"&gt;" + "\n";
+	    html +=pad + "&lt;" + HU.span(["data-path",path, TITLE,"Add path selector",STYLE,HU.css("cursor","pointer","text-decoration","underline"), CLASS,"ramadda-xmlnode"],node.nodeName)+"&gt;" + "\n";
 	    node.childNodes.forEach(child=>{
 		func(child,path,padding+1);
 	    });
-	    for(let i=0;i<padding;i++)
-		html +="  ";
-	    html +="&lt;/" + node.nodeName+"&gt;" + "\n";
+	    html +=pad + "&lt;/" + node.nodeName+"&gt;" + "\n";
 	}
 	xmlDoc.childNodes.forEach(n=>{
 	    if(n.nodeName == "parsererror") {
@@ -1374,7 +1392,7 @@ var Utils =  {
     },
     formatNumberInner: function(number) {
         var anumber = Math.abs(number);
-        if (anumber == Math.floor(anumber)) return number;
+        if (anumber == Math.floor(anumber)) return String(number);
         if (anumber > 1000) {
             return number_format(number, 0);
         } else if (anumber > 100) {
@@ -3687,10 +3705,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 searching: false,
                 scrollCollapse: true,
 		retrieve: true,
+		fixedHeader:false,
             };
             if (args)
                 $.extend(options, args);
-            var height = $(this).attr("table-height");
+            let height = args.height || $(this).attr("table-height");
             if (height)
                 options.scrollY = height;
             var ordering = $(this).attr("table-ordering");
@@ -3711,7 +3730,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    }
             table = $(this).DataTable(options);
         });
-
 	return table;
     },
     th: function(attrs, inner) {
