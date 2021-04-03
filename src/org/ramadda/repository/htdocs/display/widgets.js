@@ -990,7 +990,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     if(this.convertAlpha) {
 	if(!Utils.isDefined(this.getProperty("alphaSourceMin"))) {
 	    var min = 0, max=0;
-	    records.map((record,idx)=>{
+	    records.forEach((record,idx)=>{
 		var tuple = record.getData();
 		if(this.compareFields.length>0) {
 		    this.compareFields.map((f,idx2)=>{
@@ -1020,7 +1020,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     if(this.convertIntensity) {
 	if(!Utils.isDefined(this.getProperty("intensitySourceMin"))) {
 	    var min = 0, max=0;
-	    records.map((record,idx)=>{
+	    records.forEach((record,idx)=>{
 		var tuple = record.getData();
 		if(this.compareFields.length>0) {
 		    this.compareFields.map((f,idx2)=>{
@@ -1111,9 +1111,10 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     this.index = this.field != null ? this.field.getIndex() : -1;
     this.stringMap = this.display.getColorByMap(colorByMapProp);
     if(this.index>=0 || this.timeField) {
-	var cnt = 0;
-	records.forEach(record=>{
-            var tuple = record.getData();
+	let min = NaN;
+	let max = NaN;
+	records.forEach((record,idx)=>{
+            let tuple = record.getData();
 	    let v;
             if(this.timeField) {
 		if(this.timeField=="hour")
@@ -1136,12 +1137,13 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
             if (this.excludeZero && v === 0) {
 		return;
             }
-	    if (!isNaN(v) && !(v === null)) {
-		if (cnt == 0 || v > this.maxValue) this.maxValue = v;
-		if (cnt == 0 || v < this.minValue) this.minValue = v;
-		cnt++;
-	    }
+	    min = Utils.min(min,v);
+	    max = Utils.max(max,v);
 	});
+//	console.log("minmax:" + min +" " + max);
+	this.minValue =min;
+	this.maxValue =max;	
+	this.origRange = [min,max];
     }
 
     if (this.display.showPercent) {
@@ -1232,11 +1234,12 @@ ColorByInfo.prototype = {
 	}
     },
     resetRange: function() {
-	if(this.origRange)
+	if(this.origRange) {
 	    this.setRange(this.origRange[0],this.origRange[1]);
+	}
     },
     setRange: function(minValue,maxValue, force) {
-//	console.log(this.propPrefix +" min:" + minValue + " max:" + maxValue);
+//	console.log(" setRange: min:" + minValue + " max:" + maxValue);
 	if(!force && this.overrideRange) return;
 	this.origMinValue = minValue;
 	this.origMaxValue = maxValue;

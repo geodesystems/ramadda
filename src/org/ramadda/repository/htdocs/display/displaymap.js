@@ -198,6 +198,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{label:"Map Lines"},
 	{p:'showSegments',ex:'true',tt:'If data has 2 lat/lon locations draw a line'},
 	{p:'isPath',ex:'true',tt:'Make a path from the points'},	
+	{p:'pathWidth',ex:'2'},
+	{p:'pathColor',ex:'red'},	
 	{p:'showPathEndPoint',ex:true},
 	{p:'pathEndPointShape',ex:'arrow'},
 	{p:'latField1',tt:'Field id for segments'},
@@ -3130,7 +3132,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			i++;
 			if(lastRecord) {
 			    pathAttrs.strokeColor = colorBy.getColorFromRecord(record, pathAttrs.strokeColor);
-			    this.lines.push(this.map.addLine("line-" + i, "", lastRecord.getLatitude(), lastRecord.getLongitude(), record.getLatitude(),record.getLongitude(),pathAttrs));
+			    let line = this.map.addLine("line-" + i, "", lastRecord.getLatitude(), lastRecord.getLongitude(), record.getLatitude(),record.getLongitude(),pathAttrs);
+			    this.lines.push(line);
+			    line.record=record;
+			    line.textGetter=textGetter;
 			}
 			secondRecord = lastRecord;
 			lastRecord = record;

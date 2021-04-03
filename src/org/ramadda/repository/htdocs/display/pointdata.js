@@ -476,10 +476,10 @@ function PointData(name, recordFields, records, url, properties) {
 	    //            Utils.doFetch(url, success,fail,"json");
 	    //Handle the snapshot relative file
 	    if(!url.startsWith("/") && !url.startsWith("http")) {
-		console.log("url:" + url);
 		let root = String(window.location).replace(/\/[^\/]+$/,"");
 		url = root + "/" + url;
 	    }
+	    console.log("point data:" + url);
             Utils.doFetch(url, success,fail,null);	    
 //            var jqxhr = $.getJSON(url, success,{crossDomain:true}).fail(fail);
         }

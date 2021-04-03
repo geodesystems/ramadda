@@ -990,7 +990,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     if(this.convertAlpha) {
 	if(!Utils.isDefined(this.getProperty("alphaSourceMin"))) {
 	    var min = 0, max=0;
-	    records.map((record,idx)=>{
+	    records.forEach((record,idx)=>{
 		var tuple = record.getData();
 		if(this.compareFields.length>0) {
 		    this.compareFields.map((f,idx2)=>{
@@ -1020,7 +1020,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     if(this.convertIntensity) {
 	if(!Utils.isDefined(this.getProperty("intensitySourceMin"))) {
 	    var min = 0, max=0;
-	    records.map((record,idx)=>{
+	    records.forEach((record,idx)=>{
 		var tuple = record.getData();
 		if(this.compareFields.length>0) {
 		    this.compareFields.map((f,idx2)=>{
@@ -1111,9 +1111,10 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     this.index = this.field != null ? this.field.getIndex() : -1;
     this.stringMap = this.display.getColorByMap(colorByMapProp);
     if(this.index>=0 || this.timeField) {
-	var cnt = 0;
-	records.forEach(record=>{
-            var tuple = record.getData();
+	let min = NaN;
+	let max = NaN;
+	records.forEach((record,idx)=>{
+            let tuple = record.getData();
 	    let v;
             if(this.timeField) {
 		if(this.timeField=="hour")
@@ -1136,12 +1137,13 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
             if (this.excludeZero && v === 0) {
 		return;
             }
-	    if (!isNaN(v) && !(v === null)) {
-		if (cnt == 0 || v > this.maxValue) this.maxValue = v;
-		if (cnt == 0 || v < this.minValue) this.minValue = v;
-		cnt++;
-	    }
+	    min = Utils.min(min,v);
+	    max = Utils.max(max,v);
 	});
+//	console.log("minmax:" + min +" " + max);
+	this.minValue =min;
+	this.maxValue =max;	
+	this.origRange = [min,max];
     }
 
     if (this.display.showPercent) {
@@ -1232,11 +1234,12 @@ ColorByInfo.prototype = {
 	}
     },
     resetRange: function() {
-	if(this.origRange)
+	if(this.origRange) {
 	    this.setRange(this.origRange[0],this.origRange[1]);
+	}
     },
     setRange: function(minValue,maxValue, force) {
-//	console.log(this.propPrefix +" min:" + minValue + " max:" + maxValue);
+//	console.log(" setRange: min:" + minValue + " max:" + maxValue);
 	if(!force && this.overrideRange) return;
 	this.origMinValue = minValue;
 	this.origMaxValue = maxValue;
@@ -4268,7 +4271,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		} else {
 		    html += HU.div([CLASS,"ramadda-menu-item","what","togglelog"],"Use log scale");
 		}
-		html += HU.div([CLASS,"ramadda-menu-item","what","reset"],"Reset range");
 		html += Utils.getColorTablePopup();
 		popup.html(html);
 		$(popup).find(".ramadda-colortable-select").click(function() {
@@ -4289,8 +4291,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		popup.find(".ramadda-menu-item").click(function() {
 		    let what = $(this).attr("what");
 		    if(what == "reset") {
-			_this.setProperty("colorByMin",_this.originalColorRange[0]);
-			_this.setProperty("colorByMax",_this.originalColorRange[1]);
+			_this.setProperty("colorByMin",_this.getProperty("colorByMinOrig"));
+			_this.setProperty("colorByMax",_this.getProperty("colorByMaxOrig"));
 			_this.setProperty("overrideColorRange", false);
 		    } else if(what == "togglelog") {
 			if(!_this.getProperty("colorByLog")) 
@@ -4298,9 +4300,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			else
 			    _this.setProperty("colorByLog",false);
  		    } else if(what == "setmin") {
+			if(!Utils.isDefined(_this.getProperty("colorByMinOrig"))) {
+			    _this.setProperty("colorByMinOrig",_this.getProperty("colorByMin"));
+			}
 			_this.setProperty("colorByMin",val);
 			_this.setProperty("overrideColorRange", true);
 		    } else {
+			if(!Utils.isDefined(_this.getProperty("colorByMaxOrig"))) {
+			    _this.setProperty("colorByMaxOrig",_this.getProperty("colorByMax"));
+			}
 			_this.setProperty("colorByMax",val);
 			_this.setProperty("overrideColorRange", true);
 		    }
@@ -11183,10 +11191,10 @@ function PointData(name, recordFields, records, url, properties) {
 	    //            Utils.doFetch(url, success,fail,"json");
 	    //Handle the snapshot relative file
 	    if(!url.startsWith("/") && !url.startsWith("http")) {
-		console.log("url:" + url);
 		let root = String(window.location).replace(/\/[^\/]+$/,"");
 		url = root + "/" + url;
 	    }
+	    console.log("point data:" + url);
             Utils.doFetch(url, success,fail,null);	    
 //            var jqxhr = $.getJSON(url, success,{crossDomain:true}).fail(fail);
         }
@@ -15350,7 +15358,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	},
         makeDataTable: function(dataList, props, selectedFields, chartOptions) {
 	    let dateType = this.getProperty("dateType","date");
-	    let debug =   false||displayDebug.makeDataTable;
+	    let debug =   true||displayDebug.makeDataTable;
 	    let debugRows = 4;
 	    if(debug) console.log(this.type+" makeDataTable #records" + dataList.length);
 	    if(debug) console.log("\tfields:" + selectedFields);
@@ -15784,6 +15792,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 //		console.log("row:" + newRow);
 		//		if(debug && rowIdx>debugRows) break;
 	    }
+
+	    if(debug)
+		console.log("#rows:" + justData.length);
 
 
             dataTable.addRows(justData);
@@ -29750,6 +29761,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{label:"Map Lines"},
 	{p:'showSegments',ex:'true',tt:'If data has 2 lat/lon locations draw a line'},
 	{p:'isPath',ex:'true',tt:'Make a path from the points'},	
+	{p:'pathWidth',ex:'2'},
+	{p:'pathColor',ex:'red'},	
 	{p:'showPathEndPoint',ex:true},
 	{p:'pathEndPointShape',ex:'arrow'},
 	{p:'latField1',tt:'Field id for segments'},
@@ -32682,7 +32695,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			i++;
 			if(lastRecord) {
 			    pathAttrs.strokeColor = colorBy.getColorFromRecord(record, pathAttrs.strokeColor);
-			    this.lines.push(this.map.addLine("line-" + i, "", lastRecord.getLatitude(), lastRecord.getLongitude(), record.getLatitude(),record.getLongitude(),pathAttrs));
+			    let line = this.map.addLine("line-" + i, "", lastRecord.getLatitude(), lastRecord.getLongitude(), record.getLatitude(),record.getLongitude(),pathAttrs);
+			    this.lines.push(line);
+			    line.record=record;
+			    line.textGetter=textGetter;
 			}
 			secondRecord = lastRecord;
 			lastRecord = record;

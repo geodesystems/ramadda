@@ -645,10 +645,20 @@ a.ramadda-menubar-button:hover {
     padding-left:8px;
     padding-right:8px;
     padding-top:5px;
+    padding-bottom:5px;
 }
 
 .ramadda-menubar-button-last {
     border-right:0px #ccc solid;
+}
+
+.ramadda-menubar-button:last-child {
+    border-right:0px #ccc solid;
+}
+
+.ramadda-popup-link .ramadda-menubar-button {
+    border:0px;
+    border-right:var(--basic-border);
 }
 
 .ramadda-page-title  {
@@ -1988,6 +1998,25 @@ table.dataTable tbody td {
 
 .ramadda-table th {
     background-color: var(--header-background);
+}
+
+
+.ramadda-table tr.th2, .ramadda-table tr.th2 th {
+    background:#fff;
+}
+
+.ramadda-table thead .th2 th, .ramadda-table  .th2, .ramadda-table  .th2 td {
+    border-bottom:0px solid #fff;
+    font-weight:normal;
+}
+
+.ramadda-table tr.th2 th {
+    border-bottom:1px solid #aaa;
+}
+
+
+.ramadda-table .th2 tr:hover {
+    background:#fff !important;
 }
 
 .ramadda-table-header, .entry-list-header {
@@ -4803,6 +4832,8 @@ h3.ui-accordion-header a {
 }
 
 .ace_editor  { 
+    border-radius:0px;
+    margin-top:0px;
     overflow-x:auto;
     width:100%;
     border: 1px #ccc solid;
@@ -4922,7 +4953,7 @@ a span i:hover, a:hover span i {
 }
 
 
-.ramadda-highlightable:hover span i, .ramadda-highlightable:hover a, a.ramadda-highlightable:hover {
+.ramadda-highlightable:hover, .ramadda-highlightable:hover span i, .ramadda-highlightable:hover a, a.ramadda-highlightable:hover {
     color: var(--hover-color) !important;    
     text-decoration:none;
 }

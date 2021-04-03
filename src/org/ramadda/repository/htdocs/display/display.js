@@ -1377,7 +1377,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		} else {
 		    html += HU.div([CLASS,"ramadda-menu-item","what","togglelog"],"Use log scale");
 		}
-		html += HU.div([CLASS,"ramadda-menu-item","what","reset"],"Reset range");
 		html += Utils.getColorTablePopup();
 		popup.html(html);
 		$(popup).find(".ramadda-colortable-select").click(function() {
@@ -1398,8 +1397,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		popup.find(".ramadda-menu-item").click(function() {
 		    let what = $(this).attr("what");
 		    if(what == "reset") {
-			_this.setProperty("colorByMin",_this.originalColorRange[0]);
-			_this.setProperty("colorByMax",_this.originalColorRange[1]);
+			_this.setProperty("colorByMin",_this.getProperty("colorByMinOrig"));
+			_this.setProperty("colorByMax",_this.getProperty("colorByMaxOrig"));
 			_this.setProperty("overrideColorRange", false);
 		    } else if(what == "togglelog") {
 			if(!_this.getProperty("colorByLog")) 
@@ -1407,9 +1406,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			else
 			    _this.setProperty("colorByLog",false);
  		    } else if(what == "setmin") {
+			if(!Utils.isDefined(_this.getProperty("colorByMinOrig"))) {
+			    _this.setProperty("colorByMinOrig",_this.getProperty("colorByMin"));
+			}
 			_this.setProperty("colorByMin",val);
 			_this.setProperty("overrideColorRange", true);
 		    } else {
+			if(!Utils.isDefined(_this.getProperty("colorByMaxOrig"))) {
+			    _this.setProperty("colorByMaxOrig",_this.getProperty("colorByMax"));
+			}
 			_this.setProperty("colorByMax",val);
 			_this.setProperty("overrideColorRange", true);
 		    }

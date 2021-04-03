@@ -976,7 +976,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	},
         makeDataTable: function(dataList, props, selectedFields, chartOptions) {
 	    let dateType = this.getProperty("dateType","date");
-	    let debug =   false||displayDebug.makeDataTable;
+	    let debug =   true||displayDebug.makeDataTable;
 	    let debugRows = 4;
 	    if(debug) console.log(this.type+" makeDataTable #records" + dataList.length);
 	    if(debug) console.log("\tfields:" + selectedFields);
@@ -1410,6 +1410,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 //		console.log("row:" + newRow);
 		//		if(debug && rowIdx>debugRows) break;
 	    }
+
+	    if(debug)
+		console.log("#rows:" + justData.length);
 
 
             dataTable.addRows(justData);
