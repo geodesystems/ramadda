@@ -78,6 +78,11 @@ import java.util.TimeZone;
 public class PageHandler extends RepositoryManager {
 
 
+    public static final String IMPORTS_BEGIN = "<!--imports-->";
+    public static final String IMPORTS_END = "<!--end imports-->";
+
+
+
     /** _more_ */
     private static boolean debugTemplates = false;
 
@@ -344,8 +349,10 @@ public class PageHandler extends RepositoryManager {
             }
             webImports = applyBaseMacros(cssImports.trim() + "\n"
                                          + jsImports.trim() + "\n");
-	    webImports = "<imports>\n" + webImports +"\n</imports>\n";
+	    webImports = IMPORTS_BEGIN + "\n" + webImports +"\n" + IMPORTS_END+"\n";
 	    
+
+
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }

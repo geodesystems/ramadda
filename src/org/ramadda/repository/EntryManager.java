@@ -842,7 +842,7 @@ public class EntryManager extends RepositoryManager {
 					  XmlUtil.attr("type","type_document_html") +
 					  XmlUtil.attr("embed_type","embed") +
 					  XmlUtil.attr("file",htmlFileName)));
-	    html = html.replaceAll("(?s)<imports>.*?</imports>","");
+	    html = html.replaceAll("(?s)" + PageHandler.IMPORTS_BEGIN+".*?" + PageHandler.IMPORTS_END,"");
 	    for(String[]tuple: snapshotFiles) {
 		String tmpFile =tuple[0];
 		String jsonFileName= tuple[1];
