@@ -20,6 +20,7 @@ package org.ramadda.util.text;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
+import org.ramadda.util.MapProvider;
 import org.ramadda.util.Utils;
 
 import ucar.unidata.util.IOUtil;
@@ -2553,7 +2554,6 @@ rotate -> pass -> pass -> rotate -> pass
             //Check for the width
             int    lineWidth = 0;
             String s         = "";
-
             for (int i = 0; i < values.size(); i++) {
                 Object value = values.get(i);
                 if (value != null) {
@@ -2588,8 +2588,8 @@ rotate -> pass -> pass -> rotate -> pass
                     String label = Utils.makeLabel(""
                                        + values.get(i)).replaceAll(" ",
                                            "&nbsp;");
-                    info.getWriter().print(HtmlUtils.span(label,
-                            HtmlUtils.attr("title",
+                    info.getWriter().print(HU.span(label,
+                            HU.attr("title",
                                            label.replaceAll("\"",
                                                "&quot;"))));
                 } else {
@@ -2597,8 +2597,13 @@ rotate -> pass -> pass -> rotate -> pass
                     String label = ((value == null)
                                     ? ""
                                     : value.toString());
-                    info.getWriter().print(HtmlUtils.span(label,
-                            HtmlUtils.attr("title", label)));
+		    //Check for images, hrefs, etc
+		    if(label.indexOf("<")>=0) {
+			info.getWriter().print(label);
+		    } else {
+			info.getWriter().print(HU.span(label,
+							      HU.attr("title", label)));
+		    }
                 }
                 info.getWriter().print("</div>");
                 info.getWriter().print(close);
@@ -3786,6 +3791,9 @@ rotate -> pass -> pass -> rotate -> pass
             Hashtable<Object, Integer> uniques = new Hashtable<Object,
                                                      Integer>();
 
+	    List<Double> pts = new ArrayList<Double>();
+
+
             /** _more_          */
             Date minDate;
 
@@ -3811,7 +3819,12 @@ rotate -> pass -> pass -> rotate -> pass
                     Double.parseDouble(sample);
                     this.type = "numeric";
                 } catch (Exception ignore) {
-                    this.type = "string";
+		    if(sample.startsWith("http")) {
+			if(name.equals("image")) this.type = "image";
+			else this.type = "url";
+		    } else {
+			this.type = "string";
+		    }
                 }
                 if (args != null) {
                     Hashtable props = new Hashtable();
@@ -3867,8 +3880,12 @@ rotate -> pass -> pass -> rotate -> pass
                     }
 
                     return "bad date:" + v;
-                }
-
+                } else if (type.equals("image")) {
+		    String url = v.toString().trim();
+		    if(url.length()!=0) {
+			return HU.href(url, HU.image(url,"width","100"), "target=_image");
+		    }
+		}
                 return v;
             }
 
@@ -3881,6 +3898,9 @@ rotate -> pass -> pass -> rotate -> pass
                 if (sample == null) {
                     sample = v;
                 }
+		if(name.equals("latitude") || name.equals("longitude")) {
+		    pts.add(Double.parseDouble(v));
+		}
                 if (type.equals("numeric")) {
                     try {
                         double d = Double.parseDouble(v);
@@ -3977,7 +3997,6 @@ rotate -> pass -> pass -> rotate -> pass
             rowCnt++;
             if (headerRow == null) {
                 headerRow = row;
-
                 return row;
             }
             if (cols == null) {
@@ -4022,6 +4041,8 @@ rotate -> pass -> pass -> rotate -> pass
 	    };
 
             w.println("#rows:" + rowCnt);
+	    w.println(HU.SPACE2);
+	    w.println("<span id=header></span>");
             if (interactive) {
                 w.println(
                     "<table  width='100%' class='stripe hover display nowrap ramadda-table ramadda-csv-table' >");
@@ -4036,23 +4057,49 @@ rotate -> pass -> pass -> rotate -> pass
                         typeIcon = "fas fa-calendar";
                     } else if (col.type.equals("enumeration")) {
                         typeIcon = "fas fa-list";
+                    } else if (col.type.equals("image")) {
+                        typeIcon = "fas fa-image";
+                    } else if (col.type.equals("url")) {
+                        typeIcon = "fas fa-link";						
                     } else {
                         typeIcon = "fas fa-hashtag";
                     }
-                    String type = HtmlUtils.faIcon(typeIcon, "",
-                                      HtmlUtils.attrs("title",
+                    String type = HU.faIcon(typeIcon, "",
+                                      HU.attrs("title",
                                           "type: " + col.type, "style",
                                           "font-size:10pt;"));
                     String name = col.name;
+		    String label = Utils.makeLabel(name);
                     w.println("<th class=csv-id fieldid='" + name
-                              + "' nowrap>" + type + "&nbsp;" + name
+                              + "' nowrap>" + type + "&nbsp;" + label
                               + "</th>");
                 }
                 w.println("</tr>");
                 w.println("<tr valign=top class=th2>");
-                for (ColStat col : cols) {
-                    w.println("<th>");
-                    if (col.type.equals("numeric")) {
+		for(int i=0;i<cols.size();i++) {
+		    ColStat col =  cols.get(i);
+		    if (col.name.equals("latitude")) {
+			ColStat next = i<cols.size()-1?cols.get(i+1):null;
+			if(next!=null && next.name.equals("longitude")) {
+			    i++;
+			    w.println("<th colspan=2>");
+			    StringBuilder map = new StringBuilder();
+			    MapProvider mp  = util.getMapProvider();
+			    if(mp!=null) {
+				List<double[]> pts = new ArrayList<double[]>();
+				for(int ptIdx=0;ptIdx<col.pts.size();ptIdx++)
+				    pts.add(new double[]{col.pts.get(ptIdx),next.pts.get(ptIdx)});
+				Hashtable<String,String>props = new Hashtable<String,String>();
+				props.put("simple","true");
+				mp.makeMap(map,"100%","100px",pts,props);
+				w.print(map.toString());
+			    }
+			    w.println("</th>");
+			    continue;
+			}
+		    }
+		    w.println("<th>");
+		    if (col.type.equals("numeric")) {
                         layout.accept("min:", "" + col.min);
 			layout.accept("max:", "" + col.max);
                         if (col.numMissing > 0) {
@@ -4076,6 +4123,8 @@ rotate -> pass -> pass -> rotate -> pass
                         if (col.maxDate != null) {
                             layout.accept("max:",fmtSdf.format(col.maxDate));
                         }
+                    } else if (col.type.equals("image")) {
+                    } else if (col.type.equals("url")) {			
                     } else {
                         List<Object[]> values = new ArrayList<Object[]>();
                         for (Enumeration keys = col.uniques.keys();

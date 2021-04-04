@@ -277,7 +277,6 @@ public abstract class Converter extends Processor {
                 if (imageColumnIndex == -1) {
                     add(info, row, "image");
                 }
-
                 return row;
             }
 

@@ -22,6 +22,7 @@ import org.ramadda.util.IO;
 import org.ramadda.util.Json;
 import org.ramadda.util.NamedInputStream;
 import org.ramadda.util.NamedChannel;
+import org.ramadda.util.MapProvider;
 import org.ramadda.util.PropertyProvider;
 import org.ramadda.util.Utils;
 import org.ramadda.util.XlsUtil;
@@ -115,7 +116,7 @@ public class CsvUtil {
 
 
     private PropertyProvider propertyProvider;
-
+    private MapProvider mapProvider;    
     private List<String> inputFiles;
 
     /**
@@ -227,7 +228,15 @@ public class CsvUtil {
 	return propertyProvider;
     }
 
+    public MapProvider getMapProvider () {
+	return mapProvider;
+    }
 
+
+    public void setMapProvider (MapProvider mp) {
+	mapProvider = mp;
+    }
+    
     public String getProperty(String name, String dflt) {
 	String v = getProperty(name);
 	if(v==null) return dflt;
@@ -1420,9 +1429,10 @@ public class CsvUtil {
                 new Arg("pattern", "", "type", "pattern")),
 
         new Cmd("-sql", "Connect to the given database",
-                new Arg("db", "The database id (defined in the environment)"),
-		new Arg("table", "The table to select from"),
-		new Arg("properties", "'columns' c1,c2,...  'where' c1,<|>|<>|like|notlike;...")),
+                new Arg("db", "The database id (defined in the environment)","type","enumeration","values","property:csv_dbs"),
+		new Arg("columns", "Comma separated list of columns to select"),
+		new Arg("where", "c1,<|>|<>|like|notlike,value;..."),				
+		new Arg("properties", "join col1,col2")),
         new Cmd("-prune", "Prune out the first N bytes",
                 new Arg("bytes", "Number of leading bytes to remove", "type",
                         "number")),
@@ -1942,7 +1952,12 @@ public class CsvUtil {
                                 for (int i = 0; i < arg.props.length;
 				     i += 2) {
                                     attrs.add(arg.props[i]);
-                                    attrs.add(Json.quote(arg.props[i + 1]));
+				    String v = arg.props[i + 1];
+				    if(v.startsWith("property:")) {
+					v = (String)getProperty(v.substring("property:".length()));
+				    }
+				    if(v==null) v="";
+				    attrs.add(Json.quote(v));
                                 }
                             }
                             tmp.add(Json.map(attrs));
@@ -2687,9 +2702,11 @@ public class CsvUtil {
 		return i;
 	    });
 
-	defineFunction("-sql",2,(ctx,args,i) -> {
-		//-sql db table "col1 value col2 value"
+	defineFunction("-sql",4,(ctx,args,i) -> {
+		//-sql db table cols "col1 value col2 value"
 		ctx.getProviders().add(new DataProvider.SqlDataProvider(args.get(++i), args.get(++i),
+									args.get(++i),
+									args.get(++i),																		
 									parseProps(args.get(++i))));
 		return i;
 	    });
@@ -3279,7 +3296,7 @@ public class CsvUtil {
 		    }
 		    files.add(arg);
 		} else {
-		    System.err.println("no files");
+		    //		    System.err.println("no files");
 		    //                    throw new IllegalArgumentException("Unknown arg:" + arg);
 		}
 	    } catch (Exception exc) {

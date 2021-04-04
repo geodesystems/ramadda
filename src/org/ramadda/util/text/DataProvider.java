@@ -667,6 +667,9 @@ public abstract class DataProvider {
         /** _more_          */
         private String table;
 
+        private String columns;
+        private String where;	
+
         /** _more_          */
         private Hashtable<String, String> props;
 
@@ -701,10 +704,12 @@ public abstract class DataProvider {
          * @param table _more_
          * @param props _more_
          */
-        public SqlDataProvider(String db, String table,
+        public SqlDataProvider(String db, String table, String columns, String where,
                                Hashtable<String, String> props) {
             this.db    = db.trim();
-            this.table = table.trim();
+            this.table = SqlUtil.sanitize(table.trim());
+            this.columns = SqlUtil.sanitize(columns.trim());	    
+            this.where = where.trim();
             this.props = props;
         }
 
@@ -740,11 +745,14 @@ public abstract class DataProvider {
                 okTables = SqlUtil.getTableNames(this.connection);
             }
 
-            if ( !Utils.containsIgnoreCase(okTables, table)) {
-                throw new IllegalArgumentException("Unknown table:" + table
-                        + "\nAvailable tables:\n"
-                        + Utils.wrap(okTables, "\t", "\n"));
-            }
+	    List<String> tableList = Utils.split(table,",",true,true);
+	    for(String t: tableList) {
+		if ( !Utils.containsIgnoreCase(okTables, t)) {
+		    throw new IllegalArgumentException("Unknown table:" + t
+						       + "\nAvailable tables:\n"
+						       + Utils.wrap(okTables, "\t", "\n"));
+		}
+	    }
 
             if (Misc.equals(props.get("help"), "true")) {
                 throw new CsvUtil.MessageException("table:" + table
@@ -754,15 +762,24 @@ public abstract class DataProvider {
             }
 
 
-            String what = props.get("columns");
-            if (what == null) {
+            List<Clause> clauses = new ArrayList<Clause>();
+
+
+	    String join  = (String) props.get("join");
+	    if(join!=null) {
+		List<String> toks = Utils.split(join,",");
+		if(toks.size()!=2) {
+		    throw new IllegalArgumentException("Bad join:" + join);
+		}
+		clauses.add(Clause.join(toks.get(0),toks.get(1)));
+	    }
+            String what = columns;
+            if (what == null || what.length()==0) {
                 what = "*";
             }
-            List<Clause> clauses = new ArrayList<Clause>();
-            String       where   = props.get("where");
-            if (where != null) {
-                for (String tok : where.split(",")) {
-                    String[] toks = tok.split(":");
+	    if (where != null && where.length()>0) {
+                for (String tok : where.split(";")) {
+                    String[] toks = tok.split(",");
                     if (toks.length != 3) {
                         throw new IllegalArgumentException("Bad where value:"
                                 + tok);
