@@ -10,38 +10,38 @@ var ramaddaMapRegions = null;
 
 
 /* base maps to add */
-const map_esri_topo = "esri.topo";
-const map_esri_street = "esri.street";
-const map_esri_worldimagery = "esri.worldimagery";
-const map_esri_terrain = "esri.terrain";
-const map_esri_shaded = "esri.shaded";
-const map_esri_lightgray = "esri.lightgray";
-const map_esri_darkgray = "esri.darkgray";
-const map_esri_physical = "esri.physical";
-const map_esri_aeronautical = "esri.aeronautical";
-const map_opentopo = "opentopo";
-const map_usgs_topo = "usgs.topo";
-const map_usgs_imagery = "usgs.imagery";
-const map_usgs_relief = "usgs.relief";
-const map_watercolor = "watercolor";
-const map_weather = "weather";
-const map_lightblue = "lightblue";
-const map_white = "white";
-const map_blue = "blue";
-const map_black = "black";
-const map_gray = "gray";
-const map_usfs_ownership = "usfs.ownership";
-const map_osm = "osm";
-const map_osm_toner = "osm.toner";
-const map_osm_toner_lite = "osm.toner.lite";
-const map_ol_openstreetmap = "ol.openstreetmap";
+var map_esri_topo = "esri.topo";
+var map_esri_street = "esri.street";
+var map_esri_worldimagery = "esri.worldimagery";
+var map_esri_terrain = "esri.terrain";
+var map_esri_shaded = "esri.shaded";
+var map_esri_lightgray = "esri.lightgray";
+var map_esri_darkgray = "esri.darkgray";
+var map_esri_physical = "esri.physical";
+var map_esri_aeronautical = "esri.aeronautical";
+var map_opentopo = "opentopo";
+var map_usgs_topo = "usgs.topo";
+var map_usgs_imagery = "usgs.imagery";
+var map_usgs_relief = "usgs.relief";
+var map_watercolor = "watercolor";
+var map_weather = "weather";
+var map_lightblue = "lightblue";
+var map_white = "white";
+var map_blue = "blue";
+var map_black = "black";
+var map_gray = "gray";
+var map_usfs_ownership = "usfs.ownership";
+var map_osm = "osm";
+var map_osm_toner = "osm.toner";
+var map_osm_toner_lite = "osm.toner.lite";
+var map_ol_openstreetmap = "ol.openstreetmap";
 
 // Microsoft maps - only work for -180 to 180
-const map_ms_shaded = "ms.shaded";
-const map_ms_hybrid = "ms.hybrid";
-const map_ms_aerial = "ms.aerial";
+var map_ms_shaded = "ms.shaded";
+var map_ms_hybrid = "ms.hybrid";
+var map_ms_aerial = "ms.aerial";
 
-const map_default_layer = map_osm;
+var map_default_layer = map_osm;
 
 
 /*
@@ -229,6 +229,9 @@ function RepositoryMap(mapId, params) {
 	params.initialLocation = {lon:lon,lat:lat};
     }
 
+    let showDflt = true;
+    if(params.simple)
+	showDflt = false;
 
     $.extend(this, {
         name: "map",
@@ -236,11 +239,11 @@ function RepositoryMap(mapId, params) {
         displayProjection: MapUtils.defaults.displayProjection,
         projectionUnits: MapUtils.defaults.units,
         mapDivId: this.mapId,
-        showScaleLine: true,
-        showLayerSwitcher: true,
+        showScaleLine: showDflt,
+        showLayerSwitcher: showDflt,
+        showLatLonPosition: showDflt,
         showZoomPanControl: false,
         showZoomOnlyControl: true,
-        showLatLonPosition: true,
         enableDragPan: true,
         defaultLocation: MapUtils.defaults.location,
         initialZoom: Utils.isDefined(params.zoomLevel)?params.zoomLevel:MapUtils.defaults.defaultZoomLevel,
