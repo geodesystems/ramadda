@@ -38,6 +38,7 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.Json;
 import org.ramadda.util.MapRegion;
+import org.ramadda.util.MapProvider;
 import org.ramadda.util.Utils;
 
 import ucar.unidata.geoloc.Bearing;
@@ -59,14 +60,12 @@ import java.util.List;
 
 
 
-
-
 /**
  * This class provides a variety of mapping services, e.g., map display and map form selector
  *
  * @author Jeff McWhirter
  */
-public class MapManager extends RepositoryManager implements WikiConstants {
+public class MapManager extends RepositoryManager implements WikiConstants, MapProvider {
 
     /** _more_ */
     public static final String ADDED_IMPORTS = "initmap";
@@ -106,6 +105,20 @@ public class MapManager extends RepositoryManager implements WikiConstants {
      */
     public MapManager(Repository repository) {
         super(repository);
+    }
+
+
+    public void makeMap(StringBuilder sb, String width, String height,List<double[]> pts, Hashtable<String,String>props) {
+	try {
+	    Request tmp = getRepository().getTmpRequest();
+	    MapInfo mapInfo= createMap(tmp, null, width, height, false,props);
+	    for(double[]pt: pts)
+		mapInfo.addCircle("",pt[0],pt[1],6);
+	    mapInfo.center();
+	    sb.append(mapInfo.getHtml());
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
     }
 
 
@@ -354,6 +367,10 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         if (showSearch != null) {
             mapInfo.addProperty("showSearch", "" + showSearch.equals("true"));
         }
+        String simple = (String) props.get("simple");
+        if (simple != null) {
+            mapInfo.addProperty("simple", "" + simple.equals("true"));
+        }	
         if (mapLayers != null) {
             mapInfo.addProperty("mapLayers",
                                 Utils.split(mapLayers, ";", true, true));

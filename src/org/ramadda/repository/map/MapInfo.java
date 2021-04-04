@@ -1253,6 +1253,12 @@ public class MapInfo {
     }
 
 
+    public void addCircle(String id, double lat, double lon, int radius) {
+	addCircle(id,lat,lon,radius,1,"#000","blue","");
+    }
+
+
+
     /**
      * _more_
      *
