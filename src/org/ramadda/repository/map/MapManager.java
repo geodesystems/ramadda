@@ -112,8 +112,9 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
 	try {
 	    Request tmp = getRepository().getTmpRequest();
 	    MapInfo mapInfo= createMap(tmp, null, width, height, false,props);
+	    int radius  = props==null?4:Utils.getProperty(props,"radius",4);
 	    for(double[]pt: pts)
-		mapInfo.addCircle("",pt[0],pt[1],6);
+		mapInfo.addCircle("",pt[0],pt[1],radius);
 	    mapInfo.center();
 	    sb.append(mapInfo.getHtml());
 	} catch(Exception exc) {

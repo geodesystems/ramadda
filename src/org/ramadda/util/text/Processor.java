@@ -3808,7 +3808,7 @@ rotate -> pass -> pass -> rotate -> pass
              * @param sample _more_
              */
             public ColStat(CsvUtil util, String n, String sample) {
-                name  = n.toLowerCase();
+                name  = n.toLowerCase().trim();
                 label = name;
                 if (name.startsWith("#fields=")) {
                     name = name.substring("#fields=".length());
@@ -4078,12 +4078,11 @@ rotate -> pass -> pass -> rotate -> pass
                 w.println("<tr valign=top class=th2>");
 		for(int i=0;i<cols.size();i++) {
 		    ColStat col =  cols.get(i);
-		    if (col.name.equals("latitude") || col.name.equals("longitude")) {
+		    if (Utils.equalsOne(col.name.trim().toLowerCase(), "latitude","longitude")) {
 			ColStat next = i<cols.size()-1?cols.get(i+1):null;
-			if(next!=null && (next.name.equals("longitude") ||
-					  next.name.equals("latitude"))) {
-			    ColStat lat = col.name.equals("latitude")?col:next;
-			    ColStat lon = col.name.equals("longitude")?col:next;			    
+			if(next!=null && Utils.equalsOne(next.name.toLowerCase(),"longitude","latitude")) {
+			    ColStat lat = col.name.equalsIgnoreCase("latitude")?col:next;
+			    ColStat lon = col.name.equalsIgnoreCase("longitude")?col:next;			   
 			    i++;
 			    w.println("<th colspan=2>");
 			    StringBuilder map = new StringBuilder();
@@ -4094,6 +4093,7 @@ rotate -> pass -> pass -> rotate -> pass
 				    pts.add(new double[]{lat.pts.get(ptIdx),lon.pts.get(ptIdx)});
 				Hashtable<String,String>props = new Hashtable<String,String>();
 				props.put("simple","true");
+				props.put("radius","3");				
 				mp.makeMap(map,"100%","100px",pts,props);
 				w.print(map.toString());
 			    }

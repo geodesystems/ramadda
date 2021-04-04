@@ -1869,6 +1869,15 @@ public class Utils extends IO {
         return a;
     }
 
+    public static boolean equalsOne(Object obj, Object...values) {
+	if(obj==null) return false;
+	for(Object other: values) {
+	    if(other!=null && obj.equals(other)) return true;
+	}
+	return false;
+    }
+
+
 
     /**
      * look for ... -arg value ...  in list
