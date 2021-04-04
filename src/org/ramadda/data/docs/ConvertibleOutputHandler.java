@@ -480,6 +480,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 csvUtil  = new CsvUtil(args, runDir);
 		csvUtil.setInteractive(true);
                 csvUtil.setPropertyProvider(getRepository());
+                csvUtil.setMapProvider(getRepository().getMapManager());		
                 if (prevCsvUtil != null) {
                     csvUtil.initWith(prevCsvUtil);
                 }
