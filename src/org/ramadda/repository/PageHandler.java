@@ -1160,12 +1160,13 @@ public class PageHandler extends RepositoryManager {
 		    //                    resource = resource.replace("${imports}", webImports);
                     HtmlTemplate template = new HtmlTemplate(getRepository(),
 							     path, resource);
+		    template.setTemplate(applyBaseMacros(template.getTemplate()));
 		    //		    System.out.println("p: " + path + " " + template.getId()+ " " + template.getName());
                     //Check if we got some other ...template.html file from a plugin
                     if (template.getId() == null) {
                         System.err.println("template: no id in " + path);
 
-                        continue;
+                      continue;
                     }
                     templateMap.put(template.getId(), template);
                     theTemplates.add(template);

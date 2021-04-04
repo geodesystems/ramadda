@@ -1,0 +1,33 @@
+.ramadda-header {
+   z-index:900;
+   position:fixed;
+   padding: 1px;
+   padding-left: 6px;
+   padding-right: 6px;
+   width:100%;
+   left:0;
+   top:0;
+}
+.ramadda-header-center {
+    position: absolute;
+    top:0px;
+    left:50%;
+    transform: translateX(-50%);
+    font-size:150%;
+    max-width:50%;
+    overflow-x:hidden;
+    white-space:nowrap; 
+}
+.ramadda-header-center a {
+    text-decoration:none !important;
+}
+.ramadda-breadcrumbs {
+    border-bottom : 0px transparent;
+}
+.ramadda-logo-image {
+    height:55px;
+}
+/* the margin  should be a little more than the height of the logo image */
+.ramadda-outercontents {
+    margin-top:55px;
+}

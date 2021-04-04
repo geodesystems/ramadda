@@ -142,6 +142,10 @@ public class HtmlTemplate {
         return template;
     }
 
+    public void setTemplate(String t) {
+         template = t;
+    }    
+
     /**
      * _more_
      *
