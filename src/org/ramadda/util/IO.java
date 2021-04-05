@@ -217,6 +217,13 @@ public class IO {
     }
 
 
+    public static final String cleanFileName(String f) {
+	if(f==null) return null;
+	f = f.replaceAll("[^a-zA-Z_0-9 ]+","_").trim();
+	return f;
+    }
+
+
     /**
      * _more_
      *
