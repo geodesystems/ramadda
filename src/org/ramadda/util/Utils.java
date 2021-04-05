@@ -1415,26 +1415,28 @@ public class Utils extends IO {
             int openParenIdx = tmp.indexOf("(");
             if (openParenIdx < 0) {
                 pattern.append(tmp);
-
                 break;
             }
             int closeParenIdx = tmp.indexOf(")");
             if (closeParenIdx < openParenIdx) {
                 pattern.append(tmp);
-
                 break;
             }
             int colonIdx = tmp.indexOf(":");
             if (colonIdx < 0) {
                 pattern.append(tmp);
-
                 break;
             }
+            if (colonIdx<openParenIdx) {
+                pattern.append(tmp.substring(0, colonIdx+1));
+                tmp = tmp.substring(colonIdx+1);
+                continue;
+	    }
+	    //	    System.err.println("open:" + openParenIdx+" close:" + closeParenIdx +" colon:" + colonIdx+ " tmp:" + tmp);
             if (closeParenIdx < colonIdx) {
                 pattern.append(tmp.substring(0, closeParenIdx + 1));
                 names.add("");
                 tmp = tmp.substring(closeParenIdx + 1);
-
                 continue;
             }
             pattern.append(tmp.substring(0, openParenIdx + 1));
@@ -2607,6 +2609,20 @@ public class Utils extends IO {
         return lines;
     }
 
+
+    public static Hashtable<String,String> parseKeyValue(String args) {
+	Hashtable props = new Hashtable();
+	for (String tok : Utils.parseCommandLine(args)) {
+	    List<String> toks = StringUtil.splitUpTo(tok, "=", 2);
+	    if (toks.size() == 2) {
+		props.put(toks.get(0), toks.get(1));
+	    } else if(toks.size()==1) {
+		props.put(toks.get(0), "");
+	    }
+	}
+	return props;
+    }
+	
 
     /**
      * _more_
