@@ -1651,4 +1651,59 @@ public abstract class DataProvider {
 
     }
 
+
+    public static class Lines extends DataProvider {
+
+        TextReader ctx;
+
+	boolean didFirst  = false;
+
+        /**
+         * _more_
+         *
+         * @param ctx _more_
+         */
+        public Lines() {
+        }
+
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param csvUtil _more_
+         * @param ctx _more_
+         * @param stream _more_
+         *
+         * @throws Exception _more_
+         */
+        public void initialize(CsvUtil csvUtil, TextReader ctx)
+                throws Exception {
+            this.ctx = ctx;
+        }
+
+        /**
+         * _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        public Row readRow() throws Exception {
+	    Row row = new Row();
+	    if(!didFirst) {
+		didFirst = true;
+		row.add("line");
+		return row;
+	    }
+	    String line = ctx.readLine();
+	    if(line==null) return null;
+
+	    row.add(line);
+	    return row;
+        }
+
+    }
+    
 }

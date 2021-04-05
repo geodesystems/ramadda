@@ -1,18 +1,18 @@
 /*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (c) 2008-2021 Geode Systems LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package org.ramadda.util.text;
 
@@ -126,7 +126,7 @@ public abstract class Processor extends CsvOperator {
      */
     public static String cleanName(String name) {
         name = name.toLowerCase().replaceAll("\\s+", "_").replaceAll(",",
-                                             "_");
+								     "_");
         name = name.replaceAll("__+", "_");
 
         return name;
@@ -147,7 +147,7 @@ public abstract class Processor extends CsvOperator {
     public static void addFieldDescriptor(String name, Appendable sb,
                                           int index, HashSet<String> seen,
                                           List<Row> rows)
-            throws Exception {
+	throws Exception {
 
         List<String>  toks   = Utils.split(name, ":unit:", true, true);
         String        id     = cleanName(toks.get(0));
@@ -156,7 +156,7 @@ public abstract class Processor extends CsvOperator {
         if (toks.size() > 1) {
             String unit = toks.get(1);
             unit = unit.replaceAll(" / ", "/").replaceAll(",",
-                                   "_").replaceAll("\"", "_");
+							  "_").replaceAll("\"", "_");
             suffix = cleanName(unit);
             extra.append(" unit=\"");
             extra.append(unit);
@@ -246,7 +246,6 @@ public abstract class Processor extends CsvOperator {
      */
     public Row processRow(TextReader info, Row row) throws Exception {
         info.setCurrentOperator(null);
-
         return row;
     }
 
@@ -261,7 +260,7 @@ public abstract class Processor extends CsvOperator {
      * @throws Exception _more_
      */
     public List<Row> processRowReturnList(TextReader info, Row row)
-            throws Exception {
+	throws Exception {
         List<Row> l = new ArrayList<Row>();
         Row       r = processRow(info, row);
         if (r != null) {
@@ -282,7 +281,7 @@ public abstract class Processor extends CsvOperator {
      * @throws Exception On badness
      */
     public List<Row> finish(TextReader info, List<Row> rows)
-            throws Exception {
+	throws Exception {
         return rows;
     }
 
@@ -416,8 +415,8 @@ public abstract class Processor extends CsvOperator {
         }
 
         /*
-rotate -> pass -> pass -> rotate -> pass
-         */
+	  rotate -> pass -> pass -> rotate -> pass
+	*/
 
         /**
          * _more_
@@ -430,7 +429,7 @@ rotate -> pass -> pass -> rotate -> pass
          * @throws Exception _more_
          */
         private Row processRowInner(TextReader info, Row row)
-                throws Exception {
+	    throws Exception {
             boolean sawBufferer = false;
             if (remainderProcessors == null) {
                 remainderProcessors = new ArrayList<Processor>();
@@ -484,7 +483,7 @@ rotate -> pass -> pass -> rotate -> pass
          * @throws Exception _more_
          */
         public List<Row> finish(TextReader textReader, List<Row> inputRows)
-                throws Exception {
+	    throws Exception {
             //      return finishOld(textReader, inputRows);
             return finishNew(textReader, inputRows);
         }
@@ -502,9 +501,9 @@ rotate -> pass -> pass -> rotate -> pass
          * @throws Exception On badness
          */
         public List<Row> finishOld(TextReader textReader, List<Row> inputRows)
-                throws Exception {
+	    throws Exception {
             while ((remainderProcessors != null)
-                    && (remainderProcessors.size() > 0)) {
+		   && (remainderProcessors.size() > 0)) {
                 if (firstProcessors != null) {
                     for (Processor processor : firstProcessors) {
                         inputRows = processor.finish(textReader, inputRows);
@@ -520,7 +519,7 @@ rotate -> pass -> pass -> rotate -> pass
                     }
                     if (textReader.getExtraRow() != null) {
                         row = processRowInner(textReader,
-                                textReader.getExtraRow());
+					      textReader.getExtraRow());
                         textReader.setExtraRow(null);
                     }
                     if ( !textReader.getOkToRun()) {
@@ -556,10 +555,10 @@ rotate -> pass -> pass -> rotate -> pass
          *  @throws Exception On badness
          */
         public List<Row> finishNew(TextReader textReader, List<Row> inputRows)
-                throws Exception {
+	    throws Exception {
             //            if (inputRows != null) {
             while ((remainderProcessors != null)
-                    && (remainderProcessors.size() > 0)) {
+		   && (remainderProcessors.size() > 0)) {
                 if (firstProcessors != null) {
                     for (Processor processor : firstProcessors) {
                         inputRows = processor.finish(textReader, inputRows);
@@ -576,7 +575,7 @@ rotate -> pass -> pass -> rotate -> pass
                     }
                     if (textReader.getExtraRow() != null) {
                         row = processRowInner(textReader,
-                                textReader.getExtraRow());
+					      textReader.getExtraRow());
                         textReader.setExtraRow(null);
                     }
                     if ( !textReader.getOkToRun()) {
@@ -692,7 +691,7 @@ rotate -> pass -> pass -> rotate -> pass
          */
         @Override
         public List<Row> finish(TextReader info, List<Row> r)
-                throws Exception {
+	    throws Exception {
             List          keys         = new ArrayList();
             List<Integer> valueIndices = getIndices(info, valueCols);
             List<Row>     rows         = new ArrayList<Row>();
@@ -700,7 +699,7 @@ rotate -> pass -> pass -> rotate -> pass
             Row           headerRow    = allRows.get(0);
             allRows.remove(0);
             Hashtable<Object, List<Row>> groups = groupRows(allRows,
-                                                      getIndices(info), keys);
+							    getIndices(info), keys);
             for (int idx : valueIndices) {
                 if (idx >= headerRow.size()) {
                     continue;
@@ -743,11 +742,11 @@ rotate -> pass -> pass -> rotate -> pass
                         double[] tuple = tuples.get(i);
                         tuple[0]++;
                         tuple[1] = first
-                                   ? v
-                                   : Math.min(v, tuple[0]);
+			    ? v
+			    : Math.min(v, tuple[0]);
                         tuple[2] = first
-                                   ? v
-                                   : Math.max(v, tuple[1]);
+			    ? v
+			    : Math.max(v, tuple[1]);
                         tuple[3] += v;
                     }
                 }
@@ -809,8 +808,8 @@ rotate -> pass -> pass -> rotate -> pass
          */
         public Propper(String flag, String value) {
             this.flag = flag.equals("position")
-                        ? FLAG_POSITION
-                        : FLAG_NONE;
+		? FLAG_POSITION
+		: FLAG_NONE;
             if (this.flag == FLAG_POSITION) {
                 this.value = value.equals("start");
             }
@@ -838,6 +837,108 @@ rotate -> pass -> pass -> rotate -> pass
 
     }
 
+
+
+    public static class Dissector extends Processor {
+	Pattern pattern;
+	List<String> patternNames;
+	int index;
+
+	public Dissector(String col, String pattern) {
+	    super(col);
+	    patternNames = new ArrayList<String>();
+            pattern = Utils.extractPatternNames(pattern,
+						patternNames);
+	    this.pattern = Pattern.compile(pattern);
+	}
+
+
+        /**
+         * @param info _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row) {
+            if (rowCnt++ == 0) {
+		index = getIndex(info);
+		for(String name: patternNames)
+		    row.add(name);
+		return row;
+            }
+	    String v = row.getString(index);
+	    Matcher matcher = pattern.matcher(v);
+            if ( !matcher.find()) {
+		for(String name: patternNames)
+		    row.add("");
+	    } else {
+		for(int i=0;i<patternNames.size();i++) {
+		    Object value = matcher.group(i+ 1);
+		    if(value==null) value="";
+		    row.add(value);
+		}
+	    }
+
+            return row;
+        }
+    }
+
+
+    public static class KeyValue extends Processor {
+	private List<String> keys;
+	private int index =-1;
+	private String extraId;
+	public KeyValue(String col) {
+	    super(col);
+	}
+
+
+        /**
+         * @param info _more
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+	public Row processRow(TextReader info, Row row)
+            throws Exception {
+	    if(Misc.equals(row.getId(), extraId)) return row;
+	    rowCnt++;
+	    if(index==-1) index = getIndex(info);
+	    if(rowCnt==1) return null;
+	    String v = row.getString(index);
+	    Hashtable<String,String> props = Utils.parseKeyValue(v);
+	    Row header = null;
+	    if(keys==null) {
+		keys = new ArrayList<String>();
+		for (Enumeration k = props.keys(); k.hasMoreElements(); ) {
+		    String key = (String) k.nextElement();
+		    keys.add(key);
+		}
+		header =  new Row();
+		Collections.sort(keys);
+		for(String key: keys)
+		    header.add(key);
+	    }
+
+	    Row newRow = new Row();
+	    for(String key: keys) {
+		String value = props.get(key);
+		if(value==null) value = "";
+		newRow.add(value);
+	    }
+	    if(header!=null) {
+		extraId = newRow.getId();
+		info.setExtraRow(newRow);
+		Row tmp = header;
+		header = null;
+		return tmp;
+	    }
+	    return newRow;
+        }
+    }
+    
 
 
     /**
@@ -869,10 +970,53 @@ rotate -> pass -> pass -> rotate -> pass
         @Override
         public Row processRow(TextReader info, Row row) throws Exception {
             System.err.println("#" + (rowCnt++) + " row:" + row);
-
             return row;
         }
     }
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Tue, Nov 19, '19
+     * @author         Enter your name here...
+     */
+    public static class Dots extends Processor {
+	int every;
+
+        /**
+         * _more_
+         */
+        public Dots(int every) {
+	    this.every = every;
+	}
+
+        public List<Row> finish(TextReader info, List<Row> rows)
+	    throws Exception {
+	    System.err.print("\n");
+	    return super.finish(info,rows);
+	}
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row) throws Exception {
+	    if((rowCnt++)%every == 0)
+		System.err.print(".");
+            return row;
+        }
+    }
+
 
 
     /**
@@ -913,7 +1057,7 @@ rotate -> pass -> pass -> rotate -> pass
             }
             if (row.size() != cnt) {
                 throw new IllegalArgumentException("Bad column count:"
-                        + row.size() + " row:" + row);
+						   + row.size() + " row:" + row);
             }
 
             return row;
@@ -1071,7 +1215,7 @@ rotate -> pass -> pass -> rotate -> pass
          */
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
-                throws Exception {
+	    throws Exception {
             List<Row> newRows = new ArrayList<Row>();
             for (Row row : getRows()) {
                 List values = row.getValues();
@@ -1130,7 +1274,7 @@ rotate -> pass -> pass -> rotate -> pass
          */
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
-                throws Exception {
+	    throws Exception {
             Hashtable<String, Row> map      = new Hashtable<String, Row>();
             int                    keyIdx   = getIndex(this.key);
             int                    valueIdx = getIndex(this.value);
@@ -1196,7 +1340,7 @@ rotate -> pass -> pass -> rotate -> pass
          */
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
-                throws Exception {
+	    throws Exception {
             rows = getRows(rows);
             List<Row> newRows = new ArrayList<Row>();
             newRows.add(rows.get(0));
@@ -1325,7 +1469,7 @@ rotate -> pass -> pass -> rotate -> pass
          */
         private void handleHeaderRow(PrintWriter writer, Row header,
                                      List exValues)
-                throws Exception {
+	    throws Exception {
             StringBuilder   sb     = new StringBuilder();
             HashSet<String> seen   = new HashSet<String>();
             List            values = header.getValues();
@@ -1337,8 +1481,8 @@ rotate -> pass -> pass -> rotate -> pass
                     sb.append("#fields=");
                 }
                 String name = (headerValue == null)
-                              ? "field"
-                              : headerValue.toString();
+		    ? "field"
+		    : headerValue.toString();
                 addFieldDescriptor(name, sb, i, seen, null /*rows*/);
             }
             writer.println(sb.toString());
@@ -1357,7 +1501,7 @@ rotate -> pass -> pass -> rotate -> pass
          */
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
-                throws Exception {
+	    throws Exception {
             debug("finish");
             if (suffix != null) {
                 info.getWriter().print(suffix);
@@ -1379,7 +1523,7 @@ rotate -> pass -> pass -> rotate -> pass
          * @throws Exception _more_
          */
         private void handleRow(TextReader info, PrintWriter writer, Row row)
-                throws Exception {
+	    throws Exception {
             boolean first = rowCnt++ == 0;
             if (first && (prefix != null)) {
                 writer.print(prefix);
@@ -1402,16 +1546,16 @@ rotate -> pass -> pass -> rotate -> pass
                             sv = sv.trim();
                         }
                         if ((first && sv.startsWith("#"))
-                                || ((colIdx == 0)
-                                    && (info.getCommentChar() != null)
-                                    && sv.startsWith(
-                                        info.getCommentChar()))) {
+			    || ((colIdx == 0)
+				&& (info.getCommentChar() != null)
+				&& sv.startsWith(
+						 info.getCommentChar()))) {
                             escapeColumns = false;
                         }
                         boolean addQuote = false;
                         if (escapeColumns) {
                             addQuote = (sv.indexOf(",") >= 0)
-                                       || (sv.indexOf("\n") >= 0);
+				|| (sv.indexOf("\n") >= 0);
                             if (sv.indexOf("\"") >= 0) {
                                 addQuote = true;
                                 sv       = sv.replaceAll("\"", "\"\"");
@@ -1429,7 +1573,7 @@ rotate -> pass -> pass -> rotate -> pass
                     }
                 } else {
                     theTemplate = theTemplate.replace("${" + colIdx + "}",
-                            v.toString());
+						      v.toString());
                 }
             }
             if (theTemplate == null) {
@@ -1454,7 +1598,7 @@ rotate -> pass -> pass -> rotate -> pass
          */
         public void writeCsv(TextReader info, PrintWriter writer,
                              List<Row> rows)
-                throws Exception {
+	    throws Exception {
             if (prefix != null) {
                 writer.print(prefix);
             }
@@ -1538,7 +1682,7 @@ rotate -> pass -> pass -> rotate -> pass
          */
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
-                throws Exception {
+	    throws Exception {
             info.getWriter().println("]");
 
             return rows;
@@ -1556,7 +1700,7 @@ rotate -> pass -> pass -> rotate -> pass
          * @throws Exception _more_
          */
         private void handleRow(TextReader info, PrintWriter writer, Row row)
-                throws Exception {
+	    throws Exception {
             rowCnt++;
             if (rowCnt > 1) {
                 writer.println(",");
@@ -1613,7 +1757,7 @@ rotate -> pass -> pass -> rotate -> pass
          * @throws Exception _more_
          */
         public List<Row> finish(TextReader info, List<Row> rows)
-                throws Exception {
+	    throws Exception {
             rows = getRows(rows);
             PrintWriter writer = info.getWriter();
             for (Row row : rows) {
@@ -1676,7 +1820,7 @@ rotate -> pass -> pass -> rotate -> pass
          */
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
-                throws Exception {
+	    throws Exception {
             PrintWriter writer = info.getWriter();
             writer.println("</" + tag + ">");
 
@@ -1708,7 +1852,7 @@ rotate -> pass -> pass -> rotate -> pass
                 Object v = values.get(i);
                 String h = (String) header.get(i);
                 h = h.trim().toLowerCase().replaceAll(" ",
-                        "_").replaceAll("/", "_");
+						      "_").replaceAll("/", "_");
                 if (h.length() == 0) {
                     continue;
                 }
@@ -1764,14 +1908,14 @@ rotate -> pass -> pass -> rotate -> pass
          */
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
-                throws Exception {
+	    throws Exception {
             int column = getIndex(info);
             rows = getRows(rows);
             if (rows.size() == 0) {
                 return rows;
             }
             Hashtable<String, List<Row>> map = new Hashtable<String,
-                                                   List<Row>>();
+		List<Row>>();
             List<String> keys   = new ArrayList<String>();
             Row          header = rows.get(0);
             for (int i = 1; i < rows.size(); i++) {
@@ -1793,9 +1937,9 @@ rotate -> pass -> pass -> rotate -> pass
                 List<Row> myRows = map.get(v);
                 String s =
                     IOUtil.cleanFileName(v).toLowerCase().replaceAll(" ",
-                                         "_").replaceAll("\\.",
-                                             "_").replaceAll("\\(",
-                                                 "_").replaceAll("\\)", "_");
+								     "_").replaceAll("\\.",
+										     "_").replaceAll("\\(",
+												     "_").replaceAll("\\)", "_");
                 s = s.replaceAll("-", "_");
                 s = s.replaceAll(",", "_");
                 s = s.replaceAll("_+_", "_");
@@ -1806,8 +1950,8 @@ rotate -> pass -> pass -> rotate -> pass
 
                 //                System.err.println("writing:" + filename);
                 PrintWriter writer = new PrintWriter(
-                                         new FileOutputStream(
-                                             info.getFilepath(filename)));
+						     new FileOutputStream(
+									  info.getFilepath(filename)));
                 Processor.Printer p = new Processor.Printer(false);
                 p.writeCsv(info, writer, myRows);
                 writer.close();
@@ -1894,18 +2038,18 @@ rotate -> pass -> pass -> rotate -> pass
             label   = CsvUtil.getDbProp(props, "table", "label", label);
             label   = label.replaceAll("\n", " ").replaceAll("\r", " ");
             tableId = Utils.makeLabel(name).toLowerCase().replaceAll(" ",
-                                      "_");
+								     "_");
             tableId = CsvUtil.getDbProp(props, "table", "id", tableId);
 
             String labels = CsvUtil.getDbProp(props, "table", "labelColumns",
-                                "");
+					      "");
 
             File output = reader.getOutputFile();
             if (output != null) {
                 reader.setOutputFile(
-                    new File(
-                        IOUtil.joinDir(
-                            output.getParentFile(), tableId + "db.xml")));
+				     new File(
+					      IOUtil.joinDir(
+							     output.getParentFile(), tableId + "db.xml")));
             }
 
             if (writer == null) {
@@ -1915,13 +2059,13 @@ rotate -> pass -> pass -> rotate -> pass
 
 
             writer.println(
-                XmlUtil.openTag(
-                    "table",
-                    XmlUtil.attrs(
-                        "id", tableId, "name", label, "labelColumns", labels,
-                        "icon",
-                        CsvUtil.getDbProp(
-                            props, "table", "icon", "/db/database.png"))));
+			   XmlUtil.openTag(
+					   "table",
+					   XmlUtil.attrs(
+							 "id", tableId, "name", label, "labelColumns", labels,
+							 "icon",
+							 CsvUtil.getDbProp(
+									   props, "table", "icon", "/db/database.png"))));
             List<Row> samples = new ArrayList<Row>();
             samples.add(row);
             boolean[] isNumeric = new boolean[row1.getValues().size()];
@@ -1932,7 +2076,7 @@ rotate -> pass -> pass -> rotate -> pass
             for (Row sample : samples) {
                 //                System.err.println("sample:" + sample);
                 for (int colIdx = 0; colIdx < sample.getValues().size();
-                        colIdx++) {
+		     colIdx++) {
                     Object value = sample.getValues().get(colIdx);
                     try {
                         Double.parseDouble(value.toString());
@@ -1943,21 +2087,21 @@ rotate -> pass -> pass -> rotate -> pass
             }
 
             boolean dfltDoStats = CsvUtil.getDbProp(props, "table",
-                                      "dostats", "false").equals("true");
+						    "dostats", "false").equals("true");
             boolean dfltCanSearch = CsvUtil.getDbProp(props, "table",
-                                        "cansearch", "true").equals("true");
+						      "cansearch", "true").equals("true");
             boolean dfltCanList = CsvUtil.getDbProp(props, "table",
-                                      "canlist", "true").equals("true");
+						    "canlist", "true").equals("true");
             String dfltChangeType = CsvUtil.getDbProp(props, "table",
-                                        "changetype", "false");
+						      "changetype", "false");
 
             String format = CsvUtil.getDbProp(props, "table", "format",
-                                "yyyy-MM-dd HH:mm");
+					      "yyyy-MM-dd HH:mm");
             for (int colIdx = 0; colIdx < row1.getValues().size(); colIdx++) {
                 Object col   = row1.getValues().get(colIdx);
                 String colId = Utils.makeLabel(col.toString());
                 colId = colId.toLowerCase().replaceAll(" ",
-                        "_").replaceAll("[^a-z0-9]", "_");
+						       "_").replaceAll("[^a-z0-9]", "_");
                 colId = colId.replaceAll("_+_", "_");
                 colId = colId.replaceAll("_$", "");
                 colId = CsvUtil.getDbProp(props, colId, "id", colId);
@@ -1974,7 +2118,7 @@ rotate -> pass -> pass -> rotate -> pass
 
                 boolean isNumber = isNumeric[colIdx];
                 String type = CsvUtil.getDbProp(props, "table", "type",
-                                  "string");
+						"string");
                 if (isNumber) {
                     type = "double";
                 }
@@ -1990,15 +2134,15 @@ rotate -> pass -> pass -> rotate -> pass
                 if (CsvUtil.getDbProp(props, colId, "changetype",
                                       dfltChangeType).equals("true")) {
                     attrs.append(XmlUtil.attrs(new String[] { "changetype",
-                            "true" }));
+							      "true" }));
                 }
                 String size = CsvUtil.getDbProp(props, colId, "size", null);
                 if (size != null) {
                     attrs.append(XmlUtil.attrs(new String[] { "size",
-                            size }));
+							      size }));
                 }
                 if ((colId.indexOf("type") >= 0)
-                        || (colId.indexOf("category") >= 0)) {
+		    || (colId.indexOf("category") >= 0)) {
                     type = "enumerationplus";
                 } else if (colId.equals("date")) {
                     type = "date";
@@ -2009,78 +2153,78 @@ rotate -> pass -> pass -> rotate -> pass
 
                 type = CsvUtil.getDbProp(props, colId, "type", type);
                 String values = CsvUtil.getDbProp(props, colId, "values",
-                                    null);
+						  null);
                 String searchRows = CsvUtil.getDbProp(props, colId,
-                                        "searchrows", "");
+						      "searchrows", "");
                 String defaultsort = CsvUtil.getDbProp(props, colId,
-                                         "defaultsort", (String) null);
+						       "defaultsort", (String) null);
                 if ((defaultsort != null) && defaultsort.equals("true")) {
                     attrs.append(XmlUtil.attrs(new String[] { "defaultsort",
-                            "true" }));
+							      "true" }));
                     String asc = CsvUtil.getDbProp(props, colId, "ascending",
-                                     (String) null);
+						   (String) null);
                     if (asc != null) {
                         attrs.append(XmlUtil.attrs(new String[] { "ascending",
-                                asc }));
+								  asc }));
                     }
                 }
 
 
                 canSearch = "true".equals(CsvUtil.getDbProp(props, colId,
-                        "cansearch", canSearch + ""));
+							    "cansearch", canSearch + ""));
                 canList = "true".equals(CsvUtil.getDbProp(props, colId,
-                        "canlist", canList + ""));
+							  "canlist", canList + ""));
                 attrs.append(XmlUtil.attrs(new String[] {
-                    "type", type, "label", label, "cansearch", "" + canSearch,
-                    "canlist", "" + canList
-                }));
+			    "type", type, "label", label, "cansearch", "" + canSearch,
+			    "canlist", "" + canList
+			}));
                 if (values != null) {
                     attrs.append(XmlUtil.attrs(new String[] { "values",
-                            values }));
+							      values }));
                 }
                 if (searchRows.length() > 0) {
                     attrs.append(XmlUtil.attrs(new String[] { "searchrows",
-                            searchRows }));
+							      searchRows }));
                 }
                 if (type.equals("date")) {
                     attrs.append(XmlUtil.attrs(new String[] { "format",
-                            CsvUtil.getDbProp(props, colId, "format",
-                            format) }));
+							      CsvUtil.getDbProp(props, colId, "format",
+										format) }));
                 }
 
                 StringBuffer inner = new StringBuffer();
                 boolean doStats = "true".equals(CsvUtil.getDbProp(props,
-                                      colId, "dostats", dfltDoStats + ""));
+								  colId, "dostats", dfltDoStats + ""));
 
                 if (doStats) {
                     inner.append(XmlUtil.tag("property",
                                              XmlUtil.attrs(new String[] {
-                                                 "name",
-                            "dostats", "value", "true" })));
+						     "name",
+						     "dostats", "value", "true" })));
                 }
                 if (CsvUtil.getDbProp(props, colId, "iscategory", false)) {
                     inner.append(XmlUtil.tag("property",
                                              XmlUtil.attrs(new String[] {
-                                                 "name",
-                            "iscategory", "value", "true" })));
+						     "name",
+						     "iscategory", "value", "true" })));
                 }
                 if (CsvUtil.getDbProp(props, colId, "formap", false)) {
                     inner.append(XmlUtil.tag("property",
                                              XmlUtil.attrs(new String[] {
-                                                 "name",
-                            "formap", "value", "true" })));
+						     "name",
+						     "formap", "value", "true" })));
                 }
 
                 if (CsvUtil.getDbProp(props, colId, "islabel", false)) {
                     inner.append(XmlUtil.tag("property",
                                              XmlUtil.attrs(new String[] {
-                                                 "name",
-                            "islabel", "value", "true" })));
+						     "name",
+						     "islabel", "value", "true" })));
                 }
 
                 if (inner.length() > 0) {
                     writer.println(XmlUtil.tag("column", attrs.toString(),
-                            inner.toString()));
+					       inner.toString()));
                 } else {
                     writer.println(XmlUtil.tag("column", attrs.toString()));
                 }
@@ -2170,7 +2314,7 @@ rotate -> pass -> pass -> rotate -> pass
          */
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
-                throws Exception {
+	    throws Exception {
             if (contains == null) {
                 info.getWriter().print("-0");
             } else {
@@ -2313,7 +2457,7 @@ rotate -> pass -> pass -> rotate -> pass
          */
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
-                throws Exception {
+	    throws Exception {
             if (strict) {
                 return rows;
             }
@@ -2464,8 +2608,8 @@ rotate -> pass -> pass -> rotate -> pass
             info.getWriter().println("#" + cnt);
             for (int i = 0; i < values.size(); i++) {
                 String label = (i < headerValues.size())
-                               ? headerValues.get(i).toString()
-                               : "NA";
+		    ? headerValues.get(i).toString()
+		    : "NA";
                 label = StringUtil.padLeft(label, 20);
                 info.getWriter().println(label + ":" + values.get(i));
             }
@@ -2530,11 +2674,11 @@ rotate -> pass -> pass -> rotate -> pass
          * @throws Exception _more_
          */
         public void printRow(TextReader info, Row row, boolean addCnt)
-                throws Exception {
+	    throws Exception {
             List values = row.getValues();
             if (cnt == 0) {
                 info.getWriter().println(
-                    "<table  class='stripe hover ramadda-table ramadda-csv-table' >");
+					 "<table  class='stripe hover ramadda-table ramadda-csv-table' >");
             }
             maxCount = Math.max(maxCount, values.size());
             String open  = "<td>";
@@ -2586,12 +2730,12 @@ rotate -> pass -> pass -> rotate -> pass
                     info.getWriter().print("#" + i + "&nbsp;");
                     info.getWriter().print("");
                     String label = Utils.makeLabel(""
-                                       + values.get(i)).replaceAll(" ",
-                                           "&nbsp;");
+						   + values.get(i)).replaceAll(" ",
+									       "&nbsp;");
                     info.getWriter().print(HU.span(label,
-                            HU.attr("title",
-                                           label.replaceAll("\"",
-                                               "&quot;"))));
+						   HU.attr("title",
+							   label.replaceAll("\"",
+									    "&quot;"))));
                 } else {
                     Object value = values.get(i);
                     String label = ((value == null)
@@ -2602,7 +2746,7 @@ rotate -> pass -> pass -> rotate -> pass
 			info.getWriter().print(label);
 		    } else {
 			info.getWriter().print(HU.span(label,
-							      HU.attr("title", label)));
+						       HU.attr("title", label)));
 		    }
                 }
                 info.getWriter().print("</div>");
@@ -2634,7 +2778,7 @@ rotate -> pass -> pass -> rotate -> pass
          */
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
-                throws Exception {
+	    throws Exception {
             if (info.getDebug()) {
                 info.getWriter().print("");
 
@@ -2729,7 +2873,7 @@ rotate -> pass -> pass -> rotate -> pass
          */
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
-                throws Exception {
+	    throws Exception {
 
             if (valueIndices == null) {
                 valueIndices     = getIndices(info, valueCols);
@@ -2744,12 +2888,12 @@ rotate -> pass -> pass -> rotate -> pass
             List<String>    newColumns   = new ArrayList<String>();
             List<String>    uniques      = new ArrayList<String>();
             Hashtable<String, List<Row>> rowMap = new Hashtable<String,
-                                                      List<Row>>();
+		List<Row>>();
             List<Row> allRows   = getRows();
             Row       headerRow = allRows.get(0);
             allRows.remove(0);
             Hashtable<String, Integer> indexMap = new Hashtable<String,
-                                                      Integer>();
+		Integer>();
             for (Row row : allRows) {
                 List   values      = row.getValues();
                 String value       = values.get(unfurlIndex).toString();
@@ -2763,7 +2907,7 @@ rotate -> pass -> pass -> rotate -> pass
                     if (valueIndices.size() > 1) {
                         for (int valueIdx : valueIndices) {
                             String label = unfurlValue + " - "
-                                           + headerRow.get(valueIdx);
+				+ headerRow.get(valueIdx);
                             newColumns.add(label);
                         }
                     } else {
@@ -2819,7 +2963,7 @@ rotate -> pass -> pass -> rotate -> pass
                     if (valueIndices.size() > 1) {
                         for (int valueIndex : valueIndices) {
                             String label = colname + " - "
-                                           + headerRow.get(valueIndex);
+				+ headerRow.get(valueIndex);
                             Integer idx = indexMap.get(label);
                             if (idx == null) {
                                 continue;
@@ -2908,7 +3052,7 @@ rotate -> pass -> pass -> rotate -> pass
          * @throws Exception _more_
          */
         public List<Row> finish(TextReader info, List<Row> rows)
-                throws Exception {
+	    throws Exception {
             rows = getRows();
             List<Integer>    indices   = getIndices(info);
             HashSet<Integer> indexMap  = Utils.makeHashSet(indices);
@@ -2981,7 +3125,7 @@ rotate -> pass -> pass -> rotate -> pass
          */
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
-                throws Exception {
+	    throws Exception {
             List<Row>     newRows = new ArrayList<Row>();
             List<Row>     allRows = getRows();
             List<Integer> cols    = Utils.toInt(columns);
@@ -3064,14 +3208,14 @@ rotate -> pass -> pass -> rotate -> pass
          */
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
-                throws Exception {
+	    throws Exception {
             List<Row> newRows = new ArrayList<Row>();
             int keyIndex = getIndices(info,
                                       Utils.split(key, ",", true,
-                                          true)).get(0);
+						  true)).get(0);
             int valueIndex = getIndices(info,
                                         Utils.split(value, ",", true,
-                                            true)).get(0);
+						    true)).get(0);
             List<Row> allRows   = getRows();
             Row       headerRow = allRows.get(0);
             headerRow.add(name);
@@ -3145,7 +3289,7 @@ rotate -> pass -> pass -> rotate -> pass
          */
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
-                throws Exception {
+	    throws Exception {
             rows = getRows();
             HashSet       cols    = new HashSet();
             List<Row>     newRows = new ArrayList<Row>();
@@ -3235,7 +3379,7 @@ rotate -> pass -> pass -> rotate -> pass
          */
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
-                throws Exception {
+	    throws Exception {
             int index = getIndex(info);
             rows = new ArrayList<Row>(getRows(rows));
             if (rows.size() == 0) {
@@ -3328,7 +3472,7 @@ rotate -> pass -> pass -> rotate -> pass
          */
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
-                throws Exception {
+	    throws Exception {
 
             uniqueIndices = getIndices(info, keys);
             valueIndices  = getIndices(info, values);
@@ -3343,7 +3487,7 @@ rotate -> pass -> pass -> rotate -> pass
             int          rowIndex = 0;
             List<String> keys     = new ArrayList<String>();
             Hashtable<String, List<Row>> rowMap = new Hashtable<String,
-                                                      List<Row>>();
+		List<Row>>();
             Hashtable<String, Row> origMap   = new Hashtable<String, Row>();
             List<Row>              allRows   = getRows(rows);
             Row                    headerRow = allRows.get(0);
@@ -3515,8 +3659,8 @@ rotate -> pass -> pass -> rotate -> pass
             List<Integer> keys1Indices = getIndices(null, keys1);
             values1Indices = getIndices(null, values1);
             BufferedReader br = new BufferedReader(
-                                    new InputStreamReader(
-                                        getInputStream(file)));
+						   new InputStreamReader(
+									 getInputStream(file)));
             TextReader reader = new TextReader(br);
             map        = new Hashtable<String, Row>();
             headerRow1 = null;
@@ -3656,7 +3800,7 @@ rotate -> pass -> pass -> rotate -> pass
          */
         @Override
         public List<Row> finish(TextReader info, List<Row> finalRows)
-                throws Exception {
+	    throws Exception {
             List<Integer> indices   = getIndices(info);
             List<Row>     allRows   = getRows();
             List<Row>     newRows   = new ArrayList<Row>();
@@ -3665,7 +3809,7 @@ rotate -> pass -> pass -> rotate -> pass
             allRows.remove(0);
             List keys = new ArrayList();
             Hashtable<Object, List<Row>> rowMap = new Hashtable<Object,
-                                                      List<Row>>();
+		List<Row>>();
             for (Row row : allRows) {
                 List          values = row.getValues();
                 StringBuilder key    = new StringBuilder();
@@ -3789,7 +3933,7 @@ rotate -> pass -> pass -> rotate -> pass
 
             /** _more_          */
             Hashtable<Object, Integer> uniques = new Hashtable<Object,
-                                                     Integer>();
+		Integer>();
 
 	    List<Double> pts = new ArrayList<Double>();
 
@@ -3827,18 +3971,12 @@ rotate -> pass -> pass -> rotate -> pass
 		    }
                 }
                 if (args != null) {
-                    Hashtable props = new Hashtable();
-                    for (String tok : Utils.parseCommandLine(args)) {
-                        List<String> toks = StringUtil.splitUpTo(tok, "=", 2);
-                        if (toks.size() == 2) {
-                            props.put(toks.get(0), toks.get(1));
-                        }
-                    }
+                    Hashtable props = Utils.parseKeyValue(args);
                     this.type  = Utils.getProperty(props, "type", this.type);
                     this.label = Utils.getProperty(props, "label",
-                            this.label);
+						   this.label);
                     this.format = Utils.getProperty(props, "format",
-                            this.format);
+						    this.format);
                     if (this.format != null) {
                         sdf = new SimpleDateFormat(this.format);
 
@@ -4028,7 +4166,7 @@ rotate -> pass -> pass -> rotate -> pass
          */
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
-                throws Exception {
+	    throws Exception {
 
             PrintWriter w = info.getWriter();
 	    BiConsumer<String,String> layout = (label,value) -> {
@@ -4045,7 +4183,7 @@ rotate -> pass -> pass -> rotate -> pass
 	    w.println("<span id=header></span>");
             if (interactive) {
                 w.println(
-                    "<table  width='100%' class='stripe hover display nowrap ramadda-table ramadda-csv-table' >");
+			  "<table  width='100%' class='stripe hover display nowrap ramadda-table ramadda-csv-table' >");
                 w.println("<thead>");
                 w.println("<tr valign=top>");
                 for (ColStat col : cols) {
@@ -4065,9 +4203,9 @@ rotate -> pass -> pass -> rotate -> pass
                         typeIcon = "fas fa-hashtag";
                     }
                     String type = HU.faIcon(typeIcon, "",
-                                      HU.attrs("title",
-                                          "type: " + col.type, "style",
-                                          "font-size:10pt;"));
+					    HU.attrs("title",
+						     "type: " + col.type, "style",
+						     "font-size:10pt;"));
                     String name = col.name;
 		    String label = Utils.makeLabel(name);
                     w.println("<th class=csv-id fieldid='" + name
@@ -4107,16 +4245,16 @@ rotate -> pass -> pass -> rotate -> pass
 			layout.accept("max:", "" + col.max);
                         if (col.numMissing > 0) {
                             layout.accept("#missing:",
-                                    "" + col.numMissing);
+					  "" + col.numMissing);
                         }
                         if (col.numErrors > 0) {
                             layout.accept("#errors:",   "" + col.numErrors);
                             if (col.sampleError != null) {
                                 layout.accept("eg:"
-                                        + ((col.sampleError.trim().length()
-                                            == 0)
-                                           ? "<blank>"
-                                           : col.sampleError), "");
+					      + ((col.sampleError.trim().length()
+						  == 0)
+						 ? "<blank>"
+						 : col.sampleError), "");
                             }
                         }
                     } else if (col.type.equals("date")) {
@@ -4131,19 +4269,19 @@ rotate -> pass -> pass -> rotate -> pass
                     } else {
                         List<Object[]> values = new ArrayList<Object[]>();
                         for (Enumeration keys = col.uniques.keys();
-                                keys.hasMoreElements(); ) {
+			     keys.hasMoreElements(); ) {
                             Object  key = keys.nextElement();
                             Integer cnt = col.uniques.get(key);
                             values.add(new Object[] { key, cnt });
                         }
                         Comparator comp = new Comparator() {
-                            public int compare(Object o1, Object o2) {
-                                Object[] t1 = (Object[]) o1;
-                                Object[] t2 = (Object[]) o2;
+				public int compare(Object o1, Object o2) {
+				    Object[] t1 = (Object[]) o1;
+				    Object[] t2 = (Object[]) o2;
 
-                                return ((int) t2[1]) - ((int) t1[1]);
-                            }
-                        };
+				    return ((int) t2[1]) - ((int) t1[1]);
+				}
+			    };
 
                         Object[] array = values.toArray();
                         Arrays.sort(array, comp);
@@ -4152,7 +4290,7 @@ rotate -> pass -> pass -> rotate -> pass
                             w.print(values.size() + "<br>unique values");
                         } else {
                             w.print(
-                                "<div style='max-height:100px;overflow-y:auto;'>");
+				    "<div style='max-height:100px;overflow-y:auto;'>");
                             w.print("<table>");
                             for (Object[] tuple : values) {
                                 Object key = tuple[0];
@@ -4160,10 +4298,10 @@ rotate -> pass -> pass -> rotate -> pass
                                 double percent = Math.round(1000.0 * cnt
 							    / (double) (rowCnt-1)) / 10;
                                 w.print(
-                                    "<tr><td>" + key
-                                    + "</td><td align=right><span title='#"
-                                    + cnt + "'>" + percent
-                                    + "%</span></td></tr>");
+					"<tr><td>" + key
+					+ "</td><td align=right><span title='#"
+					+ cnt + "'>" + percent
+					+ "%</span></td></tr>");
                             }
                             w.print("</table>");
                             w.print("</div>");
@@ -4205,7 +4343,4 @@ rotate -> pass -> pass -> rotate -> pass
 
         }
     }
-
-
-
 }

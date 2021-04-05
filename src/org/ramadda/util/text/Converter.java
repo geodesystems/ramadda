@@ -2707,10 +2707,10 @@ public abstract class Converter extends Processor {
          * @param from _more_
          * @param to _more_
          */
-        public DateFormatter(List<String> cols, String from, String to) {
+        public DateFormatter(List<String> cols, SimpleDateFormat from, String to) {
             super(cols);
             try {
-                this.from = new SimpleDateFormat(from);
+                this.from = from;
                 if (to.length() == 0) {
                     to = "yyyyMMdd'T'HHmmss Z";
                 }
@@ -2760,6 +2760,62 @@ public abstract class Converter extends Processor {
 
     }
 
+
+    public static class Elapsed extends Converter {
+
+        /** _more_ */
+        private SimpleDateFormat from;
+
+	private Date lastDate;
+
+	private int index;
+	
+        /**
+         *
+         * @param cols _more_
+         * @param from _more_
+         * @param to _more_
+         */
+        public Elapsed(String col, SimpleDateFormat from) {
+            super(col);
+	    this.from = from;
+        }
+
+        /**
+         *
+         *
+         *
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row) {
+            //Don't process the first row
+            if (rowCnt++ == 0) {
+		index = getIndex(info);
+		row.add("elapsed");
+		return row;
+            }
+
+	    try {
+		Date date = from.parse(row.get(index).toString());
+		if(lastDate!=null) 
+		    row.add(date.getTime()-lastDate.getTime());
+		else
+		    row.add(0);
+		lastDate = date;
+	    } catch(Exception exc) {
+		throw new RuntimeException(exc);
+	    }
+	    return row;
+        }
+
+    }
+    
 
 
 
@@ -4596,6 +4652,70 @@ public abstract class Converter extends Processor {
 
     }
 
+    public static class Bytes extends Converter {
+	private String unit;
+
+        /**
+         *
+         * @param indices _more_
+         */
+        public Bytes(String unit,List<String> indices) {
+            super(indices);
+	    this.unit = unit;
+        }
+
+        /**
+         *
+         * @param info _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row) {
+            List<Integer> indices = getIndices(info);
+            if (rowCnt++ == 0) {
+		for(int i: indices)
+		    row.add("Size " + row.get(i));
+		return row;
+            }
+            for (Integer idx : indices) {
+                int index = idx.intValue();
+                String s = (String) row.getValues().get(index);
+		double v = 0;
+
+		s  = s.replaceAll(" ","").toLowerCase();
+		String u = StringUtil.findPattern(s,"([^0-9\\.\\-]+)");
+		if(u==null) {
+		    v = Double.parseDouble(s);
+		} else {
+		    v = Double.parseDouble(s.replaceAll(u,""));
+		    v = v*getMultiplier(u);
+		}
+                row.add(v);
+
+            }
+
+            return row;
+        }
+
+	private double getMultiplier(String u) {
+	    if(unit.equals("binary")) return getMultiplier(u,1024);
+	    return getMultiplier(u,1000);
+	}
+
+	private double getMultiplier(String u, double base) {
+	    if(u.equals("kb")) return base;
+	    if(u.equals("mb")) return base*base;
+	    if(u.equals("gb")) return base*base*base;
+	    if(u.equals("tb")) return base*base*base*base;
+	    if(u.equals("pb")) return base*base*base*base*base;	    	    	    
+	    return 1;
+	}
+	
+
+    }
+
 
     /**
      * Class description
@@ -4729,7 +4849,9 @@ public abstract class Converter extends Processor {
                     s = s.toLowerCase();
                 } else if (action.equals("upper")) {
                     s = s.toUpperCase();
-                } else if (action.equals("camel")) {
+                } else if (action.equals("proper")) {
+                    s = Utils.upperCaseFirst(s);
+                } else if (action.equals("camel")) {		    
                     s = Utils.upperCaseFirst(s);
                 } else if (action.equals("capitalize")) {
                     if (s.length() == 1) {

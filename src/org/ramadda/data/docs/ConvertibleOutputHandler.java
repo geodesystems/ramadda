@@ -396,15 +396,16 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 llines.add(l);
             }
             if (request.defined("csvoutput")) {
-                llines.get(llines.size()
-                           - 1).add(request.getString("csvoutput"));
+		String output = request.getString("csvoutput");
+		List<String> lastLine  = llines.get(llines.size()-1);
+		if(!lastLine.contains(output)) lastLine.add(output);
             }
             CsvUtil prevCsvUtil = null;
 
             for (int i = 0; i < llines.size(); i++) {
                 List<String> args1        = llines.get(i);
                 String       runDirPrefix = request.getString("rundir",
-                                                "run");
+							      "run");
                 List<String> args         = new ArrayList<String>();
                 for (int j = 0; j < args1.size(); j++) {
                     String arg = args1.get(j);
@@ -414,7 +415,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
                                 arg.substring("entry:".length()));
                         if (fileEntry == null) {
                             throw new IllegalArgumentException(
-                                "Could not find " + arg);
+							       "Could not find " + arg);
                         }
                         if (fileEntry.getFile() == null) {
                             throw new IllegalArgumentException(
@@ -423,12 +424,11 @@ public class ConvertibleOutputHandler extends OutputHandler {
                         arg = fileEntry.getFile().toString();
                     } else if (arg.equals("-run")) {
                         runDirPrefix = args1.get(++j);
-
                         continue;
                     }
                     args.add(arg);
                 }
-		boolean hasOutput = args.contains("-tojson")  || args.contains("-toxml");
+		boolean hasOutput = args.contains("-tojson")  || args.contains("-toxml")|| args.contains("-db");
 		//		System.err.println("args:" + args);
                 if ( !args.contains("-print") && !args.contains("-p")
 		     && !args.contains("-explode")
@@ -449,12 +449,17 @@ public class ConvertibleOutputHandler extends OutputHandler {
 		    args.remove("-print");
 		    args.remove("-p");
 		}
-                currentArgs = args;
-                //              for(String arg: args)
-                //                  System.err.println("arg:" + arg+":");
 
-                //              System.err.println("args:" + args);
+                currentArgs = args;
+		//		System.err.println("args:" + args);
+                //              for(String arg: args)
+
+                //                  System.err.println("arg:" + arg+":");
+		
                 File runDir = null;
+		if(runDirPrefix!=null)   runDirPrefix = IO.cleanFileName(runDirPrefix).trim();
+		if(runDirPrefix.length()==0) runDirPrefix = "run";
+		System.err.println("r:" + runDirPrefix);
                 for (int j = 0; true; j++) {
                     runDir = new File(IOUtil.joinDir(destDir, ((j == 0)
                             ? runDirPrefix

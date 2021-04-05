@@ -697,7 +697,13 @@ public boolean getVerbose () {
      * @return _more_
      */
     public String getInputFile() {
-        return inputFile;
+	if(inputFile!=null)
+	    return inputFile;
+	if(input!=null)
+	    return input.getName();
+	if(inputChannel!=null)
+	    return inputChannel.getName();	
+	return null;
     }
 
     /**
