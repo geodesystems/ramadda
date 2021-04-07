@@ -9,7 +9,7 @@
 
   <type name="type_point_hydro_waterml"  super="type_point_hydro" description="WaterML"  handler="org.ramadda.data.services.PointTypeHandler">
      <property name="icon" value="/point/waterml.png"/>
-     <property name="record.file.class" value="org.ramadda.data.point.hydro.WaterMLFile"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.WaterMLFile"/>
      <column  name="site_code"  type="enumerationplus" label="Site Code" cansearch="true"/>
      <column  name="site_name"  label="Site Name" cansearch="true"/>
   </type>
@@ -23,6 +23,7 @@
      <column  name="site_id"  label="Site ID" cansearch="true"/>
 
  <property name="record.properties">
+pathReplace=http_semicolon_:https_semicolon_
 skiplines=16
 delimiter=tab
 fields=station[label="Station" type="string"],time[type=date format="yyyy-MM-dd HH:mm" label="Time"],gage_height[unit=ft label="Gage height"],discharge[label="Discharge" unit=cfs]

@@ -10,7 +10,7 @@ category="Ocean and Water Data" foruser="false">
 
   <type name="type_point_hydro_waterml"  super="type_point_hydro" description="WaterML"  handler="org.ramadda.data.services.PointTypeHandler">
      <property name="icon" value="/point/waterml.png"/>
-     <property name="record.file.class" value="org.ramadda.data.point.hydro.WaterMLFile"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.WaterMLFile"/>
      <column  name="site_code"  type="enumerationplus" label="Site Code" cansearch="true"/>
      <column  name="site_name"  label="Site Name" cansearch="true"/>
   </type>

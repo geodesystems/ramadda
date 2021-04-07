@@ -100,6 +100,7 @@ picky=false
      <column  name="huc_id"   label="HUC ID" cansearch="true"/>
  <property name="record.properties">
 <![CDATA[
+pathReplace=http_semicolon_//www.wcc.nrcs.usda.gov:https_semicolon_//wcc.sc.egov.usda.gov
 fields=date[label="Date" type="date" format="yyyy-MM-dd" ] , snow_water_equivalent[label="Snow Water Equivalent " unit="in" ] , change_in_snow_water_equivalent[label="Change In Snow Water Equivalent " unit="in" ] , snow_depth[label="Snow Depth " unit="in" ] , change_in_snow_depth[label="Change In Snow Depth " unit="in" ] , precipitation_accumulation[label="Precipitation Accumulation " unit="in" ] , air_temperature_observed[label="Air Temperature Observed " unit="F" ] , air_temperature_minimum[label="Air Temperature Minimum " unit="F" ] , air_temperature_maximum[label="Air Temperature Maximum " unit="F" ] 
 skiplines=1
 commentLineStart=#
