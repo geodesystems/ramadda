@@ -23,6 +23,8 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.data.docs.*;
+
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.HtmlUtils;
@@ -44,7 +46,7 @@ import java.util.Hashtable;
  *
  *
  */
-public class JsonFileTypeHandler extends GenericTypeHandler {
+public class JsonFileTypeHandler extends ConvertibleTypeHandler {
 
 
     /**
