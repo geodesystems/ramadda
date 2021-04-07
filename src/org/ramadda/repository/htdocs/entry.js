@@ -432,8 +432,10 @@ function Ramadda(repositoryRoot) {
             if (settings.entries && settings.entries.length > 0) {
                 url += "&entries=" + settings.entries;
             }
-            if (settings.orderBy == "name") {
-                url += "&orderby=name&ascending=true";
+            if (settings.orderBy) {
+                url += "&orderby=" + settings.orderBy;
+		if(Utils.isDefined(settings.ascending)) 
+		    url +="&ascending=" + (settings.ascending?"true":"false");
             }
             if (settings.endDate && settings.endDate.length > 0) {
                 url += "&endtime=" + settings.endDate;
@@ -1048,7 +1050,7 @@ function EntrySearchSettings(props) {
         skip: 0,
         metadata: [],
         extra: "",
-        sortBy: "",
+        orderBy: "",
         entries: null,
         startDate: null,
         endDate: null,
