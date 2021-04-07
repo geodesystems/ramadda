@@ -3952,13 +3952,14 @@ public abstract class Processor extends CsvOperator {
              * @param sample _more_
              */
             public ColStat(CsvUtil util, String n, String sample) {
-                name  = n.toLowerCase().trim();
                 label = name;
+		name = n;
                 if (name.startsWith("#fields=")) {
                     name = name.substring("#fields=".length());
                 }
                 String args = StringUtil.findPattern(name, "\\[(.*)\\]");
                 name = name.replaceAll("\\[.*\\]", "");
+                name  = name.toLowerCase().trim();
                 try {
                     Double.parseDouble(sample);
                     this.type = "numeric";
@@ -3975,8 +3976,8 @@ public abstract class Processor extends CsvOperator {
                     this.type  = Utils.getProperty(props, "type", this.type);
                     this.label = Utils.getProperty(props, "label",
 						   this.label);
-                    this.format = Utils.getProperty(props, "format",
-						    this.format);
+                    this.format = Utils.getProperty(props, name +".format",Utils.getProperty(props, "format",
+											     this.format));
                     if (this.format != null) {
                         sdf = new SimpleDateFormat(this.format);
 
