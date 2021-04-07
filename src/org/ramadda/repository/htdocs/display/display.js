@@ -70,6 +70,7 @@ const ID_GROUPBY_FIELDS= "groupdbyfields";
 const ID_TOOLBAR = "toolbar";
 const ID_TOOLBAR_INNER = "toolbarinner";
 const ID_LIST = "list";
+const ID_DISPLAY_MESSAGE = "displaymessage";
 const ID_DIALOG = "dialog";
 const ID_DIALOG_TABS = "dialog_tabs";
 const ID_FOOTER = "footer";
@@ -508,6 +509,9 @@ function DisplayThing(argId, argProperties) {
 	gid: function(suffix) {
             return this.getId() + "_" + suffix;
         },
+	find: function(selector) {
+	    return this.jq(ID_DISPLAY_CONTENTS).find(selector);
+	},
         jq: function(componentId) {
             return $("#" + this.getDomId(componentId));
         },
@@ -1637,6 +1641,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.setDisplayParent(cm.getLayoutManager());
         },
         setContents: function(contents) {
+//            this.clearDisplayMessage();
             let style = "";
             contents = HU.div([ATTR_CLASS, "display-contents-inner display-" + this.getType() + "-inner", STYLE, style], contents);
             this.writeHtml(ID_DISPLAY_CONTENTS, contents);
@@ -1950,6 +1955,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getWaitImage: function() {
             return HU.image(ramaddaBaseUrl + "/icons/progress.gif");
         },
+	useDisplayMessage:function() {
+	    return false;
+	},
+	setDisplayMessage:function(msg) {
+	    this.jq(ID_DISPLAY_MESSAGE).html(msg);
+	    this.jq(ID_DISPLAY_MESSAGE).show();
+	},
+	clearDisplayMessage:function() {
+	    this.jq(ID_DISPLAY_MESSAGE).hide();
+	},	
         getLoadingMessage: function(msg) {
 	    if(this.getAcceptEventDataSelection()) {
 		return "";
@@ -1962,6 +1977,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if (!msg) msg = this.getProperty("loadingMessage", "icon_progress Loading data...");
 	    if(msg=="") return "";
 	    msg = msg.replace("icon_progress",HU.image(icon_progress));
+	    if(this.useDisplayMessage()) {
+		return SPACE+msg;
+	    } 
             return HU.div([STYLE, HU.css("text-align","center")], this.getMessage(SPACE + msg));
         },
 	reloadData: function() {
@@ -4355,6 +4373,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		
             }
             topLeft = HU.div([ID, this.getDomId(ID_TOP_LEFT),CLASS,"display-header-block"], topLeft);
+
 	    let h2Separate = this.getAnimationEnabled();
 	    let h1 = 	HU.div([ID,this.getDomId(ID_HEADER1),CLASS,"display-header-block display-header1"], "");
 	    let h2 = HU.div([ID,this.getDomId(ID_HEADER2),CLASS,"display-header-block display-header2"], "");
@@ -4388,8 +4407,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    bottom+=legend;
 	    let left = HU.div([ATTR_ID, this.getDomId(ID_LEFT)],leftInner);
 	    let right = HU.div([ATTR_ID, this.getDomId(ID_RIGHT)],rightInner);
-
-
 	    let sideWidth = "1%";
             let contents = this.getContentsDiv();
 	    //display table
@@ -4402,10 +4419,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		table+= HU.tr([],HU.td(['width',sideWidth]) + HU.td(['width','99%'],bottom) +HU.td(['width',sideWidth]));
 	    }
 	    table+=HU.close('table');
-
+	    let message= HU.div([ID,this.domId(ID_DISPLAY_MESSAGE),CLASS,"display-output-message", STYLE,HU.css("display","none","position","absolute","top","10px","left","50%",
+									"-webkit-transform","translateX(-50%)","transform","translateX(-50%)")],"message");
             let html =  HU.div([ATTR_CLASS, 'ramadda-popup', STYLE,"display:none;", ATTR_ID, this.getDomId(ID_MENU_OUTER)], '');
             let style = this.getProperty('displayStyle', '');
-            html += HU.div([CLASS, 'display-contents', STYLE, HU.css('position','relative') + style],table);
+            html += HU.div([CLASS, 'display-contents', STYLE, HU.css('position','relative') + style],table + message);
             return html;
         },
         getWidthForStyle: function(dflt) {
@@ -5782,8 +5800,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	startProgress: function() {
 	    if(this.jq(ID_DISPLAY_PROGRESS).length>0) 
 		this.jq(ID_DISPLAY_PROGRESS).html(HU.image(icon_progress));
-	    else
-		this.setContents(this.getLoadingMessage());
+	    else {
+		if(this.useDisplayMessage()) {
+                    this.setDisplayMessage(this.getLoadingMessage());
+		} else {
+		    this.setContents(this.getLoadingMessage());
+		}
+	    }
 	},
 	handleNoData: function(pointData,reload) {
 	    let debug = displayDebug.handleNoData;
@@ -7057,7 +7080,11 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
         initDisplay: function() {
             SUPER.initDisplay.call(this);
             if (this.needsData()) {
-                this.setContents(this.getLoadingMessage());
+		if(this.useDisplayMessage()) {
+                    this.setDisplayMessage(this.getLoadingMessage());
+		} else {
+                    this.setContents(this.getLoadingMessage());
+		}
             }
             this.callUpdateUI();
         },

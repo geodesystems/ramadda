@@ -277,6 +277,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 
     defineDisplay(this, SUPER, myProps, {
+	useDisplayMessage:function() {
+	    return true;
+	},
 	//Override so we don't include the expandable class
 	getContentsClass: function() {
 	    return "display-contents-inner display-" + this.type;
@@ -558,7 +561,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    console.log("\tgoogle charts have not loaded callback pending:" +this.googleChartCallbackPending);
                 if (!this.googleChartCallbackPending) {
                     this.googleChartCallbackPending = true;
-                    this.setContents(this.getLoadingMessage());
+//                    this.setContents(this.getLoadingMessage());
+		    this.setDisplayMessage(this.getLoadingMessage());
                     setTimeout(()=> {
                         this.googleChartCallbackPending = false;
                         this.displayData();
@@ -571,14 +575,15 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
             if (!this.hasData()) {
                 this.clearChart();
-                this.setContents(this.getLoadingMessage());
+//                this.setContents(this.getLoadingMessage());
+		this.setDisplayMessage(this.getLoadingMessage());
                 return;
             }
 
 
 	    if(!this.getAcceptEventDataSelection()) {
-		this.setContents(HU.div([ATTR_CLASS, "display-output-message"],
-					"Building display..."));
+//		this.setContents(HU.div([ATTR_CLASS, "display-output-message"],"Building display..."));
+		this.setDisplayMessage("Building display...");
 	    }
 
 	    if(debug)
@@ -625,7 +630,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             if (selectedFields.length == 0) {
 		if(!this.getAcceptEventDataSelection()) {
-                    this.setContents("No fields selected");
+//                    this.setContents("No fields selected");
+		    this.setDisplayMessage("No fields selected");
 		}
                 return;
             }
@@ -694,8 +700,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
             if (dataList.length == 0) {
-                this.setContents(HU.div([ATTR_CLASS, "display-output-message"],
-					this.getNoDataMessage()));
+                this.setDisplayMessage(this.getNoDataMessage());
                 return;
             }
 
@@ -772,6 +777,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 dataList = newList;
             }
             try {
+		this.clearDisplayMessage();
                 this.makeGoogleChart(dataList, props, selectedFields);
             } catch (e) {
 		console.log(this.type+" Error making chart:\n" + e +"\n" + e.stack);
@@ -976,7 +982,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	},
         makeDataTable: function(dataList, props, selectedFields, chartOptions) {
 	    let dateType = this.getProperty("dateType","date");
-	    let debug =   true||displayDebug.makeDataTable;
+	    let debug =   displayDebug.makeDataTable;
 	    let debugRows = 4;
 	    if(debug) console.log(this.type+" makeDataTable #records" + dataList.length);
 	    if(debug) console.log("\tfields:" + selectedFields);
@@ -1724,7 +1730,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	},
 	doMakeGoogleChartInner: function(dataList, props, selectedFields) {
             if (typeof google == 'undefined') {
-                this.setContents("No google");
+                this.setDisplayMessage("No google");
                 return;
             }
             this.chartOptions = this.makeChartOptions(dataList, props, selectedFields);
@@ -1813,7 +1819,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             let chart = this.doMakeGoogleChart(dataList, props, chartDiv, selectedFields, this.chartOptions);
             if (chart == null) return null;
             if (!dataTable) {
-                this.setContents(this.getMessage(this.getNoDataMessage()));
+                this.setDisplayMessage(this.getNoDataMessage());
                 return null;
             }
 	    if(this.getProperty("vAxisSharedRange")) {

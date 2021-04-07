@@ -486,7 +486,7 @@ function RamaddaTreeDisplay(displayManager, id, properties) {
 	    roots.map(func);
 	    this.myRecords = [];
             this.displayHtml(html);
-	    this.jq(ID_DISPLAY_CONTENTS).find(".display-tree-toggle").click(function() {
+	    this.find(".display-tree-toggle").click(function() {
 		let state = (/true/i).test($(this).attr("toggle-state"));
 		state = !state;
 		let cnt = $(this).attr("block-count");
@@ -505,7 +505,7 @@ function RamaddaTreeDisplay(displayManager, id, properties) {
 		    _this.propagateEventRecordSelection({record: record});
 		}
 	    });
-	    this.jq(ID_DISPLAY_CONTENTS).find(".display-tree-toggle-details").click(function() {
+	    this.find(".display-tree-toggle-details").click(function() {
 		let state = (/true/i).test($(this).attr("toggle-state"));
 		state = !state;
 		let cnt = $(this).attr("block-count");
@@ -913,7 +913,7 @@ function RamaddaHoursDisplay(displayManager, id, properties) {
 	    html+=extra;
 	    html+="&nbsp;</div>";
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
-	    this.multis = this.jq(ID_DISPLAY_CONTENTS).find(".display-hours-box-multi");
+	    this.multis = this.find(".display-hours-box-multi");
 	    this.multis.click(function() {
 		let id = $(this).attr("dttm")+"_" + $(this).attr("hour") +"_"+$(this).attr("minute");
 		let div = _this.jq(id);
@@ -933,7 +933,7 @@ function RamaddaHoursDisplay(displayManager, id, properties) {
                     collision: "none none"
 		});
 	    });
-	    this.boxes = this.jq(ID_DISPLAY_CONTENTS).find(".display-hours-box");
+	    this.boxes = this.find(".display-hours-box");
 	    this.boxes.click(function() {
 		let state = (/true/i).test($(this).attr("toggle-state"));
 		state = !state;
@@ -951,13 +951,13 @@ function RamaddaHoursDisplay(displayManager, id, properties) {
         handleEventRecordSelection: function(source, args) {
 	    if(!args.record) return;
 	    let select = ".display-hours-box[" + RECORD_ID +"='" + args.record.getId()+"']";
-	    let box = this.jq(ID_DISPLAY_CONTENTS).find(select);
+	    let box = this.find(select);
 	    if(box.length) {
 		this.boxes.css("background",BOX_COLOR);
 		this.multis.css("background","#efefef");		
 		let multiId = 	box.attr(MULTI_ID);
 		if(multiId) {
-		    let multi = this.jq(ID_DISPLAY_CONTENTS).find("#" + multiId);
+		    let multi = this.find("#" + multiId);
 		    if(multi.length>0) {
 			box = multi;
 			box.css("background",HIGHLIGHT_COLOR);
@@ -966,7 +966,6 @@ function RamaddaHoursDisplay(displayManager, id, properties) {
 		
 		box.css("background",HIGHLIGHT_COLOR);
 		let contents = this.jq(ID_DISPLAY_CONTENTS);
-
 		HU.scrollVisible(contents, box);
 	    }
 	},
@@ -2217,7 +2216,7 @@ function RamaddaRecordsDisplay(displayManager, id, properties, type) {
                 height = height + "px";
             }
             this.setContents(HU.div([STYLE, HU.css('max-height', height,'overflow-y','auto')], html));
-	    this.jq(ID_DISPLAY_CONTENTS).find(".display-records-record").click(function() {
+	    this.find(".display-records-record").click(function() {
 		let record = _this.records[$(this).attr(RECORD_INDEX)];
 		if(record) {
 		    _this.propagateEventRecordSelection({highlight:true,record: record});
@@ -2594,7 +2593,7 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
             this.initTooltip();
 
 	    if(doValueSelection) {
-		let values = this.jq(ID_DISPLAY_CONTENTS).find(".display-stats-value");
+		let values = this.find(".display-stats-value");
 		values.each(function() {
 		    let type  = $(this).attr("data-type");
 		    let value  = $(this).attr("data-value");
@@ -2604,7 +2603,7 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
 
 		    $(this).append(links);
 		});
-		values = this.jq(ID_DISPLAY_CONTENTS).find(".display-stats-value-link");
+		values = this.find(".display-stats-value-link");
 		values.each(function() {
 		    
 		});
@@ -2870,7 +2869,7 @@ function RamaddaBoxtableDisplay(displayManager, id, properties) {
 	    colorBy.displayColorTable(500);
 	    if(!this.getProperty("tooltip"))
 		this.setProperty("tooltip","${default}");
-	    this.makeTooltips(this.jq(ID_DISPLAY_CONTENTS).find(".display-colorboxes-box"),records);
+	    this.makeTooltips(this.find(".display-colorboxes-box"),records);
 	    this.addFieldClickHandler(null, records);
 	}
     })
@@ -3361,7 +3360,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 	    });
 
 	    let pieWidth=this.getProperty("pieWidth", 30);
-	    this.jq(ID_DISPLAY_CONTENTS).find(".display-datatable-counts").each(function() {
+	    this.find(".display-datatable-counts").each(function() {
 		let key = $(this).attr("data-key");	
 		let cell = cells[key];
 		countFields.forEach(f=>{
@@ -3384,7 +3383,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 	    });
 	    
 
-	    this.jq(ID_DISPLAY_CONTENTS).find(".display-datatable-checked").tooltip({
+	    this.find(".display-datatable-checked").tooltip({
 		content: function() {
 		    let key = $(this).attr("data-key");	
 		    let cell = cells[key];
@@ -3726,7 +3725,7 @@ function RamaddaCanvasDisplay(displayManager, id, properties) {
 		    glyph.draw(opts, canvas, ctx, originX,originY,{record:record});
 		});
 	    });
-	    let blocks = this.jq(ID_DISPLAY_CONTENTS).find(".display-canvas-block");
+	    let blocks = this.find(".display-canvas-block");
 	    this.makeTooltips(blocks,records,null,"${default}");
 	}
     });
@@ -3859,7 +3858,7 @@ function RamaddaFieldtableDisplay(displayManager, id, properties) {
 	    }
 
             HU.formatTable("#" + this.domId(ID_TABLE), opts);
-	    let rows = this.jq(ID_DISPLAY_CONTENTS).find(".display-fieldtable-row");
+	    let rows = this.find(".display-fieldtable-row");
 	    this.addFieldClickHandler(null, records,true);
 	    let markerFill = this.getProperty("markerFill","#64CDCC");
 	    let markerStroke = this.getProperty("markerStroke","#000");
@@ -3970,7 +3969,7 @@ function RamaddaDotstackDisplay(displayManager, id, properties) {
 		html += HU.close(DIV);
 	    });
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
-	    let dots = this.jq(ID_DISPLAY_CONTENTS).find(".display-dotstack-dot");
+	    let dots = this.find(".display-dotstack-dot");
 	    this.addFieldClickHandler(dots,records,false);
 	    this.makeTooltips(dots,records,null,"${default}");
 	    if(this.getProperty("tableHeight")) {
@@ -4085,7 +4084,7 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 	    html+=HU.close(TABLE);
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
 	    let t3 = new Date();
-	    let dots = this.jq(ID_DISPLAY_CONTENTS).find(".display-dotbar-dot");
+	    let dots = this.find(".display-dotbar-dot");
 	    let t4 = new Date();
 	    let _this = this;
 	    dots.mouseleave(function() {
@@ -4094,7 +4093,7 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 	    dots.mouseover(function() {
 		let idx = $(this).attr(RECORD_INDEX);
 		dots.removeClass("display-dotbar-dot-highlight");
-		_this.jq(ID_DISPLAY_CONTENTS).find("[" + RECORD_INDEX+"=\"" + idx+"\"]").addClass( "display-dotbar-dot-highlight");
+		_this.find("[" + RECORD_INDEX+"=\"" + idx+"\"]").addClass( "display-dotbar-dot-highlight");
 	    });
 	    dots.click(function() {
 		let idx = $(this).attr(RECORD_INDEX);
@@ -4109,7 +4108,7 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 		_this.selectedIndex =  idx;
 		if(keyField)
 		    _this.selectedKey = record.getValue(keyField.getIndex());
-		_this.jq(ID_DISPLAY_CONTENTS).find("[" + RECORD_INDEX+"=\"" + idx+"\"]").addClass( "display-dotbar-dot-select");
+		_this.find("[" + RECORD_INDEX+"=\"" + idx+"\"]").addClass( "display-dotbar-dot-select");
 		_this.hadClick = true;
 		_this.propagateEventRecordSelection({record: record});
 		_this.updateUI();
@@ -4287,7 +4286,7 @@ function RamaddaDategridDisplay(displayManager, id, properties) {
 	    });
 	    html += "</table></div>";
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
-	    this.boxes = this.jq(ID_DISPLAY_CONTENTS).find(".display-dategrid-box");
+	    this.boxes = this.find(".display-dategrid-box");
 	    this.addFieldClickHandler(this.boxes, records,false);
 	    this.makeTooltips(this.boxes,records,null);
 	    this.recordMap = this.makeIdToRecords(records);
