@@ -16,36 +16,20 @@
 
 package org.ramadda.data.docs;
 
-
 import org.ramadda.repository.*;
-import org.ramadda.repository.auth.*;
 import org.ramadda.repository.output.*;
-import org.ramadda.service.*;
-import org.ramadda.util.FileInfo;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Json;
 import org.ramadda.util.Utils;
-import org.ramadda.util.XlsUtil;
 import org.ramadda.util.text.CsvUtil;
-import org.ramadda.util.text.Filter;
-import org.ramadda.util.text.Processor;
-import org.ramadda.util.text.SearchField;
-import org.ramadda.util.text.TextReader;
 
 import org.w3c.dom.*;
-
 
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
-import ucar.unidata.util.StringUtil;
-
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Image;
-import java.awt.image.*;
 
 import java.io.*;
 
@@ -459,7 +443,6 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 File runDir = null;
 		if(runDirPrefix!=null)   runDirPrefix = IO.cleanFileName(runDirPrefix).trim();
 		if(runDirPrefix.length()==0) runDirPrefix = "run";
-		System.err.println("r:" + runDirPrefix);
                 for (int j = 0; true; j++) {
                     runDir = new File(IOUtil.joinDir(destDir, ((j == 0)
                             ? runDirPrefix
@@ -702,7 +685,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
     public HashSet<Integer> getSheetsToShow(String s) {
         HashSet<Integer> sheetsToShow = null;
         if (Utils.stringDefined(s)) {
-            List<String> sheetsStr = StringUtil.split(s, ",", true, true);
+            List<String> sheetsStr = Utils.split(s, ",", true, true);
             if (sheetsStr.size() > 0) {
                 sheetsToShow = new HashSet<Integer>();
                 for (String tok : sheetsStr) {

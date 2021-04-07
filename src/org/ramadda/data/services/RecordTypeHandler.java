@@ -18,7 +18,6 @@ package org.ramadda.data.services;
 
 
 import org.ramadda.data.point.PointFile;
-import org.ramadda.data.point.PointMetadataHarvester;
 import org.ramadda.data.record.RecordFile;
 import org.ramadda.data.record.RecordFileContext;
 import org.ramadda.data.record.RecordFileFactory;
@@ -27,39 +26,26 @@ import org.ramadda.data.record.RecordVisitorGroup;
 import org.ramadda.data.record.VisitInfo;
 
 import org.ramadda.data.record.filter.*;
-import org.ramadda.data.services.PointEntry;
-
 import org.ramadda.data.services.RecordEntry;
 
 import org.ramadda.repository.*;
-import org.ramadda.repository.map.*;
-import org.ramadda.repository.metadata.*;
-import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.PropertyProvider;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
-import org.ramadda.util.grid.LatLonGrid;
-
-
-
-import org.w3c.dom.*;
 
 import ucar.unidata.util.Misc;
-import ucar.unidata.util.StringUtil;
 
-
+import org.w3c.dom.*;
 
 import java.io.File;
 
 import java.lang.reflect.*;
 
-
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -73,6 +59,8 @@ import java.util.List;
 public abstract class RecordTypeHandler extends BlobTypeHandler implements RecordConstants,
         RecordFileContext {
 
+    public static boolean debug = false;
+	
     /** _more_          */
     private static int IDX = 0;
 
@@ -550,8 +538,10 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
                                         Hashtable requestProperties)
             throws Exception {
         String path = getPathForEntry(null, entry);
-
-        return getPathForRecordEntry(entry, path, requestProperties);
+	if(debug)
+	    System.err.println("RecordTypeHandler.getPathForRecordEntry entry:" + entry +" path:" + path +" resource:" + entry.getResource());
+        path = getPathForRecordEntry(entry, path, requestProperties);
+	return path;
     }
 
 
@@ -571,7 +561,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
             String m = (String) props.get("requestFields");
             if (m != null) {
                 macros = new ArrayList<Macro>();
-                for (String macro : StringUtil.split(m, ",", true, true)) {
+                for (String macro : Utils.split(m, ",", true, true)) {
                     macros.add(new Macro(macro, props));
                 }
             }
@@ -594,6 +584,8 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     public String getPathForRecordEntry(Entry entry, String path,
                                         Hashtable requestProperties)
             throws Exception {
+	if(debug)
+	    System.err.println("RecordTypeHandler.getPathForRecordEntry entry:" + entry +" path:" + path);
         List<Macro> macros = getMacros(entry);
         if (macros != null) {
             for (Macro macro : macros) {

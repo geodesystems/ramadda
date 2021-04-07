@@ -41,12 +41,13 @@ import java.util.List;
 public class CsvFile extends TextFile {
 
 
-    /** _more_          */
-    public static boolean debug = false;
-
     /** column delimiter */
     private String delimiter = null;
 
+
+    private boolean hasCsvCommands = false;
+
+    private boolean hasAddHeader = false;
 
     /**
      * ctor
@@ -219,9 +220,24 @@ public class CsvFile extends TextFile {
         List<String> commands     = getCsvCommands();
         boolean      shouldCreate = shouldCreateCsvFile();
         if ( !shouldCreate && (commands.size() == 0)) {
+
+	    if(!getProperty("isRAMADDAPointData","false").equals("true") &&
+	       !isHeaderStandard()) {
+		setFirstLineFields(true);
+		if(debug)
+		    System.err.println("CsvFile.doMakeInputStream: no commands setFirstLineFields: true" );
+	    } else  {
+		if(debug)
+		    System.err.println("CsvFile.doMakeInputStream: no commands setFirstLineFields: false" );
+	    }
             return super.doMakeInputStream(buffered);
         }
 
+
+	hasAddHeader = commands.contains("-addheader");
+	if(debug)
+	    System.err.println("CsvFile.doMakeInputStream commands: hasAddHeader:" + hasAddHeader + " commands:" + commands);
+	hasCsvCommands = true;
         File file = checkCachedFile();
         if ((file == null) || !file.exists()) {
             try {
@@ -356,9 +372,22 @@ public class CsvFile extends TextFile {
         delimiter = null;
     }
 
-
-
-
+    public boolean getFirstLineFields () {
+        String fieldString = getProperty(PROP_FIELDS, null);
+	if(fieldString!=null) {
+	    if(debug)
+		System.err.println("CsvFile.getFirstLineFields: has fields property");
+	    return false;
+	}
+	if(hasAddHeader) {
+	    if(debug)
+		System.err.println("CsvFile.getFirstLineFields: has fields property");
+	    return false;
+	}
+	if(debug)
+	    System.err.println("CsvFile.getFirstLineFields: has csv commands:" + hasCsvCommands +" super:" + super.getFirstLineFields());
+	return hasCsvCommands|| super.getFirstLineFields();
+    }
 
     /**
      * _more_
@@ -369,7 +398,10 @@ public class CsvFile extends TextFile {
      */
     @Override
     public List<RecordField> doMakeFields(boolean failureOk) {
+
         String fieldString = getProperty(PROP_FIELDS, null);
+	if(debug)
+	    System.err.println("CsvFile.doMakeFields fieldString:" + fieldString);
         //      System.err.println("CsvFile.doMakeFields props:" + getProperties());
         if (fieldString == null) {
             doQuickVisit();

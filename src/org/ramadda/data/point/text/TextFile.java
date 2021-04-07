@@ -84,6 +84,8 @@ public abstract class TextFile extends PointFile {
     /** _more_ */
     private boolean headerStandard = false;
 
+    private boolean firstLineFields = false;
+
     /** _more_ */
     String commentLineStart = null;
 
@@ -197,6 +199,29 @@ public abstract class TextFile extends PointFile {
 
 
     /**
+       Set the FirstLineFields property.
+
+       @param value The new value for FirstLineFields
+    **/
+    public void setFirstLineFields (boolean value) {
+	firstLineFields = value;
+    }
+
+    /**
+       Get the FirstLineFields property.
+
+       @return The FirstLineFields
+    **/
+    public boolean getFirstLineFields () {
+	return  getProperty("firstLineDefinesFields",
+			    firstLineFields);
+
+    }
+
+
+
+
+    /**
      * _more_
      *
      * @param visitInfo _more_
@@ -223,7 +248,7 @@ public abstract class TextFile extends PointFile {
      * @return _more_
      */
     public boolean isHeaderStandard() {
-        return headerStandard;
+	return  getProperty(PROP_HEADER_STANDARD, headerStandard);
     }
 
     /**
@@ -409,19 +434,20 @@ public abstract class TextFile extends PointFile {
 
         boolean haveReadHeader  = headerLines.size() > 0;
         String  headerDelimiter = getHeaderDelimiter();
-        //TODO
-        boolean isStandard = getProperty(PROP_HEADER_STANDARD, false);
-        //        boolean isStandard      = getProperty(PROP_HEADER_STANDARD, true);
-        boolean firstLineFields = getProperty("firstLineDefinesFields",
-                                      false);
+        boolean firstLineFields = getFirstLineFields();
         String sfieldRow         = (String) getProperty("fieldRow", null);
         String lastHeaderPattern = getProperty("lastHeaderPattern", null);
         if (firstLineFields || (sfieldRow != null)) {
             int    skipCnt  = getSkipLines(visitInfo);
             int    fieldRow =sfieldRow!=null? Integer.parseInt(sfieldRow):0;
+	    if(debug)
+		System.err.println("TextFile.prepareToVisit: firstLineFields=true skipLines=" + skipCnt);
             String line     = null;
             while (true) {
                 line = visitInfo.getRecordIO().readLine();
+                if ( !haveReadHeader) {
+                    headerLines.add(line);
+                }				   
                 skipCnt--;
                 fieldRow--;
                 if (fieldRow <= 0) {
@@ -430,7 +456,11 @@ public abstract class TextFile extends PointFile {
             }
             //Read the rest of the header lines
             while (skipCnt > 0) {
-                visitInfo.getRecordIO().readLine();
+                line = visitInfo.getRecordIO().readLine();
+		if(line==null) break;
+                if ( !haveReadHeader) {
+                    headerLines.add(line);
+                }				   
                 skipCnt--;
             }
 
@@ -501,6 +531,8 @@ public abstract class TextFile extends PointFile {
                 putProperty(PROP_FIELDS, f);
             }
         } else if (headerDelimiter != null) {
+	    if(debug)
+		System.err.println("TextFile.prepareToVisit: headerDelimiter");
             boolean starts = headerDelimiter.startsWith("starts:");
             if (starts) {
                 headerDelimiter =
@@ -530,7 +562,9 @@ public abstract class TextFile extends PointFile {
                         "Reading way too many header lines");
                 }
             }
-        } else if (isStandard || isHeaderStandard()) {
+        } else if (isHeaderStandard()) {
+	    if(debug)
+		System.err.println("TextFile.prepareToVisit: isStandard");
             while (true) {
                 String line = visitInfo.getRecordIO().readLine();
                 if (line == null) {
@@ -557,6 +591,8 @@ public abstract class TextFile extends PointFile {
                 }
             }
         } else if (lastHeaderPattern != null) {
+	    if(debug)
+		System.err.println("TextFile.prepareToVisit: lastHeaderPattern:" + lastHeaderPattern);
             boolean starts = lastHeaderPattern.startsWith("starts:");
             if (starts) {
                 lastHeaderPattern =
@@ -588,13 +624,10 @@ public abstract class TextFile extends PointFile {
             int skipCnt = getSkipLines(visitInfo);
             commentLineStart = getProperty("commentLineStart", null);
             boolean seenLastHeaderPattern = false;
-            //            System.err.println("Skip:" + skipCnt +" " + commentLineStart);
             for (int i = 0; i < skipCnt; ) {
                 String line = visitInfo.getRecordIO().readLine();
-                //                System.err.println("Line:" + line);
                 if ((commentLineStart != null)
                         && line.startsWith(commentLineStart)) {
-                    //                    System.err.println("is comment line:" + line);
                     continue;
                 }
                 if ( !haveReadHeader) {
@@ -606,6 +639,8 @@ public abstract class TextFile extends PointFile {
                 throw new IllegalArgumentException(
                     "Bad number of header lines:" + headerLines.size());
             }
+	    if(debug)
+		System.err.println("TextFile.prepareToVisit: default header lines=" + headerLines +" skipCnt=" + skipCnt);
         }
 
 

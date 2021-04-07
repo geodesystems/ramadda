@@ -48,6 +48,8 @@ import java.util.zip.*;
  */
 public abstract class RecordFile {
 
+    /** debug */
+    public static boolean debug = false;
 
     /** _more_ */
     public static final String PROP_DATEFORMAT = "dateformat";
@@ -73,8 +75,6 @@ public abstract class RecordFile {
     private static final GeoRecord dummy3 = null;
 
 
-    /** debug */
-    public static boolean debug = false;
 
     /** The file */
     private String filename;
@@ -164,8 +164,11 @@ public abstract class RecordFile {
     public RecordFile(String filename, Hashtable properties) {
         this.filename   = filename;
         this.properties = properties;
+	if(debug) {
+	    System.err.println("RecordFile.ctor:" + filename);
+	    //	    System.err.println(Utils.getStack(10));
+	}
     }
-
 
     /**
      * ctor
@@ -175,8 +178,9 @@ public abstract class RecordFile {
      *
      */
     public RecordFile(String filename) {
-        this.filename = filename;
+        this(filename, null);
     }
+
 
 
     /**
@@ -188,8 +192,7 @@ public abstract class RecordFile {
      */
     public RecordFile(String filename, RecordFileContext context,
                       Hashtable properties) {
-        this.filename   = filename;
-        this.properties = properties;
+	this(filename, properties);
         this.context    = context;
     }
 
@@ -647,8 +650,8 @@ public abstract class RecordFile {
      * @throws Exception _more_
      */
     public InputStream doMakeInputStream(boolean buffered) throws Exception {
-        //      System.err.println("****  RecordFile reading:" + filename);
         String path = getNormalizedFilename();
+	//	System.err.println("RecordFile.doMakeInputStream:" + path);
 	if(debug)
 	    System.err.println("RecordFile.doMakeInputStream path:" + path);
 
@@ -1347,11 +1350,17 @@ public abstract class RecordFile {
      */
     public String getNormalizedFilename() {
 	String path =  Utils.normalizeTemplateUrl(filename);
-        //A hack for snotel data
-        if (path.startsWith("http://www.wcc.nrcs.usda.gov")) {
-            path = path.replace("http://www.wcc.nrcs.usda.gov",
-                                "https://wcc.sc.egov.usda.gov");
-        }
+	String pathReplace = (String)getProperty("pathReplace");
+	if(pathReplace!=null) {
+	    List<String> toks = StringUtil.splitUpTo(pathReplace,":",2);
+	    if(toks.size()==2) {
+		String from = toks.get(0).replaceAll("_semicolon_",":");
+		String to = toks.get(1).replaceAll("_semicolon_",":");		
+		path = path.replaceAll(from,to);
+		if(debug)
+		    System.err.println("RecordFile.getNormalizedFilename changed path:" + path);
+	    }
+	}
 	return path;
     }
 

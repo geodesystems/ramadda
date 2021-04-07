@@ -20,21 +20,14 @@ package org.ramadda.data.docs;
 import org.ramadda.data.record.RecordFile;
 import org.ramadda.data.services.PointTypeHandler;
 
-
 import org.ramadda.repository.*;
-import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
-
-
-
 
 
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 
-
 import org.w3c.dom.*;
-
 
 import ucar.unidata.util.StringUtil;
 
@@ -112,7 +105,7 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
             }
             if (arg.startsWith("entry:")) {
                 Entry fileEntry = getEntryManager().getEntry(request,
-                                      arg.substring("entry:".length()));
+							     arg.substring("entry:".length()));
                 if (fileEntry == null) {
                     throw new IllegalArgumentException("Could not find "
                             + arg);
@@ -128,10 +121,10 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
             args.add(arg);
         }
         commands = Utils.join(args, " ", false);
-        String path = getPathForRecordEntry(entry, commands,
-                                            requestProperties);
+	if(debug)
+	    System.err.println("ConvertibleTypeHandler.getPathForRecordEntry entry:" + entry +" commands:" + commands);
+        String path = getPathForRecordEntry(entry, requestProperties);
         ConvertibleFile file = new ConvertibleFile(this, entry, args, path);
-
         return file;
     }
 
