@@ -348,6 +348,10 @@ public class TextRecord extends DataRecord {
     public ReadStatus read(RecordIO recordIO) throws Exception {
 
         String line = null;
+	if(tokens!=null && tokens.length==0) {
+	    System.err.println("TextRecord.read zero length tokens array");
+	    return ReadStatus.EOF;
+	}
 
         try {
             int fieldCnt;
