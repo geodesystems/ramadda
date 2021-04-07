@@ -2964,6 +2964,7 @@ const ID_GROUPBY_FIELDS= "groupdbyfields";
 const ID_TOOLBAR = "toolbar";
 const ID_TOOLBAR_INNER = "toolbarinner";
 const ID_LIST = "list";
+const ID_DISPLAY_MESSAGE = "displaymessage";
 const ID_DIALOG = "dialog";
 const ID_DIALOG_TABS = "dialog_tabs";
 const ID_FOOTER = "footer";
@@ -3402,6 +3403,9 @@ function DisplayThing(argId, argProperties) {
 	gid: function(suffix) {
             return this.getId() + "_" + suffix;
         },
+	find: function(selector) {
+	    return this.jq(ID_DISPLAY_CONTENTS).find(selector);
+	},
         jq: function(componentId) {
             return $("#" + this.getDomId(componentId));
         },
@@ -4531,6 +4535,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.setDisplayParent(cm.getLayoutManager());
         },
         setContents: function(contents) {
+//            this.clearDisplayMessage();
             let style = "";
             contents = HU.div([ATTR_CLASS, "display-contents-inner display-" + this.getType() + "-inner", STYLE, style], contents);
             this.writeHtml(ID_DISPLAY_CONTENTS, contents);
@@ -4844,6 +4849,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getWaitImage: function() {
             return HU.image(ramaddaBaseUrl + "/icons/progress.gif");
         },
+	useDisplayMessage:function() {
+	    return false;
+	},
+	setDisplayMessage:function(msg) {
+	    this.jq(ID_DISPLAY_MESSAGE).html(msg);
+	    this.jq(ID_DISPLAY_MESSAGE).show();
+	},
+	clearDisplayMessage:function() {
+	    this.jq(ID_DISPLAY_MESSAGE).hide();
+	},	
         getLoadingMessage: function(msg) {
 	    if(this.getAcceptEventDataSelection()) {
 		return "";
@@ -4856,6 +4871,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if (!msg) msg = this.getProperty("loadingMessage", "icon_progress Loading data...");
 	    if(msg=="") return "";
 	    msg = msg.replace("icon_progress",HU.image(icon_progress));
+	    if(this.useDisplayMessage()) {
+		return SPACE+msg;
+	    } 
             return HU.div([STYLE, HU.css("text-align","center")], this.getMessage(SPACE + msg));
         },
 	reloadData: function() {
@@ -7249,6 +7267,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		
             }
             topLeft = HU.div([ID, this.getDomId(ID_TOP_LEFT),CLASS,"display-header-block"], topLeft);
+
 	    let h2Separate = this.getAnimationEnabled();
 	    let h1 = 	HU.div([ID,this.getDomId(ID_HEADER1),CLASS,"display-header-block display-header1"], "");
 	    let h2 = HU.div([ID,this.getDomId(ID_HEADER2),CLASS,"display-header-block display-header2"], "");
@@ -7282,8 +7301,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    bottom+=legend;
 	    let left = HU.div([ATTR_ID, this.getDomId(ID_LEFT)],leftInner);
 	    let right = HU.div([ATTR_ID, this.getDomId(ID_RIGHT)],rightInner);
-
-
 	    let sideWidth = "1%";
             let contents = this.getContentsDiv();
 	    //display table
@@ -7296,10 +7313,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		table+= HU.tr([],HU.td(['width',sideWidth]) + HU.td(['width','99%'],bottom) +HU.td(['width',sideWidth]));
 	    }
 	    table+=HU.close('table');
-
+	    let message= HU.div([ID,this.domId(ID_DISPLAY_MESSAGE),CLASS,"display-output-message", STYLE,HU.css("display","none","position","absolute","top","10px","left","50%",
+									"-webkit-transform","translateX(-50%)","transform","translateX(-50%)")],"message");
             let html =  HU.div([ATTR_CLASS, 'ramadda-popup', STYLE,"display:none;", ATTR_ID, this.getDomId(ID_MENU_OUTER)], '');
             let style = this.getProperty('displayStyle', '');
-            html += HU.div([CLASS, 'display-contents', STYLE, HU.css('position','relative') + style],table);
+            html += HU.div([CLASS, 'display-contents', STYLE, HU.css('position','relative') + style],table + message);
             return html;
         },
         getWidthForStyle: function(dflt) {
@@ -8676,8 +8694,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	startProgress: function() {
 	    if(this.jq(ID_DISPLAY_PROGRESS).length>0) 
 		this.jq(ID_DISPLAY_PROGRESS).html(HU.image(icon_progress));
-	    else
-		this.setContents(this.getLoadingMessage());
+	    else {
+		if(this.useDisplayMessage()) {
+                    this.setDisplayMessage(this.getLoadingMessage());
+		} else {
+		    this.setContents(this.getLoadingMessage());
+		}
+	    }
 	},
 	handleNoData: function(pointData,reload) {
 	    let debug = displayDebug.handleNoData;
@@ -9951,7 +9974,11 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
         initDisplay: function() {
             SUPER.initDisplay.call(this);
             if (this.needsData()) {
-                this.setContents(this.getLoadingMessage());
+		if(this.useDisplayMessage()) {
+                    this.setDisplayMessage(this.getLoadingMessage());
+		} else {
+                    this.setContents(this.getLoadingMessage());
+		}
             }
             this.callUpdateUI();
         },
@@ -14659,6 +14686,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 
     defineDisplay(this, SUPER, myProps, {
+	useDisplayMessage:function() {
+	    return true;
+	},
 	//Override so we don't include the expandable class
 	getContentsClass: function() {
 	    return "display-contents-inner display-" + this.type;
@@ -14940,7 +14970,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    console.log("\tgoogle charts have not loaded callback pending:" +this.googleChartCallbackPending);
                 if (!this.googleChartCallbackPending) {
                     this.googleChartCallbackPending = true;
-                    this.setContents(this.getLoadingMessage());
+//                    this.setContents(this.getLoadingMessage());
+		    this.setDisplayMessage(this.getLoadingMessage());
                     setTimeout(()=> {
                         this.googleChartCallbackPending = false;
                         this.displayData();
@@ -14953,14 +14984,15 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
             if (!this.hasData()) {
                 this.clearChart();
-                this.setContents(this.getLoadingMessage());
+//                this.setContents(this.getLoadingMessage());
+		this.setDisplayMessage(this.getLoadingMessage());
                 return;
             }
 
 
 	    if(!this.getAcceptEventDataSelection()) {
-		this.setContents(HU.div([ATTR_CLASS, "display-output-message"],
-					"Building display..."));
+//		this.setContents(HU.div([ATTR_CLASS, "display-output-message"],"Building display..."));
+		this.setDisplayMessage("Building display...");
 	    }
 
 	    if(debug)
@@ -15007,7 +15039,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             if (selectedFields.length == 0) {
 		if(!this.getAcceptEventDataSelection()) {
-                    this.setContents("No fields selected");
+//                    this.setContents("No fields selected");
+		    this.setDisplayMessage("No fields selected");
 		}
                 return;
             }
@@ -15076,8 +15109,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
             if (dataList.length == 0) {
-                this.setContents(HU.div([ATTR_CLASS, "display-output-message"],
-					this.getNoDataMessage()));
+                this.setDisplayMessage(this.getNoDataMessage());
                 return;
             }
 
@@ -15154,6 +15186,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 dataList = newList;
             }
             try {
+		this.clearDisplayMessage();
                 this.makeGoogleChart(dataList, props, selectedFields);
             } catch (e) {
 		console.log(this.type+" Error making chart:\n" + e +"\n" + e.stack);
@@ -15358,7 +15391,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	},
         makeDataTable: function(dataList, props, selectedFields, chartOptions) {
 	    let dateType = this.getProperty("dateType","date");
-	    let debug =   true||displayDebug.makeDataTable;
+	    let debug =   displayDebug.makeDataTable;
 	    let debugRows = 4;
 	    if(debug) console.log(this.type+" makeDataTable #records" + dataList.length);
 	    if(debug) console.log("\tfields:" + selectedFields);
@@ -16106,7 +16139,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	},
 	doMakeGoogleChartInner: function(dataList, props, selectedFields) {
             if (typeof google == 'undefined') {
-                this.setContents("No google");
+                this.setDisplayMessage("No google");
                 return;
             }
             this.chartOptions = this.makeChartOptions(dataList, props, selectedFields);
@@ -16195,7 +16228,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             let chart = this.doMakeGoogleChart(dataList, props, chartDiv, selectedFields, this.chartOptions);
             if (chart == null) return null;
             if (!dataTable) {
-                this.setContents(this.getMessage(this.getNoDataMessage()));
+                this.setDisplayMessage(this.getNoDataMessage());
                 return null;
             }
 	    if(this.getProperty("vAxisSharedRange")) {
@@ -36955,7 +36988,7 @@ function RamaddaTreeDisplay(displayManager, id, properties) {
 	    roots.map(func);
 	    this.myRecords = [];
             this.displayHtml(html);
-	    this.jq(ID_DISPLAY_CONTENTS).find(".display-tree-toggle").click(function() {
+	    this.find(".display-tree-toggle").click(function() {
 		let state = (/true/i).test($(this).attr("toggle-state"));
 		state = !state;
 		let cnt = $(this).attr("block-count");
@@ -36974,7 +37007,7 @@ function RamaddaTreeDisplay(displayManager, id, properties) {
 		    _this.propagateEventRecordSelection({record: record});
 		}
 	    });
-	    this.jq(ID_DISPLAY_CONTENTS).find(".display-tree-toggle-details").click(function() {
+	    this.find(".display-tree-toggle-details").click(function() {
 		let state = (/true/i).test($(this).attr("toggle-state"));
 		state = !state;
 		let cnt = $(this).attr("block-count");
@@ -37382,7 +37415,7 @@ function RamaddaHoursDisplay(displayManager, id, properties) {
 	    html+=extra;
 	    html+="&nbsp;</div>";
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
-	    this.multis = this.jq(ID_DISPLAY_CONTENTS).find(".display-hours-box-multi");
+	    this.multis = this.find(".display-hours-box-multi");
 	    this.multis.click(function() {
 		let id = $(this).attr("dttm")+"_" + $(this).attr("hour") +"_"+$(this).attr("minute");
 		let div = _this.jq(id);
@@ -37402,7 +37435,7 @@ function RamaddaHoursDisplay(displayManager, id, properties) {
                     collision: "none none"
 		});
 	    });
-	    this.boxes = this.jq(ID_DISPLAY_CONTENTS).find(".display-hours-box");
+	    this.boxes = this.find(".display-hours-box");
 	    this.boxes.click(function() {
 		let state = (/true/i).test($(this).attr("toggle-state"));
 		state = !state;
@@ -37420,13 +37453,13 @@ function RamaddaHoursDisplay(displayManager, id, properties) {
         handleEventRecordSelection: function(source, args) {
 	    if(!args.record) return;
 	    let select = ".display-hours-box[" + RECORD_ID +"='" + args.record.getId()+"']";
-	    let box = this.jq(ID_DISPLAY_CONTENTS).find(select);
+	    let box = this.find(select);
 	    if(box.length) {
 		this.boxes.css("background",BOX_COLOR);
 		this.multis.css("background","#efefef");		
 		let multiId = 	box.attr(MULTI_ID);
 		if(multiId) {
-		    let multi = this.jq(ID_DISPLAY_CONTENTS).find("#" + multiId);
+		    let multi = this.find("#" + multiId);
 		    if(multi.length>0) {
 			box = multi;
 			box.css("background",HIGHLIGHT_COLOR);
@@ -37435,7 +37468,6 @@ function RamaddaHoursDisplay(displayManager, id, properties) {
 		
 		box.css("background",HIGHLIGHT_COLOR);
 		let contents = this.jq(ID_DISPLAY_CONTENTS);
-
 		HU.scrollVisible(contents, box);
 	    }
 	},
@@ -38686,7 +38718,7 @@ function RamaddaRecordsDisplay(displayManager, id, properties, type) {
                 height = height + "px";
             }
             this.setContents(HU.div([STYLE, HU.css('max-height', height,'overflow-y','auto')], html));
-	    this.jq(ID_DISPLAY_CONTENTS).find(".display-records-record").click(function() {
+	    this.find(".display-records-record").click(function() {
 		let record = _this.records[$(this).attr(RECORD_INDEX)];
 		if(record) {
 		    _this.propagateEventRecordSelection({highlight:true,record: record});
@@ -39063,7 +39095,7 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
             this.initTooltip();
 
 	    if(doValueSelection) {
-		let values = this.jq(ID_DISPLAY_CONTENTS).find(".display-stats-value");
+		let values = this.find(".display-stats-value");
 		values.each(function() {
 		    let type  = $(this).attr("data-type");
 		    let value  = $(this).attr("data-value");
@@ -39073,7 +39105,7 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
 
 		    $(this).append(links);
 		});
-		values = this.jq(ID_DISPLAY_CONTENTS).find(".display-stats-value-link");
+		values = this.find(".display-stats-value-link");
 		values.each(function() {
 		    
 		});
@@ -39339,7 +39371,7 @@ function RamaddaBoxtableDisplay(displayManager, id, properties) {
 	    colorBy.displayColorTable(500);
 	    if(!this.getProperty("tooltip"))
 		this.setProperty("tooltip","${default}");
-	    this.makeTooltips(this.jq(ID_DISPLAY_CONTENTS).find(".display-colorboxes-box"),records);
+	    this.makeTooltips(this.find(".display-colorboxes-box"),records);
 	    this.addFieldClickHandler(null, records);
 	}
     })
@@ -39830,7 +39862,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 	    });
 
 	    let pieWidth=this.getProperty("pieWidth", 30);
-	    this.jq(ID_DISPLAY_CONTENTS).find(".display-datatable-counts").each(function() {
+	    this.find(".display-datatable-counts").each(function() {
 		let key = $(this).attr("data-key");	
 		let cell = cells[key];
 		countFields.forEach(f=>{
@@ -39853,7 +39885,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 	    });
 	    
 
-	    this.jq(ID_DISPLAY_CONTENTS).find(".display-datatable-checked").tooltip({
+	    this.find(".display-datatable-checked").tooltip({
 		content: function() {
 		    let key = $(this).attr("data-key");	
 		    let cell = cells[key];
@@ -40195,7 +40227,7 @@ function RamaddaCanvasDisplay(displayManager, id, properties) {
 		    glyph.draw(opts, canvas, ctx, originX,originY,{record:record});
 		});
 	    });
-	    let blocks = this.jq(ID_DISPLAY_CONTENTS).find(".display-canvas-block");
+	    let blocks = this.find(".display-canvas-block");
 	    this.makeTooltips(blocks,records,null,"${default}");
 	}
     });
@@ -40328,7 +40360,7 @@ function RamaddaFieldtableDisplay(displayManager, id, properties) {
 	    }
 
             HU.formatTable("#" + this.domId(ID_TABLE), opts);
-	    let rows = this.jq(ID_DISPLAY_CONTENTS).find(".display-fieldtable-row");
+	    let rows = this.find(".display-fieldtable-row");
 	    this.addFieldClickHandler(null, records,true);
 	    let markerFill = this.getProperty("markerFill","#64CDCC");
 	    let markerStroke = this.getProperty("markerStroke","#000");
@@ -40439,7 +40471,7 @@ function RamaddaDotstackDisplay(displayManager, id, properties) {
 		html += HU.close(DIV);
 	    });
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
-	    let dots = this.jq(ID_DISPLAY_CONTENTS).find(".display-dotstack-dot");
+	    let dots = this.find(".display-dotstack-dot");
 	    this.addFieldClickHandler(dots,records,false);
 	    this.makeTooltips(dots,records,null,"${default}");
 	    if(this.getProperty("tableHeight")) {
@@ -40554,7 +40586,7 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 	    html+=HU.close(TABLE);
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
 	    let t3 = new Date();
-	    let dots = this.jq(ID_DISPLAY_CONTENTS).find(".display-dotbar-dot");
+	    let dots = this.find(".display-dotbar-dot");
 	    let t4 = new Date();
 	    let _this = this;
 	    dots.mouseleave(function() {
@@ -40563,7 +40595,7 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 	    dots.mouseover(function() {
 		let idx = $(this).attr(RECORD_INDEX);
 		dots.removeClass("display-dotbar-dot-highlight");
-		_this.jq(ID_DISPLAY_CONTENTS).find("[" + RECORD_INDEX+"=\"" + idx+"\"]").addClass( "display-dotbar-dot-highlight");
+		_this.find("[" + RECORD_INDEX+"=\"" + idx+"\"]").addClass( "display-dotbar-dot-highlight");
 	    });
 	    dots.click(function() {
 		let idx = $(this).attr(RECORD_INDEX);
@@ -40578,7 +40610,7 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 		_this.selectedIndex =  idx;
 		if(keyField)
 		    _this.selectedKey = record.getValue(keyField.getIndex());
-		_this.jq(ID_DISPLAY_CONTENTS).find("[" + RECORD_INDEX+"=\"" + idx+"\"]").addClass( "display-dotbar-dot-select");
+		_this.find("[" + RECORD_INDEX+"=\"" + idx+"\"]").addClass( "display-dotbar-dot-select");
 		_this.hadClick = true;
 		_this.propagateEventRecordSelection({record: record});
 		_this.updateUI();
@@ -40756,7 +40788,7 @@ function RamaddaDategridDisplay(displayManager, id, properties) {
 	    });
 	    html += "</table></div>";
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
-	    this.boxes = this.jq(ID_DISPLAY_CONTENTS).find(".display-dategrid-box");
+	    this.boxes = this.find(".display-dategrid-box");
 	    this.addFieldClickHandler(this.boxes, records,false);
 	    this.makeTooltips(this.boxes,records,null);
 	    this.recordMap = this.makeIdToRecords(records);
