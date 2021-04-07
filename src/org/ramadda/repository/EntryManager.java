@@ -8056,6 +8056,7 @@ public class EntryManager extends RepositoryManager {
 
         String orderBy = getQueryOrderAndLimit(request, true, group, select, null);
 
+
         TypeHandler typeHandler = getRepository().getTypeHandler(request);
         int         skipCnt     = request.get(ARG_SKIP, 0);
         Statement statement = typeHandler.select(request,
@@ -9781,6 +9782,7 @@ public class EntryManager extends RepositoryManager {
             } else if (by.equals(SORTBY_TYPE)) {
                 orderBy = SqlUtil.orderBy(Tables.ENTRIES.COL_TYPE,desc);
             } else if (by.equals(SORTBY_SIZE)) {
+		//TODO: add a NULLS LAST for derby/postgres and something else for mysql and others?
                 orderBy = SqlUtil.orderBy(Tables.ENTRIES.COL_FILESIZE,desc);
             } else if (by.equals(SORTBY_CREATEDATE)) {
                 orderBy = SqlUtil.orderBy(Tables.ENTRIES.COL_CREATEDATE,desc);
@@ -9788,7 +9790,7 @@ public class EntryManager extends RepositoryManager {
                 if ( !haveOrder) {
                     desc = false;
                 }
-                orderBy = SqlUtil.orderBy(Tables.ENTRIES.COL_NAME,desc);
+                orderBy = SqlUtil.orderBy("LOWER("+Tables.ENTRIES.COL_NAME+")",desc);
             }
         }
 	return orderBy + limitString;
