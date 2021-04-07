@@ -1542,7 +1542,7 @@ public class CsvUtil {
                 new Arg("file", "File to join with", "type", "file"),
                 new Arg("source_columns", "source key columns")),
         new Cmd("-dissect", "Make fields based on patterns",
-                new Arg("column", "", "type", "column"), new Arg("pattern","e.g., \"(field1:.*) (field2:.*) ...\"")),
+                new Arg("column", "", "type", "column"), new Arg("pattern","e.g., \"(field1:.*) (field2:.*) ...\"","type","pattern","size","80")),
         new Cmd("-keyvalue", "Make fields from key/value pairs, e.g. name1=value1 name2=value2 ...",
                 new Arg("column", "", "type", "column")),
 
