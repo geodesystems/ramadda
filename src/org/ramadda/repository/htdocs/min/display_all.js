@@ -8392,6 +8392,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.pageSkip = 0;
 	},
 	dataFilterChanged: function(args) {
+	    args = args||{};
+	    args.dataFilterChanged = true;
 	    this.callUpdateUI(args);
 	},
 	addFieldClickHandler: function(jq, records, addHighlight) {
@@ -14747,8 +14749,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             return false;
         },
         updateUI: function(args) {
-	    if(!args) args = {};
 	    let debug = false;
+	    args = args || {};
             SUPER.updateUI.call(this, args);
 	    if(debug)
 		console.log(this.type+".updateUI")
@@ -14759,6 +14761,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 	    if(debug)
 		console.log("\tcalling displayData");
+	    if(args.dataFilterChanged) {
+		this.setDisplayMessage("Creating display...");
+		setTimeout(()=>{
+		    this.displayData(args.reload, debug);
+		},1);
+		return;
+	    }
             this.displayData(args.reload, debug);
         },
         getWikiAttributes: function(attrs) {
@@ -15033,9 +15042,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 return;
             }
 
-
 	    if(!this.getAcceptEventDataSelection()) {
-		this.setDisplayMessage("Building display...");
+		this.setDisplayMessage("Creating display...");
 	    }
 
 	    if(debug)

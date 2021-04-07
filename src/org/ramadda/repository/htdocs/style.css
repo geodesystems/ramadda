@@ -2922,12 +2922,11 @@ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;
     padding-top:1px;    
     padding-bottom:1px;    
     border: 1px #ccc solid;
-    background-color:#efefef;
+    background-color:#fff;    
 }
 
 .ramadda-breadcrumbs-menu-button i {
     line-height:8px;
-//    font-size:8pt;
 }
 
 .ramadda-breadcrumbs-menu-button:hover {

@@ -5498,6 +5498,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.pageSkip = 0;
 	},
 	dataFilterChanged: function(args) {
+	    args = args||{};
+	    args.dataFilterChanged = true;
 	    this.callUpdateUI(args);
 	},
 	addFieldClickHandler: function(jq, records, addHighlight) {
