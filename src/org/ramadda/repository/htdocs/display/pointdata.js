@@ -2412,6 +2412,38 @@ function CsvUtil() {
 	    });
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
+	addBearing: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+            let fields  = pointData.getRecordFields();
+	    let newRecords  =[];
+	    let newFields = [];
+	    fields.forEach((f,fieldIdx)=>{
+		f = f.clone();
+		newFields.push(f);
+	    });
+	    let bearingField = new RecordField();
+	    newFields.push(new RecordField({
+		id:"bearing",
+		index:newFields.length,
+		label:"Bearing",
+		type:"double",
+		chartable:true,
+	    }));
+	    let pervPoint;
+	    records.forEach((record, rowIdx)=>{
+		let newRecord = record.clone();
+		newRecord.fields =newFields;
+		newRecords.push(newRecord);
+		let bearing = NaN;
+		if(prevPoint) {
+		    let point = {lat:newRecord.getLatitude(),lon: newRecord.getLongitude()};
+		    bearing  = Utils.getBearing(prevPoint, point);
+		    prevPoint = point;
+		}
+		newRecord.data.push(bearing);
+	    });
+	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
+	},
 	cut: function(pointData, args) {
 	    let cut  = args.fields?args.fields.split(","):[];
 	    let records = pointData.getRecords(); 

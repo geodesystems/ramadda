@@ -272,7 +272,7 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
             }
 	    let graphData = null;
 	    let html = HU.div([ID, this.domId(ID_GRAPH)]);
-	    this.jq(ID_DISPLAY_CONTENTS).html(html);
+	    this.setContents(html);
 	    let records = this.filterData();
 	    if (!records) {
                 return;
@@ -319,7 +319,7 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
 		    links.push({source:source, target: target});
 		});
 	    } else {
-		this.jq(ID_DISPLAY_CONTENTS).html("No source/target fields specified");
+		this.setDisplayMessage("No source/target fields specified");
 		return;
 	    }
 	    graphData = {
@@ -437,7 +437,7 @@ function RamaddaTreeDisplay(displayManager, id, properties) {
 	    try {
 		roots = this.makeTree(records);
 	    } catch(error) {
-                this.setContents(this.getMessage(error.toString()));
+                this.setDisplayMessage(error.toString());
 		return;
 	    }
 
@@ -549,7 +549,7 @@ function OrgchartDisplay(displayManager, id, properties) {
 	    })) {
 		return;
 	    }
-            this.displayHtml(HU.div([ID,this.domId(ID_ORGCHART)],"HELLO"));
+            this.displayHtml(HU.div([ID,this.domId(ID_ORGCHART)],""));
 	    if(this.jq(ID_ORGCHART).length==0) {
 		setTimeout(()=>this.updateUI(),1000);
 		return;
@@ -558,14 +558,17 @@ function OrgchartDisplay(displayManager, id, properties) {
 	    try {
 		roots = this.makeTree();
 	    } catch(error) {
-                this.setContents(this.getMessage(error.toString()));
+                this.setDisplayMessage(error.toString());
 		return;
 	    }
-            let data = new google.visualization.DataTable();
+	    if(roots==null) return;
+
+	    let data = new google.visualization.DataTable();
             data.addColumn('string', 'Name');
             data.addColumn('string', 'Parent');
             data.addColumn('string', 'ToolTip');
 	    let rows = [];
+	    let cnt=0;
 	    let func = function(node) {
 		cnt++;
 		let value = node.label;
@@ -644,7 +647,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 		}
 	    }
 	    if(!this.timelineLoaded) {
-		this.writeHtml(ID_DISPLAY_CONTENTS, "Could not load timeline");
+		this.setDisplayMessage("Could not load timeline");
 		return;
 	    }
             let records = this.filterData();
@@ -652,7 +655,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    let timelineId = this.domId(ID_TIMELINE);
 	    let html = HU.cssTag("h2 a, h2 a:visited, h2 a:link {color:#c34528;}");
 	    html+=HU.div([ID,timelineId]);
-	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
+	    this.setContents(html);
 	    this.timelineReady = false;
 	    let opts = {
 		timenav_position: this.getProperty("timelinePosition","bottom"),
@@ -912,7 +915,7 @@ function RamaddaHoursDisplay(displayManager, id, properties) {
 	    html+="</table>";
 	    html+=extra;
 	    html+="&nbsp;</div>";
-	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
+	    this.setContents(html);
 	    this.multis = this.find(".display-hours-box-multi");
 	    this.multis.click(function() {
 		let id = $(this).attr("dttm")+"_" + $(this).attr("hour") +"_"+$(this).attr("minute");
@@ -965,8 +968,7 @@ function RamaddaHoursDisplay(displayManager, id, properties) {
 		}
 		
 		box.css("background",HIGHLIGHT_COLOR);
-		let contents = this.jq(ID_DISPLAY_CONTENTS);
-		HU.scrollVisible(contents, box);
+		HU.scrollVisible(this.getContents(), box);
 	    }
 	},
     });
@@ -987,7 +989,7 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
         },
 	updateUI: function() {
 	    let records = this.filterData();
-	    this.writeHtml(ID_DISPLAY_CONTENTS, "");
+	    this.setContents("");
 	    if(!records) return;
 	    let colorBy = this.getColorByInfo(records);
 	    if(colorBy.index>=0) {
@@ -1012,7 +1014,7 @@ function RamaddaPreDisplay(displayManager, id, properties) {
 	updateUI: function() {
 	    let records = this.filterData();
 	    if(!records) {
-		this.writeHtml(ID_DISPLAY_CONTENTS, "No records yet");		
+		this.setContents("No records yet");		
 		return;
 	    }
             let pointData = this.dataCollection.getList()[0];
@@ -1042,7 +1044,7 @@ function RamaddaPreDisplay(displayManager, id, properties) {
 		return true;
 	    });
 	    html+="</pre>"
-	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
+	    this.setContents(html);
 	}});
 }
 
@@ -1064,7 +1066,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	updateUI: function() {
 	    let records = this.filterData();
 	    if(!records) {
-		this.writeHtml(ID_DISPLAY_CONTENTS, "No records yet");		
+		this.setDisplayMessage("No records yet");		
 		return;
 	    }
             let pointData = this.dataCollection.getList()[0];
@@ -1110,7 +1112,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		return true;
 	    });
 	    html+="</table>";
-	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
+	    this.setContents(html);
 	}});
 }
 
@@ -1149,7 +1151,7 @@ function RamaddaTsneDisplay(displayManager, id, properties) {
         updateUI: async function(pointData) {
             SUPER.updateUI.call(this, pointData);
             if (!this.hasData()) {
-                this.setContents(this.getLoadingMessage());
+                this.setDisplayMessage(this.getLoadingMessage());
                 return;
             }
             await Utils.importJS(ramaddaBaseUrl + "/lib/tsne.js");
@@ -1381,14 +1383,14 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
                 let func = function() {
                     _this.updateUI();
                 }
-                this.setContents(this.getLoadingMessage());
+                this.setDisplayMessage(this.getLoadingMessage());
                 setTimeout(func, 1000);
                 return;
             }
 
             SUPER.updateUI.call(this, pointData);
             if (!this.hasData()) {
-                this.setContents(this.getLoadingMessage());
+                this.setDisplayMessage(this.getLoadingMessage());
                 return;
             }
             let dataList = this.getStandardData(null, {
@@ -1581,7 +1583,7 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
             SUPER.updateUI.call(this, pointData);
             let records = this.records =  this.filterData();
             if (records == null) {
-                this.setContents(this.getLoadingMessage());
+                this.setDisplayMessage(this.getLoadingMessage());
                 return;
             }
             let dataList = this.getStandardData(null, {
@@ -1600,7 +1602,7 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
                 sortField = numericFields[0];
             }
             if (!sortField) {
-                this.setContents("No fields specified");
+                this.setDisplayMessage("No fields specified");
                 return;
             }
 
@@ -1743,7 +1745,7 @@ function RamaddaCrosstabDisplay(displayManager, id, properties) {
         updateUI: function(pointData) {
             SUPER.updateUI.call(this, pointData);
             if (!this.hasData()) {
-                this.setContents(this.getLoadingMessage());
+                this.setDisplayMessage(this.getLoadingMessage());
                 return;
             }
             let allFields = this.dataCollection.getList()[0].getRecordFields();
@@ -1932,7 +1934,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
         updateUI: function(pointData) {
             SUPER.updateUI.call(this, pointData);
             if (!this.hasData()) {
-                this.setContents(this.getLoadingMessage());
+                this.setDisplayMessage(this.getLoadingMessage());
                 return;
             }
 	    let _this  = this;
@@ -2193,7 +2195,7 @@ function RamaddaRecordsDisplay(displayManager, id, properties, type) {
             SUPER.updateUI.call(this,reload);
             let records = this.filterData();
             if (!records) {
-                this.setContents(this.getLoadingMessage());
+                this.setDisplayMessage(this.getLoadingMessage());
                 return;
             }
 	    this.records = records;
@@ -2318,7 +2320,7 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
         updateUI: function(args) {
             SUPER.updateUI.call(this,args);
             if (!this.hasData()) {
-                this.setContents(this.getLoadingMessage());
+                this.setDisplayMessage(this.getLoadingMessage());
                 return;
             }
             let dataList = this.getStandardData(null, {
@@ -2676,7 +2678,7 @@ function RamaddaCooccurenceDisplay(displayManager, id, properties) {
 	    }  
 	    let html = HU.div([ID, this.domId(ID_HEADER)]) +
 		HU.div([ID, this.domId(ID_TABLE)]);
-	    this.jq(ID_DISPLAY_CONTENTS).html(html);
+	    this.setContents(html);
 
 
 	    let sourceField = this.getFieldById(null, this.getProperty("sourceField","source"));
@@ -2684,7 +2686,7 @@ function RamaddaCooccurenceDisplay(displayManager, id, properties) {
 	    let weightField = this.getFieldById(null, this.getProperty("colorBy","weight"));
 
 	    if(sourceField==null || targetField==null) {
-		this.jq(ID_DISPLAY_CONTENTS).html("No source/target fields specified");
+		this.setDisplayMessage("No source/target fields specified");
 		return;
 	    }
 	    let colors = this.getColorTable();
@@ -2816,7 +2818,7 @@ function RamaddaBoxtableDisplay(displayManager, id, properties) {
 	    }  
 	    let categoryField = this.getFieldById(null, this.getProperty("categoryField","category"));
 	    if(categoryField==null) {
-		this.jq(ID_DISPLAY_CONTENTS).html("No category field field specified");
+		this.setDisplayMessage("No category field field specified");
 		return;
 	    }
 	    let colors = this.getColorTable();
@@ -3003,7 +3005,7 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 		html += HU.close(TBODY);
 		html += HU.close(TABLE);
 	    }
-	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
+	    this.setContents(html); 
             HU.formatTable("#" + this.domId("percentchange"), {ordering:true
 								  //scrollY: this.getProperty("tableSummaryHeight", tableHeight)
 								 });
@@ -3038,7 +3040,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
             return true;
         },
         updateUI: function() {
-            this.setContents(this.getLoadingMessage());
+            this.setDisplayMessage(this.getLoadingMessage());
 	    let records = this.filterData();
 	    if (!records) {
                 return;
@@ -3346,7 +3348,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 //	    html+=header;
 	    html+=mainTable;
 
-	    this.jq(ID_DISPLAY_CONTENTS).html(html);
+	    this.setContents(html);
 
 
 	    let _this = this;
@@ -3461,7 +3463,7 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 
 	    let field = this.getFieldById(null, this.getProperty("field"));
 	    if(field==null) {
-		this.jq(ID_DISPLAY_CONTENTS).html("No field specified");
+		this.setDisplayMessage("No field specified");
 		return;
 	    }
 	    let t1 = new Date();
@@ -3483,7 +3485,7 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 	    if(groups) {
 		let labelPosition = this.getProperty("labelPosition","bottom");
 		html = HU.div([ID,this.domId(ID_INNER)]);
-		this.writeHtml(ID_DISPLAY_CONTENTS, html); 
+		this.setContents(html); 
 		groups.values.forEach((value,idx)=>{
 		    let grecords = groups.map[value];
 		    let gid = id+"_"+ +idx;
@@ -3507,7 +3509,7 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 		let right = this.getProperty("showMax",true)? HU.div([CLASS,"display-sparkline-value",STYLE, this.getPropertyLabelStyle("")],this.formatNumber(col.values[col.values.length-1])):"";
 		if(left!=""  || right!="")
 		    html = HU.leftCenterRight(left,html,right,"1%","99%","1%",null,"padding:2px 2px;");
-		this.writeHtml(ID_DISPLAY_CONTENTS, html); 
+		this.setContents(html); 
 		drawSparkLine(this, "#"+id,w,h,col.values,records,min,max,colorBy);
 	    }
 	    let t2 = new Date();
@@ -3580,7 +3582,7 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 	    let ratio = (bounds.east-bounds.west)/(bounds.north-bounds.south);
 	    let style = this.getProperty("padding")?HU.css('padding',+this.getProperty("padding")+"px") : "";
 	    let html = HU.div([ID,this.domId("inner"),STYLE,style]);
-	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
+	    this.setContents(html); 
 	    let pad = 10;
 	    let w = Math.round(this.jq("inner").width());
 	    let h = Math.round(w/ratio);
@@ -3588,8 +3590,8 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 	    //	    $("#"+ divid).css("height",h+pad);
 	    html = HU.div([ID,this.domId("inner"),STYLE,HU.css('width', w +'height', h+'px') + style]);
 	    html = HU.div([ID,this.domId("inner")]);
-	    //	    this.jq(ID_DISPLAY_CONTENTS).css("height",h+pad);
-	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
+	    //this.getContents().css("height",h+pad);
+	    this.setContents(html); 
 	    let colorBy = this.getColorByInfo(records);
 	    bounds = RecordUtil.expandBounds(bounds,0.1);
 	    let args =$.extend({colorBy:colorBy, w:w, h:h,cell3D:this.getProperty("cell3D"),bounds:bounds},
@@ -3655,7 +3657,7 @@ function RamaddaCanvasDisplay(displayManager, id, properties) {
 	    let fields = this.getFields();
 	    if(!records) return;
 	    if(records.length==0) {
-		this.setContents(this.getMessage(this.getNoDataMessage()));
+		this.setDisplayMessage(this.getNoDataMessage());
 		return;
 	    }
 	    let style = this.getPropertyCanvasStyle("");
@@ -3841,7 +3843,7 @@ function RamaddaFieldtableDisplay(displayManager, id, properties) {
 	    html += HU.close(TFOOT);
 
 	    html+=HU.close(TABLE);
-	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
+	    this.setContents(html); 
 	    let opts = {
 		ordering:true
 	    };
@@ -3968,7 +3970,7 @@ function RamaddaDotstackDisplay(displayManager, id, properties) {
 		html +=value;
 		html += HU.close(DIV);
 	    });
-	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
+	    this.setContents(html); 
 	    let dots = this.find(".display-dotstack-dot");
 	    this.addFieldClickHandler(dots,records,false);
 	    this.makeTooltips(dots,records,null,"${default}");
@@ -4082,7 +4084,7 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 	    });
 	    let t2 = new Date();
 	    html+=HU.close(TABLE);
-	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
+	    this.setContents(html); 
 	    let t3 = new Date();
 	    let dots = this.find(".display-dotbar-dot");
 	    let t4 = new Date();
@@ -4285,7 +4287,7 @@ function RamaddaDategridDisplay(displayManager, id, properties) {
 		html+="</tr>";
 	    });
 	    html += "</table></div>";
-	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
+	    this.setContents(html); 
 	    this.boxes = this.find(".display-dategrid-box");
 	    this.addFieldClickHandler(this.boxes, records,false);
 	    this.makeTooltips(this.boxes,records,null);

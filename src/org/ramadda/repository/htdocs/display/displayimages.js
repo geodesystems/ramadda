@@ -149,7 +149,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 
 
             contents += HU.div([ID,this.domId(ID_RESULTS)]);
-            this.writeHtml(ID_DISPLAY_CONTENTS, contents);
+            this.setContents(contents);
             let _this = this;
             this.jq(ID_HEADER1).find("input, input:radio,select").change(function(){
                 _this.updateUI();
@@ -440,9 +440,9 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    this.updateUI();
 	},
         handleEventRecordSelection: function(source, args) {
-	    let blocks = this.jq(ID_DISPLAY_CONTENTS).find(".display-images-block");
+	    let blocks = this.find(".display-images-block");
 	    let select = HU.attrSelect(RECORD_ID, args.record.getId());
-	    let block = this.jq(ID_DISPLAY_CONTENTS).find(select);
+	    let block = this.find(select);
 	    blocks.css('background','transparent');
 	    block.css('background',HIGHLIGHT_COLOR);
 	    HU.scrollVisible(this.jq(ID_IMAGES),block);
@@ -464,7 +464,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
             let bottomLabelTemplate = this.getPropertyBottomLabelTemplate();	    
             let tooltipFields = this.getFieldsByIds(null, this.getProperty("tooltipFields", null, true));
 	    if(!imageField) {
-		this.setContents(this.getMessage("No image field in data"));
+		this.setDisplayMessage("No image field in data");
 		return;
 	    }
 	    let decorate = this.getPropertyDecorate(true);
@@ -590,8 +590,8 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		contents = HU.div([ID,this.domId(ID_IMAGES),STYLE,css+HU.css("overflow-y","auto")], contents);
 	    }
 
-            this.writeHtml(ID_DISPLAY_CONTENTS, header + contents);
-	    let blocks = this.jq(ID_DISPLAY_CONTENTS).find(".display-images-block");
+            this.setContents(header + contents);
+	    let blocks = this.find(".display-images-block");
 	    this.makeTooltips(blocks,displayedRecords);
 	    if(!doPopup) {
 		let _this = this;
@@ -659,7 +659,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    if(!this.imageField)
 		this.imageField = this.getFieldByType(fields,"image");
 	    if(!this.imageField) {
-		this.setContents(this.getMessage("No image field in data"));
+		this.setDisplayMessage("No image field in data");
 		return;
 	    }
 	    this.labelFields = this.getFieldsByIds(fields, this.getPropertyLabelFields());
@@ -694,7 +694,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 		let thumb = row[thumbField.getIndex()];		
 		thumbsHtml += HU.image(thumb,[RECORD_INDEX,rowIdx,ID,this.domId(ID_THUMB)+rowIdx,WIDTH, thumbWidth,CLASS,"display-imagezoom-thumb"])+"<br>\n";
 	    }
-            this.writeHtml(ID_DISPLAY_CONTENTS, contents);
+            this.setContents(contents);
 	    this.jq(ID_THUMBS).html(thumbsHtml);
 	    let _this = this;
 	    let thumbs = this.jq(ID_THUMBS).find(".display-imagezoom-thumb");
@@ -905,7 +905,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	    var contents = HU.div([STYLE,HU.css('position','relative')], "<table width=100%><tr valign=top><td width=20>" + HU.div([STYLE,navStyle], left) + "</td><td>" +
 					 slide + "</td>" +
 					 "<td width=20>" + HU.div([STYLE,navStyle],right) + "</td></tr></table>");
-	    this.writeHtml(ID_DISPLAY_CONTENTS, contents);
+	    this.setContents(contents);
 	    this.jq(ID_PREV).click(() =>{
 		this.slideIndex--;
 		this.displaySlide(true);

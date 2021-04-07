@@ -561,7 +561,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    console.log("\tgoogle charts have not loaded callback pending:" +this.googleChartCallbackPending);
                 if (!this.googleChartCallbackPending) {
                     this.googleChartCallbackPending = true;
-//                    this.setContents(this.getLoadingMessage());
 		    this.setDisplayMessage(this.getLoadingMessage());
                     setTimeout(()=> {
                         this.googleChartCallbackPending = false;
@@ -575,14 +574,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
             if (!this.hasData()) {
                 this.clearChart();
-//                this.setContents(this.getLoadingMessage());
 		this.setDisplayMessage(this.getLoadingMessage());
                 return;
             }
 
 
 	    if(!this.getAcceptEventDataSelection()) {
-//		this.setContents(HU.div([ATTR_CLASS, "display-output-message"],"Building display..."));
 		this.setDisplayMessage("Building display...");
 	    }
 

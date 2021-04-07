@@ -306,7 +306,7 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
 		    });
 
 		}
-                this.writeHtml(ID_DISPLAY_CONTENTS, HU.div([ID, this.domId("words"), STYLE, HU.css('height','300px')], ""));
+                this.setContents(HU.div([ID, this.domId("words"), STYLE, HU.css('height','300px')], ""));
                 $("#" + this.domId("words")).jQCloud(info, options);
 		return
 	    }
@@ -391,12 +391,12 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
 			       label + HU.div([STYLE, HU.css('border','1px #ccc solid','height','300px'), ID, fi.divId], ""));
             }
 
-            this.writeHtml(ID_DISPLAY_CONTENTS, "");
+            this.setContents("");
             if (this.getProperty("combined", false)) {
-                this.writeHtml(ID_DISPLAY_CONTENTS, HU.div([ID, this.domId("words"), STYLE, HU.css('height','300px')], ""));
+                this.setContents(HU.div([ID, this.domId("words"), STYLE, HU.css('height','300px')], ""));
                 $("#" + this.domId("words")).jQCloud(words, options);
             } else {
-                this.writeHtml(ID_DISPLAY_CONTENTS, divs);
+                this.setContents(divs);
                 for (a in fieldInfo) {
                     let fi = fieldInfo[a];
                     $("#" + fi.divId).jQCloud(fi.words, options);
@@ -523,7 +523,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    if(this.getPropertyOnlyShowSelected() && this.selectedRecord ) {
 		this.selectedRecord = null;
 		this.selectedRecords = null;		
-		this.writeHtml(ID_DISPLAY_CONTENTS, "");
+		this.setContents("");
 	    }
 	    SUPER.dataFilterChanged.call(this);
 	},
@@ -541,7 +541,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    }
 	    if(this.getPropertyOnlyShowSelected()) {
 		if(!this.selectedRecord && !this.selectedRecords) {
-		    this.writeHtml(ID_DISPLAY_CONTENTS, "<br>");
+		    this.setContents("<br>");
 		    return;
 		}
 		
@@ -618,7 +618,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		var selectField = this.getProperty("selectField",null);
 		if(selectField) selectField  =this.getFieldById(null, selectField);
 		if(!selectField) {
-		    this.writeHtml(ID_DISPLAY_CONTENTS, "No selectField specified");
+		    this.setContents("No selectField specified");
 		    return;
 		}
 		var selectValue = this.getProperty("selectValue","0");
@@ -897,14 +897,14 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    }
 	    if(selected.length>0) 
 		contents+= footerTemplate;
-	    this.writeHtml(ID_DISPLAY_CONTENTS, contents);
+	    this.setContents(contents,true);
 	    this.addFieldClickHandler(null,null,false);
-	    var recordElements = this.jq(ID_DISPLAY_CONTENTS).find(".display-template-record");
+	    var recordElements = this.find(".display-template-record");
 	    this.makeTooltips(recordElements, selected);
 	    this.makePopups(recordElements, selected);
 	    let _this = this;
 	    if(this.getPropertyHandleSelectOnClick(true)) {
-		this.jq(ID_DISPLAY_CONTENTS).find(".display-template-record").click(function() {
+		this.find(".display-template-record").click(function() {
 		    var record = selected[$(this).attr(RECORD_INDEX)];
 		    _this.handleEventRecordHighlight(this, {record:record,highlight:true,immediate:true,skipScroll:true});
 		    _this.propagateEventRecordSelection({highlight:true,record: record});
@@ -913,8 +913,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 
 
 	    if(this.getPropertyHighlightOnScroll(false)) {
-		let items = this.jq(ID_DISPLAY_CONTENTS).find(".display-template-record");
-		this.jq(ID_DISPLAY_CONTENTS).scroll(()=>{
+		let items = this.find(".display-template-record");
+		this.getContents().scroll(()=>{
 		    let topElement = null;
 		    items.each(function() {
 			let pos  = $(this).position();
@@ -1027,7 +1027,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		if(!args.skipScroll) {
 		    var eo = element.offset();
 		    if(eo==null) return;
-		    var container = this.jq(ID_DISPLAY_CONTENTS);
+		    var container = this.getContents();
 		    if(this.getProperty("orientation","vertical")== "vertical") {
 			var c = container.offset().top;
 			var s = container.scrollTop();
@@ -1130,22 +1130,22 @@ function RamaddaTopfieldsDisplay(displayManager, id, properties) {
 		div += HU.div([CLASS,"display-topfields-values"], contents);
 		html+=HU.div([CLASS,"display-topfields-record"], div);
 	    }
-	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
+	    this.setContents(html);
 	    let _this = this;
-	    this.jq(ID_DISPLAY_CONTENTS).find(".display-topfields-header").click(function(){
+	    this.find(".display-topfields-header").click(function(){
 		var idx = $(this).attr(RECORD_INDEX);
-		_this.jq(ID_DISPLAY_CONTENTS).find(".display-topfields-record").removeClass("display-topfields-selected");
+		_this.find(".display-topfields-record").removeClass("display-topfields-selected");
 		$(this).parent().addClass("display-topfields-selected");
 		var record = records[idx];
 		if(record) {
 		    _this.propagateEventRecordSelection({record: record});
 		}
 	    });
-	    let rows =this.jq(ID_DISPLAY_CONTENTS).find(".display-topfields-row");
+	    let rows =this.find(".display-topfields-row");
 	    rows.hover(function() {
 		rows.removeClass("display-topfields-highlight");
 		var value = $(this).attr("data-value");
-		_this.jq(ID_DISPLAY_CONTENTS).find(HU.attrSelect("data-value", value)).addClass("display-topfields-highlight");
+		_this.find(HU.attrSelect("data-value", value)).addClass("display-topfields-highlight");
 		
 	    });
 	    rows.click(function() {
@@ -1158,7 +1158,7 @@ function RamaddaTopfieldsDisplay(displayManager, id, properties) {
 	    if(!args.record) return;
 	    var index = this.recordToIndex[args.record.getId()];
 	    if(!Utils.isDefined(index)) return;
-	    var container = this.jq(ID_DISPLAY_CONTENTS);
+	    var container = this.getContents();
 	    container.find(".display-topfields-record").removeClass("display-topfields-selected");
 	    var element =   container.find(HU.attrSelect(RECORD_INDEX, index)).parent();
 	    element.addClass("display-topfields-selected");
@@ -1261,10 +1261,10 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 		this.headers.push("");
 	    this.showBlocks(true);
 
-	    this.writeHtml(ID_DISPLAY_CONTENTS, 
-			   HU.div([CLASS,"display-blocks-header",STYLE, this.getProperty("headerStyle","", true),ID,this.domId(ID_BLOCKS_HEADER)]) +
-			   HU.div([CLASS,"display-blocks-blocks",ID,this.domId(ID_BLOCKS)])+
-			   HU.div([CLASS,"display-blocks-footer", STYLE, this.getProperty("footerStyle","", true), ID,this.domId(ID_BLOCKS_FOOTER)]));
+	    this.setContents(
+		HU.div([CLASS,"display-blocks-header",STYLE, this.getProperty("headerStyle","", true),ID,this.domId(ID_BLOCKS_HEADER)]) +
+		    HU.div([CLASS,"display-blocks-blocks",ID,this.domId(ID_BLOCKS)])+
+		    HU.div([CLASS,"display-blocks-footer", STYLE, this.getProperty("footerStyle","", true), ID,this.domId(ID_BLOCKS_FOOTER)]));
 	    //Show the outline
 	    this.showBlocks(false);
 	    if(this.getProperty("displayOnScroll")) {
@@ -1501,7 +1501,7 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                     html += HU.closeTag("table");
                 }
             }
-            this.writeHtml(ID_DISPLAY_CONTENTS, html);
+            this.setContents(html);
             var tableHeight = this.getProperty("tableHeight", "200");
 
             if (this.getProperty("showSummary", true))
@@ -1765,10 +1765,10 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 
 	    let doBanner = this.getProperty("banner",false);
 	    if(doBanner) html = HU.div([CLASS,"display-frequency-banner"], bannerHtml);
-	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
+	    this.setContents(html);
 	    let _this = this;
 	    let cnt = 0;
-	    let items = this.jq(ID_DISPLAY_CONTENTS).find(".display-frequency-item");
+	    let items = this.find(".display-frequency-item");
 	    items.click(function(){
 		let click = _this.getProperty("clickFunction")
 		let value = $(this).attr("data-value");
@@ -1796,9 +1796,9 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    });
 		}
 	    });
-	    this.jq(ID_DISPLAY_CONTENTS).find(".display-frequency-label").click(function(){
+	    this.find(".display-frequency-label").click(function(){
 		let field = $(this).attr("data-field");
-		//		    _this.jq(ID_DISPLAY_CONTENTS).find("[data-field=" + field+"]").css("color","black");
+		//		    _this.find("[data-field=" + field+"]").css("color","black");
 		_this.handleEventPropertyChanged(_this,{
 		    property: PROP_FILTER_VALUE,
 		    id:ID,
@@ -1837,7 +1837,7 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
                 return null;
             }
             let _this = this;
-            this.setContents(this.getMessage("Processing text..."));
+            this.setDisplayMessage("Processing text...");
             var func = function() {
                 _this.updateUIInnerInner();
             };
@@ -1938,7 +1938,7 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
                 cols.push(this.printList("Possessives", nlp.possessives().out('topk')));
             }
             if (cols.length == 0) {
-                this.writeHtml(ID_DISPLAY_CONTENTS, this.getMessage("No text types specified"));
+                this.setDisplayMessage("No text types specified");
                 return;
             }
             var height = this.getProperty("height", "400");
@@ -1959,7 +1959,7 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
                 html += HU.tag("table", ["width", "100%"], HU.tr(row));
             }
             html += HU.closeTag("div");
-            this.writeHtml(ID_DISPLAY_CONTENTS, html);
+            this.setContents(html);
             HU.formatTable("#" + this.domId("tables") + " .ramadda-table", {
                 scrollY: this.getProperty("tableHeight", "200")
             });
@@ -2051,7 +2051,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             var height = this.getProperty("height", "600");
 	    var style = this.getProperty("displayInnerStyle","");
             var html = HU.div([ID, this.domId(ID_TEXT), STYLE, "padding:4px;border:1px #ccc solid; max-height:" + height + "px;overflow-y:auto;" + style]);
-            this.writeHtml(ID_DISPLAY_CONTENTS, html);
+            this.setContents(html);
 	    let t1 = new Date();
             this.showText();
 	    let t2 = new Date();
@@ -2417,7 +2417,7 @@ function RamaddaTextDisplay(displayManager, id, properties) {
 		    this.setContents(this.getRecordHtml(records[0]));
 		}
 	    } else  if(this.getPropertyMessage()) {
-		this.setContents(this.getMessage(this.getPropertyMessage()));
+		this.setDisplayMessage(this.getPropertyMessage());
 	    }
         },
         handleEventRecordSelection: function(source, args) {
@@ -2456,7 +2456,7 @@ function RamaddaGlossaryDisplay(displayManager, id, properties) {
 	    let letters = {};
 	    records.forEach(record=>{
 		let word = String(wordField.getValue(record)).trim();
-		let definition = definitionField.getIndex(record);
+		let definition = definitionField.getValue(record);
 		let letter = word.substring(0,1).toUpperCase();
 		let list = letters[letter] || (letters[letter] = []);
 		list.push({word:word,definition:definition, record:record});
@@ -2478,10 +2478,11 @@ function RamaddaGlossaryDisplay(displayManager, id, properties) {
 		letters[letter].sort((a,b)=>{
 		    return a.word.localeCompare(b.word);
 		}).forEach(info=>{
-		    let def = info.definition;
+		    let def = String(info.definition);
 		    highlight.forEach(h=>{
 			def  = h.highlight(def);
 		    });
+
 		    let entry  = HU.div([CLASS,"display-glossary-word"], info.word) + HU.div([CLASS,"display-glossary-definition"], def); 
 		    group+=HU.div([TITLE,"",CLASS,"display-glossary-entry",RECORD_ID,info.record.getId()],entry);
 		});
@@ -2492,13 +2493,13 @@ function RamaddaGlossaryDisplay(displayManager, id, properties) {
 	    let height = this.getProperty("glossaryHeight","600px");
 	    header = HU.div([ID,this.domId(ID_GLOSSARY_HEADER), CLASS,"display-glossary-header"], header);
 	    html = HU.div([STYLE,HU.css("max-height",HU.getDimension(height),"overflow-y","auto")], html);
-	    this.writeHtml(ID_DISPLAY_CONTENTS, header  + html);
+	    this.setContents(header  + html);
 	    let _this = this;
 	    this.jq(ID_GLOSSARY_HEADER).find(".display-glossary-letter").click(function() {
 		_this.searchLetter =  $(this).attr("letter");
 		_this.forceUpdateUI();
 	    });
-	    this.makeTooltips(this.jq(ID_DISPLAY_CONTENTS).find(".display-glossary-entry"),records);
+	    this.makeTooltips(this.find(".display-glossary-entry"),records);
 	},
     });
 }

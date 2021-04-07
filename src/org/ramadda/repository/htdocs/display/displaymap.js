@@ -2661,8 +2661,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    drawSparkLine(this,"#"+ info.hoverId,hoverW,hoverH,info.data,info.records,allData.min,allData.max,colorBy);		    
 		}
 	    });
-	    let items = this.jq(ID_DISPLAY_CONTENTS).find(".display-map-html-item");
-	    let hitems = this.jq(ID_DISPLAY_CONTENTS).find(".display-map-html-hitem");
+	    let items = this.find(".display-map-html-item");
+	    let hitems = this.find(".display-map-html-hitem");
 	    this.makeTooltips(hitems, layerRecords);
 
 	    items.mouseenter(function() {
@@ -3796,7 +3796,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	    }
 	    table +=HU.tr([],HU.td(["colspan", maxx],"<br>" +   HU.div([ID,this.domId(ID_COLORTABLE)])));
 	    table+=HU.close(TABLE);
-	    this.writeHtml(ID_DISPLAY_CONTENTS, HU.center(table));
+	    this.setContents(HU.center(table));
 
 	    let states = [];
 	    let stateData = this.stateData = {
@@ -3804,7 +3804,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	    let minData = 0;
 	    let maxData = 0;
 	    let seen = {};
-	    let contents = this.jq(ID_DISPLAY_CONTENTS);
+	    let contents = this.getContents();
 	    for(let i=0;i<records.length;i++) {
 		let record = records[i]; 
 		let tuple = record.getData();
@@ -3896,7 +3896,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	},
 
         handleEventRecordSelection: function(source, args) {
-	    let contents = this.jq(ID_DISPLAY_CONTENTS);
+	    let contents = this.getContents();
 	    if(this.selectedCell) {
 		this.selectedCell.css("border",this.selectedBorder);
 	    }
@@ -6197,9 +6197,9 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 	    this.mapRange.minLon= this.getPropertyMinLon(this.mapRange.minLon);
 	    this.mapRange.maxLat= this.getPropertyMaxLat(this.mapRange.maxLat);
 	    this.mapRange.minLat= this.getPropertyMinLat(this.mapRange.minLat);	    	    
-	    this.writeHtml(ID_DISPLAY_CONTENTS, HU.div([ID,this.domId(ID_BASEMAP),STYLE,css]));
+	    this.setContents(HU.div([ID,this.domId(ID_BASEMAP),STYLE,css]));
 	    if(isNaN(width)) {
-		width = this.jq(ID_DISPLAY_CONTENTS).width();
+		width = this.getContents().width();
 	    }
 	    return [width,height];
 

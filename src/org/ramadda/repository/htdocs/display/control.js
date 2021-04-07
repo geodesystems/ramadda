@@ -302,7 +302,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 		html = HU.div([ID,this.domId(ID_POPUP_BUTTON)],"Select fields") +
 		    HU.div([ID,this.domId(ID_POPUP),STYLE,"display:none;width:600px;"], html);
 	    }
-	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
+	    this.setContents(html);
 	    if(this.getShowPopup()) {
 		this.jq(ID_POPUP_BUTTON).button().click(()=>{
 		    HU.makeDialog({contentId:this.domId(ID_POPUP),inPlace:true,anchor:this.domId(ID_POPUP_BUTTON),draggable:true,header:true,sticky:true});
@@ -310,7 +310,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	    }
 	    if(selectable) {
 		let _this = this;
-		let fieldBoxes = this.jq(ID_DISPLAY_CONTENTS).find(".display-fields-field");
+		let fieldBoxes = this.find(".display-fields-field");
 		fieldBoxes.click(function(event) {
 		    let shift = event.shiftKey ;
 		    let selected  = $(this).attr("field-selected")=="true";
@@ -457,7 +457,7 @@ function RamaddaLegendDisplay(displayManager, id, properties) {
 	    if(orientation!="vertical") {
 		html = HU.center(html); 
 	    }
-	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
+	    this.setContents(html);
 	},
     });
 }
@@ -728,7 +728,7 @@ function RamaddaTicksDisplay(displayManager, id, properties) {
 	    Object.keys(years).sort().forEach(year=>{
 		html+=HU.div([CLASS,'display-ticks-ticks', ID,this.getDomId(ID_ANIMATION+year)]);
 	    })
-	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
+	    this.setContents(html);
 	    Object.keys(years).sort().forEach((year,idx)=>{		 
 		let info=years[year];
 		let dateInfo = this.getDateInfo(info.records);

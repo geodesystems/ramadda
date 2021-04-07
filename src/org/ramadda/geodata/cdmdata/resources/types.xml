@@ -160,7 +160,7 @@ ${charts}
 </center>
 {{display type="map" showTitle="false" showMenu="false" justOneMarker=true}}
 :p
-{{display type="text" showTitle="false" showMenu="false"}}
+{{display type="text" showTitle="false" showMenu="false" labelWidth="100px"}}
 -col
 -row
 ]]>

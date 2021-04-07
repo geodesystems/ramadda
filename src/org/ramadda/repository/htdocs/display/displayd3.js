@@ -233,7 +233,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
 //          console.log("skewt.updateui-1");
             let records =  this.filterData();
             if (!records || records.length==0) {
-                this.setContents(this.getLoadingMessage());
+                this.setDisplayMessage(this.getLoadingMessage());
                 return;
             }
 //          console.log("skewt.updateui-2");
@@ -564,7 +564,6 @@ function RamaddaD3Display(displayManager, id, properties) {
             //Note: if we write to the SVG dom element then we lose the svg object that got created in initDisplay
             //Not sure how to show a message to the user
             if (!this.hasData()) {
-                //this.writeHtml(ID_SVG, HtmlUtils.div([ATTR_CLASS,"display-output-message"], this.getLoadingMessage()));
                 return;
             }
             test = this;
@@ -903,7 +902,7 @@ function RamaddaVennDisplay(displayManager, id, properties) {
                     obj.label = setInfo.label;
                 sets.push(obj);
             }
-            this.writeHtml(ID_DISPLAY_CONTENTS, HtmlUtils.div(["id", this.getDomId(ID_VENN), "style", "height:300px;"], ""));
+            this.setContents(HtmlUtils.div(["id", this.getDomId(ID_VENN), "style", "height:300px;"], ""));
             var chart = venn.VennDiagram()
                 .width(600)
                 .height(400);
@@ -1010,7 +1009,7 @@ function RamaddaMinidotsDisplay(displayManager, id, properties) {
 	    let groupList = Object.keys(groups).sort();
 	    if(!groupByField) {
 		let data = groups["all"];
-		this.writeHtml(ID_DISPLAY_CONTENTS, HtmlUtils.div([CLASS,"display-minidots-dots", ID, this.getDomId(ID_MINIDOTS), STYLE, HU.css(HEIGHT,HU.getDimension(dotsHeight),WIDTH,HU.getDimension(dotsWidth))], ""));
+		this.setContents(HtmlUtils.div([CLASS,"display-minidots-dots", ID, this.getDomId(ID_MINIDOTS), STYLE, HU.css(HEIGHT,HU.getDimension(dotsHeight),WIDTH,HU.getDimension(dotsWidth))], ""));
 		drawDots(this,"#"+ this.getDomId(ID_MINIDOTS),dotsWidth,dotsHeight,data.list,range,null/*colorBy*/);
 	    } else {
 		let container = this.jq(ID_MINIDOTS);
@@ -1023,7 +1022,7 @@ function RamaddaMinidotsDisplay(displayManager, id, properties) {
 		    table += HU.td([],HtmlUtils.div([CLASS,"display-minidots-dots", ID, id, STYLE, HU.css(HEIGHT,HU.getDimension(dotsHeight),WIDTH,HU.getDimension(dotsWidth))], ""));
 		    table+="</tr>\n";
 		});
-		this.writeHtml(ID_DISPLAY_CONTENTS, table);
+		this.setContents(table);
 		groupList.forEach((key,idx)=>{
 		    let data = groups[key];
 		    let id = this.getDomId(ID_MINIDOTS+"_"+idx);
@@ -1246,14 +1245,14 @@ function RamaddaChernoffDisplay(displayManager, id, properties) {
             legend = HtmlUtils.div(["class", "display-chernoff-legend"], legend);
             var height = this.getProperty("height", "400px");
             if (!height.endsWith("px")) height += "px";
-            this.writeHtml(ID_DISPLAY_CONTENTS, legend + HtmlUtils.div(["style", "height:" + height + ";", "class", "display-chernoff-container", "id", this.getDomId("chernoff")], html));
+            this.setContents(legend + HtmlUtils.div(["style", "height:" + height + ";", "class", "display-chernoff-container", "id", this.getDomId("chernoff")], html));
             for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
                 var div = "#" + this.getDomId("chernoff") + "_" + rowIdx;
                 this.makeFace(div, data[rowIdx].faceData, data[rowIdx].color);
             }
 
             if (string) {
-                $("#" + this.getDomId(ID_DISPLAY_CONTENTS)).find(".ramadda-div-link").click(function() {
+                this.find(".ramadda-div-link").click(function() {
                     var value = $(this).attr("value");
                     _this.propagateEvent("handleEventFieldValueSelect", {
                         field: string,
@@ -1365,8 +1364,8 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
                 return;
             }
 	    //If the width is 0 then there is an error in the d3
-	    if(this.jq(ID_DISPLAY_CONTENTS).width() ==0)  {
-		this.jq(ID_DISPLAY_CONTENTS).html("...");
+	    if(this.getContents().width() ==0)  {
+		this.setContents("...");
 		return;
 	    }
 	    let records = this.filterData();
@@ -1379,7 +1378,7 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
 		this.setProperty("sortFields",colorByField.getId());
 	    let html = HtmlUtil.tag("svg", ["id", this.getDomId(ID_BUBBLES),
 					    "width","100%","height","700", "font-family","sans-serif","font-size","10", "text-anchor","middle"])
-	    this.jq(ID_DISPLAY_CONTENTS).html(html);
+	    this.setContents(html);
 	    let values;
 	    let min = 0;
 	    let max = 0;

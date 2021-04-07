@@ -627,7 +627,7 @@ function RamaddaMultiDisplay(displayManager, id, properties) {
             SUPER.initDisplay.call(this);
             let records = this.filterData();
             if (!records) {
-                this.setContents(this.getLoadingMessage());
+                this.setDisplayMessage(this.getLoadingMessage());
                 return null;
             }
 
@@ -676,7 +676,7 @@ function RamaddaMultiDisplay(displayManager, id, properties) {
                 }
             }
             var html = HU.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container"]);
-            this.writeHtml(ID_DISPLAY_CONTENTS, html);
+            this.setContents(html);
             var groupProps = {
                 target: this.getDomId(ID_DISPLAYS),
             }

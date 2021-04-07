@@ -510,8 +510,11 @@ function DisplayThing(argId, argProperties) {
             return this.getId() + "_" + suffix;
         },
 	find: function(selector) {
-	    return this.jq(ID_DISPLAY_CONTENTS).find(selector);
+	    return this.getContents().find(selector);
 	},
+	getContents: function() {
+	    return this.jq(ID_DISPLAY_CONTENTS);
+	},	
         jq: function(componentId) {
             return $("#" + this.getDomId(componentId));
         },
@@ -760,12 +763,14 @@ function DisplayThing(argId, argProperties) {
 	    let labelColAttrs = [];
 	    if(this.getProperty("labelColumnAttrs")) {
 		labelColAttrs = this.getProperty("labelColumnAttrs").split(",");
+	    } else {
+		labelColAttrs = ["align","right"];
 	    }
 	    let labelWidth = this.getProperty("labelWidth");
 
             for (var doDerived = 0; doDerived < 2; doDerived++) {
                 for (let i = 0; i < fields.length; i++) {
-                    var field = fields[i];
+                    let field = fields[i];
 		    if(tooltipNots[field.getId()]) continue;
 		    if(attrs[field.getId()+".hide"]) {
 			continue;
@@ -787,7 +792,7 @@ function DisplayThing(argId, argProperties) {
                             continue;
                         }
                     }
-                    var value = record.getValue(field.getIndex());
+                    let value = record.getValue(field.getIndex());
 		    let fieldValue = value;
                     if (typeof value == "number") {
 			value = this.formatNumber(value, field.getId());
@@ -819,18 +824,18 @@ function DisplayThing(argId, argProperties) {
 		    if(field.getType() == "url") {
 			value = this.getRecordUrlHtml(attrs, field, record);
 		    }
-		    value = value + field.getUnitSuffix();
-		    if(value.length>200) {
-			value  = HU.div([STYLE,HU.css("max-height","200px","overflow-y","auto")],value);
-		    }
 		    let labelValue = field.getLabel();
+		    value = value + field.getUnitSuffix();
+		    let tt = labelValue+"=" + value;
+		    if(value.length>100) {
+			value  = HU.div([STYLE,HU.css("max-height","100px","overflow-y","auto")],value);
+		    }
 		    let label = this.formatRecordLabel(labelValue)+":";
 		    if(labelWidth) {
-			label = HU.div([TITLE,labelValue,STYLE,HU.css("max-width" ,HU.getDimension(labelWidth),"overflow-x","auto")], label);
-		    }
-		    
+			label = HU.div([STYLE,HU.css("max-width" ,HU.getDimension(labelWidth),"overflow-x","auto")], label); 
+		    } 
+		    label  = HU.div([TITLE,tt],label);
                     let row = HU.open(TR,['valign','top']);
-		    
 		    row += HU.td(labelColAttrs,HU.b(label));
 		    row += HU.td(["field-id",field.getId(),"field-value",fieldValue, "align","left"], HU.div([STYLE,HU.css('margin-left','5px')], value));
 		    row += HU.close(TR);
@@ -1340,7 +1345,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.displayHtml("");
         },
         displayHtml: function(html) {
-            this.jq(ID_DISPLAY_CONTENTS).html(html);
+            this.setContents(html);
         },
         notifyEvent: function(func, source, data) {
             if (this[func] == null) {
@@ -1640,10 +1645,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.displayManager = cm;
             this.setDisplayParent(cm.getLayoutManager());
         },
-        setContents: function(contents) {
-//            this.clearDisplayMessage();
-            let style = "";
-            contents = HU.div([ATTR_CLASS, "display-contents-inner display-" + this.getType() + "-inner", STYLE, style], contents);
+        setContents: function(contents,dontWrap) {
+            this.clearDisplayMessage();
+            if(!dontWrap)
+		contents = HU.div([ATTR_CLASS, "display-contents-inner display-" + this.getType() + "-inner"], contents);
             this.writeHtml(ID_DISPLAY_CONTENTS, contents);
         },
         addEntry: function(entry) {
@@ -1956,14 +1961,24 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return HU.image(ramaddaBaseUrl + "/icons/progress.gif");
         },
 	useDisplayMessage:function() {
-	    return false;
+	    return true;
 	},
 	setDisplayMessage:function(msg) {
+	    let contents =  this.jq(ID_DISPLAY_CONTENTS);
+	    let minHeight = contents.css("min-height");
+	    if(!minHeight || minHeight=="0px") {
+		contents.css("min-height","75px");
+		contents.attr("display-set-minheight","true");
+	    }
 	    this.jq(ID_DISPLAY_MESSAGE).html(msg);
 	    this.jq(ID_DISPLAY_MESSAGE).show();
 	},
 	clearDisplayMessage:function() {
+	    let contents =  this.jq(ID_DISPLAY_CONTENTS);
 	    this.jq(ID_DISPLAY_MESSAGE).hide();
+	    if(contents.attr("display-set-minheight")!=null) {
+		contents.css("min-height","");
+	    }
 	},	
         getLoadingMessage: function(msg) {
 	    if(this.getAcceptEventDataSelection()) {
@@ -2589,7 +2604,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
 	makeTree: function(records) {
 	    if(records==null)  {
-		var pointData = this.getData();
+		let pointData = this.getData();
                 if (pointData == null) return null;
                 records = pointData.getRecords();
             }
@@ -2649,11 +2664,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 	    //{label:..., id:...., record:...,	    children:[]}
-            var parentField = this.getFieldById(null, this.getProperty("parentField"));
-	    var idField = this.getFieldById(null, this.getProperty("idField"));
+            let parentField = this.getFieldById(null, this.getProperty("parentField"));
+	    let idField = this.getFieldById(null, this.getProperty("idField"));
 	    if(!parentField) {
 		throw new Error("No parent field specified");
-		return;
 	    }
 	    if(!idField) {
                 throw new Error("No id field specified");
@@ -5955,7 +5969,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    try {
 		let requirement = this.getRequirement();
 		if(requirement) {
-		    console.log("waiting on:" + requirement);
+//		    console.log("waiting on:" + requirement);
 		    HU.waitForIt(requirement,()=>{
 			this.updateUI({reload:reload});
 		    });

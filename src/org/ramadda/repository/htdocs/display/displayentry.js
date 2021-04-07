@@ -2818,7 +2818,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		this.jq(ID_ENTRIES).fadeOut();
 	    } else {
 		let header = (entries && entries.length>0)?this.getResultsHeader(entries,true):"";
-		this.dialog = HU.makeDialog({content:header+msg,anchor:this.jq(ID_DISPLAY_CONTENTS),
+		this.dialog = HU.makeDialog({content:header+msg,anchor:this.getContents(),
 					     draggable:false,header:true});
 	    }
 	},
