@@ -3,33 +3,71 @@
 */
 
 function AreaWidget(display) {
-    const ID_CONTAINS = "contains";
+    const ID_CONTAINS = "mapcontains";
     const ID_NORTH = "north";
     const ID_SOUTH = "south";
     const ID_EAST = "east";
     const ID_WEST = "west";
+    const ID_SETTINGS = "mapsettings";
     const ID_AREA_LINK = "arealink";
+    const ID_MAP_SHOW = "showmap";
+    const ID_MAP_POPUP_WRAPPER = "mappopupwrapper";    
+    const ID_MAP_POPUP = "mappopup";    
+    const ID_CLEAR = "mapclear";    
+    const ID_SET_LOCATION="mapsetlocation";
 
-    RamaddaUtil.inherit(this, {
+
+    $.extend(this, {
+	areaContains:false,
         display: display,
+        initHtml: function() {
+	    this.display.jq(ID_SETTINGS).click(()=>{
+		this.showSettings();
+	    });
+	    this.display.jq(ID_MAP_SHOW).click(()=>{
+		this.showMap();
+	    });
+
+	    let params = {};
+	    this.map =  new RepositoryMap(this.display.domId(ID_MAP_POPUP), params);
+	    this.map.setSelection(this.display.getId(),true,1);
+	},
+        showSettings: function() {
+	    let _this = this;
+	    let html = "";
+	    html+= HU.div([CLASS,"ramadda-clickable",TITLE, "Use my location",ID,this.display.domId(ID_SET_LOCATION)],
+			  HU.getIconImage("fas fa-compass") + SPACE + "Use my location");
+            html += HU.div([CLASS,"ramadda-clickable",TITLE, "Clear form",ID,this.display.domId(ID_CLEAR)],
+			  HU.getIconImage("fas fa-eraser") + SPACE + "Clear form");
+	    html+= HU.div([TITLE, "Search mode: checked - contains, unchecked - overlaps"],
+			  HtmlUtils.checkbox("",[ID, this.display.getDomId(ID_CONTAINS)], this.areaContains) +SPACE + "Contains");
+	    html = HU.div([STYLE,"margin:5px;"], html);
+	    this.settingsDialog = HU.makeDialog({content:html,anchor:this.display.jq(ID_SETTINGS),draggable:false,header:true});
+	    this.display.jq(ID_CONTAINS).change(function(e) {
+		_this.areaContains = $(this).is(':checked');
+	    });
+	    this.display.jq(ID_SET_LOCATION).click(()=>{
+		this.settingsDialog.remove();
+		this.useMyLocation();
+	    });
+	    this.display.jq(ID_CLEAR).click(()=>{
+		this.settingsDialog.remove();
+		this.areaClear();
+	    });	    
+	},
         getHtml: function() {
-            var callback = this.display.getGet();
-            //hack, hack
-            var cbx = HtmlUtils.checkbox(this.display.getDomId(ID_CONTAINS), [TITLE, "Search mode: checked - contains, unchecked - overlaps"], false);
-            var link = HtmlUtils.onClick(callback + ".areaWidget.areaLinkClick();", HtmlUtils.image(root + (this.linkArea ? "/icons/link.png" : "/icons/link_break.png"), [ATTR_TITLE, "Set bounds from map", ATTR_CLASS, "display-area-link", "border", "0", ATTR_ID, this.display.getDomId(ID_AREA_LINK)]));
+            let callback = this.display.getGet();
+            let settings = HU.div([TITLE,"Settings",CLASS,"ramadda-clickable",ID,this.display.domId(ID_SETTINGS)],HU.getIconImage("fas fa-cog"));
+            let link = HtmlUtils.onClick(callback + ".areaWidget.areaLinkClick();", HtmlUtils.image(root + (this.linkArea ? "/icons/link.png" : "/icons/link_break.png"), [ATTR_TITLE, "Set bounds from map", ATTR_CLASS, "display-area-link", "border", "0", ATTR_ID, this.display.getDomId(ID_AREA_LINK)]));
+	    let showMap = HU.div([CLASS,"ramadda-clickable",ID,this.display.domId(ID_MAP_SHOW),TITLE,"Show map selector"], HtmlUtils.getIconImage("fas fa-globe"));
 
-            var mylocation = HtmlUtils.onClick(callback + ".areaWidget.useMyLocation();", HtmlUtils.image(root + "/icons/compass.png"), [ATTR_TITLE, "Set my location", ATTR_CLASS, "display-area-link", "border", "0"]);
-
-
-            var erase = HtmlUtils.onClick(callback + ".areaWidget.areaClear();", HtmlUtils.image(root + "/icons/eraser.png", [ATTR_TITLE, "Clear form", ATTR_CLASS, "display-area-link", "border", "0"]));
-
-            var areaForm = HtmlUtils.openTag(TAG_TABLE, [ATTR_CLASS, "display-area", "border", "0", "cellpadding", "0", "cellspacing", "0"]);
+            let areaForm = HtmlUtils.openTag(TAG_TABLE, [ATTR_CLASS, "display-area", "border", "0", "cellpadding", "0", "cellspacing", "0"]);
             areaForm += HtmlUtils.tr([],
 				     HtmlUtils.td(["align", "center"],
-						  HtmlUtils.leftCenterRight(mylocation,
+						  HtmlUtils.leftCenterRight("",
 									    HtmlUtils.input(ID_NORTH, "", ["placeholder", " N", ATTR_CLASS, "input display-area-input", "size", "5", ATTR_ID,
 													   this.display.getDomId(ID_NORTH), ATTR_TITLE, "North"
-													  ]), link, "20%", "60%", "20%")));
+													  ]), showMap, "20%", "60%", "20%")));
 
             areaForm += HtmlUtils.tr([], HtmlUtils.td([],
 						      HtmlUtils.input(ID_WEST, "", ["placeholder", " W", ATTR_CLASS, "input  display-area-input", "size", "5", ATTR_ID,
@@ -40,13 +78,21 @@ function AreaWidget(display) {
 										   ])));
             areaForm += HtmlUtils.tr([],
 				     HtmlUtils.td(["align", "center"],
-						  HtmlUtils.leftCenterRight(erase, HtmlUtils.input(ID_SOUTH, "", ["placeholder", " S", ATTR_CLASS, "input  display-area-input", "size", "5", ATTR_ID,
+						  HtmlUtils.leftCenterRight("", HtmlUtils.input(ID_SOUTH, "", ["placeholder", " S", ATTR_CLASS, "input  display-area-input", "size", "5", ATTR_ID,
 														  this.display.getDomId(ID_SOUTH), ATTR_TITLE, "South"
-														 ]), cbx)));
+														 ]), settings)));
 
             areaForm += HtmlUtils.closeTag(TAG_TABLE);
+            areaForm += HU.div([ID,this.display.domId(ID_MAP_POPUP_WRAPPER),STYLE,HU.css("display","none")],SPACE+"Shift-drag to select region" +
+				HU.div([ID,this.display.domId(ID_MAP_POPUP),STYLE,HU.css("width","400px","height","300px")]));
             return areaForm;
         },
+	showMap: function() {
+	    let anchor = this.display.jq(ID_MAP_SHOW);
+	    this.dialog = HU.makeDialog({contentId:this.display.domId(ID_MAP_POPUP_WRAPPER),anchor:anchor,draggable:true,header:true});
+	    this.map.selectionPopupInit();
+	    this.map.getMap().updateSize();
+	},
         areaClear: function() {
             $("#" + this.display.getDomId(ID_NORTH)).val("");
             $("#" + this.display.getDomId(ID_WEST)).val("");
@@ -56,16 +102,16 @@ function AreaWidget(display) {
         },
         useMyLocation: function() {
             if (navigator.geolocation) {
-                var _this = this;
+                let _this = this;
                 navigator.geolocation.getCurrentPosition(function(position) {
                     _this.setUseMyLocation(position);
                 });
             } else {}
         },
         setUseMyLocation: function(position) {
-            var lat = position.coords.latitude;
-            var lon = position.coords.longitude;
-            var offset = 5.0;
+            let lat = position.coords.latitude;
+            let lon = position.coords.longitude;
+            let offset = 5.0;
             if (this.display.myLocationOffset)
                 offset = parseFloat(this.display.myLocationOffset);
 
@@ -78,10 +124,10 @@ function AreaWidget(display) {
         },
         areaLinkClick: function() {
             this.linkArea = !this.linkArea;
-            var image = root + (this.linkArea ? "/icons/link.png" : "/icons/link_break.png");
+            let image = root + (this.linkArea ? "/icons/link.png" : "/icons/link_break.png");
             $("#" + this.display.getDomId(ID_AREA_LINK)).attr("src", image);
             if (this.linkArea && this.lastBounds) {
-                var b = this.lastBounds;
+                let b = this.lastBounds;
                 $("#" + this.display.getDomId(ID_NORTH)).val(MapUtils.formatLocationValue(b.top));
                 $("#" + this.display.getDomId(ID_WEST)).val(MapUtils.formatLocationValue(b.left));
                 $("#" + this.display.getDomId(ID_SOUTH)).val(MapUtils.formatLocationValue(b.bottom));
@@ -100,12 +146,7 @@ function AreaWidget(display) {
             $("#" + this.display.getDomId(ID_EAST)).val(MapUtils.formatLocationValue(bounds.right));
         },
         setSearchSettings: function(settings) {
-            var cbx = $("#" + this.display.getDomId(ID_CONTAINS));
-            if (cbx.is(':checked')) {
-                settings.setAreaContains(true);
-            } else {
-                settings.setAreaContains(false);
-            }
+            settings.setAreaContains(this.areaContains);
             settings.setBounds(this.display.getFieldValue(this.display.getDomId(ID_NORTH), null),
 			       this.display.getFieldValue(this.display.getDomId(ID_WEST), null),
 			       this.display.getFieldValue(this.display.getDomId(ID_SOUTH), null),
@@ -128,12 +169,12 @@ function DateRangeWidget(display) {
             this.display.jq(ID_DATE_END).datepicker();
         },
         setSearchSettings: function(settings) {
-            var start = this.display.jq(ID_DATE_START).val();
-            var end = this.display.jq(ID_DATE_START).val();
+            let start = this.display.jq(ID_DATE_START).val();
+            let end = this.display.jq(ID_DATE_START).val();
             settings.setDateRange(start, end);
         },
         getHtml: function() {
-            var html = HtmlUtils.input(ID_DATE_START, "", [CLASS, "display-date-input", "placeholder", " start date", ATTR_ID,
+            let html = HtmlUtils.input(ID_DATE_START, "", [CLASS, "display-date-input", "placeholder", " start date", ATTR_ID,
 							   display.getDomId(ID_DATE_START), "size", "10"
 							  ]) + " - " +
                 HtmlUtils.input(ID_DATE_END, "", [CLASS, "display-date-input", "placeholder", " end date", ATTR_ID,
@@ -220,7 +261,7 @@ function DisplayAnimation(display, enabled,attrs) {
 	    this.end = this.dateMax;
 	    if(!this.dateMin) return;
 	    this.dates=[];
-	    var seen = {};
+	    let seen = {};
 	    records.every(r=>{
 		if(!seen[r.getDate()]) {
 		    seen[r.getDate()] = true;
@@ -464,7 +505,7 @@ function DisplayAnimation(display, enabled,attrs) {
 		let ticks = this.jq(ID_TICKS);
 		ticks.mousedown(function(e) {
 		    _this.mouseIsDown = true;
-		    var parentOffset = $(this).parent().offset(); 
+		    let parentOffset = $(this).parent().offset(); 
 		    _this.mouseX = e.pageX - parentOffset.left;
 		});
 
