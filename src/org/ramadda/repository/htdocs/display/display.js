@@ -518,6 +518,16 @@ function DisplayThing(argId, argProperties) {
         jq: function(componentId) {
             return $("#" + this.getDomId(componentId));
         },
+	selectboxit: function(selector, args) {
+	    let opts = {
+		showEffect: "fadeIn",
+		showEffectSpeed: 400,
+		hideEffect: "fadeOut",
+		hideEffectSpeed: 400,
+	    };
+	    if(args) $.extend(opts,args);
+            selector.selectBoxIt(opts);
+	},
         writeHtml: function(idSuffix, html) {
             $("#" + this.getDomId(idSuffix)).html(html);
         },
