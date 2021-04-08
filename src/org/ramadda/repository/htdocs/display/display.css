@@ -1088,17 +1088,6 @@ svg > g > g:last-child { pointer-events: none }
 
 
 
-.display-entries-results {
-   padding-left: 3px;
-   padding-right: 3px;
-   margin-bottom: 1px;
-   font-style:italic;
-}
-
-
-
-
-
 .display-metadata {
    border-bottom:1px #ccc solid; 
 }
@@ -2493,10 +2482,22 @@ table.dataTable tfoot td {
 
 
 .display-entries-results {
-    height:1.5em;
-    min-height:1.0em;
+   padding-left: 10px;
+   padding-right: 10px;
+   margin-bottom: 2px;
+   font-style:italic;
+   height:1.5em;
+   min-height:1.0em;
 }
 
+.display-entries-entries {
+    margin-left:8px;
+    margin-right:8px;
+    max-width: 400px;
+    overflow-x:auto;
+    max-height:400px;
+    overflow-y:auto;
+}
 
 
 .display-simplesearch-entry {

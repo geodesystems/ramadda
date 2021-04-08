@@ -3522,7 +3522,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    $("#" + id +"_close").click(function() {
 		popup.hide();
 		if(opts.callback) opts.callback(popup);
-		if(opts.remove) popup.remove();
+		if(opts.remove) {
+		    popup.remove();
+		}
 	    });
 	}
 	if(opts.initCall) {
