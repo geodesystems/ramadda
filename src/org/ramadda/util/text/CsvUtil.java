@@ -798,6 +798,20 @@ public class CsvUtil {
         ArrayList<NamedChannel> channels=
             new ArrayList<NamedChannel>();
         for (String file : files) {
+	    if (file.toLowerCase().endsWith(".xls") || file.toLowerCase().endsWith(".xlsx")) {
+		String csv = XlsUtil.xlsToCsv(file);
+		InputStream bais=  new ByteArrayInputStream(csv.getBytes());
+		ReadableByteChannel in = Channels.newChannel(bais);
+		channels.add(new NamedChannel(file, in));
+		continue;
+	    }
+	    if (file.toLowerCase().endsWith(".gz") || file.toLowerCase().endsWith(".gzip")) {
+		InputStream is = new GZIPInputStream(new FileInputStream(file));
+		ReadableByteChannel in = Channels.newChannel(is);
+		channels.add(new NamedChannel(file, in));
+		continue;
+	    }
+
             channels.add(new NamedChannel(file, new RandomAccessFile(file,"r").getChannel()));
         }
         if (inputStream != null) {
