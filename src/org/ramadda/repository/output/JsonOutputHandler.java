@@ -163,7 +163,14 @@ public class JsonOutputHandler extends OutputHandler {
                                       + ".json");
         }
         List<Entry> allEntries = new ArrayList<Entry>();
-        if (request.get(ARG_ONLYENTRY, false)) {
+        if (request.get("ancestors", false)) {
+            allEntries.add(group);
+	    Entry parent  =group.getParentEntry();
+	    while(parent!=null) {
+		allEntries.add(parent);
+		parent  =parent.getParentEntry();
+	    }
+	} else if (request.get(ARG_ONLYENTRY, false)) {
             allEntries.add(group);
         } else {
             allEntries.addAll(subGroups);
@@ -199,14 +206,16 @@ public class JsonOutputHandler extends OutputHandler {
                                   + ".json");
         List<Entry> allEntries = new ArrayList<Entry>();
         allEntries.add(entry);
+        if (request.get("ancestors", false)) {
+	    Entry parent  =entry.getParentEntry();
+	    while(parent!=null) {
+		allEntries.add(parent);
+		parent  =parent.getParentEntry();
+	    }
+	}
         StringBuilder sb = new StringBuilder();
-        if (outputType.equals(OUTPUT_JSON_POINT)) {
-            makeJson(request, allEntries, sb);
-        } else {
-            makeJson(request, allEntries, sb);
-        }
+	makeJson(request, allEntries, sb);
         request.setCORSHeaderOnResponse();
-
         return new Result("", sb, Json.MIMETYPE);
     }
 
@@ -454,6 +463,11 @@ public class JsonOutputHandler extends OutputHandler {
         if ( !displayName.equals(entryName)) {
             Json.quoteAttr(items, "displayName", displayName);
         }
+
+	String snippet = getWikiManager().getSnippet(request, entry, true,null);
+	if(snippet!=null) {
+	    Json.quoteAttr(items, "snippet", snippet);
+	}
 
         Json.quoteAttr(items, "description", entry.getDescription());
         TypeHandler type     = entry.getTypeHandler();
