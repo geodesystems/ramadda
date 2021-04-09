@@ -382,7 +382,7 @@ public class HtmlOutputHandler extends OutputHandler {
 							      OutputType.TYPE_MENU);
         } else {
 	    StringBuilder sb = new StringBuilder();
-	    String snippet = getWikiManager().getSnippet(request, entry, true);
+	    String snippet = getWikiManager().getSnippet(request, entry, true,null);
 	    if(Utils.stringDefined(snippet)) {
 		sb.append(snippet);
 		sb.append(HU.br());
@@ -889,7 +889,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
         if (cnt == 0) {
             parent.getTypeHandler().handleNoEntriesHtml(request, parent, sb);
-	    String snippet = getWikiManager().getSnippet(request, parent, true);
+	    String snippet = getWikiManager().getSnippet(request, parent, true,null);
 	    if(Utils.stringDefined(snippet)) {
 		sb.append(snippet);
 		sb.append(HU.br());
@@ -1187,7 +1187,7 @@ public class HtmlOutputHandler extends OutputHandler {
         List         tabContents = new ArrayList<String>();
         StringBuffer basicSB     = new StringBuffer();
         if (includeSnippet) {
-	    String snippet = getWikiManager().getSnippet(request, entry, true);
+	    String snippet = getWikiManager().getSnippet(request, entry, true,null);
 	    if(Utils.stringDefined(snippet)) {
 		basicSB.append(snippet);
 		basicSB.append(HU.br());

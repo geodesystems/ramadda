@@ -2460,7 +2460,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 StringBuilder content = new StringBuilder();
                 content.append(prefix);
                 HU.open(content, HU.TAG_DIV, divExtra);
-                content.append(getSnippet(request, child, true));
+                content.append(getSnippet(request, child, true,""));
                 content.append(childsHtml);
                 content.append(suffix);
                 if (includeLinkAfter) {
@@ -3228,7 +3228,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     linkLabel = HU.img(getPageHandler().getIconUrl(request,
                             child)) + HU.space(1) + linkLabel;
                 }
-		String snippet =  includeSnippet?getSnippet(request,  child, true):null;
+		String snippet =  includeSnippet?getSnippet(request,  child, true,""):null;
 		if(decorate) {
 		    linkLabel =  "<div class=' ramadda-entry-nav-page  ramadda-entry-nav-page-decorated '><div class='ramadda-entry-nav-page-label'>" + linkLabel +"</div>" + (snippet!=null?snippet:"") + "</div>";
 		}
@@ -3579,11 +3579,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      *
      * @throws Exception _more_
      */
-    public String getSnippet(Request request, Entry child, boolean wikify)
+    public String getSnippet(Request request, Entry child, boolean wikify, String dflt)
             throws Exception {
         String snippet = getRawSnippet(request, child, wikify);
         if (snippet == null) {
-            return "";
+            return dflt;
         }
 
         return HU.div(snippet, HU.cssClass("ramadda-snippet"));
@@ -3761,7 +3761,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                        "showSnippetHover", false);
 
         if (showSnippet || showSnippetHover) {
-            String snippet = getSnippet(request, entry, false);
+            String snippet = getSnippet(request, entry, false,null);
             if (Utils.stringDefined(snippet)) {
                 snippet = wikifyEntry(request, entry, snippet, false, null,
                                       null, wikiUtil.getNotTags());

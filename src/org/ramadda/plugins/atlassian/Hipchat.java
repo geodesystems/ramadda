@@ -329,7 +329,7 @@ public class Hipchat {
         StringBuilder desc = new StringBuilder();
         String snippet =
             request.getRepository().getWikiManager().getSnippet(request,
-								entry, false);
+								entry, false,null);
         if (Utils.stringDefined(snippet)) {
             snippet = snippet.replaceAll("<div[^>]+>", "");
             snippet = snippet.replaceAll("</div>", "");

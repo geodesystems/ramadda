@@ -453,6 +453,29 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+    public void checkParents() throws Exception {
+        Statement statement =
+            getDatabaseManager().select(
+					Tables.ENTRIES.COL_ID+"," +Tables.ENTRIES.COL_PARENT_GROUP_ID,
+					Misc.newList(Tables.ENTRIES.NAME),
+					null);
+        SqlUtil.Iterator iter = getDatabaseManager().getIterator(statement);
+        ResultSet        results;
+	int cnt = 0;
+	while ((results = iter.getNext()) != null) {
+	    if((cnt%100)==0) System.err.print(".");
+            String id = results.getString(1);
+            String parentId = results.getString(1);
+	    Entry parent = getEntry(null, parentId,false);
+	    if(parent!=null) continue;
+	    Entry entry = getEntry(null,id,false);
+	    System.err.println("entry:" + (entry) +" " + id);
+	    if(cnt++>10) break;
+	}
+    }
+	
+
+
     /**
      * _more_
      *
@@ -5682,7 +5705,7 @@ public class EntryManager extends RepositoryManager {
         String        entryIcon = HU.getIconImage(getPageHandler().getIconUrl(request, entry));
 	String link = entryIcon+HU.SPACE+linkText;
 	StringBuilder inner = new StringBuilder();
-	String snippet = getWikiManager().getSnippet(request, entry, true);
+	String snippet = getWikiManager().getSnippet(request, entry, true,null);
 	if(Utils.stringDefined(snippet)) {
 	    HU.div(inner,snippet,HU.cssClass("ramadda-snippet"));
 	}

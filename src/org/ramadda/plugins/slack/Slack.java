@@ -495,7 +495,7 @@ public class Slack {
             StringBuffer desc = new StringBuffer();
             String snippet =
                 request.getRepository().getWikiManager().getSnippet(request,
-								    entry,true);
+								    entry,true,null);
             if (Utils.stringDefined(snippet)) {
                 desc.append(snippet);
                 desc.append("\n");
