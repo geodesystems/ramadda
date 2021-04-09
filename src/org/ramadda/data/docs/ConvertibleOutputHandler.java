@@ -354,7 +354,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
             //A hack because the Request changes any incoming "script" to "_script_"
             commandString = commandString.replaceAll("_script_", "script");
             List<StringBuilder> toks =
-                getTypeHandler(entry).tokenizeCommands(commandString);
+                CsvUtil.tokenizeCommands(commandString);
 
             //      System.err.println("TOKS:" + toks);
             List<List<String>> llines  = new ArrayList<List<String>>();

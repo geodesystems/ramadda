@@ -23,13 +23,11 @@ import org.ramadda.data.services.PointTypeHandler;
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 
-
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
+import org.ramadda.util.text.CsvUtil;
 
 import org.w3c.dom.*;
-
-import ucar.unidata.util.StringUtil;
 
 import java.io.File;
 
@@ -96,7 +94,7 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
             throws Exception {
         String commands =
             (String) entry.getValue(ConvertibleTypeHandler.IDX_COMMANDS);
-        List<StringBuilder> toks    = tokenizeCommands(commands);
+        List<StringBuilder> toks    = CsvUtil.tokenizeCommands(commands);
         List<String>        args    = new ArrayList<String>();
         for (int j = 0; j < toks.size(); j++) {
             String arg = toks.get(j).toString();
@@ -128,30 +126,6 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
         return file;
     }
 
-    /**
-     * _more_
-     *
-     * @param commandString _more_
-     *
-     * @return _more_
-     */
-    public List<StringBuilder> tokenizeCommands(String commandString) {
-        StringBuilder tmp = new StringBuilder();
-        for (String line : StringUtil.split(commandString, "\n")) {
-            String tline = line.trim();
-            if (tline.startsWith("-quit")) {
-                break;
-            }
-            if ( !tline.startsWith("#")) {
-                tmp.append(line);
-                tmp.append("\n");
-            }
-        }
-        List<StringBuilder> toks =
-            Utils.parseMultiLineCommandLine(tmp.toString());
-
-        return toks;
-    }
 
     
 
