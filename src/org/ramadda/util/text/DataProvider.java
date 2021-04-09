@@ -739,13 +739,21 @@ public abstract class DataProvider {
 
             //Check tables whitelist
             String tables   = csvUtil.getProperty("csv_" + db + "_tables",
-                                  "");
-            List   okTables = Arrays.asList(tables.split(","));
+						  "");
+            List   okTables = Utils.split(tables,",",true,true);
             if ((okTables.size() == 1) && okTables.get(0).equals("*")) {
                 okTables = SqlUtil.getTableNames(this.connection);
             }
 
 	    List<String> tableList = Utils.split(table,",",true,true);
+	    if(tableList.size()==0) {
+		throw new IllegalArgumentException("No table specified"
+						   + "\nAvailable tables:\n"
+						   + Utils.wrap(okTables, "\t", "\n"));
+	    }
+		
+
+
 	    for(String t: tableList) {
 		if ( !Utils.containsIgnoreCase(okTables, t)) {
 		    throw new IllegalArgumentException("Unknown table:" + t
@@ -779,19 +787,20 @@ public abstract class DataProvider {
             }
 	    if (where != null && where.length()>0) {
                 for (String tok : where.split(";")) {
-                    String[] toks = tok.split(",");
-                    if (toks.length != 3) {
+                    List<String> toks = StringUtil.splitUpTo(tok, " ",3);
+                    if (toks.size() != 3) {
                         throw new IllegalArgumentException("Bad where value:"
                                 + tok);
                     }
-                    String expr  = toks[1].toLowerCase();
-                    String value = toks[2];
+                    String col  = toks.get(0);
+                    String expr  = toks.get(1).toLowerCase().trim();
+                    String value = toks.get(2);
                     if (expr.equals("like")
                             && !(value.startsWith("%")
                                  || value.endsWith("%"))) {
                         value = "%" + value + "%";
                     }
-                    clauses.add(new Clause(toks[0], expr, value));
+                    clauses.add(new Clause(col, expr, value));
                 }
             }
             Clause clause = (clauses.size() > 0)

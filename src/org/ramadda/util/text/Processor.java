@@ -4141,12 +4141,13 @@ public abstract class Processor extends CsvOperator {
             if (cols == null) {
                 cols = new ArrayList<ColStat>();
                 for (int i = 0; i < row.size(); i++) {
-                    cols.add(new ColStat(util, headerRow.getString(i),
+                    cols.add(new ColStat(util, i<headerRow.size()?headerRow.getString(i):"",
                                          row.getString(i)));
                 }
             }
             for (int i = 0; i < row.size(); i++) {
-                cols.get(i).addValue(row.getString(i));
+		if(i<cols.size())
+		    cols.get(i).addValue(row.getString(i));
             }
 
             addRow(row);
@@ -4326,7 +4327,8 @@ public abstract class Processor extends CsvOperator {
                     Row r = new Row();
                     for (int i = 0; i < cols.size(); i++) {
                         ColStat col = cols.get(i);
-                        r.add(col.format(row.get(i)));
+			if(i<row.size()) 
+			    r.add(col.format(row.get(i)));
                     }
                     printRow(info, r, false);
                 }

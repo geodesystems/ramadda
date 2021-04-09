@@ -798,13 +798,21 @@ public class CsvUtil {
         ArrayList<NamedChannel> channels=
             new ArrayList<NamedChannel>();
         for (String file : files) {
-	    if (file.toLowerCase().endsWith(".xls") || file.toLowerCase().endsWith(".xlsx")) {
+	    if (file.toLowerCase().endsWith(".xls")) {
 		String csv = XlsUtil.xlsToCsv(file);
 		InputStream bais=  new ByteArrayInputStream(csv.getBytes());
 		ReadableByteChannel in = Channels.newChannel(bais);
 		channels.add(new NamedChannel(file, in));
 		continue;
 	    }
+	    if (file.toLowerCase().endsWith(".xlsx")) {
+		String csv = XlsUtil.xlsxToCsv(file);
+		InputStream bais=  new ByteArrayInputStream(csv.getBytes());
+		ReadableByteChannel in = Channels.newChannel(bais);
+		channels.add(new NamedChannel(file, in));
+		continue;
+	    }
+
 	    if (file.toLowerCase().endsWith(".gz") || file.toLowerCase().endsWith(".gzip")) {
 		InputStream is = new GZIPInputStream(new FileInputStream(file));
 		ReadableByteChannel in = Channels.newChannel(is);
@@ -879,8 +887,12 @@ public class CsvUtil {
 					       + file);
         }
 
-        if (file.endsWith(".xls") || file.endsWith(".xlsx")) {
+        if (file.endsWith(".xls")) {
             String csv = XlsUtil.xlsToCsv(file);
+            return new BufferedInputStream(
+					   new ByteArrayInputStream(csv.getBytes()));
+	} else if (file.endsWith(".xlsx")) {
+            String csv = XlsUtil.xlsxToCsv(file);
             return new BufferedInputStream(
 					   new ByteArrayInputStream(csv.getBytes()));
         } else if (file.toLowerCase().endsWith(".zip")) {
@@ -1459,12 +1471,12 @@ public class CsvUtil {
         new Cmd("-tokenize", "Tokenize the input from the pattern",
                 new Arg("header", "header1,header2..."),
                 new Arg("pattern", "", "type", "pattern")),
-
         new Cmd("-sql", "Connect to the given database",
                 new Arg("db", "The database id (defined in the environment)","type","enumeration","values","property:csv_dbs"),
+		new Arg("table", "Comma separate list of tables to select from","size","60"),
 		new Arg("columns", "Comma separated list of columns to select"),
-		new Arg("where", "c1,<|>|<>|like|notlike,value;..."),				
-		new Arg("properties", "join col1,col2")),
+		new Arg("where", "column1 expr value\ncolumn2 expr value\n...\nWhere expr is: =|<|>|<>|like|notlike","type","rows","delimiter",";","size","60"),				
+		new Arg("properties", "name space value properties. e.g., join col1,col2")),
         new Cmd("-prune", "Prune out the first N bytes",
                 new Arg("bytes", "Number of leading bytes to remove", "type",
                         "number")),
@@ -2770,9 +2782,10 @@ public class CsvUtil {
 
 	defineFunction("-sql",4,(ctx,args,i) -> {
 		//-sql db table cols "col1 value col2 value"
-		ctx.getProviders().add(new DataProvider.SqlDataProvider(args.get(++i), args.get(++i),
+		ctx.getProviders().add(new DataProvider.SqlDataProvider(args.get(++i),
 									args.get(++i),
-									args.get(++i),																		
+									args.get(++i),
+									args.get(++i),																	
 									parseProps(args.get(++i))));
 		return i;
 	    });
@@ -3488,6 +3501,26 @@ public class CsvUtil {
 	}
 	return props;
     }
+
+
+    public static List<StringBuilder> tokenizeCommands(String commandString) {
+        StringBuilder tmp = new StringBuilder();
+        for (String line : StringUtil.split(commandString, "\n")) {
+            String tline = line.trim();
+            if (tline.startsWith("-quit")) {
+                break;
+            }
+            if ( !tline.startsWith("#")) {
+                tmp.append(line);
+                tmp.append("\n");
+            }
+        }
+        List<StringBuilder> toks =
+            Utils.parseMultiLineCommandLine(tmp.toString());
+
+        return toks;
+    }
+
 
 
     /**
