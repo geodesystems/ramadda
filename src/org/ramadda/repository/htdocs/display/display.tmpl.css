@@ -903,8 +903,8 @@ svg > g > g:last-child { pointer-events: none }
 }
 
 .display-search-label {
-    margin-top:5px;
-    font-weight:600;
+    margin-top:8px;
+    font-weight:500;
 }
 
 .display-search-widget {
@@ -915,8 +915,51 @@ svg > g > g:last-child { pointer-events: none }
    padding-left:15px;
 }
 
+.display-search-metadata-block {
+    padding-bottom:5px;
+    border-bottom: var(--basic-border);
+}
 
+.display-search-metadata-block-inner {
+    max-height: 100px;
+    overflow-y: auto;
+}
 
+.display-search-header {
+    margin-bottom:2px;
+}
+
+.display-search-bar {
+    min-height:2.5em;
+}
+
+.display-search-tag-group {
+    display:inline-block;
+}
+
+.display-search-tag {
+    display:inline-block;
+    margin:5px;
+    border-radius: 10px;
+    padding:1px;
+    padding-left:8px;
+    padding-right:10px;
+    cursor:pointer;
+    background:#E5E5E5;
+    border:1px solid #ccc;
+}
+
+.display-search-tag:hover {
+    border:1px solid #999;
+}
+
+.display-search-tag span i {
+    color:#666;
+}
+
+.display-search-orderby {
+    font-size:8pt;
+}
 
 .display-cell {
   padding:10px;
@@ -2479,6 +2522,9 @@ table.dataTable tfoot td {
   border-radius: 5px;
   font-size: 11pt;
 }
+
+
+
 
 
 .display-entries-results {

@@ -40,7 +40,7 @@ function AreaWidget(display) {
             html += HU.div([CLASS,"ramadda-clickable",TITLE, "Clear form",ID,this.display.domId(ID_CLEAR)],
 			  HU.getIconImage("fas fa-eraser") + SPACE + "Clear form");
 	    html+= HU.div([TITLE, "Search mode: checked - contains, unchecked - overlaps"],
-			  HtmlUtils.checkbox("",[ID, this.display.getDomId(ID_CONTAINS)], this.areaContains) +SPACE + "Contains");
+			  HtmlUtils.checkbox("",[ID, this.display.getDomId(ID_CONTAINS)], this.areaContains) +HU.tag("label",[CLASS,"ramadda-clickable","for",this.display.getDomId(ID_CONTAINS)], SPACE + "Contains"));
 	    html = HU.div([STYLE,"margin:5px;"], html);
 	    this.settingsDialog = HU.makeDialog({content:html,anchor:this.display.jq(ID_SETTINGS),draggable:false,header:true});
 	    this.display.jq(ID_CONTAINS).change(function(e) {
@@ -58,32 +58,29 @@ function AreaWidget(display) {
         getHtml: function() {
             let callback = this.display.getGet();
             let settings = HU.div([TITLE,"Settings",CLASS,"ramadda-clickable",ID,this.display.domId(ID_SETTINGS)],HU.getIconImage("fas fa-cog"));
-            let link = HtmlUtils.onClick(callback + ".areaWidget.areaLinkClick();", HtmlUtils.image(root + (this.linkArea ? "/icons/link.png" : "/icons/link_break.png"), [ATTR_TITLE, "Set bounds from map", ATTR_CLASS, "display-area-link", "border", "0", ATTR_ID, this.display.getDomId(ID_AREA_LINK)]));
 	    let showMap = HU.div([CLASS,"ramadda-clickable",ID,this.display.domId(ID_MAP_SHOW),TITLE,"Show map selector"], HtmlUtils.getIconImage("fas fa-globe"));
 
-            let areaForm = HtmlUtils.openTag(TAG_TABLE, [ATTR_CLASS, "display-area", "border", "0", "cellpadding", "0", "cellspacing", "0"]);
+	    let input = (id,place,title)=>{
+		return HtmlUtils.input(id, "", ["placeholder", place, ATTR_CLASS, "input display-area-input", "size", "5", ATTR_ID,
+						this.display.getDomId(id), ATTR_TITLE, title]);
+	    };
+            let areaForm = HtmlUtils.openTag(TAG_TABLE, [ATTR_CLASS, "display-area"]);
             areaForm += HtmlUtils.tr([],
 				     HtmlUtils.td(["align", "center"],
 						  HtmlUtils.leftCenterRight("",
-									    HtmlUtils.input(ID_NORTH, "", ["placeholder", " N", ATTR_CLASS, "input display-area-input", "size", "5", ATTR_ID,
-													   this.display.getDomId(ID_NORTH), ATTR_TITLE, "North"
-													  ]), showMap, "20%", "60%", "20%")));
+									    input(ID_NORTH, " N","North"),showMap, "20%", "60%", "20%")));
 
             areaForm += HtmlUtils.tr([], HtmlUtils.td([],
-						      HtmlUtils.input(ID_WEST, "", ["placeholder", " W", ATTR_CLASS, "input  display-area-input", "size", "5", ATTR_ID,
-										    this.display.getDomId(ID_WEST), ATTR_TITLE, "West"
-										   ]) +
-						      HtmlUtils.input(ID_EAST, "", ["placeholder", " E", ATTR_CLASS, "input  display-area-input", "size", "5", ATTR_ID,
-										    this.display.getDomId(ID_EAST), ATTR_TITLE, "East"
-										   ])));
+						      input(ID_WEST, " W", "West") +
+						      input(ID_EAST, " E", "East")));
+
             areaForm += HtmlUtils.tr([],
 				     HtmlUtils.td(["align", "center"],
-						  HtmlUtils.leftCenterRight("", HtmlUtils.input(ID_SOUTH, "", ["placeholder", " S", ATTR_CLASS, "input  display-area-input", "size", "5", ATTR_ID,
-														  this.display.getDomId(ID_SOUTH), ATTR_TITLE, "South"
-														 ]), settings)));
+						  HtmlUtils.leftCenterRight("", input(ID_SOUTH,  " S", "South"), settings, "20%", "60%", "20%")));
+
 
             areaForm += HtmlUtils.closeTag(TAG_TABLE);
-            areaForm += HU.div([ID,this.display.domId(ID_MAP_POPUP_WRAPPER),STYLE,HU.css("display","none")],SPACE+"Shift-drag to select region" +
+            areaForm += HU.div([ID,this.display.domId(ID_MAP_POPUP_WRAPPER),STYLE,HU.css("display","none")],SPACE+"Shift-drag: select region. Cmd-drag: move region" +
 				HU.div([ID,this.display.domId(ID_MAP_POPUP),STYLE,HU.css("width","400px","height","300px")]));
             return areaForm;
         },

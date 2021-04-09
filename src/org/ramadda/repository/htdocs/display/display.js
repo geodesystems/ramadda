@@ -2028,6 +2028,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             return dflt;
         },
+        getFieldValues: function(id, dflt) {
+            var jq = $("#" + id);
+            if (jq.length > 0) {
+		let v = [];
+		jq.each(function(){
+		    v.push($(this).val());
+		});
+		return v;
+            }
+            return dflt;
+        },
+
         getFooter: function() {
             return HU.div([ATTR_ID, this.getDomId(ID_FOOTER), ATTR_CLASS, "display-footer"],
 			  HU.leftRight(HU.div([ATTR_ID, this.getDomId(ID_FOOTER_LEFT), ATTR_CLASS, "display-footer-left"], ""),
