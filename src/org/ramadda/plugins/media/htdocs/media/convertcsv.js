@@ -38,10 +38,7 @@ var Csv = {
 	html += HU.div(["class","ramadda-menubar","style","width:100%;"],HU.leftRightTable(topLeft,topRight));
 	html += HtmlUtil.textarea("",text,[STYLE,"width:100%;", ID,Csv.inputId, "rows", "5"]);
 	let left ="";
-	left += HtmlUtil.href("javascript:Csv.display('-raw')","Raw",["title", "Don't process. Just show the raw data", CLASS,"convert_button"])+" ";
-	left += HtmlUtil.href("javascript:Csv.display('-print')","Text",["title","Display text output",CLASS,"convert_button"])+" ";
-	left += HtmlUtil.href("javascript:Csv.display('-printheader',null,true)","Header",["title", "Print the header (ctrl-h)", CLASS,"convert_button"])+" ";
-	left += HtmlUtil.href("javascript:Csv.display('-record')","Records",["title","Display output as records", CLASS,"convert_button"])+" ";
+	left += HtmlUtil.span([ID,"csvconvert_outputs",CLASS,"convert_button"], "Outputs") +" ";
 	left += HtmlUtil.href("javascript:Csv.display('-stats',null,true)","Table",["title","Display table (ctrl-h)", CLASS,"convert_button"])+" ";
 	left += HtmlUtil.href("javascript:Csv.display('',true)","Process",["title","Process entire file", CLASS,"convert_button"])+" ";
 	let right = "";
@@ -56,6 +53,21 @@ var Csv = {
 	$("#convertcsv_div").html(html);
 	Csv.makeEditor();
 	$(".convert_button").button();
+	$("#csvconvert_outputs").click(function(){
+	    let html = Csv.outputCommands.reduce((acc,cmd)=>{
+		if(cmd.command=="-stats") return acc;
+		acc+=HU.div([CLASS,"ramadda-clickable","command",cmd.command,TITLE,cmd.command],cmd.description);
+		return acc;
+	    },"");
+	    html = HU.div(["style",HU.css("margin","10px")],html);
+	    let dialog = HU.makeDialog({content:html,anchor:$(this)});
+	    dialog.find(".ramadda-clickable").click(function(){
+		let command = $(this).attr("command");
+		dialog.remove();
+		Csv.display(command);
+
+	    });
+	});
 
 	$("#convertcsv_settings").click(function(e) {
 	    let html ="";
@@ -67,7 +79,7 @@ var Csv = {
 
 	    let dialog = HU.makeDialog({content:html,my:"right top",at:"right bottom",xtitle:"",anchor:$(this),draggable:true,header:true,inPlace:false});
 	    HU.onReturnEvent("#convertcsv_maxrows",input=>{
-		Csv.maxRows = input.val();
+	 	Csv.maxRows = input.val();
 		dialog.remove();
 	    });
 
@@ -101,40 +113,6 @@ var Csv = {
 	    var popup = $("#csv_popup");
 	    popup.css("display","none");
 	});
-	$("#csvconvert_add").click(function() {
-	    if(!Csv.commands) return;
-	    if(!Csv.addDialog) {
-		let html = "";
-		Csv.commands.forEach(cmd=>{
-		    var command = cmd.command;
-		    if(cmd.isCategory) {
-			html +=HtmlUtil.div([STYLE,HU.css("font-weight","bold","font-size","14pt")], cmd.description);
-			return;
-		    }
-		    if(!command) return;
-		    if(!command.startsWith("-")) return;
-		    if(command.startsWith("-help")) return;
-		    var tooltip = "";
-		    var desc = cmd.description;
-		    if(desc && desc!="") {
-			tooltip =desc+"\n";
-		    }
-		    tooltip += command;
-		    cmd.args.forEach(a=>{
-			let desc = a.desc||"";
-			if(desc!="") desc = " "  + desc;
-			tooltip +=" <" +a.id  +desc+ "> ";
-		    });
-		    tooltip = tooltip.replace(/\"/g,"&quot;").replace(/\(/g,"").replace(/\)/g,"");
-		    var label = cmd.label ||  Utils.camelCase(cmd.command.replace("-",""));
-		    html +=HU.div([CLASS,"convert_add",TITLE,tooltip],HtmlUtil.onClick("Csv.addCommand('" + command +"')",label));
-		});
-		html = HU.div([STYLE,HU.css("margin-left","10px","max-height","300px","overflow-y","auto")], html);
-		Csv.addDialog =  HU.makeDialog({content:html,my:"left top",at:"right+10 top",anchor:$(this),draggable:true,header:true,inPlace:false});
-	    }
-	    Csv.addDialog.show();
-	});
-
 
 	var helpUrl = Csv.getUrl("-helpjson");
 	var jqxhr = $.getJSON( helpUrl, function(data) {
@@ -150,6 +128,8 @@ var Csv = {
 		let menus = [];
 		let fileSelect =  HU.div(["id","convertcsv_file1_selectlink", "class","ramadda-highlightable  ramadda-menubar-button"], "Select file");
 		let categories = {};
+		let category="";
+		Csv.outputCommands = [];
 		Csv.commands.forEach(cmd=>{
 		    var command = cmd.command;
 		    if(cmd.isCategory) {
@@ -159,9 +139,13 @@ var Csv = {
 			menus.push(HU.div(["class","ramadda-highlightable ramadda-menubar-button","category",category], category));
 			return;
 		    }
-		    if(!command) return;
-		    if(!command.startsWith("-")) return;
-		    if(command.startsWith("-help")) return;
+		    if(!command || !command.startsWith("-") || command.startsWith("-help")) return;
+		    if(category=="Output") {
+			if(cmd.args.length==0) {
+			    Csv.outputCommands.push(cmd);
+			    return;
+			}
+		    }
 		    var tooltip = "";
 		    var desc = cmd.description;
 		    if(desc && desc!="") {
@@ -259,141 +243,13 @@ var Csv = {
 	    bindKey: {mac: "ctrl-h", win: "ctrl-h"}
 	})
 
-	Csv.editor.container.addEventListener("contextmenu", function(e) {
-	    e.preventDefault();
-	    let cursor = Csv.editor.getCursorPosition();
-	    let index = Csv.editor.session.doc.positionToIndex(cursor);
-	    let text =Csv.editor.getValue();
-	    let menu = "";
-	    let tmp = index;
-	    let left = -1;
-	    let right = -1;
-	    let lastWasChar=false;
-	    let lastWasHash=false;
-	    while(tmp>=0) {
-		let c = text[tmp];
-		if (c == "-") {
-		    if(lastWasChar) {
-			left = tmp;
-			break;
-		    }
-		}
-		if(c=="\n" && lastWasHash) {
-		    break;
-		}
-		lastWasChar = String(c).match(/[a-zA-Z]/);
-		//	    if(c==" " || c=="\n" || c =="\"" || c=="{" || c=="}") break;
-		tmp--;
-		lastWasHash = (c=="#") ;
-	    }
+	Csv.editor.container.addEventListener("mouseup", (e) =>{
+	    if(!e.metaKey)  return;
+	    this.handleMouseUp(e);
+	});
 
-	    if(left>=0) {
-		tmp = left;
-		while(tmp<text.length) {
-		    right  = tmp;
-		    let c = text[tmp];
-		    if (c == " " || c=="\n") {
-			break;
-		    }
-		    tmp++;
-		}
-		if(right<0) return;
-		let command = Csv.commandsMap[text.substring(left,right)];
-		if(!command) return;
-		let values = [];
-		let tok = null;
-		let append = (c)=>{
-		    if(tok == null) tok = c;
-		    else tok+=c;
-		}
-		let end = (c)=>{
-		    if(tok != null) values.push(tok);
-		    tok = null;
-		}
-		let inQuote = false;
-		let bracketCnt = 0;
-		let inEscape = false;
-		while(right<text.length && values.length<command.args.length) {
-		    let c = text[right++];
-		    if(c=="\\") {
-			if(inEscape)
-			    append(c);
-			else
-			    inEscape = true;
-			continue;
-		    }
-		    if(inEscape) {
-			append(c);
-			inEscape = false;
-			continue;
-		    }
-
-		    if(bracketCnt==0) {
-			if(c=="{") {
-			    if(inQuote) {
-				append(c);
-			    } else {
-				bracketCnt++;
-			    }
-			    continue;
-			}
-			if(c=="\"") {
-			    inQuote = !inQuote;
-			    if(!inQuote) {
-				if(tok==null) tok="";
-				end();
-			    }
-			    continue;
-			}
-			if(!inQuote && (c==" " || c=="\n")) {
-			    end();
-			} else {
-			    append(c);
-			}
-			continue;
-		    } else {
-			if(c=="}") {
-			    bracketCnt--;
-			    if(bracketCnt==0) {
-				bracketCnt=0;
-				end();
-			    } else if(bracketCnt<0) {
-				bracketCnt=0;			    
-			    } else {
-				append(c);
-			    }
-			} else if(c=="{") {
-			    append(c);
-			    bracketCnt++;
-			} else  {
-			    append(c);
-			}
-		    }
-		}		
-		end();
-		let c1 = Csv.editor.session.doc.indexToPosition(left);
-		let c2 = Csv.editor.session.doc.indexToPosition(right);
-		//Need to do this to prevent global conflicts
-		var Range = ace.require('ace/range').Range;
-		let r = new  Range(c1.row, c1.column, c2.row, c2.column);
-		Csv.editor.selection.setRange(new Range(c1.row, c1.column, c2.row, c2.column));
-		let callback = (values,args)=>{
-		    if(!values) {
-			Csv.editor.clearSelection();
-			return;
-		    }
-		    text = text.substring(0,left) + command.command +" " +args + text.substring(right);
-		    let idx = left+command.command.length +1 + args.length;
-		    Csv.editor.setValue(text);
-		    Csv.editor.clearSelection();
-		    let cursor = Csv.editor.session.doc.indexToPosition(idx);
-		    Csv.editor.selection.moveTo(cursor.row, cursor.column);
-		    Csv.editor.focus();
-		    
-		};
-		Csv.addCommand(command, {add:false,values:values,callback:callback,
-					 event:e});
-	    }
+	Csv.editor.container.addEventListener("contextmenu",(e)=> {
+	    this.handleMouseUp(e,null,true);
 	});
 
 	addHandler({
@@ -414,6 +270,143 @@ var Csv = {
     },
 
 
+    handleMouseUp(e,result) {
+	e.preventDefault();
+	let cursor = Csv.editor.getCursorPosition();
+	let index = Csv.editor.session.doc.positionToIndex(cursor);
+	let text = Csv.editor.getValue();
+	let menu = "";
+	let tmp = index;
+	let left = -1;
+	let right = -1;
+	let lastWasChar=false;
+	let lastWasHash=false;
+	while(tmp>=0) {
+	    let c = text[tmp];
+	    if (c == "-") {
+		if(lastWasChar) {
+		    left = tmp;
+		    break;
+		}
+	    }
+	    if(c=="\n" && lastWasHash) {
+		break;
+	    }
+	    lastWasChar = String(c).match(/[a-zA-Z]/);
+	    //	    if(c==" " || c=="\n" || c =="\"" || c=="{" || c=="}") break;
+	    tmp--;
+	    lastWasHash = (c=="#") ;
+	}
+
+	if(left>=0) {
+	    tmp = left;
+	    while(tmp<text.length) {
+		right  = tmp;
+		let c = text[tmp];
+		if (c == " " || c=="\n") {
+		    break;
+		}
+		tmp++;
+	    }
+	    if(right<0) return;
+	    let command = Csv.commandsMap[text.substring(left,right)];
+	    if(!command) return;
+	    let values = [];
+	    let tok = null;
+	    let append = (c)=>{
+		if(tok == null) tok = c;
+		else tok+=c;
+	    }
+	    let end = (c)=>{
+		if(tok != null) values.push(tok);
+		tok = null;
+	    }
+	    let inQuote = false;
+	    let bracketCnt = 0;
+	    let inEscape = false;
+	    while(right<text.length && values.length<command.args.length) {
+		let c = text[right++];
+		if(c=="\\") {
+		    if(inEscape)
+			append(c);
+		    else
+			inEscape = true;
+		    continue;
+		}
+		if(inEscape) {
+		    append(c);
+		    inEscape = false;
+		    continue;
+		}
+
+		if(bracketCnt==0) {
+		    if(c=="{") {
+			if(inQuote) {
+			    append(c);
+			} else {
+			    bracketCnt++;
+			}
+			continue;
+		    }
+		    if(c=="\"") {
+			inQuote = !inQuote;
+			if(!inQuote) {
+			    if(tok==null) tok="";
+			    end();
+			}
+			continue;
+		    }
+		    if(!inQuote && (c==" " || c=="\n")) {
+			end();
+		    } else {
+			append(c);
+		    }
+		    continue;
+		} else {
+		    if(c=="}") {
+			bracketCnt--;
+			if(bracketCnt==0) {
+			    bracketCnt=0;
+			    end();
+			} else if(bracketCnt<0) {
+			    bracketCnt=0;			    
+			} else {
+			    append(c);
+			}
+		    } else if(c=="{") {
+			append(c);
+			bracketCnt++;
+		    } else  {
+			append(c);
+		    }
+		}
+	    }		
+	    end();
+	    let c1 = Csv.editor.session.doc.indexToPosition(left);
+	    let c2 = Csv.editor.session.doc.indexToPosition(right);
+	    //Need to do this to prevent global conflicts
+	    var Range = ace.require('ace/range').Range;
+	    let r = new  Range(c1.row, c1.column, c2.row, c2.column);
+	    Csv.editor.selection.setRange(new Range(c1.row, c1.column, c2.row, c2.column));
+	    let callback = (values,args)=>{
+		if(!values) {
+		    Csv.editor.clearSelection();
+		    return;
+		}
+		text = text.substring(0,left) + command.command +" " +args + text.substring(right);
+		let idx = left+command.command.length +1 + args.length;
+		Csv.editor.setValue(text);
+		Csv.editor.clearSelection();
+		let cursor = Csv.editor.session.doc.indexToPosition(idx);
+		Csv.editor.selection.moveTo(cursor.row, cursor.column);
+		Csv.editor.focus();
+		
+	    };
+	    Csv.addCommand(command, {add:false,values:values,callback:callback,
+				     event:e});
+	}
+
+    },
     insertCommand:function(cmds) {
 	if(!cmds) return;
 	cmds = cmds.replace(/_quote_/g,"\"");
@@ -486,14 +479,14 @@ var Csv = {
     },
     getUrl:function(cmds,rawInput) {
 	var input = "";
-	if(rawInput) input = "&lastinput=" + encodeURIComponent(rawInput);
+	if(rawInput || rawInput==="") input = "&lastinput=" + encodeURIComponent(rawInput);
 	var url = ramaddaBaseUrl + "/entry/show?output=convert_process&entryid=" + convertCsvEntry+"&commands=" + encodeURIComponent(cmds) + input;
 	return url;
     },
     makeDbMenu:function(field,value,label) {
 	if(!value) value = "null";
 	else value = "'" + value +"'";
-	return HtmlUtil.tag("a",[CLASS,"ramadda-menuitem-link","onclick","Csv.insertDb('" + field+"'," +value+");"],(label||field));
+	return HtmlUtil.tag("a",[CLASS,"ramadda-clickable","onclick","Csv.insertDb('" + field+"'," +value+");"],(label||field));
     },
     makeHeaderMenu: function(field,value,label) {
 	if(!value) value = "null";
@@ -508,13 +501,16 @@ var Csv = {
 	Csv.insertCommand(field +value);
     },
     insertDb:function(field,value) {
-	var popup = $("#csv_popup");
-	popup.css("display","none");
+	if(Csv.dialog) Csv.dialog.remove();
+	Csv.dialog = null;
 	if(!value) value = " ";
-	if(value!="true" && value!="false") 
-            value = " \"" +value+"\"";
-	else
+	if(value!="true" && value!="false") {
+	    if(value.indexOf(" ")>=0) 
+		value = " \"" +value+"\"";
+	    else if(value!="") value = " " + value +" ";
+	} else {
             value = " " + value +" ";
+	}
 	Csv.insertCommand(field +value);
     },
     call:function(cmds,args) {
@@ -538,10 +534,11 @@ var Csv = {
             cleanCmds+=line+"\n";
 	}
 	cmds = cleanCmds;
-	var isScript  = cmds.trim().startsWith("-script");
+	var isScript  = args.csvoutput=="-script";
+	var isArgs  = args.csvoutput=="-args";
 	let debug = cmds.match("-debug");
 	var rawInput = Csv.getInput();
-	if((!args.process && !doExplode) || args.html) {
+	if((!args.process && !doExplode && !isScript && !isArgs) || args.html) {
             if (Csv.maxRows != "") {
 		cmds = "-maxrows " + Csv.maxRows +" " + cmds;
             }
@@ -552,14 +549,23 @@ var Csv = {
             args.csvoutput = "-print";
 	}
 
-
-
 	var raw = args.csvoutput=="-raw";
+	var isDb = args.csvoutput == "-db" || cmds.indexOf("-db")>=0;
+	var isJson = args.csvoutput=="-tojson";
+	var isXml = args.csvoutput=="-toxml";	
 	var csv = args.csvoutput=="-print";
 	var stats = args.csvoutput=="-stats";		
 	var showHtml = args.csvoutput == "-table";
 	var printHeader = args.csvoutput == "-printheader";
+
 	var url = Csv.getUrl(cmds,rawInput);
+
+	let filename = "results.txt"
+	if(isScript) filename = "convert.sh";
+	else if(isArgs) filename = "convertargs.txt";
+	else if(isJson) filename = "results.json";
+	else if(isXml) filename = "results.xml";			
+
 
 	if(args.process)
             url += "&process=true";
@@ -577,9 +583,32 @@ var Csv = {
 	if(Csv.applyToSiblings) 
             url += "&applysiblings=true";
 
-	
+	let output = $("#convertcsv_output");
+
+	let result;
+	let writePre =contents=>{
+	    contents = "<pre style='position:relative;' id=csvpre>" + contents+"</pre>";
+            output.html(contents);
+	    let msg = $(HU.div([STYLE,HU.css("position","absolute","right","48px","top","5px")], "")).appendTo("#csvpre");
+
+	    let copy = $(HU.div([TITLE,"Copy to clipboard", CLASS,"ramadda-clickable", STYLE,HU.css("position","absolute","right","10px","top","5px")], HU.getIconImage("fas fa-clipboard"))).appendTo($("#csvpre"));
+	    copy.click(()=>{
+		Utils.copyToClipboard(result);
+		msg.html("OK, result is copied");
+		setTimeout(()=>{
+		    msg.fadeOut();
+		},2000);
+	    });
+	    if(filename) {
+		let file = $(HU.div([TITLE,"Download file", CLASS,"ramadda-clickable", STYLE,HU.css("position","absolute","right","32px","top","5px")], HU.getIconImage("fas fa-file-download"))).appendTo($("#csvpre"));
+		file.click(()=>{
+		    msg.html("");
+		    Utils.makeDownloadFile(filename,result);
+		});
+	    }
+
+	};
 	var jqxhr = $.getJSON( url, function(data) {
-	    let output = $("#convertcsv_output");
             if(data.error!=null) {
 		Csv.output(HtmlUtil.tag("pre",[],"Error:" + window.atob(data.error)));
 		return;
@@ -612,16 +641,70 @@ var Csv = {
 
 
             if(Utils.isDefined(data.result)) {
-		let result = window.atob(data.result);
+		result = window.atob(data.result);
+//		console.log("result: " + result);
 		if(isScript) {
-		    Utils.makeDownloadFile("script.sh",result);
-		    return;
+//		    Utils.makeDownloadFile("script.sh",result);
+//		    return;
 		}
 		if(result.match(".*<(table|row|div).*")) showHtml = true;
 		if(debug) {
 		    result = result.replace(/</g,"&lt;").replace(/>/g,"&gt;");
-		    result = "<pre>" + result+"</pre>";
-                    output.html(result);
+		    writePre(result);
+		} else if(isDb) {
+		    let db = result.replace("<tables>","Database:");
+		    db = db.replace(/<property[^>]+>/g,"");
+		    db = db.replace(/> *<\/column>/g,"/>");
+		    db = db.replace(/\n *\n/g,"\n");
+		    db = db.replace(/\/>/g,"");
+		    db = db.replace(/>/g,"");
+		    db = db.replace(/<table +id="(.*?)"/g,"\t<table <a class=csv_db_field field='table' onclick=noop()  title='Add to input'>$1</a>");
+		    db = db.replace("<table ","table:");
+		    db = db.replace("</table","");
+		    db = db.replace("</tables","");
+
+		    db = db.replace(/<column +name="(.*?)"/g,"\tcolumn: name=\"<a class=csv_db_field field='$1' onclick=noop() title='Add to input'>$1</a>\"");
+		    db = db.replace(/ ([^ ]+)="([^"]+)"/g,"\t$1:$2");
+		    db = db.replace(/ ([^ ]+)="([^"]*)"/g,"\t$1:\"$2\"");
+		    writePre(db);
+		    output.find(".csv_db_field").click(function(event) {
+                        var space = "&nbsp;"
+                        event.preventDefault();
+                        var pos=$(this).offset();
+                        var h=$(this).height();
+                        var w=$(this).width();
+                        var field  = $(this).attr("field");
+                        var html = "<div style=\"margin:2px;margin-left:5px;margin-right:5px;\">\n";
+                        if(field  == "table") {
+			    html +=Csv.makeDbMenu(field+".name")+"<br>";
+			    html +=Csv.makeDbMenu(field+".label")+"<br>";
+                        } else {
+			    html +=Csv.makeDbMenu(field+".id")+"<br>";
+			    html +=Csv.makeDbMenu(field+".label")+"<br>";
+			    html +=
+                                Csv.makeDbMenu(field+".type")+space +
+                                Csv.makeDbMenu(field+".type","string","string")+space +
+                                Csv.makeDbMenu(field+".type","double","double")+space +
+                                Csv.makeDbMenu(field+".type","int","int")+space +
+                                Csv.makeDbMenu(field+".type","enumeration","enumeration")+space +
+                                Csv.makeDbMenu(field+".type","enumerationplus","enumerationplus")+space +
+                                "<br>";
+			    html +=
+                                Csv.makeDbMenu(field+".cansearch")+space +
+                                Csv.makeDbMenu(field+".cansearch","true","true")+space +
+                                Csv.makeDbMenu(field+".cansearch","false","false")+
+                                "<br>";
+			    html +=
+                                Csv.makeDbMenu(field+".canlist")+space +
+                                Csv.makeDbMenu(field+".canlist","true","true")+space+
+                                Csv.makeDbMenu(field+".canlist","false","false")+
+                                "<br>";
+                        }
+                        html+="</div>";
+			Csv.dialog=HU.makeDialog({content:html,anchor:$(this)});
+		    })
+
+
 		} else if(csv) {
 		    result = result.trim();
 		    var isJson = (result.startsWith("{") && result.endsWith("}")) || (result.startsWith("[") && result.endsWith("]"));
@@ -649,13 +732,23 @@ var Csv = {
 			    console.log("Couldn't display as xml:" + err);
 			}
 		    }
-
 		    result = result.replace(/</g,"&lt;").replace(/>/g,"&gt;");
-		    result = "<pre>" + result+"</pre>";
-                    output.html(result);
+		    writePre(result);
 		} else if(stats) {
-                    output.html(HU.div([],result));		    
-		    
+		    console.log("STATS");
+		    output.html(result);
+		    output.find( "#header").html(HU.span([ID,"csv_toggledetails"],"Hide details"));
+		    let _this = this;
+		    let visible = true;
+		    $("#csv_toggledetails").addClass("ramadda-clickable").click(function() {
+			visible = !visible;
+			$(this).html(visible?"Hide details":"Show details");
+			if(visible)
+			    output.find(".th2").show();
+			else
+			    output.find(".th2").hide();
+		    });
+
 		    output.find( ".csv-id").css('color','blue').css('font-weight','normal').css('cursor','pointer').attr('title','Add field id').click(function() {
 			let id = $(this).attr('fieldid');
 			if(!id) return;
@@ -682,7 +775,6 @@ var Csv = {
 		    result = result.trim();
 		    var isJson = (result.startsWith("{") && result.endsWith("}")) || (result.startsWith("[") && result.endsWith("]"));
 		    var isXml = result.startsWith("<") && result.endsWith(">")
-                    var isDb = result.startsWith("<tables");
 		    var isHeader = result.startsWith("#fields=");
 		    /*
 		    if(isJson) {
@@ -744,22 +836,6 @@ var Csv = {
 			    tmp+=l +"\n";
 			}
 			result = tmp;
-		    } else if(isDb) {
-			result = result.replace("<tables>","Database:");
-			result = result.replace(/<property[^>]+>/g,"");
-			result = result.replace(/> *<\/column>/g,"/>");
-			result = result.replace(/\n *\n/g,"\n");
-			result = result.replace(/\/>/g,"");
-			result = result.replace(/>/g,"");
-			result = result.replace(/<table +id="(.*?)"/g,"\t<table <a class=csv_db_field field='table' onclick=noop()  title='Add to input'>$1</a>");
-			result = result.replace("<table ","table:");
-			result = result.replace("</table","");
-			result = result.replace("</tables","");
-
-			result = result.replace(/<column +name="(.*?)"/g,"\tcolumn: name=\"<a class=csv_db_field field='$1' onclick=noop() title='Add to input'>$1</a>\"");
-			result = result.replace(/ ([^ ]+)="([^"]+)"/g,"\t$1:$2");
-			result = result.replace(/ ([^ ]+)="([^"]*)"/g,"\t$1:\"$2\"");
-
 		    } else if(cmds.indexOf("-help")>=0) {
 			var tmp = "";
 			result = result.replace(/</g,"&lt;");
@@ -786,8 +862,11 @@ var Csv = {
                     }
                     var html = printHeader?result:"<pre>" + result +"</pre>";
                     if(isDb || isHeader) {
-			html+="<div class=\"ramadda-popup\" xstyle=\"display: none;position:absolute;\" id=csv_popup></div>" ;
-		    }
+			html+="<div class=\"ramadda-popup\" id=csv_popup></div>" ;
+		    } else if(!printHeader) {
+			writePre(result);
+			return;
+		    } 
                     output.html(html);
 		    if(printHeader) {
 			output.find(".csv_header_field").click(function(event) {
@@ -827,57 +906,6 @@ var Csv = {
 			});
 		    }
 		    
-                    if(isDb){
-			output.find(".csv_db_field").click(function(event) {
-                            var space = "&nbsp;"
-                            event.preventDefault();
-                            var pos=$(this).offset();
-                            var h=$(this).height();
-                            var w=$(this).width();
-                            var field  = $(this).attr("field");
-                            var html = "<div style=\"margin:2px;margin-left:5px;margin-right:5px;\">\n";
-                            if(field  == "table") {
-				html +=Csv.makeDbMenu(field+".name")+"<br>";
-				html +=Csv.makeDbMenu(field+".label")+"<br>";
-                            } else {
-				html +=Csv.makeDbMenu(field+".id")+"<br>";
-				html +=Csv.makeDbMenu(field+".label")+"<br>";
-				html +=
-                                    Csv.makeDbMenu(field+".type")+space +
-                                    Csv.makeDbMenu(field+".type","string","string")+space +
-                                    Csv.makeDbMenu(field+".type","double","double")+space +
-                                    Csv.makeDbMenu(field+".type","int","int")+space +
-                                    Csv.makeDbMenu(field+".type","enumeration","enumeration")+space +
-                                    Csv.makeDbMenu(field+".type","enumerationplus","enumerationplus")+space +
-                                    "<br>";
-				html +=
-                                    Csv.makeDbMenu(field+".cansearch")+space +
-                                    Csv.makeDbMenu(field+".cansearch","true","true")+space +
-                                    Csv.makeDbMenu(field+".cansearch","false","false")+
-                                    "<br>";
-				html +=
-                                    Csv.makeDbMenu(field+".canlist")+space +
-                                    Csv.makeDbMenu(field+".canlist","true","true")+space+
-                                    Csv.makeDbMenu(field+".canlist","false","false")+
-                                    "<br>";
-                            }
-                            html+="</div>";
-                            var popup = $("#csv_popup");
-                            Csv.dbPopupTime = new Date();
-                            popup.css("display","block");
-                            popup.html(html);
-                            var myalign  = "left top";
-                            var atalign  = "left bottom";
-                            popup.position({
-				of: $(this),
-				my: myalign,
-				at: atalign,
-				collision: "none none"
-                            });
-
-			})
-
-                    }
 		}
 		return;
             }
@@ -909,17 +937,28 @@ var Csv = {
 	    let label = a.label || Utils.makeLabel(a.id);
 	    let id = "csvcommand" + idx;
 	    let desc = a.description==null?"": HU.div([STYLE,HU.css('max-width','300px','vertical-align','top')],a.description);
+	    desc = desc.replace(/\n/g,"<br>");
 	    if(a.rows) {
 		inner+=HU.formEntryTop(label,
 				       HU.hbox([HU.textarea("",v,["cols", a.columns || "40", "rows",a.rows,ID,id,"size",10]),desc]));		
 	    } else if(a.type=="list" || a.type=="columns" || a.type=="rows") {
-		v = v.replace(/,/g,"\n");
+		let delim = a.delimiter||",";
+		let lines = v.split(delim);
+		v = lines.join("\n");
 		if(!Csv.columnInput && (a.type == "columns" || a.type == "column")) Csv.columnInput = id;
 		inner+=HU.formEntryTop(label,HU.hbox([HU.textarea("",v,["cols", a.size || "10", "rows",a.rows||"5",ID,id]),
-						     desc]));
+				 		     desc]));
 		
-	    } else if(a.values) {
-		inner+=HU.formEntry(label,HU.hbox([HU.select("",[ID,id],a.values.split(",")),desc]));
+
+	    } else if(a.values || a.type=="enumeration") {
+		let values
+		if(a.values) {
+		    values = a.values;
+		} else {
+		    console.log(JSON.stringify(a));
+		    value="foo,bar";
+		}
+		inner+=HU.formEntry(label,HU.hbox([HU.select("",[ID,id],values.split(",")),desc]));
 	    } else {
 		let size = a.size ||30;
 		if(a.type=="number") size=a.size||5;
@@ -947,6 +986,7 @@ var Csv = {
 	    at = "left " + "top+" + (opts.event.offsetY+10);
 	    target = $(opts.event.target);
 	}
+	inner = HU.div([STYLE,HU.css('margin','5px')], inner);
 	let dialog =   HU.makeDialog({content:inner,my:"left top",at:at,anchor:target,draggable:true,header:true,inPlace:false});
 	let submit = () =>{
 	    Csv.columnInput = null;
@@ -956,10 +996,11 @@ var Csv = {
 		let v = $("#csvcommand" +idx).val();
 		if(a.type=="list" || a.type=="columns" || a.type=="rows") {
 		    let tmp = "";
+		    let delim = a.delimiter||",";
 		    v.split("\n").forEach(line=>{
 			line = line.trim();
 			if(line=="") return;
-			if(tmp!="") tmp+=",";
+			if(tmp!="") tmp+=delim;
 			tmp +=line;
 		    });
 		    v = tmp;
@@ -982,6 +1023,8 @@ var Csv = {
 	}
 	
 	HU.onReturnEvent(dialog.find("input"),()=>{submit()});
+
+	
 
 	$("#csvcommand0").focus();
 	$("#csvaddcommand").button().click(()=>{
