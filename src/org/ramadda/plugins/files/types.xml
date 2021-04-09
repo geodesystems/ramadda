@@ -14,7 +14,7 @@
   </type>
 
 
-  <type name="type_file"  description="Text File" pattern="(.*\.xml)"  category="Files">
+  <type name="type_file"  description="Text File" pattern="(.*\.xml)"  category="Documents">
      <property name="icon" value="/icons/xml.png"/>
      <wiki><![CDATA[
 +section title={{name}}
@@ -26,7 +26,7 @@
   </type>
   
 
-<type name="type_file_javascript"  description="Javascript File" pattern=".*\.js"  category="Files">
+<type name="type_file_javascript"  description="Javascript File" pattern=".*\.js"  category="Documents">
     <property name="icon" value="/icons/js.png"/>
 </type>
 
