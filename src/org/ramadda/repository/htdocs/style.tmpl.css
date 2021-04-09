@@ -532,9 +532,6 @@ a.ramadda-entry-nav-page {
 }
 
 
-div:hover .ramadda-snippet, .ramadda-entry-nav-page-outer .ramadda-snippet {
-    color:#9DAAB6;
-}
 
 .ramadda-entry-nav-page-decorated:hover {
     border:1px solid var(--nav-hover-color);
@@ -843,12 +840,6 @@ a.ramadda-menubar-button:hover {
     margin-bottom: 5px;
     overflow-y: auto;
 }
-
-
-
-
-
-
 
 .ramadda-snippet-popup {
     max-width:400px;
@@ -2878,11 +2869,20 @@ label {
 }
 
 
-.breadCrumb ul li {
+.breadcrumb-delimiter, .breadCrumb ul li {
     background: url(icons/arrow_right_blue.png) no-repeat 100% center;
     margin: 0px 4px 0px 0px;
     padding: 0px 8px 0px 0px;
     font-size: inherit;
+}
+
+.breadcrumb-delimiter {
+    margin: 0px 4px 0px 4px;
+    padding: 0px;
+    vertical-align:middle;
+    width:8px;
+    height:16px;
+    display:inline-block;
 }
 
 .breadcrumbs {

@@ -3995,6 +3995,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	return "[" + name +"='" + value+ "']";
     },
     attr: function(name, value) {
+	if(value==null)
+            return " " + name + " ";
         return " " + name + "=" + this.qt(value) + " ";
     },
 

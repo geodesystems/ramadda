@@ -7,6 +7,8 @@ var OUTPUT_CSV = "default.csv";
 var OUTPUT_ZIP = "zip.tree";
 var OUTPUT_EXPORT = "zip.export";
 
+var DEFAULT_MAX = 100;
+
 var OUTPUTS = [{
     id: OUTPUT_ZIP,
     name: "Download Zip"
@@ -471,6 +473,7 @@ function Ramadda(repositoryRoot) {
             this.entryCache[entry.getId()] = entry;
         },
         getEntry: async function(id, callback) {
+	    let debug = false;
 	    if(id == null) {
 		console.log("Error in getEntry: entry id is null");
 		console.trace();
@@ -478,6 +481,7 @@ function Ramadda(repositoryRoot) {
 	    }
             var entry = this.entryCache[id];
             if (entry != null) {
+		if(debug) console.log("getEntry:" + entry.getName());
                 return Utils.call(callback, entry);
             }
             //Check any others
@@ -491,22 +495,22 @@ function Ramadda(repositoryRoot) {
                 }
             }
             if (callback == null) {
-                return Utils.call(callback, null);
+                return null;
             }
-            var ramadda = this;
-            var jsonUrl = this.getJsonUrl(id) + "&onlyentry=true";
-            //            console.log("\tramadda.getEntry getting json");
+            let ramadda = this;
+            let jsonUrl = this.getJsonUrl(id) + "&ancestors=true";
+            if(debug)console.log("ramadda.getEntry:" + id +"  getting json");
             await $.getJSON(jsonUrl, function(data) {
-                    //                    console.log("\tramadda.getEntry json return");
-                    if (GuiUtils.isJsonError(data)) {
-                        return;
-                    }
-                    var entryList = createEntriesFromJson(data, ramadda);
-                    var first = null;
-                    if (entryList.length > 0) first = entryList[0];
-                    //                    console.log("\tramadda.getEntry: result:" + entryList.length +" " + first);
-                    Utils.call(callback, first, entryList);
-                })
+                if (GuiUtils.isJsonError(data)) {
+                    if(debug) console.log("\tramadda.getEntry json error:" + data);
+                    return;
+                }
+                let entryList = createEntriesFromJson(data, ramadda);
+                let first = null;
+                if (entryList.length > 0) first = entryList[0];
+                if(debug) console.log("\tramadda.getEntry: result:" + entryList.length +" " + first);
+                Utils.call(callback, first, entryList);
+            })
                 .fail(function(jqxhr, textStatus, error) {
                     var err = textStatus + ", " + error;
                     GuiUtils.handleError("Error getting entry information: " + err, jsonUrl, false);
@@ -658,7 +662,7 @@ function Entry(props) {
         endDate: null,
     });
 
-    RamaddaUtil.inherit(this, props);
+    $.extend(this, props);
 
     this.domId = Utils.cleanId(this.id);
 
@@ -914,6 +918,10 @@ function Entry(props) {
             }
             return this.name;
         },
+        getSnippet: function(dflt) {
+            if (this.snippet == null) return dflt;
+            return this.snippet;
+        },
         getDescription: function(dflt) {
             if (this.description == null) return dflt;
             return this.description;
@@ -955,9 +963,13 @@ function Entry(props) {
             }
             return rurl + "?entryid=" + this.id;
         },
-        getLink: function(label) {
+        getLink: function(label, includeIcon, attrs) {
             if (!label) label = this.getName();
-            return HtmlUtils.tag("a", ["href", this.getEntryUrl()], label);
+	    attrs = attrs ||[];
+	    attrs.push("href", this.getEntryUrl());
+	    if(includeIcon)
+		label  = this.getIconImage() + SPACE +label;
+            return HtmlUtils.tag("a", attrs, label);
         },
         getResourceLink: function(label) {
             if (!label) label = this.getName();
@@ -1046,7 +1058,7 @@ function EntrySearchSettings(props) {
     $.extend(this, {
         types: [],
         parent: null,
-        max: 50,
+        max: DEFAULT_MAX,
         skip: 0,
         metadata: [],
         extra: "",

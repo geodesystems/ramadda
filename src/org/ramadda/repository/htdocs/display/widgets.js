@@ -171,10 +171,10 @@ function DateRangeWidget(display) {
             settings.setDateRange(start, end);
         },
         getHtml: function() {
-            let html = HtmlUtils.input(ID_DATE_START, "", [CLASS, "display-date-input", "placeholder", " start date", ATTR_ID,
+            let html = HtmlUtils.input(ID_DATE_START, "", [CLASS, "display-date-input", "placeholder", " Start date", ATTR_ID,
 							   display.getDomId(ID_DATE_START), "size", "10"
 							  ]) + " - " +
-                HtmlUtils.input(ID_DATE_END, "", [CLASS, "display-date-input", "placeholder", " end date", ATTR_ID,
+                HtmlUtils.input(ID_DATE_END, "", [CLASS, "display-date-input", "placeholder", " End date", ATTR_ID,
 						  display.getDomId(ID_DATE_END), "size", "10"
 						 ]);
             return html;

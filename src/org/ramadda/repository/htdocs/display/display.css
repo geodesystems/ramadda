@@ -871,6 +871,11 @@ svg > g > g:last-child { pointer-events: none }
 }
 
 
+.display-search-button {
+    vertical-align:middle;
+    margin-right:5px;
+}
+
 .display-search-input {
   max-width:100%;
   padding-left: 5px;
@@ -908,7 +913,6 @@ svg > g > g:last-child { pointer-events: none }
 }
 
 .display-search-widget {
-    margin-left:20px;
 }
 
 .display-search-extra-inner {
@@ -947,6 +951,7 @@ svg > g > g:last-child { pointer-events: none }
     cursor:pointer;
     background:#E5E5E5;
     border:1px solid #ccc;
+    color:rgb(51,51,51);
 }
 
 .display-search-tag:hover {
@@ -1287,6 +1292,10 @@ svg > g > g:last-child { pointer-events: none }
 
 .display-entrylist-details-inner {
     padding-left: 16px;
+}
+
+.display-entrylist-details-ancestors, .display-entrylist-details-tags {
+    padding-left: 24px;
 }
 
 
