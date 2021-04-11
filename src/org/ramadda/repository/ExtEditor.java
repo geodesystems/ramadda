@@ -1180,7 +1180,7 @@ public class ExtEditor extends RepositoryManager {
 	}
 
 	public void setStartDate(String date) throws Exception {
-	    this.startDate = DateUtil.parse(date);
+	    this.startDate = Utils.parseDate(date);
 	}	
 
 
@@ -1189,7 +1189,7 @@ public class ExtEditor extends RepositoryManager {
 	}
 
 	public void setEndDate(String date) throws Exception {
-	    this.endDate = DateUtil.parse(date);
+	    this.endDate = Utils.parseDate(date);
 	}	
 	
 
@@ -1224,7 +1224,7 @@ public class ExtEditor extends RepositoryManager {
 	}	
 
 	public Date getDate(String d) throws Exception {
-	    return DateUtil.parse(d);
+	    return Utils.parseDate(d);
 	}
 	public void print(Object msg) {
 	    visitor.append(msg+"\n");

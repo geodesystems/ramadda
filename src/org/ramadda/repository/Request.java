@@ -2034,7 +2034,7 @@ public class Request implements Constants, Cloneable {
             return dflt;
         }
 
-        return DateUtil.parse(result);
+        return Utils.parseDate(result);
     }
 
     /**
@@ -2111,7 +2111,8 @@ public class Request implements Constants, Cloneable {
         if (dflt == null) {
             dflt = new Date();
         }
-        Date[] range = DateUtil.getDateRange(fromDate, toDate, dflt);
+        Date[] range = Utils.getDateRange(fromDate, toDate, dflt);
+	//	System.err.println("from:" + fromDate +" to:" + toDate + " fd:" + range[0] +" td:" + range[1]);
 
         //        System.err.println("dateRange:" + fromDate + " date:" + range[0]);
         return range;

@@ -110,7 +110,6 @@ public class CdmUtil {
     public static Date makeDate(CalendarDate cd) {
         Date d = null;
         try {
-            //d = DateUtil.parse(cd.toString());
             d = Utils.parseDate(cd.toString());
         } catch (Exception e) {
             d = cd.toDate();  // not correct for non-standard calendars

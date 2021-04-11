@@ -588,7 +588,7 @@ public class TextRecord extends DataRecord {
 	    if(date == null) {
 		//Check for year
 		if (tok.length() == 4) {
-		    date = DateUtil.parse(tok);
+		    date = Utils.parseDate(tok);
 		}
 		if (date == null) {
 		    //Try tacking on UTC
