@@ -167,9 +167,9 @@ public class OpenSearchProvider extends SearchProvider {
                     (String) null);
             if (Utils.stringDefined(dateString)) {
                 List<String> toks = Utils.splitUpTo(dateString, "/", 2);
-                fromDate = DateUtil.parse(toks.get(0));
+                fromDate = Utils.parseDate(toks.get(0));
                 if (toks.size() > 1) {
-                    toDate = DateUtil.parse(toks.get(1));
+                    toDate = Utils.parseDate(toks.get(1));
                 } else {
                     toDate = fromDate;
                 }
@@ -180,7 +180,7 @@ public class OpenSearchProvider extends SearchProvider {
                 dateString = XmlUtil.getGrandChildText(item,
                         AtomUtil.TAG_TIME_START, (String) null);
                 if (Utils.stringDefined(dateString)) {
-                    fromDate = DateUtil.parse(dateString);
+                    fromDate = Utils.parseDate(dateString);
                 }
             }
 
@@ -189,7 +189,7 @@ public class OpenSearchProvider extends SearchProvider {
                 dateString = XmlUtil.getGrandChildText(item,
                         AtomUtil.TAG_TIME_END, (String) null);
                 if (Utils.stringDefined(dateString)) {
-                    toDate = DateUtil.parse(dateString);
+                    toDate = Utils.parseDate(dateString);
                 }
             }
 

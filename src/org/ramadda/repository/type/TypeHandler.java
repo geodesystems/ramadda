@@ -5921,7 +5921,6 @@ public class TypeHandler extends RepositoryManager {
                                     msg(arg.getLabel()) + "<=", date2);
                         dateClauses.add(Clause.le(column, date2));
                     }
-
                     continue;
                 }
 
@@ -5931,6 +5930,8 @@ public class TypeHandler extends RepositoryManager {
                 if (date2 == null) {
                     date2 = date1;
                 }
+
+
 
 
                 String dateSearchMode = request.getString(arg.getMode(),
@@ -5989,10 +5990,6 @@ public class TypeHandler extends RepositoryManager {
 
 
         }
-
-
-
-
 
 
         if (dateClauses.size() > 1) {

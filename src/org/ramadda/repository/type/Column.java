@@ -2986,7 +2986,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             return dateParser.parse(value);
         }
 
-        return DateUtil.parse(value);
+        return Utils.parseDate(value);
     }
 
     /**

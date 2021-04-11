@@ -792,7 +792,7 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
                        date = new SimpleDateFormat(dateFormat).parse(dateString);
 
                   } else {
-                       date = DateUtil.parse(dateString);
+                       date = Utils.parseDate(dateString);
                   }
                   dttm  = date.getTime();
               }
