@@ -429,8 +429,19 @@ function Ramadda(repositoryRoot) {
             if (settings.name != null && settings.name.length > 0)
                 url += "&name=" + settings.name;
             if (settings.startDate && settings.startDate.length > 0) {
-                url += "&starttime=" + settings.startDate;
+                url += "&datadate.from=" + settings.startDate;
             }
+            if (settings.endDate && settings.endDate.length > 0) {
+                url += "&datadate.to=" + settings.endDate;
+            }
+
+            if (settings.createstartDate && settings.createstartDate.length > 0) {
+                url += "&createdate.from=" + settings.createstartDate;
+            }
+            if (settings.createendDate && settings.createendDate.length > 0) {
+                url += "&createdate.to=" + settings.createendDate;
+            }
+
             if (settings.entries && settings.entries.length > 0) {
                 url += "&entries=" + settings.entries;
             }
@@ -438,9 +449,6 @@ function Ramadda(repositoryRoot) {
                 url += "&orderby=" + settings.orderBy;
 		if(Utils.isDefined(settings.ascending)) 
 		    url +="&ascending=" + (settings.ascending?"true":"false");
-            }
-            if (settings.endDate && settings.endDate.length > 0) {
-                url += "&endtime=" + settings.endDate;
             }
             if (settings.getAreaContains()) {
                 url += "&areamode=contains";
@@ -1102,6 +1110,10 @@ function EntrySearchSettings(props) {
             this.startDate = start;
             this.endDate = end;
         },
+        setCreateDateRange: function(start, end) {
+            this.createstartDate = start;
+            this.createendDate = end;
+        },	
 
         setBounds: function(north, west, south, east) {
             this.north = (north == null || north.toString().length == 0 ? NaN : parseFloat(north));

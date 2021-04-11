@@ -4359,6 +4359,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     input: function(name, value, attrs) {
         return "<input " + HtmlUtils.attrs(attrs) + HtmlUtils.attrs(["name", name, "value", value]) + ">";
     },
+    hidden: function(name, value, attrs) {
+        return "<input type=hidden " + HtmlUtils.attrs(attrs) + HtmlUtils.attrs(["name", name, "value", value]) + ">";
+    },    
     textarea: function(name, value, attrs) {
         return "<textarea " + HtmlUtils.attrs(attrs) + HtmlUtils.attrs(["name", name]) + ">" + value + "</textarea>";
     },

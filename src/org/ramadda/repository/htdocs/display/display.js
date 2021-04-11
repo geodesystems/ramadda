@@ -4208,9 +4208,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             menu += HU.formTable() + HU.formEntry("Show:", tmp) + HU.close(TABLE);
             return menu;
         },
-        isLayoutHorizontal: function() {
-	    return this.getProperty("orientation","horizontal")== "horizontal";
-        },
         loadInitialData: function() {
 	    if(!this.getProperty("okToLoadData",true)) return;
             if (!this.needsData() || this.properties.theData == null) {

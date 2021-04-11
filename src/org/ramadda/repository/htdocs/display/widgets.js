@@ -154,28 +154,37 @@ function AreaWidget(display) {
 
 
 
-
-function DateRangeWidget(display) {
+function DateRangeWidget(display, what) {
     const ID_DATE_START = "date_start";
     const ID_DATE_END = "date_end";
+    let startLabel, endLabel;
+    this.what = what;
+    if(what == "createdate") {
+	startLabel = "Create start";
+	endLabel = "Create end";	
+    }
 
+    this.baseId = Utils.getUniqueId("");
     RamaddaUtil.inherit(this, {
         display: display,
         initHtml: function() {
-            this.display.jq(ID_DATE_START).datepicker();
-            this.display.jq(ID_DATE_END).datepicker();
+            $("#" + this.baseId +ID_DATE_START).datepicker();
+            $("#" + this.baseId +ID_DATE_END).datepicker();	    
         },
         setSearchSettings: function(settings) {
-            let start = this.display.jq(ID_DATE_START).val();
-            let end = this.display.jq(ID_DATE_START).val();
-            settings.setDateRange(start, end);
+            let start = $("#"+ this.baseId +ID_DATE_START).val();
+            let end =  $("#"+ this.baseId +ID_DATE_END).val();
+	    if(this.what=="createdate")
+		settings.setCreateDateRange(start, end);
+	    else
+		settings.setDateRange(start, end);
         },
         getHtml: function() {
-            let html = HtmlUtils.input(ID_DATE_START, "", [CLASS, "display-date-input", "placeholder", " Start date", ATTR_ID,
-							   display.getDomId(ID_DATE_START), "size", "10"
+            let html = HtmlUtils.input(this.baseId +ID_DATE_START, "", [CLASS, "display-date-input", "placeholder", " " +(startLabel||"Start date"), ATTR_ID,
+									this.baseId +ID_DATE_START, "size", "10"
 							  ]) + " - " +
-                HtmlUtils.input(ID_DATE_END, "", [CLASS, "display-date-input", "placeholder", " End date", ATTR_ID,
-						  display.getDomId(ID_DATE_END), "size", "10"
+                HtmlUtils.input(this.baseId +ID_DATE_END, "", [CLASS, "display-date-input", "placeholder",  " " +(startLabel||"Start date"), ATTR_ID,
+							       this.baseId +ID_DATE_END, "size", "10"
 						 ]);
             return html;
         }
