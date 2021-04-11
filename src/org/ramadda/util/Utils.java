@@ -10,7 +10,7 @@
 * Unless required by applicable law or agreed to in writing, software
 * distributed under the License is distributed on an "AS IS" BASIS,
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
+a* See the License for the specific language governing permissions and
 * limitations under the License.
 */
 
@@ -763,7 +763,7 @@ public class Utils extends IO {
                              "(" + yyyy + "-\\d\\d-\\d\\d)");
             if (str != null) {
                 //                System.err.println("pattern 1:" + str);
-                return DateUtil.parse(str);
+                return parseDate(str);
             }
 
             str = StringUtil.findPattern(
@@ -941,8 +941,11 @@ public class Utils extends IO {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        String s = "f4ce4a71-57a7-4d0b-bfd8-f44b92aaccaf";
-	split(s,"|",false,false);
+	for(String dateString:new String[]{"04/01/2021"}) {
+	    debugDate = true;
+	    Date date = parseDate(dateString);
+	    System.err.println("date:" + dateString +" date:" + date);
+	}
         System.exit(0);
     }
 
@@ -967,7 +970,6 @@ public class Utils extends IO {
             if (dttm != null) {
                 dttm = dttm.replaceAll(" _ ", " ");
                 dttm = dttm.replaceAll(" / ", "/");
-
                 return makeDateFormat(dateFormats[dateFormatIdx]).parse(dttm);
             }
         }
@@ -2821,8 +2823,6 @@ public class Utils extends IO {
         return new double[] { centroidX, centroidY };
     }
 
-    /** _more_ */
-    private static List<SimpleDateFormat> dateFormats;
 
     /**
      * _more_
@@ -2842,6 +2842,50 @@ public class Utils extends IO {
     }
 
 
+    //j--
+    private static DateFormat[] DATE_FORMATS = {
+        new DateFormat("yyyy-MM-dd'T'HH:mm:ss Z"),
+	new DateFormat("yyyyMMdd'T'HHmmss Z"),
+        new DateFormat("yyyy/MM/dd HH:mm:ss Z"),
+	new DateFormat("yyyy-MM-dd HH:mm:ss Z"),
+        new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"),
+	new DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
+        new DateFormat("yyyy-MM-dd HH:mm:ss'Z'"),
+	new DateFormat("yyyy-MM-dd HH:mm:ss.SSS'Z'"),
+        new DateFormat("EEE MMM dd HH:mm:ss Z yyyy"),
+	new DateFormat("yyyy-MM-dd'T'HH:mm:ss"),
+        new DateFormat("yyyyMMdd'T'HHmmss"),
+	new DateFormat("yyyy-MM-dd'T'HH:mm Z"),
+	new DateFormat("yyyyMMdd'T'HHmm Z"),
+        new DateFormat("yyyy-MM-dd'T'HH:mm"),
+	new DateFormat("yyyyMMdd'T'HHmm"),
+	new DateFormat("yyyy/MM/dd HH:mm:ss"),
+        new DateFormat("yyyy-MM-dd HH:mm:ss"),
+	new DateFormat("yyyy/MM/dd HH:mm Z"),
+	new DateFormat("yyyy-MM-dd HH:mm Z"),
+        new DateFormat("yyyy/MM/dd HH:mm",true), 
+	new DateFormat("yyyy-MM-dd HH:mm",true),
+	new DateFormat("yyyy-MM-dd",true),
+	new DateFormat("yyyy/MM/dd",true),
+	new DateFormat("MM/dd/yyyy",true),
+        new DateFormat("yyyy-MM",true),
+	new DateFormat("yyyy/MM",true),
+	new DateFormat("yyyyMMdd",true),
+	new DateFormat("yyyyMM",true),
+	new DateFormat("yyyy",true)
+    };
+    //j++
+
+
+    /** The format string that was used for the most recent sdf */
+    private static DateFormat lastFormat;
+
+    /** A hack. We keep track of the length of the date string and will only use the lastSdf when the lengths match */
+    private static int lengthLastDate = 0;
+
+
+    public static boolean debugDate = false;
+
     /**
      * _more_
      *
@@ -2850,33 +2894,18 @@ public class Utils extends IO {
      * @return _more_
      */
     public static Date parseDate(String dttm) {
-        if (dateFormats == null) {
-            String[] formats = {
-                "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd HH:mm:ss z",
-                "yyyy-MM-dd'T'HH:mm", "yyyy-MM-dd HH:mm z",
-                "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM-dd",
-                "yyyyMMddHHmmss", "yyyyMMddHHmm", "yyyyMMddHH", "yyyyMMdd"
-            };
-
-            dateFormats = new ArrayList<SimpleDateFormat>();
-            for (int i = 0; i < formats.length; i++) {
-                SimpleDateFormat dateFormat =
-                    new java.text.SimpleDateFormat(formats[i]);
-                dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
-                dateFormats.add(dateFormat);
-            }
-
-        }
-        int           cnt = 0;
         ParsePosition pp  = new ParsePosition(0);
-        for (SimpleDateFormat dateFormat : dateFormats) {
-            Date date = dateFormat.parse(dttm, pp);
-            if (date != null) {
-                return date;
-            }
-        }
-
-        return null;
+	for(DateFormat dateFormat:getFormatters()) {
+	    Date date = dateFormat.parse(dttm, pp);
+	    if (date != null) {
+		if (debugDate) {
+		    System.err.println("   success:" + " date:" + dttm
+				       + " format:" + dateFormat.format +" date:" + date);
+		}
+		return date;
+	    }
+	}
+	return null;
     }
 
 
@@ -3514,6 +3543,53 @@ public class Utils extends IO {
         //        System.err.println("iw:" + imageWidth +" w:"  + w + " " + left +" " + right);
         //        System.err.println("ih:" + imageHeight +" h:"  + h + " " + top +" " + bottom);
         return image.getSubimage(left, top, w, h);
+    }
+
+    public static class DateFormat {
+	SimpleDateFormat sdf;
+	String format;
+	Pattern pattern;
+	String spattern;
+
+	public DateFormat(String format, String pattern) {
+	    this.format = format;
+	    sdf = new SimpleDateFormat(this.format);
+	    sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+	    this.pattern = pattern!=null?Pattern.compile(spattern = pattern):null;
+	}
+
+	public DateFormat(String format) {
+	    this(format,null);
+	}
+
+	public DateFormat(String format,boolean cvrt) {
+	    this(format,convert(format));
+	}
+
+	private static String convert(String s) {
+	    s = s.replaceAll("[yMdHms]","\\\\d");
+	    return s;
+	}
+
+	public synchronized Date  parse(String dttm, ParsePosition pp) {
+	    if(pattern!=null) {
+		Matcher m = pattern.matcher(dttm);
+		if(!m.matches()) {
+		    if(debugDate)
+			System.err.println("not match:" + dttm +" pattern:" + spattern);
+		    return null;
+		}
+		if(debugDate)
+		    System.err.println("match:" + dttm +" pattern:" + spattern);
+	    }
+	    try {
+		return sdf.parse(dttm,pp);
+	    } catch(Exception exc) {
+		return null;
+	    }
+	}
+
+
     }
 
     /**
@@ -4248,6 +4324,104 @@ public class Utils extends IO {
 
         return (int) (now.getTime() - date.getTime()) / 1000 / 60;
     }
+
+
+    public static Date[] getDateRange(String fromDate, String toDate,
+                                      Date dflt)
+            throws java.text.ParseException {
+
+        Date fromDttm = DateUtil.parseRelative(dflt, fromDate, -1);
+        Date toDttm   = DateUtil.parseRelative(dflt, toDate, +1);
+	//	System.err.println ("dflt: " + dflt);
+	//	System.err.println ("fromDttm:" + fromDate + " " + fromDttm);
+	//	System.err.println ("toDttm:" + toDate + " " + toDttm);
+	
+
+        if ((fromDate.length() > 0) && (fromDttm == null)) {
+            if ( !fromDate.startsWith("-")) {
+                fromDttm = Utils.parseDate(fromDate);
+		System.err.println ("fromDttm:" + fromDate + " " + fromDttm);
+            }
+        }
+        if ((toDate.length() > 0) && (toDttm == null)) {
+            if ( !toDate.startsWith("+")) {
+                toDttm = Utils.parseDate(toDate);
+            }
+        }
+
+        if ((fromDttm == null) && fromDate.startsWith("-")) {
+            if (toDttm == null) {
+                throw new IllegalArgumentException(
+                    "Cannot do relative From Date when To Date is not set");
+            }
+            fromDttm = DateUtil.getRelativeDate(toDttm, fromDate);
+        }
+
+        if ((toDttm == null) && toDate.startsWith("+")) {
+            if (fromDttm == null) {
+                throw new IllegalArgumentException(
+                    "Cannot do relative From Date when To Date is not set");
+            }
+            toDttm = DateUtil.getRelativeDate(fromDttm, toDate);
+        }
+
+        return new Date[] { fromDttm, toDttm };
+    }
+
+
+    public static DateFormat[] getFormatters() {
+	return DATE_FORMATS;
+    }
+
+
+
+    private static SimpleDateFormat doySdf;
+    public static Date parse(String s) throws java.text.ParseException {
+	boolean debug  = true;
+
+        //Check for yyyy-DDD
+        if ((s.length() == 8) && s.substring(4, 5).equals("-")) {
+            try {
+                if (doySdf == null) {
+                    doySdf = new SimpleDateFormat("yyyy-DDD");
+                }
+                synchronized (doySdf) {
+                    Date date = doySdf.parse(s);
+                    //              System.err.println("using doy:" + s +" " + date);
+                    return date;
+                }
+            } catch (java.text.ParseException pe) {}
+        }
+
+
+
+        if ((lastFormat != null) && (lengthLastDate == s.length())) {
+	    Date date = lastFormat.parse(s,null);
+	    if(date!=null) {
+		if (debug) {
+		    System.err.println("Using lastSdf format= "
+				       + lastFormat.format);
+		}
+		return date;
+	    }
+        }
+
+        for (DateFormat sdf: getFormatters()) {
+	    if(debug) System.err.println("   trying " + sdf.format);
+	    Date dttm = sdf.parse(s,null);
+	    if(dttm==null) continue;
+	    lastFormat = sdf;
+	    lengthLastDate = s.length();
+	    if (debug) {
+		System.err.println("   success:" + " date:" + s
+				   + " format:" + sdf.format);
+	    }
+	    return dttm;
+        }
+        throw new IllegalArgumentException("Could not find date format for:"
+                                           + s);
+    }
+
 
 
     /**
