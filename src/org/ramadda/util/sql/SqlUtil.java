@@ -17,6 +17,7 @@
 package org.ramadda.util.sql;
 
 
+import org.ramadda.util.Utils;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -294,7 +295,7 @@ public class SqlUtil {
      */
     public static String getDateString(String dttm)
             throws java.text.ParseException {
-        Date date = DateUtil.parse(dttm);
+        Date date = Utils.parseDate(dttm);
 
         return SqlUtil.format(date);
 
