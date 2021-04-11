@@ -287,7 +287,7 @@ public class PlosSearchProvider extends SearchProvider {
 
             String date     = getAttr(nodeList, "publication_date", null);
             if (date != null) {
-                dttm = fromDate = toDate = DateUtil.parse(date);
+                dttm = fromDate = toDate = Utils.parseDate(date);
             }
             Resource resource = (url != null)
                                 ? new Resource(new URL(url))

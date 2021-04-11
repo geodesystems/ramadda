@@ -244,7 +244,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
                 results.add(new BucketInfo(dirName));
             } else {
                 List<String> toks = StringUtil.splitUpTo(line.trim(), " ", 4);
-                Date dttm = DateUtil.parse(toks.get(0) + "'T'" + toks.get(1));
+                Date dttm = Utils.parseDate(toks.get(0) + "'T'" + toks.get(1));
                 String       size = toks.get(2);
                 String       file = toks.get(3);
                 results.add(new BucketInfo(file, dttm,

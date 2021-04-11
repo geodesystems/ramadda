@@ -157,7 +157,7 @@ public class NationalArchivesSearchProvider extends SearchProvider {
             String desc = snippet.getString("description");
 
             Date   dttm = new Date();
-            Date fromDate = DateUtil.parse(Json.readValue(snippet,
+            Date fromDate = Utils.parseDate(Json.readValue(snippet,
                                 "publishedAt", null));
             Date   toDate  = fromDate;
 

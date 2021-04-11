@@ -187,7 +187,7 @@ public class DspaceSearchProvider extends SearchProvider {
             String     name     = Json.readValue(item, "name", "");
             Date       dttm     = new Date();
             Date       fromDate = dttm;
-            //DateUtil.parse(Json.readValue(snippet, "publishedAt", null));
+            //Utils.parseDate(Json.readValue(snippet, "publishedAt", null));
             Date   toDate  = fromDate;
 
             String itemUrl = baseUrl + "/dataset/" + name;

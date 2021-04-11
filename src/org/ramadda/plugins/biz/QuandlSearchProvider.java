@@ -166,9 +166,9 @@ public class QuandlSearchProvider extends SearchProvider {
             Resource resource  = new Resource(pageUrl);
 
             Date     dttm      = new Date();
-            Date fromDate = DateUtil.parse(Json.readValue(item, "from_date",
+            Date fromDate = Utils.parseDate(Json.readValue(item, "from_date",
                                 "2015-01-01"));
-            Date toDate = DateUtil.parse(Json.readValue(item, "to_date",
+            Date toDate = Utils.parseDate(Json.readValue(item, "to_date",
                               "2015-01-01"));
             Entry newEntry = new Entry(makeSynthId(sourceCode, code),
                                        typeHandler);

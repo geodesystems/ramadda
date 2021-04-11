@@ -155,7 +155,7 @@ public class WebhoseSearchProvider extends SearchProvider {
             String     itemUrl = item.getString("url");
 
             Date       dttm    = new Date();
-            Date fromDate = DateUtil.parse(Json.readValue(item, "published",
+            Date fromDate = Utils.parseDate(Json.readValue(item, "published",
                                 null));
             Date  toDate   = fromDate;
 

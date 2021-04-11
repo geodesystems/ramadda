@@ -343,7 +343,7 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
                 }
 
                 if (tag.equals(TAG_BIBLIO_DATE)) {
-                    Date date = DateUtil.parse(value);
+                    Date date = Utils.parseDate(value);
                     entry.setStartDate(date.getTime());
                     entry.setEndDate(date.getTime());
 

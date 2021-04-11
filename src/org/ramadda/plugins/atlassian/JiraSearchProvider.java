@@ -172,7 +172,7 @@ public class JiraSearchProvider extends SearchProvider {
 
 
             Date       dttm     = new Date();
-            Date fromDate = DateUtil.parse(Json.readValue(fields, "created",
+            Date fromDate = Utils.parseDate(Json.readValue(fields, "created",
                                 null));
             Date toDate = fromDate;
 

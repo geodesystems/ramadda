@@ -110,7 +110,7 @@ public class PdfTypeHandler extends GenericTypeHandler {
                 TikaCoreProperties.CREATED.getName());
         }
         if (created != null) {
-            Date dttm = DateUtil.parse(created);
+            Date dttm = Utils.parseDate(created);
             entry.setStartDate(dttm.getTime());
             entry.setEndDate(dttm.getTime());
         }
@@ -118,7 +118,7 @@ public class PdfTypeHandler extends GenericTypeHandler {
         String saved =
             (String) entry.getTransientProperty(Office.SAVE_DATE.getName());
         if (saved != null) {
-            Date dttm = DateUtil.parse(saved);
+            Date dttm = Utils.parseDate(saved);
             entry.setEndDate(dttm.getTime());
         }
 

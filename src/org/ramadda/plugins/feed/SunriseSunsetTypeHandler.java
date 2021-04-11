@@ -138,9 +138,9 @@ public class SunriseSunsetTypeHandler extends GenericTypeHandler {
                 dateFormat.applyPattern("h:mm a z");
 
 
-                Date sunrise = DateUtil.parse(results.optString("sunrise",
+                Date sunrise = Utils.parseDate(results.optString("sunrise",
                                    "NA"));
-                Date sunset = DateUtil.parse(results.optString("sunset",
+                Date sunset = Utils.parseDate(results.optString("sunset",
                                   "NA"));
                 int length  = results.optInt("day_length", 0);
                 int hours   = length / 3600;

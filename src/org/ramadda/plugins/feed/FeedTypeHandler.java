@@ -194,7 +194,7 @@ public class FeedTypeHandler extends ExtensibleGroupTypeHandler {
             }
 
             if (dttm == null) {
-                dttm = DateUtil.parse(pubDate);
+                dttm = Utils.parseDate(pubDate);
             }
 
 
@@ -286,7 +286,7 @@ public class FeedTypeHandler extends ExtensibleGroupTypeHandler {
 
 
             if (dttm == null) {
-                dttm = DateUtil.parse(pubDate);
+                dttm = Utils.parseDate(pubDate);
             }
 
             setLocation(item, entry);

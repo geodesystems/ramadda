@@ -187,7 +187,7 @@ public class ConfluenceSearchProvider extends SearchProvider {
 
             if (result.has("history")) {
                 JSONObject history = result.getJSONObject("history");
-                fromDate = DateUtil.parse(Json.readValue(history,
+                fromDate = Utils.parseDate(Json.readValue(history,
                         "createdDate", null));
                 toDate = fromDate;
             }
