@@ -878,8 +878,8 @@ public class ThreddsMetadataHandler extends MetadataHandler {
      * @throws java.text.ParseException _more_
      */
     private Date getDate(String dateString) throws java.text.ParseException {
-        //        System.err.println ("getDate:" + dateString +" Date:" +DateUtil.parse(dateString));
-        //return DateUtil.parse(dateString);
+        //        System.err.println ("getDate:" + dateString +" Date:" +Utils.parseDate(dateString));
+        //return Utils.parseDate(dateString);
         return Utils.parseDate(dateString);
     }
 

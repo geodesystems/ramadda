@@ -1318,7 +1318,7 @@ public class CDOTimeSeriesComparison extends CDODataService {
                 continue;
             }
             String[] toks = StringUtil.split(line, ",", 2);
-            //Date             d     = DateUtil.parse(toks[0]);
+            //Date             d     = Utils.parseDate(toks[0]);
             Date             d     = Utils.parseDate(toks[0]);
             double           value = Misc.parseNumber(toks[1]);
             TimeSeriesRecord r     = new TimeSeriesRecord(d, value);

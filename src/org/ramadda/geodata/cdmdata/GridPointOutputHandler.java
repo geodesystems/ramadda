@@ -1250,7 +1250,7 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
                 continue;
             }
             String[] lineTokes = line.split(",");
-            Date     date      = DateUtil.parse(lineTokes[0]);
+            Date     date      = Utils.parseDate(lineTokes[0]);
             int      startIdx  = hasLevel
                                  ? 4
                                  : 3;

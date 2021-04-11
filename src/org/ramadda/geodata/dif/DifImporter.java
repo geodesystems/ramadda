@@ -252,13 +252,13 @@ public class DifImporter extends ImportHandler {
             String startDate = XmlUtil.getGrandChildText(temporalNode,
                                    DifUtil.TAG_Start_Date, null);
             if (startDate != null) {
-                dttm = DateUtil.parse(startDate);
+                dttm = Utils.parseDate(startDate);
                 entry.setStartDate(dttm.getTime());
             }
             String stopDate = XmlUtil.getGrandChildText(temporalNode,
                                   DifUtil.TAG_Stop_Date, null);
             if (stopDate != null) {
-                dttm = DateUtil.parse(stopDate);
+                dttm = Utils.parseDate(stopDate);
                 entry.setEndDate(dttm.getTime());
             } else {
                 //Pick up the start date

@@ -360,7 +360,7 @@ public class WmsCapabilitiesTypeHandler extends ExtensibleGroupTypeHandler {
                               ".*[^\\d](\\d\\d\\d\\d)[^\\d].*");
             if (year != null) {
                 try {
-                    date = DateUtil.parse(year);
+                    date = Utils.parseDate(year);
                 } catch (Exception exc) {}
             }
 
@@ -369,7 +369,7 @@ public class WmsCapabilitiesTypeHandler extends ExtensibleGroupTypeHandler {
             if (dttm != null) {
                 try {
                     dttm = dttm.replaceAll("\\.", "-");
-                    date = DateUtil.parse(dttm);
+                    date = Utils.parseDate(dttm);
                 } catch (Exception exc) {}
             }
 
