@@ -996,7 +996,7 @@ public class EntryManager extends RepositoryManager {
     public Result processEntryTypes(Request request) throws Exception {
         String            output       = request.getString(ARG_OUTPUT, "");
         List<String>      types        = new ArrayList<String>();
-        List<TypeHandler> typeHandlers = getRepository().getTypeHandlers();
+        List<TypeHandler> typeHandlers = getRepository().getTypeHandlersForDisplay(false);
         boolean           checkCnt     = request.get("checkcount", true);
         for (TypeHandler typeHandler : typeHandlers) {
             if ( !typeHandler.getForUser()) {
