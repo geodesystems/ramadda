@@ -5604,7 +5604,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 if (t1.getPriority() == t2.getPriority()) {
                     return t1.getLabel().compareTo(t2.getLabel());
                 }
-
                 return t1.getPriority() - t2.getPriority();
             }
         };

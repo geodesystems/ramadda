@@ -28,6 +28,8 @@ import org.ramadda.util.MultiJarClassLoader;
 import org.ramadda.util.MyTrace;
 import org.ramadda.util.TempDir;
 
+import org.ramadda.util.text.CsvPlugin;
+
 
 import org.w3c.dom.*;
 
@@ -197,6 +199,8 @@ public class PluginManager extends RepositoryManager {
     /** Keeps track of files we've seen */
     private HashSet seenThings = new HashSet();
 
+    private List<Class> csvClasses = new ArrayList<Class>();
+
     /**
      * _more_
      *
@@ -218,6 +222,13 @@ public class PluginManager extends RepositoryManager {
 
         super.shutdown();
     }
+
+
+    public List<Class> getCsvClasses() {
+	return csvClasses;
+    }
+
+
 
 
     /**
@@ -732,6 +743,10 @@ public class PluginManager extends RepositoryManager {
     }
 
 
+
+
+
+
     /**
      * Class MyClassLoader provides a hook into the MultiJarClassLoader routines
      *
@@ -791,6 +806,7 @@ public class PluginManager extends RepositoryManager {
         */
 
 
+
         /**
          * Check if this class is one of the special classes, e.g., ImportHandler, PageDecorator, etc.
          *
@@ -810,6 +826,14 @@ public class PluginManager extends RepositoryManager {
                 return;
             }
             seenClasses.add(key);
+
+
+
+            if (CsvPlugin.class.isAssignableFrom(c)) {
+                pluginStat("CSV Class", c.getName());
+		csvClasses.add(c);
+		return;
+	    }
 
 
             if (ImportHandler.class.isAssignableFrom(c)) {
@@ -890,6 +914,7 @@ public class PluginManager extends RepositoryManager {
                 specialClasses.add(c);
             }
         }
+
 
         /**
          * _more_
