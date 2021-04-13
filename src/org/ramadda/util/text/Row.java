@@ -44,6 +44,8 @@ public class Row {
     /** _more_ */
     private List values;
 
+    private List<Hashtable> properties;
+
     /** _more_ */
     private Object skipTo;
 

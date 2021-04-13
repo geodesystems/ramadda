@@ -123,6 +123,11 @@ public class CsvUtil {
     private PropertyProvider propertyProvider;
     private MapProvider mapProvider;    
     private List<String> inputFiles;
+    private CsvContext csvContext;
+    private List<DataSink> sinks;
+
+
+    private boolean hasSink = false;
 
     /**
      * _more_
@@ -209,12 +214,46 @@ public class CsvUtil {
     public void initWith(CsvUtil csvUtil) {
         this.comment = csvUtil.comment;
         this.js      = csvUtil.js;
+	this.sinks = csvUtil.sinks;
         //        this.delimiter = csvUtil.delimiter;
     }
 
     public List<String> getInputFiles() {
 	return inputFiles;
     }
+
+
+    /**
+       Set the Context property.
+
+       @param value The new value for Context
+    **/
+    public void setCsvContext (CsvContext value) {
+	csvContext = value;
+	sinks = new ArrayList<DataSink>();
+	try {
+	    for(Class c: csvContext.getClasses()) {
+		if (DataSink.class.isAssignableFrom(c)) {
+		    DataSink sink = (DataSink) c.newInstance();
+		    sinks.add(sink);
+		}
+
+	    }
+	} catch(Exception exc) {
+	}
+    }
+
+    /**
+       Get the Context property.
+
+       @return The Context
+    **/
+    public CsvContext getCsvContext () {
+	return csvContext;
+    }
+
+
+
 
 
     /**
@@ -1571,7 +1610,6 @@ public class CsvUtil {
                 new Arg("column", "", "type", "column"), new Arg("pattern","e.g., \"(field1:.*) (field2:.*) ...\"","type","pattern","size","80")),
         new Cmd("-keyvalue", "Make fields from key/value pairs, e.g. name1=value1 name2=value2 ...",
                 new Arg("column", "", "type", "column")),
-
         /** *  Filter * */
         new Cmd(true, "Filter"),
         new Cmd("-start", "Start at pattern in source file",
@@ -2106,6 +2144,7 @@ public class CsvUtil {
     }
 
 
+    private static int SKIP_INDEX = -999;
     private static class CsvFunctionHolder {
 	private CsvUtil csvUtil;
 	private String  name;
@@ -2413,37 +2452,6 @@ public class CsvUtil {
 		return i;
 	    });
 
-	defineFunction("-output",1,(ctx,args,i) -> {
-		try {
-		    String out = args.get(++i);
-		    this.outputStream = makeOutputStream(out);
-		    ctx.setWriter(new PrintWriter(this.outputStream));
-		    ctx.getProcessor().addProcessor(new Processor.Printer(ctx.getPrintFields(), false));
-		    return i;
-		} catch(Exception exc) {
-		    throw new RuntimeException(exc);
-		}
-	    });
-
-	defineFunction(new String[]{"-print","-p"}, 0,(ctx,args,i) -> {
-		if (ctx.getProperty("seenPrint")!=null) {
-		    return i;
-		}
-		ctx.putProperty("seenPrint","true");
-		ctx.getProcessor().addProcessor(new Processor.Printer(ctx.getPrintFields(), false));
-		return i;
-	    });
-
-
-
-	defineFunction("-toxml",2,(ctx,args,i) -> {
-		ctx.getProcessor().addProcessor(new Processor.ToXml(args.get(++i),args.get(++i)));
-		return i;
-	    });
-	defineFunction("-tojson",0,(ctx,args,i) -> {
-		ctx.getProcessor().addProcessor(new Processor.ToJson());
-		return i;
-	    });	
 	
 	defineFunction("-percent",  1,(ctx,args,i) -> {
 		ctx.getProcessor().addProcessor(new Converter.ColumnPercenter(getCols(args.get(++i))));
@@ -2806,8 +2814,8 @@ public class CsvUtil {
 	    });
 	
 	defineFunction("-kml",0,(ctx,args,i) -> {
-		ctx.getProviders().add(new DataProvider.KmlDataProvider());
-		return i;
+		ctx.getProviders().add(new DataProvider.KmlDataProvider());	
+	return i;
 	    });
 	
 	defineFunction("-changeraw",2,(ctx,args,i) -> {
@@ -2827,82 +2835,8 @@ public class CsvUtil {
 	    });
 
 
-	defineFunction("-table",0, (ctx,args,i) -> {
-		ctx.getProcessor().addProcessor(new Processor.Html());
-		return i;
-	    });
-
-
-	defineFunction("-dump",0,(ctx,args,i) -> {
-		ctx.getProcessor().addProcessor(
-						new Processor.Printer(ctx.getPrintFields(), false));
-
-		return i;
-	    });
-
-	defineFunction("-record",0,(ctx,args,i) -> {
-		ctx.getProcessor().addProcessor(
-						new Processor.Prettifier());
-
-		return i;
-	    });
-
-	defineFunction("-stats",0,(ctx,args,i) -> {
-		ctx.getProcessor().addProcessor(new Processor.Stats(this));
-		return i;
-	    });
-	
-
-
-	defineFunction("-template",4,(ctx,args,i) -> {
-		try {
-		    String prefix   = args.get(++i).replaceAll("_nl_", "\n");
-		    String template = args.get(++i).replaceAll("_nl_", "\n");
-		    String delim    = args.get(++i).replaceAll("_nl_", "\n");
-		    String suffix   = args.get(++i).replaceAll("_nl_", "\n");
-		    if (new File(template).exists()) {
-			template = IO.readContents(new File(template));
-		    }
-		    ctx.getProcessor().addProcessor(
-						    new Processor.Printer(
-									  prefix, template, delim, suffix));
-
-		    return i;
-		} catch(Exception exc) {
-		    throw new RuntimeException(exc);
-		}
-	    });
-
-
 	defineFunction("-mergerows",3,(ctx,args,i) -> {
 		ctx.getProcessor().addProcessor(new Converter.RowMerger(Utils.getNumbers(args.get(++i)), args.get(++i), args.get(++i)));
-		return i;
-	    });
-
-	defineFunction("-dots",1,(ctx,args,i) -> {
-		ctx.getProcessor().addProcessor(new Processor.Dots(new Integer(args.get(++i))));
-		return i;
-	    });
-
-
-
-	defineFunction("-addheader",1,(ctx,args,i) -> {
-		ctx.getProcessor().addProcessor(new Converter.HeaderMaker(parseProps(args.get(++i))));
-		return i;
-	    });
-
-	defineFunction("-deheader",0,(ctx,args,i) -> {
-		ctx.putProperty("deheader","true");
-		return i;
-	    });
-
-	defineFunction(new String[]{"-printheader","-ph"},0,(ctx,args,i) -> {
-		ctx.getProcessor().addProcessor(new Converter.PrintHeader());
-		return i;
-	    });
-
-	defineFunction("-pointheader",0,(ctx,args,i) -> {
-		ctx.getProcessor().addProcessor(new Converter.PrintHeader(true));
 		return i;
 	    });
 
@@ -2923,12 +2857,6 @@ public class CsvUtil {
 	defineFunction("-map", 3,(ctx,args,i) -> {
 		ctx.getProcessor().addProcessor(new Converter.ColumnMapper(getCols(args.get(++i)), args.get(++i),
 									   Utils.parseCommandLine(args.get(++i))));
-		return i;
-	    });
-
-
-	defineFunction("-tcl", 1,(ctx,args,i) -> {
-		ctx.getProcessor().addProcessor(new Processor.TclWrapper(args.get(++i)));
 		return i;
 	    });
 
@@ -3244,6 +3172,127 @@ public class CsvUtil {
 	    });
 
 
+
+	defineFunction("-dots",1,(ctx,args,i) -> {
+		ctx.getProcessor().addProcessor(new Processor.Dots(new Integer(args.get(++i))));
+		return i;
+	    });
+
+
+
+	defineFunction("-addheader",1,(ctx,args,i) -> {
+		ctx.getProcessor().addProcessor(new Converter.HeaderMaker(parseProps(args.get(++i))));
+		return i;
+	    });
+
+	defineFunction("-deheader",0,(ctx,args,i) -> {
+		ctx.putProperty("deheader","true");
+		return i;
+	    });
+
+
+	defineFunction("-output",1,(ctx,args,i) -> {
+		try {
+		    String out = args.get(++i);
+		    this.outputStream = makeOutputStream(out);
+		    ctx.setWriter(new PrintWriter(this.outputStream));
+		    ctx.getProcessor().addProcessor(new Processor.Printer(ctx.getPrintFields(), false));
+		    return i;
+		} catch(Exception exc) {
+		    throw new RuntimeException(exc);
+		}
+	    });
+
+
+	defineFunction("-toxml",2,(ctx,args,i) -> {
+		hasSink = true;
+		ctx.getProcessor().addProcessor(new Processor.ToXml(args.get(++i),args.get(++i)));
+		return i;
+	    });
+
+	defineFunction("-tojson",0,(ctx,args,i) -> {
+		hasSink = true;
+		ctx.getProcessor().addProcessor(new Processor.ToJson());
+		return i;
+	    });	
+
+
+	defineFunction("-table",0, (ctx,args,i) -> {
+		ctx.getProcessor().addProcessor(new Processor.Html());
+		return i;
+	    });
+
+
+	defineFunction("-dump",0,(ctx,args,i) -> {
+		ctx.getProcessor().addProcessor(
+						new Processor.Printer(ctx.getPrintFields(), false));
+		return i;
+	    });
+
+	defineFunction("-record",0,(ctx,args,i) -> {
+		ctx.getProcessor().addProcessor(
+						new Processor.Prettifier());
+		return i;
+	    });
+
+	defineFunction(new String[]{"-print","-p"}, 0,(ctx,args,i) -> {
+		if(hasSink) return SKIP_INDEX;
+		if (ctx.getProperty("seenPrint")!=null) {
+		    return i;
+		}
+		ctx.putProperty("seenPrint","true");
+		ctx.getProcessor().addProcessor(new Processor.Printer(ctx.getPrintFields(), false));
+		return i;
+	    });
+
+	defineFunction("-stats",0,(ctx,args,i) -> {
+		if(hasSink) return SKIP_INDEX;
+		ctx.getProcessor().addProcessor(new Processor.Stats(this));
+		return i;
+	    });
+	
+
+
+	defineFunction("-template",4,(ctx,args,i) -> {
+		try {
+		    String prefix   = args.get(++i).replaceAll("_nl_", "\n");
+		    String template = args.get(++i).replaceAll("_nl_", "\n");
+		    String delim    = args.get(++i).replaceAll("_nl_", "\n");
+		    String suffix   = args.get(++i).replaceAll("_nl_", "\n");
+		    if (new File(template).exists()) {
+			template = IO.readContents(new File(template));
+		    }
+		    ctx.getProcessor().addProcessor(
+						    new Processor.Printer(
+									  prefix, template, delim, suffix));
+
+		    return i;
+		} catch(Exception exc) {
+		    throw new RuntimeException(exc);
+		}
+	    });
+
+
+
+	defineFunction(new String[]{"-printheader","-ph"},0,(ctx,args,i) -> {
+		ctx.getProcessor().addProcessor(new Converter.PrintHeader());
+		return i;
+	    });
+
+	defineFunction("-pointheader",0,(ctx,args,i) -> {
+		ctx.getProcessor().addProcessor(new Converter.PrintHeader(true));
+		return i;
+	    });
+
+
+
+	defineFunction("-tcl", 1,(ctx,args,i) -> {
+		ctx.getProcessor().addProcessor(new Processor.TclWrapper(args.get(++i)));
+		return i;
+	    });
+
+
+
 	defineFunction("-dummy",0,(ctx,args,i) -> {return i;});
 
     }
@@ -3324,13 +3373,33 @@ public class CsvUtil {
 		    continue;
 		}
 
+		if(sinks!=null) {
+		    boolean gotOne = false;
+		    for(DataSink sink:sinks) {
+			if(sink.canHandle(this,arg)) {
+			    DataSink other = sink.cloneMe();
+			    i = other.processArgs(this,args,i);
+			    ctx.getProcessor().addProcessor(other);
+			    gotOne = true;
+			    hasSink = true;
+			    break;
+			}
+		    }
+		    if(gotOne) continue;
+		}
+
 
 		CsvFunctionHolder func = getFunction(arg);
 		if(func!=null) {
-		    i=func.run(ctx, args,i);
-		    if(i<0) return false;
+		    int idx = func.run(ctx, args,i);
+		    if(idx==SKIP_INDEX) {
+			continue;
+		    }
+		    if(idx<0) return false;
+		    i = idx;
 		    continue;
 		}
+
 		if (arg.equals("-args")) {
 		    doArgs = true;
 		    continue;
@@ -3359,6 +3428,9 @@ public class CsvUtil {
 		if (arg.startsWith("-")) {
 		    throw new IllegalArgumentException("Unknown arg:" + arg);
 		}
+
+
+
 
 		int idx = arg.indexOf("!=");
 		if (idx >= 0) {
