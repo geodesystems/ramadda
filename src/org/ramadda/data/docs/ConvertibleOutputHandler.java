@@ -17,12 +17,14 @@
 package org.ramadda.data.docs;
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.PluginManager;
 import org.ramadda.repository.output.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Json;
 import org.ramadda.util.Utils;
 import org.ramadda.util.text.CsvUtil;
+import org.ramadda.util.text.CsvContext;
 
 import org.w3c.dom.*;
 
@@ -468,6 +470,14 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 csvUtil  = new CsvUtil(args, runDir);
 		csvUtil.setInteractive(true);
                 csvUtil.setPropertyProvider(getRepository());
+		csvUtil.setCsvContext(new CsvContext() {
+			public List<Class> getClasses() {
+			    return getRepository().getPluginManager().getCsvClasses();
+			}
+			public String getProperty(String key, String dflt) {
+			    return getRepository().getProperty(key, dflt);
+			}
+		    });
                 csvUtil.setMapProvider(getRepository().getMapManager());		
                 if (prevCsvUtil != null) {
                     csvUtil.initWith(prevCsvUtil);
