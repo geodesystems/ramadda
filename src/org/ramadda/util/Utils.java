@@ -4340,7 +4340,6 @@ public class Utils extends IO {
         if ((fromDate.length() > 0) && (fromDttm == null)) {
             if ( !fromDate.startsWith("-")) {
                 fromDttm = Utils.parseDate(fromDate);
-		System.err.println ("fromDttm:" + fromDate + " " + fromDttm);
             }
         }
         if ((toDate.length() > 0) && (toDttm == null)) {
