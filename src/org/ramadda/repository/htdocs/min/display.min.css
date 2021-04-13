@@ -891,12 +891,7 @@ svg > g > g:last-child { pointer-events: none }
 
 .display-search-extra {
    margin-top:2px;
-   margin-left: 10px;
-   margin-bottom:2px;
-}
-
-
-.display-search-extra-label {
+   margin-left: 24px;
 }
 
 .display-search-providers {
@@ -910,13 +905,6 @@ svg > g > g:last-child { pointer-events: none }
 .display-search-label {
     margin-top:8px;
     font-weight:500;
-}
-
-.display-search-widget {
-}
-
-.display-search-extra-inner {
-   padding-left:15px;
 }
 
 .display-search-metadata-block {

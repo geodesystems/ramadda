@@ -653,7 +653,6 @@ function DisplayThing(argId, argProperties) {
 		    if(value && value.trim().length>1) {
 			attrs[f.getId() +"_href"] =  HU.href(value,value);
 			attrs[f.getId()]=  value;
-			console.log("URL");
 		    } else {
 			attrs[f.getId() +"_href"] =  "";
 			attrs[f.getId()] =  "";
@@ -3885,8 +3884,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 	    }
 
-
-
+            let _this = this;
             let hereBefore = details.attr("has-content") != null;
             details.attr("has-content", "true");
             if (hereBefore) {
@@ -3896,7 +3894,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let detailsInner = this.jq(ID_DETAILS_INNER + entry.getIdForDom() + suffix);
             if (entry.getIsGroup() /* && !entry.isRemote*/ ) {
                 detailsInner.html(HU.image(icon_progress));
-                let _this = this;
                 let callback = function(entries) {
                     _this.displayChildren(entry, entries, suffix, handlerId);
                 };
@@ -3909,19 +3906,25 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    handleContent();
 
 
+	    let metadataMap  = {};
 	    let metadata = "";
 	    entry.getMetadata().forEach(m=>{
 		//Check for exclusions
 		if(["content.pagetemplate","content.thumbnail","content.attachment"].includes(m.type)) return;
 		if(m.type.startsWith("map")) return;
 		if(m.type.startsWith("spatial")) return;		
-                let tt = m.type+": " + m.value.attr1;
+                let tt = m.label+": " + m.value.attr1;
                 let label =String(m.value.attr1);
 		if(label.length>20) label = label.substring(0,19) +"...";
-		metadata+=HU.div([CLASS,"display-search-tag",TITLE, tt],label);
+		let id = Utils.getUniqueId("metadata_");
+		metadata+=HU.div([ID,id,CLASS,"display-search-tag",TITLE, tt],label);
+		metadataMap[id] = m;
 		
 	    });
-	    this.jq(ID_DETAILS_TAGS + entry.getIdForDom() + suffix).html(metadata);
+	    let tags = $(metadata).appendTo(this.jq(ID_DETAILS_TAGS + entry.getIdForDom() + suffix));
+	    tags.click(function() {
+		_this.metadataTagClicked(metadataMap[$(this).attr("id")]);
+	    });	    
 
 
 	    let ancestorContent = "";
@@ -3937,10 +3940,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 	    };
 	    entry.getParentEntry(handleAncestor);
-
-
-
         },
+	metadataTagClicked:function(metadata) {
+	},
         getSelectedEntriesFromTree: function() {
             var selected = [];
             if (this.selectedEntriesFromTree) {

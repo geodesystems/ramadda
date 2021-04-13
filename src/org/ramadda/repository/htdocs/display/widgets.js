@@ -162,6 +162,9 @@ function DateRangeWidget(display, what) {
     if(what == "createdate") {
 	startLabel = "Create start";
 	endLabel = "Create end";	
+    } else {
+	startLabel = "Start date";
+	endLabel = "End date";	
     }
 
     this.baseId = Utils.getUniqueId("");
@@ -180,10 +183,10 @@ function DateRangeWidget(display, what) {
 		settings.setDateRange(start, end);
         },
         getHtml: function() {
-            let html = HtmlUtils.input(this.baseId +ID_DATE_START, "", [CLASS, "display-date-input", "placeholder", " " +(startLabel||"Start date"), ATTR_ID,
+            let html = HtmlUtils.input(this.baseId +ID_DATE_START, "", [CLASS, "display-date-input", "placeholder", " " +startLabel, TITLE, startLabel, ATTR_ID,
 									this.baseId +ID_DATE_START, "size", "10"
 							  ]) + " - " +
-                HtmlUtils.input(this.baseId +ID_DATE_END, "", [CLASS, "display-date-input", "placeholder",  " " +(startLabel||"Start date"), ATTR_ID,
+                HtmlUtils.input(this.baseId +ID_DATE_END, "", [CLASS, "display-date-input", "placeholder",  " " +endLabel, TITLE,endLabel,ATTR_ID,
 							       this.baseId +ID_DATE_END, "size", "10"
 						 ]);
             return html;

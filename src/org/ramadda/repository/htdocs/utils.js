@@ -1,3 +1,5 @@
+//"use strict";
+
 /**
  * Copyright (c) 2008-2020 Geode Systems LLC
  */
@@ -279,7 +281,8 @@ var Utils =  {
     },
     parseAttributes: function(v) {
         let attrs = {};
-        var newv;
+        let newv;
+	let toks;
 	while((toks = v.match(/([^ ]+) *= *"([^"]*)"/))!=null) {
 	    attrs[toks[1].trim()] = toks[2].trim();
 	    v = Utils.replaceAll(v, toks[0],"");
@@ -1069,10 +1072,10 @@ var Utils =  {
     },    
     camelCase: function(s,firstLower) {
         if (!s) return s;
-        var r = "";
-        toks = s.split(" ");
-        for (var i = 0; i < toks.length; i++) {
-            tok = toks[i];
+        let r = "";
+        let toks = s.split(" ");
+        for (let i = 0; i < toks.length; i++) {
+            let tok = toks[i];
 	    let converted = tok.substring(0, 1);
 	    if(i>>0 || !firstLower)
 		converted = converted.toUpperCase();
@@ -1597,6 +1600,7 @@ var Utils =  {
 	    HtmlUtils.formatTable(parent + ".ramadda-table");
 	} catch (e) {
 	    console.log("Error formatting table:" + e);
+	    console.log(e.stack);
 	}
         var snippets = $(parent + ".ramadda-snippet-hover");
         snippets.each(function() {
@@ -2776,7 +2780,7 @@ var GuiUtils = {
         }
     },
     getDomObject: function(name) {
-        obj = new DomObject(name);
+        let obj = new DomObject(name);
         if (obj.obj) return obj;
         return null;
     },
@@ -3706,9 +3710,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	});
     },
     formatTable: function(id, args) {
-	var table;
+	let table;
         $(id).each(function() {
-            var options = {
+            let options = {
                 paging: false,
                 ordering: false,
                 info: false,
@@ -3719,20 +3723,20 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             };
             if (args)
                 $.extend(options, args);
-            let height = args.height || $(this).attr("table-height");
+            let height = options.height || $(this).attr("table-height");
             if (height)
                 options.scrollY = height;
-            var ordering = $(this).attr("table-ordering");
+            let ordering = $(this).attr("table-ordering");
             if (ordering)
                 options.ordering = (ordering == "true");
-            var searching = $(this).attr("table-searching");
+            let searching = $(this).attr("table-searching");
             if (searching)
                 options.searching = (searching == "true");
-            var paging = $(this).attr("table-paging");
+            let paging = $(this).attr("table-paging");
             if (paging)
                 options.paging = (paging == "true");
             if (Utils.isDefined(options.scrollY)) {
-                var sh = "" + options.scrollY;
+                let sh = "" + options.scrollY;
                 if (!sh.endsWith("px")) options.scrollY += "px";
             }
 	    if($.fn.dataTable.isDataTable("#"+$(this).attr("id"))) {
@@ -4156,8 +4160,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     href: function(url, label, attrs) {
         if (attrs == null) attrs = [];
-        var a = [];
-        for (i in attrs)
+        let a = [];
+        for (let i in attrs)
             a.push(attrs[i]);
         attrs = a;
         attrs.push("href");
@@ -4167,9 +4171,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
 
     onClick: function(call, html, attrs) {
-        var myAttrs = ["onclick", call, "style", "color:black;   cursor:pointer;"];
+        let myAttrs = ["onclick", call, "style", "color:black;   cursor:pointer;"];
         if (attrs != null) {
-            for (var i = 0; i < attrs.length; i++) {
+            for (let i = 0; i < attrs.length; i++) {
                 myAttrs.push(attrs[i]);
             }
         }
@@ -4685,7 +4689,8 @@ function number_format(number, decimals, dec_point, thousands_sep) {
 
 
 //SVG Utils
-var SU = SvgUtils  = {
+var SU;
+var SvgUtils  = SU = {
     translate: function(x,y) {
 	return ' translate(' + x + ',' + y+') ';
     },

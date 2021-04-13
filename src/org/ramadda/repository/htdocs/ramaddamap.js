@@ -447,9 +447,9 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             this.latFldId = "latfld";
             this.zoomFldId = "zoomfld";
         }
-        lonFld = GuiUtils.getDomObject(this.lonFldId);
-        latFld = GuiUtils.getDomObject(this.latFldId);
-        zoomFld = GuiUtils.getDomObject(this.zoomFldId);
+	let lonFld = GuiUtils.getDomObject(this.lonFldId);
+        let latFld = GuiUtils.getDomObject(this.latFldId);
+        let zoomFld = GuiUtils.getDomObject(this.zoomFldId);
         if (latFld && lonFld) {
             latFld.obj.value = MapUtils.formatLocationValue(lonlat.lat);
             lonFld.obj.value = MapUtils.formatLocationValue(lonlat.lon);
@@ -567,8 +567,8 @@ RepositoryMap.prototype = {
 	}
         this.centerOnMarkersCalled = true;
         this.centerOnMarkersForce = force;
-        now = Date.now();
-        var bounds = null;
+        let now = Date.now();
+        let bounds = null;
         if (dfltBounds) {
             if (dfltBounds.left < -180 || dfltBounds.left > 180 ||
                 dfltBounds.right < -180 || dfltBounds.right > 180 ||
@@ -665,7 +665,7 @@ RepositoryMap.prototype = {
         this.setViewToBounds(bounds);
     },
     setViewToBounds: function(bounds) {
-        projBounds = this.transformLLBounds(bounds);
+        let projBounds = this.transformLLBounds(bounds);
         if (projBounds.getWidth() == 0) {
 	    if(debugBounds) console.log("setViewToBounds center");
 	    this.getMap().setCenter(projBounds.getCenterLonLat());
@@ -946,7 +946,7 @@ RepositoryMap.prototype = {
     },
     handleFeatureout: function(feature, skipText) {
 	this.closeHighlightPopup();
-        layer = feature.layer;
+        let layer = feature.layer;
         if (layer && !(layer.isMapLayer === true)) {
             if (!skipText) {
                 if (feature.text && !this.fixedText) {
@@ -1052,7 +1052,7 @@ RepositoryMap.prototype = {
         if (!feature) return;
         feature.renderIntent = null;
         feature.isSelected = false;
-        layer = feature.layer;
+        let layer = feature.layer;
         if (!layer) return;
         layer.drawFeature(layer.selectedFeature, layer.selectedFeature.style || "default");
         layer.selectedFeature.isSelected = false;
@@ -1297,7 +1297,7 @@ RepositoryMap.prototype = {
             strokeColor: props.strokeColor,
             strokeWidth: props.strokeWidth
         });
-        map = new OpenLayers.StyleMap({
+        let map = new OpenLayers.StyleMap({
             "temporary": temporaryStyle,
             "default": defaultStyle,
             "select": selectStyle
@@ -1321,9 +1321,9 @@ RepositoryMap.prototype = {
         }
     },
     getAttrValue: function(p, attr) {
-        value = "";
+        let value = "";
         if ((typeof p[attr] == 'object') || (typeof p[attr] == 'Object')) {
-            var o = p[attr];
+            let o = p[attr];
             if (o) {
                 value = "" + o["value"];
             }
@@ -1334,16 +1334,16 @@ RepositoryMap.prototype = {
     },
 
     searchFor: function(searchFor) {
-        var _this = this;
+        let _this = this;
         if (searchFor) searchFor = searchFor.trim();
         if (searchFor == "") searchFor = null;
         this.searchText = searchFor;
-        var bounds = null;
-        var toks = null;
-        var doHelp = false;
-        var download = $("#" + this.searchDiv + "_download").is(':checked');
-
-        var attrs = [];
+        let bounds = null;
+        let toks = null;
+        let doHelp = false;
+        let download = $("#" + this.searchDiv + "_download").is(':checked');
+        let attrs = [];
+        let doOr = true;
         if (searchFor) {
             searchFor = searchFor.trim();
             if (searchFor == "?") {
@@ -1351,19 +1351,18 @@ RepositoryMap.prototype = {
             }
             searchFor = searchFor.toLowerCase();
             toks = [];
-            var doOr = true;
-            tmp = searchFor.split("|");
+            let tmp = searchFor.split("|");
             if (tmp.length == 1) {
                 tmp = searchFor.split("&");
                 doOr = tmp.length == 1;
             }
-            for (var i = 0; i < tmp.length; i++) {
-                var not = false;
-                var equals = false;
-                var tok = tmp[i];
-                tmp2 = tok.split(":");
-                var field = "";
-                var value = tok;
+            for (let i = 0; i < tmp.length; i++) {
+                let not = false;
+                let equals = false;
+                let tok = tmp[i];
+                let tmp2 = tok.split(":");
+                let field = "";
+                let value = tok;
                 if (tmp2.length > 1) {
                     field = tmp2[0];
                     value = tmp2[1];
@@ -1385,48 +1384,48 @@ RepositoryMap.prototype = {
             }
         } else {
             this.searchMsg.html("");
-        }
+	}
 
-        for (a in this.loadedLayers) {
-            var layer = this.loadedLayers[a];
+        for (let a in this.loadedLayers) {
+            let layer = this.loadedLayers[a];
             if (layer.selectedFeature) {
                 this.handleNofeatureclick(layer);
             }
-            for (f in layer.features) {
-                var feature = layer.features[f];
-                var p = feature.attributes;
+            for (let f in layer.features) {
+                let feature = layer.features[f];
+                let p = feature.attributes;
                 if (!searchFor) {
                     feature.featureVisibleSearch = true;
                     attrs.push(p);
                     continue;
                 }
                 if (doHelp) {
-                    var space = "&nbsp;&nbsp;&nbsp;"
-                    var help = "Enter, e.g.:<br>";
+                    let space = "&nbsp;&nbsp;&nbsp;"
+                    let help = "Enter, e.g.:<br>";
                     help += space + "<i>&lt;term&gt;</i> (any match)<br>";
                     help += space + "<i>=&lt;term&gt;</i> (exact match)<br>";
                     help += space + "<i>!&lt;term&gt;</i> (not match)<br>";
                     help += space + "<i>&lt;term 1&gt;|&lt;term 2&gt;</i> (match any)<br>";
                     help += space + "<i>&lt;term 1&gt;&amp;&lt;term 2&gt;</i> (match all)<br>";
                     help += "Or by field:<br>";
-                    for (var attr in p) {
+                    for (let attr in p) {
                         help += space + attr.toLowerCase() + ":" + "<i>&lt;term&gt;</i><br>";
                     }
                     this.showText(help);
                     return
                 }
-                var matches = false;
-                var checkAll = false;
-                var allMatched = true;
-                var someMatched = false;
-                if (tok.not) checkAll = true;
-                for (v in toks) {
-                    var tok = toks[v];
-                    for (var attr in p) {
+                let matches = false;
+                let checkAll = false;
+                let allMatched = true;
+                let someMatched = false;
+//                if (tok.not) checkAll = true;
+                for (let v in toks) {
+                    let tok = toks[v];
+                    for (let attr in p) {
                         if (tok.field != "" && tok.field != attr.toLowerCase()) {
                             continue;
                         }
-                        var value = this.getAttrValue(p, attr);
+                        let value = this.getAttrValue(p, attr);
                         value = value.toLowerCase().trim();
                         if (tok.equals) {
                             matches = (value == tok.value);
@@ -1458,21 +1457,21 @@ RepositoryMap.prototype = {
 
             this.centerOnMarkers();
             if (download) {
-                var csv = "";
-                for (var i in attrs) {
-                    var p = attrs[i];
-                    for (var attr in p) {
+                let csv = "";
+                for (let i in attrs) {
+                    let p = attrs[i];
+                    for (let attr in p) {
                         if (csv != "") csv += ",";
                         csv += attr.toLowerCase();
                     }
                     csv += "\n";
                     break;
                 }
-                for (var i in attrs) {
-                    var p = attrs[i];
-                    var line = "";
-                    for (var attr in p) {
-                        var value = this.getAttrValue(p, attr);
+                for (let i in attrs) {
+                    let p = attrs[i];
+                    let line = "";
+                    for (let attr in p) {
+                        let value = this.getAttrValue(p, attr);
                         if (value.includes(",")) {
                             value = "\"" + value + "\"";
                         }
@@ -1488,15 +1487,15 @@ RepositoryMap.prototype = {
         }
     },
     checkFeatureVisible: function(feature, redraw) {
-        var layer = feature.layer;
-        var visible = this.getFeatureVisible(feature);
+        let layer = feature.layer;
+        let visible = this.getFeatureVisible(feature);
         if (feature.originalStyle) {
             feature.style = feature.originalStyle;
         }
-        var style = feature.style;
+        let style = feature.style;
         if (!style) {
             style = {};
-            var defaultStyle = layer.styleMap.styles["default"].defaultStyle;
+            let defaultStyle = layer.styleMap.styles["default"].defaultStyle;
             $.extend(style, defaultStyle);
             feature.style = style;
         } else {}
@@ -1514,7 +1513,7 @@ RepositoryMap.prototype = {
     },
 
     getFeatureVisible: function(feature) {
-        var visible = true;
+        let visible = true;
         if (Utils.isDefined(feature.featureVisibleSearch) && !feature.featureVisibleSearch) {
             visible = false;
         }
@@ -1527,17 +1526,17 @@ RepositoryMap.prototype = {
         return visible;
     },
     setFeatureVisibility: function(layer) {
-        var _this = this;
-        var didSearch = this.searchText || (this.startDate && this.endDate);
-        var bounds = null;
-        var html = "";
-        var didOn = false;
-        var didOff = false;
-        var cnt = 0;
-        var onFeature = null;
-        for (var i = 0; i < layer.features.length; i++) {
-            var feature = layer.features[i];
-            var visible = this.checkFeatureVisible(feature, false);
+        let _this = this;
+        let didSearch = this.searchText || (this.startDate && this.endDate);
+        let bounds = null;
+        let html = "";
+        let didOn = false;
+        let didOff = false;
+        let cnt = 0;
+        let onFeature = null;
+        for (let i = 0; i < layer.features.length; i++) {
+            let feature = layer.features[i];
+            let visible = this.checkFeatureVisible(feature, false);
             if (!visible) {
                 this.clearDateFeature(feature);
                 didOff = true;
@@ -1547,9 +1546,9 @@ RepositoryMap.prototype = {
                 cnt++;
                 if (!onFeature) onFeature = feature;
                 html += HtmlUtils.div(["class", "ramadda-map-feature", "feature-index", "" + i], this.getFeatureName(feature));
-                var geometry = feature.geometry;
+                let geometry = feature.geometry;
                 if (geometry) {
-                    var fbounds = geometry.getBounds();
+                    let fbounds = geometry.getBounds();
                     if (bounds) bounds.extend(fbounds);
                     else bounds = fbounds;
                 }
@@ -1559,18 +1558,18 @@ RepositoryMap.prototype = {
             this.showText(this.getFeatureText(layer, onFeature));
         } else {
             if (didSearch || (didOn && didOff)) {
-                var id = this.mapDivId + "_features";
+                let id = this.mapDivId + "_features";
                 this.showText(HtmlUtils.div(["id", id, "class", "ramadda-map-features"], html));
                 $("#" + id + " .ramadda-map-feature").click(function() {
-                    var index = parseInt($(this).attr("feature-index"));
+                    let index = parseInt($(this).attr("feature-index"));
                     _this.handleFeatureclick(layer, layer.features[index], true);
                 });
                 $("#" + id + " .ramadda-map-feature").mouseover(function() {
-                    var index = parseInt($(this).attr("feature-index"));
+                    let index = parseInt($(this).attr("feature-index"));
                     _this.handleFeatureover(layer.features[index], true);
                 });
                 $("#" + id + " .ramadda-map-feature").mouseout(function() {
-                    var index = parseInt($(this).attr("feature-index"));
+                    let index = parseInt($(this).attr("feature-index"));
                     _this.handleFeatureout(layer.features[index], true);
                 });
 
@@ -1602,18 +1601,18 @@ RepositoryMap.prototype = {
 	    return this.textGetter(layer,feature);
 	}
 
-        var style = feature.style || feature.originalStyle || layer.style;
-        var p = feature.attributes;
-        var out = feature.popupText;
+        let style = feature.style || feature.originalStyle || layer.style;
+        let p = feature.attributes;
+        let out = feature.popupText;
         if (!out) {
             if (style && style["balloonStyle"]) {
                 out = style["balloonStyle"];
-                for (var attr in p) {
+                for (let attr in p) {
                     //$[styleid/attr]
-                    var label = attr.replace("_", " ");
-                    var value = "";
+                    let label = attr.replace("_", " ");
+                    let value = "";
                     if (typeof p[attr] == 'object' || typeof p[attr] == 'Object') {
-                        var o = p[attr];
+                        let o = p[attr];
                         value = "" + o["value"];
                     } else {
                         value = "" + p[attr];
@@ -1622,8 +1621,8 @@ RepositoryMap.prototype = {
                 }
             } else {
                 out = "<table>";
-                for (var attr in p) {
-                    var label = attr;
+                for (let attr in p) {
+                    let label = attr;
                     lclabel = label.toLowerCase();
                     if (lclabel == "objectid" ||
                         lclabel == "feature_type" ||
@@ -1637,9 +1636,9 @@ RepositoryMap.prototype = {
                     label = label.replace(/_/g, " ");
                     label = Utils.camelCase(label);
                     out += "<tr valign=top><td align=right><div style=\"margin-right:5px;margin-bottom:3px;\"><b>" + label + ":</b></div></td><td><div style=\"margin-right:5px;margin-bottom:3px;\">";
-                    var value;
+                    let value;
                     if (p[attr] != null && (typeof p[attr] == 'object' || typeof p[attr] == 'Object')) {
-                        var o = p[attr];
+                        let o = p[attr];
                         value = "" + o["value"];
                     } else {
                         value = "" + p[attr];
@@ -1663,7 +1662,7 @@ RepositoryMap.prototype = {
             func(this, layer);
             return;
         }
-        feature = layer.feature;
+        let feature = layer.feature;
 	if(this.featureSelectHandler) {
 	    if(this.featureSelectHandler(feature)) {
 		return;
@@ -1671,14 +1670,14 @@ RepositoryMap.prototype = {
 	}
 
 	if(!this.doPopup) return;
-        var out = this.getFeatureText(layer, feature);
+        let out = this.getFeatureText(layer, feature);
 	if(!out) return;
         if (this.currentPopup) {
             this.getMap().removePopup(this.currentPopup);
             this.currentPopup.destroy();
         }
 
-        var popup = this.makePopup(feature.geometry.getBounds().getCenterLonLat(),out);
+        let popup = this.makePopup(feature.geometry.getBounds().getCenterLonLat(),out);
         feature.popup = popup;
         popup.feature = feature;
         this.getMap().addPopup(popup);
@@ -1713,7 +1712,7 @@ RepositoryMap.prototype = {
     },
 
     addSelectCallback:  function(layer, canSelect, selectCallback, unselectCallback) {
-        var _this = this;
+        let _this = this;
         if (this.getCanSelect(canSelect)) {
             /** don't add listeners here. We do it up at the main map level
                 select = new OpenLayers.Control.SelectFeature(layer, {
@@ -1759,28 +1758,28 @@ RepositoryMap.prototype = {
     },
 
     initDates:  function(layer) {
-        var _this = this;
-        var features = layer.features;
-        var didDate = false;
-        var didYear = false;
+        let _this = this;
+        let features = layer.features;
+        let didDate = false;
+        let didYear = false;
         this.hasDates = false;
         this.dates = [];
         this.dateFeatures = [];
         this.minDate = null;
         this.maxDate = null;
-        for (var i = 0; i < features.length; i++) {
-            var feature = features[i];
-            var p = feature.attributes;
-            for (var attr in p) {
-                var name = ("" + attr).toLowerCase();
-                var isYear = name.includes("year") || name.includes("_yr");
-                var isDate = name.includes("date");
+        for (let i = 0; i < features.length; i++) {
+            let feature = features[i];
+            let p = feature.attributes;
+            for (let attr in p) {
+                let name = ("" + attr).toLowerCase();
+                let isYear = name.includes("year") || name.includes("_yr");
+                let isDate = name.includes("date");
                 if (!(isDate || isYear)) continue;
-                var value = this.getAttrValue(p, attr);
+                let value = this.getAttrValue(p, attr);
                 if (!value) continue;
                 if (value == "0") continue;
                 try {
-                    var date = Utils.parseDate(value);
+                    let date = Utils.parseDate(value);
                     if (isYear) didYear = true;
                     else didDate = true;
                     if (this.startDate != null && this.endDate != null) {
@@ -1801,28 +1800,28 @@ RepositoryMap.prototype = {
             }
         }
         if (this.hasDates) {
-            var options = null;
+            let options = null;
             if (didYear)
                 options = {
                     year: 'numeric'
                 };
             $("#" + this.mapDivId + "_footer").html(HtmlUtils.div(["class", "ramadda-map-animation", "id", this.mapDivId + "_animation"], ""));
             this.animation = $("#" + this.mapDivId + "_animation");
-            var ticksDiv = HtmlUtils.div(["class", "ramadda-map-animation-ticks", "id", this.mapDivId + "_animation_ticks"], "");
-            var infoDiv = HtmlUtils.div(["class", "ramadda-map-animation-info", "id", this.mapDivId + "_animation_info"], "");
+            let ticksDiv = HtmlUtils.div(["class", "ramadda-map-animation-ticks", "id", this.mapDivId + "_animation_ticks"], "");
+            let infoDiv = HtmlUtils.div(["class", "ramadda-map-animation-info", "id", this.mapDivId + "_animation_info"], "");
             this.animation.html(ticksDiv + infoDiv);
-            var startLabel = Utils.formatDate(this.minDate, options);
-            var endLabel = Utils.formatDate(this.maxDate, options);
+            let startLabel = Utils.formatDate(this.minDate, options);
+            let endLabel = Utils.formatDate(this.maxDate, options);
             this.animationTicks = $("#" + this.mapDivId + "_animation_ticks");
             this.animationInfo = $("#" + this.mapDivId + "_animation_info");
-            var center = "";
+            let center = "";
             if (this.startDate && this.endDate) {
                 center = HtmlUtils.div(["id", this.mapDivId + "_ticks_reset", "class", "ramadda-map-animation-tick-reset"], "Reset");
             }
-            var info = "<table width=100%><tr valign=top><td width=40%>" + startLabel + "</td><td align=center width=20%>" + center + "</td><td align=right width=40%>" + endLabel + "</td></tr></table>";
+            let info = "<table width=100%><tr valign=top><td width=40%>" + startLabel + "</td><td align=center width=20%>" + center + "</td><td align=right width=40%>" + endLabel + "</td></tr></table>";
             this.animationInfo.html(info);
             if (this.startDate && this.endDate) {
-                var reset = $("#" + this.mapDivId + "_ticks_reset");
+                let reset = $("#" + this.mapDivId + "_ticks_reset");
                 reset.click(function() {
                     _this.startDate = null;
                     _this.endDate = null;
@@ -1831,30 +1830,30 @@ RepositoryMap.prototype = {
                     _this.setFeatureDateRange(layer, "Resetting range...");
                 });
             }
-            var width = this.animationTicks.width();
-            var percentPad = width > 0 ? 5 / width : 0;
+            let width = this.animationTicks.width();
+            let percentPad = width > 0 ? 5 / width : 0;
             //            console.log("w:" + width + " " + percentPad);
-            var html = "";
-            var start = this.minDate.getTime();
-            var end = this.maxDate.getTime();
+            let html = "";
+            let start = this.minDate.getTime();
+            let end = this.maxDate.getTime();
             if (this.startDate != null && this.endDate != null) {
                 start = this.startDate.getTime();
                 end = this.endDate.getTime();
             }
-            var range = end - start;
+            let range = end - start;
             if (range > 0) {
-                for (var i = 0; i < this.dates.length; i++) {
-                    var date = this.dates[i];
-                    var time = date.getTime();
+                for (let i = 0; i < this.dates.length; i++) {
+                    let date = this.dates[i];
+                    let time = date.getTime();
                     if (time < start || time > end) continue;
-                    var feature = this.dateFeatures[i];
+                    let feature = this.dateFeatures[i];
                     feature.dateIndex = i;
-                    var percent = 100 * (time - start) / range;
+                    let percent = 100 * (time - start) / range;
                     percent = percent - percent * percentPad;
                     if(!options) options = {};
-                    var fdate = date.toLocaleDateString("en-US", options);
-                    var name = Utils.camelCase(this.getFeatureName(feature));
-                    var tooltip = "";
+                    let fdate = date.toLocaleDateString("en-US", options);
+                    let name = Utils.camelCase(this.getFeatureName(feature));
+                    let tooltip = "";
                     tooltip += name != null ? name + "<br>" : "";
                     tooltip += fdate;
                     tooltip += "<br>shift-click: set visible range<br>cmd/ctrl-click:zoom";
@@ -1863,7 +1862,7 @@ RepositoryMap.prototype = {
                 }
             }
             this.animationTicks.html(html);
-            var tick = $("#" + this.mapDivId + "_animation .ramadda-map-animation-tick");
+            let tick = $("#" + this.mapDivId + "_animation .ramadda-map-animation-tick");
             tick.tooltip({
                 content: function() {
                     return $(this).prop('title');
@@ -1877,18 +1876,18 @@ RepositoryMap.prototype = {
                 }
             });
             tick.mouseover(function() {
-                var index = parseInt($(this).attr("feature-index"));
-                var feature = _this.dateFeatures[index];
+                let index = parseInt($(this).attr("feature-index"));
+                let feature = _this.dateFeatures[index];
                 _this.handleFeatureover(feature, true);
             });
             tick.mouseout(function() {
-                var index = parseInt($(this).attr("feature-index"));
-                var feature = _this.dateFeatures[index];
+                let index = parseInt($(this).attr("feature-index"));
+                let feature = _this.dateFeatures[index];
                 _this.handleFeatureout(feature, true);
             });
             tick.click(function(evt) {
-                var index = parseInt($(this).attr("feature-index"));
-                var feature = _this.dateFeatures[index];
+                let index = parseInt($(this).attr("feature-index"));
+                let feature = _this.dateFeatures[index];
                 if (evt.shiftKey) {
                     if (_this.startDate == null) {
                         _this.startDate = feature.featureDate;
@@ -1915,7 +1914,7 @@ RepositoryMap.prototype = {
                             _this.dateFeatureSelect(null);
                             return;
                         } else if (_this.startDate.getTime() > _this.endDate.getTime()) {
-                            var tmp = _this.startDate;
+                            let tmp = _this.startDate;
                             _this.startDate = _this.endDate;
                             _this.endDate = tmp;
                             tmp = _this.startFeature;
@@ -1925,7 +1924,7 @@ RepositoryMap.prototype = {
                         _this.setFeatureDateRange(feature.layer);
                     }
                 } else {
-                    var center = evt.metaKey || evt.ctrlKey;
+                    let center = evt.metaKey || evt.ctrlKey;
                     if (_this.startDate != null || _this.endDate != null) {
                         _this.startDate = null;
                         _this.endDate = null;
@@ -1947,12 +1946,12 @@ RepositoryMap.prototype = {
     },
 
     setFeatureDateRangeInner:  function(layer) {
-        var features = layer.features;
+        let features = layer.features;
         if (layer.selectedFeature) {
             this.unselectFeature(layer.selectedFeature);
         }
-        for (var i = 0; i < features.length; i++) {
-            var feature = features[i];
+        for (let i = 0; i < features.length; i++) {
+            let feature = features[i];
             if (this.startDate && this.endDate && feature.featureDate) {
                 feature.featureVisibleDate = this.startDate.getTime() <= feature.featureDate.getTime() &&
                     feature.featureDate.getTime() <= this.endDate.getTime();
@@ -1964,12 +1963,12 @@ RepositoryMap.prototype = {
         this.initDates(layer);
     },
     dateFeatureSelect:  function(feature) {
-        var tick = this.getFeatureTick(feature);
+        let tick = this.getFeatureTick(feature);
         tick.css("background-color", this.tickSelectColor);
         tick.css("zIndex", "100");
     },
     dateFeatureOver:  function(feature) {
-        var tick = this.getFeatureTick(feature);
+        let tick = this.getFeatureTick(feature);
         tick.css("background-color", this.tickHoverColor);
         tick.css("zIndex", "100");
         //In case some aren't closed
@@ -1979,7 +1978,7 @@ RepositoryMap.prototype = {
         tick.tooltip("open");
     },
     dateFeatureOut:  function(feature) {
-        var tick = this.getFeatureTick(feature);
+        let tick = this.getFeatureTick(feature);
         if (feature && (feature == this.startFeature || feature == this.endFeature)) {
             tick.css("background-color", this.tickSelectColor);
             tick.css("zIndex", "0");
@@ -1996,14 +1995,14 @@ RepositoryMap.prototype = {
         return $("#" + this.mapDivId + "_tick" + feature.dateIndex);
     },
     clearDateFeature:  function(feature) {
-        var element = feature != null ? $("#" + this.mapDivId + "_tick" + feature.dateIndex) : $("#" + this.mapDivId + "_animation_ticks .ramadda-map-animation-tick");
+        let element = feature != null ? $("#" + this.mapDivId + "_tick" + feature.dateIndex) : $("#" + this.mapDivId + "_animation_ticks .ramadda-map-animation-tick");
         element.css("background-color", "");
         element.css("zIndex", "0");
     },
 
 
     initMapVectorLayer:  function(layer, canSelect, selectCallback, unselectCallback, loadCallback, zoomToExtent) {
-        var _this = this;
+        let _this = this;
         this.showLoadingImage();
         layer.isMapLayer = true;
         layer.canSelect = canSelect;
@@ -2016,7 +2015,7 @@ RepositoryMap.prototype = {
                     return;
                 }
                 if (zoomToExtent) {
-                    var dataBounds = layer.getDataExtent();
+                    let dataBounds = layer.getDataExtent();
                     if (dataBounds) {
                         _this.zoomToExtent(dataBounds, true);
                     }
@@ -2042,7 +2041,7 @@ RepositoryMap.prototype = {
     },
 
     addGeoJsonLayer:  function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent) {
-        var layer = new OpenLayers.Layer.Vector(name, {
+        let layer = new OpenLayers.Layer.Vector(name, {
             projection: this.displayProjection,
             strategies: [new OpenLayers.Strategy.Fixed()],
             protocol: new OpenLayers.Protocol.HTTP({
@@ -2062,7 +2061,7 @@ RepositoryMap.prototype = {
     },
 
     addKMLLayer:  function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent) {
-        var layer = new OpenLayers.Layer.Vector(name, {
+        let layer = new OpenLayers.Layer.Vector(name, {
             projection: this.displayProjection,
             strategies: [new OpenLayers.Strategy.Fixed()],
             protocol: new OpenLayers.Protocol.HTTP({
@@ -2087,7 +2086,7 @@ RepositoryMap.prototype = {
     },
 
     createXYZLayer:  function(name, url, attribution) {
-        var options = {
+        let options = {
             sphericalMercator: MapUtils.defaults.doSphericalMercator,
             numZoomLevels: MapUtils.defaults.zoomLevels,
             wrapDateLine: MapUtils.defaults.wrapDateline
@@ -2125,9 +2124,9 @@ RepositoryMap.prototype = {
                 map_black,
             ];
         }
-        var dflt = this.defaultMapLayer || map_osm;
+        let dflt = this.defaultMapLayer || map_osm;
         if (!this.haveAddedDefaultLayer && dflt) {
-            var index = this.mapLayers.indexOf(dflt);
+            let index = this.mapLayers.indexOf(dflt);
             if (index >= 0) {
                 this.mapLayers.splice(index, 1);
                 this.mapLayers.splice(0, 0, dflt);
@@ -2142,50 +2141,50 @@ RepositoryMap.prototype = {
 	this.numberOfBaseLayers = 0;
 
         for (let i = 0; i < this.mapLayers.length; i++) {
-            mapLayer = this.mapLayers[i];
+            let mapLayer = this.mapLayers[i];
             if (mapLayer == null) {
                 continue;
             }
-            var newLayer = null;
+            let newLayer = null;
             if (mapLayer == map_osm) {
-                urls = [
+                let urls = [
                     '//a.tile.openstreetmap.org/${z}/${x}/${y}.png',
                     '//b.tile.openstreetmap.org/${z}/${x}/${y}.png',
                     '//c.tile.openstreetmap.org/${z}/${x}/${y}.png'
                 ];
                 newLayer = new OpenLayers.Layer.OSM("Open Street Map", urls);
             } else if (mapLayer == map_osm_toner) {
-                urls = ["http://a.tile.stamen.com/toner/${z}/${x}/${y}.png"];
+                let urls = ["http://a.tile.stamen.com/toner/${z}/${x}/${y}.png"];
                 newLayer = new OpenLayers.Layer.OSM("OSM-Toner", urls);
             } else if (mapLayer == map_osm_toner_lite) {
-                urls = ["http://a.tile.stamen.com/toner-lite/${z}/${x}/${y}.png"];
+                let urls = ["http://a.tile.stamen.com/toner-lite/${z}/${x}/${y}.png"];
                 newLayer = new OpenLayers.Layer.OSM("OSM-Toner Lite", urls);
             } else if (mapLayer == map_watercolor) {
-                urls = ["http://c.tile.stamen.com/watercolor/${z}/${x}/${y}.jpg"];
+                let urls = ["http://c.tile.stamen.com/watercolor/${z}/${x}/${y}.jpg"];
                 newLayer = new OpenLayers.Layer.OSM("Watercolor", urls);
             } else if (mapLayer == map_opentopo) {
                 newLayer = this.createXYZLayer("OpenTopo", "//a.tile.opentopomap.org/${z}/${x}/${y}.png}");
             } else if (mapLayer == map_weather) {
 		let maxZoom =  8;
-                var wlayers = [ 
+                let wlayers = [ 
 		    {name:'GOES Infrared',maxZoom:maxZoom,		    id:'goes-ir-4km-900913', alias:'goes-ir'},
 		    {name:'GOES Water Vapor', maxZoom:maxZoom,id:'goes-wv-4km-900913', alias:'goes-wv'},
 		    {name:'GOES Visible', maxZoom:maxZoom,id:'goes-vis-1km-900913', alias:'goes-visible'},
 		    {name:'NWS Radar', maxZoom:maxZoom,id:'nexrad-n0q-900913',alias:'nexrad'},
 		    {name:'24 hr precip', maxZoom:maxZoom,id:'q2-p24h-900913',alias:'precipition'}];
 
-                var wlayers = [ 
+                wlayers = [ 
 		    {name:'NWS Radar', maxZoom:maxZoom,id:'nexrad-n0q-900913',alias:'nexrad'}]
 
 
 		let _this = this;
 		let get_my_url = function(bounds) {
-		    var res = _this.getMap().getResolution();
-		    var z = _this.getMap().getZoom();
-		    var x = Math.round((bounds.left - this.maxExtent.left) / (res * this.tileSize.w));
-		    var y = Math.round((this.maxExtent.top - bounds.top) / (res * this.tileSize.h));
-		    var path = z + "/" + x + "/" + y + "." + this.type + "?" + parseInt(Math.random() * 9999);
-		    var url = this.url;
+		    let res = _this.getMap().getResolution();
+		    let z = _this.getMap().getZoom();
+		    let x = Math.round((bounds.left - this.maxExtent.left) / (res * this.tileSize.w));
+		    let y = Math.round((this.maxExtent.top - bounds.top) / (res * this.tileSize.h));
+		    let path = z + "/" + x + "/" + y + "." + this.type + "?" + parseInt(Math.random() * 9999);
+		    let url = this.url;
 		    if (url instanceof Array) {
 			url = this.selectUrl(path, url);
 		    }
@@ -2194,7 +2193,7 @@ RepositoryMap.prototype = {
 
 
 		wlayers.forEach(l=>{
-                    var layer = new OpenLayers.Layer.TMS(
+                    let layer = new OpenLayers.Layer.TMS(
                         l.name,
                         'https://mesonet.agron.iastate.edu/cache/tile.py/', {
                             layername: l.id,
@@ -2268,7 +2267,7 @@ RepositoryMap.prototype = {
                 newLayer = this.createXYZLayer("ESRI Streets",
 					       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${y}/${x}");
             } else if (/\/tile\//.exec(mapLayer)) {
-                var layerURL = mapLayer;
+                let layerURL = mapLayer;
                 newLayer = new OpenLayers.Layer.XYZ(
                     "ESRI China Map", layerURL, {
                         sphericalMercator: MapUtils.defaults.doSphericalMercator,
@@ -2300,7 +2299,7 @@ RepositoryMap.prototype = {
                         wrapDateLine: MapUtils.defaults.wrapDateline
                     });
             } else {
-                var match = /wms:(.*),(.*),(.*)/.exec(mapLayer);
+                let match = /wms:(.*),(.*),(.*)/.exec(mapLayer);
                 if (!match) {
                     alert("no match for map layer:" + mapLayer);
                     continue;
@@ -2358,19 +2357,19 @@ RepositoryMap.prototype = {
     searchMarkers:  function(text) {
         text = text.trim();
         text = text.toLowerCase();
-        var all = text == "";
-        var cbxall = $(':input[id*=\"' + "visibleall_" + this.mapId + '\"]');
+        let all = text == "";
+        let cbxall = $(':input[id*=\"' + "visibleall_" + this.mapId + '\"]');
         cbxall.prop('checked', all);
-        var bounds = new OpenLayers.Bounds();
-        var cnt = 0;
+        let bounds = new OpenLayers.Bounds();
+        let cnt = 0;
         if (this.markers) {
-            var list = this.getMarkers();
-            for (var idx = 0; idx < list.length; idx++) {
+            let list = this.getMarkers();
+            for (let idx = 0; idx < list.length; idx++) {
                 marker = list[idx];
-                var visible = true;
-                var cbx = $('#' + "visible_" + this.mapId + "_" + marker.ramaddaId);
-                var block = $('#' + "block_" + this.mapId + "_" + marker.ramaddaId);
-                var name = marker.name;
+                let visible = true;
+                let cbx = $('#' + "visible_" + this.mapId + "_" + marker.ramaddaId);
+                let block = $('#' + "block_" + this.mapId + "_" + marker.ramaddaId);
+                let name = marker.name;
                 if (all) visible = true;
                 else if (!Utils.isDefined(name)) {
                     visible = false;
@@ -2394,10 +2393,10 @@ RepositoryMap.prototype = {
             this.markers.redraw();
         }
         if (this.boxes && this.boxes.markers) {
-            for (var marker in this.boxes.markers) {
+            for (let marker in this.boxes.markers) {
                 marker = this.boxes.markers[marker];
                 name = marker.name;
-                var visible = true;
+                let visible = true;
                 if (all) visible = true;
                 else if (!Utils.isDefined(name)) {
                     visible = false;
@@ -2406,7 +2405,7 @@ RepositoryMap.prototype = {
                 }
                 marker.display(visible);
                 if (visible) {
-                    var b = this.transformProjBounds(marker.bounds);
+                    let b = this.transformProjBounds(marker.bounds);
                     bounds.extend(b);
                     cnt++;
                 }
@@ -2415,11 +2414,11 @@ RepositoryMap.prototype = {
         }
 
         if (this.lines) {
-            var features = this.lines.features;
-            for (var i = 0; i < features.length; i++) {
-                var line = features[i];
+            let features = this.lines.features;
+            for (let i = 0; i < features.length; i++) {
+                let line = features[i];
                 name = line.name;
-                var visible = true;
+                let visible = true;
                 if (all) visible = true;
                 else if (!Utils.isDefined(name)) {
                     visible = false;
@@ -2482,9 +2481,9 @@ RepositoryMap.prototype = {
         }
 //	this.getMap().addControl(new OpenLayers.Control.OverviewMap());
 
-        var keyboardControl = new OpenLayers.Control();
-        var control = new OpenLayers.Control();
-        var callbacks = {
+        let keyboardControl = new OpenLayers.Control();
+        let control = new OpenLayers.Control();
+        let callbacks = {
             keydown: function(evt) {
                 if (evt.keyCode == 79) {
                     if (!_this.imageLayers) return;
@@ -2512,7 +2511,7 @@ RepositoryMap.prototype = {
             }
 
         };
-        var handler = new OpenLayers.Handler.Keyboard(control, callbacks, {});
+        let handler = new OpenLayers.Handler.Keyboard(control, callbacks, {});
         handler.activate();
         this.getMap().addControl(keyboardControl);
         this.getMap().addControl(new OpenLayers.Control.KeyboardDefaults());
@@ -2525,7 +2524,7 @@ RepositoryMap.prototype = {
         if (this.showLatLonPosition) {
             if (!this.latlonReadout)
                 this.latlonReadout = this.mapId + "_latlonreadout";
-            var latLonReadout = GuiUtils.getDomObject(this.latlonReadout);
+            let latLonReadout = GuiUtils.getDomObject(this.latlonReadout);
             if (latLonReadout) {
                 this.getMap().addControl(new OpenLayers.Control.MousePosition({
                     numDigits: 5,
@@ -2548,8 +2547,8 @@ RepositoryMap.prototype = {
 	}
 
         if (false && this.defaultLocation && !this.defaultBounds) {
-            var center = this.defaultLocation;
-            var offset = 10.0;
+            let center = this.defaultLocation;
+            let offset = 10.0;
             this.defaultBounds = MapUtils.createBounds(center.lon - offset, center.lat - offset, center.lon + offset, center.lat + offset);
 	    if(debugBounds)
 		console.log("setting default bounds-2:" + center.lon +" " + center.lat +" bounds:" + this.defaultBounds);
@@ -2558,7 +2557,7 @@ RepositoryMap.prototype = {
 
 	this.applyDefaultLocation();
 
-        for (var i = 0; i < this.initialLayers.length; i++) {
+        for (let i = 0; i < this.initialLayers.length; i++) {
             this.addLayer(this.initialLayers[i]);
         }
         this.initialLayers = [];
@@ -2567,7 +2566,7 @@ RepositoryMap.prototype = {
             this.addRegionSelectorControl();
         }
 
-        var cbx = $(':input[id*=\"' + "visible_" + this.mapId + '\"]');
+        let cbx = $(':input[id*=\"' + "visible_" + this.mapId + '\"]');
         cbx.change(function(event) {
             _this.checkImageLayerVisibility();
             _this.checkMarkerVisibility();
@@ -2575,7 +2574,7 @@ RepositoryMap.prototype = {
             _this.checkBoxesVisibility();
         });
 
-        var cbxall = $(':input[id*=\"' + "visibleall_" + this.mapId + '\"]');
+        let cbxall = $(':input[id*=\"' + "visibleall_" + this.mapId + '\"]');
         cbxall.change(function(event) {
             cbx.prop("checked", cbxall.is(':checked'));
             _this.checkImageLayerVisibility();
@@ -2591,15 +2590,15 @@ RepositoryMap.prototype = {
 	if(debugBounds)
 	    console.log("apply default location:" + this.defaultLocation);
 	if(this.defaultLocation) {
-            var projPoint = this.transformLLPoint(this.defaultLocation);
+            let projPoint = this.transformLLPoint(this.defaultLocation);
             this.getMap().setCenter(projPoint);
 	    if(!(this.initialZoom>=0)) {
 		this.getMap().zoomTo(4);
 	    }
 	    this.defaultLocation = null;
 	} else  if (this.defaultBounds) {
-            var llPoint = this.defaultBounds.getCenterLonLat();
-            var projPoint = this.transformLLPoint(llPoint);
+            let llPoint = this.defaultBounds.getCenterLonLat();
+            let projPoint = this.transformLLPoint(llPoint);
             this.getMap().setCenter(projPoint);
             this.zoomToExtent(this.transformLLBounds(this.defaultBounds));
             this.defaultBounds = null;
@@ -2625,7 +2624,7 @@ RepositoryMap.prototype = {
 
     removeSearchMarkers:  function() {
         if (!this.searchMarkerList) return;
-        for (var i = 0; i < this.searchMarkerList.length; i++) {
+        for (let i = 0; i < this.searchMarkerList.length; i++) {
             this.removeMarker(this.searchMarkerList[i]);
         }
     },
@@ -2636,7 +2635,7 @@ RepositoryMap.prototype = {
         this.searchMarkerList = [];
         if (!this.locationSearchResults) return;
         let east, west, north, south;
-        for (var i = 0; i < this.locationSearchResults.length; i++) {
+        for (let i = 0; i < this.locationSearchResults.length; i++) {
             let result = this.locationSearchResults[i];
             let lonlat = new MapUtils.createLonLat(result.longitude, result.latitude);
             let icon = result.icon;
@@ -2655,7 +2654,7 @@ RepositoryMap.prototype = {
     initLocationSearch:  function() {
         if (this.selectRegion) return;
         let _this = this;
-        var input = HtmlUtils.span(["style", "padding-right:4px;", "id", this.mapDivId + "_loc_search_wait"], "") +
+        let input = HtmlUtils.span(["style", "padding-right:4px;", "id", this.mapDivId + "_loc_search_wait"], "") +
             HtmlUtils.checkbox(this.mapDivId + "_loc_bounds", ["title", "Search in map bounds"], false) + HtmlUtils.span(["title", "Search in map bounds"], " In view ") +
             HtmlUtils.input("", "", ["class", "ramadda-map-loc-input", "title", "^string - matches beginning", "size", "30", "placeholder", "Search location", "id", this.mapDivId + "_loc_search"])
         $("#" + this.mapDivId + "_footer2").html(input);
@@ -2677,7 +2676,7 @@ RepositoryMap.prototype = {
         });
 
         searchInput.keypress(function(e) {
-            var keyCode = e.keyCode || e.which;
+            let keyCode = e.keyCode || e.which;
             if (keyCode == 27) {
                 searchPopup.hide();
                 return;
@@ -2686,30 +2685,30 @@ RepositoryMap.prototype = {
                 return;
             }
             wait.html(HtmlUtils.image(icon_wait));
-            var url = ramaddaBaseUrl + "/geocode?query=" + encodeURIComponent(searchInput.val());
+            let url = ramaddaBaseUrl + "/geocode?query=" + encodeURIComponent(searchInput.val());
             if (bounds.is(':checked')) {
-                var b = _this.transformProjBounds(_this.getMap().getExtent());
+                let b = _this.transformProjBounds(_this.getMap().getExtent());
                 url += "&bounds=" + b.top + "," + b.left + "," + b.bottom + "," + b.right;
             }
-            var jqxhr = $.getJSON(url, function(data) {
+            let jqxhr = $.getJSON(url, function(data) {
                 wait.html("");
-                var result = HtmlUtils.openTag("div", ["style", "max-height:400px;overflow-y:auto;"]);
+                let result = HtmlUtils.openTag("div", ["style", "max-height:400px;overflow-y:auto;"]);
                 if (data.result.length == 0) {
                     wait.html("Nothing found");
                     return;
                 } else {
                     _this.locationSearchResults = data.result;
-                    for (var i = 0; i < data.result.length; i++) {
-                        var n = data.result[i].name.replace("\"", "'");
-                        var icon = data.result[i].icon;
+                    for (let i = 0; i < data.result.length; i++) {
+                        let n = data.result[i].name.replace("\"", "'");
+                        let icon = data.result[i].icon;
                         if (!icon)
                             icon = ramaddaBaseUrl + "/icons/green-dot.png";
                         result += HtmlUtils.div(["class", "ramadda-map-loc", "name", n, "icon", icon, "latitude", data.result[i].latitude, "longitude", data.result[i].longitude], "<img width='16' src=" + icon + "> " + data.result[i].name);
                     }
                     result += HtmlUtils.div(["class", "ramadda-map-loc", "name", "all"], "Show all");
                 }
-                var my = "left bottom";
-                var at = "left top";
+                let my = "left bottom";
+                let at = "left top";
                 result += HtmlUtils.closeTag("div");
                 searchPopup.html(result);
                 HtmlUtils.setPopupObject(searchPopup);
@@ -2722,22 +2721,22 @@ RepositoryMap.prototype = {
                 });
                 searchPopup.find(".ramadda-map-loc").click(function() {
                     searchPopup.hide();
-                    var name = $(this).attr("name");
+                    let name = $(this).attr("name");
                     if (name == "all") {
                         _this.addAllLocationResults();
                         return;
                     }
-                    var lat = parseFloat($(this).attr("latitude"));
-                    var lon = parseFloat($(this).attr("longitude"));
-                    var icon = $(this).attr("icon");
-                    var offset = 0.05;
-                    var bounds = _this.transformLLBounds(MapUtils.createBounds(lon - offset, lat - offset, lon + offset, lat + offset));
-                    var lonlat = new MapUtils.createLonLat(lon, lat);
+                    let lat = parseFloat($(this).attr("latitude"));
+                    let lon = parseFloat($(this).attr("longitude"));
+                    let icon = $(this).attr("icon");
+                    let offset = 0.05;
+                    let bounds = _this.transformLLBounds(MapUtils.createBounds(lon - offset, lat - offset, lon + offset, lat + offset));
+                    let lonlat = new MapUtils.createLonLat(lon, lat);
                     _this.removeSearchMarkers();
                     _this.searchMarkerList = [];
                     _this.searchMarkerList.push(_this.addMarker("search", lonlat, icon, "", name, 20, 20));
                     //Only zoom  if its a zoom in
-                    var b = _this.transformProjBounds(_this.getMap().getExtent());
+                    let b = _this.transformProjBounds(_this.getMap().getExtent());
                     if (Math.abs(b.top - b.bottom) > offset) {
                         _this.zoomToExtent(bounds);
                     } else {
@@ -2754,7 +2753,7 @@ RepositoryMap.prototype = {
         this.addLayer(layer);
         this.vectorLayers.push(layer);
         if (this.getCanSelect(canSelect)) {
-            var _this = this;
+            let _this = this;
             if (!this.getMap().featureSelect) {
                 this.getMap().featureSelect = new OpenLayers.Control.SelectFeature([layer], {
                     multiple: false,
@@ -2792,8 +2791,8 @@ RepositoryMap.prototype = {
     },
 
     isLayerVisible:  function(id, parentId) {
-        //        var cbx =   $(':input[id*=\"' + "visible_" + this.mapId +"_" + id+'\"]');
-        var cbx = $('#' + "visible_" + this.mapId + "_" + id);
+        //        let cbx =   $(':input[id*=\"' + "visible_" + this.mapId +"_" + id+'\"]');
+        let cbx = $('#' + "visible_" + this.mapId + "_" + id);
         if (cbx.length == 0 && parentId != null) cbx = $('#' + "visible_" + this.mapId + "_" + parentId);
         if (cbx.length == 0) return true;
         return cbx.is(':checked');
@@ -2913,7 +2912,7 @@ RepositoryMap.prototype = {
 				 this.fldWest.obj.value, this.fldSouth.obj.value,
 				 this.fldEast.obj.value, true);
             if (this.selectorBox) {
-                var boxBounds = this.selectorBox.bounds
+                let boxBounds = this.selectorBox.bounds
                 this.getMap().setCenter(boxBounds.getCenterLonLat());
                 if (zoom) {
                     this.zoomToExtent(boxBounds);
@@ -2945,10 +2944,10 @@ RepositoryMap.prototype = {
     setSelectionBox:  function(north, west, south, east, centerView) {
         if (north == "" || west == "" || south == "" || east == "")
             return;
-        var bounds = MapUtils.createBounds(west, Math.max(south,
+        let bounds = MapUtils.createBounds(west, Math.max(south,
 						 -MapUtils.defaults.maxLatValue), east, Math.min(north, MapUtils.defaults.maxLatValue));
         if (!this.selectorBox) {
-            var args = {
+            let args = {
                 "color": "red",
                 "selectable": false
             };
@@ -2968,7 +2967,7 @@ RepositoryMap.prototype = {
         }
 
         if (this.selectImage) {
-            var imageBounds = MapUtils.createBounds(west, south, east, north);
+            let imageBounds = MapUtils.createBounds(west, south, east, north);
             imageBounds = this.transformLLBounds(imageBounds);
             this.selectImage.extent = imageBounds;
             this.selectImage.redraw();
@@ -2985,7 +2984,7 @@ RepositoryMap.prototype = {
 
     clearSelectedFeatures:  function() {
         if (this.getMap().controls != null) {
-            var myControls = this.getMap().controls;
+            let myControls = this.getMap().controls;
             for (i = 0; i < myControls.length; i++) {
                 if (myControls[i].displayClass == "olControlSelectFeature") {
                     myControls[i].unselectAll();
@@ -3003,7 +3002,7 @@ RepositoryMap.prototype = {
         }
 
 
-        var lonlat = new MapUtils.createLonLat(lon, lat);
+        let lonlat = new MapUtils.createLonLat(lon, lat);
         if (this.selectorMarker == null) {
             this.selectorMarker = this.addMarker(MapUtils.POSITIONMARKERID, lonlat, "", "", "", 20, 10);
         } else {
@@ -3022,7 +3021,7 @@ RepositoryMap.prototype = {
 		console.log("setSelectionMarker-2");
 
             if (zoom.zoomOut) {
-                var level = this.getMap().getZoom();
+                let level = this.getMap().getZoom();
                 level--;
                 if (this.getMap().isValidZoomLevel(level)) {
                     this.getMap().zoomTo(level);
@@ -3030,7 +3029,7 @@ RepositoryMap.prototype = {
                 return;
             }
             if (zoom.zoomIn) {
-                var level = this.getMap().getZoom();
+                let level = this.getMap().getZoom();
                 level++;
                 if (this.getMap().isValidZoomLevel(level)) {
                     this.getMap().zoomTo(level);
@@ -3038,9 +3037,9 @@ RepositoryMap.prototype = {
                 return;
             }
 
-            var offset = zoom.offset;
+            let offset = zoom.offset;
             if (offset) {
-                var bounds = this.transformLLBounds(MapUtils.createBounds(lon - offset, lat - offset, lon + offset, lat + offset));
+                let bounds = this.transformLLBounds(MapUtils.createBounds(lon - offset, lat - offset, lon + offset, lat + offset));
                 this.zoomToExtent(bounds);
             }
         }
@@ -3051,7 +3050,7 @@ RepositoryMap.prototype = {
             return;
 	if(Utils.isDefined(bounds.north))
             bounds= MapUtils.createBounds(bounds.west,bounds.south, bounds.east,bounds.north);
-        var llbounds = bounds.clone();
+        let llbounds = bounds.clone();
         return llbounds.transform(this.displayProjection, this.sourceProjection);
     },
 
@@ -3065,14 +3064,14 @@ RepositoryMap.prototype = {
     transformProjBounds:  function(bounds) {
         if (!bounds)
             return;
-        var projbounds = bounds.clone();
+        let projbounds = bounds.clone();
         return projbounds.transform(this.sourceProjection, this.displayProjection);
     },
 
     transformProjPoint:  function(point) {
         if (!point)
             return;
-        var projpoint = point.clone();
+        let projpoint = point.clone();
         return projpoint.transform(this.sourceProjection, this.displayProjection);
     },
 
@@ -3080,10 +3079,10 @@ RepositoryMap.prototype = {
         if (!this.map) {
             return bounds;
         }
-        var newBounds = bounds;
-        var newLeft = bounds.left;
-        var newRight = bounds.right;
-        var extentBounds = this.getMap().restrictedExtent;
+        let newBounds = bounds;
+        let newLeft = bounds.left;
+        let newRight = bounds.right;
+        let extentBounds = this.getMap().restrictedExtent;
         if (!extentBounds) {
             extentBounds = this.maxExtent;
         }
@@ -3143,7 +3142,7 @@ RepositoryMap.prototype = {
 
     clearMarkers:  function() {
         if (!this.markers) return;
-        var markers = this.getMarkers();
+        let markers = this.getMarkers();
         this.markers.removeFeatures(markers);
         this.markers.redraw();
     },
@@ -3160,7 +3159,7 @@ RepositoryMap.prototype = {
         }
     },
     addRegionSelectorControl:  function(listener) {
-        var _this = this;
+        let _this = this;
         if (_this.selectorControl)
             return;
         _this.selectorListener = listener;
@@ -3178,13 +3177,13 @@ RepositoryMap.prototype = {
             },
 
             notice: function(bounds) {
-                var ll = _this.getMap().getLonLatFromPixel(new OpenLayers.Pixel(
+                let ll = _this.getMap().getLonLatFromPixel(new OpenLayers.Pixel(
                     bounds.left, bounds.bottom));
-                var ur = _this.getMap().getLonLatFromPixel(new OpenLayers.Pixel(
+                let ur = _this.getMap().getLonLatFromPixel(new OpenLayers.Pixel(
                     bounds.right, bounds.top));
                 ll = _this.transformProjPoint(ll);
                 ur = _this.transformProjPoint(ur);
-                var bounds = MapUtils.createBounds(ll.lon, ll.lat, ur.lon,
+                bounds = MapUtils.createBounds(ll.lon, ll.lat, ur.lon,
 					  ur.lat);
                 bounds = _this.normalizeBounds(bounds);
                 _this.setSelectionBox(bounds.top, bounds.left, bounds.bottom, bounds.right, false);
@@ -3264,7 +3263,7 @@ RepositoryMap.prototype = {
                 }
             },
             move: function(pt) {
-                var ll = _this.getMap().getLonLatFromPixel(new OpenLayers.Pixel(pt.x, pt.y));
+                let ll = _this.getMap().getLonLatFromPixel(new OpenLayers.Pixel(pt.x, pt.y));
                 ll = _this.transformProjPoint(ll);
                 dx = ll.lon - this.firstPoint.lon;
                 dy = ll.lat - this.firstPoint.lat;
@@ -3280,7 +3279,7 @@ RepositoryMap.prototype = {
                     newEast += dx;
                 if (this.doNorth)
                     newNorth += dy;
-                var bounds = MapUtils.createBounds(newWest, newSouth, newEast, newNorth);
+                let bounds = MapUtils.createBounds(newWest, newSouth, newEast, newNorth);
                 bounds = _this.normalizeBounds(bounds);
                 _this.setSelectionBox(bounds.top, bounds.left, bounds.bottom, bounds.right, false);
                 _this.findSelectionFields();
@@ -3325,7 +3324,7 @@ RepositoryMap.prototype = {
 
     findObject:  function(id, array) {
         for (i = 0; i < array.length; i++) {
-            var aid = array[i].ramaddaId;
+            let aid = array[i].ramaddaId;
             if (!aid)
                 array[i].id;
             if (aid == id) {
@@ -3364,10 +3363,10 @@ RepositoryMap.prototype = {
     },
     checkMarkerVisibility:  function() {
         if (!this.markers) return;
-        var list = this.getMarkers();
-        for (var idx = 0; idx < list.length; idx++) {
+        let list = this.getMarkers();
+        for (let idx = 0; idx < list.length; idx++) {
             marker = list[idx];
-            var visible = this.isLayerVisible(marker.ramaddaId, marker.parentId);
+            let visible = this.isLayerVisible(marker.ramaddaId, marker.parentId);
             //            console.log("   visible:" + visible +" " + marker.ramaddaId + " " + marker.parentId);
             if (visible) {
                 marker.style.display = 'inline';
@@ -3381,10 +3380,10 @@ RepositoryMap.prototype = {
 
     checkLinesVisibility:  function() {
         if (!this.lines) return;
-        var features = this.lines.features;
-        for (var i = 0; i < features.length; i++) {
-            var line = features[i];
-            var visible = this.isLayerVisible(line.ramaddaId);
+        let features = this.lines.features;
+        for (let i = 0; i < features.length; i++) {
+            let line = features[i];
+            let visible = this.isLayerVisible(line.ramaddaId);
             if (visible) {
                 line.style.display = 'inline';
             } else {
@@ -3399,9 +3398,9 @@ RepositoryMap.prototype = {
 
     checkBoxesVisibility:  function() {
         if (!this.boxes) return;
-        for (var marker in this.boxes.markers) {
+        for (let marker in this.boxes.markers) {
             marker = this.boxes.markers[marker];
-            var visible = this.isLayerVisible(marker.ramaddaId);
+            let visible = this.isLayerVisible(marker.ramaddaId);
             marker.display(visible);
         }
         this.boxes.redraw();
@@ -3411,9 +3410,9 @@ RepositoryMap.prototype = {
 
     checkImageLayerVisibility:  function() {
         if (!this.imageLayers) return;
-        for (var i in this.imageLayers) {
-            var visible = this.isLayerVisible(i);
-            var image = this.imageLayers[i];
+        for (let i in this.imageLayers) {
+            let visible = this.isLayerVisible(i);
+            let image = this.imageLayers[i];
             image.setVisibility(visible);
             if (!visible) {
                 if (image.box) {
@@ -3430,7 +3429,7 @@ RepositoryMap.prototype = {
     },
 
     hiliteMarker:  function(id) {
-        var mymarker = this.findMarker(id);
+        let mymarker = this.findMarker(id);
         if (!mymarker) {
             mymarker = this.findFeature(id);
         }
@@ -3443,9 +3442,9 @@ RepositoryMap.prototype = {
         if (!mymarker) {
             return;
         }
-        var latLonBounds = mymarker.latLonBounds;
+        let latLonBounds = mymarker.latLonBounds;
         if (latLonBounds) {
-            var projBounds = this.transformLLBounds(latLonBounds);
+            let projBounds = this.transformLLBounds(latLonBounds);
             this.zoomToExtent(projBounds);
         } else {
 	    if(debugBounds) console.log("hiliteMarker");
@@ -3467,12 +3466,12 @@ RepositoryMap.prototype = {
             this.loadingImage.style.visibility = "inline";
             return;
         }
-        sz = new OpenLayers.Size();
+        let sz = new OpenLayers.Size();
         sz.h = 120;
         sz.w = 120;
-        width = this.getMap().viewPortDiv.offsetWidth;
-        height = this.getMap().viewPortDiv.offsetHeight;
-        position = new OpenLayers.Pixel(width / 2 - sz.w / 2, height / 2 - sz.h / 2);
+        let width = this.getMap().viewPortDiv.offsetWidth;
+        let height = this.getMap().viewPortDiv.offsetHeight;
+        let position = new OpenLayers.Pixel(width / 2 - sz.w / 2, height / 2 - sz.h / 2);
         this.loadingImage = OpenLayers.Util.createImage("loadingimage",
 							position,
 							sz,
@@ -3493,12 +3492,12 @@ RepositoryMap.prototype = {
     },
 
     getLayerVisbileExtent: function(layer) {
-        var maxExtent = null;
-        var features = layer.features;
+        let maxExtent = null;
+        let features = layer.features;
 	if(!features) return layer.getDataExtent();
         if(features.length > 0) {
-            var geometry = null;
-            for(var i=0, len=features.length; i<len; i++) {
+            let geometry = null;
+            for(let i=0, len=features.length; i<len; i++) {
 		if(!features[i].getVisibility()) continue;
                 geometry = features[i].geometry;
                 if (geometry) {
@@ -3513,7 +3512,7 @@ RepositoryMap.prototype = {
     },
 
     zoomToLayer:  function(layer,scale)  {
-        var dataBounds = this.getLayerVisbileExtent(layer);
+        let dataBounds = this.getLayerVisbileExtent(layer);
 	if(!dataBounds)
 	    dataBounds = layer.extent;
         if (dataBounds) {
@@ -3527,12 +3526,12 @@ RepositoryMap.prototype = {
 	if(!Utils.isDefined(steps)) steps = 1;
 	if(!ob)
 	    ob = this.transformProjBounds(this.getMap().getExtent());
-	var numSteps = 10;
+	let numSteps = 10;
 	if(steps>numSteps) {
 	    this.setViewToBounds(bounds);
 	    return;
 	}
-	var p = steps/numSteps; 
+	let p = steps/numSteps; 
 	steps++;
 	newBounds = MapUtils.createBounds(
 	    ob.left+(bounds.left- ob.left)*p,
@@ -3692,7 +3691,7 @@ RepositoryMap.prototype = {
             return null;
         };
 	//Don't do this as the box select hides the marker select
-	//        var sf = new OpenLayers.Control.SelectFeature(theBoxes);
+	//        let sf = new OpenLayers.Control.SelectFeature(theBoxes);
 	//        this.getMap().addControl(sf);
 	//        sf.activate();
     },
@@ -3725,22 +3724,22 @@ RepositoryMap.prototype = {
             text = window.atob(text.substring(7));
         }
 
-        var args = {
+        let args = {
             "color": "blue",
             "selectable": true,
             "zoomToExtent": false,
             "sticky": false
         };
-        for (var i in params) {
+        for (let i in params) {
             args[i] = params[i];
         }
 	if(!args.color) args.color = this.params.boxColor || "blue";
-        var bounds = MapUtils.createBounds(west, Math.max(south, -MapUtils.defaults.maxLatValue),
+        let bounds = MapUtils.createBounds(west, Math.max(south, -MapUtils.defaults.maxLatValue),
 				  east, Math.min(north, MapUtils.defaults.maxLatValue));
-        var projBounds = this.transformLLBounds(bounds);
+        let projBounds = this.transformLLBounds(bounds);
         box = new OpenLayers.Marker.Box(projBounds);
         box.sticky = args.sticky;
-        var _this = this;
+        let _this = this;
 
         if (args["selectable"]) {
             box.events.register("click", box, function(e) {
@@ -3749,7 +3748,7 @@ RepositoryMap.prototype = {
             });
         }
 
-        var lonlat = new MapUtils.createLonLat(west, north);
+        let lonlat = new MapUtils.createLonLat(west, north);
         box.lonlat = this.transformLLPoint(lonlat);
         box.text = this.getPopupText(text);
         box.name = name;
@@ -3779,7 +3778,7 @@ RepositoryMap.prototype = {
 
         if (attrs)
             $.extend(myattrs, attrs);
-        var _this = this;
+        let _this = this;
         this.showFeatureText(marker);
         return this.addPoint(id + "_circle", marker.location, myattrs);
     },
@@ -3805,10 +3804,10 @@ RepositoryMap.prototype = {
 	if(this.featureHighlightHandler) {
 	    this.featureHighlightHandler(feature,true);
 	}
-        var _this = this;
+        let _this = this;
         if (feature.text && this.displayDiv) {
             this.textFeature = feature;
-            var callback = function() {
+            let callback = function() {
                 if (_this.textFeature == feature) {
                     _this.showText(_this.textFeature.text);
                 }
@@ -3906,7 +3905,7 @@ RepositoryMap.prototype = {
     },
 
     addRectangle:  function(id, north, west, south, east, attrs, info) {
-        var points = [new OpenLayers.Geometry.Point(west, north),
+        let points = [new OpenLayers.Geometry.Point(west, north),
 		      new OpenLayers.Geometry.Point(west, south),
 		      new OpenLayers.Geometry.Point(east, south),
 		      new OpenLayers.Geometry.Point(east, north),
@@ -3917,7 +3916,7 @@ RepositoryMap.prototype = {
 
 
     addLine:  function(id, name, lat1, lon1, lat2, lon2, attrs, info) {
-        var points = [new OpenLayers.Geometry.Point(lon1, lat1),
+        let points = [new OpenLayers.Geometry.Point(lon1, lat1),
 		      new OpenLayers.Geometry.Point(lon2, lat2)
 		     ];
         return this.addPolygon(id, name, points, attrs, info);
@@ -3932,8 +3931,8 @@ RepositoryMap.prototype = {
 	    attrs.strokeColor = this.strokeColor;
 	    
 
-        var points = [];
-        for (var i = 0; i < values.length; i += 2) {
+        let points = [];
+        for (let i = 0; i < values.length; i += 2) {
 //	    console.log("pt:" + values[i+1] + " " + values[i]);
             points.push(new OpenLayers.Geometry.Point(values[i + 1], values[i]));
         }
@@ -3948,26 +3947,26 @@ RepositoryMap.prototype = {
     },
 
     addPolygon:  function(id, name, points, attrs, marker) {
-        var _this = this;
-        var location;
+        let _this = this;
+        let location;
         if (points.length > 1) {
             location = new OpenLayers.LonLat(points[0].x + (points[1].x - points[0].x) / 2,
 					     points[0].y + (points[1].y - points[0].y) / 2);
         } else {
             location = new OpenLayers.LonLat(points[0].x, points[0].y);
         }
-        for (var i = 0; i < points.length; i++) {
+        for (let i = 0; i < points.length; i++) {
             points[i].transform(this.displayProjection, this.sourceProjection);
         }
 
 
-        var base_style = OpenLayers.Util.extend({},
+        let base_style = OpenLayers.Util.extend({},
 						OpenLayers.Feature.Vector.style['default']);
-        var style = OpenLayers.Util.extend({}, base_style);
+        let style = OpenLayers.Util.extend({}, base_style);
         style.strokeColor = "blue";
         style.strokeWidth = 1;
         if (attrs) {
-            for (key in attrs) {
+            for (let key in attrs) {
                 style[key] = attrs[key];
             }
         }
@@ -3979,8 +3978,8 @@ RepositoryMap.prototype = {
             this.addVectorLayer(this.lines);
         }
 
-        var lineString = new OpenLayers.Geometry.LineString(points);
-        var line = new OpenLayers.Feature.Vector(lineString, null, style);
+        let lineString = new OpenLayers.Geometry.LineString(points);
+        let line = new OpenLayers.Feature.Vector(lineString, null, style);
         /*
          * line.events.register("click", line, function (e) { alert("box
          * click"); _this.showMarkerPopup(box); OpenLayers.Event.stop(evt); });
@@ -3991,7 +3990,7 @@ RepositoryMap.prototype = {
         line.ramaddaId = id;
         line.location = location;
         line.name = name;
-        var visible = this.isLayerVisible(line.ramaddaId);
+        let visible = this.isLayerVisible(line.ramaddaId);
         if (visible) {
             line.style.display = 'inline';
         } else {
@@ -4019,16 +4018,16 @@ RepositoryMap.prototype = {
             this.currentPopup.destroy();
             this.currentPopup = null;
         }
-        var marker = this.currentEntryMarker;
+        let marker = this.currentEntryMarker;
         if (marker.entryLayer) {
-            var idx = this.loadedLayers.indexOf(marker.entryLayer);
+            let idx = this.loadedLayers.indexOf(marker.entryLayer);
             if (idx >= 0)
                 this.loadedLayers = this.loadedLayers.slice(idx);
             this.getMap().removeLayer(marker.entryLayer);
             marker.entryLayer = null;
             return;
         }
-        var layer = this.handleEntrySelect(marker.entryId, marker.name, marker.entryType);
+        let layer = this.handleEntrySelect(marker.entryId, marker.name, marker.entryType);
         if (layer) {
             marker.entryLayer = layer;
         }
@@ -4054,7 +4053,7 @@ RepositoryMap.prototype = {
 	}
 
 
-        var id = marker.ramaddaId;
+        let id = marker.ramaddaId;
         if (!id)
             id = marker.id;
 	if(this.shareSelected &&  window["ramaddaDisplaySetSelectedEntry"]) {
@@ -4066,7 +4065,7 @@ RepositoryMap.prototype = {
 	}
 
         this.hiliteBox(id);
-        var _this = this;
+        let _this = this;
         if (marker.inputProps) {
             marker.text = this.getPopupText(marker.inputProps.text);
         }
@@ -4090,7 +4089,7 @@ RepositoryMap.prototype = {
             markers = this.seenMarkers[marker.locationKey];
             if (markers && markers.length > 1) {
                 markerText = "";
-                for (var i = 0; i < markers.length; i++) {
+                for (let i = 0; i < markers.length; i++) {
                     otherMarker = markers[i];
                     if (i > 0)
                         markerText += '<hr>';
@@ -4106,7 +4105,7 @@ RepositoryMap.prototype = {
 
 	
         // set marker text as the location
-        var location = marker.location;
+        let location = marker.location;
 
         let projPoint = null;
 	if(!location) {
@@ -4128,11 +4127,11 @@ RepositoryMap.prototype = {
             }
 	    
             if (marker.entryType) {
-		var type = marker.entryType;
+		let type = marker.entryType;
 		if (type == "geo_kml" || type == "geo_json" || type == "geo_shapefile") {
                     this.currentEntryMarker = marker;
-                    var call = "ramaddaMapMap['" + this.mapId + "'].handleMarkerLayer();";
-                    var label = marker.entryLayer ? "Remove Layer" : "Load Layer";
+                    let call = "ramaddaMapMap['" + this.mapId + "'].handleMarkerLayer();";
+                    let label = marker.entryLayer ? "Remove Layer" : "Load Layer";
                     markerText = "<center>" + HtmlUtils.onClick(call, label) + "</center>" + markerText;
 		}
             }
@@ -4176,14 +4175,14 @@ RepositoryMap.prototype = {
     },
 
     popupChart:  function(props) {
-        var displayManager = getOrCreateDisplayManager(props.divId, {}, true);
-        var pointDataProps = {
+        let displayManager = getOrCreateDisplayManager(props.divId, {}, true);
+        let pointDataProps = {
             entryId: props.entryId
         };
-        var title = props.title;
+        let title = props.title;
         if (!title) title = "Chart";
-        var fields = (props.fields == null ? null : props.fields.split(","));
-        var chartProps = {
+        let fields = (props.fields == null ? null : props.fields.split(","));
+        let chartProps = {
             "title": title,
             "layoutHere": true,
             "divid": props.divId,
@@ -4195,7 +4194,7 @@ RepositoryMap.prototype = {
         };
 	if(props.chartArgs) {
 	    let toks = props.chartArgs.split(",");
-	    for(var i=0;i<toks.length;i+=2) {
+	    for(let i=0;i<toks.length;i+=2) {
 		chartProps[toks[i]] = toks[i+1];
 	    }
 	}
