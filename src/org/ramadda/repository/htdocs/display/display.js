@@ -3370,6 +3370,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             html += HU.div([ID, divid], "");
             let snippet = entry.getSnippet();
 	    if(snippet) html+=snippet;
+
 	    /*
             let desc = entry.getDescription();
             if (desc)
@@ -3609,8 +3610,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             });
             entryRows.mouseout(async function(event) {
-                var entryId = $(this).attr(ATTR_ENTRYID);
-                var entry;
+                let entryId = $(this).attr(ATTR_ENTRYID);
+                let entry;
                 await theDisplay.getEntry(entryId, e => {
                     entry = e
                 });
@@ -3618,9 +3619,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 theDisplay.propagateEvent("handleEventEntryMouseout", {
                     entry: entry
                 });
-                var domEntryId = Utils.cleanId(entryId);
-                var toolbarId = theDisplay.getEntryToolbarId(entryId);
-                var toolbar = $("#" + toolbarId);
+                let domEntryId = Utils.cleanId(entryId);
+                let toolbarId = theDisplay.getEntryToolbarId(entryId);
+                let toolbar = $("#" + toolbarId);
                 //TOOLBAR                        toolbar.hide();
             });
 
@@ -3808,7 +3809,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			  HU.join(toolbarItems, ""));
         },
         getEntryToolbarId: function(entryId) {
-            var id = entryId.replace(/:/g, "_");
+            var id = entryId.replace(/:/g, "_").replace(/\//g,"_").replace(/[\(\)]/g,"_");
             id = id.replace(/=/g, "_");
             return this.getDomId(ID_TOOLBAR + "_" + id);
         },

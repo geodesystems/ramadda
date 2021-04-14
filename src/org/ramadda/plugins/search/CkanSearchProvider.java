@@ -257,7 +257,7 @@ public class CkanSearchProvider extends SearchProvider {
                                  getMetadataManager().addMetadata(newEntry, thumbnailMetadata);
             */
 
-            newEntry.initEntry(title, desc, parent,
+            newEntry.initEntry(title, "<snippet>" + desc+"</snippet>", parent,
                                getUserManager().getLocalFileUser(),
                                new Resource(new URL(itemUrl)), "",Entry.DEFAULT_ORDER,
                                dttm.getTime(), dttm.getTime(),

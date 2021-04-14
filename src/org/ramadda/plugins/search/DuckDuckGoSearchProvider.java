@@ -147,7 +147,7 @@ public class DuckDuckGoSearchProvider extends SearchProvider {
             entries.add(newEntry);
             newEntry.setIcon("/search/duckduckgo.png");
             Date dttm = new Date();
-            newEntry.initEntry(name, desc, parent,
+            newEntry.initEntry(name, "<snippet>" +desc+"</snippet>", parent,
                                getUserManager().getLocalFileUser(),
                                new Resource(new URL(resultUrl)), "",Entry.DEFAULT_ORDER,
                                dttm.getTime(), dttm.getTime(),
