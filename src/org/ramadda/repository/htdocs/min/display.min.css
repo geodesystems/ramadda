@@ -921,6 +921,7 @@ svg > g > g:last-child { pointer-events: none }
 
 .display-search-bar {
     min-height:2.5em;
+    margin-left:24px;
 }
 
 .display-search-tag-group {

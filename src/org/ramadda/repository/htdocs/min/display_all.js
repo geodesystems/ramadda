@@ -26782,6 +26782,7 @@ let DISPLAY_ENTRYTITLE = "entrytitle";
 let DISPLAY_SEARCH  = "search";
 let DISPLAY_SIMPLESEARCH  = "simplesearch";
 let ID_RESULTS = "results";
+let ID_SEARCH_FORM = "searchform";
 let ID_SEARCH_HEADER = "searchheader";
 let ID_SEARCH_BAR = "searchbar";
 let ID_SEARCH_TAG = "searchtag";
@@ -26804,6 +26805,8 @@ let ID_TYPE_DIV = "typediv";
 let ID_TYPEFIELDS = "typefields";
 let ID_METADATA_FIELD = "metadatafield";
 let ID_COLUMN = "column";
+
+let ID_SEARCH_HIDEFORM = "searchhideform";
 
 
 
@@ -27176,6 +27179,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         {p:"fields",d: null},
         {p:"formWidth",d: "300px"},
         {p:"entriesWidth",d: 0},
+	{p:'displayTypes',ex:"list,gallery,map,metadata"},
         {p:"showDetailsForGroup",d: false},
 	{p:'doWorkbench',d:false,ex:'true', tt:'Show the new, charts, etc links'},
 	];
@@ -27216,6 +27220,13 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         },
 
 	initHtml: function() {
+	    this.jq(ID_SEARCH_HIDEFORM).click(()=>{
+		this.formShown  = !this.formShown;
+		if(this.formShown)
+		    this.jq(ID_SEARCH_FORM).show();
+		else
+		    this.jq(ID_SEARCH_FORM).hide();
+	    });
 	    if(this.areaWidget) this.areaWidget.initHtml();
 	    if(this.getShowOrderBy()) {
 		let settings = this.getSearchSettings();
@@ -27267,10 +27278,16 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 resultsDiv = HU.div([ATTR_CLASS, "display-entries-results", ATTR_ID, this.getDomId(ID_RESULTS)], "&nbsp;");
             }
 	    resultsDiv = HU.leftRightTable(resultsDiv,HU.div([CLASS,"display-search-header", ID,this.domId(ID_SEARCH_HEADER)]),null,null,{valign:"bottom"});
-            let entriesDiv =
-		searchBar +
-                resultsDiv +
-                HU.div(entriesDivAttrs, this.getLoadingMessage());
+	    let toggle = "";
+	    if(horizontal && this.getShowForm()) {
+		toggle = HU.div([TITLE, "Toggle form", ID,this.domId(ID_SEARCH_HIDEFORM), CLASS,"ramadda-clickable",STYLE,HU.css("position","absolute","left","0px","top","0px")],
+				HU.getIconImage("fas fa-bars"));
+	    }
+            let entriesDiv = HU.div([STYLE,HU.css("position","relative")],
+				    toggle +
+				    searchBar +
+				    resultsDiv +
+				    HU.div(entriesDivAttrs, this.getLoadingMessage()));
 
             if (horizontal) {
 		html += HU.open("table",["width","100%","border",0]);
@@ -27279,10 +27296,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 if (this.getShowForm()) {
                     let attrs = [];
 		    let form = HU.div([STYLE,HU.css("min-height","400px","max-width",HU.getDimension(this.getFormWidth()),"overflow-x","auto")],this.makeSearchForm());
-		    html += HU.tag("td", ["width","10%"], form);
+		    html += HU.tag("td", [ID,this.getDomId(ID_SEARCH_FORM),"width","1%"], form);
+		    this.formShown  = true;
                 }
                 if (this.getShowEntries()) {
-                    let attrs = [ATTR_WIDTH, "75%"];
+                    let attrs = [];
                     if (this.getEntriesWidth() === "") {
                         attrs = [];
                     } else if (this.getEntriesWidth() != 0) {
@@ -28243,7 +28261,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 	    this.mapId = null;
 	    let titles = [];
 	    let contents = [];
-	    this.getProperty("displayTypes","list,gallery,map,metadata").split(",").forEach(type=>{
+	    this.getDisplayTypes("list,gallery,map").split(",").forEach(type=>{
 		if(type=="list") {
 		    titles.push("List");
 		    contents.push(this.getEntriesTree(entries));

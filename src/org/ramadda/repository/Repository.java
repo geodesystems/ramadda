@@ -544,6 +544,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private String languageDefault = "";
 
 
+    /** _more_          */
+    private int overridePort = -1;
+
+    /** _more_ */
+    private boolean ignoreSSL = false;
+
+
+
 
     /**
      * _more_
@@ -703,8 +711,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /** _more_          */
-    private int overridePort = -1;
 
     /**
      * _more_
@@ -716,9 +722,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         overridePort = value;
     }
 
-
-    /** _more_ */
-    private boolean ignoreSSL = false;
 
     /**
      * _more_
@@ -842,10 +845,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
             childRepository.setHttpsPort(sslPort);
         }
     }
-
-
-
-
 
 
     /**
