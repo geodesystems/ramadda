@@ -3656,6 +3656,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return this.tag("tr", attrs, inner);
     },
     css: function(...attrs) {
+	if(attrs.length==1 && Array.isArray(attrs[0])) attrs = attrs[0]
+
 	let css = "";
 	for(let i=0;i<attrs.length;i+=2) {
 	    css +=attrs[i]+":" + attrs[i+1]+";";

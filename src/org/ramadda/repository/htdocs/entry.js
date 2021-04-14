@@ -780,10 +780,12 @@ function Entry(props) {
         },
         getThumbnail: function() {
             if (!this.metadata) return null;
-            for (var i = 0; i < this.metadata.length; i++) {
-                var metadata = this.metadata[i];
-                if (metadata.type == "content.thumbnail" && Utils.stringDefined(metadata.value.attr1))
-                    return this.getRamadda().getRoot() + "/metadata/view/" + metadata.value.attr1 + "?element=1&entryid=" + this.getId() + "&metadata_id=" + metadata.id;
+            for (let i = 0; i < this.metadata.length; i++) {
+                let metadata = this.metadata[i];
+                if (metadata.type == "content.thumbnail" && Utils.stringDefined(metadata.value.attr1)) {
+		    if(metadata.value.attr1.startsWith("http")) return metadata.value.attr1;
+		    return this.getRamadda().getRoot() + "/metadata/view/" + metadata.value.attr1 + "?element=1&entryid=" + this.getId() + "&metadata_id=" + metadata.id;
+		}
             }
             return null;
         },
@@ -955,9 +957,23 @@ function Entry(props) {
             if (this.url && this.url.search(/(\.png|\.jpg|\.jpeg|\.gif)/i) >= 0) {
                 return true;
             }
-
-            return this.hasResource() && this.getFilename().search(/(\.png|\.jpg|\.jpeg|\.gif)/i) >= 0;
+            if(this.hasResource() && this.getFilename().search(/(\.png|\.jpg|\.jpeg|\.gif)/i) >= 0) return true;
+	    if(this.getThumbnail()) return true;
+	    return false;
         },
+        getImageUrl: function() {
+            if (this.url && this.url.search(/(\.png|\.jpg|\.jpeg|\.gif)/i) >= 0) {
+                return this.url;
+            }
+            if(this.hasResource() && this.getFilename().search(/(\.png|\.jpg|\.jpeg|\.gif)/i) >= 0) {
+		return this.getResourceUrl();
+	    }
+	    let thumbnail = this.getThumbnail();
+	    if(thumbnail) {
+		return thumbnail;
+	    }
+	    return null;
+	},
         hasResource: function() {
             return this.getFilename() != null;
         },

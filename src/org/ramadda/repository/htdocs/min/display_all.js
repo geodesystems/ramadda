@@ -6326,7 +6326,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             var metadata = entry.getMetadata();
             if (entry.isImage()) {
-                var img = HU.tag(TAG_IMG, ["src", entry.getResourceUrl(), /*ATTR_WIDTH,"100%",*/
+                var img = HU.tag(TAG_IMG, ["src", entry.getImageUrl(), /*ATTR_WIDTH,"100%",*/
 					   ATTR_CLASS, "display-entry-image"
 					  ]);
 
@@ -26764,7 +26764,7 @@ function RamaddaGlossaryDisplay(displayManager, id, properties) {
 
 
 /**
-Copyright 2008-2019 Geode Systems LLC
+Copyright 2008-2021 Geode Systems LLC
 */
 
 
@@ -26813,12 +26813,14 @@ addGlobalDisplayType({
     requiresData: false,
     category: CATEGORY_ENTRIES
 });
+/*
 addGlobalDisplayType({
     type: DISPLAY_SEARCH,
     label: "Entry Search",
     requiresData: false,
     category: CATEGORY_ENTRIES
 });
+*/
 /*
 addGlobalDisplayType({
     type: DISPLAY_TESTLIST,
@@ -26934,7 +26936,206 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
             if (this.entryList == null) return [];
             return this.entryList.getEntries();
         },
+	getEntriesMetadata:function(entries) {
+	                var mdtsFromEntries = [];
+            var mdtmap = {};
+            var tmp = {};
+            for (var i = 0; i < entries.length; i++) {
+                var entry = entries[i];
+                var metadata = entry.getMetadata();
+                for (var j = 0; j < metadata.length; j++) {
+                    var m = metadata[j];
+                    if (tmp[m.type] == null) {
+                        tmp[m.type] = "";
+                        mdtsFromEntries.push(m.type);
+                    }
+                    mdtmap[metadata[j].type] = metadata[j].label;
+                }
+            }
 
+            var html = "";
+            html += HU.openTag(TAG_TABLE, ["id", this.getDomId("table"), ATTR_CLASS, "cell-border stripe ramadda-table", ATTR_WIDTH, "100%", "cellpadding", "5", "cellspacing", "0"]);
+            html += "<thead>"
+            var type = this.findEntryType(this.searchSettings.entryType);
+            var typeName = "Entry";
+            if (type != null) {
+                typeName = type.getLabel();
+            }
+	    this.writeMessage(this.getResultsHeader(entries));
+            var mdts = null;
+            //Get the metadata types to show from either a property or
+            //gather them from all of the entries
+            // e.g., "project_pi,project_person,project_funding"
+            var prop = this.getProperty("metadataTypes", null);
+            if (prop != null) {
+                mdts = prop.split(",");
+            } else {
+                mdts = mdtsFromEntries;
+                mdts.sort();
+            }
+
+            var skip = {
+                "content.pagestyle": true,
+                "content.pagetemplate": true,
+                "content.sort": true,
+                "spatial.polygon": true,
+            };
+            var headerItems = [];
+            headerItems.push(HU.th([], HU.b(typeName)));
+            for (var i = 0; i < mdts.length; i++) {
+                var type = mdts[i];
+                if (skip[type]) {
+                    continue;
+                }
+                var label = mdtmap[mdts[i]];
+                if (label == null) label = mdts[i];
+                headerItems.push(HU.th([], HU.b(label)));
+            }
+            var headerRow = HU.tr(["valign", "bottom"], HU.join(headerItems, ""));
+            html += headerRow;
+            html += "</thead><tbody>"
+            var divider = "<div class=display-metadata-divider></div>";
+            var missing = this.missingMessage;
+            if (missing = null) missing = "&nbsp;";
+            for (var entryIdx = 0; entryIdx < entries.length; entryIdx++) {
+                var entry = entries[entryIdx];
+                var metadata = entry.getMetadata();
+                var row = [];
+                var buttonId = this.getDomId("entrylink" + entry.getIdForDom());
+                var link = entry.getLink(entry.getIconImage() + " " + entry.getName());
+                row.push(HU.td([], HU.div([ATTR_CLASS, "display-metadata-entrylink"], link)));
+                for (var mdtIdx = 0; mdtIdx < mdts.length; mdtIdx++) {
+                    var mdt = mdts[mdtIdx];
+                    if (skip[mdt]) {
+                        continue;
+                    }
+                    var cell = null;
+                    for (var j = 0; j < metadata.length; j++) {
+                        var m = metadata[j];
+                        if (m.type == mdt) {
+                            var item = null;
+                            if (m.type == "content.thumbnail" || m.type == "content.logo") {
+                                var url = this.getRamadda().getRoot() + "/metadata/view/" + m.value.attr1 + "?element=1&entryid=" + entry.getId() + "&metadata_id=" + m.id;
+                                item = HU.image(url, [ATTR_WIDTH, "100"]);
+                            } else if (m.type == "content.url" || m.type == "dif.related_url") {
+                                var label = m.value.attr2;
+                                if (label == null || label == "") {
+                                    label = m.value.attr1;
+                                }
+                                item = HU.href(m.value.attr1, label);
+                            } else if (m.type == "content.attachment") {
+                                var toks = m.value.attr1.split("_file_");
+                                var filename = toks[1];
+                                var url = this.getRamadda().getRoot() + "/metadata/view/" + m.value.attr1 + "?element=1&entryid=" + entry.getId() + "&metadata_id=" + m.id;
+                                item = HU.href(url, filename);
+                            } else {
+                                item = m.value.attr1;
+                                if (Utils.isDefined(m.value.attr2)) {
+				    if(String(m.value.attr2).trim().length > 0) {
+					item += " - " + m.value.attr2;
+				    }
+                                }
+                            }
+                            if (item != null) {
+                                if (cell == null) {
+                                    cell = "";
+                                } else {
+                                    cell += divider;
+                                }
+                                cell += HU.div([ATTR_CLASS, "display-metadata-item"], item);
+                            }
+
+                        }
+                    }
+                    if (cell == null) {
+                        cell = missing;
+                    }
+                    if (cell == null) {
+                        cell = "";
+                    }
+                    var add = HU.tag(TAG_A, [ATTR_STYLE, "color:#000;", ATTR_HREF, this.getRamadda().getRoot() + "/metadata/addform?entryid=" + entry.getId() + "&metadata_type=" + mdt,
+                        "target", "_blank", "alt", "Add metadata", ATTR_TITLE, "Add metadata"
+                    ], "+");
+                    add = HU.div(["class", "display-metadata-table-add"], add);
+                    var cellContents = add + divider;
+                    if (cell.length > 0) {
+                        cellContents += cell;
+                    }
+                    row.push(HU.td([], HU.div([ATTR_CLASS, "display-metadata-table-cell-contents"], cellContents)));
+                }
+                html += HU.tr(["valign", "top"], HU.join(row, ""));
+                //Add in the header every 10 rows
+                if (((entryIdx + 1) % 10) == 0) html += headerRow;
+            }
+            html += "</tbody>"
+            html += HU.closeTag(TAG_TABLE);
+	    return html;
+	},
+
+        getEntriesGallery: function(entries) {
+            let nonImageHtml = "";
+            let html = "";
+            let imageCnt = 0;
+            let imageEntries = [];
+	    for (let i = 0; i < entries.length; i++) {
+                let entry = entries[i];
+                //Don: Right now this just shows all of the images one after the other.
+                //If there is just one image we should just display it
+                //We should do a gallery here if more than 1
+
+                if (entry.isImage()) {
+                    imageEntries.push(entry);
+                    let link = HU.tag(TAG_A, [ATTR_HREF, entry.getEntryUrl()], entry.getName());
+                    imageCnt++;
+		    let imageUrl =entry.getImageUrl();
+                    html += HU.tag(TAG_IMG, ["src", imageUrl, ATTR_WIDTH, "500", ATTR_ID,
+                            this.getDomId("entry_" + entry.getIdForDom()),
+                            ATTR_ENTRYID, entry.getId(), ATTR_CLASS, "display-entrygallery-entry"
+                        ]) + "<br>" +
+                        link + "<p>";
+                } else {
+                    let icon = entry.getIconImage([ATTR_TITLE, "View entry"]);
+                    let link = HU.tag(TAG_A, [ATTR_HREF, entry.getEntryUrl()], icon + " " + entry.getName());
+                    nonImageHtml += link + "<br>";
+                }
+            }
+
+            if (imageCnt > 1) {
+                //Show a  gallery instead
+		this.galleryId = HU.getUniqueId("gallery_");
+                let newHtml = HU.open("div",[ID, this.galleryId]);
+		let itemWidth = this.getProperty("galleryItemWidth","200px");
+                for (let i = 0; i < imageEntries.length; i++) {
+                    let entry = imageEntries[i];
+		    let attrs = ["width",itemWidth];
+                    newHtml += HU.open("div",[CLASS,"display-entrygallery-item",STYLE,HU.css(attrs)]);
+                    let link = HU.tag(TAG_A, ["target","_entries",ATTR_HREF, entry.getEntryUrl()], entry.getName());
+		    link = link.replace(/"/g,"'");
+		    let imageUrl =entry.getImageUrl();
+                    let img = HU.image(imageUrl, [ATTR_WIDTH, "100%", ATTR_ID,
+						  this.getDomId("entry_" + entry.getIdForDom()),
+						  ATTR_ENTRYID, entry.getId(), ATTR_CLASS, "display-entrygallery-entry"
+						 ]);
+                    img = HU.href(entry.getResourceUrl(), img, ["data-fancybox",this.galleryId, "data-caption",link, CLASS, "popup_image"]);
+                    newHtml += HU.div(["class", "image-outer"], HU.div(["class", "image-inner"], img) +
+                        HU.div(["class", "image-caption"], link));
+
+                    newHtml += HU.close("div");
+                }
+                newHtml += HU.close("div");
+                html = newHtml;
+            }
+
+
+            //append the links to the non image entries
+            if (nonImageHtml != "") {
+                if (imageCnt > 0) {
+                    html += "<hr>";
+                }
+                html += HU.div([STYLE,HU.css("margin","10px")],nonImageHtml);
+            }
+            return html;
+        }
     });
     if (properties.entryType != null) {
         this.searchSettings.addType(properties.entryType);
@@ -26952,29 +27153,30 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{label:'Search'},
         {p:"showForm",d: true},
         {p:"formOpen",d: true},	
-        {p:"showOrderBy",ex: "true"},
+        {p:"showOrderBy",d:true,ex: "true"},
         {p:"orderBy",ex: "name_ascending|name_descending|fromdate_ascending|fromdate_descending|todate_|createdate_|size_"},
         {p:"searchText",d: ""},
         {p:"orientation",ex:"horizontal|vertical",d:"horizontal"},
         {p:"showSearchSettings",d: true},
-        {p:"showToggle",d: true},
-	{p:'formHeight',eg:'200px'},
+        {p:"showToggle",d: false},
+	{p:'formHeight',d:'400px'},
+        {p:'entriesHeight',d:'400px'},	
         {p:"showEntries",d: true},
         {p:"showType",d: true},
         {p:"types",ex:'comma separated list of types'},
-        {p:"doSearch",d: true},
-        {p:"showMetadata",d: true},
-        {p:"showTags",d: true},	
-        {p:"showArea",d: true},
-        {p:"showText",d: true},
+        {p:"doSearch",d: true,tt:'Apply search at initial display'},
         {p:"showDate",d: true},
         {p:"showCreateDate",ex:"true",d: false},	
+        {p:"showArea",d: true},
+        {p:"showText",d: true},
+        {p:"showMetadata",d: true},
+	{p:'metadataTypes', d:'enum_tag:Tag,content.keyword:Keyword'},
+        {p:"showTags",d: true},	
         {p:"fields",d: null},
-        {p:"formWidth",d: 0},
+        {p:"formWidth",d: "300px"},
         {p:"entriesWidth",d: 0},
-        {p:"entriesHeight",ex: "300px"},	
         {p:"showDetailsForGroup",d: false},
-	{p:'doWorkbench',ex:'true', tt:'Show the new, charts, etc links'},
+	{p:'doWorkbench',d:false,ex:'true', tt:'Show the new, charts, etc links'},
 	];
 
     const SUPER = new RamaddaEntryDisplay(displayManager, id, type, properties);
@@ -26986,8 +27188,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         metadata: {},
         metadataLoading: {},
 	ctor: function() {
-	    if (this.getProperty("showMetadata") && this.getProperty("showSearchSettings")) {
-		let metadataTypesAttr = this.getProperty("metadataTypes", "enum_tag:Tag");
+	    if (this.getShowMetadata() && this.getShowSearchSettings()) {
+		let metadataTypesAttr = this.getMetadataTypes();
 		//look for type:value:label, or type:label,
 		let toks = metadataTypesAttr.split(",");
 		for (let i = 0; i < toks.length; i++) {
@@ -27070,17 +27272,13 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 HU.div(entriesDivAttrs, this.getLoadingMessage());
 
             if (horizontal) {
-                html += HU.openTag(TAG_DIV, ["class", "row"]);
+		html += HU.open("table",["width","100%","border",0]);
+		html+="<tr valign=top>";
                 let entriesAttrs = ["class", "col-md-12"];
                 if (this.getShowForm()) {
                     let attrs = [];
-                    if (this.getFormWidth() === "") {
-                        attrs = [];
-                    } else if (this.getFormWidth() != 0) {
-                        attrs = [ATTR_WIDTH, this.getFormWidth()];
-                    }
-                    html += HU.tag(TAG_DIV, ["class", "col-md-4"], this.makeSearchForm());
-                    entriesAttrs = ["class", "col-md-8"];
+		    let form = HU.div([STYLE,HU.css("min-height","400px","max-width",HU.getDimension(this.getFormWidth()),"overflow-x","auto")],this.makeSearchForm());
+		    html += HU.tag("td", ["width","10%"], form);
                 }
                 if (this.getShowEntries()) {
                     let attrs = [ATTR_WIDTH, "75%"];
@@ -27089,9 +27287,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                     } else if (this.getEntriesWidth() != 0) {
                         attrs = [ATTR_WIDTH, this.getEntriesWidth()];
                     }
-                    html += HU.tag(TAG_DIV, entriesAttrs, entriesDiv);
+                    html += HU.tag("td",[], entriesDiv);		    
                 }
-                html += HU.closeTag("row");
+                html += HU.closeTag("tr");
+                html += HU.closeTag("table");
 
                 html += HU.openTag(TAG_DIV, ["class", "row"]);
                 if (this.getShowForm()) {
@@ -27259,7 +27458,6 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             }
 
 
-
             if (this.haveTypes) {
                 settings.entryType = this.getFieldValue(this.getDomId(ID_TYPE_FIELD), settings.entryType);
 		if(settings.entryType) {
@@ -27312,10 +27510,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             }
 
             //Call this now because it sets settings
+            let theRepository = this.getRamadda()
 
-
-            var theRepository = this.getRamadda()
-
+	    this.writeMessage(this.getWaitImage() + " " +"Searching...");
             if (theRepository.children) {
                 this.entryList = new EntryListHolder(theRepository, this);
                 this.multiSearch = {
@@ -27473,7 +27670,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                         img = img.replace(/\${root}/g, ramaddaBaseUrl);
                         extraAttrs += " data-iconurl=\"" + img + "\" ";
                     }
-                    buff += "<option title='" + label+"' class=display-search-provider " + extraAttrs + " value=\"" + id + "\">" + label + "</option>\n";
+                    buff += "<option  title='" + label+"' class=display-search-provider " + extraAttrs + " value=\"" + id + "\">" + label + "</option>\n";
                     catToBuff[category] = buff;
                 }
 
@@ -27486,7 +27683,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                         options += "</optgroup>";
 
                 }
-		let providersSelect = HU.tag("select", ["multiple", null, "id", this.getDomId(ID_PROVIDERS), ATTR_CLASS, "display-search-providers"], options);
+		let providersSelect = HU.tag("select", [STYLE,HU.css(),"multiple", null, "id", this.getDomId(ID_PROVIDERS), ATTR_CLASS, "display-search-providers"], options);
                 topItems.push(providersSelect);
             }
 
@@ -27802,7 +27999,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    } else {
 		this.writeHtml(ID_TYPE_DIV, select);
 	    }
-            this.selectboxit(this.jq(ID_TYPE_FIELD));
+	    
+            this.selectboxit(this.jq(ID_TYPE_FIELD),
+			     { autoWidth: false,  "max-height":"100px"});
             this.addExtraForm();
 	    if(hadSelected) {
 		this.submitSearchForm();
@@ -27965,8 +28164,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
                 this.entryListChanged(this.entryList);
             }
             this.selectboxit(this.jq(ID_PROVIDERS),
-			     {width:"100px",
-			      "max-height":"50px"});
+			     { autoWidth: false,  "max-height":"100px"});
             this.jq(ID_PROVIDERS).change(function() {
                 _this.providerChanged();
             });
@@ -28038,7 +28236,53 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
             }
         },
         makeEntriesDisplay: function(entries) {
-            return this.getEntriesTree(entries);
+	    this.tabId = null;
+	    this.mapId = null;
+	    let titles = [];
+	    let contents = [];
+	    this.getProperty("displayTypes","list,gallery,map,metadata").split(",").forEach(type=>{
+		if(type=="list") {
+		    titles.push("List");
+		    contents.push(this.getEntriesTree(entries));
+		} else if(type=="gallery") {
+		    let imageEntries = entries.filter(entry=>{
+			return entry.isImage();
+		    });
+		    if(imageEntries.length>0) {
+			titles.push("Gallery");
+			contents.push(this.getEntriesGallery(imageEntries));
+		    }
+		} else if(type=="map") {
+		    this.areaEntries = entries.filter(entry=>{
+			return entry.hasBounds() || entry.hasLocation();
+		    });
+		    if(this.areaEntries.length>0) {
+			titles.push("Map");
+			this.mapId = HU.getUniqueId("map_");
+			let mapDiv = HU.div([ID,this.mapId,STYLE,HU.css("width","100%","height","400px")]);
+			contents.push(mapDiv);
+		    }
+
+		} else if(type=="metadata") {		    
+		    titles.push("Metadata");
+		    let mtd = HU.div([STYLE,HU.css("width","800px","max-width","800px","overflow-x","auto")],this.getEntriesMetadata(entries));
+		    contents.push(mtd);
+		}
+	    });
+
+	    if(titles.length==1) return HU.div([CLASS,"display-entrylist-content-border"],contents[0]);
+	    let tabId = HU.getUniqueId("tabs_");
+	    let tabs = HU.open("div",[ID,tabId,CLASS,"ui-tabs"]) +"<ul>";
+	    titles.forEach((title,idx)=>{
+		tabs +="<li>" +HU.href("#" + tabId+"-" + idx,title) +"</li>\n"
+	    })
+	    tabs +="</ul>\n";
+	    contents.forEach((content,idx)=>{
+		tabs +=HU.div([ID,tabId+"-" + idx,CLASS,"ui-tabs-hide"], content);
+	    });
+	    tabs +=HU.close("div");
+	    this.tabId = tabId;
+	    return tabs;
         },
 
         entryListChanged: function(entryList) {
@@ -28080,6 +28324,39 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
             this.writeEntries(html, entries);
             this.addEntrySelect();
             this.getDisplayManager().handleEventEntriesChanged(this, entries);
+	    if(this.galleryId) {
+	    	$("#" + this.galleryId).find("a.popup_image").fancybox({helpers:{title:{type:'over'}}});
+	    }
+	    if(this.tabId) {
+		$('#' + this.tabId).tabs({activate: HtmlUtil.tabLoaded});
+	    }
+	    if(this.mapId && this.areaEntries && this.areaEntries.length>0) {
+		let map = new RepositoryMap(this.mapId);
+		map.initMap(false);
+		this.areaEntries.forEach(entry=>{
+                    let link = HU.tag(TAG_A, ["target","_entries",ATTR_HREF, entry.getEntryUrl()], entry.getName());
+		    let text = link;
+		    if(entry.isImage()) {
+			text = HU.image(entry.getResourceUrl(), [ATTR_WIDTH, "400", ATTR_ID,
+								 this.getDomId("entry_" + entry.getIdForDom()),
+								 ATTR_ENTRYID, entry.getId(), ATTR_CLASS, "display-entrygallery-entry"
+								]) +"<br>" + link;
+
+
+			
+		    }
+//		    map.addMarker:  function(id, location, iconUrl, markerName, text, parentId, size, yoffset, canSelect, attrs) {
+		    map.addMarker('',new OpenLayers.LonLat(entry.getLongitude(),entry.getLatitude()), entry.getIconUrl(),"",text,null,16,0,true,{});
+/*
+{"pointRadius":16,
+												     "strokeWidth":1,
+												     "fillColor":"blue",
+												     "strokeColor":"#000"},text);
+*/
+		});
+		map.centerOnMarkersInit(null);
+	    }
+
         },
     });
 }
@@ -28144,71 +28421,6 @@ function RamaddaEntrygalleryDisplay(displayManager, id, properties) {
                 this.entryListChanged(this.entryList);
             }
         },
-        getEntriesGallery: function(entries) {
-            var nonImageHtml = "";
-            var html = "";
-            var imageCnt = 0;
-            var imageEntries = [];
-	    for (var i = 0; i < entries.length; i++) {
-                var entry = entries[i];
-                //Don: Right now this just shows all of the images one after the other.
-                //If there is just one image we should just display it
-                //We should do a gallery here if more than 1
-
-                if (entry.isImage()) {
-                    imageEntries.push(entry);
-                    var link = HU.tag(TAG_A, [ATTR_HREF, entry.getEntryUrl()], entry.getName());
-                    imageCnt++;
-                    html += HU.tag(TAG_IMG, ["src", entry.getResourceUrl(), ATTR_WIDTH, "500", ATTR_ID,
-                            this.getDomId("entry_" + entry.getIdForDom()),
-                            ATTR_ENTRYID, entry.getId(), ATTR_CLASS, "display-entrygallery-entry"
-                        ]) + "<br>" +
-                        link + "<p>";
-                } else {
-                    var icon = entry.getIconImage([ATTR_TITLE, "View entry"]);
-                    var link = HU.tag(TAG_A, [ATTR_HREF, entry.getEntryUrl()], icon + " " + entry.getName());
-                    nonImageHtml += link + "<br>";
-                }
-            }
-
-            if (imageCnt > 1) {
-                //Show a  gallery instead
-                var newHtml = "";
-                newHtml += "<div class=\"row\">\n";
-                var columns = parseInt(this.getProperty("columns", "3"));
-                var colClass = "col-md-" + (12 / columns);
-                for (var i = 0; i < imageEntries.length; i++) {
-                    if (i >= columns) {
-                        newHtml += "</div><div class=\"row\">\n";
-                    }
-                    newHtml += "<div class=" + colClass + ">\n";
-                    var entry = imageEntries[i];
-                    var link = HU.tag(TAG_A, [ATTR_HREF, entry.getEntryUrl()], entry.getName());
-                    //Don: right now I just replicate what I do above
-                    var img = HU.image(entry.getResourceUrl(), [ATTR_WIDTH, "100%", ATTR_ID,
-                        this.getDomId("entry_" + entry.getIdForDom()),
-                        ATTR_ENTRYID, entry.getId(), ATTR_CLASS, "display-entrygallery-entry"
-                    ]);
-                    img = HU.href(entry.getResourceUrl(), img, ["class", "popup_image"]);
-                    newHtml += HU.div(["class", "image-outer"], HU.div(["class", "image-inner"], img) +
-                        HU.div(["class", "image-caption"], link));
-
-                    newHtml += "</div>\n";
-                }
-                newHtml += "</div>\n";
-                html = newHtml;
-            }
-
-
-            //append the links to the non image entries
-            if (nonImageHtml != "") {
-                if (imageCnt > 0) {
-                    html += "<hr>";
-                }
-                html += nonImageHtml;
-            }
-            return html;
-        }
     });
 }
 
@@ -29000,137 +29212,7 @@ function RamaddaMetadataDisplay(displayManager, id, properties) {
                 this.writeMessage("Nothing found");
                 return;
             }
-            var mdtsFromEntries = [];
-            var mdtmap = {};
-            var tmp = {};
-            for (var i = 0; i < entries.length; i++) {
-                var entry = entries[i];
-                var metadata = entry.getMetadata();
-                for (var j = 0; j < metadata.length; j++) {
-                    var m = metadata[j];
-                    if (tmp[m.type] == null) {
-                        tmp[m.type] = "";
-                        mdtsFromEntries.push(m.type);
-                    }
-                    mdtmap[metadata[j].type] = metadata[j].label;
-                }
-            }
-
-            var html = "";
-            html += HU.openTag(TAG_TABLE, ["id", this.getDomId("table"), ATTR_CLASS, "cell-border stripe ramadda-table", ATTR_WIDTH, "100%", "cellpadding", "5", "cellspacing", "0"]);
-            html += "<thead>"
-            var type = this.findEntryType(this.searchSettings.entryType);
-            var typeName = "Entry";
-            if (type != null) {
-                typeName = type.getLabel();
-            }
-	    this.writeMessage(this.getResultsHeader(entries));
-            var mdts = null;
-            //Get the metadata types to show from either a property or
-            //gather them from all of the entries
-            // e.g., "project_pi,project_person,project_funding"
-            var prop = this.getProperty("metadataTypes", null);
-            if (prop != null) {
-                mdts = prop.split(",");
-            } else {
-                mdts = mdtsFromEntries;
-                mdts.sort();
-            }
-
-            var skip = {
-                "content.pagestyle": true,
-                "content.pagetemplate": true,
-                "content.sort": true,
-                "spatial.polygon": true,
-            };
-            var headerItems = [];
-            headerItems.push(HU.th([], HU.b(typeName)));
-            for (var i = 0; i < mdts.length; i++) {
-                var type = mdts[i];
-                if (skip[type]) {
-                    continue;
-                }
-                var label = mdtmap[mdts[i]];
-                if (label == null) label = mdts[i];
-                headerItems.push(HU.th([], HU.b(label)));
-            }
-            var headerRow = HU.tr(["valign", "bottom"], HU.join(headerItems, ""));
-            html += headerRow;
-            html += "</thead><tbody>"
-            var divider = "<div class=display-metadata-divider></div>";
-            var missing = this.missingMessage;
-            if (missing = null) missing = "&nbsp;";
-            for (var entryIdx = 0; entryIdx < entries.length; entryIdx++) {
-                var entry = entries[entryIdx];
-                var metadata = entry.getMetadata();
-                var row = [];
-                var buttonId = this.getDomId("entrylink" + entry.getIdForDom());
-                var link = entry.getLink(entry.getIconImage() + " " + entry.getName());
-                row.push(HU.td([], HU.div([ATTR_CLASS, "display-metadata-entrylink"], link)));
-                for (var mdtIdx = 0; mdtIdx < mdts.length; mdtIdx++) {
-                    var mdt = mdts[mdtIdx];
-                    if (skip[mdt]) {
-                        continue;
-                    }
-                    var cell = null;
-                    for (var j = 0; j < metadata.length; j++) {
-                        var m = metadata[j];
-                        if (m.type == mdt) {
-                            var item = null;
-                            if (m.type == "content.thumbnail" || m.type == "content.logo") {
-                                var url = this.getRamadda().getRoot() + "/metadata/view/" + m.value.attr1 + "?element=1&entryid=" + entry.getId() + "&metadata_id=" + m.id;
-                                item = HU.image(url, [ATTR_WIDTH, "100"]);
-                            } else if (m.type == "content.url" || m.type == "dif.related_url") {
-                                var label = m.value.attr2;
-                                if (label == null || label == "") {
-                                    label = m.value.attr1;
-                                }
-                                item = HU.href(m.value.attr1, label);
-                            } else if (m.type == "content.attachment") {
-                                var toks = m.value.attr1.split("_file_");
-                                var filename = toks[1];
-                                var url = this.getRamadda().getRoot() + "/metadata/view/" + m.value.attr1 + "?element=1&entryid=" + entry.getId() + "&metadata_id=" + m.id;
-                                item = HU.href(url, filename);
-                            } else {
-                                item = m.value.attr1;
-                                //                                    console.log("Item:" + item);
-                                if (m.value.attr2 && m.value.attr2.trim().length > 0) {
-                                    item += " - " + m.value.attr2;
-                                }
-                            }
-                            if (item != null) {
-                                if (cell == null) {
-                                    cell = "";
-                                } else {
-                                    cell += divider;
-                                }
-                                cell += HU.div([ATTR_CLASS, "display-metadata-item"], item);
-                            }
-
-                        }
-                    }
-                    if (cell == null) {
-                        cell = missing;
-                    }
-                    if (cell == null) {
-                        cell = "";
-                    }
-                    var add = HU.tag(TAG_A, [ATTR_STYLE, "color:#000;", ATTR_HREF, this.getRamadda().getRoot() + "/metadata/addform?entryid=" + entry.getId() + "&metadata_type=" + mdt,
-                        "target", "_blank", "alt", "Add metadata", ATTR_TITLE, "Add metadata"
-                    ], "+");
-                    add = HU.div(["class", "display-metadata-table-add"], add);
-                    var cellContents = add + divider;
-                    if (cell.length > 0) {
-                        cellContents += cell;
-                    }
-                    row.push(HU.td([], HU.div([ATTR_CLASS, "display-metadata-table-cell-contents"], cellContents)));
-                }
-                html += HU.tr(["valign", "top"], HU.join(row, ""));
-                //Add in the header every 10 rows
-                if (((entryIdx + 1) % 10) == 0) html += headerRow;
-            }
-            html += "</tbody>"
-            html += HU.closeTag(TAG_TABLE);
+	    let html = this.getEntriesMetadata(entries);
             this.writeEntries(html, entries);
             HU.formatTable("#" + this.getDomId("table"), {
                 scrollY: 400
@@ -29250,14 +29332,8 @@ function RamaddaEntrytimelineDisplay(displayManager, id, properties) {
 
 
 
-
-
-
-
 function RamaddaEntrydisplayDisplay(displayManager, id, properties) {
-    var SUPER;
-    var e = new Error();
-
+    let SUPER;
     $.extend(this, {
         sourceEntry: properties.sourceEntry
     });

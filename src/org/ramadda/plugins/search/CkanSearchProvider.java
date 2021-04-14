@@ -309,7 +309,7 @@ public class CkanSearchProvider extends SearchProvider {
                                              + rid, typeHandlerToUse);
                     rEntry.setIcon("/search/ckan.png");
 
-                    rEntry.initEntry(rname, rdesc, newEntry,
+                    rEntry.initEntry(rname, "<snippet>" + rdesc +"</snippet>", newEntry,
                                      getUserManager().getLocalFileUser(),
                                      new Resource(new URL(rUrl)), "",Entry.DEFAULT_ORDER,
                                      dttm.getTime(), dttm.getTime(),

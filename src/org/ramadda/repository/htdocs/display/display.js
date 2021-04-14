@@ -3382,7 +3382,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             var metadata = entry.getMetadata();
             if (entry.isImage()) {
-                var img = HU.tag(TAG_IMG, ["src", entry.getResourceUrl(), /*ATTR_WIDTH,"100%",*/
+                var img = HU.tag(TAG_IMG, ["src", entry.getImageUrl(), /*ATTR_WIDTH,"100%",*/
 					   ATTR_CLASS, "display-entry-image"
 					  ]);
 

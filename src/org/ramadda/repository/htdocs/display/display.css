@@ -895,11 +895,9 @@ svg > g > g:last-child { pointer-events: none }
 }
 
 .display-search-providers {
-   padding-left:100px;
 }
 
 .display-search-provider {
-   max-width: 250px;
 }
 
 .display-search-label {
@@ -1209,10 +1207,19 @@ svg > g > g:last-child { pointer-events: none }
 .display-entrylist-content   { 
    min-width: 250px;
    min-height: 250px;
-   border:1px #ccc solid; 
    overflow-y: auto;
    max-height: 250px;
    background: #fff;
+}
+
+
+.display-entrylist-content-border   {
+    border:1px #ccc solid; 
+}
+
+.display-entrylist-content .ui-tabs-panel {
+    padding:0px;
+    padding-top:4px;    
 }
 
 
@@ -1289,6 +1296,11 @@ svg > g > g:last-child { pointer-events: none }
 
 .display-entrygallery {
 
+}
+
+.display-entrygallery-item {
+    display:inline-block;
+    width:200px;
 }
 
 .display-entrygallery-content   { 

@@ -167,18 +167,19 @@ public class EntrezSearchProvider extends SearchProvider {
             TypeHandler typeHandler = getLinkTypeHandler();
             String summaryUrl = HtmlUtils.url(URL_SUMMARY, ARG_DB, db,
                                     ARG_ID, StringUtil.join(",", ids));
-	    //            System.err.println(getName() + " summary url:" + summaryUrl);
+	    //	    System.err.println(getName() + " summary url:" + summaryUrl);
             is  = getInputStream(summaryUrl);
             xml = IOUtil.readContents(is);
             IOUtil.close(is);
 	    //	    System.out.println(xml);
-	    Element docRoot = XmlUtil.getElement(XmlUtil.getRoot(xml),"DocumentSummarySet");
+	    Element summaryRoot = XmlUtil.getRoot(xml);
+	    Element docRoot = summaryRoot;
 	    if(docRoot==null) {
-		System.err.println("Entrez: no DocumentSummarySet found");
+		System.err.println("Entrez: no eSummaryResult");
 		return entries;
 	    }
             NodeList docSums = XmlUtil.getElements(docRoot,
-						   "DocumentSummary");
+						   "DocSum");
             for (int childIdx = 0; childIdx < docSums.getLength();
                     childIdx++) {
                 Element docSum   = (Element) docSums.item(childIdx);
@@ -257,7 +258,7 @@ public class EntrezSearchProvider extends SearchProvider {
                     }
                 }
                 table.append(HtmlUtils.formTableClose());
-                desc.append(table);
+                desc.append("<snippet>" + table+"</snippet>");
 
                 if ( !Utils.stringDefined(name)) {
                     name = backupName;

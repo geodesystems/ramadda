@@ -168,6 +168,14 @@ function ramaddaMapAdd(map) {
     ramaddaMapMap[map.mapId] = map;
 }
 
+function ramaddaMapRemove(map) {
+    if (window.globalMapList == null) {
+        window.globalMapList = [];
+    }
+    window.globalMapList.push(map);
+    delete ramaddaMapMap[map.mapId];
+}
+
 
 function ramaddaMapCheckLayout() {
     setTimeout(()=>{
@@ -211,7 +219,6 @@ function ramaddaMapShareState(source, state) {
 	map.stateIsBeingSet = false;
     }
 }
-
 
 
 
