@@ -84,14 +84,14 @@ could create a folder entry and then another entry that is a child of the folder
 <a name="import"></a><p><div class="ramadda-help-heading">6.3.0 <a href="#import">Importing Entries</a></div> 
 
 
-Here is a simple <a href="examples/test.zip">test.zip</a> entries file that you can import. It contains a single file entry defined in an entries.xml file and its associated data file (test.txt). In your RAMADDA, go to File->Import Entries menu and you can upload a .zip file or the entries.xml directly.
+Here is a simple <a href="${root}/userguide/examples/test.zip">test.zip</a> entries file that you can import. It contains a single file entry defined in an entries.xml file and its associated data file (test.txt). In your RAMADDA, go to File->Import Entries menu and you can upload a .zip file or the entries.xml directly.
 
 
 
 
 <a name="metadata"></a><p><div class="ramadda-help-heading">6.3.1 <a href="#metadata">Metadata</a></div> 
 
-The <a href="examples/folder.xml">folder.xml</a> example just defines a set of folders with associated metadata. 
+The <a href="${root}/userguide/examples/folder.xml">folder.xml</a> example just defines a set of folders with associated metadata. 
 
 Inside the entry tag you can have any number of metadata tags. You define the type and the attribute values.
 
@@ -151,7 +151,8 @@ you have encoded=false.
 
 
 <a name="configuration"></a><p><div class="ramadda-help-heading">6.3.2 <a href="#configuration">Harvest Configuration</a></div> 
-When <a href="harvesters.html">harvesting files</a> or configuring <a href="dataingest.html">Server Side Files</a> RAMADDA will look on the file system for an entry XML configuration file to use as a template when creating entries for the files and folders being ingested or displayed. For a given file RAMADDA will look for the following entry xml file in the file's parent directory:
+When <a href='harvesters.html'>harvesting files</a> or configuring <a href='dataingest.html'>Server Side Files</a> 
+RAMADDA will look on the file system for an entry XML configuration file to use as a template when creating entries for the files and folders being ingested or displayed. For a given file RAMADDA will look for the following entry xml file in the file's parent directory:
 <pre>
 .&lt;filename&gt;.ramadda.xml
 .dir.ramadda.xml

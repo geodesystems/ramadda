@@ -3,7 +3,7 @@
 
 The HTML pages that RAMADDA generates are based on a template mechanism.
 Here is an example template that has documentation in it:
-<a href="exampletemplate.html.txt">exampletemplate.html.txt</a>.
+<a href="${root}/userguide/exampletemplate.html.txt">exampletemplate.html.txt</a>.
 Copy the example to your local RAMADDA plugins directory and rename it as:
 &lt;your name&gt;template.html (strip off the .txt):
 <pre>
@@ -26,7 +26,7 @@ at the <a href="https://github.com/geodesystems/ramadda/tree/master/src/org/rama
 While you can just have a file called &lt;something&gt;template.html in your plugins directory if you
 have your own CSS or images or icons that go along with your template you will want to
 package them up in a .jar file. Here is an example 
-<a href="exampletemplate.jar">exampletemplate.jar</a>
+<a href="${root}/userguide/exampletemplate.jar">exampletemplate.jar</a>
 that provides the above exampletemplate.html.  
 
 <p>
@@ -69,25 +69,6 @@ ramadda.html.template.default=&lt;your template id&gt;
 You can set this in a plugin .properties file or you can specify this property 
 (and other properties as well)
 in the Admin-&gt;Settings-&gt;Site and Contact Information-&gt;Extra Properties field.
-
-
-<subhead  id="misc"  intoc="false">Miscellaneous</subhead>
-
-You can specify whether the "Created:" label is shown for entries with the property:
-<pre>
-#default:
-ramadda.created.display=all  
-
-#never show it
-ramadda.created.display=none  
-
-#only show it for admins
-ramadda.created.display=admin
-
-#only show it for logged in users
-ramadda.created.display=user
-</pre>
-
 
 
 <subhead  id="mobile"  intoc="false">Mobile Template</subhead>

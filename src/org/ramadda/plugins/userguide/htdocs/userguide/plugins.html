@@ -26,12 +26,13 @@ pre {
 <div style="margin-left:20px;">
 
 
+
 RAMADDA has a plugin facility that enables one to add new kinds of entry types, new content views, etc. In the RAMADDA home directory there is a &quot;plugins&quot; sub-directory. When RAMADDA starts up it loads all of the files in the plugins directory. 
 When you install a new plugin you need to restart RAMADDA.
 <p>
 
 
-The plugins can be <a href="installing.html#fromgit">built</a> from source or are available at the 
+The plugins can be <a href='installing.html#fromgit'>built</a> from source or are available at the 
 <a href="http://geodesystems.com/repository/alias/release">Geode Systems RAMADDA </a> site.
 To install a plugin just download the file and copy it to the RAMADDA home directory <i>plugins</i> directory.
 
@@ -61,7 +62,7 @@ at the <a href="https://github.com/geodesystems/ramadda/tree/master/src/org/rama
 <li><i>template.html</i><br> 
 Any file that ends with &quot;template.html&quot; is treated as an html
 page template.
-More documentation is  <a href="templates.html">available here</a>.
+More documentation is  <a href='templates.html'>available here</a>.
 
 <li> <i>htdocs</i><br>
 If you have an &quot;htdocs/somename&quot; directory in your .jar plugin file then HTML content
@@ -109,7 +110,7 @@ If the file ends with &quot;.sql&quot; then the file is evaluated at startup to 
 <a name="maps"></a>
 <h3>Adding map layers</h3>
 You can integrate map layers  from external Web Map Servers (WMS) through the plugin mechanism. 
-The file  <a href="examples/chinamaps.properties.txt">chinamaps.properties.txt</a> has an example. 
+The file  <a href="${root}/userguide/examples/chinamaps.properties.txt">chinamaps.properties.txt</a> has an example. 
 Remove the ".txt" suffix and copy the properties file to your RAMADDA plugin directory. The file has instructions on
 how to specify the WMS layers.
 

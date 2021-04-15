@@ -9,18 +9,18 @@ ways of providing access to the files that are already on the server machine.
 
 
 <subhead  id="harvesting"  intoc="false">Harvesting files</subhead>
-RAMADDA provides a <a href="harvesters.html">harvester facility </a>
+RAMADDA provides a [ug::link harvesters.html {harvester facility}]
 that allows an administrator to scan the local file system on the server 
 and add entries into the database for those files.
 For example, say you have a large directory of data (and/or other) files (e.g., <i>/project/data</i>)
 that you want RAMADDA to provide access to.
-You could simply create a <a href="dataingest.html#serverfiles">Server Side File</a> view of the directory but this does not
+You could simply create a [ug::link dataingest.html#serverfiles {Server Side File}] view of the directory but this does not
 actually add  entries into the repository database for the files and you cannot add metadata, search etc., with those entries.
 <p>
 The File Harvester can walk the directory tree and add entries into the repository for the files it finds.
 
 <p>
-The first thing you need to do is to specify in the <a href="admin.html#filesystemaccess">Site Administration</a> area
+The first thing you need to do is to specify in the [ug::link admin.html#filesystemaccess {Site Administration}] area
 that it is OK to serve up files from that directory tree. Go to the [ht::menu Admin Settings Access] page in RAMADDA 
 and enter the directory path, e.g., <i>/project/data</i>:
 [ht::cimg images/filesystemaccess.png {File System Access} {border=0 width=700}]
@@ -51,7 +51,7 @@ a Harvester any number of times and it will only add the new files that it has n
 
 <p>
 
-The File Harvester has many  other settings described in more detail <a href="harvesters.html">here</a>.
+The File Harvester has many  other settings described in more detail [ug::link harvesters.html here].
 
 
 <subhead  id="localfiles"  intoc="false">Serving up local files</subhead>

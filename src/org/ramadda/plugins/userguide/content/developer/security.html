@@ -1,4 +1,4 @@
-
+[ht::head {Security}]
 <h3>Files</h3> 
 RAMADDA writes and reads a large number of files in a variety of places within the code. Possible exploits here include reading files from the server file system (e.g., /etc/passwrd) and/or writing files to areas within the server file system. To prevent this *all* file access is accomplished through a small number of methods in the class StorageManager. e.g.:
 

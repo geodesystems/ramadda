@@ -1,17 +1,11 @@
-<html>
-<head>
-  <title>RAMADDA Web API</title>
-  <link rel="stylesheet" type="text/css" href="ramadda.css" title="Style">
-</head>
-
-<body>
+[ht::head {RAMADDA Web API}]
 
 In general, a RAMADDA URL can be specified as:
 
 <pre>
-http://<hostname>/<base path>/<api path>/<entry path>?entryid=<entry id>
+https://&lt;hostname&gt;/&lt;base path&gt;/&lt;api path&gt;/&lt;entry path&gt;?entryid=&lt;entry id&gt;
 e.g.:
-http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c
+https://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c
 </pre>
 
 The base path (by default /repository) is the same for the entire repository.
@@ -28,13 +22,13 @@ Other paths include:
 
 The entry is identified by the entryid URL argument:
 <pre>
-http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c
+https://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c
 </pre>
 
 The path to the entry (e.g., /Home/RAMADDA+Examples) is optional if the entryid argument is provided.
 However, if the entryid argument is not provided then RAMADDA will use the path:
 <pre>
-http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples
+https://ramadda.org/repository/entry/show/Home/RAMADDA+Examples
 </pre>
 
 Though this works we kindof discourage this approach because if you change a name or location then any links the entry would break. 
@@ -48,43 +42,41 @@ When viewing an entry in RAMADDA one can specify any number of encodings or view
 the <i>output</i> URL argument:
 
 Basic HTML display:<br>
-<a href="http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=html.info">
-http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=html.info
+<a href="https://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=html.info">
+https://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=html.info
 </a>
 
 <br>GeoRSS:<br>
-<a href="http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=rss.full">
-http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=rss.full
+<a href="https://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=rss.full">
+https://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=rss.full
 </a>
 
 <br>ATOM-XML:<br>
-<a href="http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=atom">
-http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=atom
+<a href="https://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=atom">
+https://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=atom
 </a>
 
 
 <br>Map:<br>
-<a href="http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=map.map">
-http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=map.map
+<a href="https://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=map.map">
+https://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=map.map
 </a>
 
 <br>Google Earth:<br>
-<a href="http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=map.gemap">
-http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=map.gemap
+<a href="https://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=map.gemap">
+https://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=map.gemap
 </a>
 
 <br>CSV:<br>
-<a href="http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=default.csv">
-http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=default.csv
+<a href="https://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=default.csv">
+https://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=default.csv
 </a>
 
 
 <br>CDL/NCML<br>
-<a href="http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples/Science+Data/Gridded+Data/elev.nc?output=data.cdl">
-http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples/Science+Data/Gridded+Data/elev.nc?output=data.cdl
+<a href="https://ramadda.org/repository/entry/show/Home/RAMADDA+Examples/Science+Data/Gridded+Data/elev.nc?output=data.cdl">
+https://ramadda.org/repository/entry/show/Home/RAMADDA+Examples/Science+Data/Gridded+Data/elev.nc?output=data.cdl
 </a>
-
-
 
 
 

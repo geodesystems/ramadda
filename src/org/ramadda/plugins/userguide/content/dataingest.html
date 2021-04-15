@@ -1,15 +1,7 @@
-<html>
-<head>
-  <title>Data Ingest</title>
-  <link rel="stylesheet" type="text/css" href="ramadda.css" title="Style">
-</head>
-
-<body>
-
-
+[ht::head {Data Ingest}]
 
 Note: If you are trying to access files on your server you  need
-to first configure the <a href="admin.html#filesystemaccess">file access settings</a>.
+to first configure the [ug::link admin.html#filesystemaccess {file access settings}].
 
 
 There are lots of ways of getting information and data ingested into RAMADDA.   
@@ -49,12 +41,11 @@ in the RAMADDA database.
 <h2>Data and project organization</h2>
 
 You can organize a file system directory tree that can represent project or data sets 
-
-<a href="harvesters.html">harvester</a>.
+[ug::link harvesters.html harvester].
 
 There are a number of constructs provided by RAMADDA to help you create and organize your information and data.
 
-You might for example have  a directory tree as shown below  that you want to harvest into RAMADDA. Normally the <a href="harvesters.html">harvester</a> would create generic File and Folder entries for the directories and files. You can configure the types and metadata with  <a href="entryxml.html#configuration">Entry XML Configuration</a>. Copy this  <a href="examples/dataset.xml">dataset.xml</a> as a <i>.ramadda.xml</i> file under the  same parent directory before the harvest.
+You might for example have  a directory tree as shown below  that you want to harvest into RAMADDA. Normally the [ug::link harvesters.html harvester] would create generic File and Folder entries for the directories and files. You can configure the types and metadata with  [ug::link entryxml.html#configuration {Entry XML Configuration}]. Copy this  <a href="${root}/userguide/examples/dataset.xml">dataset.xml</a> as a <i>.ramadda.xml</i> file under the  same parent directory before the harvest.
 
 <pre>
 Dataset_1

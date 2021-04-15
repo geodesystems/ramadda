@@ -1,10 +1,5 @@
-<html>
-<head>
-  <title>Configuring the RAMADDA Database</title>
-  <link rel="stylesheet" type="text/css" href="ramadda.css" title="Style">
-</head>
+[ht::head {Configuring the RAMADDA Database}]
 
-<body>
 By default RAMADDA uses a built in Java Derby relational database. 
 RAMADDA also can run using MySQL, PostgresSQL, Oracle and H2.
 Derby works pretty well though there are some performance issues with search and doing many deletes.
@@ -15,7 +10,7 @@ then its probably a good idea to use mysql or postgres.
 
 
 The database to use and its connection parameters are specified in a .properties file, e.g., db.properties. 
-The properties file can be placed in the <a href="installing.html#properties">ramadda home directory</a>.
+The properties file can be placed in the [ug::link installing.html#properties {ramadda home directory}].
 To define the database just uncomment the appropriate  ramadda.db properties in repository.properties, e.g.:
 
 <pre>
@@ -51,7 +46,7 @@ ramadda.db.mysql.password=the database password
 
 
 <h3>Postgres</h3>
-For <a href="jdbc:postgresql://host:port/database">Postgres</a>:
+For Postgres:
 
 <pre>
 ramadda.db=postgres
@@ -72,27 +67,6 @@ ramadda.db.h2.url=jdbc:h2:%repositorydir%/h2db
 ramadda.db.h2.user=
 ramadda.db.h2.password=
 </pre>
-
-
-<h3>Database Issues</h3>
-
-Because RAMADDA can run on top of most any relational database the SQL it uses is pretty simple and
-has to be the lowest common denominator. (Sorry, no fancy Oracle tricks, etc.)
-There are a few things that have to be dealt with though for each database in RAMADDA code. 
-For example, mysql and derby use
-&quot;double&quot; for the primitive double type. Postgres uses &quot;float8&quot;. Likewise there are issues
-with date/time. From repository/resources/makedb.sql is the comment:
-
-<pre>
----Note: the ramadda.datetime and ramadda.double are replaced by ramadda
----with the appropriate datatype for the database being used.
----mysql has a datetime type, postgres and derby have timestamp
----we can't use timestamp for mysql because it only goes back to 1970
----derby and mysql have double. postgres has float8
-</pre>
-
-What we do is use the class org.ramadda.repository.database.DatabaseManager to convert the sql text to 
-the correct syntax of the underlying database. This is mostly done in the DatabaseManager.convertSql method.
 
 
 </body>
