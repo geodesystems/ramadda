@@ -945,7 +945,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
                                String inner) {
         if (Utils.stringDefined(title)) {
             if (isFontAwesome(path)) {
-                return faIconWithAttr(path,
+                return faIcon(path,
                                       attrs(ATTR_TITLE, title) + " " + extra);
             }
 
@@ -954,7 +954,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
                              title, ATTR_ALT, title) + " " + extra);
         }
         if (isFontAwesome(path)) {
-            return faIconWithAttr(path, extra);
+            return faIcon(path, extra);
         }
         String img = tag(TAG_IMG,
                          attrs(ATTR_BORDER, "0", ATTR_SRC, path) + " "
@@ -982,75 +982,13 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * _more_
      *
      * @param icon _more_
-     * @param attr _more_
-     *
-     * @return _more_
-     */
-    public static String faIconWithAttr(String icon, String attr) {
-        if (icon.trim().indexOf(" ") >= 0) {
-            return span("<i class=\"" + icon + "\"></i>", attr);
-        }
-
-        return span("<i class=\"fas " + icon + "\"></i>", attr);
-    }
-
-
-
-    /**
-     * _more_
-     *
-     * @param icon _more_
-     * @param attr _more_
-     * @param outerAttr _more_
-     * @param innerAttr _more_
-     *
-     * @return _more_
-     */
-    public static String faIcon(String icon, String outerAttr,
-                                String innerAttr) {
-        if (icon.trim().indexOf(" ") >= 0) {
-            return span("<i class='" + icon + "' " + innerAttr + "></i>",
-                        outerAttr);
-        }
-
-        return span("<i class='fas " + icon + "' " + innerAttr + "></i>",
-                    outerAttr);
-    }
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param icon _more_
-     * @param attr _more_
-     *
-     * @return _more_
-     */
-    public static String fasIconWithAttr(String icon, String attr) {
-        if (icon.trim().indexOf(" ") >= 0) {
-            return span("<i class=\"" + icon + "\"></i>", attr);
-        }
-
-        return span("<i class=\"fas " + icon + "\"></i>", attr);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param icon _more_
      * @param args _more_
      *
      * @return _more_
      */
     public static String faIcon(String icon, String... args) {
-        if (icon.trim().indexOf(" ") >= 0) {
-            return span("<i class=\"" + icon + "\"></i>", attrs(args));
-        }
-
-        return span("<i class=\"fas " + icon + "\"></i>", attrs(args));
+	String clazz = icon.trim().indexOf(" ") >= 0?icon:"fas " + icon;
+	return span(tag("i"," class='" + clazz + "' " + attrs(args),""),"");
     }
 
 
@@ -1065,9 +1003,9 @@ public class HtmlUtils implements HtmlUtilsConstants {
      */
     public static String getIconImage(String url, String... args) {
         if (isFontAwesome(url)) {
-            return HtmlUtils.faIcon(url, args);
+            return faIcon(url, args);
         } else {
-            return HtmlUtils.image(url, args);
+            return image(url, args);
         }
     }
 
@@ -4176,7 +4114,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static String attrs(String... args) {
         StringBuilder sb = new StringBuilder();
         attrs(sb, args);
-
         return sb.toString();
     }
 
@@ -4187,6 +4124,14 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @param args _more_
      */
     public static void attrs(Appendable sb, String... args) {
+	if(args.length==1) {
+	    try {
+		sb.append(args[0]);
+	    } catch(Exception exc) {
+		throw new RuntimeException(exc);
+	    }
+	    return;
+	}
         for (int i = 0; i < args.length; i += 2) {
             if (args[i].length() > 0) {
                 attr(sb, args[i], args[i + 1]);
@@ -4828,7 +4773,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
                       : showImg;
         String img;
         if (isFontAwesome(icon)) {
-            img = faIconWithAttr(icon, HtmlUtils.id(id + "img"));
+            img = faIcon(icon, HtmlUtils.id(id + "img"));
         } else {
             img = HtmlUtils.img(icon, "", HtmlUtils.id(id + "img"));
         }
