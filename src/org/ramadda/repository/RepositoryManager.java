@@ -333,9 +333,9 @@ public class RepositoryManager implements RepositorySource, Constants,
      */
     public String getIconImage(String url, String... args) {
         if (HU.isFontAwesome(url)) {
-            return HtmlUtils.faIcon(url, args);
+            return HU.faIcon(url, args);
         } else {
-            return HtmlUtils.image(getIconUrl(url), args);
+            return HU.image(getIconUrl(url), args);
         }
     }
 
