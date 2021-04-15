@@ -111,7 +111,7 @@ proc ht::index {s {name ""} {word ""}} {
     return "<a name=\"$name\" class=\"index\" word=\"$word\">$s</a>"
 }
 
-proc ht::doImage {img class {caption ""} {extra ""}} {
+proc ht::doImage {img centered {caption ""} {extra ""}} {
     if {[gen::getDoImageLinks]} {
         set href1 "<a href=\"$img\">"
         set href2 "</a>"
@@ -121,14 +121,16 @@ proc ht::doImage {img class {caption ""} {extra ""}} {
     }
 
     set cnt [gen::getNextImageId $img $caption]
+    set html ""
     if {$caption != ""} {
-        set html  "<a name=\"image$cnt\"></a><div class=\"$class\">$href1<img  src=\"$img\" $extra alt=\"$caption\" >$href2"
+        set html  "<a name=\"image$cnt\"></a><div>$href1<img  src=\"$img\" $extra alt=\"$caption\" >$href2"
         append html "<br><span class=\"caption\">Image $cnt: $caption</span></div>"
-        return $html
     } else {
-	   set img  "<div class=\"$class\">$href1<img  src=\"$img\" $extra alt=\"$img\" >$href2</div>"
-	   return $img
+	   set html  "<div>$href1<img  src=\"$img\" $extra alt=\"$img\" >$href2</div>"
     }
+    if {$centered} {return "<center>$html</center>"}
+    return $html
+	   
 }
 
 
@@ -160,7 +162,7 @@ proc ht::cimg {img {caption ""} {extra ""}} {
 	}
 	return  "<p>&nbsp;<center><img src=\"$img\" alt=\"$img\"></center>&nbsp;<p>"
     }
-    ht::doImage $img userguide-image-centered $caption $extra
+    ht::doImage $img 1 $caption $extra
 }
 
 proc ht::img {img {caption ""} {extra ""}} {
@@ -170,7 +172,7 @@ proc ht::img {img {caption ""} {extra ""}} {
 	}
 	return  "<p><img src=\"$img\"><p>"
     }
-    ht::doImage $img img $caption $extra
+    ht::doImage $img 0 $caption $extra
 }
 
 
@@ -338,6 +340,10 @@ proc displayType {name id desc args {img ""} {url ""} } {
 }
 
 
+
+proc ug::link {path label} {
+    return "<a href='$path'>$label</a>"
+}
 
 proc ug::subheading {label {id ""}  {extra {}}   {intoc false} } {
     if ($::doXml) {
