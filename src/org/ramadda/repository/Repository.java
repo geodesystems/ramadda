@@ -558,9 +558,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @throws Exception _more_
      */
-    public Repository() throws Exception {}
-
-
+    public Repository() throws Exception {
+    }
 
     /**
      * _more_
@@ -575,7 +574,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
             throws Exception {
         super(port);
         this.parentRepository = parentRepository;
+	System.err.println("rep-1");
         init(args, port);
+	System.err.println("rep-2");
     }
 
 
@@ -604,20 +605,27 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public void init(String[] args, int port) throws Exception {
         //NOTE: Only do this for now so we can have snotel data
         trustAllCertificates();
-
         setPort(port);
         LogUtil.setTestMode(true);
-        try {
-            java.net.InetAddress localMachine =
-                java.net.InetAddress.getLocalHost();
-            setHostname(localMachine.getHostName());
-            setIpAddress(localMachine.getHostAddress());
-        } catch (Exception exc) {
-            System.err.println("Got exception accessing local hostname");
-            //            exc.printStackTrace();
-            setHostname("unknown");
-            setIpAddress("unknown");
-        }
+	//This takes a second or two so do it in a thread
+	Misc.run(new Runnable() {
+		public void run() {
+		    try {
+			//			System.err.println("calling getLocalHost");
+			java.net.InetAddress localMachine =
+			    java.net.InetAddress.getLocalHost();
+			//			System.err.println("after getLocalHost:" +localMachine.getHostName() +" " +
+			//					   localMachine.getHostAddress());			   
+			setHostname(localMachine.getHostName());
+			setIpAddress(localMachine.getHostAddress());
+		    } catch (Exception exc) {
+			System.err.println("Got exception accessing local hostname");
+			//            exc.printStackTrace();
+			setHostname("unknown");
+			setIpAddress("unknown");
+		    }
+		}});
+
         this.args     = args;
 
         entryEditUrls = RequestUrl.toList(new RequestUrl[] {
@@ -637,6 +645,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             //        URL_ENTRY_DELETE
             //        URL_ENTRY_SHOW
         });
+
 
 
     }
@@ -1045,18 +1054,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //This stops jython from processing jars and printing out its annoying message
         System.setProperty("python.cachedir.skip", "true");
 
+
         CacheManager.setDoCache(false);
         initProperties(properties);
         //Clear the tmp dir as it gets set by the plugin manager and any tmp dir set in a properties file will be ignored
         getStorageManager().clearTmpDir();
         initServer();
-
-
         RepositoryServlet.debugRequests =
             getProperty("ramadda.debug.requests", false);
         RepositoryServlet.debugMultiPart =
             getProperty("ramadda.debug.multipart", false);
-
 
 
         repositoryInitialized = true;
@@ -1084,13 +1091,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
+
         //This depends on the html templates which depends on the 
         getMetadataManager().loadMetadataHandlers(getPluginManager());
         clearAllCaches();
         StringBuilder statusMsg =
             new StringBuilder("RAMADDA: repository started at:" + new Date());
         statusMsg.append("\n");
-        statusMsg.append("\tHome dir: "
+        statusMsg.append("Home dir: "
                          + getStorageManager().getRepositoryDir());
 
         statusMsg.append("  Version: "
@@ -1100,13 +1108,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
         statusMsg.append("  Java version: "
                          + getProperty(PROP_JAVA_VERSION, "N/A"));
         statusMsg.append("\n");
-        statusMsg.append("\tRunning on port:" + getPort() + " "
+        statusMsg.append("Running on port:" + getPort() + " "
                          + (isSSLEnabled(null)
                             ? "SSL port:" + getHttpsPort()
                             : " SSL not enabled"));
         getLogManager().logInfoAndPrint(statusMsg.toString());
-
-
 
 
         if (getProperty("ramadda.beep", false)) {
@@ -1516,12 +1522,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         readDatabaseProperties();
         checkVersion();
-
         MyTrace.call1("Repository.loadResources");
         loadResources();
         MyTrace.call2("Repository.loadResources");
-
-
         getRegistryManager().checkApi();
 
         //Load in any other sql files from the command line
@@ -1535,6 +1538,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
         getUserManager().initUsers(cmdLineUsers);
+
 
         //This finds or creates the top-level group
         getEntryManager().initTopEntry();
@@ -1593,9 +1597,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         getPageHandler().clearCache();
         loadPluginResources();
         getPluginManager().loadPluginsFinish();
-
         initDefaultOutputHandlers();
-
     }
 
 
@@ -1631,7 +1633,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 if (root == null) {
                     continue;
                 }
-                loadTypeHandlers(root, false);
+		loadTypeHandlers(root, false);
                 getPluginManager().markSeen("types:" + file);
             } catch (Exception exc) {
                 badFiles.add(file);
@@ -1703,7 +1705,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         String classPath = XmlUtil.getAttribute(entryNode,
                                TypeHandler.ATTR_HANDLER, (String) null);
 
-        if (classPath == null) {
+	if (classPath == null) {
             String superType = XmlUtil.getAttribute(entryNode,
                                    TypeHandler.ATTR_SUPER, (String) null);
             if (superType != null) {
@@ -1719,7 +1721,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
-
         Class handlerClass = Misc.findClass(classPath);
         Constructor ctor = Misc.findConstructor(handlerClass,
                                new Class[] { Repository.class,
@@ -1727,9 +1728,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         try {
             TypeHandler typeHandler =
                 (TypeHandler) ctor.newInstance(new Object[] { this,
-                    entryNode });
+							      entryNode });
             addTypeHandler(typeHandler.getType(), typeHandler, overwrite);
-
             return typeHandler;
         } catch (Exception exc) {
             System.err.println("Error creating type handler:"
