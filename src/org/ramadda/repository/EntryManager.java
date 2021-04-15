@@ -4089,7 +4089,7 @@ public class EntryManager extends RepositoryManager {
             }
 
 
-	    HU.div(middle, HU.div("To",HU.cssClass("entry-confirm-header")) +HU.faIcon(ICON_RIGHTARROW, "", HU.style("font-size:24pt;")),HU.style("margin-left:32px;margin-right:32px;text-align:center;"));
+	    HU.div(middle, HU.div("To",HU.cssClass("entry-confirm-header")) +HU.faIcon(ICON_RIGHTARROW, HU.style("font-size:24pt;")),HU.style("margin-left:32px;margin-right:32px;text-align:center;"));
 
 	    HU.div(right,
 		   toEntry==null?"Select a destination":"Target entry:",
