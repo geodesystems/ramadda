@@ -2003,16 +2003,15 @@ public class WikiUtil {
                                    : null;
                     }
                     if (icon != null) {
-                        icon = HU.fasIconWithAttr(icon, (iconSize != null)
-                                ? HU.attrs("style", "font-size:" + iconSize)
-                                : "");
+                        icon = HU.faIcon(icon, "style", (iconSize!=null?"font-size:" + iconSize:""));
+			icon = HU.div(icon,
+				      HU.attrs("class", "ramadda-callout-icon"));
                     } else {
                         icon = "";
                     }
                     buff.append(
                         "<table width=100%><tr valign=top><td width=1%>");
-                    HU.div(buff, icon,
-                           HU.attrs("class", "ramadda-callout-icon"));
+		    buff.append(icon);
                     buff.append("</td><td>");
                     HU.open(buff, "div",
                             HU.attrs("class", "ramadda-callout-inner"));
