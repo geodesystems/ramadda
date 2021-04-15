@@ -735,7 +735,6 @@ var Csv = {
 		    result = result.replace(/</g,"&lt;").replace(/>/g,"&gt;");
 		    writePre(result);
 		} else if(stats) {
-		    console.log("STATS");
 		    output.html(result);
 		    output.find( "#header").html(HU.span([ID,"csv_toggledetails"],"Hide details"));
 		    let _this = this;
