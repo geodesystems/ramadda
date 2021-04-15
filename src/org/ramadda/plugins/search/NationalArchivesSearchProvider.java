@@ -95,6 +95,7 @@ public class NationalArchivesSearchProvider extends SearchProvider {
     }
 
 
+
     /**
      * _more_
      *
@@ -123,50 +124,67 @@ public class NationalArchivesSearchProvider extends SearchProvider {
 
         List<Entry> entries = new ArrayList<Entry>();
         String      url     = URL + request.getString(ARG_TEXT, "");
-        System.err.println(getName() + " search url:" + url);
+        System.out.println(getName() + " search url:" + url);
         InputStream is   = getInputStream(url);
         String      json = IOUtil.readContents(is);
         IOUtil.close(is);
-        //        System.out.println(json);
+	//	System.out.println(json);
         JSONObject obj = new JSONObject(new JSONTokener(json));
+	/*
         if ( !obj.has("items")) {
-            System.err.println(
+            System.out.println(
                 "NationalArchives SearchProvider: no items field in json:"
                 + json);
 
             return entries;
         }
+	*/
 
 
-        JSONArray searchResults = obj.getJSONArray("items");
+        JSONArray searchResults = Json.readArray(obj, "opaResponse.results.result");
         Entry     parent        = getSynthTopLevelEntry();
         TypeHandler typeHandler =
-            getRepository().getTypeHandler("media_youtubevideo");
+            getRepository().getTypeHandler("file");
 
         for (int i = 0; i < searchResults.length(); i++) {
+	    //	    if(i>1) continue;
             JSONObject item    = searchResults.getJSONObject(i);
-            JSONObject snippet = item.getJSONObject("snippet");
-            String     kind    = Json.readValue(item, "id.kind", "");
-            if ( !kind.equals("youtube#video")) {
-                System.err.println("? Youtube kind:" + kind);
+            String     type    = Json.readValue(item, "type", "");
+            String     name   = Json.readValue(item, "title", "");
+            String     itemUrl   = Json.readValue(item, "url", "");
+            String     desc   = Json.readValue(item, "teaser", "");	    	    	    
+            JSONObject descObject    = Json.readObject(item,"description");
+	    if(descObject!=null) {
+		if(name.length()==0) {
+		    name = Json.readValue(descObject, "series.title", "");
+		}
+		//		System.err.println("haveDesc:" + name);
+		JSONArray names = descObject.names();
+		for(int j=0;j<names.length();j++) {
+		    //		    System.err.println("\t" + names.get(j));
+		    //		    Object value = descObject.get(name);
 
-                continue;
-            }
-            String id   = Json.readValue(item, "id.videoId", "");
-            String name = snippet.getString("title");
-            String desc = snippet.getString("description");
+		}
+		//		System.err.println("obj:" + descObject);
+		if(name.length()==0) {
+		    name = Json.readValue(descObject, "fileUnit.title", "");
+		}
+		if(desc.length()==0) {
+		    desc = Json.readValue(descObject, "series.scopeAndContentNote", "");
+		}
 
+	    }
+	    if(name.length()==0) {
+		//		System.out.println("****** no name \n" + item.toString(10));
+		continue;
+	    }
             Date   dttm = new Date();
-            Date fromDate = Utils.parseDate(Json.readValue(snippet,
-                                "publishedAt", null));
-            Date   toDate  = fromDate;
-
-            String itemUrl = "https://www.youtube.com/watch?v=" + id;
-
+	    String id = Utils.getGuid();
             Entry newEntry = new Entry(Repository.ID_PREFIX_SYNTH + getId()
                                        + TypeHandler.ID_DELIMITER
                                        + id, typeHandler);
             entries.add(newEntry);
+	    /*
 
             String thumb = Json.readValue(snippet, "thumbnails.default.url",
                                           null);
@@ -178,13 +196,19 @@ public class NationalArchivesSearchProvider extends SearchProvider {
                                  false, thumb, null, null, null, null);
                 getMetadataManager().addMetadata(newEntry, thumbnailMetadata);
             }
+	    */
 
-
-            newEntry.initEntry(name, desc, parent,
+	    Resource resource;
+	    if(itemUrl.length()>0)
+		resource = new Resource(new URL(itemUrl));
+	    else
+		resource = new Resource();
+	    newEntry.setIcon("/search/nationalarchives.png");
+            newEntry.initEntry(name, "<snippet>" + desc+"</snippet>", parent,
                                getUserManager().getLocalFileUser(),
-                               new Resource(new URL(itemUrl)), "",Entry.DEFAULT_ORDER,
+                               resource, "",Entry.DEFAULT_ORDER,
                                dttm.getTime(), dttm.getTime(),
-                               fromDate.getTime(), toDate.getTime(), null);
+                               dttm.getTime(), dttm.getTime(), null);
             getEntryManager().cacheSynthEntry(newEntry);
         }
 

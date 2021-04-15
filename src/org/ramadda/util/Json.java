@@ -1102,6 +1102,7 @@ public class Json {
         while (toks.size() > 0) {
             String tok = toks.get(0);
             toks.remove(0);
+	    if(!obj.has(tok)) return null;
             obj = obj.getJSONObject(tok);
             if (obj == null) {
                 return null;

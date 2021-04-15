@@ -792,7 +792,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	},
         handleSearchError: function(url, msg) {
             this.writeEntries("");
-            this.writeMessagel( "");
+            this.writeMessage("Error performing search:" + msg);
             console.log("Error performing search:" + msg);
             //alert("There was an error performing the search\n" + msg);
         },

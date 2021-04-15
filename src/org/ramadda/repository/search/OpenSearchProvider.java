@@ -143,7 +143,7 @@ public class OpenSearchProvider extends SearchProvider {
         connection.setRequestProperty("User-Agent", "ramadda");
         InputStream is  = connection.getInputStream();
         String      xml = IOUtil.readContents(is);
-        //        System.out.println("xml:" + xml);
+	System.out.println("xml:" + xml);
 
         Element     root        = XmlUtil.getRoot(xml);
         Entry       parent      = getSynthTopLevelEntry();
