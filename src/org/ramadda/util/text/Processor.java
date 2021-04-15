@@ -4203,10 +4203,7 @@ public abstract class Processor extends CsvOperator {
                     } else {
                         typeIcon = "fas fa-hashtag";
                     }
-                    String type = HU.faIcon(typeIcon, "",
-					    HU.attrs("title",
-						     "type: " + col.type, "style",
-						     "font-size:10pt;"));
+                    String type = HU.faIcon(typeIcon, "title", "type: " + col.type, "style", "font-size:10pt;");
                     String name = col.name;
 		    String label = Utils.makeLabel(name);
                     w.println("<th class=csv-id fieldid='" + name
