@@ -1477,29 +1477,29 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                    ? ""
                                    : "ramadda-nav-arrow-disabled";
             if (prev) {
-                img = HU.fasIconWithAttr("fa-arrow-left",
-                                         HU.attrs("class",
-                                             "ramadda-nav-arrow "
-                                             + extraImgClass, "title", title,
-                                                 "style",
-                                                     "font-size:"
-                                                         + iconSize) + ";");
+                img = HU.faIcon("fa-arrow-left",
+				HU.attrs("class",
+					 "ramadda-nav-arrow "
+					 + extraImgClass, "title", title,
+					 "style",
+					 "font-size:"
+					 + iconSize) + ";");
             } else if (next) {
-                img = HU.fasIconWithAttr("fa-arrow-right",
-                                         HU.attrs("class",
-                                             "ramadda-nav-arrow "
-                                             + extraImgClass, "title", title,
-                                                 "style",
-                                                     "font-size:" + iconSize
-                                                         + ";"));
+                img = HU.faIcon("fa-arrow-right",
+				HU.attrs("class",
+					 "ramadda-nav-arrow "
+					 + extraImgClass, "title", title,
+					 "style",
+					 "font-size:" + iconSize
+					 + ";"));
             } else {
-                img = HU.fasIconWithAttr("fa-arrow-up",
-                                         HU.attrs("class",
-                                             "ramadda-nav-arrow "
-                                             + extraImgClass, "title", title,
-                                                 "style",
-                                                     "font-size:" + iconSize
-                                                         + ";"));
+                img = HU.faIcon("fa-arrow-up",
+				HU.attrs("class",
+					 "ramadda-nav-arrow "
+					 + extraImgClass, "title", title,
+					 "style",
+					 "font-size:" + iconSize
+					 + ";"));
             }
             String extraClass = "";
             if (position != null) {
@@ -5495,60 +5495,61 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         if (request.get("doImports", true)) {
             addDisplayImports(request, buttons);
         }
-        StringBuilder tags  = new StringBuilder();
+        StringBuilder tags1  = new StringBuilder();
         StringBuilder tags2 = new StringBuilder();
-        Utils.appendAll(
-            tags, getWikiEditLink(
-                textAreaId, "Section", "+section title={{name}}_newline__newline_", "-section", ""), getWikiEditLink(
-                textAreaId, "Frame", "+frame background=#fff frameSize=0 shadow title=_title_", "-frame", ""), getWikiEditLink(
-                textAreaId, "Note", "+note_newline__newline_", "-note", ""), getWikiEditLink(
-                textAreaId, "Table", "+table height=400 hover=true cellborder=false rowborder=false stripe=false ordering=false paging=false searching=false_newline_:tr &quot;heading 1&quot; &quot;heading 2&quot;_newline_+tr_newline_:td colum 1_newline_+td_newline_column 2_newline_", "-td_newline_-tr_newline_-table", ""),
-	    getWikiEditLink(textAreaId, "Row/Column", "+row_newline_+col-6_newline_", "-col_newline_+col-6_newline_-col_newline_-row", ""),
-	    getWikiEditLink(textAreaId, "Tabs", "+tabs_newline_+tab tab title_newline_", "-tab_newline_-tabs_newline_", ""),
-	    getWikiEditLink(textAreaId, "Accordion", "+accordion decorate=true collapsible=true activeSegment=0 _newline_+segment segment  title_newline_", "-segment_newline_-accordion_newline_", ""),
-	    getWikiEditLink(textAreaId, "Slides", "+slides dots=true slidesToShow=1  bigArrow=true style=_qt__qt__nl_+slide Title_nl_", "-slide_nl_-slides_nl_", ""),
-
-
-
-	    getWikiEditLink(textAreaId, "Menu", "+menu_nl_    :menuheader Header_nl_    :menuitem Item 1_nl_    +menu Menu 1_nl_        :menuitem Item 2_nl_        +menuitem style=_qt_width:300px; background:green;_qt_ _nl_        Menu contents_nl_        -menuitem_nl_    -menu_nl_    +menu Menu 2_nl_        :menuitem Item 3_nl_    -menu_nl_-menu", "", ""),
-	    getWikiEditLink(textAreaId, "Navigation left", ":navleft leftStyle=_qt_width:250px;_qt_ rightStyle=_qt__qt_  maxLevel=_qt_4_qt_", "", ""),
-	    getWikiEditLink(textAreaId, "Navigation top", ":navtop style=_quote__quote_ delimiter=_quote_|_quote_  maxLevel=_qt__qt_", "", ""),
-	    getWikiEditLink(textAreaId, "Navigation popup", ":navpopup align=right|left  maxLevel=_qt__qt_", "", ""),	    
-
-	    getWikiEditLink(textAreaId, "Prev arrow", "{{prev position=relative|fixed decorate=false iconSize=32 sort=name,entryorder sortAscending=true style=_qt_left:250px;_qt_  showName=false}}", "", ""),
-	    getWikiEditLink(textAreaId, "Next arrow", "{{next position=relative|fixed decorate=false iconSize=32 sort=name,entryorder sortAscending=true style=_dq_  showName=false}}", "", "")); 
-
-        Utils.appendAll(tags2,
-			getWikiEditLink(textAreaId,"Popup",
-					"+popup link=_qt_Link_qt_ icon=_qt_fas fa-cog_qt_ title=_qt_Title_qt_ header=true draggable=true decorate=true sticky=true my=_qt__qt_ at=_qt__qt_ animate=false_nl__nl_",
-					"-popup_nl_",""),
-			getWikiEditLink(textAreaId, "Draggable",
-					"+draggable framed=true header=_quote__quote_ style=_quote_background:#fff;_quote_ toggle=_quote_true_quote_ toggleVisible=_quote_true_quote__newline_",
-                        "-draggable", ""),
-			getWikiEditLink(textAreaId,
-                            "Expandable",
-                                "+expandable header=_quote_quote_ expand=true_newline_",
-                                    "-expandable",
-                                        ""), getWikiEditLink(textAreaId,
-                                            "Grid box",
-                                                "+gridboxes-2_newline_+gridbox Title 1_newline_-gridbox_newline_+gridbox Title 2_newline_-gridbox_newline_",
-                                                    "-gridboxes",
-                                                        ""), getWikiEditLink(textAreaId,
-                                                            "Scroll panels",
-                                                                "+scroll_newline_+panel color=gradient1 name=home style=_quote__quote_ _newline_+center_newline_<div class=scroll-indicator>Scroll Down</div>_newline_-center_newline_-panel_newline_+panel color=gradient2 name=panel1_newline__newline_-panel_newline_+panel color=blue name=panel2_newline__newline_-panel_newline_", "-scroll", ""), getWikiEditLink(textAreaId, "Inset", "+inset top=0 bottom=0 left=0 right=0 _newline_", "-inset", ""), getWikiEditLink(textAreaId, "Absolute", "\\n+absolute top= bottom= left= right=\\n-absolute", "", ""), getWikiEditLink(textAreaId, "Relative", "\\n+relative\\n-relative", "", ""), getWikiEditLink(textAreaId, "Center", "\\n+center\\n-center", "", ""), getWikiEditLink(textAreaId, "Div", "+div class=_quote__quote_ style=_quote__quote_ background=_quote__quote_ _newline_", "-div", ""), getWikiEditLink(textAreaId, "CSS", "+css_newline_", "-css", ""), getWikiEditLink(textAreaId, "PRE", "+pre_newline_", "-pre", ""), getWikiEditLink(textAreaId, "Javascript", "+js_newline_", "-js", ""), getWikiEditLink(textAreaId, "Code", "```_newline__newline_", "```", ""));
-
         StringBuilder tags3 = new StringBuilder();
         StringBuilder tags4 = new StringBuilder();
-        StringBuilder tags5 = new StringBuilder();
+	Utils.TriFunction<String,String,String,String> l = (title,pre,post)->{
+	    return getWikiEditLink(textAreaId,title,pre,post,"");
+	};
+
+	Utils.QuadFunction<String,String,String,String,String> l2 = (title,pre,post,tt)->{
+	    return getWikiEditLink(textAreaId,title,pre,post,tt);
+	};
+	
+        Utils.appendAll(tags1,
+			l.call("Section", "+section title={{name}}_newline__newline_", "-section"),
+			l.call( "Frame", "+frame background=#fff frameSize=0 shadow title=_title_", "-frame"),
+			l.call( "Note", "+note_newline__newline_", "-note"),
+			l.call( "Table", "+table height=400 hover=true cellborder=false rowborder=false stripe=false ordering=false paging=false searching=false_newline_:tr &quot;heading 1&quot; &quot;heading 2&quot;_newline_+tr_newline_:td colum 1_newline_+td_newline_column 2_newline_", "-td_newline_-tr_newline_-table"),
+			l.call( "Row/Column", "+row_newline_+col-6_newline_", "-col_newline_+col-6_newline_-col_newline_-row"),
+			l.call( "Left-right", "+leftright_nl_+left_nl_-left_nl_+right_nl_-right_nl_", "-leftright"),
+			l.call( "Left-middle-right", "+leftmiddleright_nl_+left_nl_-left_nl_+middle_nl_-middle_nl_+right_nl_-right_nl_", "-leftmiddleright"),
+			l.call( "Tabs", "+tabs_newline_+tab tab title_newline_", "-tab_newline_-tabs_newline_"),
+			l.call( "Accordion", "+accordion decorate=true collapsible=true activeSegment=0 _newline_+segment segment  title_newline_", "-segment_newline_-accordion_newline_"),
+			l.call( "Slides", "+slides dots=true slidesToShow=1  bigArrow=true style=_qt__qt__nl_+slide Title_nl_", "-slide_nl_-slides_nl_"),
+			l.call("Grid box", "+gridboxes-2_newline_+gridbox Title 1_newline_-gridbox_newline_+gridbox Title 2_newline_-gridbox_newline_", "-gridboxes"),
+			l.call("Scroll panels","+scroll_newline_+panel color=gradient1 name=home style=_quote__quote_ _newline_+center_newline_<div class=scroll-indicator>Scroll Down</div>_newline_-center_newline_-panel_newline_+panel color=gradient2 name=panel1_newline__newline_-panel_newline_+panel color=blue name=panel2_newline__newline_-panel_newline_", "-scroll") 
+			
+			); 
+
+        Utils.appendAll(tags2,
+			l.call("Popup", "+popup link=_qt_Link_qt_ icon=_qt_fas fa-cog_qt_ title=_qt_Title_qt_ header=true draggable=true decorate=true sticky=true my=_qt__qt_ at=_qt__qt_ animate=false_nl__nl_", "-popup_nl_"),
+			l.call( "Menu", "+menu_nl_    :menuheader Header_nl_    :menuitem Item 1_nl_    +menu Menu 1_nl_        :menuitem Item 2_nl_        +menuitem style=_qt_width:300px; background:green;_qt_ _nl_        Menu contents_nl_        -menuitem_nl_    -menu_nl_    +menu Menu 2_nl_        :menuitem Item 3_nl_    -menu_nl_-menu", ""),
+			l.call( "Navigation left", ":navleft leftStyle=_qt_width:250px;_qt_ rightStyle=_qt__qt_  maxLevel=_qt_4_qt_", ""),
+			l.call( "Navigation top", ":navtop style=_quote__quote_ delimiter=_quote_|_quote_  maxLevel=_qt__qt_", ""),
+			l.call( "Navigation popup", ":navpopup align=right|left  maxLevel=_qt__qt_", ""),	    
+			l.call( "Prev arrow", "{{prev position=relative|fixed decorate=false iconSize=32 sort=name,entryorder sortAscending=true style=_qt_left:250px;_qt_  showName=false}}", ""),
+			l.call( "Next arrow", "{{next position=relative|fixed decorate=false iconSize=32 sort=name,entryorder sortAscending=true style=_dq_  showName=false}}", ""),
+			l.call( "Draggable", "+draggable framed=true header=_quote__quote_ style=_quote_background:#fff;_quote_ toggle=_quote_true_quote_ toggleVisible=_quote_true_quote__newline_",
+				"-draggable"),
+			l.call("Expandable",   "+expandable header=_quote_quote_ expand=true_newline_", "-expandable"),
+			l.call( "Inset", "+inset top=0 bottom=0 left=0 right=0 _newline_", "-inset"),
+			l.call( "Absolute", "\\n+absolute top= bottom= left= right=\\n","-absolute"),
+			l.call( "Relative", "\\n+relative\\n","-relative"),
+			l.call( "Center", "\\n+center\\n","-center")
+			);
+
 
         Utils.appendAll(tags3,
-                        getWikiEditLink(textAreaId, "Note", "+note_nl__nl_",
-                                        "-note", ""));
-        String[] colors = new String[] {
-            "plain", "gray", "platinum", "yellow", 
-            "azure",  "bone",
-            "green",  "cambridgeblue"
-        };
+                        l.call( "Callout", "+callout_nl__nl_", "-callout"),
+                        l.call( "Callout info", "+callout-info_nl__nl_", "-callout"),
+                        l.call( "Callout question", "+callout-question_nl__nl_", "-callout"),
+                        l.call( "Callout warning", "+callout-warning_nl__nl_", "-callout"));
+
+
+        Utils.appendAll(tags3, l.call( "Note", "+note style=\"\" _nl__nl_", "-note"));
+        String[] colors = new String[] {"gray",  "yellow"};
         for (String color : colors) {
             tags3.append(
                 getWikiEditLink(
@@ -5556,22 +5557,20 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                         "Note "
                         + color, HU.attrs(
                             "style", "padding:2px; display:inline-block;", "class", "ramadda-background-"
-                            + color)), "+note-" + color
-                                       + "_nl__nl_", "-note", ""));
+                            + color)), 
+		    "+note-" + color + "_nl__nl_", "-note",""));
         }
 
-        Utils.appendAll(tags4,
-                        getWikiEditLink(textAreaId, "Box", "+box_nl__nl_",
-                                        "-box", ""));
+        Utils.appendAll(tags3, l.call( "Box", "+box style=\"\" _nl__nl_", "-box"));
         for (String color : colors) {
-            tags4.append(
+            tags3.append(
                 getWikiEditLink(
                     textAreaId, HU.div(
                         "Box "
                         + color, HU.attrs(
                             "style", "padding:2px; display:inline-block;", "class", "ramadda-background-"
                             + color)), "+box-" + color
-                                       + "_nl__nl_", "-box", ""));
+		    + "_nl__nl_", "-box",""));
         }
 
 
@@ -5642,36 +5641,43 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         makeHelp.accept("/colortables", "Color Tables");
         String helpButton = makeButton.apply("Help", help.toString());
         String formattingButton = makeButton.apply("Formatting",
-                                      HU.hbox(tags, tags2, tags3, tags4));
+						   HU.hbox(tags1, tags2,tags3,tags4));
 
-        StringBuilder text1 = new StringBuilder();
-        StringBuilder text2 = new StringBuilder();	
+        StringBuilder misc1 = new StringBuilder();
+        StringBuilder misc2 = new StringBuilder();
+        StringBuilder misc3 = new StringBuilder();		
+	Utils.appendAll(misc3,
+			l.call( "CSS", "+css_newline_", "-css"),
+			l.call( "PRE", "+pre_newline_", "-pre"),
+			l.call( "Javascript", "+js_newline_", "-js"),
+			l.call( "Code", "```_newline__newline_", "```"));
+
         Utils.appendAll(
-            text1,
-	    getWikiEditLink(textAreaId, "Title", ":title {{name link=true}}", "", ""), getWikiEditLink(textAreaId, "Heading", ":heading your heading", "", ""), getWikiEditLink(textAreaId, "Heading-1", ":h1 your heading", "", ""), getWikiEditLink(textAreaId, "Heading-2", ":h2 your heading", "", ""), getWikiEditLink(textAreaId, "Heading-3", ":h3 your heading", "", ""),	    
-	    getWikiEditLink(
-                textAreaId, "Break", "\\n:br", "", ""), getWikiEditLink(
-                textAreaId, "Paragraph", "\\n:p", "", ""), getWikiEditLink(
-                textAreaId, "Bold text", "\\'\\'\\'", "\\'\\'\\'", ""), getWikiEditLink(
-                textAreaId, "Italic text", "\\'\\'", "\\'\\'", ""), getWikiEditLink(
-										    textAreaId, "Code", "```\\n", "\\n```", ""));
-        Utils.appendAll(
-			text2,
-			getWikiEditLink(
-                textAreaId, "Internal link", "[[", "]]", "Link title"), getWikiEditLink(
-                textAreaId, "External link", "[", "]", "http://www.example.com link title"), getWikiEditLink(
-                textAreaId, "Level 2 headline", "\\n== ", " ==\\n", "Headline text"), getWikiEditLink(
-                textAreaId, "Small text", "<small>", "</small>", "Small text"), getWikiEditLink(
-                textAreaId, "Horizontal line", "\\n----\\n", "", ""), getWikiEditLink(
-                textAreaId, "Button", ":button url label", "", ""), getWikiEditLink(
-                textAreaId, "Remark", "\\n:rem ", "", ""), getWikiEditLink(
-                textAreaId, "Reload", "\\n:reload seconds=30 showCheckbox=true showLabel=true", "", ""), getWikiEditLink(
-                textAreaId, "After", "+after pause=0 afterFade=5000_newline__newline_", "-after", "After"), getWikiEditLink(
-                textAreaId, "Odometer", "{{odometer initCount=0 count=100 immediate=true pause=1000}}", "", ""));
+            misc1,
+	    l.call( "Title", ":title {{name link=true}}", ""),
+	    l.call( "Heading", ":heading your heading", ""),
+	    l.call( "Heading-1", ":h1 your heading", ""),
+	    l.call( "Heading-2", ":h2 your heading", ""),
+	    l.call( "Heading-3", ":h3 your heading", ""),	    
+	    l.call("Break", "\\n:br", ""),
+	    l.call("Paragraph", "\\n:p", ""),
+	    l.call("Bold text", "\\'\\'\\'", "\\'\\'\\'"),
+	    l.call("Italic text", "\\'\\'", "\\'\\'"),
+	    l.call("Code", "```\\n", "\\n```"));
+        Utils.appendAll(misc2,
+			l2.call("Internal link", "[[", "]]", "Link title"),
+			l2.call("External link", "[", "]", "http://www.example.com link title"),
+			l2.call("Small text", "<small>", "</small>", "Small text"),
+			l.call("Horizontal line", "\\n----\\n", ""),
+			l.call("Button", ":button url label", ""),
+			l.call("Remark", "\\n:rem ", ""),
+			l.call("Reload", "\\n:reload seconds=30 showCheckbox=true showLabel=true", ""),
+			l2.call("After", "+after pause=0 afterFade=5000_newline__newline_", "-after", "After"),
+			l.call("Odometer", "{{odometer initCount=0 count=100 immediate=true pause=1000}}", ""));
 	
 
-        String textButton = makeButton.apply("Text",
-                                      HU.hbox(text1, text2));
+        String textButton = makeButton.apply("Misc",
+					     HU.hbox(misc1, misc2,misc3));
 
         String entriesButton = makeButton.apply("Entries",
                                    makeTagsMenu(textAreaId));
