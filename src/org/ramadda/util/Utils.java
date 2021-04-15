@@ -4564,6 +4564,29 @@ public class Utils extends IO {
         void accept(T t, U u, V v);
     }
 
+    public interface TriFunction<R,T, U, V> {
+        /**
+         * _more_
+         *
+         * @param t _more_
+         * @param u _more_
+         * @param v _more_
+         */
+        R call(T t, U u, V v);
+    }
+
+    public interface QuadFunction<R,T, U, V,W> {
+        /**
+         * _more_
+         *
+         * @param t _more_
+         * @param u _more_
+         * @param v _more_
+         */
+        R call(T t, U u, V v, W w);
+    }
+
+
     public interface QuadConsumer < T, U, V, W > {
 	/**
          * _more_
