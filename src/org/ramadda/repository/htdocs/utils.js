@@ -3198,9 +3198,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    editor.handleSubmit();
         }
     },
-    addWikiEditor:function(editor) {
+    addWikiEditor:function(editor,id) {
 	if(!this.wikiEditors)  this.wikiEditors={};
-	this.wikiEditors[editor.getId()] = editor;
+	id = id || editor.getId();
+	this.wikiEditors[id] = editor;
     },
     makeBreadcrumbsInit: function(id) {
 	//If page isn't loaded then register a callback

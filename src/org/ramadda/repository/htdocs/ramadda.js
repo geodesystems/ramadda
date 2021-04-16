@@ -584,8 +584,6 @@ function selectClick(id, entryId, value) {
         selectCancel();
         return;
     }
-
-    console.log("id:" + selector.elementId);
     if (selector.selecttype == "wikilink") {
         insertAtCursor(selector.elementId, selector.textComp.obj, "[[" + entryId + "|" + value + "]]");
     } else   if (selector.selecttype == "fieldname") {

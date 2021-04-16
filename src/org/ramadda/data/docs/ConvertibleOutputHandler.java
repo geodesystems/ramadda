@@ -168,8 +168,6 @@ public class ConvertibleOutputHandler extends OutputHandler {
 
     public void makeConvertForm(Request request, Entry entry, StringBuilder sb)
             throws Exception {
-        StringBuilder js = new StringBuilder();
-        js.append("var convertCsvEntry = '" + entry.getId() + "';\n");
         String lastInput =
             (String) getSessionManager().getSessionProperty(request,
                 "csv.lastinput." + entry.getId());
@@ -193,17 +191,19 @@ public class ConvertibleOutputHandler extends OutputHandler {
             lastInput = lastInput.replaceAll("\n", "_escnl_");
             lastInput = lastInput.replaceAll("\"", "_escquote_");
             lastInput = lastInput.replaceAll("\\\\", "_escslash_");
-            js.append("var convertCsvLastInput =\"" + lastInput + "\";\n");
-        } else {
-            js.append("var convertCsvLastInput =null;\n");
         }
-        HtmlUtils.script(sb, js.toString());
-        sb.append(HtmlUtils.div("", HtmlUtils.id("convertcsv_div")));
+	String id = HtmlUtils.getUniqueId("convert");
+	if(lastInput!=null)
+	    sb.append(HtmlUtils.div(lastInput, "style='display:none;' "+HU.id(id+"_lastinput")));
+        sb.append(HtmlUtils.div("", HtmlUtils.id(id)));	
         HtmlUtils.importJS(
             sb, getRepository().getHtdocsUrl("/lib/ace/src-min/ace.js"));
         HtmlUtils.importJS(sb,
                            getRepository().getUrlBase()
                            + "/media/convertcsv.js");
+	HU.script(sb, "new ConvertForm('" + id +"','" + entry.getId()+"');\n");
+
+
     }
     
     /**
