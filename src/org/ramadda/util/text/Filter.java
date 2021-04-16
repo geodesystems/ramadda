@@ -328,6 +328,11 @@ public class Filter extends Processor {
             setPattern(pattern);
         }
 
+        public PatternFilter(int col, String pattern) {
+            super(col);
+            setPattern(pattern);
+        }	
+
         /**
          * _more_
          *
