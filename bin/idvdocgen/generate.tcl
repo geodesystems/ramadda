@@ -112,6 +112,7 @@ proc ht::index {s {name ""} {word ""}} {
 }
 
 proc ht::doImage {img centered {caption ""} {extra ""}} {
+    puts "$img $extra"
     if {[gen::getDoImageLinks]} {
         set href1 "<a href=\"$img\">"
         set href2 "</a>"

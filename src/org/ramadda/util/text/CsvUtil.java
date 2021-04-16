@@ -2278,7 +2278,7 @@ public class CsvUtil {
 		return i;
 	    });
 
-	defineFunction("-unfurl",4,(ctx,args,i) -> {
+	CsvFunction unfurlFunc = (ctx,args,i) -> {
 		String       mainCol   = args.get(++i);
 		List<String> valueCols = getCols(args.get(++i));
 		String       uniqueCol = args.get(++i);
@@ -2287,7 +2287,10 @@ public class CsvUtil {
 								       mainCol, valueCols, uniqueCol, extraCols));
 
 		return i;
-	    });
+	};
+
+	defineFunction("-unfurl",4,unfurlFunc);
+	defineFunction("-makefields",4,unfurlFunc);	
 
 	defineFunction("-furl",3,(ctx,args,i) -> {
 		List<String> valueCols = getCols(args.get(++i));

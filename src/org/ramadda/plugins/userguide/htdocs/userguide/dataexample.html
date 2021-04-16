@@ -28,7 +28,7 @@ pre {
 
 
 
-Here we put things all together showing how to use the ETL tools to clean up and normalize an example CSV data file, how to ingest that file and create a display of the data. 
+Here we put things together showing how to use the ETL tools to clean up and normalize an example CSV data file, how to ingest that file and create a display of the data. 
 <p>
 The overall flow is to -
 <ul>
@@ -40,8 +40,7 @@ The overall flow is to -
 
 
 <a name="rawdata"></a><p><div class="ramadda-help-heading">7.1.0 <a href="#rawdata">The raw data</a></div> 
-The example we are using is data from the City of Boulder
-<a href=https://bouldercolorado.gov/open-data/community-greenhouse-gas-emissions/>Open Data Repository</a> that shows  greenhouse gas emissions and looks like - 
+The example we are using is data from the City of Boulder's Open Data Repository that shows  greenhouse gas emissions and looks like - 
 <pre>
 Year,Category,Sub-Category,Emissions per Sub-Category (MTCO2e)
 2005,Source,Electricity,"1,014,560"
@@ -55,18 +54,12 @@ Year,Category,Sub-Category,Emissions per Sub-Category (MTCO2e)
 <a name="upload"></a><p><div class="ramadda-help-heading">7.1.1 <a href="#upload">Upload the raw file</a></div> 
 <p>
 <ul>
-<li> First download the <a href=https://bouldercolorado.gov/open-data/community-greenhouse-gas-emissions/>GHGI_Community_Emissions_Source.csv</a> file from the Open Data Repository. 
+<li> First download the <a href="https://geodesystems.com/repository/entry/get/GHGI_Community_Emissions_Sector.csv?entryid=67609c54-abd1-4e5b-aa95-a78845e67853">GHGI_Community_Emissions_Source.csv</a> file.
 <li> Assuming you are logged in to RAMADDA you will upload the file to RAMADDA. 
 <ul>
-<li> Navigate to some folder (e.g., a development folder).
-<li> Click on the menu and select "New File" - 
-<center><div><a href="images/dataexample/menu.png"><img  src="images/dataexample/menu.png"  alt="images/dataexample/menu.png" ></a></div></center>
-<li> Upload the file in the Add Entry form:
-<center><div><a href="images/dataexample/add.png"><img  src="images/dataexample/add.png"  alt="images/dataexample/add.png" ></a></div></center>
-
-<li> Alternately you can copy the file URL and enter it into the URL field and select "Download":
-<center><div><a href="images/dataexample/add2.png"><img  src="images/dataexample/add2.png"  alt="images/dataexample/add2.png" ></a></div></center>
-
+<li> Navigate to some folder
+<li> Click on the menu and select "New File" - <center><div><a href="images/dataexample/menu.png"><img  src="images/dataexample/menu.png"  alt="images/dataexample/menu.png" ></a></div></center>
+<li> Upload the file in the Add Entry form - <center><div><a href="images/dataexample/add.png"><img  src="images/dataexample/add.png"  alt="images/dataexample/add.png" ></a></div></center>
 </ul>
 <li> Once you upload the raw CSV file RAMADDA automatically creates a "CSV File" entry type. 
 </ul>
@@ -77,12 +70,13 @@ From the menu choose "Convert Spreadsheet" -
 <center><div><a href="images/dataexample/menu2.png"><img  src="images/dataexample/menu2.png"  alt="images/dataexample/menu2.png" ></a></div></center>
 
 This takes us to the interactive ETL conversion form (view it
-<a href="https://boulderdata.org/repository/entry/show/Home/Content/Community+Data/Colorado/Boulder+Data+Hub/Development/Ghgi+Community+Emissions+Source?entryid=9fba8d8d-7782-4c88-8e62-17d32faa0afe&output=csv_convert_form">here</a>).
+<a href="https://geodesystems.com/repository/entry/show/Home/Content/Community+Data/Colorado/Boulder+Data+Hub/Development/Ghgi+Community+Emissions+Sector?entryid=67609c54-abd1-4e5b-aa95-a78845e67853&output=convert_form">here</a>).
 
 <center><div><a href="images/dataexample/convert1.png"><img  src="images/dataexample/convert1.png" width=80% alt="images/dataexample/convert1.png" ></a></div></center>
 
 
-RAMADDA's ETL facility provides a large number of operations (documented <a href="https://geodesystems.com/repository/userguide/etl.html">here</a>) for transforming the CSV file.  One adds any number of conversion commands in the main input area. The buttons along the bottom (e.g., Table, Records) allow for the results to be viewed in different ways. 
+RAMADDA's ETL facility provides a large number of operations (documented <a href="https://geodesystems.com/repository/userguide/etl.html">here</a>) for transforming the CSV file.  One adds any number of conversion commands in the main input area. 
+The buttons along the bottom (e.g., Output, Table, Process) allow for the results to be viewed in different ways. 
 <p>
 
 The below commands are used to convert the raw data. This changes the commas in the

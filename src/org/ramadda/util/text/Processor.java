@@ -4206,7 +4206,8 @@ public abstract class Processor extends CsvOperator {
                     String type = HU.faIcon(typeIcon, "title", "type: " + col.type, "style", "font-size:10pt;");
                     String name = col.name;
 		    String label = Utils.makeLabel(name);
-                    w.println("<th class=csv-id fieldid='" + name
+		    String id = Utils.makeID(name);
+                    w.println("<th class=csv-id fieldid='" + id
                               + "' nowrap>" + type + "&nbsp;" + label
                               + "</th>");
                 }

@@ -418,6 +418,7 @@ var Csv = {
 	    let v = $("#" + Csv.columnInput).val()||"";
 	    v = v.trim();
 	    if(v!="" && !v.endsWith(",")) v +=plain?"":",";
+	    index = String(index).split(",").join("\n");
 	    v+=index;
 	    $("#" + Csv.columnInput).val(v);	    
 	    return;
@@ -736,7 +737,9 @@ var Csv = {
 		    writePre(result);
 		} else if(stats) {
 		    output.html(result);
-		    output.find( "#header").html(HU.span([ID,"csv_toggledetails"],"Hide details"));
+		    let toolbar = HU.span([TITLE,"Insert field names", CLASS,"ramadda-clickable", ID,"csv_addfields"],"Add field ids") + SPACE3 + HU.span([ID,"csv_toggledetails"],"Hide details");
+
+		    output.find( "#header").html(toolbar);
 		    let _this = this;
 		    let visible = true;
 		    $("#csv_toggledetails").addClass("ramadda-clickable").click(function() {
@@ -746,6 +749,15 @@ var Csv = {
 			    output.find(".th2").show();
 			else
 			    output.find(".th2").hide();
+		    });
+
+		    let ids = [];
+		    output.find( ".csv-id").each(function() {
+			ids.push($(this).attr('fieldid'));
+		    });
+		    $("#csv_addfields").click(()=>{
+			let f = ids.join(",");
+			Csv.insertColumnIndex(f,true);
 		    });
 
 		    output.find( ".csv-id").css('color','blue').css('font-weight','normal').css('cursor','pointer').attr('title','Add field id').click(function() {
