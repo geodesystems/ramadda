@@ -1302,6 +1302,7 @@ svg > g > g:last-child { pointer-events: none }
 .display-entrygallery-item {
     display:inline-block;
     width:200px;
+    flex-grow:1;
 }
 
 .display-entrygallery-content   { 
@@ -1957,11 +1958,17 @@ font-weight:bold;
     margin:10px;
 }
 
+.display-images {
+    display:flex;
+    flex-wrap: wrap;
+}
+
 .display-images-image-outer {
+    flex-grow:1;
     border: 1px solid #aaa;
     padding:10px;
     padding-bottom:10px;
-    margin:5px;
+    margin:10px;
     margin-bottom:10px;
     -webkit-box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);
     box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);

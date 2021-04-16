@@ -341,7 +341,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
             if (imageCnt > 1) {
                 //Show a  gallery instead
 		this.galleryId = HU.getUniqueId("gallery_");
-                let newHtml = HU.open("div",[ID, this.galleryId]);
+                let newHtml = HU.open("div",[ID, this.galleryId,CLASS,"ramadda-grid"]);
 		let itemWidth = this.getProperty("galleryItemWidth","200px");
                 for (let i = 0; i < imageEntries.length; i++) {
                     let entry = imageEntries[i];
@@ -355,7 +355,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
 						  ATTR_ENTRYID, entry.getId(), ATTR_CLASS, "display-entrygallery-entry"
 						 ]);
                     img = HU.href(entry.getResourceUrl(), img, ["data-fancybox",this.galleryId, "data-caption",link, CLASS, "popup_image"]);
-                    newHtml += HU.div(["class", "image-outer"], HU.div(["class", "image-inner"], img) +
+                    newHtml += HU.div([CLASS, "image-outer"], HU.div(["class", "image-inner"], img) +
                         HU.div(["class", "image-caption"], link));
 
                     newHtml += HU.close("div");

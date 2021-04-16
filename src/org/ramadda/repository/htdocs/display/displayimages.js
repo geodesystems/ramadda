@@ -473,7 +473,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    let colorBy = this.getColorByInfo(records);
 	    let width = this.getPropertyImageWidth();
 	    let height = this.getPropertyImageHeight();	    
-	    if(!width && !height) width="150";
+	    if(!width && !height) width="100%";
 	    let imageStyle = this.getPropertyImageStyle("");
 	    let contents = "";
 	    let uid = HtmlUtils.getUniqueId();
@@ -541,13 +541,13 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		    style+=HU.css(BACKGROUND,c);
 		}
 
-		style+=HU.css("vertical-align","top");
+		style+=HU.css("vertical-align","top","width","200px");
+		if(doPopup) {
+		    img = HU.href(image,img,[CLASS,"popup_image","data-fancybox",base,"data-caption",galleryLabel]);
+		}
 		let block = 
 		    HU.div([STYLE, style, RECORD_ID,record.getId(),RECORD_INDEX,recordIndex++,ID,base+"div"+  rowIdx, CLASS, class1,TITLE,tt],
 			   HU.div([CLASS,class2], topLbl + img + lbl));
-		if(doPopup) {
-		    block = HU.href(image,block,[CLASS,"popup_image","data-fancybox",base,"data-caption",galleryLabel]);
-		}
 		if(columns) {
 		    if(++columnCnt>=columns) {
 			columnCnt=0;
@@ -590,6 +590,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		contents = HU.div([ID,this.domId(ID_IMAGES),STYLE,css+HU.css("overflow-y","auto")], contents);
 	    }
 
+	    contents  = HU.div([CLASS,"ramadda-grid"],contents);
             this.setContents(header + contents);
 	    let blocks = this.find(".display-images-block");
 	    this.makeTooltips(blocks,displayedRecords);
