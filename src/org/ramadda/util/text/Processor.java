@@ -556,36 +556,44 @@ public abstract class Processor extends CsvOperator {
          */
         public List<Row> finishNew(TextReader textReader, List<Row> inputRows)
 	    throws Exception {
+	    //	    System.err.println("finishNew:" + inputRows);
             //            if (inputRows != null) {
             while ((remainderProcessors != null)
 		   && (remainderProcessors.size() > 0)) {
                 if (firstProcessors != null) {
                     for (Processor processor : firstProcessors) {
                         inputRows = processor.finish(textReader, inputRows);
+			//			System.err.println("firstProcessor:" + processor.getClass().getName());
+			//			System.err.println("firstProcessors:" + inputRows);
                     }
                 }
                 processors          = remainderProcessors;
                 remainderProcessors = null;
                 firstProcessors     = null;
 		if(inputRows ==null) return inputRows;
+		List<Row> newRows = new ArrayList<Row>();
                 for (Row row : inputRows) {
                     row = processRowInner(textReader, row);
                     if ( !textReader.getOkToRun()) {
                         break;
                     }
+		    if(row!=null) newRows.add(row);
                     if (textReader.getExtraRow() != null) {
                         row = processRowInner(textReader,
 					      textReader.getExtraRow());
+			if(row!=null) newRows.add(row);
                         textReader.setExtraRow(null);
                     }
                     if ( !textReader.getOkToRun()) {
                         break;
                     }
                 }
+		inputRows = newRows;
             }
             //            }
             if (firstProcessors != null) {
                 for (Processor processor : firstProcessors) {
+		    //		    System.err.println("P:" + processor.getClass().getName());
                     List<Row> tmp = processor.finish(textReader, inputRows);
                     if (tmp != null) {
                         inputRows = tmp;
@@ -1073,6 +1081,7 @@ public abstract class Processor extends CsvOperator {
      * @author         Jeff McWhirter
      */
     public static class RowCollector extends Processor {
+	String myid = getClass().getName();
 
         /** _more_ */
         private List<Row> rows = new ArrayList<Row>();
@@ -1135,7 +1144,6 @@ public abstract class Processor extends CsvOperator {
         @Override
         public Row processRow(TextReader info, Row row) throws Exception {
             rows.add(row);
-
             return row;
         }
 

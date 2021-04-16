@@ -19999,6 +19999,7 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
 		}
 	    }
 	    this.setContents(html);
+            this.clearDisplayMessage();
 	    this.jq(ID_CHECKBOX).change(()=>{
 		let cbx = this.jq(ID_CHECKBOX);
 		if(cbx.is(':checked')) {
@@ -20009,6 +20010,9 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
 		this.checkReload(-1);
 	    });
 	    this.setTimer(this.getPropertyInterval());
+	},
+	setDisplayMessage:function(msg) {
+	    //noop
 	},
 	okToRun: function() {
 	    let cbx = this.jq(ID_CHECKBOX);

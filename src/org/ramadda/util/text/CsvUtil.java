@@ -1587,7 +1587,7 @@ public class CsvUtil {
                         "average,min,max,count")),
         new Cmd("-rotate", "Rotate the data"),
         new Cmd("-flip", "Reverse the order of the rows except the header"),
-        new Cmd("-unfurl", "Make columns from data values",
+        new Cmd("-makefields", "Make new columns from data values",
                 new Arg("column", "column to get new column header#", "type",
 			"column"), new Arg("value columns",
 					   "Columns to get values from", "type",

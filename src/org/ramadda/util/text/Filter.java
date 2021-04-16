@@ -305,19 +305,6 @@ public class Filter extends Processor {
         boolean debug = false;
 
         /**
-         *
-         * _more_
-         *
-         * @param col _more_
-         * @param pattern _more_
-         */
-        public PatternFilter(int col, String pattern) {
-            super(col);
-            setPattern(pattern);
-        }
-
-
-        /**
          * _more_
          *
          * @param col _more_
@@ -405,16 +392,13 @@ public class Filter extends Processor {
             }
 
             String v = row.getString(idx);
-            //            System.out.println("v:" + v);
             if (blank) {
                 return doNegate(v.equals(""));
             }
             if (pattern.matcher(v).find()) {
-                //                System.out.println("OK");
                 if (debug) {
                     System.err.println("R3:" + doNegate(true) + " " + row);
                 }
-
                 return doNegate(true);
             }
 
