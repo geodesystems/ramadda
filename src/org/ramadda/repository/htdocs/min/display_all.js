@@ -36365,6 +36365,7 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 	    this.makeMap();
 	},
 	makeRegions:function() {
+	    if(!this.mapJson) return false;
 	    let debug = this.getProperty("debug");
 	    let pruneMissing = this.getPropertyPruneMissing(false);
 	    let allRegions = {};
