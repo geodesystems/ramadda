@@ -5,14 +5,18 @@
      <service link="gdal_info"/>
   </type>
 
-  <type name="geo_geotiff"  description="GeoTIFF"  super="geo_gdal"   pattern="(.*\.tif|.*\.tiff)" >
+  <type name="geo_gdal_raster" super="geo_gdal" description="GDAL Raster" foruser="true" xhandler="org.ramadda.geodata.earthdata.GdalTypeHandler" >
+     <service link="gdal_makethumb"  target="attachment"/>
+     <service link="gdal_info"/>
+  </type>
+
+  <type name="geo_geotiff"  description="GeoTIFF"  super="geo_gdal_raster"   pattern="(.*\.tif|.*\.tiff)" >
      <property name="icon" value="/icons/image.gif"/>
   </type>
 
- <type name="type_nitf"  description="NITF File"   pattern="(.*\.ntf|.*\.NTF)" >
+ <type name="type_nitf"  description="NITF File"   pattern="(.*\.ntf|.*\.NTF)" super="geo_gdal_raster">
      <property name="icon" value="/icons/image.gif"/>
      <property name="form.area.show" value="true"/>
-     <service link="gdal_makethumb"  target="attachment"/>
      <service link="gdal_info" id="gdal_info" target="description"  namePattern="(?s).*NITF_FTITLE=(.*?)[\n\r]"  descriptionPattern="(?s).*NITF_ITITLE=(.*?)[\n\r]"/>
   </type>
 

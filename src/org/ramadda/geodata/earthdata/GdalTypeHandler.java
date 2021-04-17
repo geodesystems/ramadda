@@ -88,7 +88,7 @@ public class GdalTypeHandler extends GenericTypeHandler {
             return;
         }
         String results = output.getResults();
-        //        System.err.println("r:" + results);
+	//	System.err.println("results:" + results);
         /*
 Upper Left  (  -28493.167, 4255884.544) (117d38'27.05"W, 33d56'37.74"N)
 Lower Left  (  -28493.167, 4224973.143) (117d38'27.05"W, 33d39'53.81"N)
