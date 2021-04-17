@@ -1447,7 +1447,6 @@ public class Admin extends RepositoryManager {
         for (OutputType type : types) {
             if ( !type.getForUser()) {
                 System.out.println("not for user:" + type);
-
                 continue;
             }
             boolean ok = getRepository().isOutputTypeOK(type);
@@ -1458,10 +1457,10 @@ public class Admin extends RepositoryManager {
                     outputSB.append(HtmlUtils.p());
                 }
                 lastCategoryName = type.getGroupName();
-                outputSB.append(
-                    HtmlUtils.div(
-                        lastCategoryName, HtmlUtils.cssClass(
-                            CSS_CLASS_HEADING_2)) + "\n<div style=\"margin-left:20px\">");
+		if(lastCategoryName!=null)
+		    HtmlUtils.div(outputSB,
+				  lastCategoryName, HtmlUtils.cssClass(CSS_CLASS_HEADING_2));
+                outputSB.append("\n<div style=\"margin-left:20px\">");
             }
             outputSB.append(HtmlUtils.checkbox("outputtype." + type.getId(),
                     "true", ok));
