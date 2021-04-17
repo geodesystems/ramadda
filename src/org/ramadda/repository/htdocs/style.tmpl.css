@@ -1776,12 +1776,6 @@ ul {
 }
 
 
-.entry-action-list {
-    background: transparent;
-    padding: 0px;
-    border: 1px #aaa solid;
-    max-width:150px;
-}
 
 .entry-confirm-header {
     font-weight: bold;

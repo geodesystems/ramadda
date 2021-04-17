@@ -4373,7 +4373,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return "<textarea " + HtmlUtils.attrs(attrs) + HtmlUtils.attrs(["name", name]) + ">" + value + "</textarea>";
     },
     initSelect: function(s) {
-        $(s).selectBoxIt({});
+	let opts = {
+	    showEffect: "fadeIn",
+	    showEffectSpeed: 400,
+	    hideEffect: "fadeOut",
+	    hideEffectSpeed: 400,
+	};
+        $(s).selectBoxIt(opts);
     },
     valueDefined: function(value) {
         if (value != "" && value.indexOf("--") != 0) {

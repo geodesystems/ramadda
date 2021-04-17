@@ -1360,12 +1360,12 @@ public class OutputHandler extends RepositoryManager {
 
         StringBuilder selectSB  = new StringBuilder();
         StringBuilder actionsSB = new StringBuilder();
+	String menuId = HU.getUniqueId("menu");
         actionsSB.append(
             HU.select(
                 ARG_OUTPUT, tfos, (List<String>) null,
-                HU.cssClass("entry-action-list")));
+                HU.id(menuId) + HU.cssClass("entry-action-list")));
         actionsSB.append(HU.SPACE2);
-        actionsSB.append(msgLabel("to"));
         StringBuilder js               = new StringBuilder();
         String        allButtonId      = HU.getUniqueId("getall");
         String        selectedButtonId = HU.getUniqueId("getselected");
@@ -1374,14 +1374,16 @@ public class OutputHandler extends RepositoryManager {
         actionsSB.append(HU.space(1));
         actionsSB.append(HU.submit(msg("All"), "getall",
                                           HU.id(allButtonId)));
+	js.append("HtmlUtils.initSelect('#" + menuId+"');\n");
         js.append(JQuery.buttonize(JQuery.id(allButtonId)));
         js.append(JQuery.buttonize(JQuery.id(selectedButtonId)));
 
         String sortLinks = getSortLinks(request);
         selectSB.append(sortLinks + HU.SPACE2 + actionsSB.toString());
-        String arrowImg = getRepository().getIconImage(hideIt?"fas fa-caret-right":"fas fa-caret-down",
+        String arrowImg = HU.span(getRepository().getIconImage(hideIt?"fas fa-caret-right":"fas fa-caret-down",
 						        "title",						       
-						       msg("Show/Hide Form"), "id", base + "img");
+							       msg("Show/Hide Form")),
+				  HU.id(base + "img"));
         String linkExtra = HU.cssClass("ramadda-entries-link");
         String link = HU.jsLink(HU.onMouseClick(base
                           + ".groupToggleVisibility()"), arrowImg,

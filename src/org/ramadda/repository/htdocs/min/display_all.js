@@ -3721,7 +3721,7 @@ function DisplayThing(argId, argProperties) {
 	    }
 	    let labelWidth = this.getProperty("labelWidth");
 
-            for (var doDerived = 0; doDerived < 2; doDerived++) {
+            for (let doDerived = 0; doDerived < 2; doDerived++) {
                 for (let i = 0; i < fields.length; i++) {
                     let field = fields[i];
 		    if(tooltipNots[field.getId()]) continue;
@@ -3745,7 +3745,8 @@ function DisplayThing(argId, argProperties) {
                             continue;
                         }
                     }
-                    let value = record.getValue(field.getIndex());
+                    let initValue = record.getValue(field.getIndex());
+                    let value = initValue;
 		    let fieldValue = value;
                     if (typeof value == "number") {
 			value = this.formatNumber(value, field.getId());
@@ -3779,7 +3780,7 @@ function DisplayThing(argId, argProperties) {
 		    }
 		    let labelValue = field.getLabel();
 		    value = value + field.getUnitSuffix();
-		    let tt = labelValue+"=" + value;
+		    let tt = labelValue+"=" + initValue;
 		    if(value.length>100) {
 			value  = HU.div([STYLE,HU.css("max-height","100px","overflow-y","auto")],value);
 		    }
@@ -27251,7 +27252,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    
 		});
 		let select = HU.tag("select", ["id", this.getDomId(ID_SEARCH_ORDERBY), ATTR_CLASS, "display-search-orderby"], options);
-		this.jq(ID_SEARCH_HEADER).append("Order by: "+ select);
+		this.jq(ID_SEARCH_HEADER).append(select);
 	    }
             this.addExtraForm();
 	},

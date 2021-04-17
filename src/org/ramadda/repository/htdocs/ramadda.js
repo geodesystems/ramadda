@@ -184,9 +184,9 @@ function EntryFormList(formId, img, selectId, initialOn) {
 
         var form = $("#"+this.formId);
         if(this.on) {
-            form.find(':input').show();
+            form.find(':checkbox').show();
         }   else {
-            form.find(':input').hide();
+            form.find(':checkbox').hide();
         }
         for (i = 0; i < this.entries.length; i++) {
             obj = GuiUtils.getDomObject(this.entries[i]);

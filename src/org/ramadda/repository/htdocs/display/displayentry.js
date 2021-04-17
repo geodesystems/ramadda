@@ -480,7 +480,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    
 		});
 		let select = HU.tag("select", ["id", this.getDomId(ID_SEARCH_ORDERBY), ATTR_CLASS, "display-search-orderby"], options);
-		this.jq(ID_SEARCH_HEADER).append("Order by: "+ select);
+		this.jq(ID_SEARCH_HEADER).append(select);
 	    }
             this.addExtraForm();
 	},

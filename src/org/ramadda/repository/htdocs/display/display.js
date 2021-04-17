@@ -777,7 +777,7 @@ function DisplayThing(argId, argProperties) {
 	    }
 	    let labelWidth = this.getProperty("labelWidth");
 
-            for (var doDerived = 0; doDerived < 2; doDerived++) {
+            for (let doDerived = 0; doDerived < 2; doDerived++) {
                 for (let i = 0; i < fields.length; i++) {
                     let field = fields[i];
 		    if(tooltipNots[field.getId()]) continue;
@@ -801,7 +801,8 @@ function DisplayThing(argId, argProperties) {
                             continue;
                         }
                     }
-                    let value = record.getValue(field.getIndex());
+                    let initValue = record.getValue(field.getIndex());
+                    let value = initValue;
 		    let fieldValue = value;
                     if (typeof value == "number") {
 			value = this.formatNumber(value, field.getId());
@@ -835,7 +836,7 @@ function DisplayThing(argId, argProperties) {
 		    }
 		    let labelValue = field.getLabel();
 		    value = value + field.getUnitSuffix();
-		    let tt = labelValue+"=" + value;
+		    let tt = labelValue+"=" + initValue;
 		    if(value.length>100) {
 			value  = HU.div([STYLE,HU.css("max-height","100px","overflow-y","auto")],value);
 		    }
