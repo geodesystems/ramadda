@@ -108,7 +108,7 @@ public class StorageManager extends RepositoryManager implements PointFile
     public static final String DIR_ANONYMOUSUPLOAD = "anonymousupload";
 
     /** index flag */
-    public static final String DIR_INDEX = "index";
+    public static final String DIR_INDEX = "luceneindex";
 
     /** cache directory */
     public static final String DIR_CACHE = "cache";

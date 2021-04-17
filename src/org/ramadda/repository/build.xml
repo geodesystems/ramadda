@@ -371,7 +371,7 @@
         <unjar src="${lib_dir}/gdata.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/javax.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/jmapproj.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/lucene-core-3.0.3.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/lucene-core-8.8.2.jar" dest="${tmpjar_dir}"/>	
         <unjar src="${lib_dir}/mail.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/activation.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/javadiff.jar" dest="${tmpjar_dir}"/>

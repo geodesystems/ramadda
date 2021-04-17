@@ -18,24 +18,16 @@ package org.ramadda.repository.search;
 
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.DateTools;
-
+import org.apache.lucene.store.*;
+import org.apache.lucene.index.*;
 import org.apache.lucene.document.Field;
-
-import org.apache.lucene.index.FilterIndexReader;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-
-
-import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.MultiFieldQueryParser;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.document.TextField;
+import org.apache.lucene.util.QueryBuilder;
 import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Scorer;
-import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.FSDirectory;
@@ -82,6 +74,8 @@ import ucar.unidata.xml.XmlUtil;
 
 
 import java.io.*;
+import java.nio.*;
+import java.nio.file.*;
 
 import java.lang.reflect.*;
 
@@ -277,13 +271,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @throws Exception _more_
      */
     private IndexWriter getLuceneWriter() throws Exception {
-        File indexFile = new File(getStorageManager().getIndexDir());
-        IndexWriter writer =
-            new IndexWriter(FSDirectory.open(indexFile),
-                            new StandardAnalyzer(Version.LUCENE_CURRENT),
-                            IndexWriter.MaxFieldLength.LIMITED);
-
-        return writer;
+	Directory index = new NIOFSDirectory(Paths.get(getStorageManager().getIndexDir()));
+	IndexWriterConfig config = new IndexWriterConfig();
+	IndexWriter writer = new IndexWriter(index, config);
+	return writer;
     }
 
 
@@ -355,7 +346,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         for (Entry entry : entries) {
             indexEntry(writer, entry);
         }
-        writer.optimize();
+	//        writer.optimize();
         writer.close();
         luceneReader   = null;
         luceneSearcher = null;
@@ -376,35 +367,35 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         org.apache.lucene.document.Document doc =
             new org.apache.lucene.document.Document();
         String path = entry.getResource().getPath();
-        doc.add(new Field(FIELD_ENTRYID, entry.getId(), Field.Store.YES,
-                          Field.Index.NOT_ANALYZED));
+
+
+        doc.add(new TextField(FIELD_ENTRYID, entry.getId(), Field.Store.YES));
         if ((path != null) && (path.length() > 0)) {
-            doc.add(new Field(FIELD_PATH, path, Field.Store.YES,
-                              Field.Index.NOT_ANALYZED));
+            doc.add(new TextField(FIELD_PATH, path, Field.Store.YES));
         }
 
         StringBuilder metadataSB = new StringBuilder();
         getRepository().getMetadataManager().getTextCorpus(entry, metadataSB);
         entry.getTypeHandler().getTextCorpus(entry, metadataSB);
-        doc.add(new Field(FIELD_DESCRIPTION,
-                          entry.getName() + " " + entry.getDescription(),
-                          Field.Store.NO, Field.Index.ANALYZED));
+        doc.add(new TextField(FIELD_DESCRIPTION,  entry.getName() + " " + entry.getDescription(),Field.Store.NO));
 
         if (metadataSB.length() > 0) {
-            doc.add(new Field(FIELD_METADATA, metadataSB.toString(),
-                              Field.Store.NO, Field.Index.ANALYZED));
+            doc.add(new TextField(FIELD_METADATA, metadataSB.toString(),Field.Store.NO));
         }
 
+		/*
         doc.add(new Field(FIELD_MODIFIED,
                           DateTools.timeToString(entry.getStartDate(),
                               DateTools.Resolution.MINUTE), Field.Store.YES,
                                   Field.Index.NOT_ANALYZED));
+		*/
 
         if (entry.isFile()) {
             addContentField(entry, doc, new File(path));
         }
         writer.addDocument(doc);
-    }
+	writer.commit();
+	}
 
 
     /**
@@ -432,8 +423,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             parser.parse(stream, handler, metadata);
             String contents = handler.toString();
             if ((contents != null) && (contents.length() > 0)) {
-                doc.add(new Field(FIELD_CONTENTS, contents, Field.Store.NO,
-                                  Field.Index.ANALYZED));
+                doc.add(new TextField(FIELD_CONTENTS, contents, Field.Store.NO));
             }
 
             /*
@@ -462,18 +452,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @throws Exception _more_
      */
     private IndexReader getLuceneReader() throws Exception {
-        if (true) {
-            return IndexReader.open(
-                FSDirectory.open(
-                    new File(getStorageManager().getIndexDir())), false);
-        }
-        if (luceneReader == null) {
-            luceneReader = IndexReader.open(
-                FSDirectory.open(
-                    new File(getStorageManager().getIndexDir())), false);
-        }
-
-        return luceneReader;
+        IndexWriter writer = getLuceneWriter();
+	return DirectoryReader.open(writer);
     }
 
 
@@ -585,13 +565,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                                     List<Entry> entries)
             throws Exception {
         StringBuffer sb = new StringBuffer();
-        StandardAnalyzer analyzer =
-            new StandardAnalyzer(Version.LUCENE_CURRENT);
-        QueryParser qp = new MultiFieldQueryParser(Version.LUCENE_CURRENT,
-                             new String[] { FIELD_DESCRIPTION,
-                                            FIELD_METADATA,
-                                            FIELD_CONTENTS }, analyzer);
-        Query         query    = qp.parse(request.getString(ARG_TEXT, ""));
+        StandardAnalyzer analyzer =       new StandardAnalyzer();
+	QueryBuilder builder = new QueryBuilder(analyzer);
+	Query query = builder.createPhraseQuery(FIELD_DESCRIPTION, request.getString(ARG_TEXT, ""));
         IndexSearcher searcher = getLuceneSearcher();
         TopDocs       hits     = searcher.search(query, 100);
         ScoreDoc[]    docs     = hits.scoreDocs;
