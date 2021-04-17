@@ -527,14 +527,23 @@ function  ConvertForm(inputId, entry) {
 	    return url;
 	},
 	makeDbMenu:function(field,value,label) {
-	    if(!value) value = "null";
-	    else value = "'" + value +"'";
-	    return HtmlUtil.tag("a",[CLASS,"ramadda-clickable","onclick","this.insertDb('" + field+"'," +value+");"],(label||field));
+	    return HtmlUtil.span([CLASS,"ramadda-clickable","field",field,"value",value],(label||field));
 	},
 	makeHeaderMenu: function(field,value,label) {
 	    return HtmlUtil.span(["field",field,"value",value,CLASS,"ramadda-menuitem-link ramadda-clickable"],(label||field));
 	},
 	insertHeader:function(field,value) {
+	    if(this.headerInput && $("#" + this.headerInput).length>0) {
+		let v = $("#" + this.headerInput).val()||"";
+		value = field +"  "+ value;
+		v = v.trim();
+		if(v.length>0)
+		    v = v +"\n";
+		v+=value;
+		$("#" + this.headerInput).val(v);	    
+		return;
+	    }
+
 	    let popup = this.jq(ID_POPUP);
 	    popup.css("display","none");
 	    if(!value) value = " ";
@@ -542,8 +551,8 @@ function  ConvertForm(inputId, entry) {
 	    this.insertCommand(field +value);
 	},
 	insertDb:function(field,value) {
-	    if(this.dialog) this.dialog.remove();
-	    this.dialog = null;
+	    if(this.dbDialog) this.dbDialog.remove();
+	    this.dbDialog = null;
 	    if(!value) value = " ";
 	    if(value!="true" && value!="false") {
 		if(value.indexOf(" ")>=0) 
@@ -551,6 +560,15 @@ function  ConvertForm(inputId, entry) {
 		else if(value!="") value = " " + value +" ";
 	    } else {
 		value = " " + value +" ";
+	    }
+	    if(this.dbInput && $("#" + this.dbInput).length>0) {
+		let v = $("#" + this.dbInput).val()||"";
+		v = v.trim();
+		if(v.length>0)
+		    v = v +"\n";
+		v+=field+" " +value;
+		$("#" + this.dbInput).val(v);	    
+		return;
 	    }
 	    this.insertCommand(field +value);
 	},
@@ -709,7 +727,7 @@ function  ConvertForm(inputId, entry) {
 			db = db.replace(/ ([^ ]+)="([^"]+)"/g,"\t$1:$2");
 			db = db.replace(/ ([^ ]+)="([^"]*)"/g,"\t$1:\"$2\"");
 			writePre(db);
-			output.find(".csv_db_field").click((event) =>{
+			output.find(".csv_db_field").click(function(event) {
                             let space = "&nbsp;"
                             event.preventDefault();
                             let pos=$(this).offset();
@@ -718,32 +736,37 @@ function  ConvertForm(inputId, entry) {
                             let field  = $(this).attr("field");
                             let html = "<div style=\"margin:2px;margin-left:5px;margin-right:5px;\">\n";
                             if(field  == "table") {
-				html +=this.makeDbMenu(field+".name")+"<br>";
-				html +=this.makeDbMenu(field+".label")+"<br>";
+				html +=_this.makeDbMenu(field+".name")+"<br>";
+				html +=_this.makeDbMenu(field+".label")+"<br>";
                             } else {
-				html +=this.makeDbMenu(field+".id")+"<br>";
-				html +=this.makeDbMenu(field+".label")+"<br>";
+				html +=_this.makeDbMenu(field+".id")+"<br>";
+				html +=_this.makeDbMenu(field+".label")+"<br>";
 				html +=
-                                    this.makeDbMenu(field+".type")+space +
-                                    this.makeDbMenu(field+".type","string","string")+space +
-                                    this.makeDbMenu(field+".type","double","double")+space +
-                                    this.makeDbMenu(field+".type","int","int")+space +
-                                    this.makeDbMenu(field+".type","enumeration","enumeration")+space +
-                                    this.makeDbMenu(field+".type","enumerationplus","enumerationplus")+space +
+                                    _this.makeDbMenu(field+".type")+space +
+                                    _this.makeDbMenu(field+".type","string","string")+space +
+                                    _this.makeDbMenu(field+".type","double","double")+space +
+                                    _this.makeDbMenu(field+".type","int","int")+space +
+                                    _this.makeDbMenu(field+".type","enumeration","enumeration")+space +
+                                    _this.makeDbMenu(field+".type","enumerationplus","enumerationplus")+space +
                                     "<br>";
 				html +=
-                                    this.makeDbMenu(field+".cansearch")+space +
-                                    this.makeDbMenu(field+".cansearch","true","true")+space +
-                                    this.makeDbMenu(field+".cansearch","false","false")+
+                                    _this.makeDbMenu(field+".cansearch")+space +
+                                    _this.makeDbMenu(field+".cansearch","true","true")+space +
+                                    _this.makeDbMenu(field+".cansearch","false","false")+
                                     "<br>";
 				html +=
-                                    this.makeDbMenu(field+".canlist")+space +
-                                    this.makeDbMenu(field+".canlist","true","true")+space+
-                                    this.makeDbMenu(field+".canlist","false","false")+
+                                    _this.makeDbMenu(field+".canlist")+space +
+                                    _this.makeDbMenu(field+".canlist","true","true")+space+
+                                    _this.makeDbMenu(field+".canlist","false","false")+
                                     "<br>";
                             }
                             html+="</div>";
-			    this.dialog=HU.makeDialog({content:html,anchor:$(this)});
+			    _this.dbDialog=HU.makeDialog({content:html,anchor:$(this)});
+			    _this.dbDialog.find(".ramadda-clickable").click(function() {
+				_this.insertDb($(this).attr('field'),$(this).attr('value'));
+				
+
+			    });
 			})
 
 		    } else if(csv) {
@@ -976,12 +999,23 @@ function  ConvertForm(inputId, entry) {
 	    let inner = HU.center(HU.h2(label)) + HU.center(desc);
 	    inner+=HU.formTable();
 	    this.columnInput = null;
+	    this.headerInput = null;	    
+	    this.dbInput = null;	    
 	    cmd.args.forEach((a,idx)=>{
 		let v = opts.values && idx<opts.values.length?opts.values[idx]:"";
 		let label = a.label || Utils.makeLabel(a.id);
 		let id = this.domId("csvcommand" + idx);
-		let desc = a.description==null?"": HU.div([STYLE,HU.css('max-width','300px','vertical-align','top')],a.description);
-		desc = desc.replace(/\n/g,"<br>");
+		let desc = a.description||"";
+		desc = desc.replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>");
+		desc =  HU.div([STYLE,HU.css('max-width','500px','vertical-align','top')],desc);
+
+		if(!this.headerInput && cmd.command=="-addheader" && a.id=="properties") {
+		    this.headerInput = id;
+		}
+		if(!this.dbInput && cmd.command=="-db" && a.id=="properties") {
+		    this.dbInput = id;
+		}		
+
 		if(a.rows) {
 		    inner+=HU.formEntryTop(label,
 					   HU.hbox([HU.textarea("",v,["cols", a.columns || "40", "rows",a.rows,ID,id,"size",10]),desc]));		
