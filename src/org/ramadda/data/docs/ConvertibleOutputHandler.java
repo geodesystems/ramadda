@@ -477,6 +477,9 @@ public class ConvertibleOutputHandler extends OutputHandler {
 			public String getProperty(String key, String dflt) {
 			    return getRepository().getProperty(key, dflt);
 			}
+			public File getTmpFile(String name) {
+			    return null;
+			}
 		    });
                 csvUtil.setMapProvider(getRepository().getMapManager());		
                 if (prevCsvUtil != null) {
