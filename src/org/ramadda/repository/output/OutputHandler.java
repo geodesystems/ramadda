@@ -145,8 +145,32 @@ public class OutputHandler extends RepositoryManager {
     public OutputHandler(Repository repository, String name)
             throws Exception {
         super(repository);
+	if(name==null) {
+	    name = getClass().getSimpleName();
+	}
         this.name = name;
+
     }
+
+
+
+    /**
+     * Construct an OutputHandler
+     *
+     * @param repository  the repository
+     * @param element     the Element
+     * @throws Exception  problem with repository
+     */
+    public OutputHandler(Repository repository, Element element)
+            throws Exception {
+        this(repository,
+             XmlUtil.getAttribute(element, ATTR_NAME, (String) null));
+        maxConnections = XmlUtil.getAttribute(element, ATTR_MAXCONNECTIONS,
+                maxConnections);
+
+
+    }
+
 
     /**
      * _more_
@@ -181,24 +205,6 @@ public class OutputHandler extends RepositoryManager {
      */
     public OutputType findOutputType(String id) {
         return typeMap.get(id);
-    }
-
-
-    /**
-     * Construct an OutputHandler
-     *
-     * @param repository  the repository
-     * @param element     the Element
-     * @throws Exception  problem with repository
-     */
-    public OutputHandler(Repository repository, Element element)
-            throws Exception {
-        this(repository,
-             XmlUtil.getAttribute(element, ATTR_NAME, (String) null));
-        maxConnections = XmlUtil.getAttribute(element, ATTR_MAXCONNECTIONS,
-                maxConnections);
-
-
     }
 
     /**
@@ -1122,24 +1128,15 @@ public class OutputHandler extends RepositoryManager {
                             ? "Click to open folder"
                             : "Click to view contents";
         boolean showArrow = true;
-        String  prefix    = ( !showArrow
-                              ? HU.img(
-                                  getRepository().getIconUrl(ICON_BLANK), "",
-                                  HU.attr(HU.ATTR_WIDTH, "10"))
-                              : HU.img(
-                                  getRepository().getIconUrl(
-                                      ICON_TOGGLEARROWRIGHT), msg(message),
-				  HU.id("img_" + uid)
-                                          + HU.onMouseClick(
-                                              HU.call(
-                                                  "folderClick",
-                                                  HU.comma(
-                                                      HU.squote(uid),
-                                                      HU.squote(
-                                                          folderClickUrl), HU.squote(
-                                                          getIconUrl(
-                                                              ICON_TOGGLEARROWDOWN)))))));
-
+        String  prefix;
+	if(!showArrow) {
+	    prefix =  HU.img(getIconUrl(ICON_BLANK), "", HU.attr(HU.ATTR_WIDTH, "10"));
+	} else {
+	    String click =  HU.onMouseClick(HU.call("folderClick",
+						    HU.comma(HU.squote(uid), HU.squote(folderClickUrl), HU.squote(getIconUrl(ICON_TOGGLEARROWDOWN)))));
+	    prefix = HU.img(getIconUrl(ICON_TOGGLEARROWRIGHT), msg(message));
+	    prefix = HU.span(prefix, HU.id("img_" + uid)+click+HU.cssClass("ramadda-clickable"));
+	}
 
         String img = prefix + HU.space(1) + HU.img(icon);
 
