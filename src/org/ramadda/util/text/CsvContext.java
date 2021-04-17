@@ -20,6 +20,8 @@ import org.ramadda.util.PropertyProvider;
 
 import java.util.List;
 
+import java.io.File;
+
 /**
  */
 
@@ -36,6 +38,9 @@ public interface CsvContext extends PropertyProvider {
     //    public String getProperty(String name, String dflt);
 
     public List<Class> getClasses();
+
+
+    public File getTmpFile(String name);
 
 
 }

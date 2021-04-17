@@ -252,7 +252,10 @@ public class CsvUtil {
 	return csvContext;
     }
 
-
+    public File getTmpFile(String name) {
+	if(csvContext!=null) return csvContext.getTmpFile(name);
+	return null;
+    }
 
 
 
@@ -876,6 +879,9 @@ public class CsvUtil {
         }
         return channels;
     }
+
+
+
 
 
     /**
@@ -1788,6 +1794,9 @@ public class CsvUtil {
 		"Search for an image with the query column text if the given image column is blank. Add the given suffix to the search. ",
 		new Arg("querycolumn", "", "type", "columns"), "suffix",
 		new Arg("imagecolumn", "", "type", "column")),
+        new Cmd("-download", "Download the URL",
+                new Arg("column", "", "type", "column"),
+		new Arg("suffix", "File suffix")),
         new Cmd("-gender", "Figure out the gender of the name in the column",
                 new Arg("column", "", "type", "columns")),
 
@@ -2205,6 +2214,10 @@ public class CsvUtil {
 		ctx.getProcessor().addProcessor(new Converter.ImageSearch(getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });
+	defineFunction("-download",2, (ctx,args,i) -> {
+		ctx.getProcessor().addProcessor(new Processor.Downloader(this, args.get(++i), args.get(++i)));
+		return i;
+	    });	
 
 	defineFunction("-columns",1,(ctx,args,i) -> {
 		ctx.setSelector(new Converter.ColumnSelector(getCols(args.get(++i))));
@@ -3638,6 +3651,25 @@ public class CsvUtil {
 	*/
 
 	CsvUtil csvUtil = new CsvUtil(args);
+	csvUtil.setCsvContext(new CsvContext() {
+		public List<Class> getClasses() {
+		    return new ArrayList<Class>();
+		}
+		public String getProperty(String key, String dflt) {
+		    String v =  System.getProperty(key);
+		    if(v==null) return dflt;
+		    return v;
+		}
+		public File getTmpFile(String name) {
+		    File tmp = new File(name);
+		    int index = 1;
+		    while(tmp.exists()) {
+			tmp = new File((index++)+"_" + name);
+		    }
+		    return tmp;
+		}
+	    });
+
 	csvUtil.run(null);
 	System.exit(0);
     }

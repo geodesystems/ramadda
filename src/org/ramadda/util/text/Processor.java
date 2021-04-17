@@ -18,6 +18,7 @@ package org.ramadda.util.text;
 
 
 
+import org.ramadda.util.IO;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
 import org.ramadda.util.MapProvider;
@@ -29,6 +30,7 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
+import java.net.URL;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -890,6 +892,59 @@ public abstract class Processor extends CsvOperator {
 
             return row;
         }
+    }
+
+
+    public static class Downloader extends Processor {
+	private CsvUtil csvUtil;
+	private String suffix;
+	private int index;
+	public Downloader(CsvUtil csvUtil, String col, String suffix) {
+	    super(col);
+	    this.csvUtil = csvUtil;
+	    this.suffix = suffix;
+	}
+
+
+        /**
+         * @param info _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row) {
+            if (rowCnt++ == 0) {
+		index = getIndex(info);
+		row.add("File");
+		return row;
+	    }
+	    String value = row.getString(index);
+	    if(suffix.length()==0) suffix = IOUtil.getFileTail(value);
+	    File tmpFile = csvUtil.getTmpFile(suffix);
+	    if(tmpFile==null) {
+		row.add("");
+		return row;
+	    }
+	    if(value.length()==0) {
+		row.add("");
+		return row;
+	    }	    
+	    try {
+		URL url = new URL(value);
+		InputStream input = IO.getInputStream(url);
+		FileOutputStream fos = new FileOutputStream(tmpFile);
+		IOUtil.writeTo(input, fos);
+		IOUtil.close(input);
+		IOUtil.close(fos);
+		row.add(tmpFile.getName());
+	    } catch(Exception exc) {
+		System.err.println("Error downloading URL:" + value +" error:" + exc);
+		row.add("");
+	    }
+	    return row;
+
+	}
     }
 
 
