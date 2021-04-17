@@ -369,12 +369,6 @@
         <unjar src="${lib_dir}/json.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/jython.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/gdata.jar" dest="${tmpjar_dir}"/>
-<!--
-        <unjar src="${lib_dir}/idvmaps.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/external.jar" dest="${tmpjar_dir}"/>
--->
-
-
         <unjar src="${lib_dir}/javax.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/jmapproj.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/lucene-core-3.0.3.jar" dest="${tmpjar_dir}"/>
@@ -382,93 +376,30 @@
         <unjar src="${lib_dir}/activation.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/javadiff.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/smtp.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/gson-2.2.4.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/ij.jar" dest="${tmpjar_dir}"/>
-
-<!--
-        <unjar src="${lib_dir}/postgres.jar" dest="${tmpjar_dir}"/>
--->
-
         <unjar src="${lib_dir}/postgresql-42.2.5.jre7.jar" dest="${tmpjar_dir}"/>
-
-
-
         <unjar src="${lib_dir}/mysql-connector-java-5.1.32-bin.jar" dest="${tmpjar_dir}"/>
-<!--
-        <unjar src="${lib_dir}/mysql-connector-java-8.0.15.jar" dest="${tmpjar_dir}"/>
--->
-
         <unjar src="${lib_dir}/h2.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/derby.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/derbytools.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/abom.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/commons-lang3-3.1.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/commons-net-3.3.jar" dest="${tmpjar_dir}"/>
-<!--
-        <unjar src="${lib_dir}/commons-io-1.4.jar" dest="${tmpjar_dir}"/>
--->
         <unjar src="${lib_dir}/commons-io-2.8.0.jar" dest="${tmpjar_dir}"/>
-
         <unjar src="${lib_dir}/commons-dbcp2-2.0.1.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/commons-pool2-2.2.jar" dest="${tmpjar_dir}"/>
-<!--
-        <unjar src="${lib_dir}/commons-fileupload-1.2.2.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/commons-fileupload-1.3.1.jar" dest="${tmpjar_dir}"/>
--->
         <unjar src="${lib_dir}/commons-fileupload-1.4.jar" dest="${tmpjar_dir}"/>
-
-<!--
-        <unjar src="${lib_dir}/commons-httpclient-3.1.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/httpclient-4.4.1.jar" dest="${tmpjar_dir}"/>
-
--->
-<!--
-        <unjar src="${lib_dir}/httpmime-4.5.5.jar" dest="${tmpjar_dir}"/>
--->
         <unjar src="${lib_dir}/rhino-1.7.13.jar" dest="${tmpjar_dir}"/>
-
         <unjar src="${lib_dir}/httpmime-4.5.7.jar" dest="${tmpjar_dir}"/>
-
-<!--
-        <unjar src="${lib_dir}/httpcore-4.4.9.jar" dest="${tmpjar_dir}"/>
--->
         <unjar src="${lib_dir}/httpcore-4.4.1.jar" dest="${tmpjar_dir}"/>
-
-
-<!--
-        <unjar src="${lib_dir}/metadata-extractor-2.6.2.jar" dest="${tmpjar_dir}"/>
--->
         <unjar src="${lib_dir}/xmpcore.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/${jfreechart_jar}" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/jcommon-1.0.23.jar" dest="${tmpjar_dir}"/>
-
-
         <unjar src="${lib_dir}/ftplet-api-1.0.6.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/ftpserver-core-1.0.6.jar" dest="${tmpjar_dir}"/>
-
         <unjar src="${lib_dir}/mina-core-2.0.0-M6.jar" dest="${tmpjar_dir}"/>
-
-<!--
-        <unjar src="${lib_dir}/log4j-1.2.15.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/slf4j-api-1.6.4.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/slf4j-simple-1.6.4.jar" dest="${tmpjar_dir}"/>
--->
-
-<!--
-        <unjar src="${lib_dir}/jetty.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/mailapi.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/ftplet-api-1.0.3.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/ftpserver-core-1.0.3.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/servlet-api.jar" dest="${tmpjar_dir}"/>
--->
-        <echo message="Unjarring ${lib1}"/>
         <unjar src="${lib1}" dest="${tmpjar_dir}"/>
-
-<!--
-        <echo message="Unjarring ${lib2}"/>
-        <unjar src="${lib2}" dest="${tmpjar_dir}"/>
--->
-
+        <echo message="jarring ${lib_dir}/ramaddalib.jar"/>
         <jar 
             basedir="${tmpjar_dir}"
             update="false"

@@ -17,7 +17,7 @@
 package org.ramadda.repository.output;
 
 
-import com.google.gson.*;
+//import com.google.gson.*;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
@@ -826,69 +826,7 @@ public class JsonOutputHandler extends OutputHandler {
      * @param args _more_
      */
     public static void main(String[] args) {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.setPrettyPrinting();
-        gsonBuilder.setDateFormat(DateFormat.LONG);
-        gsonBuilder.setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE);
-
-
-
-        Gson  gson  = gsonBuilder.create();
-        Entry entry = new Entry();
-        System.err.println(gson.toJson(entry));
-
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Mon, Sep 5, '11
-     * @author         Enter your name here...
-     */
-    private static class EntryExclusionStrategy implements ExclusionStrategy {
-
-        /**
-         * _more_
-         *
-         * @param clazz _more_
-         *
-         * @return _more_
-         */
-        public boolean shouldSkipClass(Class<?> clazz) {
-            if (clazz.equals(org.ramadda.repository.type.TypeHandler.class)) {
-                return false;
-            }
-            if (clazz.equals(org.ramadda.repository.Repository.class)) {
-                return false;
-            }
-            if (clazz.equals(org.ramadda.repository.RepositorySource.class)) {
-                return false;
-            }
-            if (clazz.equals(org.ramadda.repository.RequestUrl.class)) {
-                return false;
-            }
-            System.err.println("class:" + clazz.getName());
-
-            return false;
-        }
-
-        /**
-         * _more_
-         *
-         * @param f _more_
-         *
-         * @return _more_
-         */
-        public boolean shouldSkipField(FieldAttributes f) {
-            if (f.hasModifier(java.lang.reflect.Modifier.STATIC)) {
-                return false;
-            }
-            System.err.println("field:" + f.getName());
-
-            //            return true;
-            return false;
-        }
-    }
 
 }
