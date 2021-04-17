@@ -370,7 +370,7 @@ public class ServiceArg extends ServiceElement {
      */
     public boolean isApplicable(Entry entry, boolean debug) {
         boolean defaultReturn = true;
-        //            debug  = true;
+	//	debug  = entryType.equals("geo_gdal_raster");
 
         if (debug) {
             System.err.println("Service.Arg.isApplicable:" + getName()
@@ -378,11 +378,11 @@ public class ServiceArg extends ServiceElement {
                                + entryPattern);
         }
         if (entryTypes != null) {
+	    if(debug) System.err.println("entryTypes:" + entryTypes);
             boolean isType = false;
             for (String type : entryTypes) {
                 if (entry.getTypeHandler().isType(type)) {
                     isType = true;
-
                     break;
                 }
             }

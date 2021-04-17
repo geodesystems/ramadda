@@ -1013,7 +1013,9 @@ public class Service extends RepositoryManager {
                     for (Entry entry : input.getEntries()) {
                         if (arg.isApplicable(entry, false)) {
                             entries.add(entry);
-                        }
+                        } else {
+			    System.err.println("not applicable");
+			}
                     }
                 }
                 for (Entry entry : entries) {
