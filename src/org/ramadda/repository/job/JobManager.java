@@ -608,6 +608,19 @@ public class JobManager extends RepositoryManager {
     }
 
 
+    public void invokeAllAndWait(List<Callable<Boolean>> callables) throws Throwable {
+	ExecutorService executor = Executors.newFixedThreadPool(callables.size());
+	List<Future<Boolean>> results = executor.invokeAll(callables);
+	for (Future future : results) {
+	    try {
+		future.get();
+	    } catch (ExecutionException ex) {
+		throw ex.getCause();
+	    }
+	}
+    }
+
+
     /**
      * _more_
      *

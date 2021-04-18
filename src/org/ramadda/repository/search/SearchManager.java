@@ -105,6 +105,8 @@ import java.util.regex.*;
 import java.util.zip.*;
 
 
+import java.util.concurrent.*;
+import org.ramadda.repository.job.JobManager;
 
 
 /**
@@ -291,7 +293,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
-    public void reindexLucene(Object actionId, boolean all) throws Exception {
+    public void reindexLucene(Object actionId, boolean all) throws Throwable {
         Statement statement =
             getDatabaseManager().select(Tables.ENTRIES.COL_ID,
 					Misc.newList(Tables.ENTRIES.NAME),
@@ -302,7 +304,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	List<String> ids = new ArrayList<String>();
 
 
-        IndexWriter writer = getLuceneWriter();
+        final IndexWriter writer = getLuceneWriter();
         IndexSearcher searcher = null;
 	while ((results = iter.getNext()) != null) {
             String id = results.getString(1);
@@ -325,34 +327,74 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    //	    if(ids.size()>5) break;
 	}
 
-	System.err.println("ids:" + ids.size());
+	//	System.err.println("ids:" + ids.size());
 
 	if(all) {
 	    writer.deleteAll();
 	    writer.commit();
 	}
 
-
-	int cnt = 0;
-	for(String id: ids) {
-	    Entry entry = getEntryManager().getEntry(null, id,false);
-	    System.err.println("#" + cnt +" entry:" + entry.getName());
-	    cnt++;
-	    indexEntry(writer, entry);
-	    writer.commit();
-	    getEntryManager().removeFromCache(entry);
-	    if(actionId!=null) {
-		if(!getActionManager().getActionOk(actionId)) {
-		    writer.close();
-		    return;
-		}
-		getActionManager().setActionMessage(actionId,
-						    "Reindexed " + cnt +" entries"); 
-	    }
-	    //	    if(cnt>10000) break;
+	Object mutex = new Object();
+	//Really 4
+	int numThreads = 6;
+	List<List> idLists;
+	if(numThreads==1) {
+	    idLists = new ArrayList<List>();
+	    idLists.add(ids);
+	} else {
+	    idLists = Utils.splitList(ids,ids.size()/numThreads);
 	}
+	int []cnt =new int[]{0};
+	boolean[]ok = new boolean[]{true};
+	List<Callable<Boolean>> callables = new ArrayList<Callable<Boolean>>();
+	System.err.println("#threads:" + idLists.size());
+	for(List idList:idLists) {
+	    callables.add(makeReindexer((List<String>)idList,writer,cnt,actionId,mutex,ok));
+	}
+	long t1 = System.currentTimeMillis();
+	getRepository().getJobManager().invokeAllAndWait(callables);
+	long t2 = System.currentTimeMillis();
+	System.err.println("time:" + (t2-t1));
+	if(ok[0])
+	    writer.commit();
         writer.close();
     }
+
+
+    private Callable<Boolean> makeReindexer(final List<String> ids, final IndexWriter writer, final int[] cnt, final Object actionId, final Object mutex, final boolean[]ok) throws Exception {
+        return  new Callable<Boolean>() {
+            public Boolean call() {
+                try {
+		    System.err.println("Thread:" + Thread.currentThread());
+		    //		    if(true) return Boolean.TRUE;
+		    for(String id: ids) {
+			Entry entry = getEntryManager().getEntry(null, id,false);
+			synchronized(mutex) {
+			    System.err.println("#" + cnt[0] +" entry:" + entry.getName());
+			    cnt[0]++;
+			}
+			indexEntry(writer, entry);
+			getEntryManager().removeFromCache(entry);
+			if(!ok[0]) break;
+			if(actionId!=null) {
+			    if(!getActionManager().getActionOk(actionId)) {
+				ok[0] =false;
+				break;
+			    }
+			    synchronized(mutex) {
+				getActionManager().setActionMessage(actionId,
+								    "Reindexed " + cnt[0] +" entries");
+			    }
+			}
+		    }
+                    return Boolean.TRUE;
+                } catch (Exception exc) {
+                    throw new RuntimeException(exc);
+                }
+            }
+        };
+    }
+	
 
 
     /**
