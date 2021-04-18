@@ -27122,7 +27122,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
                     let link = HU.tag(TAG_A, ["target","_entries",ATTR_HREF, entry.getEntryUrl()], entry.getName());
 		    link = link.replace(/"/g,"'");
 		    let imageUrl =entry.getImageUrl();
-                    let img = HU.image(imageUrl, [ATTR_WIDTH, "100%", ATTR_ID,
+                    let img = HU.image(imageUrl, ["loading","lazy", ATTR_WIDTH, "100%", ATTR_ID,
 						  this.getDomId("entry_" + entry.getIdForDom()),
 						  ATTR_ENTRYID, entry.getId(), ATTR_CLASS, "display-entrygallery-entry"
 						 ]);
