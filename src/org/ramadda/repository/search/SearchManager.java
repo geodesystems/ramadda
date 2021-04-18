@@ -315,6 +315,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    if(entry==null) continue;
 	    System.err.println("#" + cnt +" entry:" + entry.getName());
 	    cnt++;
+	    if(true) continue;
 	    indexEntry(writer, entry);
 	    writer.commit();
 	    getEntryManager().removeFromCache(entry);
