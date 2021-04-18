@@ -454,6 +454,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
     private String readContents(File f) throws Exception {
+	//Don't do really bug files or images
+	if(f.length()>5000000) return null;
+	if(Utils.isImage(f.toString())) return null;
+
 	try(InputStream stream = getStorageManager().getFileInputStream(f)) {
             org.apache.tika.metadata.Metadata metadata =
                 new org.apache.tika.metadata.Metadata();
