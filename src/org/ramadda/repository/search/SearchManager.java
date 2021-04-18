@@ -1,43 +1,27 @@
 /*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (c) 2008-2021 Geode Systems LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package org.ramadda.repository.search;
-
-
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.store.*;
-import org.apache.lucene.index.*;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.TextField;
-import org.apache.lucene.util.QueryBuilder;
-import org.apache.lucene.search.Collector;
-import org.apache.lucene.search.*;
-import org.apache.lucene.store.FSDirectory;
-
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.admin.*;
 
 import org.ramadda.repository.auth.*;
-
 import org.ramadda.repository.database.Tables;
-
 import org.ramadda.repository.metadata.*;
-
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.DateArgument;
@@ -68,6 +52,15 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.store.*;
+import org.apache.lucene.index.*;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
+import org.apache.lucene.util.QueryBuilder;
+import org.apache.lucene.search.*;
+import org.apache.lucene.store.FSDirectory;
 
 import java.io.*;
 import java.nio.*;
@@ -132,18 +125,18 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     /** _more_ */
     public final RequestUrl URL_ENTRY_SEARCH = new RequestUrl(this,
-                                                   "/search/do", "Search");
+							      "/search/do", "Search");
 
 
 
     /** _more_ */
     public final RequestUrl URL_SEARCH_FORM = new RequestUrl(this,
-                                                  "/search/form", "Form");
+							     "/search/form", "Form");
 
 
     /** _more_ */
     public final RequestUrl URL_SEARCH_TYPE = new RequestUrl(this,
-                                                  "/search/type", "By Type");
+							     "/search/type", "By Type");
 
     /** _more_ */
     public final RequestUrl URL_SEARCH_ASSOCIATIONS =
@@ -156,8 +149,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     /** _more_ */
     public final RequestUrl URL_SEARCH_BROWSE = new RequestUrl(this,
-                                                    "/search/browse",
-                                                    "Browse Metadata");
+							       "/search/browse",
+							       "Browse Metadata");
 
 
 
@@ -332,7 +325,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		}
 	    }
 	    ids.add(id);
-	    //	    if(ids.size()>5) break;
+	    if(ids.size()>10000) break;
 	}
 
 	//	System.err.println("ids:" + ids.size());
@@ -362,10 +355,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	long t1 = System.currentTimeMillis();
 	getRepository().getJobManager().invokeAllAndWait(callables);
 	long t2 = System.currentTimeMillis();
+	System.err.println("#threads:" + idLists.size());
 	System.err.println("time:" + (t2-t1));
 	if(ok[0])
 	    writer.commit();
         writer.close();
+	getActionManager().actionComplete(actionId);
     }
 
 
@@ -427,14 +422,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         }
         asb.append(HtmlUtils.colspan(msgHeader("Search"), 2));
         asb.append(
-            HtmlUtils
-                .formEntry(
-                    "",
-                    HtmlUtils
-                        .checkbox(
-                            PROP_SEARCH_LUCENE_ENABLED, "true",
-                            isLuceneEnabled()) + HtmlUtils.space(2)
-                                + msg("Enable Lucene Indexing and Search")));
+		   HtmlUtils
+		   .formEntry(
+			      "",
+			      HtmlUtils
+			      .checkbox(
+					PROP_SEARCH_LUCENE_ENABLED, "true",
+					isLuceneEnabled()) + HtmlUtils.space(2)
+			      + msg("Enable Lucene Indexing and Search")));
     }
 
 
@@ -448,8 +443,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     @Override
     public void applyAdminSettingsForm(Request request) throws Exception {
         getRepository().writeGlobal(
-            PROP_SEARCH_LUCENE_ENABLED,
-            isLuceneEnabled = request.get(PROP_SEARCH_LUCENE_ENABLED, false));
+				    PROP_SEARCH_LUCENE_ENABLED,
+				    isLuceneEnabled = request.get(PROP_SEARCH_LUCENE_ENABLED, false));
     }
 
     /**
@@ -469,7 +464,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @throws Exception _more_
      */
     private synchronized void indexEntries(List<Entry> entries)
-            throws Exception {
+	throws Exception {
         IndexWriter writer = getLuceneWriter();
         for (Entry entry : entries) {
             indexEntry(writer, entry);
@@ -491,7 +486,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @throws Exception _more_
      */
     private void indexEntry(IndexWriter writer, Entry entry)
-            throws Exception {
+	throws Exception {
 
         org.apache.lucene.document.Document doc =
             new org.apache.lucene.document.Document();
@@ -513,10 +508,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         }
 
 	/*
-        doc.add(new Field(FIELD_MODIFIED,
-                          DateTools.timeToString(entry.getStartDate(),
-                              DateTools.Resolution.MINUTE), Field.Store.YES,
-                                  Field.Index.NOT_ANALYZED));
+	  doc.add(new Field(FIELD_MODIFIED,
+	  DateTools.timeToString(entry.getStartDate(),
+	  DateTools.Resolution.MINUTE), Field.Store.YES,
+	  Field.Index.NOT_ANALYZED));
 	*/
 
         if (entry.isFile()) {
@@ -559,20 +554,20 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     private void addContentField(Entry entry,
                                  org.apache.lucene.document.Document doc,
                                  File f)
-            throws Exception {
+	throws Exception {
         try {
             String contents = readContents(f);
             if ((contents != null) && (contents.length() > 0)) {
                 doc.add(new TextField(FIELD_CONTENTS, contents, Field.Store.NO));
             }
             /*
-            String[] names = metadata.names();
-            for (String name : names) {
-                String value = metadata.get(name);
-                System.err.println(name +"=" + value);
-                doc.add(new Field(name, value, Field.Store.YES,
-                                  Field.Index.ANALYZED));
-            }
+	      String[] names = metadata.names();
+	      for (String name : names) {
+	      String value = metadata.get(name);
+	      System.err.println(name +"=" + value);
+	      doc.add(new Field(name, value, Field.Store.YES,
+	      Field.Index.ANALYZED));
+	      }
             */
         } catch (Exception exc) {
             System.err.println("SearchManager: error harvesting corpus from:" + f);
@@ -641,7 +636,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @throws Exception _more_
      */
     public void processLuceneSearch(Request request, List<Entry> entries)
-            throws Exception {
+	throws Exception {
         StringBuffer sb = new StringBuffer();
         StandardAnalyzer analyzer =       new StandardAnalyzer();
         IndexSearcher searcher = getLuceneSearcher();
@@ -793,32 +788,32 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         Document doc  = XmlUtil.makeDocument();
         Element  root = OpenSearchUtil.getRoot();
         /*
-   <ShortName>Web Search</ShortName>
-   <Description>Use Example.com to search the Web.</Description>
-   <Tags>example web</Tags>
-   <Contact>admin@example.com</Contact>
+	  <ShortName>Web Search</ShortName>
+	  <Description>Use Example.com to search the Web.</Description>
+	  <Tags>example web</Tags>
+	  <Contact>admin@example.com</Contact>
         */
         OpenSearchUtil.addBasicTags(
-            root, getRepository().getRepositoryName(),
-            getRepository().getRepositoryDescription(),
-            getRepository().getRepositoryEmail());
+				    root, getRepository().getRepositoryName(),
+				    getRepository().getRepositoryDescription(),
+				    getRepository().getRepositoryEmail());
         ((Element) XmlUtil.create(
-            OpenSearchUtil.TAG_IMAGE, root)).appendChild(
-                XmlUtil.makeCDataNode(
-                    root.getOwnerDocument(),
-                    getPageHandler().getLogoImage(null), false));
+				  OpenSearchUtil.TAG_IMAGE, root)).appendChild(
+									       XmlUtil.makeCDataNode(
+												     root.getOwnerDocument(),
+												     getPageHandler().getLogoImage(null), false));
 
 
 
 
         String url = request.getAbsoluteUrl(URL_ENTRY_SEARCH.toString());
         url = HtmlUtils.url(url, new String[] {
-            ARG_OUTPUT, AtomOutputHandler.OUTPUT_ATOM.getId(), ARG_TEXT,
-            OpenSearchUtil.MACRO_TEXT, ARG_BBOX, OpenSearchUtil.MACRO_BBOX,
-            DateArgument.ARG_DATA.getFromArg(),
-            OpenSearchUtil.MACRO_TIME_START, DateArgument.ARG_DATA.getToArg(),
-            OpenSearchUtil.MACRO_TIME_END,
-        }, false);
+		ARG_OUTPUT, AtomOutputHandler.OUTPUT_ATOM.getId(), ARG_TEXT,
+		OpenSearchUtil.MACRO_TEXT, ARG_BBOX, OpenSearchUtil.MACRO_BBOX,
+		DateArgument.ARG_DATA.getFromArg(),
+		OpenSearchUtil.MACRO_TIME_START, DateArgument.ARG_DATA.getToArg(),
+		OpenSearchUtil.MACRO_TIME_END,
+	    }, false);
 
 
         XmlUtil.create(OpenSearchUtil.TAG_URL, root, "",
@@ -893,10 +888,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         value = value.replaceAll("\"", "&quot;");
         String textField =
             HtmlUtils.input(
-                ARG_TEXT, value,
-                HtmlUtils.attr("placeholder", msg(" Search text"))
-                + HtmlUtils.id("searchinput") + HtmlUtils.SIZE_50
-                + " autocomplete='off' autofocus ") + "\n<div id=searchpopup class=ramadda-popup></div>" + HtmlUtils.script("Utils.searchSuggestInit('searchinput');");
+			    ARG_TEXT, value,
+			    HtmlUtils.attr("placeholder", msg(" Search text"))
+			    + HtmlUtils.id("searchinput") + HtmlUtils.SIZE_50
+			    + " autocomplete='off' autofocus ") + "\n<div id=searchpopup class=ramadda-popup></div>" + HtmlUtils.script("Utils.searchSuggestInit('searchinput');");
 
         return textField;
     }
@@ -923,12 +918,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @throws Exception _more_
      */
     private void getFormOpen(Request request, Appendable sb)
-            throws Exception {
+	throws Exception {
         sb.append(
-            HtmlUtils.form(
-                getSearchUrl(request),
-                makeFormSubmitDialog(sb, msg("Searching..."))
-                + " name=\"searchform\" "));
+		  HtmlUtils.form(
+				 getSearchUrl(request),
+				 makeFormSubmitDialog(sb, msg("Searching..."))
+				 + " name=\"searchform\" "));
     }
 
 
@@ -941,7 +936,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @throws Exception _more_
      */
     private void makeSearchForm(Request request, Appendable sb)
-            throws Exception {
+	throws Exception {
         getFormOpen(request, sb);
         sb.append(getTextField(request));
         sb.append(" ");
@@ -972,7 +967,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      */
     private void makeSearchForm(Request request, Appendable sb,
                                 boolean typeSpecific, boolean addTextField)
-            throws Exception {
+	throws Exception {
 
 
         sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
@@ -1019,11 +1014,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         //            System.err.println("metadata form:" + (t2-t1));
 
         /*            StringBuffer outputForm = new StringBuffer(HtmlUtils.formTable());
-        String output = makeOutputSettings(request);
-        outputForm.append(output);
-        outputForm.append(HtmlUtils.formTableClose());
-        contents.add(outputForm.toString());
-        titles.add(msg("Output"));
+		      String output = makeOutputSettings(request);
+		      outputForm.append(output);
+		      outputForm.append(HtmlUtils.formTableClose());
+		      contents.add(outputForm.toString());
+		      titles.add(msg("Output"));
         */
 
 
@@ -1082,15 +1077,15 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         String orderBy =
             HtmlUtils.select(ARG_ORDERBY, orderByList,
                              request.getString(ARG_ORDERBY,
-                                 "none")) + HtmlUtils.checkbox(ARG_ASCENDING,
-                                     "true",
-                                     request.get(ARG_ASCENDING,
-                                         false)) + HtmlUtils.space(1)
-                                             + msg("ascending");
+					       "none")) + HtmlUtils.checkbox(ARG_ASCENDING,
+									     "true",
+									     request.get(ARG_ASCENDING,
+											 false)) + HtmlUtils.space(1)
+	    + msg("ascending");
         outputForm.append(HtmlUtils.formEntry(msgLabel("Order By"), orderBy));
         outputForm.append(HtmlUtils.formEntry(msgLabel("Output"),
-                HtmlUtils.select(ARG_OUTPUT, getOutputHandlerSelectList(),
-                                 request.getString(ARG_OUTPUT, ""))));
+					      HtmlUtils.select(ARG_OUTPUT, getOutputHandlerSelectList(),
+							       request.getString(ARG_OUTPUT, ""))));
 
         return outputForm.toString();
     }
@@ -1107,7 +1102,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      */
     private void addSearchProviders(Request request, List<String> contents,
                                     List<String> titles)
-            throws Exception {
+	throws Exception {
         boolean showProviders = request.get("show_providers", false);
         List<SearchProvider> searchProviders = getSearchProviders();
         List<ServerInfo> servers =
@@ -1119,8 +1114,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
         List<String>  selectedProviders = new ArrayList<String>();
         for (String tok :
-                (List<String>) request.get(ARG_PROVIDER,
-                                           new ArrayList<String>())) {
+		 (List<String>) request.get(ARG_PROVIDER,
+					    new ArrayList<String>())) {
             selectedProviders.addAll(Utils.split(tok, ",", true, true));
         }
 
@@ -1150,20 +1145,20 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             String cbxCall =
                 HtmlUtils.attr(HtmlUtils.ATTR_ONCLICK,
                                HtmlUtils.call("checkboxClicked",
-                                   HtmlUtils.comma("event",
-                                       HtmlUtils.squote(ARG_PROVIDER),
-                                       HtmlUtils.squote(cbxId))));
+					      HtmlUtils.comma("event",
+							      HtmlUtils.squote(ARG_PROVIDER),
+							      HtmlUtils.squote(cbxId))));
 
 
 
             String anchor = HtmlUtils.anchorName(searchProvider.getId());
             String cbx = HtmlUtils.labeledCheckbox(ARG_PROVIDER,
-                             searchProvider.getId(), selected,
-                             cbxCall + HtmlUtils.id(cbxId),
-                             searchProvider.getFormLabel(false)
-                             + (showProviders
-                                ? " -- " + searchProvider.getId()
-                                : ""));
+						   searchProvider.getId(), selected,
+						   cbxCall + HtmlUtils.id(cbxId),
+						   searchProvider.getFormLabel(false)
+						   + (showProviders
+						      ? " -- " + searchProvider.getId()
+						      : ""));
             cbx += anchor;
             cats.get(searchProvider.getCategory()).append(cbx);
             cats.get(searchProvider.getCategory()).append(HtmlUtils.br());
@@ -1174,19 +1169,19 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             Appendable buff = cats.get(cat);
             if (cat.length() == 0) {
                 /*
-                buff.append(HtmlUtils.labeledCheckbox(ARG_PROVIDER,
-                                                      "all", selectedProviders.contains("all"),"",
-                                                      msg("All Search Providers")));
+		  buff.append(HtmlUtils.labeledCheckbox(ARG_PROVIDER,
+		  "all", selectedProviders.contains("all"),"",
+		  msg("All Search Providers")));
                 */
                 providerSB.append(buff.toString());
             } else {
                 providerSB.append(
-                    HtmlUtils.div(
-                        cat,
-                        HtmlUtils.cssClass(
-                            "ramadda-search-provider-header")));
+				  HtmlUtils.div(
+						cat,
+						HtmlUtils.cssClass(
+								   "ramadda-search-provider-header")));
                 providerSB.append(HtmlUtils.div(buff.toString(),
-                        HtmlUtils.cssClass("ramadda-search-provider-list")));
+						HtmlUtils.cssClass("ramadda-search-provider-list")));
             }
         }
         String title = msg("Search providers");
@@ -1207,7 +1202,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     public List getOutputHandlerSelectList() {
         List tfos = new ArrayList<TwoFacedObject>();
         for (OutputHandler outputHandler :
-                getRepository().getOutputHandlers()) {
+		 getRepository().getOutputHandlers()) {
             for (OutputType type : outputHandler.getTypes()) {
                 if (type.getIsForSearch()) {
                     String icon = type.getIcon();
@@ -1218,7 +1213,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                         icon = getRepository().getIconUrl(icon);
                     }
                     tfos.add(new HtmlUtils.Selector(HtmlUtils.space(2)
-                            + type.getLabel(), type.getId(), icon));
+						    + type.getLabel(), type.getId(), icon));
                 }
             }
         }
@@ -1253,7 +1248,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             if (typeHandler != null) {
                 Result result =
                     typeHandler.getSpecialSearch().processSearchRequest(
-                        request, sb);
+									request, sb);
                 //Is it non-html?
                 if (result != null) {
                     return result;
@@ -1274,9 +1269,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @throws Exception _more_
      */
     private void addSearchByTypeList(Request request, StringBuffer sb)
-            throws Exception {
+	throws Exception {
         for (EntryManager.SuperType superType :
-                getEntryManager().getCats(false)) {
+		 getEntryManager().getCats(false)) {
             boolean didSuper = false;
             for (EntryManager.Types types : superType.getList()) {
                 boolean didSub = false;
@@ -1288,36 +1283,36 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                     if ( !didSuper) {
                         didSuper = true;
                         sb.append(
-                            "<div class=type-group-container><div class='type-group-header'>"
-                            + superType.getName()
-                            + "</div><div class=type-group>");
+				  "<div class=type-group-container><div class='type-group-header'>"
+				  + superType.getName()
+				  + "</div><div class=type-group>");
                     }
                     if ( !didSub) {
                         didSub = true;
                         sb.append(
-                            "<div class=type-list-container><div class='type-list-header'>"
-                            + types.getName()
-                            + "</div><div class=type-list>");
+				  "<div class=type-list-container><div class='type-list-header'>"
+				  + types.getName()
+				  + "</div><div class=type-list>");
                     }
                     String icon = typeHandler.getIconProperty(null);
                     String img;
                     if (icon == null) {
                         icon = ICON_BLANK;
                         img = HtmlUtils.img(
-                            typeHandler.getIconUrl(icon), "",
-                            HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "16"));
+					    typeHandler.getIconUrl(icon), "",
+					    HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "16"));
                     } else {
                         img = HtmlUtils.img(typeHandler.getIconUrl(icon));
                     }
                     String label = img + HU.SPACE
-                                   + typeHandler.getDescription() + HU.SPACE
-                                   + "(" + cnt + ")";
+			+ typeHandler.getDescription() + HU.SPACE
+			+ "(" + cnt + ")";
                     String href = HtmlUtils.href(getRepository().getUrlBase()
-                                      + "/search/type/"
-                                      + typeHandler.getType(), label);
+						 + "/search/type/"
+						 + typeHandler.getType(), label);
                     String help = "Search for "
-                                  + typeHandler.getDescription() + " - "
-                                  + cnt + " entries";
+			+ typeHandler.getDescription() + " - "
+			+ cnt + " entries";
                     HU.div(sb, href,
                            HU.attrs("class", "type-list-item", "title",
                                     help));
@@ -1350,16 +1345,16 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         sb.append("<a name=entrytypes></a>");
         sb.append(HtmlUtils.b("Entry Types"));
         sb.append(
-            HtmlUtils.open(
-                "div",
-                HtmlUtils.style("max-height: 300px;overflow-y:auto;")));
+		  HtmlUtils.open(
+				 "div",
+				 HtmlUtils.style("max-height: 300px;overflow-y:auto;")));
         sb.append(HtmlUtils.formTable());
         for (TypeHandler typeHandler : getRepository().getTypeHandlers()) {
             String link =
                 HtmlUtils.href(URL_SEARCH_TYPE + "/" + typeHandler.getType(),
                                typeHandler.getType());
             sb.append(HtmlUtils.row(HtmlUtils.cols(link,
-                    typeHandler.getDescription())));
+						   typeHandler.getDescription())));
         }
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.close("div"));
@@ -1369,15 +1364,15 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         sb.append("<a name=outputtypes></a>");
         sb.append(HtmlUtils.b("Output Types"));
         sb.append(
-            HtmlUtils.open(
-                "div",
-                HtmlUtils.style("max-height: 300px;overflow-y:auto;")));
+		  HtmlUtils.open(
+				 "div",
+				 HtmlUtils.style("max-height: 300px;overflow-y:auto;")));
         sb.append(HtmlUtils.formTable());
         for (OutputHandler outputHandler :
-                getRepository().getOutputHandlers()) {
+		 getRepository().getOutputHandlers()) {
             for (OutputType type : outputHandler.getTypes()) {
                 sb.append(HtmlUtils.row(HtmlUtils.cols(type.getId(),
-                        type.getLabel())));
+						       type.getLabel())));
             }
         }
         sb.append(HtmlUtils.formTableClose());
@@ -1388,18 +1383,18 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         sb.append("<a name=metadatatypes></a>");
         sb.append(HtmlUtils.b("Metadata Types"));
         sb.append(
-            HtmlUtils.open(
-                "div",
-                HtmlUtils.style("max-height: 300px;overflow-y:auto;")));
+		  HtmlUtils.open(
+				 "div",
+				 HtmlUtils.style("max-height: 300px;overflow-y:auto;")));
         sb.append(header(msg("Metadata Types")));
         sb.append(HtmlUtils.formTable());
         for (MetadataType type :
-                getRepository().getMetadataManager().getMetadataTypes()) {
+		 getRepository().getMetadataManager().getMetadataTypes()) {
             if ( !type.getSearchable()) {
                 continue;
             }
             sb.append(HtmlUtils.row(HtmlUtils.cols(type.getId(),
-                    type.getName())));
+						   type.getName())));
         }
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.close("div"));
@@ -1455,7 +1450,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                 HtmlUtils.href(URL_SEARCH_TYPE + "/" + typeHandler.getType(),
                                typeHandler.getType());
             sb.append(HtmlUtils.row(HtmlUtils.cols(link,
-                    typeHandler.getDescription())));
+						   typeHandler.getDescription())));
         }
         sb.append(HtmlUtils.formTableClose());
 
@@ -1463,10 +1458,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         sb.append(header(msg("Output Types")));
         sb.append(HtmlUtils.formTable());
         for (OutputHandler outputHandler :
-                getRepository().getOutputHandlers()) {
+		 getRepository().getOutputHandlers()) {
             for (OutputType type : outputHandler.getTypes()) {
                 sb.append(HtmlUtils.row(HtmlUtils.cols(type.getId(),
-                        type.getLabel())));
+						       type.getLabel())));
             }
         }
         sb.append(HtmlUtils.formTableClose());
@@ -1475,12 +1470,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         sb.append(header(msg("Metadata Types")));
         sb.append(HtmlUtils.formTable());
         for (MetadataType type :
-                getRepository().getMetadataManager().getMetadataTypes()) {
+		 getRepository().getMetadataManager().getMetadataTypes()) {
             if ( !type.getSearchable()) {
                 continue;
             }
             sb.append(HtmlUtils.row(HtmlUtils.cols(type.getId(),
-                    type.getName())));
+						   type.getName())));
         }
         sb.append(HtmlUtils.formTableClose());
 
@@ -1505,10 +1500,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @throws Exception _more_
      */
     public List<ServerInfo> findServers(Request request, boolean includeThis)
-            throws Exception {
+	throws Exception {
         List<ServerInfo> servers = new ArrayList<ServerInfo>();
         for (String id :
-                (List<String>) request.get(ATTR_SERVER, new ArrayList())) {
+		 (List<String>) request.get(ATTR_SERVER, new ArrayList())) {
             if (id.equals(ServerInfo.ID_THIS) && !includeThis) {
                 continue;
             }
@@ -1536,7 +1531,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     public Result processRemoteSearch(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
         List<String> servers = (List<String>) request.get(ATTR_SERVER,
-                                   new ArrayList());
+							  new ArrayList());
         sb.append(HtmlUtils.p());
         request.remove(ATTR_SERVER);
 
@@ -1557,12 +1552,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
         if ( !didone) {
             sb.append(
-                getPageHandler().showDialogNote(msg("No servers selected")));
+		      getPageHandler().showDialogNote(msg("No servers selected")));
         } else {
             sb.append(
-                HtmlUtils.div(
-                    serverSB.toString(),
-                    HtmlUtils.cssClass(CSS_CLASS_SERVER_BLOCK)));
+		      HtmlUtils.div(
+				    serverSB.toString(),
+				    HtmlUtils.cssClass(CSS_CLASS_SERVER_BLOCK)));
             sb.append(HtmlUtils.p());
         }
         sb.append(HtmlUtils.p());
@@ -1582,7 +1577,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @throws Exception _more_
      */
     public Result processEntryBrowseSearchForm(Request request)
-            throws Exception {
+	throws Exception {
 
         StringBuffer sb = new StringBuffer();
         HtmlUtils.open(sb, "div", HtmlUtils.cssClass("ramadda-links"));
@@ -1604,7 +1599,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @throws Exception _more_
      */
     public Result makeResult(Request request, String title, Appendable sb)
-            throws Exception {
+	throws Exception {
         StringBuilder headerSB = new StringBuilder();
         getPageHandler().sectionOpen(request, headerSB, "Search", false);
         getPageHandler().makeLinksHeader(request, headerSB, getSearchUrls(),
@@ -1649,7 +1644,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             for (ServerInfo server : servers) {
                 if (server.getId().equals(id)) {
                     provider = new SearchProvider.RemoteSearchProvider(
-                        getRepository(), server);
+								       getRepository(), server);
                     searchProviderMap.put(id, provider);
                 }
             }
@@ -1684,13 +1679,13 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             List<SearchProvider> tmp = new ArrayList<SearchProvider>();
 
             tmp.add(thisSearchProvider =
-                new SearchProvider.RamaddaSearchProvider(getRepository(),
-                    ServerInfo.ID_THIS, "This RAMADDA Repository"));
+		    new SearchProvider.RamaddaSearchProvider(getRepository(),
+							     ServerInfo.ID_THIS, "This RAMADDA Repository"));
             for (ServerInfo server :
-                    getRegistryManager().getEnabledRemoteServers()) {
+		     getRegistryManager().getEnabledRemoteServers()) {
                 tmp.add(
-                    new SearchProvider.RemoteSearchProvider(
-                        getRepository(), server));
+			new SearchProvider.RemoteSearchProvider(
+								getRepository(), server));
             }
 
             for (SearchProvider provider : tmp) {
@@ -1716,11 +1711,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @throws Exception _more_
      */
     public List<Entry>[] doSearch(Request request, SearchInfo searchInfo)
-            throws Exception {
+	throws Exception {
 
         HashSet<String> providers = new HashSet<String>();
         for (String arg :
-                (List<String>) request.get(ARG_PROVIDER, new ArrayList())) {
+		 (List<String>) request.get(ARG_PROVIDER, new ArrayList())) {
             providers.addAll(Utils.split(arg, ",", true, true));
         }
         if (providers.size() == 0) {
@@ -1753,7 +1748,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                 new ArrayList<SearchProvider>();
             for (SearchProvider searchProvider : getSearchProviders()) {
                 if ( !doAll && (providers != null)
-                        && (providers.size() > 0)) {
+		     && (providers.size() > 0)) {
                     if ( !providers.contains(searchProvider.getId())) {
                         continue;
                     }
@@ -1766,8 +1761,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             List<Runnable>  runnables   = new ArrayList<Runnable>();
             for (SearchProvider searchProvider : searchProviders) {
                 Runnable runnable = makeRunnable(request, searchProvider,
-                                        allEntries, searchInfo, running,
-                                        runnableCnt);
+						 allEntries, searchInfo, running,
+						 runnableCnt);
                 runnables.add(runnable);
             }
             runSearch(runnables, running, runnableCnt);
@@ -1788,14 +1783,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         if ((folders.size() == 0) && (entries.size() == 0)) {
             if (request.defined(ARG_GROUP)) {
                 String groupId = (String) request.getString(ARG_GROUP,
-                                     "").trim();
+							    "").trim();
                 Entry theGroup = getEntryManager().findGroup(request,
-                                     groupId);
+							     groupId);
                 if ((theGroup != null)
-                        && theGroup.getTypeHandler().isSynthType()) {
+		    && theGroup.getTypeHandler().isSynthType()) {
                     List<Entry> children =
                         getEntryManager().getChildrenAll(request, theGroup,
-                            null);
+							 null);
                     for (Entry child : children) {
                         if (child.isGroup()) {
                             folders.add(child);
@@ -1826,10 +1821,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
         if (request.get(ARG_WAIT, false)) {
             return getRepository().getMonitorManager().processEntryListen(
-                request);
+									  request);
         }
         if (request.defined("submit_type.x")
-                || request.defined(ARG_SEARCH_SUBSET)) {
+	    || request.defined(ARG_SEARCH_SUBSET)) {
             request.remove(ARG_OUTPUT);
 
             return processSearchForm(request);
@@ -1866,7 +1861,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         makeSearchForm(request, header);
         if ( !foundAny) {
             header.append(
-                getPageHandler().showDialogNote(msg("Sorry, nothing found")));
+			  getPageHandler().showDialogNote(msg("Sorry, nothing found")));
         }
         request.appendPrefixHtml(header.toString());
 
@@ -1878,8 +1873,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
         Result result =
             getRepository().getOutputHandler(request).outputGroup(request,
-                                             request.getOutput(), theGroup,
-                                             groups, entries);
+								  request.getOutput(), theGroup,
+								  groups, entries);
         long   t4 = System.currentTimeMillis();
 
         Result r;
@@ -1910,7 +1905,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                                     List<ServerInfo> servers,
                                     final Entry tmpEntry,
                                     final List<Entry> entries)
-            throws Exception {
+	throws Exception {
         request = request.cloneMe();
         ServerInfo      thisServer  = getRepository().getServerInfo();
         final int[]     runnableCnt = { 0 };
@@ -1969,8 +1964,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @throws Exception _more_
      */
     private void runSearch(List<Runnable> runnables, boolean[] running,
-                       int[] runnableCnt)
-            throws Exception {
+			   int[] runnableCnt)
+	throws Exception {
         runnableCnt[0] = runnables.size();
         for (Runnable runnable : runnables) {
             Misc.runInABit(0, runnable);
@@ -2022,7 +2017,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                                  final List<Entry> entries,
                                  final boolean[] running,
                                  final int[] runnableCnt)
-            throws Exception {
+	throws Exception {
 
 
         final Request request = theRequest.cloneMe();
@@ -2038,64 +2033,64 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         parentEntry.setName(serverUrl);
         final String linkUrl  = request.getUrlArgs();
         Runnable     runnable = new Runnable() {
-            public void run() {
-                String remoteSearchUrl = serverUrl
-                                         + URL_ENTRY_SEARCH.getPath() + "?"
-                                         + linkUrl;
+		public void run() {
+		    String remoteSearchUrl = serverUrl
+			+ URL_ENTRY_SEARCH.getPath() + "?"
+			+ linkUrl;
 
-                System.err.println("Remote URL:" + remoteSearchUrl);
-                try {
-                    String entriesXml =
-                        getStorageManager().readSystemResource(
-                            new URL(remoteSearchUrl));
-                    //                        System.err.println(entriesXml);
-                    if ((running != null) && !running[0]) {
-                        return;
-                    }
-                    Element  root     = XmlUtil.getRoot(entriesXml);
-                    NodeList children = XmlUtil.getElements(root);
-                    //Synchronize on the list so only one thread at  a time adds its entries to it
-                    for (int i = 0; i < children.getLength(); i++) {
-                        Element node = (Element) children.item(i);
-                        //                    if (!node.getTagName().equals(TAG_ENTRY)) {continue;}
-                        List<Entry> entryList =
-                            getEntryManager().createEntryFromXml(request,
-                                node, parentEntry, new Hashtable(), false,
-                                false);
+		    System.err.println("Remote URL:" + remoteSearchUrl);
+		    try {
+			String entriesXml =
+			    getStorageManager().readSystemResource(
+								   new URL(remoteSearchUrl));
+			//                        System.err.println(entriesXml);
+			if ((running != null) && !running[0]) {
+			    return;
+			}
+			Element  root     = XmlUtil.getRoot(entriesXml);
+			NodeList children = XmlUtil.getElements(root);
+			//Synchronize on the list so only one thread at  a time adds its entries to it
+			for (int i = 0; i < children.getLength(); i++) {
+			    Element node = (Element) children.item(i);
+			    //                    if (!node.getTagName().equals(TAG_ENTRY)) {continue;}
+			    List<Entry> entryList =
+				getEntryManager().createEntryFromXml(request,
+								     node, parentEntry, new Hashtable(), false,
+								     false);
 
-                        Entry entry = entryList.get(0);
+			    Entry entry = entryList.get(0);
 
-                        entry.setResource(new Resource("remote:"
-                                + XmlUtil.getAttribute(node, ATTR_RESOURCE,
-                                    ""), Resource.TYPE_REMOTE_FILE));
-                        String id = XmlUtil.getAttribute(node, ATTR_ID);
-                        entry.setId(
-                            getEntryManager().getRemoteEntryId(
-                                serverUrl, id));
-                        entry.setRemoteServer(serverInfo);
-                        entry.setRemoteUrl(serverUrl + "/entry/show?entryid="
-                                           + id);
-                        getEntryManager().cacheEntry(entry);
-                        synchronized (entries) {
-                            entries.add((Entry) entry);
-                        }
-                    }
-                } catch (Exception exc) {
-                    logException("Error doing search:" + remoteSearchUrl,
-                                 exc);
-                } finally {
-                    if (runnableCnt != null) {
-                        synchronized (runnableCnt) {
-                            runnableCnt[0]--;
-                        }
-                    }
-                }
-            }
+			    entry.setResource(new Resource("remote:"
+							   + XmlUtil.getAttribute(node, ATTR_RESOURCE,
+										  ""), Resource.TYPE_REMOTE_FILE));
+			    String id = XmlUtil.getAttribute(node, ATTR_ID);
+			    entry.setId(
+					getEntryManager().getRemoteEntryId(
+									   serverUrl, id));
+			    entry.setRemoteServer(serverInfo);
+			    entry.setRemoteUrl(serverUrl + "/entry/show?entryid="
+					       + id);
+			    getEntryManager().cacheEntry(entry);
+			    synchronized (entries) {
+				entries.add((Entry) entry);
+			    }
+			}
+		    } catch (Exception exc) {
+			logException("Error doing search:" + remoteSearchUrl,
+				     exc);
+		    } finally {
+			if (runnableCnt != null) {
+			    synchronized (runnableCnt) {
+				runnableCnt[0]--;
+			    }
+			}
+		    }
+		}
 
-            public String toString() {
-                return "Runnable:" + serverUrl;
-            }
-        };
+		public String toString() {
+		    return "Runnable:" + serverUrl;
+		}
+	    };
 
         return runnable;
 
@@ -2122,29 +2117,29 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                                  final SearchInfo searchInfo,
                                  final boolean[] running,
                                  final int[] runnableCnt)
-            throws Exception {
+	throws Exception {
         final Request request  = theRequest.cloneMe();
         Runnable      runnable = new Runnable() {
-            public void run() {
-                try {
-                    //                        System.err.println("start search:"+ provider.getName());
-                    List<Entry> results = provider.getEntries(request,
-                                              searchInfo);
-                    //                        System.err.println("end search:"+ provider.getName());
-                    synchronized (entries) {
-                        entries.addAll(results);
-                    }
-                } catch (Exception exc) {
-                    logException("Error doing search:" + provider, exc);
-                } finally {
-                    if (runnableCnt != null) {
-                        synchronized (runnableCnt) {
-                            runnableCnt[0]--;
-                        }
-                    }
-                }
-            }
-        };
+		public void run() {
+		    try {
+			//                        System.err.println("start search:"+ provider.getName());
+			List<Entry> results = provider.getEntries(request,
+								  searchInfo);
+			//                        System.err.println("end search:"+ provider.getName());
+			synchronized (entries) {
+			    entries.addAll(results);
+			}
+		    } catch (Exception exc) {
+			logException("Error doing search:" + provider, exc);
+		    } finally {
+			if (runnableCnt != null) {
+			    synchronized (runnableCnt) {
+				runnableCnt[0]--;
+			    }
+			}
+		    }
+		}
+	    };
 
         return runnable;
     }
@@ -2161,7 +2156,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @throws Exception _more_
      */
     protected List getSearchFormLinks(Request request, String what)
-            throws Exception {
+	throws Exception {
         TypeHandler typeHandler = getRepository().getTypeHandler(request);
         List        links       = new ArrayList();
         String      extra1      = " class=subnavnolink ";
@@ -2178,12 +2173,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                 item = HtmlUtils.span(names[i], extra1);
             } else {
                 item = HtmlUtils.href(request.makeUrl(URL_SEARCH_FORM,
-                        ARG_WHAT, whats[i], ARG_FORM_TYPE,
-                        formType), names[i], extra2);
+						      ARG_WHAT, whats[i], ARG_FORM_TYPE,
+						      formType), names[i], extra2);
             }
             if (i == 0) {
                 item = "<span " + extra1
-                       + ">Search For:&nbsp;&nbsp;&nbsp; </span>" + item;
+		    + ">Search For:&nbsp;&nbsp;&nbsp; </span>" + item;
             }
             links.add(item);
         }
@@ -2194,8 +2189,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                 links.add(HtmlUtils.span(tfo.toString(), extra1));
             } else {
                 links.add(HtmlUtils.href(request.makeUrl(URL_SEARCH_FORM,
-                        ARG_WHAT, BLANK + tfo.getId(), ARG_TYPE,
-                        typeHandler.getType()), tfo.toString(), extra2));
+							 ARG_WHAT, BLANK + tfo.getId(), ARG_TYPE,
+							 typeHandler.getType()), tfo.toString(), extra2));
             }
         }
 
