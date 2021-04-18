@@ -25,6 +25,9 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.util.QueryBuilder;
 import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Scorer;
@@ -199,7 +202,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     private static final String FIELD_DESCRIPTION = "description";
 
     /** _more_ */
+    private static final String FIELD_NAME = "name";    
+
+    /** _more_ */
     private static final String FIELD_METADATA = "metadata";
+
+    private static final String[] SEARCH_FIELDS ={FIELD_NAME, FIELD_DESCRIPTION, FIELD_CONTENTS};
 
     /** _more_ */
     private IndexSearcher luceneSearcher;
@@ -238,9 +246,20 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     public SearchManager(Repository repository) {
         super(repository);
         repository.addEntryChecker(this);
+        getAdmin().addAdminHandler(this);
+    }
+
+
+    @Override
+    public void initAttributes() {
+        super.initAttributes();
         isLuceneEnabled =
             getRepository().getProperty(PROP_SEARCH_LUCENE_ENABLED, false);
-        getAdmin().addAdminHandler(this);
+	try {
+	    new org.apache.tika.config.TikaConfig(getClass().getResourceAsStream("/org/ramadda/repository/resources/tika-config.xml"));
+	} catch(Exception exc) {
+	    System.err.println("Error calling TikaConfig:" + exc);
+	}
     }
 
 
@@ -273,8 +292,43 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     private IndexWriter getLuceneWriter() throws Exception {
 	Directory index = new NIOFSDirectory(Paths.get(getStorageManager().getIndexDir()));
 	IndexWriterConfig config = new IndexWriterConfig();
+	config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
 	IndexWriter writer = new IndexWriter(index, config);
 	return writer;
+    }
+
+
+    public void reindexLucene(Object actionId) throws Exception {
+        IndexWriter writer = getLuceneWriter();
+	writer.deleteAll();
+	writer.commit();
+        Statement statement =
+            getDatabaseManager().select(Tables.ENTRIES.COL_ID,
+					Misc.newList(Tables.ENTRIES.NAME),
+					null);
+        SqlUtil.Iterator iter = getDatabaseManager().getIterator(statement);
+        ResultSet        results;
+	int cnt = 0;
+	while ((results = iter.getNext()) != null) {
+            String id = results.getString(1);
+	    Entry entry = getEntryManager().getEntry(null, id,false);
+	    if(entry==null) continue;
+	    System.err.println("#" + cnt +" entry:" + entry.getName());
+	    cnt++;
+	    indexEntry(writer, entry);
+	    writer.commit();
+	    getEntryManager().removeFromCache(entry);
+	    if(actionId!=null) {
+		if(!getActionManager().getActionOk(actionId)) {
+		    writer.close();
+		    return;
+		}
+		getActionManager().setActionMessage(actionId,
+						    "Reindexed " + cnt +" entries"); 
+	    }
+	    //	    if(cnt>10000) break;
+	}
+        writer.close();
     }
 
 
@@ -293,6 +347,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @param block _more_
      * @param asb _more_
      */
+    @Override
     public void addToAdminSettingsForm(String block, StringBuffer asb) {
         if ( !block.equals(Admin.BLOCK_ACCESS)) {
             return;
@@ -317,11 +372,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      *
      * @throws Exception _more_
      */
+    @Override
     public void applyAdminSettingsForm(Request request) throws Exception {
         getRepository().writeGlobal(
             PROP_SEARCH_LUCENE_ENABLED,
             isLuceneEnabled = request.get(PROP_SEARCH_LUCENE_ENABLED, false));
-
     }
 
     /**
@@ -340,13 +395,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      *
      * @throws Exception _more_
      */
-    public synchronized void indexEntries(List<Entry> entries)
+    private synchronized void indexEntries(List<Entry> entries)
             throws Exception {
         IndexWriter writer = getLuceneWriter();
         for (Entry entry : entries) {
             indexEntry(writer, entry);
         }
 	//        writer.optimize();
+	writer.commit();
         writer.close();
         luceneReader   = null;
         luceneSearcher = null;
@@ -368,7 +424,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             new org.apache.lucene.document.Document();
         String path = entry.getResource().getPath();
 
-
         doc.add(new TextField(FIELD_ENTRYID, entry.getId(), Field.Store.YES));
         if ((path != null) && (path.length() > 0)) {
             doc.add(new TextField(FIELD_PATH, path, Field.Store.YES));
@@ -377,25 +432,42 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         StringBuilder metadataSB = new StringBuilder();
         getRepository().getMetadataManager().getTextCorpus(entry, metadataSB);
         entry.getTypeHandler().getTextCorpus(entry, metadataSB);
-        doc.add(new TextField(FIELD_DESCRIPTION,  entry.getName() + " " + entry.getDescription(),Field.Store.NO));
+        doc.add(new TextField(FIELD_NAME,  entry.getName(),Field.Store.YES));
+        doc.add(new TextField(FIELD_DESCRIPTION, entry.getDescription(),Field.Store.NO));
 
         if (metadataSB.length() > 0) {
             doc.add(new TextField(FIELD_METADATA, metadataSB.toString(),Field.Store.NO));
         }
 
-		/*
+	/*
         doc.add(new Field(FIELD_MODIFIED,
                           DateTools.timeToString(entry.getStartDate(),
                               DateTools.Resolution.MINUTE), Field.Store.YES,
                                   Field.Index.NOT_ANALYZED));
-		*/
+	*/
 
         if (entry.isFile()) {
             addContentField(entry, doc, new File(path));
         }
         writer.addDocument(doc);
-	writer.commit();
+    }
+
+
+    private String readContents(File f) throws Exception {
+	try(InputStream stream = getStorageManager().getFileInputStream(f)) {
+            org.apache.tika.metadata.Metadata metadata =
+                new org.apache.tika.metadata.Metadata();
+            org.apache.tika.parser.AutoDetectParser parser =
+                new org.apache.tika.parser.AutoDetectParser();
+            org.apache.tika.sax.BodyContentHandler handler =
+                new org.apache.tika.sax.BodyContentHandler(100000000);
+            parser.parse(stream, handler, metadata);
+            return  handler.toString();
+	}  catch(Throwable exc) {
+	    System.err.println("Error reading contents:" + f.getName() +" error:" + exc);
+	    return null;
 	}
+    }	
 
 
     /**
@@ -411,21 +483,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                                  org.apache.lucene.document.Document doc,
                                  File f)
             throws Exception {
-        //org.apache.lucene.document.Document doc
-        InputStream stream = getStorageManager().getFileInputStream(f);
         try {
-            org.apache.tika.metadata.Metadata metadata =
-                new org.apache.tika.metadata.Metadata();
-            org.apache.tika.parser.AutoDetectParser parser =
-                new org.apache.tika.parser.AutoDetectParser();
-            org.apache.tika.sax.BodyContentHandler handler =
-                new org.apache.tika.sax.BodyContentHandler();
-            parser.parse(stream, handler, metadata);
-            String contents = handler.toString();
+            String contents = readContents(f);
             if ((contents != null) && (contents.length() > 0)) {
                 doc.add(new TextField(FIELD_CONTENTS, contents, Field.Store.NO));
             }
-
             /*
             String[] names = metadata.names();
             for (String name : names) {
@@ -436,10 +498,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             }
             */
         } catch (Exception exc) {
-            System.err.println("error harvesting corpus from:" + f);
+            System.err.println("SearchManager: error harvesting corpus from:" + f);
             exc.printStackTrace();
-        } finally {
-            IOUtil.close(stream);
         }
     }
 
@@ -483,73 +543,17 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @throws Exception _more_
      */
     public Result processEntrySuggest(Request request) throws Exception {
-        String       string = request.getString("string", "");
-        String       type   = request.getString("type", (String) null);
         List<String> names  = new ArrayList<String>();
-        if (Utils.stringDefined(string)) {
-            List<Clause> clauses = new ArrayList<Clause>();
-            if (string.startsWith("name:")) {
-                string = string.substring("name:".length());
-                clauses.add(
-                    getDatabaseManager().makeLikeTextClause(
-                        Tables.ENTRIES.COL_NAME, "%" + string + "%", false));
-            } else if (string.startsWith("description:")) {
-                string = string.substring("description:".length());
-                clauses.add(
-                    getDatabaseManager().makeLikeTextClause(
-                        Tables.ENTRIES.COL_DESCRIPTION, "%" + string + "%",
-                        false));
-            } else if (string.startsWith("file:")) {
-                string = string.substring("file:".length());
-                clauses.add(
-                    getDatabaseManager().makeLikeTextClause(
-                        Tables.ENTRIES.COL_RESOURCE, "%" + string + "%",
-                        false));
-            } else {
-                clauses.add(
-                    getDatabaseManager().makeLikeTextClause(
-                        Tables.ENTRIES.COL_NAME, "%" + string + "%", false));
-                clauses.add(
-                    getDatabaseManager().makeLikeTextClause(
-                        Tables.ENTRIES.COL_DESCRIPTION, "%" + string + "%",
-                        false));
-            }
-            Clause clause = Clause.or(clauses);
-            if (type != null) {
-                clause = Clause.and(clause,
-                                    Clause.eq(Tables.ENTRIES.COL_TYPE, type));
-            }
-
-            String order = getDatabaseManager().makeOrderBy(
-                               Tables.ENTRIES.COL_CREATEDATE,
-                               request.get(ARG_ASCENDING, false));
-            Statement statement = getDatabaseManager().select(
-            //                                      "distinct " + Tables.ENTRIES.COL_NAME,
-            Tables.ENTRIES.COL_ID + "," + Tables.ENTRIES.COL_NAME + ","
-                                  + Tables.ENTRIES.COL_TYPE, Utils.makeList(
-                                      Tables.ENTRIES.NAME), clause, order,
-                                          30);
-            SqlUtil.Iterator iter =
-                getDatabaseManager().getIterator(statement);
-            ResultSet results;
-            while ((results = iter.getNext()) != null) {
-                String id   = results.getString(1);
-                String name = results.getString(2);
-                TypeHandler typeHandler =
-                    getRepository().getTypeHandler(results.getString(3));
-                String obj = Json.map("name", Json.quote(name), "id",
-                                      Json.quote(id), "icon",
-                                      (typeHandler != null)
-                                      ? Json.quote(
-                                          typeHandler.getTypeIconUrl())
-                                      : "null");
-
+	List[] pair = getEntryManager().getEntries(request);
+	for(List l: pair) {
+	    for(Entry entry: (List<Entry>)l) {
+                String obj = Json.map("name", Json.quote(entry.getName()), "id",
+                                      Json.quote(entry.getId()), "icon",
+                                      Json.quote(entry.getTypeHandler().getTypeIconUrl()));
                 names.add(obj);
-            }
-        }
-        String json = Json.map("values", Json.list(names));
-
-        return new Result("", new StringBuilder(json), "text/json");
+	    }
+	}
+	return new Result("", new StringBuilder(Json.map("values", Json.list(names))), "text/json");
     }
 
     /**
@@ -566,11 +570,35 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             throws Exception {
         StringBuffer sb = new StringBuffer();
         StandardAnalyzer analyzer =       new StandardAnalyzer();
-	QueryBuilder builder = new QueryBuilder(analyzer);
-	Query query = builder.createPhraseQuery(FIELD_DESCRIPTION, request.getString(ARG_TEXT, ""));
         IndexSearcher searcher = getLuceneSearcher();
-        TopDocs       hits     = searcher.search(query, 100);
+	String text = request.getString(ARG_TEXT,"");
+	//	QueryBuilder builder = new QueryBuilder(analyzer);
+	Query query = null;
+	BooleanQuery.Builder builder = new BooleanQuery.Builder();
+	boolean hasAField = false;
+	for(String field: SEARCH_FIELDS) {
+	    if(text.indexOf(field+":")>=0) {
+		hasAField = true;
+		break;
+	    }
+	}
+
+	if(false && hasAField) {
+	    org.apache.lucene.queryparser.classic.QueryParser queryParser =
+		new org.apache.lucene.queryparser.classic.QueryParser(FIELD_NAME, analyzer);
+	    query = queryParser.parse(text);
+	} else {
+	    for(String field: SEARCH_FIELDS) {
+		Query term = new TermQuery(new Term(field, text));
+		builder.add(term, BooleanClause.Occur.SHOULD);
+	    }
+	    query = builder.build();
+	}
+
+        TopDocs       hits     = searcher.search(query, 100);	
         ScoreDoc[]    docs     = hits.scoreDocs;
+	//	System.err.println("docs:" + docs.length +" text:" + text);
+
         for (int i = 0; i < docs.length; i++) {
             org.apache.lucene.document.Document doc =
                 searcher.doc(docs[i].doc);
@@ -1620,12 +1648,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         List<Entry> allEntries = new ArrayList<Entry>();
 
         boolean     doSearch   = true;
-
-
         if (request.defined("entries")) {
             for (String id :
-                    Utils.split(request.getString("entries", ""), ",", true,
-                                true)) {
+		     Utils.split(request.getString("entries", ""), ",", true,
+				 true)) {
                 Entry e = getEntryManager().getEntry(request, id);
                 if (e == null) {
                     continue;
@@ -1649,8 +1675,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                 searchProviders.add(searchProvider);
             }
 
-
-
             final int[]     runnableCnt = { 0 };
             final boolean[] running     = { true };
             List<Runnable>  runnables   = new ArrayList<Runnable>();
@@ -1660,9 +1684,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                                         runnableCnt);
                 runnables.add(runnable);
             }
-
-            runEm(runnables, running, runnableCnt);
-        }
+            runSearch(runnables, running, runnableCnt);
+	}
 
         if ( !request.exists(ARG_ORDERBY)) {
             for (Entry e : allEntries) {
@@ -1675,26 +1698,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         } else {
             entries = allEntries;
         }
-
-        /**
-         * for (SearchProvider searchProvider: searchProviders) {
-         *   try {
-         *       //                System.err.println("Searching:" +searchProvider.getId());
-         *       List<Entry> results = searchProvider.getEntries(request,
-         *                                 searchCriteriaSB);
-         *       for (Entry e : results) {
-         *           if (e.isGroup()) {
-         *               folders.add(e);
-         *           } else {
-         *               entries.add(e);
-         *           }
-         *       }
-         *   } catch (Exception exc) {
-         *       getLogManager().logError("Searching provider:"
-         *                                + searchProvider, exc);
-         *   }
-         * }
-         */
 
         if ((folders.size() == 0) && (entries.size() == 0)) {
             if (request.defined(ARG_GROUP)) {
@@ -1746,28 +1749,18 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             return processSearchForm(request);
         }
 
-        boolean textSearch = isLuceneEnabled()
-                             && request.getString(ARG_SEARCH_TYPE,
-                                 "").equals(SEARCH_TYPE_TEXT);
-
         SearchInfo       searchInfo = new SearchInfo();
-        boolean          searchThis = true;
         List<ServerInfo> servers    = null;
 
         ServerInfo       thisServer = getRepository().getServerInfo();
-        boolean          doFrames   = request.get(ARG_DOFRAMES, false);
 
         List<Entry>      groups     = new ArrayList<Entry>();
         List<Entry>      entries    = new ArrayList<Entry>();
 
         long             t1         = System.currentTimeMillis();
-        if (textSearch) {
-            processLuceneSearch(request, groups, entries);
-        } else if (searchThis) {
-            List[] pair = doSearch(request, searchInfo);
-            groups.addAll((List<Entry>) pair[0]);
-            entries.addAll((List<Entry>) pair[1]);
-        }
+	List[] pair = doSearch(request, searchInfo);
+	groups.addAll((List<Entry>) pair[0]);
+	entries.addAll((List<Entry>) pair[1]);
         int   total    = groups.size() + entries.size();
         long  t2       = System.currentTimeMillis();
         Entry theGroup = null;
@@ -1814,47 +1807,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         return r;
     }
 
-
-    /*
-            if (doFrames) {
-                String linkUrl = request.getUrlArgs();
-                request.put(ARG_DECORATE, "false");
-                request.put(ATTR_TARGET, "_server");
-                String       embeddedUrl = request.getUrlArgs();
-                StringBuffer sb          = new StringBuffer();
-                sb.append(msgHeader("Remote Server Search Results"));
-                for (ServerInfo server : servers) {
-                    String remoteSearchUrl = server.getUrl()
-                                             + URL_ENTRY_SEARCH.getPath()
-                                             + "?" + linkUrl;
-                    sb.append("\n");
-                    sb.append(HtmlUtils.p());
-                    String link = HtmlUtils.href(remoteSearchUrl,
-                                      server.getUrl());
-                    String fullUrl = server.getUrl()
-                                     + URL_ENTRY_SEARCH.getPath() + "?"
-                                     + embeddedUrl;
-                    String content =
-                        HtmlUtils.tag(
-                            HtmlUtils.TAG_IFRAME,
-                            HtmlUtils.attrs(
-                                HtmlUtils.ATTR_WIDTH, "100%",
-                                HtmlUtils.ATTR_HEIGHT, "200",
-                                HtmlUtils.ATTR_SRC,
-                                fullUrl), "need to have iframe support");
-                    sb.append(HtmlUtils.makeShowHideBlock(server.getLabel()
-                            + HtmlUtils.space(2) + link, content, true));
-
-                    sb.append("\n");
-                }
-                request.remove(ARG_DECORATE);
-                request.remove(ARG_TARGET);
-
-                return new Result("Remote Search Results", sb);
-            }
-
-
-    */
 
 
 
@@ -1930,7 +1882,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      *
      * @throws Exception _more_
      */
-    private void runEm(List<Runnable> runnables, boolean[] running,
+    private void runSearch(List<Runnable> runnables, boolean[] running,
                        int[] runnableCnt)
             throws Exception {
         runnableCnt[0] = runnables.size();
@@ -2182,7 +2134,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                 new org.apache.tika.sax.BodyContentHandler(100000000);
             parser.parse(stream, handler, metadata);
             String contents = handler.toString();
-            //            System.out.println("contents: " + contents);
+	    System.out.println("contents: " + contents);
         }
     }
 

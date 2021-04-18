@@ -1151,9 +1151,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
         */
 
-
-
-	//	getEntryManager().checkParents();
     }
 
     /**

@@ -19,7 +19,7 @@
 	<property name="docs_dir" value="${dist_dir}/${release_name}docs"/>
         <property name="docs_javadoc_dest" value="${docs_dir}/javadoc" />
 
-        <property name="tika_jar" value="tika-app-1.13.jar" />
+        <property name="tika_jar" value="tika-app-1.26.jar" />
         <property name="jfreechart_jar" value="jfreechart-1.0.19.jar" />
         <property name="unidata_jar" value="idv.jar" />
 
@@ -371,7 +371,8 @@
         <unjar src="${lib_dir}/gdata.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/javax.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/jmapproj.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/lucene-core-8.8.2.jar" dest="${tmpjar_dir}"/>	
+        <unjar src="${lib_dir}/lucene-core-8.8.2.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/lucene-queryparser-8.2.0.jar" dest="${tmpjar_dir}"/>		
         <unjar src="${lib_dir}/mail.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/activation.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/javadiff.jar" dest="${tmpjar_dir}"/>
@@ -392,7 +393,6 @@
         <unjar src="${lib_dir}/rhino-1.7.13.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/httpmime-4.5.7.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/httpcore-4.4.1.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/xmpcore.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/${jfreechart_jar}" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/jcommon-1.0.23.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/ftplet-api-1.0.6.jar" dest="${tmpjar_dir}"/>

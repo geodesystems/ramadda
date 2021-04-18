@@ -1747,7 +1747,7 @@ var Utils =  {
 	let _this = this;
 	let newVal = input.val()||"";
 	Utils.searchLastInput = newVal;
-	let url = ramaddaBaseUrl + "/search/suggest?string=" + encodeURIComponent(newVal);
+	let url = ramaddaBaseUrl + "/search/suggest?text=" + encodeURIComponent(newVal);
 	if (type) url += "&type=" + type;
 	url+="&ascending=" + Utils.searchAscending;
 	let jqxhr = $.getJSON(url, function(data) {

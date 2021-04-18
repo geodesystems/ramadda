@@ -795,9 +795,6 @@ public interface Constants {
     public static final String ARG_DELETE = "delete";
 
     /** _more_ */
-    public static final String ARG_DOFRAMES = "doframes";
-
-    /** _more_ */
     public static final String ARG_DELETE_CONFIRM = "delete.confirm";
 
     /** _more_ */

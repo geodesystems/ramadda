@@ -19,6 +19,7 @@ package org.ramadda.data.docs;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -829,16 +830,16 @@ public class TabularOutputHandler extends OutputHandler {
                         break;
                     }
                     Object value = null;
-                    int    type  = cell.getCellType();
-                    if (type == cell.CELL_TYPE_NUMERIC) {
+                    CellType    type  = cell.getCellType();
+                    if (type == CellType.NUMERIC) {
                         value = new Double(cell.getNumericCellValue());
-                    } else if (type == cell.CELL_TYPE_BOOLEAN) {
+                    } else if (type == CellType.BOOLEAN) {
                         value = new Boolean(cell.getBooleanCellValue());
-                    } else if (type == cell.CELL_TYPE_ERROR) {
+                    } else if (type == CellType.ERROR) {
                         value = "" + cell.getErrorCellValue();
-                    } else if (type == cell.CELL_TYPE_BLANK) {
+                    } else if (type == CellType.BLANK) {
                         value = "";
-                    } else if (type == cell.CELL_TYPE_FORMULA) {
+                    } else if (type == CellType.FORMULA) {
                         value = cell.getCellFormula();
                     } else {
                         value = cell.getStringCellValue();
@@ -1262,16 +1263,16 @@ public class TabularOutputHandler extends OutputHandler {
                         break;
                     }
                     Object value = null;
-                    int    type  = cell.getCellType();
-                    if (type == cell.CELL_TYPE_NUMERIC) {
+                    CellType    type  = cell.getCellType();
+                    if (type == CellType.NUMERIC) {
                         value = new Double(cell.getNumericCellValue());
-                    } else if (type == cell.CELL_TYPE_BOOLEAN) {
+                    } else if (type == CellType.BOOLEAN) {
                         value = new Boolean(cell.getBooleanCellValue());
-                    } else if (type == cell.CELL_TYPE_ERROR) {
+                    } else if (type == CellType.ERROR) {
                         value = "" + cell.getErrorCellValue();
-                    } else if (type == cell.CELL_TYPE_BLANK) {
+                    } else if (type == CellType.BLANK) {
                         value = "";
-                    } else if (type == cell.CELL_TYPE_FORMULA) {
+                    } else if (type == CellType.FORMULA) {
                         value = cell.getCellFormula();
                     } else {
                         value = cell.getStringCellValue();

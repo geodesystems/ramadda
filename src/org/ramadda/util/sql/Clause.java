@@ -170,6 +170,14 @@ public class Clause {
 
 
 
+    public void getColumns(List<String> columns) {
+	if(column!=null) columns.add(column);
+	if(subClauses!=null)
+	    for(Clause clause: subClauses)
+		clause.getColumns(columns);
+    }
+
+
 
     /**
      * utility to make an AND clause

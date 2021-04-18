@@ -108,6 +108,7 @@ public class Admin extends RepositoryManager {
 
     /** _more_ */
     public static final String ACTION_DUMPDB = "action.dumpb";
+    public static final String ACTION_REINDEX = "action.reindex";    
 
     /** _more_ */
     public static final String ACTION_CHANGEPATHS = "action.changepaths";
@@ -992,6 +993,7 @@ public class Admin extends RepositoryManager {
 
     /** _more_ */
     private boolean amDumpingDb = false;
+    private boolean amReindexing = false;    
 
     /**
      * _more_
@@ -1026,6 +1028,40 @@ public class Admin extends RepositoryManager {
 
         return result;
     }
+
+    public Result adminReindex(Request request) throws Exception {
+        //Only do one at a time
+        if (amReindexing) {
+            StringBuffer sb = new StringBuffer(
+                                  getPageHandler().showDialogWarning(
+								     "Currently reindexing"));
+
+            return makeResult(request, msg("Reindex"), sb);
+        }
+
+
+        ActionManager.Action action = new ActionManager.Action() {
+            public void run(Object actionId) throws Exception {
+		try {
+		    getSearchManager().reindexLucene(actionId);
+		} catch(Exception exc) {
+		    System.err.println("Error reindexing:" + exc);
+		    throw exc;
+		} finally {		    
+		    amReindexing = false;
+		}
+            }
+        };
+        String href = HtmlUtils.href(request.makeUrl(URL_ADMIN_CLEANUP),
+                                     "Continue");
+
+        Result result = getActionManager().doAction(request, action,
+                            "Reindexing", href);
+
+        return result;
+    }
+
+
 
     /**
      * _more_
@@ -2339,6 +2375,8 @@ public class Admin extends RepositoryManager {
             return new Result(request.makeUrl(URL_ADMIN_CLEANUP));
         } else if (request.defined(ACTION_DUMPDB)) {
             return adminDbDump(request);
+        } else if (request.defined(ACTION_REINDEX)) {
+            return adminReindex(request);	    
         } else if (request.defined(ACTION_NEWDB)) {
             getDatabaseManager().reInitialize();
 
@@ -2434,11 +2472,24 @@ public class Admin extends RepositoryManager {
                 HtmlUtils.section(
                     HtmlUtils.h3(msg("Export Database"))
                     + msg("You can write out the database for backup or transfer to a new database")
-                    + "<p>"
+                    + "<br>"
                     + HtmlUtils.submit(
                         msg("Export the database"), ACTION_DUMPDB)));
 
             sb.append(HtmlUtils.formClose());
+
+            request.formPostWithAuthToken(sb, URL_ADMIN_CLEANUP, "");
+            sb.append(
+                HtmlUtils.section(
+                    HtmlUtils.h3(msg("Reindex"))
+                    + msg("This recreates the Lucene search index for the entire site")
+                    + "<br>"
+                    + HtmlUtils.submit(
+                        msg("Reindex"), ACTION_REINDEX)));
+            sb.append(HtmlUtils.formClose());
+
+
+
 
             sb.append(filePathSB);
 

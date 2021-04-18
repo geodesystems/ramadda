@@ -643,7 +643,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @param entry _more_
      */
-    protected void removeFromCache(Entry entry) {
+    public void removeFromCache(Entry entry) {
         removeFromCache(entry.getId());
     }
 
@@ -6789,6 +6789,7 @@ public class EntryManager extends RepositoryManager {
                                     TypeHandler typeHandler)
             throws Exception {
 
+
 	String entryRoot = null;
 	if(request.defined("entryRoot")) {
 	    entryRoot = request.getString("entryRoot","");
@@ -6819,59 +6820,80 @@ public class EntryManager extends RepositoryManager {
 	    //a	    System.err.println("after: " + clauses);
 	}
 
-
-        int skipCnt = request.get(ARG_SKIP, 0);
-        SqlUtil.debug = false;
         List<Entry> entries       = new ArrayList<Entry>();
         List<Entry> groups        = new ArrayList<Entry>();
-        boolean canDoSelectOffset = getDatabaseManager().canDoSelectOffset();
-        Hashtable   seen          = new Hashtable();
         List<Entry> allEntries    = new ArrayList<Entry>();
+	boolean didSearch = false;
 
-	Metadata[] mtd = new Metadata[]{null};
-
-	String order = getQueryOrderAndLimit(request, false, null,  new SelectInfo(),mtd);
-        Statement statement = typeHandler.select(request,
-                                  Tables.ENTRIES.COLUMNS, clauses,
-						 order);
-        ResultSet        results;
-        SqlUtil.Iterator iter = getDatabaseManager().getIterator(statement);
-
-        long             t1   = System.currentTimeMillis();
-        try {
-            while ((results = iter.getNext()) != null) {
-                if ( !canDoSelectOffset && (skipCnt-- > 0)) {
-                    continue;
-                }
-                String id    = results.getString(1);
-                Entry  entry = getEntryFromCache(id);
-                if (entry == null) {
-                    //id,type,name,desc,group,user,file,createdata,fromdate,todate
-                    TypeHandler localTypeHandler =
-                        getRepository().getTypeHandler(results.getString(2),
-                            true);
-                    entry = localTypeHandler.createEntryFromDatabase(results);
-                    cacheEntry(entry);
-                }
-                if (seen.get(entry.getId()) != null) {
-                    continue;
-                }
-                seen.put(entry.getId(), BLANK);
-                allEntries.add(entry);
-            }
-        } finally {
-            long t2 = System.currentTimeMillis();
-            if ((t2 - t1) > 60 * 1000) {
-                getLogManager().logError("Select took a long time:"
-                                         + (t2 - t1));
-            }
-            getDatabaseManager().closeAndReleaseConnection(statement);
-        }
-
-	if(mtd[0]!=null && Misc.equals(mtd[0].getAttr1(),"number")) {
-	    //TODO: sort
-	    //	    String pattern = "number:" + mtd[0].getAttr4();
+	//Check if we should let lucene do the searching
+	if(getSearchManager().isLuceneEnabled()) {
+	    List<String> columns = new ArrayList<String>();
+	    for(Clause clause: clauses)
+		clause.getColumns(columns);
+	    if(columns.size()==3 && columns.contains(Tables.ENTRIES.COL_NAME) &&
+	       columns.contains(Tables.ENTRIES.COL_DESCRIPTION) &&
+	       columns.contains(Tables.ENTRIES.COL_RESOURCE)) {
+		getSearchManager().processLuceneSearch(request, groups, entries);
+		didSearch = true;
+		allEntries.addAll(groups);
+		allEntries.addAll(entries);		
+	    }
 	}
+
+
+	if(!didSearch) {
+	    int skipCnt = request.get(ARG_SKIP, 0);
+	    SqlUtil.debug = false;
+	    boolean canDoSelectOffset = getDatabaseManager().canDoSelectOffset();
+	    Hashtable   seen          = new Hashtable();
+
+
+	    Metadata[] mtd = new Metadata[]{null};
+
+	    String order = getQueryOrderAndLimit(request, false, null,  new SelectInfo(),mtd);
+	    Statement statement = typeHandler.select(request,
+						     Tables.ENTRIES.COLUMNS, clauses,
+						     order);
+	    ResultSet        results;
+	    SqlUtil.Iterator iter = getDatabaseManager().getIterator(statement);
+
+	    long             t1   = System.currentTimeMillis();
+	    try {
+		while ((results = iter.getNext()) != null) {
+		    if ( !canDoSelectOffset && (skipCnt-- > 0)) {
+			continue;
+		    }
+		    String id    = results.getString(1);
+		    Entry  entry = getEntryFromCache(id);
+		    if (entry == null) {
+			//id,type,name,desc,group,user,file,createdata,fromdate,todate
+			TypeHandler localTypeHandler =
+			    getRepository().getTypeHandler(results.getString(2),
+							   true);
+			entry = localTypeHandler.createEntryFromDatabase(results);
+			cacheEntry(entry);
+		    }
+		    if (seen.get(entry.getId()) != null) {
+			continue;
+		    }
+		    seen.put(entry.getId(), BLANK);
+		    allEntries.add(entry);
+		}
+	    } finally {
+		long t2 = System.currentTimeMillis();
+		if ((t2 - t1) > 60 * 1000) {
+		    getLogManager().logError("Select took a long time:"
+					     + (t2 - t1));
+		}
+		getDatabaseManager().closeAndReleaseConnection(statement);
+	    }
+
+	    if(mtd[0]!=null && Misc.equals(mtd[0].getAttr1(),"number")) {
+		//TODO: sort
+		//	    String pattern = "number:" + mtd[0].getAttr4();
+	    }
+	}
+
         //Only split them into groups and non-groups if we aren't doing an orderby
 
 	//	System.err.println("ob:" + request.getString(ARG_ORDERBY));
@@ -6912,8 +6934,6 @@ public class EntryManager extends RepositoryManager {
 
         entries = getAccessManager().filterEntries(request, entries);
         groups  = getAccessManager().filterEntries(request, groups);
-
-
         return (List<Entry>[]) new List[] { groups, entries };
     }
 
