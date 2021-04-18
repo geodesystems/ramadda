@@ -304,7 +304,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	while ((results = iter.getNext()) != null) {
             String id = results.getString(1);
 	    Entry entry = getEntryManager().getEntry(null, id,false);
-	    if(entry==null) continue;
+
 	    System.err.println("#" + cnt +" entry:" + entry.getName());
 	    cnt++;
 	    indexEntry(writer, entry);
@@ -540,6 +540,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      */
     public Result processEntrySuggest(Request request) throws Exception {
         List<String> names  = new ArrayList<String>();
+	request.put(ARG_MAX,20);
 	List[] pair = getEntryManager().getEntries(request);
 	for(List l: pair) {
 	    for(Entry entry: (List<Entry>)l) {
@@ -593,8 +594,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    query = builder.build();
 	}
 
+	int max = request.get(ARG_MAX,100);
 	//	searcher.setDefaultFieldSortScoring(true, false);
-	TopDocs       hits     = searcher.search(query, 100,Sort.RELEVANCE);
+	TopDocs       hits     = searcher.search(query, max,Sort.RELEVANCE);
 	//        TopDocs       hits     = searcher.search(query, 100);		
         ScoreDoc[]    docs     = hits.scoreDocs;
 	System.err.println("lucene results:" + docs.length +" text:" + text);

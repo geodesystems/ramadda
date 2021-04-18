@@ -3638,37 +3638,37 @@ public class TypeHandler extends RepositoryManager {
             }
         }
 
-        //Now run the services
-        for (Service service : services) {
-            if ( !service.isEnabled()) {
-                continue;
-            }
-            try {
-                File         workDir = getStorageManager().createProcessDir();
-                ServiceInput serviceInput = new ServiceInput(workDir, entry);
-                System.err.println("execing command: " + this);
-                ServiceOutput output =
-                    service.evaluate(getRepository().getTmpRequest(),
-                                     serviceInput, null);
-                if ( !output.isOk()) {
-                    System.err.println("service not ok");
+	if(!fromImport) {
+	    //Now run the services
+	    for (Service service : services) {
+		if ( !service.isEnabled()) {
+		    continue;
+		}
+		try {
+		    File         workDir = getStorageManager().createProcessDir();
+		    ServiceInput serviceInput = new ServiceInput(workDir, entry);
+		    System.err.println("execing service: " + service);
+		    ServiceOutput output =
+			service.evaluate(getRepository().getTmpRequest(),
+					 serviceInput, null);
+		    if ( !output.isOk()) {
+			System.err.println("service not ok");
+			continue;
+		    }
 
-                    continue;
-                }
 
-
-                //Defer to the entry's type handler
-                System.err.println("calling handleServiceResults:"
-                                   + entry.getTypeHandler());
-                entry.getTypeHandler().handleServiceResults(request, entry,
-                        service, output);
-            } catch (Exception exc) {
-                getLogManager().logError(
-                    "ERROR: TypeHandler calling service:" + service + "\n",
-                    exc);
-            }
-        }
-
+		    //Defer to the entry's type handler
+		    System.err.println("calling handleServiceResults:"
+				       + entry.getTypeHandler());
+		    entry.getTypeHandler().handleServiceResults(request, entry,
+								service, output);
+		} catch (Exception exc) {
+		    getLogManager().logError(
+					     "ERROR: TypeHandler calling service:" + service + "\n",
+					     exc);
+		}
+	    }
+	}
 
 
 

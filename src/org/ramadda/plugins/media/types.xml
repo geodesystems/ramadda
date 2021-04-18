@@ -43,7 +43,7 @@
      <property name="icon" value="/icons/doc.png"/>
 </type>
 
-  <type name="type_document_ppt"  description="Powerpoint File" pattern="(.*\.ppt|.*\.pptx)"  super="type_document_tika"   handler="org.ramadda.data.docs.MsDocTypeHandler" priority="10" >
+  <type name="type_document_ppt"  description="Powerpoint File" pattern="(.*\.ppt|.*\.pptx)"  super="type_document_tika"    priority="10" >
      <property name="icon" value="/icons/ppt.png"/>
 </type>
 
