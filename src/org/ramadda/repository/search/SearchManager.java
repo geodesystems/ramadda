@@ -293,7 +293,15 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
-    public void reindexLucene(Object actionId, boolean all) throws Throwable {
+    public void reindexLucene(Object actionId, boolean all)  {
+	try {
+	    reindexLuceneInner(actionId, all);
+	} catch(Throwable thr) {
+	    throw new RuntimeException(thr);
+	}
+    }
+
+    private void reindexLuceneInner(Object actionId, boolean all)  throws Throwable {	
         Statement statement =
             getDatabaseManager().select(Tables.ENTRIES.COL_ID,
 					Misc.newList(Tables.ENTRIES.NAME),
