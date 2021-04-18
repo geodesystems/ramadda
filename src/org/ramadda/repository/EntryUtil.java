@@ -89,6 +89,20 @@ public class EntryUtil extends RepositoryManager {
 
     }
 
+    public static List<Entry> getGroups(List<Entry> entries) {
+	List<Entry> groups = new ArrayList<Entry>();
+	for(Entry entry: entries)
+	    if (entry.isGroup()) groups.add(entry);
+	return groups;
+    }
+
+    public static List<Entry> getNonGroups(List<Entry> entries) {
+	List<Entry> nongroups = new ArrayList<Entry>();
+	for(Entry entry: entries)
+	    if (!entry.isGroup()) nongroups.add(entry);
+	return nongroups;
+    }
+
 
     /**
      * _more_

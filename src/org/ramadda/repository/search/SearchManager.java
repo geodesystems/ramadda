@@ -21,6 +21,7 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.store.*;
 import org.apache.lucene.index.*;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.util.QueryBuilder;
 import org.apache.lucene.search.Collector;
@@ -290,21 +291,51 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
-    public void reindexLucene(Object actionId) throws Exception {
-        IndexWriter writer = getLuceneWriter();
-	writer.deleteAll();
-	writer.commit();
+    public void reindexLucene(Object actionId, boolean all) throws Exception {
         Statement statement =
             getDatabaseManager().select(Tables.ENTRIES.COL_ID,
 					Misc.newList(Tables.ENTRIES.NAME),
 					null);
+
         SqlUtil.Iterator iter = getDatabaseManager().getIterator(statement);
         ResultSet        results;
-	int cnt = 0;
+	List<String> ids = new ArrayList<String>();
+
+
+        IndexWriter writer = getLuceneWriter();
+        IndexSearcher searcher = null;
 	while ((results = iter.getNext()) != null) {
             String id = results.getString(1);
-	    Entry entry = getEntryManager().getEntry(null, id,false);
+	    if(!all) {
+		if(searcher==null) {
+		    IndexReader reader =  DirectoryReader.open(writer);
+		    searcher = new IndexSearcher(reader);
+		}
+		Query query = new TermQuery(new Term(FIELD_ENTRYID, id));
+		TopDocs       hits     = searcher.search(query, 1);
+		ScoreDoc[]    docs     = hits.scoreDocs;
+		if(docs.length>0) {
+		    //		    System.err.println("skipping:" + id);
+		    continue;
+		} else {
+		    //		    System.err.println("not skipping:"  + id);
+		}
+	    }
+	    ids.add(id);
+	    //	    if(ids.size()>5) break;
+	}
 
+	System.err.println("ids:" + ids.size());
+
+	if(all) {
+	    writer.deleteAll();
+	    writer.commit();
+	}
+
+
+	int cnt = 0;
+	for(String id: ids) {
+	    Entry entry = getEntryManager().getEntry(null, id,false);
 	    System.err.println("#" + cnt +" entry:" + entry.getName());
 	    cnt++;
 	    indexEntry(writer, entry);
@@ -416,7 +447,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             new org.apache.lucene.document.Document();
         String path = entry.getResource().getPath();
 
-        doc.add(new TextField(FIELD_ENTRYID, entry.getId(), Field.Store.YES));
+        doc.add(new StringField(FIELD_ENTRYID, entry.getId(), Field.Store.YES));
         if ((path != null) && (path.length() > 0)) {
             doc.add(new TextField(FIELD_PATH, path, Field.Store.YES));
         }
@@ -541,14 +572,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     public Result processEntrySuggest(Request request) throws Exception {
         List<String> names  = new ArrayList<String>();
 	request.put(ARG_MAX,20);
-	List[] pair = getEntryManager().getEntries(request);
-	for(List l: pair) {
-	    for(Entry entry: (List<Entry>)l) {
-                String obj = Json.map("name", Json.quote(entry.getName()), "id",
-                                      Json.quote(entry.getId()), "icon",
-                                      Json.quote(entry.getTypeHandler().getTypeIconUrl()));
-                names.add(obj);
-	    }
+	for(Entry entry:  getEntryManager().getEntries(request, new StringBuilder())) {
+	    String obj = Json.map("name", Json.quote(entry.getName()), "id",
+				  Json.quote(entry.getId()), "icon",
+				  Json.quote(entry.getTypeHandler().getTypeIconUrl()));
+	    names.add(obj);
 	}
 	return new Result("", new StringBuilder(Json.map("values", Json.list(names))), "text/json");
     }
@@ -595,6 +623,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 
 	int max = request.get(ARG_MAX,100);
+
+
 	//	searcher.setDefaultFieldSortScoring(true, false);
 	TopDocs       hits     = searcher.search(query, max,Sort.RELEVANCE);
 	//        TopDocs       hits     = searcher.search(query, 100);		

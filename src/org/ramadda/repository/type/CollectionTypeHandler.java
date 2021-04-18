@@ -871,11 +871,8 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         }
         List<Clause> clauses = new ArrayList<Clause>();
         addClauses(request, group, clauses);
-        List[] pair = getEntryManager().getEntries(request, clauses,
-                          getGranuleTypeHandler());
-
-        //        pair[0] is the folder entries. shouldn't have any here
-        return (List<Entry>) pair[1];
+        return  getEntryManager().getEntries(request, clauses,
+						    getGranuleTypeHandler());
     }
 
     /**

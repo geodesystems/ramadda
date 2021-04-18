@@ -564,30 +564,6 @@ public class RepositoryManager implements RepositorySource, Constants,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
-    private String xxxgetProperty(String name, String dflt) {
-        return repository.getProperty(name, dflt);
-    }
-
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
-    private boolean xxxgetProperty(String name, boolean dflt) {
-        return repository.getProperty(name, dflt);
-    }
-
 
     /**
      * _more_

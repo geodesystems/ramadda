@@ -147,11 +147,8 @@ public class TestSearchProvider extends SearchProvider {
         } else {
             System.err.println("TestSearchProvider.getEntries");
             StringBuilder sb = new StringBuilder();
-            List[] fromRepos = getEntryManager().getEntries(request, sb);
+            results =   getEntryManager().getEntries(request, sb,null);
             searchInfo.addMessage(this, sb.toString());
-            results.addAll(((List<Entry>) fromRepos[0]));
-            results.addAll(((List<Entry>) fromRepos[1]));
-
         }
 
         return results;

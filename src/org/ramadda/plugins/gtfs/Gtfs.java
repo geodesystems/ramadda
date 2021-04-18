@@ -1611,14 +1611,10 @@ public class Gtfs implements Constants {
                                   "type_gtfs_stop");
                 searchRequest.put("search.type_gtfs_stop.stop_id",
                                   "=" + stopId);
-                List[] pair =
-                    request.getRepository().getEntryManager().getEntries(
-                        searchRequest, tmp);
-                stopEntry = (Entry) ((pair[0].size() > 0)
-                                     ? pair[0].get(0)
-                                     : (pair[1].size() > 0)
-                                       ? pair[1].get(0)
-                                       : null);
+		List<Entry> entries = 
+                    request.getRepository().getEntryManager().getEntries(searchRequest, tmp);
+                stopEntry = entries.size()>0?entries.get(0):null;
+
             }
             if (stopEntry != null) {
                 if (stopMap != null) {
@@ -1658,15 +1654,8 @@ public class Gtfs implements Constants {
         searchRequest.put("search.type_gtfs_stop.agency_id",
                           "=" + agency.getId());
         StringBuilder tmp = new StringBuilder();
-        List[] pair = request.getRepository().getEntryManager().getEntries(
-                          searchRequest, tmp);
-        Entry stop = (Entry) ((pair[0].size() > 0)
-                              ? pair[0].get(0)
-                              : (pair[1].size() > 0)
-                                ? pair[1].get(0)
-                                : null);
-
-        return stop;
+        List<Entry> entries= request.getRepository().getEntryManager().getEntries(searchRequest, tmp);
+	return   entries.size()>0?entries.get(0):null;
     }
 
 
@@ -1694,15 +1683,8 @@ public class Gtfs implements Constants {
         searchRequest.put("search.type_gtfs_route.agency_id",
                           "=" + agency.getId());
         StringBuilder tmp = new StringBuilder();
-        List[] pair = request.getRepository().getEntryManager().getEntries(
-                          searchRequest, tmp);
-        Entry route = (Entry) ((pair[0].size() > 0)
-                               ? pair[0].get(0)
-                               : (pair[1].size() > 0)
-                                 ? pair[1].get(0)
-                                 : null);
-
-        return route;
+        List<Entry> entries =  request.getRepository().getEntryManager().getEntries(searchRequest, tmp);
+	return entries.size()>0?entries.get(0):null;
     }
 
 
@@ -1730,15 +1712,8 @@ public class Gtfs implements Constants {
         searchRequest.put("search.type_gtfs_trip.agency_id",
                           "=" + agency.getId());
         StringBuilder tmp = new StringBuilder();
-        List[] pair = request.getRepository().getEntryManager().getEntries(
-                          searchRequest, tmp);
-        Entry trip = (Entry) ((pair[0].size() > 0)
-                              ? pair[0].get(0)
-                              : (pair[1].size() > 0)
-                                ? pair[1].get(0)
-                                : null);
-
-        return trip;
+        List<Entry> entries = request.getRepository().getEntryManager().getEntries(searchRequest, tmp);
+	return entries.size()>0?entries.get(0):null;
     }
 
 
@@ -2081,13 +2056,8 @@ public class Gtfs implements Constants {
         q.append("]");
         searchRequest.put("search.type_gtfs_trip.stop_ids", q);
         StringBuilder tmp = new StringBuilder();
-        List[] pair = request.getRepository().getEntryManager().getEntries(
-                          searchRequest, tmp);
-        trips = new ArrayList<Entry>();
-        trips.addAll((List<Entry>) pair[0]);
-        trips.addAll((List<Entry>) pair[1]);
+	trips = request.getRepository().getEntryManager().getEntries(searchRequest, tmp);
         agency.putTransientProperty(entry.getId() + ".trips", trips);
-
         return trips;
     }
 

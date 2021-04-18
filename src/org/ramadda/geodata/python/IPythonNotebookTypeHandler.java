@@ -75,42 +75,6 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
 
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param wikiUtil _more_
-     * @param request _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    //    @Override
-    /*
-    public Result xxxgetHtmlDisplay(Request request, Entry entry)
-            throws Exception {
-        try {
-            if ( !isDefaultHtmlOutput(request)) {
-                return null;
-            }
-
-            return getHtmlDisplayInner(request, entry);
-        } catch (Exception exc) {
-            exc.printStackTrace();
-
-            return new Result("",
-                              new StringBuilder("Ann error has occurred:"
-                                  + exc));
-        }
-    }
-    */
-
-
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)

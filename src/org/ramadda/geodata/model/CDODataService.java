@@ -190,11 +190,9 @@ public abstract class CDODataService extends Service {
             }
 
         }
-        List<Entry>[] pair =
-            outputHandler.getEntryManager().getEntries(request, clauses,
-                ctypeHandler.getGranuleTypeHandler());
+	return outputHandler.getEntryManager().getEntries(request, clauses,
+							ctypeHandler.getGranuleTypeHandler());
 
-        return pair[1];
     }
 
 

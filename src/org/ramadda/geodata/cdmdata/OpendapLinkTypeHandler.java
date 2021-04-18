@@ -64,29 +64,6 @@ public class OpendapLinkTypeHandler extends GridTypeHandler {
      *
      * @throws Exception _more_
      */
-    public String xxxgetEntryResourceUrl(Request request, Entry entry)
-            throws Exception {
-
-        String fileTail =
-            IOUtil.stripExtension(getStorageManager().getFileTail(entry))
-            + ".html";
-        System.err.println("getEntry:" + fileTail);
-
-        return HtmlUtils.url(request.makeUrl(getRepository().URL_ENTRY_GET)
-                             + "/" + fileTail, ARG_ENTRYID, entry.getId());
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getPathForEntry(Request request, Entry entry)
             throws Exception {

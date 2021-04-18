@@ -346,8 +346,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         int minWidth       = contentsWidth + 200;
         request.put(ARG_TYPE, theType);
         List<Entry> allEntries = new ArrayList<Entry>();
-        List<Entry> entries    = new ArrayList<Entry>();
-        List<Entry> groups     = new ArrayList<Entry>();
         boolean     refinement = request.exists(ARG_SEARCH_REFINE);
         if ( !request.exists(ARG_MAX)) {
             request.put(ARG_MAX, "50");
@@ -389,20 +387,17 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                 }
             }
 
-            List[] groupAndEntries =
-                getRepository().getEntryManager().getEntries(request,
-                    criteriaSB, extra);
-            groups  = (List<Entry>) groupAndEntries[0];
-            entries = (List<Entry>) groupAndEntries[1];
-            allEntries.addAll(groups);
-            allEntries.addAll(entries);
+            allEntries =  getRepository().getEntryManager().getEntries(request,
+									criteriaSB, extra);
+
         }
 
 
         if (request.isOutputDefined()) {
             OutputHandler outputHandler =
                 getRepository().getOutputHandler(request);
-
+	    List<Entry> groups    = getEntryUtil().getGroups(allEntries);
+	    List<Entry> entries    = getEntryUtil().getNonGroups(allEntries);	    
             return outputHandler.outputGroup(
                 request, null, getEntryManager().getDummyGroup(), groups,
                 entries);

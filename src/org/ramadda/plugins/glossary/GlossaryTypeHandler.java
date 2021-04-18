@@ -141,29 +141,6 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @param request _more_
      * @param group _more_
-     * @param entries _more_
-     * @param subGroups _more_
-     * @param where _more_
-     * @param select _more_
-     *
-     * @throws Exception _more_
-     */
-    public void xxxgetChildrenEntries(Request request, Entry group,
-                                      List<Entry> entries,
-                                      List<Entry> subGroups,
-                                      SelectInfo select)
-            throws Exception {
-        if ( !request.defined(ARG_OUTPUT) && !request.defined(ARG_LETTER)) {
-            return;
-        }
-        super.getChildrenEntries(request, group, entries, subGroups, select);
-    }
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param group _more_
      * @param subGroups _more_
      * @param entries _more_
      *

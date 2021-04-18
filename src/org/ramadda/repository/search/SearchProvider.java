@@ -332,13 +332,8 @@ public abstract class SearchProvider extends GenericTypeHandler {
         public List<Entry> getEntries(Request request, SearchInfo searchInfo)
                 throws Exception {
             StringBuilder sb = new StringBuilder();
-            List<Entry>[] repositoryResults =
-                getEntryManager().getEntries(request, sb);
+            List<Entry> results = getEntryManager().getEntries(request, sb);
             searchInfo.addMessage(this, sb.toString());
-            List<Entry> results = new ArrayList<Entry>();
-            results.addAll(repositoryResults[0]);
-            results.addAll(repositoryResults[1]);
-
             return results;
         }
 

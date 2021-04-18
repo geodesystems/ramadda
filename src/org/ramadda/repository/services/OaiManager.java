@@ -836,7 +836,6 @@ public class OaiManager extends RepositoryManager {
      * @throws Exception _more_
      */
     private EntryList getEntries(Request request) throws Exception {
-        List<Entry> entries = new ArrayList<Entry>();
         int         max     = request.get(ARG_MAX, 5);
         int         skip    = request.get(ARG_RESUMPTIONTOKEN, 0);
         Request newRequest  = new Request(getRepository(), request.getUser());
@@ -851,12 +850,7 @@ public class OaiManager extends RepositoryManager {
             newRequest.put(ARG_UNTIL, request.getString(ARG_UNTIL, ""));
         }
 
-
-        List[] tuple = getEntryManager().getEntries(newRequest,
-                           new StringBuffer());
-        entries.addAll((List<Entry>) tuple[0]);
-        entries.addAll((List<Entry>) tuple[1]);
-
+        List<Entry> entries =  getEntryManager().getEntries(newRequest);
         String token = null;
         if (entries.size() > 0) {
             if (entries.size() >= max) {

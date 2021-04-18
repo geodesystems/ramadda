@@ -3640,9 +3640,7 @@ public class EntryManager extends RepositoryManager {
         }
 
 
-        List[] groupAndEntries =
-            getRepository().getEntryManager().getEntries(request);
-        List<Entry> entries = (List<Entry>) groupAndEntries[1];
+        List<Entry> entries =getEntries(request);
         if (entries.size() == 0) {
             throw new IllegalArgumentException(
 					       "Could not find entry with file");
@@ -6038,7 +6036,7 @@ public class EntryManager extends RepositoryManager {
                                  String linkText, String url)
 	throws Exception {
         if (url == null) {
-            url = getEntryManager().getEntryUrl(request, entry);
+            url = getEntryUrl(request, entry);
             //            url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
         }
 
@@ -6730,7 +6728,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public List[] getEntries(Request request) throws Exception {
+    public List<Entry> getEntries(Request request) throws Exception {
         return getEntries(request, new StringBuilder());
     }
 
@@ -6744,10 +6742,11 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public List[] getEntries(Request request, Appendable searchCriteriaSB)
+    public List<Entry> getEntries(Request request, Appendable searchCriteriaSB)
 	throws Exception {
         return getEntries(request, searchCriteriaSB, null);
     }
+
 
     /**
      * _more_
@@ -6760,7 +6759,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public List[] getEntries(Request request, Appendable searchCriteriaSB,
+    public List<Entry> getEntries(Request request, Appendable searchCriteriaSB,
                              List<Clause> extraClauses)
 	throws Exception {
 
@@ -6774,6 +6773,7 @@ public class EntryManager extends RepositoryManager {
         return getEntries(request, where, typeHandler);
     }
 
+
     /**
      * _more_
      *
@@ -6785,7 +6785,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public List<Entry>[] getEntries(Request request, List<Clause> clauses,
+    public List<Entry> getEntries(Request request, List<Clause> clauses,
                                     TypeHandler typeHandler)
 	throws Exception {
 
@@ -6819,8 +6819,7 @@ public class EntryManager extends RepositoryManager {
 	    //a	    System.err.println("after: " + clauses);
 	}
 
-        List<Entry> entries       = new ArrayList<Entry>();
-        List<Entry> groups        = new ArrayList<Entry>();
+
         List<Entry> allEntries    = new ArrayList<Entry>();
 	boolean didSearch = false;
 
@@ -6829,7 +6828,7 @@ public class EntryManager extends RepositoryManager {
 	    List<String> columns = new ArrayList<String>();
 	    for(Clause clause: clauses)
 		clause.getColumns(columns);
-	    // check if its jut the text search with the default order by
+	    // check if its just the text search with the default order by
 	    boolean isTextSearch = (columns.size()==3 && columns.contains(Tables.ENTRIES.COL_NAME) &&
 				    columns.contains(Tables.ENTRIES.COL_DESCRIPTION) &&
 				    columns.contains(Tables.ENTRIES.COL_RESOURCE));//  || columns.size()==0;
@@ -6893,24 +6892,23 @@ public class EntryManager extends RepositoryManager {
 	    }
 	}
 
-        //Only split them into groups and non-groups if we aren't doing an orderby
 
-	//	System.err.println("ob:" + request.getString(ARG_ORDERBY));
+
+
+
+        //Only split them into groups and non-groups if we aren't doing an orderby
         if (!request.exists(ARG_ORDERBY)) {
 	    String text = request.getString(ARG_TEXT);
 	    //if there was a text search then put the entries whose names
-	    //match ths text up first
-	    //	    System.err.println("text:" + text);
+	    //match the text up first
 	    if(text!=null) {
 		List<Entry> first = new ArrayList<Entry>();
 		List<Entry> last = new ArrayList<Entry>();
 		for(Entry entry: allEntries) {
 		    String name = entry.getName();
 		    if(name.regionMatches(true,0,text,0,text.length())) {
-			//			System.err.println("\tmatch:" + name);
 			first.add(entry);
 		    } else {
-			//			System.err.println("\tno match:" + name);
 			last.add(entry);
 		    }
 		}
@@ -6919,21 +6917,13 @@ public class EntryManager extends RepositoryManager {
 		allEntries.addAll(last);
 	    }
 
-
-            for (Entry entry : allEntries) {
-                if (entry.isGroup()) {
-                    groups.add(entry);
-                } else {
-                    entries.add(entry);
-                }
-            }
-        } else {
-            entries = allEntries;
+	    List<Entry> entries       = new ArrayList<Entry>();
+	    entries.addAll(getEntryUtil().getGroups(allEntries));
+	    entries.addAll(getEntryUtil().getNonGroups(allEntries));			   
+	    allEntries = entries;
         }
 
-        entries = getAccessManager().filterEntries(request, entries);
-        groups  = getAccessManager().filterEntries(request, groups);
-        return (List<Entry>[]) new List[] { groups, entries };
+	return getAccessManager().filterEntries(request, allEntries);
     }
 
 
@@ -7154,9 +7144,9 @@ public class EntryManager extends RepositoryManager {
                                       Entry entry, Entry associatedEntry,
                                       String associationType)
 	throws Exception {
-        Entry parent = getEntryManager().findGroup(request,
-						   request.getString(ARG_PUBLISH_ENTRY + "_hidden",
-								     ""));
+        Entry parent = findGroup(request,
+				 request.getString(ARG_PUBLISH_ENTRY + "_hidden",
+						   ""));
         if (parent == null) {
             return new Result(
 			      "",
