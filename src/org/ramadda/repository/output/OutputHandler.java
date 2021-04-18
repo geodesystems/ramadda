@@ -1571,14 +1571,14 @@ public class OutputHandler extends RepositoryManager {
 		} 
 	    };
 
-	    makeHeader.accept(SORTBY_NAME,"Name",null);
-	    makeHeader.accept(SORTBY_FROMDATE,"Date",WIDTH_DATE);
+	    makeHeader.accept(ORDERBY_NAME,"Name",null);
+	    makeHeader.accept(ORDERBY_FROMDATE,"Date",WIDTH_DATE);
             if (showCreateDate) {
-		makeHeader.accept(SORTBY_CREATEDATE,"Created",WIDTH_DATE);
+		makeHeader.accept(ORDERBY_CREATEDATE,"Created",WIDTH_DATE);
 	    }
             if ( !isMobile) {
-		makeHeader.accept(SORTBY_SIZE,"Size",WIDTH_SIZE);
-		makeHeader.accept(SORTBY_TYPE,"Type",WIDTH_KIND);		
+		makeHeader.accept(ORDERBY_SIZE,"Size",WIDTH_SIZE);
+		makeHeader.accept(ORDERBY_TYPE,"Type",WIDTH_KIND);		
             }
             sb.append("</tr></table>");
             link = "";

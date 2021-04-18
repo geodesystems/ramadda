@@ -24,17 +24,9 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.util.QueryBuilder;
 import org.apache.lucene.search.Collector;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.Scorer;
-import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.search.TopScoreDocCollector;
+import org.apache.lucene.search.*;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.util.Version;
+
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.admin.*;
@@ -569,8 +561,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      *
      * @throws Exception _more_
      */
-    public void processLuceneSearch(Request request, List<Entry> groups,
-                                    List<Entry> entries)
+    public void processLuceneSearch(Request request, List<Entry> entries)
             throws Exception {
         StringBuffer sb = new StringBuffer();
         StandardAnalyzer analyzer =       new StandardAnalyzer();
@@ -587,22 +578,28 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    }
 	}
 
-	if(false && hasAField) {
+	if(text.length()==0) {
+	    query = new MatchAllDocsQuery();
+	} else if(false && hasAField) {
 	    org.apache.lucene.queryparser.classic.QueryParser queryParser =
 		new org.apache.lucene.queryparser.classic.QueryParser(FIELD_NAME, analyzer);
 	    query = queryParser.parse(text);
 	} else {
 	    for(String field: SEARCH_FIELDS) {
-		Query term = new TermQuery(new Term(field, text));
+		//		Query term = new TermQuery(new Term(field, text));
+		Query term = new WildcardQuery(new Term(field, text));		
 		builder.add(term, BooleanClause.Occur.SHOULD);
 	    }
 	    query = builder.build();
 	}
 
-        TopDocs       hits     = searcher.search(query, 100);	
+	//	searcher.setDefaultFieldSortScoring(true, false);
+	TopDocs       hits     = searcher.search(query, 100,Sort.RELEVANCE);
+	//        TopDocs       hits     = searcher.search(query, 100);		
         ScoreDoc[]    docs     = hits.scoreDocs;
-	//	System.err.println("docs:" + docs.length +" text:" + text);
+	System.err.println("lucene results:" + docs.length +" text:" + text);
 
+	HashSet seen = new HashSet();
         for (int i = 0; i < docs.length; i++) {
             org.apache.lucene.document.Document doc =
                 searcher.doc(docs[i].doc);
@@ -610,15 +607,17 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             if (id == null) {
                 continue;
             }
+	    if(seen.contains(id)) {
+		//		System.err.println("seen:"+ id);
+		continue;
+	    }
+	    seen.add(id);
             Entry entry = getEntryManager().getEntry(request, id);
             if (entry == null) {
                 continue;
             }
-            if (entry.isGroup()) {
-                groups.add(entry);
-            } else {
-                entries.add(entry);
-            }
+	    //	    System.err.println("entry:"+ entry +" id:" + entry.getId());
+	    entries.add(entry);
         }
     }
 
@@ -989,13 +988,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         Appendable outputForm  = new StringBuilder();
         List       orderByList = new ArrayList();
         orderByList.add(new TwoFacedObject(msg("None"), "none"));
+        orderByList.add(new TwoFacedObject(msg("Relevant"), ORDERBY_RELEVANT));
         orderByList.add(new TwoFacedObject(msg("From Date"),
-                                           SORTBY_FROMDATE));
-        orderByList.add(new TwoFacedObject(msg("To Date"), SORTBY_TODATE));
+                                           ORDERBY_FROMDATE));
+        orderByList.add(new TwoFacedObject(msg("To Date"), ORDERBY_TODATE));
         orderByList.add(new TwoFacedObject(msg("Create Date"),
-                                           SORTBY_CREATEDATE));
-        orderByList.add(new TwoFacedObject(msg("Name"), SORTBY_NAME));
-        orderByList.add(new TwoFacedObject(msg("Size"), SORTBY_SIZE));
+                                           ORDERBY_CREATEDATE));
+        orderByList.add(new TwoFacedObject(msg("Name"), ORDERBY_NAME));
+        orderByList.add(new TwoFacedObject(msg("Size"), ORDERBY_SIZE));
 
         String orderBy =
             HtmlUtils.select(ARG_ORDERBY, orderByList,

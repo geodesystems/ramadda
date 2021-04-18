@@ -232,7 +232,7 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
         boolean descending = !request.get(ARG_ASCENDING, false);
-        String  by         = request.getString(ARG_ORDERBY, SORTBY_FROMDATE);
+        String  by         = request.getString(ARG_ORDERBY, ORDERBY_FROMDATE);
         if (sortMetadata != null) {
             if ( !request.exists(ARG_ASCENDING)) {
                 if (Misc.equals(sortMetadata.getAttr2(), "true")) {
@@ -247,12 +247,12 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
 
-        if (by.equals(SORTBY_NAME)) {
+        if (by.equals(ORDERBY_NAME)) {
             files = IOUtil.sortFilesOnName(files, descending);
-        } else if (by.equals(SORTBY_SIZE)) {
+        } else if (by.equals(ORDERBY_SIZE)) {
             files = Utils.sortFilesOnSize(files, descending);
 
-        } else if (by.equals(SORTBY_MIXED)) {
+        } else if (by.equals(ORDERBY_MIXED)) {
             List<File> filesByDate = new ArrayList<File>();
             List<File> filesByName = new ArrayList<File>();
             for (File f : files) {

@@ -195,15 +195,15 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
             }
 
             if (by == null) {
-                by = SORTBY_FROMDATE;
+                by = ORDERBY_FROMDATE;
             }
 
 
 	    //	    System.err.println("by:" + by + " desc:" + descending);
-            if (by.equals(SORTBY_NAME)) {
+            if (by.equals(ORDERBY_NAME)) {
                 entries = getEntryManager().getEntryUtil().sortEntriesOnName(
                     entries, descending);
-                //        } else if (by.equals(SORTBY_SIZE)) {
+                //        } else if (by.equals(ORDERBY_SIZE)) {
 		//		System.err.println("by name:" + entries);
             } else {
                 entries = getEntryManager().getEntryUtil().sortEntriesOnDate(

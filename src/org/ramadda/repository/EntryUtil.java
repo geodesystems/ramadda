@@ -512,22 +512,22 @@ public class EntryUtil extends RepositoryManager {
      * @return _more_
      */
     public static int compareEntries(Entry e1, Entry e2, String on) {
-        if (on.equals(SORTBY_DATE) || on.equals(SORTBY_FROMDATE)) {
+        if (on.equals(ORDERBY_DATE) || on.equals(ORDERBY_FROMDATE)) {
             return compare(e1.getStartDate(), e2.getStartDate());
-        } else if (on.equals(SORTBY_TODATE)) {
+        } else if (on.equals(ORDERBY_TODATE)) {
             return compare(e1.getEndDate(), e2.getEndDate());
-        } else if (on.equals(SORTBY_CHANGEDATE)) {
+        } else if (on.equals(ORDERBY_CHANGEDATE)) {
             return compare(e1.getChangeDate(), e2.getChangeDate());
-        } else if (on.equals(SORTBY_CREATEDATE)) {
+        } else if (on.equals(ORDERBY_CREATEDATE)) {
 	    return  compare(e1.getCreateDate(), e2.getCreateDate());
-        } else if (on.equals(SORTBY_NAME)) {
+        } else if (on.equals(ORDERBY_NAME)) {
             return e1.getName().compareToIgnoreCase(e2.getName());
-        } else if (on.equals(SORTBY_ENTRYORDER)) {
+        } else if (on.equals(ORDERBY_ENTRYORDER)) {
             return e1.getEntryOrder() - e2.getEntryOrder();
-        } else if (on.equals(SORTBY_TYPE)) {
+        } else if (on.equals(ORDERBY_TYPE)) {
             return e1.getTypeHandler().getLabel().compareToIgnoreCase(
                 e2.getTypeHandler().getLabel());
-        } else if (on.equals(SORTBY_SIZE)) {
+        } else if (on.equals(ORDERBY_SIZE)) {
             return compare(e1.getResource().getFileSize(),
                            e2.getResource().getFileSize());
         }

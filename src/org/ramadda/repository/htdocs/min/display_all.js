@@ -27236,11 +27236,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    if(this.areaWidget) this.areaWidget.initHtml();
 	    if(this.getShowOrderBy()) {
 		let settings = this.getSearchSettings();
-		let byList = [["A-Z","name_ascending"],["Z-A","name_descending"],
+		let byList = [["Relevant","relevant"], ["A-Z","name_ascending"],["Z-A","name_descending"],
+			  ["Create date - newest first","createdate_descending"],
 			  ["Create date - oldest first","createdate_ascending"],
-			  ["Create date - youngest first","createdate_descending"],
-			  ["From date - oldest first","fromdate_ascending"],
 			  ["From date - youngest first","fromdate_descending"],			  			  
+			  ["From date - oldest first","fromdate_ascending"],
 			  ["Size - largest first","size_descending"],
 			  ["Size - smallest first","size_ascending"]];			  
 		let options = "";
@@ -27472,6 +27472,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    let orderBy = this.jq(ID_SEARCH_ORDERBY).val();
 	    if(orderBy) {
 		let ascending = orderBy.indexOf("_ascending")>=0;
+		if(orderBy=="relevant") ascending=false;
 		orderBy = orderBy.replace("_ascending","").replace("_descending","");
 		settings.orderBy =  orderBy;
 		settings.ascending = ascending;

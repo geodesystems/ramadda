@@ -2266,34 +2266,36 @@ public interface Constants {
 
 
     /** _more_ */
-    public static final String SORTBY_DATE = "date";
+    public static final String ORDERBY_DATE = "date";
 
     /** _more_ */
-    public static final String SORTBY_FROMDATE = "fromdate";
+    public static final String ORDERBY_FROMDATE = "fromdate";
 
     /** _more_ */
-    public static final String SORTBY_TODATE = "todate";
+    public static final String ORDERBY_TODATE = "todate";
 
     /** _more_ */
-    public static final String SORTBY_CHANGEDATE = "changedate";
+    public static final String ORDERBY_CHANGEDATE = "changedate";
 
     /** _more_ */
-    public static final String SORTBY_SIZE = "size";
+    public static final String ORDERBY_SIZE = "size";
 
     /** _more_ */
-    public static final String SORTBY_TYPE = "type";
+    public static final String ORDERBY_TYPE = "type";
+
+    public static final String ORDERBY_RELEVANT = "relevant";
 
     /** _more_ */
-    public static final String SORTBY_ENTRYORDER = "entryorder";
+    public static final String ORDERBY_ENTRYORDER = "entryorder";
 
     /** _more_ */
-    public static final String SORTBY_CREATEDATE = "createdate";
+    public static final String ORDERBY_CREATEDATE = "createdate";
 
     /** _more_ */
-    public static final String SORTBY_NAME = "name";
+    public static final String ORDERBY_NAME = "name";
 
     /** _more_ */
-    public static final String SORTBY_MIXED = "mixed";
+    public static final String ORDERBY_MIXED = "mixed";
 
 
     /** _more_ */
