@@ -20,7 +20,6 @@
         <property name="docs_javadoc_dest" value="${docs_dir}/javadoc" />
 
         <property name="tika_jar" value="tika-app-1.26.jar" />
-        <property name="jfreechart_jar" value="jfreechart-1.0.19.jar" />
         <property name="unidata_jar" value="idv.jar" />
 
 
@@ -43,7 +42,7 @@
 
     <target name="initcore" if="core">
        <property name="classpath" value="${lib_dir}/ramaddalib.jar:${lib_dir}/servlet-api.jar:${lib_dir}/jetty.jar"/>
-       <property name="manifestjars" value=" ramaddalib.jar   servlet-api.jar jetty.jar allplugins_classes.jar ${tika_jar} ${jfreechart_jar}"/>
+       <property name="manifestjars" value=" ramaddalib.jar   servlet-api.jar jetty.jar allplugins_classes.jar ${tika_jar} "/>
        <property name="lib1" value="${lib_dir}/dummy.jar"/>
        <property name="lib2" value="${lib_dir}/dummy.jar"/>
        <property name="lib3" value="${lib_dir}/dummy.jar"/>
@@ -51,7 +50,7 @@
 
     <target name="initfull">
        <property name="classpath" value="${lib_dir}/ramaddalib.jar:${lib_dir}/${unidata_jar}:${lib_dir}/${tika_jar}:${lib_dir}/ramaddatds.jar:${lib_dir}/servlet-api.jar:${lib_dir}/jetty.jar"/>
-       <property name="manifestjars" value="${unidata_jar} ramaddalib.jar   ramaddatds.jar servlet-api.jar jetty.jar allplugins_classes.jar  ${tika_jar}  ${jfreechart_jar}" />
+       <property name="manifestjars" value="${unidata_jar} ramaddalib.jar   ramaddatds.jar servlet-api.jar jetty.jar allplugins_classes.jar  ${tika_jar}  " />
        <property name="lib1" value="${lib_dir}/visad.jar" />
        <property name="lib2" value="${lib_dir}/ncIdv.jar"/>
     </target>
@@ -393,7 +392,6 @@
         <unjar src="${lib_dir}/rhino-1.7.13.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/httpmime-4.5.7.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/httpcore-4.4.1.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/${jfreechart_jar}" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/jcommon-1.0.23.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/ftplet-api-1.0.6.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/ftpserver-core-1.0.6.jar" dest="${tmpjar_dir}"/>

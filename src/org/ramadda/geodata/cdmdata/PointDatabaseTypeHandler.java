@@ -17,20 +17,6 @@
 package org.ramadda.geodata.cdmdata;
 
 
-import org.jfree.chart.*;
-import org.jfree.chart.annotations.*;
-import org.jfree.chart.axis.*;
-import org.jfree.chart.entity.*;
-import org.jfree.chart.event.*;
-import org.jfree.chart.labels.*;
-import org.jfree.chart.plot.*;
-import org.jfree.chart.renderer.xy.*;
-import org.jfree.data.*;
-import org.jfree.data.general.*;
-import org.jfree.data.time.*;
-import org.jfree.data.xy.*;
-import org.jfree.ui.*;
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
@@ -174,16 +160,8 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
     public static final String FORMAT_TIMESERIES_CHART = "timeseries_chart";
 
     /** _more_ */
-    public static final String FORMAT_TIMESERIES_IMAGE = "timeseries_image";
-
-    /** _more_ */
     public static final String FORMAT_TIMESERIES_DATA = "timeseries_data";
 
-    /** _more_ */
-    public static final String FORMAT_SCATTERPLOT = "scatterplot";
-
-    /** _more_ */
-    public static final String FORMAT_SCATTERPLOT_IMAGE = "scatterplot_image";
 
     /** _more_ */
     public static final String FORMAT_TIMELINE = "timeline";
@@ -1048,13 +1026,6 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             StringBuffer sb = new StringBuffer();
             getHtmlHeader(request, sb, entry, null);
             if (format.equals(FORMAT_TIMESERIES)) {
-                request.put(ARG_POINT_FORMAT, FORMAT_TIMESERIES_IMAGE);
-                String redirectUrl = request.getRequestPath() + "/"
-                                     + baseName + ".png" + "?"
-                                     + request.getUrlArgs(null,
-                                         getSet(OP_LT));
-                sb.append(HtmlUtils.img(redirectUrl,
-                                        "Image is being processed..."));
             } else {
                 /*
                 //  for amcharts flash
@@ -1117,8 +1088,6 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             return new Result(redirectUrl);
         }
 
-
-        if (format.equals(FORMAT_SCATTERPLOT)) {}
 
 
         String tableName = getTableName(entry);
@@ -1364,17 +1333,9 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         } else if (format.equals(FORMAT_CHART)) {
             return makeSearchResultsChart(request, entry, columnsToUse,
                                           pointDataList);
-        } else if (format.equals(FORMAT_TIMESERIES_IMAGE)) {
-            return makeSearchResultsTimeSeries(request, entry, columnsToUse,
-                    pointDataList);
-
         } else if (format.equals(FORMAT_TIMESERIES_DATA)) {
             return makeSearchResultsTimeSeriesData(request, entry,
                     columnsToUse, pointDataList);
-
-        } else if (format.equals(FORMAT_SCATTERPLOT_IMAGE)) {
-            return makeSearchResultsScatterPlot(request, entry, columnsToUse,
-                    pointDataList);
         } else if (format.equals(FORMAT_MAP)) {
             return makeSearchResultsMap(request, entry, columnsToUse,
                                         pointDataList);
@@ -1429,57 +1390,6 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
 
 
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param dataset _more_
-     *
-     * @return _more_
-     */
-    private static JFreeChart createChart(Request request, Entry entry,
-                                          XYDataset dataset) {
-        JFreeChart chart = ChartFactory.createTimeSeriesChart(
-                               request.getString(
-                                   ARG_POINT_TIMESERIES_TITLE,
-                                   entry.getName()),  // title
-            "Date",   // x-axis label
-            "",       // y-axis label
-            dataset,  // data
-            true,     // create legend?
-            true,     // generate tooltips?
-            false     // generate URLs?
-                );
-
-        chart.setBackgroundPaint(Color.white);
-        ValueAxis rangeAxis = new NumberAxis("");
-        rangeAxis.setVisible(false);
-        XYPlot plot = (XYPlot) chart.getPlot();
-        if (request.get("gray", false)) {
-            plot.setBackgroundPaint(Color.lightGray);
-            plot.setDomainGridlinePaint(Color.white);
-            plot.setRangeGridlinePaint(Color.white);
-        } else {
-            plot.setBackgroundPaint(Color.white);
-            plot.setDomainGridlinePaint(Color.lightGray);
-            plot.setRangeGridlinePaint(Color.lightGray);
-        }
-        plot.setAxisOffset(new RectangleInsets(5.0, 5.0, 5.0, 5.0));
-        plot.setDomainCrosshairVisible(true);
-        plot.setRangeCrosshairVisible(true);
-        plot.setRangeAxis(0, rangeAxis, false);
-
-
-        XYItemRenderer r    = plot.getRenderer();
-        DateAxis       axis = (DateAxis) plot.getDomainAxis();
-        axis.setDateFormatOverride(new SimpleDateFormat("MMM-yyyy"));
-
-        return chart;
-
-    }
 
     /**
      * _more_
@@ -1879,286 +1789,8 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param columnsToUse _more_
-     * @param list _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    private Result makeSearchResultsTimeSeries(Request request, Entry entry,
-            List<PointDataMetadata> columnsToUse, List<PointData> list)
-            throws Exception {
-
-        StringBuffer sb = new StringBuffer();
-        sb.append(getHeader(request, entry));
-        sb.append(header(msg("Point Data Search Results")));
-        if (list.size() == 0) {
-            sb.append(msg("No results found"));
-
-            return new Result("Point Search Results", sb);
-        }
-
-        TimeSeriesCollection dummy  = new TimeSeriesCollection();
-        JFreeChart chart = createChart(request, entry, dummy);
-        XYPlot               xyPlot = (XYPlot) chart.getPlot();
-
-        Hashtable<String, MyTimeSeries> seriesMap = new Hashtable<String,
-                                                        MyTimeSeries>();
-        List<MyTimeSeries> allSeries = new ArrayList<MyTimeSeries>();
-        int     paramCount = 0;
-        int     colorCount = 0;
-        boolean axisLeft   = true;
-        Hashtable<String, List<ValueAxis>> axisMap = new Hashtable<String,
-                                                         List<ValueAxis>>();
-        Hashtable<String, double[]> rangeMap = new Hashtable<String,
-                                                   double[]>();
-        List<String> units = new ArrayList<String>();
-
-        long         t1    = System.currentTimeMillis();
-
-        for (PointData pointData : list) {
-            for (PointDataMetadata pdm : columnsToUse) {
-                if ( !pdm.isNumeric()) {
-                    continue;
-                }
-                double value =
-                    ((Double) pointData.getValue(pdm)).doubleValue();
-                if (value != value) {
-                    continue;
-                }
-                List<ValueAxis> axises = null;
-                double[]        range  = null;
-                if (pdm.hasUnit()) {
-                    axises = axisMap.get(pdm.unit);
-                    range  = rangeMap.get(pdm.unit);
-                    if (axises == null) {
-                        axises = new ArrayList<ValueAxis>();
-                        range  = new double[] { value, value };
-                        rangeMap.put(pdm.unit, range);
-                        axisMap.put(pdm.unit, axises);
-                        units.add(pdm.unit);
-                    }
-                    range[0] = Math.min(range[0], value);
-                    range[1] = Math.max(range[1], value);
-                }
-                MyTimeSeries series = seriesMap.get(pdm.getColumnName());
-                if (series == null) {
-                    paramCount++;
-                    TimeSeriesCollection dataset = new TimeSeriesCollection();
-                    series = new MyTimeSeries(pdm.formatName(),
-                            FixedMillisecond.class);
-                    allSeries.add(series);
-                    ValueAxis rangeAxis = new NumberAxis(pdm.formatName()
-                                              + " " + pdm.formatUnit());
-                    if (axises != null) {
-                        axises.add(rangeAxis);
-                    }
-                    XYItemRenderer renderer =
-                        new XYAreaRenderer(XYAreaRenderer.LINES);
-                    if (colorCount >= HtmlUtils.COLORS.length) {
-                        colorCount = 0;
-                    }
-                    renderer.setSeriesPaint(0, HtmlUtils.COLORS[colorCount]);
-                    colorCount++;
-                    xyPlot.setRenderer(paramCount, renderer);
-                    xyPlot.setRangeAxis(paramCount, rangeAxis, false);
-                    AxisLocation side = (axisLeft
-                                         ? AxisLocation.TOP_OR_LEFT
-                                         : AxisLocation.BOTTOM_OR_RIGHT);
-                    axisLeft = !axisLeft;
-                    xyPlot.setRangeAxisLocation(paramCount, side);
-
-                    dataset.setDomainIsPointsInTime(true);
-                    dataset.addSeries(series);
-                    seriesMap.put(pdm.getColumnName(), series);
-                    xyPlot.setDataset(paramCount, dataset);
-                    xyPlot.mapDatasetToRangeAxis(paramCount, paramCount);
-                }
-                //series.addOrUpdate(new FixedMillisecond(pointData.date),value);
-                TimeSeriesDataItem item = new TimeSeriesDataItem(
-                                              new FixedMillisecond(
-                                                  pointData.date), value);
-                series.addItem(item);
-            }
-        }
 
 
-
-        for (MyTimeSeries timeSeries : allSeries) {
-            timeSeries.finish();
-        }
-
-        for (String unit : units) {
-            List<ValueAxis> axises = axisMap.get(unit);
-            double[]        range  = rangeMap.get(unit);
-            for (ValueAxis rangeAxis : axises) {
-                rangeAxis.setRange(new org.jfree.data.Range(range[0],
-                        range[1]));
-            }
-        }
-
-
-        long t2 = System.currentTimeMillis();
-
-        BufferedImage newImage =
-            chart.createBufferedImage(request.get(ARG_POINT_IMAGE_WIDTH,
-                1000), request.get(ARG_POINT_IMAGE_HEIGHT, 400));
-        long t3 = System.currentTimeMillis();
-        //System.err.println("timeseries image time:" + (t2 - t1) + " "
-        //                   + (t3 - t2));
-
-        File file = getStorageManager().getTmpFile(request, "point.png");
-        ImageUtils.writeImageToFile(newImage, file);
-        InputStream is     = getStorageManager().getFileInputStream(file);
-        Result      result = new Result("", is, "image/png");
-
-        return result;
-
-    }
-
-
-
-
-    /**
-     * Class MyTimeSeries _more_
-     *
-     *
-     * @author IDV Development Team
-     */
-    private static class MyTimeSeries extends TimeSeries {
-
-        /** _more_ */
-        List<TimeSeriesDataItem> items = new ArrayList<TimeSeriesDataItem>();
-
-        /** _more_ */
-        HashSet<TimeSeriesDataItem> seen = new HashSet<TimeSeriesDataItem>();
-
-        /**
-         * _more_
-         *
-         * @param name _more_
-         * @param c _more_
-         */
-        public MyTimeSeries(String name, Class c) {
-            super(name, c);
-        }
-
-        /**
-         * _more_
-         *
-         * @param item _more_
-         */
-        public void addItem(TimeSeriesDataItem item) {
-            if (seen.contains(item)) {
-                return;
-            }
-            seen.add(item);
-            items.add(item);
-        }
-
-        /**
-         * _more_
-         */
-        public void finish() {
-            items = new ArrayList<TimeSeriesDataItem>(Misc.sort(items));
-
-            for (TimeSeriesDataItem item : items) {
-                this.data.add(item);
-            }
-            fireSeriesChanged();
-        }
-
-
-    }
-
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param columnsToUse _more_
-     * @param list _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    private Result makeSearchResultsScatterPlot(Request request, Entry entry,
-            List<PointDataMetadata> columnsToUse, List<PointData> list)
-            throws Exception {
-        StringBuffer sb = new StringBuffer();
-        /*
-        sb.append(getHeader(request, entry));
-        sb.append(header(msg("Point Data Search Results")));
-        if(list.size()==0) {
-            sb.append(msg("No results found"));
-            return new Result("Point Search Results",sb);
-        }
-
-        XYSeries series = new XYSeries("Series 1");
-        XYSeriesCollection dataset = new XYSeriesCollection(series);
-
-        JFreeChart chart = ChartFactory.createScatterPlot(
-            "Scatter Plot Demo",
-            "X", "Y",
-            dataset,
-            PlotOrientation.VERTICAL,
-            true,
-            true,
-            false
-        );
-
-
-        XYPlot xyPlot = (XYPlot) chart.getPlot();
-        XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot.getRenderer();
-        renderer.setSeriesOutlinePaint(0, Color.black);
-        renderer.setUseOutlinePaint(true);
-
-        NumberAxis domainAxis = (NumberAxis) plot.getDomainAxis();
-        domainAxis.setAutoRangeIncludesZero(false);
-
-
-        double[][]data = new
-        series.add(newData);
-
-        int paramCount = 0;
-        int colorCount = 0;
-        for(PointData pointData: list) {
-            int cnt = -1;
-            for(PointDataMetadata pdm: columnsToUse) {
-                cnt++;
-                if(pdm.isBasic()) continue;
-                Object value = pointData.getValue(pdm);
-                if(pdm.isNumeric()) {
-                }
-            }
-        }
-        */
-
-        /*
-
-        BufferedImage newImage = chart.createBufferedImage(
-                                                           request.get(ARG_POINT_IMAGE_WIDTH,800),
-                                                           request.get(ARG_POINT_IMAGE_HEIGHT,800));
-        File file = getStorageManager().getTmpFile(request, "point.png");
-        ImageUtils.writeImageToFile(newImage, file);
-        InputStream is = getStorageManager().getFileInputStream(file);
-        Result result = new Result("",is,"image/png");
-        return result;
-        */
-        return null;
-
-    }
 
 
 

@@ -17,13 +17,6 @@
 package org.ramadda.data.services;
 
 
-import org.jfree.chart.*;
-import org.jfree.chart.axis.*;
-import org.jfree.chart.plot.*;
-import org.jfree.chart.renderer.xy.*;
-import org.jfree.data.xy.*;
-import org.jfree.ui.*;
-
 import org.ramadda.data.record.*;
 import org.ramadda.data.record.filter.*;
 import org.ramadda.data.services.*;

@@ -175,11 +175,6 @@ public class PointOutputHandler extends RecordOutputHandler {
     /** output type */
     public final OutputType OUTPUT_ASC;
 
-    /** output type */
-    public final OutputType OUTPUT_WAVEFORM;
-
-    /** output type */
-    public final OutputType OUTPUT_WAVEFORM_IMAGE;
 
     /** output type */
     public final OutputType OUTPUT_WAVEFORM_CSV;
@@ -301,12 +296,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                 base + ".timeseriesimage", OutputType.TYPE_OTHER, "",
                 ICON_IMAGE, category);
 
-        OUTPUT_WAVEFORM = new OutputType("Waveform", base + ".waveform",
-                                         OutputType.TYPE_OTHER, "",
-                                         ICON_DATA, category);
-        OUTPUT_WAVEFORM_IMAGE = new OutputType("Waveform",
-                base + ".waveformimage", OutputType.TYPE_OTHER, "",
-                ICON_DATA, category);
+
         OUTPUT_WAVEFORM_CSV = new OutputType("Waveform CSV",
                                              base + ".waveformcsv",
                                              OutputType.TYPE_OTHER, "",
@@ -339,11 +329,6 @@ public class PointOutputHandler extends RecordOutputHandler {
         addType(OUTPUT_ASC);
         addType(OUTPUT_CHART);
         addType(OUTPUT_FORM);
-
-
-        addType(OUTPUT_WAVEFORM);
-        addType(OUTPUT_TIMESERIES_IMAGE);
-        addType(OUTPUT_WAVEFORM_IMAGE);
         addType(OUTPUT_WAVEFORM_CSV);
         addType(OUTPUT_IMAGE);
         addType(OUTPUT_HILLSHADE);
@@ -803,22 +788,9 @@ public class PointOutputHandler extends RecordOutputHandler {
             return outputEntryChart(request, outputType, entry);
         }
 
-        if (outputType.equals(OUTPUT_WAVEFORM)) {
-            return getPointFormHandler().outputEntryWaveform(request,
-                    outputType, (PointEntry) doMakeEntry(request, entry));
-        }
-        if (outputType.equals(OUTPUT_WAVEFORM_IMAGE)) {
-            return getPointFormHandler().outputEntryWaveformImage(request,
-                    outputType, (PointEntry) doMakeEntry(request, entry));
-        }
 
         if (outputType.equals(OUTPUT_WAVEFORM_CSV)) {
             return getPointFormHandler().outputEntryWaveformCsv(request,
-                    outputType, (PointEntry) doMakeEntry(request, entry));
-        }
-
-        if (outputType.equals(OUTPUT_TIMESERIES_IMAGE)) {
-            return getPointFormHandler().outputEntryTimeSeriesImage(request,
                     outputType, (PointEntry) doMakeEntry(request, entry));
         }
 

@@ -36,8 +36,6 @@ import java.io.*;
 import java.util.Date;
 import java.util.List;
 
-import javax.mail.*;
-import javax.mail.internet.*;
 
 
 /**

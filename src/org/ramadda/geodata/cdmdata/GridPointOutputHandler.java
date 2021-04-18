@@ -17,13 +17,7 @@
 package org.ramadda.geodata.cdmdata;
 
 
-import org.jfree.chart.*;
-import org.jfree.chart.axis.*;
-import org.jfree.chart.plot.*;
-import org.jfree.chart.renderer.xy.*;
-import org.jfree.data.time.*;
-import org.jfree.data.xy.*;
-import org.jfree.ui.*;
+
 
 import org.ramadda.data.record.RecordField;
 import org.ramadda.repository.DateHandler;
@@ -640,18 +634,13 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
                     (Entry) entry.clone(), entry, "point series of");
         }
         Result result = null;
-        if (format.equalsIgnoreCase(FORMAT_TIMESERIES_IMAGE)) {
-            result = outputTimeSeriesImage(request, entry, f);
-        } else {
-            result = new Result(getStorageManager().getFileInputStream(f),
-                                doingJson
-                                ? Json.MIMETYPE
-                                : pdrb.getAccept());
-            //Set return filename sets the Content-Disposition http header so the browser saves the file
-            //with the correct name and suffix
-            result.setReturnFilename(baseName + "_pointsubset" + suffix);
-        }
-
+	result = new Result(getStorageManager().getFileInputStream(f),
+			    doingJson
+			    ? Json.MIMETYPE
+			    : pdrb.getAccept());
+	//Set return filename sets the Content-Disposition http header so the browser saves the file
+	//with the correct name and suffix
+	result.setReturnFilename(baseName + "_pointsubset" + suffix);
         return result;
     }
 
@@ -799,9 +788,6 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
         addTimeWidget(request, dates, sb);
 
         List<TwoFacedObject> formats = new ArrayList<TwoFacedObject>();
-        formats.add(new TwoFacedObject("Interactive Time Series",
-                                       FORMAT_TIMESERIES_CHART));
-
         formats.add(new TwoFacedObject("JSON", FORMAT_JSON));
         formats.add(
             new TwoFacedObject(
@@ -819,8 +805,6 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
             new TwoFacedObject(
                 "Comma Separated Values (CSV)",
                 SupportedFormat.CSV_STREAM.getFormatName()));
-        formats.add(new TwoFacedObject("Time Series Image",
-                                       FORMAT_TIMESERIES));
         formats.add(
             new TwoFacedObject(
                 "XML", SupportedFormat.XML_STREAM.getFormatName()));
@@ -1192,170 +1176,6 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
 
 
 
-
-    /**
-     * Output the timeseries image
-     *
-     * @param request the request
-     * @param entry  the entry
-     * @param f  the file
-     *
-     * @return  the image
-     *
-     * @throws Exception  problem creating image
-     */
-    private Result outputTimeSeriesImage(Request request, Entry entry, File f)
-            throws Exception {
-
-        StringBuffer sb = new StringBuffer();
-        //sb.append(getHeader(request, entry));
-        sb.append(header(msg("Chart")));
-
-        TimeSeriesCollection dummy  = new TimeSeriesCollection();
-        JFreeChart chart = createChart(request, entry, dummy);
-        XYPlot               xyPlot = (XYPlot) chart.getPlot();
-
-        Hashtable<String, MyTimeSeries> seriesMap = new Hashtable<String,
-                                                        MyTimeSeries>();
-        List<MyTimeSeries> allSeries = new ArrayList<MyTimeSeries>();
-        int     paramCount = 0;
-        int     colorCount = 0;
-        boolean axisLeft   = true;
-        Hashtable<String, List<ValueAxis>> axisMap = new Hashtable<String,
-                                                         List<ValueAxis>>();
-        Hashtable<String, double[]> rangeMap = new Hashtable<String,
-                                                   double[]>();
-        List<String> units      = new ArrayList<String>();
-        List<String> paramUnits = new ArrayList<String>();
-        List<String> paramNames = new ArrayList<String>();
-
-        long         t1         = System.currentTimeMillis();
-        String contents =
-            IOUtil.readContents(getStorageManager().getFileInputStream(f));
-        List<String> lines      = StringUtil.split(contents, "\n", true,
-                                      true);
-        String       header     = lines.get(0);
-        String[]     headerToks = header.split(",");
-        for (int i = 0; i < headerToks.length; i++) {
-            paramNames.add(getParamName(headerToks[i]));
-            paramUnits.add(getUnitFromName(headerToks[i]));
-        }
-        boolean hasLevel   = paramNames.get(3).equals("vertCoord");
-
-        boolean readHeader = false;
-        for (String line : lines) {
-            if ( !readHeader) {
-                readHeader = true;
-
-                continue;
-            }
-            String[] lineTokes = line.split(",");
-            Date     date      = Utils.parseDate(lineTokes[0]);
-            int      startIdx  = hasLevel
-                                 ? 4
-                                 : 3;
-            for (int i = startIdx; i < lineTokes.length; i++) {
-                double value = Double.parseDouble(lineTokes[i]);
-                if (value != value) {
-                    continue;
-                }
-                List<ValueAxis> axises     = null;
-                double[]        range      = null;
-                String          u          = paramUnits.get(i);
-                String          paramName  = paramNames.get(i);
-                String          formatName = paramName.replaceAll("_", " ");
-                String formatUnit = ((u == null) || (u.length() == 0))
-                                    ? ""
-                                    : "[" + u + "]";
-                if (u != null) {
-                    axises = axisMap.get(u);
-                    range  = rangeMap.get(u);
-                    if (axises == null) {
-                        axises = new ArrayList<ValueAxis>();
-                        range  = new double[] { value, value };
-                        rangeMap.put(u, range);
-                        axisMap.put(u, axises);
-                        units.add(u);
-                    }
-                    range[0] = Math.min(range[0], value);
-                    range[1] = Math.max(range[1], value);
-                }
-                MyTimeSeries series = seriesMap.get(paramName);
-                if (series == null) {
-                    paramCount++;
-                    TimeSeriesCollection dataset = new TimeSeriesCollection();
-                    series = new MyTimeSeries(formatName,
-                            FixedMillisecond.class);
-                    allSeries.add(series);
-                    ValueAxis rangeAxis = new NumberAxis(formatName + " "
-                                              + formatUnit);
-                    if (axises != null) {
-                        axises.add(rangeAxis);
-                    }
-                    XYItemRenderer renderer =
-                        new XYAreaRenderer(XYAreaRenderer.LINES);
-                    if (colorCount >= HtmlUtils.COLORS.length) {
-                        colorCount = 0;
-                    }
-                    renderer.setSeriesPaint(0, HtmlUtils.COLORS[colorCount]);
-                    colorCount++;
-                    xyPlot.setRenderer(paramCount, renderer);
-                    xyPlot.setRangeAxis(paramCount, rangeAxis, false);
-                    AxisLocation side = (axisLeft
-                                         ? AxisLocation.TOP_OR_LEFT
-                                         : AxisLocation.BOTTOM_OR_RIGHT);
-                    axisLeft = !axisLeft;
-                    xyPlot.setRangeAxisLocation(paramCount, side);
-
-                    dataset.setDomainIsPointsInTime(true);
-                    dataset.addSeries(series);
-                    seriesMap.put(paramNames.get(i), series);
-                    xyPlot.setDataset(paramCount, dataset);
-                    xyPlot.mapDatasetToRangeAxis(paramCount, paramCount);
-                }
-                //series.addOrUpdate(new FixedMillisecond(pointData.date),value);
-                TimeSeriesDataItem item =
-                    new TimeSeriesDataItem(new FixedMillisecond(date), value);
-                series.addItem(item);
-            }
-        }
-
-
-
-        for (MyTimeSeries timeSeries : allSeries) {
-            timeSeries.finish();
-        }
-
-        for (String unit : units) {
-            List<ValueAxis> axises = axisMap.get(unit);
-            double[]        range  = rangeMap.get(unit);
-            for (ValueAxis rangeAxis : axises) {
-                rangeAxis.setRange(new org.jfree.data.Range(range[0],
-                        range[1]));
-            }
-        }
-
-
-        long t2 = System.currentTimeMillis();
-
-        BufferedImage newImage =
-            chart.createBufferedImage(request.get(ARG_IMAGE_WIDTH, 1000),
-                                      request.get(ARG_IMAGE_HEIGHT, 400));
-        long t3 = System.currentTimeMillis();
-        //System.err.println("timeseries image time:" + (t2 - t1) + " "
-        //                   + (t3 - t2));
-
-        File file = getStorageManager().getTmpFile(request, "point.png");
-        ImageUtils.writeImageToFile(newImage, file);
-        InputStream is     = getStorageManager().getFileInputStream(file);
-        Result      result = new Result("", is, "image/png");
-
-        return result;
-
-    }
-
-
-
     /**
      * get the parameter name from the raw name
      *
@@ -1389,115 +1209,6 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
         }
 
         return unit;
-    }
-
-
-    /**
-     * A wrapper for TimeSeries
-     *
-     * @author RAMADDA Development Team
-     */
-    private static class MyTimeSeries extends TimeSeries {
-
-        /** the items */
-        List<TimeSeriesDataItem> items = new ArrayList<TimeSeriesDataItem>();
-
-        /** seen items */
-        HashSet<TimeSeriesDataItem> seen = new HashSet<TimeSeriesDataItem>();
-
-        /**
-         * Construct the time series
-         *
-         * @param name  the name
-         * @param c     the class
-         */
-        public MyTimeSeries(String name, Class c) {
-            super(name, c);
-        }
-
-        /**
-         * Add an item to the timeseries
-         *
-         * @param item  the item to add
-         */
-        public void addItem(TimeSeriesDataItem item) {
-            if (seen.contains(item)) {
-                return;
-            }
-            seen.add(item);
-            items.add(item);
-        }
-
-        /**
-         * finish this
-         */
-        public void finish() {
-            items = new ArrayList<TimeSeriesDataItem>(Misc.sort(items));
-
-            for (TimeSeriesDataItem item : items) {
-                this.data.add(item);
-            }
-            fireSeriesChanged();
-        }
-
-
-    }
-
-
-    /**
-     * Create the chart
-     *
-     *
-     * @param request  the request
-     * @param entry    the entry
-     * @param dataset  the dataset
-     *
-     * @return the chart
-     */
-    private static JFreeChart createChart(Request request, Entry entry,
-                                          XYDataset dataset) {
-        LatLonPointImpl llp =
-            new LatLonPointImpl(request.getLatOrLonValue(ARG_LOCATION
-                + ".latitude", 0), request.getLatOrLonValue(ARG_LOCATION
-                               + ".longitude", 0));
-        String     title = entry.getName() + " at " + llp.toString();
-
-        JFreeChart chart = ChartFactory.createTimeSeriesChart(
-        //entry.getName(),  // title
-        title,    // title
-        "Date",   // x-axis label
-        "",       // y-axis label
-        dataset,  // data
-        true,     // create legend?
-        true,     // generate tooltips?
-        false     // generate URLs?
-            );
-
-        chart.setBackgroundPaint(Color.white);
-        ValueAxis rangeAxis = new NumberAxis("");
-        rangeAxis.setVisible(false);
-        XYPlot plot = (XYPlot) chart.getPlot();
-        if (request.get("gray", false)) {
-            plot.setBackgroundPaint(Color.lightGray);
-            plot.setDomainGridlinePaint(Color.white);
-            plot.setRangeGridlinePaint(Color.white);
-        } else {
-            plot.setBackgroundPaint(Color.white);
-            plot.setDomainGridlinePaint(Color.lightGray);
-            plot.setRangeGridlinePaint(Color.lightGray);
-        }
-        plot.setAxisOffset(new RectangleInsets(5.0, 5.0, 5.0, 5.0));
-        plot.setDomainCrosshairVisible(true);
-        plot.setRangeCrosshairVisible(true);
-        plot.setRangeAxis(0, rangeAxis, false);
-
-
-        XYItemRenderer r    = plot.getRenderer();
-        DateAxis       axis = (DateAxis) plot.getDomainAxis();
-        //axis.setDateFormatOverride(new SimpleDateFormat("MMM-yyyy"));
-
-        return chart;
-
     }
 
 

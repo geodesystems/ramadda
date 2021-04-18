@@ -36,8 +36,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.*;
 
-import javax.mail.*;
-import javax.mail.internet.*;
 
 
 /**

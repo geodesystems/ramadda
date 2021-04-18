@@ -17,13 +17,6 @@
 package org.ramadda.geodata.cdmdata;
 
 
-import org.jfree.chart.*;
-import org.jfree.chart.axis.*;
-import org.jfree.chart.plot.*;
-import org.jfree.chart.renderer.xy.*;
-import org.jfree.data.time.*;
-import org.jfree.data.xy.*;
-import org.jfree.ui.*;
 
 import org.ramadda.data.record.RecordField;
 import org.ramadda.repository.DateHandler;

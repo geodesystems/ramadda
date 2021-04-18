@@ -333,6 +333,7 @@ public class PointTypeHandler extends RecordTypeHandler {
      * @return _more_
      * @throws Exception on badness
      */
+    /****
     @Override
     public boolean processCommandView(org.ramadda.repository.harvester
             .CommandHarvester.CommandRequest cmdRequest, Entry entry,
@@ -388,6 +389,8 @@ public class PointTypeHandler extends RecordTypeHandler {
         //        System.err.println("URL:" + entryUrl);
         return true;
     }
+    */
+
 
     /**
      * _more_

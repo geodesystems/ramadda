@@ -72,12 +72,9 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.mail.Address;
-
 import javax.mail.Message;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
-
-
 import javax.mail.internet.MimeMessage;
 
 
