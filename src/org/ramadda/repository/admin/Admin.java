@@ -105,7 +105,8 @@ public class Admin extends RepositoryManager {
 
     /** _more_ */
     public static final String ACTION_DUMPDB = "action.dumpb";
-    public static final String ACTION_REINDEX = "action.reindex";    
+    public static final String ACTION_FULLINDEX = "action.fullindex";
+    public static final String ACTION_PARTIALINDEX = "action.partialindex";        
 
     /** _more_ */
     public static final String ACTION_CHANGEPATHS = "action.changepaths";
@@ -1026,7 +1027,7 @@ public class Admin extends RepositoryManager {
         return result;
     }
 
-    public Result adminReindex(Request request) throws Exception {
+    public Result adminReindex(Request request, boolean all) throws Exception {
         //Only do one at a time
         if (amReindexing) {
             StringBuffer sb = new StringBuffer(
@@ -1040,7 +1041,7 @@ public class Admin extends RepositoryManager {
         ActionManager.Action action = new ActionManager.Action() {
             public void run(Object actionId) throws Exception {
 		try {
-		    getSearchManager().reindexLucene(actionId);
+		    getSearchManager().reindexLucene(actionId,all);
 		} catch(Exception exc) {
 		    System.err.println("Error reindexing:" + exc);
 		    throw exc;
@@ -2372,8 +2373,10 @@ public class Admin extends RepositoryManager {
             return new Result(request.makeUrl(URL_ADMIN_CLEANUP));
         } else if (request.defined(ACTION_DUMPDB)) {
             return adminDbDump(request);
-        } else if (request.defined(ACTION_REINDEX)) {
-            return adminReindex(request);	    
+        } else if (request.defined(ACTION_FULLINDEX)) {
+            return adminReindex(request,true);
+        } else if (request.defined(ACTION_PARTIALINDEX)) {
+            return adminReindex(request,false);	    	    
         } else if (request.defined(ACTION_NEWDB)) {
             getDatabaseManager().reInitialize();
 
@@ -2478,11 +2481,12 @@ public class Admin extends RepositoryManager {
             request.formPostWithAuthToken(sb, URL_ADMIN_CLEANUP, "");
             sb.append(
                 HtmlUtils.section(
-                    HtmlUtils.h3(msg("Reindex"))
-                    + msg("This recreates the Lucene search index for the entire site")
+                    HtmlUtils.h3(msg("Reindex Lucene Index")) 
+		    + "Reindex all deletes entire index. Reindex partial only in indexes entries not already indexed" 
                     + "<br>"
-                    + HtmlUtils.submit(
-                        msg("Reindex"), ACTION_REINDEX)));
+                    + HtmlUtils.submit(msg("Reindex all"), ACTION_FULLINDEX)
+		    + HU.space(2) 
+		    + HtmlUtils.submit(msg("Reindex partial"), ACTION_PARTIALINDEX)));
             sb.append(HtmlUtils.formClose());
 
 
