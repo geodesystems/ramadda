@@ -250,6 +250,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     public void addToInformationTabs(Request request, Entry entry,
                                      List<String> tabTitles,
                                      List<String> tabContents) {
+	System.err.println("R:" + getClass().getName());
         //        super.addToInformationTabs(request, entry, tabTitles, tabContents);
         if ( !shouldProcessResource(request, entry)) {
             return;

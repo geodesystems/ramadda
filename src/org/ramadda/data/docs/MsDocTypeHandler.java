@@ -51,7 +51,7 @@ import java.util.zip.ZipInputStream;
  *
  *
  */
-public class MsDocTypeHandler extends ConvertibleTypeHandler {
+public class MsDocTypeHandler extends GenericTypeHandler {
 
 
     /**

@@ -58,7 +58,7 @@ import java.util.zip.ZipInputStream;
  *
  *
  */
-public class TabularTypeHandler extends MsDocTypeHandler {
+public class TabularTypeHandler extends ConvertibleTypeHandler {
 
 
     /** _more_ */
@@ -66,7 +66,7 @@ public class TabularTypeHandler extends MsDocTypeHandler {
 
 
     /** _more_ */
-    private static int IDX = MsDocTypeHandler.IDX_LAST+1;
+    private static int IDX = ConvertibleTypeHandler.IDX_LAST+1;
 
     /** _more_ */
     public static final int IDX_SHOWTABLE = IDX++;
