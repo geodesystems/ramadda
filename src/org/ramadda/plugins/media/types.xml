@@ -1,14 +1,6 @@
 <types>
   <type name="type_document_tika"  foruser="false" description="TIKA Doc"  super="type_document" handler="org.ramadda.plugins.media.TikaTypeHandler"  metadata="enum_tag,metadata_author,metadata_publisher">
-<!--
-     <service link="media_pdfbox_extracttext"/>
--->
-     <service link="tika_extracttext"/>
-     <!--
-     <service link="media_pdfbox_thumbnail" target="attachment"/>
--->
-     <service link="media_gs_thumbnail" target="attachment"/>
-     <wiki><![CDATA[
+    <wiki><![CDATA[
 +section # title="{{name}}"
 {{information showTitle="false" details="true"}}
 :heading Description
@@ -21,9 +13,7 @@
 
 
   <type name="type_document_pdf"  description="PDF File" pattern=".*\.pdf" super="type_document_tika">
-<!--
-     <service link="media_pdfbox_extracttext"/>
--->
+     <service link="media_gs_thumbnail" target="attachment"/>
      <property name="icon" value="/icons/pdf.png"/>
      <xwiki><![CDATA[
 +section # title="{{name}}"
