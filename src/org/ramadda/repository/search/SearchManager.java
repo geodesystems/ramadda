@@ -325,7 +325,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		}
 	    }
 	    ids.add(id);
-	    if(ids.size()>10000) break;
+	    //	    if(ids.size()>10000) break;
 	}
 
 	//	System.err.println("ids:" + ids.size());
@@ -337,7 +337,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	Object mutex = new Object();
 	//Really 4
-	int numThreads = 2;
+	int numThreads = 3;
 	List<List> idLists;
 	if(numThreads==1) {
 	    idLists = new ArrayList<List>();
