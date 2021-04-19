@@ -370,7 +370,7 @@ public class ServiceArg extends ServiceElement {
      */
     public boolean isApplicable(Entry entry, boolean debug) {
         boolean defaultReturn = true;
-	//	debug  = entryType.equals("geo_gdal_raster");
+	//	debug  = entryType.equals("media_gs_thumbnail");
 
         if (debug) {
             System.err.println("Service.Arg.isApplicable:" + getName()
