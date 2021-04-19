@@ -1186,10 +1186,10 @@ public class Column implements DataTypes, Constants, Cloneable {
      *
      * @throws Exception _more_
      */
-    public void formatValue(Entry entry, Appendable sb, String output,
+    public void formatValue(Request request, Entry entry, Appendable sb, String output,
                             Object[] values, boolean raw)
             throws Exception {
-        formatValue(entry, sb, output, values, null, raw);
+        formatValue(request, entry, sb, output, values, null, raw);
     }
 
 
@@ -1205,7 +1205,7 @@ public class Column implements DataTypes, Constants, Cloneable {
      *
      * @throws Exception _more_
      */
-    public void formatValue(Entry entry, Appendable result, String output,
+    public void formatValue(Request request, Entry entry, Appendable result, String output,
                             Object[] values, SimpleDateFormat sdf,
                             boolean raw)
             throws Exception {
@@ -1295,7 +1295,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                     try {
                         String link =
                             getRepository().getEntryManager().getAjaxLink(
-                                getRepository().getTmpRequest(), theEntry,
+									  request, theEntry,
                                 theEntry.getName()).toString();
                         sb.append(link);
                     } catch (Exception exc) {
@@ -1381,7 +1381,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 
             if (rows > 1) {
                 s = getRepository().getWikiManager().wikifyEntry(
-                    getRepository().getTmpRequest(), entry, s, false, null,
+								 request, entry, s, false, null,
                     null);
             } else if (isEnumeration() && !raw) {
                 String label = getEnumLabel(s);

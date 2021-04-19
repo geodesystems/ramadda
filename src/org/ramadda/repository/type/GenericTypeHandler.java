@@ -1002,7 +1002,7 @@ public class GenericTypeHandler extends TypeHandler {
                                       Column column, Appendable tmpSb,
                                       Object[] values)
             throws Exception {
-        column.formatValue(entry, tmpSb, Column.OUTPUT_HTML, values, false);
+        column.formatValue(request, entry, tmpSb, Column.OUTPUT_HTML, values, false);
     }
 
 
@@ -1017,22 +1017,20 @@ public class GenericTypeHandler extends TypeHandler {
     @Override
     public void getTextCorpus(Entry entry, Appendable sb) throws Exception {
         super.getTextCorpus(entry, sb);
-        /*
         Object[] values = entry.getValues();
         if (values == null) { return;}
+	Request request=getRepository().getTmpRequest();
         for (Column column :  getMyColumns()) {
-            StringBuilder tmpSb = new StringBuilder();
-            formatColumnHtmlValue(request, entry, column, tmpSb,  values);
-            if ( !column.getCanShow()) {
+            if (!column.getCanShow() || column.isPrivate()) {
                 continue;
             }
-            sb.append(" ");
-            sb.append(column.getLabel());
-            sb.append(" ");
-            sb.append(tmpSb);
-            sb.append(" ");
+	    StringBuilder tmpSB = new StringBuilder();
+	    formatColumnHtmlValue(request, entry, column, tmpSB,
+				  values);
+
+	    sb.append(tmpSB);
+	    sb.append("\n");
         }
-        */
     }
 
 
@@ -1194,7 +1192,7 @@ public class GenericTypeHandler extends TypeHandler {
         if (values != null) {
             for (Column column : getMyColumns()) {
                 StringBuilder tmpSb = new StringBuilder();
-                column.formatValue(entry, tmpSb, Column.OUTPUT_HTML, values,
+                column.formatValue(request, entry, tmpSb, Column.OUTPUT_HTML, values,
                                    false);
                 html = html.replace("${" + column.getName() + ".content}",
                                     tmpSb.toString());
@@ -1389,7 +1387,7 @@ public class GenericTypeHandler extends TypeHandler {
         if ((entry != null) && hasValue && !canEdit) {
             if (canDisplay) {
                 StringBuilder tmpSb = new StringBuilder();
-                column.formatValue(entry, tmpSb, Column.OUTPUT_HTML, values,
+                column.formatValue(request, entry, tmpSb, Column.OUTPUT_HTML, values,
                                    false);
                 formBuffer.append(HtmlUtils.formEntry(column.getLabel()
                         + ":", tmpSb.toString()));

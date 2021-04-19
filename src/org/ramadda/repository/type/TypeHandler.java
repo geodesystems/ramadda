@@ -572,6 +572,7 @@ public class TypeHandler extends RepositoryManager {
                     throw new IllegalArgumentException(
                         "Cannot find parent type:" + superType);
                 }
+		parent.checkAncestorTypes(getType());
                 parent.addChildTypeHandler(this);
             }
 
@@ -585,6 +586,14 @@ public class TypeHandler extends RepositoryManager {
 
 
     }
+
+    private void checkAncestorTypes(String type) {
+	if(type.equals(getType())) throw new IllegalStateException("Detected cycle in type handlers:" + type);
+        if (getParent() != null) {
+            getParent().checkAncestorTypes(type);
+        }
+    }
+
 
     /**
      * _more_
@@ -610,7 +619,11 @@ public class TypeHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public void getTextCorpus(Entry entry, Appendable sb) throws Exception {}
+    public void getTextCorpus(Entry entry, Appendable sb) throws Exception {
+	sb.append(entry.getDescription());
+	sb.append("\n");
+    }
+
 
 
     /**
@@ -2197,14 +2210,16 @@ public class TypeHandler extends RepositoryManager {
      */
     public boolean anySuperTypesOfThisType() {
         Class       myClass = getClass();
-        TypeHandler handler = this.parent;
-        while (handler != null) {
-            //            System.err.println("parent:" + handler.getClass().getName());
-            if (handler.getClass().isAssignableFrom(myClass)) {
-                //                System.err.println("Have super class");
+        TypeHandler parent = this.parent;
+	//	System.err.println("any super types:" + this);
+
+	while (parent != null) {
+	    //	    System.err.println("parent:" + parent);
+            if (parent.getClass().isAssignableFrom(myClass)) {
+		//		System.err.println("Have super class");
                 return true;
             }
-            handler = parent;
+            parent = parent.getParent();
         }
 
         //        System.err.println("Don't Have super class");
@@ -3647,7 +3662,7 @@ public class TypeHandler extends RepositoryManager {
 		try {
 		    File         workDir = getStorageManager().createProcessDir();
 		    ServiceInput serviceInput = new ServiceInput(workDir, entry);
-		    System.err.println("execing service: " + service);
+		    System.err.println("TypeHandler execing service: " + service);
 		    ServiceOutput output =
 			service.evaluate(getRepository().getTmpRequest(),
 					 serviceInput, null);
