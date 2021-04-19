@@ -195,13 +195,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     /** _more_ */
     private static final String FIELD_METADATA = "metadata";
 
-    private static final String[] SEARCH_FIELDS ={FIELD_NAME, FIELD_DESCRIPTION, FIELD_CONTENTS};
+    private static final String[] SEARCH_FIELDS ={FIELD_NAME, FIELD_DESCRIPTION, FIELD_CONTENTS,FIELD_PATH};
 
-    /** _more_ */
-    private IndexSearcher luceneSearcher;
 
-    /** _more_ */
-    private IndexReader luceneReader;
+    private IndexWriter luceneWriter;
 
     /** _more_ */
     private boolean isLuceneEnabled = true;
@@ -278,23 +275,30 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @throws Exception _more_
      */
     private IndexWriter getLuceneWriter() throws Exception {
-	Directory index = new NIOFSDirectory(Paths.get(getStorageManager().getIndexDir()));
-	IndexWriterConfig config = new IndexWriterConfig();
-	config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-	IndexWriter writer = new IndexWriter(index, config);
-	return writer;
+	if(luceneWriter==null) {
+	    Directory index = new NIOFSDirectory(Paths.get(getStorageManager().getIndexDir()));
+	    IndexWriterConfig config = new IndexWriterConfig();
+	    config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+	    luceneWriter = new IndexWriter(index, config);
+	}
+	return luceneWriter;
     }
 
 
     public void reindexLucene(Object actionId, boolean all)  {
 	try {
-	    reindexLuceneInner(actionId, all);
+	    IndexWriter writer = getLuceneWriter();
+	    try {
+		reindexLuceneInner(writer, actionId, all);
+	    } finally {
+		//		writer.close();
+	    }
 	} catch(Throwable thr) {
 	    throw new RuntimeException(thr);
 	}
     }
 
-    private void reindexLuceneInner(Object actionId, boolean all)  throws Throwable {	
+    private void reindexLuceneInner(final IndexWriter writer, Object actionId, boolean all)  throws Throwable {	
         Statement statement =
             getDatabaseManager().select(Tables.ENTRIES.COL_ID,
 					Misc.newList(Tables.ENTRIES.NAME),
@@ -303,10 +307,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         SqlUtil.Iterator iter = getDatabaseManager().getIterator(statement);
         ResultSet        results;
 	List<String> ids = new ArrayList<String>();
-
-
-        final IndexWriter writer = getLuceneWriter();
-        IndexSearcher searcher = null;
+	IndexSearcher searcher = null;
 	while ((results = iter.getNext()) != null) {
             String id = results.getString(1);
 	    if(!all) {
@@ -337,7 +338,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	Object mutex = new Object();
 	//Really 4
-	int numThreads = 3;
+	int numThreads = 1;
 	List<List> idLists;
 	if(numThreads==1) {
 	    idLists = new ArrayList<List>();
@@ -348,18 +349,19 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	int []cnt =new int[]{0};
 	boolean[]ok = new boolean[]{true};
 	List<Callable<Boolean>> callables = new ArrayList<Callable<Boolean>>();
-	System.err.println("#threads:" + idLists.size());
 	for(List idList:idLists) {
 	    callables.add(makeReindexer((List<String>)idList,writer,cnt,actionId,mutex,ok));
 	}
 	long t1 = System.currentTimeMillis();
 	getRepository().getJobManager().invokeAllAndWait(callables);
 	long t2 = System.currentTimeMillis();
-	System.err.println("#threads:" + idLists.size());
 	System.err.println("time:" + (t2-t1));
-	if(ok[0])
+	if(ok[0]) {
+	    System.err.println("committing");
 	    writer.commit();
-        writer.close();
+	}
+	//	System.err.println("closing");
+	//        writer.close();
 	getActionManager().actionComplete(actionId);
     }
 
@@ -368,13 +370,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         return  new Callable<Boolean>() {
             public Boolean call() {
                 try {
-		    System.err.println("Thread:" + Thread.currentThread());
-		    //		    if(true) return Boolean.TRUE;
 		    for(String id: ids) {
 			Entry entry = getEntryManager().getEntry(null, id,false);
+			if(entry==null) continue;
 			synchronized(mutex) {
-			    System.err.println("#" + cnt[0] +" entry:" + entry.getName());
 			    cnt[0]++;
+			    System.err.println("#" + cnt[0] +" entry:" + entry.getName());
 			}
 			indexEntry(writer, entry);
 			getEntryManager().removeFromCache(entry);
@@ -466,14 +467,15 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     private synchronized void indexEntries(List<Entry> entries)
 	throws Exception {
         IndexWriter writer = getLuceneWriter();
-        for (Entry entry : entries) {
-            indexEntry(writer, entry);
-        }
-	//        writer.optimize();
-	writer.commit();
-        writer.close();
-        luceneReader   = null;
-        luceneSearcher = null;
+	try {
+	    for (Entry entry : entries) {
+		indexEntry(writer, entry);
+	    }
+	    //        writer.optimize();
+	    writer.commit();
+	} finally {
+	    //	    writer.close();
+	}
     }
 
 
@@ -487,22 +489,27 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      */
     private void indexEntry(IndexWriter writer, Entry entry)
 	throws Exception {
-
         org.apache.lucene.document.Document doc =
             new org.apache.lucene.document.Document();
-        String path = entry.getResource().getPath();
-
+	//Only store the ID as this is the only thing we need when we search
         doc.add(new StringField(FIELD_ENTRYID, entry.getId(), Field.Store.YES));
+        String path = entry.getResource().getPath();
         if ((path != null) && (path.length() > 0)) {
-            doc.add(new TextField(FIELD_PATH, path, Field.Store.YES));
+	    if(entry.getResource().isFile()) {
+		path = getStorageManager().getFileTail(entry);
+	    }
+            doc.add(new TextField(FIELD_PATH, path, Field.Store.NO));
         }
+
+        doc.add(new TextField(FIELD_NAME,  entry.getName(),Field.Store.NO));
+
+	StringBuilder desc = new StringBuilder();
+        entry.getTypeHandler().getTextCorpus(entry, desc);
+        doc.add(new TextField(FIELD_DESCRIPTION, desc.toString(),Field.Store.NO));
+
 
         StringBuilder metadataSB = new StringBuilder();
         getRepository().getMetadataManager().getTextCorpus(entry, metadataSB);
-        entry.getTypeHandler().getTextCorpus(entry, metadataSB);
-        doc.add(new TextField(FIELD_NAME,  entry.getName(),Field.Store.YES));
-        doc.add(new TextField(FIELD_DESCRIPTION, entry.getDescription(),Field.Store.NO));
-
         if (metadataSB.length() > 0) {
             doc.add(new TextField(FIELD_METADATA, metadataSB.toString(),Field.Store.NO));
         }
@@ -515,7 +522,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	*/
 
         if (entry.isFile()) {
-            addContentField(entry, doc, new File(path));
+            addContentField(entry, doc, entry.getResource().getTheFile());
         }
         writer.addDocument(doc);
     }
@@ -523,9 +530,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     private String readContents(File f) throws Exception {
 	//Don't do really bug files or images
-	if(f.length()>5000000) return null;
+	if(f.length()>10000000) return null;
 	if(Utils.isImage(f.toString())) return null;
-
 	try(InputStream stream = getStorageManager().getFileInputStream(f)) {
             org.apache.tika.metadata.Metadata metadata =
                 new org.apache.tika.metadata.Metadata();
@@ -557,6 +563,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	throws Exception {
         try {
             String contents = readContents(f);
+	    //	    System.out.println(f+"\n" + contents);
             if ((contents != null) && (contents.length() > 0)) {
                 doc.add(new TextField(FIELD_CONTENTS, contents, Field.Store.NO));
             }
@@ -583,25 +590,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      *
      * @throws Exception _more_
      */
-    private IndexReader getLuceneReader() throws Exception {
-        IndexWriter writer = getLuceneWriter();
-	return DirectoryReader.open(writer);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private IndexSearcher getLuceneSearcher() throws Exception {
-        if (luceneSearcher == null) {
-            luceneSearcher = new IndexSearcher(getLuceneReader());
-        }
-
-        return luceneSearcher;
+	return new IndexSearcher(DirectoryReader.open(getLuceneWriter()));
     }
 
 
@@ -619,7 +609,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	request.put(ARG_MAX,20);
 	for(Entry entry:  getEntryManager().getEntries(request, new StringBuilder())) {
 	    String obj = Json.map("name", Json.quote(entry.getName()), "id",
-				  Json.quote(entry.getId()), "icon",
+				  Json.quote(entry.getId()),
+				  "type",Json.quote(entry.getTypeHandler().getType()),
+				  "icon",
 				  Json.quote(entry.getTypeHandler().getTypeIconUrl()));
 	    names.add(obj);
 	}
@@ -668,20 +660,21 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 
 	int max = request.get(ARG_MAX,100);
-
+	int skip = request.get(ARG_SKIP,0);
 
 	//	searcher.setDefaultFieldSortScoring(true, false);
-	TopDocs       hits     = searcher.search(query, max,Sort.RELEVANCE);
+	TopDocs       hits     = searcher.search(query, max+skip,Sort.RELEVANCE);
 	//        TopDocs       hits     = searcher.search(query, 100);		
         ScoreDoc[]    docs     = hits.scoreDocs;
 	System.err.println("lucene results:" + docs.length +" text:" + text);
 
 	HashSet seen = new HashSet();
-        for (int i = 0; i < docs.length; i++) {
+        for (int i = skip; i < docs.length; i++) {
             org.apache.lucene.document.Document doc =
                 searcher.doc(docs[i].doc);
             String id = doc.get(FIELD_ENTRYID);
             if (id == null) {
+		System.err.println("No ID");
                 continue;
             }
 	    if(seen.contains(id)) {
@@ -691,6 +684,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    seen.add(id);
             Entry entry = getEntryManager().getEntry(request, id);
             if (entry == null) {
+		System.err.println("No ENTRY:" + id);
                 continue;
             }
 	    //	    System.err.println("entry:"+ entry +" id:" + entry.getId());
@@ -730,7 +724,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             List<String> ids = new ArrayList<String>();
             for (Entry entry : entries) {
                 ids.add(entry.getId());
-
             }
             entriesDeleted(ids);
             indexEntries(entries);
@@ -751,10 +744,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         }
         try {
             IndexWriter writer = getLuceneWriter();
-            for (String id : ids) {
-                writer.deleteDocuments(new Term(FIELD_ENTRYID, id));
-            }
-            writer.close();
+	    for (String id : ids) {
+		System.err.println("delete:" + id);
+		writer.deleteDocuments(new Term(FIELD_ENTRYID, id));
+	    }
+	    writer.commit();
         } catch (Exception exc) {
             logError("Error deleting entries from Lucene index", exc);
         }
