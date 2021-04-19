@@ -3059,7 +3059,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             List<Column> columns = getColumnsToUse(request, false);
             for (int i = 0; i < columns.size(); i++) {
                 StringBuilder cb = new StringBuilder();
-                columns.get(i).formatValue(entry, cb, Column.OUTPUT_CSV,
+                columns.get(i).formatValue(request, entry, cb, Column.OUTPUT_CSV,
                             values, true);
                 String colValue = cb.toString();
                 colValue = colValue.replaceAll("\n", " ");
@@ -3126,7 +3126,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
             for (int i = 0; i < columns.size(); i++) {
                 cb.setLength(0);
-                columns.get(i).formatValue(entry, cb, Column.OUTPUT_CSV,
+                columns.get(i).formatValue(request, entry, cb, Column.OUTPUT_CSV,
                             values, true);
                 String colValue = cb.toString();
                 attrs.add(columns.get(i).getName());
@@ -3174,7 +3174,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         SimpleDateFormat sdf = getDateFormat(entry);
         for (int cnt = 0; cnt < valueList.size(); cnt++) {
             Object[] values = valueList.get(cnt);
-            String   label  = getLabel(entry, values, null);
+            String   label  = getLabel(request, entry, values, null);
             Date     date   = null;
             if (dbInfo.getDateColumns().size() > 0) {
                 date = (Date) values[dbInfo.getDateColumn().getOffset()];
@@ -4067,7 +4067,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             throws Exception {
         StringBuilder htmlSB = new StringBuilder();
 
-        column.formatValue(entry, htmlSB, Column.OUTPUT_HTML, values, sdf,
+        column.formatValue(request, entry, htmlSB, Column.OUTPUT_HTML, values, sdf,
                            false);
         String html = htmlSB.toString();
 
@@ -4393,7 +4393,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             msg("View entry"), "width=16")));
             theSB.append(" ");
             theSB.append(map.getHiliteHref(dbid,
-                                           getMapLabel(entry, values, sdf)));
+                                           getMapLabel(request, entry, values, sdf)));
 
 
             theSB.append("</div>");
@@ -4562,7 +4562,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     lon = ll[3];
                 }
             }
-            String label = getKmlLabel(entry, values, null);
+            String label = getKmlLabel(request, entry, values, null);
             String viewUrl = request.getAbsoluteUrl(getViewUrl(request,
                                  entry, dbid));
             String        href = HtmlUtils.href(viewUrl, label);
@@ -4922,7 +4922,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
           (String) values[IDX_DBID]);
 
           String href = HtmlUtils.href(url,
-          getLabel(entry, values, sdf));
+          getLabel(request, entry, values, sdf));
           String rowId = "row_" + values[IDX_DBID];
           String divId = "div_" + values[IDX_DBID];
           String event = getEventJS(request, entry, values, rowId,
@@ -5108,7 +5108,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             String event = getEventJS(request, entry, valuesArray, rowId,
                                       rowId);
             String href = HtmlUtils.href(url,
-                                         getLabel(entry, valuesArray, sdf));
+                                         getLabel(request, entry, valuesArray, sdf));
             //            href= HtmlUtils.span(href,HtmlUtils.cssClass("xdbcategoryrow")+);
             sb.append(HtmlUtils.col("&nbsp;" + href,
                                     HtmlUtils.id(rowId) + event
@@ -5288,7 +5288,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                       (String) valuesArray[IDX_DBID])
                          : getViewUrl(request, entry,
                                       (String) valuesArray[IDX_DBID]);
-            String label    = getLabel(entry, valuesArray, sdf);
+            String label    = getLabel(request, entry, valuesArray, sdf);
             String href     = HtmlUtils.href(url, label);
 
             String rowValue = (String) valuesArray[gridColumn.getOffset()];
@@ -5407,7 +5407,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         for (Object[] values : valueList) {
             columnCnt = 0;
-            String label = getLabel(entry, values, sdf);
+            String label = getLabel(request, entry, values, sdf);
             sb.append("data.setValue(" + row + ", " + columnCnt + ","
                       + HtmlUtils.squote(label) + ");\n");
             columnCnt++;
@@ -5506,7 +5506,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             times.add(
                 SqlUtil.format(
                     (Date) values[dbInfo.getDateColumn().getOffset()]));
-            String label = getLabel(entry, values, null).trim();
+            String label = getLabel(request, entry, values, null).trim();
             if (label.length() == 0) {
                 label = "NA";
             }
@@ -5583,7 +5583,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             String        dbid  = (String) values[IDX_DBID];
             Date date = (Date) values[dbInfo.getDateColumn().getOffset()];
             String        url   = getViewUrl(request, entry, dbid);
-            String        label = getCalendarLabel(entry, values, sdf).trim();
+            String        label = getCalendarLabel(request, entry, values, sdf).trim();
             StringBuilder html  = new StringBuilder();
             if (label.length() == 0) {
                 label = "NA";
@@ -5666,7 +5666,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             Hashtable props = getProps(values);
             String    dbid  = (String) values[IDX_DBID];
             String    url   = getViewUrl(request, entry, dbid);
-            String    label = getLabel(entry, values, sdf).trim();
+            String    label = getLabel(request, entry, values, sdf).trim();
             if (label.length() == 0) {
                 label = "NA";
             }
@@ -5807,7 +5807,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             String dateString2 = sdf.format(date2) + "Z";
             String url         = getViewUrl(request, entry, dbid);
             url = request.getAbsoluteUrl(url);
-            String label = getLabel(entry, values, null).trim();
+            String label = getLabel(request, entry, values, null).trim();
 
             if (label.length() == 0) {
                 label = "NA";
@@ -5855,7 +5855,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             Object[] values = valueList.get(cnt);
             String   t      = template.entry;
             for (Column column : dbInfo.getColumnsToUse()) {
-                column.formatValue(entry, tmp, Column.OUTPUT_HTML, values,
+                column.formatValue(request, entry, tmp, Column.OUTPUT_HTML, values,
                                    sdf, false);
 
                 t = t.replace("${" + column.getName() + "}", tmp.toString());
@@ -6667,9 +6667,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      *
      * @throws Exception _more_
      */
-    public String getLabel(Entry entry, Object[] values, SimpleDateFormat sdf)
+    public String getLabel(Request request, Entry entry, Object[] values, SimpleDateFormat sdf)
             throws Exception {
-        String lbl = getLabelInner(entry, values, sdf);
+        String lbl = getLabelInner(request, entry, values, sdf);
         if ( !Utils.stringDefined(lbl)) {
             lbl = "---";
         }
@@ -6688,10 +6688,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      *
      * @throws Exception _more_
      */
-    public String getKmlLabel(Entry entry, Object[] values,
+    public String getKmlLabel(Request request, Entry entry, Object[] values,
                               SimpleDateFormat sdf)
             throws Exception {
-        return getLabel(entry, values, sdf);
+        return getLabel(request, entry, values, sdf);
     }
 
     /**
@@ -6705,10 +6705,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      *
      * @throws Exception _more_
      */
-    public String getMapLabel(Entry entry, Object[] values,
+    public String getMapLabel(Request request, Entry entry, Object[] values,
                               SimpleDateFormat sdf)
             throws Exception {
-        return getLabel(entry, values, sdf);
+        return getLabel(request, entry, values, sdf);
     }
 
 
@@ -6723,10 +6723,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      *
      * @throws Exception _more_
      */
-    public String getCalendarLabel(Entry entry, Object[] values,
+    public String getCalendarLabel(Request request, Entry entry, Object[] values,
                                    SimpleDateFormat sdf)
             throws Exception {
-        return getLabel(entry, values, sdf);
+        return getLabel(request, entry, values, sdf);
     }
 
     /**
@@ -6740,14 +6740,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      *
      * @throws Exception _more_
      */
-    public String getLabelInner(Entry entry, Object[] values,
+    public String getLabelInner(Request request, Entry entry, Object[] values,
                                 SimpleDateFormat sdf)
             throws Exception {
         DbInfo        dbInfo = getDbInfo();
         StringBuilder sb     = new StringBuilder();
         if (dbInfo.getLabelColumns() != null) {
             for (Column labelColumn : dbInfo.getLabelColumns()) {
-                labelColumn.formatValue(entry, sb, Column.OUTPUT_HTML,
+                labelColumn.formatValue(request,entry, sb, Column.OUTPUT_HTML,
                                         values, sdf, false);
                 sb.append(" ");
             }
@@ -6764,7 +6764,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     || type.equals(Column.DATATYPE_URL)
                     || type.equals(Column.DATATYPE_EMAIL)
                     || type.equals(Column.DATATYPE_ENUMERATIONPLUS)) {
-                column.formatValue(entry, sb, Column.OUTPUT_HTML, values,
+                column.formatValue(request,entry, sb, Column.OUTPUT_HTML, values,
                                    false);
                 String label = sb.toString();
                 if (label.length() > 0) {
@@ -6809,7 +6809,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
             StringBuilder tmpSb = new StringBuilder();
             formatTableValue(request, entry, tmpSb, column, values, sdf);
-            //            column.formatValue(entry, tmpSb, Column.OUTPUT_HTML, values);
+            //            column.formatValue(request, entry, tmpSb, Column.OUTPUT_HTML, values);
             String tmp = tmpSb.toString();
             tmp = tmp.replaceAll("'", "&apos;");
             sb.append(formEntry(request, column.getLabel() + ":", tmp));
