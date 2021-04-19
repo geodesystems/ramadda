@@ -1,0 +1,53 @@
+[ht::head {ETL Tools}]
+<%nochildlist%>
+
+[
+proc etlcat {cat} {
+append ::etl [ug::subheading $cat [string tolower $cat]]
+}
+proc etl {cmd label desc args} {
+regsub --  {-} $cmd {} id
+regsub -all {<} $cmd {\&lt;} cmd
+regsub -all {>} $cmd {\&gt;} cmd
+regsub -all {<} $desc {\&lt;} desc
+regsub -all {>} $desc {\&gt;} desc
+regsub -all {\(} $desc {} desc
+regsub -all {\)} $desc {} desc
+regsub -all {\n} $desc {<br>} desc
+
+    set argHtml ""
+    set argCnt 0
+foreach argt $args {
+    foreach {a d} $argt break
+    regsub  -all "\n" $d { } d
+    regsub  -all "<br>" $d { } d    
+    if {$argCnt>0} {
+         append argHtml "\n\t";
+    }
+    append argHtml " &lt;<i>$a</i>";
+    append argHtml "&gt; ";
+    if {$d!=""} {
+    append argHtml "$d ";
+    }
+    incr argCnt
+}
+
+
+
+append ::etl [ug::subsubheading "$label" $id]
+append ::etl "<pre>$cmd $argHtml</pre>"
+append ::etl $desc
+append ::etl "<p>"
+}]
+
+
+[
+set ::etl ""
+source etlcommands.tcl
+set ::etl 
+]
+
+[ht::foot]
+
+
+</body>
