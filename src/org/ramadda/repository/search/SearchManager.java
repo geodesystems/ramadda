@@ -338,7 +338,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	Object mutex = new Object();
 	//Really 4
-	int numThreads = 1;
+	int numThreads = 3;
 	List<List> idLists;
 	if(numThreads==1) {
 	    idLists = new ArrayList<List>();
