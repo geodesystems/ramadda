@@ -31,3 +31,6 @@ President, Geode Systems
 {{tree showtoggle="false"}}
 <p>
 -section
++section label="Search your repository"
+{{display_entrylist}}
+-section
