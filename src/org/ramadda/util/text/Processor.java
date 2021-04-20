@@ -4079,7 +4079,7 @@ public abstract class Processor extends CsvOperator {
 			    w.print("<tr valign=bottom title='" + percent+"%'>");
 			    w.print(td+ " width=1%>" + key+"</td>");
 			    w.print(td+" width=1% align=right>" + cnt +"</td>");
-a			    w.print("<td style='border:none;padding:0px;' ><div style='margin-top:3px;display:inline-block;background:blue;height:1em;width:" + percent +"%;'></div></td>");
+			    w.print("<td style='border:none;padding:0px;' ><div style='margin-top:3px;display:inline-block;background:blue;height:1em;width:" + percent +"%;'></div></td>");
 
 			    w.print("</tr>");			    
 			}
