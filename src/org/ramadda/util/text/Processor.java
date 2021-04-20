@@ -487,8 +487,8 @@ public abstract class Processor extends CsvOperator {
          */
         public List<Row> finish(TextReader textReader, List<Row> inputRows)
 	    throws Exception {
-            //      return finishOld(textReader, inputRows);
-            return finishNew(textReader, inputRows);
+	    //return finishOld(textReader, inputRows);
+	    return finishNew(textReader, inputRows);
         }
 
 
@@ -559,7 +559,6 @@ public abstract class Processor extends CsvOperator {
          */
         public List<Row> finishNew(TextReader textReader, List<Row> inputRows)
 	    throws Exception {
-	    //	    System.err.println("finishNew:" + inputRows);
             //            if (inputRows != null) {
             while ((remainderProcessors != null)
 		   && (remainderProcessors.size() > 0)) {
@@ -1075,8 +1074,12 @@ public abstract class Processor extends CsvOperator {
          */
         @Override
         public Row processRow(TextReader info, Row row) throws Exception {
-	    if((rowCnt++)%every == 0)
-		System.err.print(".");
+	    rowCnt++;
+	    if(every==0) {
+		System.err.println(rowCnt);
+	    } else  if((rowCnt)%every == 0) {
+		System.err.print("."); 
+	    }
             return row;
         }
     }
@@ -4368,7 +4371,14 @@ public abstract class Processor extends CsvOperator {
                     sample = v;
                 }
 		if(name.equals("latitude") || name.equals("longitude")) {
-		    pts.add(Double.parseDouble(v));
+		    try {
+			pts.add(Double.parseDouble(v));
+		    } catch (Exception exc) {
+                        numErrors++;
+                        if (sampleError == null) {
+                            sampleError = v;
+                        }
+                    }
 		}
                 if (type.equals("numeric")) {
                     try {

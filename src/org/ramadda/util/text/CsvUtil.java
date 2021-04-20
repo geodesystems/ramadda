@@ -1721,7 +1721,7 @@ public class CsvUtil {
         new Cmd("-case", "Change case of column",
                 new Arg("type", "", "values",
                         "lower,upper,proper,capitalize"), new Arg("column",
-								 "", "type", "column")),
+								  "", "type", "column")),
         new Cmd("-width", "Limit the string size of the columns",
                 new Arg("columns", "", "type", "columns"), new Arg("size")),
         new Cmd(
@@ -2293,14 +2293,14 @@ public class CsvUtil {
 	    });
 
 	CsvFunction unfurlFunc = (ctx,args,i) -> {
-		String       mainCol   = args.get(++i);
-		List<String> valueCols = getCols(args.get(++i));
-		String       uniqueCol = args.get(++i);
-		List<String> extraCols = getCols(args.get(++i));
-		ctx.getProcessor().addProcessor(new Processor.Unfurler(
-								       mainCol, valueCols, uniqueCol, extraCols));
+	    String       mainCol   = args.get(++i);
+	    List<String> valueCols = getCols(args.get(++i));
+	    String       uniqueCol = args.get(++i);
+	    List<String> extraCols = getCols(args.get(++i));
+	    ctx.getProcessor().addProcessor(new Processor.Unfurler(
+								   mainCol, valueCols, uniqueCol, extraCols));
 
-		return i;
+	    return i;
 	};
 
 	defineFunction("-unfurl",4,unfurlFunc);
@@ -2832,7 +2832,7 @@ public class CsvUtil {
 	
 	defineFunction("-kml",0,(ctx,args,i) -> {
 		ctx.getProviders().add(new DataProvider.KmlDataProvider());	
-	return i;
+		return i;
 	    });
 	
 	defineFunction("-changeraw",2,(ctx,args,i) -> {

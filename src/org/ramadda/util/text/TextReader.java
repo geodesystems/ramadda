@@ -1,18 +1,18 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (c) 2008-2019 Geode Systems LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package org.ramadda.util.text;
 
@@ -106,6 +106,8 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private int nextChar = UNDEF;
 
+
+    private boolean hasInput = true;
 
     /** _more_ */
     private String delimiter = ",";
@@ -277,24 +279,23 @@ public class TextReader implements Cloneable {
     }
 
 
-/**
-Set the Verbose property.
+    /**
+       Set the Verbose property.
 
-@param value The new value for Verbose
-**/
-public void setVerbose (boolean value) {
+       @param value The new value for Verbose
+    **/
+    public void setVerbose (boolean value) {
 	verbose = value;
-}
+    }
 
-/**
-Get the Verbose property.
+    /**
+       Get the Verbose property.
 
-@return The Verbose
-**/
-public boolean getVerbose () {
+       @return The Verbose
+    **/
+    public boolean getVerbose () {
 	return verbose;
-}
-
+    }
 
 
     /**
@@ -634,7 +635,7 @@ public boolean getVerbose () {
      */
     public TextReader cloneMe(NamedInputStream input, File outputFile,
                               OutputStream output)
-            throws CloneNotSupportedException {
+	throws CloneNotSupportedException {
         TextReader that = (TextReader) super.clone();
         that.debug      = this.debug;
         that.input      = input;
@@ -645,7 +646,7 @@ public boolean getVerbose () {
         if (debug) {
             that.debugSB = this.debugSB;
             if ((that.output != null) && (that.debugSB != null)
-                    && (that.debugSB.length() > 0)) {
+		&& (that.debugSB.length() > 0)) {
                 that.getWriter().print(that.debugSB);
                 that.debugSB = new StringBuilder();
             }
@@ -664,7 +665,7 @@ public boolean getVerbose () {
 
     public TextReader cloneMe(NamedChannel inputChannel, File outputFile,
                               OutputStream output)
-            throws CloneNotSupportedException {
+	throws CloneNotSupportedException {
         TextReader that = (TextReader) super.clone();
         that.debug      = this.debug;
         that.inputChannel      = inputChannel;
@@ -675,7 +676,7 @@ public boolean getVerbose () {
         if (debug) {
             that.debugSB = this.debugSB;
             if ((that.output != null) && (that.debugSB != null)
-                    && (that.debugSB.length() > 0)) {
+		&& (that.debugSB.length() > 0)) {
                 that.getWriter().print(that.debugSB);
                 that.debugSB = new StringBuilder();
             }
@@ -804,10 +805,16 @@ public boolean getVerbose () {
      * @throws Exception _more_
      */
     private int readChar() throws Exception {
-	if(inputChannel!=null)
-	    return readCharNew();
-	else
-	    return readCharOld();
+	int c;
+	if(inputChannel!=null) {
+	    c =  readCharNew();
+	}  else {
+	    c= readCharOld();
+	}
+	if(c==UNDEF) {
+	    hasInput = false;
+	}
+	return c;
     }
 
 
@@ -873,22 +880,23 @@ public boolean getVerbose () {
      * @throws Exception _more_
      */
     public String readLine() throws Exception {
+	if(!hasInput) return null;
         lb.setLength(0);
         int           c;
         boolean       inQuote = false;
         StringBuilder sb      = null;
-        boolean       debug   = true;
-        debug = false;
-        if(debug) sb      = new StringBuilder();
+        boolean       debug   = false;
+	boolean debug2 = false;
+        if(debug || debug2) sb      = new StringBuilder();
         while (true) {
-            if (debug && (lb.length() > 750)) {
+            if (debug2 && (lb.length() > 750)) {
                 System.err.println("***** Whoa:" + lb);
                 System.err.println("***" + sb);
             }
             if (nextChar >= 0) {
                 c        = nextChar;
                 nextChar = UNDEF;
-                if (debug) {
+                if (debug2) {
                     sb.append("\tread from before:" + (char) c + "\n");
                 }
             } else {
@@ -903,11 +911,12 @@ public boolean getVerbose () {
                     return null;
                 }
                 return result;
-            }
+            } 
 
             if (c == NEWLINE) {
-                if (debug) {
+                if (debug2) {
                     sb.append("\tnew line:" + inQuote + "\n");
+                    System.err.print("new line:" + inQuote + "\n");		    
                 }
                 if (changeStrings != null) {
                     String line  = lb.toString();
@@ -932,10 +941,8 @@ public boolean getVerbose () {
                             inQuote  = false;
                             nextChar = UNDEF;
                             ok       = false;
-
                             break;
                         }
-
                     }
                     if ( !ok) {
                         continue;
@@ -945,11 +952,14 @@ public boolean getVerbose () {
                     break;
                 }
             } else if (c == CARRIAGE_RETURN) {
-                if (debug) {
+                if (debug2) {
                     sb.append("\tcr:" + inQuote + "\n");
                 }
                 if ( !inQuote) {
                     nextChar = readChar();
+		    if (nextChar == UNDEF) {
+			System.err.println("XXX");
+		    }
                     if (debug) {
                         sb.append("\tread next char:" + (char) nextChar);
                     }
@@ -969,10 +979,8 @@ public boolean getVerbose () {
             if (debug) {
                 sb.append("\tchar:" + (char) c + "  inQuote: " + inQuote);
             }
-            //"PMT2005-01570","3250 O""NEAL CR B","0079339","N&V","Residential","Single Family Attached Dwelling, Repair","Building","8450","0","05/02/2005","\
-
             if (c == QUOTE_DOUBLE) {
-                if (debug) {
+                if (debug2) {
                     sb.append("\tquote: " + inQuote + "\n");
                 }
                 if ( !inQuote) {
@@ -982,6 +990,9 @@ public boolean getVerbose () {
                     inQuote = true;
                 } else {
                     nextChar = readChar();
+		    if (nextChar == UNDEF) {
+			System.err.println("YYY");
+		    }
                     if (nextChar == UNDEF) {
                         break;
                     }
@@ -1003,6 +1014,9 @@ public boolean getVerbose () {
                         }
                         if (nextChar == CARRIAGE_RETURN) {
                             nextChar = readChar();
+			    if (nextChar == UNDEF) {
+				System.err.println("ZZZ");
+			    }
                             if (nextChar == UNDEF) {
                                 break;
                             }
@@ -1026,16 +1040,16 @@ public boolean getVerbose () {
                     nextChar = UNDEF;
                 }
             }
-        }
+	}
         if (debug) {
             System.out.println(sb);
         }
 
         String line = lb.toString();
-
         //        if (line.length() == 0) {
         //            return null;
         //        }
+	//	System.out.println("LINE:" + line);
         return line;
     }
 
@@ -1358,7 +1372,6 @@ public boolean getVerbose () {
      * @return The Input
      */
     public NamedInputStream getInput() {
-	
         return input;
     }
 
@@ -1379,7 +1392,7 @@ public boolean getVerbose () {
     public BufferedReader getReader() {
         if (reader == null) {
             reader = new BufferedReader(
-                new InputStreamReader(getInput().getInputStream()));
+					new InputStreamReader(getInput().getInputStream()));
         }
         return reader;
     }
@@ -1425,8 +1438,8 @@ public boolean getVerbose () {
         this.prepend = text;
         if (text != null) {
             this.prependReader = new BufferedReader(
-                new InputStreamReader(
-                    new ByteArrayInputStream(text.getBytes())));
+						    new InputStreamReader(
+									  new ByteArrayInputStream(text.getBytes())));
         } else {
             this.prependReader = null;
         }
@@ -1787,8 +1800,5 @@ public boolean getVerbose () {
     public boolean getPositionStart() {
         return positionStart;
     }
-
-
-
 
 }

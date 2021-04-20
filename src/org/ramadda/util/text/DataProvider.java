@@ -1592,7 +1592,7 @@ public abstract class DataProvider {
                 }
 
 		//		line = line.replaceAll("\\u000d", " ");
-
+		//		System.out.println("LINE:" + line);
                 if (rawLines > 0) {
                     ctx.getWriter().println(line);
                     rawLines--;
