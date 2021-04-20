@@ -745,7 +745,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         try {
             IndexWriter writer = getLuceneWriter();
 	    for (String id : ids) {
-		System.err.println("delete:" + id);
 		writer.deleteDocuments(new Term(FIELD_ENTRYID, id));
 	    }
 	    writer.commit();
