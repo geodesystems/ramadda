@@ -53,7 +53,7 @@ function  ConvertForm(inputId, entry) {
 	    html += ".convert_add {margin-left:10px; cursor:pointer;}\n";
 	    html += ".convert_add:hover {text-decoration:underline;}\n";
 	    html += ".ace_gutter-cell {cursor:pointer;}\n";
-	    html += ".ace_editor {margin-bottom:5px;height:200px;}\n";
+	    html += ".ace_editor {margin-bottom:5px;xheight:200px;}\n";
 	    html += ".ace_editor_disabled {background:rgb(250,250,250);}\n";
 	    html += ".ace_csv_comment {color:#B7410E;}\n";
 	    html += ".ace_csv_command {color:blue;}\n";
@@ -63,7 +63,9 @@ function  ConvertForm(inputId, entry) {
 		HtmlUtil.span([ID,this.domId(ID_HELP),CLASS,"ramadda-clickable", TITLE,"Help"], HtmlUtils.getIconImage("fa-question-circle"))+SPACE2;
 	    
 	    html += HU.div(["class","ramadda-menubar","style","width:100%;"],HU.leftRightTable(topLeft,topRight));
-	    html += HtmlUtil.textarea("",text,[STYLE,"width:100%;", ID,this.domId(ID_INPUT), "rows", "5"]);
+//	    let textarea = HtmlUtil.textarea("",text,[STYLE,"position:absolute;width:100%;", ID,this.domId(ID_INPUT), "rows", "5"]);
+	    let input = HtmlUtil.div([STYLE,"height:100%;top:0px;right:0px;left:0px;bottom:0px;position:absolute;width:100%;", ID,this.domId(ID_INPUT), "rows", "5"], text);	    
+	    html+=HU.div([ID,this.domId("resize"),STYLE,"margin-bottom:5px;height:200px;position:relative;"],input);
 	    let left ="";
 	    left += HtmlUtil.span([ID,this.domId(ID_OUTPUTS),CLASS,"convert_button"], "Outputs") +" ";
 	    left += HtmlUtil.span([ID,this.domId(ID_TABLE),CLASS,"convert_button", TITLE,"Display table (ctrl-t)"],"Table")+" ";
@@ -79,7 +81,16 @@ function  ConvertForm(inputId, entry) {
 	    html += HtmlUtil.div([ID, this.domId(ID_SCRATCH)],"");
 
 	    $("#" +  this.inputId).html(html);
+	    this.jq("resize").resizable({
+		handles: 's',
+		stop: (event, ui) =>{
+		    $(this).css("width", '');
+		    this.editor.resize();
+		},
+	    });
 	    this.makeEditor();
+
+
 
 	    this.jq(ID_TRASH).click(()=>{
 		this.call('',{clearOutput:true});
@@ -256,8 +267,8 @@ function  ConvertForm(inputId, entry) {
 	},
 	makeEditor:  function() {
 	    let _this = this;
-	    this.editor = ace.edit(this.domId("input"));
-	    HU.addWikiEditor(this,this.domId("input"));
+	    this.editor = ace.edit(this.domId(ID_INPUT));
+	    HU.addWikiEditor(this,this.domId(ID_INPUT));
 	    this.editor.setBehavioursEnabled(true);
 	    this.editor.setDisplayIndentGuides(false);
 	    this.editor.setKeyboardHandler("emacs");
@@ -847,11 +858,13 @@ function  ConvertForm(inputId, entry) {
 			output.html(result);
 			let toolbar = HU.span([TITLE,"Insert field names", CLASS,"ramadda-clickable", ID,this.domId("addfields")],"Add field ids") + SPACE3;
 			if(table)
-			    toolbar += HU.span([ID,"csv_toggledetails"],"Hide summary");
+			    toolbar += HU.span([ID,"csv_toggledetails"],"Show summary");
 
 			output.find("#header").html(toolbar);
 			let _this = this;
-			let visible = true;
+			let visible = false;
+			if(table)
+			    output.find(".th2").hide();
 			$("#csv_toggledetails").addClass("ramadda-clickable").click(function(){
 			    visible = !visible;
 			    $(this).html(visible?"Hide summary":"Show summary");
