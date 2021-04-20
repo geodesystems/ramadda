@@ -1758,7 +1758,7 @@ ul {
     padding:10px;
 }
 
-.ramadda-noselect {
+.ramadda-clickable, .ramadda-noselect {
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
     -khtml-user-select: none; /* Konqueror HTML */
