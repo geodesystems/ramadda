@@ -1921,7 +1921,8 @@ public class CsvUtil {
 	new Cmd("-print", "Text output"),
         new Cmd("-printheader", "Print header"),
         new Cmd("-raw", "Print the file raw"),
-        new Cmd("-stats", "Print stats"),	
+        new Cmd("-table", "Print table and stats"),	
+        new Cmd("-stats", "Print summary stats"),	
         new Cmd("-record", "Print records"),
         new Cmd("-toxml", "Generate XML", new Arg("tag1"),new Arg("tag2")),
         new Cmd("-tojson", "Generate JSON"),	
@@ -3263,9 +3264,15 @@ public class CsvUtil {
 
 	defineFunction("-stats",0,(ctx,args,i) -> {
 		if(hasSink) return SKIP_INDEX;
-		ctx.getProcessor().addProcessor(new Processor.Stats(this));
+		ctx.getProcessor().addProcessor(new Processor.Stats(this,true));
 		return i;
 	    });
+
+	defineFunction("-table",0,(ctx,args,i) -> {
+		if(hasSink) return SKIP_INDEX;
+		ctx.getProcessor().addProcessor(new Processor.Stats(this,false));
+		return i;
+	    });	
 	
 
 

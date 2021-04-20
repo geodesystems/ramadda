@@ -36,6 +36,7 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
+import java.util.function.Consumer;
 import java.util.function.BiConsumer;
 
 import java.util.ArrayList;
@@ -3951,6 +3952,273 @@ public abstract class Processor extends CsvOperator {
         /** _more_          */
         private CsvUtil util;
 
+	private boolean justStats;
+
+        /** _more_          */
+        private List<ColStat> cols;
+
+        /** _more_          */
+        private Row headerRow;
+
+        /** _more_          */
+        int rowCnt = 0;
+
+        /** _more_          */
+        private boolean interactive;
+
+        /**
+         * ctor
+         *
+         * @param util _more_
+         */
+        public Stats(CsvUtil util,boolean justStats) {
+            this.util   = util;
+	    this.justStats = justStats;
+            interactive = util.getInteractive();
+        }
+
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param row _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row) throws Exception {
+            rowCnt++;
+            if (headerRow == null) {
+                headerRow = row;
+                return row;
+            }
+            if (cols == null) {
+                cols = new ArrayList<ColStat>();
+                for (int i = 0; i < row.size(); i++) {
+                    cols.add(new ColStat(util, i<headerRow.size()?headerRow.getString(i):"",
+                                         row.getString(i)));
+                }
+            }
+            for (int i = 0; i < row.size(); i++) {
+		if(i<cols.size())
+		    cols.get(i).addValue(row.getString(i));
+            }
+
+            addRow(row);
+
+            return row;
+        }
+
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param rows _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public List<Row> finish(TextReader info, List<Row> rows)
+	    throws Exception {
+
+            PrintWriter w = info.getWriter();
+	    BiConsumer<String,String> layout = (label,value) -> {
+		w.print(HU.tag("table",
+			       HU.attrs("class", "left_right_table",
+					"cellpadding", "0", "cellspacing",
+					"0"), HU.row(HU.col(label)
+						     + HU.col(value,
+							      HU.attrs("align","right","valign","top")))));
+	    };
+
+	    Consumer<ColStat> printUniques = (col) -> {
+                        List<Object[]> values = new ArrayList<Object[]>();
+                        for (Enumeration keys = col.uniques.keys();
+			     keys.hasMoreElements(); ) {
+                            Object  key = keys.nextElement();
+                            Integer cnt = col.uniques.get(key);
+                            values.add(new Object[] { key, cnt });
+                        }
+                        Comparator comp = new Comparator() {
+				public int compare(Object o1, Object o2) {
+				    Object[] t1 = (Object[]) o1;
+				    Object[] t2 = (Object[]) o2;
+
+				    return ((int) t2[1]) - ((int) t1[1]);
+				}
+			    };
+
+                        Object[] array = values.toArray();
+                        Arrays.sort(array, comp);
+                        values = (List<Object[]>) Misc.toList(array); 
+			w.print(Utils.plural(values.size(), "unique value"));
+			if(justStats)
+			    w.print("<div style='margin-right:5px;max-height:300px;overflow-y:auto;'>");			
+			else
+			    w.print("<div style='margin-right:5px;max-height:100px;overflow-y:auto;'>");			
+			w.print("<table width=100% border=0 cellpadding=0 cellspacing=0>");
+			int tupleCnt=0;
+			String td = "<td style='border:none;padding:0px;padding-left:0px;padding-right:5px;' ";
+			for (Object[] tuple : values) {
+			    tupleCnt++;
+			    if((justStats && tupleCnt>50) || (!justStats && tupleCnt>20)) {
+				w.print("<tr>" + td+" colspan=2>...</td></tr>");
+				break;
+			    }
+			    Object key = tuple[0];
+			    int    cnt = (Integer) tuple[1];
+			    double percent = Math.round(1000.0 * cnt
+							/ (double) (rowCnt-1)) / 10;
+
+			    w.print("<tr valign=bottom title='" + percent+"%'>");
+			    w.print(td+ " width=1%>" + key+"</td>");
+			    w.print(td+" width=1% align=right>" + cnt +"</td>");
+a			    w.print("<td style='border:none;padding:0px;' ><div style='margin-top:3px;display:inline-block;background:blue;height:1em;width:" + percent +"%;'></div></td>");
+
+			    w.print("</tr>");			    
+			}
+			w.print("</table>");
+			w.print("</div>");
+
+	    };
+
+
+	    w.println("#rows:" + rowCnt);
+	    w.println(HU.SPACE2);
+	    w.println("<span id=header></span>");
+            if (interactive) {
+                w.println(
+			  "<table  width='100%' class='stripe hover display nowrap ramadda-table ramadda-csv-table' >");
+                w.println("<thead>");
+                w.println("<tr valign=top>");
+                for (ColStat col : cols) {
+                    String typeIcon = "";
+                    String tt       = "";
+                    if (col.type.equals("string")) {
+                        typeIcon = "fas fa-font";
+                    } else if (col.type.equals("date")) {
+                        typeIcon = "fas fa-calendar";
+                    } else if (col.type.equals("enumeration")) {
+                        typeIcon = "fas fa-list";
+                    } else if (col.type.equals("image")) {
+                        typeIcon = "fas fa-image";
+                    } else if (col.type.equals("url")) {
+                        typeIcon = "fas fa-link";						
+                    } else {
+                        typeIcon = "fas fa-hashtag";
+                    }
+                    String type = HU.faIcon(typeIcon, "title", "type: " + col.type, "style", "font-size:10pt;");
+                    String name = col.name;
+		    String label = Utils.makeLabel(name);
+		    String id = Utils.makeID(name);
+                    w.println("<th class=csv-id fieldid='" + id
+                              + "' nowrap>" + type + "&nbsp;" + label
+                              + "</th>");
+                }
+                w.println("</tr>");
+                w.println("<tr valign=top class=th2>");
+		for(int i=0;i<cols.size();i++) {
+		    ColStat col =  cols.get(i);
+		    if (Utils.equalsOne(col.name.trim().toLowerCase(), "latitude","longitude")) {
+			ColStat next = i<cols.size()-1?cols.get(i+1):null;
+			if(next!=null && Utils.equalsOne(next.name.toLowerCase(),"longitude","latitude")) {
+			    ColStat lat = col.name.equalsIgnoreCase("latitude")?col:next;
+			    ColStat lon = col.name.equalsIgnoreCase("longitude")?col:next;			   
+			    i++;
+			    w.println("<th colspan=2>");
+			    StringBuilder map = new StringBuilder();
+			    MapProvider mp  = util.getMapProvider();
+			    if(mp!=null) {
+				List<double[]> pts = new ArrayList<double[]>();
+				for(int ptIdx=0;ptIdx<lat.pts.size();ptIdx++)
+				    pts.add(new double[]{lat.pts.get(ptIdx),lon.pts.get(ptIdx)});
+				Hashtable<String,String>props = new Hashtable<String,String>();
+				props.put("simple","true");
+				props.put("radius","3");				
+				mp.makeMap(map,"100%",justStats?"300px":"100px",pts,props);
+				w.print(map.toString());
+			    }
+			    w.println("</th>");
+			    continue;
+			}
+		    }
+		    w.println("<th>");
+		    if (col.type.equals("numeric")) {
+                        layout.accept("min:", "" + col.min);
+			layout.accept("max:", "" + col.max);
+                        if (col.numMissing > 0) {
+                            layout.accept("#missing:",
+					  "" + col.numMissing);
+                        }
+                        if (col.numErrors > 0) {
+                            layout.accept("#errors:",   "" + col.numErrors);
+                            if (col.sampleError != null) {
+                                layout.accept("eg:"
+					      + ((col.sampleError.trim().length()
+						  == 0)
+						 ? "<blank>"
+						 : col.sampleError), "");
+                            }
+                        }
+			printUniques.accept(col);
+                    } else if (col.type.equals("date")) {
+                        if (col.minDate != null) {
+			    layout.accept("min:", fmtSdf.format(col.minDate));
+                        }
+                        if (col.maxDate != null) {
+                            layout.accept("max:",fmtSdf.format(col.maxDate));
+                        }
+                    } else if (col.type.equals("image")) {
+                    } else if (col.type.equals("url")) {			
+                    } else {
+			printUniques.accept(col);
+                    }
+                    w.println("</th>");
+                }
+                w.println("</tr>");
+                w.println("</thead>");
+                w.println("<tbody>");
+
+                rows = getRows(rows);
+
+                for (Row row : rows) {
+		    if(!justStats) {
+			if (cnt++ > 200) {
+			    w.println("<tr><td colspan=" + row.size()
+				      + ">...</td></tr>");
+			    break;
+			}
+		    }
+                    Row r = new Row();
+                    for (int i = 0; i < cols.size(); i++) {
+                        ColStat col = cols.get(i);
+			if(i<row.size()) 
+			    r.add(col.format(row.get(i)));
+                    }
+		    if(!justStats)
+			printRow(info, r, false);
+                }
+                w.println("</tbody>");
+                w.println("</table>");
+            } else {
+                for (ColStat col : cols) {
+                    cnt++;
+		    info.getWriter().print("#" + cnt + " ");
+                    col.finish(info.getWriter());
+                }
+            }
+
+            return rows;
+
+        }
+
+
         /**
          * Class description
          *
@@ -4122,14 +4390,13 @@ public abstract class Processor extends CsvOperator {
                         minDate = Utils.min(minDate, date);
                         maxDate = Utils.max(maxDate, date);
                     }
-                } else {
-                    Integer cnt = uniques.get(v);
-                    if (cnt == null) {
-                        cnt = new Integer(0);
-                    }
-                    cnt = new Integer(cnt + 1);
-                    uniques.put(v, cnt);
-                }
+                } 
+		Integer cnt = uniques.get(v);
+		if (cnt == null) {
+		    cnt = new Integer(0);
+		}
+		cnt = new Integer(cnt + 1);
+		uniques.put(v, cnt);
             }
 
             /**
@@ -4159,251 +4426,8 @@ public abstract class Processor extends CsvOperator {
             }
 
         }
-
-        /** _more_          */
-        private List<ColStat> cols;
-
-        /** _more_          */
-        private Row headerRow;
-
-        /** _more_          */
-        int rowCnt = 0;
-
-        /** _more_          */
-        private boolean interactive;
-
-        /**
-         * ctor
-         *
-         * @param util _more_
-         */
-        public Stats(CsvUtil util) {
-            this.util   = util;
-            interactive = util.getInteractive();
-        }
+	
 
 
-        /**
-         * _more_
-         *
-         * @param info _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
-        @Override
-        public Row processRow(TextReader info, Row row) throws Exception {
-            rowCnt++;
-            if (headerRow == null) {
-                headerRow = row;
-                return row;
-            }
-            if (cols == null) {
-                cols = new ArrayList<ColStat>();
-                for (int i = 0; i < row.size(); i++) {
-                    cols.add(new ColStat(util, i<headerRow.size()?headerRow.getString(i):"",
-                                         row.getString(i)));
-                }
-            }
-            for (int i = 0; i < row.size(); i++) {
-		if(i<cols.size())
-		    cols.get(i).addValue(row.getString(i));
-            }
-
-            addRow(row);
-
-            return row;
-        }
-
-
-        /**
-         * _more_
-         *
-         * @param info _more_
-         * @param rows _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
-        @Override
-        public List<Row> finish(TextReader info, List<Row> rows)
-	    throws Exception {
-
-            PrintWriter w = info.getWriter();
-	    BiConsumer<String,String> layout = (label,value) -> {
-		w.print(HU.tag("table",
-			       HU.attrs("class", "left_right_table",
-					"cellpadding", "0", "cellspacing",
-					"0"), HU.row(HU.col(label)
-						     + HU.col(value,
-							      HU.attrs("align","right","valign","top")))));
-	    };
-
-            w.println("#rows:" + rowCnt);
-	    w.println(HU.SPACE2);
-	    w.println("<span id=header></span>");
-            if (interactive) {
-                w.println(
-			  "<table  width='100%' class='stripe hover display nowrap ramadda-table ramadda-csv-table' >");
-                w.println("<thead>");
-                w.println("<tr valign=top>");
-                for (ColStat col : cols) {
-                    String typeIcon = "";
-                    String tt       = "";
-                    if (col.type.equals("string")) {
-                        typeIcon = "fas fa-font";
-                    } else if (col.type.equals("date")) {
-                        typeIcon = "fas fa-calendar";
-                    } else if (col.type.equals("enumeration")) {
-                        typeIcon = "fas fa-list";
-                    } else if (col.type.equals("image")) {
-                        typeIcon = "fas fa-image";
-                    } else if (col.type.equals("url")) {
-                        typeIcon = "fas fa-link";						
-                    } else {
-                        typeIcon = "fas fa-hashtag";
-                    }
-                    String type = HU.faIcon(typeIcon, "title", "type: " + col.type, "style", "font-size:10pt;");
-                    String name = col.name;
-		    String label = Utils.makeLabel(name);
-		    String id = Utils.makeID(name);
-                    w.println("<th class=csv-id fieldid='" + id
-                              + "' nowrap>" + type + "&nbsp;" + label
-                              + "</th>");
-                }
-                w.println("</tr>");
-                w.println("<tr valign=top class=th2>");
-		for(int i=0;i<cols.size();i++) {
-		    ColStat col =  cols.get(i);
-		    if (Utils.equalsOne(col.name.trim().toLowerCase(), "latitude","longitude")) {
-			ColStat next = i<cols.size()-1?cols.get(i+1):null;
-			if(next!=null && Utils.equalsOne(next.name.toLowerCase(),"longitude","latitude")) {
-			    ColStat lat = col.name.equalsIgnoreCase("latitude")?col:next;
-			    ColStat lon = col.name.equalsIgnoreCase("longitude")?col:next;			   
-			    i++;
-			    w.println("<th colspan=2>");
-			    StringBuilder map = new StringBuilder();
-			    MapProvider mp  = util.getMapProvider();
-			    if(mp!=null) {
-				List<double[]> pts = new ArrayList<double[]>();
-				for(int ptIdx=0;ptIdx<lat.pts.size();ptIdx++)
-				    pts.add(new double[]{lat.pts.get(ptIdx),lon.pts.get(ptIdx)});
-				Hashtable<String,String>props = new Hashtable<String,String>();
-				props.put("simple","true");
-				props.put("radius","3");				
-				mp.makeMap(map,"100%","100px",pts,props);
-				w.print(map.toString());
-			    }
-			    w.println("</th>");
-			    continue;
-			}
-		    }
-		    w.println("<th>");
-		    if (col.type.equals("numeric")) {
-                        layout.accept("min:", "" + col.min);
-			layout.accept("max:", "" + col.max);
-                        if (col.numMissing > 0) {
-                            layout.accept("#missing:",
-					  "" + col.numMissing);
-                        }
-                        if (col.numErrors > 0) {
-                            layout.accept("#errors:",   "" + col.numErrors);
-                            if (col.sampleError != null) {
-                                layout.accept("eg:"
-					      + ((col.sampleError.trim().length()
-						  == 0)
-						 ? "<blank>"
-						 : col.sampleError), "");
-                            }
-                        }
-                    } else if (col.type.equals("date")) {
-                        if (col.minDate != null) {
-			    layout.accept("min:", fmtSdf.format(col.minDate));
-                        }
-                        if (col.maxDate != null) {
-                            layout.accept("max:",fmtSdf.format(col.maxDate));
-                        }
-                    } else if (col.type.equals("image")) {
-                    } else if (col.type.equals("url")) {			
-                    } else {
-                        List<Object[]> values = new ArrayList<Object[]>();
-                        for (Enumeration keys = col.uniques.keys();
-			     keys.hasMoreElements(); ) {
-                            Object  key = keys.nextElement();
-                            Integer cnt = col.uniques.get(key);
-                            values.add(new Object[] { key, cnt });
-                        }
-                        Comparator comp = new Comparator() {
-				public int compare(Object o1, Object o2) {
-				    Object[] t1 = (Object[]) o1;
-				    Object[] t2 = (Object[]) o2;
-
-				    return ((int) t2[1]) - ((int) t1[1]);
-				}
-			    };
-
-                        Object[] array = values.toArray();
-                        Arrays.sort(array, comp);
-                        values = (List<Object[]>) Misc.toList(array);
-                        if (values.size() > 20) {
-                            w.print(values.size() + "<br>unique values");
-                        } else {
-                            w.print(
-				    "<div style='max-height:100px;overflow-y:auto;'>");
-                            w.print("<table>");
-                            for (Object[] tuple : values) {
-                                Object key = tuple[0];
-                                int    cnt = (Integer) tuple[1];
-                                double percent = Math.round(1000.0 * cnt
-							    / (double) (rowCnt-1)) / 10;
-                                w.print(
-					"<tr><td>" + key
-					+ "</td><td align=right><span title='#"
-					+ cnt + "'>" + percent
-					+ "%</span></td></tr>");
-                            }
-                            w.print("</table>");
-                            w.print("</div>");
-                        }
-                    }
-                    w.println("</th>");
-                }
-                w.println("</tr>");
-                w.println("</thead>");
-                w.println("<tbody>");
-
-                rows = getRows(rows);
-
-                for (Row row : rows) {
-                    if (cnt++ > 200) {
-                        w.println("<tr><td colspan=" + row.size()
-                                  + ">...</td></tr>");
-
-                        break;
-                    }
-                    Row r = new Row();
-                    for (int i = 0; i < cols.size(); i++) {
-                        ColStat col = cols.get(i);
-			if(i<row.size()) 
-			    r.add(col.format(row.get(i)));
-                    }
-                    printRow(info, r, false);
-                }
-                w.println("</tbody>");
-                w.println("</table>");
-            } else {
-                for (ColStat col : cols) {
-                    cnt++;
-                    info.getWriter().print("#" + cnt + " ");
-                    col.finish(info.getWriter());
-                }
-            }
-
-            return rows;
-
-        }
     }
 }

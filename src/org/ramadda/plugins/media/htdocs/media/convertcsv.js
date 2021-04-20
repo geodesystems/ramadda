@@ -66,7 +66,7 @@ function  ConvertForm(inputId, entry) {
 	    html += HtmlUtil.textarea("",text,[STYLE,"width:100%;", ID,this.domId(ID_INPUT), "rows", "5"]);
 	    let left ="";
 	    left += HtmlUtil.span([ID,this.domId(ID_OUTPUTS),CLASS,"convert_button"], "Outputs") +" ";
-	    left += HtmlUtil.span([ID,this.domId(ID_TABLE),CLASS,"convert_button", TITLE,"Display table (ctrl-h)"],"Table")+" ";
+	    left += HtmlUtil.span([ID,this.domId(ID_TABLE),CLASS,"convert_button", TITLE,"Display table (ctrl-t)"],"Table")+" ";
 	    left += HtmlUtil.span([ID,this.domId(ID_PROCESS),CLASS,"convert_button", TITLE,"Process entire file"],"Process")+" ";	    
 	    let right = "";
 	    right += HtmlUtil.span([ID,this.domId(ID_CLEAR),CLASS,"ramadda-clickable", TITLE,"Clear output"],HU.getIconImage("fa-eraser")) +SPACE2;
@@ -93,7 +93,7 @@ function  ConvertForm(inputId, entry) {
 	    });
 
 	    this.jq(ID_TABLE).button().click(()=>{
-		this.display('-stats',null,true);
+		this.display('-table',null,true);
 	    });
 	    this.jq(ID_PROCESS).button().click(()=>{
 		this.display('',true);
@@ -102,7 +102,7 @@ function  ConvertForm(inputId, entry) {
 
 	    this.jq(ID_OUTPUTS).button().click(function(){
 		let html = _this.outputCommands.reduce((acc,cmd)=>{
-		    if(cmd.command=="-stats") return acc;
+		    if(cmd.command=="-table") return acc;
 		    acc+=HU.div([CLASS,"ramadda-clickable","command",cmd.command,TITLE,cmd.command],cmd.description);
 		    return acc;
 		},"");
@@ -283,7 +283,7 @@ function  ConvertForm(inputId, entry) {
 	    this.editor.commands.addCommand({
 		name: "keyt",
 		exec: function() {
-		    _this.display('-stats',null,true);
+		    _this.display('-table',null,true);
 		},
 		bindKey: {mac: "ctrl-t", win: "ctrl-t"}
 	    })
@@ -598,12 +598,6 @@ function  ConvertForm(inputId, entry) {
 	    let isArgs  = args.csvoutput=="-args";
 	    let debug = cmds.match("-debug");
 	    let rawInput = this.getInput();
-	    if((!args.process && !doExplode && !isScript && !isArgs) || args.html) {
-		if (this.maxRows != "") {
-		    cmds = "-maxrows " + this.maxRows +" " + cmds;
-		}
-	    }
-
 	    haveOutput = Utils.isDefined(args.csvoutput);
 	    if(!doExplode &&  cmds.indexOf("-count")<0  && cmds.indexOf("-db") <0 && !haveOutput)  {
 		args.csvoutput = "-print";
@@ -614,9 +608,21 @@ function  ConvertForm(inputId, entry) {
 	    let isJson = args.csvoutput=="-tojson";
 	    let isXml = args.csvoutput=="-toxml";	
 	    let csv = args.csvoutput=="-print";
-	    let stats = args.csvoutput=="-stats";		
-	    let showHtml = args.csvoutput == "-table";
+	    let stats = args.csvoutput=="-stats";
+	    let table =  args.csvoutput=="-table";					    
+	    let showHtml =false;
 	    let printHeader = args.csvoutput == "-printheader";
+
+	    if((!args.process && !doExplode && !isScript && !isArgs) || args.html) {
+		if (this.maxRows != "") {
+		    if(stats) {
+		    }  else {
+			cmds = "-maxrows " + this.maxRows +" " + cmds;
+		    }
+		}
+	    }
+
+
 
 	    let url = this.getUrl(cmds,rawInput);
 
@@ -837,16 +843,18 @@ function  ConvertForm(inputId, entry) {
 			    });
 			}
 			return;
-		    } else if(stats) {
+		    } else if(stats || table) {
 			output.html(result);
-			let toolbar = HU.span([TITLE,"Insert field names", CLASS,"ramadda-clickable", ID,this.domId("addfields")],"Add field ids") + SPACE3 + HU.span([ID,"csv_toggledetails"],"Hide details");
+			let toolbar = HU.span([TITLE,"Insert field names", CLASS,"ramadda-clickable", ID,this.domId("addfields")],"Add field ids") + SPACE3;
+			if(table)
+			    toolbar += HU.span([ID,"csv_toggledetails"],"Hide summary");
 
 			output.find("#header").html(toolbar);
 			let _this = this;
 			let visible = true;
-			$("#csv_toggledetails").addClass("ramadda-clickable").click(() =>{
+			$("#csv_toggledetails").addClass("ramadda-clickable").click(function(){
 			    visible = !visible;
-			    $(this).html(visible?"Hide details":"Show details");
+			    $(this).html(visible?"Hide summary":"Show summary");
 			    if(visible)
 				output.find(".th2").show();
 			    else
@@ -867,7 +875,8 @@ function  ConvertForm(inputId, entry) {
 			    if(!id) return;
 			    _this.insertColumnIndex(id,true);
 			});
-			HtmlUtils.formatTable(output.find( ".ramadda-table"),{paging:false,height:"200px",fixedHeader: true,scrollX:true});
+			if(table)
+			    HtmlUtils.formatTable(output.find( ".ramadda-table"),{paging:false,height:"200px",fixedHeader: true,scrollX:true});
 		    } else if(!raw && showHtml) {
   			let newresult = result.replace(/(<th>.*?)(#[0-9]+)(.*?<.*?>)([^<>]*?)(<.*?)<\/th>/g,"$1<a href='#' index='$2' style='color:blue;' class=csv_header_field field='table' onclick=noop()  title='Add field id'>$2</a>$3<a href='#' label='$4' style='color:blue;' class=csv_header_field field='table' onclick=noop()  title='Add field id'>$4</a>$5</th>");
 			result = newresult;
