@@ -3612,7 +3612,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             return snippet;
         }
         String text = child.getTypeHandler().getEntryText(child);
-        snippet = StringUtil.findPattern(text, "(?s)<snippet>(.*)</snippet>");
+	if(text!=null)
+	    snippet = StringUtil.findPattern(text, "(?s)<snippet>(.*)</snippet>");
         if (snippet == null) {
             snippet = StringUtil.findPattern(
                 text, "(?s)<snippet-hide>(.*)</snippet-hide>");
