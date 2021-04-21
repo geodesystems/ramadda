@@ -160,7 +160,7 @@
 
             source="${javac.version}"
             target="${javac.version}">
-        <include name="${plugin_dir}/*.java"/>
+        <include name="${plugin_dir}/**/*.java"/>
         <include name="${plugin_extra_src}"/>
         </javac>
 
