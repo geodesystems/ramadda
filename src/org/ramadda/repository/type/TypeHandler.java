@@ -126,29 +126,6 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     public static final String TARGET_SIBLING = "sibling";
 
-    /** _more_ */
-    public static final RequestArgument REQUESTARG_NORTH =
-        new RequestArgument("ramadda.arg.area.north");
-
-    /** _more_ */
-    public static final RequestArgument REQUESTARG_WEST =
-        new RequestArgument("ramadda.arg.area.west");
-
-    /** _more_ */
-    public static final RequestArgument REQUESTARG_SOUTH =
-        new RequestArgument("ramadda.arg.area.south");
-
-    /** _more_ */
-    public static final RequestArgument REQUESTARG_EAST =
-        new RequestArgument("ramadda.arg.area.east");
-
-    /** _more_ */
-    public static final RequestArgument REQUESTARG_LATITUDE =
-        new RequestArgument("ramadda.arg.latitude");
-
-    /** _more_ */
-    public static final RequestArgument REQUESTARG_LONGITUDE =
-        new RequestArgument("ramadda.arg.longitude");
 
     /** _more_ */
     public static final RequestArgument REQUESTARG_FROMDATE =
@@ -157,10 +134,6 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     public static final RequestArgument REQUESTARG_TODATE =
         new RequestArgument("ramadda.arg.todate");
-
-    /** _more_ */
-    public static final RequestArgument[] AREA_NWSE = { REQUESTARG_NORTH,
-            REQUESTARG_WEST, REQUESTARG_SOUTH, REQUESTARG_EAST };
 
 
     /** _more_ */
@@ -5538,7 +5511,7 @@ public class TypeHandler extends RepositoryManager {
 
         if (advancedForm) {
             String             radio = getSpatialSearchTypeWidget(request);
-            SelectionRectangle bbox  = getSelectionBounds(request);
+            SelectionRectangle bbox  = request.getSelectionBounds();
             MapInfo map = getRepository().getMapManager().createMap(request,
                               null, true, null);
 
@@ -5946,9 +5919,6 @@ public class TypeHandler extends RepositoryManager {
                     date2 = date1;
                 }
 
-
-
-
                 String dateSearchMode = request.getString(arg.getMode(),
                                             DATE_SEARCHMODE_DEFAULT);
                 if (dateSearchMode.equals(DATE_SEARCHMODE_OVERLAPS)) {
@@ -5981,7 +5951,7 @@ public class TypeHandler extends RepositoryManager {
                     dateClauses.add(Clause.ge(Tables.ENTRIES.COL_TODATE,
                             date2));
                 }
-            }
+	    }
 
 
             String noDataMode = request.getString(ARG_DATE_NODATAMODE, "");
@@ -6025,41 +5995,8 @@ public class TypeHandler extends RepositoryManager {
         boolean[]          areaLE    = { true, false, false, true };
         String[]           areaNames = { "North", "West", "South", "East" };
         Clause             areaClause;
-        SelectionRectangle bbox = getSelectionBounds(request);
-        bbox.normalizeLongitude();
         List<Clause> areaClauses = new ArrayList<Clause>();
-        List<SelectionRectangle> rectangles =
-            new ArrayList<SelectionRectangle>();
-
-        /*
-   160                 20
-    +------------------+
- ---------+---------+---------+------------
-       180/-180     0      180/-180
-        */
-
-
-
-        if (bbox.allDefined()) {
-            addCriteria(request, searchCriteria, (contains
-                    ? "Area contained by "
-                    : "Area overlaps"), bbox.getNorth() + " "
-                                        + bbox.getWest() + " "
-                                        + bbox.getSouth() + " "
-                                        + bbox.getEast());
-        }
-
-        //Check for a search crossing the dateline
-        if (bbox.crossesDateLine()) {
-            rectangles.add(new SelectionRectangle(bbox.getNorth(),
-                    bbox.getWest(), bbox.getSouth(), 180));
-            rectangles.add(new SelectionRectangle(bbox.getNorth(), -180,
-                    bbox.getSouth(), bbox.getEast()));
-        } else {
-            rectangles.add(bbox);
-        }
-
-
+	List<SelectionRectangle> rectangles = getEntryUtil().getSelectionRectangles(request.getSelectionBounds());
         for (SelectionRectangle rectangle : rectangles) {
             List<Clause> areaExpressions = new ArrayList<Clause>();
 
@@ -6187,8 +6124,6 @@ public class TypeHandler extends RepositoryManager {
             }
         }
 
-
-
         List<Clause> metadataAnds = new ArrayList<Clause>();
         for (int typeIdx = 0; typeIdx < types.size(); typeIdx++) {
             String         type     = types.get(typeIdx);
@@ -6273,40 +6208,6 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     */
-    public static SelectionRectangle getSelectionBounds(Request request) {
-        String[] argPrefixes = { ARG_AREA, ARG_BBOX };
-        double[] bbox = { Double.NaN, Double.NaN, Double.NaN, Double.NaN };
-        for (String argPrefix : argPrefixes) {
-            if (request.defined(argPrefix)) {
-                List<String> toks =
-                    Utils.split(request.getString(argPrefix, ""), ",",
-                                     true, true);
-                //n,w,s,e
-                if (toks.size() == 4) {
-                    for (int i = 0; i < 4; i++) {
-                        bbox[i] = Double.parseDouble(toks.get(i));
-                    }
-                }
-            }
-        }
-
-        for (int i = 0; i < 4; i++) {
-            if (request.defined(AREA_NWSE[i])) {
-                bbox[i] = request.get(AREA_NWSE[i], 0.0);
-            }
-        }
-
-        return new SelectionRectangle(bbox[0], bbox[1], bbox[2], bbox[3]);
-
-    }
 
     /**
      * _more_
