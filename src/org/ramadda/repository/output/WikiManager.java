@@ -3614,9 +3614,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         String text = child.getTypeHandler().getEntryText(child);
 	if(text!=null)
 	    snippet = StringUtil.findPattern(text, "(?s)<snippet>(.*)</snippet>");
-        if (snippet == null) {
+        if (text!=null && snippet == null) {
             snippet = StringUtil.findPattern(
-                text, "(?s)<snippet-hide>(.*)</snippet-hide>");
+					     text, "(?s)<snippet-hide>(.*)</snippet-hide>");
         }
         child.setSnippet(snippet);
         if ((snippet != null) && wikify) {
