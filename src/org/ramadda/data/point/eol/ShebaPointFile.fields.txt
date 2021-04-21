@@ -1,1 +1,0 @@
-time[format="yyyyMMddHHmmss"],T[missing="1e+30"] ,P[missing="1e+30"] ,RH[missing="1e+30"] ,Tsnow[missing="1e+30"] ,Gsnow[missing="1e+30"] ,spd[missing="1e+30"] ,dir[missing="1e+30"] ,qual[missing="1e+30"] ,compass[missing="1e+30"] ,decl[missing="1e+30"] ,latitude[missing="1e+30"] ,longitude[missing="1e+30"] 

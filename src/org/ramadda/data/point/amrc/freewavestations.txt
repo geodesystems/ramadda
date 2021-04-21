@@ -1,4 +1,0 @@
-CapeBird,CapeBird,77.217S, 166.439E,    38
-MinnaBluff,MinnaBluff,78.554S,166.691E,  895 
-WillieField,WillieField,77.866S,166.983E,   14
-MarblePoint,MarblePoint,77.439S, 163.759E,   111
