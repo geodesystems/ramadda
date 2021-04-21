@@ -8,51 +8,51 @@
 
   <type name="type_point_icebridge_mccords_irmcr2"  description="McCords Irmcr2 Data" handler="org.ramadda.data.services.PointTypeHandler" super="type_point_icebridge" >
      <property name="icon" value="/point/nasa.png"/>
-     <property name="record.file.class" value="org.ramadda.data.point.icebridge.McordsIrmcr2File"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.icebridge.McordsIrmcr2File"/>
 
   </type>
 
   <type name="type_point_icebridge_mccords_irmcr3"  description="McCords Irmcr3 Data" handler="org.ramadda.data.services.PointTypeHandler" super="type_point_icebridge" >
      <property name="icon" value="/point/nasa.png"/>
-     <property name="record.file.class" value="org.ramadda.data.point.icebridge.McordsIrmcr3File"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.icebridge.McordsIrmcr3File"/>
   </type>
 
 
 
   <type name="type_point_icebridge_atm_icessn"  description="ATM Ice SSN Data" handler="org.ramadda.data.services.PointTypeHandler" super="type_point_icebridge" >
      <property name="icon" value="/point/nasa.png"/>
-     <property name="record.file.class" value="org.ramadda.data.point.icebridge.AtmIceSSNFile"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.icebridge.AtmIceSSNFile"/>
 
   </type>
 
   <type name="type_point_icebridge_atm_qfit"  description="ATM QFIT Data" handler="org.ramadda.data.services.PointTypeHandler" super="type_point_icebridge" >
      <property name="icon" value="/point/nasa.png"/>
      <property name="isTrajectory" value="true"/>
-     <property name="record.file.class" value="org.ramadda.data.point.icebridge.QfitFile"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.icebridge.QfitFile"/>
   </type>
 
 
   <type name="type_point_icebridge_paris"  description="Paris Data" handler="org.ramadda.data.services.PointTypeHandler" super="type_point_icebridge" >
      <property name="icon" value="/point/nasa.png"/>
      <property name="isTrajectory" value="true"/>
-     <property name="record.file.class" value="org.ramadda.data.point.icebridge.ParisFile"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.icebridge.ParisFile"/>
   </type>
 
   <type name="type_point_icebridge_bgm3_v09"  description="BGM-3 Gravimeter V09" handler="org.ramadda.data.services.PointTypeHandler" super="type_point_icebridge" >
      <property name="icon" value="/point/nasa.png"/>
-     <property name="record.file.class" value="org.ramadda.data.point.icebridge.Igbgm2GravityV09File"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.icebridge.Igbgm2GravityV09File"/>
   </type>
 
   <type name="type_point_icebridge_bgm3_v11"  description="BGM-3 Gravimeter V11" handler="org.ramadda.data.services.PointTypeHandler" super="type_point_icebridge" >
      <property name="icon" value="/point/nasa.png"/>
-     <property name="record.file.class" value="org.ramadda.data.point.icebridge.Igbgm2GravityV11File"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.icebridge.Igbgm2GravityV11File"/>
   </type>
 
 
 
   <type name="type_point_icebridge_iggrv1b"  description="IGGRV1B Air Gravity Anomaly" handler="org.ramadda.data.services.PointTypeHandler" super="type_point_icebridge" >
      <property name="icon" value="/point/nasa.png"/>
-     <property name="record.file.class" value="org.ramadda.data.point.icebridge.Iggrv1bAirGravityFile"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.icebridge.Iggrv1bAirGravityFile"/>
   </type>
 
 

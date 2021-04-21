@@ -9,7 +9,7 @@
         description="Ameriflux Level 2 CSV File"  
         handler="org.ramadda.data.services.PointTypeHandler">
     <property name="icon" value="/point/tower.png"/>
-    <property name="record.file.class" value="org.ramadda.data.point.above.AmerifluxLevel2PointFile"/>
+    <property name="record.file.class" value="org.ramadda.geodata.point.above.AmerifluxLevel2PointFile"/>
     <column  name="site_id"  type="enumerationplus" label="Site ID" cansearch="true"/>
     <column  name="contact"  type="string" label="Contact" cansearch="true"/>
     <column  name="ecosystem_type"  type="enumerationplus" label="Ecosystem Type" cansearch="true">
@@ -23,7 +23,7 @@
   </type>
 
   <type name="type_point_above_cmcswemonthlyclimate"  super="type_point_above" description="CMC SWE Monthly"  handler="org.ramadda.data.services.PointTypeHandler">
-     <property name="record.file.class" value="org.ramadda.data.point.above.CmcSweMonthlyClimate"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.above.CmcSweMonthlyClimate"/>
   </type>
 
 

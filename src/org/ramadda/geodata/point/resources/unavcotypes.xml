@@ -10,7 +10,7 @@ this gets it from the type_point super class
 
 
   <type name="type_point_pbo_position_time_series"  super="type_point_unavco" description="PBO Position Time Series"  handler="org.ramadda.data.services.PointTypeHandler">
-     <property name="record.file.class" value="org.ramadda.data.point.unavco.PositionTimeSeriesPointFile"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.unavco.PositionTimeSeriesPointFile"/>
      <column  name="four_char_id"  type="enumerationplus" label="Four Char ID" cansearch="true"/>
      <column  name="station_name"  type="string" label="Station Name" cansearch="true"/>
      <column  name="reference_frame"  type="enumerationplus" label="Reference Frame" cansearch="true"/>

@@ -1,11 +1,11 @@
 <types supercategory="Geoscience">
 
   <type name="type_point_netcdf"  description="NetCDF Point File" super="type_point" handler="org.ramadda.data.services.PointTypeHandler">
-     <property name="record.file.class" value="org.ramadda.data.point.netcdf.NetcdfPointFile"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.netcdf.NetcdfPointFile"/>
   </type>
 
   <type name="type_single_point_grid_netcdf"  description="NetCDF Single Point Grid File" super="type_point" handler="org.ramadda.data.services.PointTypeHandler">
-     <property name="record.file.class" value="org.ramadda.data.point.netcdf.NetcdfSinglePointGridFile"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.netcdf.NetcdfSinglePointGridFile"/>
   </type>
   
 </types>

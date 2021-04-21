@@ -1,0 +1,7 @@
+sample_site_code[type=string],
+latitude[synthetic=true],
+longitude[synthetic=true],
+elevation[synthetic=true],
+sample_year[],
+sample_month[type=string],
+${parameter}[missing="-999.99" chartable="true"]

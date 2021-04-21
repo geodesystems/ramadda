@@ -3,7 +3,7 @@
 
   <type name="type_point_gcnet"  super="type_point_aon" description="GC-Net Point Data"  handler="org.ramadda.data.services.PointTypeHandler">
     <property name="icon" value="/point/gcnet.png"/>
-     <property name="record.file.class" value="org.ramadda.data.point.gcnet.GCNetPointFile"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.gcnet.GCNetPointFile"/>
 <!--
      <column  name="site_id"  type="enumerationplus" label="Site ID" cansearch="true"/>
      <column  name="contact"  type="string" label="Contact" cansearch="true"/>

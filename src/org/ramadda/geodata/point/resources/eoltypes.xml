@@ -6,16 +6,16 @@
 
 
   <type name="type_point_eol_sheba"  super="type_point_eol" description="Sheba Point File"  handler="org.ramadda.data.services.PointTypeHandler">
-     <property name="record.file.class" value="org.ramadda.data.point.eol.ShebaPointFile"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.eol.ShebaPointFile"/>
   </type>
 
 
   <type name="type_point_eol_ceoptower"  super="type_point_eol" description="CEOP Tower File"  handler="org.ramadda.data.services.PointTypeHandler">
-     <property name="record.file.class" value="org.ramadda.data.point.eol.CeopPointFile"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.eol.CeopPointFile"/>
   </type>
 
   <type name="type_point_eol_ceopsfc"  super="type_point_eol" description="CEOP Surface File"  handler="org.ramadda.data.services.PointTypeHandler">
-     <property name="record.file.class" value="org.ramadda.data.point.eol.CeopSfcPointFile"/>
+     <property name="record.file.class" value="org.ramadda.data.geopoint.eol.CeopSfcPointFile"/>
   </type>
 
 
