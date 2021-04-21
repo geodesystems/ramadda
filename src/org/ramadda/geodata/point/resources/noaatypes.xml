@@ -11,14 +11,14 @@ this gets it from the type_point super class
 
   <type name="type_point_noaa_tower"  super="type_point_noaa" description="NOAA Tower Network"  handler="org.ramadda.data.services.PointTypeHandler">
      <property name="icon" value="/point/tower.png"/>
-     <property name="record.file.class" value="org.ramadda.data.point.noaa.NoaaTowerPointFile"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.noaa.NoaaTowerPointFile"/>
      <column  name="site_id"  type="enumerationplus" label="Site ID" cansearch="true"/>
   </type>
 
 
   <type name="type_point_noaa_carbon"  super="type_point_noaa" description="NOAA Carbon Measurements"  handler="org.ramadda.data.services.PointTypeHandler">
 
-     <property name="record.file.class" value="org.ramadda.data.point.noaa.NoaaCarbonPointFile"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.noaa.NoaaCarbonPointFile"/>
      <column  name="site_id"  type="enumerationplus" label="Site ID" cansearch="true"/>
      <column  name="parameter"  type="enumerationplus" label="Parameter" cansearch="true"/>
      <column  name="project"  type="string" label="Project" cansearch="true"/>
@@ -30,7 +30,7 @@ this gets it from the type_point super class
   <type name="type_point_noaa_flask_event"  super="type_point_noaa" description="NOAA Flask Event Measurements"  handler="org.ramadda.data.services.PointTypeHandler">
      <property name="icon" value="/point/noaa.gif"/>
 
-     <property name="record.file.class" value="org.ramadda.data.point.noaa.NoaaFlaskEventPointFile"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.noaa.NoaaFlaskEventPointFile"/>
      <column  name="site_id"  type="enumerationplus" label="Site ID" cansearch="true"/>
      <column  name="parameter"  type="enumerationplus" label="Parameter" cansearch="true"/>
      <column  name="project"  type="string" label="Project" cansearch="true"/>
@@ -41,7 +41,7 @@ this gets it from the type_point super class
   <type name="type_point_noaa_flask_month"  super="type_point_noaa" description="NOAA Flask Month Measurements"  handler="org.ramadda.data.services.PointTypeHandler">
      <property name="icon" value="/point/noaa.gif"/>
 
-     <property name="record.file.class" value="org.ramadda.data.point.noaa.NoaaFlaskMonthPointFile"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.noaa.NoaaFlaskMonthPointFile"/>
      <column  name="site_id"  type="enumerationplus" label="Site ID" cansearch="true"/>
      <column  name="parameter"  type="enumerationplus" label="Parameter" cansearch="true"/>
      <column  name="project"  type="string" label="Project" cansearch="true"/>
@@ -51,10 +51,10 @@ this gets it from the type_point super class
 
 
   <type name="type_point_noaa_madis"  super="type_point_noaa" description="NOAA MADIS Point Data"  handler="org.ramadda.data.services.PointTypeHandler">
-     <property name="record.file.class" value="org.ramadda.data.point.netcdf.NetcdfPointFile"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.netcdf.NetcdfPointFile"/>
      <property name="icon" value="/point/noaa.gif"/>
 <!--
-     <property name="record.file.class" value="org.ramadda.data.point.noaa.NoaaTowerPointFile"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.noaa.NoaaTowerPointFile"/>
      <column  name="site_id"  type="enumerationplus" label="Site ID" cansearch="true"/>
 -->
   </type>
@@ -65,7 +65,7 @@ this gets it from the type_point super class
   <type name="type_point_ncdc_climate"  super="type_point_noaa" description="NC
 
 DC Climate Data"  handler="org.ramadda.data.services.PointTypeHandler">
-     <property name="record.file.class" value="org.ramadda.data.point.noaa.NcdcClimatePointFile"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.noaa.NcdcClimatePointFile"/>
   </type>
 
 

@@ -10,7 +10,7 @@ this gets it from the type_point super class
 
   <type name="type_point_amrc_final"  super="type_point_amrc" description="AMRC Final QC Data"  handler="org.ramadda.data.services.PointTypeHandler">
      <property name="icon" value="/point/tux.png"/>
-     <property name="record.file.class" value="org.ramadda.data.point.amrc.AmrcFinalQCPointFile"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.amrc.AmrcFinalQCPointFile"/>
      <column  name="site_id"  type="enumerationplus" label="Site ID" cansearch="true"/>
      <column  name="site_name"  type="string" label="Site Name" cansearch="true"/>
      <column  name="argos_id"  type="enumerationplus" label="Argos ID" cansearch="true"/>
@@ -45,7 +45,7 @@ this gets it from the type_point super class
 
   <type name="type_point_amrc_freewave"  super="type_point_amrc" description="AMRC Freewave  Data"  handler="org.ramadda.data.services.PointTypeHandler">
      <property name="icon" value="/point/tux.png"/>
-     <property name="record.file.class" value="org.ramadda.data.point.amrc.FreewavePointFile"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.amrc.FreewavePointFile"/>
      <column  name="station_name"  type="enumerationplus" label="Station Name" cansearch="true"/>
      <column  name="format"  type="string" label="File Format" cansearch="true"/>
      <column  name="datalogger_model"  type="enumerationplus" label="Data Logger Model" cansearch="true"/>

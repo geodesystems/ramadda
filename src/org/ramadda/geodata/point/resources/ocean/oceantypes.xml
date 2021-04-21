@@ -6,7 +6,7 @@
   <type name="type_point_ocean_netcdf_track"  super="type_point_ocean" description="NetCDF Track Data"  handler="org.ramadda.data.services.PointTypeHandler">
      <property name="isTrajectory" value="true"/>
      <property name="icon" value="/point/glider.png"/>
-     <property name="record.file.class" value="org.ramadda.data.point.ocean.NetcdfOceanTrajectoryFile"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.ocean.NetcdfOceanTrajectoryFile"/>
      <column  name="platform"  type="enumerationplus" label="Platform" cansearch="true"/>
   </type>
 
@@ -31,7 +31,7 @@ These don't define the fields or their order. They just define the default attri
   <type name="type_point_ocean_cnv"  super="type_point_ocean" description="SeaBird CNV Data"  handler="org.ramadda.data.services.PointTypeHandler" pattern=".*\.cnv">
      <property name="isTrajectory" value="true"/>
      <property name="icon" value="/point/sbe.png"/>
-     <property name="record.file.class" value="org.ramadda.data.point.ocean.CnvPointFile"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.ocean.CnvPointFile"/>
   </type>
 
   <type name="type_point_ocean_ooi_dmgx"  super="type_point_ocean" description="OOI Data"  handler="org.ramadda.data.services.PointTypeHandler">
