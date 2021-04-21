@@ -431,13 +431,46 @@ public abstract class TextFile extends PointFile {
      * @throws Exception _more_
      */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
+	boolean debug = false;
 
         boolean haveReadHeader  = headerLines.size() > 0;
         String  headerDelimiter = getHeaderDelimiter();
         boolean firstLineFields = getFirstLineFields();
         String sfieldRow         = (String) getProperty("fieldRow", null);
         String lastHeaderPattern = getProperty("lastHeaderPattern", null);
-        if (firstLineFields || (sfieldRow != null)) {
+	if (headerDelimiter != null) {
+	    if(debug)
+		System.err.println("TextFile.prepareToVisit: headerDelimiter");
+            boolean starts = headerDelimiter.startsWith("starts:");
+            if (starts) {
+                headerDelimiter =
+                    headerDelimiter.substring("starts:".length());
+            }
+            while (true) {
+                String line = visitInfo.getRecordIO().readLine();
+                if (line == null) {
+                    break;
+                }
+                line = line.trim();
+                if (starts) {
+                    if (line.startsWith(headerDelimiter)) {
+                        break;
+                    }
+                } else {
+                    if (line.equals(headerDelimiter)) {
+                        break;
+                    }
+                }
+                if ( !haveReadHeader) {
+                    headerLines.add(line);
+                }
+                //Don't go crazy if we miss the header delimiter
+                if (headerLines.size() > 500) {
+                    throw new IllegalStateException(
+						    "Reading way too many header lines");
+                }
+	    }
+	} else if (firstLineFields || (sfieldRow != null)) {
             int    skipCnt  = getSkipLines(visitInfo);
             int    fieldRow =sfieldRow!=null? Integer.parseInt(sfieldRow):0;
 	    if(debug)
@@ -529,38 +562,6 @@ public abstract class TextFile extends PointFile {
                 }
                 String f = makeFields(cleaned);
                 putProperty(PROP_FIELDS, f);
-            }
-        } else if (headerDelimiter != null) {
-	    if(debug)
-		System.err.println("TextFile.prepareToVisit: headerDelimiter");
-            boolean starts = headerDelimiter.startsWith("starts:");
-            if (starts) {
-                headerDelimiter =
-                    headerDelimiter.substring("starts:".length());
-            }
-            while (true) {
-                String line = visitInfo.getRecordIO().readLine();
-                if (line == null) {
-                    break;
-                }
-                line = line.trim();
-                if (starts) {
-                    if (line.startsWith(headerDelimiter)) {
-                        break;
-                    }
-                } else {
-                    if (line.equals(headerDelimiter)) {
-                        break;
-                    }
-                }
-                if ( !haveReadHeader) {
-                    headerLines.add(line);
-                }
-                //Don't go crazy if we miss the header delimiter
-                if (headerLines.size() > 500) {
-                    throw new IllegalStateException(
-                        "Reading way too many header lines");
-                }
             }
         } else if (isHeaderStandard()) {
 	    if(debug)

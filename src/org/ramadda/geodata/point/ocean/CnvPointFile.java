@@ -87,6 +87,7 @@ public class CnvPointFile extends CsvFile {
      *
      * @throws Exception On badness
      */
+    @Override
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         //Have the parent class read the header lines
         super.prepareToVisit(visitInfo);

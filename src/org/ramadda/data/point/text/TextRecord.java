@@ -163,6 +163,7 @@ public class TextRecord extends DataRecord {
     @Override
     public void initFields(List<RecordField> fields) {
         super.initFields(fields);
+
         tokens  = new String[numDataFields];
         indices = new int[numDataFields];
         int idx = 0;
