@@ -16,7 +16,7 @@
 
 package org.ramadda.repository;
 
-
+import org.ramadda.repository.util.RequestArgument;
 /**
  *
  *
@@ -2300,5 +2300,31 @@ public interface Constants {
 
     /** _more_ */
     public static final String MACRO_ROOT = "root";
+
+    /** _more_ */
+    public static final RequestArgument REQUESTARG_NORTH =
+        new RequestArgument("ramadda.arg.area.north");
+
+    /** _more_ */
+    public static final RequestArgument REQUESTARG_WEST =
+        new RequestArgument("ramadda.arg.area.west");
+
+    /** _more_ */
+    public static final RequestArgument REQUESTARG_SOUTH =
+        new RequestArgument("ramadda.arg.area.south");
+
+    /** _more_ */
+    public static final RequestArgument REQUESTARG_EAST =
+        new RequestArgument("ramadda.arg.area.east");
+
+    /** _more_ */
+    public static final RequestArgument REQUESTARG_LATITUDE =
+        new RequestArgument("ramadda.arg.latitude");
+
+    /** _more_ */
+    public static final RequestArgument REQUESTARG_LONGITUDE =
+        new RequestArgument("ramadda.arg.longitude");
+
+
 
 }
