@@ -23,7 +23,7 @@ import org.ramadda.repository.database.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 
-
+import org.ramadda.util.SelectionRectangle;
 
 
 
@@ -837,6 +837,31 @@ public class EntryUtil extends RepositoryManager {
     }
 
 
+
+    public static List<SelectionRectangle> getSelectionRectangles(SelectionRectangle bbox) {
+        bbox.normalizeLongitude();
+        List<SelectionRectangle> rectangles =
+            new ArrayList<SelectionRectangle>();
+
+        /*
+   160                 20
+    +------------------+
+ ---------+---------+---------+------------
+       180/-180     0      180/-180
+        */
+
+        //Check for a search crossing the dateline
+        if (bbox.crossesDateLine()) {
+            rectangles.add(new SelectionRectangle(bbox.getNorth(),
+                    bbox.getWest(), bbox.getSouth(), 180));
+            rectangles.add(new SelectionRectangle(bbox.getNorth(), -180,
+                    bbox.getSouth(), bbox.getEast()));
+        } else {
+            rectangles.add(bbox);
+        }
+	return rectangles;
+
+    }
 
 
     /**

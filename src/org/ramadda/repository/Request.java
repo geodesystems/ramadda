@@ -24,6 +24,7 @@ import org.ramadda.repository.output.PageStyle;
 import org.ramadda.repository.util.RequestArgument;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
+import org.ramadda.util.SelectionRectangle;
 
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
@@ -47,6 +48,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -60,6 +62,13 @@ import javax.servlet.http.HttpServletResponse;
 public class Request implements Constants, Cloneable {
 
     //    public org.ramadda.util.HtmlTemplate template = null;
+
+
+    /** _more_ */
+    public static final RequestArgument[] AREA_NWSE = { REQUESTARG_NORTH,
+            REQUESTARG_WEST, REQUESTARG_SOUTH, REQUESTARG_EAST };
+
+
 
 
     /** _more_ */
@@ -3009,6 +3018,44 @@ public class Request implements Constants, Cloneable {
     }
 
 
+
+
+    /**
+     * _more_
+     *
+     * @param request The request
+     *
+     * @return _more_
+     */
+    public  SelectionRectangle getSelectionBounds() {
+        String[] argPrefixes = { ARG_AREA, ARG_BBOX };
+        double[] bbox = { Double.NaN, Double.NaN, Double.NaN, Double.NaN };
+        for (String argPrefix : argPrefixes) {
+            if (defined(argPrefix)) {
+                List<String> toks =
+                    Utils.split(getString(argPrefix, ""), ",",
+                                     true, true);
+                //n,w,s,e
+                if (toks.size() == 4) {
+                    for (int i = 0; i < 4; i++) {
+                        bbox[i] = Double.parseDouble(toks.get(i));
+                    }
+                }
+            }
+        }
+
+        for (int i = 0; i < 4; i++) {
+            if (defined(AREA_NWSE[i])) {
+                bbox[i] = get(AREA_NWSE[i], 0.0);
+            }
+        }
+
+        return new SelectionRectangle(bbox[0], bbox[1], bbox[2], bbox[3]);
+
+    }
+
+
+    
 
 
 
