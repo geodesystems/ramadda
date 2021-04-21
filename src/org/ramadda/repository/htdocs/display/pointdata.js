@@ -309,6 +309,19 @@ function PointData(name, recordFields, records, url, properties) {
 	    root.jsonUrl = jsonUrl;
             root.loadPointJson(jsonUrl, display, reload);
         },
+	propagateEventDataChanged:function(source) {
+            let cacheObject = pointDataCache[this.url];
+            if(cacheObject) {
+		let displays = cacheObject.displays;
+		if(displays) {
+		    displays.forEach(display=>{
+			if(display==source) return;
+			display.pointDataLoaded(this, this.url, true);
+		    });
+                }
+	    }
+	},
+
         loadPointJson: function(url, display, reload) {
 	    let debug =  displayDebug.loadPointJson;
 	    let debug2 = false;
@@ -610,10 +623,12 @@ function RecordField(props, source) {
 	forDisplay:true
     });
     $.extend(this, props);
+
     $.extend(this, {
         isGroup:props.group,
         properties: props
     });
+
 
     //check for extended attributes
     if(source && source.getProperty) {
@@ -716,6 +731,9 @@ function RecordField(props, source) {
         setLabel: function(l) {
             this.label = l;
         },
+	canEdit: function() {
+	    return this.canedit==true;
+	},
         isNumeric: function() {
 	    return this.type == "double" || this.type == "integer";
 	},
@@ -747,9 +765,10 @@ function RecordField(props, source) {
   The main data record. This holds a lat/lon/elevation, time and an array of data
   The data array corresponds to the RecordField fields
 */
-function PointRecord(fields,lat, lon, elevation, time, data) {
+function PointRecord(fields,lat, lon, elevation, time, data, rowIdx) {
     this.isPointRecord = true;
     $.extend(this, {
+	rowIndex:rowIdx,
 	fields:fields,
         latitude: lat,
         longitude: lon,
@@ -961,10 +980,10 @@ function makePointData(json, derived, source,url) {
     let hasDate = false;
     let setDateFlags = false;
     let dateIsString = false;
-    json.data.forEach((tuple,i)=>{
-	//	if(i>100) return;
-	if(debug && i>0 && (i%10000)==0) console.log("\tprocessed:" + i);
-	if(i==0) {
+    json.data.forEach((tuple,rowIndex)=>{
+	//	if(rowIndex>100) return;
+	if(debug && rowIndex>0 && (rowIndex%10000)==0) console.log("\tprocessed:" + i);
+	if(rowIndex==0) {
 	    isArray = Array.isArray(tuple);
 	    hasDate = !(typeof tuple.date === 'undefined');
 	}
@@ -1094,8 +1113,9 @@ function makePointData(json, derived, source,url) {
             values[field.getIndex()] = value;
         }
 
-        var record = new PointRecord(fields, tuple.latitude, tuple.longitude, tuple.elevation, date, values);
+        var record = new PointRecord(fields, tuple.latitude, tuple.longitude, tuple.elevation, date, values,rowIndex);
         pointRecords.push(record);
+
     });
 
 

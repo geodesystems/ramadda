@@ -102,6 +102,7 @@ public class RecordField {
     /** _more_ */
     public static final String TYPE_DOUBLE = "double";
 
+    public static final String TYPE_BOOLEAN = "boolean";
     /** _more_ */
     public static final String TYPE_INT = "int";
 
@@ -471,6 +472,20 @@ public class RecordField {
         items.add(Utils.stringDefined(unit)
                   ? Json.quote(unit)
                   : "null");
+
+
+
+	String canEdit = (String) getProperty("canedit",null);
+	if(canEdit!=null) {
+	    items.add("canedit");
+	    items.add(Json.quote(canEdit));
+	}
+	String values = (String) getProperty("values",null);
+	if(values!=null) {
+	    items.add("values");
+	    items.add(Json.quote(values));
+	}	
+
         items.add("chartable");
         items.add("" + getChartable());
         items.add("sortorder");
@@ -1091,6 +1106,7 @@ public class RecordField {
                         || value.equals(TYPE_DOUBLE)
                         || value.equals(TYPE_INT);
         isTypeString = value.equals(TYPE_STRING) || value.equals(TYPE_URL)
+                       || value.equals(TYPE_BOOLEAN)
                        || value.equals(TYPE_IMAGE)
                        || value.equals(TYPE_MOVIE)	    
                        || value.equals(TYPE_ENUMERATION);

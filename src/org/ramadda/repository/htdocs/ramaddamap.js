@@ -804,8 +804,9 @@ RepositoryMap.prototype = {
     zoomChanged: function() {
     },
     locationChanged: function() {
-	var latlon = this.getBounds();
-	var bits = 100000;
+	if(this.doSelect) return;
+	let latlon = this.getBounds();
+	let bits = 100000;
 	let r = (v=>{
 	    return Math.round(v*bits)/bits;
 	});
@@ -813,25 +814,11 @@ RepositoryMap.prototype = {
 	latlon.left = r(latlon.left);
 	latlon.bottom = r(latlon.bottom);
 	latlon.right = r(latlon.right);
-        var bounds = "map_bounds=" + latlon.top + "," + latlon.left + "," + latlon.bottom + "," + latlon.right;
-        var url = "" + window.location;
-        url = url.replace(/\&?map_bounds=[-\d\.]+,[-\d\.]+,[-\d\.]+,[-\d\.]+/g, "");
-        if (!url.includes("?")) url += "?";
-        url += "&" + bounds;
+	HU.addToDocumentUrl("map_bounds",latlon.top + "," + latlon.left + "," + latlon.bottom + "," + latlon.right);
+	HU.addToDocumentUrl("zoomLevel" , this.getMap().getZoom());
 
-        var level = this.getMap().getZoom();
-        url = url.replace(/\&?zoomLevel=[\d]+/g, "");
-        url += "&zoomLevel=" + level;
 	let center =   this.transformProjPoint(this.getMap().getCenter())
-        url = url.replace(/\&?mapCenter=[-\d\.]+,[-\d\.]+/g, "");
-        url += "&mapCenter=" + r(center.lat)+","+ r(center.lon);
-
-        try {
-            if (window.history.replaceState)
-                window.history.replaceState("", "", url);
-        } catch (e) {
-            console.log("err:" + e);
-        }
+        HU.addToDocumentUrl("mapCenter", r(center.lat)+","+ r(center.lon));
 	ramaddaMapShareState(this,"bounds");
     },
     baseLayerChanged: function() {
@@ -3128,6 +3115,8 @@ RepositoryMap.prototype = {
 
     selectionClear:  function() {
         this.findSelectionFields();
+	HU.addToDocumentUrl("map_bounds","");
+
         if (this.fldNorth) {
             this.fldNorth.obj.value = "";
             this.fldSouth.obj.value = "";
@@ -3203,6 +3192,7 @@ RepositoryMap.prototype = {
                     _this.fldSouth.obj.value = MapUtils.formatLocationValue(bounds.bottom);
                     _this.fldWest.obj.value = MapUtils.formatLocationValue(bounds.left);
                     _this.fldEast.obj.value = MapUtils.formatLocationValue(bounds.right);
+		    HU.addToDocumentUrl("map_bounds",bounds.top+"," + bounds.left+"," + bounds.bottom +","+bounds.right);
                 }
             }
         });

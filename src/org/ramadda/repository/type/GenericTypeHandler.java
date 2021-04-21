@@ -398,6 +398,7 @@ public class GenericTypeHandler extends TypeHandler {
             return null;
         }
 
+
         return column.getObject(values);
     }
 

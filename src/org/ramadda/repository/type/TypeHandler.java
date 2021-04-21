@@ -5817,7 +5817,6 @@ public class TypeHandler extends RepositoryManager {
                 groupId = groupId.substring(1);
             }
             if (groupId.endsWith("%")) {
-                System.err.println("%%");
                 Entry group = getEntryManager().findGroup(request,
                                   groupId.substring(0, groupId.length() - 1));
                 if (group != null) {
@@ -5827,7 +5826,6 @@ public class TypeHandler extends RepositoryManager {
                 where.add(Clause.like(Tables.ENTRIES.COL_PARENT_GROUP_ID,
                                       groupId));
             } else {
-
                 List<String> toks = Utils.split(groupId, "|", true,
                                         true);
                 if (toks.size() > 1) {

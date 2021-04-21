@@ -711,7 +711,6 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 return;
             }
 
-
             if (this.haveTypes) {
                 settings.entryType = this.getFieldValue(this.getDomId(ID_TYPE_FIELD), settings.entryType);
 		if(settings.entryType) {

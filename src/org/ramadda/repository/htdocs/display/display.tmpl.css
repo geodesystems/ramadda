@@ -513,6 +513,30 @@ a.display-container {
 }
 
 
+.display-records-grid {
+    vertical-align:top;
+    display:flex;
+    flex-wrap: wrap;
+}
+
+
+.display-records-grid-box {
+    margin:5px;
+    flex-grow:1;
+    cursor: pointer;
+    background-color : #FFF; 
+    padding:5px;
+    border-radius:4px;
+    border: var(--basic-border);
+    box-shadow: rgba(116, 129, 141, 0.4) 2px 2px 4px 0px;
+    -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px;
+}
+
+.display-records-grid-box:hover, .ramadda-grid-box:hover {
+    border:   var(--highlight-border)
+}
+
+
 
 .display-template-record a {
     text-decoration: underline;

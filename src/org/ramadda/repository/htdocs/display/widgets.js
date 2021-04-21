@@ -56,27 +56,35 @@ function AreaWidget(display) {
 	    });	    
 	},
         getHtml: function() {
+	    let bounds =  HU.getUrlArgument("map_bounds");
+	    let n="",w="",s="",e="";
+	    if(bounds) {
+		let toks  = bounds.split(",");
+		if(toks.length==4) {
+		    n = toks[0]; w=toks[1]; s=toks[2]; e=toks[3];
+		}
+	    }
             let callback = this.display.getGet();
             let settings = HU.div([TITLE,"Settings",CLASS,"ramadda-clickable",ID,this.display.domId(ID_SETTINGS)],HU.getIconImage("fas fa-cog"));
 	    let showMap = HU.div([CLASS,"ramadda-clickable",ID,this.display.domId(ID_MAP_SHOW),TITLE,"Show map selector"], HtmlUtils.getIconImage("fas fa-globe"));
 
-	    let input = (id,place,title)=>{
-		return HtmlUtils.input(id, "", ["placeholder", place, ATTR_CLASS, "input display-area-input", "size", "5", ATTR_ID,
+	    let input = (id,place,title,v)=>{
+		return HtmlUtils.input(id, v, ["placeholder", place, ATTR_CLASS, "input display-area-input", "size", "5", ATTR_ID,
 						this.display.getDomId(id), ATTR_TITLE, title]);
 	    };
             let areaForm = HtmlUtils.openTag(TAG_TABLE, [ATTR_CLASS, "display-area"]);
             areaForm += HtmlUtils.tr([],
 				     HtmlUtils.td(["align", "center"],
 						  HtmlUtils.leftCenterRight("",
-									    input(ID_NORTH, " N","North"),showMap, "20%", "60%", "20%")));
+									    input(ID_NORTH, " N","North",n),showMap, "20%", "60%", "20%")));
 
             areaForm += HtmlUtils.tr([], HtmlUtils.td([],
-						      input(ID_WEST, " W", "West") +
-						      input(ID_EAST, " E", "East")));
+						      input(ID_WEST, " W", "West",w) +
+						      input(ID_EAST, " E", "East",e)));
 
             areaForm += HtmlUtils.tr([],
 				     HtmlUtils.td(["align", "center"],
-						  HtmlUtils.leftCenterRight("", input(ID_SOUTH,  " S", "South"), settings, "20%", "60%", "20%")));
+						  HtmlUtils.leftCenterRight("", input(ID_SOUTH,  " S", "South",s), settings, "20%", "60%", "20%")));
 
 
             areaForm += HtmlUtils.closeTag(TAG_TABLE);

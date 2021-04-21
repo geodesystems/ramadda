@@ -1001,6 +1001,13 @@ public abstract class PointFile extends RecordFile implements Cloneable,
             RecordField field = new RecordField(name, name, "", paramId++,
                                     getProperty(properties, ATTR_UNIT, ""));
 
+	    String canEdit= getProperty(properties, "canedit",null);
+	    if(canEdit!=null) {
+		field.setProperty("canedit",canEdit);
+	    }
+
+	    
+
             if (getProperty(properties, "isDateOffset",
                             "false").equals("true")) {
                 field.setIsDateOffset(true);

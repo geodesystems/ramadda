@@ -590,7 +590,12 @@ function selectClick(id, entryId, value) {
         insertAtCursor(selector.elementId, selector.textComp.obj,  value);
     } else if (selector.selecttype == "entryid") {
         //        insertTagsInner(selector.elementId, selector.textComp.obj, "" +entryId+"|"+value+" "," ","importtype");
-        HU.getWikiEditor(selector.elementId).insertTags(entryId, " ", "importtype");
+	let editor = HU.getWikiEditor(selector.elementId);
+	if(editor) {
+	    insertTags(entryId, " ", "importtype");
+	} else {
+	    insertText(selector.elementId,entryId);
+	}
     } else if (selector.selecttype == "entry:entryid") {
         //        insertTagsInner(selector.elementId, selector.textComp.obj, "" +entryId+"|"+value+" "," ","importtype");
         HU.getWikiEditor(selector.elementId).insertTags("entry:" + entryId, " ", "importtype");

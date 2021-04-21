@@ -188,6 +188,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     /** _more_ */
     private static final String FIELD_ENTRYID = "entryid";
+    private static final String FIELD_PARENT = "parent";
 
     /** _more_ */
     private static final String FIELD_PATH = "path";
@@ -210,6 +211,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     /** _more_ */
     private static final String FIELD_METADATA = "metadata";
+
+    private static final String FIELD_PROPERTY = "property";
 
 
     /** _more_ */
@@ -487,6 +490,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	return FIELD_METADATA+"_"+ type;
     }
 
+    public String getPropertyField(TypeHandler  handler,String  type) {
+	return FIELD_PROPERTY+"_"+ handler.getType()+"_"+type;
+    }    
+
 
 
     /**
@@ -523,8 +530,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	throws Exception {
         org.apache.lucene.document.Document doc =
             new org.apache.lucene.document.Document();
-	//Only store the ID as this is the only thing we need when we search
+
         doc.add(new StringField(FIELD_ENTRYID, entry.getId(), Field.Store.YES));
+        doc.add(new StringField(FIELD_TYPE, entry.getTypeHandler().getType(), Field.Store.YES));	
+	if(entry.getParentEntryId()!=null) {
+	    doc.add(new StringField(FIELD_PARENT, entry.getParentEntryId(), Field.Store.YES));	
+	}
         doc.add(new SortedNumericDocValuesField(FIELD_SIZE, entry.getResource().getFileSize()));
         doc.add(new SortedNumericDocValuesField(FIELD_ENTRYORDER, entry.getEntryOrder()));
 	if(entry.hasAreaDefined()) {
@@ -540,22 +551,41 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 
 
-        doc.add(new StringField(FIELD_TYPE, entry.getTypeHandler().getType(), Field.Store.YES));	
+
         String path = entry.getResource().getPath();
         if ((path != null) && (path.length() > 0)) {
 	    if(entry.getResource().isFile()) {
 		path = getStorageManager().getFileTail(entry);
 	    }
-            doc.add(new TextField(FIELD_PATH, path, Field.Store.NO));
+            doc.add(new TextField(FIELD_PATH, path.toLowerCase(), Field.Store.NO));
         }
 
-        doc.add(new TextField(FIELD_NAME,  entry.getName(),Field.Store.NO));
+        doc.add(new TextField(FIELD_NAME,  entry.getName().toLowerCase(),Field.Store.YES));
 	doc.add(new SortedDocValuesField(FIELD_NAME_SORT, new BytesRef(entry.getName())));
-	//        doc.add(new StringField(FIELD_NAME_SORT,  entry.getName(),Field.Store.YES));	
 
 	StringBuilder desc = new StringBuilder();
         entry.getTypeHandler().getTextCorpus(entry, desc);
-        doc.add(new TextField(FIELD_DESCRIPTION, desc.toString(),Field.Store.NO));
+        doc.add(new TextField(FIELD_DESCRIPTION, desc.toString().toLowerCase(),Field.Store.NO));
+
+
+	List<Column> columns = entry.getTypeHandler().getColumns();
+	if (columns != null) {
+	    Object[] values = entry.getTypeHandler().getEntryValues(entry);
+	    if(values!=null) {
+		for (Column column : columns) {
+		    if (column.getCanSearch()) {
+			Object v= column.getObject(values);
+			if(v!=null) {
+			    String s = v.toString();
+			    if(column.isEnumeration()) 
+				doc.add(new StringField(getPropertyField(entry.getTypeHandler(),column.getName()), s,Field.Store.YES));
+			    else
+				doc.add(new TextField(getPropertyField(entry.getTypeHandler(),column.getName()), s,Field.Store.NO));
+			}
+		    }
+		}
+	    }
+	}
 
 
         for (Metadata metadata : getMetadataManager().getMetadata(entry)) {
@@ -722,6 +752,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	List<Query> queries = new ArrayList<Query>();
 	if(text.length()>0) {
+	    text = text.toLowerCase();
 	    BooleanQuery.Builder builder = new BooleanQuery.Builder();
 	    for(String field: SEARCH_FIELDS) {
 		Query term = new WildcardQuery(new Term(field, text));		
@@ -783,10 +814,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	contains=true;
 	List<SelectionRectangle> rectangles = getEntryUtil().getSelectionRectangles(request.getSelectionBounds());
-	System.err.println("BBOX:" + request.getSelectionBounds());
 	List<Query> areaQueries = new ArrayList<Query>();
 	for (SelectionRectangle rectangle : rectangles) {
 	    if(!rectangle.anyDefined()) continue;
+	    System.err.println("BBOX:" + rectangle);
 	    double minLat = rectangle.hasSouth()?rectangle.getSouth():-90;
 	    double maxLat = rectangle.hasNorth()?rectangle.getNorth():90;	    
 	    double minLon = rectangle.hasWest()?rectangle.getWest():-180;
@@ -817,6 +848,28 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 
 
+	List<Entry> entryTree = getEntryManager().getEntryRootTree(request);
+	if(entryTree!=null) {
+	    BooleanQuery.Builder parentBuilder = new BooleanQuery.Builder();
+	    for(Entry e: entryTree) {
+		Query query = new TermQuery(new Term(FIELD_PARENT, e.getId()));
+		parentBuilder.add(query, BooleanClause.Occur.SHOULD);
+	    }
+	    queries.add(parentBuilder.build());
+	}
+
+
+        if (request.defined(ARG_GROUP)) {
+	    List<String> toks = Utils.split(request.getString(ARG_GROUP), "|", true,
+					    true);
+	    BooleanQuery.Builder parentBuilder = new BooleanQuery.Builder();
+	    for(String tok: toks) {
+		Query query = new TermQuery(new Term(FIELD_PARENT, tok));
+		parentBuilder.add(query, BooleanClause.Occur.SHOULD);
+	    }
+	    queries.add(parentBuilder.build());
+	}
+
 
         Hashtable args        = request.getArgs();
         String metadataPrefix = ARG_METADATA_ATTR1 + "_";
@@ -829,7 +882,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             if ( !request.defined(arg)) {
                 continue;
             }
-
 	    String value = request.getString(arg);
             String type = arg.substring(ARG_METADATA_ATTR1.length() + 1);
 	    cats.add(type,value);
@@ -846,7 +898,31 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 
 	if(request.defined(ARG_TYPE)) {
-	    queries.add(new TermQuery(new Term(FIELD_TYPE, request.getString(ARG_TYPE))));
+	    TypeHandler typeHandler = getRepository().getTypeHandler(request.getString(ARG_TYPE));
+	    if(typeHandler!=null) {
+		queries.add(new TermQuery(new Term(FIELD_TYPE, typeHandler.getType())));
+		List<Column> columns = typeHandler.getColumns();
+		if (columns != null) {
+		    BooleanQuery.Builder builder = new BooleanQuery.Builder();
+		    int cnt = 0;
+		    for (Column column : columns) {
+			if (column.getCanSearch()) {
+			    String       searchArg = column.getSearchArg();
+			    String v = request.getString(searchArg,null);
+			    if(Utils.stringDefined(v)&&!v.equals(TypeHandler.ALL)) {
+				Query term=null;
+				if(column.isEnumeration()) 
+				    term = new TermQuery(new Term(getPropertyField(typeHandler,column.getName()), v));		
+				else
+				    term = new WildcardQuery(new Term(getPropertyField(typeHandler,column.getName()), v));		
+				cnt++;
+				builder.add(term, BooleanClause.Occur.SHOULD);
+			    }
+			}
+		    }
+		    if(cnt>0) queries.add(builder.build());
+		}
+	    }
 	}
 
 	Query query = null;
@@ -861,7 +937,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    query = builder.build();
 	}
 
-	System.err.println("QUERY:" + query);
+	//	System.err.println("QUERY:" + query);
 	int max = request.get(ARG_MAX,100);
 	int skip = request.get(ARG_SKIP,0);
 
@@ -902,7 +978,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		field=FIELD_NAME_SORT;
 	    }
 
-	    System.err.println("Sort:" + field +" " + sortType);
 	    if(field==null)
 		sort = Sort.RELEVANCE;
 	    else {
@@ -921,7 +996,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	TopDocs       hits     = searcher.search(query, max+skip,sort);
 	//        TopDocs       hits     = searcher.search(query, 100);		
         ScoreDoc[]    docs     = hits.scoreDocs;
-	System.err.println("lucene results:" + docs.length +" text:" + text);
+	System.err.println("lucene results:" + docs.length +" query:" + query);
 
 	HashSet seen = new HashSet();
         for (int i = skip; i < docs.length; i++) {

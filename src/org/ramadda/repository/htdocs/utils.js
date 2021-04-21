@@ -63,15 +63,21 @@ var Utils =  {
 	Utils.loadFunctions.push(f);
     },
     getLocalStorage: function(key, toJson) {
-	let v = localStorage.getItem(ramaddaBaseEntry+"." + key);
-	if(v!==null && toJson) {
-	    return JSON.parse(v);
+	try {
+	    let v = localStorage.getItem(ramaddaBaseEntry+"." + key);
+	    if(v!==null && toJson) {
+		return JSON.parse(v);
+	    }
+	    return v;
+	} catch(err) {
+	    console.log("Error getting local storage. key=" + key);
+	    return null;
 	}
-	return v;
     },
     setLocalStorage: function(key, value, fromJson) {
 	if(value && fromJson) value = JSON.stringify(value);
 	localStorage.setItem(ramaddaBaseEntry+"." + key, value);
+	console.log("writing" +value);
     },
 
     max: function(v1,v2) {

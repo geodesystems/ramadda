@@ -1056,7 +1056,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	{label:'Html Table'},
 	{p:'numRecords',ex:'100',d:1000},
 	{p:'includeGeo',ex:'true',d:false},
-	{p:'includeDate',ex:'true',d:true},		
+	{p:'includeDate',ex:'true',d:true},
+	{p:'fancy',ex:'true',d:true},			
     ];
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -1069,6 +1070,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		this.setDisplayMessage("No records yet");		
 		return;
 	    }
+	    let fancy  = this.getFancy();
             let pointData = this.dataCollection.getList()[0];
             let fields = pointData.getRecordFields();
             let selectedFields = this.getSelectedFields();
@@ -1076,15 +1078,24 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	    let numRecords = this.getNumRecords();
 	    let includeGeo = this.getIncludeGeo();
 	    let includeDate = this.getIncludeGeo();	    
-	    let html ="Number of records:" + records.length+"<table width=100% border=0>";
-	    html+="<tr valign=top><td></td>";
-	    let headerAttrs = [STYLE,"white-space:nowrap;background:#efefef;margin:1px;padding:3px; font-weight:bold;"];
+	    let html ="Number of records:" + records.length+"<table width=100% border=0 cellpadding=0 cellspacing=0>";
+	    html+="<tr valign=top><td width=30></td>";
+	    let headerAttrs = [STYLE,"white-space:nowrap;background:#efefef;padding:5px; font-weight:bold;"];
 	    if(includeDate) html+=HU.td(HU.div(headerAttrs,"Date"));
 	    fields.forEach((f,idx)=>{
-		html+=HU.td([],HU.div(headerAttrs,f.getId() +"[" + f.getType()+"]"));
+		if(fancy)
+		    html+=HU.td([],HU.div(headerAttrs,f.getLabel()));
+		else
+		    html+=HU.td([],HU.div(headerAttrs,f.getId() +"[" + f.getType()+"]"));
+		
 	    });
 	    if(includeGeo) html+=HU.td(HU.div(headerAttrs,"latitude")) + HU.td([],HU.div(headerAttrs,"longitude"));
 	    html+="</tr>";
+	    this.savedState = Utils.getLocalStorage(this.getProperty("storageKey",this.type), true) || {};
+	    let hadSavedState = false;
+	    this.recordMap = {};
+	    this.fieldMap = {};
+	    fields.forEach(f=>{this.fieldMap[f.getId()] = f;})
 	    records.every((r,idx)=>{
 		if(numRecords>-1 && idx>numRecords) return false;
 		let d = r.getData();
@@ -1097,14 +1108,43 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		if(includeDate) {
 		    html+=HU.td([],this.formatDate(r.getDate()));
 		}
+		this.recordMap[r.rowIndex] = r;
 		fields.forEach(f=>{
 		    let v = d[f.getIndex()]
 		    v = String(v);
 		    if(v.length>500) {
 			v = HU.div([STYLE,"max-height:200px;overflow-y:auto;"],v);
 		    }
+		    if(f.canEdit()) {
+			let value = v;
+			if(this.savedState) {
+			    let map  = this.savedState[f.getId()];
+			    if(map) {
+				let savedValue = map[r.rowIndex];
+				if(Utils.isDefined(savedValue)) {
+				    r.data[f.getIndex()] = savedValue;
+				    value = savedValue;
+				    hadSavedState = true;
+				}
+			    }
+			}
+			if(f.getType()=="boolean") 
+			    v = HU.checkbox("", ["fieldid",f.getId(),"inputtype","checkbox",RECORD_INDEX,r.rowIndex,CLASS,"display-editable", ID,this.domId("editable_" + f.getId())], value);
+			else if(f.isFieldEnumeration()) {
+			    let enums = f.getEnumeratedValues() ||"";
+			    let select = [];
+			    for(a in enums)
+				select.push([a,enums[a]]);
+			    v =  HU.select("",["fieldid",f.getId(),RECORD_INDEX,r.rowIndex, CLASS,"display-editable",STYLE,"", ID,this.domId("editable_" +f.getId())],select,value);
+			}  else {
+			    v = HU.input("", value, ["fieldid",f.getId(),RECORD_INDEX,r.rowIndex,CLASS,"display-editable", ID,this.domId("editable_" + f.getId())]);
+			}
+		    }
 		    html+=HU.td([],v);
 		});
+		if(hadSavedState) {
+		    this.getPointData().propagateEventDataChanged(this);
+		}
 		if(includeGeo) {
 		    html+=HU.td([],r.getLatitude()) +HU.td([],r.getLongitude());
 		}
@@ -1113,6 +1153,35 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	    });
 	    html+="</table>";
 	    this.setContents(html);
+	    let _this  = this;
+	    let handleChange = dom=>{
+		let val;
+		if(dom.attr('inputtype')=="checkbox") {
+		    val = dom.is(':checked');
+		} else {
+		    val = dom.val();
+		}
+		
+		let fieldId = dom.attr("fieldid");
+		let map  = _this.savedState[fieldId] ||{};
+		let recordIndex = dom.attr(RECORD_INDEX); 
+		map[recordIndex] = val;
+		_this.savedState[fieldId]  = map;
+ 		Utils.setLocalStorage(_this.getProperty("storageKey",_this.type), _this.savedState, true);
+		let row = _this.recordMap[recordIndex];
+		let field = _this.fieldMap[fieldId];		
+		row.data[field.getIndex()] = val;
+		_this.getPointData().propagateEventDataChanged(_this);
+	    }
+	    this.jq(ID_DISPLAY_CONTENTS).find(".display-editable").change(function() {
+		handleChange($(this));
+	    });
+	    this.jq(ID_DISPLAY_CONTENTS).find(".display-editable").keypress(function(event) {
+                if (event.which == 13) {
+		    handleChange($(this));
+		}
+	    });
+
 	}});
 }
 
@@ -2167,6 +2236,7 @@ function RamaddaRecordsDisplay(displayManager, id, properties, type) {
     let myProps = [
 	{label:'Records'},
 	{p:'maxHeight',ex:'400px'},
+	{p:'showCards',ex:'true',d:true}
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 
@@ -2202,6 +2272,8 @@ function RamaddaRecordsDisplay(displayManager, id, properties, type) {
 	    let _this = this;
             let fields = this.getSelectedFields(this.getData().getRecordFields());
             let html = "";
+	    let showCards = this.getShowCards();
+	    if(showCards) html+=HU.open("div",[CLASS,"display-records-grid"]);
             for (let rowIdx = 0; rowIdx < records.length; rowIdx++) {
 		let div = "";
                 let tuple = this.getDataValues(records[rowIdx]);
@@ -2211,8 +2283,12 @@ function RamaddaRecordsDisplay(displayManager, id, properties, type) {
 		    if(v.getTime) v = this.formatDate(v);
                     div += HU.b(field.getLabel()) + ": " + v + "<br>" +"\n";
                 }
-                html += HU.div([CLASS,"display-records-record",RECORD_INDEX,rowIdx,RECORD_ID, records[rowIdx].getId()], div);
+                let box = HU.div([CLASS,showCards?"":"display-records-record",RECORD_INDEX,rowIdx,RECORD_ID, records[rowIdx].getId()], div);
+
+		if(showCards) box =HU.div([CLASS,"display-records-grid-box"],box);
+		html+=box;
             }
+	    if(showCards) html+=HU.close("div");
             let height = this.getProperty("maxHeight", "400px");
             if (!height.endsWith("px")) {
                 height = height + "px";

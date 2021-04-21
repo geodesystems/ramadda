@@ -6774,6 +6774,27 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+    public List<Entry> getEntryRootTree(Request request) throws Exception {
+	if(request.defined("entryRoot")) {
+	    String entryRoot = request.getString("entryRoot","");
+	    Entry root = getEntry(request,entryRoot);
+	    if(root!=null) {
+		List<Entry> all = new ArrayList<Entry>();
+		all.add(root);
+		for(Entry child: getChildrenAll(request,root,null)) {
+		    all.add(child);
+		    for(Entry grandchild:getChildrenAll(request, child,null)) {
+			all.add(grandchild);
+			all.addAll(getChildrenAll(request, grandchild,null));
+		    }
+		}
+		return all;
+	    }
+	}
+	return null;
+    }
+
+
     /**
      * _more_
      *
@@ -6789,34 +6810,20 @@ public class EntryManager extends RepositoryManager {
                                     TypeHandler typeHandler)
 	throws Exception {
 
-	String entryRoot = null;
-	if(request.defined("entryRoot")) {
-	    entryRoot = request.getString("entryRoot","");
-	    Entry root = getEntry(request,entryRoot);
-	    if(root!=null) {
-		List<Entry> all = new ArrayList<Entry>();
-		all.add(root);
-		for(Entry child: getChildrenAll(request,root,null)) {
-		    all.add(child);
-		    for(Entry grandchild:getChildrenAll(request, child,null)) {
-			all.add(grandchild);
-			all.addAll(getChildrenAll(request, grandchild,null));
-		    }
-		}
-		List<Clause> ors = new ArrayList<Clause>();
-		for(Entry e:all) {
-		    ors.add(Clause.eq(Tables.ENTRIES.COL_PARENT_GROUP_ID,e.getId()));
-		}
-		Clause tree  =Clause.or(ors);
-		if(clauses.size()==1) {
-		    Clause c = clauses.get(0);
-		    clauses = new ArrayList<Clause>();
-		    clauses.add(Clause.and(c,tree));
-		} else {	
-		    clauses.add(tree);
-		}
+	List<Entry> entryTree = getEntryRootTree(request);
+	if(entryTree!=null) {
+	    List<Clause> ors = new ArrayList<Clause>();
+	    for(Entry e:entryTree) {
+		ors.add(Clause.eq(Tables.ENTRIES.COL_PARENT_GROUP_ID,e.getId()));
 	    }
-	    //a	    System.err.println("after: " + clauses);
+	    Clause tree  =Clause.or(ors);
+	    if(clauses.size()==1) {
+		Clause c = clauses.get(0);
+		clauses = new ArrayList<Clause>();
+		clauses.add(Clause.and(c,tree));
+	    } else {	
+		clauses.add(tree);
+	    }
 	}
 
 
@@ -6832,7 +6839,7 @@ public class EntryManager extends RepositoryManager {
 	    boolean isTextSearch = (columns.size()==3 && columns.contains(Tables.ENTRIES.COL_NAME) &&
 				    columns.contains(Tables.ENTRIES.COL_DESCRIPTION) &&
 				    columns.contains(Tables.ENTRIES.COL_RESOURCE));//  || columns.size()==0;
-	    //	    isTextSearch  = true;
+	    isTextSearch  = true;
 	    if(isTextSearch) {
 		getSearchManager().processLuceneSearch(request, allEntries);
 		didSearch = true;

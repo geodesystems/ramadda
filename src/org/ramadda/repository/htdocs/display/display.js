@@ -6048,7 +6048,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		} else {
 		    this.updateUI({reload:reload});
 		}
-
 	    } catch(err) {
                 this.displayError("Error creating display:<br>" + err);
 		console.log(err);
