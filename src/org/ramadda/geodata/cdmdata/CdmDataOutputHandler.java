@@ -1133,7 +1133,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             }
         }
 
-        SelectionRectangle bbox = TypeHandler.getSelectionBounds(request);
+        SelectionRectangle bbox = request.getSelectionBounds();
 
         if (bbox.allDefined()) {
             llr = new LatLonRect(new LatLonPointImpl(bbox.getNorth(),
