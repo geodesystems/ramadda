@@ -28,6 +28,7 @@ import org.ramadda.repository.util.DateArgument;
 import org.ramadda.repository.util.ServerInfo;
 
 import org.ramadda.util.CategoryBuffer;
+import org.ramadda.util.CategoryList;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.Json;
@@ -40,6 +41,7 @@ import org.ramadda.util.WadlUtil;
 
 import org.ramadda.util.sql.Clause;
 import org.ramadda.util.sql.SqlUtil;
+import org.ramadda.util.SelectionRectangle;
 
 
 import org.w3c.dom.*;
@@ -55,10 +57,17 @@ import ucar.unidata.xml.XmlUtil;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.store.*;
 import org.apache.lucene.index.*;
+import org.apache.lucene.document.DateTools;
+import org.apache.lucene.document.IntPoint;
+import org.apache.lucene.document.DoublePoint;
+import org.apache.lucene.document.LongPoint;
+import org.apache.lucene.document.SortedNumericDocValuesField;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.SortedDocValuesField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.util.QueryBuilder;
+import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.FSDirectory;
 
@@ -174,26 +183,43 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                                              URL_SEARCH_ASSOCIATIONS_FORM });
 
 
+    private static final String  FIELD_ENTRYORDER ="entryorder";
+    private static final String  FIELD_SIZE ="size";
+
     /** _more_ */
     private static final String FIELD_ENTRYID = "entryid";
 
     /** _more_ */
     private static final String FIELD_PATH = "path";
 
+    private static final String FIELD_TYPE = "type";
+
+    private static final String FIELD_NORTH = "north";
+    private static final String FIELD_WEST = "west";    
+    private static final String FIELD_SOUTH = "south";
+    private static final String FIELD_EAST = "east";
+
     /** _more_ */
     private static final String FIELD_CONTENTS = "contents";
 
     /** _more_ */
-    private static final String FIELD_MODIFIED = "modified";
+    private static final String FIELD_DATE_CREATED = "date_created";
+    private static final String FIELD_DATE_CHANGED = "date_changed";
+    private static final String FIELD_DATE_START = "date_start";
+    private static final String FIELD_DATE_END = "date_end";    
+
+    /** _more_ */
+    private static final String FIELD_METADATA = "metadata";
+
 
     /** _more_ */
     private static final String FIELD_DESCRIPTION = "description";
 
     /** _more_ */
-    private static final String FIELD_NAME = "name";    
+    private static final String FIELD_NAME = "name";
 
-    /** _more_ */
-    private static final String FIELD_METADATA = "metadata";
+    private static final String FIELD_NAME_SORT = "namesort";    
+
 
     private static final String[] SEARCH_FIELDS ={FIELD_NAME, FIELD_DESCRIPTION, FIELD_CONTENTS,FIELD_PATH};
 
@@ -457,6 +483,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         return "searchmanager";
     }
 
+    public String getMetadataField(String  type) {
+	return FIELD_METADATA+"_"+ type;
+    }
+
+
+
     /**
      * _more_
      *
@@ -493,6 +525,22 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             new org.apache.lucene.document.Document();
 	//Only store the ID as this is the only thing we need when we search
         doc.add(new StringField(FIELD_ENTRYID, entry.getId(), Field.Store.YES));
+        doc.add(new SortedNumericDocValuesField(FIELD_SIZE, entry.getResource().getFileSize()));
+        doc.add(new SortedNumericDocValuesField(FIELD_ENTRYORDER, entry.getEntryOrder()));
+	if(entry.hasAreaDefined()) {
+	    doc.add(new DoublePoint(FIELD_NORTH, entry.getNorth()));
+	    doc.add(new DoublePoint(FIELD_WEST, entry.getWest()));
+	    doc.add(new DoublePoint(FIELD_SOUTH, entry.getSouth()));
+	    doc.add(new DoublePoint(FIELD_EAST, entry.getEast()));
+	} else if(entry.hasLocationDefined()) {
+	    doc.add(new DoublePoint(FIELD_NORTH, entry.getLatitude()));
+	    doc.add(new DoublePoint(FIELD_WEST, entry.getLongitude()));
+	    doc.add(new DoublePoint(FIELD_SOUTH, entry.getLatitude()));
+	    doc.add(new DoublePoint(FIELD_EAST, entry.getLongitude()));
+	}
+
+
+        doc.add(new StringField(FIELD_TYPE, entry.getTypeHandler().getType(), Field.Store.YES));	
         String path = entry.getResource().getPath();
         if ((path != null) && (path.length() > 0)) {
 	    if(entry.getResource().isFile()) {
@@ -502,24 +550,37 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         }
 
         doc.add(new TextField(FIELD_NAME,  entry.getName(),Field.Store.NO));
+	doc.add(new SortedDocValuesField(FIELD_NAME_SORT, new BytesRef(entry.getName())));
+	//        doc.add(new StringField(FIELD_NAME_SORT,  entry.getName(),Field.Store.YES));	
 
 	StringBuilder desc = new StringBuilder();
         entry.getTypeHandler().getTextCorpus(entry, desc);
         doc.add(new TextField(FIELD_DESCRIPTION, desc.toString(),Field.Store.NO));
 
 
+        for (Metadata metadata : getMetadataManager().getMetadata(entry)) {
+	    MetadataType type = getMetadataManager().getType(metadata);
+	    if(type==null) {
+		System.err.println("Null type:" + entry.getName() +"  "+ metadata);
+		continue;
+	    }
+	    if(type.getSearchable()) {
+		doc.add(new StringField(getMetadataField(type.getId()), metadata.getAttr1(),Field.Store.NO));
+	    }
+	}
+
+
         StringBuilder metadataSB = new StringBuilder();
         getRepository().getMetadataManager().getTextCorpus(entry, metadataSB);
         if (metadataSB.length() > 0) {
-            doc.add(new TextField(FIELD_METADATA, metadataSB.toString(),Field.Store.NO));
+
         }
 
-	/*
-	  doc.add(new Field(FIELD_MODIFIED,
-	  DateTools.timeToString(entry.getStartDate(),
-	  DateTools.Resolution.MINUTE), Field.Store.YES,
-	  Field.Index.NOT_ANALYZED));
-	*/
+	doc.add(new SortedNumericDocValuesField(FIELD_DATE_CREATED, entry.getCreateDate()));	
+	doc.add(new SortedNumericDocValuesField(FIELD_DATE_CHANGED, entry.getChangeDate()));
+	doc.add(new SortedNumericDocValuesField(FIELD_DATE_START, entry.getStartDate()));
+	doc.add(new SortedNumericDocValuesField(FIELD_DATE_END, entry.getEndDate()));	
+
 
         if (entry.isFile()) {
             addContentField(entry, doc, entry.getResource().getTheFile());
@@ -618,6 +679,23 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	return new Result("", new StringBuilder(Json.map("values", Json.list(names))), "text/json");
     }
 
+    private Query makeAnd(Query...queries) {
+	BooleanQuery.Builder builder = new BooleanQuery.Builder();
+	for(Query query: queries) {
+	    builder.add(query, BooleanClause.Occur.MUST);
+	}
+	return builder.build();
+    }
+
+    private Query makeOr(Query...queries) {
+	BooleanQuery.Builder builder = new BooleanQuery.Builder();
+	for(Query query: queries) {
+	    builder.add(query, BooleanClause.Occur.SHOULD);
+	}
+	return builder.build();
+    }    
+
+
     /**
      * _more_
      *
@@ -634,8 +712,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         IndexSearcher searcher = getLuceneSearcher();
 	String text = request.getString(ARG_TEXT,"");
 	//	QueryBuilder builder = new QueryBuilder(analyzer);
-	Query query = null;
-	BooleanQuery.Builder builder = new BooleanQuery.Builder();
 	boolean hasAField = false;
 	for(String field: SEARCH_FIELDS) {
 	    if(text.indexOf(field+":")>=0) {
@@ -644,26 +720,205 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    }
 	}
 
-	if(text.length()==0) {
-	    query = new MatchAllDocsQuery();
-	} else if(false && hasAField) {
-	    org.apache.lucene.queryparser.classic.QueryParser queryParser =
-		new org.apache.lucene.queryparser.classic.QueryParser(FIELD_NAME, analyzer);
-	    query = queryParser.parse(text);
-	} else {
+	List<Query> queries = new ArrayList<Query>();
+	if(text.length()>0) {
+	    BooleanQuery.Builder builder = new BooleanQuery.Builder();
 	    for(String field: SEARCH_FIELDS) {
-		//		Query term = new TermQuery(new Term(field, text));
 		Query term = new WildcardQuery(new Term(field, text));		
 		builder.add(term, BooleanClause.Occur.SHOULD);
 	    }
+	    queries.add(builder.build());
+	}
+
+	for (DateArgument arg : DateArgument.SEARCH_ARGS) {
+	    long min = Long.MIN_VALUE;
+	    long max = Long.MAX_VALUE;
+            Date[] dateRange = request.getDateRange(arg.getFrom(),
+                                   arg.getTo(), arg.getRelative(),
+                                   new Date());
+	    Date date1 = dateRange[0];
+	    Date date2 = dateRange[1];
+	    if(date1==null && date2==null) continue;
+	    if (arg.forCreateDate() || arg.forChangeDate()) {
+		String field = arg.forCreateDate()
+		    ? FIELD_DATE_CREATED
+		    : FIELD_DATE_CHANGED;
+		if(date1!=null || date2!=null) {
+		    queries.add(LongPoint.newRangeQuery(field, date1!=null?date1.getTime():min,
+							date2!=null?date2.getTime():max));
+		}
+		continue;
+	    }
+	    long t1 = date1==null?min:date1.getTime();
+	    long t2 = date2==null?max:date2.getTime();	    
+	    if (date1 == null) {
+		date1 = date2;
+	    }
+	    if (date2 == null) {
+		date2 = date1;
+	    }
+
+
+	    queries.add(LongPoint.newRangeQuery(FIELD_DATE_START, t1,t2));
+
+	    String dateSearchMode = request.getString(arg.getMode(), DATE_SEARCHMODE_DEFAULT);
+	    queries.add(LongPoint.newRangeQuery(FIELD_DATE_START, t1,t2));
+	    queries.add(LongPoint.newRangeQuery(FIELD_DATE_END, t1,t2));	    
+	    if (dateSearchMode.equals(DATE_SEARCHMODE_OVERLAPS)) {
+	    } else if (dateSearchMode.equals(DATE_SEARCHMODE_CONTAINEDBY)) {
+		//TODO
+		//		queries.add(Clause.ge(FIELD_DATE_START, date1));
+		//		queries.add(Clause.le(FIELD_DATE_END,  date2));
+	    } else {
+		//DATE_SEARCHMODE_CONTAINS
+		//		queries.add(Clause.le(FIELD_DATE_START,  date1));
+		//		queries.add(Clause.ge(FIELD_DATE_END, date2));
+	    }
+	}
+
+	boolean contains = !(request.getString(
+					       ARG_AREA_MODE, VALUE_AREA_OVERLAPS).equals(
+											  VALUE_AREA_OVERLAPS));
+
+
+	contains=true;
+	List<SelectionRectangle> rectangles = getEntryUtil().getSelectionRectangles(request.getSelectionBounds());
+	System.err.println("BBOX:" + request.getSelectionBounds());
+	List<Query> areaQueries = new ArrayList<Query>();
+	for (SelectionRectangle rectangle : rectangles) {
+	    if(!rectangle.anyDefined()) continue;
+	    double minLat = rectangle.hasSouth()?rectangle.getSouth():-90;
+	    double maxLat = rectangle.hasNorth()?rectangle.getNorth():90;	    
+	    double minLon = rectangle.hasWest()?rectangle.getWest():-180;
+	    double maxLon = rectangle.hasEast()?rectangle.getEast():180;	    
+	    if (contains) {
+		if (rectangle.hasNorth()) {
+		    areaQueries.add(DoublePoint.newRangeQuery(FIELD_NORTH,minLat,rectangle.getNorth()));
+		}
+		if (rectangle.hasSouth()) {
+		    areaQueries.add(DoublePoint.newRangeQuery(FIELD_SOUTH,rectangle.getSouth(),maxLat));
+		}
+		if (rectangle.hasWest()) {
+		    areaQueries.add(DoublePoint.newRangeQuery(FIELD_WEST,rectangle.getWest(),maxLon));
+		}
+		if (rectangle.hasEast()) {
+		    areaQueries.add(DoublePoint.newRangeQuery(FIELD_EAST,minLon,rectangle.getEast()));
+		}
+	    } else {
+
+	    }
+	}
+	if (areaQueries.size() > 0) {
+	    BooleanQuery.Builder areaBuilder = new BooleanQuery.Builder();
+	    for(Query query: areaQueries) {
+		areaBuilder.add(query, BooleanClause.Occur.MUST);
+	    }
+	    queries.add(areaBuilder.build());
+	}
+
+
+
+        Hashtable args        = request.getArgs();
+        String metadataPrefix = ARG_METADATA_ATTR1 + "_";
+	CategoryList<String> cats = new CategoryList<String>();
+        for (Enumeration keys = args.keys(); keys.hasMoreElements(); ) {
+            String arg = (String) keys.nextElement();
+            if ( !arg.startsWith(metadataPrefix)) {
+                continue;
+            }
+            if ( !request.defined(arg)) {
+                continue;
+            }
+
+	    String value = request.getString(arg);
+            String type = arg.substring(ARG_METADATA_ATTR1.length() + 1);
+	    cats.add(type,value);
+	}
+	List<Query> metadataQueries = new ArrayList<Query>();
+	for(String type: cats.getCategories()) {
+	    BooleanQuery.Builder builder = new BooleanQuery.Builder();
+	    String field = getMetadataField(type);
+	    for(String value: cats.get(type)) {
+		Query query = new TermQuery(new Term(field, value));
+		builder.add(query,BooleanClause.Occur.SHOULD);		
+	    }
+	    queries.add(builder.build());
+	}
+
+	if(request.defined(ARG_TYPE)) {
+	    queries.add(new TermQuery(new Term(FIELD_TYPE, request.getString(ARG_TYPE))));
+	}
+
+	Query query = null;
+	if(queries.size()==0) {
+	    query = new MatchAllDocsQuery();
+	} else if(queries.size()==1) {
+	    query = queries.get(0);
+	} else  {
+	    BooleanQuery.Builder builder = new BooleanQuery.Builder();
+	    for(Query q: queries)
+		builder.add(q,BooleanClause.Occur.MUST);
 	    query = builder.build();
 	}
 
+	System.err.println("QUERY:" + query);
 	int max = request.get(ARG_MAX,100);
 	int skip = request.get(ARG_SKIP,0);
 
 	//	searcher.setDefaultFieldSortScoring(true, false);
-	TopDocs       hits     = searcher.search(query, max+skip,Sort.RELEVANCE);
+	Sort sort;
+        if(request.exists(ARG_ORDERBY)) {
+	    boolean desc = true;
+            String by = request.getString(ARG_ORDERBY, (String) null);
+            if (request.get(ARG_ASCENDING, false)) {
+                desc = false;
+            }
+
+	    String field=null;
+	    SortField.Type sortType = SortField.Type.STRING;
+            if (by.equals(ORDERBY_FROMDATE)) {
+                field = FIELD_DATE_START;
+		sortType = SortField.Type.LONG;
+            } else if (by.equals(ORDERBY_TODATE)) {
+                field = FIELD_DATE_END;                
+		sortType = SortField.Type.LONG;
+            } else if (by.equals(ORDERBY_RELEVANT)) {
+		sort = Sort.RELEVANCE;
+            } else if (by.equals(ORDERBY_CREATEDATE)) {
+		sortType = SortField.Type.LONG;
+                field = FIELD_DATE_CREATED;
+	    } else if (by.equals(ORDERBY_CHANGEDATE)) {
+		sortType = SortField.Type.LONG;
+                field = FIELD_DATE_CHANGED;
+            } else if (by.equals(ORDERBY_ENTRYORDER)) {
+		sortType = SortField.Type.INT;
+                field = FIELD_ENTRYORDER;
+            } else if (by.equals(ORDERBY_TYPE)) {
+                field = FIELD_TYPE;
+            } else if (by.equals(ORDERBY_SIZE)) {
+		sortType = SortField.Type.LONG;
+                field = FIELD_SIZE;
+            } else {
+		field=FIELD_NAME_SORT;
+	    }
+
+	    System.err.println("Sort:" + field +" " + sortType);
+	    if(field==null)
+		sort = Sort.RELEVANCE;
+	    else {
+		if(sortType == SortField.Type.LONG || sortType == SortField.Type.INT)
+		    sort = new Sort(new SortField[] {
+			    new SortedNumericSortField(field, sortType,desc),
+			    new SortField(FIELD_NAME_SORT, SortField.Type.STRING,true)});
+		else
+		    sort = new Sort(new SortField[] {new SortField(field, sortType,desc),
+						     new SortField(FIELD_NAME_SORT, SortField.Type.STRING,desc)});
+	    }
+	} else {
+	    sort = Sort.RELEVANCE;
+	}
+
+	TopDocs       hits     = searcher.search(query, max+skip,sort);
 	//        TopDocs       hits     = searcher.search(query, 100);		
         ScoreDoc[]    docs     = hits.scoreDocs;
 	System.err.println("lucene results:" + docs.length +" text:" + text);
