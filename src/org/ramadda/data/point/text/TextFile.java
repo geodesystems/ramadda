@@ -470,6 +470,64 @@ public abstract class TextFile extends PointFile {
 						    "Reading way too many header lines");
                 }
 	    }
+        } else if (isHeaderStandard()) {
+	    if(debug)
+		System.err.println("TextFile.prepareToVisit: isStandard");
+            while (true) {
+                String line = visitInfo.getRecordIO().readLine();
+                if (line == null) {
+                    break;
+                }
+                line = line.trim();
+                if (line.length() == 0) {
+                    break;
+                }
+                if ( !isHeaderLine(line)) {
+                    visitInfo.getRecordIO().putBackLine(line);
+
+                    break;
+                }
+                if ( !haveReadHeader) {
+                    headerLines.add(line);
+                    line = line.substring(1);
+                    int idx = line.indexOf("=");
+                    if (idx >= 0) {
+                        List<String> toks = Utils.splitUpTo(line, "=",
+                                                2);
+                        putProperty(toks.get(0), toks.get(1));
+                    }
+                }
+            }
+        } else if (lastHeaderPattern != null) {
+	    if(debug)
+		System.err.println("TextFile.prepareToVisit: lastHeaderPattern:" + lastHeaderPattern);
+            boolean starts = lastHeaderPattern.startsWith("starts:");
+            if (starts) {
+                lastHeaderPattern =
+                    lastHeaderPattern.substring("starts:".length());
+            }
+            while (true) {
+                String line = visitInfo.getRecordIO().readLine();
+                if (line == null) {
+                    break;
+                }
+                if (starts) {
+                    if (line.startsWith(lastHeaderPattern)) {
+                        break;
+                    }
+                } else {
+                    if (line.matches(lastHeaderPattern)) {
+                        break;
+                    }
+                }
+                headerLines.add(line);
+                if (headerLines.size() > 500) {
+                    throw new IllegalStateException(
+                        "Reading way too many header lines");
+                }
+
+            }
+
 	} else if (firstLineFields || (sfieldRow != null)) {
             int    skipCnt  = getSkipLines(visitInfo);
             int    fieldRow =sfieldRow!=null? Integer.parseInt(sfieldRow):0;
@@ -563,64 +621,6 @@ public abstract class TextFile extends PointFile {
                 String f = makeFields(cleaned);
                 putProperty(PROP_FIELDS, f);
             }
-        } else if (isHeaderStandard()) {
-	    if(debug)
-		System.err.println("TextFile.prepareToVisit: isStandard");
-            while (true) {
-                String line = visitInfo.getRecordIO().readLine();
-                if (line == null) {
-                    break;
-                }
-                line = line.trim();
-                if (line.length() == 0) {
-                    break;
-                }
-                if ( !isHeaderLine(line)) {
-                    visitInfo.getRecordIO().putBackLine(line);
-
-                    break;
-                }
-                if ( !haveReadHeader) {
-                    headerLines.add(line);
-                    line = line.substring(1);
-                    int idx = line.indexOf("=");
-                    if (idx >= 0) {
-                        List<String> toks = Utils.splitUpTo(line, "=",
-                                                2);
-                        putProperty(toks.get(0), toks.get(1));
-                    }
-                }
-            }
-        } else if (lastHeaderPattern != null) {
-	    if(debug)
-		System.err.println("TextFile.prepareToVisit: lastHeaderPattern:" + lastHeaderPattern);
-            boolean starts = lastHeaderPattern.startsWith("starts:");
-            if (starts) {
-                lastHeaderPattern =
-                    lastHeaderPattern.substring("starts:".length());
-            }
-            while (true) {
-                String line = visitInfo.getRecordIO().readLine();
-                if (line == null) {
-                    break;
-                }
-                if (starts) {
-                    if (line.startsWith(lastHeaderPattern)) {
-                        break;
-                    }
-                } else {
-                    if (line.matches(lastHeaderPattern)) {
-                        break;
-                    }
-                }
-                headerLines.add(line);
-                if (headerLines.size() > 500) {
-                    throw new IllegalStateException(
-                        "Reading way too many header lines");
-                }
-
-            }
-
         } else {
             int skipCnt = getSkipLines(visitInfo);
             commentLineStart = getProperty("commentLineStart", null);
