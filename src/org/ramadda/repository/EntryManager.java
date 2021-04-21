@@ -6832,7 +6832,7 @@ public class EntryManager extends RepositoryManager {
 	    boolean isTextSearch = (columns.size()==3 && columns.contains(Tables.ENTRIES.COL_NAME) &&
 				    columns.contains(Tables.ENTRIES.COL_DESCRIPTION) &&
 				    columns.contains(Tables.ENTRIES.COL_RESOURCE));//  || columns.size()==0;
-	    isTextSearch  = true;
+	    //	    isTextSearch  = true;
 	    if(isTextSearch) {
 		getSearchManager().processLuceneSearch(request, allEntries);
 		didSearch = true;
