@@ -504,7 +504,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         }
 
 
-        SelectionRectangle theBbox = TypeHandler.getSelectionBounds(request);
+        SelectionRectangle theBbox = request.getSelectionBounds();
         if ( !theBbox.anyDefined()) {
             return goodEntries;
         }
@@ -2263,7 +2263,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                                         List<? extends PointEntry> entries) {
 
 
-        SelectionRectangle theBbox = TypeHandler.getSelectionBounds(request);
+        SelectionRectangle theBbox = request.getSelectionBounds();
         theBbox.normalizeLongitude();
 
         //TODO: handle date line
@@ -2549,7 +2549,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         }
 
 
-        SelectionRectangle bbox = TypeHandler.getSelectionBounds(request);
+        SelectionRectangle bbox = request.getSelectionBounds();
         if (bbox.anyDefined()) {
             bbox.normalizeLongitude();
             //If the request crosses the dateline then split it into to and make an OR filter
