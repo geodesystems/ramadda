@@ -95,7 +95,7 @@ public class WikiUtil {
     private Hashtable wikiAttributes = new Hashtable();
 
     /** _more_ */
-    private StringBuilder js = new StringBuilder();
+    private StringBuilder javascript = new StringBuilder();
 
     /** _more_ */
     private Hashtable<String, String> myVars = new Hashtable<String,
@@ -159,6 +159,8 @@ public class WikiUtil {
         this.properties = properties;
     }
 
+    static int xcnt = 0;
+    int mycnt = xcnt++;
     /**
      * _more_
      *
@@ -168,8 +170,9 @@ public class WikiUtil {
         if ((code == null) || (code.trim().length() == 0)) {
             return;
         }
-        js.append(code);
-        js.append("\n");
+	if(javascript==null) javascript = new StringBuilder();
+        javascript.append(code);
+        javascript.append("\n");
     }
 
     /**
@@ -177,8 +180,11 @@ public class WikiUtil {
      *
      * @return _more_
      */
-    public String getJavascript() {
-        return js.toString();
+    public String getJavascript(boolean andClear) {
+	if(javascript==null) return null;
+	String j = javascript.toString();
+	if(andClear) javascript = null;
+        return j;
     }
 
     /**
