@@ -619,7 +619,7 @@ function EntryType(props) {
             return this.icon;
         },
         getLabel: function() {
-            return this.label;
+            return this.label || this.name;
         },
         getId: function() {
             if (this.type != null) return this.type;

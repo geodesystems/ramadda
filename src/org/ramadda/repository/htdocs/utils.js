@@ -2687,7 +2687,8 @@ var GuiUtils = {
             return;
         }
         console.log(error);
-	console.trace();
+//	console.trace();
+
         if (extra) {
             console.log(extra);
         }

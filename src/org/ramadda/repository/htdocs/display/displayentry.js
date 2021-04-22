@@ -25,6 +25,7 @@ let ID_ENTRIES = "entries";
 let ID_DETAILS_INNER = "detailsinner";
 let ID_DETAILS_ANCESTORS = "detailsancestors";
 let ID_DETAILS_TAGS= "detailstags";
+let ID_DETAILS_TYPE= "detailstype";
 let ID_PROVIDERS = "providers";
 let ID_SEARCH_ORDERBY = "orderby";
 let ID_SEARCH_SETTINGS = "searchsettings";
@@ -1151,9 +1152,13 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		_this.submitSearchForm();
 	    });
 	},
+	typeTagClicked:function(type) {
+	    this.jq(ID_TYPE_FIELD).selectBoxIt('selectOption', type.getId());
+	},	
 	metadataTagClicked:function(metadata) {
 	    if(!this.metadataBoxes[metadata.type] || !this.metadataBoxes[metadata.type][metadata.value.attr1]) {
 		this.addMetadataTag(metadata.type, metadata.type,metadata.value.attr1, null);
+		this.submitSearchForm();
 		return;
 	    }
 
