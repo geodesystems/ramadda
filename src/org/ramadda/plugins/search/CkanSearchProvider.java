@@ -257,7 +257,7 @@ public class CkanSearchProvider extends SearchProvider {
                                  getMetadataManager().addMetadata(newEntry, thumbnailMetadata);
             */
 
-            newEntry.initEntry(title, "<snippet>" + desc+"</snippet>", parent,
+            newEntry.initEntry(title, makeSnippet(desc), parent,
                                getUserManager().getLocalFileUser(),
                                new Resource(new URL(itemUrl)), "",Entry.DEFAULT_ORDER,
                                dttm.getTime(), dttm.getTime(),
@@ -287,11 +287,15 @@ public class CkanSearchProvider extends SearchProvider {
                 for (int resourceIdx = 0; resourceIdx < resources.length();
                         resourceIdx++) {
                     JSONObject  rObj = resources.getJSONObject(resourceIdx);
-                    String      rname = Json.readValue(rObj, "name", "");
+                    String      resourceName = Json.readValue(rObj, "name", "");
+                    String      format = Json.readValue(rObj, "format", "");
+		    if(resourceName.length()==0) {
+			resourceName = "Format: "+ format;
+		    }
+
                     String      rid = Json.readValue(rObj, "id", "");
                     String rdesc = Json.readValue(rObj, "description", "");
                     String      dataUrl = Json.readValue(rObj, "url", null);
-                    String      format = Json.readValue(rObj, "format", "");
                     String      rUrl = itemUrl + "/resource/" + rid;
 
                     TypeHandler typeHandlerToUse = rtypeHandler;
@@ -308,8 +312,7 @@ public class CkanSearchProvider extends SearchProvider {
                                              + TypeHandler.ID_DELIMITER
                                              + rid, typeHandlerToUse);
                     rEntry.setIcon("/search/ckan.png");
-
-                    rEntry.initEntry(rname, "<snippet>" + rdesc +"</snippet>", newEntry,
+                    rEntry.initEntry(resourceName, makeSnippet(rdesc), newEntry,
                                      getUserManager().getLocalFileUser(),
                                      new Resource(new URL(rUrl)), "",Entry.DEFAULT_ORDER,
                                      dttm.getTime(), dttm.getTime(),

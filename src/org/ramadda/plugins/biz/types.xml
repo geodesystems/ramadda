@@ -264,7 +264,7 @@ picky=false
 
      <column name="source_code"  type="string"  label="Source Code"    />
      <column name="series_id" type="string"  label="Series Code"    />
-     <wiki_inner><![CDATA[
+     <wiki><![CDATA[
 +section # title="QUANDL Time Series: {{name}}"
 <br>
 {{group showMenu="true"}}
@@ -292,7 +292,7 @@ Data courtesy of  <a href="{{resource  url=true}}">Quandl</a>.
 
 ]]>
 
-</wiki_inner>
+</wiki>
 
   </type>
 

@@ -98,7 +98,6 @@ public class QuandlSeriesTypeHandler extends PointTypeHandler {
                             getRepository().getProperty("quandl.api.key",
                                 ""));
         //        System.err.println("quandl:" + url);
-
         return url;
     }
 
