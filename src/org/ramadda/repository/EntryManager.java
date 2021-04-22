@@ -1685,6 +1685,41 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+
+    public Result processEntrySetFile(final Request request) throws Exception {
+	StringBuilder sb = new StringBuilder();
+        Entry         entry = getEntry(request);
+	if(entry==null) {
+	    sb.append(Json.mapAndQuote("error", "Could not find entry"));
+	    return new Result("", sb, Json.MIMETYPE);
+	}
+	if ( !getAccessManager().canDoAction(request, entry,
+					     Permission.ACTION_EDIT)) {
+	    sb.append(Json.mapAndQuote("error", "No permision to edit entry"));
+	    return new Result("", sb, Json.MIMETYPE);
+	}
+	String contents = request.getString("file","");
+
+        if (!entry.isFile()) {
+	    sb.append(Json.mapAndQuote("error", "Entry is not a file"));
+	    return new Result("", sb, Json.MIMETYPE);
+	}
+
+	removeFromCache(entry);
+	File oldFile = entry.getResource().getTheFile();
+	File tmpFile = getStorageManager().getTmpFile(request,oldFile.getName());
+        OutputStream  toStream   = getStorageManager().getFileOutputStream(tmpFile);
+        IOUtil.writeTo(new ByteArrayInputStream(contents.getBytes()), toStream);
+        IOUtil.close(toStream);
+	File newFile = getStorageManager().moveToStorage(request,
+							 tmpFile);
+	entry.getResource().setPath(newFile.toString());
+	updateEntry(request, entry);
+	sb.append(Json.mapAndQuote("message", "OK, file has been changed"));
+	return new Result("", sb, Json.MIMETYPE);
+    }
+
+    
     /**
      * _more_
      *
