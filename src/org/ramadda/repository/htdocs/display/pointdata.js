@@ -3142,7 +3142,7 @@ function CsvUtil() {
 
 
 var DataUtils = {
-    getCsv: function(fields, records, filename) {
+    getCsv: function(fields, records) {
 	let csv = "";
 	fields.forEach((f,idx)=>{
 	    if(idx>0) csv+=",";
@@ -3170,7 +3170,7 @@ var DataUtils = {
 	    });
 	    csv+="\n";
 	});
-	Utils.makeDownloadFile(filename, csv);
+	return csv;
     },
     getJson: function(fields, records, filename) {
 	let json = [];

@@ -59,6 +59,11 @@ var Utils =  {
     loadFunctions:[],
     mouseMoveCnt:0,
     mouseIsDown: false,
+    entryGroups: new Array(),
+    groupList: new Array(),
+    tooltipObject:null,
+    entryDragInfo:null,
+    globalEntryRows:{},
     addLoadFunction: function(f) {
 	Utils.loadFunctions.push(f);
     },
@@ -1860,11 +1865,11 @@ var Utils =  {
 	HtmlUtils.getTooltip().hide();
     },
     handleMouseDown:function(event) {
-	if (HtmlUtils.hasPopupObject() || tooltipObject) {
+	if (HtmlUtils.hasPopupObject() || Utils.tooltipObject) {
 	    setTimeout(() => {
-		if(tooltipObject) {
-		    tooltipObject.hide();
-		    tooltipObject = null;
+		if(Utils.tooltipObject) {
+		    Utils.tooltipObject.hide();
+		    Utils.tooltipObject = null;
 		}
 		if(HtmlUtils.hasPopupObject()) {
 		    let thisId = HtmlUtils.getPopupObject().attr("id");
@@ -1884,7 +1889,7 @@ var Utils =  {
 	GuiUtils.setCursor('default');
 	let obj = $("#ramadda-floatdiv");
 	if (obj.length) {
-            let dragSourceObj = entryDragInfo?GuiUtils.getDomObject(entryDragInfo.dragSource):null;
+            let dragSourceObj = Utils.entryDragInfo?GuiUtils.getDomObject(Utils.entryDragInfo.dragSource):null;
             if (dragSourceObj) {
 		let tox = GuiUtils.getLeft(dragSourceObj.obj);
 		let toy = GuiUtils.getTop(dragSourceObj.obj);
@@ -1897,7 +1902,7 @@ var Utils =  {
             } else {
 		obj.hide();
             }
-	    entryDragInfo = null;
+	    Utils.entryDragInfo = null;
 	    
 	}
 	return true;
@@ -1922,7 +1927,7 @@ var Utils =  {
     },
     handleMouseMove:function(event) {
 	event = GuiUtils.getEvent(event);
-	if (entryDragInfo && Utils.mouseIsDown) {
+	if (Utils.entryDragInfo && Utils.mouseIsDown) {
             Utils.mouseMoveCnt++;
             var obj = $("#ramadda-floatdiv");
             if (Utils.mouseMoveCnt == 6) {
@@ -1932,7 +1937,7 @@ var Utils =  {
 		Utils.moveFloatDiv(GuiUtils.getEventX(event), GuiUtils.getEventY(event));
             }
 	}
-	return false;
+	return true
     },
 
     finalHide:function(id) {
@@ -1951,8 +1956,8 @@ var Utils =  {
             if (!visible) {
 		obj.show();
 		let html = "";
-		if (entryDragInfo) {
-		    html = entryDragInfo.getHtml();
+		if (Utils.entryDragInfo) {
+		    html = Utils.entryDragInfo.getHtml();
 		}		
 		obj.html(html + "<br>Drag to a group to copy/move/associate");
             }

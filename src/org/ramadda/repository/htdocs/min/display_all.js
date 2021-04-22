@@ -14027,7 +14027,7 @@ function CsvUtil() {
 
 
 var DataUtils = {
-    getCsv: function(fields, records, filename) {
+    getCsv: function(fields, records) {
 	let csv = "";
 	fields.forEach((f,idx)=>{
 	    if(idx>0) csv+=",";
@@ -14055,7 +14055,7 @@ var DataUtils = {
 	    });
 	    csv+="\n";
 	});
-	Utils.makeDownloadFile(filename, csv);
+	return csv;
     },
     getJson: function(fields, records, filename) {
 	let json = [];
@@ -19883,7 +19883,8 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	{p:'csvLabel',ex:'Download'},
 	{p:'useIcon',d:'false',ex:'false'},
 	{p:'fileName',d:'download',ex:'download'},
-	{p:'askFields',d:'false',ex:'true'},		
+	{p:'askFields',d:'false',ex:'true'},
+//	{p:'doSave',d:false,tt:'Show the save file button'}
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	fieldOn:{},
@@ -19894,8 +19895,51 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	    let label = this.getPropertyCsvLabel("Download Data");
 	    label = label.replace("${title}",this.getProperty("title",""));
 	    let useIcon = this.getPropertyUseIcon(true);
-	    label = useIcon?HU.getIconImage("fa-download",[STYLE,"cursor:pointer;",TITLE,label]):label;
-	    this.setContents(HU.div([],HU.span([ID,this.getDomId("csv")],label)));
+	    label = HU.span([ID,this.getDomId("csv")], useIcon?HU.getIconImage("fa-download",[STYLE,"cursor:pointer;",TITLE,label]):label);
+	    /*
+	    if(!Utils.isAnonymous() && this.getDoSave()) {
+		label+=SPACE2 +HU.span([ID,this.domId("save"),CLASS,"ramadda-clickable"], HU.getIconImage("fas fa-save")) +SPACE +HU.span([ID,this.domId("savelabel")]);
+	    }
+	    */
+	    this.setContents(HU.div([],label));
+	    /*
+	    if(!Utils.isAnonymous() && this.getDoSave()) {
+		let _this  = this;
+		this.jq("save").click(()=>{
+		    if(!confirm("Are you sure you want to change the file?")) return;
+		    let records = this.filterData();
+		    let fields = this.getData().getRecordFields();
+		    let csv = DataUtils.getCsv(fields, records);
+		    let data = new FormData();
+		    data.append("file",csv);
+		    data.append("entryid",this.getProperty("entryId"));
+		    jQuery.ajax({
+			url: ramaddaBaseUrl+"/entry/setfile",
+			data: data,
+			cache: false,
+			contentType: false,
+			processData: false,
+			method: 'POST',
+			type: 'POST',
+			success: function(data){
+			    if(data.message)
+				_this.jq("savelabel").html(data.message);
+			    else if(data.error)
+				_this.jq("savelabel").html(data.error);			    
+			    else
+				console.log("response:" + JSON.stringify(data));
+			    setTimeout(()=>{
+				_this.jq("savelabel").html("&nbsp;");
+			    },3000);
+			},
+			fail: function(data) {
+			    _this.jq("savelabel").html("An error occurred:" + data);			    
+			    console.log("An error occurred:" + data);			    
+			}
+		    });
+		});
+	    }
+*/
 	    if(useIcon) {
 		this.jq("csv").click(() => {
 		    this.doDownload();
@@ -19908,7 +19952,8 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	},
 	getCsv: function(fields, records) {
             fields = fields || this.getData().getRecordFields();
-	    DataUtils.getCsv(fields, records,this.getPropertyFileName()+".csv");
+	    let csv = DataUtils.getCsv(fields, records);
+	    Utils.makeDownloadFile(this.getPropertyFileName()+".csv", csv);	    
 	},
 	getJson: function(fields, records) {
             fields = fields || this.getData().getRecordFields();
@@ -19953,7 +19998,6 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	},
 	doDownload: function() {
 	    let records = this.filterData();
-
 	    let func = json=>{
 		this.jq(ID_DIALOG).hide();
 		let fields = [];
@@ -38052,7 +38096,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	{p:'numRecords',ex:'100',d:1000},
 	{p:'includeGeo',ex:'true',d:false},
 	{p:'includeDate',ex:'true',d:true},
-	{p:'fancy',ex:'true',d:true},			
+	{p:'fancy',ex:'true',d:true},
+	{p:'showAddRow',ex:'true'},				
     ];
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -38073,9 +38118,10 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	    let numRecords = this.getNumRecords();
 	    let includeGeo = this.getIncludeGeo();
 	    let includeDate = this.getIncludeGeo();	    
-	    let html ="Number of records:" + records.length+"<table width=100% border=0 cellpadding=0 cellspacing=0>";
-	    html+="<tr valign=top><td width=30></td>";
+	    let html ="<table width=100% border=0 cellpadding=0 cellspacing=0>";
 	    let headerAttrs = [STYLE,"white-space:nowrap;background:#efefef;padding:5px; font-weight:bold;"];
+	    html+="<tr valign=top>"
+	    html+=HU.td(HU.div(headerAttrs,"&nbsp;"));	    
 	    if(includeDate) html+=HU.td(HU.div(headerAttrs,"Date"));
 	    fields.forEach((f,idx)=>{
 		if(fancy)
@@ -38147,7 +38193,19 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		return true;
 	    });
 	    html+="</table>";
+	    if(this.getShowAddRow()) {
+		html+=HU.div([ID,this.domId("addrow"),CLASS,"ramadda-clickable"], HU.getIconImage("fas fa-plus"));
+	    }
 	    this.setContents(html);
+	    if(this.getShowAddRow()) {
+		this.jq("addrow").click(()=>{
+		    let records = this.getPointData().getRecords();
+		    let newRow = records[records.length-1].clone();
+		    records.push(newRow);
+		    this.updateUI();
+		    this.getPointData().propagateEventDataChanged(this);
+		});
+	    }
 	    let _this  = this;
 	    let handleChange = dom=>{
 		let val;

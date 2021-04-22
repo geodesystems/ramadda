@@ -1057,7 +1057,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	{p:'numRecords',ex:'100',d:1000},
 	{p:'includeGeo',ex:'true',d:false},
 	{p:'includeDate',ex:'true',d:true},
-	{p:'fancy',ex:'true',d:true},			
+	{p:'fancy',ex:'true',d:true},
+	{p:'showAddRow',ex:'true'},				
     ];
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -1078,9 +1079,10 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	    let numRecords = this.getNumRecords();
 	    let includeGeo = this.getIncludeGeo();
 	    let includeDate = this.getIncludeGeo();	    
-	    let html ="Number of records:" + records.length+"<table width=100% border=0 cellpadding=0 cellspacing=0>";
-	    html+="<tr valign=top><td width=30></td>";
+	    let html ="<table width=100% border=0 cellpadding=0 cellspacing=0>";
 	    let headerAttrs = [STYLE,"white-space:nowrap;background:#efefef;padding:5px; font-weight:bold;"];
+	    html+="<tr valign=top>"
+	    html+=HU.td(HU.div(headerAttrs,"&nbsp;"));	    
 	    if(includeDate) html+=HU.td(HU.div(headerAttrs,"Date"));
 	    fields.forEach((f,idx)=>{
 		if(fancy)
@@ -1152,7 +1154,19 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		return true;
 	    });
 	    html+="</table>";
+	    if(this.getShowAddRow()) {
+		html+=HU.div([ID,this.domId("addrow"),CLASS,"ramadda-clickable"], HU.getIconImage("fas fa-plus"));
+	    }
 	    this.setContents(html);
+	    if(this.getShowAddRow()) {
+		this.jq("addrow").click(()=>{
+		    let records = this.getPointData().getRecords();
+		    let newRow = records[records.length-1].clone();
+		    records.push(newRow);
+		    this.updateUI();
+		    this.getPointData().propagateEventDataChanged(this);
+		});
+	    }
 	    let _this  = this;
 	    let handleChange = dom=>{
 		let val;

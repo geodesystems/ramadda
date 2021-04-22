@@ -2,21 +2,16 @@
  * Copyright (c) 2008-2021 Geode Systems LLC
  */
 
-
-
-var tooltipObject;
-var entryDragInfo;
-
 function mouseOverOnEntry(event, entryId, targetId) {
-    if (Utils.mouseIsDown && entryDragInfo) {
-	if(entryDragInfo.hasEntry(entryId)) return;
+    if (Utils.mouseIsDown && Utils.entryDragInfo) {
+	if(Utils.entryDragInfo.hasEntry(entryId)) return;
         $("#" + targetId).css("borderBottom", "2px black solid");
     }
 }
 
 function mouseOutOnEntry(event, entryId, targetId) {
-    if(entryDragInfo) {
-	if(entryDragInfo.entryId == entryId) return;
+    if(Utils.entryDragInfo) {
+	if(Utils.entryDragInfo.entryId == entryId) return;
     }
     $("#" + targetId).css("borderBottom","");
 }
@@ -24,7 +19,7 @@ function mouseOutOnEntry(event, entryId, targetId) {
 
 function mouseDownOnEntry(event, entryId, name, sourceIconId, icon) {
     event = GuiUtils.getEvent(event);
-    entryDragInfo = {
+    Utils.entryDragInfo = {
 	dragSource: sourceIconId,
 	getIds: function() {
 	    return this.entryIds.join(",");
@@ -49,16 +44,16 @@ function mouseDownOnEntry(event, entryId, name, sourceIconId, icon) {
 	entryIds:[],
 	entries:[]
     }
-    let entry = globalEntryRows[entryId];
+    let entry = Utils.globalEntryRows[entryId];
     if(entry) {
-	entryDragInfo.addEntry(entry);
+	Utils.entryDragInfo.addEntry(entry);
     }
 
     $(".ramadda-entry-select:checked").each(function() {
 	let id  =$(this).attr("id");
-	let entry = globalEntryRows[id];
+	let entry = Utils.globalEntryRows[id];
 	if(entry) {
-	    entryDragInfo.addEntry(entry);
+	    Utils.entryDragInfo.addEntry(entry);
 	}
     });
 
@@ -73,23 +68,22 @@ function mouseDownOnEntry(event, entryId, name, sourceIconId, icon) {
 
 
 function mouseUpOnEntry(event, entryId, targetId) {
-    if(!entryDragInfo) return;
-    if(entryDragInfo.hasEntry(entryId)) return;
+    if(!Utils.entryDragInfo) return;
+    if(Utils.entryDragInfo.hasEntry(entryId)) return;
     $("#"+ targetId).css("borderBottom","");
-    if(!entryDragInfo.hasEntry(entryId)) {
-        url = ramaddaBaseUrl + "/entry/copy?action=action.move&from=" + entryDragInfo.getIds() + "&to=" + entryId;
+    if(!Utils.entryDragInfo.hasEntry(entryId)) {
+        url = ramaddaBaseUrl + "/entry/copy?action=action.move&from=" + Utils.entryDragInfo.getIds() + "&to=" + entryId;
         document.location = url;
     }
 }
 
-var groups = new Array();
-var groupList = new Array();
+
 
 function EntryFormList(formId, img, selectId, initialOn) {
     this.entryRows = new Array();
     this.lastEntryRowClicked = null;
-    groups[formId] = this;
-    groupList[groupList.length] = this;
+    Utils.entryGroups[formId] = this;
+    Utils.groupList.push(this);
     this.formId = formId;
     this.toggleImg = img;
     this.on = initialOn;
@@ -120,7 +114,7 @@ function EntryFormList(formId, img, selectId, initialOn) {
     }
 
     this.findEntryRow = function(rowId) {
-        var i;
+        let i;
         for (i = 0; i < this.entryRows.length; i++) {
             if (this.entryRows[i].rowId == rowId) {
                 return this.entryRows[i];
@@ -131,7 +125,7 @@ function EntryFormList(formId, img, selectId, initialOn) {
 
     this.checkboxClicked = function(event, cbxId) {
         if (!event) return;
-        var entryRow;
+        let entryRow;
         for (i = 0; i < this.entryRows.length; i++) {
             if (this.entryRows[i].cbxId == cbxId) {
                 entryRow = this.entryRows[i];
@@ -142,7 +136,7 @@ function EntryFormList(formId, img, selectId, initialOn) {
         if (!entryRow) return;
 
 
-        var value = entryRow.isSelected();
+        let value = entryRow.isSelected();
 
         if (event.ctrlKey) {
             for (i = 0; i < this.entryRows.length; i++) {
@@ -153,16 +147,16 @@ function EntryFormList(formId, img, selectId, initialOn) {
         if (event.shiftKey) {
 
             if (this.lastEntryRowClicked) {
-                var pos1 = this.lastEntryRowClicked.getCbx().offset().top;
-                var pos2 = entryRow.getCbx().offset().top;
+                let pos1 = this.lastEntryRowClicked.getCbx().offset().top;
+                let pos2 = entryRow.getCbx().offset().top;
                 if (pos1 > pos2) {
-                    var tmp = pos1;
+                    let tmp = pos1;
                     pos1 = pos2;
                     pos2 = tmp;
                 }
 
                 for (i = 0; i < this.entryRows.length; i++) {
-                    var top = this.entryRows[i].getCbx().offset().top;
+                    let top = this.entryRows[i].getCbx().offset().top;
                     if (top >= pos1 && top <= pos2) {
                         this.entryRows[i].setCheckbox(value);
                     }
@@ -182,7 +176,7 @@ function EntryFormList(formId, img, selectId, initialOn) {
             }
         }
 
-        var form = $("#"+this.formId);
+        let form = $("#"+this.formId);
         if(this.on) {
             form.find(':checkbox').show();
         }   else {
@@ -202,8 +196,10 @@ function EntryFormList(formId, img, selectId, initialOn) {
 
 
 
+
+
 function initEntryListForm(formId) {
-    let visibilityGroup = groups[formId];
+    let visibilityGroup = Utils.entryGroups[formId];
     if (visibilityGroup) {
         visibilityGroup.on = 0;
         visibilityGroup.setVisbility();
@@ -211,7 +207,8 @@ function initEntryListForm(formId) {
 }
 
 
-var globalEntryRows={};
+
+
 
 function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails,args) {
     if(!args) args = {
@@ -219,9 +216,9 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails,args) {
     } 
     this.args = args;
     args.entryId = entryId;
-    globalEntryRows[entryId] = this;
-    globalEntryRows[rowId] = this;
-    globalEntryRows[cbxId] = this;
+    Utils.globalEntryRows[entryId] = this;
+    Utils.globalEntryRows[rowId] = this;
+    Utils.globalEntryRows[cbxId] = this;
     this.entryId = entryId;
     this.showIcon = args.showIcon;
     this.onColor = "#FFFFCC";
@@ -238,9 +235,9 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails,args) {
         return $("#" + this.cbxId);
     }
 
-    var form = this.getCbx().closest('form');
+    let form = this.getCbx().closest('form');
     if (form.length) {
-        var visibilityGroup = groups[form.attr('id')];
+        let visibilityGroup = Utils.entryGroups[form.attr('id')];
         if (visibilityGroup) {
             visibilityGroup.addEntryRow(this);
         }
@@ -282,11 +279,11 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails,args) {
 
     this.mouseClick = function(event) {
         eventX = GuiUtils.getEventX(event);
-        var position = this.getRow().offset();
+        let position = this.getRow().offset();
         //Don't pick up clicks on the left side
         if (eventX - position.left < 150) return;
         this.lastClick = eventX;
-        var url = ramaddaBaseUrl + "/entry/show?entryid=" + entryId + "&output=metadataxml";
+        let url = ramaddaBaseUrl + "/entry/show?entryid=" + entryId + "&output=metadataxml";
         if (this.showDetails) {
             url += "&details=true";
         } else {
@@ -336,14 +333,18 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails,args) {
     }
 }
 
+
+
+
+
 function hideEntryPopup() {
     HtmlUtils.getTooltip().hide();
 }
 
 function findEntryRow(rowId) {
-    var idx;
-    for (idx = 0; idx < groupList.length; idx++) {
-        var entryRow = groupList[idx].findEntryRow(rowId);
+    let idx;
+    for (idx = 0; idx < Utils.groupList.length; idx++) {
+        let entryRow = Utils.groupList[idx].findEntryRow(rowId);
         if (entryRow) return entryRow;
     }
     return null;
@@ -351,32 +352,33 @@ function findEntryRow(rowId) {
 
 
 function entryRowOver(rowId) {
-    var entryRow = findEntryRow(rowId);
+    let entryRow = findEntryRow(rowId);
     if (entryRow) entryRow.mouseOver();
 }
 
 
 function entryRowOut(rowId) {
-    var entryRow = findEntryRow(rowId);
+    let entryRow = findEntryRow(rowId);
     if (entryRow) entryRow.mouseOut();
 }
 
 function entryRowClick(event, rowId) {
-    var entryRow = findEntryRow(rowId);
+    let entryRow = findEntryRow(rowId);
     if (entryRow) entryRow.mouseClick(event);
 }
 
 var lastCbxClicked;
 var lastCbxIdClicked;
 
+
 function checkboxClicked(event, cbxPrefix, id) {
     if (!event) return;
-    var cbx = GuiUtils.getDomObject(id);
+    let cbx = GuiUtils.getDomObject(id);
     if (!cbx) return;
     cbx = cbx.obj;
-    var checkBoxes = new Array();
+    let checkBoxes = new Array();
     if (!cbx.form) return;
-    var elements = cbx.form.elements;
+    let elements = cbx.form.elements;
     for (i = 0; i < elements.length; i++) {
         if (elements[i].name.indexOf(cbxPrefix) >= 0 || elements[i].id.indexOf(cbxPrefix) >= 0) {
             checkBoxes.push(elements[i]);
@@ -384,7 +386,7 @@ function checkboxClicked(event, cbxPrefix, id) {
     }
 
 
-    var value = cbx.checked;
+    let value = cbx.checked;
     if (event.ctrlKey) {
         for (i = 0; i < checkBoxes.length; i++) {
             checkBoxes[i].checked = value;
@@ -394,11 +396,11 @@ function checkboxClicked(event, cbxPrefix, id) {
 
     if (event.shiftKey) {
         if (lastCbxClicked) {
-            var pos1 = GuiUtils.getTop(cbx);
-            var pos2 = GuiUtils.getTop(lastCbxClicked);
+            let pos1 = GuiUtils.getTop(cbx);
+            let pos2 = GuiUtils.getTop(lastCbxClicked);
 
-            var lastCbx = $("#" + lastCbxIdClicked);
-            var thisCbx = $("#" + id);
+            let lastCbx = $("#" + lastCbxIdClicked);
+            let thisCbx = $("#" + id);
 
             if (lastCbx.position()) {
                 pos2 = lastCbx.position().top;
@@ -408,12 +410,12 @@ function checkboxClicked(event, cbxPrefix, id) {
             }
 
             if (pos1 > pos2) {
-                var tmp = pos1;
+                let tmp = pos1;
                 pos1 = pos2;
                 pos2 = tmp;
             }
             for (i = 0; i < checkBoxes.length; i++) {
-                var top = $("#" + checkBoxes[i].id).position().top;
+                let top = $("#" + checkBoxes[i].id).position().top;
                 if (top >= pos1 && top <= pos2) {
                     checkBoxes[i].checked = value;
                 }
@@ -446,8 +448,8 @@ function toggleBlockVisibility(id, imgid, showimg, hideimg) {
 
 
 function toggleInlineVisibility(id, imgid, showimg, hideimg) {
-    var img = GuiUtils.getDomObject(imgid);
-    var icon;
+    let img = GuiUtils.getDomObject(imgid);
+    let icon;
     if (toggleVisibility(id, 'inline')) {
         icon= showimg;
     } else {
@@ -463,17 +465,17 @@ function toggleInlineVisibility(id, imgid, showimg, hideimg) {
 
 
 
-var originalImages = new Array();
-var changeImages = new Array();
+let originalImages = new Array();
+let changeImages = new Array();
 
 function folderClick(uid, url, changeImg) {
     changeImages[uid] = changeImg;
-    var jqBlock = $("#" + uid);
+    let jqBlock = $("#" + uid);
     if (jqBlock.length == 0) {
         return;
     }
-    var jqImage = $("#img_" + uid);
-    var showing = jqBlock.css('display') != "none";
+    let jqImage = $("#img_" + uid);
+    let showing = jqBlock.css('display') != "none";
     if (!showing) {
         originalImages[uid] = jqImage.html();
         jqBlock.show();
@@ -491,11 +493,11 @@ function folderClick(uid, url, changeImg) {
 
 function handleFolderList(request, uid) {
     if (request.responseXML != null) {
-        var xmlDoc = request.responseXML.documentElement;
-        var script;
-        var html;
+        let xmlDoc = request.responseXML.documentElement;
+        let script;
+        let html;
         for (i = 0; i < xmlDoc.childNodes.length; i++) {
-            var childNode = xmlDoc.childNodes[i];
+            let childNode = xmlDoc.childNodes[i];
             if (childNode.tagName == "javascript") {
                 script = getChildText(childNode);
             } else if (childNode.tagName == "content") {
@@ -522,7 +524,7 @@ function handleFolderList(request, uid) {
 }
 
 
-var selectors = new Array();
+let selectors = new Array();
 
 function Selector(event, selectorId, elementId, allEntries, selecttype, localeId, entryType) {
     this.id = selectorId;
@@ -534,12 +536,12 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
     this.textComp = GuiUtils.getDomObject(this.elementId);
 
     this.getTextComponent = function() {
-        var id = "#" + this.elementId;
+        let id = "#" + this.elementId;
         return $(id);
     }
 
     this.getHiddenComponent = function() {
-        var id = "#" + this.elementId + "_hidden";
+        let id = "#" + this.elementId + "_hidden";
         return $(id);
     }
 
@@ -550,12 +552,12 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
 
 
     this.handleClick = function(event) {
-        var srcId = this.id + '_selectlink';
+        let srcId = this.id + '_selectlink';
         HtmlUtils.hidePopupObject(event);
         this.div = GuiUtils.getDomObject('ramadda-selectdiv');
-        var selectDiv = $("#ramadda-selectdiv");
+        let selectDiv = $("#ramadda-selectdiv");
         selectDiv.show();
-        var src = $("#" + srcId);
+        let src = $("#" + srcId);
         selectDiv.position({
             of: src,
             my: "left top",
@@ -577,7 +579,7 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
 
 function selectClick(id, entryId, value) {
     selector = selectors[id];
-    var handler = getHandler(id);
+    let handler = getHandler(id);
     if(!handler) handler = getHandler(selector.elementId);
     if (handler) {
         handler.selectClick(selector.selecttype, id, entryId, value);
@@ -638,8 +640,8 @@ function clearSelect(id) {
     } else {
         //        console.log("No selector");
         //In case the user never clicked select
-        var textComp = GuiUtils.getDomObject(id);
-        var hiddenComp = GuiUtils.getDomObject(id + "_hidden");
+        let textComp = GuiUtils.getDomObject(id);
+        let hiddenComp = GuiUtils.getDomObject(id + "_hidden");
         if (hiddenComp) {
             hiddenComp.obj.value = ""
         }
@@ -652,14 +654,14 @@ function clearSelect(id) {
 
 function handleSelect(request, id) {
     selector = selectors[id];
-    var xmlDoc = request.responseXML.documentElement;
+    let xmlDoc = request.responseXML.documentElement;
     text = getChildText(xmlDoc);
-    var pinId = selector.div.id +"-pin";
-    var pin = HU.jsLink("",HtmlUtils.getIconImage(icon_pin), ["class","ramadda-popup-pin", "id",pinId]); 
-    var closeImage = HtmlUtils.getIconImage(icon_close, []);
-    var close = "<a href=\"javascript:selectCancel(true);\">" + closeImage+"</a>";
-    var header = HtmlUtils.div(["style","text-align:left;","class","ramadda-popup-header"],SPACE+close+SPACE+pin);
-    var popup = HtmlUtils.div(["id",id+"-popup"], header + text);
+    let pinId = selector.div.id +"-pin";
+    let pin = HU.jsLink("",HtmlUtils.getIconImage(icon_pin), ["class","ramadda-popup-pin", "id",pinId]); 
+    let closeImage = HtmlUtils.getIconImage(icon_close, []);
+    let close = "<a href=\"javascript:selectCancel(true);\">" + closeImage+"</a>";
+    let header = HtmlUtils.div(["style","text-align:left;","class","ramadda-popup-header"],SPACE+close+SPACE+pin);
+    let popup = HtmlUtils.div(["id",id+"-popup"], header + text);
     selector.div.obj.innerHTML = popup;
     $("#" + selector.div.id).draggable();
     $("#" + pinId).click(function() {
@@ -671,9 +673,9 @@ function handleSelect(request, id) {
 	    $(this).attr("data-pinned",true);
 	}
     });
-    var arr = selector.div.obj.getElementsByTagName('script')
+    let arr = selector.div.obj.getElementsByTagName('script')
     //Eval any embedded js
-    for (var n = 0; n < arr.length; n++) {
+    for (let n = 0; n < arr.length; n++) {
 	eval(arr[n].innerHTML);
     }
 
@@ -681,7 +683,7 @@ function handleSelect(request, id) {
 
 
 function getChildText(node) {
-    var text = '';
+    let text = '';
     for (childIdx = 0; childIdx < node.childNodes.length; childIdx++) {
         text = text + node.childNodes[childIdx].nodeValue;
     }
@@ -691,7 +693,7 @@ function getChildText(node) {
 
 
 function toggleVisibility(id, style) {
-    var display = $("#" + id).css('display');
+    let display = $("#" + id).css('display');
     $("#" + id).toggle();
     return display != 'block';
 }
@@ -703,8 +705,8 @@ function hide(id) {
 
 
 function showStickyPopup(event, srcId, popupId, alignLeft) {
-    var myalign = 'left top';
-    var atalign = 'left top';
+    let myalign = 'left top';
+    let atalign = 'left top';
     $("#" + popupId).show("slow");
     $("#" + popupId).position({
         of: jQuery("#" + srcId),
@@ -745,12 +747,12 @@ function toggleVisibilityOnObject(obj, display) {
 
 
 
-var EntryTree = {
+let EntryTree = {
     initSelectAll:function() {
 	$("#selectall").click(function(event) {
 	    let value = $(this).is(":checked");
 	    $(".ramadda-entry-select").each(function(){
-		let entryRow = globalEntryRows[$(this).attr("id")];
+		let entryRow = Utils.globalEntryRows[$(this).attr("id")];
 		if(entryRow) {
 		    entryRow.setCheckbox(value);
 		}
@@ -762,7 +764,7 @@ var EntryTree = {
 	if (!cbx) return;
 	cbx = cbx.obj;
 	if (!cbx.form) return;
-	let visibilityGroup = groups[cbx.form.id];
+	let visibilityGroup = Utils.entryGroups[cbx.form.id];
 	if (visibilityGroup) {
             visibilityGroup.checkboxClicked(event, cbxId);
 	}
