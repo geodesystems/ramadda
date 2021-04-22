@@ -338,12 +338,17 @@ public class IO {
                 if ((connection != null)
                         && (connection instanceof HttpURLConnection)) {
                     HttpURLConnection huc = (HttpURLConnection) connection;
-                    msg = "Response code: " + huc.getResponseCode() + " ";
-                    try {
-                        InputStream err = huc.getErrorStream();
-                        msg += " Message: "
-                               + new String(readBytes(err, 10000));
-                    } catch (Exception ignoreIt) {}
+		    int code = huc.getResponseCode();
+		    if(code==403)
+			msg = "Access forbidden";
+		    else {
+			msg = "Response code: " + code + " ";
+			try {
+			    InputStream err = huc.getErrorStream();
+			    String response = new String(readBytes(err, 10000));
+			    msg += " Message: " +response;
+			} catch (Exception ignoreIt) {}
+		    }
                 }
 
                 throw new IOException(msg);
