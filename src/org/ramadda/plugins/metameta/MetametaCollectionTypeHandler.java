@@ -85,9 +85,12 @@ public class MetametaCollectionTypeHandler extends MetametaGroupTypeHandler {
         }
 
         StringBuffer sb = new StringBuffer();
+        getPageHandler().entrySectionOpen(request, parent, sb,null);
+
         subGroups.addAll(entries);
         addListForm(request, parent, subGroups, sb);
 
+        getPageHandler().entrySectionClose(request, parent, sb);
         return getEntryManager().addEntryHeader(request, parent,
                 new Result("Metameta Collection", sb));
     }
