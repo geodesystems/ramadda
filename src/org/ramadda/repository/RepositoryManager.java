@@ -152,6 +152,10 @@ public class RepositoryManager implements RepositorySource, Constants,
     }
 
 
+    public String makeSnippet(String snippet) {
+	return "<snippet>" + snippet +"</snippet>";
+    }
+
     /**
      * _more_
      *
