@@ -22,7 +22,7 @@
      <column name="capabilities" label="Capabilities"  size="1024" rows="5" cansearch="true" />
 
      <wiki><![CDATA[
-:title Package: {{name}}
++section title="Package: {{name}}"
 <table width=100%>
 <tr valign=top>
 <td width=50%>
@@ -43,6 +43,8 @@
 
 {{tree message=""}}
 
+-section
+
 ]]></wiki>
 
    </type>
@@ -58,12 +60,11 @@
      <property name="form.date.show" value="false"/>
      <property name="form.area.show" value="false"/>
      <wiki><![CDATA[
-:title Service: {{name}}
-
++section title="Service: {{name}}"
 {{information}}
 
 {{tree message=""}}
-
+-section
 ]]></wiki>
 
 
@@ -135,16 +136,15 @@ showSearchSettings="false"
      <column name="unit" label="Canonical Unit"  type="enumerationplus"  cansearch="true" />
      <column name="aliases" label="Aliases"  size="2000" rows="5"  cansearch="true" />
      <wiki_inner><![CDATA[
-:title {{name}}
-
++section title={{name}}
 {{description}}
-
 <table class="formtable">
 {{field name="unit" row.label="Unit:"}}
 {{field name="aliases" row.label="Aliases:"}}
 </table>
 
 {{menu menus="feeds"}}
+-section
 ]]></wiki_inner>
    </type>
 
