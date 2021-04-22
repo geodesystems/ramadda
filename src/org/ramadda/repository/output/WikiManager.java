@@ -3606,7 +3606,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         String snippet = child.getSnippet();
         if (snippet != null) {
             if (wikify) {
-                snippet = wikifyEntry(request, child, snippet);
+                snippet = wikifyEntry(request, child, snippet,false);
             }
 
             return snippet;
@@ -3620,7 +3620,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
         child.setSnippet(snippet);
         if ((snippet != null) && wikify) {
-            snippet = wikifyEntry(request, child, snippet);
+            snippet = wikifyEntry(request, child, snippet,false);
         }
 
         return snippet;
@@ -6115,6 +6115,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                              ATTR_REQUEST,
                              myRequest, ATTR_ENTRY, entry })), entry);
 
+
         return wikifyEntry(request, entry, wikiUtil, wikiContent, wrapInDiv,
                            subGroups, subEntries, notTags, true);
     }
@@ -6162,8 +6163,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             content = HU.div(content, HU.cssClass("wikicontent")) + "\n";
         }
         if (includeJavascript) {
-            String js = wikiUtil.getJavascript();
-            if (js.length() > 0) {
+            String js = wikiUtil.getJavascript(true);
+            if (js!=null && js.length() > 0) {
                 StringBuilder sb = new StringBuilder();
                 sb.append(content);
                 sb.append(HU.script(js));
