@@ -431,13 +431,13 @@ function checkboxClicked(event, cbxPrefix, id) {
 
 function toggleBlockVisibility(id, imgid, showimg, hideimg) {
     if (toggleVisibility(id, 'block')) {
-        if(StringUtil.startsWith(showimg,"fa-")) {
+        if(HU.isFontAwesome(showimg)) {
             $("#" + imgid).html(HtmlUtils.getIconImage(showimg,[]));
         } else {
             $("#" + imgid).attr('src', showimg);
         }
     } else {
-        if(StringUtil.startsWith(showimg,"fa-")) {
+        if(HU.isFontAwesome(showimg)) {
             $("#" + imgid).html(HtmlUtils.getIconImage(hideimg,[]));
         } else {
             $("#" + imgid).attr('src', hideimg);
