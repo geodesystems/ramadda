@@ -2588,7 +2588,18 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static String labeledCheckbox(String name, String value,
                                          boolean checked, String attrs,
                                          String label) {
-        return checkbox(name, value, checked, attrs) + space(2) + label;
+	String id = null;
+	if(attrs==null) { attrs = "";}
+	for(String pattern: new String[]{"id *= *\"([^\"]+)\"","id *= *'([^']+)'"}) {
+	    id = StringUtil.findPattern(attrs,"(?i)"+pattern);
+	    if(id!=null) break;
+	}
+	if(id==null)  {
+	    id = getUniqueId("cbx");
+	    attrs+=" " + HtmlUtils.id(id);
+	}
+	
+        return checkbox(name, value, checked, attrs) + space(1) + tag("label", cssClass("ramadda-clickable") +attr("for",id),label);
     }
 
     /**
@@ -2623,13 +2634,15 @@ public class HtmlUtils implements HtmlUtilsConstants {
                                 boolean checked, String extra) {
         try {
             dangleOpen(sb, TAG_INPUT);
+	    sb.append(" ");
             if (extra.length() > 0) {
                 sb.append(extra);
             }
+
             attrs(sb, ATTR_TYPE, TYPE_CHECKBOX, ATTR_NAME, name, ATTR_VALUE,
                   value);
             if (checked) {
-                sb.append(" checked ");
+                sb.append(" checked='checked' ");
             }
             sb.append(">");
         } catch (IOException ioe) {
@@ -4619,7 +4632,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static String makeShowHideBlock(String label, String content,
                                            boolean visible) {
         return makeShowHideBlock(label, content, visible,
-                                 cssClass("toggleblocklabel"));
+                                 cssClass("toggleblocklabel ramadda-clickable"));
     }
 
     /**
@@ -4710,11 +4723,10 @@ public class HtmlUtils implements HtmlUtilsConstants {
         String        img = "";
         //        System.err.println ("show image:" + showImg);
         if ((showImg != null) && (showImg.length() > 0)) {
-            img = HtmlUtils.img(visible
+            img = span(HtmlUtils.img(visible
                                 ? hideImg
                                 : showImg, "",
-                                           " align=bottom  " + " id='" + id
-                                           + "img' ");
+				     " align=bottom"),HtmlUtils.id(id+ "img"));
         }
         String mouseEvent = HtmlUtils.onMouseClick("toggleBlockVisibility('"
                                 + id + "','" + id + "img','" + hideImg
@@ -5106,6 +5118,26 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+	System.err.println(labeledCheckbox("name","value", false,null,"label"));
+	System.err.println(labeledCheckbox("name","value", false,"","label"));
+	System.err.println(labeledCheckbox("name","value", false,"foo=bar","label"));
+	System.err.println(labeledCheckbox("name","value", false,"foo=bar","label"));
+	System.err.println(labeledCheckbox("name","value", false,"id='ID'","label"));
+	System.err.println(labeledCheckbox("name","value", false,"id  ='ID'","label"));
+	System.err.println(labeledCheckbox("name","value", false,"id  =   'ID'","label"));
+	System.err.println(labeledCheckbox("name","value", false,"id=   'ID'","label"));		
+	System.err.println(labeledCheckbox("name","value", false,"id=\"ID\"","label"));				
+	System.err.println(labeledCheckbox("name","value", false,"id=\"ID\"","label"));
+	System.err.println(labeledCheckbox("name","value", false,"id  =\"ID\"","label"));
+	System.err.println(labeledCheckbox("name","value", false,"id  =   \"ID\"","label"));
+	System.err.println(labeledCheckbox("name","value", false,"id=   \"ID\"","label"));		
+	System.err.println(labeledCheckbox("name","value", false,"id=\"ID\"","label"));				
+
+
+	if(true) return;
+
+
+
         debug1 = true;
         parseHtmlProperties("multi=2  \n   z= \"1\" template=\"x\ny\"");
 
