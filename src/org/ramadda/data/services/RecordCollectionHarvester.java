@@ -223,13 +223,13 @@ public abstract class RecordCollectionHarvester extends PatternHarvester {
      * @throws Exception on badness
      */
     @Override
-    public Entry harvestFile(HarvesterFile fileInfo, File f, Matcher matcher)
+    public Entry harvestFile(HarvesterFile fileInfo, File f, Matcher matcher,Hashtable<String,Entry> entriesMap)
             throws Exception {
         if (f.toString().endsWith(".properties")) {
             return null;
         }
 
-        return super.harvestFile(fileInfo, f, matcher);
+        return super.harvestFile(fileInfo, f, matcher,entriesMap);
     }
 
 
