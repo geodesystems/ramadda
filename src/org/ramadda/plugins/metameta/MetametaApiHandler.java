@@ -72,7 +72,7 @@ public class MetametaApiHandler extends RepositoryManager implements RequestHand
      */
     public Result processTypeList(Request request) throws Exception {
         CategoryBuffer cb = new CategoryBuffer();
-        for (TypeHandler typeHandler : getRepository().getTypeHandlers()) {
+        for (TypeHandler typeHandler : getRepository().getTypeHandlersForDisplay(false)) {
             if ( !typeHandler.getForUser()) {
                 continue;
             }
@@ -92,17 +92,16 @@ public class MetametaApiHandler extends RepositoryManager implements RequestHand
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append(HtmlUtils.sectionOpen("Metameta Listing"));
+        getPageHandler().sectionOpen(request,sb, "Metameta Listing",false);
         sb.append(
-            "Below are RAMADDA entry import files that allow you to view and modify the entry metadata<br>");
+            "Below are RAMADDA entry import files that allow you to view and modify the entry metadata.\n");
         sb.append(
             "Download the file or the URL and then do a File Import of the file. This will create a collection of entries based on the metadata of the selected entry type. You can then modify that metadata and regenerate an types.xml that defines a new entry type");
         sb.append("<hr>");
 
         getPageHandler().doTableLayout(request, sb, cb);
 
-        sb.append(HtmlUtils.sectionClose());
-
+	getPageHandler().sectionClose(request,sb);
         return new Result("Metameta", sb);
     }
 
