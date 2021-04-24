@@ -367,7 +367,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	Object mutex = new Object();
 	//Really 4
-	int numThreads = 3;
+	int numThreads = 1;
 	List<List> idLists;
 	if(numThreads==1) {
 	    idLists = new ArrayList<List>();
@@ -406,6 +406,17 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			    cnt[0]++;
 			    System.err.println("#" + cnt[0] +" entry:" + entry.getName());
 			}
+			/****
+			  if(entry.getParentEntry()==null && !entry.getId().equals("ff29d75c-8baf-4b17-b121-6c0e10eb9c60")) {
+			  System.out.println("#" + cnt[0]+" delete:" + entry.getName() +" " + entry.getId());
+			  getEntryManager().deleteEntry(getRepository().getTmpRequest(), entry);
+			  } else {
+			  System.out.println("#" + cnt[0]+" entry:" + entry.getName() +" " + entry.getId());
+			  }			
+			  if(true) continue;
+			  }**/
+					       
+
 			indexEntry(writer, entry);
 			getEntryManager().removeFromCache(entry);
 			if(!ok[0]) break;
@@ -591,7 +602,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         for (Metadata metadata : getMetadataManager().getMetadata(entry)) {
 	    MetadataType type = getMetadataManager().getType(metadata);
 	    if(type==null) {
-		System.err.println("Null type:" + entry.getName() +"  "+ metadata);
+		//		System.err.println("Null type:" + entry.getName() +"  "+ metadata);
 		continue;
 	    }
 	    if(type.getSearchable()) {
