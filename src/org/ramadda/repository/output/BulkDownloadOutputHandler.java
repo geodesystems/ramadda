@@ -247,7 +247,7 @@ public class BulkDownloadOutputHandler extends OutputHandler {
             new ArrayList<List<String>>();
         boolean            includeGroupOutputs = false;
         for (String pair :
-                Utils.split(request.getString(ARG_OUTPUTS, ""), ",",
+                Utils.split(request.getString(ARG_OUTPUTS, "xml.xmlentry"), ",",
                                  true, true)) {
             outputPairs.add(Utils.splitUpTo(pair, ":", 2));
             String outputId = outputPairs.get(outputPairs.size()
@@ -258,16 +258,16 @@ public class BulkDownloadOutputHandler extends OutputHandler {
         }
 
         CurlCommand command = new CurlCommand(request, wget);
-        command.init(sb);
+        command.init(request, sb);
 
-        if (request.get(ARG_INCLUDEPARENT, false)) {
+        if (request.get(ARG_INCLUDEPARENT, true)) {
             writeGroupScript(request, group, sb, command, outputPairs,
                              includeGroupOutputs, wget);
         }
 
         process(request, sb, group, entries, recurse, overwrite, command,
                 outputPairs, includeGroupOutputs, seen, wget);
-        if (request.get(ARG_INCLUDEPARENT, false)) {
+        if (request.get(ARG_INCLUDEPARENT, true)) {
             sb.append(cmd("cd .."));
         }
     }
@@ -347,34 +347,21 @@ public class BulkDownloadOutputHandler extends OutputHandler {
                     destFile = "v" + (cnt++) + "_" + tail;
                 }
                 seenFiles.add(destFile);
-                String path = request.getAbsoluteUrl(
-                                  getEntryManager().getEntryResourceUrl(
-                                      request, entry));
+                String path = "${ROOT}" + getEntryManager().getEntryResourceUrl(request, entry,false);
 
                 path = HtmlUtils.urlEncodeSpace(path);
-                String tmpFile = destFile + ".tmp";
                 if ( !overwrite) {
                     sb.append("if ! test -e " + qt(destFile) + " ; then \n");
                 }
 
                 long size = entry.getResource().getFileSize();
 
-                sb.append(cmd("echo "
-                              + qt("downloading " + destFile + " ("
-                                   + formatFileLength(size) + ")")));
-
-                sb.append(cmd("touch " + qt(tmpFile)));
-
-                command.append(sb, tmpFile, path);
-                sb.append("if [[ $? != 0 ]] ; then\n");
-                sb.append(cmd("echo" + " "
-                              + qt("file download failed for " + destFile)));
-                sb.append("exit $?\n");
-                sb.append("fi\n");
-                sb.append(cmd("mv " + qt(tmpFile) + " " + qt(destFile)));
+		String msg = "downloading " + destFile + " ("
+		    + formatFileLength(size) + ")";
+                command.download(sb, msg, destFile, path);
                 if ( !overwrite) {
                     sb.append("else\n");
-                    sb.append(cmd("echo "
+                    sb.append(cmd("\techo "
                                   + qt("File " + destFile
                                        + " already exists")));
                     sb.append("fi\n");
@@ -387,11 +374,11 @@ public class BulkDownloadOutputHandler extends OutputHandler {
                 if (pair.size() > 1) {
                     suffix = pair.get(1);
                 }
-                String extraUrl = HtmlUtils.url(
-                                      getEntryManager().getFullEntryShowUrl(
-                                          request), ARG_ENTRYID,
-                                              entry.getId(), ARG_OUTPUT,
-                                              output);
+		String  entryShowUrl =
+		    request.makeUrl(getRepository().URL_ENTRY_SHOW);
+                String extraUrl = "${ROOT}" + HtmlUtils.url(entryShowUrl, ARG_ENTRYID,
+							    entry.getId(), ARG_OUTPUT,
+							    output);
                 String destOutputFile = destFile + "." + suffix;
 
                 if (output.equals(XmlOutputHandler.OUTPUT_XMLENTRY.getId())) {
@@ -401,10 +388,7 @@ public class BulkDownloadOutputHandler extends OutputHandler {
                     destOutputFile = "." + destFile + ".ramadda.xml";
                     appendDownloadMetadata(request, entry, sb, command);
                 }
-
-
-                sb.append(cmd("echo " + qt("downloading " + destOutputFile)));
-                command.append(sb, destOutputFile, extraUrl);
+                command.download(sb, "downloading " + destOutputFile, destOutputFile, extraUrl);
             }
 
 
@@ -434,15 +418,14 @@ public class BulkDownloadOutputHandler extends OutputHandler {
         if (dirName.length() == 0) {
             dirName = entry.getId();
         }
-        sb.append("if ! test -e " + qt(dirName) + " ; then \n");
-        sb.append(cmd("mkdir " + qt(dirName)));
-        sb.append("fi\n");
+        sb.append(mkdir(dirName));
+	sb.append(line());
         sb.append(cmd("cd " + qt(dirName)));
         if (includeGroupOutputs) {
             //Make a .placeholder file so we force the harvest of the directory
-            if ( !wget) {
-                sb.append(cmd("touch " + qt(Harvester.FILE_PLACEHOLDER)));
-            }
+	    //            if ( !wget) {
+	    sb.append(cmd("touch " + qt(Harvester.FILE_PLACEHOLDER)));
+		//            }
             for (List<String> pair : outputPairs) {
                 String output = pair.get(0);
                 String suffix = output;
@@ -450,11 +433,11 @@ public class BulkDownloadOutputHandler extends OutputHandler {
                     suffix = pair.get(1);
                 }
                 String destFile = "." + dirName;
-                String extraUrl = HtmlUtils.url(
-                                      getEntryManager().getFullEntryShowUrl(
-                                          request), ARG_ENTRYID,
-                                              entry.getId(), ARG_OUTPUT,
-                                              output);
+		String  entryShowUrl =
+		    request.makeUrl(getRepository().URL_ENTRY_SHOW);
+                String extraUrl = "${ROOT}" + HtmlUtils.url(entryShowUrl, ARG_ENTRYID,
+							    entry.getId(), ARG_OUTPUT,
+							    output);
                 String destOutputFile = destFile + "." + suffix;
 
                 String message        = "downloading " + destOutputFile;
@@ -463,8 +446,7 @@ public class BulkDownloadOutputHandler extends OutputHandler {
                     appendDownloadMetadata(request, entry, sb, command);
                     message = "downloading metadata for " + dirName;
                 }
-                sb.append(cmd("echo " + qt(message)));
-                command.append(sb, destOutputFile, extraUrl);
+                command.download(sb, message, destOutputFile, extraUrl);
             }
         }
     }
@@ -485,8 +467,8 @@ public class BulkDownloadOutputHandler extends OutputHandler {
             throws Exception {
         for (String[] pair :
                 getMetadataManager().getFilelUrls(request, entry)) {
-            command.append(sb, "." + pair[0],
-                           request.getAbsoluteUrl(pair[1]));
+            command.download(sb, "downloading metadata " + pair[0], "." + pair[0],
+                           "${ROOT}" +pair[1]);
         }
     }
 
@@ -501,6 +483,14 @@ public class BulkDownloadOutputHandler extends OutputHandler {
         return s + ";\n";
     }
 
+    private static String comment(String s) {
+        return "#" + s +"\n";
+    }    
+
+    private static String line() {
+        return comment("--------------------------------------------------------------------");
+    }    
+    
     /**
      * _more_
      *
@@ -511,6 +501,11 @@ public class BulkDownloadOutputHandler extends OutputHandler {
     private static String qt(String s) {
         return "\"" + s + "\"";
     }
+
+    private static String mkdir(String dir) {
+	return cmd("makedir " + qt(dir));
+    }
+	   
 
     /**
      * Get the MIME type for this output handler
@@ -552,13 +547,14 @@ public class BulkDownloadOutputHandler extends OutputHandler {
                     ? COMMAND_WGET
                     : COMMAND_CURL);
             args      = command.equals(COMMAND_WGET)
-                        ? ""
+                        ? " -q "
                         : " --progress-bar -k ";
-            outputArg = command.equals(COMMAND_WGET)
-                        ? "-O"
+	    outputArg = command.equals(COMMAND_WGET)
+                        ? " -O "
                         : command.equals(COMMAND_CURL)
                           ? "-o "
                           : "";
+	    if(command.equals(COMMAND_WGET)) command = "\"" + command  + "  --no-check-certificate \"";
         }
 
         /**
@@ -566,8 +562,18 @@ public class BulkDownloadOutputHandler extends OutputHandler {
          *
          * @param sb _more_
          */
-        public void init(StringBuilder sb) {
+        public void init(Request request, StringBuilder sb) {
             sb.append(cmd("export DOWNLOAD_COMMAND=" + command));
+            sb.append(cmd("export ROOT=\"" + request.getAbsoluteUrl("")+"\""));
+	    sb.append("makedir() {\nif ! test -e $1 ; then\n\tmkdir $1;\nfi\n}\n");
+	    String test = "if [[ $? != 0 ]] ; then\n\techo \"download failed url:$3\"\n\texit $?\nfi\n";
+	    sb.append("download() {\necho \"$1\";\n");
+	    sb.append("touch \"$2.tmp\"\n");
+	    sb.append("${DOWNLOAD_COMMAND} " + args + " " + outputArg + " \"$2.tmp\" \"$3\" \n");
+	    sb.append(test);
+	    sb.append("mv \"$2.tmp\" \"$2\" \n");
+
+	    sb.append("}\n");
         }
 
         /**
@@ -577,9 +583,8 @@ public class BulkDownloadOutputHandler extends OutputHandler {
          * @param filename _more_
          * @param url _more_
          */
-        public void append(StringBuilder sb, String filename, String url) {
-            sb.append(cmd("${DOWNLOAD_COMMAND} " + args + " " + outputArg
-                          + " " + qt(filename) + " " + qt(url)));
+        public void download(StringBuilder sb, String msg, String filename, String url) {
+            sb.append(cmd("download "+ qt(msg) +" " + qt(filename) + " " + qt(url)));
         }
 
 
