@@ -520,7 +520,7 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
                                    TypeHandler.TYPE_GROUP)
                                : getRepository().getTypeHandler(
                                    TypeHandler.TYPE_FILE));
-        Entry templateEntry = getEntryManager().getTemplateEntry(targetFile);
+        Entry templateEntry = getEntryManager().getTemplateEntry(targetFile,null);
         Entry entry         = null;
 
 
