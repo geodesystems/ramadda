@@ -522,7 +522,9 @@ public class PointFormHandler extends RecordFormHandler {
                 request, entry, sb);
         }
 
-        addSelectForm(request, entry, sb, false, recordEntry, "");
+        addSubsetForm(request, entry, sb, false, recordEntry, "");	
+        addGriddingForm(request, entry, sb, recordEntry);
+        addSelectForm(request, entry, sb, false, recordEntry);
         addSettingsForm(request, entry, sb, recordEntry);
 
     }
@@ -549,7 +551,9 @@ public class PointFormHandler extends RecordFormHandler {
             ((RecordTypeHandler) group.getTypeHandler()).addToProcessingForm(
                 request, group, sb);
         }
-        addSelectForm(request, group, sb, true, recordEntries.get(0), extra);
+        addSelectForm(request, group, sb, true, recordEntries.get(0));
+        addGriddingForm(request, group, sb, recordEntries.get(0));
+        addSubsetForm(request, group, sb, true, recordEntries.get(0), extra);
         addSettingsForm(request, group, sb, recordEntries.get(0));
     }
 
@@ -566,39 +570,38 @@ public class PointFormHandler extends RecordFormHandler {
      *
      * @throws Exception On badness
      */
-    public void addSettingsForm(Request request, Entry entry, Appendable sb,
+    public void addGriddingForm(Request request, Entry entry, Appendable sb,
                                 RecordEntry recordEntry)
             throws Exception {
 
+	//        if (!recordEntry.isCapable(PointFile.ACTION_GRID))  return;
         boolean      showUrl = request.get(ARG_SHOWURL, false);
-        StringBuffer extra   = new StringBuffer();
-        extra.append(HtmlUtils.formTable());
+	StringBuilder gridding = new StringBuilder();
+        gridding.append(HtmlUtils.formTable());
 
-        String paramWidget = null;
         List   params      = new ArrayList();
         //TODO: we need a better way to say this is a elevation point cloud
         //        if(pointEntry.isCapable(PointFile.ACTION_ELEVATION)) {
+        params.add(new TwoFacedObject(msg(LABEL_ALTITUDE), "_altitude_"));
         params.add(new TwoFacedObject("Point Count", "_pointcount_"));
-        params.add(new TwoFacedObject(msg(LABEL_ALTITUDE), ""));
         //        }
         if (recordEntry != null) {
             for (RecordField field :
                     recordEntry.getRecordFile().getChartableFields()) {
                 params.add(new TwoFacedObject(field.getLabel(),
-                        "" + field.getParamId()));
+					      "" + field.getParamId()));
             }
         }
 
+
         if (params.size() > 1) {
-            extra.append(
+	    String selectedParam = request.getString(RecordOutputHandler.ARG_PARAMETER,  "_altitude_");
+            gridding.append(
                 HtmlUtils.formEntry(
                     msgLabel("Parameter to grid"),
                     HtmlUtils.select(
-                        RecordOutputHandler.ARG_PARAMETER, params,
-                        request.getString(
-                            RecordOutputHandler.ARG_PARAMETER,
-                            (String) null))));
-            extra.append(
+				     RecordOutputHandler.ARG_PARAMETER, params,selectedParam)));
+            gridding.append(
                 HtmlUtils.formEntry(
                     msgLabel("Divisor"),
                     HtmlUtils.select(
@@ -611,7 +614,7 @@ public class PointFormHandler extends RecordFormHandler {
 
 
 
-        extra.append(
+        gridding.append(
             HtmlUtils.formEntry(
                 msgLabel("Minimum # of Points"),
                 HtmlUtils.input(
@@ -620,7 +623,7 @@ public class PointFormHandler extends RecordFormHandler {
                         RecordConstants.ARG_GRID_MINPOINTS, "1"), 5)));
 
         /*
-        extra.append(
+        gridding.append(
             HtmlUtils.formEntry(
                 msgLabel("Fill missing"),
                 HtmlUtils.checkbox(
@@ -628,7 +631,7 @@ public class PointFormHandler extends RecordFormHandler {
                     request.get(PointOutputHandler.ARG_FILLMISSING, false))));
         */
 
-        extra.append(
+        gridding.append(
             HtmlUtils.formEntry(
                 msgLabel("Threshold"),
                 HtmlUtils.input(
@@ -646,7 +649,7 @@ public class PointFormHandler extends RecordFormHandler {
         }
 
         String initialCells = request.getString(ARG_GRID_RADIUS_CELLS, "5");
-        extra.append(
+        gridding.append(
             HtmlUtils.formEntry(
                 msgLabel("IDW Grid Radius"),
                 msgLabel("Grid cells")
@@ -655,7 +658,7 @@ public class PointFormHandler extends RecordFormHandler {
                 + HtmlUtils.input(
                     ARG_GRID_RADIUS_DEGREES, initialDegrees, 12)));
 
-        extra.append(
+        gridding.append(
             HtmlUtils.formEntry(
                 msgLabel("IDW Power"),
                 HtmlUtils.input(
@@ -667,7 +670,7 @@ public class PointFormHandler extends RecordFormHandler {
                            "More Information")));
 
 
-        extra.append(
+        gridding.append(
             HtmlUtils.formEntry(
                 msgLabel("Hill shading"),
                 msgLabel("Azimuth")
@@ -681,7 +684,7 @@ public class PointFormHandler extends RecordFormHandler {
 
 
 
-        extra.append(
+        gridding.append(
             HtmlUtils.formEntry(
                 msgLabel("Image Dimensions"),
                 HtmlUtils.input(
@@ -693,14 +696,14 @@ public class PointFormHandler extends RecordFormHandler {
                            5)));
 
 
-        extra.append(
+        gridding.append(
             HtmlUtils.formEntry(
                 msgLabel("Color Table"),
                 HtmlUtils.select(
                     ARG_COLORTABLE, ColorTable.getColorTableNames(),
                     request.getString(ARG_COLORTABLE, (String) null))));
 
-        extra.append(
+        gridding.append(
             HtmlUtils.formEntry(
                 msgLabel("Color Range"),
                 HtmlUtils.input(
@@ -712,22 +715,23 @@ public class PointFormHandler extends RecordFormHandler {
                                 request.getString(
                                     RecordConstants.ARG_GRID_RANGE_MAX,
                                     ""), 5)));
-        extra.append(HtmlUtils.formTableClose());
+        gridding.append(HtmlUtils.formTableClose());
+	sb.append(HtmlUtils.makeShowHideBlock("Gridding",    gridding.toString(), showUrl));
+    }
 
 
 
+    public void addSettingsForm(Request request, Entry entry, Appendable sb,
+                                RecordEntry recordEntry)
+            throws Exception {
 
-        StringBuffer points = new StringBuffer();
-        points.append(HtmlUtils.formTable());
-        points.append(
-            HtmlUtils.formEntry(
-                "",
-                HtmlUtils.checkbox(ARG_GEOREFERENCE, "true", false) + " "
-                + msg("Convert coordinates to lat/lon if needed")));
+        boolean      showUrl = request.get(ARG_SHOWURL, false);
 
 
-        points.append(HtmlUtils.formTableClose());
-        StringBuffer processSB = new StringBuffer();
+
+        String paramWidget = null;
+
+        StringBuilder processSB = new StringBuilder();
         processSB.append(HtmlUtils.formTable());
         processSB.append(HtmlUtils.formEntry("",
                                              HtmlUtils.checkbox(ARG_ASYNCH,
@@ -757,50 +761,31 @@ public class PointFormHandler extends RecordFormHandler {
             request, entry, processSB,
             msg("Select a folder to publish the product to"));
 
-        processSB.append(HtmlUtils.formTableClose());
 
-
-        StringBuilder advancedSB = new StringBuilder();
-        if (recordEntry.isCapable(PointFile.ACTION_GRID)) {
-            advancedSB.append(HtmlUtils.makeShowHideBlock(msg("Gridding"),
-                    extra.toString(), showUrl));
-        }
-        /*
-        advancedSB.append(HtmlUtils.makeShowHideBlock(msg("Points"),
-                points.toString(), false));
-        */
-        advancedSB.append(HtmlUtils.makeShowHideBlock(msg("Processing"),
-                processSB.toString(), false));
-
-
-        StringBuilder jobSB = new StringBuilder();
-        jobSB.append(HtmlUtils.formTable());
         User user = request.getUser();
         if (getMailManager().isEmailEnabled()) {
-            jobSB.append(HtmlUtils.formEntry(msgLabel("Send email to"),
+            processSB.append(HtmlUtils.formEntry(msgLabel("Send email to"),
                                              HtmlUtils.input(ARG_JOB_EMAIL,
                                                  user.getEmail(), 40)));
         }
-        jobSB.append(HtmlUtils.formEntry(msgLabel("Your name"),
+        processSB.append(HtmlUtils.formEntry(msgLabel("Your name"),
                                          HtmlUtils.input(ARG_JOB_USER,
                                              user.getName(), 40)));
 
-        jobSB.append(HtmlUtils.formEntry(msgLabel("Job name"),
+        processSB.append(HtmlUtils.formEntry(msgLabel("Job name"),
                                          HtmlUtils.input(ARG_JOB_NAME, "",
                                              40)));
 
-        jobSB.append(
+        processSB.append(
             HtmlUtils.formEntryTop(
                 msgLabel("Description"),
                 HtmlUtils.textArea(ARG_JOB_DESCRIPTION, "", 5, 40)));
 
-        jobSB.append(HtmlUtils.formTableClose());
+        processSB.append(HtmlUtils.formTableClose());
 
-        formGroup(request, sb, "Advanced Settings", advancedSB.toString());
-        formGroup(request, sb, "Job Information",
-                  HtmlUtils.makeShowHideBlock("", jobSB.toString(), false));
+	sb.append(HtmlUtils.makeShowHideBlock("Processing", processSB.toString(), false));
     }
-
+    
 
     /**
      * _more_
@@ -832,7 +817,7 @@ public class PointFormHandler extends RecordFormHandler {
      *
      * @throws Exception On badness
      */
-    public void addSelectForm(Request request, Entry entry, Appendable sb,
+    public void addSubsetForm(Request request, Entry entry, Appendable sb,
                               boolean forGroup, RecordEntry recordEntry,
                               String extraSubset)
             throws Exception {
@@ -841,93 +826,6 @@ public class PointFormHandler extends RecordFormHandler {
                           ? 0
                           : recordEntry.getNumRecords();
 
-        List<HtmlUtils.Selector> pointFormats =
-            new ArrayList<HtmlUtils.Selector>();
-        List<HtmlUtils.Selector> gridFormats =
-            new ArrayList<HtmlUtils.Selector>();
-
-        //Do this so we get the LidarOutputHandler in case of a lidar entry
-        ((PointEntry) recordEntry).getPointOutputHandler().getPointFormats(
-            pointFormats, forGroup);
-        getGridFormats(gridFormats, forGroup);
-        List<List<HtmlUtils.Selector>> formatLists =
-            new ArrayList<List<HtmlUtils.Selector>>();
-        formatLists.add(pointFormats);
-        formatLists.add(gridFormats);
-
-        StringBuffer productSB = new StringBuffer();
-        productSB.append(HtmlUtils.formTable());
-        HashSet<String> selectedFormat = getFormats(request);
-        StringBuffer formats =
-            new StringBuffer(
-                "<table border=0 cellpadding=4 cellspacing=0><tr valign=top>");
-
-        int          cnt = 0;
-        StringBuffer formatCol;
-        StringBuffer gridsCol = new StringBuffer();
-        gridsCol.append(HtmlUtils.b(msg("Select Grids")));
-        gridsCol.append(HtmlUtils.p());
-        for (int i = 0; i < GRID_ARGS.length; i++) {
-            String helpImg =
-                HtmlUtils.img(getRepository().getIconUrl(ICON_HELP),
-                              GRID_HELP[i]);
-            gridsCol.append(helpImg);
-            gridsCol.append(HtmlUtils.checkbox(GRID_ARGS[i], "true",
-                    request.get(GRID_ARGS[i], false)));
-            gridsCol.append(msg(GRID_LABELS[i]));
-            gridsCol.append(HtmlUtils.p());
-        }
-
-
-
-        for (int i = 0; i < formatLists.size(); i++) {
-            List<HtmlUtils.Selector> formatList = formatLists.get(i);
-            formatCol = new StringBuffer();
-            if (i == 0) {
-                formatCol.append(HtmlUtils.b(msg("Point Products")));
-            } else {
-                if ( !recordEntry.isCapable(PointFile.ACTION_GRID)) {
-                    continue;
-                }
-                formats.append(HtmlUtils.col(HtmlUtils.space(5)));
-                formats.append(
-                    HtmlUtils.col(
-                        HtmlUtils.img(
-                            getRepository().getFileUrl(
-                                "/icons/blank.gif")), HtmlUtils.style(
-                                    "border-left:1px #000000 solid")));
-                formats.append(HtmlUtils.col(HtmlUtils.space(4)));
-                formats.append(HtmlUtils.col(gridsCol.toString()));
-                String middle =
-                    "<br><br><br>&nbsp;&nbsp;&nbsp;to make&nbsp;&nbsp;&nbsp;<br>"
-                    + HtmlUtils.img(
-                        getRepository().getFileUrl("/point/rightarrow.jpg"));
-                formats.append(
-                    HtmlUtils.col(
-                        middle,
-                        HtmlUtils.attr(HtmlUtils.ATTR_ALIGN, "center")));
-                formatCol.append(HtmlUtils.b(msg("Select Products")));
-            }
-            formatCol.append(HtmlUtils.p());
-
-            for (HtmlUtils.Selector selector : formatList) {
-                formatCol.append(HtmlUtils.checkbox(ARG_PRODUCT,
-                        selector.getId(),
-                        selectedFormat.contains(selector.getId())));
-                formatCol.append(" ");
-                if (selector.getIcon() != null) {
-                    formatCol.append(HtmlUtils.img(selector.getIcon()));
-                    formatCol.append(" ");
-                }
-                formatCol.append(selector.getLabel());
-                formatCol.append(HtmlUtils.p());
-            }
-            formats.append(HtmlUtils.col(formatCol.toString()));
-        }
-        formats.append("</tr></table>");
-        productSB.append(HtmlUtils.row(HtmlUtils.colspan(formats.toString(),
-                2)));
-        productSB.append(HtmlUtils.formTableClose());
 
         StringBuffer subsetSB = new StringBuffer();
         subsetSB.append(HtmlUtils.formTable());
@@ -1054,10 +952,9 @@ public class PointFormHandler extends RecordFormHandler {
                 paramSB.append(
                     HtmlUtils.formEntry(
                         "",
-                        HtmlUtils.checkbox(
+                        HtmlUtils.labeledCheckbox(
                             ARG_FIELD_USE, attr.getName(),
-                            selected.contains(attr.getName())) + " "
-                                + label));
+                            selected.contains(attr.getName()), label)));
             }
             if (paramSB != null) {
                 paramSB.append(HtmlUtils.formTableClose());
@@ -1161,16 +1058,132 @@ public class PointFormHandler extends RecordFormHandler {
         }
         subsetSB.append(extraSubset);
         subsetSB.append(HtmlUtils.formTableClose());
+        sb.append(HtmlUtils.makeShowHideBlock("Subset Data", subsetSB.toString(), false));
 
+    }
+
+    /**
+     * add to form
+     *
+     * @param request request
+     * @param entry _more_
+     * @param sb buffer
+     * @param forGroup for group
+     * @param recordEntry the entry
+     *
+     * @throws Exception On badness
+     */
+    public void addSelectForm(Request request, Entry entry, Appendable sb,
+                              boolean forGroup, RecordEntry recordEntry)
+            throws Exception {
+
+        long numRecords = forGroup
+                          ? 0
+                          : recordEntry.getNumRecords();
+
+        List<HtmlUtils.Selector> pointFormats =
+            new ArrayList<HtmlUtils.Selector>();
+        List<HtmlUtils.Selector> gridFormats =
+            new ArrayList<HtmlUtils.Selector>();
+
+        //Do this so we get the LidarOutputHandler in case of a lidar entry
+        ((PointEntry) recordEntry).getPointOutputHandler().getPointFormats(
+            pointFormats, forGroup);
+        getGridFormats(gridFormats, forGroup);
+        List<List<HtmlUtils.Selector>> formatLists =
+            new ArrayList<List<HtmlUtils.Selector>>();
+        formatLists.add(pointFormats);
+        formatLists.add(gridFormats);
+
+        StringBuffer productSB = new StringBuffer();
+        productSB.append(HtmlUtils.formTable());
+        HashSet<String> selectedFormat = getFormats(request);
+        StringBuffer formats =
+            new StringBuffer(
+                "<table border=0 cellpadding=4 cellspacing=0><tr valign=top>");
+
+        int          cnt = 0;
+        StringBuffer formatCol;
+        StringBuffer gridsCol = new StringBuffer();
+        gridsCol.append(HtmlUtils.b(msg("Select Grids")));
+        gridsCol.append(HtmlUtils.p());
+	boolean anySelected = false;
+        for (String arg: GRID_ARGS) {
+	    if(request.get(arg, false)) anySelected = true;
+	}
+	for (HtmlUtils.Selector selector : pointFormats) {
+	    if(selectedFormat.contains(selector.getId())) anySelected = true;
+
+	}
+
+        for (int i = 0; i < GRID_ARGS.length; i++) {
+            String helpImg =
+                HtmlUtils.img(getRepository().getIconUrl(ICON_HELP),
+                              GRID_HELP[i]);
+            gridsCol.append(helpImg);
+	    gridsCol.append(" ");
+	    boolean on = request.get(GRID_ARGS[i], false);
+	    if(!anySelected && GRID_ARGS[i].equals(ARG_GRID_IDW)) {
+		on = true;
+	    }
+            gridsCol.append(HtmlUtils.labeledCheckbox(GRID_ARGS[i], "true",   on,GRID_LABELS[i]));
+            gridsCol.append(HtmlUtils.p());
+        }
+
+
+
+        for (int i = 0; i < formatLists.size(); i++) {
+            List<HtmlUtils.Selector> formatList = formatLists.get(i);
+            formatCol = new StringBuffer();
+            if (i == 0) {
+                formatCol.append(HtmlUtils.b(msg("Point Products")));
+            } else {
+                if ( !recordEntry.isCapable(PointFile.ACTION_GRID)) {
+                    continue;
+                }
+                formats.append(HtmlUtils.col(HtmlUtils.space(5)));
+                formats.append(
+                    HtmlUtils.col(
+                        HtmlUtils.img(
+                            getRepository().getFileUrl(
+                                "/icons/blank.gif")), HtmlUtils.style(
+                                    "border-left:1px #000000 solid")));
+                formats.append(HtmlUtils.col(HtmlUtils.space(4)));
+                formats.append(HtmlUtils.col(gridsCol.toString()));
+                String middle =
+                    "<br><br><br>&nbsp;&nbsp;&nbsp;to make&nbsp;&nbsp;&nbsp;<br>"
+                    + HtmlUtils.img(
+                        getRepository().getFileUrl("/point/rightarrow.jpg"));
+                formats.append(
+                    HtmlUtils.col(
+                        middle,
+                        HtmlUtils.attr(HtmlUtils.ATTR_ALIGN, "center")));
+                formatCol.append(HtmlUtils.b(msg("Select Products")));
+            }
+            formatCol.append(HtmlUtils.p());
+
+            for (HtmlUtils.Selector selector : formatList) {
+		String label = "";
+                if (selector.getIcon() != null) {
+		    //Add the  space because fontawesome icons overlap the cbx
+                    label =HU.space(3) + HtmlUtils.img(selector.getIcon()) + " ";
+                }
+                label+=selector.getLabel();
+                formatCol.append(HtmlUtils.labeledCheckbox(ARG_PRODUCT,
+							   selector.getId(),
+							   selectedFormat.contains(selector.getId()),label));
+                formatCol.append(HtmlUtils.p());
+            }
+            formats.append(HtmlUtils.col(formatCol.toString()));
+        }
+        formats.append("</tr></table>");
+        productSB.append(HtmlUtils.row(HtmlUtils.colspan(formats.toString(),
+                2)));
+        productSB.append(HtmlUtils.formTableClose());
         sb.append(
             HtmlUtils.hidden(
                 ARG_OUTPUT, getPointOutputHandler().OUTPUT_PRODUCT.getId()));
-        formGroup(request, sb, "Subset Data",
-                  HtmlUtils.makeShowHideBlock("", subsetSB.toString(),
-                      false));
-        formGroup(request, sb, "Select Products",
-                  HtmlUtils.makeShowHideBlock("", productSB.toString(),
-                      true));
+        sb.append(HtmlUtils.makeShowHideBlock("Select Products", productSB.toString(),  true));
 
     }
 

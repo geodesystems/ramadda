@@ -110,8 +110,10 @@ public class GridVisitor extends BridgeRecordVisitor {
         imageHeight  = llg.getHeight();
         imageWidth   = llg.getWidth();
         if (request.defined(RecordOutputHandler.ARG_PARAMETER)) {
-            if (request.getString(RecordOutputHandler.ARG_PARAMETER,
-                                  "").equals("_pointcount_")) {
+            if (request.getString(RecordOutputHandler.ARG_PARAMETER,"").equals("_altitude_")) {
+		valueAttr = -1;
+	    } else  if (request.getString(RecordOutputHandler.ARG_PARAMETER,
+					  "").equals("_pointcount_")) {
                 usingPointcount = true;
             } else {
                 valueAttr = request.get(RecordOutputHandler.ARG_PARAMETER,
