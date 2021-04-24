@@ -699,6 +699,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         init();
 
 
+	Hashtable<String,Entry> entriesMap = new Hashtable<String,Entry>();
         List<File> rootDirs = getRootDirs();
         for (File rootDir : rootDirs) {
             logHarvesterInfo("Looking for initial directory listing:"
@@ -731,7 +732,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             long t1 = System.currentTimeMillis();
             logHarvesterInfo("Start scanning");
             printTab = "\t";
-            harvestEntries((cnt == 0), timestamp);
+            harvestEntries((cnt == 0), timestamp,entriesMap);
             printTab = "";
             logHarvesterInfo("Done scanning");
             lastRunTime = System.currentTimeMillis();
@@ -851,7 +852,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
      *
      * @throws Exception _more_
      */
-    private void harvestEntries(boolean firstTime, int timestamp)
+    private void harvestEntries(boolean firstTime, int timestamp,Hashtable<String,Entry> entriesMap)
             throws Exception {
 
         long t1 = System.currentTimeMillis();
@@ -917,6 +918,12 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             printTab = "\t\t";
             files    = IOUtil.sortFilesOnName(files);
 
+
+            for (File f : files) {
+		System.err.println("FILE:" + f);
+	    }
+
+
             for (File f : files) {
                 if (f.isDirectory()) {
                     //If this is a directory then check if we already have it 
@@ -927,8 +934,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                             tmpDirs.add(addDir(f, dirInfo.getRootDir()));
                         }
                     }
-
-                    continue;
+		    continue;
                 }
                 long fileTime = f.lastModified();
                 //time diff threshold = 1 minute
@@ -950,7 +956,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 }
                 Entry entry = null;
                 try {
-                    entry = processFile(dirInfo, f);
+                    entry = processFile(dirInfo, f, entriesMap);
                 } catch (Exception exc) {
                     appendError("Error processing file:" + f);
                     logHarvesterError("Error creating entry:" + f, exc);
@@ -1021,7 +1027,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                     dirInfo.addFile(newEntry.getResource().getPath());
                 }
                 if (needToAdd.size() > 1000) {
-                    addEntries(needToAdd, timestamp);
+                    addEntries(needToAdd, timestamp,entriesMap);
                     needToAdd = new ArrayList<Entry>();
                 }
             }
@@ -1033,7 +1039,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         }
 
         if (needToAdd.size() > 0) {
-            addEntries(needToAdd, timestamp);
+            addEntries(needToAdd, timestamp,entriesMap);
         }
 
         if ( !canContinueRunning(timestamp)) {
@@ -1063,7 +1069,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
      *
      * @throws Exception _more_
      */
-    private void addEntries(List<Entry> entries, int timestamp)
+    private void addEntries(List<Entry> entries, int timestamp,Hashtable<String,Entry>entriesMap)
             throws Exception {
         if (getTestMode() || (entries.size() == 0)) {
             return;
@@ -1102,6 +1108,11 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
                 continue;
             }
+	    System.err.println("createEntry:" + newEntry);
+	    if(originalId!=null)
+		entriesMap.put(originalId,newEntry);
+
+
             idList.add(new String[] { newEntry.getId(), originalId });
             entriesToAdd.add(newEntry);
             cnt++;
@@ -1153,7 +1164,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
      * @throws Exception _more_
      */
     private String getDirNames(File parentFile, Entry parentGroup,
-                               List<String> dirToks, boolean makeGroup)
+                               List<String> dirToks, boolean makeGroup,Hashtable<String,Entry> entriesMap)
             throws Exception {
         Request request = getRequest();
         //        if(dirToks.size()==0) return parentFile.toString();
@@ -1165,7 +1176,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 file = new File(parentFile + "/"
                                 + filename.replaceAll(" ", "_"));
             }
-            Entry  template = getEntryManager().getTemplateEntry(file);
+            Entry  template = getEntryManager().getTemplateEntry(file,entriesMap);
             String name     = ((template != null)
                                ? template.getName()
                                : filename);
@@ -1221,6 +1232,10 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                     if (originalId != null) {
                         group.putProperty(ATTR_ORIGINALID, originalId);
                     }
+		    System.err.println("createGroup:" + group);
+
+		    if(originalId!=null)
+			entriesMap.put(originalId,group);
                     idList.add(new String[] { group.getId(), originalId });
 
                     //                    System.err.println ("New group:" + group.getName() +" ID: " + group.getProperty(ATTR_ORIGINALID));
@@ -1283,7 +1298,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
      *
      * @throws Exception _more_
      */
-    public Entry processFile(HarvesterFile fileInfo, File f)
+    public Entry processFile(HarvesterFile fileInfo, File f,Hashtable<String,Entry> entriesMap)
             throws Exception {
 
         logHarvesterInfo("processFile:" + f);
@@ -1331,7 +1346,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
         debug("file:<i>" + filePath + "</i> matches pattern");
 
-        return harvestFile(fileInfo, f, matcher);
+        return harvestFile(fileInfo, f, matcher,entriesMap);
     }
 
 
@@ -1359,7 +1374,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
      *
      * @throws Exception _more_
      */
-    public Entry harvestFile(HarvesterFile fileInfo, File f, Matcher matcher)
+    public Entry harvestFile(HarvesterFile fileInfo, File f, Matcher matcher,Hashtable<String,Entry> entriesMap)
             throws Exception {
 
         boolean isPlaceholder = f.getName().equals(FILE_PLACEHOLDER);
@@ -1373,9 +1388,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
 
         if (isEntryXml) {
-            templateEntry = getEntryManager().parseEntryXml(f, true).get(0);
+            templateEntry = getEntryManager().parseEntryXml(f, true, entriesMap).get(0);
         } else {
-            templateEntry = getEntryManager().getTemplateEntry(f);
+            templateEntry = getEntryManager().getTemplateEntry(f,entriesMap);
         }
 
         if (templateEntry != null) {
@@ -1414,8 +1429,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
         File   dirPathFile = new File(dirPath);
         Entry dirTemplateEntry =
-            getEntryManager().getTemplateEntry(dirPathFile);
+            getEntryManager().getTemplateEntry(dirPathFile,entriesMap);
 
+	System.err.println("dirTemplateEntry:" + dirTemplateEntry +" " + dirPathFile);
         dirPath =
             dirPath.substring(fileInfo.getRootDir().toString().length());
         dirPath = dirPath.replace("\\", "/");
@@ -1430,7 +1446,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             dirGroup = getDirNames(fileInfo.getRootDir(), baseGroup, dirToks,
                                    !getTestMode()
                                    && (groupTemplate.indexOf("${dirgroup}")
-                                       >= 0));
+                                       >= 0),entriesMap);
             dirGroup = dirGroup.replace("\\", "/");
         }
 
@@ -1570,9 +1586,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
       @Override
       public void initEntry(Entry entry) {
           theHarvester.initEntry(entry);
-      }
-  });
+      }});
 
+	System.err.println("GROUP:" + group);
         if (group == null) {
             logHarvesterInfo("Could not create group:" + groupName);
 
@@ -1717,14 +1733,14 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
      *
      * @throws Exception _more_
      */
-    public Entry processFile(TypeHandler type, String filepath)
+    public Entry processFile(TypeHandler type, String filepath,Hashtable<String,Entry> entriesMap)
             throws Exception {
         if ( !this.getTypeHandler().equals(type)) {
             return null;
         }
         File f = new File(filepath);
 
-        return processFile(new HarvesterFile(f.getParentFile()), f);
+        return processFile(new HarvesterFile(f.getParentFile()), f, entriesMap);
     }
 
 

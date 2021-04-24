@@ -79,7 +79,7 @@ public abstract class Harvester extends RepositoryManager {
 
 
     /** _more_ */
-    private static final boolean PRINT_DEBUG = false;
+    private static final boolean PRINT_DEBUG = true;
 
     /** _more_ */
     private final LogManager.LogId LOGID =
@@ -965,6 +965,7 @@ public abstract class Harvester extends RepositoryManager {
      */
     public void logHarvesterError(String message, Throwable exc) {
         System.err.println("ERROR:" + getName() + " " + message);
+	exc.printStackTrace();
         getRepository().getLogManager().logError(LOGID,
                 getName() + " " + message, exc);
         appendError(message);
