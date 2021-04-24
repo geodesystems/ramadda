@@ -16,7 +16,7 @@ import org.ramadda.repository.harvester.HarvesterFile;
 import org.ramadda.repository.harvester.PatternHarvester;
 import org.ramadda.repository.type.TypeHandler;
 import org.w3c.dom.Element;
-
+import java.util.Hashtable;
 
 /**
  * Harvester for NOAA Climate Model files
@@ -95,13 +95,13 @@ public class NOAAClimateModelFileHarvester extends PatternHarvester {
      * @throws Exception on badness
      */
     @Override
-    public Entry harvestFile(HarvesterFile fileInfo, File f, Matcher matcher)
+    public Entry harvestFile(HarvesterFile fileInfo, File f, Matcher matcher,Hashtable<String,Entry> entriesMap)
             throws Exception {
         if ( !f.toString().endsWith(".nc")) {
             return null;
         }
 
-        return super.harvestFile(fileInfo, f, matcher);
+        return super.harvestFile(fileInfo, f, matcher,entriesMap);
     }
 
 }

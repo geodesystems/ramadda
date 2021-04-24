@@ -25,6 +25,7 @@ import org.w3c.dom.Element;
 import java.io.File;
 
 import java.util.regex.Matcher;
+import java.util.Hashtable;
 
 
 /**
@@ -133,13 +134,13 @@ public class CMIP5ModelFileHarvester extends PatternHarvester {
      * @throws Exception on badness
      */
     @Override
-    public Entry harvestFile(HarvesterFile fileInfo, File f, Matcher matcher)
+    public Entry harvestFile(HarvesterFile fileInfo, File f, Matcher matcher,Hashtable<String,Entry> entriesMap)
             throws Exception {
         if ( !f.toString().endsWith(".nc")) {
             return null;
         }
 
-        return super.harvestFile(fileInfo, f, matcher);
+        return super.harvestFile(fileInfo, f, matcher, entriesMap);
     }
 
 
