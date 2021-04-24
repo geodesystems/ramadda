@@ -5180,8 +5180,10 @@ public class EntryManager extends RepositoryManager {
 				       File> origFileToStorage)
 	throws Exception {
         Hashtable<String, Entry> entries = new Hashtable<String, Entry>();
+	System.err.println("processEntryXml");
         if (parent != null) {
             entries.put("", parent);
+	    System.err.println("\tparent:" + parent);
         }
 
 
@@ -5299,6 +5301,7 @@ public class EntryManager extends RepositoryManager {
                                           boolean checkAccess,
                                           boolean internal)
 	throws Exception {
+	System.err.println("createEntryFromXml:");
         String parentId    = XmlUtil.getAttribute(node, ATTR_PARENT, "");
         Entry  parentEntry = (Entry) entries.get(parentId);
         if (parentEntry == null) {
@@ -5310,7 +5313,8 @@ public class EntryManager extends RepositoryManager {
         }
         if (parentEntry == null) {
             // Lets not check for now. Some entry xml doesn't have a parent
-	    throw new RepositoryUtil.MissingEntryException("Could not find parent:" + parentId +" xml:" + XmlUtil.toString(node));
+	    throw new RepositoryUtil.MissingEntryException("Could not find parent:" + parentId);
+	    // +" xml:" + XmlUtil.toString(node));
         }
 
         List<Entry> entryList = createEntryFromXml(request, node,
@@ -5319,6 +5323,7 @@ public class EntryManager extends RepositoryManager {
         String tmpid = XmlUtil.getAttribute(node, ATTR_ID, (String) null);
         if (tmpid != null) {
             for (Entry entry : entryList) {
+		System.err.println("\tput:" + tmpid);
                 entries.put(tmpid, entry);
             }
         }
@@ -8317,9 +8322,10 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public List<Entry> parseEntryXml(File xmlFile, boolean internal)
+    public List<Entry> parseEntryXml(File xmlFile, boolean internal,Hashtable<String,Entry> entriesMap)
 	throws Exception {
 
+	if(entriesMap == null) entriesMap = new Hashtable<String,Entry> ();
         Element root =
             XmlUtil.getRoot(getStorageManager().readSystemResource(xmlFile));
 
@@ -8347,7 +8353,7 @@ public class EntryManager extends RepositoryManager {
 			       new Request(
 					   getRepository(),
 					   getUserManager().getDefaultUser()), root,
-			       new Hashtable(), files, false, internal);
+			       entriesMap, files, false, internal);
 
         if (internal) {
             for (Element assNode : associationNodes) {
@@ -8444,9 +8450,9 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Entry getTemplateEntry(File file) throws Exception {
+    public Entry getTemplateEntry(File file,Hashtable<String,Entry> entriesMap) throws Exception {
         try {
-            Entry entry = getTemplateEntryInner(file);
+            Entry entry = getTemplateEntryInner(file, entriesMap);
 
             return entry;
         } catch (Exception exc) {
@@ -8467,7 +8473,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    private Entry getTemplateEntryInner(File file) throws Exception {
+    private Entry getTemplateEntryInner(File file,Hashtable<String,Entry> entriesMap) throws Exception {
         File    parent      = file.getParentFile();
         boolean isDirectory = file.isDirectory();
         String  type        = (isDirectory
@@ -8481,14 +8487,14 @@ public class EntryManager extends RepositoryManager {
         for (String name : names) {
             File f = new File(IOUtil.joinDir(parent, name));
             if (f.exists()) {
-                return parseEntryXml(f, true).get(0);
+                return parseEntryXml(f, true, entriesMap).get(0);
             }
         }
 
         if (isDirectory) {
             File f = new File(IOUtil.joinDir(file, ".this.ramadda.xml"));
             if (f.exists()) {
-                Entry entry = parseEntryXml(f, true).get(0);
+                Entry entry = parseEntryXml(f, true,entriesMap).get(0);
 
                 return entry;
             }
