@@ -168,8 +168,8 @@ public class PointFormHandler extends RecordFormHandler {
      */
     public void getGridFormats(List<HtmlUtils.Selector> outputs,
                                boolean forCollection) {
-        outputs.add(getSelect(getPointOutputHandler().OUTPUT_IMAGE));
         outputs.add(getSelect(getPointOutputHandler().OUTPUT_HILLSHADE));
+        outputs.add(getSelect(getPointOutputHandler().OUTPUT_IMAGE));
         outputs.add(getSelect(getPointOutputHandler().OUTPUT_KMZ));
         outputs.add(getSelect(getPointOutputHandler().OUTPUT_ASC));
         //        outputs.add(getSelect(getPointOutputHandler().OUTPUT_NC));
@@ -667,7 +667,7 @@ public class PointFormHandler extends RecordFormHandler {
                     5) + " "
                        + HtmlUtils.href(
                            "https://gisgeography.com/inverse-distance-weighting-idw-interpolation/",
-                           "More Information")));
+                           "More Information","target=_help")));
 
 
         gridding.append(
@@ -1108,6 +1108,7 @@ public class PointFormHandler extends RecordFormHandler {
         gridsCol.append(HtmlUtils.b(msg("Select Grids")));
         gridsCol.append(HtmlUtils.p());
 	boolean anySelected = false;
+	boolean gridSelected = false;
         for (String arg: GRID_ARGS) {
 	    if(request.get(arg, false)) anySelected = true;
 	}
@@ -1126,7 +1127,8 @@ public class PointFormHandler extends RecordFormHandler {
 	    if(!anySelected && GRID_ARGS[i].equals(ARG_GRID_IDW)) {
 		on = true;
 	    }
-            gridsCol.append(HtmlUtils.labeledCheckbox(GRID_ARGS[i], "true",   on,GRID_LABELS[i]));
+	    if(on) gridSelected = true;
+	    gridsCol.append(HtmlUtils.labeledCheckbox(GRID_ARGS[i], "true",   on,GRID_LABELS[i]));
             gridsCol.append(HtmlUtils.p());
         }
 
@@ -1162,6 +1164,11 @@ public class PointFormHandler extends RecordFormHandler {
             }
             formatCol.append(HtmlUtils.p());
 
+	    boolean productSelected = false;
+            for (HtmlUtils.Selector selector : formatList) {
+		if(selectedFormat.contains(selector.getId())) productSelected = true;
+	    }
+
             for (HtmlUtils.Selector selector : formatList) {
 		String label = "";
                 if (selector.getIcon() != null) {
@@ -1169,9 +1176,16 @@ public class PointFormHandler extends RecordFormHandler {
                     label =HU.space(3) + HtmlUtils.img(selector.getIcon()) + " ";
                 }
                 label+=selector.getLabel();
+		boolean on = selectedFormat.contains(selector.getId());
+		if(i==1) {
+		    if(gridSelected && !productSelected) {
+			on  = true;
+			productSelected = true;
+		    }
+		}
                 formatCol.append(HtmlUtils.labeledCheckbox(ARG_PRODUCT,
-							   selector.getId(),
-							   selectedFormat.contains(selector.getId()),label));
+							   selector.getId(),on,label));
+							   
                 formatCol.append(HtmlUtils.p());
             }
             formats.append(HtmlUtils.col(formatCol.toString()));
