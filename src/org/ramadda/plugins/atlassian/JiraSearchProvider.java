@@ -199,7 +199,8 @@ public class JiraSearchProvider extends SearchProvider {
             }
             */
 
-            newEntry.initEntry(name, desc, parent,
+	    
+            newEntry.initEntry(name,makeSnippet(desc,true), parent,
                                getUserManager().getLocalFileUser(),
                                new Resource(new URL(issueUrl)), "",Entry.DEFAULT_ORDER,
                                dttm.getTime(), dttm.getTime(),

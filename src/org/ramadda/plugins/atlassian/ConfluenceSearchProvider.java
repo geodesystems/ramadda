@@ -187,6 +187,8 @@ public class ConfluenceSearchProvider extends SearchProvider {
 
             if (result.has("history")) {
                 JSONObject history = result.getJSONObject("history");
+		if(fromDate!=null) dttm = fromDate;
+		else fromDate = dttm;
                 fromDate = Utils.parseDate(Json.readValue(history,
                         "createdDate", null));
                 toDate = fromDate;
@@ -215,7 +217,7 @@ public class ConfluenceSearchProvider extends SearchProvider {
             }
             */
 
-            newEntry.initEntry(name, desc, parent,
+            newEntry.initEntry(name, makeSnippet(desc,true), parent,
                                getUserManager().getLocalFileUser(),
                                new Resource(new URL(resultUrl)), "",Entry.DEFAULT_ORDER,
                                dttm.getTime(), dttm.getTime(),

@@ -20,6 +20,7 @@ package org.ramadda.plugins.search;
 import org.json.*;
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
 
@@ -139,6 +140,7 @@ public class RedditSearchProvider extends SearchProvider {
             String     desc    = data.optString("selftext_html", "");
             desc = desc.replaceAll("\\&lt;", "<").replaceAll("\\&gt;",
                                    ">").replaceAll("\\&#39;", "'");
+	    desc = HU.href("https://www.reddit.com/r/" + sub,"/r/" +sub,"target=_news") +"<br>" + desc;
             String id = data.getString("id");
             String resultUrl = "https://www.reddit.com"
                                + data.getString("permalink");
@@ -147,11 +149,22 @@ public class RedditSearchProvider extends SearchProvider {
                                        + id, typeHandler);
             entries.add(newEntry);
             newEntry.setIcon("/search/reddit.png");
-            newEntry.initEntry(name, desc, parent,
+            newEntry.initEntry(name, makeSnippet(desc), parent,
                                getUserManager().getLocalFileUser(),
                                new Resource(new URL(resultUrl)), "",Entry.DEFAULT_ORDER,
                                dttm.getTime(), dttm.getTime(),
                                dttm.getTime(), dttm.getTime(), null);
+	    String thumbnail = data.optString("thumbnail");
+	    if(Utils.stringDefined(thumbnail) && thumbnail.startsWith("https:")) {
+		Metadata metadata =
+		    new Metadata(getRepository().getGUID(),
+				 newEntry.getId(),
+				 ContentMetadataHandler.TYPE_THUMBNAIL,
+				 false, thumbnail, "image", null, null,
+				 null);
+		getMetadataManager().addMetadata(newEntry, metadata);
+	    }		
+
             getEntryManager().cacheSynthEntry(newEntry);
         }
 

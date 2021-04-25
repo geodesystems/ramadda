@@ -168,9 +168,14 @@ public class PlosSearchProvider extends SearchProvider {
         //    http://api.plos.org/search?q=title:%22Ten%20Simple%20Rules%22&api_key=2ifY1fYfC9xz33odffyX
         String      searchText = request.getString(ARG_TEXT, "");
         List<Entry> entries    = new ArrayList<Entry>();
-        String searchUrl = HtmlUtils.url(URL, ARG_API_KEY, getApiKey(),
+	String max = request.getString("max","100");
+        String searchUrl = HtmlUtils.url(URL, "rows",max,"wt","xml",ARG_API_KEY, getApiKey(),
                                          ARG_Q, searchText);
-        //        System.err.println(getName() + " search url:" + searchUrl);
+	if(request.get("skip",0)>0) {
+	    searchUrl+="&start=" + request.get("skip",0);
+	}
+
+	System.err.println(getName() + " search url:" + searchUrl);
         InputStream is  = getInputStream(searchUrl);
         String      xml = IOUtil.readContents(is);
         //        System.out.println(xml);
@@ -227,9 +232,6 @@ public class PlosSearchProvider extends SearchProvider {
                           + "/article?id=" + id;
                 }
             }
-
-
-
 
             Element abs = XmlUtil.findElement(nodeList, ATTR_NAME,
                               "abstract");
@@ -292,7 +294,7 @@ public class PlosSearchProvider extends SearchProvider {
             Resource resource = (url != null)
                                 ? new Resource(new URL(url))
                                 : new Resource("");
-            newEntry.initEntry(name, desc.toString(), parent,
+            newEntry.initEntry(name, makeSnippet(desc.toString()), parent,
                                getUserManager().getLocalFileUser(), resource,
                                "", Entry.DEFAULT_ORDER,dttm.getTime(), dttm.getTime(),
                                fromDate.getTime(), toDate.getTime(), null);
