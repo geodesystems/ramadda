@@ -235,7 +235,7 @@ function Ramadda(repositoryRoot) {
     if (repositoryRoot == null) {
         repositoryRoot = ramaddaBaseUrl;
     }
-    var SUPER;
+    let SUPER;
     RamaddaUtil.inherit(this, SUPER = new Repository(repositoryRoot));
 
     RamaddaUtil.defineMembers(this, {
@@ -481,6 +481,7 @@ function Ramadda(repositoryRoot) {
             this.entryCache[entry.getId()] = entry;
         },
         getEntry: async function(id, callback) {
+//	    console.log("getEntry");
 	    let debug = false;
 	    if(id == null) {
 		console.log("Error in getEntry: entry id is null");
@@ -594,6 +595,9 @@ function EntryTypeColumn(props) {
         isEnumeration: function() {
             return this.getType() == "enumeration" || this.getType() == "enumerationplus";
         },
+        isNumeric: function() {
+            return this.getType() == "double" || this.getType() == "int";
+        },	
         isUrl: function() {
             return this.getType() == "url"
         },
@@ -637,7 +641,6 @@ function EntryType(props) {
     });
 }
 
-var xnt = 0;
 
 function Entry(props) {
     if (props.repositoryId == null) {
@@ -710,6 +713,9 @@ function Entry(props) {
             if (this.displayName) return this.displayName;
             return this.getName();
         },
+        getCreateDate: function() {
+            return this.startCreate;
+        },
         getStartDate: function() {
             return this.startDate;
         },
@@ -747,7 +753,7 @@ function Entry(props) {
                 //                    console.log("\tgetParent: got it");
                 return Utils.call(callback, this.parentEntry);
             }
-            await this.getRamadda().getEntry(this.parent, entry => {
+            await this.getRamadda().getEntry(this.remoteParent||this.parent, entry => {
                 this.parentEntry = entry;
                 Utils.call(callback, entry);
             });
@@ -760,7 +766,7 @@ function Entry(props) {
                 parent: this.getId()
             });
             var jsonUrl = this.getRamadda().getSearchUrl(settings, OUTPUT_JSON);
-            var jsonUrl = this.getRamadda().getJsonUrl(this.getId()) + "&justchildren=true";
+            var jsonUrl = this.getRamadda().getJsonUrl(this.getAbsoluteId()) + "&justchildren=true";
             if (extraArgs != null) {
                 jsonUrl += "&" + extraArgs;
             }
@@ -772,7 +778,6 @@ function Entry(props) {
             };
             var entryList = new EntryList(this.getRamadda(), jsonUrl, myCallback, false);
             await entryList.doSearch();
-            return;
         },
         getType: function() {
             if (this.typeObject != null) {}
@@ -784,7 +789,12 @@ function Entry(props) {
                 let metadata = this.metadata[i];
                 if (metadata.type == "content.thumbnail" && Utils.stringDefined(metadata.value.attr1)) {
 		    if(metadata.value.attr1.startsWith("http")) return metadata.value.attr1;
-		    return this.getRamadda().getRoot() + "/metadata/view/" + metadata.value.attr1 + "?element=1&entryid=" + this.getId() + "&metadata_id=" + metadata.id;
+		    if(this.getAbsoluteId()=="8aace8e1-df60-4c72-b19a-9da6c676f083") {
+			console.log(this.getAbsoluteId() +"  "+ metadata.value.attr1 +" id:" + metadata.id);
+		    }
+
+		    let url = this.getRamadda().getRoot() + "/metadata/view/" + metadata.value.attr1 + "?element=1&entryid=" + this.getAbsoluteId() + "&metadata_id=" + metadata.id;
+		    return url;
 		}
             }
             return null;
@@ -794,6 +804,8 @@ function Entry(props) {
             return this.metadata;
         },
         getRamadda: function() {
+	    if(this.remoteRepository)
+		return getRamadda(this.remoteRepository.url);
             return getRamadda(this.repositoryId);
         },
         getLocationLabel: function() {
@@ -977,10 +989,21 @@ function Entry(props) {
         hasResource: function() {
             return this.getFilename() != null;
         },
+	getAbsoluteId: function() {
+	    if(this.remoteRepository  && this.remoteUrl) {
+		let match = this.remoteUrl.match("entryid=(.*)");
+		if(match && match.length>1)
+		    return match[1];
+	    }
+	    return this.id;
+	},
         getResourceUrl: function() {
             if (this.url) {
                 return this.url;
             }
+	    if(this.remoteRepository) {
+		return this.remoteRepository.url + "/entry/get?entryid=" + this.getAbsoluteId();
+	    }
             var rurl = this.getRamadda().getRoot() + "/entry/get";
             if (this.getFilename() != null) {
                 rurl += "/" + this.getFilename();
