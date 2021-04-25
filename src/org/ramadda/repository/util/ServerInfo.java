@@ -70,7 +70,7 @@ public class ServerInfo implements Constants {
     /** _more_ */
     public static final String ID_THIS = "this";
 
-
+    private String url;
 
     /** _more_ */
     private String hostname;
@@ -107,6 +107,7 @@ public class ServerInfo implements Constants {
      * @param description _more_
      */
     public ServerInfo(URL url, String title, String description) {
+	this.url = url.toString();
         this.hostname    = url.getHost();
         this.port        = url.getPort();
         this.basePath    = url.getPath();
@@ -122,9 +123,9 @@ public class ServerInfo implements Constants {
      * @param title _more_
      * @param description _more_
      */
-    public ServerInfo(String hostname, int port, String title,
+    public ServerInfo(String url, String hostname, int port, String title,
                       String description) {
-        this(hostname, port, -1, "/repository", title, description, "",
+        this(url,hostname, port, -1, "/repository", title, description, "",
              false, false);
     }
 
@@ -174,9 +175,10 @@ public class ServerInfo implements Constants {
      * @param isRegistry _more_
      * @param enabled _more_
      */
-    public ServerInfo(String hostname, int port, int sslPort,
+    public ServerInfo(String url,String hostname, int port, int sslPort,
                       String basePath, String title, String description,
                       String email, boolean isRegistry, boolean enabled) {
+	this.url = url;
         this.hostname    = hostname;
         this.port        = port;
         this.sslPort     = sslPort;
@@ -295,6 +297,7 @@ public class ServerInfo implements Constants {
      * @return _more_
      */
     public String getUrl() {
+	if(url!=null) return url;
         if ((port == -1) || (port == 80)) {
             return "http://" + hostname + basePath;
         }
