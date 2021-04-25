@@ -106,6 +106,8 @@ public class Entry implements Cloneable {
     /** the parent entry id */
     private String parentEntryId;
 
+    private String remoteParentEntryId;    
+
     /** the tree id */
     private String treeId;
 
@@ -729,6 +731,24 @@ public class Entry implements Cloneable {
      */
     public boolean isTopEntry() {
         return isGroup() && (getParentEntryId() == null);
+    }
+
+    /**
+       Set the RemoteParentEntryId property.
+
+       @param value The new value for RemoteParentEntryId
+    **/
+    public void setRemoteParentEntryId (String value) {
+	remoteParentEntryId = value;
+    }
+
+    /**
+       Get the RemoteParentEntryId property.
+
+       @return The RemoteParentEntryId
+    **/
+    public String getRemoteParentEntryId () {
+	return remoteParentEntryId;
     }
 
     /**
