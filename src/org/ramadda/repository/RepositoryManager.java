@@ -153,8 +153,12 @@ public class RepositoryManager implements RepositorySource, Constants,
 
 
     public String makeSnippet(String snippet) {
-	return "<snippet>" + snippet +"</snippet>";
+	return makeSnippet(snippet,false);
     }
+    public String makeSnippet(String snippet, boolean stripTags) {
+	if(stripTags) snippet = Utils.stripTags(snippet);
+	return "<snippet>" + snippet +"</snippet>";
+    }    
 
     /**
      * _more_
