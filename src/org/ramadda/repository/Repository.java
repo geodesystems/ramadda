@@ -5909,10 +5909,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public ServerInfo getServerInfo() {
+    public ServerInfo getServerInfo() throws Exception {
         int sslPort = getHttpsPort();
-
-        return new ServerInfo(getHostname(), getPort(), sslPort,
+	String url = getTmpRequest().getAbsoluteUrl("");
+        return new ServerInfo(url, getHostname(), getPort(), sslPort,
                               getUrlBase(), getRepositoryName(),
                               getRepositoryDescription(),
                               getRepositoryEmail(),
