@@ -3167,6 +3167,7 @@ function removeRamaddaDisplay(id) {
     var display = getRamaddaDisplay(id);
     if (display) {
         display.removeDisplay();
+	Utils.removeDisplay(display);
     }
 }
 
@@ -27264,7 +27265,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         {p:"fields",d: null},
         {p:"formWidth",d: "300px"},
         {p:"entriesWidth",d: 0},
-	{p:'displayTypes',ex:"list,gallery,map,metadata"},
+	{p:'displayTypes',ex:"list,gallery,timeline,map,metadata"},
         {p:"showDetailsForGroup",d: false},
 	{p:'doWorkbench',d:false,ex:'true', tt:'Show the new, charts, etc links'},
 	];
@@ -27685,9 +27686,26 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             let cols = this.getSearchableColumns();
             for (let i = 0; i < cols.length; i++) {
                 let col = cols[i];
-                let value = this.jq(ID_COLUMN + col.getName()).val();
-                if (value == null || value.length == 0) continue;
-                extra += "&" + col.getSearchArg() + "=" + encodeURI(value);
+                if (!col.getCanSearch()) continue;
+		let id  = ID_COLUMN + col.getName();
+		let arg = col.getSearchArg();
+		if(col.isNumeric()) {
+                    let expr = this.jq(id+"_expr").val();
+                    let from = this.jq(id+"_from").val();
+                    let to = this.jq(id+"_to").val();		    		    
+		    if(Utils.stringDefined(from) || Utils.stringDefined(to)) {
+			extra += "&" + arg  +"_expr" +  "=" + encodeURI(expr);
+			if(Utils.stringDefined(from))
+			    extra += "&" + arg  +"_from" +  "=" + encodeURI(from);
+			if(Utils.stringDefined(to))
+			    extra += "&" + arg  +"_to" +  "=" + encodeURI(to);						
+			console.log("expr:" +expr +" from:" + from +" to:" + to);
+		    }
+		} else {
+                    let value = this.jq(id).val();
+                    if (value == null || value.length == 0) continue;
+                    extra += "&" + arg + "=" + encodeURI(value);
+		}
             }
             this.getSearchSettings().setExtra(extra);
             let jsonUrl = repository.getSearchUrl(this.getSearchSettings(), OUTPUT_JSON);
@@ -27734,7 +27752,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             this.providerMap = {};
             if (this.getPropertyProviders() != null) {
                 let options = "";
-                let selected = Utils.getUrlArgs(document.location.search).provider;
+		let selected = HU.getUrlArgument(ID_PROVIDERS);
                 let toks = this.getPropertyProviders().split(",");
                 let currentCategory = null;
                 let catToBuff = {};
@@ -28196,6 +28214,12 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                     field += HU.closeTag(TAG_SELECT);
                     extra += HU.div([CLASS,"display-search-label"], col.getLabel()+":")+
 			HU.div([CLASS,"display-search-widget"], field+col.getSuffix());
+		} else if (col.isNumeric()) {
+		    let expr=   HU.select("",[CLASS,"ramadda-expr",ATTR_ID, id+"_expr"],["<=",">=","between","="]);
+		    let from = HU.input("", "", [ATTR_CLASS, "input", STYLE,HU.css("width","2.5em"), ATTR_ID, id+"_from"]);
+		    let to = HU.input("", "", [ATTR_CLASS, "input", STYLE,HU.css("display","none", "width","2.5em"), ATTR_ID, id+"_to"]);		    
+                    extra += HU.div([CLASS,"display-search-label"], col.getLabel()) +
+			expr + " " +from +" " + to;
                 } else {
                     field = HU.input("", savedValue, ["placeholder",col.getLabel(),ATTR_CLASS, "input", ATTR_SIZE, "15", ATTR_ID, id]);
                     extra += HU.div([CLASS,"display-search-label"], "") +HU.div([CLASS,"display-search-widget"], field + " " + col.getSuffix());
@@ -28205,6 +28229,16 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 extra += HU.closeTag(TAG_TABLE);
             }
             this.writeHtml(ID_TYPEFIELDS, extra);
+	    let _this = this;
+	    this.jq(ID_TYPEFIELDS).find(".ramadda-expr").change(function() {
+		let id = $(this).attr("id");
+		let val = $(this).val();
+		id  = id.replace("_expr","_to");
+		if(val=="between")
+		    $("#" + id).show();
+		else
+		    $("#" + id).hide();
+	    });
 	    let menus = this.jq(ID_TYPEFIELDS).find(".display-menu");
 	    this.selectboxit(menus);
 	    menus.change(()=>{
@@ -28261,6 +28295,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
             this.createUI();
             this.setContents(this.getDefaultHtml());
 	    this.initHtml();
+            this.providerChanged();
             if (this.dateRangeWidget) {
                 this.dateRangeWidget.initHtml();
             }
@@ -28279,6 +28314,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
         },
         providerChanged: function() {
             let provider = this.jq(ID_PROVIDERS).val();
+	    HU.addToDocumentUrl(ID_PROVIDERS,provider);
             if (provider != "this") {
                 this.jq(ID_SEARCH_SETTINGS).hide();
 		this.jq(ID_TYPE_DIV).hide();
@@ -28348,9 +28384,15 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
         makeEntriesDisplay: function(entries) {
 	    this.tabId = null;
 	    this.mapId = null;
+	    this.timelineId = null;	    
+	    if(this.timelineDisplay) {
+		removeRamaddaDisplay(this.timelineDisplay.getId());
+		this.timelineDisplay = null;
+	    }
+
 	    let titles = [];
 	    let contents = [];
-	    this.getDisplayTypes("list,gallery,map").split(",").forEach(type=>{
+	    this.getDisplayTypes("list,gallery,timeline,map").split(",").forEach(type=>{
 		if(type=="list") {
 		    titles.push("List");
 		    contents.push(this.getEntriesTree(entries));
@@ -28362,6 +28404,11 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 			titles.push("Gallery");
 			contents.push(this.getEntriesGallery(imageEntries));
 		    }
+		} else if(type=="timeline") {
+		    titles.push("Timeline");
+		    this.timelineId = HU.getUniqueId("timeline_");
+		    let timelineDiv = HU.div([ID,this.timelineId,STYLE,HU.css("width","100%","height","400px")]);
+		    contents.push(timelineDiv);
 		} else if(type=="map") {
 		    this.areaEntries = entries.filter(entry=>{
 			return entry.hasBounds() || entry.hasLocation();
@@ -28439,7 +28486,25 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 	    }
 	    if(this.tabId) {
 		$('#' + this.tabId).tabs({activate: HtmlUtil.tabLoaded});
+	    }	
+	    if(this.timelineId) {
+		let index=0;
+		let fields = [new RecordField({type: "string", index: (index++), id: "title",label: "Title"}),
+			      new RecordField({type: "string", index: (index++), id: "description",label: "Description"}),
+			      new RecordField({type: "url", index: (index++), id: "url",label: "URL"}),
+			      new RecordField({type: "image", index: (index++), id: "image",label: "Image"}),			      			      			      
+			     ]
+		let records = [];
+		entries.forEach(entry=>{
+//		    console.log("title:" + entry.getName());
+		    records.push(new PointRecord(fields, NaN,NaN,NaN,entry.getStartDate() || entry.getCreateDate(),[entry.getName(),entry.getSnippet()||"",entry.getEntryUrl(),entry.getImageUrl()||""],0));
+		});
+		let data= new  PointData("pointdata", fields, records,null,null);
+		let props = {"imageField":"image","urlField":"url","textTemplate":"${description}","displayId":this.timelineId,"divid":this.timelineId,"showMenu":false,theData:data};
+		console.log("new timeline:" + this.timelineId);
+		this.timelineDisplay = this.getDisplayManager().createDisplay("timeline",props);
 	    }
+
 	    if(this.mapId && this.areaEntries && this.areaEntries.length>0) {
 		let map = new RepositoryMap(this.mapId);
 		map.initMap(false);
@@ -37798,6 +37863,12 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 		//		console.log(JSON.stringify(event));
 		events.push(event);
 	    }
+//	    console.log(JSON.stringify(json,null,2));
+	    if($("#" + timelineId).length==0) {
+		console.log("No timeline div:" + timelineId);
+		return;
+	    }
+
 	    this.timeline = new TL.Timeline(timelineId,json,opts);
 	    if(this.getPropertyHideBanner(false)) {
 		this.jq(ID_TIMELINE).find(".tl-storyslider").css("display","none");
