@@ -508,6 +508,8 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                                       Metadata metadata, Hashtable fileMap,
                                       boolean internal)
             throws Exception {
+
+	if(!internal || entry.getIsRemoteEntry()) return true;
         NodeList elements = XmlUtil.getElements(node);
 
         for (MetadataElement element : getChildren()) {
@@ -575,7 +577,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                 try {
                     //See if its a URL
                     URL testUrl = new URL(fileArg);
-
                     continue;
                 } catch (Exception ignore) {
                     handler.getRepository().getLogManager().logError(

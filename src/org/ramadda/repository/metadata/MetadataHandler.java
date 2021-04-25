@@ -189,7 +189,9 @@ public class MetadataHandler extends RepositoryManager {
         //TODO: Handle the extra attributes
         String extra = XmlUtil.getGrandChildText(node, Metadata.TAG_EXTRA,
                            "");
-        Metadata metadata = new Metadata(getRepository().getGUID(),
+	String id = getRepository().getGUID();
+	if(!internal) id = XmlUtil.getAttribute(node,"id",id);
+        Metadata metadata = new Metadata(id,
                                          entry.getId(), type,
                                          XmlUtil.getAttribute(node,
                                              ATTR_INHERITED, DFLT_INHERITED));
@@ -199,12 +201,13 @@ public class MetadataHandler extends RepositoryManager {
             if ( !XmlUtil.hasAttribute(node, ATTR_ATTR + attrIndex)) {
                 break;
             }
+
             metadata.setAttr(attrIndex,
-                             XmlUtil.getAttribute(node,
-                                 ATTR_ATTR + attrIndex, ""));
+                             XmlUtil.getAttribute(node, ATTR_ATTR + attrIndex, ""));
         }
         metadata.setExtra(extra);
 
+	System.out.println("metadata:");
         NodeList children = XmlUtil.getElements(node);
         for (int i = 0; i < children.getLength(); i++) {
             Element childNode = (Element) children.item(i);
@@ -217,6 +220,7 @@ public class MetadataHandler extends RepositoryManager {
             if (XmlUtil.getAttribute(childNode, "encoded", true)) {
                 text = new String(Utils.decodeBase64(text));
             }
+	    System.out.println("\t" + text);
             text = metadata.trimToMaxLength(text);
             metadata.setAttr(index, text);
         }
@@ -519,7 +523,7 @@ public class MetadataHandler extends RepositoryManager {
 
         Document doc = node.getOwnerDocument();
         Element metadataNode = XmlUtil.create(doc, TAG_METADATA, node,
-                                   new String[] { ATTR_TYPE,
+					      new String[] { "id",metadata.getId(), ATTR_TYPE,
                 metadata.getType(), ATTR_INHERITED,
                 "" + metadata.getInherited() });
         for (MetadataElement element : type.getChildren()) {
