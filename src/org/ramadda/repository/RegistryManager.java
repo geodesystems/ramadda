@@ -77,6 +77,8 @@ public class RegistryManager extends RepositoryManager {
     /** _more_ */
     private Object REMOTE_MUTEX = new Object();
 
+    public static final String ARG_CHANGE = "registry.change";
+
     /** _more_ */
     public static final String ARG_REGISTRY_RELOAD = "registry.reload";
 
@@ -205,7 +207,8 @@ public class RegistryManager extends RepositoryManager {
                 fetchRemoteServers(server);
             }
             checkApi();
-        } else if (request.exists(ARG_SUBMIT)) {
+        } else if (request.exists(ARG_CHANGE)) {
+	    System.err.println("change");
             for (ServerInfo serverInfo : getRemoteServers()) {
                 String argBase    = serverInfo.getArgBase();
                 String cbx2Id     = ARG_REGISTRY_ENABLED + argBase;
@@ -214,18 +217,19 @@ public class RegistryManager extends RepositoryManager {
                 String label = request.getString(labelFldId,
                                    serverInfo.getLabel());
                 String  url = request.getString(urlFldId,
-                                  serverInfo.getUrl());
+						serverInfo.getUrl());
 
+		System.err.println("arg:" + labelFldId +" label:" + label +" " + serverInfo.getId());
                 boolean isEnabled = request.get(cbx2Id, false);
                 getDatabaseManager().update(Tables.REMOTESERVERS.NAME,
                                             Tables.REMOTESERVERS.COL_URL,
                                             serverInfo.getId(),
                                             new String[] {
                                                 Tables.REMOTESERVERS.COL_URL,
-                        Tables.REMOTESERVERS.COL_TITLE,
-                        Tables.REMOTESERVERS.COL_SELECTED }, new Object[] {
-                            url,
-                            label, new Boolean(isEnabled) });
+						Tables.REMOTESERVERS.COL_TITLE,
+						Tables.REMOTESERVERS.COL_SELECTED }, new Object[] {
+						url,
+						label, new Boolean(isEnabled) });
             }
             clearRemoteServers();
             checkApi();
@@ -249,7 +253,7 @@ public class RegistryManager extends RepositoryManager {
         sb.append(request.formPost(URL_REGISTRY_REMOTESERVERS, ""));
         sb.append(
             HtmlUtils.buttons(
-                HtmlUtils.submit(msg("Change"), ARG_SUBMIT),
+                HtmlUtils.submit(msg("Change"), ARG_CHANGE),
                 HtmlUtils.submit(msg("Delete Selected"), ARG_DELETE),
                 HtmlUtils.submit(msg("Add New Server"), ARG_REGISTRY_ADD),
                 HtmlUtils.submit(
@@ -566,12 +570,13 @@ public class RegistryManager extends RepositoryManager {
         List<Comment>    comments = new ArrayList();
         ResultSet        results;
         while ((results = iter.getNext()) != null) {
-            URL     url        = new URL(results.getString(1));
+	    String id = results.getString(1);
+	    URL     url        = new URL(id);
             String  title      = results.getString(2);
             String  desc       = results.getString(3);
             String  email      = results.getString(4);
             boolean isRegistry = results.getInt(5) != 0;
-            servers.add(new ServerInfo(url.getHost(), url.getPort(), -1,
+            servers.add(new ServerInfo(id, url.getHost(), url.getPort(), -1,
                                        url.getPath(), title, desc, email,
                                        isRegistry, false));
         }
@@ -597,7 +602,7 @@ public class RegistryManager extends RepositoryManager {
         enabledRemoteServers = null;
         remoteServers        = null;
         remoteServerMap      = null;
-
+	getSearchManager().clearSearchProviders();
     }
 
 
@@ -679,14 +684,15 @@ public class RegistryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     private ServerInfo makeRemoteServer(ResultSet results) throws Exception {
-        URL     url        = new URL(results.getString(1));
+	String id = results.getString(1);
+	URL     url        = new URL(id);
         String  title      = results.getString(2);
         String  desc       = results.getString(3);
         String  email      = results.getString(4);
         boolean isRegistry = results.getInt(5) != 0;
         boolean isSelected = results.getInt(6) != 0;
 
-        ServerInfo serverInfo = new ServerInfo(url.getHost(), url.getPort(),
+        ServerInfo serverInfo = new ServerInfo(id, url.getHost(), url.getPort(),
                                     -1, url.getPath(), title, desc, email,
                                     isRegistry, isSelected);
 
