@@ -243,8 +243,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     private List<SearchProvider> allProviders;
 
     /** _more_ */
-    private Hashtable<String, SearchProvider> searchProviderMap =
-        new Hashtable<String, SearchProvider>();
+    private Hashtable<String, SearchProvider> searchProviderMap =     new Hashtable<String, SearchProvider>();
 
 
     /** _more_ */
@@ -584,16 +583,18 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    Object[] values = entry.getTypeHandler().getEntryValues(entry);
 	    if(values!=null) {
 		for (Column column : columns) {
-		    if (column.getCanSearch()) {
-			Object v= column.getObject(values);
-			if(v!=null) {
-			    String s = v.toString();
-			    if(column.isEnumeration()) 
-				doc.add(new StringField(getPropertyField(entry.getTypeHandler(),column.getName()), s,Field.Store.YES));
-			    else
-				doc.add(new TextField(getPropertyField(entry.getTypeHandler(),column.getName()), s,Field.Store.NO));
-			}
-		    }
+		    if (!column.getCanSearch()) continue;
+		    Object v= column.getObject(values);
+		    if(v==null) continue;
+		    String field  = getPropertyField(entry.getTypeHandler(),column.getName());
+		    if(column.isEnumeration()) 
+			doc.add(new StringField(field, v.toString(),Field.Store.YES));
+		    else if(column.isDouble()) 
+			doc.add(new DoublePoint(field, (Double)v));
+		    else if(column.isInteger()) 
+			doc.add(new IntPoint(field, (Integer)v));		    
+		    else
+			doc.add(new TextField(field, v.toString(),Field.Store.NO));
 		}
 	    }
 	}
@@ -917,19 +918,95 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    BooleanQuery.Builder builder = new BooleanQuery.Builder();
 		    int cnt = 0;
 		    for (Column column : columns) {
-			if (column.getCanSearch()) {
-			    String       searchArg = column.getSearchArg();
-			    String v = request.getString(searchArg,null);
-			    if(Utils.stringDefined(v)&&!v.equals(TypeHandler.ALL)) {
-				Query term=null;
-				if(column.isEnumeration()) 
-				    term = new TermQuery(new Term(getPropertyField(typeHandler,column.getName()), v));		
-				else
-				    term = new WildcardQuery(new Term(getPropertyField(typeHandler,column.getName()), v));		
-				cnt++;
-				builder.add(term, BooleanClause.Occur.SHOULD);
-			    }
+
+			if (!column.getCanSearch()) {
+			    continue;
 			}
+			String       searchArg = column.getSearchArg();
+			Query term=null;
+			String field = getPropertyField(typeHandler,column.getName());
+			if(column.isEnumeration()) {
+			    String v = request.getString(searchArg,null);
+			    if(!Utils.stringDefined(v)||v.equals(TypeHandler.ALL)) continue;
+			    term = new TermQuery(new Term(field, v));
+			} else if(column.isDouble()) {
+			    String expr = request.getEnum(searchArg + "_expr", "", "",
+							  Column.EXPR_EQUALS, Column.EXPR_LE, Column.EXPR_GE,
+							  Column.EXPR_BETWEEN, "&lt;=", "&gt;=");
+			    expr = expr.replace("&lt;", "<").replace("&gt;", ">");
+			    double from  = request.get(searchArg + "_from", Double.NaN);
+			    double to    = request.get(searchArg + "_to", Double.NaN);
+			    double value = request.get(searchArg, Double.NaN);
+			    if (column.isType(Column.DATATYPE_PERCENTAGE)) {
+				from  = from / 100.0;
+				to    = to / 100.0;
+				value = value / 100.0;
+			    }
+			    if (!Double.isNaN(from) && Double.isNaN(to)) {
+				to = from;
+			    } else if (Double.isNaN(from) && !Double.isNaN(to)) {
+				from = to;
+			    } else if (Double.isNaN(from) && Double.isNaN(to)) {
+				from = value;
+				to   = value;
+			    }
+			    if (Double.isNaN(from)) continue;
+			    if (expr.equals("")) {
+				expr = Column.EXPR_EQUALS;
+			    }
+			    if (expr.equals(Column.EXPR_EQUALS)) {
+				term = DoublePoint.newExactQuery(field,from);
+			    } else if (expr.equals(Column.EXPR_LE)) {
+				term = DoublePoint.newRangeQuery(field,Double.MIN_VALUE,to);
+			    } else if (expr.equals(Column.EXPR_GE)) {
+				term = DoublePoint.newRangeQuery(field,from,Double.MAX_VALUE);
+			    } else if (expr.equals(Column.EXPR_BETWEEN)) {
+				term = DoublePoint.newRangeQuery(field,from,to);
+			    } else if (expr.length() > 0) {
+				throw new IllegalArgumentException("Unknown expression:"
+								   + expr);
+			    }
+			} else if(column.isInteger()) {
+			    String expr = request.getEnum(searchArg + "_expr", "", "",
+							  Column.EXPR_EQUALS, Column.EXPR_LE, Column.EXPR_GE,
+							  Column.EXPR_BETWEEN, "&lt;=", "&gt;=");
+			    expr = expr.replace("&lt;", "<").replace("&gt;", ">");
+			    int undef = -99999999;
+			    int from  = request.get(searchArg + "_from", undef);
+			    int to    = request.get(searchArg + "_to", undef);
+			    int value = request.get(searchArg, undef);
+			    if ((from != undef) && (to == undef)) {
+				to = from;
+			    } else if ((from == undef) && (to != undef)) {
+				from = to;
+			    } else if ((from == undef) && (to == undef)) {
+				from = value;
+				to   = value;
+			    }
+			    if (from == undef) continue;
+			    if (expr.equals("")) {
+				expr = Column.EXPR_EQUALS;
+			    }
+			    if (expr.equals(Column.EXPR_EQUALS)) {
+				term = IntPoint.newExactQuery(field,from);
+			    } else if (expr.equals(Column.EXPR_LE)) {
+				term = IntPoint.newRangeQuery(field,Integer.MIN_VALUE,to);
+			    } else if (expr.equals(Column.EXPR_GE)) {
+				term = IntPoint.newRangeQuery(field,from,Integer.MAX_VALUE);
+			    } else if (expr.equals(Column.EXPR_BETWEEN)) {
+				term = IntPoint.newRangeQuery(field,from,to);
+			    } else if (expr.length() > 0) {
+				throw new IllegalArgumentException("Unknown expression:"
+								   + expr);
+			    }
+			} else {
+			    String v = request.getString(searchArg,null);
+			    if(!Utils.stringDefined(v)||v.equals(TypeHandler.ALL)) continue;
+			    term = new WildcardQuery(new Term(field, v));
+			}
+			cnt++;
+			if(term!=null)
+			    builder.add(term, BooleanClause.Occur.SHOULD);
 		    }
 		    if(cnt>0) queries.add(builder.build());
 		}
@@ -1460,8 +1537,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
         CategoryBuffer cats  = new CategoryBuffer();
         StringBuilder  extra = new StringBuilder();
+	HashSet seen = new HashSet();
         for (int i = 0; i < searchProviders.size(); i++) {
             SearchProvider searchProvider = searchProviders.get(i);
+	    if(seen.contains(searchProvider.getId())) continue;
+	    seen.add(searchProvider.getId());
+
             boolean        selected       = false;
             if (selectedProviders.size() == 0) {
                 selected = (i == 0);
@@ -1996,9 +2077,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      *
      * @throws Exception _more_
      */
-    public List<SearchProvider> getSearchProviders() throws Exception {
+    public synchronized  List<SearchProvider> getSearchProviders() throws Exception {
         if (searchProviders == null) {
             //            System.err.println("SearchManager.doSearch- making searchProviders");
+	    searchProviderMap =     new Hashtable<String, SearchProvider>();
             List<SearchProvider> tmp = new ArrayList<SearchProvider>();
             for (SearchProvider provider : pluginSearchProviders) {
                 if (provider.isEnabled()) {
@@ -2012,14 +2094,18 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         if (allProviders == null) {
             List<SearchProvider> tmp = new ArrayList<SearchProvider>();
 
+	    HashSet seen = new HashSet();
             tmp.add(thisSearchProvider =
 		    new SearchProvider.RamaddaSearchProvider(getRepository(),
 							     ServerInfo.ID_THIS, "This RAMADDA Repository"));
+
+	    seen.add(thisSearchProvider.getId());
             for (ServerInfo server :
 		     getRegistryManager().getEnabledRemoteServers()) {
-                tmp.add(
-			new SearchProvider.RemoteSearchProvider(
-								getRepository(), server));
+		SearchProvider provider = new SearchProvider.RemoteSearchProvider(getRepository(), server);
+		if(seen.contains(provider.getId())) continue;
+		seen.add(provider.getId());
+		tmp.add(provider);
             }
 
             for (SearchProvider provider : tmp) {
@@ -2032,6 +2118,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         return allProviders;
     }
 
+
+
+    public synchronized void clearSearchProviders() {
+	searchProviderMap = null;
+	allProviders = null;
+	searchProviders = null;
+	
+    }
 
 
     /**
