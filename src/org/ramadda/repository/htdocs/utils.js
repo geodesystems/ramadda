@@ -1598,6 +1598,17 @@ var Utils =  {
             this.displaysMap[display.displayId] = display;
 	}
     },
+    removeDisplay: function(display) {
+	let index = this.displaysList.indexOf(display);
+	if(index>=0)
+	    this.displaysList.splice(index,1);
+	if(display.getId) {
+	    delete this.displaysMap[display.getId()];
+	}
+	if (display.displayId) {
+            delete this.displaysMap[display.displayId];
+	}
+    },
     initDisplays: function() {
 	//	console.log("initDisplays");
 	this.displaysList.forEach(d=>{
