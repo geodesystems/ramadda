@@ -502,6 +502,10 @@ public class JsonOutputHandler extends OutputHandler {
                       Json.map("url", Json.quote(server.getUrl()), "name",
                                Json.quote(server.getLabel())));
             Json.quoteAttr(items, "remoteUrl", entry.getRemoteUrl());
+	    String remoteParent = entry.getRemoteParentEntryId();
+	    if(remoteParent!=null) {
+		Json.quoteAttr(items, "remoteParent", remoteParent);
+	    }
         }
 
         Json.quoteAttr(items, "startDate", formatDate(entry.getStartDate()));
