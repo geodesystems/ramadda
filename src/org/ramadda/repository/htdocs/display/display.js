@@ -215,6 +215,7 @@ function removeRamaddaDisplay(id) {
     var display = getRamaddaDisplay(id);
     if (display) {
         display.removeDisplay();
+	Utils.removeDisplay(display);
     }
 }
 
