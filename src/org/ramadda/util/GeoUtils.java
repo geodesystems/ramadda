@@ -804,14 +804,16 @@ public class GeoUtils {
         }
         //        System.err.println("looking for address:" + address);
 
-
         String latString      = null;
         String lonString      = null;
         String encodedAddress = StringUtil.replace(address, " ", "%20");
         String name           = null;
 
+	if(googleKey == null)
+	    googleKey = System.getenv("GOOGLE_API_KEY");
 
         if (googleKey != null) {
+	    String result= null;
             try {
                 //                https://maps.googleapis.com/maps/api/geocode/json?address=Winnetka&bounds=34.172684,118.604794|34.236144,-118.500938&key=YOUR_API_KEY
                 String url =
@@ -822,8 +824,8 @@ public class GeoUtils {
                            + bounds.getWest() + "|" + bounds.getNorth() + ","
                            + bounds.getEast();
                 }
-                String result = IO.readContents(url, GeoUtils.class);
-                //                System.err.println("result:" + result);
+                result = IO.readContents(url, GeoUtils.class);
+
 
                 name = StringUtil.findPattern(result,
                         "\"formatted_address\"\\s*:\\s*\"([^\"]+)\"");
@@ -834,6 +836,8 @@ public class GeoUtils {
             } catch (Exception exc) {
                 System.err.println("exc:" + exc);
             }
+	    if(latString==null)
+		System.err.println("geocode null result:" + result);
         }
         if ((latString != null) && (lonString != null)) {
             place = new Place((name == null)
