@@ -6623,6 +6623,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         String providers = getProperty(wikiUtil, props, "providers");
         if (providers != null) {
             List<String> processed = new ArrayList<String>();
+	    HashSet seen = new HashSet();
             for (String tok : Utils.split(providers, ",")) {
                 //                System.err.println ("Tok:" + tok);
                 if (tok.startsWith("name:") || tok.startsWith("category:")) {
@@ -6633,6 +6634,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     //                    System.err.println ("doName:" + doName +" pattern:" + pattern);
                     for (SearchProvider provider :
                             getSearchManager().getSearchProviders()) {
+			if(seen.contains(provider.getId())) continue;
+			seen.add(provider.getId());
                         String  target  = doName
                                           ? provider.getName()
                                           : provider.getCategory();
@@ -6679,28 +6682,26 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
                 }
                 String id   = searchProvider.getId();
-                String icon = searchProvider.getSearchProviderIconUrl();
-                if (icon == null) {
-                    icon = "${root}/icons/magnifier.png";
-                }
-                icon = getPageHandler().applyBaseMacros(icon);
-                String label = searchProvider.getName();
-
-                if (subToks.size() > 1) {
-                    label = subToks.get(1);
-                }
-
-                if (subToks.size() > 2) {
-                    icon = subToks.get(2);
-                }
-                String v = id.replace(":", "_COLON_") + ":"
-                           + label.replace(":", "-").replace(",", " ") + ":"
-                           + icon + ":" + searchProvider.getCategory();
-                processed.add(v);
-            }
-            //            for(String s: processed) {
-            //                System.out.println(s);
-            //            }
+		if(!seen.contains(id)) {
+		    seen.add(id);
+		    String icon = searchProvider.getSearchProviderIconUrl();
+		    if (icon == null) {
+			icon = "${root}/icons/magnifier.png";
+		    }
+		    icon = getPageHandler().applyBaseMacros(icon);
+		    String label = searchProvider.getName();
+		    if (subToks.size() > 1) {
+			label = subToks.get(1);
+		    }
+		    if (subToks.size() > 2) {
+			icon = subToks.get(2);
+		    }
+		    String v = id.replace(":", "_COLON_") + ":"
+			+ label.replace(":", "-").replace(",", " ") + ":"
+			+ icon + ":" + searchProvider.getCategory();
+		    processed.add(v);
+		}
+	    }
             props.put("providers", StringUtil.join(",", processed));
 
         }
