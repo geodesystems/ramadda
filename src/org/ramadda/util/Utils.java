@@ -2894,6 +2894,7 @@ public class Utils extends IO {
      * @return _more_
      */
     public static Date parseDate(String dttm) {
+	if(dttm==null) return null;
         ParsePosition pp  = new ParsePosition(0);
 	for(DateFormat dateFormat:getFormatters()) {
 	    Date date = dateFormat.parse(dttm, pp);
