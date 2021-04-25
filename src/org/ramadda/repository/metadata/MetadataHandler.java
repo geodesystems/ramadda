@@ -207,7 +207,6 @@ public class MetadataHandler extends RepositoryManager {
         }
         metadata.setExtra(extra);
 
-	System.out.println("metadata:");
         NodeList children = XmlUtil.getElements(node);
         for (int i = 0; i < children.getLength(); i++) {
             Element childNode = (Element) children.item(i);
@@ -220,8 +219,7 @@ public class MetadataHandler extends RepositoryManager {
             if (XmlUtil.getAttribute(childNode, "encoded", true)) {
                 text = new String(Utils.decodeBase64(text));
             }
-	    System.out.println("\t" + text);
-            text = metadata.trimToMaxLength(text);
+	    text = metadata.trimToMaxLength(text);
             metadata.setAttr(index, text);
         }
 
