@@ -747,6 +747,12 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 		//		console.log(JSON.stringify(event));
 		events.push(event);
 	    }
+//	    console.log(JSON.stringify(json,null,2));
+	    if($("#" + timelineId).length==0) {
+		console.log("No timeline div:" + timelineId);
+		return;
+	    }
+
 	    this.timeline = new TL.Timeline(timelineId,json,opts);
 	    if(this.getPropertyHideBanner(false)) {
 		this.jq(ID_TIMELINE).find(".tl-storyslider").css("display","none");
