@@ -1714,6 +1714,55 @@ public abstract class Converter extends Processor {
     }
 
 
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Jan 16, '15
+     * @author         Enter your name here...
+     */
+    public static class Ascii extends Converter {
+
+        /** _more_ */
+        private String value;
+
+
+        /**
+         *
+         * @param cols _more_
+         * @param value _more_
+         */
+        public Ascii(List<String> cols, 
+                             String value) {
+            super(cols);
+            this.value = value;
+        }
+
+        /**
+         *
+         * @param info _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row) {
+            List<Integer> indices = getIndices(info);
+            for (Integer idx : indices) {
+                int index = idx.intValue();
+                if ((index >= 0) && (index < row.size())) {
+                    String s  = row.getString(index).trim();
+		    s = s.replaceAll("[^\\x00-\\x7F]", value);
+                    row.set(index, s);
+                }
+            }
+            return row;
+        }
+
+    }
+
+    
     /**
      * Class description
      *
@@ -3323,6 +3372,8 @@ public abstract class Converter extends Processor {
             double lon = Double.NaN;
             if (key != null) {
                 Place place = null;
+
+
                 if (doAddress) {
                     place = GeoUtils.getLocationFromAddress(key.toString());
                 } else {

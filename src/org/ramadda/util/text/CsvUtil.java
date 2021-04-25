@@ -1734,6 +1734,10 @@ public class CsvUtil {
                 new Arg("column", "", "type", "column"), new Arg("prefix")),
         new Cmd("-suffix", "Add suffix to column",
                 new Arg("column", "", "type", "column"), "suffix"),
+        new Cmd("-ascii", "Convert non ascii characters",
+                new Arg("columns", "", "type", "columns"),
+                new Arg("substitution string", "")),
+
         new Cmd(
 		"-js",
 		"Define Javascript (e.g., functions) to use later in the -func call",
@@ -2610,6 +2614,12 @@ public class CsvUtil {
 		return i;
 	    });
 
+
+	defineFunction("-ascii",2,(ctx,args,i) -> {
+		ctx.getProcessor().addProcessor(new Converter.Ascii(getCols(args.get(++i)),args.get(++i)));
+		return i;
+	    });
+	
 
 	defineFunction("-endswith",2,(ctx,args,i) -> {
 		ctx.getProcessor().addProcessor(new Converter.ColumnEndsWith(getCols(args.get(++i)), args.get(++i)));
