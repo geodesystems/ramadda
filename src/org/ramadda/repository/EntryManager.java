@@ -5301,7 +5301,6 @@ public class EntryManager extends RepositoryManager {
                                           boolean checkAccess,
                                           boolean internal)
 	throws Exception {
-	System.err.println("createEntryFromXml:");
         String parentId    = XmlUtil.getAttribute(node, ATTR_PARENT, "");
         Entry  parentEntry = (Entry) entries.get(parentId);
         if (parentEntry == null) {
@@ -5413,6 +5412,9 @@ public class EntryManager extends RepositoryManager {
 	if(description.length()>10000) {
 	    //	    System.err.println("l:" + name + " " + description.length());
 	}
+
+
+
 
         if (checkAccess && (parentEntry != null)) {
             if ( !getAccessManager().canDoAction(request, parentEntry,
@@ -5622,6 +5624,11 @@ public class EntryManager extends RepositoryManager {
 			    entryOrder,
                             createDate.getTime(), changeDate.getTime(),
                             fromDate.getTime(), toDate.getTime(), null);
+
+	    if(!internal) {
+		entry.setRemoteParentEntryId(XmlUtil.getAttribute(node,"parent",(String)null));
+	    }
+
 
             if (doAnonymousUpload) {
                 initUploadedEntry(request, entry, parentEntry);
