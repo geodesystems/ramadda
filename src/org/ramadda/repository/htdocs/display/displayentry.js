@@ -1462,6 +1462,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
             });
         },
         providerChanged: function() {
+	    if(this.jq(ID_PROVIDERS).length==0) return;
             let provider = this.jq(ID_PROVIDERS).val();
 	    HU.addToDocumentUrl(ID_PROVIDERS,provider);
             if (provider != "this") {
@@ -1649,8 +1650,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 		    records.push(new PointRecord(fields, NaN,NaN,NaN,entry.getStartDate() || entry.getCreateDate(),[entry.getName(),entry.getSnippet()||"",entry.getEntryUrl(),entry.getImageUrl()||""],0));
 		});
 		let data= new  PointData("pointdata", fields, records,null,null);
-		let props = {"imageField":"image","urlField":"url","textTemplate":"${description}","displayId":this.timelineId,"divid":this.timelineId,"showMenu":false,theData:data};
-		console.log("new timeline:" + this.timelineId);
+		let props = {"imageField":"image","urlField":"url","textTemplate":"${description}","displayId":this.timelineId,"divid":this.timelineId,"showMenu":false,theData:data,displayStyle:""};
 		this.timelineDisplay = this.getDisplayManager().createDisplay("timeline",props);
 	    }
 
