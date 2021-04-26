@@ -125,6 +125,7 @@ public  class RowCollector extends Processor {
 
     public Row handleRow(TextReader ctx, Row row) throws Exception {
 	//Here we don't call nextProcessor.handleRow
+	setHeaderIfNeeded(row);
 	row = processRow(ctx, row);
 	return row;
     }

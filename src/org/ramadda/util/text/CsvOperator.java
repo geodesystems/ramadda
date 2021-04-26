@@ -289,7 +289,9 @@ public abstract class CsvOperator {
         if (index != UNDEFINED_INDEX) {
             return index;
         }
-        index = getIndices(info).get(0);
+	List<Integer>  indices = getIndices(info);
+	if(indices.size()==0) throw new IllegalStateException("Could not find index for " + getClass().getSimpleName());
+	index = indices.get(0);
 
         return index;
     }
@@ -375,7 +377,6 @@ public abstract class CsvOperator {
     public int getColumnIndex(String s) {
         List<Integer> indices = new ArrayList<Integer>();
         getColumnIndex(null, indices, s);
-
         return indices.get(0);
     }
 
@@ -406,7 +407,6 @@ public abstract class CsvOperator {
             if (columnNames == null) {
                 if (header == null) {
                     debug("no names or header");
-
                     return;
                 }
                 columnMap = new Hashtable<String, Integer>();

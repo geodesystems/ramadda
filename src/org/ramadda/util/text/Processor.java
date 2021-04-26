@@ -259,6 +259,7 @@ public abstract class Processor extends CsvOperator {
     private Row extraRow;
 
     public Row handleRow(TextReader ctx, Row row) throws Exception {
+	setHeaderIfNeeded(row);
 	row = processRow(ctx, row);
 	if(row!=null && nextProcessor!=null) {
 	    row = nextProcessor.handleRow(ctx,row);
