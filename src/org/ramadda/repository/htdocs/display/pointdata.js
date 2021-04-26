@@ -65,7 +65,7 @@ function BasePointData(name, properties) {
             return false;
         },
         hasData: function() {
-            return this.records != null;
+            return this.records != null && this.records.length>0;
         },
         clear: function() {
             this.records = null;
