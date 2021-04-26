@@ -1374,12 +1374,12 @@ public abstract class DataProvider {
                                 + tokenPattern);
             }
             Pattern p1 = Pattern.compile(tokenPattern);
+	    //	    System.err.println("pattern:" + tokenPattern);
+	    int remLength = -1;
             while (true) {
                 Matcher m1 = p1.matcher(s);
-                if ( !m1.find()) {
+                if (!m1.find()) {
                     ctx.printDebug("-text3", "no match");
-
-                    //              System.err.println("no match");
                     break;
                 }
                 //              System.err.println("match");
@@ -1388,7 +1388,11 @@ public abstract class DataProvider {
                     ctx.printDebug("-text3",
                                     "match group count:" + m1.groupCount());
                 }
-                //              System.err.println("REMAINDER:" + s);
+		//		System.err.println("REMAINDER:" + s.length());
+		if(remLength>0 && remLength==s.length()) {
+		    throw new IllegalArgumentException("Bad pattern:" + tokenPattern+" groupCount:" + m1.groupCount() + " " + (m1.groupCount()>1?("group:" + m1.group(1)):"") + " remainder is the same as before");
+		}
+		remLength = s.length();
                 Row row = new Row();
                 addRow(row);
                 for (int i = 1; i <= m1.groupCount(); i++) {
