@@ -2500,10 +2500,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         textReader.setInput(new NamedInputStream("input",new BufferedInputStream(source)));
         textReader.setSkip(skip);
         textReader.setDelimiter(delimiter);
-        Processor.ProcessorGroup myProcessor =
-            new Processor.ProcessorGroup() {
+        Processor myProcessor =
+            new Processor() {
             @Override
-            public org.ramadda.util.text.Row processRow(
+            public org.ramadda.util.text.Row handleRow(
                     TextReader textReader, org.ramadda.util.text.Row row) {
                 try {
                     Object[] values = tableHandler.makeEntryValueArray();
@@ -2590,7 +2590,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 }
             }
         };
-        textReader.setProcessor(myProcessor);
+        textReader.addProcessor(myProcessor);
         CsvUtil csvUtil = new CsvUtil(new ArrayList<String>());
 	DataProvider.CsvDataProvider provider = new DataProvider.CsvDataProvider(textReader);
         csvUtil.process(textReader, provider);

@@ -911,8 +911,7 @@ public abstract class Converter extends Processor {
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row) {
-
+        public Row processRow(TextReader ctx, Row row) {
             rowCnt++;
             if (rowCnt > 2) {
                 //              System.err.println("hdr rest:" + row);
@@ -920,13 +919,12 @@ public abstract class Converter extends Processor {
             }
             if (firstRow == null) {
                 firstRow = row;
-
                 return null;
             }
             boolean justFields  = Misc.equals(props.get("justFields"),
                                       "true");
             boolean      debug  = Misc.equals(props.get("debug"), "true");
-            PrintWriter  writer = info.getWriter();
+            PrintWriter  writer = ctx.getWriter();
             StringBuffer sb     = new StringBuffer();
             if (toStdOut) {
                 sb.append("fields=");
@@ -1121,26 +1119,17 @@ public abstract class Converter extends Processor {
                 values.add(field);
             }
 
-            if (toStdOut) {
-                System.out.println(StringUtil.join(",", values));
-                info.stopRunning();
-
-                return firstRow;
-            }
-            //      System.err.println("hdr first:" + firstRow);
-            //      System.err.println("hdr row:" + row);
+	    Processor nextProcessor = getNextProcessor();
             firstRow.setValues(values);
-            row.setSkipTo(this);
-            info.setExtraRow(row);
-            Row tmp = firstRow;
+	    if(nextProcessor!=null) {
+		try {
+		    nextProcessor.handleRow(ctx,firstRow);
+		} catch(Exception exc) {
+		    throw new RuntimeException(exc);
+		}
+	    }
             firstRow = null;
-            if (debug) {
-                writer.println("");
-                info.stopRunning();
-            }
-
-            return tmp;
-
+	    return row;
         }
     }
 
@@ -5290,140 +5279,6 @@ public abstract class Converter extends Processor {
             return row;
         }
     }
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sat, Jul 18, '20
-     * @author         Enter your name here...
-     */
-    public static class DateLatest extends RowCollector {
-
-        /** _more_ */
-        List<String> keys;
-
-        /** _more_ */
-        private Hashtable<String, Row> rows = new Hashtable<String, Row>();
-
-        /** _more_ */
-        private List<Integer> indices;
-
-        /** _more_ */
-        private List<Integer> keyindices;
-
-        /** _more_ */
-        private List<String> keyValues = new ArrayList<String>();
-
-        /** _more_ */
-        private String colName;
-
-        /** _more_ */
-        private int col = -1;
-
-        /** _more_ */
-        private SimpleDateFormat sdf;
-
-        /** _more_ */
-        private Row header;
-
-        /**
-         * _more_
-         *
-         * @param cols _more_
-         * @param colName _more_
-         * @param sdf _more_
-         */
-        public DateLatest(List<String> cols, String colName,
-                          SimpleDateFormat sdf) {
-            this.keys    = cols;
-            this.colName = colName;
-            this.sdf     = sdf;
-        }
-
-        /**
-         * _more_
-         *
-         * @param info _more_
-         * @param row _more_
-         *
-         * @return _more_
-         */
-        @Override
-        public Row processRow(TextReader info, Row row) {
-            if (rowCnt++ == 0) {
-                header = row;
-
-                return null;
-            }
-            if (keyindices == null) {
-                keyindices = getIndices(info, keys);
-            }
-            debug("date latest.processRow");
-            String key = "";
-            for (Integer idx : keyindices) {
-                int index = idx.intValue();
-                if ((index < 0) || (index >= row.size())) {
-                    continue;
-                }
-                key += row.get(index).toString() + "_";
-            }
-            Row prevRow = rows.get(key);
-            if (prevRow == null) {
-                prevRow = row;
-                rows.put(key, prevRow);
-                keyValues.add(key);
-
-                return null;
-            }
-            try {
-                if (col == -1) {
-                    col = getColumnIndex(colName);
-                }
-                Date d1 = sdf.parse(prevRow.get(col).toString());
-                Date d2 = sdf.parse(row.get(col).toString());
-                if (d2.getTime() >= d1.getTime()) {
-                    //              System.err.println("update date:" + row.get(col)+" d:" + d2);
-                    rows.put(key, row);
-                }
-
-            } catch (Exception exc) {
-                System.err.println("Error:" + exc + "\nrow1:" + prevRow
-                                   + "\nrow2:" + row);
-            }
-
-            return null;
-        }
-
-
-
-        /**
-         * _more_
-         *
-         * @param info _more_
-         * @param tmp _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
-        @Override
-        public List<Row> finish(TextReader info, List<Row> tmp)
-                throws Exception {
-            debug("date latest.finish");
-            List<Row> result = new ArrayList<Row>();
-            result.add(header);
-            for (String key : keyValues) {
-                result.add(rows.get(key));
-            }
-
-            return result;
-        }
-
-    }
-
 
 
 

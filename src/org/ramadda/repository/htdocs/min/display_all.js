@@ -10604,10 +10604,10 @@ function DisplayManager(argId, argProperties) {
 		props.data = null;
 	    }
 
-            if (props.theData != null) {
-                var haveItAlready = false;
+            if (props.theData != null && !props.theData.hasData()) {
+                let haveItAlready = false;
                 for (var i = 0; i < this.dataList.length; i++) {
-                    var existingData = this.dataList[i];
+                    let existingData = this.dataList[i];
                     if (existingData.equals(props.theData)) {
                         props.theData = existingData;
                         haveItAlready = true;
@@ -10958,7 +10958,7 @@ function BasePointData(name, properties) {
             return false;
         },
         hasData: function() {
-            return this.records != null;
+            return this.records != null && this.records.length>0;
         },
         clear: function() {
             this.records = null;

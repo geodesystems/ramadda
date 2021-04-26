@@ -155,13 +155,9 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private Converter.ColumnSelector selector;
 
-    /** _more_ */
-    private Filter.FilterGroup filter = new Filter.FilterGroup();
 
-
-    /** _more_ */
-    private Processor.ProcessorGroup processor =
-        new Processor.ProcessorGroup();
+    private Processor firstProcessor;
+    private Processor lastProcessor;    
 
     /** _more_ */
     private DecimalFormat format;
@@ -276,6 +272,39 @@ public class TextReader implements Cloneable {
      */
     public TextReader(BufferedReader reader) {
         this.reader = reader;
+    }
+
+
+
+    public Row processRow(CsvUtil csvUtil,Row row) throws Exception {
+	if(firstProcessor!=null) {
+	    row  = firstProcessor.handleRow(this, row);
+	} else {
+            getWriter().println(csvUtil.columnsToString(row.getValues(),
+						getOutputDelimiter()));
+            getWriter().flush();
+	}
+	return row;
+    }
+
+
+    public void finishProcessing() throws Exception {
+	if(firstProcessor!=null) {
+	    firstProcessor.finish(this);
+	}
+    }
+
+    public void resetProcessors() {
+	if(firstProcessor!=null) firstProcessor.reset();
+    }
+
+    public void addProcessor(Processor processor) {
+	if(firstProcessor==null)
+	    lastProcessor = firstProcessor = processor;
+	else {
+	    lastProcessor.setNextProcessor(processor);
+	    lastProcessor = processor;
+	}
     }
 
 
@@ -1640,36 +1669,6 @@ public class TextReader implements Cloneable {
     public String getDelimiter() {
         return delimiter;
     }
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public Filter.FilterGroup getFilter() {
-        return filter;
-    }
-
-
-    /**
-     * Set the Processor property.
-     *
-     * @param value The new value for Processor
-     */
-    public void setProcessor(Processor.ProcessorGroup value) {
-        processor = value;
-    }
-
-    /**
-     * Get the Processor property.
-     *
-     * @return The Processor
-     */
-    public Processor.ProcessorGroup getProcessor() {
-        return processor;
-    }
-
 
     /**
      * _more_

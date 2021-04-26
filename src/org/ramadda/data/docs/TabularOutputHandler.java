@@ -693,7 +693,7 @@ public class TabularOutputHandler extends OutputHandler {
         textReader.setInput(new NamedInputStream("input",
                 new BufferedInputStream(inputStream)));
         textReader.setOutput(bos);
-        textReader.getProcessor().addProcessor(new Processor() {
+        textReader.addProcessor(new Processor() {
             @Override
             public org.ramadda.util.text.Row processRow(
                     TextReader textReader, org.ramadda.util.text.Row row)
@@ -728,14 +728,10 @@ public class TabularOutputHandler extends OutputHandler {
                             s = s.replace(operator, "").trim();
                             double value = Double.parseDouble(s);
                             int op = Filter.ValueFilter.getOperator(operator);
-                            textReader.getFilter().addFilter(
-                                new Filter.ValueFilter(cols, op, value));
-
+                            textReader.addProcessor(new Filter.ValueFilter(cols, op, value));
                             continue;
                         }
-                        //                        if(s.
-
-                        textReader.getFilter().addFilter(
+                        textReader.addProcessor(
                             new Filter.PatternFilter(
                                 column, request.getString(id, "")));
 
@@ -748,7 +744,7 @@ public class TabularOutputHandler extends OutputHandler {
         String searchText = request.getString("table.text", (String) null);
         if (Utils.stringDefined(searchText)) {
             //match all
-            textReader.getFilter().addFilter(new Filter.PatternFilter(-1,
+            textReader.addProcessor(new Filter.PatternFilter(-1,
                     "(?i:.*" + searchText + ".*)"));
         }
         CsvUtil csvUtil = new CsvUtil(new ArrayList<String>());

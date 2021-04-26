@@ -42,7 +42,7 @@ import java.util.List;
  * @version        $version$, Wed, Jul 8, '15
  * @author         Enter your name here...
  */
-public class EntryXmlProcessor extends Processor.RowCollector {
+public class EntryXmlProcessor extends RowCollector {
 
     /** _more_ */
     SimpleDateFormat fsdf = new SimpleDateFormat("yyyy-MM-dd");

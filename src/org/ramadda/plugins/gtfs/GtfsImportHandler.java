@@ -387,7 +387,7 @@ public class GtfsImportHandler extends ImportHandler {
 
         TextReader        textReader = new TextReader();
         textReader.setInput(is);
-        textReader.getProcessor().addProcessor(new MyProcessor() {
+        textReader.addProcessor(new MyProcessor() {
             boolean googleOk = true;
             @Override
             public org.ramadda.util.text.Row processRow(
@@ -540,7 +540,7 @@ public class GtfsImportHandler extends ImportHandler {
         InputStream is         = new FileInputStream(file);
         TextReader  textReader = new TextReader();
         textReader.setInput(is);
-        textReader.getProcessor().addProcessor(new MyProcessor() {
+        textReader.addProcessor(new MyProcessor() {
             @Override
             public org.ramadda.util.text.Row processRow(
                     TextReader textReader, org.ramadda.util.text.Row row) {
@@ -632,7 +632,7 @@ public class GtfsImportHandler extends ImportHandler {
 
         TextReader textReader = new TextReader();
         textReader.setInput(is);
-        textReader.getProcessor().addProcessor(new MyProcessor() {
+        textReader.addProcessor(new MyProcessor() {
             @Override
             public org.ramadda.util.text.Row processRow(
                     TextReader textReader, org.ramadda.util.text.Row row) {
@@ -698,7 +698,7 @@ public class GtfsImportHandler extends ImportHandler {
         InputStream is         = new FileInputStream(file);
         TextReader  textReader = new TextReader();
         textReader.setInput(is);
-        textReader.getProcessor().addProcessor(new MyProcessor() {
+        textReader.addProcessor(new MyProcessor() {
             @Override
             public org.ramadda.util.text.Row processRow(
                     TextReader textReader, org.ramadda.util.text.Row row) {
@@ -767,7 +767,7 @@ public class GtfsImportHandler extends ImportHandler {
 
         TextReader textReader = new TextReader();
         textReader.setInput(is);
-        textReader.getProcessor().addProcessor(new MyProcessor() {
+        textReader.addProcessor(new MyProcessor() {
             @Override
             public org.ramadda.util.text.Row processRow(
                     TextReader textReader, org.ramadda.util.text.Row row) {
@@ -902,7 +902,7 @@ public class GtfsImportHandler extends ImportHandler {
         final User        user       = request.getUser();
         TextReader        textReader = new TextReader();
         textReader.setInput(is);
-        textReader.getProcessor().addProcessor(new MyProcessor() {
+        textReader.addProcessor(new MyProcessor() {
 
             @Override
             public org.ramadda.util.text.Row processRow(
@@ -1053,7 +1053,7 @@ public class GtfsImportHandler extends ImportHandler {
             throws Exception {
         TextReader textReader = new TextReader();
         textReader.setInput(is);
-        textReader.getProcessor().addProcessor(new MyProcessor() {
+        textReader.addProcessor(new MyProcessor() {
             public org.ramadda.util.text.Row processRow(
                     TextReader textReader, org.ramadda.util.text.Row row) {
                 try {
@@ -1102,7 +1102,7 @@ public class GtfsImportHandler extends ImportHandler {
             throws Exception {
         TextReader textReader = new TextReader();
         textReader.setInput(is);
-        textReader.getProcessor().addProcessor(new MyProcessor() {
+        textReader.addProcessor(new MyProcessor() {
             public org.ramadda.util.text.Row processRow(
                     TextReader textReader, org.ramadda.util.text.Row row) {
                 try {
@@ -1144,7 +1144,7 @@ public class GtfsImportHandler extends ImportHandler {
             throws Exception {
         TextReader textReader = new TextReader();
         textReader.setInput(is);
-        textReader.getProcessor().addProcessor(new MyProcessor() {
+        textReader.addProcessor(new MyProcessor() {
             public org.ramadda.util.text.Row processRow(
                     TextReader textReader, org.ramadda.util.text.Row row) {
                 try {
@@ -1202,7 +1202,7 @@ public class GtfsImportHandler extends ImportHandler {
         final User    user       = request.getUser();
         TextReader    textReader = new TextReader();
         textReader.setInput(is);
-        textReader.getProcessor().addProcessor(new MyProcessor() {
+        textReader.addProcessor(new MyProcessor() {
 
             int maxStops = 0;
             @Override
