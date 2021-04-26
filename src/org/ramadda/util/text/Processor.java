@@ -271,31 +271,31 @@ public abstract class Processor extends CsvOperator {
     /**
      * _more_
      *
-     * @param info _more_
+     * @param ctx _more_
      * @param row _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public Row processRow(TextReader info, Row row) throws Exception {
+    public Row processRow(TextReader ctx, Row row) throws Exception {
         return row;
     }
 
     /**
      * _more_
      *
-     * @param info _more_
+     * @param ctx _more_
      * @param row _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public List<Row> processRowReturnList(TextReader info, Row row)
+    public List<Row> processRowReturnList(TextReader ctx, Row row)
 	throws Exception {
         List<Row> l = new ArrayList<Row>();
-        Row       r = processRow(info, row);
+        Row       r = processRow(ctx, row);
         if (r != null) {
             l.add(r);
         }
@@ -359,7 +359,7 @@ public abstract class Processor extends CsvOperator {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param row _more_
          *
          * @return _more_
@@ -367,9 +367,9 @@ public abstract class Processor extends CsvOperator {
          * @throws Exception _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row) throws Exception {
+        public Row processRow(TextReader ctx, Row row) throws Exception {
             if (flag == FLAG_POSITION) {
-                info.setPositionStart(value);
+                ctx.setPositionStart(value);
             }
 
             return row;
@@ -394,15 +394,15 @@ public abstract class Processor extends CsvOperator {
 
 
         /**
-         * @param info _more_
+         * @param ctx _more_
          * @param row _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row) {
+        public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
-		index = getIndex(info);
+		index = getIndex(ctx);
 		for(String name: patternNames)
 		    row.add(name);
 		return row;
@@ -437,15 +437,15 @@ public abstract class Processor extends CsvOperator {
 
 
         /**
-         * @param info _more_
+         * @param ctx _more_
          * @param row _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row) {
+        public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
-		index = getIndex(info);
+		index = getIndex(ctx);
 		row.add("File");
 		return row;
 	    }
@@ -488,17 +488,17 @@ public abstract class Processor extends CsvOperator {
 
 
         /**
-         * @param info _more
+         * @param ctx _more
          * @param row _more_
          *
          * @return _more_
          */
         @Override
-	public Row processRow(TextReader info, Row row)
+	public Row processRow(TextReader ctx, Row row)
             throws Exception {
 	    if(Misc.equals(row.getId(), extraId)) return row;
 	    rowCnt++;
-	    if(index==-1) index = getIndex(info);
+	    if(index==-1) index = getIndex(ctx);
 	    if(rowCnt==1) return null;
 	    String v = row.getString(index);
 	    Hashtable<String,String> props = Utils.parseKeyValue(v);
@@ -523,7 +523,7 @@ public abstract class Processor extends CsvOperator {
 	    }
 	    if(header!=null) {
 		extraId = newRow.getId();
-		info.setExtraRow(newRow);
+		ctx.setExtraRow(newRow);
 		Row tmp = header;
 		header = null;
 		return tmp;
@@ -553,7 +553,7 @@ public abstract class Processor extends CsvOperator {
          * _more_
          *
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param row _more_
          *
          * @return _more_
@@ -561,7 +561,7 @@ public abstract class Processor extends CsvOperator {
          * @throws Exception _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row) throws Exception {
+        public Row processRow(TextReader ctx, Row row) throws Exception {
             System.err.println("#" + (rowCnt++) + " row:" + row);
             return row;
         }
@@ -596,7 +596,7 @@ public abstract class Processor extends CsvOperator {
          * _more_
          *
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param row _more_
          *
          * @return _more_
@@ -604,7 +604,7 @@ public abstract class Processor extends CsvOperator {
          * @throws Exception _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row) throws Exception {
+        public Row processRow(TextReader ctx, Row row) throws Exception {
 	    rowCnt++;
 	    if(every==0) {
 		System.err.println(rowCnt);
@@ -639,7 +639,7 @@ public abstract class Processor extends CsvOperator {
          * _more_
          *
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param row _more_
          *
          * @return _more_
@@ -647,7 +647,7 @@ public abstract class Processor extends CsvOperator {
          * @throws Exception _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row) throws Exception {
+        public Row processRow(TextReader ctx, Row row) throws Exception {
             if (cnt == -1) {
                 cnt = row.size();
 
@@ -747,7 +747,7 @@ public abstract class Processor extends CsvOperator {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param row _more_
          *
          * @return _more_
@@ -755,15 +755,15 @@ public abstract class Processor extends CsvOperator {
          * @throws Exception _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row) throws Exception {
+        public Row processRow(TextReader ctx, Row row) throws Exception {
             debug("processRow");
             if (addPointHeader) {
                 addPointHeader = false;
-                handleHeaderRow(info.getWriter(), row, null /*exValues*/);
+                handleHeaderRow(ctx.getWriter(), row, null /*exValues*/);
 
                 return row;
             }
-            handleRow(info, info.getWriter(), row);
+            handleRow(ctx, ctx.getWriter(), row);
 
             return row;
         }
@@ -803,7 +803,7 @@ public abstract class Processor extends CsvOperator {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param rows _more_
          *
          * @return _more_
@@ -826,13 +826,13 @@ public abstract class Processor extends CsvOperator {
          * _more_
          *
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param writer _more_
          * @param row _more_
          *
          * @throws Exception _more_
          */
-        private void handleRow(TextReader info, PrintWriter writer, Row row)
+        private void handleRow(TextReader ctx, PrintWriter writer, Row row)
 	    throws Exception {
             boolean first = rowCnt++ == 0;
             if (first && (prefix != null)) {
@@ -857,9 +857,9 @@ public abstract class Processor extends CsvOperator {
                         }
                         if ((first && sv.startsWith("#"))
 			    || ((colIdx == 0)
-				&& (info.getCommentChar() != null)
+				&& (ctx.getCommentChar() != null)
 				&& sv.startsWith(
-						 info.getCommentChar()))) {
+						 ctx.getCommentChar()))) {
                             escapeColumns = false;
                         }
                         boolean addQuote = false;
@@ -900,13 +900,13 @@ public abstract class Processor extends CsvOperator {
          * _more_
          *
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param writer _more_
          * @param rows _more_
          *
          * @throws Exception _more_
          */
-        public void writeCsv(TextReader info, PrintWriter writer,
+        public void writeCsv(TextReader ctx, PrintWriter writer,
                              List<Row> rows)
 	    throws Exception {
             if (prefix != null) {
@@ -928,7 +928,7 @@ public abstract class Processor extends CsvOperator {
                     writer.print(delimiter);
                 }
                 Row row = rows.get(i);
-                handleRow(info, writer, row);
+                handleRow(ctx, writer, row);
             }
             if (suffix != null) {
                 writer.print(suffix);
@@ -960,7 +960,7 @@ public abstract class Processor extends CsvOperator {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param row _more_
          *
          * @return _more_
@@ -968,13 +968,13 @@ public abstract class Processor extends CsvOperator {
          * @throws Exception _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row) throws Exception {
+        public Row processRow(TextReader ctx, Row row) throws Exception {
             if (headerRow == null) {
                 headerRow = row;
-                info.getWriter().println("[");
+                ctx.getWriter().println("[");
                 return row;
             }
-	    handleRow(info, info.getWriter(), row);
+	    handleRow(ctx, ctx.getWriter(), row);
             return row;
         }
 
@@ -983,7 +983,7 @@ public abstract class Processor extends CsvOperator {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param rows _more_
          *
          * @return _more_
@@ -1002,13 +1002,13 @@ public abstract class Processor extends CsvOperator {
          * _more_
          *
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param writer _more_
          * @param row _more_
          *
          * @throws Exception _more_
          */
-        private void handleRow(TextReader info, PrintWriter writer, Row row)
+        private void handleRow(TextReader ctx, PrintWriter writer, Row row)
 	    throws Exception {
             rowCnt++;
             if (rowCnt > 1) {
@@ -1340,7 +1340,7 @@ public abstract class Processor extends CsvOperator {
          * _more_
          *
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param row _more_
          *
          * @return _more_
@@ -1348,7 +1348,7 @@ public abstract class Processor extends CsvOperator {
          * @throws Exception _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row) throws Exception {
+        public Row processRow(TextReader ctx, Row row) throws Exception {
             boolean first = false;
             if (contains == null) {
                 contains = new ArrayList<HashSet>();
@@ -1373,7 +1373,7 @@ public abstract class Processor extends CsvOperator {
         /**
          *   _more_
          *
-         *   @param info _more_
+         *   @param ctx _more_
          * @param rows _more_
          *
          *
@@ -1391,7 +1391,7 @@ public abstract class Processor extends CsvOperator {
                     List uniqueValues = values.get(i);
                     for (int j = 0; j < uniqueValues.size(); j++) {
                         if (j > 0) {
-                            //                            info.getWriter().print(",");
+                            //                            ctx.getWriter().print(",");
                         }
                         ctx.getWriter().println(uniqueValues.get(j));
                     }
@@ -1471,7 +1471,7 @@ public abstract class Processor extends CsvOperator {
          * _more_
          *
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param row _more_
          *
          * @return _more_
@@ -1479,7 +1479,7 @@ public abstract class Processor extends CsvOperator {
          * @throws Exception _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row) throws Exception {
+        public Row processRow(TextReader ctx, Row row) throws Exception {
             int size = row.size();
 
             if (currentNumCols < 0) {
@@ -1515,7 +1515,7 @@ public abstract class Processor extends CsvOperator {
         /**
          *   _more_
          *
-         *   @param info _more_
+         *   @param ctx _more_
          * @param rows _more_
          *
          *
@@ -1570,7 +1570,7 @@ public abstract class Processor extends CsvOperator {
          * _more_
          *
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param row _more_
          *
          * @return _more_
@@ -1578,7 +1578,7 @@ public abstract class Processor extends CsvOperator {
          * @throws Exception _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row) throws Exception {
+        public Row processRow(TextReader ctx, Row row) throws Exception {
             total++;
             if (++rowCount >= 1000) {
                 System.err.println("count:" + total);
@@ -1626,7 +1626,7 @@ public abstract class Processor extends CsvOperator {
          * _more_
          *
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param row _more_
          *
          * @return _more_
@@ -1634,7 +1634,7 @@ public abstract class Processor extends CsvOperator {
          * @throws Exception _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row) throws Exception {
+        public Row processRow(TextReader ctx, Row row) throws Exception {
             if (headerValues == null) {
 
 		headerValues = new ArrayList();
@@ -1649,7 +1649,7 @@ public abstract class Processor extends CsvOperator {
 		}
 		return row;
             }
-            printRow(info, row);
+            printRow(ctx, row);
 
             return row;
         }
@@ -1658,12 +1658,12 @@ public abstract class Processor extends CsvOperator {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param row _more_
          *
          * @throws Exception _more_
          */
-        public void printRow(TextReader info, Row row) throws Exception {
+        public void printRow(TextReader ctx, Row row) throws Exception {
             if (headerValues == null) {
                 headerValues = row.getValues();
 
@@ -1671,13 +1671,13 @@ public abstract class Processor extends CsvOperator {
             }
             List values = row.getValues();
             cnt++;
-            info.getWriter().println("#" + cnt);
+            ctx.getWriter().println("#" + cnt);
             for (int i = 0; i < values.size(); i++) {
                 String label = (i < headerValues.size())
 		    ? headerValues.get(i).toString()
 		    : "NA";
                 label = StringUtil.padLeft(label, 20);
-                info.getWriter().println(label + ":" + values.get(i));
+                ctx.getWriter().println(label + ":" + values.get(i));
             }
         }
 
@@ -1813,7 +1813,7 @@ public abstract class Processor extends CsvOperator {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param row _more_
          *
          *
@@ -1821,8 +1821,8 @@ public abstract class Processor extends CsvOperator {
          * @throws Exception On badness
          */
         @Override
-        public Row processRow(TextReader info, Row row) throws Exception {
-            List<Integer> keys2Indices = getIndices(info, keys2);
+        public Row processRow(TextReader ctx, Row row) throws Exception {
+            List<Integer> keys2Indices = getIndices(ctx, keys2);
             if (headerRow2 == null) {
                 headerRow2 = row;
                 System.err.println("ROW:" + headerRow1);

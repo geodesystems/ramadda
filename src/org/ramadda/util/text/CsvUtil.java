@@ -958,16 +958,16 @@ public class CsvUtil {
      * _more_
      *
      * @param files _more_
-     * @param info _more_
+     * @param ctx _more_
      * @param asPoint _more_
      *
      * @throws Exception _more_
      */
-    public void header(List<String> files, TextReader info, boolean asPoint)
+    public void header(List<String> files, TextReader ctx, boolean asPoint)
 	throws Exception {
-        PrintWriter   writer    = info.getWriter();
-        List<Integer> widths    = info.getWidths();
-        String        delimiter = info.getDelimiter();
+        PrintWriter   writer    = ctx.getWriter();
+        List<Integer> widths    = ctx.getWidths();
+        String        delimiter = ctx.getDelimiter();
         if ((widths == null) && (delimiter == null)) {
             delimiter = ",";
         }
@@ -1040,7 +1040,7 @@ public class CsvUtil {
      *     _more_
      *
      *     @param files _more_
-     *     @param info _more_
+     *     @param ctx _more_
      *
      *     @throws Exception _more_
      */
@@ -2266,7 +2266,7 @@ public class CsvUtil {
 		int skip  = Integer.parseInt(args.get(++i));
 		if (skip > 0) {
 		    ctx.addProcessor(
-						    new Filter.Decimate(start, skip));
+				     new Filter.Decimate(start, skip));
 		}
 		return i;
 	    });
@@ -2289,7 +2289,7 @@ public class CsvUtil {
 	    String       uniqueCol = args.get(++i);
 	    List<String> extraCols = getCols(args.get(++i));
 	    ctx.addProcessor(new RowCollector.Unfurler(
-								   mainCol, valueCols, uniqueCol, extraCols));
+						       mainCol, valueCols, uniqueCol, extraCols));
 
 	    return i;
 	};
@@ -2300,7 +2300,7 @@ public class CsvUtil {
 	defineFunction("-furl",3,(ctx,args,i) -> {
 		List<String> valueCols = getCols(args.get(++i));
 		ctx.addProcessor(new RowCollector.Furler(
-								     valueCols, args.get(++i), args.get(++i)));
+							 valueCols, args.get(++i), args.get(++i)));
 
 		return i;
 	    });
@@ -2472,8 +2472,8 @@ public class CsvUtil {
 		int          period = Integer.parseInt(args.get(++i));
 		String       label  = args.get(++i);
 		ctx.addProcessor(
-						new Converter.ColumnAverage(
-									    Converter.ColumnAverage.MA, cols, period, label));
+				 new Converter.ColumnAverage(
+							     Converter.ColumnAverage.MA, cols, period, label));
 
 		return i;
 	    });
@@ -2560,8 +2560,8 @@ public class CsvUtil {
 
 	defineFunction("-geocodejoin",5,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Geocoder(args.get(++i),args.get(++i), Integer.parseInt(args.get(++i)),
-								       Integer.parseInt(args.get(++i)),
-								       Integer.parseInt(args.get(++i)), false));
+							Integer.parseInt(args.get(++i)),
+							Integer.parseInt(args.get(++i)), false));
 		return i;
 	    });
 
@@ -2574,8 +2574,8 @@ public class CsvUtil {
 
 	defineFunction("-geocodedb",5,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Geocoder(args.get(++i),args.get(++i), Integer.parseInt(args.get(++i)),
-								       Integer.parseInt(args.get(++i)),
-								       Integer.parseInt(args.get(++i)), true));
+							Integer.parseInt(args.get(++i)),
+							Integer.parseInt(args.get(++i)), true));
 		return i;
 	    });
 
@@ -2626,8 +2626,8 @@ public class CsvUtil {
 		String name    = args.get(++i);
 		pattern = Utils.convertPattern(pattern);
 		ctx.addProcessor(
-						new Converter.ColumnExtracter(
-									      col, pattern, replace, name));
+				 new Converter.ColumnExtracter(
+							       col, pattern, replace, name));
 
 		return i;
 	    });
@@ -2638,7 +2638,7 @@ public class CsvUtil {
 		int    length = new Integer(args.get(++i));
 		String suffix = args.get(++i);
 		ctx.addProcessor(
-						new Converter.Truncater(col, length, suffix));
+				 new Converter.Truncater(col, length, suffix));
 
 		return i;
 	    });
@@ -2650,8 +2650,8 @@ public class CsvUtil {
 		String        pattern = args.get(++i);
 		pattern = Utils.convertPattern(pattern);
 		ctx.addProcessor(
-						new Converter.RowChanger(
-									 rows, cols, pattern, args.get(++i)));
+				 new Converter.RowChanger(
+							  rows, cols, pattern, args.get(++i)));
 
 		return i;
 	    });
@@ -2677,9 +2677,9 @@ public class CsvUtil {
 		String col  = args.get(++i);
 		String sdf2 = args.get(++i);
 		ctx.addProcessor(
-						new Converter.DateConverter(
-									    col, dateFormat,
-									    new SimpleDateFormat(sdf2)));
+				 new Converter.DateConverter(
+							     col, dateFormat,
+							     new SimpleDateFormat(sdf2)));
 		return i;
 	    });
 
@@ -2687,7 +2687,7 @@ public class CsvUtil {
 		String col  = args.get(++i);
 		String what = args.get(++i);
 		ctx.addProcessor(
-						new Converter.DateExtracter(col, dateFormatString, timezone, what));
+				 new Converter.DateExtracter(col, dateFormatString, timezone, what));
 
 		return i;
 	    });
@@ -2710,8 +2710,8 @@ public class CsvUtil {
 			dttm = Utils.parseDate(date);
 		    }
 		    ctx.addProcessor(
-						    new Converter.DateBefore(
-									     col, new SimpleDateFormat(sdf1), dttm));
+				     new Converter.DateBefore(
+							      col, new SimpleDateFormat(sdf1), dttm));
 
 		    return i;
 		} catch(Exception exc) {
@@ -2735,8 +2735,8 @@ public class CsvUtil {
 			dttm = Utils.parseDate(date);
 		    }
 		    ctx.addProcessor(
-						    new Converter.DateAfter(
-									    col, new SimpleDateFormat(sdf1), dttm));
+				     new Converter.DateAfter(
+							     col, new SimpleDateFormat(sdf1), dttm));
 
 		    return i;
 	       	} catch(Exception exc) {
@@ -2750,8 +2750,8 @@ public class CsvUtil {
 		String       col  = args.get(++i);
 		String       sdf  = args.get(++i);
 		ctx.addProcessor(
-						new RowCollector.DateLatest(
-									 cols, col, new SimpleDateFormat(sdf)));
+				 new RowCollector.DateLatest(
+							     cols, col, new SimpleDateFormat(sdf)));
 
 		return i;
 	    });
@@ -2870,15 +2870,15 @@ public class CsvUtil {
 	
 	defineFunction("-map", 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnMapper(getCols(args.get(++i)), args.get(++i),
-									   Utils.parseCommandLine(args.get(++i))));
+							    Utils.parseCommandLine(args.get(++i))));
 		return i;
 	    });
 
 
 	defineFunction("-split", 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnSplitter(
-									     args.get(++i), args.get(++i),
-									     Utils.split(args.get(++i), ",")));
+							      args.get(++i), args.get(++i),
+							      Utils.split(args.get(++i), ",")));
 		return i;
 	    });
 
@@ -2912,7 +2912,7 @@ public class CsvUtil {
 
 	defineFunction("-generate", 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Generator(args.get(++i), Double.parseDouble(args.get(++i)),
-									Double.parseDouble(args.get(++i))));
+							 Double.parseDouble(args.get(++i))));
 		return i;
 	    });
 
@@ -2932,8 +2932,8 @@ public class CsvUtil {
 
 	defineFunction("-scale", 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnScaler(getCols(args.get(++i)), Double.parseDouble(args.get(++i)),
-									   Double.parseDouble(args.get(++i)),
-									   Double.parseDouble(args.get(++i))));
+							    Double.parseDouble(args.get(++i)),
+							    Double.parseDouble(args.get(++i))));
 
 		return i;
 	    });
@@ -3125,8 +3125,8 @@ public class CsvUtil {
 
 	defineFunction("-groupfilter", 4,(ctx,args,i) -> {
 		ctx.addProcessor(new RowCollector.GroupFilter(getCols(args.get(++i)), Integer.parseInt(args.get(++i)),
-									  CsvOperator.getOperator(args.get(++i)),
-									  args.get(++i)));
+							      CsvOperator.getOperator(args.get(++i)),
+							      args.get(++i)));
 		return i;
 	    });
 
@@ -3176,7 +3176,7 @@ public class CsvUtil {
 		String key   = args.get(++i);
 		String value = args.get(++i);
 		ctx.addProcessor(
-						new RowCollector.MaxValue(key, value));
+				 new RowCollector.MaxValue(key, value));
 
 		return i;
 	    });
@@ -3186,7 +3186,7 @@ public class CsvUtil {
 		String last = args.get(args.size() - 1);
 		if (last.equals("-print") || last.equals("-p")) {
 		    ctx.addProcessor(
-						    new Processor.Printer(ctx.getPrintFields(), false));
+				     new Processor.Printer(ctx.getPrintFields(), false));
 		} else if (last.equals("-table")) {
 		    ctx.addProcessor(new RowCollector.Html());
 		}
@@ -3247,13 +3247,13 @@ public class CsvUtil {
 
 	defineFunction("-dump",0,(ctx,args,i) -> {
 		ctx.addProcessor(
-						new Processor.Printer(ctx.getPrintFields(), false));
+				 new Processor.Printer(ctx.getPrintFields(), false));
 		return i;
 	    });
 
 	defineFunction("-record",0,(ctx,args,i) -> {
 		ctx.addProcessor(
-						new Processor.Prettifier());
+				 new Processor.Prettifier());
 		return i;
 	    });
 
@@ -3291,8 +3291,8 @@ public class CsvUtil {
 			template = IO.readContents(new File(template));
 		    }
 		    ctx.addProcessor(
-						    new Processor.Printer(
-									  prefix, template, delim, suffix));
+				     new Processor.Printer(
+							   prefix, template, delim, suffix));
 
 		    return i;
 		} catch(Exception exc) {
@@ -3554,7 +3554,7 @@ public class CsvUtil {
     /**
      * _more_
      *
-     * @param info _more_
+     * @param ctx _more_
      * @param filterToAddTo _more_
      * @param converter _more_
      */

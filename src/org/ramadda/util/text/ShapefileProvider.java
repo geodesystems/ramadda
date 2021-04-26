@@ -52,12 +52,12 @@ public class ShapefileProvider extends DataProvider.BulkDataProvider {
     /**
      * _more_
      *
-     * @param info _more_
+     * @param ctx _more_
      * @param s _more_
      *
      * @throws Exception _more_
      */
-    public void tokenize(TextReader info, String s) throws Exception {}
+    public void tokenize(TextReader ctx, String s) throws Exception {}
 
 
     /**

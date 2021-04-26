@@ -884,12 +884,12 @@ public class TextReader implements Cloneable {
     /**
      * _more_
      *
-     * @param info _more_
+     * @param ctx _more_
      * @param line _more_
      *
      * @return _more_
      */
-    public boolean lineOk(TextReader info, String line) {
+    public boolean lineOk(String line) {
         if ((comment != null) && line.startsWith(comment)) {
             return false;
         }

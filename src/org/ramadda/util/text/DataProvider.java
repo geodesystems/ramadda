@@ -74,12 +74,12 @@ public abstract class DataProvider {
      *
      *
      * @param csvUtil _more_
-     * @param info _more_
+     * @param ctx _more_
      * @param stream _more_
      *
      * @throws Exception _more_
      */
-    public void initialize(CsvUtil csvUtil, TextReader info)
+    public void initialize(CsvUtil csvUtil, TextReader ctx)
 	throws Exception {}
 
 
@@ -178,12 +178,12 @@ public abstract class DataProvider {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param s _more_
          *
          * @throws Exception _more_
          */
-        public abstract void tokenize(TextReader info, String s)
+        public abstract void tokenize(TextReader ctx, String s)
          throws Exception;
 
 
@@ -231,12 +231,12 @@ public abstract class DataProvider {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param s _more_
          *
          * @throws Exception _more_
          */
-        public void tokenize(TextReader info, String s) throws Exception {
+        public void tokenize(TextReader ctx, String s) throws Exception {
 
             int count = Utils.getProperty(props, "count", 1);
             if ((pattern == null) || (pattern.trim().length() == 0)) {
@@ -416,13 +416,13 @@ public abstract class DataProvider {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param s _more_
          *
          * @throws Exception _more_
          */
-        public void tokenize(TextReader info, String s) throws Exception {
-            int numLines = info.getMaxRows();
+        public void tokenize(TextReader ctx, String s) throws Exception {
+            int numLines = ctx.getMaxRows();
             pattern = Utils.convertPattern(pattern);
             if (cols.length() > 0) {
                 addRow(new Row(Utils.split(cols, ",")));
@@ -514,12 +514,12 @@ public abstract class DataProvider {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param s _more_
          *
          * @throws Exception _more_
          */
-        public void tokenize(TextReader info, String s) throws Exception {
+        public void tokenize(TextReader ctx, String s) throws Exception {
 	    boolean debug = false;
 
             int        xcnt  = 0;
@@ -827,7 +827,7 @@ public abstract class DataProvider {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param s _more_
          *
          *
@@ -904,12 +904,12 @@ public abstract class DataProvider {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param s _more_
          *
          * @throws Exception _more_
          */
-        public void tokenize(TextReader info, String s) throws Exception {
+        public void tokenize(TextReader ctx, String s) throws Exception {
 
             Element root   = XmlUtil.getRoot(s);
             Row     header = new Row();
@@ -1042,7 +1042,7 @@ public abstract class DataProvider {
         }
 
 
-        public void tokenize(TextReader info, String s)
+        public void tokenize(TextReader ctx, String s)
 	    throws Exception {
 	}
 
@@ -1050,7 +1050,7 @@ public abstract class DataProvider {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param s _more_
          *
          * @throws Exception _more_
@@ -1202,12 +1202,12 @@ public abstract class DataProvider {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param s _more_
          *
          * @throws Exception _more_
          */
-        public void tokenize(TextReader info, String s) throws Exception {
+        public void tokenize(TextReader ctx, String s) throws Exception {
             addRow(new Row(header));
             if (pattern.length() == 0) {
                 return;
@@ -1269,12 +1269,12 @@ public abstract class DataProvider {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param s _more_
          *
          * @throws Exception _more_
          */
-        public void tokenize(TextReader info, String s) throws Exception {
+        public void tokenize(TextReader ctx, String s) throws Exception {
             Row headerRow = new Row();
             addRow(headerRow);
             for (String tok : Utils.split(header, ",")) {
@@ -1357,19 +1357,19 @@ public abstract class DataProvider {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param s _more_
          *
          * @throws Exception _more_
          */
-        public void tokenize(TextReader info, String s) throws Exception {
+        public void tokenize(TextReader ctx, String s) throws Exception {
             Row headerRow = new Row();
             addRow(headerRow);
             for (String tok : Utils.split(header, ",")) {
                 headerRow.add(tok);
             }
-            if (info.getDebug()) {
-                info.printDebug("-text3",
+            if (ctx.getDebug()) {
+                ctx.printDebug("-text3",
                                 "Parsing text input\n\tpattern:"
                                 + tokenPattern);
             }
@@ -1377,15 +1377,15 @@ public abstract class DataProvider {
             while (true) {
                 Matcher m1 = p1.matcher(s);
                 if ( !m1.find()) {
-                    info.printDebug("-text3", "no match");
+                    ctx.printDebug("-text3", "no match");
 
                     //              System.err.println("no match");
                     break;
                 }
                 //              System.err.println("match");
                 s = s.substring(m1.end());
-                if (info.getDebug()) {
-                    info.printDebug("-text3",
+                if (ctx.getDebug()) {
+                    ctx.printDebug("-text3",
                                     "match group count:" + m1.groupCount());
                 }
                 //              System.err.println("REMAINDER:" + s);
@@ -1396,8 +1396,8 @@ public abstract class DataProvider {
                     row.add(tok);
                 }
             }
-            if (info.getDebug()) {
-                info.printDebug("\tdone parsing input #rows:"
+            if (ctx.getDebug()) {
+                ctx.printDebug("\tdone parsing input #rows:"
                                 + getRows().size());
             }
         }
@@ -1444,12 +1444,12 @@ public abstract class DataProvider {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param s _more_
          *
          * @throws Exception _more_
          */
-        public void tokenize(TextReader info, String s) throws Exception {
+        public void tokenize(TextReader ctx, String s) throws Exception {
             Row headerRow = new Row();
             addRow(headerRow);
             for (String tok : Utils.split(header, ",")) {
@@ -1612,7 +1612,7 @@ public abstract class DataProvider {
                 }
 
 
-                if ( !ctx.lineOk(ctx, line)) {
+                if ( !ctx.lineOk(line)) {
                     continue;
                 }
 

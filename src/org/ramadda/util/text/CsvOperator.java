@@ -224,12 +224,12 @@ public abstract class CsvOperator {
     /**
      * _more_
      *
-     * @param info _more_
+     * @param ctx _more_
      * @param row _more_
      *
      * @throws Exception _more_
      */
-    public void processFirstRow(TextReader info, Row row) throws Exception {}
+    public void processFirstRow(TextReader ctx, Row row) throws Exception {}
 
 
 
@@ -281,15 +281,15 @@ public abstract class CsvOperator {
     /**
      * _more_
      *
-     * @param info _more_
+     * @param ctx _more_
      *
      * @return _more_
      */
-    public int getIndex(TextReader info) {
+    public int getIndex(TextReader ctx) {
         if (index != UNDEFINED_INDEX) {
             return index;
         }
-	List<Integer>  indices = getIndices(info);
+	List<Integer>  indices = getIndices(ctx);
 	if(indices.size()==0) throw new IllegalStateException("Could not find index for " + getClass().getSimpleName());
 	index = indices.get(0);
 
@@ -385,12 +385,12 @@ public abstract class CsvOperator {
      *
      *
      *
-     * @param info _more_
+     * @param ctx _more_
      * @param indices _more_
      * @param s _more_
      *
      */
-    public void getColumnIndex(TextReader info, List<Integer> indices,
+    public void getColumnIndex(TextReader ctx, List<Integer> indices,
                                String s) {
         s = s.toLowerCase().trim();
         List<String> toks  = Utils.splitUpTo(s, "-", 2);
@@ -480,13 +480,13 @@ public abstract class CsvOperator {
     /**
      * _more_
      *
-     * @param info _more_
+     * @param ctx _more_
      *
      * @return _more_
      */
-    public List<Integer> getIndices(TextReader info) {
+    public List<Integer> getIndices(TextReader ctx) {
         if (indices == null) {
-            indices = getIndices(info, sindices);
+            indices = getIndices(ctx, sindices);
         }
 
         return indices;
@@ -496,19 +496,19 @@ public abstract class CsvOperator {
      * _more_
      *
      *
-     * @param info _more_
+     * @param ctx _more_
      * @param cols _more_
      *
      * @return _more_
      */
-    public List<Integer> getIndices(TextReader info, List<String> cols) {
+    public List<Integer> getIndices(TextReader ctx, List<String> cols) {
         debug("getIndices:" + cols);
         if (cols == null) {
             return null;
         }
         List<Integer> indices = new ArrayList<Integer>();
         for (String s : cols) {
-            getColumnIndex(info, indices, s);
+            getColumnIndex(ctx, indices, s);
         }
 
         return indices;
@@ -530,14 +530,14 @@ public abstract class CsvOperator {
     /**
      * _more_
      *
-     * @param info _more_
+     * @param ctx _more_
      * @param idx _more_
      *
      * @return _more_
      */
-    public int getIndex(TextReader info, String idx) {
+    public int getIndex(TextReader ctx, String idx) {
         List<Integer> indices = new ArrayList<Integer>();
-        getColumnIndex(info, indices, idx);
+        getColumnIndex(ctx, indices, idx);
         if (indices.size() == 0) {
             throw new IllegalArgumentException("Could not find column index:"
                     + idx);
@@ -553,13 +553,13 @@ public abstract class CsvOperator {
     /**
      * _more_
      *
-     * @param info _more_
+     * @param ctx _more_
      * @param row _more_
      *
      * @return _more_
      */
-    public Row filterValues(TextReader info, Row row) {
-        row.setValues(filterValues(info, row.getValues()));
+    public Row filterValues(TextReader ctx, Row row) {
+        row.setValues(filterValues(ctx, row.getValues()));
 
         return row;
     }
@@ -567,14 +567,14 @@ public abstract class CsvOperator {
     /**
      * _more_
      *
-     * @param info _more_
+     * @param ctx _more_
      * @param values _more_
      *
      * @return _more_
      */
-    public List filterValues(TextReader info, List values) {
+    public List filterValues(TextReader ctx, List values) {
         List             newValues = new ArrayList();
-        HashSet<Integer> indexMap  = getIndexMap(info);
+        HashSet<Integer> indexMap  = getIndexMap(ctx);
         for (int i = 0; i < values.size(); i++) {
             if ( !indexMap.contains(i)) {
                 newValues.add(values.get(i));
@@ -588,13 +588,13 @@ public abstract class CsvOperator {
     /**
      * _more_
      *
-     * @param info _more_
+     * @param ctx _more_
      *
      * @return _more_
      */
-    public HashSet<Integer> getIndexMap(TextReader info) {
+    public HashSet<Integer> getIndexMap(TextReader ctx) {
         if (indexMap == null) {
-            List<Integer> indices = getIndices(info);
+            List<Integer> indices = getIndices(ctx);
             indexMap = new HashSet();
             for (Integer i : indices) {
                 indexMap.add(i);

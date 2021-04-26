@@ -135,7 +135,7 @@ public  class RowCollector extends Processor {
      * _more_
      *
      *
-     * @param info _more_
+     * @param ctx _more_
      * @param row _more_
      *
      * @return _more_
@@ -143,18 +143,9 @@ public  class RowCollector extends Processor {
      * @throws Exception _more_
      */
     @Override
-    public Row processRow(TextReader info, Row row) throws Exception {
+    public Row processRow(TextReader ctx, Row row) throws Exception {
 	rows.add(row);
 	return row;
-    }
-
-    /**
-     * _more_
-     *
-     * @param row _more_
-     */
-    public void addRow(Row row) {
-	rows.add(row);
     }
 
 
@@ -255,7 +246,7 @@ public  class RowCollector extends Processor {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param r _more_
          *
          *
@@ -263,16 +254,16 @@ public  class RowCollector extends Processor {
          * @throws Exception On badness
          */
         @Override
-        public List<Row> finish(TextReader info, List<Row> r)
+        public List<Row> finish(TextReader ctx, List<Row> r)
 	    throws Exception {
             List          keys         = new ArrayList();
-            List<Integer> valueIndices = getIndices(info, valueCols);
+            List<Integer> valueIndices = getIndices(ctx, valueCols);
             List<Row>     rows         = new ArrayList<Row>();
             List<Row>     allRows      = getRows();
             Row           headerRow    = allRows.get(0);
             allRows.remove(0);
             Hashtable<Object, List<Row>> groups = groupRows(allRows,
-							    getIndices(info), keys);
+							    getIndices(ctx), keys);
             for (int idx : valueIndices) {
                 if (idx >= headerRow.size()) {
                     continue;
@@ -371,7 +362,7 @@ public  class RowCollector extends Processor {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param rows _more_
          *
          *
@@ -379,7 +370,7 @@ public  class RowCollector extends Processor {
          * @throws Exception On badness
          */
         @Override
-        public List<Row> finish(TextReader info, List<Row> rows)
+        public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
             List<Row> newRows = new ArrayList<Row>();
             for (Row row : getRows()) {
@@ -428,7 +419,7 @@ public  class RowCollector extends Processor {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param rows _more_
          *
          *
@@ -436,7 +427,7 @@ public  class RowCollector extends Processor {
          * @throws Exception On badness
          */
         @Override
-        public List<Row> finish(TextReader info, List<Row> rows)
+        public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
             Hashtable<String, Row> map      = new Hashtable<String, Row>();
             int                    keyIdx   = getIndex(this.key);
@@ -494,7 +485,7 @@ public  class RowCollector extends Processor {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param rows _more_
          *
          *
@@ -502,7 +493,7 @@ public  class RowCollector extends Processor {
          * @throws Exception On badness
          */
         @Override
-        public List<Row> finish(TextReader info, List<Row> rows)
+        public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
             List<Row> newRows = new ArrayList<Row>();
             newRows.add(rows.get(0));
@@ -516,7 +507,7 @@ public  class RowCollector extends Processor {
 
     }
 
-        /**
+    /**
      * Class description
      *
      *
@@ -543,16 +534,16 @@ public  class RowCollector extends Processor {
          * _more_
          *
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param rows _more_
          *
          * @return _more_
          *
          * @throws Exception _more_
          */
-        public List<Row> finish(TextReader info, List<Row> rows)
+        public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
-            PrintWriter writer = info.getWriter();
+            PrintWriter writer = ctx.getWriter();
             for (Row row : rows) {
                 List values = row.getValues();
                 writer.print(prefix);
@@ -603,7 +594,7 @@ public  class RowCollector extends Processor {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param rows _more_
          *
          * @return _more_
@@ -611,9 +602,9 @@ public  class RowCollector extends Processor {
          * @throws Exception _more_
          */
         @Override
-        public List<Row> finish(TextReader info, List<Row> rows)
+        public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
-            PrintWriter writer = info.getWriter();
+            PrintWriter writer = ctx.getWriter();
             writer.println("</" + tag + ">");
             return rows;
         }
@@ -621,7 +612,7 @@ public  class RowCollector extends Processor {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param row _more_
          *
          * @return _more_
@@ -629,8 +620,8 @@ public  class RowCollector extends Processor {
          * @throws Exception _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row) throws Exception {
-            PrintWriter writer = info.getWriter();
+        public Row processRow(TextReader ctx, Row row) throws Exception {
+            PrintWriter writer = ctx.getWriter();
             if (header == null) {
                 header = row;
                 writer.println("<" + tag + ">");
@@ -690,7 +681,7 @@ public  class RowCollector extends Processor {
          * _more_
          *
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param rows _more_
          *
          *
@@ -698,9 +689,9 @@ public  class RowCollector extends Processor {
          * @throws Exception On badness
          */
         @Override
-        public List<Row> finish(TextReader info, List<Row> rows)
+        public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
-            int column = getIndex(info);
+            int column = getIndex(ctx);
             if (rows.size() == 0) {
                 return rows;
             }
@@ -741,9 +732,9 @@ public  class RowCollector extends Processor {
                 //                System.err.println("writing:" + filename);
                 PrintWriter writer = new PrintWriter(
 						     new FileOutputStream(
-									  info.getFilepath(filename)));
+									  ctx.getFilepath(filename)));
                 Processor.Printer p = new Processor.Printer(false);
-                p.writeCsv(info, writer, myRows);
+                p.writeCsv(ctx, writer, myRows);
                 writer.close();
             }
 
@@ -780,7 +771,7 @@ public  class RowCollector extends Processor {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param row _more_
          *
          * @return _more_
@@ -788,11 +779,11 @@ public  class RowCollector extends Processor {
          * @throws Exception _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row) throws Exception {
-            if (info.getDebug()) {
+        public Row processRow(TextReader ctx, Row row) throws Exception {
+            if (ctx.getDebug()) {
                 return row;
             }
-            printRow(info, row, true);
+            printRow(ctx, row, true);
 
             return row;
         }
@@ -800,30 +791,30 @@ public  class RowCollector extends Processor {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param row _more_
          * @param addCnt _more_
          *
          * @throws Exception _more_
          */
-        public void printRow(TextReader info, Row row, boolean addCnt)
+        public void printRow(TextReader ctx, Row row, boolean addCnt)
 	    throws Exception {
             List values = row.getValues();
             if (cnt == 0) {
-                info.getWriter().println(
-					 "<table  class='stripe hover ramadda-table ramadda-csv-table' >");
+                ctx.getWriter().println(
+					"<table  class='stripe hover ramadda-table ramadda-csv-table' >");
             }
             maxCount = Math.max(maxCount, values.size());
             String open  = "<td>";
             String close = "</td>";
 
             if (cnt == 0) {
-                info.getWriter().println("<thead>");
-                info.getWriter().println("<tr valign=top>");
+                ctx.getWriter().println("<thead>");
+                ctx.getWriter().println("<tr valign=top>");
                 open  = "<th>";
                 close = "</th>";
             } else {
-                info.getWriter().println("<tr  valign=top>");
+                ctx.getWriter().println("<tr  valign=top>");
             }
 
 
@@ -846,29 +837,29 @@ public  class RowCollector extends Processor {
 
             for (int i = 0; i < values.size(); i++) {
                 if ((i == 0) && addCnt) {
-                    info.getWriter().print(open);
-                    info.getWriter().print("<div style='" + style + "'>");
+                    ctx.getWriter().print(open);
+                    ctx.getWriter().print("<div style='" + style + "'>");
                     if (cnt == 0) {
-                        info.getWriter().print("&nbsp;");
+                        ctx.getWriter().print("&nbsp;");
                     } else {
-                        info.getWriter().print("#" + cnt);
+                        ctx.getWriter().print("#" + cnt);
                     }
-                    info.getWriter().print("");
-                    info.getWriter().print("</div>");
-                    info.getWriter().print(close);
+                    ctx.getWriter().print("");
+                    ctx.getWriter().print("</div>");
+                    ctx.getWriter().print(close);
                 }
-                info.getWriter().print(open);
-                info.getWriter().print("<div style='" + style + "'>");
+                ctx.getWriter().print(open);
+                ctx.getWriter().print("<div style='" + style + "'>");
                 if (cnt == 0) {
-                    info.getWriter().print("#" + i + "&nbsp;");
-                    info.getWriter().print("");
+                    ctx.getWriter().print("#" + i + "&nbsp;");
+                    ctx.getWriter().print("");
                     String label = Utils.makeLabel(""
 						   + values.get(i)).replaceAll(" ",
 									       "&nbsp;");
-                    info.getWriter().print(HU.span(label,
-						   HU.attr("title",
-							   label.replaceAll("\"",
-									    "&quot;"))));
+                    ctx.getWriter().print(HU.span(label,
+						  HU.attr("title",
+							  label.replaceAll("\"",
+									   "&quot;"))));
                 } else {
                     Object value = values.get(i);
                     String label = ((value == null)
@@ -876,25 +867,25 @@ public  class RowCollector extends Processor {
                                     : value.toString());
 		    //Check for images, hrefs, etc
 		    if(label.indexOf("<")>=0) {
-			info.getWriter().print(label);
+			ctx.getWriter().print(label);
 		    } else {
-			info.getWriter().print(HU.span(label,
-						       HU.attr("title", label)));
+			ctx.getWriter().print(HU.span(label,
+						      HU.attr("title", label)));
 		    }
                 }
-                info.getWriter().print("</div>");
-                info.getWriter().print(close);
+                ctx.getWriter().print("</div>");
+                ctx.getWriter().print(close);
             }
-            info.getWriter().print("\n");
+            ctx.getWriter().print("\n");
             if (cnt == 0) {
-                info.getWriter().println("</tr>");
-                info.getWriter().println("</thead>");
-                info.getWriter().println("<tbody>");
+                ctx.getWriter().println("</tr>");
+                ctx.getWriter().println("</thead>");
+                ctx.getWriter().println("<tbody>");
             } else {
                 for (int i = values.size(); i < maxCount; i++) {
-                    info.getWriter().print("<td></td>");
+                    ctx.getWriter().print("<td></td>");
                 }
-                info.getWriter().println("</tr>");
+                ctx.getWriter().println("</tr>");
             }
             cnt++;
         }
@@ -902,7 +893,7 @@ public  class RowCollector extends Processor {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param rows _more_
          *
          * @return _more_
@@ -910,14 +901,14 @@ public  class RowCollector extends Processor {
          * @throws Exception _more_
          */
         @Override
-        public List<Row> finish(TextReader info, List<Row> rows)
+        public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
-            if (info.getDebug()) {
-                info.getWriter().print("");
+            if (ctx.getDebug()) {
+                ctx.getWriter().print("");
                 return rows;
             }
-            info.getWriter().println("</tbody>");
-            info.getWriter().print("</table>");
+            ctx.getWriter().println("</tbody>");
+            ctx.getWriter().print("</table>");
             return rows;
         }
 
@@ -995,7 +986,7 @@ public  class RowCollector extends Processor {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param rows _more_
          *
          *
@@ -1003,16 +994,16 @@ public  class RowCollector extends Processor {
          * @throws Exception On badness
          */
         @Override
-        public List<Row> finish(TextReader info, List<Row> rows)
+        public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
 
             if (valueIndices == null) {
-                valueIndices     = getIndices(info, valueCols);
+                valueIndices     = getIndices(ctx, valueCols);
                 this.unfurlIndex = getIndex(unfurlCol);
                 this.uniqueIndex = getIndex(uniqueCol);
             }
 
-            List<Integer>   includes     = getIndices(info);
+            List<Integer>   includes     = getIndices(ctx);
             HashSet<String> seen         = new HashSet<String>();
             int             rowIndex     = 0;
             HashSet<String> newColumnMap = new HashSet<String>();
@@ -1175,16 +1166,16 @@ public  class RowCollector extends Processor {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param rows _more_
          *
          * @return _more_
          *
          * @throws Exception _more_
          */
-        public List<Row> finish(TextReader info, List<Row> rows)
+        public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
-            List<Integer>    indices   = getIndices(info);
+            List<Integer>    indices   = getIndices(ctx);
             HashSet<Integer> indexMap  = Utils.makeHashSet(indices);
             List<Row>        newRows   = new ArrayList<Row>();
             Row              header    = rows.get(0);
@@ -1246,7 +1237,7 @@ public  class RowCollector extends Processor {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param rows _more_
          *
          *
@@ -1254,7 +1245,7 @@ public  class RowCollector extends Processor {
          * @throws Exception On badness
          */
         @Override
-        public List<Row> finish(TextReader info, List<Row> rows)
+        public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
             List<Row>     newRows = new ArrayList<Row>();
             List<Row>     allRows = getRows();
@@ -1329,7 +1320,7 @@ public  class RowCollector extends Processor {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param rows _more_
          *
          *
@@ -1337,13 +1328,13 @@ public  class RowCollector extends Processor {
          * @throws Exception On badness
          */
         @Override
-        public List<Row> finish(TextReader info, List<Row> rows)
+        public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
             List<Row> newRows = new ArrayList<Row>();
-            int keyIndex = getIndices(info,
+            int keyIndex = getIndices(ctx,
                                       Utils.split(key, ",", true,
 						  true)).get(0);
-            int valueIndex = getIndices(info,
+            int valueIndex = getIndices(ctx,
                                         Utils.split(value, ",", true,
 						    true)).get(0);
             List<Row> allRows   = rows;
@@ -1410,7 +1401,7 @@ public  class RowCollector extends Processor {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param rows _more_
          *
          *
@@ -1418,11 +1409,11 @@ public  class RowCollector extends Processor {
          * @throws Exception On badness
          */
         @Override
-        public List<Row> finish(TextReader info, List<Row> rows)
+        public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
             HashSet       cols    = new HashSet();
             List<Row>     newRows = new ArrayList<Row>();
-            List<Integer> indices = getIndices(info);
+            List<Integer> indices = getIndices(ctx);
             for (int i : indices) {
                 cols.add(i);
             }
@@ -1499,7 +1490,7 @@ public  class RowCollector extends Processor {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param rows _more_
          *
          *
@@ -1507,9 +1498,9 @@ public  class RowCollector extends Processor {
          * @throws Exception On badness
          */
         @Override
-        public List<Row> finish(TextReader info, List<Row> rows)
+        public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
-            int index = getIndex(info);
+            int index = getIndex(ctx);
             rows = new ArrayList<Row>(getRows(rows));
             if (rows.size() == 0) {
                 return rows;
@@ -1568,8 +1559,6 @@ public  class RowCollector extends Processor {
 
         /**
          * _more_
-         *
-         * @param info _more_
          * @param row _more_
          *
          * @return _more_
@@ -1577,7 +1566,7 @@ public  class RowCollector extends Processor {
          * @throws Exception _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row) throws Exception {
+        public Row processRow(TextReader ctx, Row row) throws Exception {
             rowCnt++;
             if (headerRow == null) {
                 headerRow = row;
@@ -1595,16 +1584,14 @@ public  class RowCollector extends Processor {
 		    cols.get(i).addValue(row.getString(i));
             }
 
-            addRow(row);
-
-            return row;
+            return super.processRow(ctx, row);
         }
 
 
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param rows _more_
          *
          * @return _more_
@@ -1612,10 +1599,10 @@ public  class RowCollector extends Processor {
          * @throws Exception _more_
          */
         @Override
-        public List<Row> finish(TextReader info, List<Row> rows)
+        public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
 
-            PrintWriter w = info.getWriter();
+            PrintWriter w = ctx.getWriter();
 	    BiConsumer<String,String> layout = (label,value) -> {
 		w.print(HU.tag("table",
 			       HU.attrs("class", "left_right_table",
@@ -1626,53 +1613,53 @@ public  class RowCollector extends Processor {
 	    };
 
 	    Consumer<ColStat> printUniques = (col) -> {
-                        List<Object[]> values = new ArrayList<Object[]>();
-                        for (Enumeration keys = col.uniques.keys();
-			     keys.hasMoreElements(); ) {
-                            Object  key = keys.nextElement();
-                            Integer cnt = col.uniques.get(key);
-                            values.add(new Object[] { key, cnt });
-                        }
-                        Comparator comp = new Comparator() {
-				public int compare(Object o1, Object o2) {
-				    Object[] t1 = (Object[]) o1;
-				    Object[] t2 = (Object[]) o2;
+		List<Object[]> values = new ArrayList<Object[]>();
+		for (Enumeration keys = col.uniques.keys();
+		     keys.hasMoreElements(); ) {
+		    Object  key = keys.nextElement();
+		    Integer cnt = col.uniques.get(key);
+		    values.add(new Object[] { key, cnt });
+		}
+		Comparator comp = new Comparator() {
+			public int compare(Object o1, Object o2) {
+			    Object[] t1 = (Object[]) o1;
+			    Object[] t2 = (Object[]) o2;
 
-				    return ((int) t2[1]) - ((int) t1[1]);
-				}
-			    };
-
-                        Object[] array = values.toArray();
-                        Arrays.sort(array, comp);
-                        values = (List<Object[]>) Misc.toList(array); 
-			w.print(Utils.plural(values.size(), "unique value"));
-			if(justStats)
-			    w.print("<div style='margin-right:5px;max-height:300px;overflow-y:auto;'>");			
-			else
-			    w.print("<div style='margin-right:5px;max-height:100px;overflow-y:auto;'>");			
-			w.print("<table width=100% border=0 cellpadding=0 cellspacing=0>");
-			int tupleCnt=0;
-			String td = "<td style='border:none;padding:0px;padding-left:0px;padding-right:5px;' ";
-			for (Object[] tuple : values) {
-			    tupleCnt++;
-			    if((justStats && tupleCnt>50) || (!justStats && tupleCnt>20)) {
-				w.print("<tr>" + td+" colspan=2>...</td></tr>");
-				break;
-			    }
-			    Object key = tuple[0];
-			    int    cnt = (Integer) tuple[1];
-			    double percent = Math.round(1000.0 * cnt
-							/ (double) (rowCnt-1)) / 10;
-
-			    w.print("<tr valign=bottom title='" + percent+"%'>");
-			    w.print(td+ " width=1%>" + key+"</td>");
-			    w.print(td+" width=1% align=right>" + cnt +"</td>");
-			    w.print("<td style='border:none;padding:0px;' ><div style='margin-top:3px;display:inline-block;background:blue;height:1em;width:" + percent +"%;'></div></td>");
-
-			    w.print("</tr>");			    
+			    return ((int) t2[1]) - ((int) t1[1]);
 			}
-			w.print("</table>");
-			w.print("</div>");
+		    };
+
+		Object[] array = values.toArray();
+		Arrays.sort(array, comp);
+		values = (List<Object[]>) Misc.toList(array); 
+		w.print(Utils.plural(values.size(), "unique value"));
+		if(justStats)
+		    w.print("<div style='margin-right:5px;max-height:300px;overflow-y:auto;'>");			
+		else
+		    w.print("<div style='margin-right:5px;max-height:100px;overflow-y:auto;'>");			
+		w.print("<table width=100% border=0 cellpadding=0 cellspacing=0>");
+		int tupleCnt=0;
+		String td = "<td style='border:none;padding:0px;padding-left:0px;padding-right:5px;' ";
+		for (Object[] tuple : values) {
+		    tupleCnt++;
+		    if((justStats && tupleCnt>50) || (!justStats && tupleCnt>20)) {
+			w.print("<tr>" + td+" colspan=2>...</td></tr>");
+			break;
+		    }
+		    Object key = tuple[0];
+		    int    cnt = (Integer) tuple[1];
+		    double percent = Math.round(1000.0 * cnt
+						/ (double) (rowCnt-1)) / 10;
+
+		    w.print("<tr valign=bottom title='" + percent+"%'>");
+		    w.print(td+ " width=1%>" + key+"</td>");
+		    w.print(td+" width=1% align=right>" + cnt +"</td>");
+		    w.print("<td style='border:none;padding:0px;' ><div style='margin-top:3px;display:inline-block;background:blue;height:1em;width:" + percent +"%;'></div></td>");
+
+		    w.print("</tr>");			    
+		}
+		w.print("</table>");
+		w.print("</div>");
 
 	    };
 
@@ -1790,15 +1777,15 @@ public  class RowCollector extends Processor {
 			    r.add(col.format(row.get(i)));
                     }
 		    if(!justStats)
-			printRow(info, r, false);
+			printRow(ctx, r, false);
                 }
                 w.println("</tbody>");
                 w.println("</table>");
             } else {
                 for (ColStat col : cols) {
                     cnt++;
-		    info.getWriter().print("#" + cnt + " ");
-                    col.finish(info.getWriter());
+		    ctx.getWriter().print("#" + cnt + " ");
+                    col.finish(ctx.getWriter());
                 }
             }
 
@@ -2075,7 +2062,7 @@ public  class RowCollector extends Processor {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param rows _more_
          *
          *
@@ -2083,13 +2070,13 @@ public  class RowCollector extends Processor {
          * @throws Exception On badness
          */
         @Override
-        public List<Row> finish(TextReader info, List<Row> rows)
+        public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
 
-            uniqueIndices = getIndices(info, keys);
-            valueIndices  = getIndices(info, values);
-            valueIndices  = getIndices(info, values);
-            extraIndices  = getIndices(info, extra);
+            uniqueIndices = getIndices(ctx, keys);
+            valueIndices  = getIndices(ctx, values);
+            valueIndices  = getIndices(ctx, values);
+            extraIndices  = getIndices(ctx, extra);
             List<Integer> allIndices = new ArrayList<Integer>();
             allIndices.addAll(uniqueIndices);
             allIndices.addAll(valueIndices);
@@ -2256,7 +2243,7 @@ public  class RowCollector extends Processor {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param finalRows _more_
          *
          *
@@ -2264,9 +2251,9 @@ public  class RowCollector extends Processor {
          * @throws Exception On badness
          */
         @Override
-        public List<Row> finish(TextReader info, List<Row> finalRows)
+        public List<Row> finish(TextReader ctx, List<Row> finalRows)
 	    throws Exception {
-            List<Integer> indices   = getIndices(info);
+            List<Integer> indices   = getIndices(ctx);
             List<Row>     allRows   = getRows();
             List<Row>     newRows   = new ArrayList<Row>();
             Row           headerRow = allRows.get(0);
@@ -2362,14 +2349,14 @@ public  class RowCollector extends Processor {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param row _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row) throws Exception {
-	    super.processRow(info, row);
+        public Row processRow(TextReader ctx, Row row) throws Exception {
+	    super.processRow(ctx, row);
 	    if(sdest!=null) dest = getColumnIndex(sdest);
 	    sdest = null;
 	    return null;
@@ -2379,7 +2366,7 @@ public  class RowCollector extends Processor {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param tmp _more_
          *
          * @return _more_
@@ -2387,8 +2374,8 @@ public  class RowCollector extends Processor {
          * @throws Exception _more_
          */
         @Override
-        public List<Row> finish(TextReader info, List<Row> tmp)
-                throws Exception {
+        public List<Row> finish(TextReader ctx, List<Row> tmp)
+	    throws Exception {
 	    tmp = getRows(tmp);
 	    List<Row> result = new ArrayList<Row>();
 	    for(Row row: tmp) {
@@ -2396,7 +2383,7 @@ public  class RowCollector extends Processor {
 	    }
 	    System.err.println("TMP: " + tmp.size());
 	    Row sample = tmp.get(1);
-	    for(int index: getIndices(info)) {
+	    for(int index: getIndices(ctx)) {
 		for(Row row: tmp) {
 		    Object v = row.get(index);
 		    row.set(index,"");
@@ -2470,19 +2457,19 @@ public  class RowCollector extends Processor {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param row _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row) {
+        public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
                 header = row;
                 return null;
             }
             if (keyindices == null) {
-                keyindices = getIndices(info, keys);
+                keyindices = getIndices(ctx, keys);
             }
             debug("date latest.processRow");
             String key = "";
@@ -2525,7 +2512,7 @@ public  class RowCollector extends Processor {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param tmp _more_
          *
          * @return _more_
@@ -2533,8 +2520,8 @@ public  class RowCollector extends Processor {
          * @throws Exception _more_
          */
         @Override
-        public List<Row> finish(TextReader info, List<Row> tmp)
-                throws Exception {
+        public List<Row> finish(TextReader ctx, List<Row> tmp)
+	    throws Exception {
             debug("date latest.finish");
             List<Row> result = new ArrayList<Row>();
             result.add(header);

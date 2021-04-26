@@ -45,14 +45,14 @@ public abstract class DataSink extends Processor implements Cloneable, CsvPlugin
     /**
      * _more_
      *
-     * @param info _more_
+     * @param ctx _more_
      * @param row _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public Row processRow(TextReader info, Row row) throws Exception {
+    public Row processRow(TextReader ctx, Row row) throws Exception {
         return row;
     }
 
@@ -60,14 +60,14 @@ public abstract class DataSink extends Processor implements Cloneable, CsvPlugin
     /**
      * _more_
      *
-     * @param info _more_
+     * @param ctx _more_
      * @param rows _more_
      *
      *
      * @return _more_
      * @throws Exception On badness
      */
-    public List<Row> finish(TextReader info, List<Row> rows)
+    public List<Row> finish(TextReader ctx, List<Row> rows)
 	throws Exception {
         return rows;
     }

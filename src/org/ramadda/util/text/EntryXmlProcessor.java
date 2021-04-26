@@ -61,11 +61,11 @@ public class EntryXmlProcessor extends RowCollector {
     /**
      * _more_
      *
-     * @param info _more_
+     * @param ctx _more_
      *
      * @throws Exception _more_
      */
-    public void finish(TextReader info) throws Exception {
+    public void finish(TextReader ctx) throws Exception {
 
         String template = null;
         if (new File("template.xml").exists()) {

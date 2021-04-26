@@ -44,8 +44,6 @@ import java.util.regex.*;
 public class Filter extends Processor {
 
 
-
-
     /** _more_ */
     private String commentPrefix = "#";
 
@@ -70,7 +68,7 @@ public class Filter extends Processor {
     /**
      * _more_
      *
-     * @param info _more_
+     * @param ctx _more_
      * @param row _more_
      *
      * @return _more_
@@ -78,9 +76,9 @@ public class Filter extends Processor {
      * @throws Exception _more_
      */
     @Override
-    public Row processRow(TextReader info, Row row) throws Exception {
-        info.setCurrentOperator(this);
-        if (rowOk(info, row)) {
+    public Row processRow(TextReader ctx, Row row) throws Exception {
+        ctx.setCurrentOperator(this);
+        if (rowOk(ctx, row)) {
             return row;
         } else {
             return null;
@@ -94,12 +92,12 @@ public class Filter extends Processor {
      * _more_
      *
      *
-     * @param info _more_
+     * @param ctx _more_
      * @param row _more_
      *
      * @return _more_
      */
-    public boolean rowOk(TextReader info, Row row) {
+    public boolean rowOk(TextReader ctx, Row row) {
         return true;
     }
 
@@ -180,11 +178,11 @@ public class Filter extends Processor {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          *
          * @return _more_
          */
-        public int getIndex(TextReader info) {
+        public int getIndex(TextReader ctx) {
             if (col >= 0) {
                 return col;
             }
@@ -192,7 +190,7 @@ public class Filter extends Processor {
                 return -11;
             }
             ArrayList<Integer> tmp = new ArrayList<Integer>();
-            getColumnIndex(info,tmp, scol);
+            getColumnIndex(ctx,tmp, scol);
             col = tmp.get(0);
 
             return col;
@@ -244,18 +242,18 @@ public class Filter extends Processor {
          * _more_
          *
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param row _more_
          *
          * @return _more_
          */
         @Override
-        public boolean rowOk(TextReader info, Row row) {
+        public boolean rowOk(TextReader ctx, Row row) {
             if (filters.size() == 0) {
                 return true;
             }
             for (Filter filter : filters) {
-                if ( !filter.rowOk(info, row)) {
+                if ( !filter.rowOk(ctx, row)) {
                     if (andLogic) {
                         return false;
                     }
@@ -359,17 +357,17 @@ public class Filter extends Processor {
          * _more_
          *
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param row _more_
          *
          * @return _more_
          */
         @Override
-        public boolean rowOk(TextReader info, Row row) {
+        public boolean rowOk(TextReader ctx, Row row) {
             if (cnt++ == 0) {
                 return true;
             }
-            int idx = getIndex(info);
+            int idx = getIndex(ctx);
             if (idx >= row.size()) {
                 return doNegate(false);
             }
@@ -445,17 +443,17 @@ public class Filter extends Processor {
          * _more_
          *
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param row _more_
          *
          * @return _more_
          */
         @Override
-        public boolean rowOk(TextReader info, Row row) {
+        public boolean rowOk(TextReader ctx, Row row) {
             if (cnt++ == 0) {
                 return true;
             }
-            int     idx   = getIndex(info);
+            int     idx   = getIndex(ctx);
             String  v     = row.getString(idx);
             Integer count = map.get(v);
             if (count == null) {
@@ -505,13 +503,13 @@ public class Filter extends Processor {
          * _more_
          *
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param row _more_
          *
          * @return _more_
          */
         @Override
-        public boolean rowOk(TextReader info, Row row) {
+        public boolean rowOk(TextReader ctx, Row row) {
             if (start > 0) {
                 start--;
 
@@ -557,20 +555,20 @@ public class Filter extends Processor {
          * _more_
          *
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param row _more_
          *
          * @return _more_
          */
         @Override
-        public boolean rowOk(TextReader info, Row row) {
+        public boolean rowOk(TextReader ctx, Row row) {
             if (seenStop) {
                 return false;
             }
             String line = row.toString();
             if (line.matches(pattern) || (line.indexOf(pattern) >= 0)) {
                 seenStop = true;
-                info.stopRunning();
+                ctx.stopRunning();
 
                 return false;
             }
@@ -612,13 +610,13 @@ public class Filter extends Processor {
          * _more_
          *
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param row _more_
          *
          * @return _more_
          */
         @Override
-        public boolean rowOk(TextReader info, Row row) {
+        public boolean rowOk(TextReader ctx, Row row) {
             if (seenStart) {
                 return true;
             }
@@ -662,13 +660,13 @@ public class Filter extends Processor {
          * _more_
          *
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param row _more_
          *
          * @return _more_
          */
         @Override
-        public boolean rowOk(TextReader info, Row row) {
+        public boolean rowOk(TextReader ctx, Row row) {
             if (row.size() < cnt) {
                 return false;
             }
@@ -704,13 +702,13 @@ public class Filter extends Processor {
          * _more_
          *
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param row _more_
          *
          * @return _more_
          */
         @Override
-        public boolean rowOk(TextReader info, Row row) {
+        public boolean rowOk(TextReader ctx, Row row) {
             if (row.size() > cnt) {
                 return false;
             }
@@ -762,17 +760,17 @@ public class Filter extends Processor {
          * _more_
          *
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param row _more_
          *
          * @return _more_
          */
         @Override
-        public boolean rowOk(TextReader info, Row row) {
+        public boolean rowOk(TextReader ctx, Row row) {
             if (cnt++ == 0) {
                 return true;
             }
-            for (int idx : getIndices(info)) {
+            for (int idx : getIndices(ctx)) {
                 if (idx >= row.size()) {
                     continue;
                 }
@@ -859,13 +857,13 @@ public class Filter extends Processor {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param row _more_
          *
          * @return _more_
          */
         @Override
-        public boolean rowOk(TextReader info, Row row) {
+        public boolean rowOk(TextReader ctx, Row row) {
             boolean inRange = false;
             for (int rowIdx : rows) {
                 if ((rowIdx == -1) && cutOne) {
@@ -926,13 +924,13 @@ public class Filter extends Processor {
         /**
          * _more_
          *
-         * @param info _more_
+         * @param ctx _more_
          * @param row _more_
          *
          * @return _more_
          */
         @Override
-        public boolean rowOk(TextReader info, Row row) {
+        public boolean rowOk(TextReader ctx, Row row) {
             boolean       inRange = false;
             StringBuilder sb      = new StringBuilder();
             for (int i : cols) {
