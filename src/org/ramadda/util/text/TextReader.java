@@ -802,10 +802,10 @@ public class TextReader implements Cloneable {
             if (prependReader != null) {
                 c = prependReader.read();
                 if (c == -1) {
-                    this.prependReader = null;
-                    c = getReader().read();
+                    prependReader = null;
                 }
-            } else {
+            }
+	    if(c==UNDEF) {
 		while(pruneBytes>0) {
 		    if(!buff.hasRemaining()) buff= getBuffer();
 		    if(buff==null) return UNDEF;
@@ -1420,8 +1420,8 @@ public class TextReader implements Cloneable {
      */
     public BufferedReader getReader() {
         if (reader == null) {
-            reader = new BufferedReader(
-					new InputStreamReader(getInput().getInputStream()));
+	    NamedInputStream input = getInput();
+            reader = new BufferedReader(new InputStreamReader(input.getInputStream()));
         }
         return reader;
     }
