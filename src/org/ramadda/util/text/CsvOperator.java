@@ -76,8 +76,6 @@ public abstract class CsvOperator {
     /** _more_ */
     public static int OP_MATCH = 7;
 
-
-
     /** _more_ */
     protected int rowCnt = 0;
 
@@ -264,7 +262,9 @@ public abstract class CsvOperator {
      * @param header _more_
      */
     public void setHeader(List header) {
-        this.header = header;
+	List tmp = new ArrayList();
+	tmp.addAll(header);
+        this.header = tmp;
     }
 
 

@@ -1335,7 +1335,7 @@ public abstract class DataProvider {
      * @version        $version$, Tue, Feb 16, '21
      * @author         Enter your name here...
      */
-    public static class Pattern3DataProvider extends BulkDataProvider {
+    public static class PatternExtractDataProvider extends BulkDataProvider {
 
         /** _more_ */
         String header;
@@ -1352,7 +1352,7 @@ public abstract class DataProvider {
          * @param chunkPattern _more_
          * @param tokenPattern _more_
          */
-        public Pattern3DataProvider(String header, String tokenPattern) {
+        public PatternExtractDataProvider(String header, String tokenPattern) {
             super();
             this.header       = header;
             this.tokenPattern = Utils.convertPattern(tokenPattern);

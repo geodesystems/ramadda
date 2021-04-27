@@ -1492,7 +1492,7 @@ public class CsvUtil {
                 new Arg("comma separated header"),
                 new Arg("chunk pattern", "", "type", "pattern"),
                 new Arg("token pattern", "", "type", "pattern")),
-        new Cmd("-text3", "Extract rows from the text",
+        new Cmd("-extractpattern", "Extract rows from the text",
                 new Arg("comma separated header"),
                 new Arg("token pattern", "", "type", "pattern")),
         new Cmd("-tokenize", "Tokenize the input from the pattern",
@@ -2785,8 +2785,14 @@ public class CsvUtil {
 		return i;
 	    });
 
+
+	defineFunction("-extractpattern",2,(ctx,args,i) -> {
+		ctx.getProviders().add(new DataProvider.PatternExtractDataProvider(args.get(++i), args.get(++i)));
+		return i;
+	    });
+
 	defineFunction("-text3",2,(ctx,args,i) -> {
-		ctx.getProviders().add(new DataProvider.Pattern3DataProvider(args.get(++i), args.get(++i)));
+		ctx.getProviders().add(new DataProvider.PatternExtractDataProvider(args.get(++i), args.get(++i)));
 		return i;
 	    });
 

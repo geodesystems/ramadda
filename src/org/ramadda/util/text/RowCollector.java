@@ -1666,6 +1666,7 @@ public  class RowCollector extends Processor {
 	    w.println("#rows:" + rowCnt);
 	    w.println(HU.SPACE2);
 	    w.println("<span id=header></span>");
+	    if(cols ==null) cols = new ArrayList<ColStat>();
             if (interactive) {
                 w.println("<table width='100%' class='stripe hover display nowrap ramadda-table ramadda-csv-table' >");
                 w.println("<thead>");
