@@ -453,20 +453,20 @@ public abstract class DataProvider {
             int     cnt = 0;
             while (true) {
                 long    t1 = System.currentTimeMillis();
-                Matcher m  = p.matcher(s);
-                if ( !m.find()) {
+                Matcher matcher  = p.matcher(s);
+                if ( !matcher.find()) {
                     break;
                 }
                 Row row = new Row();
                 addRow(row);
-                for (int i = 1; i <= m.groupCount(); i++) {
-                    String tok = m.group(i);
+                for (int i = 1; i <= matcher.groupCount(); i++) {
+                    String tok = matcher.group(i);
                     if (tok == null) {
                         tok = "";
                     }
                     row.add(tok.trim());
                 }
-                String s2 = s.substring(m.end());
+                String s2 = s.substring(matcher.end());
                 if (s.length() == s2.length()) {
                     break;
                 }
@@ -1214,17 +1214,18 @@ public abstract class DataProvider {
             }
             Pattern p = Pattern.compile(pattern);
             while (true) {
-                Matcher m = p.matcher(s);
-                if ( !m.find()) {
+                Matcher matcher = p.matcher(s);
+                if ( !matcher.find()) {
                     break;
                 }
                 Row row = new Row();
                 addRow(row);
-                for (int i = 1; i <= m.groupCount(); i++) {
-                    row.add(m.group(i));
+                for (int i = 1; i <= matcher.groupCount(); i++) {
+                    row.add(matcher.group(i));
                 }
-                s = s.substring(m.end());
-                //      System.err.println(s.length());
+                String s2 = s.substring(matcher.end());
+		if(s.length()==s2.length()) break;
+		s = s2;
             }
         }
     }
@@ -1288,7 +1289,9 @@ public abstract class DataProvider {
                     //              System.err.println(" no chunk match");
                     break;
                 }
-                s = s.substring(m1.end());
+                String s2 = s.substring(m1.end());
+		if(s.length() == s2.length()) break;
+		s =s2;
                 //              System.err.println("REMAINDER:" + s);
                 for (int i1 = 1; i1 <= m1.groupCount(); i1++) {
                     String chunk = m1.group(i1).trim();
@@ -1314,7 +1317,9 @@ public abstract class DataProvider {
                             //                      System.err.println("\ttok:" + tok);
                             row.add(tok);
                         }
-                        chunk = chunk.substring(m2.end());
+			String c2= chunk.substring(m2.end());
+			if(chunk.length() == c2.length()) break;
+			chunk = c2;
                     }
                 }
             }
@@ -1383,7 +1388,9 @@ public abstract class DataProvider {
                     break;
                 }
                 //              System.err.println("match");
-                s = s.substring(m1.end());
+                String s2 = s.substring(m1.end());
+		if(s.length()==s2.length()) break;
+		s = s2;
                 if (ctx.getDebug()) {
                     ctx.printDebug("-text3",
                                     "match group count:" + m1.groupCount());
@@ -1467,7 +1474,9 @@ public abstract class DataProvider {
                     if ( !m1.find()) {
                         break;
                     }
-                    s = s.substring(m1.end());
+                    String s2 = s.substring(m1.end());
+		    if(s.length() == s2.length()) break;
+		    s  =s2;
                     if (m1.groupCount() > 2) {
                         throw new IllegalArgumentException(
                             "There should only be one sub-pattern in the chunk");

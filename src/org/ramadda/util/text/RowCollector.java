@@ -149,6 +149,10 @@ public  class RowCollector extends Processor {
     }
 
 
+    public void addRow(Row row) {
+	rows.add(row);
+    }
+
     /**
      *  Set the Rows property.
      *
@@ -780,11 +784,8 @@ public  class RowCollector extends Processor {
          */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
-            if (ctx.getDebug()) {
-                return row;
-            }
+	    System.err.println("Html.processRow");
             printRow(ctx, row, true);
-
             return row;
         }
 
@@ -1583,8 +1584,8 @@ public  class RowCollector extends Processor {
 		if(i<cols.size())
 		    cols.get(i).addValue(row.getString(i));
             }
-
-            return super.processRow(ctx, row);
+	    addRow(row);
+	    return row;
         }
 
 
@@ -1601,7 +1602,6 @@ public  class RowCollector extends Processor {
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
-
             PrintWriter w = ctx.getWriter();
 	    BiConsumer<String,String> layout = (label,value) -> {
 		w.print(HU.tag("table",
@@ -1663,13 +1663,11 @@ public  class RowCollector extends Processor {
 
 	    };
 
-
 	    w.println("#rows:" + rowCnt);
 	    w.println(HU.SPACE2);
 	    w.println("<span id=header></span>");
             if (interactive) {
-                w.println(
-			  "<table  width='100%' class='stripe hover display nowrap ramadda-table ramadda-csv-table' >");
+                w.println("<table width='100%' class='stripe hover display nowrap ramadda-table ramadda-csv-table' >");
                 w.println("<thead>");
                 w.println("<tr valign=top>");
                 for (ColStat col : cols) {
@@ -1755,12 +1753,10 @@ public  class RowCollector extends Processor {
 			printUniques.accept(col);
                     }
                     w.println("</th>");
-                }
+		}
                 w.println("</tr>");
                 w.println("</thead>");
                 w.println("<tbody>");
-
-                rows = getRows(rows);
 
                 for (Row row : rows) {
 		    if(!justStats) {
@@ -1776,8 +1772,9 @@ public  class RowCollector extends Processor {
 			if(i<row.size()) 
 			    r.add(col.format(row.get(i)));
                     }
-		    if(!justStats)
+		    if(!justStats) {
 			printRow(ctx, r, false);
+		    }
                 }
                 w.println("</tbody>");
                 w.println("</table>");
@@ -2381,7 +2378,6 @@ public  class RowCollector extends Processor {
 	    for(Row row: tmp) {
 		result.add(row);
 	    }
-	    System.err.println("TMP: " + tmp.size());
 	    Row sample = tmp.get(1);
 	    for(int index: getIndices(ctx)) {
 		for(Row row: tmp) {
