@@ -1680,6 +1680,10 @@ ul {
     color:#aaa !important;
 }
 
+.ramadda-slides-container {
+    border:var(--basic-border) !important;
+}
+
 .ramadda-slides {
     margin-left:25px;
     margin-right:25px;    

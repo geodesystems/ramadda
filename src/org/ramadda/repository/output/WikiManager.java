@@ -2822,10 +2822,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
                 String prevImage =
-                    HU.href("#", "<i class=\"fas fa-angle-left prev\"/>");
+                    HU.href("#", "<i style='font-size:32pt;'  class=\"ramadda-clickable  fas fa-angle-left prev\"/>");
 
                 String nextImage =
-                    HU.href("#", "<i class=\"fas fa-angle-right next\"/>");
+                    HU.href("#", "<i style='font-size:32pt;' class=\"ramadda-clickable  fas fa-angle-right next\"/>");
                 String arrowTDWidth = "20px";
 
                 sb.append(
@@ -2834,7 +2834,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                        "width=\"" + arrowTDWidth
                        + "\" style=\"font-size: 30px\"");
                 HU.open(sb, HU.TAG_TD, HU.attr(HU.ATTR_WIDTH, width));
-                HU.open(sb, HU.TAG_DIV, HU.cssClass("slides_container"));
+                HU.open(sb, HU.TAG_DIV, HU.cssClass("ramadda-slides-container slides_container"));
                 for (int i = 0; i < titles.size(); i++) {
                     String title   = titles.get(i);
                     String content = contents.get(i);
