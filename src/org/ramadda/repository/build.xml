@@ -83,7 +83,9 @@
         <antcall target="ramadda.zip"/>
         <antcall target="repository.war"/>
         <antcall target="installer"/>
+<!--
         <antcall target="client"/>
+-->
     </target>
 
     <target name="client" depends="init,clean">

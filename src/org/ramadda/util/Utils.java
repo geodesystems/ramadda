@@ -2079,6 +2079,7 @@ public class Utils extends IO {
                                         "_").replaceAll("[\"'`]+", "").trim();
         label = label.replaceAll("-", "_");	
         label = label.replaceAll("__+", "_");
+        label = label.replaceAll("[\\{\\}=]+", "_");
         label = label.replaceAll("_$", "");
 	if(Pattern.matches("^[0-9]+.*", label))
 	    label  = "_" + label;

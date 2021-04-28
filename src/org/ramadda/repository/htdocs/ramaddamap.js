@@ -194,7 +194,7 @@ var ramaddaMapLastShareMap = "";
 function ramaddaMapShareState(source, state) {
     //We check the time since the last state change because the zoomTo is done in the event loop
     //which can result in an infinite loop of state change calls
-    var time = new Date().getTime();
+    let time = new Date().getTime();
     if(source.mapId!=ramaddaMapLastShareMap) {
 	if(time-ramaddaMapLastShareTime<2000) {
 	    return;
@@ -203,7 +203,7 @@ function ramaddaMapShareState(source, state) {
     ramaddaMapLastShareTime = time;
     ramaddaMapLastShareMap = source.mapId;
     if(source.stateIsBeingSet) return;
-    var linkGroup = source.linkGroup;
+    let linkGroup = source.linkGroup;
     if(!source.linked && !linkGroup) return;
     var bounds = source.getBounds();
     var baseLayer = source.map.baseLayer;
@@ -804,6 +804,7 @@ RepositoryMap.prototype = {
     zoomChanged: function() {
     },
     locationChanged: function() {
+	ramaddaMapShareState(this,"bounds");
 	if(this.doSelect) return;
 	let latlon = this.getBounds();
 	let bits = 100000;
@@ -819,7 +820,6 @@ RepositoryMap.prototype = {
 
 	let center =   this.transformProjPoint(this.getMap().getCenter())
         HU.addToDocumentUrl("mapCenter", r(center.lat)+","+ r(center.lon));
-	ramaddaMapShareState(this,"bounds");
     },
     baseLayerChanged: function() {
         var baseLayer = this.getMap().baseLayer;
