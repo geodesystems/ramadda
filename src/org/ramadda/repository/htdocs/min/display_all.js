@@ -26961,7 +26961,7 @@ addGlobalDisplayType({
 
 
 function RamaddaEntryDisplay(displayManager, id, type, properties) {
-    let  SUPER = new RamaddaDisplay(displayManager, id, type, properties);
+    const  SUPER = new RamaddaDisplay(displayManager, id, type, properties);
     RamaddaUtil.inherit(this, SUPER);
     this.defineProperties([
 	{label:'Entry Search'},
@@ -26969,7 +26969,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
     ]);
 
     this.ramaddas = new Array();
-    var repos = this.getProperty("repositories", this.getProperty("repos", null));
+    let repos = this.getProperty("repositories", this.getProperty("repos", null));
     if (repos != null) {
         var toks = repos.split(",");
         //OpenSearch;http://adasd..asdasdas.dasdas.,
@@ -27261,11 +27261,13 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         {p:"showEntries",d: true},
         {p:"showType",d: true},
         {p:"types",ex:'comma separated list of types'},
+	{p:"entryRoot",w:"this",tt:"Constrain search to this tree"},		
         {p:"doSearch",d: true,tt:'Apply search at initial display'},
         {p:"showDate",d: true},
         {p:"showCreateDate",ex:"true",d: false},	
         {p:"showArea",d: true},
         {p:"showText",d: true},
+	{p:"searchPrefix",ex:'name:, contents:, path:'},
         {p:"showMetadata",d: true},
 	{p:'metadataTypes', d:'enum_tag:Tag,content.keyword:Keyword,thredds.variable:Variable'},
         {p:"showTags",d: true},	
@@ -27430,7 +27432,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             let theDisplay = this;
 
             this.jq(ID_SEARCH).click(function(event) {
-                theDisplay.submitSearchForm();
+               theDisplay.submitSearchForm();
                 event.preventDefault();
             });
 
@@ -27544,18 +27546,20 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 HU.join(lessMore, "&nbsp;");
             return results+"<br>";
         },
-        submitSearchForm: function() {
-            if (this.fixedEntries) {
-                return;
-            }
-            this.haveSearched = true;
-            let settings = this.getSearchSettings();
+	makeSearchSettings: function() {
+	                let settings = this.getSearchSettings();
             settings.text = this.getFieldValue(this.getDomId(ID_TEXT_FIELD), settings.text);
-	    if(settings.text)
+	    if(settings.text) {
 		HU.addToDocumentUrl(ID_TEXT_FIELD,settings.text);
-	    else
+		if(settings.text.trim()!="") {
+		    if(this.getSearchPrefix())
+			settings.text = this.getSearchPrefix()+ settings.text;
+		}
+	    }  else {
 		HU.addToDocumentUrl(ID_TEXT_FIELD,"");
+	    }
 
+	    settings.entryRoot = this.getEntryRoot();
 	    let orderBy = this.jq(ID_SEARCH_ORDERBY).val();
 	    if(orderBy) {
 		let ascending = orderBy.indexOf("_ascending")>=0;
@@ -27564,11 +27568,6 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		settings.orderBy =  orderBy;
 		settings.ascending = ascending;
 	    }
-
-            if (this.textRequired && (settings.text == null || settings.text.trim().length == 0)) {
-                this.writeEntries("");
-                return;
-            }
 
             if (this.haveTypes) {
                 settings.entryType = this.getFieldValue(this.getDomId(ID_TYPE_FIELD), settings.entryType);
@@ -27619,6 +27618,19 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			value: value
 		    });
 		});
+            }
+	    return settings;
+	},
+        submitSearchForm: function() {
+            if (this.fixedEntries) {
+                return;
+            }
+            this.haveSearched = true;
+	    let settings  =this.makeSearchSettings();
+
+            if (this.textRequired && (settings.text == null || settings.text.trim().length == 0)) {
+                this.writeEntries("");
+                return;
             }
 
             //Call this now because it sets settings
@@ -28558,25 +28570,6 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 
 
 
-function RamaddaTestlistDisplay(displayManager, id, properties) {
-    let SUPER;
-    RamaddaUtil.inherit(this, SUPER = new RamaddaEntrylistDisplay(displayManager, id, properties, DISPLAY_TESTLIST));
-    RamaddaUtil.defineMembers(this, {
-        //This gets called by the EntryList to actually make the display
-        makeEntriesDisplay: function(entries) {
-
-            return "Overridden display<br>" + this.getEntriesTree(entries);
-        },
-    });
-
-}
-
-
-
-var RamaddaListDisplay = RamaddaEntrylistDisplay;
-
-
-
 function RamaddaEntrygalleryDisplay(displayManager, id, properties) {
     var ID_GALLERY = "gallery";
     var SUPER;
@@ -28618,8 +28611,6 @@ function RamaddaEntrygalleryDisplay(displayManager, id, properties) {
         },
     });
 }
-
-
 
 
 function RamaddaEntrygridDisplay(displayManager, id, properties) {
@@ -29419,114 +29410,6 @@ function RamaddaMetadataDisplay(displayManager, id, properties) {
 
 
 
-
-function RamaddaEntrytimelineDisplay(displayManager, id, properties) {
-    if (properties.formOpen == null) {
-        properties.formOpen = false;
-    }
-    var SUPER;
-    RamaddaUtil.inherit(this, SUPER = new RamaddaSearcherDisplay(displayManager, id, DISPLAY_ENTRYTIMELINE, properties));
-    addRamaddaDisplay(this);
-    RamaddaUtil.defineMembers(this, {
-        initDisplay: function() {
-            this.createUI();
-            this.setContents(this.getDefaultHtml());
-	    this.initHtml();
-            SUPER.initDisplay.apply(this);
-        },
-        entryListChanged: function(entryList) {
-            this.entryList = entryList;
-            var entries = this.entryList.getEntries();
-            var html = "";
-            if (entries.length == 0) {
-                this.writeMessage("Nothing found");
-                return;
-            }
-
-            var data = {
-                "timeline": {
-                    "headline": "The Main Timeline Headline Goes here",
-                    "type": "default",
-                    "text": "<p>Intro body text goes here, some HTML is ok</p>",
-                    "asset": {
-                        "media": "http://yourdomain_or_socialmedialink_goes_here.jpg",
-                        "credit": "Credit Name Goes Here",
-                        "caption": "Caption text goes here"
-                    },
-                    "date": [{
-                            "startDate": "2011,12,10",
-                            "endDate": "2011,12,11",
-                            "headline": "Headline Goes Here",
-                            "text": "<p>Body text goes here, some HTML is OK</p>",
-                            "tag": "This is Optional",
-                            "classname": "optionaluniqueclassnamecanbeaddedhere",
-                            "asset": {
-                                "media": "http://twitter.com/ArjunaSoriano/status/164181156147900416",
-                                "thumbnail": "optional-32x32px.jpg",
-                                "credit": "Credit Name Goes Here",
-                                "caption": "Caption text goes here"
-                            }
-                        }, {
-                            "startDate": "2012,12,10",
-                            "endDate": "2012,12,11",
-                            "headline": "Headline Goes Here",
-                            "text": "<p>Body text goes here, some HTML is OK</p>",
-                            "tag": "This is Optional",
-                            "classname": "optionaluniqueclassnamecanbeaddedhere",
-                            "asset": {
-                                "media": "http://twitter.com/ArjunaSoriano/status/164181156147900416",
-                                "thumbnail": "optional-32x32px.jpg",
-                                "credit": "Credit Name Goes Here",
-                                "caption": "Caption text goes here"
-                            }
-                        }, {
-                            "startDate": "2013,12,10",
-                            "endDate": "2013,12,11",
-                            "headline": "Headline Goes Here",
-                            "text": "<p>Body text goes here, some HTML is OK</p>",
-                            "tag": "This is Optional",
-                            "classname": "optionaluniqueclassnamecanbeaddedhere",
-                            "asset": {
-                                "media": "http://twitter.com/ArjunaSoriano/status/164181156147900416",
-                                "thumbnail": "optional-32x32px.jpg",
-                                "credit": "Credit Name Goes Here",
-                                "caption": "Caption text goes here"
-                            }
-                        }
-
-                    ],
-                    "era": [{
-                            "startDate": "2011,12,10",
-                            "endDate": "2011,12,11",
-                            "headline": "Headline Goes Here",
-                            "text": "<p>Body text goes here, some HTML is OK</p>",
-                            "tag": "This is Optional"
-                        }
-
-                    ]
-                }
-            };
-
-
-            for (var i = 0; i < entries.length; i++) {
-                var entry = entries[i];
-
-            }
-            createStoryJS({
-                type: 'timeline',
-                width: '800',
-                height: '600',
-                source: data,
-                embed_id: this.getDomId(ID_ENTRIES),
-            });
-
-        },
-    });
-
-}
-
-
-
 function RamaddaEntrydisplayDisplay(displayManager, id, properties) {
     let SUPER;
     $.extend(this, {
@@ -29904,11 +29787,9 @@ function RamaddaRepositoriesDisplay(displayManager, id, properties) {
     });
 }
 
-
 var RamaddaGalleryDisplay = RamaddaEntrygalleryDisplay;
 
 function RamaddaSimplesearchDisplay(displayManager, id, properties) {
-    let SUPER;
     let myProps = [
 	{label:'Simple Search'},
 	{p:'resultsPosition',ex:'absolute|relative'},
@@ -29919,10 +29800,9 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	{p:"showHeader",w:true},
 	{p:"inputWidth",w:"100%"},
 	{p:"entryType",w:"",tt:"Constrain search to entries of this type"},		
-	{p:"entryRoot",w:"this",tt:"Constrain search to this tree"},		
     ];
 
-    RamaddaUtil.inherit(this, SUPER = new RamaddaSearcherDisplay(displayManager, id, DISPLAY_SIMPLESEARCH, properties));
+    const SUPER   = new RamaddaSearcherDisplay(displayManager, id, DISPLAY_SIMPLESEARCH, properties);
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	callNumber:1,
         haveDisplayed: false,
@@ -30056,14 +29936,8 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    this.writeMessage(this.getWaitImage() + " " +"Searching...");
 	    if(callNumber==null) callNumber = this.callNumber;
             this.haveSearched = true;
-            let settings = this.getSearchSettings();
-            settings.text = this.getFieldValue(this.getDomId(ID_TEXT_FIELD), settings.text);
-	    settings.entryRoot = this.getProperty("entryRoot");
+            let settings  =this.makeSearchSettings();
 	    settings.entryType = this.getProperty("entryType");	    
-            if (this.haveTypes) {
-                settings.entryType = this.getFieldValue(this.getDomId(ID_TYPE_FIELD), settings.entryType);
-            }
-            let theRepository = this.getRamadda()
             let jsonUrl = this.makeSearchUrl(this.getRamadda());
             this.entryList = new EntryList(this.getRamadda(), jsonUrl);
 	    let success= ()=>{
@@ -30079,13 +29953,12 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		this.updateForSearching(jsonUrl);
         },
 
-
         makeDisplayList: function() {
-            var entries = this.getSelectedEntriesFromTree();
+            let entries = this.getSelectedEntriesFromTree();
             if (entries.length == 0) {
                 return;
             }
-            var props = {
+            let props = {
                 selectedEntries: entries,
                 showForm: false,
                 showMenu: true,

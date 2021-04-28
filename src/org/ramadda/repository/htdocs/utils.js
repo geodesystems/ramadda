@@ -4458,19 +4458,19 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	}
     },
     toggleBlock: function(label, contents, visible) {
-        var id = Utils.getUniqueId("block_");
-        var imgid = id + "_img";
+        let id = Utils.getUniqueId("block_");
+        let imgid = id + "_img";
 
-        var img1 = ramaddaBaseUrl + "/icons/togglearrowdown.gif";
-        var img2 = ramaddaBaseUrl + "/icons/togglearrowright.gif";
-        var args = HtmlUtils.join([HtmlUtils.squote(id), HtmlUtils.squote(imgid), HtmlUtils.squote(img1), HtmlUtils.squote(img2)], ",");
-        var click = "toggleBlockVisibility(" + args + ");";
+        let img1 = ramaddaBaseUrl + "/icons/togglearrowdown.gif";
+        let img2 = ramaddaBaseUrl + "/icons/togglearrowright.gif";
+        let args = HtmlUtils.join([HtmlUtils.squote(id), HtmlUtils.squote(imgid), HtmlUtils.squote(img1), HtmlUtils.squote(img2)], ",");
+        let click = "toggleBlockVisibility(" + args + ");";
 
-        var header = HtmlUtils.div(["class", "ramadda-noselect entry-toggleblock-label ramadda-hoverable", "onClick", click],
+        let header = HtmlUtils.div(["class", "ramadda-noselect entry-toggleblock-label ramadda-hoverable", "onClick", click],
 				   HtmlUtils.image((visible ? img1 : img2), ["align", "bottom", "id", imgid]) +
 				   " " + label);
-        var style = (visible ? "display:block;visibility:visible" : "display:none;");
-        var body = HtmlUtils.div(["class", "hideshowblock", "id", id, "style", style],
+        let style = (visible ? "display:block;visibility:visible" : "display:none;");
+        let body = HtmlUtils.div(["class", "hideshowblock", "id", id, "style", style],
 				 contents);
         return header + body;
     }
