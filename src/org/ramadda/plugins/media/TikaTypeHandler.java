@@ -51,7 +51,7 @@ import java.io.OutputStream;
 
 import java.util.ArrayList;
 import java.util.Date;
-
+import java.util.HashSet;
 import java.util.Date;
 import java.util.List;
 
@@ -97,23 +97,15 @@ public class TikaTypeHandler extends GenericTypeHandler {
                 && !request.get(ARG_METADATA_ADD, false)) {
             return;
         }
-        List<Entry> entries = output.getEntries();
-        if (entries.size() == 0) {
-            return;
-        }
-        Entry serviceEntry = entries.get(0);
-        if ( !serviceEntry.getResource().getPath().endsWith(".txt")) {
-            return;
-        }
 
-        String created = (String) entry.getTransientProperty(
+        String created = (String) entry.getAndRemoveTransientProperty(
                              Office.CREATION_DATE.getName());
         if (created == null) {
-            created = (String) entry.getTransientProperty(
+            created = (String) entry.getAndRemoveTransientProperty(
                 TikaCoreProperties.CREATED.getName());
         }
         if (created == null) {
-            created = (String) entry.getTransientProperty(
+            created = (String) entry.getAndRemoveTransientProperty(
                 TikaCoreProperties.CREATED.getName());
         }
 
@@ -125,15 +117,52 @@ public class TikaTypeHandler extends GenericTypeHandler {
         }
 
         String saved =
-            (String) entry.getTransientProperty(Office.SAVE_DATE.getName());
+            (String) entry.getAndRemoveTransientProperty(Office.SAVE_DATE.getName());
         if (saved != null) {
             Date dttm = Utils.parseDate(saved);
             entry.setEndDate(dttm.getTime());
         }
 
+	HashSet seen = new HashSet();
+        String slideCount =
+            (String) entry.getAndRemoveTransientProperty(Office.SLIDE_COUNT.getName());
+        if (Utils.stringDefined(slideCount)) {
+            getMetadataManager().addMetadata(
+                entry,
+                new Metadata(
+                    getRepository().getGUID(), entry.getId(),
+                    "property", false, "slide_count", slideCount, null, null,
+                    null));
+        }
+
+        String wordCount =
+            (String) entry.getAndRemoveTransientProperty(Office.WORD_COUNT.getName());
+        if (Utils.stringDefined(wordCount)) {
+            getMetadataManager().addMetadata(
+                entry,
+                new Metadata(
+                    getRepository().getGUID(), entry.getId(),
+                    "property", false, "word_count", wordCount, null, null,
+                    null));
+        }
+
+	String pageCount =
+            (String) entry.getAndRemoveTransientProperty(Office.PAGE_COUNT.getName());
+        if (Utils.stringDefined(pageCount)) {
+            getMetadataManager().addMetadata(
+                entry,
+                new Metadata(
+                    getRepository().getGUID(), entry.getId(),
+                    "property", false, "page_count", pageCount, null, null,
+                    null));
+        }
+
+
+
         String author =
-            (String) entry.getTransientProperty(Office.AUTHOR.getName());
+            (String) entry.getAndRemoveTransientProperty(Office.AUTHOR.getName());
         if (Utils.stringDefined(author)) {
+	    seen.add(author);
             getMetadataManager().addMetadata(
                 entry,
                 new Metadata(
@@ -143,9 +172,10 @@ public class TikaTypeHandler extends GenericTypeHandler {
         }
 
         String lastAuthor =
-            (String) entry.getTransientProperty(Office.LAST_AUTHOR.getName());
+            (String) entry.getAndRemoveTransientProperty(Office.LAST_AUTHOR.getName());
         if (Utils.stringDefined(lastAuthor)
-                && !Misc.equals(author, lastAuthor)) {
+	    && !seen.contains(lastAuthor)) {
+	    seen.add(lastAuthor);
             getMetadataManager().addMetadata(
                 entry,
                 new Metadata(
@@ -154,10 +184,10 @@ public class TikaTypeHandler extends GenericTypeHandler {
                     null));
         }
 
-        String publisher = (String) entry.getTransientProperty(
+        String publisher = (String) entry.getAndRemoveTransientProperty(
                                TikaCoreProperties.PUBLISHER.getName());
         if (publisher == null) {
-            publisher = (String) entry.getTransientProperty(
+            publisher = (String) entry.getAndRemoveTransientProperty(
                 DublinCore.PUBLISHER.getName());
         }
         if (Utils.stringDefined(publisher)) {
@@ -167,6 +197,19 @@ public class TikaTypeHandler extends GenericTypeHandler {
                     getRepository().getGUID(), entry.getId(),
                     "metadata_publisher", false, publisher, null, null, null,
                     null));
+        }
+
+
+
+
+
+        List<Entry> entries = output.getEntries();
+        if (entries.size() == 0) {
+            return;
+        }
+        Entry serviceEntry = entries.get(0);
+        if ( !serviceEntry.getResource().getPath().endsWith(".txt")) {
+            return;
         }
 
 

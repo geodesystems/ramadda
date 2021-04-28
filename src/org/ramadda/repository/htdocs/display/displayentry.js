@@ -1582,7 +1582,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 		    if(this.areaEntries.length>0) {
 			titles.push("Map");
 			let id = HU.getUniqueId(type +"_");
-			this.myDisplays.push({id:id,type:type});
+			this.myDisplays.push({id:id,type:type,entries:this.areaEntries});
 			contents.push(HU.div([ID,id,STYLE,HU.css("width","100%")]));
 //			this.mapId = HU.getUniqueId("map_");
 //			let mapDiv = HU.div([ID,this.mapId,STYLE,HU.css("width","100%","height","400px")]);
@@ -1653,8 +1653,13 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 	    if(this.galleryId) {
 	    	$("#" + this.galleryId).find("a.popup_image").fancybox({helpers:{title:{type:'over'}}});
 	    }
+//	    this.activeTabIndex = 0;
+	    let tabbed = (event,ui)=>{
+		this.activeTabIndex = ui.newTab.index();
+		HtmlUtil.tabLoaded();
+	    };
 	    if(this.tabId) {
-		$('#' + this.tabId).tabs({activate: HtmlUtil.tabLoaded});
+		$('#' + this.tabId).tabs({activate: tabbed,active: this.activeTabIndex});
 	    }	
 	    if(this.myDisplays && this.myDisplays.length) {
 		let index=0;
@@ -1664,15 +1669,19 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 			      new RecordField({type: "image", index: (index++), id: "image",label: "Image"}),
 			      new RecordField({type: "url", index: (index++), id: "iconUrl",label: "Icon"}),			      
 			      new RecordField({index: (index++), id: "latitude",label: "Latitude"}),
-			      new RecordField({index: (index++), id: "longitude",label: "Longitude"}),			      			      			      			      			      
-			     ]
+			      new RecordField({index: (index++), id: "longitude",label: "Longitude"}),			      			      					     ]
 		let records = [];
-		entries.forEach(entry=>{
-		    let data = [entry.getName(),entry.getSnippet()||"",entry.getEntryUrl(),entry.getImageUrl()||"",entry.getIconUrl(),entry.getLatitude(), entry.getLongitude()];
-		    records.push(new PointRecord(fields, entry.getLatitude(),entry.getLongitude(),NaN,entry.getStartDate() || entry.getCreateDate(),data,0));
-		});
-		let data= new  PointData("pointdata", fields, records,null,null);
+		let makeData = entries=>{
+		    let records = [];
+		    entries.forEach(entry=>{
+			let data = [entry.getName(),entry.getSnippet()||"",entry.getEntryUrl(),entry.getImageUrl()||"",entry.getIconUrl(),entry.getLatitude(), entry.getLongitude()];
+			records.push(new PointRecord(fields, entry.getLatitude(),entry.getLongitude(),NaN,entry.getStartDate() || entry.getCreateDate(),data,0));
+		    });
+		    return records;
+		};
+		let baseData= new  PointData("pointdata", fields, makeData(entries),null,null);
 		this.myDisplays.forEach(info=> {
+		    let data = info.entries?new  PointData("pointdata", fields, makeData(info.entries)):baseData;
 		    let props = {numberOfImages:500,showTableOfContents:true,iconField:"iconUrl",iconSize:16,displayEntries:false, imageField:"image",urlField:"url",titleField:"name",labelField:"name",labelFields:"name",textTemplate:"${description}",displayId:info.id,divid:info.id,showMenu:false,theData:data,displayStyle:""};
 		    info.display =  this.getDisplayManager().createDisplay(info.type,props);
 //		    console.log("d:" + info.display.type);

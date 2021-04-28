@@ -7,4 +7,10 @@
   <output type="file" pattern=".*\.txt"/>
 </service>
 
+<service id="tika_extractmetadata" label="Extract metadata" command="java:org.ramadda.data.docs.TikaService:extractMetadata" >
+  <description><![CDATA[Extract metadata from document]]></description>
+
+  <arg value="${entry.file}" type="entry" entryType="type_document_tika" primary="true" label="Input Document"  entryPattern="(.*\.pdf|.*\.doc|.*\.docx|.*\.ppt.*)"></arg>
+</service>
+
 </services>

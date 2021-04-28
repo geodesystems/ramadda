@@ -1657,6 +1657,12 @@ public class Entry implements Cloneable {
         return transientProperties.get(key);
     }
 
+    public Object getAndRemoveTransientProperty(Object key) {
+        Object o= transientProperties.get(key);
+	if(o!=null) transientProperties.remove(key);
+	return o;
+    }    
+
     /**
      * Add a transient property
      *

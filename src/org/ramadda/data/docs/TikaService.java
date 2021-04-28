@@ -35,6 +35,7 @@ import ucar.unidata.util.IOUtil;
 
 import java.io.*;
 
+import java.util.HashSet;
 import java.util.List;
 
 
@@ -59,6 +60,13 @@ public class TikaService extends Service {
 
 
 
+    public boolean extractMetadata(Request request, Service service,
+                               ServiceInput input, List args)
+            throws Exception {
+	return extractText(request, service, input, args, false);
+    }
+
+
     /**
      * _more_
      *
@@ -74,23 +82,23 @@ public class TikaService extends Service {
     public boolean extractText(Request request, Service service,
                                ServiceInput input, List args)
             throws Exception {
+
+	return extractText(request, service, input, args, true);
+    }
+
+    public boolean extractText(Request request, Service service,
+                               ServiceInput input, List args, boolean doText)
+            throws Exception {	
         Entry entry = null;
         for (Entry e : input.getEntries()) {
             if (e.isFile()) {
                 entry = e;
-
                 break;
             }
         }
         if (entry == null) {
             throw new IllegalArgumentException("No file entry found");
         }
-
-        String name = getStorageManager().getFileTail(entry);
-        if ( !Utils.stringDefined(name)) {
-            name = entry.getName();
-        }
-        name = IOUtil.stripExtension(name);
 
         //        System.out.println("TikaService.extractText:" + entry.getFile());
         Parser parser = new AutoDetectParser();
@@ -100,29 +108,38 @@ public class TikaService extends Service {
         FileInputStream    inputstream = new FileInputStream(entry.getFile());
         ParseContext       context     = new ParseContext();
         parser.parse(inputstream, handler, metadata, context);
-        String fileContent = handler.toString();
+
 
         //getting the list of all meta data elements 
         String[] metadataNames = metadata.names();
 
+	HashSet seen = new HashSet();
         for (String metadataName : metadataNames) {
-            //            System.out.println(metadataName + ": " + metadata.get(metadataName));
-            entry.putTransientProperty(metadataName,
-                                       metadata.get(metadataName));
+	    Object value = metadata.get(metadataName);
+	    String key = metadataName+"_" + value;
+	    if(!seen.contains(key)) {
+		seen.add(key);
+		//		System.out.println(metadataName + "= " + value);
+		entry.putTransientProperty(metadataName,
+					   metadata.get(metadataName));
+	    }
         }
 
-        /*
-        Tika tika = new Tika();
-        String fileContent = tika.parseToString(entry.getFile());
-        */
+	if(doText) {
+	    String name = getStorageManager().getFileTail(entry);
+	    if ( !Utils.stringDefined(name)) {
+		name = entry.getName();
+	    }
+	    name = IOUtil.stripExtension(name);
 
-        File newFile = new File(IOUtil.joinDir(input.getProcessDir(),
-                           name + ".txt"));
-
-        FileOutputStream fileOut = new FileOutputStream(newFile);
-        IOUtil.writeFile(newFile, fileContent);
-        fileOut.close();
-
+	    String fileContent = handler.toString();
+	    File newFile = new File(IOUtil.joinDir(input.getProcessDir(),
+						   name + ".txt"));
+	    
+	    FileOutputStream fileOut = new FileOutputStream(newFile);
+	    IOUtil.writeFile(newFile, fileContent);
+	    fileOut.close();
+	}
         return true;
 
     }

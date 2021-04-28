@@ -764,13 +764,24 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 
 	List<Query> queries = new ArrayList<Query>();
+	text = text.trim();
 	if(text.length()>0) {
 	    text = text.toLowerCase();
 	    BooleanQuery.Builder builder = new BooleanQuery.Builder();
+	    List<String> words = Utils.split(text," ",true,true);
 	    for(String field: SEARCH_FIELDS) {
 		if(searchField!=null && !field.equals(searchField)) continue;
-		Query term = new WildcardQuery(new Term(field, text));		
-		builder.add(term, BooleanClause.Occur.SHOULD);
+		if(words.size()>1) {
+		    BooleanQuery.Builder multiBuilder = new BooleanQuery.Builder();
+		    for (String word : words) {
+			Query term = new WildcardQuery(new Term(field, word));		
+			multiBuilder.add(term, BooleanClause.Occur.MUST);
+		    }
+		    builder.add(multiBuilder.build(),BooleanClause.Occur.SHOULD);
+		} else {
+		    Query term = new WildcardQuery(new Term(field, text));		
+		    builder.add(term, BooleanClause.Occur.SHOULD);
+		}
 	    }
 	    queries.add(builder.build());
 	}

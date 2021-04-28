@@ -3640,7 +3640,7 @@ public class TypeHandler extends RepositoryManager {
 			service.evaluate(getRepository().getTmpRequest(),
 					 serviceInput, null);
 		    if ( !output.isOk()) {
-			System.err.println("service not ok");
+			System.err.println("service output not ok");
 			continue;
 		    }
 
@@ -3679,7 +3679,6 @@ public class TypeHandler extends RepositoryManager {
             throws Exception {
         if (parent != null) {
             parent.handleServiceResults(request, entry, service, output);
-
             return;
         }
 
