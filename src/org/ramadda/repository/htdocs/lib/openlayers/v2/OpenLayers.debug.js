@@ -73236,6 +73236,8 @@ OpenLayers.Events.featureclick = OpenLayers.Class({
         for (var i=0, len=features.length; i<len; ++i) {
             feature = features[i];
             layer = feature.layer;
+	    //jeffmc: check for NPE
+	    if(layer==null) continue;
             clicked[layer.id] = true;
             more = this.triggerEvent("featureclick", {feature: feature});
             if (more === false) {
