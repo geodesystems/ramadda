@@ -94,6 +94,11 @@ public class PointMetadataHarvester extends RecordVisitor {
     }
 
 
+    public List<RecordField> getFields() {
+	return fields;
+    }
+
+
     /**
      * _more_
      *

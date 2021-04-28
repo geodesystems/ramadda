@@ -161,6 +161,7 @@ public class PointTypeHandler extends RecordTypeHandler {
 
 	if(!shouldProcessResource(request, entry)) return;
 
+	if(fromImport) return;
 
         log("initialize new entry:" + entry.getResource());
         File file = entry.getFile();
@@ -588,9 +589,6 @@ public class PointTypeHandler extends RecordTypeHandler {
     protected void handleHarvestedMetadata(RecordEntry recordEntry,
                                            PointMetadataHarvester metadata)
             throws Exception {
-
-
-
         PointEntry pointEntry = (PointEntry) recordEntry;
         Entry      entry      = pointEntry.getEntry();
 	if(!shouldProcessResource(null, entry)) return;
@@ -682,9 +680,20 @@ public class PointTypeHandler extends RecordTypeHandler {
             }
         }
 
+	List<RecordField> fields = metadata.getFields();
+	if(fields!=null) {
+	    for(RecordField field: fields) {
+		String unit = field.getUnit();
+		Metadata fieldMetadata =
+		    new Metadata(getRepository().getGUID(), entry.getId(),
+				 "thredds.variable",
+				 DFLT_INHERITED, field.getName(),
+				 field.getLabel(),unit!=null?unit:"","", Metadata.DFLT_EXTRA);
+		getMetadataManager().addMetadata(entry, fieldMetadata,          false);
+	    }
+	}
 
 
-        //        xxxxx
         entry.setValues(values);
         if ( !Double.isNaN(metadata.getMaxLatitude())) {
             entry.setNorth(metadata.getMaxLatitude());
