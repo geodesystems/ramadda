@@ -3659,7 +3659,8 @@ function DisplayThing(argId, argProperties) {
         getRecordHtml: function(record, fields, template, debug) {
 	    fields = this.getFields(fields);
 	    if(!fields) return "";
-	    let linkField = this.getFieldById(null,this.getProperty("linkField"));
+            let urlField = this.getFieldById(null, this.getProperty("urlField", "url"));
+	    let linkField = this.getFieldById(null,this.getProperty("linkField"))|| urlField;
 	    let titleField = this.getFieldById(null,this.getProperty("titleField"));
 	    let titleTemplate = this.getProperty("titleTemplate");	    
 	    let descField = this.getFieldById(null,this.getProperty("descriptionField"));
@@ -3705,7 +3706,7 @@ function DisplayThing(argId, argProperties) {
 		    title = HU.center(HU.h3(title));
 		}
 		if(link)
-		    title = HU.href(link,title);
+		    title = HU.href(link,title,["target","_target"]);
 		values+=title;
 		link = null;
 	    }
@@ -18925,6 +18926,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    if(!imageField) {
 		imageField = this.getFieldByType(null,"image");
 	    }
+	    let urlField = this.getFieldById(null, this.getProperty("urlField"));
 
             let pointData = this.getData();
             let fields = pointData.getRecordFields();
@@ -19006,6 +19008,11 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		let img = image==""?SPACE1:HU.image(image,imgAttrs);
 		let topLbl = (topLabel!=null?HU.div([CLASS,"display-images-toplabel"], topLabel):"");
 		let lbl = HU.div([CLASS,"display-images-label"], label.trim());
+		if(urlField) {
+		    lbl = HU.href(urlField.getValue(record), lbl,["target","_target"]);
+		    galleryLabel = HU.href(urlField.getValue(record), galleryLabel,["target","_target"]);
+		    galleryLabel = galleryLabel.replace(/"/g,"'");
+		}
 		if(colorBy.isEnabled()) {
 		    let c = colorBy.getColorFromRecord(record);
 		    style+=HU.css(BACKGROUND,c);
@@ -27260,12 +27267,12 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         {p:"showArea",d: true},
         {p:"showText",d: true},
         {p:"showMetadata",d: true},
-	{p:'metadataTypes', d:'enum_tag:Tag,content.keyword:Keyword'},
+	{p:'metadataTypes', d:'enum_tag:Tag,content.keyword:Keyword,thredds.variable:Variable'},
         {p:"showTags",d: true},	
         {p:"fields",d: null},
         {p:"formWidth",d: "300px"},
         {p:"entriesWidth",d: 0},
-	{p:'displayTypes',ex:"list,gallery,timeline,map,metadata"},
+	{p:'displayTypes',ex:"list,images,timeline,map,metadata"},
         {p:"showDetailsForGroup",d: false},
 	{p:'doWorkbench',d:false,ex:'true', tt:'Show the new, charts, etc links'},
 	];
@@ -27827,7 +27834,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    let text  = this.getFormText();
 	    if(!text || text=="")
 		text = HU.getUrlArgument(ID_TEXT_FIELD);
-            let textField = HU.input("", text, ["placeholder", this.getEgText("Search text"), ATTR_CLASS, "display-simplesearch-input", ATTR_SIZE, this.getProperty("inputSize", "30"), ATTR_ID, this.domId(ID_TEXT_FIELD)]);
+            let textField = HU.input("", text, ["placeholder", this.getEgText("Search text"), TITLE,"e.g. name:, contents:,path:", ATTR_CLASS, "display-simplesearch-input", ATTR_SIZE, this.getProperty("inputSize", "30"), ATTR_ID, this.domId(ID_TEXT_FIELD)]);
 
             if (this.getShowText()) {
 		topItems.push(textField);
@@ -27876,8 +27883,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                                 NONE));
                     }
 		    if(this.getShowTags()) {
-			extra += HU.div([CLASS,"display-search-label"], type.getLabel());
-			extra += HU.div([CLASS,"display-search-metadata-block"], HU.div([CLASS,"display-search-metadata-block-inner", ID,this.getMetadataFieldId(type)]));
+			let block = HU.div([CLASS,"display-search-metadata-block"], HU.div([CLASS,"display-search-metadata-block-inner", ID,this.getMetadataFieldId(type)]));
+			extra+=HU.toggleBlock(type.getLabel(),block,false);
 		    } else {
 			extra += addWidget(type.getLabel() + ":", metadataSelect);
 		    }
@@ -28385,40 +28392,47 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
         makeEntriesDisplay: function(entries) {
 	    this.tabId = null;
 	    this.mapId = null;
-	    this.timelineId = null;	    
-	    if(this.timelineDisplay) {
-		removeRamaddaDisplay(this.timelineDisplay.getId());
-		this.timelineDisplay = null;
+	    if(this.myDisplays) {
+		this.myDisplays.forEach(info=>{
+		    removeRamaddaDisplay(info.display.getId());
+		});
 	    }
+	    this.myDisplays = [];
+
 
 	    let titles = [];
 	    let contents = [];
-	    this.getDisplayTypes("list,gallery,timeline,map").split(",").forEach(type=>{
+	    this.getDisplayTypes("list,images,timeline,map").split(",").forEach(type=>{
 		if(type=="list") {
 		    titles.push("List");
 		    contents.push(this.getEntriesTree(entries));
-		} else if(type=="gallery") {
+		} else if(type=="images") {
 		    let imageEntries = entries.filter(entry=>{
 			return entry.isImage();
 		    });
 		    if(imageEntries.length>0) {
-			titles.push("Gallery");
-			contents.push(this.getEntriesGallery(imageEntries));
+			titles.push("Images");
+			let id = HU.getUniqueId(type +"_");
+			this.myDisplays.push({id:id,type:type});
+			contents.push(HU.div([ID,id,STYLE,HU.css("width","100%")]));
 		    }
 		} else if(type=="timeline") {
 		    titles.push("Timeline");
-		    this.timelineId = HU.getUniqueId("timeline_");
-		    let timelineDiv = HU.div([ID,this.timelineId,STYLE,HU.css("width","100%","height","400px")]);
-		    contents.push(timelineDiv);
+		    let id = HU.getUniqueId(type +"_");
+		    this.myDisplays.push({id:id,type:type});
+		    contents.push(HU.div([ID,id,STYLE,HU.css("width","100%")]));
 		} else if(type=="map") {
 		    this.areaEntries = entries.filter(entry=>{
 			return entry.hasBounds() || entry.hasLocation();
 		    });
 		    if(this.areaEntries.length>0) {
 			titles.push("Map");
-			this.mapId = HU.getUniqueId("map_");
-			let mapDiv = HU.div([ID,this.mapId,STYLE,HU.css("width","100%","height","400px")]);
-			contents.push(mapDiv);
+			let id = HU.getUniqueId(type +"_");
+			this.myDisplays.push({id:id,type:type});
+			contents.push(HU.div([ID,id,STYLE,HU.css("width","100%")]));
+//			this.mapId = HU.getUniqueId("map_");
+//			let mapDiv = HU.div([ID,this.mapId,STYLE,HU.css("width","100%","height","400px")]);
+//			contents.push(mapDiv);
 		    }
 
 		} else if(type=="metadata") {		    
@@ -28488,21 +28502,27 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 	    if(this.tabId) {
 		$('#' + this.tabId).tabs({activate: HtmlUtil.tabLoaded});
 	    }	
-	    if(this.timelineId) {
+	    if(this.myDisplays && this.myDisplays.length) {
 		let index=0;
-		let fields = [new RecordField({type: "string", index: (index++), id: "title",label: "Title"}),
+		let fields = [new RecordField({type: "string", index: (index++), id: "name",label: "Name"}),
 			      new RecordField({type: "string", index: (index++), id: "description",label: "Description"}),
 			      new RecordField({type: "url", index: (index++), id: "url",label: "URL"}),
-			      new RecordField({type: "image", index: (index++), id: "image",label: "Image"}),			      			      			      
+			      new RecordField({type: "image", index: (index++), id: "image",label: "Image"}),
+			      new RecordField({type: "url", index: (index++), id: "iconUrl",label: "Icon"}),			      
+			      new RecordField({index: (index++), id: "latitude",label: "Latitude"}),
+			      new RecordField({index: (index++), id: "longitude",label: "Longitude"}),			      			      			      			      			      
 			     ]
 		let records = [];
 		entries.forEach(entry=>{
-//		    console.log("title:" + entry.getName());
-		    records.push(new PointRecord(fields, NaN,NaN,NaN,entry.getStartDate() || entry.getCreateDate(),[entry.getName(),entry.getSnippet()||"",entry.getEntryUrl(),entry.getImageUrl()||""],0));
+		    let data = [entry.getName(),entry.getSnippet()||"",entry.getEntryUrl(),entry.getImageUrl()||"",entry.getIconUrl(),entry.getLatitude(), entry.getLongitude()];
+		    records.push(new PointRecord(fields, entry.getLatitude(),entry.getLongitude(),NaN,entry.getStartDate() || entry.getCreateDate(),data,0));
 		});
 		let data= new  PointData("pointdata", fields, records,null,null);
-		let props = {"imageField":"image","urlField":"url","textTemplate":"${description}","displayId":this.timelineId,"divid":this.timelineId,"showMenu":false,theData:data,displayStyle:""};
-		this.timelineDisplay = this.getDisplayManager().createDisplay("timeline",props);
+		this.myDisplays.forEach(info=> {
+		    let props = {numberOfImages:500,showTableOfContents:true,iconField:"iconUrl",iconSize:16,displayEntries:false, imageField:"image",urlField:"url",titleField:"name",labelField:"name",labelFields:"name",textTemplate:"${description}",displayId:info.id,divid:info.id,showMenu:false,theData:data,displayStyle:""};
+		    info.display =  this.getDisplayManager().createDisplay(info.type,props);
+//		    console.log("d:" + info.display.type);
+		})
 	    }
 
 	    if(this.mapId && this.areaEntries && this.areaEntries.length>0) {
@@ -30496,7 +30516,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var _this = this;
             var html = "";
             var extraStyle="";
-            var height = this.getProperty("height", 300);
+            var height = this.getProperty("height", this.getProperty("mapHeight", 300));
             if (height < 0) {
 		height = (-height)+"%";
 	    }
@@ -30853,16 +30873,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
 
 
-            var currentFeatures = this.features;
+            let currentFeatures = this.features;
             this.features = [];
             for (var i = 0; i < currentFeatures.length; i++) {
                 this.addFeature(currentFeatures[i]);
             }
-            var entries = this.getDisplayManager().collectEntries();
-            for (var i = 0; i < entries.length; i++) {
-                var pair = entries[i];
-                this.handleEventEntriesChanged(pair.source, pair.entries);
-            }
+	    if(this.getProperty("displayEntries",true)) {
+		let entries = this.getDisplayManager().collectEntries();
+		for (let i = 0; i < entries.length; i++) {
+                    let pair = entries[i];
+                    this.handleEventEntriesChanged(pair.source, pair.entries);
+		}
+	    }
 
 
             if (this.layerEntries) {
@@ -32259,7 +32281,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(!labelField) labelField = this.getFieldByType(null,"string");
 	    if(labelField) {
 		let html = "";
-		let iconField = this.getFieldById(null,"icon");
+		let iconField = this.getFieldById(null, this.getProperty("iconField"));
 		records.forEach((record,idx)=>{
 		    let title = "View record";
 		    if(this.trackUrlField) title = "Click to view; Double-click to view track";
@@ -32273,7 +32295,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    html+= HU.span([TITLE, title, CLASS,clazz,RECORD_ID,record.getId(),RECORD_INDEX,idx], value);
 		});
 
-		html = HU.div([CLASS, "display-map-toc",STYLE,HU.css("max-height","calc(" +this.getHeightForStyle()+" - 1em)"),ID, this.domId("toc")],html);
+		let height = this.getProperty("height", this.getProperty("mapHeight", 300));
+
+		html = HU.div([CLASS, "display-map-toc",STYLE,HU.css("max-height","calc(" +HU.getDimension(height)+" - 1em)"),ID, this.domId("toc")],html);
 		let title = this.getProperty("tableOfContentsTitle","");
 		if(title) html = HU.center(HU.b(title)) + html;
 		this.jq(ID_LEFT).html(html);
@@ -32286,6 +32310,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(!record) return;
 		    _this.highlightPoint(record.getLatitude(), record.getLongitude(),true, false);
 		    _this.map.setCenter(new OpenLayers.LonLat(record.getLongitude(),record.getLatitude()));
+		    _this.map.setZoom(10);
 		    if(record.trackData) {
 			setTimeout(()=>{
 			    _this.getDisplayManager().notifyEvent("handleEventDataSelection", _this, {data:record.trackData});

@@ -42,6 +42,7 @@
     </type>
 
 
+
     <type name="Acknowledgement" id="content.acknowledgement" searchable="true" browsable="true" displaygroup="Acknowledgements"  >
       <element name="Acknowledgement" rows="5"/>
 <!-- todo -->

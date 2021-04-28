@@ -4466,7 +4466,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         var args = HtmlUtils.join([HtmlUtils.squote(id), HtmlUtils.squote(imgid), HtmlUtils.squote(img1), HtmlUtils.squote(img2)], ",");
         var click = "toggleBlockVisibility(" + args + ");";
 
-        var header = HtmlUtils.div(["class", "entry-toggleblock-label ramadda-hoverable", "onClick", click],
+        var header = HtmlUtils.div(["class", "ramadda-noselect entry-toggleblock-label ramadda-hoverable", "onClick", click],
 				   HtmlUtils.image((visible ? img1 : img2), ["align", "bottom", "id", imgid]) +
 				   " " + label);
         var style = (visible ? "display:block;visibility:visible" : "display:none;");

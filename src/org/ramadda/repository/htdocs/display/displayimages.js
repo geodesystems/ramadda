@@ -455,6 +455,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    if(!imageField) {
 		imageField = this.getFieldByType(null,"image");
 	    }
+	    let urlField = this.getFieldById(null, this.getProperty("urlField"));
 
             let pointData = this.getData();
             let fields = pointData.getRecordFields();
@@ -536,6 +537,11 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		let img = image==""?SPACE1:HU.image(image,imgAttrs);
 		let topLbl = (topLabel!=null?HU.div([CLASS,"display-images-toplabel"], topLabel):"");
 		let lbl = HU.div([CLASS,"display-images-label"], label.trim());
+		if(urlField) {
+		    lbl = HU.href(urlField.getValue(record), lbl,["target","_target"]);
+		    galleryLabel = HU.href(urlField.getValue(record), galleryLabel,["target","_target"]);
+		    galleryLabel = galleryLabel.replace(/"/g,"'");
+		}
 		if(colorBy.isEnabled()) {
 		    let c = colorBy.getColorFromRecord(record);
 		    style+=HU.css(BACKGROUND,c);

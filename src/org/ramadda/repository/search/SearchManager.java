@@ -754,10 +754,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         IndexSearcher searcher = getLuceneSearcher();
 	String text = request.getString(ARG_TEXT,"");
 	//	QueryBuilder builder = new QueryBuilder(analyzer);
-	boolean hasAField = false;
+	String searchField = null;
 	for(String field: SEARCH_FIELDS) {
 	    if(text.indexOf(field+":")>=0) {
-		hasAField = true;
+		searchField = field;
+		text = text.substring((field.length()+1));
 		break;
 	    }
 	}
@@ -767,6 +768,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    text = text.toLowerCase();
 	    BooleanQuery.Builder builder = new BooleanQuery.Builder();
 	    for(String field: SEARCH_FIELDS) {
+		if(searchField!=null && !field.equals(searchField)) continue;
 		Query term = new WildcardQuery(new Term(field, text));		
 		builder.add(term, BooleanClause.Occur.SHOULD);
 	    }

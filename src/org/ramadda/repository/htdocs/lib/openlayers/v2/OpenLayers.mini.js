@@ -1,60 +1,3 @@
-/*
-
-  OpenLayers.js -- OpenLayers Map Viewer Library
-
-  Copyright (c) 2006-2015 by OpenLayers Contributors
-  Published under the 2-clause BSD license.
-  See https://raw.githubusercontent.com/openlayers/ol2/master/license.txt for the full text of the license, and https://raw.githubusercontent.com/openlayers/ol2/master/authors.txt for full list of contributors.
-
-  Includes compressed code under the following licenses:
-
-  (For uncompressed versions of the code used, please see the
-  OpenLayers Github repository: <https://github.com/openlayers/ol2>)
-
-*/
-
-/**
- * Contains XMLHttpRequest.js <http://code.google.com/p/xmlhttprequest/>
- * Copyright 2007 Sergey Ilinsky (http://www.ilinsky.com)
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * http://www.apache.org/licenses/LICENSE-2.0
- */
-
-/**
- * OpenLayers.Util.pagePosition is based on Yahoo's getXY method, which is
- * Copyright (c) 2006, Yahoo! Inc.
- * All rights reserved.
- *
- * Redistribution and use of this software in source and binary forms, with or
- * without modification, are permitted provided that the following conditions
- * are met:
- *
- * * Redistributions of source code must retain the above copyright notice,
- *   this list of conditions and the following disclaimer.
- *
- * * Redistributions in binary form must reproduce the above copyright notice,
- *   this list of conditions and the following disclaimer in the documentation
- *   and/or other materials provided with the distribution.
- *
- * * Neither the name of Yahoo! Inc. nor the names of its contributors may be
- *   used to endorse or promote products derived from this software without
- *   specific prior written permission of Yahoo! Inc.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
 var OpenLayers={VERSION_NUMBER:"Release 2.14 dev",singleFile:true,_getScriptLocation:(function(){var r=new RegExp("(^|(.*?\\/))(OpenLayers[^\\/]*?\\.js)(\\?|$)"),s=document.getElementsByTagName('script'),src,m,l="";for(var i=0,len=s.length;i<len;i++){src=s[i].getAttribute('src');if(src){m=src.match(r);if(m){l=m[1];break;}}}
 return(function(){return l;});})(),ImgPath:''};OpenLayers.Class=function(){var len=arguments.length;var P=arguments[0];var F=arguments[len-1];var C=typeof F.initialize=="function"?F.initialize:function(){P.prototype.initialize.apply(this,arguments);};if(len>1){var newArgs=[C,P].concat(Array.prototype.slice.call(arguments).slice(1,len-1),F);OpenLayers.inherit.apply(null,newArgs);}else{C.prototype=F;}
 return C;};OpenLayers.inherit=function(C,P){var F=function(){};F.prototype=P.prototype;C.prototype=new F;var i,l,o;for(i=2,l=arguments.length;i<l;i++){o=arguments[i];if(typeof o==="function"){o=o.prototype;}
@@ -2694,8 +2637,7 @@ return onScreen;},display:function(display){this.div.style.display=(display)?"":
 "' events can only be registered for OpenLayers.Layer.Vector "+
 "or OpenLayers.Map instances");}
 for(var i=this.provides.length-1;i>=0;--i){target.extensions[this.provides[i]]=true;}},setMap:function(map){this.map=map;this.cache={};map.events.register("mousedown",this,this.start,{extension:true});map.events.register("mouseup",this,this.onClick,{extension:true});map.events.register("touchstart",this,this.start,{extension:true});map.events.register("touchmove",this,this.cancel,{extension:true});map.events.register("touchend",this,this.onClick,{extension:true});map.events.register("mousemove",this,this.onMousemove,{extension:true});},start:function(evt){this.startEvt=evt;},cancel:function(evt){delete this.startEvt;},onClick:function(evt){if(!this.startEvt||evt.type!=="touchend"&&!OpenLayers.Event.isLeftClick(evt)){return;}
-																																																																																	var features=this.getFeatures(this.startEvt);delete this.startEvt;var feature,layer,more,clicked={};for(var i=0,len=features.length;i<len;++i){feature=features[i];layer=feature.layer;/*jeffmc fix NPE*/ if(!layer) continue;
-clicked[layer.id]=true;more=this.triggerEvent("featureclick",{feature:feature});if(more===false){break;}}
+var features=this.getFeatures(this.startEvt);delete this.startEvt;var feature,layer,more,clicked={};for(var i=0,len=features.length;i<len;++i){feature=features[i];layer=feature.layer;if(layer==null)continue;clicked[layer.id]=true;more=this.triggerEvent("featureclick",{feature:feature});if(more===false){break;}}
 for(i=0,len=this.map.layers.length;i<len;++i){layer=this.map.layers[i];if(layer instanceof OpenLayers.Layer.Vector&&!clicked[layer.id]){this.triggerEvent("nofeatureclick",{layer:layer});}}},onMousemove:function(evt){delete this.startEvt;var clientX=evt.clientX;var clientY=evt.clientY;if(this.lastClientX==clientX&&this.lastClientY==clientY){return;}else{this.lastClientX=clientX;this.lastClientY=clientY;}
 var features=this.getFeatures(evt);var over={},newly=[],feature;for(var i=0,len=features.length;i<len;++i){feature=features[i];over[feature.id]=feature;if(!this.cache[feature.id]){newly.push(feature);}}
 var out=[];for(var id in this.cache){feature=this.cache[id];if(feature.layer&&feature.layer.map){if(!over[feature.id]){out.push(feature);}}else{delete this.cache[id];}}

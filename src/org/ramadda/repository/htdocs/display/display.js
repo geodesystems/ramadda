@@ -707,7 +707,8 @@ function DisplayThing(argId, argProperties) {
         getRecordHtml: function(record, fields, template, debug) {
 	    fields = this.getFields(fields);
 	    if(!fields) return "";
-	    let linkField = this.getFieldById(null,this.getProperty("linkField"));
+            let urlField = this.getFieldById(null, this.getProperty("urlField", "url"));
+	    let linkField = this.getFieldById(null,this.getProperty("linkField"))|| urlField;
 	    let titleField = this.getFieldById(null,this.getProperty("titleField"));
 	    let titleTemplate = this.getProperty("titleTemplate");	    
 	    let descField = this.getFieldById(null,this.getProperty("descriptionField"));
@@ -753,7 +754,7 @@ function DisplayThing(argId, argProperties) {
 		    title = HU.center(HU.h3(title));
 		}
 		if(link)
-		    title = HU.href(link,title);
+		    title = HU.href(link,title,["target","_target"]);
 		values+=title;
 		link = null;
 	    }

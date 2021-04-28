@@ -287,7 +287,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var _this = this;
             var html = "";
             var extraStyle="";
-            var height = this.getProperty("height", 300);
+            var height = this.getProperty("height", this.getProperty("mapHeight", 300));
             if (height < 0) {
 		height = (-height)+"%";
 	    }
@@ -644,16 +644,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
 
 
-            var currentFeatures = this.features;
+            let currentFeatures = this.features;
             this.features = [];
             for (var i = 0; i < currentFeatures.length; i++) {
                 this.addFeature(currentFeatures[i]);
             }
-            var entries = this.getDisplayManager().collectEntries();
-            for (var i = 0; i < entries.length; i++) {
-                var pair = entries[i];
-                this.handleEventEntriesChanged(pair.source, pair.entries);
-            }
+	    if(this.getProperty("displayEntries",true)) {
+		let entries = this.getDisplayManager().collectEntries();
+		for (let i = 0; i < entries.length; i++) {
+                    let pair = entries[i];
+                    this.handleEventEntriesChanged(pair.source, pair.entries);
+		}
+	    }
 
 
             if (this.layerEntries) {
@@ -2050,7 +2052,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(!labelField) labelField = this.getFieldByType(null,"string");
 	    if(labelField) {
 		let html = "";
-		let iconField = this.getFieldById(null,"icon");
+		let iconField = this.getFieldById(null, this.getProperty("iconField"));
 		records.forEach((record,idx)=>{
 		    let title = "View record";
 		    if(this.trackUrlField) title = "Click to view; Double-click to view track";
@@ -2064,7 +2066,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    html+= HU.span([TITLE, title, CLASS,clazz,RECORD_ID,record.getId(),RECORD_INDEX,idx], value);
 		});
 
-		html = HU.div([CLASS, "display-map-toc",STYLE,HU.css("max-height","calc(" +this.getHeightForStyle()+" - 1em)"),ID, this.domId("toc")],html);
+		let height = this.getProperty("height", this.getProperty("mapHeight", 300));
+
+		html = HU.div([CLASS, "display-map-toc",STYLE,HU.css("max-height","calc(" +HU.getDimension(height)+" - 1em)"),ID, this.domId("toc")],html);
 		let title = this.getProperty("tableOfContentsTitle","");
 		if(title) html = HU.center(HU.b(title)) + html;
 		this.jq(ID_LEFT).html(html);
@@ -2077,6 +2081,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(!record) return;
 		    _this.highlightPoint(record.getLatitude(), record.getLongitude(),true, false);
 		    _this.map.setCenter(new OpenLayers.LonLat(record.getLongitude(),record.getLatitude()));
+		    _this.map.setZoom(10);
 		    if(record.trackData) {
 			setTimeout(()=>{
 			    _this.getDisplayManager().notifyEvent("handleEventDataSelection", _this, {data:record.trackData});
