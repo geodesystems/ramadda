@@ -19,7 +19,7 @@ scp ${dist}/plugins/coreplugins/* ${dist}/plugins/bioplugins/* ${dist}/plugins/g
 
 #cp the top level build products
 echo "copying core"
-scp ${dist}/ramaddainstaller.zip  ${dist}/ramaddaserver.zip   ${dist}/ramaddaclient.zip   ${dist}/repository.war ${dist}/csvutil.zip ${dest}
+scp ${dist}/ramaddainstaller.zip  ${dist}/ramaddaserver.zip   ${dist}/repository.war ${dist}/csvutil.zip ${dest}
 
 
 
