@@ -146,9 +146,9 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
                 }
 
                 listHtml += "<tr>";
-                listHtml += "<td><input name=\"entryselect\" type=checkbox checked value=\"" + entry.getId() + "\" id=\"" +
+                listHtml += "<td style='padding-left:4px;padding-right:4px;' width=1><input name=\"entryselect\" type=checkbox checked value=\"" + entry.getId() + "\" id=\"" +
                     this.checkboxPrefix +
-                    +entry.getId() + "\" >";
+                    +entry.getId() + "\" ></td><td>";
                 listHtml += "&nbsp;" + entry.getLink(entry.getIconImage() + " " + entry.getName());
 
                 for (var colIdx = 0; colIdx < columnNames.length; colIdx++) {
@@ -166,26 +166,23 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
                 listHtml += "</tr>";
             }
 
-
-
-	    var table = HtmlUtils.openTag("table", ["class", "selectform-table stripe rowborder ramadda-table", "id", tableId]);
+	    var table = HtmlUtils.openTag("table", ["border",0,"class", "selectform-table stripe rowborder ramadda-table", "id", tableId]);
             var checkboxId = this.id + "_listcbx";
-            header = "<tr><th><input type=checkbox checked value=true id=\"" + checkboxId + "\"\> " +
+            header = "<tr><th style='padding-left:4px;padding-right:4px;' width=1><input type=checkbox checked value=true id=\"" + checkboxId + "\"\></th><th> " +
 		"<b>" + data.length + " files found</b></th>" + header + "<th align=right><b>Size</b></td></tr>";
 
             table += HtmlUtils.openTag("thead", []);
-  	        table += header;
+  	    table += header;
             table += HtmlUtils.closeTag("thead");
             table += HtmlUtils.openTag("tbody", []);
-	        table += listHtml;
+	    table += listHtml;
             table += HtmlUtils.closeTag("tbody");
-	        table += HtmlUtils.closeTag("table");
-	        html += table;
+	    table += HtmlUtils.closeTag("table");
+	    html += table;
             html +=  HtmlUtils.leftRight("",GuiUtils.size_format(totalSize));
-        }
+	}
         this.totalSize = totalSize;
         $("#" + this.outputDivPrefix + "list").html(html);
-
 
         HtmlUtils.formatTable("#"+ tableId,{
             scrollY: "250",
@@ -200,9 +197,11 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
 
 
         cbx.change(function(event) {
-            var value = cbx.is(':checked');
+            let value = cbx.is(':checked');
             theForm.getEntryCheckboxes().attr("checked", value);
             theForm.listUpdated();
+	    event.stopPropagation();
+
         });
         this.listUpdated()
     }                
