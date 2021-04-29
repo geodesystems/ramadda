@@ -999,12 +999,12 @@ public class EntryManager extends RepositoryManager {
         List<TypeHandler> typeHandlers = getRepository().getTypeHandlersForDisplay(false);
         boolean           checkCnt     = request.get("checkcount", true);
         for (TypeHandler typeHandler : typeHandlers) {
-            if ( !typeHandler.getForUser()) {
+	    if (!typeHandler.getIncludeInSearch() &&  !typeHandler.getForUser()) {
                 continue;
             }
             if (checkCnt) {
                 int cnt = getEntryUtil().getEntryCount(typeHandler);
-                if (cnt == 0) {
+                if (!typeHandler.getIncludeInSearch() && cnt == 0) {
                     continue;
                 }
             }

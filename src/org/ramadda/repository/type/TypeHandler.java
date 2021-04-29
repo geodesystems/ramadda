@@ -338,6 +338,9 @@ public class TypeHandler extends RepositoryManager {
     /** Should users be shown this type when doing a New Entry... */
     private boolean forUser = true;
 
+    /** can be set for abstract types */
+    private boolean includeInSearch = false;
+
     /** _more_ */
     private Boolean canCache;
 
@@ -517,6 +520,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
+            includeInSearch = Utils.getAttributeOrTag(node, "includeInSearch", false);
 
             forUser = Utils.getAttributeOrTag(node, ATTR_FORUSER,
                     XmlUtil.getAttributeFromTree(node, ATTR_FORUSER,
@@ -636,6 +640,8 @@ public class TypeHandler extends RepositoryManager {
         items.add("" + cnt);
         items.add("label");
         items.add(Json.quote(getLabel()));
+        items.add("includeInSearch");
+        items.add(Json.quote(""+getIncludeInSearch()));
         items.add("isgroup");
         items.add("" + isGroup());
 
@@ -7131,6 +7137,28 @@ public class TypeHandler extends RepositoryManager {
 
 
     /**
+       Set the IncludeInSearch property.
+
+       @param value The new value for IncludeInSearch
+    **/
+    public void setIncludeInSearch (boolean value) {
+	includeInSearch = value;
+    }
+
+    /**
+       Get the IncludeInSearch property.
+
+       @return The IncludeInSearch
+    **/
+    public boolean getIncludeInSearch () {
+	return includeInSearch;
+    }
+
+
+
+
+
+    /**
      * _more_
      *
      * @param v _more_
@@ -7154,10 +7182,10 @@ public class TypeHandler extends RepositoryManager {
         }
 
         /*
-        if (getParent() != null) {
-            return getParent().getForUser();
-        }
-        return true;
+	  if (getParent() != null) {
+	  return getParent().getForUser();
+	  }
+	  return true;
         */
     }
 
@@ -7189,7 +7217,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public TimeZone getTimeZone(Request request, Entry entry, int index)
-            throws Exception {
+	throws Exception {
         TimeZone timeZone = null;
         String   timezone = null;
         if (entry != null) {
@@ -7257,21 +7285,21 @@ public class TypeHandler extends RepositoryManager {
                 tmp.add(arg);
             }
             List<String> from = Utils.split(
-                                    getRepository().getProperty(
-                                        "ramadda.arg.date.from", ""), ",",
+					    getRepository().getProperty(
+									"ramadda.arg.date.from", ""), ",",
                                             true, true);
             List<String> to = Utils.split(
-                                  getRepository().getProperty(
-                                      "ramadda.arg.date.to", ""), ",", true,
+					  getRepository().getProperty(
+								      "ramadda.arg.date.to", ""), ",", true,
                                           true);
             List<String> mode = Utils.split(
-                                    getRepository().getProperty(
-                                        "ramadda.arg.date.mode", ""), ",",
+					    getRepository().getProperty(
+									"ramadda.arg.date.mode", ""), ",",
                                             true, true);
             List<String> relative = Utils.split(
-                                        getRepository().getProperty(
-                                            "ramadda.arg.date.relative",
-                                            ""), ",", true, true);
+						getRepository().getProperty(
+									    "ramadda.arg.date.relative",
+									    ""), ",", true, true);
             for (int i = 0; i < from.size(); i++) {
                 tmp.add(new DateArgument(DateArgument.TYPE_DATA, from.get(i),
                                          to.get(i), mode.get(i),
@@ -7303,7 +7331,7 @@ public class TypeHandler extends RepositoryManager {
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)
-            throws Exception {
+	throws Exception {
         return null;
     }
 
@@ -7324,7 +7352,7 @@ public class TypeHandler extends RepositoryManager {
             Utils.append(inner,
                          XmlUtil.tag(TypeHandler.TAG_PROPERTY,
                                      XmlUtil.attrs(ATTR_NAME, arg,
-                                         TypeHandler.ATTR_VALUE, value)));
+						   TypeHandler.ATTR_VALUE, value)));
         }
     }
 
