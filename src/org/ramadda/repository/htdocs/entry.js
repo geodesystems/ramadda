@@ -635,6 +635,9 @@ function EntryType(props) {
         getEntryCount: function() {
             return this.entryCount;
         },
+        getIncludeInSearch: function() {
+            return this.includeInSearch;
+        },	
         getColumns: function() {
             return this.columns;
         },

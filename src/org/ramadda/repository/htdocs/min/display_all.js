@@ -27050,20 +27050,20 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
                 }
             }
 
-            var html = "";
+            let html = "";
             html += HU.openTag(TAG_TABLE, ["id", this.getDomId("table"), ATTR_CLASS, "cell-border stripe ramadda-table", ATTR_WIDTH, "100%", "cellpadding", "5", "cellspacing", "0"]);
             html += "<thead>"
-            var type = this.findEntryType(this.searchSettings.entryType);
-            var typeName = "Entry";
+            let type = this.findEntryType(this.searchSettings.entryType);
+            let typeName = "Entry";
             if (type != null) {
                 typeName = type.getLabel();
             }
 	    this.writeMessage(this.getResultsHeader(entries));
-            var mdts = null;
+            let mdts = null;
             //Get the metadata types to show from either a property or
             //gather them from all of the entries
             // e.g., "project_pi,project_person,project_funding"
-            var prop = this.getProperty("metadataTypes", null);
+            let prop = this.getProperty("metadataTypes", null);
             if (prop != null) {
                 mdts = prop.split(",");
             } else {
@@ -27071,59 +27071,59 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
                 mdts.sort();
             }
 
-            var skip = {
+            let skip = {
                 "content.pagestyle": true,
                 "content.pagetemplate": true,
                 "content.sort": true,
                 "spatial.polygon": true,
             };
-            var headerItems = [];
+            let headerItems = [];
             headerItems.push(HU.th([], HU.b(typeName)));
-            for (var i = 0; i < mdts.length; i++) {
-                var type = mdts[i];
+            for (let i = 0; i < mdts.length; i++) {
+                let type = mdts[i];
                 if (skip[type]) {
                     continue;
                 }
-                var label = mdtmap[mdts[i]];
+                let label = mdtmap[mdts[i]];
                 if (label == null) label = mdts[i];
                 headerItems.push(HU.th([], HU.b(label)));
             }
-            var headerRow = HU.tr(["valign", "bottom"], HU.join(headerItems, ""));
+            let headerRow = HU.tr(["valign", "bottom"], HU.join(headerItems, ""));
             html += headerRow;
             html += "</thead><tbody>"
-            var divider = "<div class=display-metadata-divider></div>";
-            var missing = this.missingMessage;
+            let divider = "<div class=display-metadata-divider></div>";
+            let missing = this.missingMessage;
             if (missing = null) missing = "&nbsp;";
-            for (var entryIdx = 0; entryIdx < entries.length; entryIdx++) {
-                var entry = entries[entryIdx];
-                var metadata = entry.getMetadata();
-                var row = [];
-                var buttonId = this.getDomId("entrylink" + entry.getIdForDom());
-                var link = entry.getLink(entry.getIconImage() + " " + entry.getName());
+            for (let entryIdx = 0; entryIdx < entries.length; entryIdx++) {
+                let entry = entries[entryIdx];
+                let metadata = entry.getMetadata();
+                let row = [];
+                let buttonId = this.getDomId("entrylink" + entry.getIdForDom());
+                let link = entry.getLink(entry.getIconImage() + " " + entry.getName());
                 row.push(HU.td([], HU.div([ATTR_CLASS, "display-metadata-entrylink"], link)));
-                for (var mdtIdx = 0; mdtIdx < mdts.length; mdtIdx++) {
-                    var mdt = mdts[mdtIdx];
+                for (let mdtIdx = 0; mdtIdx < mdts.length; mdtIdx++) {
+                    let mdt = mdts[mdtIdx];
                     if (skip[mdt]) {
                         continue;
                     }
-                    var cell = null;
-                    for (var j = 0; j < metadata.length; j++) {
-                        var m = metadata[j];
+                    let cell = null;
+                    for (let j = 0; j < metadata.length; j++) {
+                        let m = metadata[j];
                         if (m.type == mdt) {
-                            var item = null;
+                            let item = null;
                             if (m.type == "content.thumbnail" || m.type == "content.logo") {
-                                var url = this.getRamadda().getRoot() + "/metadata/view/" + m.value.attr1 + "?element=1&entryid=" + entry.getId() + "&metadata_id=" + m.id;
+                                let url = this.getRamadda().getRoot() + "/metadata/view/" + m.value.attr1 + "?element=1&entryid=" + entry.getId() + "&metadata_id=" + m.id;
                                 item = HU.image(url, [ATTR_WIDTH, "100"]);
                             } else if (m.type == "content.url" || m.type == "dif.related_url") {
-                                var label = m.value.attr2;
+                                let label = m.value.attr2;
                                 if (label == null || label == "") {
                                     label = m.value.attr1;
                                 }
                                 item = HU.href(m.value.attr1, label);
                             } else if (m.type == "content.attachment") {
-                                var toks = m.value.attr1.split("_file_");
-                                var filename = toks[1];
-                                var url = this.getRamadda().getRoot() + "/metadata/view/" + m.value.attr1 + "?element=1&entryid=" + entry.getId() + "&metadata_id=" + m.id;
+                                let toks = m.value.attr1.split("_file_");
+                                let filename = toks[1];
+                                let url = this.getRamadda().getRoot() + "/metadata/view/" + m.value.attr1 + "?element=1&entryid=" + entry.getId() + "&metadata_id=" + m.id;
                                 item = HU.href(url, filename);
                             } else {
                                 item = m.value.attr1;
@@ -27150,11 +27150,11 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
                     if (cell == null) {
                         cell = "";
                     }
-                    var add = HU.tag(TAG_A, [ATTR_STYLE, "color:#000;", ATTR_HREF, this.getRamadda().getRoot() + "/metadata/addform?entryid=" + entry.getId() + "&metadata_type=" + mdt,
+                    let add = HU.tag(TAG_A, [ATTR_STYLE, "color:#000;", ATTR_HREF, this.getRamadda().getRoot() + "/metadata/addform?entryid=" + entry.getId() + "&metadata_type=" + mdt,
                         "target", "_blank", "alt", "Add metadata", ATTR_TITLE, "Add metadata"
                     ], "+");
                     add = HU.div(["class", "display-metadata-table-add"], add);
-                    var cellContents = add + divider;
+                    let cellContents = add + divider;
                     if (cell.length > 0) {
                         cellContents += cell;
                     }
@@ -27520,13 +27520,13 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	},
         getResultsHeader: function(entries, includeCloser) {
             if (entries.length < 10) return entries.length+" result" +(entries.length>1?"s":"");
-            var left = "Showing " + (this.searchSettings.skip + 1) + "-" + (this.searchSettings.skip + Math.min(this.searchSettings.max, entries.length));
-            var nextPrev = [];
-            var lessMore = [];
+            let left = "Showing " + (this.searchSettings.skip + 1) + "-" + (this.searchSettings.skip + Math.min(this.searchSettings.max, entries.length));
+            let nextPrev = [];
+            let lessMore = [];
             if (this.searchSettings.skip > 0) {
                 nextPrev.push(HU.onClick(this.getGet() + ".loadPrevUrl();", HU.getIconImage("fa-arrow-left", [ATTR_TITLE, "Previous"]), [ATTR_CLASS, "display-link"]));
             }
-            var addMore = false;
+            let addMore = false;
             if (entries.length == this.searchSettings.getMax()) {
                 nextPrev.push(HU.onClick(this.getGet() + ".loadNextUrl();", HU.getIconImage("fa-arrow-right", [ATTR_TITLE, "Next"]), [ATTR_CLASS, "display-link"]));
                 addMore = true;
@@ -27536,8 +27536,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             if (addMore) {
                 lessMore.push(HU.onClick(this.getGet() + ".loadMore();", HU.getIconImage("fa-plus", [ATTR_TITLE, "View more"]), [ATTR_CLASS, "display-link"]));
             }
-            var results = "";
-            var spacer = "&nbsp;&nbsp;&nbsp;"
+            let results = "";
+            let spacer = "&nbsp;&nbsp;&nbsp;"
 	    if(includeCloser)
 		results = this.getCloser();
 	    results += "&nbsp;" + left + spacer;
@@ -28126,7 +28126,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                     optionAttrs.push("selected");
                     optionAttrs.push(null);
                 }
-                let option = HU.tag(TAG_OPTION, optionAttrs, type.getLabel() + " (" + type.getEntryCount() + ")");
+		let label = type.getLabel();
+		if(type.getEntryCount()>0) 
+		    label += " (" + type.getEntryCount() + ")"
+
+                let option = HU.tag(TAG_OPTION, optionAttrs, label);
                 let map = catMap[type.getCategory()];
                 if (map == null) {
                     catMap[type.getCategory()] = HU.tag(TAG_OPTION, [ATTR_CLASS, "display-typelist-category", ATTR_TITLE, "", ATTR_VALUE, ""], type.getCategory());
@@ -28461,6 +28465,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 		tabs +="<li>" +HU.href("#" + tabId+"-" + idx,title) +"</li>\n"
 	    })
 	    tabs +="</ul>\n";
+	    this.tabCount = contents.length;
 	    contents.forEach((content,idx)=>{
 		tabs +=HU.div([ID,tabId+"-" + idx,CLASS,"ui-tabs-hide"], content);
 	    });
@@ -28511,13 +28516,14 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 	    if(this.galleryId) {
 	    	$("#" + this.galleryId).find("a.popup_image").fancybox({helpers:{title:{type:'over'}}});
 	    }
-//	    this.activeTabIndex = 0;
 	    let tabbed = (event,ui)=>{
 		this.activeTabIndex = ui.newTab.index();
 		HtmlUtil.tabLoaded();
 	    };
 	    if(this.tabId) {
-		$('#' + this.tabId).tabs({activate: tabbed,active: this.activeTabIndex});
+		let index = this.activeTabIndex;
+		if(index>=this.tabCount)  index = this.tabCount-1;
+		$('#' + this.tabId).tabs({activate: tabbed,active: index});
 	    }	
 	    if(this.myDisplays && this.myDisplays.length) {
 		let index=0;
