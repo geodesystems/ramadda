@@ -98,10 +98,6 @@ public class PdfTypeHandler extends GenericTypeHandler {
         if (entries.size() == 0) {
             return;
         }
-        Entry serviceEntry = entries.get(0);
-        if ( !serviceEntry.getResource().getPath().endsWith(".txt")) {
-            return;
-        }
 
         String created = (String) entry.getTransientProperty(
                              Office.CREATION_DATE.getName());
@@ -132,6 +128,12 @@ public class PdfTypeHandler extends GenericTypeHandler {
                     "metadata_author", false, author, null, null, null,
                     null));
         }
+
+        Entry serviceEntry = entries.get(0);
+        if ( !serviceEntry.getResource().getPath().endsWith(".txt")) {
+            return;
+        }
+
         String results =
             IOUtil.readContents(serviceEntry.getFile().toString(),
                                 getClass());
