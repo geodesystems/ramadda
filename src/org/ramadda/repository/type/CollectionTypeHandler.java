@@ -365,6 +365,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
     public List<Clause> getClauses(Request request, Entry entry,
                                    Appendable key)
             throws Exception {
+	System.err.println(Utils.getStack(10));
         List<Clause> clauses = new ArrayList<Clause>();
         for (int selectIdx = 0; selectIdx < granuleColumns.size();
                 selectIdx++) {
@@ -871,8 +872,9 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         }
         List<Clause> clauses = new ArrayList<Clause>();
         addClauses(request, group, clauses);
+	//Pass in false to say not to do lucene search if its enabled
         return  getEntryManager().getEntries(request, clauses,
-						    getGranuleTypeHandler());
+					     getGranuleTypeHandler(),false);
     }
 
     /**
