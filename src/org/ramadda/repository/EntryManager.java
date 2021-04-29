@@ -6856,6 +6856,13 @@ public class EntryManager extends RepositoryManager {
     public List<Entry> getEntries(Request request, List<Clause> clauses,
                                     TypeHandler typeHandler)
 	throws Exception {
+	return getEntries(request, clauses, typeHandler, true);
+    }
+
+
+    public List<Entry> getEntries(Request request, List<Clause> clauses,
+				  TypeHandler typeHandler,boolean luceneOk)
+	throws Exception {	
 
 	List<Entry> entryTree = getEntryRootTree(request);
 	if(entryTree!=null) {
@@ -6878,7 +6885,7 @@ public class EntryManager extends RepositoryManager {
 	boolean didSearch = false;
 
 	//Check if we should let lucene do the searching
-	if(getSearchManager().isLuceneEnabled()) {
+	if(luceneOk && getSearchManager().isLuceneEnabled()) {
 	    List<String> columns = new ArrayList<String>();
 	    for(Clause clause: clauses)
 		clause.getColumns(columns);
