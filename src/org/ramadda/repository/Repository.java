@@ -5608,7 +5608,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         List<TypeHandler> tmp = new ArrayList<TypeHandler>();
         for (TypeHandler typeHandler :
                 (List<TypeHandler>) Misc.toList(array)) {
-            if ( !typeHandler.getForUser()) {
+            if (!typeHandler.getIncludeInSearch() &&  !typeHandler.getForUser()) {
                 continue;
             }
             if (typeHandler.isAnyHandler()) {
