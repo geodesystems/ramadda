@@ -185,6 +185,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     private static final String  FIELD_ENTRYORDER ="entryorder";
     private static final String  FIELD_SIZE ="size";
+    private static final String  FIELD_SUPERTYPE ="supertype";    
 
     /** _more_ */
     private static final String FIELD_ENTRYID = "entryid";
@@ -542,7 +543,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             new org.apache.lucene.document.Document();
 
         doc.add(new StringField(FIELD_ENTRYID, entry.getId(), Field.Store.YES));
-        doc.add(new StringField(FIELD_TYPE, entry.getTypeHandler().getType(), Field.Store.YES));	
+	//        doc.add(new StringField(FIELD_TYPE, entry.getTypeHandler().getType(), Field.Store.YES));	
+	TypeHandler parentType = entry.getTypeHandler();//.getParent();
+	while(parentType!=null) {
+	    doc.add(new StringField(FIELD_SUPERTYPE, parentType.getType(), Field.Store.YES));	
+	    parentType = parentType.getParent();
+	}
+
+
 	if(entry.getParentEntryId()!=null) {
 	    doc.add(new StringField(FIELD_PARENT, entry.getParentEntryId(), Field.Store.YES));	
 	}
@@ -925,7 +933,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	if(request.defined(ARG_TYPE)) {
 	    TypeHandler typeHandler = getRepository().getTypeHandler(request.getString(ARG_TYPE));
 	    if(typeHandler!=null) {
-		queries.add(new TermQuery(new Term(FIELD_TYPE, typeHandler.getType())));
+		//		queries.add(new TermQuery(new Term(FIELD_TYPE, typeHandler.getType())));
+		queries.add(new TermQuery(new Term(FIELD_SUPERTYPE, request.getString(ARG_TYPE))));
 		List<Column> columns = typeHandler.getColumns();
 		if (columns != null) {
 		    BooleanQuery.Builder builder = new BooleanQuery.Builder();
@@ -1094,6 +1103,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    sort = Sort.RELEVANCE;
 	}
 
+	//	System.err.println("m:" + (max+skip));
 	TopDocs       hits     = searcher.search(query, max+skip,sort);
 	//        TopDocs       hits     = searcher.search(query, 100);		
         ScoreDoc[]    docs     = hits.scoreDocs;
