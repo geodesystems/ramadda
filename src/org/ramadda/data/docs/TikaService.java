@@ -107,10 +107,9 @@ public class TikaService extends Service {
         Metadata           metadata    = new Metadata();
         FileInputStream    inputstream = new FileInputStream(entry.getFile());
         ParseContext       context     = new ParseContext();
-	System.err.println("calling parser.parse");
+	//	System.err.println("calling parser.parse");
         parser.parse(inputstream, handler, metadata, context);
-	System.err.println("done calling parser.parse");
-
+	//	System.err.println("done calling parser.parse");
 
         //getting the list of all meta data elements 
         String[] metadataNames = metadata.names();

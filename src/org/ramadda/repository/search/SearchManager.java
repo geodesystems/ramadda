@@ -230,6 +230,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     private static final String[] SEARCH_FIELDS ={FIELD_NAME, FIELD_DESCRIPTION, FIELD_CONTENTS,FIELD_PATH};
 
+    public static final long LUCENE_MAX_LENGTH = 10000000;
 
     private IndexWriter luceneWriter;
 
@@ -419,7 +420,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			if(entry==null) continue;
 			synchronized(mutex) {
 			    cnt[0]++;
-			    //System.err.println("#" + cnt[0] +" entry:" + entry.getName());
+			    System.err.println("#" + cnt[0] +" entry:" + entry.getName());
 			}
 			indexEntry(writer, entry);
 			getEntryManager().removeFromCache(entry);
@@ -652,18 +653,17 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     private String readContents(File f) throws Exception {
 	//Don't do really big files or images
-	if(f.length()>10000000) return null;
+	if(f.length()>LUCENE_MAX_LENGTH) return null;
 	if(Utils.isImage(f.toString())) return null;
 	try(InputStream stream = getStorageManager().getFileInputStream(f)) {
-	    System.err.println("SearchManager.readContents:" + f.getName());
+	    //	    System.err.println("SearchManager.readContents:" + f.getName());
             org.apache.tika.metadata.Metadata metadata =
                 new org.apache.tika.metadata.Metadata();
-	    //            Parser parser =
-	    AutoDetectParser parser = new org.apache.tika.parser.AutoDetectParser(tikaConfig);
+	    Parser parser = new org.apache.tika.parser.AutoDetectParser(tikaConfig);
             org.apache.tika.sax.BodyContentHandler handler =
-                new org.apache.tika.sax.BodyContentHandler(100000000);
+                new org.apache.tika.sax.BodyContentHandler(LUCENE_MAX_LENGTH);
             parser.parse(stream, handler, metadata,new org.apache.tika.parser.ParseContext());
-	    System.err.println("done");
+	    //	    System.err.println("done");
             return  handler.toString();
 	}  catch(Throwable exc) {
 	    System.err.println("Error reading contents:" + f.getName() +" error:" + exc);
