@@ -100,8 +100,8 @@ public class TikaService extends Service {
             throw new IllegalArgumentException("No file entry found");
         }
 
-        //        System.out.println("TikaService.extractText:" + entry.getFile());
-        Parser parser = new AutoDetectParser();
+	//	System.out.println("TikaService.extractText:" + entry.getFile());
+        Parser parser = new AutoDetectParser(getRepository().getSearchManager().getTikaConfig());
         //Set the max char length to be 5 meg
         BodyContentHandler handler = new BodyContentHandler(5 * 1000 * 1000);
         Metadata           metadata    = new Metadata();

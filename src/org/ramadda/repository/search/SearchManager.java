@@ -305,6 +305,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
+    public TikaConfig getTikaConfig() {
+	return tikaConfig;
+    }
+
+
     /**
      * _more_
      *
@@ -650,11 +655,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	if(f.length()>10000000) return null;
 	if(Utils.isImage(f.toString())) return null;
 	try(InputStream stream = getStorageManager().getFileInputStream(f)) {
-	    System.err.println("readContents:" + f.getName());
+	    System.err.println("SearchManager.readContents:" + f.getName());
             org.apache.tika.metadata.Metadata metadata =
                 new org.apache.tika.metadata.Metadata();
 	    //            Parser parser =
-	    AutoDetectParser parser = new org.apache.tika.parser.AutoDetectParser();
+	    AutoDetectParser parser = new org.apache.tika.parser.AutoDetectParser(tikaConfig);
             org.apache.tika.sax.BodyContentHandler handler =
                 new org.apache.tika.sax.BodyContentHandler(100000000);
             parser.parse(stream, handler, metadata,new org.apache.tika.parser.ParseContext());
