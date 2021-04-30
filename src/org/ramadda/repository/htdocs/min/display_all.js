@@ -18987,7 +18987,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		}
 		let label = "";
 		let galleryLabel = "";
-		if(bottomLabelTemplate) {
+		if(Utils.stringDefined(bottomLabelTemplate)) {
 		    label = this.getRecordHtml(record,fields,bottomLabelTemplate);
 		} 
 		labelFields.forEach(l=>{
@@ -19006,13 +19006,17 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		if(width) imgAttrs.push(WIDTH,width);
 		else if(height) imgAttrs.push(HEIGHT,height);		
 		let img = image==""?SPACE1:HU.image(image,imgAttrs);
-		let topLbl = (topLabel!=null?HU.div([CLASS,"display-images-toplabel"], topLabel):"");
-		let lbl = HU.div([CLASS,"display-images-label"], label.trim());
+		let topLbl = (topLabel!=null?HU.div([CLASS,"ramadda-clickable display-images-toplabel"], topLabel):"");
+		let lbl = HU.div([CLASS,"ramadda-clickable display-images-label"], label.trim());
 		if(urlField) {
+		    if(topLbl!="")
+			topLbl = HU.href(urlField.getValue(record), topLbl,["target","_target"]);
 		    lbl = HU.href(urlField.getValue(record), lbl,["target","_target"]);
 		    galleryLabel = HU.href(urlField.getValue(record), galleryLabel,["target","_target"]);
 		    galleryLabel = galleryLabel.replace(/"/g,"'");
 		}
+		if(!this.getProperty("showBottomLabel",true))
+		    lbl="";
 		if(colorBy.isEnabled()) {
 		    let c = colorBy.getColorFromRecord(record);
 		    style+=HU.css(BACKGROUND,c);
@@ -26971,17 +26975,17 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
     this.ramaddas = new Array();
     let repos = this.getProperty("repositories", this.getProperty("repos", null));
     if (repos != null) {
-        var toks = repos.split(",");
+        let toks = repos.split(",");
         //OpenSearch;http://adasd..asdasdas.dasdas.,
-        for (var i = 0; i < toks.length; i++) {
-            var tok = toks[i];
+        for (let i = 0; i < toks.length; i++) {
+            let tok = toks[i];
             tok = tok.trim();
             this.ramaddas.push(getRamadda(tok));
         }
         if (this.ramaddas.length > 0) {
-            var container = new RepositoryContainer("all", "All entries");
+            let container = new RepositoryContainer("all", "All entries");
             addRepository(container);
-            for (var i = 0; i < this.ramaddas.length; i++) {
+            for (let i = 0; i < this.ramaddas.length; i++) {
                 container.addRepository(this.ramaddas[i]);
             }
             this.ramaddas.push(container);
@@ -27034,14 +27038,14 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
             return this.entryList.getEntries();
         },
 	getEntriesMetadata:function(entries) {
-	                var mdtsFromEntries = [];
-            var mdtmap = {};
-            var tmp = {};
-            for (var i = 0; i < entries.length; i++) {
-                var entry = entries[i];
-                var metadata = entry.getMetadata();
-                for (var j = 0; j < metadata.length; j++) {
-                    var m = metadata[j];
+	                let mdtsFromEntries = [];
+            let mdtmap = {};
+            let tmp = {};
+            for (let i = 0; i < entries.length; i++) {
+                let entry = entries[i];
+                let metadata = entry.getMetadata();
+                for (let j = 0; j < metadata.length; j++) {
+                    let m = metadata[j];
                     if (tmp[m.type] == null) {
                         tmp[m.type] = "";
                         mdtsFromEntries.push(m.type);
@@ -27519,7 +27523,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    });
 	},
         getResultsHeader: function(entries, includeCloser) {
-            if (entries.length < 10) return entries.length+" result" +(entries.length>1?"s":"");
+            if (entries.length < DEFAULT_MAX) return entries.length+" result" +(entries.length>1?"s":"");
             let left = "Showing " + (this.searchSettings.skip + 1) + "-" + (this.searchSettings.skip + Math.min(this.searchSettings.max, entries.length));
             let nextPrev = [];
             let lessMore = [];
@@ -27592,9 +27596,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    
             settings.metadata = [];
 	    if(!this.getShowTags()) {
-		for (var i = 0; i < this.metadataTypeList.length; i++) {
-                    var metadataType = this.metadataTypeList[i];
-                    var value = metadataType.getValue();
+		for (let i = 0; i < this.metadataTypeList.length; i++) {
+                    let metadataType = this.metadataTypeList[i];
+                    let value = metadataType.getValue();
                     if (value == null) {
 			value = this.getFieldValues(this.getMetadataFieldId(metadataType), null);
                     }
@@ -27643,9 +27647,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                     count: 0,
                 };
 
-                for (var i = 0; i < theRepository.children.length; i++) {
-                    var ramadda = theRepository.children[i];
-                    var jsonUrl = this.makeSearchUrl(ramadda);
+                for (let i = 0; i < theRepository.children.length; i++) {
+                    let ramadda = theRepository.children[i];
+                    let jsonUrl = this.makeSearchUrl(ramadda);
                     this.updateForSearching(jsonUrl);
                     this.entryList.addEntryList(new EntryList(ramadda, jsonUrl, null, false));
                     this.multiSearch.count++;
@@ -27653,7 +27657,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 this.entryList.doSearch(this);
             } else {
                 this.multiSearch = null;
-                var jsonUrl = this.makeSearchUrl(this.getRamadda());
+                let jsonUrl = this.makeSearchUrl(this.getRamadda());
                 console.log(jsonUrl);
                 this.entryList = new EntryList(this.getRamadda(), jsonUrl, this, true);
                 this.updateForSearching(jsonUrl);
@@ -27668,14 +27672,14 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             //alert("There was an error performing the search\n" + msg);
         },
         updateForSearching: function(jsonUrl) {
-            var outputs = this.getRamadda().getSearchLinks(this.getSearchSettings());
+            let outputs = this.getRamadda().getSearchLinks(this.getSearchSettings());
             this.footerRight = outputs == null ? "" : "Links: " + HU.join(outputs, " - ");
             this.writeHtml(ID_FOOTER_RIGHT, this.footerRight);
-            var msg = this.searchMessage;
+            let msg = this.searchMessage;
             if (msg == null) {
                 msg = this.getRamadda().getSearchMessage();
             }
-            var provider = this.getSearchSettings().provider;
+            let provider = this.getSearchSettings().provider;
             if (provider != null) {
                 msg = null;
                 if (this.providerMap != null) {
@@ -27691,11 +27695,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         prepareToLayout: function() {
             SUPER.prepareToLayout.apply(this);
             this.savedValues = {};
-            var cols = this.getSearchableColumns();
-            for (var i = 0; i < cols.length; i++) {
-                var col = cols[i];
-                var id = this.getDomId(ID_COLUMN + col.getName());
-                var value = $("#" + id).val();
+            let cols = this.getSearchableColumns();
+            for (let i = 0; i < cols.length; i++) {
+                let col = cols[i];
+                let id = this.getDomId(ID_COLUMN + col.getName());
+                let value = $("#" + id).val();
                 if (value == null || value.length == 0) continue;
                 this.savedValues[id] = value;
             }
@@ -27846,7 +27850,15 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    let text  = this.getFormText();
 	    if(!text || text=="")
 		text = HU.getUrlArgument(ID_TEXT_FIELD);
-            let textField = HU.input("", text, ["placeholder", this.getEgText("Search text"), TITLE,"e.g. name:, contents:,path:", ATTR_CLASS, "display-simplesearch-input", ATTR_SIZE, this.getProperty("inputSize", "30"), ATTR_ID, this.domId(ID_TEXT_FIELD)]);
+	    let attrs  = ["placeholder", this.getEgText("Search text"), TITLE,"e.g. name:, contents:,path:", ATTR_CLASS, "display-simplesearch-input",  ATTR_ID, this.domId(ID_TEXT_FIELD)];
+	    if(this.getProperty("inputSize")) {
+		attrs.push(ATTR_SIZE);
+		attrs.push(this.getProperty("inputSize", "30"));
+	    } else {
+		attrs.push(STYLE);
+		attrs.push(HU.css("width","100%"));
+	    }
+            let textField = HU.input("", text, attrs);
 
             if (this.getShowText()) {
 		topItems.push(textField);
@@ -27937,9 +27949,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	},
 
 	getFormText:function() {
-	    var text = this.getSearchSettings().text;
+	    let text = this.getSearchSettings().text;
             if (text == null) {
-                var args = Utils.getUrlArgs(document.location.search);
+                let args = Utils.getUrlArgs(document.location.search);
                 text = args.text;
             }
             if (text == null) {
@@ -27954,7 +27966,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             }
         },
         typeChanged: function() {
-            var settings = this.getSearchSettings();
+            let settings = this.getSearchSettings();
             settings.skip = 0;
             settings.max = DEFAULT_MAX;
             settings.entryType = this.getFieldValue(this.getDomId(ID_TYPE_FIELD), settings.entryType);
@@ -28061,8 +28073,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
         findEntryType: function(typeName) {
             if (this.entryTypes == null) return null;
-            for (var i = 0; i < this.entryTypes.length; i++) {
-                var type = this.entryTypes[i];
+            for (let i = 0; i < this.entryTypes.length; i++) {
+                let type = this.entryTypes[i];
                 if (type.getId() == typeName) return type;
             }
             return null;
@@ -28192,8 +28204,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             if (cols == null) {
                 return searchable;
             }
-            for (var i = 0; i < cols.length; i++) {
-                var col = cols[i];
+            for (let i = 0; i < cols.length; i++) {
+                let col = cols[i];
                 if (!col.getCanSearch()) continue;
                 searchable.push(col);
             }
@@ -28546,7 +28558,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 		let baseData= new  PointData("pointdata", fields, makeData(entries),null,null);
 		this.myDisplays.forEach(info=> {
 		    let data = info.entries?new  PointData("pointdata", fields, makeData(info.entries)):baseData;
-		    let props = {numberOfImages:500,showTableOfContents:true,iconField:"iconUrl",iconSize:16,displayEntries:false, imageField:"image",urlField:"url",titleField:"name",labelField:"name",labelFields:"name",textTemplate:"${description}",displayId:info.id,divid:info.id,showMenu:false,theData:data,displayStyle:""};
+		    let props = {numberOfImages:500,showTableOfContents:true,iconField:"iconUrl",iconSize:16,displayEntries:false, imageField:"image",urlField:"url",titleField:"name",labelField:"name",labelFields:"name",showBottomLabel:false,bottomLabelTemplate:"", topLabelTemplate:"${name}", textTemplate:"${description}",displayId:info.id,divid:info.id,showMenu:false,theData:data,displayStyle:""};
 		    info.display =  this.getDisplayManager().createDisplay(info.type,props);
 //		    console.log("d:" + info.display.type);
 		})
@@ -28586,16 +28598,16 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 
 
 function RamaddaEntrygalleryDisplay(displayManager, id, properties) {
-    var ID_GALLERY = "gallery";
-    var SUPER;
+    const ID_GALLERY = "gallery";
+    let SUPER;
     RamaddaUtil.inherit(this, SUPER = new RamaddaEntryDisplay(displayManager, id, DISPLAY_ENTRY_GALLERY, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
         entries: properties.entries,
         initDisplay: function() {
-            var _this = this;
+            let _this = this;
             this.createUI();
-            var html = HU.div([ATTR_ID, this.getDomId(ID_GALLERY)], "Gallery");
+            let html = HU.div([ATTR_ID, this.getDomId(ID_GALLERY)], "Gallery");
             this.setContents(html);
 
             if (this.selectedEntries != null) {
@@ -28603,21 +28615,21 @@ function RamaddaEntrygalleryDisplay(displayManager, id, properties) {
                 return;
             }
             if (this.entries) {
-                var props = {
+                let props = {
                     entries: this.entries
                 };
-                var searchSettings = new EntrySearchSettings(props);
-                var jsonUrl = this.getRamadda().getSearchUrl(searchSettings, OUTPUT_JSON, "BAR");
-                var myCallback = {
+                let searchSettings = new EntrySearchSettings(props);
+                let jsonUrl = this.getRamadda().getSearchUrl(searchSettings, OUTPUT_JSON, "BAR");
+                let myCallback = {
                     entryListChanged: function(list) {
-                        var entries = list.getEntries();
+                        let entries = list.getEntries();
                         _this.jq(ID_GALLERY).html(_this.getEntriesGallery(entries));
                         $("a.popup_image").fancybox({
                             'titleShow': false
                         });
                     }
                 };
-                var entryList = new EntryList(this.getRamadda(), jsonUrl, myCallback, true);
+                let entryList = new EntryList(this.getRamadda(), jsonUrl, myCallback, true);
             }
 
             if (this.entryList != null && this.entryList.haveLoaded) {
@@ -28629,45 +28641,45 @@ function RamaddaEntrygalleryDisplay(displayManager, id, properties) {
 
 
 function RamaddaEntrygridDisplay(displayManager, id, properties) {
-    var SUPER;
-    var ID_CONTENTS = "contents";
-    var ID_GRID = "grid";
-    var ID_AXIS_LEFT = "axis_left";
-    var ID_AXIS_BOTTOM = "axis_bottom";
-    var ID_CANVAS = "canvas";
-    var ID_LINKS = "links";
-    var ID_RIGHT = "right";
+    let SUPER;
+    const ID_CONTENTS = "contents";
+    const ID_GRID = "grid";
+    const ID_AXIS_LEFT = "axis_left";
+    const ID_AXIS_BOTTOM = "axis_bottom";
+    const ID_CANVAS = "canvas";
+    const ID_LINKS = "links";
+    const ID_RIGHT = "right";
 
-    var ID_SETTINGS = "gridsettings";
-    var ID_YAXIS_ASCENDING = "yAxisAscending";
-    var ID_YAXIS_SCALE = "scaleHeight";
-    var ID_XAXIS_ASCENDING = "xAxisAscending";
-    var ID_XAXIS_TYPE = "xAxisType";
-    var ID_YAXIS_TYPE = "yAxisType";
-    var ID_XAXIS_SCALE = "scaleWidth";
-    var ID_SHOW_ICON = "showIcon";
-    var ID_SHOW_NAME = "showName";
-    var ID_COLOR = "boxColor";
+    const ID_SETTINGS = "gridsettings";
+    const ID_YAXIS_ASCENDING = "yAxisAscending";
+    const ID_YAXIS_SCALE = "scaleHeight";
+    const ID_XAXIS_ASCENDING = "xAxisAscending";
+    const ID_XAXIS_TYPE = "xAxisType";
+    const ID_YAXIS_TYPE = "yAxisType";
+    const ID_XAXIS_SCALE = "scaleWidth";
+    const ID_SHOW_ICON = "showIcon";
+    const ID_SHOW_NAME = "showName";
+    const ID_COLOR = "boxColor";
 
     RamaddaUtil.inherit(this, SUPER = new RamaddaEntryDisplay(displayManager, id, DISPLAY_ENTRY_GRID, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
         entries: properties.entries,
         initDisplay: function() {
-            var _this = this;
+            let _this = this;
             this.createUI();
-            var html = HU.div([ATTR_ID, this.getDomId(ID_CONTENTS)], this.getLoadingMessage("Loading entries..."));
+            let html = HU.div([ATTR_ID, this.getDomId(ID_CONTENTS)], this.getLoadingMessage("Loading entries..."));
             this.setContents(html);
             if (!this.entryIds) {
                 _this.jq(ID_CONTENTS).html(this.getLoadingMessage("No entries specified"));
                 return;
             }
-            var props = {
+            let props = {
                 entries: this.entryIds
             };
-            var searchSettings = new EntrySearchSettings(props);
-            var jsonUrl = this.getRamadda().getSearchUrl(searchSettings, OUTPUT_JSON, "BAR");
-            var myCallback = {
+            let searchSettings = new EntrySearchSettings(props);
+            let jsonUrl = this.getRamadda().getSearchUrl(searchSettings, OUTPUT_JSON, "BAR");
+            let myCallback = {
                 entryListChanged: function(list) {
                     _this.entries = list.getEntries();
                     if (_this.entries.length == 0) {
@@ -28679,10 +28691,10 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
 
                     _this.canvas = $("#" + _this.getDomId(ID_CANVAS));
                     _this.gridPopup = $("#" + _this.getDomId(ID_GRID) + " .display-grid-popup");
-                    var debugMouse = false;
-                    var xAxis = _this.jq(ID_AXIS_BOTTOM);
-                    var yAxis = _this.jq(ID_AXIS_LEFT);
-                    var mousedown = function(evt) {
+                    let debugMouse = false;
+                    let xAxis = _this.jq(ID_AXIS_BOTTOM);
+                    let yAxis = _this.jq(ID_AXIS_LEFT);
+                    let mousedown = function(evt) {
                         if (debugMouse)
                             console.log("mouse down");
                         _this.handledClick = false;
@@ -28700,13 +28712,13 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                             }
                         }
                     }
-                    var mouseleave = function(evt) {
+                    let mouseleave = function(evt) {
                         if (debugMouse)
                             console.log("mouse leave");
                         _this.drag = null;
                         _this.handledClick = false;
                     }
-                    var mouseup = function(evt) {
+                    let mouseup = function(evt) {
                         if (debugMouse)
                             console.log("mouse up");
                         if (_this.drag) {
@@ -28718,24 +28730,24 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                             _this.drag = null;
                         }
                     }
-                    var mousemove = function(evt, doX, doY) {
+                    let mousemove = function(evt, doX, doY) {
                         if (debugMouse)
                             console.log("mouse move");
-                        var drag = _this.drag;
+                        let drag = _this.drag;
                         if (!drag) return;
                         drag.dragging = true;
-                        var x = GuiUtils.getEventX(evt);
-                        var deltaX = drag.x - x;
-                        var y = GuiUtils.getEventY(evt);
-                        var deltaY = drag.y - y;
-                        var width = $(this).width();
-                        var height = $(this).height();
-                        var percentX = (x - drag.x) / width;
-                        var percentY = (y - drag.y) / height;
-                        var ascX = _this.getXAxisAscending();
-                        var ascY = _this.getXAxisAscending();
-                        var diffX = (drag.X.maxDate.getTime() - drag.X.minDate.getTime()) * percentX;
-                        var diffY = (drag.Y.maxDate.getTime() - drag.Y.minDate.getTime()) * percentY;
+                        let x = GuiUtils.getEventX(evt);
+                        let deltaX = drag.x - x;
+                        let y = GuiUtils.getEventY(evt);
+                        let deltaY = drag.y - y;
+                        let width = $(this).width();
+                        let height = $(this).height();
+                        let percentX = (x - drag.x) / width;
+                        let percentY = (y - drag.y) / height;
+                        let ascX = _this.getXAxisAscending();
+                        let ascY = _this.getXAxisAscending();
+                        let diffX = (drag.X.maxDate.getTime() - drag.X.minDate.getTime()) * percentX;
+                        let diffY = (drag.Y.maxDate.getTime() - drag.Y.minDate.getTime()) * percentY;
 
                         if (doX) {
                             _this.axis.X.minDate = new Date(drag.X.minDate.getTime() + ((ascX ? -1 : 1) * diffX));
@@ -28747,7 +28759,7 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                         }
                         _this.makeGrid(_this.entries);
                     }
-                    var mouseclick = function(evt, doX, doY) {
+                    let mouseclick = function(evt, doX, doY) {
                         if (_this.handledClick) {
                             if (debugMouse)
                                 console.log("mouse click-other click");
@@ -28763,11 +28775,11 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                         if (debugMouse)
                             console.log("mouse click");
                         _this.drag = null;
-                        var action;
+                        let action;
                         if (evt.metaKey || evt.ctrlKey) {
                             action = "reset";
                         } else {
-                            var zoomOut = evt.shiftKey;
+                            let zoomOut = evt.shiftKey;
                             if (zoomOut)
                                 action = "zoomout";
                             else
@@ -28776,23 +28788,23 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                         _this.doZoom(action, doX, doY);
                     };
 
-                    var mousemoveCanvas = function(evt) {
+                    let mousemoveCanvas = function(evt) {
                         mousemove(evt, true, true);
                     }
-                    var mousemoveX = function(evt) {
+                    let mousemoveX = function(evt) {
                         mousemove(evt, true, false);
                     }
-                    var mousemoveY = function(evt) {
+                    let mousemoveY = function(evt) {
                         mousemove(evt, false, true);
                     }
 
-                    var mouseclickCanvas = function(evt) {
+                    let mouseclickCanvas = function(evt) {
                         mouseclick(evt, true, true);
                     }
-                    var mouseclickX = function(evt) {
+                    let mouseclickX = function(evt) {
                         mouseclick(evt, true, false);
                     }
-                    var mouseclickY = function(evt) {
+                    let mouseclickY = function(evt) {
                         mouseclick(evt, false, true);
                     }
 
@@ -28815,13 +28827,13 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                     yAxis.mousemove(mousemoveY);
                     yAxis.click(mouseclickY);
 
-                    var links =
+                    let links =
                         HU.image(icon_zoom, ["class", "display-grid-action", "title", "reset zoom", "action", "reset"]) +
                         HU.image(icon_zoom_in, ["class", "display-grid-action", "title", "zoom in", "action", "zoomin"]) +
                         HU.image(icon_zoom_out, ["class", "display-grid-action", "title", "zoom out", "action", "zoomout"]);
                     _this.jq(ID_LINKS).html(links);
                     $("#" + _this.getDomId(ID_GRID) + " .display-grid-action").click(function() {
-                        var action = $(this).attr("action");
+                        let action = $(this).attr("action");
                         _this.doZoom(action);
                     });
 
@@ -28831,23 +28843,23 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                     _this.makeGrid(_this.entries);
                 }
             };
-            var entryList = new EntryList(this.getRamadda(), jsonUrl, myCallback, true);
+            let entryList = new EntryList(this.getRamadda(), jsonUrl, myCallback, true);
         },
         initDialog: function() {
             SUPER.initDialog.call(this);
-            var _this = this;
-            var cbx = this.jq(ID_SETTINGS + " :checkbox");
+            let _this = this;
+            let cbx = this.jq(ID_SETTINGS + " :checkbox");
             cbx.click(function() {
                 _this.setProperty($(this).attr("attr"), $(this).is(':checked'));
                 _this.makeGrid(_this.entries);
             });
-            var input = this.jq(ID_SETTINGS + " :input");
+            let input = this.jq(ID_SETTINGS + " :input");
             input.blur(function() {
                 _this.setProperty($(this).attr("attr"), $(this).val());
                 _this.makeGrid(_this.entries);
             });
             input.keypress(function(event) {
-                var keycode = (event.keyCode ? event.keyCode : event.which);
+                let keycode = (event.keyCode ? event.keyCode : event.which);
                 if (keycode == 13) {
                     _this.setProperty($(this).attr("attr"), $(this).val());
                     _this.makeGrid(_this.entries);
@@ -28856,8 +28868,8 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
 
         },
         getDialogContents: function(tabTitles, tabContents) {
-            var height = "600";
-            var html = "";
+            let height = "600";
+            let html = "";
             html += HU.openTag("div", ["id", this.getDomId(ID_SETTINGS)]);
 
             html += HU.formTable();
@@ -28907,20 +28919,20 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                 this.axis.X.minDate = null;
                 this.axis.X.maxDate = null;
             } else {
-                var zoomOut = (action == "zoomout");
+                let zoomOut = (action == "zoomout");
                 if (doX) {
-                    var d1 = this.axis.X.minDate.getTime();
-                    var d2 = this.axis.X.maxDate.getTime();
-                    var dateRange = d2 - d1;
-                    var diff = (zoomOut ? 1 : -1) * dateRange * 0.1;
+                    let d1 = this.axis.X.minDate.getTime();
+                    let d2 = this.axis.X.maxDate.getTime();
+                    let dateRange = d2 - d1;
+                    let diff = (zoomOut ? 1 : -1) * dateRange * 0.1;
                     this.axis.X.minDate = new Date(d1 - diff);
                     this.axis.X.maxDate = new Date(d2 + diff);
                 }
                 if (doY) {
-                    var d1 = this.axis.Y.minDate.getTime();
-                    var d2 = this.axis.Y.maxDate.getTime();
-                    var dateRange = d2 - d1;
-                    var diff = (zoomOut ? 1 : -1) * dateRange * 0.1;
+                    let d1 = this.axis.Y.minDate.getTime();
+                    let d2 = this.axis.Y.maxDate.getTime();
+                    let dateRange = d2 - d1;
+                    let diff = (zoomOut ? 1 : -1) * dateRange * 0.1;
                     this.axis.Y.minDate = new Date(d1 - diff);
                     this.axis.Y.maxDate = new Date(d2 + diff);
                 }
@@ -28928,12 +28940,12 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
             this.makeGrid(this.entries);
         },
         initGrid: function(entries) {
-            var _this = this;
-            var items = this.canvas.find(".display-grid-entry");
+            let _this = this;
+            let items = this.canvas.find(".display-grid-entry");
             items.click(function(evt) {
-                var index = parseInt($(this).attr("index"));
+                let index = parseInt($(this).attr("index"));
                 entry = entries[index];
-                var url = entry.getEntryUrl();
+                let url = entry.getEntryUrl();
                 if (_this.urlTemplate) {
                     url = _this.urlTemplate.replace("{url}", url).replace(/{entryid}/g, entry.getId()).replace(/{resource}/g, entry.getResourceUrl());
                 }
@@ -28944,9 +28956,9 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                 //                        evt.stopPropagation();
             });
             items.mouseout(function() {
-                var id = $(this).attr("entryid");
+                let id = $(this).attr("entryid");
                 if (id) {
-                    var other = _this.canvas.find("[entryid='" + id + "']");
+                    let other = _this.canvas.find("[entryid='" + id + "']");
                     other.each(function() {
                         if ($(this).attr("itemtype") == "box") {
                             $(this).attr("prevcolor", $(this).css("background"));
@@ -28958,9 +28970,9 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                 _this.gridPopup.hide();
             });
             items.mouseover(function(evt) {
-                var id = $(this).attr("entryid");
+                let id = $(this).attr("entryid");
                 if (id) {
-                    var other = _this.canvas.find("[entryid='" + id + "']");
+                    let other = _this.canvas.find("[entryid='" + id + "']");
                     other.each(function() {
                         if ($(this).attr("itemtype") == "box") {
                             $(this).attr("prevcolor", $(this).css("background"));
@@ -28968,19 +28980,19 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                         }
                     });
                 }
-                var x = GuiUtils.getEventX(evt);
-                var index = parseInt($(this).attr("index"));
+                let x = GuiUtils.getEventX(evt);
+                let index = parseInt($(this).attr("index"));
                 entry = entries[index];
-                var thumb = entry.getThumbnail();
-                var html = "";
+                let thumb = entry.getThumbnail();
+                let html = "";
                 if (thumb) {
                     html = HU.image(thumb, ["width", "300;"]) + "<br>";
                 } else if (entry.isImage()) {
                     html += HU.image(entry.getResourceUrl(), ["width", "300"]) + "<br>";
                 }
                 html += entry.getIconImage() + " " + entry.getName() + "<br>";
-                var start = entry.getStartDate().getUTCFullYear() + "-" + Utils.padLeft(entry.getStartDate().getUTCMonth() + 1, 2, "0") + "-" + Utils.padLeft(entry.getStartDate().getUTCDate(), 2, "0");
-                var end = entry.getEndDate().getUTCFullYear() + "-" + Utils.padLeft(entry.getEndDate().getUTCMonth() + 1, 2, "0") + "-" + Utils.padLeft(entry.getEndDate().getUTCDate(), 2, "0");
+                let start = entry.getStartDate().getUTCFullYear() + "-" + Utils.padLeft(entry.getStartDate().getUTCMonth() + 1, 2, "0") + "-" + Utils.padLeft(entry.getStartDate().getUTCDate(), 2, "0");
+                let end = entry.getEndDate().getUTCFullYear() + "-" + Utils.padLeft(entry.getEndDate().getUTCMonth() + 1, 2, "0") + "-" + Utils.padLeft(entry.getEndDate().getUTCDate(), 2, "0");
                 html += "Date: " + start + " - " + end + " UTC";
                 _this.gridPopup.html(html);
                 _this.gridPopup.show();
@@ -28999,8 +29011,8 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
             });
         },
         makeFramework: function(entries) {
-            var html = "";
-            var mouseInfo = "click:zoom in;shift-click:zoom out;command/ctrl click: reset";
+            let html = "";
+            let mouseInfo = "click:zoom in;shift-click:zoom out;command/ctrl click: reset";
             html += HU.openDiv(["class", "display-grid", "id", this.getDomId(ID_GRID)]);
             html += HU.div(["class", "display-grid-popup ramadda-popup"], "");
             html += HU.openTag("table", ["border", "0", "class", "", "cellspacing", "0", "cellspacing", "0", "width", "100%", "style", "height:100%;"]);
@@ -29051,14 +29063,14 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
 
 
         makeGrid: function(entries) {
-            var showIcon = this.getProperty(ID_SHOW_ICON, true);
-            var showName = this.getProperty(ID_SHOW_NAME, true);
+            let showIcon = this.getProperty(ID_SHOW_ICON, true);
+            let showName = this.getProperty(ID_SHOW_NAME, true);
 
             if (!this.minDate) {
-                var minDate = null;
-                var maxDate = null;
-                for (var i = 0; i < entries.length; i++) {
-                    var entry = entries[i];
+                let minDate = null;
+                let maxDate = null;
+                for (let i = 0; i < entries.length; i++) {
+                    let entry = entries[i];
                     minDate = minDate == null ? entry.getStartDate() : (minDate.getTime() > entry.getStartDate().getTime() ? entry.getStartDate() : minDate);
                     maxDate = maxDate == null ? entry.getEndDate() : (maxDate.getTime() < entry.getEndDate().getTime() ? entry.getEndDate() : maxDate);
                 }
@@ -29066,7 +29078,7 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                 this.maxDate = new Date(Date.UTC(maxDate.getUTCFullYear() + 1, 0, 1));
             }
 
-            var axis = {
+            let axis = {
                 width: this.canvas.width(),
                 height: this.canvas.height(),
                 Y: {
@@ -29124,11 +29136,11 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
             } else {
                 this.calculateMonthAxis(axis.Y);
             }
-            for (var i = 0; i < axis.Y.ticks.length; i++) {
-                var tick = axis.Y.ticks[i];
-                var style = (axis.Y.ascending ? "bottom:" : "top:") + tick.percent + "%;";
-                var style = "bottom:" + tick.percent + "%;";
-                var lineClass = tick.major ? "display-grid-hline-major" : "display-grid-hline";
+            for (let i = 0; i < axis.Y.ticks.length; i++) {
+                let tick = axis.Y.ticks[i];
+//                let style = (axis.Y.ascending ? "bottom:" : "top:") + tick.percent + "%;";
+                let style = "bottom:" + tick.percent + "%;";
+                let lineClass = tick.major ? "display-grid-hline-major" : "display-grid-hline";
                 axis.Y.lines += HU.div(["style", style, "class", lineClass], " ");
                 axis.Y.html += HU.div(["style", style, "class", "display-grid-axis-left-tick"], tick.label + " " + HU.div(["class", "display-grid-htick"], ""));
             }
@@ -29140,21 +29152,21 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
             } else {
                 this.calculateMonthAxis(axis.X);
             }
-            for (var i = 0; i < axis.X.ticks.length; i++) {
-                var tick = axis.X.ticks[i];
+            for (let i = 0; i < axis.X.ticks.length; i++) {
+                let tick = axis.X.ticks[i];
                 if (tick.percent > 0) {
-                    var lineClass = tick.major ? "display-grid-vline-major" : "display-grid-vline";
+                    let lineClass = tick.major ? "display-grid-vline-major" : "display-grid-vline";
                     axis.X.lines += HU.div(["style", "left:" + tick.percent + "%;", "class", lineClass], " ");
                 }
                 axis.X.html += HU.div(["style", "left:" + tick.percent + "%;", "class", "display-grid-axis-bottom-tick"], HU.div(["class", "display-grid-vtick"], "") + " " + tick.label);
             }
 
-            var items = "";
-            var seen = {};
-            for (var i = 0; i < entries.length; i++) {
-                var entry = entries[i];
-                var vInfo = this[axis.Y.calculatePercent].call(this, entry, axis.Y);
-                var xInfo = this[axis.X.calculatePercent].call(this, entry, axis.X);
+            let items = "";
+            let seen = {};
+            for (let i = 0; i < entries.length; i++) {
+                let entry = entries[i];
+                let vInfo = this[axis.Y.calculatePercent].call(this, entry, axis.Y);
+                let xInfo = this[axis.X.calculatePercent].call(this, entry, axis.X);
                 if (vInfo.p1 < 0) {
                     vInfo.p2 = vInfo.p2 + vInfo.p1;
                     vInfo.p1 = 0;
@@ -29163,8 +29175,8 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                     vInfo.p2 = 100 - vInfo.p1;
                 }
 
-                var style = "";
-                var pos = "";
+                let style = "";
+                let pos = "";
 
                 if (axis.X.ascending) {
                     style += "left:" + xInfo.p1 + "%;";
@@ -29183,7 +29195,7 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                 }
 
 
-                var namePos = pos;
+                let namePos = pos;
                 if (axis.Y.ascending) {
                     style += " bottom:" + vInfo.p2 + "%;";
                     pos += " bottom:" + vInfo.p2 + "%;";
@@ -29208,13 +29220,13 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                 if (showIcon) {
                     items += HU.div(["class", "display-grid-entry-icon display-grid-entry", "entryid", entry.getId(), "index", i, "style", pos], entry.getIconImage());
                 }
-                var key = Math.round(xInfo.p1) + "---" + Math.round(vInfo.p1);
+                let key = Math.round(xInfo.p1) + "---" + Math.round(vInfo.p1);
                 if (showName && !seen[key]) {
                     seen[key] = true;
-                    var name = entry.getName().replace(/ /g, "&nbsp;");
+                    let name = entry.getName().replace(/ /g, "&nbsp;");
                     items += HU.div(["class", "display-grid-entry-text display-grid-entry", "entryid", entry.getId(), "index", i, "style", namePos], name);
                 }
-                var boxStyle = style + "background:" + this.getProperty(ID_COLOR, "lightblue");
+                let boxStyle = style + "background:" + this.getProperty(ID_COLOR, "lightblue");
                 items += HU.div(["class", "display-grid-entry-box display-grid-entry", "itemtype", "box", "entryid", entry.getId(), "style", boxStyle, "index", i], "");
             }
             this.jq(ID_AXIS_LEFT).html(axis.Y.html);
@@ -29223,10 +29235,10 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
             this.initGrid(entries);
         },
         calculateSizeAxis: function(axisInfo) {
-            var min = Number.MAX_VALUE;
-            var max = Number.MIN_VALUE;
-            for (var i = 0; i < this.entries.length; i++) {
-                var entry = this.entries[i];
+            let min = Number.MAX_VALUE;
+            let max = Number.MIN_VALUE;
+            for (let i = 0; i < this.entries.length; i++) {
+                let entry = this.entries[i];
                 min = Math.min(min, entry.getSize());
                 max = Math.max(max, entry.getSize());
             }
@@ -29236,7 +29248,7 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
             if(!axisInfo.ascending) {
                 percents.p1 = 100-percents.p1;
                 percents.p2 = 100-percents.p2;
-                var tmp  =percents.p1;
+                let tmp  =percents.p1;
                 percents.p1=percents.p2;
                 percents.p2=tmp;
             }
@@ -29248,8 +29260,8 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
             };
         },
         calculateDatePercent: function(entry, axisInfo) {
-            var p1 = 100 * (entry.getStartDate().getTime() - axisInfo.min) / axisInfo.range;
-            var p2 = 100 * (entry.getEndDate().getTime() - axisInfo.min) / axisInfo.range;
+            let p1 = 100 * (entry.getStartDate().getTime() - axisInfo.min) / axisInfo.range;
+            let p2 = 100 * (entry.getEndDate().getTime() - axisInfo.min) / axisInfo.range;
             return this.checkOrder(axisInfo, {
                 p1: p1,
                 p2: p2,
@@ -29257,12 +29269,12 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
             });
         },
         calculateMonthPercent: function(entry, axisInfo) {
-            var d1 = entry.getStartDate();
-            var d2 = entry.getEndDate();
-            var t1 = new Date(Date.UTC(1, d1.getUTCMonth(), d1.getUTCDate()));
-            var t2 = new Date(Date.UTC(1, d2.getUTCMonth(), d2.getUTCDate()));
-            var p1 = 100 * ((t1.getTime() - axisInfo.min) / axisInfo.range);
-            var p2 = 100 * ((t2.getTime() - axisInfo.min) / axisInfo.range);
+            let d1 = entry.getStartDate();
+            let d2 = entry.getEndDate();
+            let t1 = new Date(Date.UTC(1, d1.getUTCMonth(), d1.getUTCDate()));
+            let t2 = new Date(Date.UTC(1, d2.getUTCMonth(), d2.getUTCDate()));
+            let p1 = 100 * ((t1.getTime() - axisInfo.min) / axisInfo.range);
+            let p2 = 100 * ((t2.getTime() - axisInfo.min) / axisInfo.range);
             if (entry.getName().includes("rilsd")) {
                 console.log("t1:" + t1);
                 console.log("t2:" + t2);
@@ -29281,10 +29293,10 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
             axisInfo.min = axisInfo.minDate.getTime();
             axisInfo.max = axisInfo.maxDate.getTime();
             axisInfo.range = axisInfo.max - axisInfo.min;
-            var months = Utils.getMonthShortNames();
-            for (var month = 0; month < months.length; month++) {
-                var t1 = new Date(Date.UTC(1, month));
-                var percent = (axisInfo.maxDate.getTime() - t1.getTime()) / axisInfo.range;
+            let months = Utils.getMonthShortNames();
+            for (let month = 0; month < months.length; month++) {
+                let t1 = new Date(Date.UTC(1, month));
+                let percent = (axisInfo.maxDate.getTime() - t1.getTime()) / axisInfo.range;
                 if (axisInfo.ascending)
                     percent = 1 - percent;
                 axisInfo.ticks.push({
@@ -29296,13 +29308,13 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
         },
         calculateDateAxis: function(axisInfo) {
             axisInfo.calculatePercent = "calculateDatePercent";
-            var numYears = axisInfo.maxDate.getUTCFullYear() - axisInfo.minDate.getUTCFullYear();
-            var years = numYears;
+            let numYears = axisInfo.maxDate.getUTCFullYear() - axisInfo.minDate.getUTCFullYear();
+            let years = numYears;
             axisInfo.type = "year";
             axisInfo.skip = Math.max(1, Math.floor(numYears / axisInfo.maxTicks));
             if ((numYears / axisInfo.skip) <= (axisInfo.maxTicks / 2)) {
-                var numMonths = 0;
-                var tmp = new Date(axisInfo.minDate.getTime());
+                let numMonths = 0;
+                let tmp = new Date(axisInfo.minDate.getTime());
                 while (tmp.getTime() < axisInfo.maxDate.getTime()) {
                     Utils.incrementMonth(tmp);
                     numMonths++;
@@ -29310,8 +29322,8 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                 axisInfo.skip = Math.max(1, Math.floor(numMonths / axisInfo.maxTicks));
                 axisInfo.type = "month";
                 if ((numMonths / axisInfo.skip) <= (axisInfo.maxTicks / 2)) {
-                    var tmp = new Date(axisInfo.minDate.getTime());
-                    var numDays = 0;
+                    let tmp = new Date(axisInfo.minDate.getTime());
+                    let numDays = 0;
                     while (tmp.getTime() < axisInfo.maxDate.getTime()) {
                         Utils.incrementDay(tmp);
                         numDays++;
@@ -29325,10 +29337,10 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
             axisInfo.min = axisInfo.minDate.getTime();
             axisInfo.max = axisInfo.maxDate.getTime();
             axisInfo.range = axisInfo.max - axisInfo.min;
-            var months = Utils.getMonthShortNames();
-            var lastYear = null;
-            var lastMonth = null;
-            var tickDate;
+            let months = Utils.getMonthShortNames();
+            let lastYear = null;
+            let lastMonth = null;
+            let tickDate;
             if (axisInfo.type == "year") {
                 tickDate = new Date(Date.UTC(axisInfo.minDate.getUTCFullYear()));
             } else if (axisInfo.type == "month") {
@@ -29339,16 +29351,16 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
             //                if(axisInfo.vertical)
             //                    console.log(axisInfo.type+" skip:" + axisInfo.skip + "   min:" + Utils.formatDateYYYYMMDD(axisInfo.minDate)+"   max:" + Utils.formatDateYYYYMMDD(axisInfo.maxDate));
             while (tickDate.getTime() < axisInfo.maxDate.getTime()) {
-                var percent = (tickDate.getTime() - axisInfo.minDate.getTime()) / axisInfo.range;
+                let percent = (tickDate.getTime() - axisInfo.minDate.getTime()) / axisInfo.range;
                 if (!axisInfo.ascending)
                     percent = (1 - percent);
                 percent = 100 * percent;
                 //                    console.log("    perc:"+ percent +" " + Utils.formatDateYYYYMMDD(tickDate));
                 if (percent >= 0 && percent < 100) {
-                    var label = "";
-                    var year = tickDate.getUTCFullYear();
-                    var month = tickDate.getUTCMonth();
-                    var major = false;
+                    let label = "";
+                    let year = tickDate.getUTCFullYear();
+                    let month = tickDate.getUTCMonth();
+                    let major = false;
                     if (axisInfo.type == "year") {
                         label = year;
                     } else if (axisInfo.type == "month") {
@@ -29391,7 +29403,7 @@ function RamaddaMetadataDisplay(displayManager, id, properties) {
     if (properties.formOpen == null) {
         properties.formOpen = false;
     }
-    var SUPER;
+    let SUPER;
     RamaddaUtil.inherit(this, SUPER = new RamaddaSearcherDisplay(displayManager, id, DISPLAY_METADATA, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
@@ -29408,7 +29420,7 @@ function RamaddaMetadataDisplay(displayManager, id, properties) {
         },
         entryListChanged: function(entryList) {
             this.entryList = entryList;
-            var entries = this.entryList.getEntries();
+            let entries = this.entryList.getEntries();
             if (entries.length == 0) {
                 this.writeMessage("Nothing found");
                 return;
@@ -29432,8 +29444,8 @@ function RamaddaEntrydisplayDisplay(displayManager, id, properties) {
     });
     RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_ENTRYDISPLAY, properties));
     if (properties.sourceEntry == null && properties.entryId != null) {
-        var _this = this;
-        var f = async function() {
+        let _this = this;
+        let f = async function() {
             await _this.getEntry(properties.entryId, entry => {
                 _this.sourceEntry = entry;
                 _this.initDisplay()
@@ -29449,10 +29461,10 @@ function RamaddaEntrydisplayDisplay(displayManager, id, properties) {
         selectedEntry: null,
         initDisplay: function() {
             this.createUI();
-            var title = this.title;
+            let title = this.title;
             if (this.sourceEntry != null) {
                 this.addEntryHtml(this.sourceEntry);
-                var url = this.sourceEntry.getEntryUrl();
+                let url = this.sourceEntry.getEntryUrl();
 
                 if (title == null) {
                     title = this.sourceEntry.getName();
@@ -29469,8 +29481,8 @@ function RamaddaEntrydisplayDisplay(displayManager, id, properties) {
         handleEventEntrySelection: function(source, args) {
             //Ignore select events
             if (this.sourceEntry != null) return;
-            var selected = args.selected;
-            var entry = args.entry;
+            let selected = args.selected;
+            let entry = args.entry;
             if (!selected) {
                 if (this.selectedEntry != entry) {
                     //not mine
@@ -29491,10 +29503,10 @@ function RamaddaEntrydisplayDisplay(displayManager, id, properties) {
                 this.setContents("&nbsp;");
                 return;
             }
-            var html = this.getEntryHtml(entry, {
+            let html = this.getEntryHtml(entry, {
                 showHeader: false
             });
-            var height = this.getProperty("height", "400px");
+            let height = this.getProperty("height", "400px");
             if (!height.endsWith("px")) height += "px";
             this.setContents(HU.div(["class", "display-entry-description", "style", "height:" + height + ";"],
                 html));
@@ -29506,14 +29518,14 @@ function RamaddaEntrydisplayDisplay(displayManager, id, properties) {
 
 
 function RamaddaEntrytitleDisplay(displayManager, id, properties) {
-    var SUPER;
+    let SUPER;
     $.extend(this, {
         sourceEntry: properties.sourceEntry
     });
     RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_ENTRYDISPLAY, properties));
     if (properties.sourceEntry == null && properties.entryId != null) {
-        var _this = this;
-        var f = async function() {
+        let _this = this;
+        let f = async function() {
             await _this.getEntry(properties.entryId, entry => {
                 _this.sourceEntry = entry;
                 _this.initDisplay()
@@ -29562,10 +29574,10 @@ function RamaddaEntrytitleDisplay(displayManager, id, properties) {
 
 
 function RamaddaOperandsDisplay(displayManager, id, properties) {
-    var ID_SELECT = TAG_SELECT;
-    var ID_SELECT1 = "select1";
-    var ID_SELECT2 = "select2";
-    var ID_NEWDISPLAY = "newdisplay";
+    const ID_SELECT = TAG_SELECT;
+    const ID_SELECT1 = "select1";
+    const ID_SELECT2 = "select2";
+    const ID_NEWDISPLAY = "newdisplay";
 
     $.extend(this, new RamaddaEntryDisplay(displayManager, id, DISPLAY_OPERANDS, properties));
     addRamaddaDisplay(this);
@@ -29577,24 +29589,24 @@ function RamaddaOperandsDisplay(displayManager, id, properties) {
             if (this.entryList == null) {
                 this.entryList = new EntryList(this.getRamadda(), jsonUrl, this);
             }
-            var html = "";
+            let html = "";
             html += HU.div([ATTR_ID, this.domId(ID_ENTRIES), ATTR_CLASS, this.getClass("entries")], "");
             this.setContents(html);
         },
         entryListChanged: function(entryList) {
-            var html = "<form>";
+            let html = "<form>";
             html += "<p>";
             html += HU.openTag(TAG_TABLE, [ATTR_CLASS, "formtable", "cellspacing", "0", "cellspacing", "0"]);
-            var entries = this.entryList.getEntries();
-            var get = this.getGet();
+            let entries = this.entryList.getEntries();
+            let get = this.getGet();
 
-            for (var j = 1; j <= 2; j++) {
-                var select = HU.openTag(TAG_SELECT, [ATTR_ID, this.getDomId(ID_SELECT + j)]);
+            for (let j = 1; j <= 2; j++) {
+                let select = HU.openTag(TAG_SELECT, [ATTR_ID, this.getDomId(ID_SELECT + j)]);
                 select += HU.tag(TAG_OPTION, [ATTR_TITLE, "", ATTR_VALUE, ""],
                     "-- Select --");
-                for (var i = 0; i < entries.length; i++) {
-                    var entry = entries[i];
-                    var label = entry.getIconImage() + " " + entry.getName();
+                for (let i = 0; i < entries.length; i++) {
+                    let entry = entries[i];
+                    let label = entry.getIconImage() + " " + entry.getName();
                     select += HU.tag(TAG_OPTION, [ATTR_TITLE, entry.getName(), ATTR_VALUE, entry.getId()],
                         entry.getName());
 
@@ -29603,7 +29615,7 @@ function RamaddaOperandsDisplay(displayManager, id, properties) {
                 html += HU.formEntry("Data:", select);
             }
 
-            var select = HU.openTag(TAG_SELECT, [ATTR_ID, this.getDomId(ID_CHARTTYPE)]);
+            let select = HU.openTag(TAG_SELECT, [ATTR_ID, this.getDomId(ID_CHARTTYPE)]);
             select += HU.tag(TAG_OPTION, [ATTR_TITLE, "", ATTR_VALUE, "linechart"],
                 "Line chart");
             select += HU.tag(TAG_OPTION, [ATTR_TITLE, "", ATTR_VALUE, "barchart"],
@@ -29625,19 +29637,19 @@ function RamaddaOperandsDisplay(displayManager, id, properties) {
             html += "<p>";
             html += "</form>";
             this.writeEntries(html);
-            var theDisplay = this;
+            let theDisplay = this;
             this.jq(ID_NEWDISPLAY).button().click(function(event) {
                 theDisplay.createDisplay();
             });
         },
         createDisplay: function() {
-            var entry1 = this.getEntry(this.jq(ID_SELECT1).val());
-            var entry2 = this.getEntry(this.jq(ID_SELECT2).val());
+            let entry1 = this.getEntry(this.jq(ID_SELECT1).val());
+            let entry2 = this.getEntry(this.jq(ID_SELECT2).val());
             if (entry1 == null) {
                 alert("No data selected");
                 return;
             }
-            var pointDataList = [];
+            let pointDataList = [];
 
             pointDataList.push(new PointData(entry1.getName(), null, null, ramaddaBaseUrl + "/entry/show?&output=points.product&product=points.json&numpoints=1000&entryid=" + entry1.getId()));
             if (entry2 != null) {
@@ -29645,10 +29657,10 @@ function RamaddaOperandsDisplay(displayManager, id, properties) {
             }
 
             //Make up some functions
-            var operation = "average";
-            var derivedData = new DerivedPointData(this.displayManager, "Derived Data", pointDataList, operation);
-            var pointData = derivedData;
-            var chartType = this.jq(ID_CHARTTYPE).val();
+            let operation = "average";
+            let derivedData = new DerivedPointData(this.displayManager, "Derived Data", pointDataList, operation);
+            let pointData = derivedData;
+            let chartType = this.jq(ID_CHARTTYPE).val();
             displayManager.createDisplay(chartType, {
                 "layoutFixed": false,
                 "data": pointData
@@ -29664,9 +29676,9 @@ function RamaddaRepositoriesDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
         initDisplay: function() {
-            var theDisplay = this;
+            let theDisplay = this;
             this.createUI();
-            var html = "";
+            let html = "";
             if (this.ramaddas.length == 0) {
                 html += this.getMessage("No repositories specified");
             } else {
@@ -29680,10 +29692,10 @@ function RamaddaRepositoriesDisplay(displayManager, id, properties) {
                     this.ramaddas.splice(this.ramaddas.length - 1, 1);
                 }
             }
-            for (var i = 0; i < this.ramaddas.length; i++) {
+            for (let i = 0; i < this.ramaddas.length; i++) {
                 if (i == 0) {}
-                var ramadda = this.ramaddas[i];
-                var types = ramadda.getEntryTypes(function(ramadda, types) {
+                let ramadda = this.ramaddas[i];
+                let types = ramadda.getEntryTypes(function(ramadda, types) {
                     theDisplay.gotTypes(ramadda, types);
                 });
                 if (types != null) {
@@ -29699,15 +29711,15 @@ function RamaddaRepositoriesDisplay(displayManager, id, properties) {
             if (!this.finishedInitDisplay || this.numberWithTypes != this.ramaddas.length) {
                 return;
             }
-            var typeMap = {};
-            var allTypes = [];
-            var html = "";
+            let typeMap = {};
+            let allTypes = [];
+            let html = "";
             html += HU.openTag(TAG_TABLE, [ATTR_CLASS, "display-repositories-table", ATTR_WIDTH, "100%", ATTR_BORDER, "1", "cellspacing", "0", "cellpadding", "5"]);
-            for (var i = 0; i < this.ramaddas.length; i++) {
-                var ramadda = this.ramaddas[i];
-                var types = ramadda.getEntryTypes();
-                for (var typeIdx = 0; typeIdx < types.length; typeIdx++) {
-                    var type = types[typeIdx];
+            for (let i = 0; i < this.ramaddas.length; i++) {
+                let ramadda = this.ramaddas[i];
+                let types = ramadda.getEntryTypes();
+                for (let typeIdx = 0; typeIdx < types.length; typeIdx++) {
+                    let type = types[typeIdx];
                     if (typeMap[type.getId()] == null) {
                         typeMap[type.getId()] = type;
                         allTypes.push(type);
@@ -29717,35 +29729,35 @@ function RamaddaRepositoriesDisplay(displayManager, id, properties) {
 
             html += HU.openTag(TAG_TR, ["valign", "bottom"]);
             html += HU.th([ATTR_CLASS, "display-repositories-table-header"], "Type");
-            for (var i = 0; i < this.ramaddas.length; i++) {
-                var ramadda = this.ramaddas[i];
-                var link = HU.href(ramadda.getRoot(), ramadda.getName());
+            for (let i = 0; i < this.ramaddas.length; i++) {
+                let ramadda = this.ramaddas[i];
+                let link = HU.href(ramadda.getRoot(), ramadda.getName());
                 html += HU.th([ATTR_CLASS, "display-repositories-table-header"], link);
             }
             html += "</tr>";
 
-            var onlyCats = [];
+            let onlyCats = [];
             if (this.categories != null) {
                 onlyCats = this.categories.split(",");
             }
 
 
 
-            var catMap = {};
-            var cats = [];
-            for (var typeIdx = 0; typeIdx < allTypes.length; typeIdx++) {
-                var type = allTypes[typeIdx];
-                var row = "";
+            let catMap = {};
+            let cats = [];
+            for (let typeIdx = 0; typeIdx < allTypes.length; typeIdx++) {
+                let type = allTypes[typeIdx];
+                let row = "";
                 row += "<tr>";
                 row += HU.td([], HU.image(type.getIcon()) + " " + type.getLabel());
-                for (var i = 0; i < this.ramaddas.length; i++) {
-                    var ramadda = this.ramaddas[i];
-                    var repoType = ramadda.getEntryType(type.getId());
-                    var col = "";
+                for (let i = 0; i < this.ramaddas.length; i++) {
+                    let ramadda = this.ramaddas[i];
+                    let repoType = ramadda.getEntryType(type.getId());
+                    let col = "";
                     if (repoType == null) {
                         row += HU.td([ATTR_CLASS, "display-repositories-table-type-hasnot"], "");
                     } else {
-                        var label =
+                        let label =
                             HU.tag(TAG_A, ["href", ramadda.getRoot() + "/search/type/" + repoType.getId(), "target", "_blank"],
                                 repoType.getEntryCount());
                         row += HU.td([ATTR_ALIGN, "right", ATTR_CLASS, "display-repositories-table-type-has"], label);
@@ -29754,7 +29766,7 @@ function RamaddaRepositoriesDisplay(displayManager, id, properties) {
                 }
                 row += "</tr>";
 
-                var catRows = catMap[type.getCategory()];
+                let catRows = catMap[type.getCategory()];
                 if (catRows == null) {
                     catRows = [];
                     catMap[type.getCategory()] = catRows;
@@ -29763,11 +29775,11 @@ function RamaddaRepositoriesDisplay(displayManager, id, properties) {
                 catRows.push(row);
             }
 
-            for (var i = 0; i < cats.length; i++) {
-                var cat = cats[i];
+            for (let i = 0; i < cats.length; i++) {
+                let cat = cats[i];
                 if (onlyCats.length > 0) {
-                    var ok = false;
-                    for (var patternIdx = 0; patternIdx < onlyCats.length; patternIdx++) {
+                    let ok = false;
+                    for (let patternIdx = 0; patternIdx < onlyCats.length; patternIdx++) {
                         if (cat == onlyCats[patternIdx]) {
                             ok = true;
                             break;
@@ -29781,11 +29793,11 @@ function RamaddaRepositoriesDisplay(displayManager, id, properties) {
                     if (!ok) continue;
 
                 }
-                var rows = catMap[cat];
+                let rows = catMap[cat];
                 html += "<tr>";
                 html += HU.th(["colspan", "" + (1 + this.ramaddas.length)], cat);
                 html += "</tr>";
-                for (var row = 0; row < rows.length; row++) {
+                for (let row = 0; row < rows.length; row++) {
                     html += rows[row];
                 }
 
@@ -29802,7 +29814,7 @@ function RamaddaRepositoriesDisplay(displayManager, id, properties) {
     });
 }
 
-var RamaddaGalleryDisplay = RamaddaEntrygalleryDisplay;
+let RamaddaGalleryDisplay = RamaddaEntrygalleryDisplay;
 
 function RamaddaSimplesearchDisplay(displayManager, id, properties) {
     let myProps = [
@@ -29826,7 +29838,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
             return this.selectedEntries;
         },
         initDisplay: function() {
-            var _this = this;
+            let _this = this;
             if (this.getIsLayoutFixed() && this.haveDisplayed) {
                 return;
             }
@@ -29897,12 +29909,12 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    return html;
 	},
         makeSearchForm: function() {
-            var form = HU.openTag("form", [ATTR_ID, this.getDomId(ID_FORM), "action", "#"]);
+            let form = HU.openTag("form", [ATTR_ID, this.getDomId(ID_FORM), "action", "#"]);
 	    
 	    let eg = this.getEgText();
 	    let text  = this.getFormText();
 	    let size = this.getPropertyInputWidth("100%");
-            var textField = HU.input("", text, [STYLE, HU.css("width", size), "placeholder", eg, ATTR_CLASS, "display-search-input", ATTR_ID, this.getDomId(ID_TEXT_FIELD)]);
+            let textField = HU.input("", text, [STYLE, HU.css("width", size), "placeholder", eg, ATTR_CLASS, "display-search-input", ATTR_ID, this.getDomId(ID_TEXT_FIELD)]);
 
 	    form += textField;
             form += "<input type=\"submit\" style=\"position:absolute;left:-9999px;width:1px;height:1px;\"/>";
@@ -29987,17 +29999,17 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
             this.selectEntry(args.entry, args.selected);
         },
         selectEntry: function(entry, selected) {
-            var changed = false;
+            let changed = false;
             if (selected) {
                 this.jq("entry_" + entry.getIdForDom()).addClass("ui-selected");
-                var index = this.selectedEntries.indexOf(entry);
+                let index = this.selectedEntries.indexOf(entry);
                 if (index < 0) {
                     this.selectedEntries.push(entry);
                     changed = true;
                 }
             } else {
                 this.jq("entry_" + entry.getIdForDom()).removeClass("ui-selected");
-                var index = this.selectedEntries.indexOf(entry);
+                let index = this.selectedEntries.indexOf(entry);
                 if (index >= 0) {
                     this.selectedEntries.splice(index, 1);
                     changed = true;
@@ -30012,7 +30024,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
                 this.multiSearch.count--;
             }
             SUPER.entryListChanged.apply(this, [entryList]);
-            var entries = this.entryList.getEntries();
+            let entries = this.entryList.getEntries();
             if (entries.length == 0) {
                 this.getSearchSettings().skip = 0;
                 this.getSearchSettings().max = DEFAULT_MAX;
@@ -30022,7 +30034,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
             this.writeMessage(this.getResultsHeader(entries, true));
 	    this.initCloser(ID_RESULTS);
 
-            var get = this.getGet();
+            let get = this.getGet();
             this.writeHtml(ID_FOOTER_LEFT, "");
             if (this.footerRight != null) {
                 this.writeHtml(ID_FOOTER_RIGHT, this.footerRight);
@@ -37682,8 +37694,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
             let records = this.filterData();
 	    if(records==null) return;
 	    let timelineId = this.domId(ID_TIMELINE);
-	    let html = HU.cssTag("h2 a, h2 a:visited, h2 a:link {color:#c34528;}");
-	    html+=HU.div([ID,timelineId]);
+	    let html = HU.div([ID,timelineId]);
 	    this.setContents(html);
 	    this.timelineReady = false;
 	    let opts = {

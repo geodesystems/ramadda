@@ -582,8 +582,9 @@ a.ramadda-entry-nav-page {
 }
 
 .ramadda-nav-right .ramadda-block {
-//    margin-left:20px !important;
-//    margin-right:20px !important;    
+/*    margin-left:20px !important;
+    margin-right:20px !important;    
+*/
 }    
 
 .ramadda-menubar {
@@ -909,7 +910,6 @@ a.ramadda-menubar-button:hover {
     margin-bottom:2px;
     padding:10px;
     border : var(--basic-border);
-//    background: #F3F3F3;
 }
 
 
@@ -4504,7 +4504,7 @@ h3.ui-accordion-header a {
 }
 
 .ui-tabs .ui-tabs-panel {
-    border: 1px solid #aaaaaa;
+    border:var(--basic-border);
     background:#fff;
     padding-left:1em;
     padding-right:1em;

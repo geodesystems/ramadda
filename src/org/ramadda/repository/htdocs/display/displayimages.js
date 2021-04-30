@@ -516,7 +516,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		}
 		let label = "";
 		let galleryLabel = "";
-		if(bottomLabelTemplate) {
+		if(Utils.stringDefined(bottomLabelTemplate)) {
 		    label = this.getRecordHtml(record,fields,bottomLabelTemplate);
 		} 
 		labelFields.forEach(l=>{
@@ -535,13 +535,17 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		if(width) imgAttrs.push(WIDTH,width);
 		else if(height) imgAttrs.push(HEIGHT,height);		
 		let img = image==""?SPACE1:HU.image(image,imgAttrs);
-		let topLbl = (topLabel!=null?HU.div([CLASS,"display-images-toplabel"], topLabel):"");
-		let lbl = HU.div([CLASS,"display-images-label"], label.trim());
+		let topLbl = (topLabel!=null?HU.div([CLASS,"ramadda-clickable display-images-toplabel"], topLabel):"");
+		let lbl = HU.div([CLASS,"ramadda-clickable display-images-label"], label.trim());
 		if(urlField) {
+		    if(topLbl!="")
+			topLbl = HU.href(urlField.getValue(record), topLbl,["target","_target"]);
 		    lbl = HU.href(urlField.getValue(record), lbl,["target","_target"]);
 		    galleryLabel = HU.href(urlField.getValue(record), galleryLabel,["target","_target"]);
 		    galleryLabel = galleryLabel.replace(/"/g,"'");
 		}
+		if(!this.getProperty("showBottomLabel",true))
+		    lbl="";
 		if(colorBy.isEnabled()) {
 		    let c = colorBy.getColorFromRecord(record);
 		    style+=HU.css(BACKGROUND,c);

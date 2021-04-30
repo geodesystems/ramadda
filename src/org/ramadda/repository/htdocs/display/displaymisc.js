@@ -653,8 +653,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
             let records = this.filterData();
 	    if(records==null) return;
 	    let timelineId = this.domId(ID_TIMELINE);
-	    let html = HU.cssTag("h2 a, h2 a:visited, h2 a:link {color:#c34528;}");
-	    html+=HU.div([ID,timelineId]);
+	    let html = HU.div([ID,timelineId]);
 	    this.setContents(html);
 	    this.timelineReady = false;
 	    let opts = {

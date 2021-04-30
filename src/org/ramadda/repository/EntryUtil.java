@@ -245,8 +245,7 @@ public class EntryUtil extends RepositoryManager {
                 Matcher m1 = pattern.matcher(e1.getName());
                 Matcher m2 = pattern.matcher(e2.getName());
                 if ( !m1.find() || !m2.find()) {
-                    System.err.println("No match: name1: " + e1.getName()
-                                       + " name2: " + e2.getName());
+		    //                    System.err.println("No match: name1: " + e1.getName() + " name2: " + e2.getName());
 
                     return 0;
                 }
