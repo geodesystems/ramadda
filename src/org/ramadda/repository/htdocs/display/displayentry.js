@@ -994,7 +994,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		attrs.push(this.getProperty("inputSize", "30"));
 	    } else {
 		attrs.push(STYLE);
-		attrs.push(HU.css("width","100%"));
+		attrs.push(HU.css("width","100%","min-width","200px"));
 	    }
             let textField = HU.input("", text, attrs);
 

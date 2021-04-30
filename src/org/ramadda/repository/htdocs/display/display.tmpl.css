@@ -881,6 +881,7 @@ svg > g > g:last-child { pointer-events: none }
 
 
 .display-date-input {
+  width:90px;
   border-radius: 5px;
   font-size: 11pt;
 }

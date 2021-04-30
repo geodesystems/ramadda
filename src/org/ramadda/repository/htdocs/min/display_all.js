@@ -192,10 +192,10 @@ function DateRangeWidget(display, what) {
         },
         getHtml: function() {
             let html = HtmlUtils.input(this.baseId +ID_DATE_START, "", [CLASS, "display-date-input", "placeholder", " " +startLabel, TITLE, startLabel, ATTR_ID,
-									this.baseId +ID_DATE_START, "size", "10"
+									this.baseId +ID_DATE_START, 
 							  ]) + " - " +
                 HtmlUtils.input(this.baseId +ID_DATE_END, "", [CLASS, "display-date-input", "placeholder",  " " +endLabel, TITLE,endLabel,ATTR_ID,
-							       this.baseId +ID_DATE_END, "size", "10"
+							       this.baseId +ID_DATE_END, 
 						 ]);
             return html;
         }
@@ -27856,7 +27856,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		attrs.push(this.getProperty("inputSize", "30"));
 	    } else {
 		attrs.push(STYLE);
-		attrs.push(HU.css("width","100%"));
+		attrs.push(HU.css("width","100%","min-width","200px"));
 	    }
             let textField = HU.input("", text, attrs);
 
