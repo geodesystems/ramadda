@@ -820,8 +820,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    ? FIELD_DATE_CREATED
 		    : FIELD_DATE_CHANGED;
 		if(date1!=null || date2!=null) {
-		    queries.add(LongPoint.newRangeQuery(field, date1!=null?date1.getTime():min,
-							date2!=null?date2.getTime():max));
+		    queries.add(SortedNumericDocValuesField.newSlowRangeQuery(field, date1!=null?date1.getTime():min,
+									      date2!=null?date2.getTime():max));
 		}
 		continue;
 	    }
