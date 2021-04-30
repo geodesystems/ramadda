@@ -416,6 +416,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			if(!getRepository().getActive()) return true;
 			Entry entry = getEntryManager().getEntry(null, id,false);
 			if(entry==null) continue;
+			if(entry.getParentEntry()==null) {
+			    System.err.println("Missing:" + entry +"  "+ entry.getId());
+			}
+			if(true) continue;
+
 			synchronized(mutex) {
 			    cnt[0]++;
 			    System.err.println("#" + cnt[0] +" entry:" + entry.getName());
