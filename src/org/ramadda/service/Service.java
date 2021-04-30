@@ -2906,7 +2906,7 @@ public class Service extends RepositoryManager {
      * @return _more_
      */
     public String toString() {
-        return getLabel() + " " + id;
+        return getLabel() + " " + id +" " + command;
     }
 
 

@@ -110,6 +110,9 @@ import java.util.zip.*;
 import java.util.concurrent.*;
 import org.ramadda.repository.job.JobManager;
 
+import org.apache.tika.config.TikaConfig;
+import org.apache.tika.parser.AutoDetectParser;
+import org.apache.tika.parser.Parser;
 
 /**
  *
@@ -252,6 +255,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         new ArrayList<SearchProvider>();
 
 
+    private TikaConfig tikaConfig;
+    
+    private Object luceneMutex = new Object();
+
     /**
      * _more_
      *
@@ -270,7 +277,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         isLuceneEnabled =
             getRepository().getProperty(PROP_SEARCH_LUCENE_ENABLED, false);
 	try {
-	    new org.apache.tika.config.TikaConfig(getClass().getResourceAsStream("/org/ramadda/repository/resources/tika-config.xml"));
+	    System.err.println("Making tikaConfig");
+	    tikaConfig = new TikaConfig(getClass().getResourceAsStream("/org/ramadda/repository/resources/tika-config.xml"));
+	    System.err.println("tikaConfig made:" + tikaConfig);
 	} catch(Exception exc) {
 	    System.err.println("Error calling TikaConfig:" + exc);
 	}
@@ -400,23 +409,13 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             public Boolean call() {
                 try {
 		    for(String id: ids) {
+			if(!getRepository().getActive()) return true;
 			Entry entry = getEntryManager().getEntry(null, id,false);
 			if(entry==null) continue;
 			synchronized(mutex) {
 			    cnt[0]++;
-			    System.err.println("#" + cnt[0] +" entry:" + entry.getName());
+			    //System.err.println("#" + cnt[0] +" entry:" + entry.getName());
 			}
-			/****
-			  if(entry.getParentEntry()==null && !entry.getId().equals("ff29d75c-8baf-4b17-b121-6c0e10eb9c60")) {
-			  System.out.println("#" + cnt[0]+" delete:" + entry.getName() +" " + entry.getId());
-			  getEntryManager().deleteEntry(getRepository().getTmpRequest(), entry);
-			  } else {
-			  System.out.println("#" + cnt[0]+" entry:" + entry.getName() +" " + entry.getId());
-			  }			
-			  if(true) continue;
-			  }**/
-					       
-
 			indexEntry(writer, entry);
 			getEntryManager().removeFromCache(entry);
 			if(!ok[0]) break;
@@ -514,17 +513,19 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      *
      * @throws Exception _more_
      */
-    private synchronized void indexEntries(List<Entry> entries)
+    private  void indexEntries(List<Entry> entries)
 	throws Exception {
-        IndexWriter writer = getLuceneWriter();
-	try {
-	    for (Entry entry : entries) {
-		indexEntry(writer, entry);
+	synchronized(luceneMutex) {
+	    IndexWriter writer = getLuceneWriter();
+	    try {
+		for (Entry entry : entries) {
+		    indexEntry(writer, entry);
+		}
+		//        writer.optimize();
+		writer.commit();
+	    } finally {
+		//	    writer.close();
 	    }
-	    //        writer.optimize();
-	    writer.commit();
-	} finally {
-	    //	    writer.close();
 	}
     }
 
@@ -608,6 +609,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 
 
+	//	try {
         for (Metadata metadata : getMetadataManager().getMetadata(entry)) {
 	    MetadataType type = getMetadataManager().getType(metadata);
 	    if(type==null) {
@@ -618,6 +620,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		doc.add(new StringField(getMetadataField(type.getId()), metadata.getAttr1(),Field.Store.NO));
 	    }
 	}
+	//	} catch(Exception exc) {
+	    //	    exc.printStackTrace();
+	    //	    System.exit(0);
+	//	}
 
 
         StringBuilder metadataSB = new StringBuilder();
@@ -640,20 +646,23 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
     private String readContents(File f) throws Exception {
-	//Don't do really bug files or images
+	//Don't do really big files or images
 	if(f.length()>10000000) return null;
 	if(Utils.isImage(f.toString())) return null;
 	try(InputStream stream = getStorageManager().getFileInputStream(f)) {
+	    System.err.println("readContents:" + f.getName());
             org.apache.tika.metadata.Metadata metadata =
                 new org.apache.tika.metadata.Metadata();
-            org.apache.tika.parser.AutoDetectParser parser =
-                new org.apache.tika.parser.AutoDetectParser();
+	    //            Parser parser =
+	    AutoDetectParser parser = new org.apache.tika.parser.AutoDetectParser();
             org.apache.tika.sax.BodyContentHandler handler =
                 new org.apache.tika.sax.BodyContentHandler(100000000);
-            parser.parse(stream, handler, metadata);
+            parser.parse(stream, handler, metadata,new org.apache.tika.parser.ParseContext());
+	    System.err.println("done");
             return  handler.toString();
 	}  catch(Throwable exc) {
 	    System.err.println("Error reading contents:" + f.getName() +" error:" + exc);
+	    exc.printStackTrace();
 	    return null;
 	}
     }	
@@ -1179,16 +1188,18 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      *
      * @param ids _more_
      */
-    public synchronized void entriesDeleted(List<String> ids) {
+    public void entriesDeleted(List<String> ids) {
         if ( !isLuceneEnabled()) {
             return;
         }
         try {
-            IndexWriter writer = getLuceneWriter();
-	    for (String id : ids) {
-		writer.deleteDocuments(new Term(FIELD_ENTRYID, id));
+	    synchronized(luceneMutex) {
+		IndexWriter writer = getLuceneWriter();
+		for (String id : ids) {
+		    writer.deleteDocuments(new Term(FIELD_ENTRYID, id));
+		}
+		writer.commit();
 	    }
-	    writer.commit();
         } catch (Exception exc) {
             logError("Error deleting entries from Lucene index", exc);
         }
