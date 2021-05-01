@@ -4244,6 +4244,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                         js = js.replace(
                             "${ramadda.htdocs}", base + "/htdocs").replace(
                             "${ramadda.root}", base);
+			js = js.replace("${ramadda.search.tree}",getSearchManager().isLuceneEnabled()+"");
                         js = js.replace("${ramadda.urlroot}", base);
                         js = js.replace(
                             "${ramadda.baseentry}",
@@ -6941,6 +6942,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
         for (EntryChecker entryMonitor : entryMonitors) {
             entryMonitor.entriesModified(entries);
         }
+    }
+
+
+    public List<EntryChecker> getEntryCheckers() {
+	return entryMonitors;
     }
 
 
