@@ -1073,8 +1073,8 @@ public class OutputHandler extends RepositoryManager {
                           + HtmlUtils.id(selectorId + "_selectlink"));
         if (addClear) {
             link = link + " "
-                   + HtmlUtils.mouseClickHref(clearEvent, "Clear",
-                       HtmlUtils.id(selectorId + "_selectlink"));
+		+ HtmlUtils.mouseClickHref(clearEvent, HU.getIconImage("fas fa-eraser"),
+					   HU.attr("title","Clear selection") +HtmlUtils.id(selectorId + "_selectlink"));
         }
 
         return link;
