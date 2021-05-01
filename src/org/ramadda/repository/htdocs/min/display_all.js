@@ -26897,6 +26897,7 @@ let ATTR_ENTRYID = "entryid";
 let ID_SEARCH = "search";
 let ID_FORM = "form";
 let ID_TEXT_FIELD = "textfield";
+let ID_ANCESTOR = "ancestor";
 let ID_TYPE_FIELD = "typefield";
 let ID_TYPE_DIV = "typediv";
 let ID_TYPEFIELDS = "typefields";
@@ -27002,7 +27003,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
             text: properties.entryText,
             entryType: properties.entryType,
             orderBy: properties.orderBy,
-	    entryRoot: properties.entryRoot,
+	    ancestor: properties.ancestor,
         }),
         entryList: properties.entryList,
         entryMap: {},
@@ -27265,8 +27266,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         {p:"showEntries",d: true},
         {p:"showType",d: true},
         {p:"types",ex:'comma separated list of types'},
-	{p:"entryRoot",w:"this",tt:"Constrain search to this tree"},		
+	{p:"ancestor",w:"this",tt:"Constrain search to this tree"},		
         {p:"doSearch",d: true,tt:'Apply search at initial display'},
+        {p:"showAncestor",d: true},
         {p:"showDate",d: true},
         {p:"showCreateDate",ex:"true",d: false},	
         {p:"showArea",d: true},
@@ -27313,6 +27315,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    this.metadataTypeList.push(new MetadataType(type, label, value));
 		}
 	    }
+	},
+        getLoadingMessage: function(msg) {
+	    if(!msg) return "";
+	    return msg;
 	},
         isLayoutHorizontal: function() {
 	    return this.getOrientation()== "horizontal";
@@ -27563,7 +27569,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		HU.addToDocumentUrl(ID_TEXT_FIELD,"");
 	    }
 
-	    settings.entryRoot = this.getEntryRoot();
+	    settings.ancestor = this.getAncestor();
 	    let orderBy = this.jq(ID_SEARCH_ORDERBY).val();
 	    if(orderBy) {
 		let ascending = orderBy.indexOf("_ascending")>=0;
@@ -27584,6 +27590,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		settings.entryType = this.typeList[0];
 	    }
             settings.clearAndAddType(settings.entryType);
+	    let ancestor = this.jq(ID_ANCESTOR+"_hidden").val();
+	    if(Utils.stringDefined(ancestor)) {
+		settings.ancestor = ancestor;
+	    }
             if (this.areaWidget) {
                 this.areaWidget.setSearchSettings(settings);
             }
@@ -27878,6 +27888,17 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
 	    if(!horizontal) 
 		extra += HU.formTable();
+
+	    if(this.getShowAncestor() && ramaddaTreeSearchEnabled===true) {
+		let aid = this.domId(ID_ANCESTOR);
+		let selectClick = "selectInitialClick(event," + HU.squote(aid)+"," +HU.squote(aid) +",'true',null,null,'');";
+		let clear = HU.href("javascript:void(0);",HU.getIconImage("fas fa-eraser"), ['onClick',"clearSelect(" + HU.squote(aid) +");",TITLE,"Clear selection"]);
+		let input = HU.input("","",["onClick",selectClick, "READONLY",null,'placeholder',' Search under', STYLE,HU.css('cursor','pointer','width','100%'),ID,aid,CLASS,"disabledinput"]);
+
+		extra += HU.hidden("","",[ID,aid+"_hidden",CLASS,"hiddeninput"]);
+		extra+=addWidget("",HU.leftRightTable(clear,input,"5%", "95%"));
+	    }
+
             if (this.getShowDate()) {
                 this.dateRangeWidget = new DateRangeWidget(this);
                 extra += addWidget("", this.dateRangeWidget.getHtml());

@@ -1731,15 +1731,22 @@ ul {
     font-size: 12px;
 }
 
+
 .ramadda-search-popup {
+    width:325px;
+}
+
+
+.ramadda-search-popup-results {
     background:#fff;
     display:none;
     border-top:1px solid #ccc;
     margin-top:2px;
-    width:250px;
+    width:325px;
     max-height:300px;
     overflow-y:auto;
 }
+
 
 .ramadda-confirm {
     margin:15px;
@@ -2388,7 +2395,7 @@ pre {
 
 .disabledinput, .disabledinput:focus {
     border : 0px #888888 solid;
-    background: #dfdfdf;
+    background: #eee;
     cursor:default;
 }
 
