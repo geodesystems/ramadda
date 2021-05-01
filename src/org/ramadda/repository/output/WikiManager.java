@@ -414,13 +414,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 }
             }
 
-            String entryRoot = getProperty(wikiUtil, props, "entryRoot",
+            String entryRoot = getProperty(wikiUtil, props, ARG_ANCESTOR,
                                            null);
             if (entryRoot != null) {
                 Entry root = findEntryFromId(request, theEntry, wikiUtil,
                                              entryRoot);
                 if (root != null) {
-                    props.put("entryRoot", root.getId());
+                    props.put(ARG_ANCESTOR, root.getId());
                 }
             }
 
