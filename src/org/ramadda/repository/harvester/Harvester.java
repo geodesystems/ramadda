@@ -79,7 +79,7 @@ public abstract class Harvester extends RepositoryManager {
 
 
     /** _more_ */
-    private static final boolean PRINT_DEBUG = true;
+    private static final boolean PRINT_DEBUG = false;
 
     /** _more_ */
     private final LogManager.LogId LOGID =
