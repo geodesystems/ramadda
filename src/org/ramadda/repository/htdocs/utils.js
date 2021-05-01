@@ -1720,44 +1720,27 @@ var Utils =  {
     searchLastInput:"",
     searchAscending:false,
     searchCnt:0,
-    searchSuggestInit:function(id, type, icon, resultsId) {
+    searchSuggestInit:function(id, hereId, type, icon, resultsId) {
 	let input = $("#"+ id);
+	let here = $("#"+ hereId);	
 	if(!Utils.isDefined(icon)) icon = true;
 	let submitForm = false;
 	if(!resultsId) {
 	    submitForm = true;
 	    resultsId = HU.getUniqueId();
 	    let width = input.width();
-	    let results = HU.div([ID,resultsId,STYLE,HU.css("width",width+"px","position","absolute"), CLASS,'ramadda-popup ramadda-search-popup'],"");
-	    $(results).appendTo("body");
-	    $("#" + resultsId).position({
-		of: $("#" + id),
-		my: "left top",
-		at: "left bottom"
-	    });
+	    let results = HU.div([ID,resultsId,STYLE,HU.css("border","0px","width",width+"px","position","absolute"), CLASS,'ramadda-popup ramadda-search-popup'],"");
+	    input.parent().append(results);
 	}
-	Utils.searchLastInput = input.val();
-	input.keyup(e=> {
-            var keyCode = e.keyCode || e.which;
-//	    console.log("k:" + keyCode);
-	    let results = $("#" + resultsId);
-	    let closer = () =>{
-		HtmlUtils.clearPopupObject();
-		results.slideUp(250);
-	    };
-            if (keyCode == 27) {
-		closer();
-		return;
-            }
 
-            if (keyCode == 13) {
-		closer();
-		return;
-            }
-            e.stopPropagation();
-            let newVal = input.val()||"";
+	let results = $("#" + resultsId);
+	let closer = () =>{
+	    results.slideUp(250);
+	};
+
+	let doSearch = () =>{
+	    let newVal = input.val()||"";
 	    this.searchCnt++;
-
 	    if(this.pendingSearch) {
 		clearTimeout(this.pendingSearch);
 		this.pendingSearch = null;
@@ -1771,28 +1754,46 @@ var Utils =  {
 	    //wait a bit
 	    this.pendingSearch = setTimeout(()=> {
 		this.pendingSearch = null;
-		Utils.doSearchSuggest(this.searchCnt, input, results, type,submitForm);
+		Utils.doSearchSuggest(this.searchCnt, input, here, results, type,submitForm);
 	    },200);
+	};
+	if(here.length) {
+	    here.change(doSearch);
+	}
 
+	Utils.searchLastInput = input.val();
+	input.keyup(e=> {
+            let keyCode = e.keyCode || e.which;
+//	    console.log("k:" + keyCode);
+            if (keyCode == 27) {
+		closer();
+		return;
+            }
+
+            if (keyCode == 13) {
+		closer();
+		return;
+            }
+            e.stopPropagation();
+	    doSearch();
 	});
     },
 
-    doSearchSuggest:function(searchCnt,input, results, type, submitForm) {
+    doSearchSuggest:function(searchCnt,input, here, results, type, submitForm) {
 	let _this = this;
 	let newVal = input.val()||"";
 	Utils.searchLastInput = newVal;
 	let url = ramaddaBaseUrl + "/search/suggest?text=" + encodeURIComponent(newVal);
 	if (type) url += "&type=" + type;
+	if(here.length>0 && here.is(':checked') && ramaddaThisEntry)
+	    url +="&ancestor=" + ramaddaThisEntry;
 	url+="&ascending=" + Utils.searchAscending;
 	let jqxhr = $.getJSON(url, function(data) {
 	    if(searchCnt!=_this.searchCnt) {
 		return;
 	    }
 	    let opener = () =>{
-		if(!HtmlUtils.isPopupObject(results)) {
-		    HtmlUtils.setPopupObject(results);
-		    results.slideDown(400);
-		}
+		results.slideDown(400);
 	    };	    
 
             if (data.values.length == 0) {
@@ -1802,8 +1803,7 @@ var Utils =  {
             }
             let html = "";
             let even = true;
-            for (let i = 0; i < data.values.length; i++) {
-		let value = data.values[i];
+            data.values.forEach((value,i) =>{
 		let name = value.name;
 		let id = value.id;
 		let v = name.replace(/\"/g, "_quote_");
@@ -1817,8 +1817,9 @@ var Utils =  {
 		let row =  searchLink +  SPACE + entryLink;
 		//			html += HtmlUtils.div([CLASS, 'ramadda-search-suggestion ' + (even ? 'ramadda-row-even' : 'ramadda-row-odd')], row);
 		html += HtmlUtils.div([CLASS, 'ramadda-search-suggestion '], row);			
+		html +="\n";
 		even = !even;
-            }
+            });
             results.html(html);
 	    if(submitForm) {
 		let links = results.find(".ramadda-search-input");
@@ -1833,7 +1834,7 @@ var Utils =  {
 	    }
 	    opener();
 	}).fail(function(jqxhr, textStatus, error) {
-            console.log("fail");
+            console.log("fail:" + textStatus);
 	});
     },
 
@@ -1854,14 +1855,17 @@ var Utils =  {
 	let form = "<form action='" + ramaddaBaseUrl + "/search/do'>";
 	form += HU.open('input',['value', value, 'placeholder','Search text', 'autocomplete','off','autofocus','true','id','popup_search_input','class', 'ramadda-search-input',
 				 STYLE,HU.css('margin-left','4px', 'padding','2px','width','250px','border','0px'),'name','text']);
+	if(ramaddaThisEntry) {
+	    form+=HU.checkbox("popup_search_here",['name','ancestor', 'value',ramaddaThisEntry, TITLE,"Search under this entry"],false) +HU.tag("label",[CLASS,"ramadda-clickable", "for","popup_search_here"]," here" + SPACE);
+	}
 	form +="</form>";
 	let linksId = HU.getUniqueId();
 	let links =  HU.div(["id", linksId,STYLE,"text-align:right"],
 			    HU.link(ramaddaBaseUrl + '/search/form', 'Advanced', [TITLE, 'Go to form', STYLE,HU.css('color','#888','font-size','13px')]));
 
 	let resultsId = HU.getUniqueId('searchresults');
-	let results = HU.div([ID,resultsId,CLASS,'ramadda-search-popup']);
-	let html = HU.div([],form+results);
+	let results = HU.div([ID,resultsId,CLASS,'ramadda-search-popup-results']);
+	let html = HU.div([CLASS,"ramadda-search-popup"],form+results);
 	let icon = $("#" + id);
 	this.dialog = HU.makeDialog({content:html,my:"right top",at:"right bottom",title:links,anchor:anchor,draggable:true,header:true,inPlace:false});
 	$("#" + linksId).find(".ramadda-link").click(Utils.searchLink);
@@ -1869,7 +1873,7 @@ var Utils =  {
 	input.mousedown(function(evt) {
             evt.stopPropagation();
 	});
-	Utils.searchSuggestInit('popup_search_input', null, true, resultsId);
+	Utils.searchSuggestInit('popup_search_input', 'popup_search_here',null, true, resultsId);
 	input.focus();
     },
     handleKeyPress:function(event) {
@@ -3610,7 +3614,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		results.html("");
 		return;
 	    }
-	    var keycode = (event.keyCode ? event.keyCode : event.which);
+	    let keycode = (event.keyCode ? event.keyCode : event.which);
 	    if(keycode == 13) {
 		let searchLink =  ramaddaBaseUrl + "/search/do?text=" + encodeURIComponent(value) +"&output=json";
 		results.html(HU.getIconImage(icon_wait) + " Searching...");
