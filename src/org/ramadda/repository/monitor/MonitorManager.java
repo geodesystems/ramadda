@@ -263,6 +263,9 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
         handleEntriesChanged(entries, false);
     }
 
+    public void entriesMoved(final List<Entry> entries) {
+    }    
+
     /**
      * _more_
      *
