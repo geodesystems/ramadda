@@ -553,11 +553,14 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
 
     this.handleClick = function(event) {
         let srcId = this.id + '_selectlink';
+        let src = $("#" + srcId);
+	if(src.length==0) {
+	    src = $("#" + this.id);
+	}
         HtmlUtils.hidePopupObject(event);
         this.div = GuiUtils.getDomObject('ramadda-selectdiv');
         let selectDiv = $("#ramadda-selectdiv");
         selectDiv.show();
-        let src = $("#" + srcId);
         selectDiv.position({
             of: src,
             my: "left top",
@@ -584,8 +587,10 @@ function selectClick(id, entryId, value) {
     if (handler) {
         handler.selectClick(selector.selecttype, id, entryId, value);
         selectCancel();
+	console.log("no handler");
         return;
     }
+
     if (selector.selecttype == "wikilink") {
         insertAtCursor(selector.elementId, selector.textComp.obj, "[[" + entryId + "|" + value + "]]");
     } else   if (selector.selecttype == "fieldname") {
@@ -638,7 +643,6 @@ function clearSelect(id) {
     if (selector) {
         selector.clearInput();
     } else {
-        //        console.log("No selector");
         //In case the user never clicked select
         let textComp = GuiUtils.getDomObject(id);
         let hiddenComp = GuiUtils.getDomObject(id + "_hidden");
