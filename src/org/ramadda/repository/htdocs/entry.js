@@ -462,8 +462,8 @@ function Ramadda(repositoryRoot) {
             if (!isNaN(settings.getEast()))
                 url += "&maxlongitude=" + settings.getEast();
 
-	    if(settings.entryRoot) 
-		url += "&entryRoot=" + encodeURIComponent(settings.entryRoot);
+	    if(settings.ancestor) 
+		url += "&ancestor=" + encodeURIComponent(settings.ancestor);
 
             for (var i = 0; i < settings.metadata.length; i++) {
                 let metadata = settings.metadata[i];
