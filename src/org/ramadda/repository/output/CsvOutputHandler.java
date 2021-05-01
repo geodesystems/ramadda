@@ -151,7 +151,7 @@ public class CsvOutputHandler extends OutputHandler {
         String  delimiter      = request.getString(ARG_DELIMITER, ",");
         boolean fixedWidth     = request.get(ARG_FIXEDWIDTH, false);
         boolean showFullHeader = request.get(ARG_FULLHEADER, false);
-	boolean showHeader = request.get("showheader", false);
+	boolean showHeader = request.get("showheader", true);
         boolean escapeCommas  = request.get("escapecommas", true)||showFullHeader;
 	
         String  filler         = request.getString("filler", " ");
