@@ -115,6 +115,7 @@ public class Request implements Constants, Cloneable {
     //    private Entry collectionEntry;
 
     private Entry rootEntry;
+    private Entry currentEntry;    
 
     /** _more_ */
     private HttpServletRequest httpServletRequest;
@@ -3019,6 +3020,24 @@ public class Request implements Constants, Cloneable {
 
 
 
+    /**
+       Set the CurrentEntry property.
+
+       @param value The new value for CurrentEntry
+    **/
+    public void setCurrentEntry (Entry value) {
+	currentEntry = value;
+    }
+
+    /**
+       Get the CurrentEntry property.
+
+       @return The CurrentEntry
+    **/
+    public Entry getCurrentEntry () {
+	return currentEntry;
+    }
+
 
     /**
      * _more_
@@ -3034,7 +3053,7 @@ public class Request implements Constants, Cloneable {
             if (defined(argPrefix)) {
                 List<String> toks =
                     Utils.split(getString(argPrefix, ""), ",",
-                                     true, true);
+				true, true);
                 //n,w,s,e
                 if (toks.size() == 4) {
                     for (int i = 0; i < 4; i++) {
