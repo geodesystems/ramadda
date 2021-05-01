@@ -21,7 +21,7 @@
 :navleft style="" minLevel=1 title="Contents"
 {{description wikify=true}}
 {{tree message="" prefix="----_nl_:h3 Pages" showIcon=false details=false sort=entryorder,name  showTitle=true decorate=false}}
-{{display_simplesearch destDiv=ramadda-nav-1 entryRoot=ancestor:type_documentation inputSize=20 placeholder="Search docs"}}
+{{display_simplesearch destDiv=ramadda-nav-1 ancestor=ancestor:type_documentation inputSize=20 placeholder="Search docs"}}
 {{links showTitle=true entry=parent destDiv=ramadda-nav-2  sort=entryorder,name highlightThis=true contentsStyle="max-height:200px;overflow-y:auto;"}}
 :p
 +inset left=50 right=50 top=50 bottom=50
