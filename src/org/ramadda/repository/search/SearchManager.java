@@ -42,6 +42,7 @@ import org.ramadda.util.WadlUtil;
 import org.ramadda.util.sql.Clause;
 import org.ramadda.util.sql.SqlUtil;
 import org.ramadda.util.SelectionRectangle;
+import java.util.function.Function;
 
 
 import org.w3c.dom.*;
@@ -193,6 +194,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     /** _more_ */
     private static final String FIELD_ENTRYID = "entryid";
     private static final String FIELD_PARENT = "parent";
+    private static final String FIELD_ANCESTOR = "ancestor";    
 
     /** _more_ */
     private static final String FIELD_PATH = "path";
@@ -417,9 +419,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			Entry entry = getEntryManager().getEntry(null, id,false);
 			if(entry==null) continue;
 			synchronized(mutex) {
-			    //			    cnt[0]++;
-			    //			    System.err.println("#" + cnt[0] +" entry:" + entry.getName());
+			    cnt[0]++;
+			    System.err.println("#" + cnt[0] +" entry:" + entry.getName());
 			}
+			/*
 			if(entry.getParentEntry()==null) {
 			    if(entry.getId().equals("2e485e95-eb29-44fc-8987-76e6ac74365a")) {
 				System.err.println("*************** top:" + entry +"  "+ entry.getId());
@@ -427,10 +430,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 				cnt[0]++;
 				System.err.println(cnt[0]+" missing:" + entry +"  "+ entry.getId());
 			    }
-			}
-			//			indexEntry(writer, entry);
+			    }*/
+			indexEntry(writer, entry);
 			getEntryManager().removeFromCache(entry);
-			if(true) continue;
+			//			if(true) continue;
 			if(!ok[0]) break;
 			if(actionId!=null) {
 			    if(!getActionManager().getActionOk(actionId)) {
@@ -567,6 +570,13 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	if(entry.getParentEntryId()!=null) {
 	    doc.add(new StringField(FIELD_PARENT, entry.getParentEntryId(), Field.Store.YES));	
+	    Entry parent = entry.getParentEntry();
+	    //	    System.err.println("index:" + entry);
+	    while(parent!=null) {
+		//		System.err.println("\tancestor:" + parent.getId());
+		doc.add(new StringField(FIELD_ANCESTOR, parent.getId(), Field.Store.YES));	
+		parent = parent.getParentEntry();
+	    }
 	}
         doc.add(new SortedNumericDocValuesField(FIELD_SIZE, entry.getResource().getFileSize()));
         doc.add(new SortedNumericDocValuesField(FIELD_ENTRYORDER, entry.getEntryOrder()));
@@ -902,17 +912,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 
 
-	List<Entry> entryTree = getEntryManager().getEntryRootTree(request);
-	if(entryTree!=null) {
-	    BooleanQuery.Builder parentBuilder = new BooleanQuery.Builder();
-	    for(Entry e: entryTree) {
-		Query query = new TermQuery(new Term(FIELD_PARENT, e.getId()));
-		parentBuilder.add(query, BooleanClause.Occur.SHOULD);
-	    }
-	    queries.add(parentBuilder.build());
+	String ancestor = request.getString(ARG_ANCESTOR+"_hidden", request.getString(ARG_ANCESTOR,null));
+	if(Utils.stringDefined(ancestor)) {
+	    queries.add(new TermQuery(new Term(FIELD_ANCESTOR, ancestor)));
 	}
-
-
         if (request.defined(ARG_GROUP)) {
 	    List<String> toks = Utils.split(request.getString(ARG_GROUP), "|", true,
 					    true);
@@ -1195,6 +1198,42 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
+    public void entriesMoved(final List<Entry> entries) {
+        if ( !isLuceneEnabled()) {
+            return;
+        }
+	Misc.run(new Runnable() {
+		public void run() {
+		    try {
+			Request tmp = getRepository().getTmpRequest();
+			for(Entry entry:entries) {
+			    entriesMovedInner(tmp, entry);
+			}
+		    } catch(Exception exc) {
+			logException("Error handling entriesMoved", exc);
+		    }
+		}
+	    });
+
+    }
+
+    private void entriesMovedInner(Request request,  Entry entry) throws Exception {
+	List<Entry> children = getEntryManager().getChildren(request, entry);
+	//	System.err.println("moved:" + entry +" children:" + children);
+	if(children!=null) {
+	    for(Entry child: children) {
+		entriesMovedInner(request, child);
+	    }
+	}
+	List<String> ids = new ArrayList<String>();
+	List<Entry> entries = new ArrayList<Entry>();
+	ids.add(entry.getId());
+	entries.add(entry);
+	entriesDeleted(ids);
+	indexEntries(entries);
+    }
+
+
     /**
      * _more_
      *
@@ -1348,7 +1387,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			    ARG_TEXT, value,
 			    HtmlUtils.attr("placeholder", msg(" Search text"))
 			    + HtmlUtils.id("searchinput") + HtmlUtils.SIZE_50
-			    + " autocomplete='off' autofocus ") + "\n<div id=searchpopup class=ramadda-popup></div>" + HtmlUtils.script("Utils.searchSuggestInit('searchinput');");
+			    + " autocomplete='off' autofocus ") + "\n<div id=searchpopup class=ramadda-popup></div>";
+	//	textField+= HtmlUtils.script("Utils.searchSuggestInit('searchinput');");
 
         return textField;
     }
@@ -1426,9 +1466,30 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                                 boolean typeSpecific, boolean addTextField)
 	throws Exception {
 
-
         sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
                                  HtmlUtils.cssClass("ramadda-search-form")));
+	Function<String,String> inset = c->{
+		return HtmlUtils.insetDiv(c, 5, 10, 10, 0);
+	    };
+
+
+	if(isLuceneEnabled()) {
+	    String ancestor = request.getString(ARG_ANCESTOR+"_hidden", request.getString(ARG_ANCESTOR,null));
+	    Entry ancestorEntry = ancestor==null?null:getEntryManager().getEntry(request, ancestor);
+	    String select =
+		getRepository().getHtmlOutputHandler().getSelect(request, ARG_ANCESTOR,
+								 "Search under", 
+								 true, "", ancestorEntry, true);
+
+	    sb.append(HU.hidden(ARG_ANCESTOR + "_hidden",
+				ancestor!=null?ancestor:"",
+				HU.id(ARG_ANCESTOR + "_hidden")));
+	    sb.append(inset.apply(select + HU.space(1) +
+				  HU.disabledInput(ARG_ANCESTOR, ancestorEntry!=null?ancestorEntry.getName():"",
+						   HU.SIZE_40 + HU.id(ARG_ANCESTOR))));
+	}
+
+
         TypeHandler typeHandler = getRepository().getTypeHandler(request);
 
 
@@ -1483,7 +1544,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         //Pad the contents
         List<String> tmp = new ArrayList<String>();
         for (String c : contents) {
-            tmp.add(HtmlUtils.insetDiv(c, 5, 10, 10, 0));
+            tmp.add(inset.apply(c));
         }
         contents = tmp;
 

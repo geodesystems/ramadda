@@ -634,6 +634,25 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                                    HtmlUtils.attr(HtmlUtils.ATTR_NAME,
                                        "apisearchform")));
         formSB.append(HtmlUtils.br());
+	if(getSearchManager().isLuceneEnabled()) {
+	    String ancestor = request.getString(ARG_ANCESTOR+"_hidden", request.getString(ARG_ANCESTOR,null));
+
+	    Entry ancestorEntry = ancestor==null?null:getEntryManager().getEntry(request, ancestor);
+	    String select =
+		getRepository().getHtmlOutputHandler().getSelect(request, ARG_ANCESTOR,
+								 "Search under", 
+								 true, "", ancestorEntry, true);
+
+	    formSB.append(HU.hidden(ARG_ANCESTOR + "_hidden",
+				ancestor!=null?ancestor:"",
+				HU.id(ARG_ANCESTOR + "_hidden")));
+	    formSB.append(select + "<br>" +
+			  HU.disabledInput(ARG_ANCESTOR, ancestorEntry!=null?ancestorEntry.getName():"",
+					   HU.SIZE_30 + HU.id(ARG_ANCESTOR)));
+	}
+
+
+
         formSB.append(HtmlUtils.formTable());
         if (showDefault && showText) {
             formSB.append(HtmlUtils.formEntry(msgLabel("Text"),
@@ -642,14 +661,15 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                                     HtmlUtils.id("searchinput")
                                     + HtmlUtils.SIZE_15
                                     + " autocomplete='off'   autofocus ")));
-            formSB.append("<div id=searchpopup class=ramadda-popup></div>");
+	    formSB.append("<div id=searchpopup xclass=ramadda-popup></div>");
+	    /*
             formSB.append(
                 HtmlUtils.script(
                     "Utils.searchSuggestInit('searchinput',"
                     + ((theType == null)
                        ? "null"
                        : "'" + theType + "'") + ");"));
-
+	    */
 
         }
 
