@@ -926,7 +926,6 @@ public class EntryManager extends RepositoryManager {
             fatalError(request, "No entry specified");
         }
 
-
 	getSessionManager().setLastEntry(request, entry);
         addSessionEntry(request, entry);
         if (entry.getIsRemoteEntry()) {
@@ -4467,11 +4466,17 @@ public class EntryManager extends RepositoryManager {
             getDatabaseManager().closeStatement(statement);
             connection.setAutoCommit(true);
 
+	    for(EntryChecker checker: getRepository().getEntryCheckers()) {
+		checker.entriesMoved(entries);
+	    }
+
+
             return new Result(request.makeUrl(getRepository().URL_ENTRY_SHOW,
 					      ARG_ENTRYID, entries.get(0).getId()));
         } finally {
             getDatabaseManager().closeConnection(connection);
         }
+
     }
 
 
@@ -6491,6 +6496,8 @@ public class EntryManager extends RepositoryManager {
             throw new RepositoryUtil.MissingEntryException(
 							   "Could not find entry:" + request.getString(urlArg, BLANK));
         }
+	if(entry!=null) request.setCurrentEntry(entry);
+
         return entry;
     }
 
@@ -6822,8 +6829,8 @@ public class EntryManager extends RepositoryManager {
 
 
     public List<Entry> getEntryRootTree(Request request) throws Exception {
-	if(request.defined("entryRoot")) {
-	    String entryRoot = request.getString("entryRoot","");
+	if(request.defined(ARG_ANCESTOR)) {
+	    String entryRoot = request.getString(ARG_ANCESTOR,"");
 	    Entry root = getEntry(request,entryRoot);
 	    if(root!=null) {
 		List<Entry> all = new ArrayList<Entry>();
