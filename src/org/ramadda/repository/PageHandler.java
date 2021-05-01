@@ -517,6 +517,15 @@ public class PageHandler extends RepositoryManager {
             extra.append(HU.SPACE2);
         }
 
+	String theFooter = footer;
+        Entry    thisEntry = request.getCurrentEntry();
+
+	if(thisEntry!=null) {
+	    String defScript = "ramaddaThisEntry='" + thisEntry.getId()+"';\n";
+	    theFooter+=HU.script(defScript);
+	}
+
+
 	popupImage = HtmlUtils.div(popupImage, HtmlUtils.cssClass("ramadda-popup-link"));
 	extra.append(HU.makePopup(null, popupImage, menuHtml, arg("my","right top"),arg("at","left bottom"), arg("animate",false)));
         menuHtml = HU.div(extra.toString(), HU.clazz("ramadda-user-menu"));
@@ -525,7 +534,7 @@ public class PageHandler extends RepositoryManager {
             MACRO_LOGO_URL, logoUrl, MACRO_LOGO_IMAGE, logoImage,
             MACRO_HEADER_IMAGE, getHeaderIcon(), MACRO_HEADER_TITLE,
             pageTitle, MACRO_LINKS, menuHtml, MACRO_REPOSITORY_NAME,
-            repository.getRepositoryName(), MACRO_FOOTER, footer, MACRO_TITLE,
+            repository.getRepositoryName(), MACRO_FOOTER, theFooter, MACRO_TITLE,
             result.getTitle(), MACRO_BOTTOM, result.getBottomHtml(),
             MACRO_SEARCH_URL, getSearchManager().getSearchUrl(request),
             MACRO_CONTENT, content, MACRO_ENTRY_HEADER, entryHeader,
