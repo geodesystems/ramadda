@@ -48,4 +48,13 @@ public interface EntryChecker {
      * @param ids _more_
      */
     public void entriesDeleted(List<String> ids);
+
+
+    /**
+     * _more_
+     *
+     * @param entries _more_
+     */
+    public void entriesMoved(List<Entry> entries);
+    
 }
