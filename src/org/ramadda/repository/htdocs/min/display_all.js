@@ -38111,6 +38111,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
     let myProps = [
 	{label:'Html Table'},
 	{p:'numRecords',ex:'100',d:1000},
+	{p:'scrollY',ex:'300px'},				
 	{p:'includeGeo',ex:'true',d:false},
 	{p:'includeDate',ex:'true',d:true},
 	{p:'fancy',ex:'true',d:true},
@@ -38224,6 +38225,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	    this.makeTooltips(this.jq(ID_TABLE).find(".display-htmltable-row"),records);
 	    let opts = {
                 ordering: true,
+		scrollY:this.getScrollY("400px")
 	    };
             HU.formatTable("#" + this.domId(ID_TABLE), opts);
 	    if(this.getShowAddRow()) {
