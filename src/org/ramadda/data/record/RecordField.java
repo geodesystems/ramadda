@@ -88,6 +88,7 @@ public class RecordField {
 
     /** _more_ */
     public static final String TYPE_ENUMERATION = "enumeration";
+    public static final String TYPE_MULTIENUMERATION = "multienumeration";    
 
     /** _more_ */
     public static final String TYPE_IMAGE = "image";
@@ -1108,7 +1109,8 @@ public class RecordField {
         isTypeString = value.equals(TYPE_STRING) || value.equals(TYPE_URL)
                        || value.equals(TYPE_BOOLEAN)
                        || value.equals(TYPE_IMAGE)
-                       || value.equals(TYPE_MOVIE)	    
+                       || value.equals(TYPE_MOVIE)
+                       || value.equals(TYPE_MULTIENUMERATION)	    	    
                        || value.equals(TYPE_ENUMERATION);
         isTypeDate = value.equals(TYPE_DATE);
         //      System.err.println("set type:" + type + " is:" +isTypeNumeric +" " + isTypeString +" " + isTypeDate);
