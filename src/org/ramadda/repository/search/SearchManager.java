@@ -394,7 +394,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	boolean[]ok = new boolean[]{true};
 	List<Callable<Boolean>> callables = new ArrayList<Callable<Boolean>>();
 	for(List idList:idLists) {
-	    callables.add(makeReindexer((List<String>)idList,writer,cnt,actionId,mutex,ok));
+	    callables.add(makeReindexer((List<String>)idList,writer,ids.size(),cnt,actionId,mutex,ok));
 	}
 	long t1 = System.currentTimeMillis();
 	getRepository().getJobManager().invokeAllAndWait(callables);
@@ -410,7 +410,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
-    private Callable<Boolean> makeReindexer(final List<String> ids, final IndexWriter writer, final int[] cnt, final Object actionId, final Object mutex, final boolean[]ok) throws Exception {
+    private Callable<Boolean> makeReindexer(final List<String> ids, final IndexWriter writer,final int total, final int[] cnt, final Object actionId, final Object mutex, final boolean[]ok) throws Exception {
         return  new Callable<Boolean>() {
             public Boolean call() {
                 try {
@@ -420,7 +420,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			if(entry==null) continue;
 			synchronized(mutex) {
 			    cnt[0]++;
-			    System.err.println("#" + cnt[0] +" entry:" + entry.getName());
+			    System.err.println("#" + cnt[0] +"/"+ total +" entry:" + entry.getName());
 			}
 			/*
 			if(entry.getParentEntry()==null) {
@@ -570,10 +570,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	if(entry.getParentEntryId()!=null) {
 	    doc.add(new StringField(FIELD_PARENT, entry.getParentEntryId(), Field.Store.YES));	
-	    Entry parent = entry.getParentEntry();
-	    //	    System.err.println("index:" + entry);
+	    Entry parent = entry;
 	    while(parent!=null) {
-		//		System.err.println("\tancestor:" + parent.getId());
 		doc.add(new StringField(FIELD_ANCESTOR, parent.getId(), Field.Store.YES));	
 		parent = parent.getParentEntry();
 	    }
@@ -789,10 +787,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     public void processLuceneSearch(Request request, List<Entry> entries)
 	throws Exception {
         StringBuffer sb = new StringBuffer();
-        StandardAnalyzer analyzer =       new StandardAnalyzer();
+	//        StandardAnalyzer analyzer =       new StandardAnalyzer();
+	//	QueryBuilder builder = new QueryBuilder(analyzer);
         IndexSearcher searcher = getLuceneSearcher();
 	String text = request.getString(ARG_TEXT,"");
-	//	QueryBuilder builder = new QueryBuilder(analyzer);
 	String searchField = null;
 	for(String field: SEARCH_FIELDS) {
 	    if(text.indexOf(field+":")>=0) {
@@ -1478,15 +1476,16 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    Entry ancestorEntry = ancestor==null?null:getEntryManager().getEntry(request, ancestor);
 	    String select =
 		getRepository().getHtmlOutputHandler().getSelect(request, ARG_ANCESTOR,
-								 "Search under", 
+								 null,
 								 true, "", ancestorEntry, true);
 
+	    String event = OutputHandler.getSelectEvent(request, ARG_ANCESTOR, true, "", ancestorEntry);
 	    sb.append(HU.hidden(ARG_ANCESTOR + "_hidden",
 				ancestor!=null?ancestor:"",
 				HU.id(ARG_ANCESTOR + "_hidden")));
 	    sb.append(inset.apply(select + HU.space(1) +
 				  HU.disabledInput(ARG_ANCESTOR, ancestorEntry!=null?ancestorEntry.getName():"",
-						   HU.SIZE_40 + HU.id(ARG_ANCESTOR))));
+						   HU.clazz("disabledinput ramadda-entry-popup-select") + HU.attr("placeholder","Search under") + HU.attr("onClick", event) + HU.SIZE_40 + HU.id(ARG_ANCESTOR))));
 	}
 
 

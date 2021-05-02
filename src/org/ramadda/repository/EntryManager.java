@@ -4137,22 +4137,21 @@ public class EntryManager extends RepositoryManager {
                 right.append(HU.hidden(ARG_TO, toEntry.getId()));
             } else {
                 Entry parent = entries.get(0).getParentEntry();
-                String select =
-                    getRepository().getHtmlOutputHandler().getSelect(request, ARG_TO,
-								     HU.highlightable(
-										      HU.image("fas fa-bars")
-										      + HU.SPACE
-										      + msg("Select")
-										      + HU.SPACE), true, "", parent, false);
-
+                String select = OutputHandler.getSelect(request, ARG_TO,
+							HU.highlightable(
+									 HU.image("fas fa-bars")
+									 + HU.SPACE
+									 + msg("Select")
+									 + HU.SPACE), true, "", parent, false);
+		String event = OutputHandler.getSelectEvent(request, ARG_TO, true, "", parent);
                 right.append(HU.hidden(ARG_TO + "_hidden",
 				       parent.getId(),
 				       HU.id(ARG_TO + "_hidden")));
 
-                right.append(select);
-                right.append(HU.space(1));
-                right.append(HU.disabledInput(ARG_TO, parent.getName(),
-					      HU.SIZE_60 + HU.id(ARG_TO)));
+		//                right.append(select);
+		//                right.append(HU.space(1));
+                right.append(HU.disabledInput(ARG_TO, parent.getName(), HU.attr("onClick",event) +
+					      HU.clazz("disabledinput ramadda-entry-popup-select") + HU.SIZE_60 + HU.id(ARG_TO)));
 
             }
             right.append(HU.close(HU.TAG_DIV));

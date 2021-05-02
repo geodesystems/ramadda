@@ -1052,6 +1052,28 @@ public class OutputHandler extends RepositoryManager {
         String  selectorId = elementId + ( !hasType
                                            ? ""
                                            : "_" + type);
+        String event = getSelectEvent(request, elementId, allEntries,   type,  entry);
+        String link = label==null?"":HtmlUtils.mouseClickHref(event, label,
+					       linkExtra
+					       + HtmlUtils.id(selectorId + "_selectlink"));
+        if (addClear) {
+	    String clearEvent = HtmlUtils.call("clearSelect",
+					       HtmlUtils.squote(selectorId));
+            link = link + " "
+		+ HtmlUtils.mouseClickHref(clearEvent, HU.getIconImage("fas fa-eraser"),
+					   HU.attr("title","Clear selection") +HtmlUtils.id(selectorId + "_selectlink"));
+        }
+
+        return link;
+    }
+
+    public static String getSelectEvent(Request request, String elementId,
+					boolean allEntries, String type, Entry entry)
+	throws Exception {
+        boolean hasType    = Utils.stringDefined(type);
+        String  selectorId = elementId + ( !hasType
+                                           ? ""
+                                           : "_" + type);
         String event = HtmlUtils.call(
                            "selectInitialClick",
                            HtmlUtils.comma(
@@ -1066,19 +1088,10 @@ public class OutputHandler extends RepositoryManager {
                                                 request.getString(
                                                     ARG_ENTRYTYPE, ""))));
 
-        String clearEvent = HtmlUtils.call("clearSelect",
-                                           HtmlUtils.squote(selectorId));
-        String link = HtmlUtils.mouseClickHref(event, label,
-                          linkExtra
-                          + HtmlUtils.id(selectorId + "_selectlink"));
-        if (addClear) {
-            link = link + " "
-		+ HtmlUtils.mouseClickHref(clearEvent, HU.getIconImage("fas fa-eraser"),
-					   HU.attr("title","Clear selection") +HtmlUtils.id(selectorId + "_selectlink"));
-        }
-
-        return link;
+	return event;
     }
+
+
 
     /**
      * _more_
