@@ -3409,7 +3409,7 @@ function DisplayThing(argId, argProperties) {
             try {
                 return this.formatDateInner(date, args, useToStringIfNeeded);
             } catch (e) {
-                console.log("Error formatting date:" + e);
+                console.log("Error formatting date:" + date +" error:" +e);
                 if (!date.getTime && date.v) date = date.v;
                 return "" + date;
             }
@@ -3681,6 +3681,8 @@ function DisplayThing(argId, argProperties) {
 		}
 	    }
 	    if(template=="${fields}") {
+		fields = this.getFieldsByIds(null,this.getProperty("tooltipFields",this.getPropertyFields()));
+	    } else {
 		fields = this.getFieldsByIds(null,this.getProperty("tooltipFields",this.getPropertyFields()));
 	    }
 
@@ -11580,11 +11582,14 @@ function RecordField(props, source) {
             return this.isNumeric();
         },
         isFieldString: function() {
-            return this.type == "string" || this.type == "enumeration";
+            return this.type == "string" || this.type == "enumeration" || this.type == "multienumeration";
         },
         isFieldEnumeration: function() {
-            return this.type == "enumeration";
+            return this.type == "enumeration" || this.type == "multienumeration";
         },
+        isFieldMultiEnumeration: function() {
+            return  this.type == "multienumeration";
+        },	
         isFieldDate: function() {
             return this.isDate;
         },
@@ -11632,7 +11637,7 @@ function RecordField(props, source) {
 	    return this.type == "double" || this.type == "integer";
 	},
 	isString: function() {
-	    return this.type == "string" || this.type=="enumeration" || this.type =="url" || this.type == "image";
+	    return this.type == "string" || this.isFieldEnumeration() || this.type =="url" || this.type == "image";
 	},
         getType: function() {
             return this.type;
@@ -12251,8 +12256,19 @@ function RecordFilter(display,filterFieldId, properties) {
 		else if(op.op==">") ok= rowValue>op.value;
 		else if(op.op==">=") ok= rowValue>=op.value;
 		else if(op.op=="==") ok= rowValue==op.value;				
-	    } else   if(filterField.getType() == "enumeration") {
-		ok = this.mySearch.values.includes(""+rowValue);
+	    } else   if(filterField.isFieldEnumeration()) {
+		rowValue=String(rowValue);
+		if(filterField.isFieldMultiEnumeration()) {
+		    ok = false;
+		    let values = rowValue.split(",");
+		    values.forEach(value=>{
+			if(this.mySearch.values.includes(value)) ok = true;
+		    });
+//		    console.log(this.mySearch.values);
+		    
+		} else {
+		    ok = this.mySearch.values.includes(rowValue);
+		}
 	    } else if(filterField.isNumeric()) {
 		if(isNaN(this.mySearch.value[0]) && isNaN(this.mySearch.value[0])) return ok;
 		if(!isNaN(this.mySearch.value[0]) && rowValue<this.mySearch.value[0]) ok = false;
@@ -12403,7 +12419,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		let enums = Utils.mergeLists([[FILTER_ALL,allName]],labels);
 		let attrs= [STYLE,widgetStyle, ID,widgetId,"fieldId",filterField.getId()];
 		widget = HU.select("",attrs,enums,selected);
-	    } else   if(filterField.getType() == "enumeration") {
+	    } else   if(filterField.isFieldEnumeration()) {
 		if(debug) console.log("\tis enumeration");
 		let dfltValue = this.defaultValue = this.getPropertyFromUrl(filterField.getId() +".filterValue",FILTER_ALL);
                 let enums = this.getEnums(records);
@@ -12613,10 +12629,16 @@ function RecordFilter(display,filterFieldId, properties) {
 	},
 	getEnums: function(records) {
 	    let counts = {};
+	    let isMulti  = filterField.isFieldMultiEnumeration();
 	    records.forEach((record,idx)=>{
-		let v = record.getValue(filterField.getIndex());
-		if(!counts[v]) counts[v]=1;
-		else   counts[v]++;
+		let value = record.getValue(filterField.getIndex());
+		if(!value) return;
+		value = String(value);
+		let values = isMulti?value.split(","):[value];
+		values.forEach(v=>{
+		    if(!counts[v]) counts[v]=1;
+		    else   counts[v]++;
+		});
 	    });
 
 	    let enums = null;
@@ -12675,12 +12697,21 @@ function RecordFilter(display,filterFieldId, properties) {
 		    this.dependMySearch = depend.mySearch;
 		}
 
+
 		records.forEach((record,idx)=>{
 		    if(depend) {
 			if(!depend.isRecordOk(record,idx<5)) return;
 		    }
 		    let value = this.display.getDataValues(record)[filterField.getIndex()];
-		    if(!seen[value]) {
+		    let values;
+		    if(isMulti) {
+			values = value.split(",");
+		    } else {
+			values = [value];
+		    }
+
+		    values.forEach(value=>{
+			if(seen[value]) return;
 			seen[value]  = true;
 			let obj = {};
 			if(imageField)
@@ -12696,7 +12727,7 @@ function RecordFilter(display,filterFieldId, properties) {
 			obj.value = tuple;
 			obj.count =  counts[value];
 			enumValues.push(obj);
-		    }
+		    });
 		});
 		if(this.getProperty(filterField.getId() +".filterSort",true)) {
 		    let sortCount = this.getProperty(filterField.getId() +".filterSortCount",true);
@@ -14662,7 +14693,7 @@ function waitOnGoogleCharts(object, callback) {
     }
     if (!object.googleChartCallbackPending) {
         object.googleChartCallbackPending = true;
-        var func = function() {
+        let func = function() {
             object.googleChartCallbackPending = false;
             callback();
         }
@@ -14809,10 +14840,10 @@ addGlobalDisplayType({
 
 
 
-var PROP_CHART_MIN = "chartMin";
-var PROP_CHART_MAX = "chartMax";
-var DFLT_WIDTH = "600px";
-var DFLT_HEIGHT = "200px";
+let PROP_CHART_MIN = "chartMin";
+let PROP_CHART_MAX = "chartMax";
+let DFLT_WIDTH = "600px";
+let DFLT_HEIGHT = "200px";
 
 /*
   Create a chart
@@ -14825,7 +14856,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
     const ID_COLORS = "colors";
     const ID_HIGHLIGHTFIELDSHOLDER = "highlightfieldsholder";
     const ID_HIGHLIGHTFIELDS = "highlightfields";	    
-    var _this = this;
+    let _this = this;
     //Init the defaults first
     $.extend(this, {
 	debugChartOptions:false,
@@ -14937,8 +14968,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
         initDialog: function() {
             SUPER.initDialog.call(this);
-            var _this = this;
-            var updateFunc = function(e) {
+            let _this = this;
+            let updateFunc = function(e) {
                 if (e && e.which != 13 && e.which!=0) {
                     return;
                 }
@@ -14961,10 +14992,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 if (e.which != 13) {
                     return;
                 }
-                var v = _this.jq(ID_COLORS).val();
+                let v = _this.jq(ID_COLORS).val();
                 _this.colorList = v.split(",");
                 _this.displayData();
-                var pointData = _this.dataCollection.getList();
+                let pointData = _this.dataCollection.getList();
                 _this.getDisplayManager().handleEventPointDataLoaded(_this, _this.lastPointData);
             });
 
@@ -14981,11 +15012,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
         },
         setColor: function() {
-            var v = prompt("Enter comma separated list of colors to use", this.colorList.join(","));
+            let v = prompt("Enter comma separated list of colors to use", this.colorList.join(","));
             if (v != null) {
                 this.colorList = v.split(",");
                 this.displayData();
-                var pointData = this.dataCollection.getList();
+                let pointData = this.dataCollection.getList();
                 this.getDisplayManager().handleEventPointDataLoaded(this, this.lastPointData);
             }
         },
@@ -15003,19 +15034,19 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         },
         getMenuItems: function(menuItems) {
             SUPER.getMenuItems.call(this, menuItems);
-            var get = this.getGet();
+            let get = this.getGet();
             //                menuItems.push(HU.onClick(get+".setColor();", "Set color"));
 
-            var min = "0";
+            let min = "0";
             if (!isNaN(this.getVAxisMinValue())) {
                 min = "" + this.getVAxisMinValue();
             }
-            var max = "";
+            let max = "";
             if (!isNaN(this.getVAxisMaxValue())) {
                 max = "" + this.getVAxisMaxValue();
             }
 
-            var tmp = HU.formTable();
+            let tmp = HU.formTable();
             tmp += HU.formEntry("Axis Range:", HU.input("", min, ["size", "7", ATTR_ID, this.domId("vaxismin")]) + " - " +
 				HU.input("", max, ["size", "7", ATTR_ID, this.domId("vaxismax")]));
             tmp += HU.formEntry("Date Range:", HU.input("", this.minDate, ["size", "10", ATTR_ID, this.domId("mindate")]) + " - " +
@@ -15050,11 +15081,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
         },
         askMinDate: function() {
-            var ex = this.minDate;
+            let ex = this.minDate;
             if (ex == null || ex == "") {
                 ex = "1800-01-01";
             }
-            var v = prompt("Minimum date", ex);
+            let v = prompt("Minimum date", ex);
             if (v == null) return;
             this.setMinDate(v);
         },
@@ -15063,11 +15094,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             this.displayData();
         },
         askMaxDate: function() {
-            var ex = this.maxDate;
+            let ex = this.maxDate;
             if (ex == null || ex == "") {
                 ex = "2100-01-01";
             }
-            var v = prompt("Maximum date", ex);
+            let v = prompt("Maximum date", ex);
             if (v == null) return;
             this.setMaxDate(v);
         },
@@ -15079,8 +15110,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             return false;
         },
         getDialogContents: function(tabTitles, tabContents) {
-            var height = "600";
-            var html = HU.div([ATTR_ID, this.domId(ID_FIELDS), STYLE, HU.css('overflow-y','auto','max-height', height + "px")], " FIELDS ");
+            let height = "600";
+            let html = HU.div([ATTR_ID, this.domId(ID_FIELDS), STYLE, HU.css('overflow-y','auto','max-height', height + "px")], " FIELDS ");
             if (this.trendLineEnabled()) {
                 html += HU.div([ATTR_CLASS, "display-dialog-subheader"], "Other");
 
@@ -15113,7 +15144,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             if (!this.okToHandleEventRecordSelection()) {
                 return;
 	    }
-	    var index = this.findMatchingIndex(args.record).index
+	    let index = this.findMatchingIndex(args.record).index
 	    if(index<0 || !Utils.isDefined(index)) {
 		return;
 	    }
@@ -15206,7 +15237,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		console.log("\tpointData #records:" +(!pointData?"NULL": pointData.getRecords().length));
 
 
-            //            var selectedFields = this.getSelectedFields(this.getFieldsToSelect(pointData));
+            //            let selectedFields = this.getSelectedFields(this.getFieldsToSelect(pointData));
 	    let records =this.filterData();
             let selectedFields = this.getSelectedFields();
 	    if(debug)
@@ -15253,8 +15284,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
             //Check for the skip
-            var tmpFields = [];
-            for (var i = 0; i < selectedFields.length; i++) {
+            let tmpFields = [];
+            for (let i = 0; i < selectedFields.length; i++) {
                 if (!this.shouldSkipField(selectedFields[i])) {
                     tmpFields.push(selectedFields[i]);
                 }
@@ -15269,12 +15300,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		this.jq(ID_TITLE_FIELD).html(this.lastSelectedFields[0].getLabel());
 	    }
 
-            var props = {
+            let props = {
                 includeIndex: this.includeIndexInData()
             };
             props.groupByIndex = -1;
 
-            var groupBy = this.getGroupBy();
+            let groupBy = this.getGroupBy();
             if (groupBy) {
 		this.getFields().every(field=>{
                     if (field.getId() == groupBy) {
@@ -15286,7 +15317,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 });
             }
 
-            var fieldsToSelect = selectedFields;
+            let fieldsToSelect = selectedFields;
             if (this.raw) {
                 fieldsToSelect = this.dataCollection.getList()[0].getRecordFields();
                 props.raw = true;
@@ -15294,19 +15325,19 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             props.includeIndexIfDate = this.getIncludeIndexIfDate();
 
-            var dataHasIndex = props.includeIndex;
+            let dataHasIndex = props.includeIndex;
 
-	    var t1= new Date();
+	    let t1= new Date();
             let dataList = this.getStandardData(this.getFieldsToDisplay(fieldsToSelect), props);
-	    var t2= new Date();
+	    let t2= new Date();
 //	    Utils.displayTimes("chart.getStandardData",[t1,t2],true);
 	    if(debug)
 		console.log(this.type +" fields:" + fieldsToSelect.length +" dataList:" + dataList.length);
             if (dataList.length == 0 && !this.userHasSelectedAField) {
-                var pointData = this.dataCollection.getList()[0];
-                var chartableFields = this.getFieldsToSelect(pointData);
-                for (var i = 0; i < chartableFields.length; i++) {
-                    var field = chartableFields[i];
+                let pointData = this.dataCollection.getList()[0];
+                let chartableFields = this.getFieldsToSelect(pointData);
+                for (let i = 0; i < chartableFields.length; i++) {
+                    let field = chartableFields[i];
                     dataList = this.getStandardData([field], props);
                     if (dataList.length > 0) {
                         this.setSelectedFields([field]);
@@ -15321,25 +15352,25 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
             if (this.showPercent) {
-                var newList = [];
-                var isNumber = [];
-                var isOk = [];
-                var headerRow = null;
-                var fields = null;
+                let newList = [];
+                let isNumber = [];
+                let isOk = [];
+                let headerRow = null;
+                let fields = null;
                 if (this.percentFields != null) {
                     fields = this.percentFields.split(",");
                 }
-                for (var i = 0; i < dataList.length; i++) {
-                    var row = this.getDataValues(dataList[i]);
+                for (let i = 0; i < dataList.length; i++) {
+                    let row = this.getDataValues(dataList[i]);
                     if (i == 0) {
                         headerRow = row;
                         continue;
                     }
                     if (i == 1) {
-                        var seenIndex = false;
-                        for (var j = 0; j < row.length; j++) {
-                            var valueIsNumber = (typeof row[j] == "number");
-                            var valueIsDate = (typeof row[j] == "object");
+                        let seenIndex = false;
+                        for (let j = 0; j < row.length; j++) {
+                            let valueIsNumber = (typeof row[j] == "number");
+                            let valueIsDate = (typeof row[j] == "object");
                             if (valueIsNumber) {
                                 if (dataHasIndex && !seenIndex) {
 				    valueIsNumber = false;
@@ -15355,9 +15386,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                             }
                             isNumber.push(valueIsNumber);
                         }
-                        var newHeader = [];
-                        for (var j = 0; j < headerRow.length; j++) {
-                            var v = headerRow[j];
+                        let newHeader = [];
+                        for (let j = 0; j < headerRow.length; j++) {
+                            let v = headerRow[j];
                             if (!isNumber[j]) {
                                 newHeader.push(v);
                             } else {
@@ -15367,19 +15398,19 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                         newList.push(newHeader);
                     }
 
-                    var total = 0;
-                    var cnt = 0;
-                    for (var j = 0; j < row.length; j++) {
+                    let total = 0;
+                    let cnt = 0;
+                    for (let j = 0; j < row.length; j++) {
                         if (isNumber[j]) {
                             total += parseFloat(row[j]);
                             cnt++;
                         }
                     }
-                    var newRow = [];
-                    for (var j = 0; j < row.length; j++) {
+                    let newRow = [];
+                    for (let j = 0; j < row.length; j++) {
                         if (isNumber[j]) {
                             if (total != 0) {
-                                var v = parseFloat(((row[j] / total) * 100).toFixed(1));
+                                let v = parseFloat(((row[j] / total) * 100).toFixed(1));
                                 newRow.push(v);
                             } else {
                                 newRow.push(NaN);
@@ -15399,7 +15430,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		console.log(this.type+" Error making chart:\n" + e +"\n" + e.stack);
                 return;
             }
-            var container = this.jq(ID_CHART);
+            let container = this.jq(ID_CHART);
 	    if(this.jq(ID_CHART).is(':visible')) {
 		this.lastWidth = container.width();
 	    } else {
@@ -15407,7 +15438,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    }
 
 	    if(reload) {
-		var pointData = this.getData();
+		let pointData = this.getData();
 		if(pointData) {
 		    let dataList = pointData.getRecords();
 		    if(dataList.length>0) {
@@ -15419,10 +15450,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         },
         printDataList: function(dataList) {
             console.log("data list:" + dataList.length);
-            for (var i = 0; i < dataList.length; i++) {
-                var row = dataList[i];
-                var s = "";
-                for (var j = 0; j < row.length; j++) {
+            for (let i = 0; i < dataList.length; i++) {
+                let row = dataList[i];
+                let s = "";
+                for (let j = 0; j < row.length; j++) {
                     if (j > 0) s += ", ";
                     s += row[j];
                 }
@@ -15598,7 +15629,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	},
         makeDataTable: function(dataList, props, selectedFields, chartOptions) {
 	    let dateType = this.getProperty("dateType","date");
-	    let debug =   displayDebug.makeDataTable;
+	    let debug =    true || displayDebug.makeDataTable;
 	    let debugRows = 4;
 	    if(debug) console.log(this.type+" makeDataTable #records" + dataList.length);
 	    if(debug) console.log("\tfields:" + selectedFields);
@@ -15695,7 +15726,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             let justData = [];
             let tooltipFields = this.getFieldsByIds(null,this.getProperty("tooltipFields", ""));
-	    //	    addTooltip=false;
             let dataTable = new google.visualization.DataTable();
             let header = this.getDataValues(dataList[0]);
             let sample = this.getDataValues(dataList[1]);
@@ -15714,7 +15744,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		} else {
 		    //todo?
 		}
-                var value = sample[j];
+                let value = sample[j];
 		let headerLabel = header[j];
 		if(maxHeaderLength>0 && headerLabel.length>maxHeaderLength) {
 		    let orig = headerLabel;
@@ -15794,7 +15824,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
 	    if(debug) {
-		for(var i=0;i<dataTable.getNumberOfColumns();i++)
+		for(let i=0;i<dataTable.getNumberOfColumns();i++)
 		    console.log("col[" + i +"]=" + dataTable.getColumnLabel(i) +" " + dataTable.getColumnType(i));
 	    }
 	    if(this.getProperty("annotations") ||  this.getProperty("annotationFields")) {
@@ -15846,7 +15876,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let annotationCnt=0;
 
 	    let records = [];
-            for (var i = 1; i < dataList.length; i++) {
+            for (let i = 1; i < dataList.length; i++) {
 		records.push(dataList[i].record);
 	    }
 	    let colors =  this.getColorTable(true);
@@ -15857,7 +15887,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             for (let rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
 		let record =dataList[rowIdx];
                 let row = this.getDataValues(record);
-		//		var index = row[0];
+		//		let index = row[0];
 		//		if(index.v) index  = index.v;
 		let theRecord = record.record;
 		let color = "";
@@ -16118,8 +16148,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 
 	    //	    this.getPropertyShow = true;
-	    var lineColor = this.getProperty("lineColor");
-	    var backgroundColor = this.getProperty("chartBackground");
+	    let lineColor = this.getProperty("lineColor");
+	    let backgroundColor = this.getProperty("chartBackground");
             this.setPropertyOn(chartOptions.backgroundColor, "chart.fill", "fill", backgroundColor);
             this.setPropertyOn(chartOptions.backgroundColor, "chart.stroke", "stroke", this.getProperty("chartArea.fill", ""));
             this.setPropertyOn(chartOptions.backgroundColor, "chart.strokeWidth", "strokeWidth", null);
@@ -16138,8 +16168,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    this.setPropertyOn(chartOptions.vAxis, "vAxis.baselineColor", "baselineColor", this.getProperty("baselineColor", lineColor));
 
 
-            var textColor = this.getProperty("textColor", "#000");
-	    var textBold = this.getProperty("textBold", "false");
+            let textColor = this.getProperty("textColor", "#000");
+	    let textBold = this.getProperty("textBold", "false");
             this.setPropertyOn(chartOptions.hAxis.textStyle, "hAxis.text.color", "color", this.getProperty("axis.text.color", textColor));
             this.setPropertyOn(chartOptions.vAxis.textStyle, "vAxis.text.color", "color", this.getProperty("axis.text.color", textColor));
 
@@ -16188,7 +16218,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		});
 	    });
 
-            var range = [NaN, NaN];
+            let range = [NaN, NaN];
 	    //	    console.log("range:" +this.getVAxisMinValue());
             if (!isNaN(this.getVAxisMinValue())) {
                 range[0] = this.getVAxisMinValue();
@@ -16255,9 +16285,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             return this.getProperty("width");
         },
         getChartDiv: function(chartId) {
-            var divAttrs = [ATTR_ID, chartId];
-            var style = "";
-            var width = this.getChartWidth();
+            let divAttrs = [ATTR_ID, chartId];
+            let style = "";
+            let width = this.getChartWidth();
             if (false && width) {
 		if(width.endsWith("%")) {
                     style += HU.css("width", width);
@@ -16273,7 +16303,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		//                style += HU.css("width","100%");
             }
 	    let expandedHeight  = this.getProperty("expandedHeight");
-            var height =  this.getChartHeight();
+            let height =  this.getChartHeight();
 	    if(expandedHeight) {
                 style += HU.css("height", expandedHeight);
 	    } else {
@@ -16373,16 +16403,16 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		dataList.forEach((v,idx)=>{if(idx>0) tmp.push(v)});
 		if(!multiField) {
 		    tmp.sort(function(a,b) {
-			var v1 = a.record?a.record.getDate():a.date;
-			var v2 = b.record?b.record.getDate():b.date;
+			let v1 = a.record?a.record.getDate():a.date;
+			let v2 = b.record?b.record.getDate():b.date;
 			return v1.getTime()-v2.getTime();
 		    });
 		}
 		dataList = Utils.mergeLists([dataList[0]], tmp);
 		dataList.forEach((v,idx)=>{
 		    if(idx==0) return;
-                    var record = v.record;
-		    var groupValue = record?multiField?record.getValue(multiField.getIndex()):record.getDate():v.date;
+                    let record = v.record;
+		    let groupValue = record?multiField?record.getValue(multiField.getIndex()):record.getDate():v.date;
 		    let list=null;
 		    list = map[groupValue];
 		    if(!list) {
@@ -16402,14 +16432,14 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    let list = map[groupValue];
 		    tmpDataList.push(dataList[0]);
 		    tmpDataList = Utils.mergeLists(tmpDataList,list);
-		    var innerId = this.domId(ID_CHART)+"_" + this.chartCount;
-		    var label = groupValue;
+		    let innerId = this.domId(ID_CHART)+"_" + this.chartCount;
+		    let label = groupValue;
 		    if(groupValue.getTime) label = this.formatDate(groupValue);
 		    label = multiLabelTemplate.replace("${value}",label);
-		    var header = HU.div([CLASS,"display-multi-header"], label);
-		    var top =labelPosition=="top"?header:"";
-		    var bottom = labelPosition=="bottom"?header:"";
-		    var div = HU.div([CLASS,"display-multi-div", STYLE,HU.css('display','inline-block')+ multiStyle], top + this.getChartDiv(innerId) + bottom);
+		    let header = HU.div([CLASS,"display-multi-header"], label);
+		    let top =labelPosition=="top"?header:"";
+		    let bottom = labelPosition=="bottom"?header:"";
+		    let div = HU.div([CLASS,"display-multi-div", STYLE,HU.css('display','inline-block')+ multiStyle], top + this.getChartDiv(innerId) + bottom);
 		    this.jq(ID_CHARTS_INNER).append(div);
 		    let chart = this.makeGoogleChartInner(tmpDataList, innerId, props, selectedFields);
 		    if(chart) this.charts.push(chart);
@@ -16431,7 +16461,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	makeGoogleChartInner: function(dataList, chartId, props, selectedFields) {
 	    let chartDiv = document.getElementById(chartId);
 	    if(!chartDiv) return;
-	    var dataTable = this.makeDataTable(dataList, props, selectedFields, this.chartOptions);
+	    let dataTable = this.makeDataTable(dataList, props, selectedFields, this.chartOptions);
             let chart = this.doMakeGoogleChart(dataList, props, chartDiv, selectedFields, this.chartOptions);
             if (chart == null) return null;
             if (!dataTable) {
@@ -16765,7 +16795,7 @@ function RamaddaBaseBarchart(displayManager, id, type, properties) {
         },
         makeChartOptions: function(dataList, props, selectedFields) {
             chartOptions = SUPER.makeChartOptions.call(this, dataList, props, selectedFields);
-            var chartType = this.getChartType();
+            let chartType = this.getChartType();
             if (chartType == DISPLAY_BARSTACK) {
 		chartOptions.series = null;
                 chartOptions.isStacked = true;
@@ -16836,7 +16866,7 @@ function HistogramDisplay(displayManager, id, properties) {
                     chartOptions.legend = {};
                 chartOptions.legend.position = this.legendPosition;
             }
-            var isStacked = this.getProperty("isStacked", null);
+            let isStacked = this.getProperty("isStacked", null);
             if (isStacked)
                 chartOptions.isStacked = isStacked == "true" ? true : isStacked == "false" ? false : isStacked;
             chartOptions.vAxis = {};
@@ -16922,7 +16952,7 @@ function PiechartDisplay(displayManager, id, properties) {
 	    let colorCnt = 0;
 	    this.uniqueValues.map((v,idx)=>{
 		if(colorCnt>=colors.length) colorCnt = 0;
-		var color  = colors[colorCnt];
+		let color  = colors[colorCnt];
 		legend += HU.div([STYLE,HU.css('display','inline-block','width','8px','height','8px','background', color)]) +SPACE + v +SPACE2;
 		colorCnt++;
 	    });
@@ -16937,7 +16967,7 @@ function PiechartDisplay(displayManager, id, properties) {
 	},
         getGroupBy: function() {
             if (!this.groupBy && this.groupBy != "") {
-                var stringField = this.getFieldByType(this.getFields(), "string");
+                let stringField = this.getFieldByType(this.getFields(), "string");
                 if (stringField) {
                     this.groupBy = stringField.getId();
                 }
@@ -16945,11 +16975,11 @@ function PiechartDisplay(displayManager, id, properties) {
             return this.groupBy;
         },
         getChartDiv: function(chartId) {
-            var divAttrs = [ATTR_ID, chartId];
+            let divAttrs = [ATTR_ID, chartId];
             divAttrs.push(STYLE);
-            var style = "";
-	    var width = this.getProperty("chartWidth") || this.getChartWidth();
-	    var height = this.getProperty("chartHeight") || this.getChartHeight();
+            let style = "";
+	    let width = this.getProperty("chartWidth") || this.getChartWidth();
+	    let height = this.getProperty("chartHeight") || this.getChartHeight();
             if (width) {
                 if (width > 0)
                     style += "width:" + width + "px;";
@@ -17034,19 +17064,19 @@ function PiechartDisplay(displayManager, id, properties) {
 	},
 
         makeDataTable: function(dataList, props, selectedFields) {
-            var dataTable = new google.visualization.DataTable();
-            var list = [];
-            var header = this.getDataValues(dataList[0]);
+            let dataTable = new google.visualization.DataTable();
+            let list = [];
+            let header = this.getDataValues(dataList[0]);
             dataTable.addColumn("string", header[0]);
             dataTable.addColumn("number", header[1]);
 
 
             if (this.getProperty("bins", null)) {
-                var bins = parseInt(this.getProperty("bins", null));
-                var min = Number.MAX_VALUE;
-                var max = Number.MIN_VALUE;
-                var haveMin = false;
-                var haveMax = false;
+                let bins = parseInt(this.getProperty("bins", null));
+                let min = Number.MAX_VALUE;
+                let max = Number.MIN_VALUE;
+                let haveMin = false;
+                let haveMax = false;
                 if (this.getProperty("binMin")) {
                     min = parseFloat(this.getProperty("binMin"));
                     haveMin = true;
@@ -17056,10 +17086,10 @@ function PiechartDisplay(displayManager, id, properties) {
                     haveMax = true;
                 }
 
-                var goodValues = [];
-                for (var i = 1; i < dataList.length; i++) {
-                    var tuple = this.getDataValues(dataList[i]);
-                    var value = tuple[1];
+                let goodValues = [];
+                for (let i = 1; i < dataList.length; i++) {
+                    let tuple = this.getDataValues(dataList[i]);
+                    let value = tuple[1];
                     if (!Utils.isRealNumber(value)) {
                         continue;
                     }
@@ -17070,9 +17100,9 @@ function PiechartDisplay(displayManager, id, properties) {
                     goodValues.push(value);
                 }
 
-                var binList = [];
-                var step = (max - min) / bins;
-                for (var binIdx = 0; binIdx < bins; binIdx++) {
+                let binList = [];
+                let step = (max - min) / bins;
+                for (let binIdx = 0; binIdx < bins; binIdx++) {
                     binList.push({
                         min: min + binIdx * step,
                         max: min + (binIdx + 1) * step,
@@ -17080,11 +17110,11 @@ function PiechartDisplay(displayManager, id, properties) {
                     });
                 }
 
-                for (var rowIdx = 0; rowIdx < goodValues.length; rowIdx++) {
-                    var value = goodValues[rowIdx];
-                    var ok = false;
+                for (let rowIdx = 0; rowIdx < goodValues.length; rowIdx++) {
+                    let value = goodValues[rowIdx];
+                    let ok = false;
 
-                    for (var binIdx = 0; binIdx < binList.length; binIdx++) {
+                    for (let binIdx = 0; binIdx < binList.length; binIdx++) {
                         if (value < binList[binIdx].min || (value >= binList[binIdx].min && value <= binList[binIdx].max)) {
                             binList[binIdx].values.push(value);
                             ok = true;
@@ -17095,8 +17125,8 @@ function PiechartDisplay(displayManager, id, properties) {
                         binList[binList.length - 1].values.push(value);
                     }
                 }
-                for (var binIdx = 0; binIdx < bins; binIdx++) {
-                    var bin = binList[binIdx];
+                for (let binIdx = 0; binIdx < bins; binIdx++) {
+                    let bin = binList[binIdx];
                     list.push(["Bin:" + this.formatNumber(bin.min) + "-" + this.formatNumber(bin.max),
                                bin.values.length
 			      ]);
@@ -17105,7 +17135,7 @@ function PiechartDisplay(displayManager, id, properties) {
 		dataTable = new google.visualization.DataTable();
 		dataTable.addColumn("string", "Category");
 		dataTable.addColumn("number", "Value");
-		var records=  this.filterData();
+		let records=  this.filterData();
 		let sumFields =  this.getFieldsByIds(null, this.getProperty("sumFields"));
 		let sums = [];
 		sumFields.map(f=>{sums.push(0)});
@@ -17114,7 +17144,7 @@ function PiechartDisplay(displayManager, id, properties) {
 		}
                 records.map(record=>{
 		    sumFields.map((f,idx)=>{
-			var v = record.getValue(f.getIndex());
+			let v = record.getValue(f.getIndex());
 			if(!isNaN(v))  sums[idx]+=v;
 		    });
 		});
@@ -17123,15 +17153,15 @@ function PiechartDisplay(displayManager, id, properties) {
 		});
 
             } else {
-                for (var i = 1; i < dataList.length; i++) {
-                    var tuple = this.getDataValues(dataList[i]);
-                    var s = "" + (tuple.length == 1 ? "#" + i : tuple[0]);
-                    var v = tuple.length == 1 ? tuple[0] : tuple[1];
+                for (let i = 1; i < dataList.length; i++) {
+                    let tuple = this.getDataValues(dataList[i]);
+                    let s = "" + (tuple.length == 1 ? "#" + i : tuple[0]);
+                    let v = tuple.length == 1 ? tuple[0] : tuple[1];
                     list.push([s, v]);
                 }
             }
 	    list.map(tuple=>{
-		var s = tuple[0];
+		let s = tuple[0];
 		if(!this.uniqueValuesMap[s]) {
 		    this.uniqueValuesMap[s] = true;
 		    this.uniqueValues.push(s);
@@ -17192,27 +17222,27 @@ function SankeyDisplay(displayManager, id, properties) {
         },
         makeDataTable: function(dataList, props, selectedFields) {
             if (!this.getProperty("doCategories", false)) {
-                var values = this.makeDataArray(dataList);
+                let values = this.makeDataArray(dataList);
                 return google.visualization.arrayToDataTable(values);
             }
-            var strings = [];
-            for (var i = 0; i < selectedFields.length; i++) {
-                var field = selectedFields[i];
+            let strings = [];
+            for (let i = 0; i < selectedFields.length; i++) {
+                let field = selectedFields[i];
                 if (field.isFieldString()) {
                     strings.push(field);
                 }
             }
-            var values = [];
+            let values = [];
             values.push(["characteristic 1", "characteristic 2", "value"]);
-            for (var i = 1; i < strings.length; i++) {
-                var field1 = strings[i - 1];
-                var field2 = strings[i];
-                var cnts = {};
-                for (var r = 1; r < dataList.length; r++) {
-                    var row = this.getDataValues(dataList[r]);
-                    var value1 = row[i - 1];
-                    var value2 = row[i];
-                    var key = value1 + "-" + value2;
+            for (let i = 1; i < strings.length; i++) {
+                let field1 = strings[i - 1];
+                let field2 = strings[i];
+                let cnts = {};
+                for (let r = 1; r < dataList.length; r++) {
+                    let row = this.getDataValues(dataList[r]);
+                    let value1 = row[i - 1];
+                    let value2 = row[i];
+                    let key = value1 + "-" + value2;
                     if (!cnts[key]) {
                         cnts[key] = {
                             v1: value1,
@@ -17249,9 +17279,9 @@ function WordtreeDisplay(displayManager, id, properties) {
             if (this.getProperty("chartHeight"))
                 chartOptions.height = parseInt(this.getProperty("chartHeight"));
             if (this.getWordColors()) {
-                var tmp = this.getWordColors().split(",");
-                var colors = [];
-                for (var i = 0; i < 3 && i < tmp.length; i++) {
+                let tmp = this.getWordColors().split(",");
+                let colors = [];
+                for (let i = 0; i < 3 && i < tmp.length; i++) {
                     colors.push(tmp[i]);
                 }
                 if (colors.length == 3)
@@ -17279,41 +17309,41 @@ function WordtreeDisplay(displayManager, id, properties) {
 
         makeDataTable: function(dataList, props, selectedFields) {
             //null ->get all data
-            var root = this.getTreeRoot();
-            var records = this.filterData(null, selectedFields, {skipFirst:true});
-            var fields = this.getSelectedFields(this.getData().getRecordFields());
-            var valueField = this.getFieldById(null, this.getProperty("colorBy"));
-            var values = [];
-            var typeTuple = ["phrases"];
+            let root = this.getTreeRoot();
+            let records = this.filterData(null, selectedFields, {skipFirst:true});
+            let fields = this.getSelectedFields(this.getData().getRecordFields());
+            let valueField = this.getFieldById(null, this.getProperty("colorBy"));
+            let values = [];
+            let typeTuple = ["phrases"];
             values.push(typeTuple);
-            var fixedSize = this.getFixedSize();
+            let fixedSize = this.getFixedSize();
             if (valueField)
                 fixedSize = 1;
             if (fixedSize) typeTuple.push("size");
             if (valueField)
                 typeTuple.push("value");
-            var fieldInfo = {};
+            let fieldInfo = {};
 
-            var header = "";
-            for (var i = 0; i < fields.length; i++) {
-                var field = fields[i];
+            let header = "";
+            for (let i = 0; i < fields.length; i++) {
+                let field = fields[i];
                 if (header != "")
                     header += " -&gt;";
                 header += field.getLabel();
                 if (!field.isFieldNumeric()) continue;
-                var column = this.getColumnValues(records, field);
-                var buckets = [];
-                var argBuckets = this.getProperty("buckets." + field.getId(), this.getProperty("buckets", null));
-                var min, max;
+                let column = this.getColumnValues(records, field);
+                let buckets = [];
+                let argBuckets = this.getProperty("buckets." + field.getId(), this.getProperty("buckets", null));
+                let min, max;
                 if (argBuckets) {
-                    var argBucketLabels = this.getProperty("bucketLabels." + field.getId(), this.getProperty("bucketLabels", null));
-                    var bucketLabels;
+                    let argBucketLabels = this.getProperty("bucketLabels." + field.getId(), this.getProperty("bucketLabels", null));
+                    let bucketLabels;
                     if (argBucketLabels)
                         bucketLabels = argBucketLabels.split(",");
-                    var bucketList = argBuckets.split(",");
-                    var prevValue = 0;
-                    for (var bucketIdx = 0; bucketIdx < bucketList.length; bucketIdx++) {
-                        var v = parseFloat(bucketList[bucketIdx]);
+                    let bucketList = argBuckets.split(",");
+                    let prevValue = 0;
+                    for (let bucketIdx = 0; bucketIdx < bucketList.length; bucketIdx++) {
+                        let v = parseFloat(bucketList[bucketIdx]);
                         if (bucketIdx == 0) {
                             min = v;
                             max = v;
@@ -17321,7 +17351,7 @@ function WordtreeDisplay(displayManager, id, properties) {
                         min = Math.min(min, v);
                         max = Math.max(max, v);
                         if (bucketIdx > 0) {
-                            var label;
+                            let label;
                             if (bucketLabels && i <= bucketLabels.length)
                                 label = bucketLabels[bucketIdx - 1];
                             else
@@ -17335,14 +17365,14 @@ function WordtreeDisplay(displayManager, id, properties) {
                         prevValue = v;
                     }
                 } else {
-                    var numBuckets = parseInt(this.getProperty("numBuckets." + field.getId(), this.getProperty("numBuckets", 10)));
+                    let numBuckets = parseInt(this.getProperty("numBuckets." + field.getId(), this.getProperty("numBuckets", 10)));
                     min = column.min;
                     max = column.max;
-                    var step = (column.max - column.min) / numBuckets;
-                    for (var bucketIdx = 0; bucketIdx < numBuckets; bucketIdx++) {
-                        var r1 = column.min + (bucketIdx * step);
-                        var r2 = column.min + ((bucketIdx + 1) * step);
-                        var label = Utils.formatNumber(r1, true) + "-" + Utils.formatNumber(r2, true);
+                    let step = (column.max - column.min) / numBuckets;
+                    for (let bucketIdx = 0; bucketIdx < numBuckets; bucketIdx++) {
+                        let r1 = column.min + (bucketIdx * step);
+                        let r2 = column.min + ((bucketIdx + 1) * step);
+                        let label = Utils.formatNumber(r1, true) + "-" + Utils.formatNumber(r2, true);
                         buckets.push({
                             min: r1,
                             max: r2,
@@ -17357,18 +17387,18 @@ function WordtreeDisplay(displayManager, id, properties) {
                 };
             }
 
-            var sep = "_SEP_";
-            for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
-                var row = this.getDataValues(records[rowIdx]);
-                var string = root;
-                for (var fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
-                    var field = fields[fieldIdx];
+            let sep = "_SEP_";
+            for (let rowIdx = 0; rowIdx < records.length; rowIdx++) {
+                let row = this.getDataValues(records[rowIdx]);
+                let string = root;
+                for (let fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
+                    let field = fields[fieldIdx];
                     string += sep;
-                    var value = row[field.getIndex()];
+                    let value = row[field.getIndex()];
                     if (field.isFieldNumeric()) {
-                        var info = fieldInfo[field.getId()];
-                        for (var bucketIdx = 0; bucketIdx < info.buckets.length; bucketIdx++) {
-                            var bucket = info.buckets[bucketIdx];
+                        let info = fieldInfo[field.getId()];
+                        for (let bucketIdx = 0; bucketIdx < info.buckets.length; bucketIdx++) {
+                            let bucket = info.buckets[bucketIdx];
                             if (value >= bucket.min && value <= bucket.max) {
                                 value = bucket.label;
                                 break;
@@ -17377,7 +17407,7 @@ function WordtreeDisplay(displayManager, id, properties) {
                     }
                     string += value;
                 }
-                var data = [string.trim()];
+                let data = [string.trim()];
                 if (fixedSize) data.push(parseInt(fixedSize));
                 if (valueField)
                     data.push(row[valueField.getIndex()]);
@@ -17519,7 +17549,7 @@ function TableDisplay(displayManager, id, properties) {
                     chartOptions.height = this.chartHeight;
 		}
 		if (chartOptions.height == null) {
-                    var height = this.getProperty("height", null);
+                    let height = this.getProperty("height", null);
                     if (height) {
 			chartOptions.height = height;
                     }
@@ -17571,12 +17601,12 @@ function TableDisplay(displayManager, id, properties) {
 	    return SUPER.formatNumber.call(this, n);
 	},
         xxxxmakeDataTable: function(dataList, props, selectedFields) {
-            var rows = this.makeDataArray(dataList);
-            var data = [];
-            for (var rowIdx = 0; rowIdx < rows.length; rowIdx++) {
-                var row = rows[rowIdx];
-                for (var colIdx = 0; colIdx < row.length; colIdx++) {
-		    var t = (typeof row[colIdx]);
+            let rows = this.makeDataArray(dataList);
+            let data = [];
+            for (let rowIdx = 0; rowIdx < rows.length; rowIdx++) {
+                let row = rows[rowIdx];
+                for (let colIdx = 0; colIdx < row.length; colIdx++) {
+		    let t = (typeof row[colIdx]);
                     if (t == "string") {
                         row[colIdx] = row[colIdx].replace(/\n/g, "<br>");
 			if(row[colIdx].startsWith("http:") || row[colIdx].startsWith("https:")) {
@@ -17610,11 +17640,11 @@ function BubbleDisplay(displayManager, id, properties) {
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         getChartDiv: function(chartId) {
-            var divAttrs = [ATTR_ID, chartId];
+            let divAttrs = [ATTR_ID, chartId];
             divAttrs.push(STYLE);
-            var style = "";
-	    var width = this.getProperty("chartWidth") || this.getChartWidth();
-	    var height = this.getProperty("chartHeight") || this.getChartHeight();
+            let style = "";
+	    let width = this.getProperty("chartWidth") || this.getChartWidth();
+	    let height = this.getProperty("chartHeight") || this.getChartHeight();
             if (width) {
                 if (width > 0)
                     style += "width:" + width + "px;";
@@ -17662,19 +17692,19 @@ function BubbleDisplay(displayManager, id, properties) {
 	    let debug =displayDebug.makeDataTable;
 	    if(debug) {
 		console.log(this.type+" makeDataTable #records:" + dataList.length);
-                var fields = this.getSelectedFields();
+                let fields = this.getSelectedFields();
 		console.log("\t fields:" + fields);
 	    }
-	    var tmp =[];
-	    var a = this.makeDataArray(dataList);
+	    let tmp =[];
+	    let a = this.makeDataArray(dataList);
 	    while(a[0].length<5)
 		a[0].push("");
 	    tmp.push(a[0]);
 	    //Remove nans
 	    this.didUnhighlight = false;
 	    let minColorValue = Number.MAX_SAFE_INTEGER;
-	    for(var i=1;i<a.length;i++) {
-		var tuple = a[i];
+	    for(let i=1;i<a.length;i++) {
+		let tuple = a[i];
 		while(tuple.length<5) {
 		    tuple.push(1);
 		}
@@ -17682,13 +17712,13 @@ function BubbleDisplay(displayManager, id, properties) {
 	    }
 
 
-	    for(var i=1;i<a.length;i++) {
-		var tuple = a[i];
+	    for(let i=1;i<a.length;i++) {
+		let tuple = a[i];
 		while(tuple.length<5)
 		    tuple.push(1);
 		if(debug && i<5)
 		    console.log("\tdata:" + tuple);
-		var ok = true;
+		let ok = true;
 		for(j=1;j<tuple.length && ok;j++) {
 		    if(isNaN(tuple[j])) ok = false;
 		}
@@ -17706,7 +17736,7 @@ function BubbleDisplay(displayManager, id, properties) {
             return google.visualization.arrayToDataTable(tmp);
         },
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
-            var ct = this.getColorTable(true);
+            let ct = this.getColorTable(true);
             if (ct) {
                 chartOptions.colors = ct;
             } else if (!this.colors) {
@@ -17732,7 +17762,7 @@ function BubbleDisplay(displayManager, id, properties) {
                     position: this.getProperty("legendPosition", "in")
                 }
             }
-	    var colorTable = this.getColorTable(true);
+	    let colorTable = this.getColorTable(true);
 	    if(colorTable) {
 		chartOptions.colorAxis.colors = colorTable;
 		if(this.didUnhighlight) {
@@ -17795,12 +17825,12 @@ function BartableDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaSeriesChart(displayManager, id, DISPLAY_BARTABLE, properties);
     defineDisplay(addRamaddaDisplay(this), SUPER, [], {
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
-            var height = "";
+            let height = "";
             if (Utils.isDefined(this.chartHeight)) {
                 height = this.chartHeight;
             } else {
                 if (dataList.length > 1) {
-                    var numBars = dataList.length;
+                    let numBars = dataList.length;
                     if (this.isStacked) {
                         height = numBars * 22;
                     } else {
@@ -17845,16 +17875,16 @@ function BartableDisplay(displayManager, id, properties) {
             return new google.charts.Bar(chartDiv); 
         },
         getDefaultSelectedFields: function(fields, dfltList) {
-            var f = [];
+            let f = [];
             for (i = 0; i < fields.length; i++) {
-                var field = fields[i];
+                let field = fields[i];
                 if (!field.isNumeric()) {
                     f.push(field);
                     break;
                 }
             }
             for (i = 0; i < fields.length; i++) {
-                var field = fields[i];
+                let field = fields[i];
                 if (field.isNumeric()) {
                     f.push(field);
                     break;
@@ -17878,13 +17908,13 @@ function TreemapDisplay(displayManager, id, properties) {
         tooltips: {},
         makeChartOptions: function(dataList, props, selectedFields) {
             let _this = this;
-            var tooltip = function(row, size, value) {
+            let tooltip = function(row, size, value) {
                 if (_this.tooltips[row]) {
                     return _this.tooltips[row];
                 }
                 return "<div class='display-treemap-tooltip-outer'><div class='display-treemap-tooltip''><i>left-click: go down<br>right-click: go up</i></div></div>";
             };
-            var chartOptions = SUPER.makeChartOptions.call(this, dataList, props, selectedFields);
+            let chartOptions = SUPER.makeChartOptions.call(this, dataList, props, selectedFields);
             $.extend(chartOptions, {
                 highlightOnMouseOver: true,
                 generateTooltip: tooltip,
@@ -17899,14 +17929,14 @@ function TreemapDisplay(displayManager, id, properties) {
         },
 
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
-            var dataTable = this.makeDataTable(dataList, props, selectedFields, chartOptions);
+            let dataTable = this.makeDataTable(dataList, props, selectedFields, chartOptions);
             if (!dataTable) return null;
             return new google.visualization.TreeMap(chartDiv);
         },
 
         addTuple: function(data, colorField, seen, value, parent, n1, n2) {
-            var ovalue = value;
-            var cnt = 0;
+            let ovalue = value;
+            let cnt = 0;
             if (Utils.isDefined(seen[value]) && parent) {
                 value = parent + ":" + value;
             }
@@ -17917,7 +17947,7 @@ function TreemapDisplay(displayManager, id, properties) {
                 }
                 value = ovalue + " " + (++cnt);
             }
-            var tuple = [value, parent, n1];
+            let tuple = [value, parent, n1];
             if (colorField) tuple.push(n2);
             data.push(tuple);
             return value;
@@ -17931,32 +17961,32 @@ function TreemapDisplay(displayManager, id, properties) {
             });
         },
         makeDataTable: function(dataList, props, selectedFields) {
-            var records = this.filterData(null,null,{skipFirst:true});
+            let records = this.filterData(null,null,{skipFirst:true});
             if (!records) {
                 return null;
             }
-            var allFields = this.getFields();
-            var fields = this.getSelectedFields(allFields);
+            let allFields = this.getFields();
+            let fields = this.getSelectedFields(allFields);
             if (fields.length == 0)
                 fields = allFields;
-            var strings = this.getFieldsByType(fields, "string");
+            let strings = this.getFieldsByType(fields, "string");
             if (strings.length < 2) {
                 this.displayError("No string fields specified");
                 return null;
             }
-            var addPrefix = this.getProperty("addPrefix", true);
-            var sizeField = this.getFieldById(allFields, this.getProperty("sizeBy"));
-            var colorField = this.getFieldById(allFields, this.getProperty("colorBy"));
-            var values = this.getFieldsByType(fields, "numeric");
+            let addPrefix = this.getProperty("addPrefix", true);
+            let sizeField = this.getFieldById(allFields, this.getProperty("sizeBy"));
+            let colorField = this.getFieldById(allFields, this.getProperty("colorBy"));
+            let values = this.getFieldsByType(fields, "numeric");
             if (!sizeField && values.length > 0)
                 sizeField = values[0];
             if (!colorField && values.length > 1)
                 colorField = values[1];
 
-            var tooltipFields = [];
-            var toks = this.getProperty("tooltipFields", "").split(",");
-            for (var i = 0; i < toks.length; i++) {
-                var tooltipField = this.getFieldById(null, toks[i]);
+            let tooltipFields = [];
+            let toks = this.getProperty("tooltipFields", "").split(",");
+            for (let i = 0; i < toks.length; i++) {
+                let tooltipField = this.getFieldById(null, toks[i]);
                 if (tooltipField)
                     tooltipFields.push(tooltipField);
             }
@@ -17964,56 +17994,56 @@ function TreemapDisplay(displayManager, id, properties) {
 
             this.tooltips = {};
 
-            var columns = [];
-            for (var fieldIndex = 0; fieldIndex < strings.length; fieldIndex++) {
-                var field = strings[fieldIndex];
+            let columns = [];
+            for (let fieldIndex = 0; fieldIndex < strings.length; fieldIndex++) {
+                let field = strings[fieldIndex];
                 columns.push(this.getColumnValues(records, field).values);
             }
 
-            var data = [];
-            var leafs = [];
-            var tmptt = [];
-            var seen = {};
+            let data = [];
+            let leafs = [];
+            let tmptt = [];
+            let seen = {};
             this.addTuple(data, colorField, {}, "Node", "Parent", "Value", "Color");
-            var root = strings[0].getLabel();
+            let root = strings[0].getLabel();
             this.addTuple(data, colorField, seen, root, null, 0, 0);
-            var keys = {};
-            var call = this.getGet();
-            for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
+            let keys = {};
+            let call = this.getGet();
+            for (let rowIdx = 0; rowIdx < records.length; rowIdx++) {
                 //               if(rowIdx>20) break;
-                var row = this.getDataValues(records[rowIdx]);
-                var key = "";
-                var parentKey = "";
-                for (var fieldIndex = 0; fieldIndex < strings.length - 1; fieldIndex++) {
-                    var values = columns[fieldIndex];
+                let row = this.getDataValues(records[rowIdx]);
+                let key = "";
+                let parentKey = "";
+                for (let fieldIndex = 0; fieldIndex < strings.length - 1; fieldIndex++) {
+                    let values = columns[fieldIndex];
                     if (key != "")
                         key += ":";
                     key += values[rowIdx];
                     if (!Utils.isDefined(keys[key])) {
-                        var parent = Utils.isDefined(keys[parentKey]) ? keys[parentKey] : root;
-                        var value = values[rowIdx];
+                        let parent = Utils.isDefined(keys[parentKey]) ? keys[parentKey] : root;
+                        let value = values[rowIdx];
                         if (addPrefix && fieldIndex > 0)
                             value = parent + ":" + value;
                         keys[key] = this.addTuple(data, colorField, seen, value, parent, 0, 0);
                     }
                     parentKey = key;
                 }
-                var parent = Utils.isDefined(keys[parentKey]) ? keys[parentKey] : root;
-                var value = row[strings[strings.length - 1].getIndex()];
-                var size = sizeField ? row[sizeField.getIndex()] : 1;
-                var color = colorField ? row[colorField.getIndex()] : 0;
+                let parent = Utils.isDefined(keys[parentKey]) ? keys[parentKey] : root;
+                let value = row[strings[strings.length - 1].getIndex()];
+                let size = sizeField ? row[sizeField.getIndex()] : 1;
+                let color = colorField ? row[colorField.getIndex()] : 0;
                 value = this.addTuple(leafs, colorField, seen, value, parent, size, color);
-                var tt = "<div class='display-treemap-tooltip-outer'><div class='display-treemap-tooltip''>";
-                for (var f = 0; f < tooltipFields.length; f++) {
-                    var v = row[tooltipFields[f].getIndex()];
-                    var field = tooltipFields[f];
+                let tt = "<div class='display-treemap-tooltip-outer'><div class='display-treemap-tooltip''>";
+                for (let f = 0; f < tooltipFields.length; f++) {
+                    let v = row[tooltipFields[f].getIndex()];
+                    let field = tooltipFields[f];
                     v = HU.onClick(call + ".valueClicked('" + field.getId() + "','" + v + "')", v, []);
                     tt += HU.b(field.getLabel()) + ": " + v + "<br>";
                 }
                 tt += "</div></div>";
                 tmptt.push(tt);
             }
-            for (var i = 0; i < leafs.length; i++) {
+            for (let i = 0; i < leafs.length; i++) {
                 data.push(leafs[i]);
                 this.tooltips[data.length - 2] = tmptt[i];
             }
@@ -18031,25 +18061,25 @@ function TimerangechartDisplay(displayManager, id, properties) {
             return new google.visualization.Timeline(chartDiv);
         },
         makeDataTable: function(dataList, props, selectedFields) {
-	    var records = this.filterData(null,null,{skipFirst:true});
-            var strings = [];
-            var stringField = this.getFieldByType(selectedFields, "string");
+	    let records = this.filterData(null,null,{skipFirst:true});
+            let strings = [];
+            let stringField = this.getFieldByType(selectedFields, "string");
             if (!stringField)
                 stringField = this.getFieldByType(null, "string");
-            var showLabel = this.getProperty("showLabel", true);
-            var labelFields = [];
-            var labelFieldsTemplate = this.getProperty("labelFieldsTemplate");
-            var toks = this.getProperty("labelFields", "").split(",");
-            for (var i = 0; i < toks.length; i++) {
-                var field = this.getFieldById(null, toks[i]);
+            let showLabel = this.getProperty("showLabel", true);
+            let labelFields = [];
+            let labelFieldsTemplate = this.getProperty("labelFieldsTemplate");
+            let toks = this.getProperty("labelFields", "").split(",");
+            for (let i = 0; i < toks.length; i++) {
+                let field = this.getFieldById(null, toks[i]);
                 if (field)
                     labelFields.push(field);
             }
-            var dateFields = this.getFieldsByType(selectedFields, "date");
+            let dateFields = this.getFieldsByType(selectedFields, "date");
             if (dateFields.length == 0)
                 dateFields = this.getFieldsByType(null, "date");
-            var values = [];
-            var dataTable = new google.visualization.DataTable();
+            let values = [];
+            let dataTable = new google.visualization.DataTable();
             if (dateFields.length < 2) {
                 throw new Error("Need to have at least 2 date fields");
             }
@@ -18078,21 +18108,21 @@ function TimerangechartDisplay(displayManager, id, properties) {
                 type: 'date',
                 id: dateFields[1].getLabel()
             });
-            for (var r = 0; r < records.length; r++) {
-                var row = this.getDataValues(records[r]);
-                var tuple = [];
+            for (let r = 0; r < records.length; r++) {
+                let row = this.getDataValues(records[r]);
+                let tuple = [];
                 values.push(tuple);
                 if (stringField && showLabel)
                     tuple.push(row[stringField.getIndex()]);
                 else
                     tuple.push("#" + (r + 1));
                 if (labelFields.length > 0) {
-                    var label = "";
+                    let label = "";
                     if (labelFieldsTemplate)
                         label = labelFieldsTemplate;
-                    for (var l = 0; l < labelFields.length; l++) {
-                        var f = labelFields[l];
-                        var value = row[f.getIndex()];
+                    for (let l = 0; l < labelFields.length; l++) {
+                        let f = labelFields[l];
+                        let value = row[f.getIndex()];
                         if (labelFieldsTemplate) {
                             label = label.replace("{" + f.getId() + "}", value);
                         } else {
@@ -18164,7 +18194,7 @@ function CalendarDisplay(displayManager, id, properties) {
             return true;
         },
         getContentsStyle: function() {
-            var height = this.getProperty("height", 800);
+            let height = this.getProperty("height", 800);
             if (height > 0) {
                 return " height:" + height + "px; " + " max-height:" + height + "px; overflow-y: auto;";
             }
@@ -18177,8 +18207,8 @@ function CalendarDisplay(displayManager, id, properties) {
             return true;
         },
         makeDataTable: function(dataList, props, selectedFields) {
-            var dataTable = new google.visualization.DataTable();
-            var header = this.getDataValues(dataList[0]);
+            let dataTable = new google.visualization.DataTable();
+            let header = this.getDataValues(dataList[0]);
             if (header.length < 2) return null;
             dataTable.addColumn({
                 type: 'date',
@@ -18195,26 +18225,26 @@ function CalendarDisplay(displayManager, id, properties) {
                     'html': true
                 }
             });
-            var haveMissing = false;
-            var missing = this.getPropertyMissingValue();
+            let haveMissing = false;
+            let missing = this.getPropertyMissingValue();
             if (missing) {
                 haveMissing = true;
                 missing = parseFloat(missing);
             }
-            var list = [];
-            var cnt = 0;
-            var options = {
+            let list = [];
+            let cnt = 0;
+            let options = {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
             };
 	    this.dateToRecords = {};
-            for (var i = 1; i < dataList.length; i++) {
+            for (let i = 1; i < dataList.length; i++) {
 		let records = this.getBinnedRecords(dataList[i].record);
 		let obj = dataList[i];
 		if(!records && obj.record) records  = [obj.record];
-                var value = this.getDataValues(obj)[1];
+                let value = this.getDataValues(obj)[1];
                 if (value == NaN) continue;
                 if (haveMissing && value == missing) {
                     continue;
@@ -18223,7 +18253,7 @@ function CalendarDisplay(displayManager, id, properties) {
 
 		let dttm = this.getDataValues(dataList[i])[0];
 		this.dateToRecords[dttm.v.getTime()] = records;
-                var tooltip = "<center><b>" + dttm.f + "</b></center>" +
+                let tooltip = "<center><b>" + dttm.f + "</b></center>" +
                     "<b>" + header[1].replace(/ /g, "&nbsp;") + "</b>:&nbsp;" + this.formatNumber(value);
                 tooltip = HU.div([STYLE, HU.css('padding','5px')], tooltip);
                 list.push([this.getDataValues(dataList[i])[0], value, tooltip]);
@@ -18252,17 +18282,17 @@ function GaugeDisplay(displayManager, id, properties) {
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
             this.dataList = dataList;
             this.chartOptions = chartOptions;
-            var min = Number.MAX_VALUE;
-            var max = Number.MIN_VALUE;
-            var setMinMax = true;
-            for (var row = 1; row < dataList.length; row++) {
-                var tuple = this.getDataValues(dataList[row]);
+            let min = Number.MAX_VALUE;
+            let max = Number.MIN_VALUE;
+            let setMinMax = true;
+            for (let row = 1; row < dataList.length; row++) {
+                let tuple = this.getDataValues(dataList[row]);
                 //                        if(tuple.length>2) setMinMax = false;
-                for (var col = 0; col < tuple.length; col++) {
+                for (let col = 0; col < tuple.length; col++) {
                     if (!Utils.isNumber(tuple[col])) {
                         continue;
                     }
-                    var value = tuple[col];
+                    let value = tuple[col];
                     min = Math.min(min, value);
                     max = Math.max(max, value);
                 }
@@ -18287,17 +18317,17 @@ function GaugeDisplay(displayManager, id, properties) {
         makeDataTable: function(dataList, props, selectedFields) {
             dataList = this.makeDataArray(dataList);
             if (!Utils.isDefined(this.index)) this.index = dataList.length - 1;
-            var index = this.index + 1;
-            var list = [];
+            let index = this.index + 1;
+            let list = [];
             list.push(["Label", "Value"]);
-            var header = this.getDataValues(dataList[0]);
+            let header = this.getDataValues(dataList[0]);
             if (index >= dataList.length) index = dataList.length - 1;
-            var row = this.getDataValues(dataList[index]);
-            for (var i = 0; i < row.length; i++) {
+            let row = this.getDataValues(dataList[index]);
+            for (let i = 0; i < row.length; i++) {
                 if (!Utils.isNumber(row[i])) continue;
-                var h = header[i];
+                let h = header[i];
                 if (h.length > 20) {
-                    var index = h.indexOf("(");
+                    let index = h.indexOf("(");
                     if (index > 0) {
                         h = h.substring(0, index);
                     }
@@ -18308,14 +18338,14 @@ function GaugeDisplay(displayManager, id, properties) {
                 if (this.getProperty("gaugeLabel"))
                     h = this.getProperty("gaugeLabel");
                 else if (this["gaugeLabel" + (i + 1)]) h = this["gaugeLabel" + (i + 1)];
-                var value = row[i];
+                let value = row[i];
                 list.push([h, Utils.formatNumber(value, true)]);
             }
             return google.visualization.arrayToDataTable(list);
         },
         setChartSelection: function(index) {
             this.index = index;
-            var dataTable = this.makeDataTable(this.dataList);
+            let dataTable = this.makeDataTable(this.dataList);
             this.mapCharts(chart=>{
 
                 chart.draw(dataTable, this.chartOptions);
@@ -18349,7 +18379,7 @@ function ScatterplotDisplay(displayManager, id, properties) {
 	    }
 	},
         makeChartOptions: function(dataList, props, selectedFields) {
-            var chartOptions = SUPER.makeChartOptions.call(this, dataList, props, selectedFields);
+            let chartOptions = SUPER.makeChartOptions.call(this, dataList, props, selectedFields);
             chartOptions.curveType = null;
             chartOptions.lineWidth = 0;
             $.extend(chartOptions, {
@@ -18434,11 +18464,11 @@ function ScatterplotDisplay(displayManager, id, properties) {
         },
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
 	    if(!chartDiv) return
-            var height = this.getProperty("height",400);
+            let height = this.getProperty("height",400);
             if (Utils.isDefined(this.getProperty("chartHeight"))) {
                 height = this.getProperty("chartHeight");
             }
-            var width = "100%";
+            let width = "100%";
 	    if (Utils.isDefined(this.getProperty("chartWidth"))) {
                 width = this.getProperty("chartWidth");
             }
@@ -18451,9 +18481,9 @@ function ScatterplotDisplay(displayManager, id, properties) {
         },
 
         getDefaultSelectedFields: function(fields, dfltList) {
-            var f = [];
+            let f = [];
             for (i = 0; i < fields.length; i++) {
-                var field = fields[i];
+                let field = fields[i];
                 if (field.isNumeric()) {
                     f.push(field);
                     if (f.length >= 2)
@@ -27893,7 +27923,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		let aid = this.domId(ID_ANCESTOR);
 		let selectClick = "selectInitialClick(event," + HU.squote(aid)+"," +HU.squote(aid) +",'true',null,null,'');";
 		let clear = HU.href("javascript:void(0);",HU.getIconImage("fas fa-eraser"), ['onClick',"clearSelect(" + HU.squote(aid) +");",TITLE,"Clear selection"]);
-		let input = HU.input("","",["onClick",selectClick, "READONLY",null,'placeholder',' Search under', STYLE,HU.css('cursor','pointer','width','100%'),ID,aid,CLASS,"disabledinput"]);
+		let input = HU.input("","",["onClick",selectClick, "READONLY",null,'placeholder',' Search under', STYLE,HU.css('cursor','pointer','width','100%'),ID,aid,CLASS,"ramadda-entry-popup-select  disabledinput"]);
 
 		extra += HU.hidden("","",[ID,aid+"_hidden",CLASS,"hiddeninput"]);
 		extra+=addWidget("",HU.leftRightTable(clear,input,"5%", "95%"));
@@ -28618,51 +28648,249 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 
 
 
-function RamaddaEntrygalleryDisplay(displayManager, id, properties) {
-    const ID_GALLERY = "gallery";
-    let SUPER;
-    RamaddaUtil.inherit(this, SUPER = new RamaddaEntryDisplay(displayManager, id, DISPLAY_ENTRY_GALLERY, properties));
-    addRamaddaDisplay(this);
-    RamaddaUtil.defineMembers(this, {
-        entries: properties.entries,
+function RamaddaSimplesearchDisplay(displayManager, id, properties) {
+    let myProps = [
+	{label:'Simple Search'},
+	{p:'resultsPosition',ex:'absolute|relative'},
+	{p:'maxHeight',w:300},
+	{p:'maxWidth',w:200},
+	{p:'maxWidth',w:200},		
+	{p:"autoSearch",w:true},
+	{p:"showHeader",w:true},
+	{p:"inputSize",w:"100%"},
+	{p:"entryType",w:"",tt:"Constrain search to entries of this type"},		
+    ];
+
+    const SUPER   = new RamaddaSearcherDisplay(displayManager, id, DISPLAY_SIMPLESEARCH, properties);
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+	callNumber:1,
+        haveDisplayed: false,
+        selectedEntries: [],
+        getSelectedEntries: function() {
+            return this.selectedEntries;
+        },
         initDisplay: function() {
             let _this = this;
-            this.createUI();
-            let html = HU.div([ATTR_ID, this.getDomId(ID_GALLERY)], "Gallery");
-            this.setContents(html);
-
-            if (this.selectedEntries != null) {
-                this.jq(ID_GALLERY).html(this.getEntriesGallery(this.selectedEntries));
+            if (this.getIsLayoutFixed() && this.haveDisplayed) {
                 return;
             }
-            if (this.entries) {
-                let props = {
-                    entries: this.entries
-                };
-                let searchSettings = new EntrySearchSettings(props);
-                let jsonUrl = this.getRamadda().getSearchUrl(searchSettings, OUTPUT_JSON, "BAR");
-                let myCallback = {
-                    entryListChanged: function(list) {
-                        let entries = list.getEntries();
-                        _this.jq(ID_GALLERY).html(_this.getEntriesGallery(entries));
-                        $("a.popup_image").fancybox({
-                            'titleShow': false
-                        });
-                    }
-                };
-                let entryList = new EntryList(this.getRamadda(), jsonUrl, myCallback, true);
-            }
+            this.haveDisplayed = true;
+            this.createUI();
+            this.setContents(this.getDefaultHtml());
+	    this.initHtml();
+	    let input = this.jq(ID_TEXT_FIELD);
+	    if(this.getAutoSearch(true)) {
+		//KEY
+		input.keyup(function(event) {
+		    _this.getSearchSettings().skip =0;
+                    _this.getSearchSettings().max = DEFAULT_MAX;
+		    if($(this).val().trim()=="") {
+			_this.writeMessage("");
+			_this.writeEntries("");			
+			if(_this.dialog) {
+			    _this.dialog.remove();
+			    _this.dialog = null;
+			}
+			return;
+		    }
+		    let myCallNumber = ++_this.callNumber;
+		    //Wait a bit in case more keys are coming
+		    setTimeout(()=>{
+			if(myCallNumber == _this.callNumber) {
+			    _this.submitSearchForm(true,myCallNumber);
+			} else {
+			}
+		    },250);
+		});
+	    }
 
-            if (this.entryList != null && this.entryList.haveLoaded) {
-                this.entryListChanged(this.entryList);
+            this.jq(ID_SEARCH).click(function(event) {
+		_this.submitSearchForm(false,++_this.callNumber);
+                event.preventDefault();
+            });
+            this.jq(ID_FORM).submit(function(event) {
+		_this.submitSearchForm(false,++_this.callNumber);
+                event.preventDefault();
+            });
+
+
+            this.jq(ID_TEXT_FIELD).autocomplete({
+                source: function(request, callback) {
+                }
+            });
+
+	},
+        getDefaultHtml: function() {
+	    let html = this.makeSearchForm();
+	    let style="";
+	    let abs = (this.getProperty("resultsPosition","absolute")=="absolute");
+	    if(!abs) {
+		if(this.getMaxHeight(400)) {
+		    style+=HU.css("max-height",HU.getDimension(this.getMaxHeight(400)));
+		} 
+		if(this.getMaxWidth()) {
+		    style+=HU.css("width",HU.getDimension(this.getMaxWidth(400)));
+		    style+=HU.css("max-width",HU.getDimension(this.getMaxWidth(200)));
+		}
+		let entries = HU.div([ID,this.domId(ID_ENTRIES),CLASS,"display-simplesearch-entries",STYLE,style]);
+		if (this.getShowHeader(true)) {
+		    html+=  HU.div([ATTR_CLASS, "display-entries-results", ATTR_ID, this.getDomId(ID_RESULTS)]);
+		}
+		html+=entries;
+	    }
+	    return html;
+	},
+        makeSearchForm: function() {
+            let form = HU.openTag("form", [ATTR_ID, this.getDomId(ID_FORM), "action", "#"]);
+	    
+	    let eg = this.getEgText();
+	    let text  = this.getFormText();
+	    let size = this.getPropertyInputSize("100%");
+            let textField = HU.input("", text, [STYLE, HU.css("width", size), "placeholder", eg, ATTR_CLASS, "display-search-input", ATTR_ID, this.getDomId(ID_TEXT_FIELD)]);
+
+	    form += textField;
+            form += "<input type=\"submit\" style=\"position:absolute;left:-9999px;width:1px;height:1px;\"/>";
+            form += HU.closeTag("form");
+	    form+=HU.div([ID,this.domId(ID_FORM)]);
+            return form;
+	},
+	handleNoEntries: function() {
+	    this.writeEntries("",[]);
+            this.writeMessage("Nothing found");
+            this.getDisplayManager().handleEventEntriesChanged(this, []);
+	},
+	writeMessage: function(msg) {
+	    this.makeDialog();
+	    SUPER.writeMessage.call(this,msg);
+	},
+
+	makeDialog: function() {
+	    if(this.dialog && (this.dialog.parent()==null ||this.dialog.parent().length==0)) this.dialog = null;
+	    if(!this.dialog) {
+                let header = HU.div([ATTR_CLASS, "display-entries-results", ATTR_ID, this.getDomId(ID_RESULTS)], "&nbsp;");
+                let entries= HU.div([CLASS,"display-entries-entries", ATTR_ID, this.getDomId(ID_ENTRIES)], "");		
+		this.dialog = HU.makeDialog({content:header+entries,anchor:this.getContents(),
+					     draggable:true,header:true});
+	    } else {
+		this.dialog.show();
+	    }
+	},	    
+	writeEntries: function(msg, entries) {
+	    let abs = this.getProperty("resultsPosition","absolute")=="absolute";
+	    if(!abs) {
+		this.jq(ID_ENTRIES).html(msg);
+		return;
+	    }
+	    this.makeDialog();
+
+	    if(Utils.stringDefined(msg)) {
+		this.jq(ID_ENTRIES).html(msg);
+		this.writeMessage(this.getResultsHeader(entries,true));
+	    } else {
+		this.jq(ID_ENTRIES).html("");
+	    }
+	},
+
+        submitSearchForm: function(auto, callNumber) {
+	    this.writeMessage(this.getWaitImage() + " " +"Searching...");
+	    if(callNumber==null) callNumber = this.callNumber;
+            this.haveSearched = true;
+            let settings  =this.makeSearchSettings();
+	    settings.entryType = this.getProperty("entryType");	    
+            let jsonUrl = this.makeSearchUrl(this.getRamadda());
+            this.entryList = new EntryList(this.getRamadda(), jsonUrl);
+	    let success= ()=>{
+		if(this.callNumber == callNumber) {
+		    this.entryListChanged(this.entryList);
+		} 
+	    };
+	    let fail= (error)=>{
+		this.writeEntries("Error:" + error);
+	    };	    
+	    this.entryList.doSearch(null,success,fail);
+	    if(!auto)
+		this.updateForSearching(jsonUrl);
+        },
+
+        makeDisplayList: function() {
+            let entries = this.getSelectedEntriesFromTree();
+            if (entries.length == 0) {
+                return;
+            }
+            let props = {
+                selectedEntries: entries,
+                showForm: false,
+                showMenu: true,
+                fixedEntries: true
+            };
+            props.entryList = new EntryList(this.getRamadda(), "", this, false);
+            props.entryList.setEntries(entries);
+            this.getDisplayManager().createDisplay(DISPLAY_ENTRYLIST, props);
+        },
+        handleEventEntrySelection: function(source, args) {
+            this.selectEntry(args.entry, args.selected);
+        },
+        selectEntry: function(entry, selected) {
+            let changed = false;
+            if (selected) {
+                this.jq("entry_" + entry.getIdForDom()).addClass("ui-selected");
+                let index = this.selectedEntries.indexOf(entry);
+                if (index < 0) {
+                    this.selectedEntries.push(entry);
+                    changed = true;
+                }
+            } else {
+                this.jq("entry_" + entry.getIdForDom()).removeClass("ui-selected");
+                let index = this.selectedEntries.indexOf(entry);
+                if (index >= 0) {
+                    this.selectedEntries.splice(index, 1);
+                    changed = true;
+                }
             }
         },
+        makeEntriesDisplay: function(entries) {
+            return this.getEntriesTree(entries);
+        },
+        entryListChanged: function(entryList) {
+            if (this.multiSearch) {
+                this.multiSearch.count--;
+            }
+            SUPER.entryListChanged.apply(this, [entryList]);
+            let entries = this.entryList.getEntries();
+            if (entries.length == 0) {
+                this.getSearchSettings().skip = 0;
+                this.getSearchSettings().max = DEFAULT_MAX;
+		this.handleNoEntries();
+                return;
+            }
+            this.writeMessage(this.getResultsHeader(entries, true));
+	    this.initCloser(ID_RESULTS);
+
+            let get = this.getGet();
+            this.writeHtml(ID_FOOTER_LEFT, "");
+            if (this.footerRight != null) {
+                this.writeHtml(ID_FOOTER_RIGHT, this.footerRight);
+            }
+
+
+	    let html = "";
+	    let inner = "";
+	    entries.forEach((entry,idx) =>{
+		inner+=HU.div([CLASS,"display-simplesearch-entry"], HU.href(this.getRamadda().getEntryUrl(entry),HU.image(entry.getIconUrl()) +"  "+ entry.getName()));
+	    });
+//	    inner = HU.div([CLASS,"display-simplesearch-entries"],inner);
+            this.writeEntries(inner, entries);
+            this.getDisplayManager().handleEventEntriesChanged(this, entries);
+        },
+
     });
 }
 
 
+
+
+
 function RamaddaEntrygridDisplay(displayManager, id, properties) {
-    let SUPER;
     const ID_CONTENTS = "contents";
     const ID_GRID = "grid";
     const ID_AXIS_LEFT = "axis_left";
@@ -28682,9 +28910,9 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
     const ID_SHOW_NAME = "showName";
     const ID_COLOR = "boxColor";
 
-    RamaddaUtil.inherit(this, SUPER = new RamaddaEntryDisplay(displayManager, id, DISPLAY_ENTRY_GRID, properties));
-    addRamaddaDisplay(this);
-    RamaddaUtil.defineMembers(this, {
+    let myProps = [];
+    let SUPER = new RamaddaEntryDisplay(displayManager, id, DISPLAY_ENTRY_GRID, properties);
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         entries: properties.entries,
         initDisplay: function() {
             let _this = this;
@@ -29832,246 +30060,6 @@ function RamaddaRepositoriesDisplay(displayManager, id, properties) {
             this.numberWithTypes++;
             this.displayRepositories();
         }
-    });
-}
-
-let RamaddaGalleryDisplay = RamaddaEntrygalleryDisplay;
-
-function RamaddaSimplesearchDisplay(displayManager, id, properties) {
-    let myProps = [
-	{label:'Simple Search'},
-	{p:'resultsPosition',ex:'absolute|relative'},
-	{p:'maxHeight',w:300},
-	{p:'maxWidth',w:200},
-	{p:'maxWidth',w:200},		
-	{p:"autoSearch",w:true},
-	{p:"showHeader",w:true},
-	{p:"inputWidth",w:"100%"},
-	{p:"entryType",w:"",tt:"Constrain search to entries of this type"},		
-    ];
-
-    const SUPER   = new RamaddaSearcherDisplay(displayManager, id, DISPLAY_SIMPLESEARCH, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
-	callNumber:1,
-        haveDisplayed: false,
-        selectedEntries: [],
-        getSelectedEntries: function() {
-            return this.selectedEntries;
-        },
-        initDisplay: function() {
-            let _this = this;
-            if (this.getIsLayoutFixed() && this.haveDisplayed) {
-                return;
-            }
-            this.haveDisplayed = true;
-            this.createUI();
-            this.setContents(this.getDefaultHtml());
-	    this.initHtml();
-	    let input = this.jq(ID_TEXT_FIELD);
-	    if(this.getAutoSearch(true)) {
-		//KEY
-		input.keyup(function(event) {
-		    _this.getSearchSettings().skip =0;
-                    _this.getSearchSettings().max = DEFAULT_MAX;
-		    if($(this).val().trim()=="") {
-			_this.writeMessage("");
-			_this.writeEntries("");			
-			if(_this.dialog) {
-			    _this.dialog.remove();
-			    _this.dialog = null;
-			}
-			return;
-		    }
-		    let myCallNumber = ++_this.callNumber;
-		    //Wait a bit in case more keys are coming
-		    setTimeout(()=>{
-			if(myCallNumber == _this.callNumber) {
-			    _this.submitSearchForm(true,myCallNumber);
-			} else {
-			}
-		    },250);
-		});
-	    }
-
-            this.jq(ID_SEARCH).click(function(event) {
-		_this.submitSearchForm(false,++_this.callNumber);
-                event.preventDefault();
-            });
-            this.jq(ID_FORM).submit(function(event) {
-		_this.submitSearchForm(false,++_this.callNumber);
-                event.preventDefault();
-            });
-
-
-            this.jq(ID_TEXT_FIELD).autocomplete({
-                source: function(request, callback) {
-                }
-            });
-
-	},
-        getDefaultHtml: function() {
-	    let html = this.makeSearchForm();
-	    let style="";
-	    let abs = (this.getProperty("resultsPosition","absolute")=="absolute");
-	    if(!abs) {
-		if(this.getMaxHeight(400)) {
-		    style+=HU.css("max-height",HU.getDimension(this.getMaxHeight(400)));
-		} 
-		if(this.getMaxWidth()) {
-		    style+=HU.css("width",HU.getDimension(this.getMaxWidth(400)));
-		    style+=HU.css("max-width",HU.getDimension(this.getMaxWidth(200)));
-		}
-		let entries = HU.div([ID,this.domId(ID_ENTRIES),CLASS,"display-simplesearch-entries",STYLE,style]);
-		if (this.getShowHeader(true)) {
-		    html+=  HU.div([ATTR_CLASS, "display-entries-results", ATTR_ID, this.getDomId(ID_RESULTS)]);
-		}
-		html+=entries;
-	    }
-	    return html;
-	},
-        makeSearchForm: function() {
-            let form = HU.openTag("form", [ATTR_ID, this.getDomId(ID_FORM), "action", "#"]);
-	    
-	    let eg = this.getEgText();
-	    let text  = this.getFormText();
-	    let size = this.getPropertyInputWidth("100%");
-            let textField = HU.input("", text, [STYLE, HU.css("width", size), "placeholder", eg, ATTR_CLASS, "display-search-input", ATTR_ID, this.getDomId(ID_TEXT_FIELD)]);
-
-	    form += textField;
-            form += "<input type=\"submit\" style=\"position:absolute;left:-9999px;width:1px;height:1px;\"/>";
-            form += HU.closeTag("form");
-	    form+=HU.div([ID,this.domId(ID_FORM)]);
-            return form;
-	},
-	handleNoEntries: function() {
-	    this.writeEntries("",[]);
-            this.writeMessage("Nothing found");
-            this.getDisplayManager().handleEventEntriesChanged(this, []);
-	},
-	writeMessage: function(msg) {
-	    this.makeDialog();
-	    SUPER.writeMessage.call(this,msg);
-	},
-
-	makeDialog: function() {
-	    if(this.dialog && (this.dialog.parent()==null ||this.dialog.parent().length==0)) this.dialog = null;
-	    if(!this.dialog) {
-                let header = HU.div([ATTR_CLASS, "display-entries-results", ATTR_ID, this.getDomId(ID_RESULTS)], "&nbsp;");
-                let entries= HU.div([CLASS,"display-entries-entries", ATTR_ID, this.getDomId(ID_ENTRIES)], "");		
-		this.dialog = HU.makeDialog({content:header+entries,anchor:this.getContents(),
-					     draggable:true,header:true});
-	    } else {
-		this.dialog.show();
-	    }
-	},	    
-	writeEntries: function(msg, entries) {
-	    let abs = this.getProperty("resultsPosition","absolute")=="absolute";
-	    if(!abs) {
-		this.jq(ID_ENTRIES).html(msg);
-		return;
-	    }
-	    this.makeDialog();
-
-	    if(Utils.stringDefined(msg)) {
-		this.jq(ID_ENTRIES).html(msg);
-		this.writeMessage(this.getResultsHeader(entries,true));
-	    } else {
-		this.jq(ID_ENTRIES).html("");
-	    }
-	},
-
-        submitSearchForm: function(auto, callNumber) {
-	    this.writeMessage(this.getWaitImage() + " " +"Searching...");
-	    if(callNumber==null) callNumber = this.callNumber;
-            this.haveSearched = true;
-            let settings  =this.makeSearchSettings();
-	    settings.entryType = this.getProperty("entryType");	    
-            let jsonUrl = this.makeSearchUrl(this.getRamadda());
-            this.entryList = new EntryList(this.getRamadda(), jsonUrl);
-	    let success= ()=>{
-		if(this.callNumber == callNumber) {
-		    this.entryListChanged(this.entryList);
-		} 
-	    };
-	    let fail= (error)=>{
-		this.writeEntries("Error:" + error);
-	    };	    
-	    this.entryList.doSearch(null,success,fail);
-	    if(!auto)
-		this.updateForSearching(jsonUrl);
-        },
-
-        makeDisplayList: function() {
-            let entries = this.getSelectedEntriesFromTree();
-            if (entries.length == 0) {
-                return;
-            }
-            let props = {
-                selectedEntries: entries,
-                showForm: false,
-                showMenu: true,
-                fixedEntries: true
-            };
-            props.entryList = new EntryList(this.getRamadda(), "", this, false);
-            props.entryList.setEntries(entries);
-            this.getDisplayManager().createDisplay(DISPLAY_ENTRYLIST, props);
-        },
-        handleEventEntrySelection: function(source, args) {
-            this.selectEntry(args.entry, args.selected);
-        },
-        selectEntry: function(entry, selected) {
-            let changed = false;
-            if (selected) {
-                this.jq("entry_" + entry.getIdForDom()).addClass("ui-selected");
-                let index = this.selectedEntries.indexOf(entry);
-                if (index < 0) {
-                    this.selectedEntries.push(entry);
-                    changed = true;
-                }
-            } else {
-                this.jq("entry_" + entry.getIdForDom()).removeClass("ui-selected");
-                let index = this.selectedEntries.indexOf(entry);
-                if (index >= 0) {
-                    this.selectedEntries.splice(index, 1);
-                    changed = true;
-                }
-            }
-        },
-        makeEntriesDisplay: function(entries) {
-            return this.getEntriesTree(entries);
-        },
-        entryListChanged: function(entryList) {
-            if (this.multiSearch) {
-                this.multiSearch.count--;
-            }
-            SUPER.entryListChanged.apply(this, [entryList]);
-            let entries = this.entryList.getEntries();
-            if (entries.length == 0) {
-                this.getSearchSettings().skip = 0;
-                this.getSearchSettings().max = DEFAULT_MAX;
-		this.handleNoEntries();
-                return;
-            }
-            this.writeMessage(this.getResultsHeader(entries, true));
-	    this.initCloser(ID_RESULTS);
-
-            let get = this.getGet();
-            this.writeHtml(ID_FOOTER_LEFT, "");
-            if (this.footerRight != null) {
-                this.writeHtml(ID_FOOTER_RIGHT, this.footerRight);
-            }
-
-
-	    let html = "";
-	    let inner = "";
-	    entries.forEach((entry,idx) =>{
-		inner+=HU.div([CLASS,"display-simplesearch-entry"], HU.href(this.getRamadda().getEntryUrl(entry),HU.image(entry.getIconUrl()) +"  "+ entry.getName()));
-	    });
-//	    inner = HU.div([CLASS,"display-simplesearch-entries"],inner);
-            this.writeEntries(inner, entries);
-            this.getDisplayManager().handleEventEntriesChanged(this, entries);
-        },
-
     });
 }
 
@@ -38081,7 +38069,7 @@ function RamaddaPreDisplay(displayManager, id, properties) {
 	updateUI: function() {
 	    let records = this.filterData();
 	    if(!records) {
-		this.setContents("No records yet");		
+		this.setContents("Loading data...");		
 		return;
 	    }
             let pointData = this.dataCollection.getList()[0];
@@ -38118,6 +38106,7 @@ function RamaddaPreDisplay(displayManager, id, properties) {
 
 
 function RamaddaHtmltableDisplay(displayManager, id, properties) {
+    const ID_TABLE  = "table";
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_HTMLTABLE, properties);
     let myProps = [
 	{label:'Html Table'},
@@ -38135,7 +38124,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	updateUI: function() {
 	    let records = this.filterData();
 	    if(!records) {
-		this.setDisplayMessage("No records yet");		
+		this.setDisplayMessage("Loading data...");		
 		return;
 	    }
 	    let fancy  = this.getFancy();
@@ -38146,38 +38135,43 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	    let numRecords = this.getNumRecords();
 	    let includeGeo = this.getIncludeGeo();
 	    let includeDate = this.getIncludeGeo();	    
-	    let html ="<table width=100% border=0 cellpadding=0 cellspacing=0>";
+	    let html =HU.openTag('table',[CLASS,"ramadda-table stripe", 'width','100%',ID,this.domId(ID_TABLE)]);
 	    let headerAttrs = [STYLE,"white-space:nowrap;background:#efefef;padding:5px; font-weight:bold;"];
-	    html+="<tr valign=top>"
-	    html+=HU.td(HU.div(headerAttrs,"&nbsp;"));	    
-	    if(includeDate) html+=HU.td(HU.div(headerAttrs,"Date"));
+	    headerAttrs = [];
+	    html+="<thead>\n";
+	    html+="<tr valign=top>\n"
+//	    html+=HU.th(HU.div(headerAttrs,"&nbsp;"));	    
+	    if(includeDate) html+=HU.th(HU.div(headerAttrs,"Date"));
 	    fields.forEach((f,idx)=>{
 		if(fancy)
-		    html+=HU.td([],HU.div(headerAttrs,f.getLabel()));
+		    html+=HU.th([],HU.div(headerAttrs,f.getLabel()));
 		else
-		    html+=HU.td([],HU.div(headerAttrs,f.getId() +"[" + f.getType()+"]"));
+		    html+=HU.th([],HU.div(headerAttrs,f.getId() +"[" + f.getType()+"]"));
 		
 	    });
-	    if(includeGeo) html+=HU.td(HU.div(headerAttrs,"latitude")) + HU.td([],HU.div(headerAttrs,"longitude"));
-	    html+="</tr>";
+	    if(includeGeo) html+=HU.th(HU.div(headerAttrs,"latitude")) + HU.th([],HU.div(headerAttrs,"longitude"));
+	    html+="</tr>\n";
+	    html+="</thead><tbody>\n";	    
 	    this.savedState = Utils.getLocalStorage(this.getProperty("storageKey",this.type), true) || {};
 	    let hadSavedState = false;
 	    this.recordMap = {};
 	    this.fieldMap = {};
 	    fields.forEach(f=>{this.fieldMap[f.getId()] = f;})
-	    records.every((r,idx)=>{
+	    records.every((record,idx)=>{
 		if(numRecords>-1 && idx>numRecords) return false;
-		let d = r.getData();
+		let d = record.getData();
 		d = d.map(d=>{
 		    if(d.getTime) return this.formatDate(d);
 		    return d;
 		});
 		let clazz = (idx%2)?"ramadda-row-odd":"ramadda-row-even";
-		html+="<tr valign=top class=" + clazz+"><td>#" + idx+": </td>";
+		clazz = "display-htmltable-row";
+		html+=HU.openTag('tr',['title','','valign','top','class',clazz, RECORD_ID,record.getId()]);
+//		html+="<td>#" + idx+": </td>";		
 		if(includeDate) {
 		    html+=HU.td([],this.formatDate(r.getDate()));
 		}
-		this.recordMap[r.rowIndex] = r;
+		this.recordMap[record.rowIndex] = record;
 		fields.forEach(f=>{
 		    let v = d[f.getIndex()]
 		    v = String(v);
@@ -38189,24 +38183,24 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 			if(this.savedState) {
 			    let map  = this.savedState[f.getId()];
 			    if(map) {
-				let savedValue = map[r.rowIndex];
+				let savedValue = map[record.rowIndex];
 				if(Utils.isDefined(savedValue)) {
-				    r.data[f.getIndex()] = savedValue;
+				    record.data[f.getIndex()] = savedValue;
 				    value = savedValue;
 				    hadSavedState = true;
 				}
 			    }
 			}
 			if(f.getType()=="boolean") 
-			    v = HU.checkbox("", ["fieldid",f.getId(),"inputtype","checkbox",RECORD_INDEX,r.rowIndex,CLASS,"display-editable", ID,this.domId("editable_" + f.getId())], value);
+			    v = HU.checkbox("", ["fieldid",f.getId(),"inputtype","checkbox",RECORD_INDEX,record.rowIndex,CLASS,"display-editable", ID,this.domId("editable_" + f.getId())], value);
 			else if(f.isFieldEnumeration()) {
 			    let enums = f.getEnumeratedValues() ||"";
 			    let select = [];
 			    for(a in enums)
 				select.push([a,enums[a]]);
-			    v =  HU.select("",["fieldid",f.getId(),RECORD_INDEX,r.rowIndex, CLASS,"display-editable",STYLE,"", ID,this.domId("editable_" +f.getId())],select,value);
+			    v =  HU.select("",["fieldid",f.getId(),RECORD_INDEX,record.rowIndex, CLASS,"display-editable",STYLE,"", ID,this.domId("editable_" +f.getId())],select,value);
 			}  else {
-			    v = HU.input("", value, ["fieldid",f.getId(),RECORD_INDEX,r.rowIndex,CLASS,"display-editable", ID,this.domId("editable_" + f.getId())]);
+			    v = HU.input("", value, ["fieldid",f.getId(),RECORD_INDEX,record.rowIndex,CLASS,"display-editable", ID,this.domId("editable_" + f.getId())]);
 			}
 		    }
 		    html+=HU.td([],v);
@@ -38215,16 +38209,23 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		    this.getPointData().propagateEventDataChanged(this);
 		}
 		if(includeGeo) {
-		    html+=HU.td([],r.getLatitude()) +HU.td([],r.getLongitude());
+		    html+=HU.td([],record.getLatitude()) +HU.td([],record.getLongitude());
 		}
-		html+="</tr>";
+		html+="</tr>\n";
 		return true;
 	    });
-	    html+="</table>";
+	    html+="</tbody>\n";
+	    html+="</table>\n";
 	    if(this.getShowAddRow()) {
 		html+=HU.div([ID,this.domId("addrow"),CLASS,"ramadda-clickable"], HU.getIconImage("fas fa-plus"));
-	    }
+	    }	
 	    this.setContents(html);
+	    let _this = this;
+	    this.makeTooltips(this.jq(ID_TABLE).find(".display-htmltable-row"),records);
+	    let opts = {
+                ordering: true,
+	    };
+            HU.formatTable("#" + this.domId(ID_TABLE), opts);
 	    if(this.getShowAddRow()) {
 		this.jq("addrow").click(()=>{
 		    let records = this.getPointData().getRecords();
@@ -38234,7 +38235,6 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		    this.getPointData().propagateEventDataChanged(this);
 		});
 	    }
-	    let _this  = this;
 	    let handleChange = dom=>{
 		let val;
 		if(dom.attr('inputtype')=="checkbox") {

@@ -1794,7 +1794,6 @@ ul {
 }
 
 .entry-confirm-list {
-    margin-left:20px;
     max-height: 250px; 
     overflow-y: auto;
     margin-bottom: 1em;
@@ -2397,6 +2396,23 @@ pre {
     border : 0px #888888 solid;
     background: #eee;
     cursor:default;
+}
+
+
+.ramadda-entry-popup-select  {
+    background: #eee;
+    cursor:default;
+    padding-left:3px;
+    border:1px solid transparent;
+}
+
+.ramadda-entry-popup-select:hover  {
+    border:var(--highlight-border);
+    cursor:pointer;
+}
+
+.ramadda-entry-popup-select:focus  {
+    border:1px solid transparent;
 }
 
 .hiddeninput {
