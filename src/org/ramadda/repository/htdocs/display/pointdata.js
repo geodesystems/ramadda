@@ -686,11 +686,14 @@ function RecordField(props, source) {
             return this.isNumeric();
         },
         isFieldString: function() {
-            return this.type == "string" || this.type == "enumeration";
+            return this.type == "string" || this.type == "enumeration" || this.type == "multienumeration";
         },
         isFieldEnumeration: function() {
-            return this.type == "enumeration";
+            return this.type == "enumeration" || this.type == "multienumeration";
         },
+        isFieldMultiEnumeration: function() {
+            return  this.type == "multienumeration";
+        },	
         isFieldDate: function() {
             return this.isDate;
         },
@@ -738,7 +741,7 @@ function RecordField(props, source) {
 	    return this.type == "double" || this.type == "integer";
 	},
 	isString: function() {
-	    return this.type == "string" || this.type=="enumeration" || this.type =="url" || this.type == "image";
+	    return this.type == "string" || this.isFieldEnumeration() || this.type =="url" || this.type == "image";
 	},
         getType: function() {
             return this.type;
@@ -1357,8 +1360,19 @@ function RecordFilter(display,filterFieldId, properties) {
 		else if(op.op==">") ok= rowValue>op.value;
 		else if(op.op==">=") ok= rowValue>=op.value;
 		else if(op.op=="==") ok= rowValue==op.value;				
-	    } else   if(filterField.getType() == "enumeration") {
-		ok = this.mySearch.values.includes(""+rowValue);
+	    } else   if(filterField.isFieldEnumeration()) {
+		rowValue=String(rowValue);
+		if(filterField.isFieldMultiEnumeration()) {
+		    ok = false;
+		    let values = rowValue.split(",");
+		    values.forEach(value=>{
+			if(this.mySearch.values.includes(value)) ok = true;
+		    });
+//		    console.log(this.mySearch.values);
+		    
+		} else {
+		    ok = this.mySearch.values.includes(rowValue);
+		}
 	    } else if(filterField.isNumeric()) {
 		if(isNaN(this.mySearch.value[0]) && isNaN(this.mySearch.value[0])) return ok;
 		if(!isNaN(this.mySearch.value[0]) && rowValue<this.mySearch.value[0]) ok = false;
@@ -1509,7 +1523,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		let enums = Utils.mergeLists([[FILTER_ALL,allName]],labels);
 		let attrs= [STYLE,widgetStyle, ID,widgetId,"fieldId",filterField.getId()];
 		widget = HU.select("",attrs,enums,selected);
-	    } else   if(filterField.getType() == "enumeration") {
+	    } else   if(filterField.isFieldEnumeration()) {
 		if(debug) console.log("\tis enumeration");
 		let dfltValue = this.defaultValue = this.getPropertyFromUrl(filterField.getId() +".filterValue",FILTER_ALL);
                 let enums = this.getEnums(records);
@@ -1719,10 +1733,16 @@ function RecordFilter(display,filterFieldId, properties) {
 	},
 	getEnums: function(records) {
 	    let counts = {};
+	    let isMulti  = filterField.isFieldMultiEnumeration();
 	    records.forEach((record,idx)=>{
-		let v = record.getValue(filterField.getIndex());
-		if(!counts[v]) counts[v]=1;
-		else   counts[v]++;
+		let value = record.getValue(filterField.getIndex());
+		if(!value) return;
+		value = String(value);
+		let values = isMulti?value.split(","):[value];
+		values.forEach(v=>{
+		    if(!counts[v]) counts[v]=1;
+		    else   counts[v]++;
+		});
 	    });
 
 	    let enums = null;
@@ -1781,12 +1801,21 @@ function RecordFilter(display,filterFieldId, properties) {
 		    this.dependMySearch = depend.mySearch;
 		}
 
+
 		records.forEach((record,idx)=>{
 		    if(depend) {
 			if(!depend.isRecordOk(record,idx<5)) return;
 		    }
 		    let value = this.display.getDataValues(record)[filterField.getIndex()];
-		    if(!seen[value]) {
+		    let values;
+		    if(isMulti) {
+			values = value.split(",");
+		    } else {
+			values = [value];
+		    }
+
+		    values.forEach(value=>{
+			if(seen[value]) return;
 			seen[value]  = true;
 			let obj = {};
 			if(imageField)
@@ -1802,7 +1831,7 @@ function RecordFilter(display,filterFieldId, properties) {
 			obj.value = tuple;
 			obj.count =  counts[value];
 			enumValues.push(obj);
-		    }
+		    });
 		});
 		if(this.getProperty(filterField.getId() +".filterSort",true)) {
 		    let sortCount = this.getProperty(filterField.getId() +".filterSortCount",true);

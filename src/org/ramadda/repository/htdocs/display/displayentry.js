@@ -1031,7 +1031,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		let aid = this.domId(ID_ANCESTOR);
 		let selectClick = "selectInitialClick(event," + HU.squote(aid)+"," +HU.squote(aid) +",'true',null,null,'');";
 		let clear = HU.href("javascript:void(0);",HU.getIconImage("fas fa-eraser"), ['onClick',"clearSelect(" + HU.squote(aid) +");",TITLE,"Clear selection"]);
-		let input = HU.input("","",["onClick",selectClick, "READONLY",null,'placeholder',' Search under', STYLE,HU.css('cursor','pointer','width','100%'),ID,aid,CLASS,"disabledinput"]);
+		let input = HU.input("","",["onClick",selectClick, "READONLY",null,'placeholder',' Search under', STYLE,HU.css('cursor','pointer','width','100%'),ID,aid,CLASS,"ramadda-entry-popup-select  disabledinput"]);
 
 		extra += HU.hidden("","",[ID,aid+"_hidden",CLASS,"hiddeninput"]);
 		extra+=addWidget("",HU.leftRightTable(clear,input,"5%", "95%"));
@@ -1756,51 +1756,249 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 
 
 
-function RamaddaEntrygalleryDisplay(displayManager, id, properties) {
-    const ID_GALLERY = "gallery";
-    let SUPER;
-    RamaddaUtil.inherit(this, SUPER = new RamaddaEntryDisplay(displayManager, id, DISPLAY_ENTRY_GALLERY, properties));
-    addRamaddaDisplay(this);
-    RamaddaUtil.defineMembers(this, {
-        entries: properties.entries,
+function RamaddaSimplesearchDisplay(displayManager, id, properties) {
+    let myProps = [
+	{label:'Simple Search'},
+	{p:'resultsPosition',ex:'absolute|relative'},
+	{p:'maxHeight',w:300},
+	{p:'maxWidth',w:200},
+	{p:'maxWidth',w:200},		
+	{p:"autoSearch",w:true},
+	{p:"showHeader",w:true},
+	{p:"inputSize",w:"100%"},
+	{p:"entryType",w:"",tt:"Constrain search to entries of this type"},		
+    ];
+
+    const SUPER   = new RamaddaSearcherDisplay(displayManager, id, DISPLAY_SIMPLESEARCH, properties);
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+	callNumber:1,
+        haveDisplayed: false,
+        selectedEntries: [],
+        getSelectedEntries: function() {
+            return this.selectedEntries;
+        },
         initDisplay: function() {
             let _this = this;
-            this.createUI();
-            let html = HU.div([ATTR_ID, this.getDomId(ID_GALLERY)], "Gallery");
-            this.setContents(html);
-
-            if (this.selectedEntries != null) {
-                this.jq(ID_GALLERY).html(this.getEntriesGallery(this.selectedEntries));
+            if (this.getIsLayoutFixed() && this.haveDisplayed) {
                 return;
             }
-            if (this.entries) {
-                let props = {
-                    entries: this.entries
-                };
-                let searchSettings = new EntrySearchSettings(props);
-                let jsonUrl = this.getRamadda().getSearchUrl(searchSettings, OUTPUT_JSON, "BAR");
-                let myCallback = {
-                    entryListChanged: function(list) {
-                        let entries = list.getEntries();
-                        _this.jq(ID_GALLERY).html(_this.getEntriesGallery(entries));
-                        $("a.popup_image").fancybox({
-                            'titleShow': false
-                        });
-                    }
-                };
-                let entryList = new EntryList(this.getRamadda(), jsonUrl, myCallback, true);
-            }
+            this.haveDisplayed = true;
+            this.createUI();
+            this.setContents(this.getDefaultHtml());
+	    this.initHtml();
+	    let input = this.jq(ID_TEXT_FIELD);
+	    if(this.getAutoSearch(true)) {
+		//KEY
+		input.keyup(function(event) {
+		    _this.getSearchSettings().skip =0;
+                    _this.getSearchSettings().max = DEFAULT_MAX;
+		    if($(this).val().trim()=="") {
+			_this.writeMessage("");
+			_this.writeEntries("");			
+			if(_this.dialog) {
+			    _this.dialog.remove();
+			    _this.dialog = null;
+			}
+			return;
+		    }
+		    let myCallNumber = ++_this.callNumber;
+		    //Wait a bit in case more keys are coming
+		    setTimeout(()=>{
+			if(myCallNumber == _this.callNumber) {
+			    _this.submitSearchForm(true,myCallNumber);
+			} else {
+			}
+		    },250);
+		});
+	    }
 
-            if (this.entryList != null && this.entryList.haveLoaded) {
-                this.entryListChanged(this.entryList);
+            this.jq(ID_SEARCH).click(function(event) {
+		_this.submitSearchForm(false,++_this.callNumber);
+                event.preventDefault();
+            });
+            this.jq(ID_FORM).submit(function(event) {
+		_this.submitSearchForm(false,++_this.callNumber);
+                event.preventDefault();
+            });
+
+
+            this.jq(ID_TEXT_FIELD).autocomplete({
+                source: function(request, callback) {
+                }
+            });
+
+	},
+        getDefaultHtml: function() {
+	    let html = this.makeSearchForm();
+	    let style="";
+	    let abs = (this.getProperty("resultsPosition","absolute")=="absolute");
+	    if(!abs) {
+		if(this.getMaxHeight(400)) {
+		    style+=HU.css("max-height",HU.getDimension(this.getMaxHeight(400)));
+		} 
+		if(this.getMaxWidth()) {
+		    style+=HU.css("width",HU.getDimension(this.getMaxWidth(400)));
+		    style+=HU.css("max-width",HU.getDimension(this.getMaxWidth(200)));
+		}
+		let entries = HU.div([ID,this.domId(ID_ENTRIES),CLASS,"display-simplesearch-entries",STYLE,style]);
+		if (this.getShowHeader(true)) {
+		    html+=  HU.div([ATTR_CLASS, "display-entries-results", ATTR_ID, this.getDomId(ID_RESULTS)]);
+		}
+		html+=entries;
+	    }
+	    return html;
+	},
+        makeSearchForm: function() {
+            let form = HU.openTag("form", [ATTR_ID, this.getDomId(ID_FORM), "action", "#"]);
+	    
+	    let eg = this.getEgText();
+	    let text  = this.getFormText();
+	    let size = this.getPropertyInputSize("100%");
+            let textField = HU.input("", text, [STYLE, HU.css("width", size), "placeholder", eg, ATTR_CLASS, "display-search-input", ATTR_ID, this.getDomId(ID_TEXT_FIELD)]);
+
+	    form += textField;
+            form += "<input type=\"submit\" style=\"position:absolute;left:-9999px;width:1px;height:1px;\"/>";
+            form += HU.closeTag("form");
+	    form+=HU.div([ID,this.domId(ID_FORM)]);
+            return form;
+	},
+	handleNoEntries: function() {
+	    this.writeEntries("",[]);
+            this.writeMessage("Nothing found");
+            this.getDisplayManager().handleEventEntriesChanged(this, []);
+	},
+	writeMessage: function(msg) {
+	    this.makeDialog();
+	    SUPER.writeMessage.call(this,msg);
+	},
+
+	makeDialog: function() {
+	    if(this.dialog && (this.dialog.parent()==null ||this.dialog.parent().length==0)) this.dialog = null;
+	    if(!this.dialog) {
+                let header = HU.div([ATTR_CLASS, "display-entries-results", ATTR_ID, this.getDomId(ID_RESULTS)], "&nbsp;");
+                let entries= HU.div([CLASS,"display-entries-entries", ATTR_ID, this.getDomId(ID_ENTRIES)], "");		
+		this.dialog = HU.makeDialog({content:header+entries,anchor:this.getContents(),
+					     draggable:true,header:true});
+	    } else {
+		this.dialog.show();
+	    }
+	},	    
+	writeEntries: function(msg, entries) {
+	    let abs = this.getProperty("resultsPosition","absolute")=="absolute";
+	    if(!abs) {
+		this.jq(ID_ENTRIES).html(msg);
+		return;
+	    }
+	    this.makeDialog();
+
+	    if(Utils.stringDefined(msg)) {
+		this.jq(ID_ENTRIES).html(msg);
+		this.writeMessage(this.getResultsHeader(entries,true));
+	    } else {
+		this.jq(ID_ENTRIES).html("");
+	    }
+	},
+
+        submitSearchForm: function(auto, callNumber) {
+	    this.writeMessage(this.getWaitImage() + " " +"Searching...");
+	    if(callNumber==null) callNumber = this.callNumber;
+            this.haveSearched = true;
+            let settings  =this.makeSearchSettings();
+	    settings.entryType = this.getProperty("entryType");	    
+            let jsonUrl = this.makeSearchUrl(this.getRamadda());
+            this.entryList = new EntryList(this.getRamadda(), jsonUrl);
+	    let success= ()=>{
+		if(this.callNumber == callNumber) {
+		    this.entryListChanged(this.entryList);
+		} 
+	    };
+	    let fail= (error)=>{
+		this.writeEntries("Error:" + error);
+	    };	    
+	    this.entryList.doSearch(null,success,fail);
+	    if(!auto)
+		this.updateForSearching(jsonUrl);
+        },
+
+        makeDisplayList: function() {
+            let entries = this.getSelectedEntriesFromTree();
+            if (entries.length == 0) {
+                return;
+            }
+            let props = {
+                selectedEntries: entries,
+                showForm: false,
+                showMenu: true,
+                fixedEntries: true
+            };
+            props.entryList = new EntryList(this.getRamadda(), "", this, false);
+            props.entryList.setEntries(entries);
+            this.getDisplayManager().createDisplay(DISPLAY_ENTRYLIST, props);
+        },
+        handleEventEntrySelection: function(source, args) {
+            this.selectEntry(args.entry, args.selected);
+        },
+        selectEntry: function(entry, selected) {
+            let changed = false;
+            if (selected) {
+                this.jq("entry_" + entry.getIdForDom()).addClass("ui-selected");
+                let index = this.selectedEntries.indexOf(entry);
+                if (index < 0) {
+                    this.selectedEntries.push(entry);
+                    changed = true;
+                }
+            } else {
+                this.jq("entry_" + entry.getIdForDom()).removeClass("ui-selected");
+                let index = this.selectedEntries.indexOf(entry);
+                if (index >= 0) {
+                    this.selectedEntries.splice(index, 1);
+                    changed = true;
+                }
             }
         },
+        makeEntriesDisplay: function(entries) {
+            return this.getEntriesTree(entries);
+        },
+        entryListChanged: function(entryList) {
+            if (this.multiSearch) {
+                this.multiSearch.count--;
+            }
+            SUPER.entryListChanged.apply(this, [entryList]);
+            let entries = this.entryList.getEntries();
+            if (entries.length == 0) {
+                this.getSearchSettings().skip = 0;
+                this.getSearchSettings().max = DEFAULT_MAX;
+		this.handleNoEntries();
+                return;
+            }
+            this.writeMessage(this.getResultsHeader(entries, true));
+	    this.initCloser(ID_RESULTS);
+
+            let get = this.getGet();
+            this.writeHtml(ID_FOOTER_LEFT, "");
+            if (this.footerRight != null) {
+                this.writeHtml(ID_FOOTER_RIGHT, this.footerRight);
+            }
+
+
+	    let html = "";
+	    let inner = "";
+	    entries.forEach((entry,idx) =>{
+		inner+=HU.div([CLASS,"display-simplesearch-entry"], HU.href(this.getRamadda().getEntryUrl(entry),HU.image(entry.getIconUrl()) +"  "+ entry.getName()));
+	    });
+//	    inner = HU.div([CLASS,"display-simplesearch-entries"],inner);
+            this.writeEntries(inner, entries);
+            this.getDisplayManager().handleEventEntriesChanged(this, entries);
+        },
+
     });
 }
 
 
+
+
+
 function RamaddaEntrygridDisplay(displayManager, id, properties) {
-    let SUPER;
     const ID_CONTENTS = "contents";
     const ID_GRID = "grid";
     const ID_AXIS_LEFT = "axis_left";
@@ -1820,9 +2018,9 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
     const ID_SHOW_NAME = "showName";
     const ID_COLOR = "boxColor";
 
-    RamaddaUtil.inherit(this, SUPER = new RamaddaEntryDisplay(displayManager, id, DISPLAY_ENTRY_GRID, properties));
-    addRamaddaDisplay(this);
-    RamaddaUtil.defineMembers(this, {
+    let myProps = [];
+    let SUPER = new RamaddaEntryDisplay(displayManager, id, DISPLAY_ENTRY_GRID, properties);
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         entries: properties.entries,
         initDisplay: function() {
             let _this = this;
@@ -2970,246 +3168,6 @@ function RamaddaRepositoriesDisplay(displayManager, id, properties) {
             this.numberWithTypes++;
             this.displayRepositories();
         }
-    });
-}
-
-let RamaddaGalleryDisplay = RamaddaEntrygalleryDisplay;
-
-function RamaddaSimplesearchDisplay(displayManager, id, properties) {
-    let myProps = [
-	{label:'Simple Search'},
-	{p:'resultsPosition',ex:'absolute|relative'},
-	{p:'maxHeight',w:300},
-	{p:'maxWidth',w:200},
-	{p:'maxWidth',w:200},		
-	{p:"autoSearch",w:true},
-	{p:"showHeader",w:true},
-	{p:"inputWidth",w:"100%"},
-	{p:"entryType",w:"",tt:"Constrain search to entries of this type"},		
-    ];
-
-    const SUPER   = new RamaddaSearcherDisplay(displayManager, id, DISPLAY_SIMPLESEARCH, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
-	callNumber:1,
-        haveDisplayed: false,
-        selectedEntries: [],
-        getSelectedEntries: function() {
-            return this.selectedEntries;
-        },
-        initDisplay: function() {
-            let _this = this;
-            if (this.getIsLayoutFixed() && this.haveDisplayed) {
-                return;
-            }
-            this.haveDisplayed = true;
-            this.createUI();
-            this.setContents(this.getDefaultHtml());
-	    this.initHtml();
-	    let input = this.jq(ID_TEXT_FIELD);
-	    if(this.getAutoSearch(true)) {
-		//KEY
-		input.keyup(function(event) {
-		    _this.getSearchSettings().skip =0;
-                    _this.getSearchSettings().max = DEFAULT_MAX;
-		    if($(this).val().trim()=="") {
-			_this.writeMessage("");
-			_this.writeEntries("");			
-			if(_this.dialog) {
-			    _this.dialog.remove();
-			    _this.dialog = null;
-			}
-			return;
-		    }
-		    let myCallNumber = ++_this.callNumber;
-		    //Wait a bit in case more keys are coming
-		    setTimeout(()=>{
-			if(myCallNumber == _this.callNumber) {
-			    _this.submitSearchForm(true,myCallNumber);
-			} else {
-			}
-		    },250);
-		});
-	    }
-
-            this.jq(ID_SEARCH).click(function(event) {
-		_this.submitSearchForm(false,++_this.callNumber);
-                event.preventDefault();
-            });
-            this.jq(ID_FORM).submit(function(event) {
-		_this.submitSearchForm(false,++_this.callNumber);
-                event.preventDefault();
-            });
-
-
-            this.jq(ID_TEXT_FIELD).autocomplete({
-                source: function(request, callback) {
-                }
-            });
-
-	},
-        getDefaultHtml: function() {
-	    let html = this.makeSearchForm();
-	    let style="";
-	    let abs = (this.getProperty("resultsPosition","absolute")=="absolute");
-	    if(!abs) {
-		if(this.getMaxHeight(400)) {
-		    style+=HU.css("max-height",HU.getDimension(this.getMaxHeight(400)));
-		} 
-		if(this.getMaxWidth()) {
-		    style+=HU.css("width",HU.getDimension(this.getMaxWidth(400)));
-		    style+=HU.css("max-width",HU.getDimension(this.getMaxWidth(200)));
-		}
-		let entries = HU.div([ID,this.domId(ID_ENTRIES),CLASS,"display-simplesearch-entries",STYLE,style]);
-		if (this.getShowHeader(true)) {
-		    html+=  HU.div([ATTR_CLASS, "display-entries-results", ATTR_ID, this.getDomId(ID_RESULTS)]);
-		}
-		html+=entries;
-	    }
-	    return html;
-	},
-        makeSearchForm: function() {
-            let form = HU.openTag("form", [ATTR_ID, this.getDomId(ID_FORM), "action", "#"]);
-	    
-	    let eg = this.getEgText();
-	    let text  = this.getFormText();
-	    let size = this.getPropertyInputWidth("100%");
-            let textField = HU.input("", text, [STYLE, HU.css("width", size), "placeholder", eg, ATTR_CLASS, "display-search-input", ATTR_ID, this.getDomId(ID_TEXT_FIELD)]);
-
-	    form += textField;
-            form += "<input type=\"submit\" style=\"position:absolute;left:-9999px;width:1px;height:1px;\"/>";
-            form += HU.closeTag("form");
-	    form+=HU.div([ID,this.domId(ID_FORM)]);
-            return form;
-	},
-	handleNoEntries: function() {
-	    this.writeEntries("",[]);
-            this.writeMessage("Nothing found");
-            this.getDisplayManager().handleEventEntriesChanged(this, []);
-	},
-	writeMessage: function(msg) {
-	    this.makeDialog();
-	    SUPER.writeMessage.call(this,msg);
-	},
-
-	makeDialog: function() {
-	    if(this.dialog && (this.dialog.parent()==null ||this.dialog.parent().length==0)) this.dialog = null;
-	    if(!this.dialog) {
-                let header = HU.div([ATTR_CLASS, "display-entries-results", ATTR_ID, this.getDomId(ID_RESULTS)], "&nbsp;");
-                let entries= HU.div([CLASS,"display-entries-entries", ATTR_ID, this.getDomId(ID_ENTRIES)], "");		
-		this.dialog = HU.makeDialog({content:header+entries,anchor:this.getContents(),
-					     draggable:true,header:true});
-	    } else {
-		this.dialog.show();
-	    }
-	},	    
-	writeEntries: function(msg, entries) {
-	    let abs = this.getProperty("resultsPosition","absolute")=="absolute";
-	    if(!abs) {
-		this.jq(ID_ENTRIES).html(msg);
-		return;
-	    }
-	    this.makeDialog();
-
-	    if(Utils.stringDefined(msg)) {
-		this.jq(ID_ENTRIES).html(msg);
-		this.writeMessage(this.getResultsHeader(entries,true));
-	    } else {
-		this.jq(ID_ENTRIES).html("");
-	    }
-	},
-
-        submitSearchForm: function(auto, callNumber) {
-	    this.writeMessage(this.getWaitImage() + " " +"Searching...");
-	    if(callNumber==null) callNumber = this.callNumber;
-            this.haveSearched = true;
-            let settings  =this.makeSearchSettings();
-	    settings.entryType = this.getProperty("entryType");	    
-            let jsonUrl = this.makeSearchUrl(this.getRamadda());
-            this.entryList = new EntryList(this.getRamadda(), jsonUrl);
-	    let success= ()=>{
-		if(this.callNumber == callNumber) {
-		    this.entryListChanged(this.entryList);
-		} 
-	    };
-	    let fail= (error)=>{
-		this.writeEntries("Error:" + error);
-	    };	    
-	    this.entryList.doSearch(null,success,fail);
-	    if(!auto)
-		this.updateForSearching(jsonUrl);
-        },
-
-        makeDisplayList: function() {
-            let entries = this.getSelectedEntriesFromTree();
-            if (entries.length == 0) {
-                return;
-            }
-            let props = {
-                selectedEntries: entries,
-                showForm: false,
-                showMenu: true,
-                fixedEntries: true
-            };
-            props.entryList = new EntryList(this.getRamadda(), "", this, false);
-            props.entryList.setEntries(entries);
-            this.getDisplayManager().createDisplay(DISPLAY_ENTRYLIST, props);
-        },
-        handleEventEntrySelection: function(source, args) {
-            this.selectEntry(args.entry, args.selected);
-        },
-        selectEntry: function(entry, selected) {
-            let changed = false;
-            if (selected) {
-                this.jq("entry_" + entry.getIdForDom()).addClass("ui-selected");
-                let index = this.selectedEntries.indexOf(entry);
-                if (index < 0) {
-                    this.selectedEntries.push(entry);
-                    changed = true;
-                }
-            } else {
-                this.jq("entry_" + entry.getIdForDom()).removeClass("ui-selected");
-                let index = this.selectedEntries.indexOf(entry);
-                if (index >= 0) {
-                    this.selectedEntries.splice(index, 1);
-                    changed = true;
-                }
-            }
-        },
-        makeEntriesDisplay: function(entries) {
-            return this.getEntriesTree(entries);
-        },
-        entryListChanged: function(entryList) {
-            if (this.multiSearch) {
-                this.multiSearch.count--;
-            }
-            SUPER.entryListChanged.apply(this, [entryList]);
-            let entries = this.entryList.getEntries();
-            if (entries.length == 0) {
-                this.getSearchSettings().skip = 0;
-                this.getSearchSettings().max = DEFAULT_MAX;
-		this.handleNoEntries();
-                return;
-            }
-            this.writeMessage(this.getResultsHeader(entries, true));
-	    this.initCloser(ID_RESULTS);
-
-            let get = this.getGet();
-            this.writeHtml(ID_FOOTER_LEFT, "");
-            if (this.footerRight != null) {
-                this.writeHtml(ID_FOOTER_RIGHT, this.footerRight);
-            }
-
-
-	    let html = "";
-	    let inner = "";
-	    entries.forEach((entry,idx) =>{
-		inner+=HU.div([CLASS,"display-simplesearch-entry"], HU.href(this.getRamadda().getEntryUrl(entry),HU.image(entry.getIconUrl()) +"  "+ entry.getName()));
-	    });
-//	    inner = HU.div([CLASS,"display-simplesearch-entries"],inner);
-            this.writeEntries(inner, entries);
-            this.getDisplayManager().handleEventEntriesChanged(this, entries);
-        },
-
     });
 }
 

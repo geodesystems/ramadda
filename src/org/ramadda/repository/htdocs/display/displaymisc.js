@@ -1019,7 +1019,7 @@ function RamaddaPreDisplay(displayManager, id, properties) {
 	updateUI: function() {
 	    let records = this.filterData();
 	    if(!records) {
-		this.setContents("No records yet");		
+		this.setContents("Loading data...");		
 		return;
 	    }
             let pointData = this.dataCollection.getList()[0];
@@ -1056,6 +1056,7 @@ function RamaddaPreDisplay(displayManager, id, properties) {
 
 
 function RamaddaHtmltableDisplay(displayManager, id, properties) {
+    const ID_TABLE  = "table";
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_HTMLTABLE, properties);
     let myProps = [
 	{label:'Html Table'},
@@ -1073,7 +1074,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	updateUI: function() {
 	    let records = this.filterData();
 	    if(!records) {
-		this.setDisplayMessage("No records yet");		
+		this.setDisplayMessage("Loading data...");		
 		return;
 	    }
 	    let fancy  = this.getFancy();
@@ -1084,38 +1085,43 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	    let numRecords = this.getNumRecords();
 	    let includeGeo = this.getIncludeGeo();
 	    let includeDate = this.getIncludeGeo();	    
-	    let html ="<table width=100% border=0 cellpadding=0 cellspacing=0>";
+	    let html =HU.openTag('table',[CLASS,"ramadda-table stripe", 'width','100%',ID,this.domId(ID_TABLE)]);
 	    let headerAttrs = [STYLE,"white-space:nowrap;background:#efefef;padding:5px; font-weight:bold;"];
-	    html+="<tr valign=top>"
-	    html+=HU.td(HU.div(headerAttrs,"&nbsp;"));	    
-	    if(includeDate) html+=HU.td(HU.div(headerAttrs,"Date"));
+	    headerAttrs = [];
+	    html+="<thead>\n";
+	    html+="<tr valign=top>\n"
+//	    html+=HU.th(HU.div(headerAttrs,"&nbsp;"));	    
+	    if(includeDate) html+=HU.th(HU.div(headerAttrs,"Date"));
 	    fields.forEach((f,idx)=>{
 		if(fancy)
-		    html+=HU.td([],HU.div(headerAttrs,f.getLabel()));
+		    html+=HU.th([],HU.div(headerAttrs,f.getLabel()));
 		else
-		    html+=HU.td([],HU.div(headerAttrs,f.getId() +"[" + f.getType()+"]"));
+		    html+=HU.th([],HU.div(headerAttrs,f.getId() +"[" + f.getType()+"]"));
 		
 	    });
-	    if(includeGeo) html+=HU.td(HU.div(headerAttrs,"latitude")) + HU.td([],HU.div(headerAttrs,"longitude"));
-	    html+="</tr>";
+	    if(includeGeo) html+=HU.th(HU.div(headerAttrs,"latitude")) + HU.th([],HU.div(headerAttrs,"longitude"));
+	    html+="</tr>\n";
+	    html+="</thead><tbody>\n";	    
 	    this.savedState = Utils.getLocalStorage(this.getProperty("storageKey",this.type), true) || {};
 	    let hadSavedState = false;
 	    this.recordMap = {};
 	    this.fieldMap = {};
 	    fields.forEach(f=>{this.fieldMap[f.getId()] = f;})
-	    records.every((r,idx)=>{
+	    records.every((record,idx)=>{
 		if(numRecords>-1 && idx>numRecords) return false;
-		let d = r.getData();
+		let d = record.getData();
 		d = d.map(d=>{
 		    if(d.getTime) return this.formatDate(d);
 		    return d;
 		});
 		let clazz = (idx%2)?"ramadda-row-odd":"ramadda-row-even";
-		html+="<tr valign=top class=" + clazz+"><td>#" + idx+": </td>";
+		clazz = "display-htmltable-row";
+		html+=HU.openTag('tr',['title','','valign','top','class',clazz, RECORD_ID,record.getId()]);
+//		html+="<td>#" + idx+": </td>";		
 		if(includeDate) {
 		    html+=HU.td([],this.formatDate(r.getDate()));
 		}
-		this.recordMap[r.rowIndex] = r;
+		this.recordMap[record.rowIndex] = record;
 		fields.forEach(f=>{
 		    let v = d[f.getIndex()]
 		    v = String(v);
@@ -1127,24 +1133,24 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 			if(this.savedState) {
 			    let map  = this.savedState[f.getId()];
 			    if(map) {
-				let savedValue = map[r.rowIndex];
+				let savedValue = map[record.rowIndex];
 				if(Utils.isDefined(savedValue)) {
-				    r.data[f.getIndex()] = savedValue;
+				    record.data[f.getIndex()] = savedValue;
 				    value = savedValue;
 				    hadSavedState = true;
 				}
 			    }
 			}
 			if(f.getType()=="boolean") 
-			    v = HU.checkbox("", ["fieldid",f.getId(),"inputtype","checkbox",RECORD_INDEX,r.rowIndex,CLASS,"display-editable", ID,this.domId("editable_" + f.getId())], value);
+			    v = HU.checkbox("", ["fieldid",f.getId(),"inputtype","checkbox",RECORD_INDEX,record.rowIndex,CLASS,"display-editable", ID,this.domId("editable_" + f.getId())], value);
 			else if(f.isFieldEnumeration()) {
 			    let enums = f.getEnumeratedValues() ||"";
 			    let select = [];
 			    for(a in enums)
 				select.push([a,enums[a]]);
-			    v =  HU.select("",["fieldid",f.getId(),RECORD_INDEX,r.rowIndex, CLASS,"display-editable",STYLE,"", ID,this.domId("editable_" +f.getId())],select,value);
+			    v =  HU.select("",["fieldid",f.getId(),RECORD_INDEX,record.rowIndex, CLASS,"display-editable",STYLE,"", ID,this.domId("editable_" +f.getId())],select,value);
 			}  else {
-			    v = HU.input("", value, ["fieldid",f.getId(),RECORD_INDEX,r.rowIndex,CLASS,"display-editable", ID,this.domId("editable_" + f.getId())]);
+			    v = HU.input("", value, ["fieldid",f.getId(),RECORD_INDEX,record.rowIndex,CLASS,"display-editable", ID,this.domId("editable_" + f.getId())]);
 			}
 		    }
 		    html+=HU.td([],v);
@@ -1153,16 +1159,23 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		    this.getPointData().propagateEventDataChanged(this);
 		}
 		if(includeGeo) {
-		    html+=HU.td([],r.getLatitude()) +HU.td([],r.getLongitude());
+		    html+=HU.td([],record.getLatitude()) +HU.td([],record.getLongitude());
 		}
-		html+="</tr>";
+		html+="</tr>\n";
 		return true;
 	    });
-	    html+="</table>";
+	    html+="</tbody>\n";
+	    html+="</table>\n";
 	    if(this.getShowAddRow()) {
 		html+=HU.div([ID,this.domId("addrow"),CLASS,"ramadda-clickable"], HU.getIconImage("fas fa-plus"));
-	    }
+	    }	
 	    this.setContents(html);
+	    let _this = this;
+	    this.makeTooltips(this.jq(ID_TABLE).find(".display-htmltable-row"),records);
+	    let opts = {
+                ordering: true,
+	    };
+            HU.formatTable("#" + this.domId(ID_TABLE), opts);
 	    if(this.getShowAddRow()) {
 		this.jq("addrow").click(()=>{
 		    let records = this.getPointData().getRecords();
@@ -1172,7 +1185,6 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		    this.getPointData().propagateEventDataChanged(this);
 		});
 	    }
-	    let _this  = this;
 	    let handleChange = dom=>{
 		let val;
 		if(dom.attr('inputtype')=="checkbox") {

@@ -457,7 +457,7 @@ function DisplayThing(argId, argProperties) {
             try {
                 return this.formatDateInner(date, args, useToStringIfNeeded);
             } catch (e) {
-                console.log("Error formatting date:" + e);
+                console.log("Error formatting date:" + date +" error:" +e);
                 if (!date.getTime && date.v) date = date.v;
                 return "" + date;
             }
@@ -729,6 +729,8 @@ function DisplayThing(argId, argProperties) {
 		}
 	    }
 	    if(template=="${fields}") {
+		fields = this.getFieldsByIds(null,this.getProperty("tooltipFields",this.getPropertyFields()));
+	    } else {
 		fields = this.getFieldsByIds(null,this.getProperty("tooltipFields",this.getPropertyFields()));
 	    }
 
