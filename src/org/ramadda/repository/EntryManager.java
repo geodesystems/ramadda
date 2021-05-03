@@ -5181,7 +5181,6 @@ public class EntryManager extends RepositoryManager {
 				       File> origFileToStorage)
 	throws Exception {
         Hashtable<String, Entry> entries = new Hashtable<String, Entry>();
-	System.err.println("processEntryXml");
         if (parent != null) {
             entries.put("", parent);
 	    System.err.println("\tparent:" + parent);
@@ -5323,7 +5322,6 @@ public class EntryManager extends RepositoryManager {
         String tmpid = XmlUtil.getAttribute(node, ATTR_ID, (String) null);
         if (tmpid != null) {
             for (Entry entry : entryList) {
-		System.err.println("\tput:" + tmpid);
                 entries.put(tmpid, entry);
             }
         }

@@ -1256,7 +1256,6 @@ public class StorageManager extends RepositoryManager implements PointFile
         }
         File f = new File(localizePath(path));
         makeDirRecursive(f);
-
         return f;
     }
 
@@ -2385,7 +2384,6 @@ public class StorageManager extends RepositoryManager implements PointFile
      */
     public String readSystemResource(URL url) throws Exception {
         checkPath(url.toString());
-
         return IOUtil.readContents(url.toString(), getClass());
     }
 
@@ -2429,12 +2427,22 @@ public class StorageManager extends RepositoryManager implements PointFile
      * @throws Exception  problem reading
      */
     public String readSystemResource(String path) throws Exception {
-        InputStream stream = getInputStream(path);
-        try {
-            return IOUtil.readInputStream(stream);
-        } finally {
-            IOUtil.close(stream);
-        }
+	try {
+            String localizedPath = localizePath(path);
+	    InputStream stream = getInputStream(localizedPath);
+	    try {
+		return IOUtil.readInputStream(stream);
+	    } finally {
+		IOUtil.close(stream);
+	    }
+	} catch(Exception exc) {
+	    Repository parent = getRepository().getParentRepository();
+	    if(parent!=null) {
+		System.err.println("Error reading system resource:" + path +" trying parent repository");
+		return parent.getStorageManager().readSystemResource(path);
+	    }
+	    throw exc;
+	}
     }
 
 

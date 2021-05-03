@@ -410,11 +410,15 @@ public class PluginManager extends RepositoryManager {
         for (String file : pluginFiles) {
             boolean didIt = false;
             for (AdminHandler adminHandler : getAdmin().getAdminHandlers()) {
-                if (adminHandler.loadPluginFile(file)) {
-                    didIt = true;
-
-                    break;
-                }
+		try {
+		    if (adminHandler.loadPluginFile(file)) {
+			didIt = true;
+			break;
+		    }
+		} catch(Exception exc) {
+		    System.err.println("Error loading plugin file:" + file);
+		    throw exc;
+		}
             }
             if ( !didIt) {
                 remainder.add(file);

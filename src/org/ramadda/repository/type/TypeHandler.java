@@ -5080,7 +5080,6 @@ public class TypeHandler extends RepositoryManager {
 	    //replace any macros {name} is the type id without the leading type_
             propertyValue = propertyValue.replace("${type}",
                     type).replace("${name}", type.replace("type_", ""));
-            propertyValue = getStorageManager().localizePath(propertyValue);
             propertyValue = getStorageManager().readSystemResource(
                 propertyValue.substring("file:".length()));
             delimiter = "\n";
