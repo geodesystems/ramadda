@@ -28421,12 +28421,13 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 	    this.provider = this.providerMap[id];
 	    HU.addToDocumentUrl(ID_PROVIDERS,id);
 	    this.jq(ID_SEARCH_BAR).html("");
-            if (this.provider.type!="ramadda") {
+            if (this.provider && this.provider.type!="ramadda") {
 		this.setRamadda(this.originalRamadda);
                 this.jq(ID_SEARCH_SETTINGS).hide();
 		this.jq(ID_TYPE_DIV).hide();
             } else {
-		this.setRamadda(getRamadda(this.provider.id+";"+ this.provider.name));
+		if(this.provider)
+		    this.setRamadda(getRamadda(this.provider.id+";"+ this.provider.name));
                 this.jq(ID_SEARCH_SETTINGS).show();
 		this.jq(ID_TYPE_DIV).show();
 		this.addTypes();
