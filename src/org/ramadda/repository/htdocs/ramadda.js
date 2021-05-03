@@ -526,7 +526,7 @@ function handleFolderList(request, uid) {
 
 let selectors = new Array();
 
-function Selector(event, selectorId, elementId, allEntries, selecttype, localeId, entryType) {
+function Selector(event, selectorId, elementId, allEntries, selecttype, localeId, entryType, ramaddaUrl) {
     this.id = selectorId;
     this.elementId = elementId;
     this.localeId = localeId;
@@ -534,7 +534,7 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
     this.allEntries = allEntries;
     this.selecttype = selecttype;
     this.textComp = GuiUtils.getDomObject(this.elementId);
-
+    this.ramaddaUrl = ramaddaUrl || ramaddaBaseUrl;
     this.getTextComponent = function() {
         let id = "#" + this.elementId;
         return $(id);
@@ -567,7 +567,7 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
             at: "left bottom",
             collision: "none none"
         });
-        url = ramaddaBaseUrl + "/entry/show?output=selectxml&selecttype=" + this.selecttype + "&allentries=" + this.allEntries + "&target=" + this.id + "&noredirect=true&firstclick=true";
+        url = this.ramaddaUrl + "/entry/show?output=selectxml&selecttype=" + this.selecttype + "&allentries=" + this.allEntries + "&target=" + this.id + "&noredirect=true&firstclick=true";
         if (this.localeId) {
             url = url + "&localeid=" + this.localeId;
         }
@@ -621,18 +621,19 @@ function selectCancel(override) {
 }
 
 
-function selectCreate(event, selectorId, elementId, allEntries, selecttype, localeId, entryType) {
-    if (!selectors[selectorId]) {
-        selectors[selectorId] = new Selector(event, selectorId, elementId, allEntries, selecttype, localeId, entryType);
+function selectCreate(event, selectorId, elementId, allEntries, selecttype, localeId, entryType, baseUrl) {
+    let key = selectorId + (baseUrl||"");
+    if (!selectors[key]) {
+        selectors[key] = new Selector(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl);
     } else {
         //Don:  alert('have selector'):
-        selectors[selectorId].handleClick(event);
+        selectors[key].handleClick(event);
     }
 }
 
 
-function selectInitialClick(event, selectorId, elementId, allEntries, selecttype, localeId, entryType) {
-    selectCreate(event, selectorId, elementId, allEntries, selecttype, localeId, entryType);
+function selectInitialClick(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl) {
+    selectCreate(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl);
     return false;
 }
 

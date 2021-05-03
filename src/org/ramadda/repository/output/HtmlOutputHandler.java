@@ -455,6 +455,7 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
         if (outputType.equals(OUTPUT_SELECTXML)) {
+            request.setCORSHeaderOnResponse();
             StringBuilder sb     = new StringBuilder();
             String        target = request.getString(ATTR_TARGET, "");
             String        type   = request.getString(ARG_SELECTTYPE, "");

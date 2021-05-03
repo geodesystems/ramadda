@@ -6633,7 +6633,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             : "category:".length());
                     //                    System.err.println ("doName:" + doName +" pattern:" + pattern);
                     for (SearchProvider provider :
-                            getSearchManager().getSearchProviders()) {
+			     getSearchManager().getSearchProviders()) {
 			if(seen.contains(provider.getId())) continue;
 			seen.add(provider.getId());
                         String  target  = doName
@@ -6654,13 +6654,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                 icon = "${root}/icons/magnifier.png";
                             }
                             icon = getPageHandler().applyBaseMacros(icon);
-                            String v =
-                                provider.getId().replace(":", "_COLON_")
-                                + ":"
-                                + provider.getName().replace(":",
-                                    "-").replace(",", " ") + ":" + icon + ":"
-                                        + provider.getCategory();
-
+			    String v =Json.map("id",Json.quote(provider.getId()),
+					       "type",Json.quote(provider.getType()),
+					       "name",Json.quote(provider.getName()),
+					       "icon",Json.quote(icon),
+					       "category",Json.quote(provider.getCategory()));
                             processed.add(v);
                         }
                     }
@@ -6696,14 +6694,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 		    if (subToks.size() > 2) {
 			icon = subToks.get(2);
 		    }
-		    String v = id.replace(":", "_COLON_") + ":"
-			+ label.replace(":", "-").replace(",", " ") + ":"
-			+ icon + ":" + searchProvider.getCategory();
+		    String v =Json.map("id",Json.quote(id),
+				       "type",Json.quote(searchProvider.getType()),
+				       "name",Json.quote(label),
+				       "icon",Json.quote(icon),
+				       "category",Json.quote(searchProvider.getCategory()));
 		    processed.add(v);
 		}
 	    }
-            props.put("providers", StringUtil.join(",", processed));
-
+            props.put("providers", "json:"+ Json.list(processed));
         }
 
         String entryParent = getProperty(wikiUtil, props, "entryParent");
@@ -7005,9 +7004,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
             Object key   = keys.nextElement();
-            Object value = props.get(key);
+            String value = props.get(key).toString();
             //      System.err.println ("adding:" + key +"=" + value);
-            Utils.add(propList, key, Json.quote(value.toString()));
+	    if(value.startsWith("json:")) {
+		value = value.substring(5);
+	    } else {
+		value = Json.quote(value);
+	    }
+	    Utils.add(propList, key, value);
         }
 
         boolean isMap = displayType.equals("map");

@@ -216,6 +216,10 @@ public abstract class SearchProvider extends GenericTypeHandler {
         return "External Search Providers";
     }
 
+    public String getType() {
+	return getClass().getSimpleName();
+    }
+
     /**
      * _more_
      *
@@ -306,6 +310,10 @@ public abstract class SearchProvider extends GenericTypeHandler {
             return "";
         }
 
+	@Override
+	public String getType() {
+	    return "ramadda";
+	}
 
 
 
@@ -393,6 +401,11 @@ public abstract class SearchProvider extends GenericTypeHandler {
             this.serverInfo = serverInfo;
         }
 
+
+	@Override
+	public String getType() {
+	    return "ramadda";
+	}
 
 
         /**

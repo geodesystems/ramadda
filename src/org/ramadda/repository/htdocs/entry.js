@@ -34,16 +34,16 @@ function getRamadda(id) {
      */
 
     //check for the embed label
-    var toks = id.split(";");
-    var name = null;
+    let toks = id.split(";");
+    let name = null;
     if (toks.length > 1) {
         id = toks[0].trim();
         name = toks[1].trim();
     }
 
-    var extraArgs = null;
-    var regexp = new RegExp("^(.*)\\((.+)\\).*$");
-    var args = regexp.exec(id);
+    let extraArgs = null;
+    let regexp = new RegExp("^(.*)\\((.+)\\).*$");
+    let args = regexp.exec(id);
     if (args) {
         id = args[1].trim();
         extraArgs = args[2];
@@ -56,14 +56,14 @@ function getRamadda(id) {
     if (window.globalRamaddas == null) {
         window.globalRamaddas = {};
     }
-    var repo = window.globalRamaddas[id];
+    let repo = window.globalRamaddas[id];
     if (repo != null) {
         return repo;
     }
 
 
     //See if its a js class
-    var func = window[id];
+    let func = window[id];
     if (func == null) {
         func = window[id + "Repository"];
     }
@@ -81,9 +81,6 @@ function getRamadda(id) {
             repo.name = name;
         }
     }
-
-
-
     addRepository(repo);
     return repo;
 }
@@ -100,11 +97,10 @@ function getGlobalRamadda() {
 }
 
 
-
 function Repository(repositoryRoot) {
     //    console.log("root:" + repositoryRoot);
-    var hostname = null;
-    var match = repositoryRoot.match("^(http.?://[^/]+)/");
+    let hostname = null;
+    let match = repositoryRoot.match("^(http.?://[^/]+)/");
     if (match && match.length > 0) {
         hostname = match[1];
     } else {
@@ -118,6 +114,9 @@ function Repository(repositoryRoot) {
         hostname: hostname,
         name: null,
 
+	getId: function() {
+	    return this.repositoryRoot;
+	},
         getSearchMessage: function() {
             return "Searching " + this.getName();
         },
@@ -170,12 +169,12 @@ function Repository(repositoryRoot) {
             if (this.repositoryRoot.indexOf("/") == 0) {
                 return this.name = "This RAMADDA";
             }
-            var url = this.repositoryRoot;
+            let url = this.repositoryRoot;
             //Do the a trick
-            var parser = document.createElement('a');
+            let parser = document.createElement('a');
             parser.href = url;
-            var host = parser.hostname;
-            var path = parser.pathname;
+            let host = parser.hostname;
+            let path = parser.pathname;
             //if its the default then just return the host;
             if (path == "/repository") return host;
             return this.name = host + ": " + path;
@@ -189,7 +188,7 @@ function Repository(repositoryRoot) {
 
 function RepositoryContainer(id, name) {
     this._id = "CONTAINER";
-    var SUPER;
+    let SUPER;
     RamaddaUtil.inherit(this, SUPER = new Repository(id));
     RamaddaUtil.defineMembers(this, {
         name: name,
@@ -208,14 +207,14 @@ function RepositoryContainer(id, name) {
                 return this.entryTypes;
             }
             this.entryTypes = [];
-            var seen = {};
-            for (var i = 0; i < this.children.length; i++) {
-                var types = this.children[i].getEntryTypes();
+            let seen = {};
+            for (let i = 0; i < this.children.length; i++) {
+                let types = this.children[i].getEntryTypes();
                 if (types == null) continue;
-                for (var j = 0; j < types.length; j++) {
-                    var type = types[j];
+                for (let j = 0; j < types.length; j++) {
+                    let type = types[j];
                     if (seen[type.getId()] == null) {
-                        var newType = {};
+                        let newType = {};
                         newType = $.extend(newType, type);
                         seen[type.getId()] = newType;
                         this.entryTypes.push(newType);
@@ -242,6 +241,9 @@ function Ramadda(repositoryRoot) {
         entryCache: {},
         entryTypes: null,
         entryTypeMap: {},
+        toString: function() {
+	    return "ramadda:" + this.getId();
+	},
         canSearch: function() {
             return true;
         },
@@ -249,11 +251,11 @@ function Ramadda(repositoryRoot) {
             return this.repositoryRoot + "/entry/show?entryid=" + entryId + "&output=json";
         },
         createEntriesFromJson: function(data) {
-            var entries = new Array();
-            for (var i = 0; i < data.length; i++) {
-                var entryData = data[i];
+            let entries = new Array();
+            for (let i = 0; i < data.length; i++) {
+                let entryData = data[i];
                 entryData.baseUrl = this.getRoot();
-                var entry = new Entry(entryData);
+                let entry = new Entry(entryData);
                 this.addEntry(entry);
                 entries.push(entry);
             }
@@ -269,7 +271,7 @@ function Ramadda(repositoryRoot) {
                 return this.entryTypes;
             }
             if (this.entryTypeCallPending) {
-                var callbacks = this.entryTypeCallbacks;
+                let callbacks = this.entryTypeCallbacks;
                 if (callbacks == null) {
                     callbacks = [];
                 }
@@ -277,29 +279,29 @@ function Ramadda(repositoryRoot) {
                 this.entryTypeCallbacks = callbacks;
                 return this.entryTypes;
             }
-            var theRamadda = this;
-            var url = this.repositoryRoot + "/entry/types";
+            let theRamadda = this;
+            let url = this.repositoryRoot + "/entry/types";
             this.entryTypeCallPending = true;
             this.entryTypeCallbacks = null;
-            var jqxhr = $.getJSON(url, function(data) {
+            let jqxhr = $.getJSON(url, function(data) {
                 if (GuiUtils.isJsonError(data)) {
                     return;
                 }
                 theRamadda.entryTypes = [];
-                for (var i = 0; i < data.length; i++) {
-                    var type = new EntryType(data[i]);
+                for (let i = 0; i < data.length; i++) {
+                    let type = new EntryType(data[i]);
                     theRamadda.entryTypeMap[type.getId()] = type;
                     theRamadda.entryTypes.push(type);
                 }
                 if (callback != null) {
                     callback(theRamadda, theRamadda.entryTypes);
                 }
-                var callbacks = theRamadda.entryTypeCallbacks;
+                let callbacks = theRamadda.entryTypeCallbacks;
                 theRamadda.entryTypeCallPending = false;
                 theRamadda.entryTypeCallbacks = null;
                 if (callbacks) {
                     //                            console.log("getEntryTypes - have extra callbacks");
-                    for (var i = 0; i < callbacks.length; i++) {
+                    for (let i = 0; i < callbacks.length; i++) {
                         callbacks[i](theRamadda, theRamadda.entryTypes);
                     }
                 }
@@ -312,7 +314,7 @@ function Ramadda(repositoryRoot) {
             }).fail(function(jqxhr, textStatus, error) {
                 theRamadda.entryTypeCallPending = false;
                 //console.log("getEntryTypes.fail:" +textStatus + " error:" + error);
-                var err = "";
+                let err = "";
                 if (error && error.length > 0) {
                     err += ":  " + error;
                 }
@@ -326,18 +328,18 @@ function Ramadda(repositoryRoot) {
         metadataCacheCallbacks: {},
 
         getMetadataCount: function(type, callback) {
-            var key = type.getType();
-            var data = this.metadataCache[key];
+            let key = type.getType();
+            let data = this.metadataCache[key];
             if (data != null) {
                 //                    console.log("getMetadata:" + type.getType() + " was in cache");
                 callback(type, data);
-                return null;
+                return data;
             }
 
 
-            var pending = this.metadataCachePending[key];
+            let pending = this.metadataCachePending[key];
             if (pending) {
-                var callbacks = this.metadataCacheCallbacks[key];
+                let callbacks = this.metadataCacheCallbacks[key];
                 if (callbacks == null) {
                     callbacks = [];
                 }
@@ -348,11 +350,11 @@ function Ramadda(repositoryRoot) {
             this.metadataCacheCallbacks[key] = null;
             this.metadataCachePending[key] = true;
 
-            var url = this.repositoryRoot + "/metadata/list?metadata_type=" + type.getType() + "&response=json";
+            let url = this.repositoryRoot + "/metadata/list?metadata_type=" + type.getType() + "&response=json";
             //                console.log("getMetadata:" + type.getType() + " URL:" + url);
-            var _this = this;
-            var jqxhr = $.getJSON(url, function(data) {
-                    var callbacks = _this.metadataCacheCallbacks[key];
+            let _this = this;
+            let jqxhr = $.getJSON(url, function(data) {
+                    let callbacks = _this.metadataCacheCallbacks[key];
                     _this.metadataCachePending[key] = false;
                     if (GuiUtils.isJsonError(data)) {
                         return;
@@ -362,23 +364,23 @@ function Ramadda(repositoryRoot) {
                     callback(type, data);
                     if (callbacks) {
                         //                            console.log("getMetadata: have callbacks");
-                        for (var i = 0; i < callbacks.length; i++) {
+                        for (let i = 0; i < callbacks.length; i++) {
                             callbacks[i](type, data);
                         }
                     }
                 })
                 .fail(function(jqxhr, textStatus, error) {
                     _this.metadataCachePending[key] = false;
-                    var err = textStatus + ", " + error;
+                    let err = textStatus + ", " + error;
                     GuiUtils.handleError("Error getting metadata count: " + err, url, false);
                 });
             return null;
         },
         getEntryUrl: function(entry, extraArgs) {
-            var id;
+            let id;
             if ((typeof entry) == "string") id = entry;
             else id = entry.id;
-            var url = this.getRoot() + "/entry/show?entryid=" + id;
+            let url = this.getRoot() + "/entry/show?entryid=" + id;
             if (extraArgs != null) {
                 if (!StringUtil.startsWith(extraArgs, "&")) {
                     url += "&";
@@ -388,10 +390,10 @@ function Ramadda(repositoryRoot) {
             return url;
         },
         getEntryDownloadUrl: function(entry, extraArgs) {
-            var id;
+            let id;
             if ((typeof entry) == "string") id = entry;
             else id = entry.id;
-            var url = this.getRoot() + "/entry/get?entryid=" + id;
+            let url = this.getRoot() + "/entry/get?entryid=" + id;
             if (extraArgs != null) {
                 if (!StringUtil.startsWith(extraArgs, "&")) {
                     url += "&";
@@ -402,8 +404,8 @@ function Ramadda(repositoryRoot) {
         },
 
         getSearchLinks: function(searchSettings) {
-            var urls = [];
-            for (var i = 0; i < OUTPUTS.length; i++) {
+            let urls = [];
+            for (let i = 0; i < OUTPUTS.length; i++) {
                 urls.push(HtmlUtils.href(this.getSearchUrl(searchSettings, OUTPUTS[i].id),
                     OUTPUTS[i].name));
             }
@@ -414,9 +416,9 @@ function Ramadda(repositoryRoot) {
         },
 
         getSearchUrl: function(settings, output, bar) {
-            var url = this.repositoryRoot + "/search/do?output=" + output;
-            for (var i = 0; i < settings.types.length; i++) {
-                var type = settings.types[i];
+            let url = this.repositoryRoot + "/search/do?output=" + output;
+            for (let i = 0; i < settings.types.length; i++) {
+                let type = settings.types[i];
                 url += "&type=" + type;
             }
 
@@ -465,7 +467,7 @@ function Ramadda(repositoryRoot) {
 	    if(settings.ancestor) 
 		url += "&ancestor=" + encodeURIComponent(settings.ancestor);
 
-            for (var i = 0; i < settings.metadata.length; i++) {
+            for (let i = 0; i < settings.metadata.length; i++) {
                 let metadata = settings.metadata[i];
                 url += "&metadata_attr1_" + metadata.type + "=" + metadata.value;
             }
@@ -488,16 +490,16 @@ function Ramadda(repositoryRoot) {
 		console.trace();
 		return null;
 	    }
-            var entry = this.entryCache[id];
+            let entry = this.entryCache[id];
             if (entry != null) {
 		if(debug) console.log("getEntry:" + entry.getName());
                 return Utils.call(callback, entry);
             }
             //Check any others
             if (window.globalRamaddas) {
-                for (var i = 0; i < window.globalRamaddas.length; i++) {
-                    var em = window.globalRamaddas[i];
-                    var entry = em.entryCache[id];
+                for (let i = 0; i < window.globalRamaddas.length; i++) {
+                    let em = window.globalRamaddas[i];
+                    let entry = em.entryCache[id];
                     if (entry != null) {
                         return Utils.call(callback, entry);
                     }
@@ -521,7 +523,7 @@ function Ramadda(repositoryRoot) {
                 Utils.call(callback, first, entryList);
             })
                 .fail(function(jqxhr, textStatus, error) {
-                    var err = textStatus + ", " + error;
+                    let err = textStatus + ", " + error;
                     GuiUtils.handleError("Error getting entry information: " + err, jsonUrl, false);
                 });
         }
@@ -606,10 +608,10 @@ function EntryTypeColumn(props) {
 
 function EntryType(props) {
     //Make the Columns
-    var columns = props.columns;
+    let columns = props.columns;
     if (columns == null) columns = [];
-    var myColumns = [];
-    for (var i = 0; i < columns.length; i++) {
+    let myColumns = [];
+    for (let i = 0; i < columns.length; i++) {
         myColumns.push(new EntryTypeColumn(columns[i]));
     }
     props.columns = myColumns;
@@ -653,11 +655,11 @@ function Entry(props) {
         props.repositoryId = ramaddaBaseUrl;
     }
 
-    var NONGEO = -9999;
+    let NONGEO = -9999;
     if (props.typeObject) {
         props.type = new EntryType(props.typeObject);
     } else if (props.type) {
-        var obj = {
+        let obj = {
             "id": props.type,
             "name": props.typeName != null ? props.typeName : props.type
         };
@@ -684,7 +686,7 @@ function Entry(props) {
     this.endDate = Utils.parseDate(props.endDate);
     if (this.endDate && this.startDate) {
         if (this.endDate.getTime() < this.startDate.getTime()) {
-            var tmp = this.startDate;
+            let tmp = this.startDate;
             this.startDate = this.endDate;
             this.endDate = tmp;
         }
@@ -692,8 +694,8 @@ function Entry(props) {
     //    console.log(props.name +" dttm:" + this.getEndDate());
     this.attributes = [];
     this.metadata = [];
-    for (var i = 0; i < this.properties.length; i++) {
-        var prop = this.properties[i];
+    for (let i = 0; i < this.properties.length; i++) {
+        let prop = this.properties[i];
         if (prop.type == "attribute") {
             this.attributes.push(prop);
         } else {
@@ -729,9 +731,9 @@ function Entry(props) {
             return this.isGroup;
         },
         getRoot: async function(callback, extraArgs) {
-            var parent = this;
+            let parent = this;
             while (true) {
-                var tmp;
+                let tmp;
                 await parent.getParentEntry(e => tmp = e);
                 if (!tmp) {
                     return Utils.call(callback, parent);
@@ -740,7 +742,7 @@ function Entry(props) {
             }
         },
         map: async function(func, finish) {
-            var children;
+            let children;
             await this.getChildrenEntries(l => {
                 children = l
             });
@@ -765,21 +767,20 @@ function Entry(props) {
             if (this.childrenEntries != null) {
                 return Utils.call(callback, this.childrenEntries);
             }
-            var settings = new EntrySearchSettings({
+            let settings = new EntrySearchSettings({
                 parent: this.getId()
             });
-            var jsonUrl = this.getRamadda().getSearchUrl(settings, OUTPUT_JSON);
-            var jsonUrl = this.getRamadda().getJsonUrl(this.getAbsoluteId()) + "&justchildren=true";
+            let jsonUrl = this.getRamadda().getJsonUrl(this.getAbsoluteId()) + "&justchildren=true";
             if (extraArgs != null) {
                 jsonUrl += "&" + extraArgs;
             }
             //                console.log(jsonUrl);
-            var myCallback = {
+            let myCallback = {
                 entryListChanged: function(list) {
                     callback(list.getEntries());
                 }
             };
-            var entryList = new EntryList(this.getRamadda(), jsonUrl, myCallback, false);
+            let entryList = new EntryList(this.getRamadda(), jsonUrl, myCallback, false);
             await entryList.doSearch();
         },
         getType: function() {
@@ -818,7 +819,7 @@ function Entry(props) {
             return this.services;
         },
         getService: function(relType) {
-            for (var i = 0; i < this.services.length; i++) {
+            for (let i = 0; i < this.services.length; i++) {
                 if (this.services[i].relType == relType) return this.services[i];
             }
             return null;
@@ -882,8 +883,8 @@ function Entry(props) {
                 return this.icon;
             }
 
-            var url;
-            var hostname = this.getRamadda().getHostname();
+            let url;
+            let hostname = this.getRamadda().getHostname();
             if (hostname)
                 url = hostname + this.icon;
             else
@@ -904,8 +905,8 @@ function Entry(props) {
             return this.attributes;
         },
         getAttribute: function(name) {
-            for (var i = 0; i < this.attributes.length; i++) {
-                var attr = this.attributes[i];
+            for (let i = 0; i < this.attributes.length; i++) {
+                let attr = this.attributes[i];
                 if (attr.id == name) {
                     return attr;
                 }
@@ -913,22 +914,22 @@ function Entry(props) {
             return null;
         },
         getAttributeValue: function(name) {
-            var attr = this.getAttribute(name);
+            let attr = this.getAttribute(name);
             if (attr == null) return null;
             return attr.value;
         },
         getAttributeNames: function() {
-            var names = [];
-            for (var i = 0; i < this.attributes.length; i++) {
-                var attr = this.attributes[i];
+            let names = [];
+            for (let i = 0; i < this.attributes.length; i++) {
+                let attr = this.attributes[i];
                 names.push(attr.id);
             }
             return names;
         },
         getAttributeLabels: function() {
-            var labels = [];
-            for (var i = 0; i < this.attributes.length; i++) {
-                var attr = this.attributes[i];
+            let labels = [];
+            for (let i = 0; i < this.attributes.length; i++) {
+                let attr = this.attributes[i];
                 if (attr.label) {
                     labels.push(attr.label);
                 } else {
@@ -952,7 +953,7 @@ function Entry(props) {
             return this.description;
         },
         getFilesize: function() {
-            var size = parseInt(this.filesize);
+            let size = parseInt(this.filesize);
             if (size == size) return size;
             return 0;
         },
@@ -1007,7 +1008,7 @@ function Entry(props) {
 	    if(this.remoteRepository) {
 		return this.remoteRepository.url + "/entry/get?entryid=" + this.getAbsoluteId();
 	    }
-            var rurl = this.getRamadda().getRoot() + "/entry/get";
+            let rurl = this.getRamadda().getRoot() + "/entry/get";
             if (this.getFilename() != null) {
                 rurl += "/" + this.getFilename();
             }
@@ -1048,7 +1049,7 @@ function EntryList(repository, jsonUrl, listener, doSearch) {
             this.haveLoaded = true;
         },
         getEntry: async function(id, callback) {
-            var entry = this.map[id];
+            let entry = this.map[id];
             if (entry != null) return Utils.call(callback, entry);
             await this.getRepository().getEntry(id, e => {
                 Utils.call(callback, e)
@@ -1059,8 +1060,8 @@ function EntryList(repository, jsonUrl, listener, doSearch) {
         },
         createEntries: function(data, listener, success) {
             this.entries = createEntriesFromJson(data, this.getRepository());
-            for (var i = 0; i < this.entries.length; i++) {
-                var entry = this.entries[i];
+            for (let i = 0; i < this.entries.length; i++) {
+                let entry = this.entries[i];
                 this.map[entry.getId()] = entry;
             }
             if (listener == null) {
@@ -1076,7 +1077,7 @@ function EntryList(repository, jsonUrl, listener, doSearch) {
             if (listener == null) {
                 listener = this.listener;
             }
-            var _this = this;
+            let _this = this;
             //console.log("search url:" + this.url);
             await $.getJSON(this.url, function(data, status, jqxhr) {
                 if (GuiUtils.isJsonError(data)) {
@@ -1194,7 +1195,7 @@ function EntrySearchSettings(props) {
 
 
 function EntryListHolder(ramadda) {
-    var SUPER;
+    let SUPER;
     RamaddaUtil.inherit(this, SUPER = new EntryList(ramadda, null));
 
     $.extend(this, {
@@ -1203,14 +1204,14 @@ function EntryListHolder(ramadda) {
             this.entryLists.push(e);
         },
         doSearch: function(listener) {
-            var _this = this;
+            let _this = this;
             if (listener == null) {
                 listener = this.listener;
             }
-            for (var i = 0; i < this.entryLists.length; i++) {
-                var entryList = this.entryLists[i];
+            for (let i = 0; i < this.entryLists.length; i++) {
+                let entryList = this.entryLists[i];
                 if (!entryList.getRepository().canSearch()) continue;
-                var callback = {
+                let callback = {
                     entryListChanged: function(entryList) {
                         if (listener) {
                             listener.entryListChanged(_this, entryList);
@@ -1221,9 +1222,9 @@ function EntryListHolder(ramadda) {
             }
         },
         getEntry: async function(id) {
-            for (var i = 0; i < this.entryLists.length; i++) {
-                var entryList = this.entryLists[i];
-                var entry;
+            for (let i = 0; i < this.entryLists.length; i++) {
+                let entryList = this.entryLists[i];
+                let entry;
                 await entryList.getEntry(id, e => {
                     entry = e
                 });
@@ -1234,10 +1235,10 @@ function EntryListHolder(ramadda) {
             return null;
         },
         getEntries: function() {
-            var entries = [];
-            for (var i = 0; i < this.entryLists.length; i++) {
-                var sub = this.entryLists[i].getEntries();
-                for (var j = 0; j < sub.length; j++) {
+            let entries = [];
+            for (let i = 0; i < this.entryLists.length; i++) {
+                let sub = this.entryLists[i].getEntries();
+                for (let j = 0; j < sub.length; j++) {
                     entries.push(sub[j]);
                 }
             }
