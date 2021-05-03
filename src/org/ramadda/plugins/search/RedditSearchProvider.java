@@ -108,7 +108,9 @@ public class RedditSearchProvider extends SearchProvider {
             url = "https://www.reddit.com" + q + ".json";
         } else {
             url = HtmlUtils.url(URL, "q", q);
+	    url +="&limit=" + request.get(ARG_MAX,100);
         }
+
 
         System.err.println(getName() + " search url:" + url);
         URLConnection connection = new URL(url).openConnection();

@@ -6632,13 +6632,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             ? "name:".length()
                             : "category:".length());
                     //                    System.err.println ("doName:" + doName +" pattern:" + pattern);
-                    for (SearchProvider provider :
+                    for (SearchProvider searchProvider :
 			     getSearchManager().getSearchProviders()) {
-			if(seen.contains(provider.getId())) continue;
-			seen.add(provider.getId());
+			if(seen.contains(searchProvider.getId())) continue;
+			seen.add(searchProvider.getId());
                         String  target  = doName
-                                          ? provider.getName()
-                                          : provider.getCategory();
+                                          ? searchProvider.getName()
+                                          : searchProvider.getCategory();
                         boolean include = target.equals(pattern);
                         if ( !include) {
                             try {
@@ -6649,16 +6649,17 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                         }
 
                         if (include) {
-                            String icon = provider.getSearchProviderIconUrl();
+                            String icon = searchProvider.getSearchProviderIconUrl();
                             if (icon == null) {
                                 icon = "${root}/icons/magnifier.png";
                             }
                             icon = getPageHandler().applyBaseMacros(icon);
-			    String v =Json.map("id",Json.quote(provider.getId()),
-					       "type",Json.quote(provider.getType()),
-					       "name",Json.quote(provider.getName()),
+			    String v =Json.map("id",Json.quote(searchProvider.getId()),
+					       "type",Json.quote(searchProvider.getType()),
+					       "name",Json.quote(searchProvider.getName()),
+					       "capabilities",Json.quote(searchProvider.getCapabilities()),					       
 					       "icon",Json.quote(icon),
-					       "category",Json.quote(provider.getCategory()));
+					       "category",Json.quote(searchProvider.getCategory()));
                             processed.add(v);
                         }
                     }
@@ -6697,6 +6698,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 		    String v =Json.map("id",Json.quote(id),
 				       "type",Json.quote(searchProvider.getType()),
 				       "name",Json.quote(label),
+				       "capabilities",Json.quote(searchProvider.getCapabilities()),					       
 				       "icon",Json.quote(icon),
 				       "category",Json.quote(searchProvider.getCategory()));
 		    processed.add(v);

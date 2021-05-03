@@ -1129,8 +1129,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	TopDocs       hits     = searcher.search(query, max+skip,sort);
 	//        TopDocs       hits     = searcher.search(query, 100);		
         ScoreDoc[]    docs     = hits.scoreDocs;
-	System.err.println("lucene results:" + docs.length +" query:" + query);
-
 	HashSet seen = new HashSet();
         for (int i = skip; i < docs.length; i++) {
             org.apache.lucene.document.Document doc =
@@ -1153,6 +1151,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    //	    System.err.println("entry:"+ entry +" id:" + entry.getId());
 	    entries.add(entry);
         }
+	System.err.println("lucene results:" + docs.length +" #entries:" + entries.size() +" query:" + query);
     }
 
 

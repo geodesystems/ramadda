@@ -51,6 +51,8 @@ public abstract class SearchProvider extends GenericTypeHandler {
     /** _more_ */
     public static final String CATEGORY_SCIENCE = "Science & Academic";
 
+    public static final String CAPABILITY_AREA = "area";
+
     /** _more_ */
     private String id;
 
@@ -100,6 +102,10 @@ public abstract class SearchProvider extends GenericTypeHandler {
                      : name);
     }
 
+
+    public String getCapabilities() {
+	return "";
+    }
 
 
     /**

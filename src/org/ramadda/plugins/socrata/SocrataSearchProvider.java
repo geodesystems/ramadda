@@ -284,6 +284,8 @@ public class SocrataSearchProvider extends SearchProvider {
                          "q",
                          HtmlUtils.urlEncodeSpace(
                              request.getString(ARG_TEXT, "")), false);
+	url += "&" + HtmlUtils.arg("limit", ""+request.get(ARG_MAX,100));
+	url += "&" + HtmlUtils.arg("offset", ""+request.get(ARG_SKIP,0));	
         if (hostname != null) {
             url += "&" + HtmlUtils.arg("domains", hostname);
         }

@@ -155,6 +155,10 @@ public class CkanSearchProvider extends SearchProvider {
         List<Entry> entries = new ArrayList<Entry>();
         String url = HtmlUtils.url(baseUrl + URL_ROOT, "q",
                                    request.getString(ARG_TEXT, ""));
+	url += "&" + HtmlUtils.arg("rows", ""+request.get(ARG_MAX,100));
+	url += "&" + HtmlUtils.arg("start", ""+request.get(ARG_SKIP,0));	
+	System.err.println("ckan url:" + url);
+
         JSONObject obj  = null;
         String     json = null;
 
