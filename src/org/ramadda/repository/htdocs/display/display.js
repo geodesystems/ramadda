@@ -3992,9 +3992,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 						 [ATTR_CLASS, "display-entry-toolbar-item", ATTR_ID, this.getDomId(ID_MENU_BUTTON + entry.getIdForDom())]));
             return menuButton;
         },
+        setOriginalRamadda: function(e) {
+            this.originalRamadda = e;
+        },
         setRamadda: function(e) {
             this.ramadda = e;
-        },
+        },	
         getRamadda: function() {
             if (this.ramadda != null) {
                 return this.ramadda;

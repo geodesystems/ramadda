@@ -2,6 +2,9 @@
  * Copyright (c) 2008-2021 Geode Systems LLC
  */
 
+var currentRamaddaBase;
+
+
 function mouseOverOnEntry(event, entryId, targetId) {
     if (Utils.mouseIsDown && Utils.entryDragInfo) {
 	if(Utils.entryDragInfo.hasEntry(entryId)) return;
@@ -464,7 +467,6 @@ function toggleInlineVisibility(id, imgid, showimg, hideimg) {
 }
 
 
-
 let originalImages = new Array();
 let changeImages = new Array();
 
@@ -481,6 +483,12 @@ function folderClick(uid, url, changeImg) {
         jqBlock.show();
         jqImage.html(HU.getIconImage("fa-caret-down"));
 	url +="&orderby=entryorder&ascending=true";
+	if(url.startsWith("/") && currentRamaddaBase) {
+	    url = currentRamaddaBase +url;
+	}
+
+
+
         GuiUtils.loadXML(url, handleFolderList, uid);
     } else {
         if (changeImg) {
@@ -567,7 +575,16 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
             at: "left bottom",
             collision: "none none"
         });
-        url = this.ramaddaUrl + "/entry/show?output=selectxml&selecttype=" + this.selecttype + "&allentries=" + this.allEntries + "&target=" + this.id + "&noredirect=true&firstclick=true";
+
+        let url =  "/entry/show?output=selectxml&selecttype=" + this.selecttype + "&allentries=" + this.allEntries + "&target=" + this.id + "&noredirect=true&firstclick=true";
+	if(this.ramaddaUrl && !this.ramaddaUrl.startsWith("/")) {
+	    let pathname = new URL(this.ramaddaUrl).pathname
+	    let root = this.ramaddaUrl.replace(pathname,"");
+	    currentRamaddaBase = root;
+            url = this.ramaddaUrl + url;
+	} else {
+	    currentRamaddaBase = null;
+	}
         if (this.localeId) {
             url = url + "&localeid=" + this.localeId;
         }
@@ -624,7 +641,7 @@ function selectCancel(override) {
 function selectCreate(event, selectorId, elementId, allEntries, selecttype, localeId, entryType, baseUrl) {
     let key = selectorId + (baseUrl||"");
     if (!selectors[key]) {
-        selectors[key] = new Selector(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl);
+        selectors[selectorId] = selectors[key] = new Selector(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl);
     } else {
         //Don:  alert('have selector'):
         selectors[key].handleClick(event);
@@ -640,7 +657,6 @@ function selectInitialClick(event, selectorId, elementId, allEntries, selecttype
 
 function clearSelect(id) {
     selector = selectors[id];
-
     if (selector) {
         selector.clearInput();
     } else {

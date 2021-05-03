@@ -128,6 +128,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
                 container.addRepository(this.ramaddas[i]);
             }
             this.ramaddas.push(container);
+            this.setOriginalRamadda(this.ramaddas[0]);
             this.setRamadda(this.ramaddas[0]);
         }
     }
@@ -1517,16 +1518,20 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
         },
         providerChanged: function() {
 	    if(this.jq(ID_PROVIDERS).length==0) return;
+	    if(this.jq(ID_ANCESTOR).val) {
+		this.jq(ID_ANCESTOR).val("");
+		this.jq(ID_ANCESTOR+"_hidden").val("");		
+	    }
             let id = this.jq(ID_PROVIDERS).val();
 	    this.provider = this.providerMap[id];
 	    HU.addToDocumentUrl(ID_PROVIDERS,id);
 	    this.jq(ID_SEARCH_BAR).html("");
             if (this.provider.type!="ramadda") {
+		this.setRamadda(this.originalRamadda);
                 this.jq(ID_SEARCH_SETTINGS).hide();
 		this.jq(ID_TYPE_DIV).hide();
             } else {
 		this.setRamadda(getRamadda(this.provider.id+";"+ this.provider.name));
-		console.log("providerChanged:" +this.getRamadda());
                 this.jq(ID_SEARCH_SETTINGS).show();
 		this.jq(ID_TYPE_DIV).show();
 		this.addTypes();
