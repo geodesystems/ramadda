@@ -1927,6 +1927,7 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
         if (outputType.equals(OUTPUT_SELECTXML)) {
+            request.setCORSHeaderOnResponse();
             return getSelectXml(request, group, subGroups, entries);
         }
 
