@@ -6915,10 +6915,20 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @param entries _more_
      */
-    public void checkNewEntries(List<Entry> entries) {
-        for (EntryChecker entryMonitor : entryMonitors) {
-            entryMonitor.entriesCreated(entries);
-        }
+    public void checkNewEntries(final List<Entry> entries) {
+	Misc.run(new Runnable() {public void run() {
+	    for (EntryChecker entryMonitor : getEntryCheckers()) {
+		entryMonitor.entriesCreated(entries);
+	    }
+	}});
+    }
+
+    public void checkMovedEntries(final List<Entry> entries) {
+	Misc.run(new Runnable() {public void run() {
+	    for (EntryChecker entryMonitor : getEntryCheckers()) {
+		entryMonitor.entriesMoved(entries);
+	    }
+	}});
     }
 
     /**
@@ -6926,10 +6936,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @param ids _more_
      */
-    public void checkDeletedEntries(List<String> ids) {
-        for (EntryChecker entryMonitor : entryMonitors) {
-            entryMonitor.entriesDeleted(ids);
-        }
+    public void checkDeletedEntries(final List<String> ids) {
+	Misc.run(new Runnable() {public void run() {
+	    for (EntryChecker entryMonitor : getEntryCheckers()) {
+		entryMonitor.entriesDeleted(ids);
+	    }
+	}});
     }
 
 
@@ -6938,10 +6950,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @param entries _more_
      */
-    public void checkModifiedEntries(List<Entry> entries) {
-        for (EntryChecker entryMonitor : entryMonitors) {
-            entryMonitor.entriesModified(entries);
-        }
+    public void checkModifiedEntries(final List<Entry> entries) {
+	Misc.run(new Runnable() {public void run() {
+	    for (EntryChecker entryMonitor : getEntryCheckers()) {
+		entryMonitor.entriesModified(entries);
+	    }
+	}});
     }
 
 

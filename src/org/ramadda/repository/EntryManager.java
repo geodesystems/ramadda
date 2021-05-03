@@ -4465,10 +4465,7 @@ public class EntryManager extends RepositoryManager {
             getDatabaseManager().closeStatement(statement);
             connection.setAutoCommit(true);
 
-	    for(EntryChecker checker: getRepository().getEntryCheckers()) {
-		checker.entriesMoved(entries);
-	    }
-
+	    getRepository().checkMovedEntries(entries);
 
             return new Result(request.makeUrl(getRepository().URL_ENTRY_SHOW,
 					      ARG_ENTRYID, entries.get(0).getId()));
