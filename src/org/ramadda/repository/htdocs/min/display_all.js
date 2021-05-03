@@ -27737,7 +27737,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             let provider = this.getSearchSettings().provider;
             if (provider != null) {
                 msg = null;
-                if (this.providerMap != null) {
+                if (this.providerMap != null && this.providerMap[provider]) {
                     msg = this.providerMap[provider].name;
                 }
                 if (msg == null) {
