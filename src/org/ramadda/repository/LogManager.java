@@ -939,7 +939,7 @@ public class LogManager extends RepositoryManager {
 
             String dttm = getDateHandler().formatDate(logEntry.getDate());
             dttm = dttm.replace(" ", "&nbsp;");
-            String user = logEntry.getUser().getLabel();
+            String user = logEntry.getUser()!=null?logEntry.getUser().getLabel():"anonymous";
             user = user.replace(" ", "&nbsp;");
             String cols = HtmlUtils.cols(user, dttm, path, logEntry.getIp(),
                                          userAgent);
