@@ -18,6 +18,7 @@ package org.ramadda.plugins.biz;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
@@ -48,6 +49,9 @@ public class FredSearchProvider extends SearchProvider {
 
     /** _more_ */
     private static final String ID = "fred";
+
+    private static final String[] TAGS = {"frequency","units","seasonal_adjustment"};
+
 
     /** _more_ */
     private static final String URL =
@@ -133,7 +137,7 @@ public class FredSearchProvider extends SearchProvider {
         int    skip = request.get(ARG_SKIP, 0);
         url = HtmlUtils.url(url, ARG_API_KEY, getApiKey(), ARG_SEARCH_TEXT,
                             text, ARG_LIMIT, "" + max, ARG_OFFSET, "" + skip);
-        //        System.err.println(getName() + " search url:" + url);
+	System.err.println(getName() + " search url:" + url);
         URLConnection connection = new URL(url).openConnection();
         connection.setRequestProperty("User-Agent", "ramadda");
         InputStream is  = connection.getInputStream();
@@ -152,9 +156,18 @@ public class FredSearchProvider extends SearchProvider {
             String  name     = XmlUtil.getAttribute(item, "title", "");
             String  desc     = XmlUtil.getAttribute(item, "notes", "");
             String  id       = XmlUtil.getAttribute(item, "id", "");
-            Date    dttm     = new Date();
+            Date    dttm     =  null;
+
+
+	    if(dttm==null)
+		dttm = new Date();
+
             Date    fromDate = dttm,
                     toDate   = dttm;
+	    String start = XmlUtil.getAttribute(item, "observation_start",(String)null);
+	    String end = XmlUtil.getAttribute(item, "observation_end",(String)null);	    
+	    if(start!=null) fromDate = Utils.parseDate(start);
+	    if(end!=null) toDate = Utils.parseDate(end);	    
             String entryUrl = "https://research.stlouisfed.org/fred2/series/"
                               + id;
             Entry newEntry = new Entry(Repository.ID_PREFIX_SYNTH + getId()
@@ -167,6 +180,20 @@ public class FredSearchProvider extends SearchProvider {
                                new Resource(new URL(entryUrl)), "",Entry.DEFAULT_ORDER,
                                dttm.getTime(), dttm.getTime(),
                                fromDate.getTime(), toDate.getTime(), values);
+	    for(String attr:TAGS) {
+		String v = XmlUtil.getAttribute(item,attr,(String)null);
+		if(v!=null) {
+		    Metadata metadata =
+                        new Metadata(getRepository().getGUID(),
+                                     newEntry.getId(), "property",
+                                     false, attr,v, null, null, null);
+                    getMetadataManager().addMetadata(newEntry, metadata);
+		}
+
+	    }
+
+
+
             getEntryManager().cacheSynthEntry(newEntry);
         }
 
