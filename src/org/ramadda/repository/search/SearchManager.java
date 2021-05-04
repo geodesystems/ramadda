@@ -232,7 +232,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     private static final String[] SEARCH_FIELDS ={FIELD_NAME, FIELD_DESCRIPTION, FIELD_CONTENTS,FIELD_PATH};
 
-    public static final int LUCENE_MAX_LENGTH = 10000000;
+    public static final int LUCENE_MAX_LENGTH = 50000000;
 
     private IndexWriter luceneWriter;
 
@@ -873,8 +873,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 					       ARG_AREA_MODE, VALUE_AREA_OVERLAPS).equals(
 											  VALUE_AREA_OVERLAPS));
 
-
-	contains=true;
 	List<SelectionRectangle> rectangles = getEntryUtil().getSelectionRectangles(request.getSelectionBounds());
 	List<Query> areaQueries = new ArrayList<Query>();
 	for (SelectionRectangle rectangle : rectangles) {
@@ -885,20 +883,15 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    double minLon = rectangle.hasWest()?rectangle.getWest():-180;
 	    double maxLon = rectangle.hasEast()?rectangle.getEast():180;	    
 	    if (contains) {
-		if (rectangle.hasNorth()) {
-		    areaQueries.add(DoublePoint.newRangeQuery(FIELD_NORTH,minLat,rectangle.getNorth()));
-		}
-		if (rectangle.hasSouth()) {
-		    areaQueries.add(DoublePoint.newRangeQuery(FIELD_SOUTH,rectangle.getSouth(),maxLat));
-		}
-		if (rectangle.hasWest()) {
-		    areaQueries.add(DoublePoint.newRangeQuery(FIELD_WEST,rectangle.getWest(),maxLon));
-		}
-		if (rectangle.hasEast()) {
-		    areaQueries.add(DoublePoint.newRangeQuery(FIELD_EAST,minLon,rectangle.getEast()));
-		}
+		areaQueries.add(DoublePoint.newRangeQuery(FIELD_NORTH,minLat,maxLat));
+		areaQueries.add(DoublePoint.newRangeQuery(FIELD_SOUTH,minLat,maxLat));
+		areaQueries.add(DoublePoint.newRangeQuery(FIELD_WEST,minLon,maxLon));
+		areaQueries.add(DoublePoint.newRangeQuery(FIELD_EAST,minLon,maxLon));
 	    } else {
-
+		areaQueries.add(DoublePoint.newRangeQuery(FIELD_NORTH,minLat,90));
+		areaQueries.add(DoublePoint.newRangeQuery(FIELD_SOUTH,-90,maxLat));
+		areaQueries.add(DoublePoint.newRangeQuery(FIELD_WEST,-180,maxLon));
+		areaQueries.add(DoublePoint.newRangeQuery(FIELD_EAST,minLon,180));
 	    }
 	}
 	if (areaQueries.size() > 0) {
