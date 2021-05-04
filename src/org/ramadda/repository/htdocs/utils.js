@@ -3585,7 +3585,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         var url = String(window.location);
 	if(!append) {
 	    url = new URL(url);
-	    url.searchParams.set(name,value);
+	    if(value===null) {
+		url.searchParams.delete(name);
+	    } else {
+		url.searchParams.set(name,value);
+	    }
 	    //	    let regex = new RegExp("(\\&|\\?)?" + name+"=[^\&]+(\\&|$)+", 'g');
 	    //	    url = url.replace(regex,"");
 	} else  {

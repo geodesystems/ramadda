@@ -711,6 +711,9 @@ function Entry(props) {
         getIdForDom: function() {
             return this.domId;
         },
+	isSynth: function() {
+	    return this.id.startsWith("synth:");
+	},
         getFullId: function() {
             return this.getRamadda().getRoot() + "," + this.id;
         },

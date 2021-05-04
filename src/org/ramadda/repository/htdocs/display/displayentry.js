@@ -41,6 +41,7 @@ let ID_SEARCH = "search";
 let ID_FORM = "form";
 let ID_TEXT_FIELD = "textfield";
 let ID_ANCESTOR = "ancestor";
+let ID_ANCESTOR_NAME = "ancestorname";
 let ID_TYPE_FIELD = "typefield";
 let ID_TYPE_DIV = "typediv";
 let ID_TYPEFIELDS = "typefields";
@@ -113,7 +114,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
     RamaddaUtil.inherit(this, SUPER);
     this.defineProperties([
 	{label:'Entry Search'},
-	{p:'providers',ex:'',tt:'List of search providers'},
+	{p:'providers',ex:'this,category:.*',tt:'List of search providers'},
     ]);
 
     this.ramaddas = new Array();
@@ -428,6 +429,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         {p:"showMetadata",d: true},
 	{p:'metadataTypes', d:'enum_tag:Tag,content.keyword:Keyword,thredds.variable:Variable'},
         {p:"showTags",d: true},	
+	{p:'searchDirect',d:true,tt:'Directly search remote RAMADDA repositories'},
         {p:"fields",d: null},
         {p:"formWidth",d: "300px"},
         {p:"entriesWidth",d: 0},
@@ -754,6 +756,14 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    let ancestor = this.jq(ID_ANCESTOR+"_hidden").val();
 	    if(Utils.stringDefined(ancestor)) {
 		settings.ancestor = ancestor;
+		HU.addToDocumentUrl(ID_ANCESTOR,ancestor);
+		let name = this.jq(ID_ANCESTOR).val();
+		if(name)
+		    HU.addToDocumentUrl(ID_ANCESTOR_NAME,name);		    
+	    } else {
+		//delete it
+		HU.addToDocumentUrl(ID_ANCESTOR,null);
+		HU.addToDocumentUrl(ID_ANCESTOR_NAME,null);		
 	    }
             if (this.areaWidget) {
                 this.areaWidget.setSearchSettings(settings);
@@ -1042,12 +1052,15 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		extra += HU.formTable();
 
 	    if(this.getShowAncestor() && ramaddaTreeSearchEnabled===true) {
+		let ancestor = HU.getUrlArgument(ID_ANCESTOR);
+		let name = HU.getUrlArgument(ID_ANCESTOR_NAME);		
 		let aid = this.domId(ID_ANCESTOR);
 		let selectClick = "selectInitialClick(event," + HU.squote(aid)+"," +HU.squote(aid) +",'true',null,null,'');";
 		let clear = HU.href("javascript:void(0);",HU.getIconImage("fas fa-eraser"), ['onClick',"clearSelect(" + HU.squote(aid) +");",TITLE,"Clear selection"]);
-		let input = HU.input("","",["xonClick",selectClick, "READONLY",null,'placeholder',' Search under', STYLE,HU.css('cursor','pointer','width','100%'),ID,aid,CLASS,"ramadda-entry-popup-select  disabledinput"]);
+		let input = HU.input("",name||"",["READONLY",null,'placeholder',' Search under', STYLE,HU.css('cursor','pointer','width','100%'),ID,aid,CLASS,"ramadda-entry-popup-select  disabledinput"]);
 
-		extra += HU.hidden("","",[ID,aid+"_hidden",CLASS,"hiddeninput"]);
+
+		extra += HU.hidden("",ancestor||"",[ID,aid+"_hidden"]);
 		extra+=addWidget("",HU.div([ID,this.domId(ID_SEARCH_ANCESTOR)], HU.leftRightTable(clear,input,"5%", "95%")));
 	    }
 
@@ -1513,7 +1526,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
             this.createUI();
             this.setContents(this.getDefaultHtml());
 	    this.initHtml();
-            this.providerChanged();
+            this.providerChanged(true);
             if (this.dateRangeWidget) {
                 this.dateRangeWidget.initHtml();
             }
@@ -1530,9 +1543,9 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
                 _this.providerChanged();
             });
         },
-        providerChanged: function() {
+        providerChanged: function(initialCall) {
 	    if(this.jq(ID_PROVIDERS).length==0) return;
-	    if(this.jq(ID_ANCESTOR).val) {
+	    if(!initialCall && this.jq(ID_ANCESTOR).val) {
 		this.jq(ID_ANCESTOR).val("");
 		this.jq(ID_ANCESTOR+"_hidden").val("");		
 	    }
@@ -1557,14 +1570,16 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 		});
 		this.jq(ID_TYPE_DIV).hide();
             } else {
-		if(this.provider)
-		    this.setRamadda(getRamadda(this.provider.id+";"+ this.provider.name));
 		blocks.forEach(id=>{
 		    this.jq(id).show();
 		});
 		this.jq(ID_TYPE_DIV).show();
-		this.addTypes();
-		this.initMetadata();
+		if(this.getSearchDirect()) {
+		    if(this.provider)
+			this.setRamadda(getRamadda(this.provider.id+";"+ this.provider.name));
+		    this.addTypes();
+		    this.initMetadata();
+		}
             }
         },
         getMenuItems: function(menuItems) {

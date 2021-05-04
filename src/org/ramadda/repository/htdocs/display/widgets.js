@@ -17,8 +17,9 @@ function AreaWidget(display) {
     const ID_SET_LOCATION="mapsetlocation";
 
 
+
     $.extend(this, {
-	areaContains:false,
+	areaContains: HU.getUrlArgument("map_contains")=="true",
         display: display,
         initHtml: function() {
 	    this.display.jq(ID_SETTINGS).click(()=>{
@@ -59,10 +60,7 @@ function AreaWidget(display) {
 	    let bounds =  HU.getUrlArgument("map_bounds");
 	    let n="",w="",s="",e="";
 	    if(bounds) {
-		let toks  = bounds.split(",");
-		if(toks.length==4) {
-		    n = toks[0]; w=toks[1]; s=toks[2]; e=toks[3];
-		}
+		[n,w,s,e]  = bounds.split(",");
 	    }
             let callback = this.display.getGet();
             let settings = HU.div([TITLE,"Settings",CLASS,"ramadda-clickable",ID,this.display.domId(ID_SETTINGS)],HU.getIconImage("fas fa-cog"));
@@ -151,11 +149,14 @@ function AreaWidget(display) {
             $("#" + this.display.getDomId(ID_EAST)).val(MapUtils.formatLocationValue(bounds.right));
         },
         setSearchSettings: function(settings) {
+	    let n = this.display.getFieldValue(this.display.getDomId(ID_NORTH), null);
+	    let w = this.display.getFieldValue(this.display.getDomId(ID_WEST), null);	    
+	    let s = this.display.getFieldValue(this.display.getDomId(ID_SOUTH), null);
+	    let e = this.display.getFieldValue(this.display.getDomId(ID_EAST), null);
             settings.setAreaContains(this.areaContains);
-            settings.setBounds(this.display.getFieldValue(this.display.getDomId(ID_NORTH), null),
-			       this.display.getFieldValue(this.display.getDomId(ID_WEST), null),
-			       this.display.getFieldValue(this.display.getDomId(ID_SOUTH), null),
-			       this.display.getFieldValue(this.display.getDomId(ID_EAST), null));
+	    HU.addToDocumentUrl("map_contains",this.areaContains);
+            settings.setBounds(n,w,s,e);
+	    HU.addToDocumentUrl("map_bounds",[n||"",w||"",s||"",e||""].join(","));
         },
     });
 }
@@ -166,7 +167,7 @@ function DateRangeWidget(display, what) {
     const ID_DATE_START = "date_start";
     const ID_DATE_END = "date_end";
     let startLabel, endLabel;
-    this.what = what;
+    this.what = what||"date";
     if(what == "createdate") {
 	startLabel = "Create start";
 	endLabel = "Create end";	
@@ -175,7 +176,7 @@ function DateRangeWidget(display, what) {
 	endLabel = "End date";	
     }
 
-    this.baseId = Utils.getUniqueId("");
+    this.baseId = this.what;
     RamaddaUtil.inherit(this, {
         display: display,
         initHtml: function() {
@@ -185,16 +186,20 @@ function DateRangeWidget(display, what) {
         setSearchSettings: function(settings) {
             let start = $("#"+ this.baseId +ID_DATE_START).val();
             let end =  $("#"+ this.baseId +ID_DATE_END).val();
+	    HU.addToDocumentUrl(this.baseId+ID_DATE_START,Utils.stringDefined(start)?start:null);
+	    HU.addToDocumentUrl(this.baseId+ID_DATE_END,Utils.stringDefined(end)?end:null);		    	    
 	    if(this.what=="createdate")
 		settings.setCreateDateRange(start, end);
 	    else
 		settings.setDateRange(start, end);
         },
         getHtml: function() {
-            let html = HtmlUtils.input(this.baseId +ID_DATE_START, "", [CLASS, "display-date-input", "placeholder", " " +startLabel, TITLE, startLabel, ATTR_ID,
+	    let start = HU.getUrlArgument(this.baseId+ID_DATE_START);
+	    let end = HU.getUrlArgument(this.baseId+ID_DATE_END);	    
+            let html = HtmlUtils.input(this.baseId +ID_DATE_START, start||"", [CLASS, "display-date-input", "placeholder", " " +startLabel, TITLE, startLabel, ATTR_ID,
 									this.baseId +ID_DATE_START, 
 							  ]) + " - " +
-                HtmlUtils.input(this.baseId +ID_DATE_END, "", [CLASS, "display-date-input", "placeholder",  " " +endLabel, TITLE,endLabel,ATTR_ID,
+                HtmlUtils.input(this.baseId +ID_DATE_END, end||"", [CLASS, "display-date-input", "placeholder",  " " +endLabel, TITLE,endLabel,ATTR_ID,
 							       this.baseId +ID_DATE_END, 
 						 ]);
             return html;

@@ -17,8 +17,9 @@ function AreaWidget(display) {
     const ID_SET_LOCATION="mapsetlocation";
 
 
+
     $.extend(this, {
-	areaContains:false,
+	areaContains: HU.getUrlArgument("map_contains")=="true",
         display: display,
         initHtml: function() {
 	    this.display.jq(ID_SETTINGS).click(()=>{
@@ -59,10 +60,7 @@ function AreaWidget(display) {
 	    let bounds =  HU.getUrlArgument("map_bounds");
 	    let n="",w="",s="",e="";
 	    if(bounds) {
-		let toks  = bounds.split(",");
-		if(toks.length==4) {
-		    n = toks[0]; w=toks[1]; s=toks[2]; e=toks[3];
-		}
+		[n,w,s,e]  = bounds.split(",");
 	    }
             let callback = this.display.getGet();
             let settings = HU.div([TITLE,"Settings",CLASS,"ramadda-clickable",ID,this.display.domId(ID_SETTINGS)],HU.getIconImage("fas fa-cog"));
@@ -151,11 +149,14 @@ function AreaWidget(display) {
             $("#" + this.display.getDomId(ID_EAST)).val(MapUtils.formatLocationValue(bounds.right));
         },
         setSearchSettings: function(settings) {
+	    let n = this.display.getFieldValue(this.display.getDomId(ID_NORTH), null);
+	    let w = this.display.getFieldValue(this.display.getDomId(ID_WEST), null);	    
+	    let s = this.display.getFieldValue(this.display.getDomId(ID_SOUTH), null);
+	    let e = this.display.getFieldValue(this.display.getDomId(ID_EAST), null);
             settings.setAreaContains(this.areaContains);
-            settings.setBounds(this.display.getFieldValue(this.display.getDomId(ID_NORTH), null),
-			       this.display.getFieldValue(this.display.getDomId(ID_WEST), null),
-			       this.display.getFieldValue(this.display.getDomId(ID_SOUTH), null),
-			       this.display.getFieldValue(this.display.getDomId(ID_EAST), null));
+	    HU.addToDocumentUrl("map_contains",this.areaContains);
+            settings.setBounds(n,w,s,e);
+	    HU.addToDocumentUrl("map_bounds",[n||"",w||"",s||"",e||""].join(","));
         },
     });
 }
@@ -166,7 +167,7 @@ function DateRangeWidget(display, what) {
     const ID_DATE_START = "date_start";
     const ID_DATE_END = "date_end";
     let startLabel, endLabel;
-    this.what = what;
+    this.what = what||"date";
     if(what == "createdate") {
 	startLabel = "Create start";
 	endLabel = "Create end";	
@@ -175,7 +176,7 @@ function DateRangeWidget(display, what) {
 	endLabel = "End date";	
     }
 
-    this.baseId = Utils.getUniqueId("");
+    this.baseId = this.what;
     RamaddaUtil.inherit(this, {
         display: display,
         initHtml: function() {
@@ -185,16 +186,20 @@ function DateRangeWidget(display, what) {
         setSearchSettings: function(settings) {
             let start = $("#"+ this.baseId +ID_DATE_START).val();
             let end =  $("#"+ this.baseId +ID_DATE_END).val();
+	    HU.addToDocumentUrl(this.baseId+ID_DATE_START,Utils.stringDefined(start)?start:null);
+	    HU.addToDocumentUrl(this.baseId+ID_DATE_END,Utils.stringDefined(end)?end:null);		    	    
 	    if(this.what=="createdate")
 		settings.setCreateDateRange(start, end);
 	    else
 		settings.setDateRange(start, end);
         },
         getHtml: function() {
-            let html = HtmlUtils.input(this.baseId +ID_DATE_START, "", [CLASS, "display-date-input", "placeholder", " " +startLabel, TITLE, startLabel, ATTR_ID,
+	    let start = HU.getUrlArgument(this.baseId+ID_DATE_START);
+	    let end = HU.getUrlArgument(this.baseId+ID_DATE_END);	    
+            let html = HtmlUtils.input(this.baseId +ID_DATE_START, start||"", [CLASS, "display-date-input", "placeholder", " " +startLabel, TITLE, startLabel, ATTR_ID,
 									this.baseId +ID_DATE_START, 
 							  ]) + " - " +
-                HtmlUtils.input(this.baseId +ID_DATE_END, "", [CLASS, "display-date-input", "placeholder",  " " +endLabel, TITLE,endLabel,ATTR_ID,
+                HtmlUtils.input(this.baseId +ID_DATE_END, end||"", [CLASS, "display-date-input", "placeholder",  " " +endLabel, TITLE,endLabel,ATTR_ID,
 							       this.baseId +ID_DATE_END, 
 						 ]);
             return html;
@@ -6787,6 +6792,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return;
 	    }
 
+
             //                console.log("toggleEntryDetails:" + entry.getName() +" " + entry.getId());
             if (suffix == null) suffix = "";
             let link = this.jq(ID_TREE_LINK + entry.getIdForDom() + suffix);
@@ -6815,7 +6821,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 return;
             }
 
-
             let open = link.attr("tree-open") == "true";
             if (open) {
                 link.attr("src", icon_tree_closed);
@@ -6843,7 +6848,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return;
             } 
 	    let detailsInner = this.jq(ID_DETAILS_INNER + entry.getIdForDom() + suffix);
-            if (entry.getIsGroup() /* && !entry.isRemote*/ ) {
+            if (!entry.isSynth() && entry.getIsGroup() /* && !entry.isRemote*/ ) {
                 detailsInner.html(HU.image(icon_progress));
                 let callback = function(entries) {
                     _this.displayChildren(entry, entries, suffix, handlerId);
@@ -6860,6 +6865,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    let metadataMap  = {};
 	    let metadata = "";
+	    let prefix = entry.isSynth()?"":HU.getIconImage("fas fa-search") + SPACE;
 	    entry.getMetadata().forEach(m=>{
 		//Check for exclusions
 		if(["content.pagestyle", "content.pagetemplate","content.thumbnail","content.attachment"].includes(m.type)) return;
@@ -6867,37 +6873,47 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(m.type.startsWith("spatial")) return;		
                 let tt = m.label+": " + m.value.attr1;
                 let label =String(m.value.attr1);
+		if(m.type=="property") {
+		    tt +=":" + m.value.attr2;
+		    label +=":" + m.value.attr2;
+		}
 		if(label.length>20) label = label.substring(0,19) +"...";
-		label = HU.getIconImage("fas fa-search") + SPACE + label;
+		label = prefix +label;
 		let id = Utils.getUniqueId("metadata_");
 		metadata+=HU.div([ID,id,CLASS,"display-search-tag",TITLE, tt],label);
 		metadataMap[id] = m;
 		
 	    });
 	    let bar = this.jq(ID_DETAILS_TAGS + entry.getIdForDom() + suffix);
-	    let typeTag = $(HU.span([CLASS,"display-search-tag"],HU.getIconImage("fas fa-search") + SPACE + "Type: " + entry.getType().getLabel())).appendTo(bar);
-	    typeTag.click(function() {
-		_this.typeTagClicked(entry.getType());
-	    });
+	    let typeTag = $(HU.span([CLASS,"display-search-tag"],prefix + "Type: " + entry.getType().getLabel())).appendTo(bar);
+	    if(!entry.isSynth()) {
+		typeTag.click(function() {
+		    _this.typeTagClicked(entry.getType());
+		});
+	    }
 	    let tags = $(metadata).appendTo(bar);
-	    tags.click(function() {
-		_this.metadataTagClicked(metadataMap[$(this).attr("id")]);
-	    });	    
+	    if(!entry.isSynth()) {
+		tags.click(function() {
+		    _this.metadataTagClicked(metadataMap[$(this).attr("id")]);
+		});
+	    }
 
 
-	    let ancestorContent = "";
-	    let handleAncestor = ancestor=>{
-		if(!ancestor) {
-		    this.jq(ID_DETAILS_ANCESTORS + entry.getIdForDom() + suffix).html(ancestorContent);
-		} else {
-		    let href= ancestor.getLink(null, false,["target","_entries"]);
-		    if(ancestorContent!="")
-			href = href + HU.div([CLASS,"breadcrumb-delimiter"]);
-		    ancestorContent = href +  ancestorContent;
-		    ancestor.getParentEntry(handleAncestor);
-		}
-	    };
-	    entry.getParentEntry(handleAncestor);
+	    if(!entry.isSynth()) {
+		let ancestorContent = "";
+		let handleAncestor = ancestor=>{
+		    if(!ancestor) {
+			this.jq(ID_DETAILS_ANCESTORS + entry.getIdForDom() + suffix).html(ancestorContent);
+		    } else {
+			let href= ancestor.getLink(null, false,["target","_entries"]);
+			if(ancestorContent!="")
+			    href = href + HU.div([CLASS,"breadcrumb-delimiter"]);
+			ancestorContent = href +  ancestorContent;
+			ancestor.getParentEntry(handleAncestor);
+		    }
+		};
+		entry.getParentEntry(handleAncestor);
+	    }
         },
 	metadataTagClicked:function(metadata) {
 	},
@@ -26936,6 +26952,7 @@ let ID_SEARCH = "search";
 let ID_FORM = "form";
 let ID_TEXT_FIELD = "textfield";
 let ID_ANCESTOR = "ancestor";
+let ID_ANCESTOR_NAME = "ancestorname";
 let ID_TYPE_FIELD = "typefield";
 let ID_TYPE_DIV = "typediv";
 let ID_TYPEFIELDS = "typefields";
@@ -27008,7 +27025,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
     RamaddaUtil.inherit(this, SUPER);
     this.defineProperties([
 	{label:'Entry Search'},
-	{p:'providers',ex:'',tt:'List of search providers'},
+	{p:'providers',ex:'this,category:.*',tt:'List of search providers'},
     ]);
 
     this.ramaddas = new Array();
@@ -27323,6 +27340,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         {p:"showMetadata",d: true},
 	{p:'metadataTypes', d:'enum_tag:Tag,content.keyword:Keyword,thredds.variable:Variable'},
         {p:"showTags",d: true},	
+	{p:'searchDirect',d:true,tt:'Directly search remote RAMADDA repositories'},
         {p:"fields",d: null},
         {p:"formWidth",d: "300px"},
         {p:"entriesWidth",d: 0},
@@ -27649,6 +27667,14 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    let ancestor = this.jq(ID_ANCESTOR+"_hidden").val();
 	    if(Utils.stringDefined(ancestor)) {
 		settings.ancestor = ancestor;
+		HU.addToDocumentUrl(ID_ANCESTOR,ancestor);
+		let name = this.jq(ID_ANCESTOR).val();
+		if(name)
+		    HU.addToDocumentUrl(ID_ANCESTOR_NAME,name);		    
+	    } else {
+		//delete it
+		HU.addToDocumentUrl(ID_ANCESTOR,null);
+		HU.addToDocumentUrl(ID_ANCESTOR_NAME,null);		
 	    }
             if (this.areaWidget) {
                 this.areaWidget.setSearchSettings(settings);
@@ -27937,12 +27963,15 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		extra += HU.formTable();
 
 	    if(this.getShowAncestor() && ramaddaTreeSearchEnabled===true) {
+		let ancestor = HU.getUrlArgument(ID_ANCESTOR);
+		let name = HU.getUrlArgument(ID_ANCESTOR_NAME);		
 		let aid = this.domId(ID_ANCESTOR);
 		let selectClick = "selectInitialClick(event," + HU.squote(aid)+"," +HU.squote(aid) +",'true',null,null,'');";
 		let clear = HU.href("javascript:void(0);",HU.getIconImage("fas fa-eraser"), ['onClick',"clearSelect(" + HU.squote(aid) +");",TITLE,"Clear selection"]);
-		let input = HU.input("","",["xonClick",selectClick, "READONLY",null,'placeholder',' Search under', STYLE,HU.css('cursor','pointer','width','100%'),ID,aid,CLASS,"ramadda-entry-popup-select  disabledinput"]);
+		let input = HU.input("",name||"",["READONLY",null,'placeholder',' Search under', STYLE,HU.css('cursor','pointer','width','100%'),ID,aid,CLASS,"ramadda-entry-popup-select  disabledinput"]);
 
-		extra += HU.hidden("","",[ID,aid+"_hidden",CLASS,"hiddeninput"]);
+
+		extra += HU.hidden("",ancestor||"",[ID,aid+"_hidden"]);
 		extra+=addWidget("",HU.div([ID,this.domId(ID_SEARCH_ANCESTOR)], HU.leftRightTable(clear,input,"5%", "95%")));
 	    }
 
@@ -28408,7 +28437,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
             this.createUI();
             this.setContents(this.getDefaultHtml());
 	    this.initHtml();
-            this.providerChanged();
+            this.providerChanged(true);
             if (this.dateRangeWidget) {
                 this.dateRangeWidget.initHtml();
             }
@@ -28425,9 +28454,9 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
                 _this.providerChanged();
             });
         },
-        providerChanged: function() {
+        providerChanged: function(initialCall) {
 	    if(this.jq(ID_PROVIDERS).length==0) return;
-	    if(this.jq(ID_ANCESTOR).val) {
+	    if(!initialCall && this.jq(ID_ANCESTOR).val) {
 		this.jq(ID_ANCESTOR).val("");
 		this.jq(ID_ANCESTOR+"_hidden").val("");		
 	    }
@@ -28452,14 +28481,16 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 		});
 		this.jq(ID_TYPE_DIV).hide();
             } else {
-		if(this.provider)
-		    this.setRamadda(getRamadda(this.provider.id+";"+ this.provider.name));
 		blocks.forEach(id=>{
 		    this.jq(id).show();
 		});
 		this.jq(ID_TYPE_DIV).show();
-		this.addTypes();
-		this.initMetadata();
+		if(this.getSearchDirect()) {
+		    if(this.provider)
+			this.setRamadda(getRamadda(this.provider.id+";"+ this.provider.name));
+		    this.addTypes();
+		    this.initMetadata();
+		}
             }
         },
         getMenuItems: function(menuItems) {

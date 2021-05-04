@@ -3835,6 +3835,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return;
 	    }
 
+
             //                console.log("toggleEntryDetails:" + entry.getName() +" " + entry.getId());
             if (suffix == null) suffix = "";
             let link = this.jq(ID_TREE_LINK + entry.getIdForDom() + suffix);
@@ -3863,7 +3864,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 return;
             }
 
-
             let open = link.attr("tree-open") == "true";
             if (open) {
                 link.attr("src", icon_tree_closed);
@@ -3891,7 +3891,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return;
             } 
 	    let detailsInner = this.jq(ID_DETAILS_INNER + entry.getIdForDom() + suffix);
-            if (entry.getIsGroup() /* && !entry.isRemote*/ ) {
+            if (!entry.isSynth() && entry.getIsGroup() /* && !entry.isRemote*/ ) {
                 detailsInner.html(HU.image(icon_progress));
                 let callback = function(entries) {
                     _this.displayChildren(entry, entries, suffix, handlerId);
@@ -3908,6 +3908,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    let metadataMap  = {};
 	    let metadata = "";
+	    let prefix = entry.isSynth()?"":HU.getIconImage("fas fa-search") + SPACE;
 	    entry.getMetadata().forEach(m=>{
 		//Check for exclusions
 		if(["content.pagestyle", "content.pagetemplate","content.thumbnail","content.attachment"].includes(m.type)) return;
@@ -3915,37 +3916,47 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(m.type.startsWith("spatial")) return;		
                 let tt = m.label+": " + m.value.attr1;
                 let label =String(m.value.attr1);
+		if(m.type=="property") {
+		    tt +=":" + m.value.attr2;
+		    label +=":" + m.value.attr2;
+		}
 		if(label.length>20) label = label.substring(0,19) +"...";
-		label = HU.getIconImage("fas fa-search") + SPACE + label;
+		label = prefix +label;
 		let id = Utils.getUniqueId("metadata_");
 		metadata+=HU.div([ID,id,CLASS,"display-search-tag",TITLE, tt],label);
 		metadataMap[id] = m;
 		
 	    });
 	    let bar = this.jq(ID_DETAILS_TAGS + entry.getIdForDom() + suffix);
-	    let typeTag = $(HU.span([CLASS,"display-search-tag"],HU.getIconImage("fas fa-search") + SPACE + "Type: " + entry.getType().getLabel())).appendTo(bar);
-	    typeTag.click(function() {
-		_this.typeTagClicked(entry.getType());
-	    });
+	    let typeTag = $(HU.span([CLASS,"display-search-tag"],prefix + "Type: " + entry.getType().getLabel())).appendTo(bar);
+	    if(!entry.isSynth()) {
+		typeTag.click(function() {
+		    _this.typeTagClicked(entry.getType());
+		});
+	    }
 	    let tags = $(metadata).appendTo(bar);
-	    tags.click(function() {
-		_this.metadataTagClicked(metadataMap[$(this).attr("id")]);
-	    });	    
+	    if(!entry.isSynth()) {
+		tags.click(function() {
+		    _this.metadataTagClicked(metadataMap[$(this).attr("id")]);
+		});
+	    }
 
 
-	    let ancestorContent = "";
-	    let handleAncestor = ancestor=>{
-		if(!ancestor) {
-		    this.jq(ID_DETAILS_ANCESTORS + entry.getIdForDom() + suffix).html(ancestorContent);
-		} else {
-		    let href= ancestor.getLink(null, false,["target","_entries"]);
-		    if(ancestorContent!="")
-			href = href + HU.div([CLASS,"breadcrumb-delimiter"]);
-		    ancestorContent = href +  ancestorContent;
-		    ancestor.getParentEntry(handleAncestor);
-		}
-	    };
-	    entry.getParentEntry(handleAncestor);
+	    if(!entry.isSynth()) {
+		let ancestorContent = "";
+		let handleAncestor = ancestor=>{
+		    if(!ancestor) {
+			this.jq(ID_DETAILS_ANCESTORS + entry.getIdForDom() + suffix).html(ancestorContent);
+		    } else {
+			let href= ancestor.getLink(null, false,["target","_entries"]);
+			if(ancestorContent!="")
+			    href = href + HU.div([CLASS,"breadcrumb-delimiter"]);
+			ancestorContent = href +  ancestorContent;
+			ancestor.getParentEntry(handleAncestor);
+		    }
+		};
+		entry.getParentEntry(handleAncestor);
+	    }
         },
 	metadataTagClicked:function(metadata) {
 	},
