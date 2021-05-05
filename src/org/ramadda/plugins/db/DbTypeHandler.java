@@ -349,21 +349,25 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         for (Column column : tableHandler.getColumns()) {
 	    if(column.isString()) colNames.add(column.getName());
 	}
+	
         Statement stmt = getDatabaseManager().select(SqlUtil.comma(colNames),
-                             Misc.newList(tableHandler.getTableName()),
-                             Clause.eq(COL_ID, entry.getId()), "", -1);
-	SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
-	ResultSet        results;
-	while ((results = iter.getNext()) != null) {
-	    Object[] values   = tableHandler.makeEntryValueArray();
-	    int      valueIdx = 2;
-	    for(String col: colNames) {
-		String s = results.getString(col);
-		sb.append(s);
-		sb.append(" ");		
+						     Misc.newList(tableHandler.getTableName()),
+						     Clause.eq(COL_ID, entry.getId()), "", -1);
+	try {
+	    SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
+	    ResultSet        results;
+	    while ((results = iter.getNext()) != null) {
+		for(String col: colNames) {
+		    String s = results.getString(col);
+		    sb.append(s);
+		    sb.append(" ");		
+		}
+		sb.append("\n");		
+		if(sb.length()>1000*1000*3) break;
 	    }
-	    sb.append("\n");		
-	    if(sb.length()>10000000) break;
+        } finally {
+            getRepository().getDatabaseManager().closeAndReleaseConnection(
+									   stmt);
 	}
     }
 
