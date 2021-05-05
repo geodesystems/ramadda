@@ -6856,7 +6856,7 @@ public class TypeHandler extends RepositoryManager {
      * @return _more_
      */
     public String toString() {
-        return type + " " + description +" for user:" + forUser+" in search:" +includeInSearch;
+        return type + " " + description;
     }
 
     /**
