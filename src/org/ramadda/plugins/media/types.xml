@@ -16,17 +16,25 @@
   <type name="type_document_pdf"  description="PDF File" pattern=".*\.pdf" super="type_document_tika">
      <service link="media_gs_thumbnail" target="attachment"/>
      <property name="icon" value="/icons/pdf.png"/>
-     <xwiki><![CDATA[
-+section # title="{{name}}"
+     <wiki><![CDATA[
++section title={{name}}
 {{description wikify="true"}}
-----
-<embed src="{{resource url=true}}" type="application/pdf" width="100%" height="600">
-</embed>
-----
-{{information}}
++accordion decorate=false collapsible=true activeSegment=-1
++segment Document Information
+{{information  details="true"  showTitle="false"  }} 
+-segment
+-accordion
+-section
++section
++center
+  <iframe frameborder="0" scrolling="no"
+     width="640" height="800"
+     src="{{resource url=true}}">
+  </iframe>
+-center
 -section
 ]]>
-</xwiki>
+</wiki>
 
 </type>
 

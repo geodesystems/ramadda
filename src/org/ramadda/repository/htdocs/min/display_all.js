@@ -18963,8 +18963,8 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    let blocks = this.find(".display-images-block");
 	    let select = HU.attrSelect(RECORD_ID, args.record.getId());
 	    let block = this.find(select);
-	    blocks.css('background','transparent');
-	    block.css('background',HIGHLIGHT_COLOR);
+	    blocks.css('border',null);
+	    block.css('border',"1px solid " +HIGHLIGHT_COLOR);
 	    HU.scrollVisible(this.jq(ID_IMAGES),block);
 	},
         updateUI: function() {

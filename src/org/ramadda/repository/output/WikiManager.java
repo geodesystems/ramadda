@@ -661,6 +661,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         boolean       inDiv = getProperty(wikiUtil, props, "inDiv", true);
         String        align = getProperty(wikiUtil, props, ATTR_ALIGN, null);
         String        width = getProperty(wikiUtil, props, ATTR_WIDTH, null);
+
         StringBuilder extra = new StringBuilder();
 
         //imagewidth says to resize and cache the image on the server
@@ -677,6 +678,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         if (width != null) {
             HU.attr(extra, HU.ATTR_WIDTH, width);
         }
+
 
         if ( !inDiv && (align != null)) {
             //            extra.append(HU.style("align:" + align + ";"));
@@ -696,9 +698,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 HU.cssClass(extra, "wiki-image");
             }
         }
-
-
         String style  = getProperty(wikiUtil, props, ATTR_STYLE, "");
+        String        maxWidth = getProperty(wikiUtil, props, "maxWidth", null);        if (maxWidth != null) {
+            style+= "max-width:" + HU.makeDim(maxWidth,"px")+";";
+        }	
+
         int    border = getProperty(wikiUtil, props, ATTR_BORDER, -1);
         String bordercolor = getProperty(wikiUtil, props, ATTR_BORDERCOLOR,
                                          "#000");
