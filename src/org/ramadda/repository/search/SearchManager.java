@@ -796,7 +796,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         StringBuffer sb = new StringBuffer();
 	//        StandardAnalyzer analyzer =       new StandardAnalyzer();
 	//	QueryBuilder builder = new QueryBuilder(analyzer);
-        IndexSearcher searcher = getLuceneSearcher();
+
 	String text = request.getString(ARG_TEXT,"");
 	String searchField = null;
 	for(String field: SEARCH_FIELDS) {
@@ -814,16 +814,21 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    BooleanQuery.Builder builder = new BooleanQuery.Builder();
 	    List<String> words = Utils.split(text," ",true,true);
 	    for(String field: SEARCH_FIELDS) {
+		boolean isName = field.equals(FIELD_NAME);
 		if(searchField!=null && !field.equals(searchField)) continue;
 		if(words.size()>1) {
 		    BooleanQuery.Builder multiBuilder = new BooleanQuery.Builder();
 		    for (String word : words) {
 			Query term = new WildcardQuery(new Term(field, word));		
+			if(isName) term = new BoostQuery(term,3);
 			multiBuilder.add(term, BooleanClause.Occur.MUST);
 		    }
 		    builder.add(multiBuilder.build(),BooleanClause.Occur.SHOULD);
 		} else {
 		    Query term = new WildcardQuery(new Term(field, text));		
+		    if(isName) {
+			term = new BoostQuery(term,3);
+		    }
 		    builder.add(term, BooleanClause.Occur.SHOULD);
 		}
 	    }
@@ -1073,7 +1078,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	int max = request.get(ARG_MAX,100);
 	int skip = request.get(ARG_SKIP,0);
 
-	//	searcher.setDefaultFieldSortScoring(true, false);
+
 	Sort sort;
         if(request.exists(ARG_ORDERBY)) {
 	    boolean desc = true;
@@ -1110,9 +1115,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		field=FIELD_NAME_SORT;
 	    }
 
-	    if(field==null)
+	    if(field==null) {
 		sort = Sort.RELEVANCE;
-	    else {
+	    }  else {
 		if(sortType == SortField.Type.LONG || sortType == SortField.Type.INT)
 		    sort = new Sort(new SortField[] {
 			    new SortedNumericSortField(field, sortType,desc),
@@ -1126,6 +1131,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 
 	//	System.err.println("m:" + (max+skip));
+        IndexSearcher searcher = getLuceneSearcher();
+	//	searcher.setDefaultFieldSortScoring(true, false);
 	TopDocs       hits     = searcher.search(query, max+skip,sort);
 	//        TopDocs       hits     = searcher.search(query, 100);		
         ScoreDoc[]    docs     = hits.scoreDocs;

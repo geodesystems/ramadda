@@ -1876,7 +1876,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 			    _this.submitSearchForm(true,myCallNumber);
 			} else {
 			}
-		    },250);
+		    },400);
 		});
 	    }
 
