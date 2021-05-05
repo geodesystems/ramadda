@@ -563,7 +563,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	//        doc.add(new StringField(FIELD_TYPE, entry.getTypeHandler().getType(), Field.Store.YES));	
 	TypeHandler parentType = entry.getTypeHandler();
 	while(parentType!=null) {
-	    System.err.println(entry.getTypeHandler() +" parentType:" + parentType);
 	    doc.add(new StringField(FIELD_SUPERTYPE, parentType.getType(), Field.Store.YES));	
 	    parentType = parentType.getParent();
 	}
