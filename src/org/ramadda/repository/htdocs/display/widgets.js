@@ -1134,6 +1134,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	colors = this.display.getColorTable(true);
     this.colors = colors;
 
+
     if(this.hasField() && !colors) {
 //	this.index = -1;
 //	return;

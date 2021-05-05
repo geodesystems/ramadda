@@ -1134,6 +1134,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	colors = this.display.getColorTable(true);
     this.colors = colors;
 
+
     if(this.hasField() && !colors) {
 //	this.index = -1;
 //	return;
@@ -3680,6 +3681,7 @@ function DisplayThing(argId, argProperties) {
             }
 	    if(!template)
 		template = this.getProperty("recordTemplate");
+
 	    if(template) {
 		if(!template.startsWith("${default") && template!="${fields}") {
 		    return this.applyRecordTemplate(record,this.getDataValues(record), fields, template, null, null,debug);
@@ -3688,7 +3690,10 @@ function DisplayThing(argId, argProperties) {
 	    if(template=="${fields}") {
 		fields = this.getFieldsByIds(null,this.getProperty("tooltipFields",this.getPropertyFields()));
 	    } else {
-		fields = this.getFieldsByIds(null,this.getProperty("tooltipFields",this.getPropertyFields()));
+		let ttf = this.getProperty("tooltipFields");
+		if(ttf) {
+		    fields = this.getFieldsByIds(null,ttf);
+		}
 	    }
 
 	    let templateProps = {};
@@ -4196,7 +4201,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:"colorByFields",ex:"",tt:"Show color by fields in a menu"},
 	{p:"colorByLog",ex:"true",tt:"Use a log scale for the color by"},
 	{p:"colorByMap",ex:"value1:color1,...,valueN:colorN",tt:"Specify colors for color by text values"},
-	{p:"colorByInverse",ex:true,tt:"Inverse the values"},
 	{p:"colorTableAlpha",ex:0.5,tt:"Set transparency on color table values"},
 	{p:"colorTableInverse",ex:true,tt:"Inverse the color table"},
 	{p:"colorTablePruneLeft",ex:"N",tt:"Prune first N colors"},
@@ -4486,11 +4490,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         convertColors: function(colors) {
 	    colors = this.addAlpha(colors);
-	    if(this.getProperty("colorTableInverse")) {
+	    if(this.getColorTableInverse()) {
 		let tmp = [];
 		for(let i=colors.length-1;i>=0;i--)
 		    tmp.push(colors[i]);
 		colors = tmp;
+		console.log("INV:" + colors);
 	    }
 	    if(this.getProperty("colorTablePruneLeft")) {
 		let tmp = [];
@@ -32209,6 +32214,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.map.getLinesLayer().removeFeatures(this.coordinateFeatures);
 	    }
 	    let textGetter = (f)=>{
+		console.log("getter");
 		if(f.record) {
                     return  this.getRecordHtml(f.record, null, this.getProperty("tooltip"));
 		}
@@ -33191,7 +33197,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let addedPoints = [];
 	    let textGetter = this.textGetter = f=>{
 		if(f.record) {
-                    return  this.getRecordHtml(f.record, fields, tooltip);
+		    let text =   this.getRecordHtml(f.record, fields, tooltip);
+		    if(text=="") return "BLANK";
+		    return text;
 		}
 		return null;
 	    };

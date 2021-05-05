@@ -1113,8 +1113,9 @@ a.ramadda-menubar-button:hover {
     border:1px solid #888 !important;
     border-radius:4px;
     box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
-    height:unset !important;
+    max-height:400px;
   
+
 }
 
 .olPopupContent {
@@ -1123,7 +1124,6 @@ a.ramadda-menubar-button:hover {
     padding-right:8px !important;
     padding-bottom:8px !important;        
     z-index:var(--ol-popup-z-index)  !important;
-    height:unset !important;
     max-height:200px;
     overflow-y:auto;
 }

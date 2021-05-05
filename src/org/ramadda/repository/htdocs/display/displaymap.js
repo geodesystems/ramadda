@@ -1984,6 +1984,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.map.getLinesLayer().removeFeatures(this.coordinateFeatures);
 	    }
 	    let textGetter = (f)=>{
+		console.log("getter");
 		if(f.record) {
                     return  this.getRecordHtml(f.record, null, this.getProperty("tooltip"));
 		}
@@ -2966,7 +2967,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let addedPoints = [];
 	    let textGetter = this.textGetter = f=>{
 		if(f.record) {
-                    return  this.getRecordHtml(f.record, fields, tooltip);
+		    let text =   this.getRecordHtml(f.record, fields, tooltip);
+		    if(text=="") return "BLANK";
+		    return text;
 		}
 		return null;
 	    };

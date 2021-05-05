@@ -851,6 +851,7 @@ RepositoryMap.prototype = {
         this.centerOnMarkers(this.dfltBounds);
     },
     makePopup: function(projPoint, text) {
+
 	return  new OpenLayers.Popup("popup",
 				     projPoint,
 				     null,
@@ -4067,6 +4068,8 @@ RepositoryMap.prototype = {
             marker.text = this.getPopupText(marker.inputProps.text);
         }
         let markerText;
+
+
 
 	if(marker.textGetter) {
 	    markerText =marker.textGetter(marker);
