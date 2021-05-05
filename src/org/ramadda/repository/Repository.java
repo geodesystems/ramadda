@@ -574,9 +574,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             throws Exception {
         super(port);
         this.parentRepository = parentRepository;
-	System.err.println("rep-1");
         init(args, port);
-	System.err.println("rep-2");
     }
 
 
@@ -1726,6 +1724,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             TypeHandler typeHandler =
                 (TypeHandler) ctor.newInstance(new Object[] { this,
 							      entryNode });
+
             addTypeHandler(typeHandler.getType(), typeHandler, overwrite);
             return typeHandler;
         } catch (Exception exc) {

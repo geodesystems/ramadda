@@ -336,6 +336,39 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 
     /**
+     * Called by lucene index to get non file contents
+     *
+     * @param entry _more_
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
+    @Override
+    public void getTextContents(Entry entry, StringBuilder sb) throws Exception {
+	List<String> colNames = new ArrayList<String>();
+        for (Column column : tableHandler.getColumns()) {
+	    if(column.isString()) colNames.add(column.getName());
+	}
+        Statement stmt = getDatabaseManager().select(SqlUtil.comma(colNames),
+                             Misc.newList(tableHandler.getTableName()),
+                             Clause.eq(COL_ID, entry.getId()), "", -1);
+	SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
+	ResultSet        results;
+	while ((results = iter.getNext()) != null) {
+	    Object[] values   = tableHandler.makeEntryValueArray();
+	    int      valueIdx = 2;
+	    for(String col: colNames) {
+		String s = results.getString(col);
+		sb.append(s);
+		sb.append(" ");		
+	    }
+	    sb.append("\n");		
+	    if(sb.length()>10000000) break;
+	}
+    }
+
+
+    /**
      * _more_
      *
      *
@@ -1824,11 +1857,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             props.put(colorID, colorMap);
             props.put(iconID, iconMap);
         }
-
-
-
         setProperties(entry, props);
-
     }
 
 

@@ -432,6 +432,9 @@ public class TypeHandler extends RepositoryManager {
 
 
 
+    public void setParentTypeHandler(TypeHandler parent) {
+	this.parent  =parent;
+    }
 
     /**
      * _more_
@@ -601,6 +604,18 @@ public class TypeHandler extends RepositoryManager {
 	sb.append("\n");
     }
 
+
+    /**
+     * Called by lucene index to get non file contents
+     *
+     * @param entry _more_
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
+
+    public void getTextContents(Entry entry, StringBuilder sb) throws Exception {
+    }
 
 
     /**
@@ -6841,7 +6856,7 @@ public class TypeHandler extends RepositoryManager {
      * @return _more_
      */
     public String toString() {
-        return type + " " + description;
+        return type + " " + description +" for user:" + forUser+" in search:" +includeInSearch;
     }
 
     /**

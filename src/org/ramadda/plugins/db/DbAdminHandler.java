@@ -161,6 +161,9 @@ public class DbAdminHandler extends AdminHandlerImpl {
                     XmlUtil.getAttribute(tableNode, ATTR_NAME) });
 
 
+	    TypeHandler baseTypeHandler = getRepository().getTypeHandler("type_db_base");
+	    typeHandler.setParentTypeHandler(baseTypeHandler);
+	    baseTypeHandler.addChildTypeHandler(typeHandler);
 
             List<Element> columnNodes =
                 (List<Element>) XmlUtil.findChildren(tableNode, TAG_COLUMN);

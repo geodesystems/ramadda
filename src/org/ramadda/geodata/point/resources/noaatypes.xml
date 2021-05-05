@@ -1,10 +1,10 @@
-<types supercategory="Geoscience">
+<types supercategory="Geoscience" category="Point Data">
 
 <!--
 all point types need to have numberoofpoints and properties fields
 this gets it from the type_point super class
 --> 
-  <type name="type_point_noaa"  description="" super="type_point" category="Point Data" foruser="false">
+  <type name="type_point_noaa"  description="" super="type_point"  foruser="false">
      <property name="icon" value="/point/noaa.gif"/>
   </type>
 

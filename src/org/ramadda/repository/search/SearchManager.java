@@ -418,6 +418,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			if(!getRepository().getActive()) return true;
 			Entry entry = getEntryManager().getEntry(null, id,false);
 			if(entry==null) continue;
+			if(!entry.getTypeHandler().isType("type_db_base")) continue;
 			synchronized(mutex) {
 			    cnt[0]++;
 			    System.err.println("#" + cnt[0] +"/"+ total +" entry:" + entry.getName());
@@ -561,8 +562,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
         doc.add(new StringField(FIELD_ENTRYID, entry.getId(), Field.Store.YES));
 	//        doc.add(new StringField(FIELD_TYPE, entry.getTypeHandler().getType(), Field.Store.YES));	
-	TypeHandler parentType = entry.getTypeHandler();//.getParent();
+	TypeHandler parentType = entry.getTypeHandler();
 	while(parentType!=null) {
+	    System.err.println(entry.getTypeHandler() +" parentType:" + parentType);
 	    doc.add(new StringField(FIELD_SUPERTYPE, parentType.getType(), Field.Store.YES));	
 	    parentType = parentType.getParent();
 	}
@@ -661,7 +663,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
         if (entry.isFile()) {
             addContentField(entry, doc, entry.getResource().getTheFile());
-        }
+        } else {
+	    StringBuilder contents = new StringBuilder();
+	    entry.getTypeHandler().getTextContents(entry, contents);
+	    if(contents.length()>0)
+		doc.add(new TextField(FIELD_CONTENTS, contents.toString(), Field.Store.NO));
+	}
+
+
         writer.addDocument(doc);
     }
 

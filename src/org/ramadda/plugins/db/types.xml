@@ -11,6 +11,11 @@
 </type>
 
 
+<type name="type_db_base"  super="type_point" description="Database Base"  supercategory="Basic"  category="Database" foruser="false" includeInSearch="true">
+     <property name="icon" value="/db/database_table.png"/>
+</type>
+
+
 <!--
   <type name="type_db_schema"  description="Database Schema"  handler="org.ramadda.plugins.media.DbSchemaTypeHandler"  category="Database">
      <property name="form.resource.show" value="false"/>
