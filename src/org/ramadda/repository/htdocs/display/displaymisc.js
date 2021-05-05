@@ -1065,7 +1065,10 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	{p:'includeGeo',ex:'true',d:false},
 	{p:'includeDate',ex:'true',d:true},
 	{p:'fancy',ex:'true',d:true},
-	{p:'showAddRow',ex:'true'},				
+	{p:'showAddRow',ex:'true'},
+	{p:'colorCells',ex:'field1,field2'},
+	{p:'iconField'},
+	{p:'linkField'}
     ];
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -1082,7 +1085,20 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
             let pointData = this.dataCollection.getList()[0];
             let fields = pointData.getRecordFields();
             let selectedFields = this.getSelectedFields();
+	    let urlField = this.getFieldById(null,this.getProperty("urlField"));
+	    let iconField = this.getFieldById(null,this.getIconField());
+
 	    fields= (selectedFields && selectedFields.length>0)?selectedFields:fields;
+	    let colorByMap = {};
+	    let cbs = [];
+	    this.getColorCells("").split(",").forEach(c=>{
+		let f = this.getFieldById(null,c);
+		if(f) {
+		    colorByMap[c] = new ColorByInfo(this, null, records, null,c+".colorByMap",null, c, f);
+		    cbs.push(colorByMap[c]);
+		}
+	    });
+	    
 	    let numRecords = this.getNumRecords();
 	    let includeGeo = this.getIncludeGeo();
 	    let includeDate = this.getIncludeGeo();	    
@@ -1108,22 +1124,22 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	    this.recordMap = {};
 	    this.fieldMap = {};
 	    fields.forEach(f=>{this.fieldMap[f.getId()] = f;})
-	    records.every((record,idx)=>{
-		if(numRecords>-1 && idx>numRecords) return false;
+	    records.every((record,recordIdx)=>{
+		if(numRecords>-1 && recordIdx>numRecords) return false;
 		let d = record.getData();
 		d = d.map(d=>{
 		    if(d.getTime) return this.formatDate(d);
 		    return d;
 		});
-		let clazz = (idx%2)?"ramadda-row-odd":"ramadda-row-even";
+		let clazz = (recordIdx%2)?"ramadda-row-odd":"ramadda-row-even";
 		clazz = "display-htmltable-row";
 		html+=HU.openTag('tr',['title','','valign','top','class',clazz, RECORD_ID,record.getId()]);
-//		html+="<td>#" + idx+": </td>";		
+//		html+="<td>#" + recordIdx": </td>";		
 		if(includeDate) {
 		    html+=HU.td([],this.formatDate(r.getDate()));
 		}
 		this.recordMap[record.rowIndex] = record;
-		fields.forEach(f=>{
+		fields.forEach((f,idx)=>{
 		    let v = d[f.getIndex()]
 		    v = String(v);
 		    if(v.length>500) {
@@ -1142,9 +1158,10 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 				}
 			    }
 			}
-			if(f.getType()=="boolean") 
+			
+			if(f.getType()=="boolean")  {
 			    v = HU.checkbox("", ["fieldid",f.getId(),"inputtype","checkbox",RECORD_INDEX,record.rowIndex,CLASS,"display-editable", ID,this.domId("editable_" + f.getId())], value);
-			else if(f.isFieldEnumeration()) {
+			} else if(f.isFieldEnumeration()) {
 			    let enums = f.getEnumeratedValues() ||"";
 			    let select = [];
 			    for(a in enums)
@@ -1154,7 +1171,36 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 			    v = HU.input("", value, ["fieldid",f.getId(),RECORD_INDEX,record.rowIndex,CLASS,"display-editable", ID,this.domId("editable_" + f.getId())]);
 			}
 		    }
-		    html+=HU.td([],v);
+
+		    
+		    if(f.getType()=="image") {
+			let url = record.getValue(f.getIndex());
+			v = HU.image(url,[STYLE,HU.css("width","150px;")]);
+		    }
+
+		    if(idx==0 && iconField) {
+			let icon = record.getValue(iconField.getIndex());
+			v = HU.image(icon,[STYLE,HU.css("max-width","50px;")]) +"&nbsp;" +v;
+		    }
+		    if(urlField && idx==0) {
+			let url = record.getValue(urlField.getIndex());
+			if(v && Utils.stringDefined(url)) {
+			    if(v) v = String(v).trim();
+			    v = HU.href(url,v);
+			}
+		    }
+
+		    let colorBy = colorByMap[f.getId()];
+		    let color = null;
+		    let foreground="#000";
+		    if(colorBy) {
+			let color =  colorBy.getColorFromRecord(record);
+			let fg =  Utils.getForegroundColor(color);
+			html += HU.td([STYLE,HU.css('background', color,'color',fg+" !important")],v)
+//			v = HU.div([STYLE,HU.css('width','100%','height','100%','background', color,'color',fg+" !important")],v)
+		    } else {
+			html+=HU.td([],v);
+		    }
 		});
 		if(hadSavedState) {
 		    this.getPointData().propagateEventDataChanged(this);
@@ -1171,6 +1217,13 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		html+=HU.div([ID,this.domId("addrow"),CLASS,"ramadda-clickable"], HU.getIconImage("fas fa-plus"));
 	    }	
 	    this.setContents(html);
+	    let dom = this.jq(ID_COLORTABLE);
+	    cbs.forEach((cb,idx)=>{
+		let id = this.domId(ID_COLORTABLE+idx);
+		dom.append(HU.div([ID,id]));
+		cb.displayColorTable(null,true,ID_COLORTABLE+idx);
+	    });
+
 	    let _this = this;
 	    this.makeTooltips(this.jq(ID_TABLE).find(".display-htmltable-row"),records);
 	    let opts = {
