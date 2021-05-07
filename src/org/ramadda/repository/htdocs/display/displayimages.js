@@ -412,7 +412,6 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
     const ID_NEXT = "next";
     const ID_PREV = "prev";
     const ID_IMAGES = "images";
-    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_IMAGES, properties);
     let myProps = [
 	{label:'Image Gallery Properties'},
 	{p:'imageField',ex:''},
@@ -422,6 +421,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	{p:'tooltipFields',ex:''},
 	{p:'numberOfImages',ex:'100'},	
 	{p:'includeBlanks',ex:'true'},
+	{p:'blockWidth',ex:'150'},
 	{p:'imageWidth',ex:'150'},
 	{p:'imageHeight',ex:'150'},	
 	{p:'imageMargin',ex:'10px'},
@@ -433,6 +433,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	{p:'columns',ex:'5'},
     ];
 
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_IMAGES, properties);
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	startIndex:0,
 	dataFilterChanged: function() {
@@ -444,7 +445,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    let select = HU.attrSelect(RECORD_ID, args.record.getId());
 	    let block = this.find(select);
 	    blocks.css('border',null);
-	    block.css('border',"1px solid " +HIGHLIGHT_COLOR);
+	    block.css('border',"1px solid " +this.getHighlightColor());
 	    HU.scrollVisible(this.jq(ID_IMAGES),block);
 	},
         updateUI: function() {
@@ -456,6 +457,8 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		imageField = this.getFieldByType(null,"image");
 	    }
 	    let urlField = this.getFieldById(null, this.getProperty("urlField"));
+	    let tooltipClick = this.getProperty("tooltipClick");
+	    if(tooltipClick) this.setProperty("tooltip",null);
 
             let pointData = this.getData();
             let fields = pointData.getRecordFields();
@@ -473,6 +476,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    let number = +this.getPropertyNumberOfImages(50);
 	    let colorBy = this.getColorByInfo(records);
 	    let width = this.getPropertyImageWidth();
+	    let blockWidth = this.getBlockWidth("200px");	    
 	    let height = this.getPropertyImageHeight();	    
 	    if(!width && !height) width="100%";
 	    let imageStyle = this.getPropertyImageStyle("");
@@ -486,17 +490,18 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    let columnMap = {};
 	    let class1= "display-images-image-outer display-images-block ";
 	    let class2 = "display-images-image-inner";
-	    let style = "";
-	    let idToRecord = {};
+	    this.idToRecord = {};
+	    let baseStyle = "";
 	    if(!decorate) {
 		class2 = "";
 		class1 = "display-images-block";
-		style = HU.css("margin",this.getPropertyImageMargin("10px"));
+		baseStyle = HU.css("margin",this.getPropertyImageMargin("10px"));
 	    }
 	    if(columns) {
 		if(width && width.endsWith("%"))
-		    style+=HU.css(WIDTH,width);
+		    baseStyle+=HU.css(WIDTH,width);
 	    }
+	    baseStyle+=this.getProperty("blockStyle","");
 	    if(this.startIndex<0) this.startIndex=0;
 	    if(this.startIndex>records.length) this.startIndex=records.length-number;
 	    let cnt = 1;
@@ -509,7 +514,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		}
 		if(cnt++>number) break;
 		displayedRecords.push(record);
-		idToRecord[record.getId()] = record;
+		this.idToRecord[record.getId()] = record;
 		let topLabel = null;
 		if(topLabelTemplate) {
 		    topLabel = this.getRecordHtml(record,fields,topLabelTemplate);
@@ -531,6 +536,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		let tt = "";
 		tooltipFields.forEach(l=>{tt += "\n" + l.getLabel()+": " + row[l.getIndex()]});
 		tt = tt.trim();
+		let style = baseStyle;
 		let imgAttrs = [STYLE,imageStyle,"alt",galleryLabel,ID,base+"image" + rowIdx,"loading","lazy"];
 		if(width) imgAttrs.push(WIDTH,width);
 		else if(height) imgAttrs.push(HEIGHT,height);		
@@ -551,9 +557,11 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		    style+=HU.css(BACKGROUND,c);
 		}
 
-		style+=HU.css("vertical-align","top","width","200px");
+		style+=HU.css("vertical-align","top","width",blockWidth);
 		if(doPopup) {
 		    img = HU.href(image,img,[CLASS,"popup_image","data-fancybox",base,"data-caption",galleryLabel]);
+		} else if(urlField&& !tooltipClick) {
+		    img = HU.href(urlField.getValue(record),img,["target","_target"]);
 		}
 		let block = 
 		    HU.div([STYLE, style, RECORD_ID,record.getId(),RECORD_INDEX,recordIndex++,ID,base+"div"+  rowIdx, CLASS, class1,TITLE,tt],
@@ -603,11 +611,37 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    contents  = HU.div([CLASS,"ramadda-grid"],contents);
             this.setContents(header + contents);
 	    let blocks = this.find(".display-images-block");
+	    let _this = this;
+	    blocks.mouseenter(function() {
+		$(this).attr("oldborder",$(this).css("border"));
+		$(this).css("border","1px solid " + _this.getHighlightColor());
+	    });
+	    blocks.mouseleave(function() {
+		$(this).css("border",$(this).attr("oldborder"));
+	    });			      
+
+
 	    this.makeTooltips(blocks,displayedRecords);
 	    if(!doPopup) {
 		let _this = this;
 		blocks.click(function() {
-		    let record = idToRecord[$(this).attr(RECORD_ID)];
+		    let record = _this.idToRecord[$(this).attr(RECORD_ID)];
+		    if(tooltipClick) {
+			if(_this.tooltipDialog) {
+			    _this.tooltipDialog.remove();
+			    _this.tooltipDialog = null;
+			} 
+			if(record) {
+			    let tt =  _this.getRecordHtml(record,null,tooltipClick);
+			    tt = HU.div([STYLE,HU.css()], tt);
+			    _this.tooltipDialog =  HU.makeDialog({content:tt,anchor:$(this),
+								  draggable:true,header:true});
+			    if(_this.getProperty("dialogListener"))
+				_this.getProperty("dialogListener")(this, _this.tooltipDialog);
+
+			}
+
+		    }
 		    if(record) {
 			_this.propagateEventRecordSelection({record: record});
 		    }
@@ -681,7 +715,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    this.popupWidth =  +this.getProperty("popupWidth",imageWidth);
 	    this.popupHeight = +this.getProperty("popupHeight",300);
 
-	    let rect = HU.div([STYLE,HU.css("border","1px solid " + HIGHLIGHT_COLOR,"width","20px","height","20px","left","10px","top","10px","display","none","position","absolute","z-index",1000,"pointer-events","none"),ID, this.domId(ID_RECT)]);
+	    let rect = HU.div([STYLE,HU.css("border","1px solid " +this.getHighlightColor(),"width","20px","height","20px","left","10px","top","10px","display","none","position","absolute","z-index",1000,"pointer-events","none"),ID, this.domId(ID_RECT)]);
 	    let imageDiv = HU.div(["style","position:relative"],
 				  rect+
 				  HU.div([ID,this.domId(ID_IMAGE),STYLE,HU.css("position","relative") ]) +
@@ -711,7 +745,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    let thumbs = this.jq(ID_THUMBS).find(".display-imagezoom-thumb");
 	    let thumbSelect = (thumb=>{
 		thumbs.css("border","1px solid transparent");
-		thumb.css("border","1px solid " + HIGHLIGHT_COLOR);
+		thumb.css("border","1px solid " + this.getHighlightColor());
 		let index = parseFloat(thumb.attr(RECORD_INDEX));
 		HU.addToDocumentUrl("imagezoom_thumb",index);
 		let record = records[index]

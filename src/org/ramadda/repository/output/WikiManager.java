@@ -44,6 +44,8 @@ import org.ramadda.repository.search.SearchManager;
 import org.ramadda.repository.search.SearchProvider;
 import org.ramadda.repository.search.SpecialSearch;
 import org.ramadda.repository.type.LocalFileTypeHandler;
+import org.ramadda.repository.type.Column;
+import org.ramadda.repository.type.DataTypes;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.util.DateArgument;
 import org.ramadda.repository.util.ServerInfo;
@@ -64,6 +66,7 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 
+import java.text.DecimalFormat;
 import java.io.*;
 
 
@@ -937,6 +940,23 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
         }
         src = src.trim();
+
+
+	for(String s: Utils.split(src,",")) {
+	    for (Column column : entry.getTypeHandler().getColumns()) {
+		if(column.isType(DataTypes.DATATYPE_URL) && column.getName().equals(s)) {
+		    Object[] values = entry.getValues();
+		    String url    = column.getString(values);
+		    if(url!=null && url.length()>0) {
+			return getWikiImage(wikiUtil, request, url, entry, props);
+		    }
+		}
+	    }
+	}
+
+
+
+
         Entry srcEntry = null;
 
         if ((src.length() == 0) || entry.getName().equals(src)) {
@@ -1816,12 +1836,21 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             String name = getProperty(wikiUtil, props, ATTR_FIELDNAME,
                                       (String) null);
             if (name != null) {
+		String  decimalFormat = getProperty(wikiUtil,props,"decimalFormat",null);
+		boolean raw = getProperty(wikiUtil, props, "raw",false);
                 String fieldValue =
-                    entry.getTypeHandler().getFieldHtml(request, entry, name);
+                    entry.getTypeHandler().getFieldHtml(request, entry, name,raw);
                 if (fieldValue != null) {
+		    if(decimalFormat!=null) {
+			try {
+			    DecimalFormat fmt     = new DecimalFormat(decimalFormat);
+			    double d = Double.parseDouble(fieldValue);
+			    fieldValue =fmt.format(d);
+			} catch(Exception exc) {
+			}
+		    }
                     return fieldValue;
                 }
-
                 return "Could not find field: " + name;
             } else {
                 return "No name=... specified in wiki tag";
@@ -4047,6 +4076,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                        ATTR_METADATA_TYPES, (String) null);
         String separator = getProperty(wikiUtil, props, "separator",
                                        (String) null);
+        boolean tags = getProperty(wikiUtil, props, "tags", false);
+	if(tags)
+	    request.put("tags","true");
+        boolean showSearch = getProperty(wikiUtil, props, "showSearch", false);	
+
         if (metadataTypesAttr != null) {
             onlyTheseTypes = new ArrayList<String>();
             notTheseTypes  = new ArrayList<String>();
@@ -4063,7 +4097,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         List tabContents = new ArrayList<String>();
         boolean includeTitle = getProperty(wikiUtil, props,
                                            ATTR_METADATA_INCLUDE_TITLE, true);
-
 
 
         for (TwoFacedObject tfo :

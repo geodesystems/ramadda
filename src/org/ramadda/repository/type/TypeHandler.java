@@ -7008,7 +7008,7 @@ public class TypeHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public String getFieldHtml(Request request, Entry entry, String name)
+    public String getFieldHtml(Request request, Entry entry, String name,boolean raw)
             throws Exception {
         //TODO: support name, desc, etc.
         return null;

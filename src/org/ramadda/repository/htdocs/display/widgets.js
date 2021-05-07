@@ -180,8 +180,12 @@ function DateRangeWidget(display, what) {
     RamaddaUtil.inherit(this, {
         display: display,
         initHtml: function() {
-            $("#" + this.baseId +ID_DATE_START).datepicker();
-            $("#" + this.baseId +ID_DATE_END).datepicker();	    
+            $("#" + this.baseId +ID_DATE_START).datepicker({
+		dateFormat: "yy-mm-dd"
+	    });
+            $("#" + this.baseId +ID_DATE_END).datepicker({
+		dateFormat: "yy-mm-dd"
+	    });	    
         },
         setSearchSettings: function(settings) {
             let start = $("#"+ this.baseId +ID_DATE_START).val();

@@ -1,4 +1,4 @@
-@charset "UTF-8";
+b@charset "UTF-8";
 
 :root {
     --font-size:12pt;
@@ -2380,6 +2380,21 @@ pre {
 }
 
 
+.metadata-tag {
+    font-size:80%;
+    display:inline-block;
+    margin:3px;
+    border-radius: 10px;
+    padding:1px;
+    padding-left:8px;
+    padding-right:10px;
+    cursor:pointer;
+    background:#E5E5E5;
+    border:1px solid #ccc;
+    color:rgb(51,51,51);
+}
+
+
 .metadata-image {
     max-width: 400px; 
     overflow-x: hidden;
@@ -4063,6 +4078,7 @@ a.toggleblocklabellink:visited {
     padding-top:2px;
     padding-bottom:2px;
     margin-bottom:2px;
+    padding-left:4px;
 }
 
 .entry-toggleblock-label  img {
@@ -4071,7 +4087,7 @@ a.toggleblocklabellink:visited {
 }
 
 .entry-toggleblock-label:hover {
-    background-color : #efefef;
+    background-color : #efefef !important;
     cursor:pointer;
 }
 

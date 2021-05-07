@@ -58,6 +58,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.TimeZone;
@@ -601,9 +602,9 @@ public class MetadataManager extends RepositoryManager {
      *
      * @param msg _more_
      */
-    public void debug(String msg) {
+    public  void debug(String msg) {
         if (debug) {
-            logInfo(msg);
+	    logInfo(msg);
         }
     }
 
@@ -1097,22 +1098,28 @@ public class MetadataManager extends RepositoryManager {
      */
     public void loadMetadataHandlers(PluginManager pluginManager)
             throws Exception {
+	HashSet seen = new HashSet();
         List<String> metadataDefFiles =
             getRepository().getPluginManager().getMetadataDefFiles();
         for (String file : metadataDefFiles) {
             try {
                 file = getStorageManager().localizePath(file);
-                if (pluginManager.haveSeen(file)) {
+                if (seen.contains(file)) {
+		    //		    System.out.println("pluginManager seen:" + file);
                     continue;
                 }
+		seen.add(file);
                 Element root = XmlUtil.getRoot(file, getClass());
                 if (root == null) {
+		    System.out.println("MetadataManager: no root element found in:" + file); 
                     continue;
                 }
+		//		System.out.println("MetadataManager: processing:" + file); 
                 MetadataType.parse(root, this);
-            } catch (Exception exc) {
+		debug = false;
+	    } catch (Exception exc) {
+		System.out.println("MetadataManager: error:" + file+" " + exc); 
                 logError("Error loading metadata handler file:" + file, exc);
-
                 throw exc;
             }
 
@@ -1509,8 +1516,6 @@ public class MetadataManager extends RepositoryManager {
                 labels.put((String) tfo.getId(), (String) tfo.getLabel());
             }
         }
-
-
         String[] values = getDistinctValues(request, handler, type);
         int[]    cnt    = new int[values.length];
         int      max    = -1;

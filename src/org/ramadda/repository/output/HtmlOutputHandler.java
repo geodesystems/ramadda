@@ -694,6 +694,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
         List<TwoFacedObject> result = new ArrayList<TwoFacedObject>();
         boolean showMetadata        = request.get(ARG_SHOWMETADATA, false);
+	boolean tags = request.get("tags",false);
         List<Metadata> metadataList = getMetadataManager().getMetadata(entry);
         if (metadataList.size() == 0) {
             return result;
@@ -745,8 +746,6 @@ public class HtmlOutputHandler extends OutputHandler {
                 cats.add(cat);
             }
 
-
-
             String        group   = type.getDisplayGroup();
             StringBuilder sb      = cb.get(group);
             Boolean       rowFlag = typeRow.get(group);
@@ -762,7 +761,11 @@ public class HtmlOutputHandler extends OutputHandler {
 
             boolean first    = sb.length() == 0;
 
-            if (smallDisplay) {
+	    if(tags) {
+                sb.append(HU.tag("div",
+                                 HU.cssClass("metadata-tag"),
+                                 metadata.getAttr1()));
+	    } else   if (smallDisplay) {
                 HU.open(sb, "tr",
                         HU.attr("valign", "top") + HU.cssClass(rowClass));
                 HU.open(sb, "td");
@@ -794,6 +797,14 @@ public class HtmlOutputHandler extends OutputHandler {
             CategoryBuffer cb = (CategoryBuffer) catMap.get(cat);
             StringBuilder  sb = new StringBuilder();
             for (String category : cb.getCategories()) {
+		if(tags) {
+		    if (showTitle) {
+			sb.append(category);
+		    }
+		    sb.append(cb.get(category));
+		    sb.append("<br>");
+		    continue;
+		}
                 String header = HU.div(category, HU.cssClass("wiki-h2"));
                 if (showTitle) {
                     sb.append(header);

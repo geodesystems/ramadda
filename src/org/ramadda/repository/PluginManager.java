@@ -264,7 +264,6 @@ public class PluginManager extends RepositoryManager {
         if ( !contains && andMark) {
             markSeen(object);
         }
-
         return contains;
     }
 

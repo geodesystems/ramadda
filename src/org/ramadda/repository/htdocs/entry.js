@@ -266,7 +266,7 @@ function Ramadda(repositoryRoot) {
         },
         entryTypeCallPending: false,
         entryTypeCallbacks: null,
-        getEntryTypes: function(callback) {
+        getEntryTypes: function(callback, types) {
             if (this.entryTypes != null) {
                 return this.entryTypes;
             }
@@ -281,6 +281,7 @@ function Ramadda(repositoryRoot) {
             }
             let theRamadda = this;
             let url = this.repositoryRoot + "/entry/types";
+	    if(types) url= url +"?types=" + types;
             this.entryTypeCallPending = true;
             this.entryTypeCallbacks = null;
             let jqxhr = $.getJSON(url, function(data) {
@@ -333,9 +334,8 @@ function Ramadda(repositoryRoot) {
             if (data != null) {
                 //                    console.log("getMetadata:" + type.getType() + " was in cache");
                 callback(type, data);
-                return data;
+                return null;
             }
-
 
             let pending = this.metadataCachePending[key];
             if (pending) {
@@ -469,7 +469,7 @@ function Ramadda(repositoryRoot) {
 
             for (let i = 0; i < settings.metadata.length; i++) {
                 let metadata = settings.metadata[i];
-                url += "&metadata_attr1_" + metadata.type + "=" + metadata.value;
+                url += "&metadata_attr1_" + metadata.type + "=" + encodeURIComponent(metadata.value);
             }
             url += "&max=" + settings.getMax();
             url += "&skip=" + settings.getSkip();
@@ -546,16 +546,36 @@ function createEntriesFromJson(data, ramadda) {
 }
 
 
+var metadataTypeCount = -1;
+var metadataColorPalette = ["#FDF5E6", "#F0FFFF","#FFE3D5","#a7d0cd","#fbeeac","#dbe3e5","#e8e9a1"];
+var metadataColors = {};
+
+function getMetadataColor(type) {
+    if(type.color) return type.color;
+    if(metadataColors[type]) return metadataColors[type];
+    return metadataColorPalette[0];
+}
+
 function MetadataType(type, label, value) {
     $.extend(this, {
         type: type,
         label: label,
         value: value
     });
+    if(!metadataColors[type]) {
+	metadataTypeCount++;
+	if(metadataTypeCount>=metadataColorPalette.length)
+	    metadataTypeCount = 0;
+	metadataColors[type] = metadataColorPalette[metadataTypeCount];
+    }
+    this.color = metadataColors[type];
     $.extend(this, {
         getType: function() {
             return this.type;
         },
+	getColor: function() {
+	    return this.color;
+	},
         getLabel: function() {
             if (this.label != null) return this.label;
             return this.type;

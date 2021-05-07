@@ -925,6 +925,10 @@ svg > g > g:last-child { pointer-events: none }
 .display-search-provider {
 }
 
+.display-search-block {
+    margin-top:8px;
+}
+
 .display-search-label {
     margin-top:8px;
     font-weight:500;
@@ -954,8 +958,9 @@ svg > g > g:last-child { pointer-events: none }
 }
 
 .display-search-tag {
+    font-size:80%;
     display:inline-block;
-    margin:5px;
+    margin:3px;
     border-radius: 10px;
     padding:1px;
     padding-left:8px;
@@ -1230,6 +1235,8 @@ svg > g > g:last-child { pointer-events: none }
     overflow-x:none; 
 }
 
+
+
 .display-entrylist-content   { 
    min-width: 250px;
    min-height: 250px;
@@ -1315,6 +1322,9 @@ svg > g > g:last-child { pointer-events: none }
     padding-left: 16px;
 }
 
+.display-entrylist-details-snippet   {
+    margin-left:24px;
+}
 .display-entrylist-details-ancestors, .display-entrylist-details-tags {
     padding-left: 24px;
 }
@@ -1978,7 +1988,6 @@ font-weight:bold;
 }
 
 .display-images-block:hover {
-    border: 1px solid red;
     cursor:pointer;
 }
 

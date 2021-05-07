@@ -61,6 +61,7 @@ const ID_TOP = "top";
 const ID_TOP_RIGHT = "topright";
 const ID_TOP_LEFT = "topleft";
 const ID_DETAILS = "details";
+const ID_DETAILS_SNIPPET = "snippet";
 const ID_DISPLAY_CONTENTS = "contents";
 const ID_DISPLAY_TOP = "top";
 const ID_DISPLAY_BOTTOM = "bottom";
@@ -105,6 +106,8 @@ const RECORD_INDEX = "recordindex";
 const RECORD_ID = "recordid";
 const TEXT_HIGHLIGHT_COLOR = "yellow";
 const HIGHLIGHT_COLOR = "red";
+
+const VALUE_NONE = "--none--";
 
 let globalDisplayCount = 0;
 function addGlobalDisplayProperty(name, value) {
@@ -3358,7 +3361,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
         },
         getEntryHtml: function(entry, props) {
-            var dfltProps = {
+            let dfltProps = {
                 showHeader: true,
                 headerRight: false,
                 showDetails: this.getShowDetails(),
@@ -3370,19 +3373,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let menu = this.getEntryMenuButton(entry);
             let html = "";
             if (props.showHeader) {
-                var left = menu + SPACE + entry.getLink(null, true, ["target","_entries"]);
+                let left = menu + SPACE + entry.getLink(null, true, ["target","_entries"]);
                 if (props.headerRight) html += HU.leftRight(left, props.headerRight);
                 else html += left;
-                //                    html += "<hr>";
             }
+
             let divid = HU.getUniqueId("entry_");
             html += HU.div([ID, divid], "");
-            let snippet = entry.getSnippet();
-	    if(snippet) html+=snippet;
-            var metadata = entry.getMetadata();
+            let metadata = entry.getMetadata();
 	    if(dfltProps.showImage) {
 		if (entry.isImage()) {
-                    var img = HU.tag(TAG_IMG, ["src", entry.getImageUrl(), /*ATTR_WIDTH,"100%",*/
+                    let img = HU.tag(TAG_IMG, ["src", entry.getImageUrl(), /*ATTR_WIDTH,"100%",*/
 					       ATTR_CLASS, "display-entry-image"
 					      ]);
 
@@ -3390,9 +3391,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		} else {
                     for (var i = 0; i < metadata.length; i++) {
 			if (metadata[i].type == "content.thumbnail") {
-                            var image = metadata[i].value.attr1;
-
-                            var url;
+                            let image = metadata[i].value.attr1;
+                            let url;
                             if (image.indexOf("http") == 0) {
 				url = image;
                             } else {
@@ -3544,11 +3544,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (handler && handler.getEntryPrefix) {
                     extra += handler.getEntryPrefix(props.handlerId, entry);
                 }
-                let left = HU.div([ATTR_CLASS, "display-entrylist-name"], entryMenuButton + " " + open + " " + extra + link + " " + entryName);
 
+
+                let left = HU.div([ATTR_CLASS, "display-entrylist-name"], entryMenuButton + " " + open + " " + extra + link + " " + entryName);
+		let snippet = "";
+		snippet = HU.div([ATTR_CLASS, "display-entrylist-details-snippet", ATTR_ID, this.getDomId(ID_DETAILS_SNIPPET + entryIdForDom)], entry.getSnippet()||"");
+		if(this.getProperty("showSnippetInList")) {
+		    left+=snippet;
+		    snippet = "";
+		}
 		let inner = HU.div([ATTR_CLASS, "display-entrylist-details-inner", ATTR_ID, this.getDomId(ID_DETAILS_INNER + entryIdForDom)], "");
                 let details = HU.div([ATTR_ID, this.getDomId(ID_DETAILS + entryIdForDom), ATTR_CLASS, "display-entrylist-details"], 
 				     HU.div([ATTR_CLASS, "display-entrylist-details-ancestors", ATTR_ID, this.getDomId(ID_DETAILS_ANCESTORS + entryIdForDom)], "") +
+				     snippet +
 				     HU.div([ATTR_CLASS, "display-entrylist-details-tags", ATTR_ID, this.getDomId(ID_DETAILS_TAGS + entryIdForDom)], "")+
 				     inner
 				    );
@@ -3831,6 +3839,47 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             this.toggleEntryDetails(event, entryId);
         },
+	makeEntryTags:function(entry,groupThem,prefix,metadataMap) {
+	    prefix = prefix||"";
+	    let metadata = "";
+	    let map = {};
+	    let list = [];
+	    entry.getMetadata().forEach(m=>{
+		//Check for exclusions
+		if(["content.pagestyle", "content.pagetemplate","content.thumbnail","content.attachment"].includes(m.type)) return;
+		if(m.type.startsWith("map")) return;
+		if(m.type.startsWith("spatial")) return;		
+                let tt = m.label+": " + m.value.attr1;
+                let label =String(m.value.attr1);
+		if(m.type=="property") {
+		    tt +=":" + m.value.attr2;
+		    label +=":" + m.value.attr2;
+		}
+		if(label.length>20) label = label.substring(0,19) +"...";
+		label = prefix +label;
+		let id = Utils.getUniqueId("metadata_");
+		let tag = HU.div(["metadata-type",m.type,"metadata-value", m.value.attr1,ID,id,CLASS,"display-search-tag",TITLE, tt,STYLE, HU.css("background", getMetadataColor(m.type))],label);
+		if(!groupThem)
+		    metadata+= tag;
+		else {
+		    if(!map[m.type]) {
+			map[m.type] = [];
+			list.push(m);
+		    }
+		    map[m.type].push(tag);
+		}
+		if(metadataMap)
+		    metadataMap[id] = m;
+	    });
+	    if(groupThem) {
+		list.forEach(m=>{
+		    metadata+=m.label +": " +map[m.type].join(" ");
+		    metadata+="<br>";
+		});
+	    }
+
+	    return metadata;
+	},
         toggleEntryDetails: async function(event, entryId, suffix, handlerId, entry) {
 	    if(!entry) {
 		await this.getEntry(entryId, e => {
@@ -3838,7 +3887,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 		return;
 	    }
-
 
             //                console.log("toggleEntryDetails:" + entry.getName() +" " + entry.getId());
             if (suffix == null) suffix = "";
@@ -3911,26 +3959,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
 	    let metadataMap  = {};
-	    let metadata = "";
 	    let prefix = entry.isSynth()?"":HU.getIconImage("fas fa-search") + SPACE;
-	    entry.getMetadata().forEach(m=>{
-		//Check for exclusions
-		if(["content.pagestyle", "content.pagetemplate","content.thumbnail","content.attachment"].includes(m.type)) return;
-		if(m.type.startsWith("map")) return;
-		if(m.type.startsWith("spatial")) return;		
-                let tt = m.label+": " + m.value.attr1;
-                let label =String(m.value.attr1);
-		if(m.type=="property") {
-		    tt +=":" + m.value.attr2;
-		    label +=":" + m.value.attr2;
-		}
-		if(label.length>20) label = label.substring(0,19) +"...";
-		label = prefix +label;
-		let id = Utils.getUniqueId("metadata_");
-		metadata+=HU.div([ID,id,CLASS,"display-search-tag",TITLE, tt],label);
-		metadataMap[id] = m;
-		
-	    });
+	    let metadata = this.makeEntryTags(entry,false,prefix,metadataMap);
+
 	    let bar = this.jq(ID_DETAILS_TAGS + entry.getIdForDom() + suffix);
 	    let typeTag = $(HU.span([CLASS,"display-search-tag"],prefix + "Type: " + entry.getType().getLabel())).appendTo(bar);
 	    if(!entry.isSynth()) {
@@ -3946,7 +3977,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 
-	    if(!entry.isSynth()) {
+	    if(!entry.isSynth() && this.getProperty("showEntryBreadcrumbs",true)) {
 		let ancestorContent = "";
 		let handleAncestor = ancestor=>{
 		    if(!ancestor) {
@@ -5556,6 +5587,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return { dateMin:dateMin, dateMax:dateMax, dates:dates};
 	},
 	    
+	getHighlightColor: function() {
+	    return this.getProperty("highlightColor", HIGHLIGHT_COLOR);
+	},
 	checkFilterField: function(f) {
 	    var min = f.attr("data-min");
 	    var max = f.attr("data-max");
@@ -5688,7 +5722,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		position: {
 		    my: _this.getProperty("tooltipPositionMy", "left top"),
 		    at: _this.getProperty("tooltipPositionAt", "left bottom+2"),
-		    collision: _this.getProperty("tooltipCollision", "none none")
+		    collision: _this.getProperty("tooltipCollision", "flip")
 		},
 		show: {
 		    delay: parseFloat(_this.getProperty("tooltipDelay",1000)),

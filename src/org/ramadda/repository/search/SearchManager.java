@@ -206,6 +206,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     private static final String FIELD_SOUTH = "south";
     private static final String FIELD_EAST = "east";
 
+    private static final String FIELD_CORPUS = "corpus";
+
+
     /** _more_ */
     private static final String FIELD_CONTENTS = "contents";
 
@@ -230,7 +233,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     private static final String FIELD_NAME_SORT = "namesort";    
 
 
-    private static final String[] SEARCH_FIELDS ={FIELD_NAME, FIELD_DESCRIPTION, FIELD_CONTENTS,FIELD_PATH};
+    private static final String[] SEARCH_FIELDS ={FIELD_CORPUS, FIELD_NAME, FIELD_DESCRIPTION, FIELD_CONTENTS,FIELD_PATH};
 
     public static final int LUCENE_MAX_LENGTH = 50000000;
 
@@ -558,6 +561,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	throws Exception {
         org.apache.lucene.document.Document doc =
             new org.apache.lucene.document.Document();
+	StringBuilder corpus = new StringBuilder();
 
         doc.add(new StringField(FIELD_ENTRYID, entry.getId(), Field.Store.YES));
 	//        doc.add(new StringField(FIELD_TYPE, entry.getTypeHandler().getType(), Field.Store.YES));	
@@ -597,15 +601,24 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    if(entry.getResource().isFile()) {
 		path = getStorageManager().getFileTail(entry);
 	    }
-            doc.add(new TextField(FIELD_PATH, path.toLowerCase(), Field.Store.NO));
+	    path = path.toLowerCase();
+	    corpus.append(path);
+	    corpus.append(" ");
+            doc.add(new TextField(FIELD_PATH, path, Field.Store.NO));
         }
 
-        doc.add(new TextField(FIELD_NAME,  entry.getName().toLowerCase(),Field.Store.YES));
+	String name = entry.getName().toLowerCase();
+	corpus.append(name);
+	corpus.append(" ");
+        doc.add(new TextField(FIELD_NAME,  name,Field.Store.YES));
 	doc.add(new SortedDocValuesField(FIELD_NAME_SORT, new BytesRef(entry.getName())));
 
 	StringBuilder desc = new StringBuilder();
         entry.getTypeHandler().getTextCorpus(entry, desc);
-        doc.add(new TextField(FIELD_DESCRIPTION, desc.toString().toLowerCase(),Field.Store.NO));
+	String _desc = desc.toString().toLowerCase();
+	corpus.append(_desc);
+	corpus.append(" ");
+        doc.add(new TextField(FIELD_DESCRIPTION, _desc,Field.Store.NO));
 
 
 	List<Column> columns = entry.getTypeHandler().getColumns();
@@ -617,14 +630,20 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    Object v= column.getObject(values);
 		    if(v==null) continue;
 		    String field  = getPropertyField(entry.getTypeHandler(),column.getName());
-		    if(column.isEnumeration()) 
+		    if(column.isEnumeration())  {
+			corpus.append(v.toString());
+			corpus.append(" ");
 			doc.add(new StringField(field, v.toString(),Field.Store.YES));
+		    }
 		    else if(column.isDouble()) 
 			doc.add(new DoublePoint(field, (Double)v));
 		    else if(column.isInteger()) 
 			doc.add(new IntPoint(field, (Integer)v));		    
-		    else
+		    else {
+			corpus.append(v.toString());
+			corpus.append(" ");
 			doc.add(new TextField(field, v.toString(),Field.Store.NO));
+		    }
 		}
 	    }
 	}
@@ -638,6 +657,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		continue;
 	    }
 	    if(type.getSearchable()) {
+		corpus.append(metadata.getAttr1().toLowerCase());
+		corpus.append(" ");
 		doc.add(new StringField(getMetadataField(type.getId()), metadata.getAttr1(),Field.Store.NO));
 	    }
 	}
@@ -647,27 +668,25 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	//	}
 
 
-        StringBuilder metadataSB = new StringBuilder();
-        getRepository().getMetadataManager().getTextCorpus(entry, metadataSB);
-        if (metadataSB.length() > 0) {
-
-        }
 
 	doc.add(new SortedNumericDocValuesField(FIELD_DATE_CREATED, entry.getCreateDate()));	
 	doc.add(new SortedNumericDocValuesField(FIELD_DATE_CHANGED, entry.getChangeDate()));
 	doc.add(new SortedNumericDocValuesField(FIELD_DATE_START, entry.getStartDate()));
 	doc.add(new SortedNumericDocValuesField(FIELD_DATE_END, entry.getEndDate()));	
 
-
         if (entry.isFile()) {
-            addContentField(entry, doc, entry.getResource().getTheFile());
+            addContentField(entry, doc, entry.getResource().getTheFile(), corpus);
         } else {
 	    StringBuilder contents = new StringBuilder();
 	    entry.getTypeHandler().getTextContents(entry, contents);
-	    if(contents.length()>0)
+	    if(contents.length()>0) {
 		doc.add(new TextField(FIELD_CONTENTS, contents.toString(), Field.Store.NO));
+		corpus.append(contents);
+		corpus.append(" ");
+	    }
 	}
 
+        doc.add(new TextField(FIELD_CORPUS, corpus.toString(),Field.Store.NO));
 
         writer.addDocument(doc);
     }
@@ -706,13 +725,15 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      */
     private void addContentField(Entry entry,
                                  org.apache.lucene.document.Document doc,
-                                 File f)
+                                 File f, StringBuilder corpus)
 	throws Exception {
         try {
             String contents = readContents(f);
 	    //	    System.out.println(f+"\n" + contents);
             if ((contents != null) && (contents.length() > 0)) {
                 doc.add(new TextField(FIELD_CONTENTS, contents, Field.Store.NO));
+		corpus.append(contents);
+		corpus.append(" ");
             }
             /*
 	      String[] names = metadata.names();
@@ -844,6 +865,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    Date date1 = dateRange[0];
 	    Date date2 = dateRange[1];
 	    if(date1==null && date2==null) continue;
+	    System.err.println(date1);
+	    System.err.println(date2);
 	    if (arg.forCreateDate() || arg.forChangeDate()) {
 		String field = arg.forCreateDate()
 		    ? FIELD_DATE_CREATED
@@ -942,9 +965,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             if ( !request.defined(arg)) {
                 continue;
             }
-	    String value = request.getString(arg);
+	    List<String> values = (List<String>) request.get(arg,new ArrayList());
             String type = arg.substring(ARG_METADATA_ATTR1.length() + 1);
-	    cats.add(type,value);
+	    for(String value: values) {
+		cats.add(type,value);
+	    }
 	}
 	List<Query> metadataQueries = new ArrayList<Query>();
 	for(String type: cats.getCategories()) {
@@ -977,11 +1002,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			if(column.isEnumeration()) {
 			    String v = request.getString(searchArg,null);
 			    if(!Utils.stringDefined(v)||v.equals(TypeHandler.ALL)) continue;
+			    if(v.equals("--blank--")) v = "";
 			    term = new TermQuery(new Term(field, v));
 			} else if(column.isDouble()) {
 			    String expr = request.getEnum(searchArg + "_expr", "", "",
-							  Column.EXPR_EQUALS, Column.EXPR_LE, Column.EXPR_GE,
-							  Column.EXPR_BETWEEN, "&lt;=", "&gt;=");
+							  Column.EXPR_EQUALS, Column.EXPR_LE, Column.EXPR_GE,Column.EXPR_LT,Column.EXPR_GT,
+							  Column.EXPR_BETWEEN, "&lt;=", "&gt;=").trim();
 			    expr = expr.replace("&lt;", "<").replace("&gt;", ">");
 			    double from  = request.get(searchArg + "_from", Double.NaN);
 			    double to    = request.get(searchArg + "_to", Double.NaN);
@@ -991,33 +1017,43 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 				to    = to / 100.0;
 				value = value / 100.0;
 			    }
-			    if (!Double.isNaN(from) && Double.isNaN(to)) {
-				to = from;
-			    } else if (Double.isNaN(from) && !Double.isNaN(to)) {
-				from = to;
-			    } else if (Double.isNaN(from) && Double.isNaN(to)) {
-				from = value;
-				to   = value;
-			    }
-			    if (Double.isNaN(from)) continue;
-			    if (expr.equals("")) {
-				expr = Column.EXPR_EQUALS;
-			    }
-			    if (expr.equals(Column.EXPR_EQUALS)) {
-				term = DoublePoint.newExactQuery(field,from);
-			    } else if (expr.equals(Column.EXPR_LE)) {
-				term = DoublePoint.newRangeQuery(field,Double.MIN_VALUE,to);
-			    } else if (expr.equals(Column.EXPR_GE)) {
-				term = DoublePoint.newRangeQuery(field,from,Double.MAX_VALUE);
-			    } else if (expr.equals(Column.EXPR_BETWEEN)) {
-				term = DoublePoint.newRangeQuery(field,from,to);
-			    } else if (expr.length() > 0) {
-				throw new IllegalArgumentException("Unknown expression:"
-								   + expr);
+			    if (expr.equals("") && (!Double.isNaN(from) || !Double.isNaN(to))) {
+				term = DoublePoint.newRangeQuery(field,Double.isNaN(from)?Double.MIN_VALUE:from,Double.isNaN(to)?Double.MAX_VALUE:to);
+			    }  else {
+				if (!Double.isNaN(from) && Double.isNaN(to)) {
+				    to = from;
+				} else if (Double.isNaN(from) && !Double.isNaN(to)) {
+				    from = to;
+				} else if (Double.isNaN(from) && Double.isNaN(to)) {
+				    from = value;
+				    to   = value;
+				}
+				if (Double.isNaN(from)) continue;
+				if (expr.equals("")) {
+				    term = DoublePoint.newRangeQuery(field,from,to);
+				    expr = Column.EXPR_EQUALS;
+				}
+				double delta = 0.00000001;
+				if (expr.equals(Column.EXPR_EQUALS)) {
+				    term = DoublePoint.newExactQuery(field,from);
+				} else if (expr.equals(Column.EXPR_LE)) {
+				    term = DoublePoint.newRangeQuery(field,Double.MIN_VALUE,to);
+				} else if (expr.equals(Column.EXPR_LT)) {
+				    term = DoublePoint.newRangeQuery(field,Double.MIN_VALUE,to-delta);
+				} else if (expr.equals(Column.EXPR_GE)) {
+				    term = DoublePoint.newRangeQuery(field,from,Double.MAX_VALUE);
+				} else if (expr.equals(Column.EXPR_GT)) {
+				    term = DoublePoint.newRangeQuery(field,from+delta,Double.MAX_VALUE);				
+				} else if (expr.equals(Column.EXPR_BETWEEN)) {
+				    term = DoublePoint.newRangeQuery(field,from,to);
+				} else if (expr.length() > 0) {
+				    throw new IllegalArgumentException("Unknown expression:"
+								       + expr);
+				}
 			    }
 			} else if(column.isInteger()) {
 			    String expr = request.getEnum(searchArg + "_expr", "", "",
-							  Column.EXPR_EQUALS, Column.EXPR_LE, Column.EXPR_GE,
+							  Column.EXPR_EQUALS, Column.EXPR_LE, Column.EXPR_GE,Column.EXPR_LT,Column.EXPR_GT,
 							  Column.EXPR_BETWEEN, "&lt;=", "&gt;=");
 			    expr = expr.replace("&lt;", "<").replace("&gt;", ">");
 			    int undef = -99999999;
@@ -1040,8 +1076,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 				term = IntPoint.newExactQuery(field,from);
 			    } else if (expr.equals(Column.EXPR_LE)) {
 				term = IntPoint.newRangeQuery(field,Integer.MIN_VALUE,to);
+			    } else if (expr.equals(Column.EXPR_LT)) {
+				term = IntPoint.newRangeQuery(field,Integer.MIN_VALUE,to-1);				
 			    } else if (expr.equals(Column.EXPR_GE)) {
 				term = IntPoint.newRangeQuery(field,from,Integer.MAX_VALUE);
+			    } else if (expr.equals(Column.EXPR_GT)) {
+				term = IntPoint.newRangeQuery(field,from+1,Integer.MAX_VALUE);				
 			    } else if (expr.equals(Column.EXPR_BETWEEN)) {
 				term = IntPoint.newRangeQuery(field,from,to);
 			    } else if (expr.length() > 0) {
@@ -1055,7 +1095,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			}
 			cnt++;
 			if(term!=null)
-			    builder.add(term, BooleanClause.Occur.SHOULD);
+			    builder.add(term, BooleanClause.Occur.MUST);
 		    }
 		    if(cnt>0) queries.add(builder.build());
 		}

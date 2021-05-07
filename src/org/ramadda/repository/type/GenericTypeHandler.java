@@ -1063,7 +1063,7 @@ public class GenericTypeHandler extends TypeHandler {
      * @throws Exception on badness
      */
     @Override
-    public String getFieldHtml(Request request, Entry entry, String name)
+    public String getFieldHtml(Request request, Entry entry, String name,boolean raw)
             throws Exception {
         Object[] values = getEntryValues(entry);
         if (values != null) {
@@ -1072,6 +1072,11 @@ public class GenericTypeHandler extends TypeHandler {
                     if (column.isPrivate()) {
                         return null;
                     }
+		    if(raw) {
+			Object o = column.getObject(values);
+			if(o!=null) return o.toString();
+			return null;
+		    }
                     StringBuilder tmpSB = new StringBuilder();
                     formatColumnHtmlValue(request, entry, column, tmpSB,
                                           values);
@@ -1081,7 +1086,7 @@ public class GenericTypeHandler extends TypeHandler {
             }
         }
 
-        return super.getFieldHtml(request, entry, name);
+        return super.getFieldHtml(request, entry, name,raw);
     }
 
     /**

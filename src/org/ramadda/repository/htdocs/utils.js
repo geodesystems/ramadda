@@ -1089,6 +1089,7 @@ var Utils =  {
     makeId: function(s) {
 	s  = String(s);
 	s = s.replace(/[^\x00-\x7F]/g, "_");
+	s = s.replace(/&/g,"_");
 	s = s.replace(/\./g, "_");	
         s = s.trim().toLowerCase().replace(/ /g,"_");
         return s;
@@ -4465,17 +4466,22 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    close($("#" + imageId));
 	}
     },
-    toggleBlock: function(label, contents, visible) {
+    toggleBlock: function(label, contents, visible, args) {
+	let opts = {
+	    headerClass:"ramadda-noselect entry-toggleblock-label ramadda-hoverable",
+	    headerStyle:""
+	};
+	if(args) $.extend(opts, args);
         let id = Utils.getUniqueId("block_");
         let imgid = id + "_img";
-
-        let img1 = ramaddaBaseUrl + "/icons/togglearrowdown.gif";
-        let img2 = ramaddaBaseUrl + "/icons/togglearrowright.gif";
-        let args = HtmlUtils.join([HtmlUtils.squote(id), HtmlUtils.squote(imgid), HtmlUtils.squote(img1), HtmlUtils.squote(img2)], ",");
-        let click = "toggleBlockVisibility(" + args + ");";
-
-        let header = HtmlUtils.div(["class", "ramadda-noselect entry-toggleblock-label ramadda-hoverable", "onClick", click],
-				   HtmlUtils.image((visible ? img1 : img2), ["align", "bottom", "id", imgid]) +
+//        let img1 = ramaddaBaseUrl + "/icons/togglearrowdown.gif";
+//        let img2 = ramaddaBaseUrl + "/icons/togglearrowright.gif";
+        let img1 = "fas fa-caret-down";
+        let img2 = "fas fa-caret-right";	
+        let clickArgs = HtmlUtils.join([HtmlUtils.squote(id), HtmlUtils.squote(imgid), HtmlUtils.squote(img1), HtmlUtils.squote(img2)], ",");
+        let click = "toggleBlockVisibility(" + clickArgs + ");";
+        let header = HtmlUtils.div([STYLE,opts.headerStyle,"class", opts.headerClass, "onClick", click],
+				   HtmlUtils.getIconImage((visible ? img1 : img2), ["align", "bottom", "id", imgid]) +
 				   " " + label);
         let style = (visible ? "display:block;visibility:visible" : "display:none;");
         let body = HtmlUtils.div(["class", "hideshowblock", "id", id, "style", style],

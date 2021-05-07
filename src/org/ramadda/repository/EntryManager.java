@@ -997,23 +997,35 @@ public class EntryManager extends RepositoryManager {
         List<String>      types        = new ArrayList<String>();
         List<TypeHandler> typeHandlers = getRepository().getTypeHandlersForDisplay(false);
         boolean           checkCnt     = request.get("checkcount", true);
+	HashSet only = null;
+	String typesList = request.getString("types");
+	if(typesList!=null) {
+	    only = new HashSet();
+	    for(String type: Utils.split(typesList,",")) {
+		only.add(type);
+	    }
+	}
+
+
         for (TypeHandler typeHandler : typeHandlers) {
 	    if (!typeHandler.getIncludeInSearch() &&  !typeHandler.getForUser()) {
                 continue;
             }
+	    if(only!=null &&!only.contains(typeHandler.getType())) continue;
             if (checkCnt) {
                 int cnt = getEntryUtil().getEntryCount(typeHandler);
                 if (!typeHandler.getIncludeInSearch() && cnt == 0) {
                     continue;
                 }
             }
+	    if(only!=null) {
+	    }
             types.add(typeHandler.getJson(request));
         }
 
         StringBuilder sb = new StringBuilder(Json.list(types));
         request.setReturnFilename("types.json");
         request.setCORSHeaderOnResponse();
-
         return new Result("", sb, Json.MIMETYPE);
     }
 

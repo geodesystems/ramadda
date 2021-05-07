@@ -1855,5 +1855,114 @@ public abstract class Processor extends CsvOperator {
         }
     }
 
+    public static class Doit extends Processor {
+	private HashSet genres = new HashSet();
+	private SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
+	private SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");	
+
+	public Doit() {
+	}
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+	    try {
+		return processRowInner(ctx,row);
+	    } catch(Exception exc) {
+		throw new RuntimeException(exc);
+	    }
+	}
+
+	private String makeTags(Object v,String tag) {
+	    List<String> toks = Utils.split(v.toString(),",");
+	    StringBuilder sb = new StringBuilder();
+	    for(String value: toks) {
+		value = value.trim();
+		if(value.length()==0) continue;
+		String contents  = XmlUtil.tag("attr",XmlUtil.attr("encoded","false")+XmlUtil.attr("index","1"),
+					       XmlUtil.getCdata(value));
+		sb.append(XmlUtil.tag("metadata",XmlUtil.attr("type","netflix_" + tag),contents));
+		sb.append("\n");
+	    }
+	    return sb.toString();
+	}
+
+
+	private String makeTag(String tag, Object v) {
+	    return XmlUtil.tag(tag,"",XmlUtil.getCdata(v.toString().trim()));
+	}
+
+        public Row processRowInner(TextReader ctx, Row row) throws Exception {	    
+
+	    PrintWriter pw = ctx.getWriter();
+            if (rowCnt++ == 0) {
+		pw.println("<entries>");
+		return row;
+            }
+	    //	    if(rowCnt>500) return null;
+	    String dttm = ((String)row.get(18)).trim();
+	    List<String> genreToks = Utils.split((String)row.get(1),",");
+	    String genre  = genreToks.size()>0?genreToks.get(0):"Film";
+	    genre = genre.trim();
+	    if(genre.length()==0) genre="Miscellaneous";
+	    if(!genres.contains(genre)) {
+		pw.print(XmlUtil.tag("entry",XmlUtil.attr("type","group")+XmlUtil.attr("id",genre)+XmlUtil.attr("name",genre),""));
+		genres.add(genre);
+	    }
+
+	    pw.print("<entry " + XmlUtil.attr("type","type_netflix_movie") + XmlUtil.attr("parent",genre));
+	    if(dttm.length()>0) {
+		Date date = sdf.parse(dttm);
+		pw.print(XmlUtil.attr("fromdate",sdf2.format(date)));
+	    }
+	    pw.println(">");
+	    pw.print(makeTag("name",row.get(0)));
+	    pw.print(makeTag("description","<snippet>" + row.get(23)+"</snippet>"));
+	    pw.print(makeTag("series_or_movie",row.get(4)));
+	    pw.print(makeTag("hidden_gem_score",row.get(5))); 
+	    pw.print(makeTag("runtime",row.get(7))); 
+	    pw.print(makeTag("view_rating",row.get(11))); 
+	    pw.print(makeTag("imdb_score",row.get(12))); 
+	    pw.print(makeTag("rotten_tomatoes_score",row.get(13))); 
+	    pw.print(makeTag("metacritic_score",row.get(14))); 
+	    pw.print(makeTag("awards_received",row.get(15))); 
+	    pw.print(makeTag("awards_nominated_for",row.get(16))); 
+	    pw.print(makeTag("boxoffice",row.get(17))); 
+	    pw.print(makeTag("release_date",row.get(18))); 
+	    pw.print(makeTag("netflix_release_date",row.get(19))); 
+	    pw.print(makeTag("netflix_link",row.get(21))); 
+	    pw.print(makeTag("imdb_link",row.get(22))); 
+	    pw.print(makeTag("imdb_votes",row.get(24)));
+	    String thumb = row.getString(25);
+	    if(thumb.trim().length()>0) {
+		pw.print("<metadata type=\"content.thumbnail\"><attr index=\"1\" encoded=\"false\">" +thumb +"</attr></metadata>");
+	    }
+	    pw.print(makeTag("poster",row.get(26)));
+	    pw.print(makeTag("tmdb_trailer",row.get(27)));
+	    pw.print(makeTag("trailer_site",row.get(28))); 
+	    pw.print(makeTags(row.get(1),"genre"));
+	    pw.print(makeTags(row.get(2),"tag"));
+	    pw.print(makeTags(row.get(3),"language"));
+	    pw.print(makeTags(row.get(6),"country_availability"));
+	    pw.print(makeTags(row.get(10),"actor"));
+	    pw.print(makeTags(row.get(20),"production_house"));
+	    pw.print(makeTags(row.get(8),"director"));
+	    pw.print(makeTags(row.get(9),"writer"));
+	    pw.println("</entry>");
+            return row;
+        }
+
+        public void finish(TextReader ctx) 
+	    throws Exception {
+	    super.finish(ctx);
+	    ctx.getWriter().println("</entries>");
+	}
+
+    }
 
 }

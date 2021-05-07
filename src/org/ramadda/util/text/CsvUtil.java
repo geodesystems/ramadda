@@ -3279,6 +3279,11 @@ public class CsvUtil {
 		return i;
 	    });
 
+	defineFunction("-doit",0,(ctx,args,i) -> {
+		ctx.addProcessor(new Processor.Doit());
+		return i;
+	    });	
+
 	defineFunction("-table",0,(ctx,args,i) -> {
 		if(hasSink) return SKIP_INDEX;
 		ctx.addProcessor(new RowCollector.Stats(this,false));

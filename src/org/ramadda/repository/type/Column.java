@@ -107,6 +107,10 @@ public class Column implements DataTypes, Constants, Cloneable {
     /** _more_ */
     public static final String EXPR_LE = "<=";
 
+    public static final String EXPR_LT = "<";
+
+    public static final String EXPR_GT = ">";    
+
     /** _more_ */
     public static final String EXPR_GE = ">=";
 
@@ -351,6 +355,8 @@ public class Column implements DataTypes, Constants, Cloneable {
 
     /** _more_ */
     private List<TwoFacedObject> enumValues;
+
+    private List<TwoFacedObject> jsonValues;    
 
     /** _more_ */
     private Hashtable<String, String> enumMap = new Hashtable<String,
@@ -920,12 +926,13 @@ public class Column implements DataTypes, Constants, Cloneable {
         col.add("" + getCanDisplay());
         if (isEnumeration()) {
             List<String>         enums = new ArrayList<String>();
-            List<TwoFacedObject> values;
-            if (isType(DATATYPE_ENUMERATION)) {
+            List<TwoFacedObject> values = null;
+	    if (isType(DATATYPE_ENUMERATION)) {
                 values = enumValues;
-            } else {
+            } 
+	    if(values==null || values.size()==0) {
                 values = typeHandler.getEnumValues(request, this, null);
-            }
+	    }
             if (values != null) {
                 for (TwoFacedObject tfo : values) {
                     enums.add(
@@ -1434,7 +1441,7 @@ public class Column implements DataTypes, Constants, Cloneable {
      */
     public String getEnumLabel(String value, boolean forDisplay) {
         String label = getEnumLabelInner(value);
-        if ( !forDisplay && (label.length() == 0)) {
+        if (!forDisplay && (label.length() == 0)) {
             label = "&lt;blank&gt;";
         }
 
