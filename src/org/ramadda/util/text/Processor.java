@@ -1904,7 +1904,7 @@ public abstract class Processor extends CsvOperator {
 		pw.println("<entries>");
 		return row;
             }
-	    //	    if(rowCnt>500) return null;
+	    if(rowCnt>50) return null;
 	    String dttm = ((String)row.get(18)).trim();
 	    List<String> genreToks = Utils.split((String)row.get(1),",");
 	    String genre  = genreToks.size()>0?genreToks.get(0):"Film";

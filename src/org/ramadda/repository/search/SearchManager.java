@@ -212,6 +212,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     /** _more_ */
     private static final String FIELD_CONTENTS = "contents";
 
+    private static final String FIELD_ATTACHMENT = "attachment";
+
     /** _more_ */
     private static final String FIELD_DATE_CREATED = "date_created";
     private static final String FIELD_DATE_CHANGED = "date_changed";
@@ -233,7 +235,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     private static final String FIELD_NAME_SORT = "namesort";    
 
 
-    private static final String[] SEARCH_FIELDS ={FIELD_CORPUS, FIELD_NAME, FIELD_DESCRIPTION, FIELD_CONTENTS,FIELD_PATH};
+    private static final String[] SEARCH_FIELDS ={FIELD_CORPUS, FIELD_NAME, FIELD_DESCRIPTION, FIELD_CONTENTS,FIELD_ATTACHMENT, FIELD_PATH};
 
     public static final int LUCENE_MAX_LENGTH = 50000000;
 
@@ -656,6 +658,19 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		//		System.err.println("Null type:" + entry.getName() +"  "+ metadata);
 		continue;
 	    }
+	    for (MetadataElement element : type.getChildren()) {
+		if ( !element.getDataType().equals(element.DATATYPE_FILE)) {
+		    continue;
+		}
+		File f = element.getFile(entry, metadata, element);
+		if(f!=null && f.exists()) {
+		    //		    System.err.println("\tindexing:" + f);
+		    addContentField(entry, doc, FIELD_ATTACHMENT, f, corpus);
+		}
+	    }
+	    
+
+
 	    if(type.getSearchable()) {
 		corpus.append(metadata.getAttr1().toLowerCase());
 		corpus.append(" ");
@@ -675,7 +690,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	doc.add(new SortedNumericDocValuesField(FIELD_DATE_END, entry.getEndDate()));	
 
         if (entry.isFile()) {
-            addContentField(entry, doc, entry.getResource().getTheFile(), corpus);
+            addContentField(entry, doc, FIELD_CONTENTS, entry.getResource().getTheFile(), corpus);
         } else {
 	    StringBuilder contents = new StringBuilder();
 	    entry.getTypeHandler().getTextContents(entry, contents);
@@ -687,12 +702,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 
         doc.add(new TextField(FIELD_CORPUS, corpus.toString(),Field.Store.NO));
-
         writer.addDocument(doc);
     }
 
 
-    private String readContents(File f) throws Exception {
+    private String readContents(File f,List<org.apache.tika.metadata.Metadata> metadataList) throws Exception {
 	//Don't do really big files or images
 	if(f.length()>LUCENE_MAX_LENGTH) return null;
 	if(Utils.isImage(f.toString())) return null;
@@ -700,6 +714,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    //	    System.err.println("SearchManager.readContents:" + f.getName());
             org.apache.tika.metadata.Metadata metadata =
                 new org.apache.tika.metadata.Metadata();
+	    metadataList.add(metadata);
 	    Parser parser = new org.apache.tika.parser.AutoDetectParser(tikaConfig);
             org.apache.tika.sax.BodyContentHandler handler =
                 new org.apache.tika.sax.BodyContentHandler(LUCENE_MAX_LENGTH);
@@ -725,25 +740,25 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      */
     private void addContentField(Entry entry,
                                  org.apache.lucene.document.Document doc,
+				 String field,
                                  File f, StringBuilder corpus)
 	throws Exception {
         try {
-            String contents = readContents(f);
+	    List<org.apache.tika.metadata.Metadata> metadata = new ArrayList<org.apache.tika.metadata.Metadata>();
+	    String contents = readContents(f,metadata);
 	    //	    System.out.println(f+"\n" + contents);
             if ((contents != null) && (contents.length() > 0)) {
-                doc.add(new TextField(FIELD_CONTENTS, contents, Field.Store.NO));
+                doc.add(new TextField(field, contents, Field.Store.NO));
 		corpus.append(contents);
 		corpus.append(" ");
             }
-            /*
-	      String[] names = metadata.names();
-	      for (String name : names) {
-	      String value = metadata.get(name);
-	      System.err.println(name +"=" + value);
-	      doc.add(new Field(name, value, Field.Store.YES,
-	      Field.Index.ANALYZED));
-	      }
-            */
+	    for(org.apache.tika.metadata.Metadata mtd: metadata) {
+		String[] names = mtd.names();
+		for (String name : names) {
+		    String value = mtd.get(name);
+		    doc.add(new StringField("document_metadata_"+ name, value, Field.Store.NO));
+		}
+	    }
         } catch (Exception exc) {
             System.err.println("SearchManager: error harvesting corpus from:" + f);
             exc.printStackTrace();
