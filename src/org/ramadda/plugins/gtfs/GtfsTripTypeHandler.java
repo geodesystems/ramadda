@@ -194,13 +194,13 @@ public class GtfsTripTypeHandler extends GenericTypeHandler {
             }
             sb.append(HtmlUtils.formEntry(msgLabel("Direction"),
                                           getFieldHtml(request, entry,
-                                              "direction")));
+						       "direction",true)));
             sb.append(HtmlUtils.formEntry(msgLabel("Wheelchair accessible"),
                                           getFieldHtml(request, entry,
-                                              "wheelchair_accessible")));
+                                              "wheelchair_accessible",true)));
             sb.append(HtmlUtils.formEntry(msgLabel("Bikes allowed"),
                                           getFieldHtml(request, entry,
-                                              "bikes_allowed")));
+                                              "bikes_allowed",true)));
             sb.append(HtmlUtils.formTableClose());
 
             return sb.toString();
