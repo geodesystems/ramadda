@@ -1241,6 +1241,7 @@ var Utils =  {
 			    return  t.attrs["missing"]
 			} 
 			if(t.attrs["youtube"]) {
+			    if(value.trim().length==0) return null;
 			    let toks = value.match(/.*watch\?v=(.*)$/);
 			    if(!toks || toks.length!=2) {
 				s +=  HU.href(value,value);
@@ -1373,6 +1374,10 @@ var Utils =  {
 			    if(hook) v = hook(t,  source[t.tag]);
 			    if(!v) v = tokenFunc(t);
 			    if(!v) return;
+			    if(v.trim().length>0 && t.attrs["toggle"]) {
+				v = HU.toggleBlock(t.attrs["toggle"],v);
+			    }
+
 			    s+=v;
 			}
 		    });
