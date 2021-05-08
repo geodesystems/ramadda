@@ -1505,6 +1505,12 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                     savedValue = this.jq(ID_COLUMN + col.getName()).val();
                 }
 //                if (savedValue == null) savedValue = "";
+		let widget = "";
+		let help = "";
+		if(col.getSuffix()) {
+		    help = HU.span([STYLE,HU.css('cursor','help','margin-left','10px'), TITLE,col.getSuffix()], HU.getIconImage("fas fa-info"));
+		}		
+		
                 if (col.isEnumeration()) {
 		    let showLabels = this.getShowSearchLabels();
                     field = HU.openTag(TAG_SELECT, [ATTR_ID, id, ATTR_CLASS, "display-menu display-metadatalist"]);
@@ -1532,23 +1538,24 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                     }
                     field += HU.closeTag(TAG_SELECT);
 		    if(showLabels) {
-			extra += HU.div([CLASS,"display-search-label"], col.getLabel()+":");
-			extra+= HU.div([CLASS,"display-search-widget"], field+col.getSuffix());
+			widget += HU.div([CLASS,"display-search-label"], col.getLabel()+":");
+			widget+= HU.div([CLASS,"display-search-widget"], field+help);
 		    } else {
-			extra+= HU.div([CLASS,"display-search-block display-search-widget"], field+col.getSuffix());
+			widget+= HU.div([CLASS,"display-search-block display-search-widget"], field+help);
 		    }
 		} else if (col.isNumeric()) {
 		    let expr=   HU.select("",[CLASS,"ramadda-expr",ATTR_ID, id+"_expr"],comparators);
 		    let from = HU.input("", "", [ATTR_CLASS, "input", STYLE,HU.css("width","2.5em"), ATTR_ID, id+"_from"]);
 		    let to = HU.input("", "", [ATTR_CLASS, "input", STYLE,HU.css("xdisplay","none", "width","2.5em"), ATTR_ID, id+"_to"]);		    
 		    expr = "";
-                    extra += HU.div([CLASS,"display-search-label"], col.getLabel()) +
-			expr + " " +from +" - " + to;
+                    widget += HU.div([CLASS,"display-search-label"], col.getLabel()) +
+			expr + " " +from +" - " + to +help;
                 } else {
                     field = HU.input("", savedValue, ["placeholder",col.getLabel(),ATTR_CLASS, "input", ATTR_SIZE, "15", ATTR_ID, id]);
-                    extra += HU.div([CLASS,"display-search-label"], "") +HU.div([CLASS,"display-search-widget"], field + " " + col.getSuffix());
+                    widget += HU.div([CLASS,"display-search-label"], "") +HU.div([CLASS,"display-search-widget"], field + " " + help);
                 }
-            }
+		extra+=widget;
+	    }
             if (extra.length > 0) {
 		extra = HU.toggleBlock(this.getSearchHeaderLabel(),extra,this.getSearchOpen());
             }

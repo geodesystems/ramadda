@@ -3392,6 +3392,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 				this.td(["align", "right", "width", rightWidth, STYLE,cellStyle], right)));
     },
 
+    row: function() {
+	let row = "<table width=100% border=1><tr valign=top>";
+	Array.from(arguments).forEach(h=>{
+	    row+=HtmlUtils.tag("td",[],h);
+	})
+	row+="</tr></table>";
+	return row;
+    },
     hrow: function() {
 	let row = "";
 	Array.from(arguments).forEach(h=>{
