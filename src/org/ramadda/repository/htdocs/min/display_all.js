@@ -28270,7 +28270,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    _this.submitSearchForm();
 		};
 		if(cbxs.length>popupLimit) {
-		    $("#"+wrapperId).html(HU.div([STYLE, HU.css("border","1px solid #ccc",  "margin-top","6px","background", getMetadataColor(metadataType)), TITLE,"Click to select tag", ID,clickId,CLASS,"entry-toggleblock-label"], HU.getIconImage("fas fa-plus",null,["style","font-size:8pt;"]) +" " +metadataType.getLabel()+" ("+ cbxs.length+")"));
+		    $("#"+wrapperId).html(HU.div([STYLE, HU.css("border","1px solid #ccc",  "margin-top","6px","background", getMetadataColor(metadataType)), TITLE,"Click to select tag", ID,clickId,CLASS,"ramadda-clickable entry-toggleblock-label"], HU.makeToggleImage("fas fa-plus","font-size:8pt;") +" " +metadataType.getLabel()+" ("+ cbxs.length+")"));
 		    $("#" + clickId).click(()=>{
 			let inputId = HU.getUniqueId("input_");
 			let input = HU.input("","",[STYLE,HU.css("width","300px;"), 'placeholder','Search for ' + metadataType.getLabel().toLowerCase(),ID,inputId]);

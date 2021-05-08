@@ -4479,23 +4479,24 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    close($("#" + imageId));
 	}
     },
+    makeToggleImage: function(img,style) {
+	style = (style||"") + HU.css('color','#000');
+	return HU.div([STYLE,HU.css('display','inline-block',"min-width","10px")], HtmlUtils.getIconImage(img, ["align", "bottom"],[STYLE,style]));
+    },
     toggleBlock: function(label, contents, visible, args) {
 	let opts = {
-	    headerClass:"ramadda-noselect entry-toggleblock-label ramadda-hoverable",
+	    headerClass:"ramadda-noselect entry-toggleblock-label ramadda-hoverable ramadda-clickable",
 	    headerStyle:""
 	};
 	if(args) $.extend(opts, args);
         let id = Utils.getUniqueId("block_");
         let imgid = id + "_img";
-//        let img1 = ramaddaBaseUrl + "/icons/togglearrowdown.gif";
-//        let img2 = ramaddaBaseUrl + "/icons/togglearrowright.gif";
         let img1 = "fas fa-caret-down";
         let img2 = "fas fa-caret-right";	
         let clickArgs = HtmlUtils.join([HtmlUtils.squote(id), HtmlUtils.squote(imgid), HtmlUtils.squote(img1), HtmlUtils.squote(img2)], ",");
         let click = "toggleBlockVisibility(" + clickArgs + ");";
-        let header = HtmlUtils.div([STYLE,opts.headerStyle,"class", opts.headerClass, "onClick", click],
-				   HtmlUtils.getIconImage((visible ? img1 : img2), ["align", "bottom", "id", imgid]) +
-				   " " + label);
+	let img = HU.span([ID,imgid], HU.makeToggleImage(visible ? img1 : img2));
+        let header = HtmlUtils.div([STYLE,opts.headerStyle,"class", opts.headerClass, "onClick", click],  img +  " " + label);
         let style = (visible ? "display:block;visibility:visible" : "display:none;");
         let body = HtmlUtils.div(["class", "hideshowblock", "id", id, "style", style],
 				 contents);
