@@ -806,6 +806,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		this.jq(ID_SEARCH_BAR).find(".display-search-tag").each(function() {
 		    let type  = $(this).attr("metadata-type");
 		    let value  = $(this).attr("metadata-value");			
+		    if(!type) return;
 		    settings.metadata.push({
 			type: type,
 			value: value
@@ -896,26 +897,54 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         makeSearchUrl: function(repository) {
             let extra = "";
             let cols = this.getSearchableColumns();
+	    let searchBar  = this.jq(ID_SEARCH_BAR);
             for (let i = 0; i < cols.length; i++) {
                 let col = cols[i];
                 if (!col.getCanSearch()) continue;
 		let id  = ID_COLUMN + col.getName();
 		let arg = col.getSearchArg();
+		let tag = searchBar.find(HU.attrSelect("column",col.getName()));
 		if(col.isNumeric()) {
                     let expr = this.jq(id+"_expr").val();
                     let from = this.jq(id+"_from").val();
                     let to = this.jq(id+"_to").val();		    		    
 		    if(Utils.stringDefined(from) || Utils.stringDefined(to)) {
+			let label =  (Utils.stringDefined(from)?(from+" &lt; "):"") +  col.getLabel() + (Utils.stringDefined(to)?(" &lt; " +to):"");
+			if(tag.length==0) {
+			    tag = $(HU.div([CLASS,"display-search-tag","column",col.getName()],label)).appendTo(searchBar);
+			    tag.click(()=>{
+				this.jq(id+"_from").val("");
+				this.jq(id+"_to").val("");		    		    
+				this.submitSearchForm();
+			    });
+			} else {
+			    tag.html(label);
+			}
 //			extra += "&" + arg  +"_expr" +  "=" + encodeURIComponent(expr);
 			if(Utils.stringDefined(from))
 			    extra += "&" + arg  +"_from" +  "=" + encodeURIComponent(from);
 			if(Utils.stringDefined(to))
 			    extra += "&" + arg  +"_to" +  "=" + encodeURIComponent(to);						
 //			console.log("expr:" +expr +" from:" + from +" to:" + to);
+		    } else {
+			tag.remove();
 		    }
 		} else {
                     let value = this.jq(id).val();
-                    if (value == null || value==VALUE_NONE) continue;
+                    if (value == null || value==VALUE_NONE) {
+			tag.remove();
+			continue;
+		    }
+		    let label = col.getLabel() +"=" + value;
+		    if(tag.length==0) {
+			tag = $(HU.div([CLASS,"display-search-tag","column",col.getName()],label)).appendTo(searchBar);
+			tag.click(()=>{
+			    this.jq(id).data("selectBox-selectBoxIt").selectOption(VALUE_NONE);
+			    this.submitSearchForm();
+			});
+		    } else {
+			tag.html(label);
+		    }
                     extra += "&" + arg + "=" + encodeURIComponent(value);
 		}
             }
@@ -1544,12 +1573,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			widget+= HU.div([CLASS,"display-search-block display-search-widget"], field+help);
 		    }
 		} else if (col.isNumeric()) {
-		    let expr=   HU.select("",[CLASS,"ramadda-expr",ATTR_ID, id+"_expr"],comparators);
 		    let from = HU.input("", "", [ATTR_CLASS, "input", STYLE,HU.css("width","2.5em"), ATTR_ID, id+"_from"]);
-		    let to = HU.input("", "", [ATTR_CLASS, "input", STYLE,HU.css("xdisplay","none", "width","2.5em"), ATTR_ID, id+"_to"]);		    
-		    expr = "";
+		    let to = HU.input("", "", [ATTR_CLASS, "input", STYLE,HU.css("width","2.5em"), ATTR_ID, id+"_to"]);		    
                     widget += HU.div([CLASS,"display-search-label"], col.getLabel()) +
-			expr + " " +from +" - " + to +help;
+			from +" - " + to +help;
                 } else {
                     field = HU.input("", savedValue, ["placeholder",col.getLabel(),ATTR_CLASS, "input", ATTR_SIZE, "15", ATTR_ID, id]);
                     widget += HU.div([CLASS,"display-search-label"], "") +HU.div([CLASS,"display-search-widget"], field + " " + help);

@@ -123,6 +123,7 @@ import org.apache.tika.parser.Parser;
  */
 public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
+
     /** _more_ */
     public static final String ARG_SEARCH_SUBMIT = "search.submit";
 
