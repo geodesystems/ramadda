@@ -166,7 +166,7 @@ public class EiaSearchProvider extends SearchProvider {
             Object[] values = typeHandler.makeEntryValues(null);
             values[EiaSeriesTypeHandler.IDX_SERIES_ID] = id;
             entries.add(newEntry);
-            newEntry.initEntry(name, desc, parent,
+            newEntry.initEntry(name, makeSnippet(desc), parent,
                                getUserManager().getLocalFileUser(),
                                new Resource(new URL(entryUrl)), "",Entry.DEFAULT_ORDER,
                                dttm.getTime(), dttm.getTime(),
