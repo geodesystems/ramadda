@@ -250,13 +250,16 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     private SearchProvider thisSearchProvider;
 
     /** _more_ */
-    private List<SearchProvider> searchProviders = null;
+    private List<SearchProvider> searchProviders;
 
     /** _more_ */
     private List<SearchProvider> allProviders;
 
     /** _more_ */
-    private Hashtable<String, SearchProvider> searchProviderMap =     new Hashtable<String, SearchProvider>();
+    private Hashtable<String, SearchProvider> searchProviderMap;
+
+
+    
 
 
     /** _more_ */
@@ -2201,7 +2204,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      */
     public void addPluginSearchProvider(SearchProvider provider) {
         pluginSearchProviders.add(provider);
+	if(searchProviderMap==null) searchProviderMap =     new Hashtable<String, SearchProvider>();    
         searchProviderMap.put(provider.getType(), provider);
+        searchProviderMap.put(provider.getId(), provider);	
     }
 
 
@@ -2251,6 +2256,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    searchProviderMap =     new Hashtable<String, SearchProvider>();
             List<SearchProvider> tmp = new ArrayList<SearchProvider>();
             for (SearchProvider provider : pluginSearchProviders) {
+		searchProviderMap.put(provider.getType(), provider);
+		searchProviderMap.put(provider.getId(), provider);	
                 if (provider.isEnabled()) {
                     tmp.add(provider);
                 }
@@ -2278,6 +2285,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
             for (SearchProvider provider : tmp) {
                 searchProviderMap.put(provider.getType(), provider);
+                searchProviderMap.put(provider.getId(), provider);		
             }
             tmp.addAll(searchProviders);
             allProviders = tmp;
@@ -2289,7 +2297,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
     public synchronized void clearSearchProviders() {
-	searchProviderMap = null;
+	searchProviderMap =     null;//new Hashtable<String, SearchProvider>();
 	allProviders = null;
 	searchProviders = null;
 	

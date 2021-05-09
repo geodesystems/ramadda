@@ -953,6 +953,10 @@ svg > g > g:last-child { pointer-events: none }
     margin-left:24px;
 }
 
+.display-search-bar-vertical {
+    margin-left:24px;
+}
+
 .display-search-tag-group {
     display:inline-block;
 }
@@ -1853,7 +1857,7 @@ font-family:monospace;
 }
 
 .display-searchbar {
-text-align:center;
+    text-align:center;
 }
 
 .display-cards-items {
