@@ -1584,7 +1584,7 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     public boolean defined(RequestArgument arg) {
-        for (String key : arg.getArgs(this)) {
+        for (String key : getArgs(arg)) {
             if (defined(key)) {
                 return true;
             }
@@ -1634,7 +1634,7 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     public String getString(RequestArgument arg, String dflt) {
-        for (String key : arg.getArgs(this)) {
+        for (String key : getArgs(arg)) {
             String value = getString(key, (String) null);
             if (value != null) {
                 return value;
@@ -1725,7 +1725,7 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     public double get(RequestArgument arg, double dflt) {
-        for (String key : arg.getArgs(this)) {
+        for (String key : getArgs(arg)) {
             if (defined(key)) {
                 return get(key, dflt);
             }
@@ -3075,6 +3075,24 @@ public class Request implements Constants, Cloneable {
 
 
     
+    /**
+     * _more_
+     *
+     *
+     * @param request _more_
+     * @return _more_
+     */
+    public List<String> getArgs(RequestArgument arg) {
+	List<String> args = arg.getArgs();
+	String argsProperty = arg.getProperty();
+        if (args == null) {
+            args = Utils.split(
+			       getRepository().getProperty(argsProperty, ""));
+        }
+
+        return args;
+    }
+
 
 
 

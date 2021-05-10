@@ -16,53 +16,8 @@
 
 package org.ramadda.repository.util;
 
-
-import org.ramadda.repository.Request;
-import org.ramadda.repository.auth.*;
-import org.ramadda.repository.output.*;
-import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Utils;
-
-import org.ramadda.util.sql.SqlUtil;
-
-import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.LogUtil;
-import ucar.unidata.util.Misc;
-
-
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.WrapperException;
-import ucar.unidata.xml.XmlUtil;
-
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import java.lang.reflect.*;
-
-
-
-import java.net.*;
-
-
-
-
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
-import java.util.regex.*;
-
-
-
-import java.util.regex.*;
-
-import javax.servlet.*;
-import javax.servlet.http.*;
 
 
 /**
@@ -102,22 +57,15 @@ public class RequestArgument {
         }
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @return _more_
-     */
-    public List<String> getArgs(Request request) {
-        if (args == null) {
-            args = Utils.split(
-                request.getRepository().getProperty(argsProperty, ""));
-        }
 
-        return args;
+    public String getProperty() {
+	return argsProperty;
     }
 
+    public List<String> getArgs() {
+	return args;
 
+    }
+	
 
 }
