@@ -4153,6 +4153,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'propagateEventRecordHighlight',ex:true},
 	{p:'acceptEventRecordHighlight',ex:true},		
 	{p:'propagateEventRecordList',ex:true},
+	{p:'headerOrientation',ex:'vertical'},
 	{p:'filterSliderImmediate',ex:true,tt:'Apply the change while sliding'},
 	{p:'filterLogic',ex:'and|or',tt:'Specify logic to apply filters'},		
 	{p:'&lt;field&gt;.filterValue'},
@@ -4165,9 +4166,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'filterShowTotal',ex:true},		
 	{p:'&lt;field&gt;.filterLabel'},
 	{p:'&lt;field&gt;.showFilterLabel'},
-	{p:'&lt;field&gt;.filterVertical',ex:true},
-	{p:'filterVertical',ex:true},				
-	{p:'headerOrientation',ex:'vertical'},
+	{p:'&lt;field&gt;.filterLabelVertical',ex:true},
+	{p:'filterLabelVertical',ex:true},				
 	{p:'&lt;field&gt;.filterByStyle',ex:'background:white;'},
 	{p:'&lt;field&gt;.includeAll',ex:false},
 	{p:'&lt;field&gt;.filterSort',ex:false},
@@ -12919,11 +12919,11 @@ function RecordFilter(display,filterFieldId, properties) {
 		    widgetLabel = "";
 		}
 		else
-		    widgetLabel = widgetLabel+" ";
-		widgetLabel+=":";
-		let vert = vertical || this.getProperty(this.getId()+".filterVertical",false)  || this.getProperty("filterVertical",false);
+		    widgetLabel = widgetLabel+": ";
+		let labelVertical = vertical || this.getProperty(this.getId()+".filterLabelVertical",false)  || this.getProperty("filterLabelVertical",false);
 		widgetLabel = this.display.makeFilterLabel(widgetLabel,tt);
-		if(vert) {
+		if(labelVertical) widgetLabel = widgetLabel+"<br>";
+		if(vertical) {
 		    widget = HtmlUtils.div([],(showLabel?widgetLabel:"") + widget+suffix);
 		} else {
 		    widget = HtmlUtils.div(["style","display:inline-block;"],(showLabel?widgetLabel:"") + widget+suffix);

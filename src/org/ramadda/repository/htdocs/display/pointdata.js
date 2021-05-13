@@ -1895,11 +1895,11 @@ function RecordFilter(display,filterFieldId, properties) {
 		    widgetLabel = "";
 		}
 		else
-		    widgetLabel = widgetLabel+" ";
-		widgetLabel+=":";
-		let vert = vertical || this.getProperty(this.getId()+".filterVertical",false)  || this.getProperty("filterVertical",false);
+		    widgetLabel = widgetLabel+": ";
+		let labelVertical = vertical || this.getProperty(this.getId()+".filterLabelVertical",false)  || this.getProperty("filterLabelVertical",false);
 		widgetLabel = this.display.makeFilterLabel(widgetLabel,tt);
-		if(vert) {
+		if(labelVertical) widgetLabel = widgetLabel+"<br>";
+		if(vertical) {
 		    widget = HtmlUtils.div([],(showLabel?widgetLabel:"") + widget+suffix);
 		} else {
 		    widget = HtmlUtils.div(["style","display:inline-block;"],(showLabel?widgetLabel:"") + widget+suffix);
