@@ -1225,7 +1225,9 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	    });
 
 	    let _this = this;
-	    this.makeTooltips(this.jq(ID_TABLE).find(".display-htmltable-row"),records);
+	    let tooltipClick = this.getProperty("tooltipClick");
+	    let rows = this.jq(ID_TABLE).find(".display-htmltable-row");
+	    this.makeTooltips(rows,records);
 	    let opts = {
                 ordering: true,
 		scrollY:this.getScrollY("400px")

@@ -1204,31 +1204,49 @@ function BoundsFilter(display, properties) {
 
 
 function RecordFilter(display,filterFieldId, properties) {
-    let filterField = display.getFieldById(null, filterFieldId);
-    RamaddaUtil.inherit(this, new BaseFilter(display, properties));
+    const ID_TEXT = "_text_";
     this.id = filterFieldId;
+    this.isText = this.id == ID_TEXT;
+    let fields;
+    if(this.isText) {
+	fields = display.getFieldsByType(null, "string");
+    } else {
+	let filterField = display.getFieldById(null, filterFieldId);
+	if(filterField)
+	    fields = [filterField];
+	else {
+	    console.log("Error: could not find filter field::" + filterFieldId);
+	    fields = [];
+	}
+    }
+    $.extend(this, new BaseFilter(display, properties));
+    this.getId = function() {
+	return this.id;
+    }
     let getAttr = (suffix,dflt)=>{
-	if(filterField==null) return dflt;
-	let key = filterField.getId()+"." + suffix;
+	let key = this.getId()+"." + suffix;
 	let v = display.getProperty(key,dflt);
 	return v;
     };
-	
-
-
+    let label = "";
+    if(this.isText)  {
+	label = getAttr("filterLabel","Text");
+    } else  {
+	label = getAttr("filterLabel",fields.length>0?fields[0].getLabel():"");
+    }
     $.extend(this, {
-	field: filterField,
+	fields: fields,
 	values:[],
 	hideFilterWidget: display.getProperty("hideFilterWidget",false, true),
 	displayType:getAttr("filterDisplay","menu"),
-	label:   getAttr("filterLabel",filterField?filterField.getLabel()+":":""),
+	label:   label,
 	suffix:  getAttr("filterSuffix",""),
 	depends: getAttr("filterDepends",null),
 	dateIds: [],
-	prefix:display.getProperty(this.id +".filterPrefix"),
-	suffix:display.getProperty(this.id +".filterSuffix"),
-	startsWith:display.getProperty(this.id +".filterStartsWith",false),
-	ops:Utils.split(display.getProperty(this.id +".filterOps"),";",true,true)
+	prefix:display.getProperty(this.getId() +".filterPrefix"),
+	suffix:display.getProperty(this.getId() +".filterSuffix"),
+	startsWith:display.getProperty(this.getId() +".filterStartsWith",false),
+	ops:Utils.split(display.getProperty(this.getId() +".filterOps"),";",true,true)
     });
 
 
@@ -1245,20 +1263,47 @@ function RecordFilter(display,filterFieldId, properties) {
 	this.ops = tmp;
     }
 
-
-    RamaddaUtil.defineMembers(this, {
-	
+    $.extend(this, {
 	toString:function() {
-	    return "filter:" + filterFieldId;
+	    return "filter:" + this.getId();
 	},
 	getField: function() {
-	    return this.field;
+	    return this.fields[0];
+	},
+	getFieldId: function() {
+	    return this.fields[0].getId();
+	},	
+	getLabel: function() {
+	    return this.label;
+	},
+
+	getValue: function(record) {
+	    if(this.fields.length==1) {
+		return record.getValue(this.fields[0].getIndex());
+	    } else {
+		let v = this.fields.reduce((acc,field)=>{
+		    return acc+=" " + record.getValue(field.getIndex());
+		},"");
+		return v;
+	    }
+	},
+	isFieldNumeric:function() {
+	    return this.getField().isNumeric();
+	},
+	isFieldEnumeration: function() {
+	    return this.getField().isFieldEnumeration();
+	},
+	isFieldMultiEnumeration: function() {
+	    return this.getField().isFieldMultiEnumeration();
+	},
+	getFieldType: function() {
+	    return this.getField().getType();
 	},
 	getFilterId: function(id) {
-	    return  this.display.getDomId("filterby_" + id);
+	    return  this.display.getDomId("filterby_" + (id||this.getId()));
 	},
 	isEnabled: function() {
-	    return this.field!=null;
+	    return this.isText || this.getField()!=null;
 	},
 	recordOk: function(display, record, values) {
             return true;
@@ -1270,18 +1315,21 @@ function RecordFilter(display,filterFieldId, properties) {
 	    return this.display.getPropertyFromUrl(key, dflt);
 	},	
 	prepareToFilter: function() {
+	    this.mySearch = null;
 	    if(this.depend) {
 		this.checkDependency();
 	    }
-	    if(!this.field) return;
+	    if(!this.isEnabled()) {
+		return;
+	    }
 	    //	    if (prefix) pattern = prefix + value;
 	    //	    if (suffix) pattern = value + suffix;
-	    var value=null;
-	    var _values =[];
-	    var values=null;
-	    var matchers =[];
+	    let value=null;
+	    let _values =[];
+	    let values=null;
+	    let matchers =[];
 	    if(this.ops) {
-		let v = $("#" + this.getFilterId(filterField.getId())).val();
+		let v = $("#" + this.getFilterId(this.getId())).val();
 		if(v==FILTER_ALL) {
 		    this.mySearch = null;
 		    return;
@@ -1290,20 +1338,20 @@ function RecordFilter(display,filterFieldId, properties) {
 		    index: parseFloat(v)
 		};
 		return;
-	    } else  if(this.field.isNumeric()) {
-		var minField = $("#" + this.display.getDomId("filterby_" + this.field.getId()+"_min"));
-		var maxField = $("#" + this.display.getDomId("filterby_" + this.field.getId()+"_max"));
+	    } else  if(this.isFieldNumeric()) {
+		let minField = $("#" + this.display.getDomId("filterby_" + this.getId()+"_min"));
+		let maxField = $("#" + this.display.getDomId("filterby_" + this.getId()+"_max"));
 		if(!minField.val() || !maxField.val()) return;
-		var minValue = parseFloat(minField.val().trim());
-		var maxValue = parseFloat(maxField.val().trim());
-		var dfltMinValue = parseFloat(minField.attr("data-min"));
-		var dfltMaxValue = parseFloat(maxField.attr("data-max"));
+		let minValue = parseFloat(minField.val().trim());
+		let maxValue = parseFloat(maxField.val().trim());
+		let dfltMinValue = parseFloat(minField.attr("data-min"));
+		let dfltMaxValue = parseFloat(maxField.attr("data-max"));
 		if(minValue!= dfltMinValue || maxValue!= dfltMaxValue) {
 		    value = [minValue,maxValue];
 		}
- 	    } else if(this.field.getType()=="date"){
-		var date1 = $("#" + this.display.getDomId("filterby_" + this.field.getId()+"_date1")).val();
-		var date2 = $("#" + this.display.getDomId("filterby_" + this.field.getId()+"_date2")).val();
+ 	    } else if(this.getFieldType()=="date"){
+		let date1 = $("#" + this.display.getDomId("filterby_" + this.getId()+"_date1")).val();
+		let date2 = $("#" + this.display.getDomId("filterby_" + this.getId()+"_date2")).val();
 		if(date1!=null && date1.trim()!="") 
 		    date1 =  Utils.parseDate(date1);
 		else
@@ -1316,21 +1364,20 @@ function RecordFilter(display,filterFieldId, properties) {
 		    value = [date1,date2]; 
 	    }  else {
 		values = this.getFieldValues();
-		if(!values && !Array.isArray(values)) values = [values];
+		if(!values) return;
+		if(!Array.isArray(values)) values = [values];
 		if(values.length==0) return;
-		var tmp = [];
-		values.map(v=>{
-		    tmp.push(v.replace(/_comma_/g,","));
+		values = values.map(v=>{
+		    return v.replace(/_comma_/g,",");
 		});
-		values = tmp;
-		values.map(v=>{
+		values.forEach(v=>{
 		    _values.push((""+v).toLowerCase());
 		    try {
 			matchers.push(new TextMatcher(v));
 		    } catch(skipIt){}
 		});
 	    }
-	    var anyValues = value!=null;
+	    let anyValues = value!=null;
 	    if(!anyValues && values) {
 		values.forEach(v=>{if(v.length>0 && v!= FILTER_ALL)anyValues = true});
 	    }
@@ -1345,14 +1392,16 @@ function RecordFilter(display,filterFieldId, properties) {
 	    } else {
 		this.mySearch = null;
 	    }
+//	    console.log(this +"prepare:" + JSON.stringify(this.mySearch));
 	},
 	isRecordOk:function(record,debug) {
 	    let ok = true;
 	    if(!this.isEnabled() || !this.mySearch) {
+		if(debug) console.log("\tfilter  enabled:" + this.isEnabled() +" mySearch:" + JSON.stringify(this.mySearch));
 		return ok;
 	    }
-	    var rowValue = record.getValue(this.field.getIndex());
-	    let filterField = this.field;
+	    if(debug) console.log("\tfilter.isRecordOk:" + JSON.stringify(this.mySearch));
+	    let rowValue = this.getValue(record);
 	    if(this.ops) {
 		let op = this.ops[this.mySearch.index];
 		if(op.op=="<") ok =  rowValue<op.value;
@@ -1360,12 +1409,13 @@ function RecordFilter(display,filterFieldId, properties) {
 		else if(op.op==">") ok= rowValue>op.value;
 		else if(op.op==">=") ok= rowValue>=op.value;
 		else if(op.op=="==") ok= rowValue==op.value;				
-	    } else   if(filterField.isFieldEnumeration()) {
+	    } else   if(this.isFieldEnumeration()) {
 		rowValue=String(rowValue);
-		if(filterField.isFieldMultiEnumeration()) {
-		    ok = false;
+		if(this.isFieldMultiEnumeration()) {
+ 		    ok = false;
 		    let values = rowValue.split(",");
 		    values.forEach(value=>{
+			value=value.trim();
 			if(this.mySearch.values.includes(value)) ok = true;
 		    });
 //		    console.log(this.mySearch.values);
@@ -1373,18 +1423,18 @@ function RecordFilter(display,filterFieldId, properties) {
 		} else {
 		    ok = this.mySearch.values.includes(rowValue);
 		}
-	    } else if(filterField.isNumeric()) {
+	    } else if(this.isFieldNumeric()) {
 		if(isNaN(this.mySearch.value[0]) && isNaN(this.mySearch.value[0])) return ok;
 		if(!isNaN(this.mySearch.value[0]) && rowValue<this.mySearch.value[0]) ok = false;
 		else if(!isNaN(this.mySearch.value[1]) && rowValue>this.mySearch.value[1]) ok = false;
-	    } else if(filterField.getType()=="date"){
+	    } else if(this.getFieldType()=="date"){
 		if(this.mySearch.value &&  Array.isArray(this.mySearch.value)) {
 		    if(rowValue == null) {
 			ok = false;
 		    }  else  {
-			var date1 = this.mySearch.value[0];
-			var date2 = this.mySearch.value[1];
-			var dttm = rowValue.getTime();
+			let date1 = this.mySearch.value[0];
+			let date2 = this.mySearch.value[1];
+			let dttm = rowValue.getTime();
 			if(isNaN(dttm)) ok = false;
 			else if(date1 && dttm<date1.getTime())
 			    ok = false;
@@ -1393,12 +1443,12 @@ function RecordFilter(display,filterFieldId, properties) {
 		    }
 		}
 	    } else {
-		var startsWith = this.startsWith;
+		let startsWith = this.startsWith;
 		ok = false;
-		roWValue  = String(rowValue).toLowerCase();
+		rowValue  = String(rowValue).toLowerCase();
 
-		for(var j=0;j<this.mySearch._values.length;j++) {
-		    var fv = this.mySearch._values[j];
+		for(let j=0;j<this.mySearch._values.length;j++) {
+		    let fv = this.mySearch._values[j];
 		    if(startsWith) {
 			if(rowValue.toString().startsWith(fv)) {
 			    ok = true;
@@ -1412,7 +1462,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		
 		if(!ok && !startsWith) {
 		    for(ri=0;ri<this.mySearch.matchers.length;ri++) {
-			var matcher = this.mySearch.matchers[ri];
+			let matcher = this.mySearch.matchers[ri];
 			if(matcher.matches(rowValue.toString())) {
 			    ok = true;
 			    break;
@@ -1424,8 +1474,13 @@ function RecordFilter(display,filterFieldId, properties) {
 	},
 
 	getFieldValues: function() {
-	    var element =$("#" + this.display.getDomId("filterby_" + this.field.getId()));
-	    var value=null;
+	    if(this.isFieldEnumeration()) {
+		if(this.getProperty(this.getId()+".showFilterTags") || this.getProperty("showFilterTags")) {
+		    return this.selectedTags ||[];
+		}
+	    }
+	    let element =$("#" + this.display.getDomId("filterby_" + this.getId()));
+	    let value=null;
 	    if(element.attr("isCheckbox")) {
 		if(element.is(':checked')) {
 		    value = element.attr("onValue");
@@ -1442,24 +1497,84 @@ function RecordFilter(display,filterFieldId, properties) {
 		else value = FILTER_ALL;
 	    }
 	    if(!Array.isArray(value)) {
-		if(!this.field.isFieldEnumeration()) {
+		if(!this.isFieldEnumeration()) {
 		    value = value.split(",");
 		} else {
 		    value = [value];
 		}
 	    }
-	    var tmp = [];
+	    let tmp = [];
 	    value.forEach(v=>tmp.push(v.trim()));
 	    value = tmp;
-	    //	    console.log(this.type +".getFilterFieldValues:" + Array.isArray(value) +" " + value.length +" " +value);
 	    return value;
 	},
+	toggleTag:function(value,on,cbx) {
+	    let _this = this;
+	    let type  = this.getFilterId();
+	    let tagId = Utils.makeId(type +"_" +  value);
+
+	    if(on) {
+		this.selectedTags = Utils.addUnique(this.selectedTags,value);
+		let tagGroup = this.display.jq(ID_TAGBAR).find(".tag-group" +HU.attrSelect("tag-type",this.getFilterId()));
+		if(tagGroup.length==0) {
+		    let bar;
+		    if(this.display.getProperty("tagDiv"))
+			bar= $("#"+this.display.getProperty("tagDiv"));
+		    else
+			bar= this.display.jq(ID_TAGBAR);
+		    tagGroup = $(HU.div([STYLE,HU.css("display","inline-block"), CLASS,"tag-group","tag-type",this.getFilterId()])).appendTo(bar);
+		}
+		
+		let tag = $(HU.div(["metadata-type",type,"metadata-value",value,TITLE,value, STYLE, HU.css("background", Utils.getEnumColor(this.getFieldId())),CLASS,"display-search-tag", ID,tagId],value+SPACE +HU.getIconImage("fas fa-times"))).appendTo(tagGroup);
+		tag.click(function(){
+		    _this.selectedTags = Utils.removeElement(_this.selectedTags,value);
+		    if(cbx)
+			cbx.prop('checked',false);
+		    $(this).remove();
+		    _this.inputFunc(_this.fakeInput,null,_this.selectedTags);
+		});
+	    } else {
+		this.selectedTags = Utils.removeElement(this.selectedTags,value);
+		$("#" + tagId).remove();
+	    }
+	},
+	    
 	initWidget: function(inputFunc) {
+	    this.inputFunc = inputFunc;
+	    this.fakeInput  = {
+		attr:function(key) {
+		    return this[key];
+		},
+		val: function() {return null},
+		id: this.getId(),
+		fieldId:this.getFieldId()
+	    };
+
 	    this.initDateWidget(inputFunc);
+//	    this.display.selectboxit($("#" + this.widgetId));
+	    if(this.tagCbxs) {
+		let _this = this;
+		let cbxChange = function() {
+        	    let cbx = $(this);
+	            let on = cbx.is(':checked');
+		    let value  = $(this).attr("metadata-value");
+		    _this.toggleTag(value,on,cbx);
+		    inputFunc(_this.fakeInput,null,_this.selectedTags);
+		}
+		let clickId = this.getFilterId()+"_popup";
+		$("#" + clickId).click(()=>{
+		    let dialog = this.display.createTagDialog(this.tagCbxs, $("#" + clickId), cbxChange, this.getFilterId(),this.getLabel());
+		    dialog.find(".metadata-cbx").each(function() {
+			let value = $(this).attr('metadata-value');
+			$(this).prop('checked',_this.selectedTags.includes(value));
+		    });
+		});
+	    }
+
 	},
 	initDateWidget: function(inputFunc) {
 	    if(!this.hideFilterWidget) {
-		for(var i=0;i<this.dateIds.length;i++) {
+		for(let i=0;i<this.dateIds.length;i++) {
 		    let id = this.dateIds[i];
 		    HtmlUtils.datePickerInit(id);
 		    $("#" + id).change(function(){
@@ -1483,7 +1598,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		if(equals) return;
 	    }
             let enums = this.getEnums(this.records);
-	    let widgetId = this.getFilterId(filterField.getId());
+	    let widgetId = this.getFilterId(this.getId());
 	    let tmp = [];
 	    enums.map(e=>tmp.push(e.value));
 	    this.display.ignoreFilterChange = true;
@@ -1493,7 +1608,38 @@ function RecordFilter(display,filterFieldId, properties) {
 	    widget.html(HU.makeOptions(tmp,val));
 	    this.display.ignoreFilterChange = false;
 	},
-	getWidget: function(fieldMap, bottom,records) {
+	handleEventPropertyChanged:function(prop) {
+	    if(this.isFieldEnumeration() && (this.getProperty(this.getId()+".showFilterTags") || this.getProperty("showFilterTags"))) {
+		if(this.selectedTags) {
+		    let type  = this.getFilterId();
+		    this.selectedTags.forEach(value=>{
+			let tagId = Utils.makeId(type +"_" +  value);	
+			$("#" + tagId).remove();
+		    });
+		}
+		this.selectedTags = [];
+		prop.value.forEach(value=>{
+		    this.toggleTag(value,true);
+		});
+		return;
+	    }
+		    
+
+
+	    let widget = $("#"+this.widgetId);
+	    if(widget.attr("isCheckbox")) {
+		let on = widget.attr("onValue");
+		widget.prop('checked',prop.value.includes(on));
+	    } else {
+		widget.val(prop.value);
+	    }
+	    widget.attr("data-value",prop.value);
+	    if(widget.attr("isButton")) {
+		widget.find(".display-filter-button").removeClass("display-filter-button-selected");
+		widget.find("[value='" + prop.value +"']").addClass("display-filter-button-selected");
+	    }
+	},
+	getWidget: function(fieldMap, bottom,records, vertical) {
 	    this.records = records;
 	    let debug = false;
 	    if(debug) console.log(this.id +".getWidget");
@@ -1504,50 +1650,53 @@ function RecordFilter(display,filterFieldId, properties) {
 	    let widgetStyle = "";
 	    if(this.hideFilterWidget)
 		widgetStyle = "display:none;";
-	    let filterField = this.field;
-	    fieldMap[filterField.getId()] = {
-		field: filterField,
+	    fieldMap[this.getId()] = {
+		field: this.fields[0],
 		values:[],
 	    };
+	    let showLabel = true;
             let widget;
-	    let widgetId = this.widgetId = this.getFilterId(filterField.getId());
+	    let widgetId = this.widgetId = this.getFilterId(this.getId());
+	    let widgetLabel =   this.getProperty(this.getId()+".filterLabel",this.getLabel());
+	    let suffix =   this.getProperty(this.getId()+".filterSuffix","");
+
             if(this.ops) {
 		let labels =[];
 		this.ops.forEach((op,idx)=>{
 		    labels.push([String(idx),op.label]);
 		});
 
-		let selected = this.getPropertyFromUrl(filterField.getId() +".filterValue",FILTER_ALL);
-		let showLabel = this.getProperty(filterField.getId() +".showFilterLabel",this.getProperty("showFilterLabel",true));
-		let allName = this.getProperty(filterField.getId() +".allName",!showLabel?filterField.getLabel():"All");
+		let selected = this.getPropertyFromUrl(this.getId() +".filterValue",FILTER_ALL);
+		let showLabel = this.getProperty(this.getId() +".showFilterLabel",this.getProperty("showFilterLabel",true));
+		let allName = this.getProperty(this.getId() +".allName",!showLabel?this.getLabel():"All");
 		let enums = Utils.mergeLists([[FILTER_ALL,allName]],labels);
-		let attrs= [STYLE,widgetStyle, ID,widgetId,"fieldId",filterField.getId()];
+		let attrs= [STYLE,widgetStyle, ID,widgetId,"fieldId",this.getId()];
 		widget = HU.select("",attrs,enums,selected);
-	    } else   if(filterField.isFieldEnumeration()) {
+	    } else   if(this.isFieldEnumeration()) {
 		if(debug) console.log("\tis enumeration");
-		let dfltValue = this.defaultValue = this.getPropertyFromUrl(filterField.getId() +".filterValue",FILTER_ALL);
+		let dfltValue = this.defaultValue = this.getPropertyFromUrl(this.getId() +".filterValue",FILTER_ALL);
                 let enums = this.getEnums(records);
-		let attrs= ["style",widgetStyle, "id",widgetId,"fieldId",filterField.getId()];
-		if(this.getProperty(filterField.getId() +".filterMultiple",false)) {
+		let attrs= ["style",widgetStyle, "id",widgetId,"fieldId",this.getId()];
+		if(this.getProperty(this.getId() +".filterMultiple",false)) {
 		    attrs.push("multiple");
 		    attrs.push("");
 		    attrs.push("size");
-		    attrs.push(this.getProperty(filterField.getId() +".filterMultipleSize","3"));
+		    attrs.push(this.getProperty(this.getId() +".filterMultipleSize","3"));
 		    dfltValue = dfltValue.split(",");
 		}
 
 		if(this.displayType!="menu") {
 		    if(debug) console.log("\tnot menu");
-		    let includeAll = this.getProperty(filterField.getId() +".includeAll",this.getProperty("filter.includeAll", true));
+		    let includeAll = this.getProperty(this.getId() +".includeAll",this.getProperty("filter.includeAll", true));
 		    if(!includeAll && dfltValue == FILTER_ALL) dfltValue = enums[0].value;
 		    let buttons = "";
-		    let colorMap = Utils.parseMap(this.getProperty(filterField.getId() +".filterColorByMap"));
+		    let colorMap = Utils.parseMap(this.getProperty(this.getId() +".filterColorByMap"));
 		    let useImage = this.displayType == "image";
 		    let imageAttrs = [];
-		    let imageMap = Utils.getNameValue(this.getProperty(filterField.getId() +".filterImages"));
+		    let imageMap = Utils.getNameValue(this.getProperty(this.getId() +".filterImages"));
 		    if(useImage) {
-			let w = this.getProperty(filterField.getId() +".filterImageWidth");
-			let h = this.getProperty(filterField.getId() +".filterImageHeight");
+			let w = this.getProperty(this.getId() +".filterImageWidth");
+			let h = this.getProperty(this.getId() +".filterImageHeight");
 			if(h) {
 			    imageAttrs.push("height");
 			    imageAttrs.push(h);
@@ -1562,13 +1711,13 @@ function RecordFilter(display,filterFieldId, properties) {
 			}
 			
 			imageAttrs.push("style");
-			imageAttrs.push(this.getProperty(filterField.getId() +".filterImageStyle","border-radius:50%;"));
+			imageAttrs.push(this.getProperty(this.getId() +".filterImageStyle","border-radius:50%;"));
 		    }
 		    for(let j=0;j<enums.length;j++) {
-			var extra = "";
-			var v = enums[j].value;
-			var color = colorMap?colorMap[v]:null;
-			var label;
+			let extra = "";
+			let v = enums[j].value;
+			let color = colorMap?colorMap[v]:null;
+			let label;
 			if(Array.isArray(v)) {
 			    label = v[1];
 			    v = v[0];
@@ -1576,49 +1725,48 @@ function RecordFilter(display,filterFieldId, properties) {
 			    label = v;
 			}
 
-			var style = this.getProperty(filterField.getId() +".filterItemStyle","");
+			let style = this.getProperty(this.getId() +".filterItemStyle","");
 			if(color) {
 			    style += " background-color:" + color +"; ";
 			}
 			
-			var clazz = " display-filter-item display-filter-item-" + this.displayType +" ";
+			let clazz = " display-filter-item display-filter-item-" + this.displayType +" ";
 			if(v == dfltValue) {
 			    clazz+=  " display-filter-item-" + this.displayType +"-selected ";
-			} else {
 			}
 			if(v == FILTER_ALL) {
 			    extra = " display-filter-item-all ";
 			}
 			if(useImage) {
-			    var image=null;
+			    let image=null;
 			    if(imageMap) image = imageMap[v];
 			    if(!image || image=="") image = enums[j].image;
 			    if(image) {
-				buttons+=HtmlUtils.div(["fieldId",filterField.getId(),"class",clazz,"style",style, "data-value",v,"title",label],
+				buttons+=HtmlUtils.div(["fieldId",this.getId(),"class",clazz,"style",style, "data-value",v,"title",label],
 						       HtmlUtils.image(image,imageAttrs));
 			    } else {
-				buttons+=HtmlUtils.div(["fieldId",filterField.getId(),"class",clazz,"style",style,"data-value",v,"title",label],label);
+				buttons+=HtmlUtils.div(["fieldId",this.getId(),"class",clazz,"style",style,"data-value",v,"title",label],label);
 			    }
 			} else {
-			    buttons+=HtmlUtils.div(["fieldId",filterField.getId(),"class",clazz, "style",style,"data-value",v],label);
+			    buttons+=HtmlUtils.div(["fieldId",this.getId(),"class",clazz, "style",style,"data-value",v],label);
 			}
 			buttons+="\n";
 		    }
 
-		    if(useImage && this.getProperty(filterField.getId() +".filterShowButtonsLabel")) {
-			buttons+=HtmlUtils.div(["class","display-filter-item-label","id",this.display.getDomId("filterby_" + filterField.getId() +"_label")],"&nbsp;");
+		    if(useImage && this.getProperty(this.getId() +".filterShowButtonsLabel")) {
+			buttons+=HtmlUtils.div(["class","display-filter-item-label","id",this.display.getDomId("filterby_" + this.getId() +"_label")],"&nbsp;");
 		    }
 		    bottom[0]+= HtmlUtils.div(["data-value",dfltValue,"class","display-filter-items","id",widgetId,"isButton","true", "fieldId",
-					       filterField.getId()], buttons);
+					       this.getId()], buttons);
 		    if(debug) console.log("\treturn 1");
 		    return "";
-		} else if(this.getProperty(filterField.getId() +".filterCheckbox")) {
+		} else if(this.getProperty(this.getId() +".filterCheckbox")) {
 		    if(debug) console.log("\tis checkbox");
 		    attrs.push("isCheckbox");
 		    attrs.push(true);
-		    var tmp = [];
+		    let tmp = [];
 		    enums.map(e=>tmp.push(e.value));
-		    var checked = tmp.includes(dfltValue);
+		    let checked = tmp.includes(dfltValue);
 		    if(tmp.length>0) {
 			attrs.push("onValue");
 			attrs.push(tmp[0]);
@@ -1629,10 +1777,36 @@ function RecordFilter(display,filterFieldId, properties) {
 		    }
 		    widget = HtmlUtils.checkbox("",attrs,checked);
 		    //			    console.log(widget);
+		} else if(this.getProperty(this.getId()+".showFilterTags") || this.getProperty("showFilterTags")) {
+		    showLabel  =false;
+		    let cbxs = [];
+		    this.tagToCbx = {};
+		    this.selectedTags = [];
+		    enums.map((e,idx)=>{
+			let count  = e.count;
+			let value = e.value;
+			let label = value;
+			if(Array.isArray(value)) {
+			    value = e.value[0];
+			    label = e.value[1];
+			    if(value == "")
+				label = "-blank-";
+			}
+			let showCount  = true;
+			if(count) label = label +(showCount?" (" + count+")":"");
+			let cbxId = this.getFilterId() +"_cbx_" + idx;
+			this.tagToCbx[value] = cbxId;
+			let cbx = HU.checkbox("",[CLASS,"metadata-cbx",ID,cbxId,"metadata-type",this.getFilterId(),"metadata-value",value],false) +" " + HU.tag( "label",  [CLASS,"ramadda-noselect ramadda-clickable","for",cbxId],label);
+			cbx = HU.span([CLASS,'display-search-tag','tag',label,STYLE, HU.css("background", Utils.getEnumColor(this.getFieldId()))], cbx);
+			cbxs.push(cbx);
+		    }); 
+		    this.tagCbxs  = cbxs;
+		    let clickId = this.getFilterId()+"_popup";
+		    widget= HU.div([STYLE, HU.css("border","1px solid #ccc",  "margin-top","6px","padding-right","5px",  "background", Utils.getEnumColor(this.getFieldId())), TITLE,"Click to select tag", ID,clickId,CLASS,"ramadda-clickable entry-toggleblock-label"], HU.makeToggleImage("fas fa-plus","font-size:8pt;") +" " +this.getLabel()+" ("+ cbxs.length+")");   
 		} else {
 		    if(debug) console.log("\tis select");
 		    let tmp = [];
-		    let showCount = this.getProperty(filterField.getId()+".filterShowCount",this.getProperty("filterShowCount",true));
+		    let showCount = this.getProperty(this.getId()+".filterShowCount",this.getProperty("filterShowCount",true));
 		    enums.map(e=>{
 			let count  = e.count;
 			let v = e.value;
@@ -1647,18 +1821,14 @@ function RecordFilter(display,filterFieldId, properties) {
 			tmp.push([v,label]);
 		    }); 
                     widget = HtmlUtils.select("",attrs,tmp,dfltValue);
-//Don't think we need this as the label gets set later on
-//		    if(this.getProperty(filterField.getId() +".filterLabel")) {
-//			widget=HU.vbox([this.getProperty(filterField.getId() +".filterLabel"),widget]);
-//		    }
 		}
-	    } else if(filterField.isNumeric()) {
+	    } else if(this.isFieldNumeric()) {
 		if(debug) console.log("\tis numeric");
-		var min=0;
-		var max=0;
-		var cnt=0;
+		let min=0;
+		let max=0;
+		let cnt=0;
 		records.map(record=>{
-		    var value = this.display.getDataValues(record)[filterField.getIndex()];
+		    let value = this.getValue(record);
 		    if(isNaN(value))return;
 		    if(cnt==0) {min=value;max=value;}
 		    else {
@@ -1667,8 +1837,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		    }
 		    cnt++;
 		});
-		let tmpMin = this.getPropertyFromUrl(filterField.getId() +".filterValueMin",this.getProperty("filterValueMin"));
-		let tmpMax = this.getPropertyFromUrl(filterField.getId() +".filterValueMax",this.getProperty("filterValueMax"));		
+		let tmpMin = this.getPropertyFromUrl(this.getId() +".filterValueMin",this.getProperty("filterValueMin"));
+		let tmpMax = this.getPropertyFromUrl(this.getId() +".filterValueMax",this.getProperty("filterValueMax"));		
 		let minStyle = "";
 		let maxStyle = "";
 		let dfltValueMin = min;
@@ -1683,71 +1853,80 @@ function RecordFilter(display,filterFieldId, properties) {
 		}
 
 
-                widget = HtmlUtils.input("",dfltValueMin,[STYLE,minStyle,"data-min",min,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_min","size",3,"fieldId",filterField.getId()]);
+                widget = HtmlUtils.input("",dfltValueMin,[STYLE,minStyle,"data-min",min,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_min","size",3,"fieldId",this.getId()]);
 		widget += "-";
-                widget += HtmlUtils.input("",dfltValueMax,[STYLE,maxStyle,"data-max",max,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_max","size",3,"fieldId",filterField.getId()]);
-	    } else if(filterField.getType() == "date") {
-                widget =HtmlUtils.datePicker("","",["class","display-filter-input","style",widgetStyle, "id",widgetId+"_date1","fieldId",filterField.getId()]) +"-" +
-		    HtmlUtils.datePicker("","",["class","display-filter-input","style",widgetStyle, "id",widgetId+"_date2","fieldId",filterField.getId()]);
+                widget += HtmlUtils.input("",dfltValueMax,[STYLE,maxStyle,"data-max",max,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_max","size",3,"fieldId",this.getId()]);
+	    } else if(this.getFieldType() == "date") {
+                widget =HtmlUtils.datePicker("","",["class","display-filter-input","style",widgetStyle, "id",widgetId+"_date1","fieldId",this.getId()]) +"-" +
+		    HtmlUtils.datePicker("","",["class","display-filter-input","style",widgetStyle, "id",widgetId+"_date2","fieldId",this.getId()]);
 		this.dateIds.push(widgetId+"_date1");
 		this.dateIds.push(widgetId+"_date2");
             } else {
-
-		var dfltValue = this.getPropertyFromUrl(filterField.getId() +".filterValue","");
-		var attrs =["style",widgetStyle, "id",widgetId,"fieldId",filterField.getId(),"class","display-filter-input"];
-		var placeholder = this.getProperty(filterField.getId() +".filterPlaceholder");
+		let dfltValue = this.getPropertyFromUrl(this.getId() +".filterValue","");
+		let width = this.getProperty(this.getId() +".filterWidth","150px");		
+		let attrs =[STYLE,widgetStyle+"width:" + HU.getDimension(width), "id",widgetId,"fieldId",this.getId(),"class","display-filter-input"];
+		let placeholder = this.getProperty(this.getId() +".filterPlaceholder");
+		attrs.push("width");
+		attrs.push(width);
 		if(placeholder) {
 		    attrs.push("placeholder");
 		    attrs.push(placeholder);
+		} else {
+		    showLabel = false;
+		    attrs.push("placeholder");
+		    attrs.push(widgetLabel);
 		}
 
                 widget =HtmlUtils.input("",dfltValue,attrs);
-		var values=fieldMap[filterField.getId()].values;
-		var seen = {};
+		let values=fieldMap[this.getId()].values;
+		let seen = {};
 		records.map(record=>{
-		    var value = this.display.getDataValues(record)[filterField.getIndex()];
+		    let value = this.getValue(record);
 		    if(!seen[value]) {
 			seen[value] = true;
 			values.push(value);
 		    }	
 		});
             }
-	    var label =   this.getProperty(filterField.getId()+".filterLabel",filterField.getLabel()+":");
-	    var suffix =   this.getProperty(filterField.getId()+".filterSuffix","");
 	    if(!this.hideFilterWidget) {
-		var tt = label;
-		if(label.length>50) label = label.substring(0,49)+"...";
-		if(!this.getProperty(filterField.getId() +".showFilterLabel",this.getProperty("showFilterLabel",true))) {
-		    label = "";
+		let tt = widgetLabel;
+		if(widgetLabel.length>50) widgetLabel = widgetLabel.substring(0,49)+"...";
+		if(!this.getProperty(this.getId() +".showFilterLabel",this.getProperty("showFilterLabel",true))) {
+		    widgetLabel = "";
 		}
 		else
-		    label = label+" ";
-		let vertical = this.getProperty(filterField.getId()+".filterVertical",false)  || this.getProperty("filterVertical",false);
-
-
-		label = this.display.makeFilterLabel(label,tt);
-		widget = HtmlUtils.div(["style","display:inline-block;"],label + (vertical?"<br>":"") + widget+suffix);
+		    widgetLabel = widgetLabel+" ";
+		widgetLabel+=":";
+		let vert = vertical || this.getProperty(this.getId()+".filterVertical",false)  || this.getProperty("filterVertical",false);
+		widgetLabel = this.display.makeFilterLabel(widgetLabel,tt);
+		if(vert) {
+		    widget = HtmlUtils.div([],(showLabel?widgetLabel:"") + widget+suffix);
+		} else {
+		    widget = HtmlUtils.div(["style","display:inline-block;"],(showLabel?widgetLabel:"") + widget+suffix);
+		}
 	    }
-            widget= widget +(this.hideFilterWidget?"":"&nbsp;&nbsp;");
+	    if(!vertical)
+		widget= widget +(this.hideFilterWidget?"":"&nbsp;&nbsp;");
 	    return widget;
 	},
 	getEnums: function(records) {
 	    let counts = {};
-	    let isMulti  = filterField.isFieldMultiEnumeration();
+	    let isMulti  = this.isFieldMultiEnumeration();
 	    records.forEach((record,idx)=>{
-		let value = record.getValue(filterField.getIndex());
+		let value = this.getValue(record);
 		if(!value) return;
 		value = String(value);
 		let values = isMulti?value.split(","):[value];
 		values.forEach(v=>{
+		    v =v.trim ();
 		    if(!counts[v]) counts[v]=1;
 		    else   counts[v]++;
 		});
 	    });
 
 	    let enums = null;
-	    let filterValues = this.getProperty(filterField.getId()+".filterValues");
-	    let showLabel = this.getProperty(filterField.getId() +".showFilterLabel",this.getProperty("showFilterLabel",true));
+	    let filterValues = this.getProperty(this.getId()+".filterValues");
+	    let showLabel = this.getProperty(this.getId() +".showFilterLabel",this.getProperty("showFilterLabel",true));
 
 	    if (filterValues) {
 		let toks;
@@ -1763,7 +1942,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		    if(tmp.length>1) {
 			tok = [tmp[0],tmp[1]];
 		    } else if(tok == FILTER_ALL) {
-			let allName = this.getProperty(filterField.getId() +".allName",!showLabel?filterField.getLabel():"All");
+			let allName = this.getProperty(this.getId() +".allName",!showLabel?this.getLabel():"All");
 			tok = [tmp[0],allName];
 		    } else {
 			tok = [tok,tok];
@@ -1772,19 +1951,19 @@ function RecordFilter(display,filterFieldId, properties) {
 		    enums.push({value:tok,count:count});
 		})
 	    }
-	    let includeAll = this.getProperty(filterField.getId() +".includeAll",this.getProperty("filter.includeAll", true));
+	    let includeAll = this.getProperty(this.getId() +".includeAll",this.getProperty("filter.includeAll", true));
 	    if(enums == null) {
-		let depend = this.getProperty(filterField.getId() +".depends");
+		let depend = this.getProperty(this.getId() +".depends");
 		if(depend) {
 		    depend=this.depend = this.display.getRecordFilter(depend);
 		}
-		let allName = this.getProperty(filterField.getId() +".allName",!showLabel?filterField.getLabel():"All");
+		let allName = this.getProperty(this.getId() +".allName",!showLabel?this.getLabel():"All");
 		enums = [];
-		if(includeAll && !this.getProperty(filterField.getId() +".filterLabel")) {
+		if(includeAll && !this.getProperty(this.getId() +".filterLabel")) {
 		    enums.push({value:[FILTER_ALL,allName]});
 		}
 		let seen = {};
-		let dflt = filterField.getEnumeratedValues();
+		let dflt = this.getField().getEnumeratedValues();
 		if(dflt) {
 		    for(let v in dflt) {
 			seen[v] = true;
@@ -1806,10 +1985,10 @@ function RecordFilter(display,filterFieldId, properties) {
 		    if(depend) {
 			if(!depend.isRecordOk(record,idx<5)) return;
 		    }
-		    let value = this.display.getDataValues(record)[filterField.getIndex()];
+		    let value =this.getValue(record);
 		    let values;
 		    if(isMulti) {
-			values = value.split(",");
+			values = value.split(",").map(v=>{return v.trim();});
 		    } else {
 			values = [value];
 		    }
@@ -1833,8 +2012,8 @@ function RecordFilter(display,filterFieldId, properties) {
 			enumValues.push(obj);
 		    });
 		});
-		if(this.getProperty(filterField.getId() +".filterSort",true)) {
-		    let sortCount = this.getProperty(filterField.getId() +".filterSortCount",true);
+		if(this.getProperty(this.getId() +".filterSort",true)) {
+		    let sortCount = this.getProperty(this.getId() +".filterSortCount",true);
 		    enumValues.sort((a,b)  =>{
 			if(sortCount && a.count && b.count) {
 			    if(b.count!=a.count)
@@ -1874,8 +2053,8 @@ function MonthFilter(param) {
 
         recordOk: function(display, record, values) {
             for (i in this.months) {
-                var month = this.months[i];
-                var date = record.getDate();
+                let month = this.months[i];
+                let date = record.getDate();
                 if (date == null) return false;
                 if (date.getMonth == null) {
                     //console.log("bad date:" + date);
@@ -2425,10 +2604,6 @@ function CsvUtil() {
 		newFields.push(newField);
 	    });
 	    let keyFields =  this.display.getFieldsByIds(fields, (args.keyFields||"").replace(/_comma_/g,","));
-//	    newFields.forEach((f,fieldIdx)=>{
-//		if(fieldIdx>3) return;
-//		console.log("F:" + f.getLabel() +" " + f.index);
-//	    });
 	    records.forEach((record, rowIdx)=>{
 		let data = [];
 		let newRecord = record.clone();

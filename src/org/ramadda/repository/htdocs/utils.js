@@ -297,6 +297,19 @@ var Utils =  {
     cloneList: function(l) {
         return l.slice(0);
     },
+    removeElement: function(list,value) {
+	if(!list) list = [];
+	let idx = list.indexOf(value);
+	if(idx>=0) list.splice(idx,1);
+	return list;
+    },
+    addUnique: function(list,value) {
+	if(list==null) list=[];
+	if(!list.includes(value)) 
+	    list.push(value);
+	return list;
+    },
+
     replaceAll: function(s,pattern,v) {
 	let idx = s.indexOf(pattern);
 	if(idx<0) return s;
@@ -2121,6 +2134,20 @@ var Utils =  {
 	c = c.replace(/rgb *\((.*),(.*),(.*)\)/,"rgba($1,$2,$3,_alpha_)");
 	c = c.replace("_alpha_",alpha);
 	return c;
+    },
+
+    enumTypeCount: -1,
+    enumColorPalette: ["#FDF5E6", "#F0FFFF","#FFE3D5","#a7d0cd","#fbeeac","#dbe3e5","#e8e9a1"],
+    enumColors: {},
+    getEnumColor:function(type) {
+	if(type.color) return type.color;
+	if(!this.enumColors[type]) {
+	    this.enumTypeCount++;
+	    if(this.enumTypeCount>=this.enumColorPalette.length)
+		this.enumTypeCount = 0;
+	    this.enumColors[type] = this.enumColorPalette[this.enumTypeCount];
+	}
+	return this.enumColors[type];
     },
     smoothColorTable: function(a,steps) {
 	if(!steps) steps= 100;
@@ -4951,5 +4978,7 @@ let dttm  =new Date();
     console.log("d1:" + d1 +"    d2:" + d2);
 });
 */
+
+
 
 

@@ -2961,7 +2961,7 @@ Glyph.prototype = {
 
 }
 /**
-   Copyright 2008-2020 Geode Systems LLC
+   Copyright 2008-2021 Geode Systems LLC
 */
 
 
@@ -3014,6 +3014,7 @@ const ID_HEADER2_PREPREFIX = "header2preprefix";
 const ID_HEADER2_PREPREPREFIX = "header2prepreprefix";
 const ID_HEADER2_SUFFIX = "header2suffix";
 const ID_FILTERBAR = "filterbar";
+const ID_TAGBAR = "tagbar";
 const ID_TITLE = ATTR_TITLE;
 const ID_TITLE_EDIT = "title_edit";
 const ID_LEFT = "left";
@@ -4095,162 +4096,164 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{label:'Display'},
 	{p:'fields',doGetter:false,ex:'comma separated list of field ids or indices - e.g. #1,#2,#4-#7,etc or *'},
 	{p:'notFields',ex:'regexp',tt:'regexp to not include fields'},		
-	{p:"showMenu",ex:true},	      
-	{p:"showTitle",ex:true},
-	{p:"showEntryIcon",ex:true},
-	{p:"layoutHere",ex:true},
-	{p:"width",doGetter:false,ex:"100%"},
-	{p:"height",doGetter:false,ex:"400"},
-	{p:"tooltip",doGetter:false,ex:"${default}"},
-	{p:"tooltipPositionMy",ex:"left top"},
-	{p:"tooltipPositionAt",ex:"left bottom+2"},		
-	{p:"recordTemplate",doGetter:false,ex:"${default}",tt:"Template for popups etc. Can be ${default attrs} or '${field} .. ${fieldn}...'"},
-	{p:"titleTemplate",doGetter:false,ex:"${field1}",tt:"Template for title in ${default} template display"},	
-	{p:"itemsPerColumn",ex:10,tt:'How many items to show in each column in a tooltip'},
-	{p:"labelColumnAttrs",ex:"align,right",tt:"Attributes of the label column in the record templates"},
-	{p:"labelWidth",ex:"10",tt:"Width of labels the record templates"},	
-	{p:"displayStyle",ex:"css styles",tt:"Specify styles for display"},
-	{p:"title",ex:""},
-	{p:"titleBackground",ex:"color"},
-	{p:"linkField",ex:""},
-	{p:"titleField",ex:""},
-	{p:"descriptionField",ex:""},
-	{p:"textColor",ex:"color"},
-	{p:"backgroundImage",ex:"",tt:"Image url to display in background"},
-	{p:"background",ex:"color"},
-	{p:"showProgress",ex:true},
-	{p:"doEntries",ex:true,tt:"Make the children entries be data"},
-	{p:"addAttributes",ex:true,tt:"Include the extra attributes of the children"},
-	{p:"sortFields",tt:"Comma separated list of fields to sort the data on"},
-	{p:"sortAscending",ex:"true|false"},
-	{p:"showSortDirection",ex:true},		
-	{p:"sortByFields",ex:"",tt:"Show sort by fields in a menu"},
-	{p:"sortHighlight",ex:true,tt:"Sort based on highlight from the filters"},
-	{p:"showDisplayFieldsMenu",ex:true},
-	{p:"displayFieldsMenuMultiple",ex:true},
-	{p:"displayFieldsMenuSide",ex:"left"},
-	{label:"Formatting"},
-	{p:"dateFormat",ex:"yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm"},
-	{p:"dateFormatDaysAgo",ex:true},
-	{p:"doFormatNumber",ex:false},
- 	{p:"formatNumberDecimals",ex:0},
-	{p:"formatNumberScale",ex:100},
-	{p:"numberTemplate",ex:"${number}%"},
-	{p:"&lt;field_id&gt;.&lt;format&gt;",ex:"..."},
-	{label:"Filter Data"},
-	{p:"fieldsNumeric",ex:true,tt:"Only get numeric fields"},
-	{p:"filterFields",ex:""},
-	{p:"filterFieldsToPropagate"},
-	{p:"hideFilterWidget",ex:true},
-	{p:"filterHighlight",ex:true,tt:"Highlight the records"},
-	{p:"showFilterHighlight",ex:false,tt:"show/hide the filter highlight widget"},
-	{p:"acceptEventFilter",ex:false},
-	{p:"acceptEventDisplayFieldsChange",ex:true},
+	{p:'showMenu',ex:true},	      
+	{p:'showTitle',ex:true},
+	{p:'showEntryIcon',ex:true},
+	{p:'layoutHere',ex:true},
+	{p:'width',doGetter:false,ex:'100%'},
+	{p:'height',doGetter:false,ex:'400'},
+	{p:'tooltip',doGetter:false,ex:'${default}'},
+	{p:'tooltipPositionMy',ex:'left top'},
+	{p:'tooltipPositionAt',ex:'left bottom+2'},		
+	{p:'recordTemplate',doGetter:false,ex:'${default}',tt:'Template for popups etc. Can be ${default attrs} or \'${field} .. ${fieldn}...\''},
+	{p:'titleTemplate',doGetter:false,ex:'${field1}',tt:'Template for title in ${default} template display'},	
+	{p:'itemsPerColumn',ex:10,tt:'How many items to show in each column in a tooltip'},
+	{p:'labelColumnAttrs',ex:'align,right',tt:'Attributes of the label column in the record templates'},
+	{p:'labelWidth',ex:'10',tt:'Width of labels the record templates'},	
+	{p:'displayStyle',ex:'css styles',tt:'Specify styles for display'},
+	{p:'title',ex:''},
+	{p:'titleBackground',ex:'color'},
+	{p:'linkField',ex:''},
+	{p:'titleField',ex:''},
+	{p:'descriptionField',ex:''},
+	{p:'textColor',ex:'color'},
+	{p:'backgroundImage',ex:'',tt:'Image url to display in background'},
+	{p:'background',ex:'color'},
+	{p:'showProgress',ex:true},
+	{p:'doEntries',ex:true,tt:'Make the children entries be data'},
+	{p:'addAttributes',ex:true,tt:'Include the extra attributes of the children'},
+	{p:'sortFields',tt:'Comma separated list of fields to sort the data on'},
+	{p:'sortAscending',ex:'true|false'},
+	{p:'showSortDirection',ex:true},		
+	{p:'sortByFields',ex:'',tt:'Show sort by fields in a menu'},
+	{p:'sortHighlight',ex:true,tt:'Sort based on highlight from the filters'},
+	{p:'showDisplayFieldsMenu',ex:true},
+	{p:'displayFieldsMenuMultiple',ex:true},
+	{p:'displayFieldsMenuSide',ex:'left'},
+	{label:'Formatting'},
+	{p:'dateFormat',ex:'yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm'},
+	{p:'dateFormatDaysAgo',ex:true},
+	{p:'doFormatNumber',ex:false},
+ 	{p:'formatNumberDecimals',ex:0},
+	{p:'formatNumberScale',ex:100},
+	{p:'numberTemplate',ex:'${number}%'},
+	{p:'&lt;field_id&gt;.&lt;format&gt;',ex:'...'},
+	{label:'Filter Data'},
+	{p:'fieldsNumeric',ex:true,tt:'Only get numeric fields'},
+	{p:'filterFields',ex:''},
+	{p:'filterFieldsToPropagate'},
+	{p:'hideFilterWidget',ex:true},
+	{p:'filterHighlight',ex:true,tt:'Highlight the records'},
+        {p:'showFilterTags',d: true},	
+	{p:'showFilterHighlight',ex:false,tt:'show/hide the filter highlight widget'},
+	{p:'acceptEventFilter',ex:false},
+	{p:'acceptEventDisplayFieldsChange',ex:true},
 	{p:'acceptEventDataSelection',ex:true,tt:'accept new data coming from other displays'},
-	{p:"acceptEventRecordList",ex:true},
-	{p:"propagateEventRecordHighlight",ex:true},
-	{p:"acceptEventRecordHighlight",ex:true},		
-	{p:"propagateEventRecordList",ex:true},
-	{p:"filterSliderImmediate",ex:true,tt:"Apply the change while sliding"},
-	{p:"filterLogic",ex:"and|or",tt:"Specify logic to apply filters"},		
-	{p:"&lt;field&gt;.filterValue"},
-	{p:"&lt;field&gt;.filterValueMin"},
-	{p:"&lt;field&gt;.filterValueMax"},
-	{p:"&lt;field&gt;.filterValues"},
-	{p:"&lt;field&gt;.filterMultiple",ex:true},
-	{p:"&lt;field&gt;.filterMultipleSize",ex:5},
-	{p:"filterShowCount",ex:false},
-	{p:"filterShowTotal",ex:true},		
-	{p:"&lt;field&gt;.filterLabel"},
-	{p:"&lt;field&gt;.showFilterLabel"},
-	{p:"&lt;field&gt;.filterVertical",ex:true},
-	{p:"filterVertical",ex:true},				
-	{p:"&lt;field&gt;.filterByStyle",ex:"background:white;"},
-	{p:"&lt;field&gt;.includeAll",ex:false},
-	{p:"&lt;field&gt;.filterSort",ex:false},
-	{p:"&lt;field&gt;.filterSortCount",ex:false},		
-	{p:"&lt;field&gt;.filterStartsWith",ex:true},
-	{p:"&lt;field&gt;.filterDisplay",ex:"menu|tab|button|image"},
-	{p:"&lt;field&gt;.filterOps",ex:"<,5000000,label1;>,5000000",tt:"Add menu with fixed filters"},
-	{p:"excludeUndefined",ex:true,tt:"Exclude any records with an undefined value"},
-	{p:"excludeZero",ex:true,tt:"Exclude any records with a 0 value"},
-	{p:"recordSelectFilterFields",tt:"Set the value of other displays filter fields"},
-	{p:"selectFields",ex:"prop:label:field1,...fieldN;prop:...."},
-	{p:"match value", ex:"dataFilters=\"match(field=field,value=value,label=,enabled=);\"",tt:"Only show records that match"}, 		
+	{p:'acceptEventRecordList',ex:true},
+	{p:'propagateEventRecordHighlight',ex:true},
+	{p:'acceptEventRecordHighlight',ex:true},		
+	{p:'propagateEventRecordList',ex:true},
+	{p:'filterSliderImmediate',ex:true,tt:'Apply the change while sliding'},
+	{p:'filterLogic',ex:'and|or',tt:'Specify logic to apply filters'},		
+	{p:'&lt;field&gt;.filterValue'},
+	{p:'&lt;field&gt;.filterValueMin'},
+	{p:'&lt;field&gt;.filterValueMax'},
+	{p:'&lt;field&gt;.filterValues'},
+	{p:'&lt;field&gt;.filterMultiple',ex:true},
+	{p:'&lt;field&gt;.filterMultipleSize',ex:5},
+	{p:'filterShowCount',ex:false},
+	{p:'filterShowTotal',ex:true},		
+	{p:'&lt;field&gt;.filterLabel'},
+	{p:'&lt;field&gt;.showFilterLabel'},
+	{p:'&lt;field&gt;.filterVertical',ex:true},
+	{p:'filterVertical',ex:true},				
+	{p:'headerOrientation',ex:'vertical'},
+	{p:'&lt;field&gt;.filterByStyle',ex:'background:white;'},
+	{p:'&lt;field&gt;.includeAll',ex:false},
+	{p:'&lt;field&gt;.filterSort',ex:false},
+	{p:'&lt;field&gt;.filterSortCount',ex:false},		
+	{p:'&lt;field&gt;.filterStartsWith',ex:true},
+	{p:'&lt;field&gt;.filterDisplay',ex:'menu|tab|button|image'},
+	{p:'&lt;field&gt;.filterOps',ex:'<,5000000,label1;>,5000000',tt:'Add menu with fixed filters'},
+	{p:'excludeUndefined',ex:true,tt:'Exclude any records with an undefined value'},
+	{p:'excludeZero',ex:true,tt:'Exclude any records with a 0 value'},
+	{p:'recordSelectFilterFields',tt:'Set the value of other displays filter fields'},
+	{p:'selectFields',ex:'prop:label:field1,...fieldN;prop:....'},
+	{p:'match value', ex:"dataFilters=\"match(field=field,value=value,label=,enabled=);\"",tt:"Only show records that match"}, 		
 	{p:"not match value",ex:"dataFilters=\"notmatch(field=field,value=value,label=,enabled=);\"",tt:"Only show records that dont match"},
-	{p:"no missing values",ex:"dataFilters=\"nomissing(field=field,label=,enabled=);\"",tt:"Dont show missing values"},
-	{p:"less than",ex:"dataFilters=\"lessthan(field=field,value=value,label=,enabled=);\""},
-	{p:"greater than",ex:"dataFilters=\"greaterthan(field=field,value=value,label=,enabled=);\""},
-	{p:"equals",ex:"dataFilters=\"equals(field=field,value=value,label=,enabled=);\""},
-	{p:"not equals",ex:"dataFilters=\"notequals(field=field,value=value,label=,enabled=);\""},
-	{p:"filterLatest",ex:"fields",tt:"Only show the latest records grouped by fields"},		
-	{p:"filterDate",ex:"year",tt:"Show a simple pull down menu to select a year to display"},
-	{p:"filterDateIncludeAll",ex:true,tt:"Include all years"},
-	{p:"startDate",ex:"yyyy,MM,dd,hh,mm,ss",tt:"Filter data on date"},
-	{p:"endDate",ex:"yyyy,MM,dd,hh,mm,ss",tt:"Filter data on date"},
-	{inlineLabel:"Convert Data"},
-	{p:"binDate",ex:"day|month|year",tt:"Bin the dates"},
-	{p:"binType",ex:"count|average|total"},
-	{p:"groupBy",ex:"field",tt:"Group the data"},
-	{p:'convertData', label:"derived data", ex:"derived(field=new_field_id, function=foo*bar);",tt:"Add derived field"},
-	{p:'convertData',label:"merge rows",ex:"mergeRows(keyFields=f1\\\\,f2, operator=count|sum|average, valueFields=);",tt:"Merge rows together"},
-	{p:'convertData',label:"rotate data", ex:"rotateData(includeFields=true,includeDate=true,flipColumns=true);",tt:"Rotate data"},
-	{p:'convertData',label:"percent increase",ex:"addPercentIncrease(replaceValues=false);",tt:"Add percent increase"},
-	{p:'convertData',label:"doubling rate",ex:"doublingRate(fields=f1\\\\,f2, keyFields=f3);",tt:"Calculate # days to double"},
-	{p:'convertData',label:"unfurl",ex:"unfurl(headerField=field to get header from,uniqueField=e.g. date,valueFields=);",tt:"Unfurl"},
-	{p:'convertData',label:"Accumulate data",ex:"accum(fields=);",tt:"Accumulate"},
-	{p:'convertData',label:"Add an average field",ex:"mean(fields=);",tt:"Mean"},
-	{p:'convertData',label:"Prune where fields are all NaN",ex:"prune(fields=);",tt:"Prune"},		
-	{p:'convertData',label:"Scale and offset",ex:"accum(scale=1,offset1=0,offset2=0,unit=,fields=);",tt:"(d + offset1) * scale + offset2"},		
-	{label:"Color"},
-	{p:"colors",ex:"color1,...,colorN",tt:"Comma separated array of colors"},
-	{p:"colorBy",ex:"",tt:"Field id to color by"},
-	{p:"colorByFields",ex:"",tt:"Show color by fields in a menu"},
-	{p:"colorByLog",ex:"true",tt:"Use a log scale for the color by"},
-	{p:"colorByMap",ex:"value1:color1,...,valueN:colorN",tt:"Specify colors for color by text values"},
-	{p:"colorTableAlpha",ex:0.5,tt:"Set transparency on color table values"},
-	{p:"colorTableInverse",ex:true,tt:"Inverse the color table"},
-	{p:"colorTablePruneLeft",ex:"N",tt:"Prune first N colors"},
-	{p:"colorTablePruneRight",ex:"N",tt:"Prune last N colors"},
-	{p:"colorByMin",ex:"value",tt:"Min scale value"},
-	{p:"colorByMax",ex:"value",tt:"Max scale value"},
-	{p:"showColorTable",ex:"false",tt:"Display the color table"},
-	{p:"showColorTableDots",ex:true},
-	{p:"colorTableDotsDecimals",ex:"0"},
-	{p:"colorTableSide",ex:"bottom|right|left|top"},
-	{p:"showColorTableStride",ex:1,tt:"How many colors should be shown"},
-	{p:"colorByAllRecords",ex:true,tt:"use all records for color range"},
-	{p:"convertColorIntensity",ex:true},
-	{p:"intensitySourceMin",ex:"0"},
-	{p:"intensitySourceMax",ex:100},
-	{p:"intensityTargetMin",ex:1},
-	{p:"intensityTargetMax",ex:0},
-	{p:"convertColorAlpha",ex:true},
-	{p:"alphaSourceMin",ex:0},
-	{p:"alphaSourceMax",ex:100},
-	{p:"alphaTargetMin",ex:0},
-	{p:"alphaTargetMax",ex:1},
-	{label:"Animation"},
-	{p:"doAnimation",ex:true},
-	{p:"animationHighlightRecord",ex:true},
-	{p:"animationHighlightRecordList",ex:true},
-	{p:"acceptEventAnimationChange",ex:false},
-	{p:"acceptDateRangeChange",ex:true},
-	{p:"animationDateFormat",ex:"yyyy"},
-	{p:"animationLabelSize",ex:"12pt"},
-	{p:"animationStyle"},				
-	{p:"animationTooltipShow",ex:"true"},
-	{p:"animationTooltipDateFormat",ex:"yyyymmddhhmm"},		
-	{p:"animationMode",ex:"sliding|frame|cumulative"},
-	{p:"animationWindow",ex:"1 day|2 weeks|3 months|1 year|2 decades|etc"},
-	{p:"animationStep",ex:"1 day|2 weeks|3 months|1 year|2 decades|etc"},
-	{p:"animationSpeed",ex:500},
-	{p:"animationLoop",ex:true},
-	{p:"animationDwell",ex:1000},
+	{p:'no missing values',ex:'dataFilters=\"nomissing(field=field,label=,enabled=);\"',tt:'Dont show missing values'},
+	{p:'less than',ex:'dataFilters=\"lessthan(field=field,value=value,label=,enabled=);\"'},
+	{p:'greater than',ex:'dataFilters=\"greaterthan(field=field,value=value,label=,enabled=);\"'},
+	{p:'equals',ex:'dataFilters=\"equals(field=field,value=value,label=,enabled=);\"'},
+	{p:'not equals',ex:'dataFilters=\"notequals(field=field,value=value,label=,enabled=);\"'},
+	{p:'filterLatest',ex:'fields',tt:'Only show the latest records grouped by fields'},		
+	{p:'filterDate',ex:'year',tt:'Show a simple pull down menu to select a year to display'},
+	{p:'filterDateIncludeAll',ex:true,tt:'Include all years'},
+	{p:'startDate',ex:'yyyy,MM,dd,hh,mm,ss',tt:'Filter data on date'},
+	{p:'endDate',ex:'yyyy,MM,dd,hh,mm,ss',tt:'Filter data on date'},
+	{inlineLabel:'Convert Data'},
+	{p:'binDate',ex:'day|month|year',tt:'Bin the dates'},
+	{p:'binType',ex:'count|average|total'},
+	{p:'groupBy',ex:'field',tt:'Group the data'},
+	{p:'convertData', label:'derived data', ex:'derived(field=new_field_id, function=foo*bar);',tt:'Add derived field'},
+	{p:'convertData',label:'merge rows',ex:'mergeRows(keyFields=f1\\\\,f2, operator=count|sum|average, valueFields=);',tt:'Merge rows together'},
+	{p:'convertData',label:'rotate data', ex:'rotateData(includeFields=true,includeDate=true,flipColumns=true);',tt:'Rotate data'},
+	{p:'convertData',label:'percent increase',ex:'addPercentIncrease(replaceValues=false);',tt:'Add percent increase'},
+	{p:'convertData',label:'doubling rate',ex:'doublingRate(fields=f1\\\\,f2, keyFields=f3);',tt:'Calculate # days to double'},
+	{p:'convertData',label:'unfurl',ex:'unfurl(headerField=field to get header from,uniqueField=e.g. date,valueFields=);',tt:'Unfurl'},
+	{p:'convertData',label:'Accumulate data',ex:'accum(fields=);',tt:'Accumulate'},
+	{p:'convertData',label:'Add an average field',ex:'mean(fields=);',tt:'Mean'},
+	{p:'convertData',label:'Prune where fields are all NaN',ex:'prune(fields=);',tt:'Prune'},		
+	{p:'convertData',label:'Scale and offset',ex:'accum(scale=1,offset1=0,offset2=0,unit=,fields=);',tt:'(d + offset1) * scale + offset2'},		
+	{label:'Color'},
+	{p:'colors',ex:'color1,...,colorN',tt:'Comma separated array of colors'},
+	{p:'colorBy',ex:'',tt:'Field id to color by'},
+	{p:'colorByFields',ex:'',tt:'Show color by fields in a menu'},
+	{p:'colorByLog',ex:'true',tt:'Use a log scale for the color by'},
+	{p:'colorByMap',ex:'value1:color1,...,valueN:colorN',tt:'Specify colors for color by text values'},
+	{p:'colorTableAlpha',ex:0.5,tt:'Set transparency on color table values'},
+	{p:'colorTableInverse',ex:true,tt:'Inverse the color table'},
+	{p:'colorTablePruneLeft',ex:'N',tt:'Prune first N colors'},
+	{p:'colorTablePruneRight',ex:'N',tt:'Prune last N colors'},
+	{p:'colorByMin',ex:'value',tt:'Min scale value'},
+	{p:'colorByMax',ex:'value',tt:'Max scale value'},
+	{p:'showColorTable',ex:'false',tt:'Display the color table'},
+	{p:'showColorTableDots',ex:true},
+	{p:'colorTableDotsDecimals',ex:'0'},
+	{p:'colorTableSide',ex:'bottom|right|left|top'},
+	{p:'showColorTableStride',ex:1,tt:'How many colors should be shown'},
+	{p:'colorByAllRecords',ex:true,tt:'use all records for color range'},
+	{p:'convertColorIntensity',ex:true},
+	{p:'intensitySourceMin',ex:'0'},
+	{p:'intensitySourceMax',ex:100},
+	{p:'intensityTargetMin',ex:1},
+	{p:'intensityTargetMax',ex:0},
+	{p:'convertColorAlpha',ex:true},
+	{p:'alphaSourceMin',ex:0},
+	{p:'alphaSourceMax',ex:100},
+	{p:'alphaTargetMin',ex:0},
+	{p:'alphaTargetMax',ex:1},
+	{label:'Animation'},
+	{p:'doAnimation',ex:true},
+	{p:'animationHighlightRecord',ex:true},
+	{p:'animationHighlightRecordList',ex:true},
+	{p:'acceptEventAnimationChange',ex:false},
+	{p:'acceptDateRangeChange',ex:true},
+	{p:'animationDateFormat',ex:'yyyy'},
+	{p:'animationLabelSize',ex:'12pt'},
+	{p:'animationStyle'},				
+	{p:'animationTooltipShow',ex:'true'},
+	{p:'animationTooltipDateFormat',ex:'yyyymmddhhmm'},		
+	{p:'animationMode',ex:'sliding|frame|cumulative'},
+	{p:'animationWindow',ex:'1 day|2 weeks|3 months|1 year|2 decades|etc'},
+	{p:'animationStep',ex:'1 day|2 weeks|3 months|1 year|2 decades|etc'},
+	{p:'animationSpeed',ex:500},
+	{p:'animationLoop',ex:true},
+	{p:'animationDwell',ex:1000},
 	{p:'animationStartShowAll',ex:true,tt:'Show full range at start'},
-	{p:"animationShowButtons",ex:false},
-	{p:"animationShowSlider",ex:false},
-	{p:"animationWidgetShort",ex:true}
+	{p:'animationShowButtons',ex:false},
+	{p:'animationShowSlider',ex:false},
+	{p:'animationWidgetShort',ex:true}
     ];
 
     displayDefineMembers(this,myProps, {
@@ -4306,7 +4309,37 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    HU.addToDocumentUrl("display"+ this.displayCount+"." + key,value);
 	},
 
-
+	createTagDialog: function(cbxs,  anchor,cbxChange, type,label) { 
+	    let cbxInner = HU.div([STYLE,HU.css("margin","5px", "width","600px;","max-height","300px","overflow-y","auto")],    Utils.wrap(cbxs,"",""));
+	    let inputId = HU.getUniqueId("input_");
+	    let input = HU.input("","",[STYLE,HU.css("width","300px;"), 'placeholder','Search for ' + label.toLowerCase(),ID,inputId]);
+	    let contents = HU.div([STYLE,HU.css("margin","10px")], HU.center(input) + cbxInner);
+	    if(!this.tagDialogs) this.tagDialogs = {};
+	    if(this.tagDialogs[type]) this.tagDialogs[type].remove();
+	    let dialog = HU.makeDialog({content:contents,anchor:anchor,title:label,
+					draggable:true,header:true});
+	    this.tagDialogs[type] = dialog;
+	    dialog.find(":checkbox").change(cbxChange);
+	    let tags = dialog.find(".display-search-tag");
+	    $("#"+inputId).keyup(function(event) {
+		let text = $(this).val().trim().toLowerCase();
+		tags.each(function() {
+		    if(text=="")
+			$(this).show();
+		    else {
+			let tag = $(this).attr("tag");
+			if(tag) {
+			    tag = tag.toLowerCase();
+			    if(tag.indexOf(text)>=0)
+				$(this).show();
+			    else
+				$(this).hide();
+			}
+		    }
+		});
+	    });
+	    return dialog;
+	},
 	getAnimationEnabled: function() {
 	    return this.getProperty("doAnimation", false);
 	},
@@ -4798,6 +4831,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 		this.settingFilterValue = true;
 		properties.forEach(prop=> {
+		    let filter = this.filterMap?this.filterMap[prop.fieldId]:null;
+		    if(!filter) return;
 		    let widgetId = this.getFilterId(prop.fieldId);
 		    if(prop.id && prop.id.endsWith("date1")) {
 			widgetId+="_date1";
@@ -4813,19 +4848,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			$("#" +widgetId+"_max").val(prop.value2);
 			$("#" +widgetId+"_max").attr("data-value", prop.value2);
 		    } else {
-			var widget = $("#"+widgetId);
-			if(widget.attr("isCheckbox")) {
-			    var on = widget.attr("onValue");
-			    var off = widget.attr("offValue");
-			    widget.prop('checked',prop.value.includes(on));
-			} else {
-			    widget.val(prop.value);
-			}
-			widget.attr("data-value",prop.value);
-			if(widget.attr("isButton")) {
-			    widget.find(".display-filter-button").removeClass("display-filter-button-selected");
-			    widget.find("[value='" + prop.value +"']").addClass("display-filter-button-selected");
-			}
+			filter.handleEventPropertyChanged(prop);
 		    }
 		});
 		this.settingFilterValue = false;
@@ -5540,15 +5563,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         getFieldsByType: function(fields, type) {
             if (!fields) {
-                var pointData = this.getData();
+                let pointData = this.getData();
                 if (pointData == null) return null;
                 fields = pointData.getRecordFields();
             }
-            var list = [];
-            var numeric = (type == "numeric");
-            var isString = (type == "string");
+            let list = [];
+            let numeric = (type == "numeric");
+            let isString = (type == "string");
             for (a in fields) {
-                var field = fields[a];
+                let field = fields[a];
 		if(field.isRecordDate()) continue;
                 if (type == null) return field;
                 if (numeric) {
@@ -5567,7 +5590,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return list;
         },
 	getDateValues: function(records) {
-	    var dates = [];
+	    let dates = [];
 	    records.forEach(r=>{
 		dates.push(r.getDate());
 	    });
@@ -5806,14 +5829,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	filterData: function(records, fields, args) {
 	    if(this.recordListOverride) return this.recordListOverride;
-	    if(!args) args = {};
 	    let opts = {
 		doGroup:false,
 		skipFirst:false,
 		applyDateRange: true
 	    }
-	    $.extend(opts,args);
-	    let debug = displayDebug.filterData;
+	    if(args)
+		$.extend(opts,args);
+	    let debug =  displayDebug.filterData;
 	    if(this.getAnimationEnabled()) {
 		if(this.getProperty("animationFilter", true)) {
 		    this.setDateRange(this.getAnimation().begin, this.getAnimation().end);
@@ -5869,7 +5892,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 records = pointData.extractGroup(this.dataGroup, records);
             }
 
-	    if(debug)   console.log("R-1:" + records.length);
+	    if(debug)   console.log("fitler #records:" + records.length);
 	    if(this.getProperty("filterLatest")) {
 		let fields = this.getFieldsByIds(null,this.getProperty("filterLatest"));
 		let max = {};
@@ -5903,7 +5926,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		r.clearHighlight(this);
 	    });
 
-	    if(debug)   console.log("checking dates");
+//	    if(debug)   console.log("checking dates");
 	    records = records.filter((record,idx)=>{
                 let date = record.getDate();
 		if(!date) return true;
@@ -5921,7 +5944,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    for(let i=0;i<this.filters.length;i++) {
 			let filter= this.filters[i];
 			if(!filter.isEnabled()) continue;
-			let filterOk = filter.isRecordOk(record);
+			let filterOk = filter.isRecordOk(record,false && rowIdx<5&&debug);
 			if(!filterOk) allOk = false;
 			else anyOk = true;
 		    }
@@ -5943,8 +5966,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		records = newData;
 	    }
 
-
-	    if(debug)   console.log("R-2:" + records.length);
+	    if(debug)   console.log("filterData-2 #records:" + records.length);
 
             var stride = parseInt(this.getProperty("stride", -1));
             if (stride < 0) {
@@ -7939,6 +7961,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return null;
 	},
         checkSearchBar: function() {
+	    let vertical =  this.getProperty("headerOrientation","horizontal") == "vertical";
+	    let filterClass = "display-filter";
 	    let debug = displayDebug.checkSearchBar;
 	    if(debug) console.log("checkSearchBar");
             let _this = this;
@@ -8001,7 +8025,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			attrs.push("4");
 		    }
 		    this.displayFieldsMenuEnums = enums;
-		    let html =  HU.span([CLASS,"display-filter"],
+		    let html =  HU.span([CLASS,filterClass],
 				       this.makeFilterLabel("Display: ") + HU.select("",attrs,enums,selected))+SPACE;
 		    let side = this.getProperty("displayFieldsMenuSide","top");
 		    if(side == "left") {
@@ -8030,7 +8054,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			if(field.isFieldGeo()) return;
 			enums.push([field.getId(),field.getLabel()]);
 		    });
-		    header2 += HU.span([CLASS,"display-filter"],
+		    header2 += HU.span([CLASS,filterClass],
 				       (label==""?"":this.makeFilterLabel(label+": ")) + 
 				       HU.select("",[ID,this.getDomId("fieldselect_" + prop)],enums,this.getProperty(prop,"")))+SPACE;
 
@@ -8046,7 +8070,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    enums.push([field.getId(),field.getLabel()]);
 		});
 		let selected = colorBy?colorBy.getId():"";
-		header2 += HU.span([CLASS,"display-filter"],
+		header2 += HU.span([CLASS,filterClass],
 				   this.makeFilterLabel("Color by: ") + HU.select("",[ID,this.getDomId("colorbyselect")],enums,selected))+SPACE;
 	    }
 	    if(this.sortByFields.length>0) {
@@ -8055,7 +8079,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(field.isFieldGeo()) return;
 		    enums.push([field.getId(),field.getLabel()]);
 		});
-		header2 += HU.span([CLASS,"display-filter"],
+		header2 += HU.span([CLASS,filterClass],
 				   this.makeFilterLabel("Sort by: ") + HU.select("",[ID,this.getDomId("sortbyselect")],enums,this.getProperty("sortFields","")))+SPACE;
 	    }
 
@@ -8073,7 +8097,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.sizeByFields.forEach(field=>{
 		    enums.push([field.getId(),field.getLabel()]);
 		});
-		header2 += HU.span([CLASS,"display-filter"],
+		header2 += HU.span([CLASS,filterClass],
 				   this.makeFilterLabel("Size by: ") + HU.select("",[ID,this.getDomId("sizebyselect")],enums,this.getProperty("sizeBy","")))+SPACE;
 	    }
 
@@ -8137,7 +8161,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		prefix += HU.div([ID,this.getDomId("filterDateStepForward"),STYLE,HU.css("display","inline-block"),TITLE,"Step Forward"],
  				 HU.getIconImage("fa-step-forward",[STYLE,HU.css("cursor","pointer")])) +SPACE1;
 
-		header2 += HU.span([CLASS,"display-filter",STYLE,style],
+		header2 += HU.span([CLASS,filterClass,STYLE,style],
 				   prefix +
 				   HU.select("",["fieldId","filterDate", ATTR_ID,selectId],enums,selected))+SPACE;
 	    }
@@ -8150,33 +8174,41 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    //Have this here so it can be used in the menu change events later. May cause problems if more than  one
 	    let displayType = "";
 	    this.filters = [];
+	    this.filterMap = {};
 	    this.addFilters(this.filters);
             if(filterBy.length>0) {
                 for(let i=0;i<filterBy.length;i++) {
 		    if(filterBy[i]!="") {
-			this.filters.push(new RecordFilter(this, filterBy[i]));
+			let filter = new RecordFilter(this, filterBy[i]);
+			this.filters.push(filter);
+			this.filterMap[filter.getId()] = filter;
 		    }
 		}
 		let searchBar = "";
 		let bottom = [""];
 		this.filters.forEach(filter=>{
-		    let widget = filter.getWidget(fieldMap, bottom,records);
-		    widget = HU.span([ID,this.domId("filtercontainer_" + filter.id)], widget);
-		    searchBar +=widget;
+		    let widget = filter.getWidget(fieldMap, bottom,records, vertical);
+		    if(!vertical)
+			widget = HU.span([ID,this.domId("filtercontainer_" + filter.id)], widget);
+		    if(vertical)
+			searchBar +=widget;
+		    else
+			searchBar +=widget;
 		});
 		style = (hideFilterWidget?"display:none;":"") + this.getProperty("filterByStyle","");
 		if(this.getProperty("showFilterTotal",false)) {
 		    searchBar+= HU.span([CLASS,"display-filter-label",ID,this.getDomId(ID_FILTER_COUNT)],"");
 		}
-		let filterBar = searchBar+bottom[0];
-		if(filterBar!="") {
-		    header2+=HU.span([CLASS,"display-filter",STYLE,style,ID,this.getDomId(ID_FILTERBAR)],searchBar+bottom);
-		}
+		let filterBar = searchBar+bottom[0] + HU.div([ID,this.domId(ID_TAGBAR)],"");
+		header2+=HU.span([CLASS,filterClass,STYLE,style,ID,this.getDomId(ID_FILTERBAR)],filterBar);
 	    }
 
 
+	    if(vertical) {
+		header2 = HU.div([CLASS,"display-header-vertical"],header2);
+	    }
 
-	    header2+=HU.div([ID,this.getDomId(ID_HEADER2_SUFFIX),CLASS,"display-header-span"],"");
+
 	    this.jq(ID_HEADER2).html(header2);
 	    this.initHeader2();
 	    this.jq("test").button().click(()=>{
@@ -8185,16 +8217,20 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 	    this.createRequestProperties();
  	    let inputFunc = (input, input2, value) =>{
+		let debug = false;
 		if(this.ignoreFilterChange) return;
-                var id = input.attr(ID);
+                let id = input.attr(ID);
 		if(!id) {
 		    console.log("No ID attribute");
 		    return;
 		}
+		if(debug)
+		    console.log(this.type+" filter change");
+
 
 		let changedFilter;
 		let changedFilterId;
-		_this.filters.every(filter=>{
+		this.filters.every(filter=>{
 		    if(filter.widgetId == id) {
 			changedFilter = filter;
 			changedFilterId = filter.id;
@@ -8203,7 +8239,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    return true;
 		});
 
-//		console.log("changed filter:" + changedFilter)
+		if(debug)
+		    console.log("changed filter:" + changedFilter)
 		let dependentFilters =[];
 		if(changedFilter) {
 		    this.filters.forEach(filter=>{
@@ -8223,14 +8260,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(id.endsWith("_min")) {
 			input2 = $("#" + id.replace(/_min$/,"_max"));
 		    } else if(id.endsWith("_max")) {
-			var tmp = input;
+			let tmp = input;
 			input =$("#" + id.replace(/_max$/,"_min"));
 			input2 = tmp;
 		    }
 		}
 		if(input.attr("isCheckbox")) {
-		    var on = input.attr("onValue")||true;
-		    var off = input.attr("offValue")||false;
+		    let on = input.attr("onValue")||true;
+		    let off = input.attr("offValue")||false;
 		    if (input.is(':checked')) {
 			value = on;
 			console.log(_this.type +" cbx is checked value:" + value +" on:" + on +" off:" + off);
@@ -8242,14 +8279,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(!value) {
 		    value = input.val();
 		} 
-		if(!value || value=="") {
-		    value = input.attr("data-value");
-		}
-		if(!value) {
-		    value = input.val();
+		if(value===null || value==="") {
+		    value = input.attr("data-value")  || input.val();
 		}
 		
-		if(value==null) return;
+		if(value==null) {
+		    if(debug)
+			console.log("no value:" + value);
+		    return;
+		}
 		if(!Array.isArray(value) && input.attr("isButton")) {
 		    //			console.log(_this.type +" " +Array.isArray(value));
 		    var tmp = [];
@@ -8259,7 +8297,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    value = tmp;
 		}
 
-                var fieldId = input.attr("fieldId");
+                let fieldId = input.attr("fieldId");
 		_this.checkFilterField(input);
 		_this.haveCalledUpdateUI = false;
 		if(_this.settingFilterValue) {
@@ -8267,8 +8305,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 		_this.settingFilterValue = true;
 		this.filteredRecords = null;
+		if(debug)
+		    console.log("calling dataFilterChanged");
 		_this.dataFilterChanged();
-
 
 		let records =[];
 		let predecessorChanged = false;
@@ -8299,10 +8338,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    return true;
 		});
 
-
-
 		this.addToDocumentUrl(fieldId+".filterValue",value);
-		var args = {
+		let args = {
 		    property: PROP_FILTER_VALUE,
 		    id:id,
 		    fieldId: fieldId,
@@ -8361,46 +8398,46 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    });
 	    this.jq(ID_FILTERBAR).find(".display-filter-input").keyup(function(e) {
-		var keyCode = e.keyCode || e.which;
+		let keyCode = e.keyCode || e.which;
 		if (keyCode == 13) {return;}
 		HtmlUtils.hidePopupObject();
-		var input = $(this);
-		var val = $(this).val().trim();
+		let input = $(this);
+		let val = $(this).val().trim();
 		if(val=="") return;
-                var fieldId = $(this).attr("fieldId");
-		var field = fieldMap[fieldId].field;
-		var values = fieldMap[fieldId].values;
-		var items=[];
-		var regexp=null;
+                let fieldId = $(this).attr("fieldId");
+		let field = fieldMap[fieldId].field;
+		let values = fieldMap[fieldId].values;
+		let items=[];
+		let regexp=null;
 		try {
 		    val = val.replace(/\./g,"\\.");
 		    regexp = new RegExp("(" + val+")",'i');
 		} catch(ignore) {
 		    //todo
 		}
-		for(var i=0;i<values.length;i++) {
-		    var text= values[i].toString();
-		    var match  = regexp?text.match(regexp):text.indexOf(val)>=0;
+		for(let i=0;i<values.length;i++) {
+		    let text= values[i].toString();
+		    let match  = regexp?text.match(regexp):text.indexOf(val)>=0;
 		    if(match) {
 			items.push([match[1], values[i]]);
 		    }
 		    if(items.length>30) break;
 		}
 		if(items.length>0) {
-		    var html = "";
-		    var itemCnt = 0;
+		    let html = "";
+		    let itemCnt = 0;
 		    items.forEach(item=>{
-			var match = item[0];
+			let match = item[0];
 			item =  item[1];
 			if(item.length>50) return;
-			var label = item.replace(regexp,"<span style='background:" + TEXT_HIGHLIGHT_COLOR +";'>" + match +"</span>");
+			let label = item.replace(regexp,"<span style='background:" + TEXT_HIGHLIGHT_COLOR +";'>" + match +"</span>");
 			item = item.replace(/\'/g,"\'");
-			html+=HU.div([CLASS,"display-filter-popup-item","item",item],label)+"\n";
+			html+=HU.div([CLASS,"ramadda-hoverable ramadda-clickable display-filter-popup-item","item",item],label)+"\n";
 			itemCnt++;
 		    });	
 		    if(itemCnt>0) {
 			let popup =HtmlUtils.setPopupObject(HtmlUtils.getTooltip());
-			popup.html(HU.div([CLASS, "ramadda-popup-inner ramadda-snippet-popup"], html));
+			popup.html(HU.div([STYLE,HU.css("margin","5px"), CLASS, "ramadda-popup-inner ramadda-snippet-popup"], html));
 			popup.show();
 			popup.position({
 			    of: $(this),
@@ -8488,7 +8525,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 
             this.jq(ID_FILTERBAR).find("input").keyup(function(e){
-		var keyCode = e.keyCode || e.which;
+		let keyCode = e.keyCode || e.which;
 		if (keyCode == 13) {
 		    inputFunc($(this));
 		}
@@ -8501,7 +8538,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 	    
 
-	    var dates = [];
+	    let dates = [];
 	    if(debug) console.log("checkSearchBar-getting filtered data");
 	    let filteredRecords  = this.filterData();
 	    if(debug) console.log("checkSearchBar-done getting filtered data");
@@ -8509,7 +8546,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(debug) console.log("checkSearchBar-11");
             if (dateInfo.dateMax) {
 		if(debug) console.log("checkSearchBar-getAnimation");
-		var animation = this.getAnimation();
+		let animation = this.getAnimation();
 		if(animation.getEnabled()) {
 		    if(debug) console.log("checkSearchBar-calling animation.init");
 //		    console.log("dateMin:" + dateMin.toUTCString());
@@ -8535,7 +8572,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    dateMin = record.getDate();
 		    dateMax = record.getDate();
 		} else {
-		    var date = record.getDate();
+		    let date = record.getDate();
 		    if (date) {
 			dates.push(date);
 			if (date.getTime() < dateMin.getTime())
@@ -8553,9 +8590,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return this.getProperty("highlightColor", HIGHLIGHT_COLOR);
 	},
 	checkFilterField: function(f) {
-	    var min = f.attr("data-min");
-	    var max = f.attr("data-max");
-	    var value = f.val();
+	    let min = f.attr("data-min");
+	    let max = f.attr("data-max");
+	    let value = f.val();
 	    if(Utils.isDefined(min)) {
 		if(value != min) {
 		    f.css("background",TEXT_HIGHLIGHT_COLOR);
@@ -8639,14 +8676,41 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    records.forEach(r=>idToRecord[r.getId()] = r);	    
 	    return idToRecord;
 	},
+	makeTooltipClick: function(selector, records) {
+	    let tooltipClick = this.getProperty("tooltipClick");
+	    if(!tooltipClick) return;
+	    selector.css("cursor","pointer");
+	    let idToRecord = this.makeIdToRecords(records);
+	    let _this = this;
+	    selector.click(function() {
+		let record = idToRecord[$(this).attr(RECORD_ID)];
+		if(!record) return;
+		if(_this.tooltipDialog) {
+		    _this.tooltipDialog.remove();
+		    _this.tooltipDialog = null;
+		} 
+		let tt =  _this.getRecordHtml(record,null,tooltipClick);
+		tt = HU.div([STYLE,HU.css("width","500px")], tt);
+		_this.tooltipDialog =  HU.makeDialog({content:tt,anchor:$(this),
+						      draggable:true,header:true});
+		if(_this.getProperty("dialogListener"))
+		    _this.getProperty("dialogListener")(this, _this.tooltipDialog);
+	    });
+	},
+
 	//Make sure to set the title attribute on the elements
 	makeTooltips: function(selector, records, callback, tooltipArg,propagateHighlight) {		
+	    let tooltipClick = this.getProperty("tooltipClick");
+	    if(tooltipClick) {
+		this.makeTooltipClick(selector,records);
+		return;
+	    }
 	    if(!Utils.isDefined(propagateHighlight) || propagateHighlight==null)
 		propagateHighlight = this.getProperty("propagateEventRecordHighlight",false);
 	    if(!this.getProperty("showTooltips",true)) {
 		return;
 	    }
-	    var tooltip = tooltipArg || this.getProperty("tooltip");
+	    let tooltip = tooltipArg || this.getProperty("tooltip");
 	    if(tooltip==null) {
 		return;
 	    }
@@ -8712,7 +8776,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	makeRecordSelect: function(selector,idToRecords, callback) {
 	    let _this = this;
 	    selector.click(function(event){
-		var record = idToRecords[$(this).attr(RECORD_ID)];
+		let record = idToRecords[$(this).attr(RECORD_ID)];
 		if(!record) return;
 		if(callback) callback(record);
 		_this.propagateEventRecordSelection({select:true,record: record});
@@ -8724,7 +8788,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(!popupTemplate) return;
 	    let _this = this;
 	    selector.click(function(event){
-		var record = records[parseFloat($(this).attr(RECORD_INDEX))];
+		let record = records[parseFloat($(this).attr(RECORD_INDEX))];
 		if(!record) return;
 		if(callback) callback(record);
 		_this.propagateEventRecordSelection({select:true,record: record});
@@ -8738,7 +8802,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(!popupTemplate) return;
 	    let _this = this;
 	    HtmlUtils.hidePopupObject();
-	    var html =  _this.getRecordHtml(record,null,popupTemplate);
+	    let html =  _this.getRecordHtml(record,null,popupTemplate);
 	    html = HU.div([CLASS, "display-popup " + _this.getProperty("popupClass",""),STYLE, _this.getProperty("popupStyle","")],html);
 	    let popup = HtmlUtils.setPopupObject(HtmlUtils.getTooltip());
 	    popup.html(html);
@@ -9707,7 +9771,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         }
     });
 
-    var filter = this.getProperty(PROP_DISPLAY_FILTER);
+    let filter = this.getProperty(PROP_DISPLAY_FILTER);
     if (filter != null) {
         //semi-colon delimited list of filter definitions
         //display.filter="filtertype:params;filtertype:params;
@@ -12164,31 +12228,49 @@ function BoundsFilter(display, properties) {
 
 
 function RecordFilter(display,filterFieldId, properties) {
-    let filterField = display.getFieldById(null, filterFieldId);
-    RamaddaUtil.inherit(this, new BaseFilter(display, properties));
+    const ID_TEXT = "_text_";
     this.id = filterFieldId;
+    this.isText = this.id == ID_TEXT;
+    let fields;
+    if(this.isText) {
+	fields = display.getFieldsByType(null, "string");
+    } else {
+	let filterField = display.getFieldById(null, filterFieldId);
+	if(filterField)
+	    fields = [filterField];
+	else {
+	    console.log("Error: could not find filter field::" + filterFieldId);
+	    fields = [];
+	}
+    }
+    $.extend(this, new BaseFilter(display, properties));
+    this.getId = function() {
+	return this.id;
+    }
     let getAttr = (suffix,dflt)=>{
-	if(filterField==null) return dflt;
-	let key = filterField.getId()+"." + suffix;
+	let key = this.getId()+"." + suffix;
 	let v = display.getProperty(key,dflt);
 	return v;
     };
-	
-
-
+    let label = "";
+    if(this.isText)  {
+	label = getAttr("filterLabel","Text");
+    } else  {
+	label = getAttr("filterLabel",fields.length>0?fields[0].getLabel():"");
+    }
     $.extend(this, {
-	field: filterField,
+	fields: fields,
 	values:[],
 	hideFilterWidget: display.getProperty("hideFilterWidget",false, true),
 	displayType:getAttr("filterDisplay","menu"),
-	label:   getAttr("filterLabel",filterField?filterField.getLabel()+":":""),
+	label:   label,
 	suffix:  getAttr("filterSuffix",""),
 	depends: getAttr("filterDepends",null),
 	dateIds: [],
-	prefix:display.getProperty(this.id +".filterPrefix"),
-	suffix:display.getProperty(this.id +".filterSuffix"),
-	startsWith:display.getProperty(this.id +".filterStartsWith",false),
-	ops:Utils.split(display.getProperty(this.id +".filterOps"),";",true,true)
+	prefix:display.getProperty(this.getId() +".filterPrefix"),
+	suffix:display.getProperty(this.getId() +".filterSuffix"),
+	startsWith:display.getProperty(this.getId() +".filterStartsWith",false),
+	ops:Utils.split(display.getProperty(this.getId() +".filterOps"),";",true,true)
     });
 
 
@@ -12205,20 +12287,47 @@ function RecordFilter(display,filterFieldId, properties) {
 	this.ops = tmp;
     }
 
-
-    RamaddaUtil.defineMembers(this, {
-	
+    $.extend(this, {
 	toString:function() {
-	    return "filter:" + filterFieldId;
+	    return "filter:" + this.getId();
 	},
 	getField: function() {
-	    return this.field;
+	    return this.fields[0];
+	},
+	getFieldId: function() {
+	    return this.fields[0].getId();
+	},	
+	getLabel: function() {
+	    return this.label;
+	},
+
+	getValue: function(record) {
+	    if(this.fields.length==1) {
+		return record.getValue(this.fields[0].getIndex());
+	    } else {
+		let v = this.fields.reduce((acc,field)=>{
+		    return acc+=" " + record.getValue(field.getIndex());
+		},"");
+		return v;
+	    }
+	},
+	isFieldNumeric:function() {
+	    return this.getField().isNumeric();
+	},
+	isFieldEnumeration: function() {
+	    return this.getField().isFieldEnumeration();
+	},
+	isFieldMultiEnumeration: function() {
+	    return this.getField().isFieldMultiEnumeration();
+	},
+	getFieldType: function() {
+	    return this.getField().getType();
 	},
 	getFilterId: function(id) {
-	    return  this.display.getDomId("filterby_" + id);
+	    return  this.display.getDomId("filterby_" + (id||this.getId()));
 	},
 	isEnabled: function() {
-	    return this.field!=null;
+	    return this.isText || this.getField()!=null;
 	},
 	recordOk: function(display, record, values) {
             return true;
@@ -12230,18 +12339,21 @@ function RecordFilter(display,filterFieldId, properties) {
 	    return this.display.getPropertyFromUrl(key, dflt);
 	},	
 	prepareToFilter: function() {
+	    this.mySearch = null;
 	    if(this.depend) {
 		this.checkDependency();
 	    }
-	    if(!this.field) return;
+	    if(!this.isEnabled()) {
+		return;
+	    }
 	    //	    if (prefix) pattern = prefix + value;
 	    //	    if (suffix) pattern = value + suffix;
-	    var value=null;
-	    var _values =[];
-	    var values=null;
-	    var matchers =[];
+	    let value=null;
+	    let _values =[];
+	    let values=null;
+	    let matchers =[];
 	    if(this.ops) {
-		let v = $("#" + this.getFilterId(filterField.getId())).val();
+		let v = $("#" + this.getFilterId(this.getId())).val();
 		if(v==FILTER_ALL) {
 		    this.mySearch = null;
 		    return;
@@ -12250,20 +12362,20 @@ function RecordFilter(display,filterFieldId, properties) {
 		    index: parseFloat(v)
 		};
 		return;
-	    } else  if(this.field.isNumeric()) {
-		var minField = $("#" + this.display.getDomId("filterby_" + this.field.getId()+"_min"));
-		var maxField = $("#" + this.display.getDomId("filterby_" + this.field.getId()+"_max"));
+	    } else  if(this.isFieldNumeric()) {
+		let minField = $("#" + this.display.getDomId("filterby_" + this.getId()+"_min"));
+		let maxField = $("#" + this.display.getDomId("filterby_" + this.getId()+"_max"));
 		if(!minField.val() || !maxField.val()) return;
-		var minValue = parseFloat(minField.val().trim());
-		var maxValue = parseFloat(maxField.val().trim());
-		var dfltMinValue = parseFloat(minField.attr("data-min"));
-		var dfltMaxValue = parseFloat(maxField.attr("data-max"));
+		let minValue = parseFloat(minField.val().trim());
+		let maxValue = parseFloat(maxField.val().trim());
+		let dfltMinValue = parseFloat(minField.attr("data-min"));
+		let dfltMaxValue = parseFloat(maxField.attr("data-max"));
 		if(minValue!= dfltMinValue || maxValue!= dfltMaxValue) {
 		    value = [minValue,maxValue];
 		}
- 	    } else if(this.field.getType()=="date"){
-		var date1 = $("#" + this.display.getDomId("filterby_" + this.field.getId()+"_date1")).val();
-		var date2 = $("#" + this.display.getDomId("filterby_" + this.field.getId()+"_date2")).val();
+ 	    } else if(this.getFieldType()=="date"){
+		let date1 = $("#" + this.display.getDomId("filterby_" + this.getId()+"_date1")).val();
+		let date2 = $("#" + this.display.getDomId("filterby_" + this.getId()+"_date2")).val();
 		if(date1!=null && date1.trim()!="") 
 		    date1 =  Utils.parseDate(date1);
 		else
@@ -12276,21 +12388,20 @@ function RecordFilter(display,filterFieldId, properties) {
 		    value = [date1,date2]; 
 	    }  else {
 		values = this.getFieldValues();
-		if(!values && !Array.isArray(values)) values = [values];
+		if(!values) return;
+		if(!Array.isArray(values)) values = [values];
 		if(values.length==0) return;
-		var tmp = [];
-		values.map(v=>{
-		    tmp.push(v.replace(/_comma_/g,","));
+		values = values.map(v=>{
+		    return v.replace(/_comma_/g,",");
 		});
-		values = tmp;
-		values.map(v=>{
+		values.forEach(v=>{
 		    _values.push((""+v).toLowerCase());
 		    try {
 			matchers.push(new TextMatcher(v));
 		    } catch(skipIt){}
 		});
 	    }
-	    var anyValues = value!=null;
+	    let anyValues = value!=null;
 	    if(!anyValues && values) {
 		values.forEach(v=>{if(v.length>0 && v!= FILTER_ALL)anyValues = true});
 	    }
@@ -12305,14 +12416,16 @@ function RecordFilter(display,filterFieldId, properties) {
 	    } else {
 		this.mySearch = null;
 	    }
+//	    console.log(this +"prepare:" + JSON.stringify(this.mySearch));
 	},
 	isRecordOk:function(record,debug) {
 	    let ok = true;
 	    if(!this.isEnabled() || !this.mySearch) {
+		if(debug) console.log("\tfilter  enabled:" + this.isEnabled() +" mySearch:" + JSON.stringify(this.mySearch));
 		return ok;
 	    }
-	    var rowValue = record.getValue(this.field.getIndex());
-	    let filterField = this.field;
+	    if(debug) console.log("\tfilter.isRecordOk:" + JSON.stringify(this.mySearch));
+	    let rowValue = this.getValue(record);
 	    if(this.ops) {
 		let op = this.ops[this.mySearch.index];
 		if(op.op=="<") ok =  rowValue<op.value;
@@ -12320,12 +12433,13 @@ function RecordFilter(display,filterFieldId, properties) {
 		else if(op.op==">") ok= rowValue>op.value;
 		else if(op.op==">=") ok= rowValue>=op.value;
 		else if(op.op=="==") ok= rowValue==op.value;				
-	    } else   if(filterField.isFieldEnumeration()) {
+	    } else   if(this.isFieldEnumeration()) {
 		rowValue=String(rowValue);
-		if(filterField.isFieldMultiEnumeration()) {
-		    ok = false;
+		if(this.isFieldMultiEnumeration()) {
+ 		    ok = false;
 		    let values = rowValue.split(",");
 		    values.forEach(value=>{
+			value=value.trim();
 			if(this.mySearch.values.includes(value)) ok = true;
 		    });
 //		    console.log(this.mySearch.values);
@@ -12333,18 +12447,18 @@ function RecordFilter(display,filterFieldId, properties) {
 		} else {
 		    ok = this.mySearch.values.includes(rowValue);
 		}
-	    } else if(filterField.isNumeric()) {
+	    } else if(this.isFieldNumeric()) {
 		if(isNaN(this.mySearch.value[0]) && isNaN(this.mySearch.value[0])) return ok;
 		if(!isNaN(this.mySearch.value[0]) && rowValue<this.mySearch.value[0]) ok = false;
 		else if(!isNaN(this.mySearch.value[1]) && rowValue>this.mySearch.value[1]) ok = false;
-	    } else if(filterField.getType()=="date"){
+	    } else if(this.getFieldType()=="date"){
 		if(this.mySearch.value &&  Array.isArray(this.mySearch.value)) {
 		    if(rowValue == null) {
 			ok = false;
 		    }  else  {
-			var date1 = this.mySearch.value[0];
-			var date2 = this.mySearch.value[1];
-			var dttm = rowValue.getTime();
+			let date1 = this.mySearch.value[0];
+			let date2 = this.mySearch.value[1];
+			let dttm = rowValue.getTime();
 			if(isNaN(dttm)) ok = false;
 			else if(date1 && dttm<date1.getTime())
 			    ok = false;
@@ -12353,12 +12467,12 @@ function RecordFilter(display,filterFieldId, properties) {
 		    }
 		}
 	    } else {
-		var startsWith = this.startsWith;
+		let startsWith = this.startsWith;
 		ok = false;
-		roWValue  = String(rowValue).toLowerCase();
+		rowValue  = String(rowValue).toLowerCase();
 
-		for(var j=0;j<this.mySearch._values.length;j++) {
-		    var fv = this.mySearch._values[j];
+		for(let j=0;j<this.mySearch._values.length;j++) {
+		    let fv = this.mySearch._values[j];
 		    if(startsWith) {
 			if(rowValue.toString().startsWith(fv)) {
 			    ok = true;
@@ -12372,7 +12486,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		
 		if(!ok && !startsWith) {
 		    for(ri=0;ri<this.mySearch.matchers.length;ri++) {
-			var matcher = this.mySearch.matchers[ri];
+			let matcher = this.mySearch.matchers[ri];
 			if(matcher.matches(rowValue.toString())) {
 			    ok = true;
 			    break;
@@ -12384,8 +12498,13 @@ function RecordFilter(display,filterFieldId, properties) {
 	},
 
 	getFieldValues: function() {
-	    var element =$("#" + this.display.getDomId("filterby_" + this.field.getId()));
-	    var value=null;
+	    if(this.isFieldEnumeration()) {
+		if(this.getProperty(this.getId()+".showFilterTags") || this.getProperty("showFilterTags")) {
+		    return this.selectedTags ||[];
+		}
+	    }
+	    let element =$("#" + this.display.getDomId("filterby_" + this.getId()));
+	    let value=null;
 	    if(element.attr("isCheckbox")) {
 		if(element.is(':checked')) {
 		    value = element.attr("onValue");
@@ -12402,24 +12521,84 @@ function RecordFilter(display,filterFieldId, properties) {
 		else value = FILTER_ALL;
 	    }
 	    if(!Array.isArray(value)) {
-		if(!this.field.isFieldEnumeration()) {
+		if(!this.isFieldEnumeration()) {
 		    value = value.split(",");
 		} else {
 		    value = [value];
 		}
 	    }
-	    var tmp = [];
+	    let tmp = [];
 	    value.forEach(v=>tmp.push(v.trim()));
 	    value = tmp;
-	    //	    console.log(this.type +".getFilterFieldValues:" + Array.isArray(value) +" " + value.length +" " +value);
 	    return value;
 	},
+	toggleTag:function(value,on,cbx) {
+	    let _this = this;
+	    let type  = this.getFilterId();
+	    let tagId = Utils.makeId(type +"_" +  value);
+
+	    if(on) {
+		this.selectedTags = Utils.addUnique(this.selectedTags,value);
+		let tagGroup = this.display.jq(ID_TAGBAR).find(".tag-group" +HU.attrSelect("tag-type",this.getFilterId()));
+		if(tagGroup.length==0) {
+		    let bar;
+		    if(this.display.getProperty("tagDiv"))
+			bar= $("#"+this.display.getProperty("tagDiv"));
+		    else
+			bar= this.display.jq(ID_TAGBAR);
+		    tagGroup = $(HU.div([STYLE,HU.css("display","inline-block"), CLASS,"tag-group","tag-type",this.getFilterId()])).appendTo(bar);
+		}
+		
+		let tag = $(HU.div(["metadata-type",type,"metadata-value",value,TITLE,value, STYLE, HU.css("background", Utils.getEnumColor(this.getFieldId())),CLASS,"display-search-tag", ID,tagId],value+SPACE +HU.getIconImage("fas fa-times"))).appendTo(tagGroup);
+		tag.click(function(){
+		    _this.selectedTags = Utils.removeElement(_this.selectedTags,value);
+		    if(cbx)
+			cbx.prop('checked',false);
+		    $(this).remove();
+		    _this.inputFunc(_this.fakeInput,null,_this.selectedTags);
+		});
+	    } else {
+		this.selectedTags = Utils.removeElement(this.selectedTags,value);
+		$("#" + tagId).remove();
+	    }
+	},
+	    
 	initWidget: function(inputFunc) {
+	    this.inputFunc = inputFunc;
+	    this.fakeInput  = {
+		attr:function(key) {
+		    return this[key];
+		},
+		val: function() {return null},
+		id: this.getId(),
+		fieldId:this.getFieldId()
+	    };
+
 	    this.initDateWidget(inputFunc);
+//	    this.display.selectboxit($("#" + this.widgetId));
+	    if(this.tagCbxs) {
+		let _this = this;
+		let cbxChange = function() {
+        	    let cbx = $(this);
+	            let on = cbx.is(':checked');
+		    let value  = $(this).attr("metadata-value");
+		    _this.toggleTag(value,on,cbx);
+		    inputFunc(_this.fakeInput,null,_this.selectedTags);
+		}
+		let clickId = this.getFilterId()+"_popup";
+		$("#" + clickId).click(()=>{
+		    let dialog = this.display.createTagDialog(this.tagCbxs, $("#" + clickId), cbxChange, this.getFilterId(),this.getLabel());
+		    dialog.find(".metadata-cbx").each(function() {
+			let value = $(this).attr('metadata-value');
+			$(this).prop('checked',_this.selectedTags.includes(value));
+		    });
+		});
+	    }
+
 	},
 	initDateWidget: function(inputFunc) {
 	    if(!this.hideFilterWidget) {
-		for(var i=0;i<this.dateIds.length;i++) {
+		for(let i=0;i<this.dateIds.length;i++) {
 		    let id = this.dateIds[i];
 		    HtmlUtils.datePickerInit(id);
 		    $("#" + id).change(function(){
@@ -12443,7 +12622,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		if(equals) return;
 	    }
             let enums = this.getEnums(this.records);
-	    let widgetId = this.getFilterId(filterField.getId());
+	    let widgetId = this.getFilterId(this.getId());
 	    let tmp = [];
 	    enums.map(e=>tmp.push(e.value));
 	    this.display.ignoreFilterChange = true;
@@ -12453,7 +12632,38 @@ function RecordFilter(display,filterFieldId, properties) {
 	    widget.html(HU.makeOptions(tmp,val));
 	    this.display.ignoreFilterChange = false;
 	},
-	getWidget: function(fieldMap, bottom,records) {
+	handleEventPropertyChanged:function(prop) {
+	    if(this.isFieldEnumeration() && (this.getProperty(this.getId()+".showFilterTags") || this.getProperty("showFilterTags"))) {
+		if(this.selectedTags) {
+		    let type  = this.getFilterId();
+		    this.selectedTags.forEach(value=>{
+			let tagId = Utils.makeId(type +"_" +  value);	
+			$("#" + tagId).remove();
+		    });
+		}
+		this.selectedTags = [];
+		prop.value.forEach(value=>{
+		    this.toggleTag(value,true);
+		});
+		return;
+	    }
+		    
+
+
+	    let widget = $("#"+this.widgetId);
+	    if(widget.attr("isCheckbox")) {
+		let on = widget.attr("onValue");
+		widget.prop('checked',prop.value.includes(on));
+	    } else {
+		widget.val(prop.value);
+	    }
+	    widget.attr("data-value",prop.value);
+	    if(widget.attr("isButton")) {
+		widget.find(".display-filter-button").removeClass("display-filter-button-selected");
+		widget.find("[value='" + prop.value +"']").addClass("display-filter-button-selected");
+	    }
+	},
+	getWidget: function(fieldMap, bottom,records, vertical) {
 	    this.records = records;
 	    let debug = false;
 	    if(debug) console.log(this.id +".getWidget");
@@ -12464,50 +12674,53 @@ function RecordFilter(display,filterFieldId, properties) {
 	    let widgetStyle = "";
 	    if(this.hideFilterWidget)
 		widgetStyle = "display:none;";
-	    let filterField = this.field;
-	    fieldMap[filterField.getId()] = {
-		field: filterField,
+	    fieldMap[this.getId()] = {
+		field: this.fields[0],
 		values:[],
 	    };
+	    let showLabel = true;
             let widget;
-	    let widgetId = this.widgetId = this.getFilterId(filterField.getId());
+	    let widgetId = this.widgetId = this.getFilterId(this.getId());
+	    let widgetLabel =   this.getProperty(this.getId()+".filterLabel",this.getLabel());
+	    let suffix =   this.getProperty(this.getId()+".filterSuffix","");
+
             if(this.ops) {
 		let labels =[];
 		this.ops.forEach((op,idx)=>{
 		    labels.push([String(idx),op.label]);
 		});
 
-		let selected = this.getPropertyFromUrl(filterField.getId() +".filterValue",FILTER_ALL);
-		let showLabel = this.getProperty(filterField.getId() +".showFilterLabel",this.getProperty("showFilterLabel",true));
-		let allName = this.getProperty(filterField.getId() +".allName",!showLabel?filterField.getLabel():"All");
+		let selected = this.getPropertyFromUrl(this.getId() +".filterValue",FILTER_ALL);
+		let showLabel = this.getProperty(this.getId() +".showFilterLabel",this.getProperty("showFilterLabel",true));
+		let allName = this.getProperty(this.getId() +".allName",!showLabel?this.getLabel():"All");
 		let enums = Utils.mergeLists([[FILTER_ALL,allName]],labels);
-		let attrs= [STYLE,widgetStyle, ID,widgetId,"fieldId",filterField.getId()];
+		let attrs= [STYLE,widgetStyle, ID,widgetId,"fieldId",this.getId()];
 		widget = HU.select("",attrs,enums,selected);
-	    } else   if(filterField.isFieldEnumeration()) {
+	    } else   if(this.isFieldEnumeration()) {
 		if(debug) console.log("\tis enumeration");
-		let dfltValue = this.defaultValue = this.getPropertyFromUrl(filterField.getId() +".filterValue",FILTER_ALL);
+		let dfltValue = this.defaultValue = this.getPropertyFromUrl(this.getId() +".filterValue",FILTER_ALL);
                 let enums = this.getEnums(records);
-		let attrs= ["style",widgetStyle, "id",widgetId,"fieldId",filterField.getId()];
-		if(this.getProperty(filterField.getId() +".filterMultiple",false)) {
+		let attrs= ["style",widgetStyle, "id",widgetId,"fieldId",this.getId()];
+		if(this.getProperty(this.getId() +".filterMultiple",false)) {
 		    attrs.push("multiple");
 		    attrs.push("");
 		    attrs.push("size");
-		    attrs.push(this.getProperty(filterField.getId() +".filterMultipleSize","3"));
+		    attrs.push(this.getProperty(this.getId() +".filterMultipleSize","3"));
 		    dfltValue = dfltValue.split(",");
 		}
 
 		if(this.displayType!="menu") {
 		    if(debug) console.log("\tnot menu");
-		    let includeAll = this.getProperty(filterField.getId() +".includeAll",this.getProperty("filter.includeAll", true));
+		    let includeAll = this.getProperty(this.getId() +".includeAll",this.getProperty("filter.includeAll", true));
 		    if(!includeAll && dfltValue == FILTER_ALL) dfltValue = enums[0].value;
 		    let buttons = "";
-		    let colorMap = Utils.parseMap(this.getProperty(filterField.getId() +".filterColorByMap"));
+		    let colorMap = Utils.parseMap(this.getProperty(this.getId() +".filterColorByMap"));
 		    let useImage = this.displayType == "image";
 		    let imageAttrs = [];
-		    let imageMap = Utils.getNameValue(this.getProperty(filterField.getId() +".filterImages"));
+		    let imageMap = Utils.getNameValue(this.getProperty(this.getId() +".filterImages"));
 		    if(useImage) {
-			let w = this.getProperty(filterField.getId() +".filterImageWidth");
-			let h = this.getProperty(filterField.getId() +".filterImageHeight");
+			let w = this.getProperty(this.getId() +".filterImageWidth");
+			let h = this.getProperty(this.getId() +".filterImageHeight");
 			if(h) {
 			    imageAttrs.push("height");
 			    imageAttrs.push(h);
@@ -12522,13 +12735,13 @@ function RecordFilter(display,filterFieldId, properties) {
 			}
 			
 			imageAttrs.push("style");
-			imageAttrs.push(this.getProperty(filterField.getId() +".filterImageStyle","border-radius:50%;"));
+			imageAttrs.push(this.getProperty(this.getId() +".filterImageStyle","border-radius:50%;"));
 		    }
 		    for(let j=0;j<enums.length;j++) {
-			var extra = "";
-			var v = enums[j].value;
-			var color = colorMap?colorMap[v]:null;
-			var label;
+			let extra = "";
+			let v = enums[j].value;
+			let color = colorMap?colorMap[v]:null;
+			let label;
 			if(Array.isArray(v)) {
 			    label = v[1];
 			    v = v[0];
@@ -12536,49 +12749,48 @@ function RecordFilter(display,filterFieldId, properties) {
 			    label = v;
 			}
 
-			var style = this.getProperty(filterField.getId() +".filterItemStyle","");
+			let style = this.getProperty(this.getId() +".filterItemStyle","");
 			if(color) {
 			    style += " background-color:" + color +"; ";
 			}
 			
-			var clazz = " display-filter-item display-filter-item-" + this.displayType +" ";
+			let clazz = " display-filter-item display-filter-item-" + this.displayType +" ";
 			if(v == dfltValue) {
 			    clazz+=  " display-filter-item-" + this.displayType +"-selected ";
-			} else {
 			}
 			if(v == FILTER_ALL) {
 			    extra = " display-filter-item-all ";
 			}
 			if(useImage) {
-			    var image=null;
+			    let image=null;
 			    if(imageMap) image = imageMap[v];
 			    if(!image || image=="") image = enums[j].image;
 			    if(image) {
-				buttons+=HtmlUtils.div(["fieldId",filterField.getId(),"class",clazz,"style",style, "data-value",v,"title",label],
+				buttons+=HtmlUtils.div(["fieldId",this.getId(),"class",clazz,"style",style, "data-value",v,"title",label],
 						       HtmlUtils.image(image,imageAttrs));
 			    } else {
-				buttons+=HtmlUtils.div(["fieldId",filterField.getId(),"class",clazz,"style",style,"data-value",v,"title",label],label);
+				buttons+=HtmlUtils.div(["fieldId",this.getId(),"class",clazz,"style",style,"data-value",v,"title",label],label);
 			    }
 			} else {
-			    buttons+=HtmlUtils.div(["fieldId",filterField.getId(),"class",clazz, "style",style,"data-value",v],label);
+			    buttons+=HtmlUtils.div(["fieldId",this.getId(),"class",clazz, "style",style,"data-value",v],label);
 			}
 			buttons+="\n";
 		    }
 
-		    if(useImage && this.getProperty(filterField.getId() +".filterShowButtonsLabel")) {
-			buttons+=HtmlUtils.div(["class","display-filter-item-label","id",this.display.getDomId("filterby_" + filterField.getId() +"_label")],"&nbsp;");
+		    if(useImage && this.getProperty(this.getId() +".filterShowButtonsLabel")) {
+			buttons+=HtmlUtils.div(["class","display-filter-item-label","id",this.display.getDomId("filterby_" + this.getId() +"_label")],"&nbsp;");
 		    }
 		    bottom[0]+= HtmlUtils.div(["data-value",dfltValue,"class","display-filter-items","id",widgetId,"isButton","true", "fieldId",
-					       filterField.getId()], buttons);
+					       this.getId()], buttons);
 		    if(debug) console.log("\treturn 1");
 		    return "";
-		} else if(this.getProperty(filterField.getId() +".filterCheckbox")) {
+		} else if(this.getProperty(this.getId() +".filterCheckbox")) {
 		    if(debug) console.log("\tis checkbox");
 		    attrs.push("isCheckbox");
 		    attrs.push(true);
-		    var tmp = [];
+		    let tmp = [];
 		    enums.map(e=>tmp.push(e.value));
-		    var checked = tmp.includes(dfltValue);
+		    let checked = tmp.includes(dfltValue);
 		    if(tmp.length>0) {
 			attrs.push("onValue");
 			attrs.push(tmp[0]);
@@ -12589,10 +12801,36 @@ function RecordFilter(display,filterFieldId, properties) {
 		    }
 		    widget = HtmlUtils.checkbox("",attrs,checked);
 		    //			    console.log(widget);
+		} else if(this.getProperty(this.getId()+".showFilterTags") || this.getProperty("showFilterTags")) {
+		    showLabel  =false;
+		    let cbxs = [];
+		    this.tagToCbx = {};
+		    this.selectedTags = [];
+		    enums.map((e,idx)=>{
+			let count  = e.count;
+			let value = e.value;
+			let label = value;
+			if(Array.isArray(value)) {
+			    value = e.value[0];
+			    label = e.value[1];
+			    if(value == "")
+				label = "-blank-";
+			}
+			let showCount  = true;
+			if(count) label = label +(showCount?" (" + count+")":"");
+			let cbxId = this.getFilterId() +"_cbx_" + idx;
+			this.tagToCbx[value] = cbxId;
+			let cbx = HU.checkbox("",[CLASS,"metadata-cbx",ID,cbxId,"metadata-type",this.getFilterId(),"metadata-value",value],false) +" " + HU.tag( "label",  [CLASS,"ramadda-noselect ramadda-clickable","for",cbxId],label);
+			cbx = HU.span([CLASS,'display-search-tag','tag',label,STYLE, HU.css("background", Utils.getEnumColor(this.getFieldId()))], cbx);
+			cbxs.push(cbx);
+		    }); 
+		    this.tagCbxs  = cbxs;
+		    let clickId = this.getFilterId()+"_popup";
+		    widget= HU.div([STYLE, HU.css("border","1px solid #ccc",  "margin-top","6px","padding-right","5px",  "background", Utils.getEnumColor(this.getFieldId())), TITLE,"Click to select tag", ID,clickId,CLASS,"ramadda-clickable entry-toggleblock-label"], HU.makeToggleImage("fas fa-plus","font-size:8pt;") +" " +this.getLabel()+" ("+ cbxs.length+")");   
 		} else {
 		    if(debug) console.log("\tis select");
 		    let tmp = [];
-		    let showCount = this.getProperty(filterField.getId()+".filterShowCount",this.getProperty("filterShowCount",true));
+		    let showCount = this.getProperty(this.getId()+".filterShowCount",this.getProperty("filterShowCount",true));
 		    enums.map(e=>{
 			let count  = e.count;
 			let v = e.value;
@@ -12607,18 +12845,14 @@ function RecordFilter(display,filterFieldId, properties) {
 			tmp.push([v,label]);
 		    }); 
                     widget = HtmlUtils.select("",attrs,tmp,dfltValue);
-//Don't think we need this as the label gets set later on
-//		    if(this.getProperty(filterField.getId() +".filterLabel")) {
-//			widget=HU.vbox([this.getProperty(filterField.getId() +".filterLabel"),widget]);
-//		    }
 		}
-	    } else if(filterField.isNumeric()) {
+	    } else if(this.isFieldNumeric()) {
 		if(debug) console.log("\tis numeric");
-		var min=0;
-		var max=0;
-		var cnt=0;
+		let min=0;
+		let max=0;
+		let cnt=0;
 		records.map(record=>{
-		    var value = this.display.getDataValues(record)[filterField.getIndex()];
+		    let value = this.getValue(record);
 		    if(isNaN(value))return;
 		    if(cnt==0) {min=value;max=value;}
 		    else {
@@ -12627,8 +12861,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		    }
 		    cnt++;
 		});
-		let tmpMin = this.getPropertyFromUrl(filterField.getId() +".filterValueMin",this.getProperty("filterValueMin"));
-		let tmpMax = this.getPropertyFromUrl(filterField.getId() +".filterValueMax",this.getProperty("filterValueMax"));		
+		let tmpMin = this.getPropertyFromUrl(this.getId() +".filterValueMin",this.getProperty("filterValueMin"));
+		let tmpMax = this.getPropertyFromUrl(this.getId() +".filterValueMax",this.getProperty("filterValueMax"));		
 		let minStyle = "";
 		let maxStyle = "";
 		let dfltValueMin = min;
@@ -12643,71 +12877,80 @@ function RecordFilter(display,filterFieldId, properties) {
 		}
 
 
-                widget = HtmlUtils.input("",dfltValueMin,[STYLE,minStyle,"data-min",min,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_min","size",3,"fieldId",filterField.getId()]);
+                widget = HtmlUtils.input("",dfltValueMin,[STYLE,minStyle,"data-min",min,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_min","size",3,"fieldId",this.getId()]);
 		widget += "-";
-                widget += HtmlUtils.input("",dfltValueMax,[STYLE,maxStyle,"data-max",max,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_max","size",3,"fieldId",filterField.getId()]);
-	    } else if(filterField.getType() == "date") {
-                widget =HtmlUtils.datePicker("","",["class","display-filter-input","style",widgetStyle, "id",widgetId+"_date1","fieldId",filterField.getId()]) +"-" +
-		    HtmlUtils.datePicker("","",["class","display-filter-input","style",widgetStyle, "id",widgetId+"_date2","fieldId",filterField.getId()]);
+                widget += HtmlUtils.input("",dfltValueMax,[STYLE,maxStyle,"data-max",max,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_max","size",3,"fieldId",this.getId()]);
+	    } else if(this.getFieldType() == "date") {
+                widget =HtmlUtils.datePicker("","",["class","display-filter-input","style",widgetStyle, "id",widgetId+"_date1","fieldId",this.getId()]) +"-" +
+		    HtmlUtils.datePicker("","",["class","display-filter-input","style",widgetStyle, "id",widgetId+"_date2","fieldId",this.getId()]);
 		this.dateIds.push(widgetId+"_date1");
 		this.dateIds.push(widgetId+"_date2");
             } else {
-
-		var dfltValue = this.getPropertyFromUrl(filterField.getId() +".filterValue","");
-		var attrs =["style",widgetStyle, "id",widgetId,"fieldId",filterField.getId(),"class","display-filter-input"];
-		var placeholder = this.getProperty(filterField.getId() +".filterPlaceholder");
+		let dfltValue = this.getPropertyFromUrl(this.getId() +".filterValue","");
+		let width = this.getProperty(this.getId() +".filterWidth","150px");		
+		let attrs =[STYLE,widgetStyle+"width:" + HU.getDimension(width), "id",widgetId,"fieldId",this.getId(),"class","display-filter-input"];
+		let placeholder = this.getProperty(this.getId() +".filterPlaceholder");
+		attrs.push("width");
+		attrs.push(width);
 		if(placeholder) {
 		    attrs.push("placeholder");
 		    attrs.push(placeholder);
+		} else {
+		    showLabel = false;
+		    attrs.push("placeholder");
+		    attrs.push(widgetLabel);
 		}
 
                 widget =HtmlUtils.input("",dfltValue,attrs);
-		var values=fieldMap[filterField.getId()].values;
-		var seen = {};
+		let values=fieldMap[this.getId()].values;
+		let seen = {};
 		records.map(record=>{
-		    var value = this.display.getDataValues(record)[filterField.getIndex()];
+		    let value = this.getValue(record);
 		    if(!seen[value]) {
 			seen[value] = true;
 			values.push(value);
 		    }	
 		});
             }
-	    var label =   this.getProperty(filterField.getId()+".filterLabel",filterField.getLabel()+":");
-	    var suffix =   this.getProperty(filterField.getId()+".filterSuffix","");
 	    if(!this.hideFilterWidget) {
-		var tt = label;
-		if(label.length>50) label = label.substring(0,49)+"...";
-		if(!this.getProperty(filterField.getId() +".showFilterLabel",this.getProperty("showFilterLabel",true))) {
-		    label = "";
+		let tt = widgetLabel;
+		if(widgetLabel.length>50) widgetLabel = widgetLabel.substring(0,49)+"...";
+		if(!this.getProperty(this.getId() +".showFilterLabel",this.getProperty("showFilterLabel",true))) {
+		    widgetLabel = "";
 		}
 		else
-		    label = label+" ";
-		let vertical = this.getProperty(filterField.getId()+".filterVertical",false)  || this.getProperty("filterVertical",false);
-
-
-		label = this.display.makeFilterLabel(label,tt);
-		widget = HtmlUtils.div(["style","display:inline-block;"],label + (vertical?"<br>":"") + widget+suffix);
+		    widgetLabel = widgetLabel+" ";
+		widgetLabel+=":";
+		let vert = vertical || this.getProperty(this.getId()+".filterVertical",false)  || this.getProperty("filterVertical",false);
+		widgetLabel = this.display.makeFilterLabel(widgetLabel,tt);
+		if(vert) {
+		    widget = HtmlUtils.div([],(showLabel?widgetLabel:"") + widget+suffix);
+		} else {
+		    widget = HtmlUtils.div(["style","display:inline-block;"],(showLabel?widgetLabel:"") + widget+suffix);
+		}
 	    }
-            widget= widget +(this.hideFilterWidget?"":"&nbsp;&nbsp;");
+	    if(!vertical)
+		widget= widget +(this.hideFilterWidget?"":"&nbsp;&nbsp;");
 	    return widget;
 	},
 	getEnums: function(records) {
 	    let counts = {};
-	    let isMulti  = filterField.isFieldMultiEnumeration();
+	    let isMulti  = this.isFieldMultiEnumeration();
 	    records.forEach((record,idx)=>{
-		let value = record.getValue(filterField.getIndex());
+		let value = this.getValue(record);
 		if(!value) return;
 		value = String(value);
 		let values = isMulti?value.split(","):[value];
 		values.forEach(v=>{
+		    v =v.trim ();
 		    if(!counts[v]) counts[v]=1;
 		    else   counts[v]++;
 		});
 	    });
 
 	    let enums = null;
-	    let filterValues = this.getProperty(filterField.getId()+".filterValues");
-	    let showLabel = this.getProperty(filterField.getId() +".showFilterLabel",this.getProperty("showFilterLabel",true));
+	    let filterValues = this.getProperty(this.getId()+".filterValues");
+	    let showLabel = this.getProperty(this.getId() +".showFilterLabel",this.getProperty("showFilterLabel",true));
 
 	    if (filterValues) {
 		let toks;
@@ -12723,7 +12966,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		    if(tmp.length>1) {
 			tok = [tmp[0],tmp[1]];
 		    } else if(tok == FILTER_ALL) {
-			let allName = this.getProperty(filterField.getId() +".allName",!showLabel?filterField.getLabel():"All");
+			let allName = this.getProperty(this.getId() +".allName",!showLabel?this.getLabel():"All");
 			tok = [tmp[0],allName];
 		    } else {
 			tok = [tok,tok];
@@ -12732,19 +12975,19 @@ function RecordFilter(display,filterFieldId, properties) {
 		    enums.push({value:tok,count:count});
 		})
 	    }
-	    let includeAll = this.getProperty(filterField.getId() +".includeAll",this.getProperty("filter.includeAll", true));
+	    let includeAll = this.getProperty(this.getId() +".includeAll",this.getProperty("filter.includeAll", true));
 	    if(enums == null) {
-		let depend = this.getProperty(filterField.getId() +".depends");
+		let depend = this.getProperty(this.getId() +".depends");
 		if(depend) {
 		    depend=this.depend = this.display.getRecordFilter(depend);
 		}
-		let allName = this.getProperty(filterField.getId() +".allName",!showLabel?filterField.getLabel():"All");
+		let allName = this.getProperty(this.getId() +".allName",!showLabel?this.getLabel():"All");
 		enums = [];
-		if(includeAll && !this.getProperty(filterField.getId() +".filterLabel")) {
+		if(includeAll && !this.getProperty(this.getId() +".filterLabel")) {
 		    enums.push({value:[FILTER_ALL,allName]});
 		}
 		let seen = {};
-		let dflt = filterField.getEnumeratedValues();
+		let dflt = this.getField().getEnumeratedValues();
 		if(dflt) {
 		    for(let v in dflt) {
 			seen[v] = true;
@@ -12766,10 +13009,10 @@ function RecordFilter(display,filterFieldId, properties) {
 		    if(depend) {
 			if(!depend.isRecordOk(record,idx<5)) return;
 		    }
-		    let value = this.display.getDataValues(record)[filterField.getIndex()];
+		    let value =this.getValue(record);
 		    let values;
 		    if(isMulti) {
-			values = value.split(",");
+			values = value.split(",").map(v=>{return v.trim();});
 		    } else {
 			values = [value];
 		    }
@@ -12793,8 +13036,8 @@ function RecordFilter(display,filterFieldId, properties) {
 			enumValues.push(obj);
 		    });
 		});
-		if(this.getProperty(filterField.getId() +".filterSort",true)) {
-		    let sortCount = this.getProperty(filterField.getId() +".filterSortCount",true);
+		if(this.getProperty(this.getId() +".filterSort",true)) {
+		    let sortCount = this.getProperty(this.getId() +".filterSortCount",true);
 		    enumValues.sort((a,b)  =>{
 			if(sortCount && a.count && b.count) {
 			    if(b.count!=a.count)
@@ -12834,8 +13077,8 @@ function MonthFilter(param) {
 
         recordOk: function(display, record, values) {
             for (i in this.months) {
-                var month = this.months[i];
-                var date = record.getDate();
+                let month = this.months[i];
+                let date = record.getDate();
                 if (date == null) return false;
                 if (date.getMonth == null) {
                     //console.log("bad date:" + date);
@@ -13385,10 +13628,6 @@ function CsvUtil() {
 		newFields.push(newField);
 	    });
 	    let keyFields =  this.display.getFieldsByIds(fields, (args.keyFields||"").replace(/_comma_/g,","));
-//	    newFields.forEach((f,fieldIdx)=>{
-//		if(fieldIdx>3) return;
-//		console.log("F:" + f.getLabel() +" " + f.index);
-//	    });
 	    records.forEach((record, rowIdx)=>{
 		let data = [];
 		let newRecord = record.clone();
@@ -19189,28 +19428,16 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    this.makeTooltips(blocks,displayedRecords);
 	    if(!doPopup) {
 		let _this = this;
-		blocks.click(function() {
-		    let record = _this.idToRecord[$(this).attr(RECORD_ID)];
-		    if(tooltipClick) {
-			if(_this.tooltipDialog) {
-			    _this.tooltipDialog.remove();
-			    _this.tooltipDialog = null;
-			} 
+		if(tooltipClick) {
+		    this.makeTooltipClick(blocks, records);
+		} else {
+		    blocks.click(function() {
+			let record = _this.idToRecord[$(this).attr(RECORD_ID)];
 			if(record) {
-			    let tt =  _this.getRecordHtml(record,null,tooltipClick);
-			    tt = HU.div([STYLE,HU.css()], tt);
-			    _this.tooltipDialog =  HU.makeDialog({content:tt,anchor:$(this),
-								  draggable:true,header:true});
-			    if(_this.getProperty("dialogListener"))
-				_this.getProperty("dialogListener")(this, _this.tooltipDialog);
-
+			    _this.propagateEventRecordSelection({record: record});
 			}
-
-		    }
-		    if(record) {
-			_this.propagateEventRecordSelection({record: record});
-		    }
-		});
+		    });
+		}
 	    }
 	    this.jq(ID_PREV).button().click(()=>{
 		this.startIndex-=number;
@@ -27419,7 +27646,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         {p:'showCreateDate',ex:'true',d: false},	
         {p:'showArea',d: true},
         {p:'showText',d: true},
-	{p:'textRequired',d:'false'},
+	{p:'textRequired',d:false},
         {p:'searchText',d: '',tt:'Initial search text'},
 	{p:'searchPrefix',ex:'name:, contents:, path:'},
         {p:'showMetadata',d: true},
@@ -28142,7 +28369,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			let wrapperId = this.getMetadataFieldId(type)+"_wrapper";			
 			let label = type.getLabel()+" " + HU.span([ID,countId]);
 			let wrapper = HU.div([ID,wrapperId], HU.toggleBlock(label,block,false,{
-			    headerStyle:HU.css("border","1px solid #ccc", "margin-top","6px","background", getMetadataColor(type))}));
+			    headerStyle:HU.css("border","1px solid #ccc", "margin-top","6px","background", Utils.getEnumColor(type))}));
 			metadataBlock+=wrapper;
 		    } else {
 			metadataBlock += addWidget(type.getLabel() + ":", metadataSelect);
@@ -28238,14 +28465,14 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    if(!this.metadataBoxes) this.metadataBoxes={};
 	    this.metadataBoxes[metadataType.getType()] = {};
             this.metadata[metadataType.getType()] = metadata;
-
-	    let popupLimit = this.getTagPopupLimit(100);
+	    let popupLimit = this.getTagPopupLimit();
             let select = HU.tag(TAG_OPTION, [ATTR_TITLE, "", ATTR_VALUE, ""], NONE);
 	    let cbxs = [];
             for (let i = 0; i < metadata.length; i++) {
                 let count = metadata[i].count;
                 let value = metadata[i].value;
                 let label = metadata[i].label;
+		let type = metadataType.getType();
                 let optionAttrs = [ATTR_VALUE, value, ATTR_CLASS, "display-metadatalist-item"];
                 let selected = false;
                 if (selected) {
@@ -28254,10 +28481,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 }
                 select += HU.tag(TAG_OPTION, optionAttrs, label + " (" + count + ")");
 		let cbxId = this.getMetadataFieldId(metadataType)+"_checkbox_" + i;
-		this.metadataBoxes[metadataType.getType()][value] = cbxId;
-		let cbx = HU.checkbox("",[ID,cbxId,"metadata-type",metadataType.getType(),"metadata-value",value],false) +" " + HU.tag( "label",  [CLASS,"ramadda-noselect ramadda-clickable","for",cbxId],label +" (" + count+")");
+		this.metadataBoxes[type][value] = cbxId;
+		let cbx = HU.checkbox("",[ID,cbxId,"metadata-type",type,"metadata-value",value],false) +" " + HU.tag( "label",  [CLASS,"ramadda-noselect ramadda-clickable","for",cbxId],label +" (" + count+")");
 		if(metadata.length>popupLimit) {
-		    cbx = HU.span([CLASS,'display-search-tag','tag',label,STYLE, HU.css("background", getMetadataColor(metadataType))], cbx);
+		    cbx = HU.span([CLASS,'display-search-tag','tag',label,STYLE, HU.css("background", Utils.getEnumColor(metadataType))], cbx);
 		}
 		cbxs.push(cbx);
 	    }
@@ -28271,6 +28498,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		let cbxInner = HU.div([STYLE,HU.css("margin","5px", "width","800px;","max-height","300px","overflow-y","auto")],    Utils.wrap(cbxs,"",""));
 		let inner = Utils.wrap(cbxs,"","<br>");
 		let clickId = this.getMetadataFieldId(metadataType)+"_popup";
+		let _this = this;
 		let cbxChange = function(){
 		    let value  = $(this).attr("metadata-value");
 		    let type  = $(this).attr("metadata-type");		
@@ -28285,44 +28513,14 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    _this.submitSearchForm();
 		};
 		if(cbxs.length>popupLimit) {
-		    $("#"+wrapperId).html(HU.div([STYLE, HU.css("border","1px solid #ccc",  "margin-top","6px","background", getMetadataColor(metadataType)), TITLE,"Click to select tag", ID,clickId,CLASS,"ramadda-clickable entry-toggleblock-label"], HU.makeToggleImage("fas fa-plus","font-size:8pt;") +" " +metadataType.getLabel()+" ("+ cbxs.length+")"));
+		    $("#"+wrapperId).html(HU.div([STYLE, HU.css("border","1px solid #ccc",  "margin-top","6px","background", Utils.getEnumColor(metadataType)), TITLE,"Click to select tag", ID,clickId,CLASS,"ramadda-clickable entry-toggleblock-label"], HU.makeToggleImage("fas fa-plus","font-size:8pt;") +" " +metadataType.getLabel()+" ("+ cbxs.length+")"));
 		    $("#" + clickId).click(()=>{
-			let inputId = HU.getUniqueId("input_");
-			let input = HU.input("","",[STYLE,HU.css("width","300px;"), 'placeholder','Search for ' + metadataType.getLabel().toLowerCase(),ID,inputId]);
-			let contents = HU.div([STYLE,HU.css("margin","10px")], HU.center(input) + cbxInner);
-			if(!this.tagDialogs) this.tagDialogs = {};
-			if(this.tagDialogs[metadataType.getType()]) this.tagDialogs[metadataType.getType()].remove();
-			let dialog = HU.makeDialog({content:contents,anchor:$("#" + clickId),title:metadataType.getLabel(),
-						     draggable:true,header:true});
-			this.tagDialogs[metadataType.getType()] = dialog;
-			dialog.find(":checkbox").change(cbxChange);
-			let tags = dialog.find(".display-search-tag");
-			$("#"+inputId).keyup(function(event) {
-			    let text = $(this).val().trim().toLowerCase();
-			    tags.each(function() {
-				if(text=="")
-				    $(this).show();
-				else {
-				    let tag = $(this).attr("tag");
-				    if(tag) {
-					tag = tag.toLowerCase();
-					if(tag.indexOf(text)>=0)
-					    $(this).show();
-					else
-					    $(this).hide();
-				    }
-				}
-			    });
-
-			    
-			});
+			this.createTagDialog(cbxs, $("#" + clickId), cbxChange, metadataType.getType(),metadataType.getLabel());
 		    });
 
 		} else {
-		    //			metadataBlock+=HU.toggleBlock(label,block,false);
 		    $("#" + this.getMetadataFieldId(metadataType)).html(inner);
 		}
-		let _this = this;
 		$("#" + this.getMetadataFieldId(metadataType)).find(":checkbox").change(cbxChange);
 	    }
         },
@@ -28343,8 +28541,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		tagGroup = $(HU.div([CLASS,"display-search-tag-group",ID,_this.domId(tagGroupId)])).appendTo(_this.jq(ID_SEARCH_BAR));			     
 	    }
 
-
-	    let tag = $(HU.div(["metadata-type",type,"metadata-value",value,TITLE,label+":" + value, STYLE, HU.css("background", getMetadataColor(type)),CLASS,"display-search-tag", ID,tagId],value+SPACE +HU.getIconImage("fas fa-times"))).appendTo(tagGroup);
+	    let tag = $(HU.div(["metadata-type",type,"metadata-value",value,TITLE,label+":" + value, STYLE, HU.css("background", Utils.getEnumColor(type)),CLASS,"display-search-tag", ID,tagId],value+SPACE +HU.getIconImage("fas fa-times"))).appendTo(tagGroup);
 	    tag.click(function() {
 		$(this).remove();
 		if(cbx)
@@ -38617,7 +38814,9 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	    });
 
 	    let _this = this;
-	    this.makeTooltips(this.jq(ID_TABLE).find(".display-htmltable-row"),records);
+	    let tooltipClick = this.getProperty("tooltipClick");
+	    let rows = this.jq(ID_TABLE).find(".display-htmltable-row");
+	    this.makeTooltips(rows,records);
 	    let opts = {
                 ordering: true,
 		scrollY:this.getScrollY("400px")

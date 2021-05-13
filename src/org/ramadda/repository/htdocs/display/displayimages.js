@@ -624,28 +624,16 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    this.makeTooltips(blocks,displayedRecords);
 	    if(!doPopup) {
 		let _this = this;
-		blocks.click(function() {
-		    let record = _this.idToRecord[$(this).attr(RECORD_ID)];
-		    if(tooltipClick) {
-			if(_this.tooltipDialog) {
-			    _this.tooltipDialog.remove();
-			    _this.tooltipDialog = null;
-			} 
+		if(tooltipClick) {
+		    this.makeTooltipClick(blocks, records);
+		} else {
+		    blocks.click(function() {
+			let record = _this.idToRecord[$(this).attr(RECORD_ID)];
 			if(record) {
-			    let tt =  _this.getRecordHtml(record,null,tooltipClick);
-			    tt = HU.div([STYLE,HU.css()], tt);
-			    _this.tooltipDialog =  HU.makeDialog({content:tt,anchor:$(this),
-								  draggable:true,header:true});
-			    if(_this.getProperty("dialogListener"))
-				_this.getProperty("dialogListener")(this, _this.tooltipDialog);
-
+			    _this.propagateEventRecordSelection({record: record});
 			}
-
-		    }
-		    if(record) {
-			_this.propagateEventRecordSelection({record: record});
-		    }
-		});
+		    });
+		}
 	    }
 	    this.jq(ID_PREV).button().click(()=>{
 		this.startIndex-=number;

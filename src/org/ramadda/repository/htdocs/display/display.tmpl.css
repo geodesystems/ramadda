@@ -161,6 +161,10 @@ a.display-container {
     overflow-x:auto;
 }
 
+.display-header-vertical .display-filter-label {
+    font-weight:bold;
+}
+
 
 
 .display-changeentries-button {
@@ -243,6 +247,10 @@ a.display-container {
    font-weight: bold; 
 }
 
+
+.display-header-vertical {
+  text-align:left;
+}
 
 .display-header1, .display-header2, .display-header3 {
   text-align:center;

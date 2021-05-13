@@ -562,13 +562,7 @@ function MetadataType(type, label, value) {
         label: label,
         value: value
     });
-    if(!metadataColors[type]) {
-	metadataTypeCount++;
-	if(metadataTypeCount>=metadataColorPalette.length)
-	    metadataTypeCount = 0;
-	metadataColors[type] = metadataColorPalette[metadataTypeCount];
-    }
-    this.color = metadataColors[type];
+    this.color = Utils.getEnumColor(type);
     $.extend(this, {
         getType: function() {
             return this.type;
