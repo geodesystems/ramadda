@@ -1728,4 +1728,76 @@ public abstract class DataProvider {
 
     }
     
+
+    public static class Pdf extends DataProvider {
+	StrTokenizer tokenizer;
+	boolean didFirst  = false;
+	BufferedReader stdInput;
+
+        TextReader ctx;
+	String tabula;
+
+
+        /**
+         * _more_
+         *
+         * @param ctx _more_
+         */
+        public Pdf(CsvUtil csvUtil) {
+	    
+	    tokenizer = StrTokenizer.getCSVInstance();
+	    tokenizer.setEmptyTokenAsNull(true);
+	    tabula = csvUtil.getProperty("ramadda_tabula");
+        }
+
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param csvUtil _more_
+         * @param ctx _more_
+         * @param stream _more_
+         *
+         * @throws Exception _more_
+         */
+        public void initialize(CsvUtil csvUtil, TextReader ctx)
+                throws Exception {
+	    Runtime rt = Runtime.getRuntime();
+	    if(tabula==null) {
+		throw new IllegalArgumentException("No ramadda_tabula environment variable set");
+	    }
+	    String[] commands = {tabula, ctx.getInputFile()};
+	    Process proc = rt.exec(commands);
+	    stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+
+	    BufferedReader stdError = new BufferedReader(new 
+							 InputStreamReader(proc.getErrorStream()));
+
+
+	    /*
+	      while ((s = stdError.readLine()) != null) {
+	      System.out.println(s);
+	      }
+	    */
+        }
+
+        /**
+         * _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        public Row readRow() throws Exception {
+	    String line =  stdInput.readLine();
+	    if(line==null) return null;
+	    List<String> toks = Utils.tokenizeColumns(line,tokenizer);
+	    return  new Row(toks);
+        }
+
+    }
+
+
 }

@@ -296,7 +296,7 @@ public class CsvUtil {
 	    String value =  propertyProvider.getProperty(name,null);
 	    if(value!=null) return value; 
 	} else {
-	    System.err.println("CsvUtil.getProperty: no PropertyProvider set");
+	    //	    System.err.println("CsvUtil.getProperty: no PropertyProvider set");
 	}
 	return System.getenv(name);
     }
@@ -1480,6 +1480,7 @@ public class CsvUtil {
 							"size", "30", "label", "Object paths", "type",
 							"list", "size", "30")),
         new Cmd("-lines", "Parse the input as text lines"),
+        new Cmd("-pdf", "Read input from a PDF file"),	
         new Cmd("-xml", "Parse the input as xml",
                 new Arg("path", "Path to the elements", "size", "60")),
         new Cmd("-shapefile", "Parse the input shapefile",
@@ -2827,6 +2828,11 @@ public class CsvUtil {
 		return i;
 	    });
 
+	defineFunction("-pdf",0,(ctx,args,i) -> {
+		ctx.getProviders().add(new DataProvider.Pdf(this));
+		return i;
+	    });
+	
 
 	defineFunction("-shapefile",1,(ctx,args,i) -> {
 		ctx.getProviders().add(new ShapefileProvider(parseProps(args.get(++i))));
