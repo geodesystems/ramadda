@@ -11528,6 +11528,7 @@ function PointData(name, recordFields, records, url, properties) {
                 if (GuiUtils.isJsonError(data)) {
 		    if(debug)
 			console.log("\tloadPointData failed");
+		    console.log("loadPointData failed:" + data);
                     display.pointDataLoadFailed(data);
                     return;
                 }

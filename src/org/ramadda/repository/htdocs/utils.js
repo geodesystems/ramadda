@@ -1091,8 +1091,14 @@ var Utils =  {
         return arg1;
     },
     isDefined: function(v) {
-	if(v===null) return false;
-	return  !(typeof v === 'undefined');
+	let ok = true;
+	let a = Array.from(arguments).every(v=>{
+	    if(v===null || typeof v === 'undefined') {
+		ok =false;
+	    }
+	    return ok;
+	});
+	return ok;
     },
     makeLabel: function(s) {
         s  = String(s);
@@ -1260,6 +1266,54 @@ var Utils =  {
 			if(t.attrs["missing"] && (value=="" || isNaN(value))) {
 			    return  t.attrs["missing"]
 			} 
+			if(t.attrs["bar"]) {
+			    let min  = t.attrs["min"]||0;
+			    let max  = t.attrs["max"];			    
+			    if(value=="" || isNaN(value)) {
+				return t.attrs["missing"] ||value;
+			    }
+			    if(Utils.isDefined(min,max)) {
+				let color  = t.attrs["color"]||"#4E79A7";
+				let width = t.attrs["width"]||"100%";
+				let height = parseFloat(t.attrs["height"]||12);
+				let percent = (100-100*(value-min)/(max-min))+"%";
+				let border = t.attrs["border"]||"1px solid #ccc";
+				let includeValue = t.attrs["includeValue"]||true;
+				let bar =  HU.div([TITLE,value+"/"+max,STYLE,HU.css("display","inline-block","position","relative", "height",(height+2)+"px","width",width,"border",border,"border-left","none")],
+						  HU.div([STYLE,HU.css("position","absolute","left","0px","right",percent,"height",height+"px","background",color)]));
+				if(includeValue) return HU.row([["width","1%"],value],bar);
+				return bar;
+
+					      
+			    }
+			}
+
+			if(t.attrs["stars"]) {
+			    if(value=="" || isNaN(value)) {
+				return t.attrs["missing"] ||value;
+			    }
+			    let count  = t.attrs["count"] ||5;
+			    let min  = t.attrs["min"]||0;
+			    let max  = t.attrs["max"];			    
+			    if(Utils.isDefined(min,max)) {
+				let color  = t.attrs["color"]||"#F9CF03";
+				let starsbase = "";
+				let stars = "";
+				for(let i=0;i<count;i++) {
+				    starsbase+=HU.getIconImage("far fa-star",null,[STYLE,HU.css("font-size","10pt","color","#000")]);
+				    stars+=HU.getIconImage("fas fa-star",null,[STYLE,HU.css("font-size","10pt","color",color)]);				    
+				}
+				let percent = (100-100*(value-min)/(max-min))+"%";
+				let includeValue = t.attrs["includeValue"]||true;
+				let bar =  HU.div([TITLE,value+"/"+max,STYLE,HU.css("position","relative")],
+						  starsbase+
+						  HU.div([STYLE,HU.css("white-space","nowrap","overflow-x","hidden","position","absolute","left","0px","right",percent,"top","0px","bottom","0px")], stars));
+				if(includeValue) return HU.row([["width","1%"],value],bar);
+				return bar;
+			    }
+			}
+
+
 			if(t.attrs["youtube"]) {
 			    if(value.trim().length==0) return null;
 			    let toks = value.match(/.*watch\?v=(.*)$/);
@@ -2731,7 +2785,7 @@ Utils.ColorTables =  {
 
 var GuiUtils = {
     getProxyUrl: function(url) {
-        var base = ramaddaBaseUrl + "/proxy?trim=true&url=";
+        let base = ramaddaBaseUrl + "/proxy?trim=true&url=";
         return base + encodeURIComponent(url);
     },
 
@@ -2742,7 +2796,7 @@ var GuiUtils = {
             return;
         }
         console.log(error);
-//	console.trace();
+	console.trace();
 
         if (extra) {
             console.log(extra);
@@ -3239,14 +3293,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
 
     isFontAwesome:function(icon) {
-	return icon.startsWith("fa-") || icon.startsWith("fas ")
+	return icon.startsWith("fa-") || icon.startsWith("fas ") || icon.startsWith("far ")
 	    || icon.startsWith("fab ");	    
     },
     getIconImage: function(url,attrs,attrs2) {
         if(HtmlUtils.isFontAwesome(url)) {
 	    let clazz = "";
 	    let a;
-	    if(url.startsWith("fas ") || url.startsWith("fab ")) {
+	    if(url.startsWith("fas ") || url.startsWith("fab ")|| url.startsWith("far")) {
 		a = ["class",url];
 
 	    } else {
@@ -3427,9 +3481,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
 
     row: function() {
-	let row = "<table width=100% border=1><tr valign=top>";
+	let row = "<table width=100%><tr valign=center>";
 	Array.from(arguments).forEach(h=>{
-	    row+=HtmlUtils.tag("td",[],h);
+	    if(Array.isArray(h)) {
+		row+=HtmlUtils.tag("td",h[0],h[1]);
+	    } else {
+		row+=HtmlUtils.tag("td",[],h);
+	    }
 	})
 	row+="</tr></table>";
 	return row;
