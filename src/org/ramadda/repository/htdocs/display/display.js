@@ -106,7 +106,7 @@ const PROP_FILTER_VALUE = "fitlerValue";
 const RECORD_INDEX = "recordindex";
 const RECORD_ID = "recordid";
 const TEXT_HIGHLIGHT_COLOR = "yellow";
-const HIGHLIGHT_COLOR = "red";
+const HIGHLIGHT_COLOR = "#436EEE";
 
 const VALUE_NONE = "--none--";
 
