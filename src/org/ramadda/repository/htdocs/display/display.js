@@ -5835,7 +5835,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let tooltipClick = this.getProperty("tooltipClick");
 	    if(tooltipClick) {
 		this.makeTooltipClick(selector,records);
-		return;
 	    }
 	    if(!Utils.isDefined(propagateHighlight) || propagateHighlight==null)
 		propagateHighlight = this.getProperty("propagateEventRecordHighlight",false);

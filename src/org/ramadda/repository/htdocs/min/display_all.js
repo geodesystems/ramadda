@@ -8797,7 +8797,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let tooltipClick = this.getProperty("tooltipClick");
 	    if(tooltipClick) {
 		this.makeTooltipClick(selector,records);
-		return;
 	    }
 	    if(!Utils.isDefined(propagateHighlight) || propagateHighlight==null)
 		propagateHighlight = this.getProperty("propagateEventRecordHighlight",false);
@@ -19367,8 +19366,6 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    }
 	    let urlField = this.getFieldById(null, this.getProperty("urlField"));
 	    let tooltipClick = this.getProperty("tooltipClick");
-	    if(tooltipClick) this.setProperty("tooltip",null);
-
             let pointData = this.getData();
             let fields = pointData.getRecordFields();
 
@@ -19533,9 +19530,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    this.makeTooltips(blocks,displayedRecords);
 	    if(!doPopup) {
 		let _this = this;
-		if(tooltipClick) {
-		    this.makeTooltipClick(blocks, records);
-		} else {
+		if(!tooltipClick) {
 		    blocks.click(function() {
 			let record = _this.idToRecord[$(this).attr(RECORD_ID)];
 			if(record) {
