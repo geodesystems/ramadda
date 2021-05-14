@@ -1055,6 +1055,12 @@ public abstract class Converter extends Processor {
                         } else if (_sample.equals("nan")
                                    || _sample.equals("na")) {
                             type = "double";
+                        } else if (sample.startsWith("http")) {
+			    if(Utils.isImage(sample)) {
+				type = "image";
+			    } else {
+				type = "url";
+			    }
                         } else if (sample.matches("^(\\+|-)?\\d+$")) {
                             type = "integer";
                         } else if (sample.matches(
