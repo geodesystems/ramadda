@@ -50,6 +50,11 @@ public class NamedList<T> {
         this.name = name;
     }
 
+    public NamedList(String name,List<T> list) {
+        this.name = name;
+	this.list = list;
+    }    
+
     /**
      * _more_
      *
