@@ -1305,7 +1305,7 @@ var Utils =  {
 				}
 				let percent = (100-100*(value-min)/(max-min))+"%";
 				let includeValue = t.attrs["includeValue"]||true;
-				let bar =  HU.div([TITLE,value+"/"+max,STYLE,HU.css("position","relative")],
+				let bar =  HU.div([TITLE,value+"/"+max,STYLE,HU.css("display","inline-block","position","relative")],
 						  starsbase+
 						  HU.div([STYLE,HU.css("white-space","nowrap","overflow-x","hidden","position","absolute","left","0px","right",percent,"top","0px","bottom","0px")], stars));
 				if(includeValue) return HU.row([["width","1%"],value],bar);
