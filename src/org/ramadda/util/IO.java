@@ -70,6 +70,7 @@ public class IO {
      * @param files _more_
      */
     public static void setOkToWriteToDirs(List<File> files) {
+	System.err.println("setOkToWriteTo:" + files);
         okToWriteToDirs = files;
     }
 
@@ -94,18 +95,20 @@ public class IO {
      * @throws Exception _more_
      */
     public static boolean okToWriteTo(String file) throws Exception {
+	System.err.println("okToWriteTo:" + file);
+	System.err.println("dirs:" + okToWriteToDirs);	
         File f = new File(file);
         if (okToWriteToDirs.size() > 0) {
-            boolean ok = false;
             for (File dir : okToWriteToDirs) {
+		System.err.println("\tdir:" + dir);
                 if (IOUtil.isADescendent(dir, f)) {
-                    ok = true;
+		    System.err.println("\tis a descendant");
+		    return true;
                 }
+		System.err.println("\tis not a descendant");
             }
-
-            return ok;
+	    return false;
         }
-
         return true;
     }
 

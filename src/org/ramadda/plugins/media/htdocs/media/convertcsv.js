@@ -719,7 +719,6 @@ function  ConvertForm(inputId, entry) {
 
 		if(Utils.isDefined(data.result)) {
 		    result = window.atob(data.result);
-		    //		console.log("result: " + result);
 		    if(isScript) {
 			//		    Utils.makeDownloadFile("script.sh",result);
 			//		    return;
