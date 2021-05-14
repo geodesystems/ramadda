@@ -1216,7 +1216,7 @@ var Utils =  {
 		    if(token) return token.attrs;
 		    return null;
 		},
-		apply: function(source, debug) {
+		apply: function(source, debug, handler) {
 		    //		    if(debug) console.log("macro:" + JSON.stringify(source,null,2));
 		    let cnt = 0;
 		    let tokenFunc = t=>{
@@ -1250,6 +1250,13 @@ var Utils =  {
 			if(value.getTime) {
 			    return  Utils.formatDateWithFormat(value,t.attrs["format"]||opts.dateFormat);
 			} 
+			if(t.attrs["handle"]) {
+			    if(handler) {
+				let result = handler(t,value);
+				if(result!==false) return result;
+			    }
+			}
+
 			if(t.attrs["missing"] && isNaN(value)) {
 			    return  t.attrs["missing"]
 			} 

@@ -3650,7 +3650,23 @@ function DisplayThing(argId, argProperties) {
 		}
 	    }
 	    this.addMacroAttributes(macros,row,attrs);
-	    return macros.apply(attrs,debug);
+	    let handler = (tag,value) =>{
+		if(tag.attrs["handle"] =="tags") {
+		    let type = tag.tag;
+		    let filter = this.filterMap[type];
+		    let color = Utils.getEnumColor(type);
+		    let result = "";
+		    value = String(value).trim();
+		    if(value=="") return "";
+		    value.split(",").forEach(tagValue=>{
+			result+= HU.div(["metadata-type",type,"metadata-value",tagValue,TITLE,tagValue, STYLE, HU.css("background", color),CLASS,"display-search-tag"],tagValue);
+		    });
+		    if(filter) result = filter.getLabel()+": " + result+"<br>";
+		    return result;
+		}
+		return "Unknown tag handler:" + tag.attrs["handle"];
+	    };
+	    return macros.apply(attrs,debug,handler);
 	},
 	addMacroAttributes:function(macros,row,attrs) {
 	},
@@ -4144,7 +4160,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'filterFieldsToPropagate'},
 	{p:'hideFilterWidget',ex:true},
 	{p:'filterHighlight',ex:true,tt:'Highlight the records'},
-        {p:'showFilterTags',d: true},	
+        {p:'showFilterTags',d: true},
+        {p:'tagDiv',tt:'Div id to show tags in'},		
 	{p:'showFilterHighlight',ex:false,tt:'show/hide the filter highlight widget'},
 	{p:'acceptEventFilter',ex:false},
 	{p:'acceptEventDisplayFieldsChange',ex:true},
@@ -5447,20 +5464,28 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	    if(sortFields.length>0) {
 		records = Utils.cloneList(records);
-		var sortAscending = this.getProperty("sortAscending",true);
+		let sortAscending = this.getProperty("sortAscending",true);
 		let cnt = 0;
 		records.sort((a,b)=>{
-		    var row1 = this.getDataValues(a);
-		    var row2 = this.getDataValues(b);
-		    var result = 0;
-		    for(var i=0;i<sortFields.length;i++) {
-			var sortField = sortFields[i];
-			var v1 = row1[sortField.getIndex()];
-			var v2 = row2[sortField.getIndex()];
+		    let row1 = this.getDataValues(a);
+		    let row2 = this.getDataValues(b);
+		    let result = 0;
+		    for(let i=0;i<sortFields.length;i++) {
+			let sortField = sortFields[i];
+			let v1 = row1[sortField.getIndex()];
+			let v2 = row2[sortField.getIndex()];
 			if(sortField.isNumeric() || sortField.isFieldDate()) {
-			    if(v1<v2) result = sortAscending?-1:1;
-			    else if(v1>v2) result = sortAscending?1:-1;
-			    else result = 0;
+			    if(isNaN(v1) && isNaN(v2)) {
+				result= 0;
+			    } else if(isNaN(v1)) {
+				result = sortAscending?-1:1;
+			    } else if(isNaN(v2)) {
+				result = sortAscending?1:-1;
+			    } else {
+				if(v1<v2) result = sortAscending?-1:1;
+				else if(v1>v2) result = sortAscending?1:-1;
+				else result = 0;
+			    }
 			} else {
 			    result = String(v1).localeCompare(String(v2));
 			    if(!sortAscending) result=-result;
@@ -7906,9 +7931,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		id = id.replace(/_min$/,"").replace(/_max$/,"");
 		let min = $("#" + id+"_min");
 		let max = $("#" + id+"_max");
+		
 		let range = {
 		    min: parseFloat(min.attr("data-min")),
 		    max: parseFloat(max.attr("data-max"))};
+		let smin =  String(min.attr("data-min")).replace(/.*\./,"");
+		let smax =  String(max.attr("data-max")).replace(/.*\./,"");		
+		let numDecimals = Math.max(smin.length,smax.length);
 		let minValue = parseFloat(min.val());
 		let maxValue = parseFloat(max.val());
 		let html = HU.div([ID,"filter-range",STYLE,HU.css("width","200px")],"");
@@ -7934,8 +7963,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    step: step,
 		    values: [minValue, maxValue],
 		    slide: function( event, ui ) {
-			min.val(ui.values[0]);
-			max.val(ui.values[1]);
+			let minv = number_format(ui.values[0], numDecimals);
+			let maxv = number_format(ui.values[1], numDecimals);			
+			min.val(minv);
+			max.val(maxv);
 			min.attr("data-value",min.val());
 			max.attr("data-value",max.val());
 			if(immediate) {
@@ -7971,7 +8002,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.colorByFields = this.getFieldsByIds(null, this.getProperty("colorByFields", "", true));
             this.sizeByFields = this.getFieldsByIds(null, this.getProperty("sizeByFields", "", true));
             this.sortByFields = this.getFieldsByIds(null, this.getProperty("sortByFields", "", true));	    
-
 
 	    let pointData = this.getData();
             if (pointData == null) return;
@@ -8077,14 +8107,23 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let enums = [];
 		this.sortByFields.forEach(field=>{
 		    if(field.isFieldGeo()) return;
-		    enums.push([field.getId(),field.getLabel()]);
+		    let id = field.getId();
+		    let label = field.getLabel();
+		    let suffix1=" increasing";
+		    let suffix2=" decreasing";
+		    if(field.isFieldString()) {
+			suffix1 = "A-Z";
+			suffix2 = "Z-A";
+		    }
+		    enums.push([id+"_up",label + " " + suffix1]);
+		    enums.push([id+"_down",label + " " + suffix2]);		    
 		});
 		header2 += HU.span([CLASS,filterClass],
-				   this.makeFilterLabel("Sort by: ") + HU.select("",[ID,this.getDomId("sortbyselect")],enums,this.getProperty("sortFields","")))+SPACE;
+				   this.makeFilterLabel("Order: ") + HU.select("",[ID,this.getDomId("sortbyselect")],enums,this.getProperty("sortFields","")))+SPACE;
 	    }
 
 	    if(this.getProperty("showSortDirection")) {
-		var sortAscending = this.getProperty("sortAscending",true);
+		let sortAscending = this.getProperty("sortAscending",true);
 		header2 +=HU.select("",[ID,this.getDomId("sortdirection")],[["up", "Sort Up"],["down","Sort Down"]],
 				    sortAscending?"up":"down") + SPACE;
 	    }
@@ -8168,7 +8207,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    
 
 
-            let filterBy = this.getProperty("filterFields","").split(","); 
+            let filterBy = this.getProperty("filterFields","").split(",").map(tok=>{return tok.trim();}); 
 	    let hideFilterWidget = this.getProperty("hideFilterWidget",false, true);
 	    let fieldMap = {};
 	    //Have this here so it can be used in the menu change events later. May cause problems if more than  one
@@ -8177,24 +8216,46 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.filterMap = {};
 	    this.addFilters(this.filters);
             if(filterBy.length>0) {
+		let group = null;
                 for(let i=0;i<filterBy.length;i++) {
-		    if(filterBy[i]!="") {
-			let filter = new RecordFilter(this, filterBy[i]);
-			this.filters.push(filter);
-			this.filterMap[filter.getId()] = filter;
+		    if(filterBy[i]=="") continue;
+		    if(filterBy[i].startsWith("group:")) {
+			group = filterBy[i].substring(6);
+			if(group=="none") group = null;
+			continue;
 		    }
+		    let filter = new RecordFilter(this, filterBy[i]);
+		    filter.group = group;
+		    this.filters.push(filter);
+		    this.filterMap[filter.getId()] = filter;
 		}
 		let searchBar = "";
 		let bottom = [""];
+		group = null;
+		groupHtml = null;
 		this.filters.forEach(filter=>{
 		    let widget = filter.getWidget(fieldMap, bottom,records, vertical);
 		    if(!vertical)
 			widget = HU.span([ID,this.domId("filtercontainer_" + filter.id)], widget);
-		    if(vertical)
-			searchBar +=widget;
-		    else
-			searchBar +=widget;
+		    if(filter.group!=null) {
+			if(filter.group!=group && groupHtml!=null) {
+			    searchBar+=HU.toggleBlock(group,groupHtml,false);
+			    groupHtml = null;
+			}
+			group = filter.group;
+			if(groupHtml==null) {
+			    groupHtml= "";
+			}
+			groupHtml+=widget;
+			return;
+		    }
+		    if(groupHtml!=null) {
+			searchBar+=HU.toggleBlock(group,groupHtml,false);
+			groupHtml=null;
+		    }
+		    searchBar +=widget;
 		});
+		if(groupHtml!=null) searchBar+=HU.toggleBlock(group,groupHtml,false);
 		style = (hideFilterWidget?"display:none;":"") + this.getProperty("filterByStyle","");
 		if(this.getProperty("showFilterTotal",false)) {
 		    searchBar+= HU.span([CLASS,"display-filter-label",ID,this.getDomId(ID_FILTER_COUNT)],"");
@@ -8513,7 +8574,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		_this.colorByFieldChanged($(this).val());
 	    });
             this.jq("sortbyselect").change(function(){
-		_this.sortByFieldChanged($(this).val());
+		let val = $(this).val();
+		if(val.endsWith("_up")) {
+		    _this.setProperty("sortAscending",true);
+		    val = val.replace(/_up$/,"");
+		} else {
+		    val = val.replace(/_down$/,"");
+		    _this.setProperty("sortAscending",false);
+		}
+		_this.sortByFieldChanged(val);
 	    });
 	    this.jq("sortdirection").change(function(){
 		let val = $(this).val();
@@ -8690,12 +8759,26 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    _this.tooltipDialog = null;
 		} 
 		let tt =  _this.getRecordHtml(record,null,tooltipClick);
-		tt = HU.div([STYLE,HU.css("width","500px")], tt);
+		tt = HU.div([STYLE,HU.css("width","600px")], tt);
 		_this.tooltipDialog =  HU.makeDialog({content:tt,anchor:$(this),
 						      draggable:true,header:true});
 		if(_this.getProperty("dialogListener"))
 		    _this.getProperty("dialogListener")(this, _this.tooltipDialog);
+		_this.initTemplatePopup(_this.tooltipDialog);
 	    });
+	},
+
+	initTemplatePopup: function(dialog) {
+	    let _this = this;
+	    dialog.find(".display-search-tag").click(function() {
+		let type = $(this).attr("metadata-type");
+		if(type==null) return;
+		let filter = _this.filterMap[type];
+		if(filter==null) return;
+		let value = $(this).attr("metadata-value");
+		filter.toggleTag(value,true,null, true);
+	    });
+
 	},
 
 	//Make sure to set the title attribute on the elements
@@ -12497,9 +12580,13 @@ function RecordFilter(display,filterFieldId, properties) {
 	    return ok;
 	},
 
+	doTags:function() {
+	    if(!this.getProperty(this.getId()+".showFilterTags",true)) return false;
+	    return this.getProperty(this.getId()+".showFilterTags") || this.getProperty("showFilterTags");
+	},
 	getFieldValues: function() {
 	    if(this.isFieldEnumeration()) {
-		if(this.getProperty(this.getId()+".showFilterTags") || this.getProperty("showFilterTags")) {
+		if(this.doTags()) {
 		    return this.selectedTags ||[];
 		}
 	    }
@@ -12532,12 +12619,13 @@ function RecordFilter(display,filterFieldId, properties) {
 	    value = tmp;
 	    return value;
 	},
-	toggleTag:function(value,on,cbx) {
+	toggleTag:function(value,on,cbx, propagateEvent) {
 	    let _this = this;
 	    let type  = this.getFilterId();
 	    let tagId = Utils.makeId(type +"_" +  value);
 
 	    if(on) {
+		if(this.selectedTags.includes(value)) return;
 		this.selectedTags = Utils.addUnique(this.selectedTags,value);
 		let tagGroup = this.display.jq(ID_TAGBAR).find(".tag-group" +HU.attrSelect("tag-type",this.getFilterId()));
 		if(tagGroup.length==0) {
@@ -12561,9 +12649,13 @@ function RecordFilter(display,filterFieldId, properties) {
 		this.selectedTags = Utils.removeElement(this.selectedTags,value);
 		$("#" + tagId).remove();
 	    }
+	    if(propagateEvent && this.inputFunc) {
+		this.inputFunc(this.fakeInput,null,this.selectedTags);
+	    }
 	},
 	    
 	initWidget: function(inputFunc) {
+	    if(!this.isEnabled()) return;
 	    this.inputFunc = inputFunc;
 	    this.fakeInput  = {
 		attr:function(key) {
@@ -12582,8 +12674,7 @@ function RecordFilter(display,filterFieldId, properties) {
         	    let cbx = $(this);
 	            let on = cbx.is(':checked');
 		    let value  = $(this).attr("metadata-value");
-		    _this.toggleTag(value,on,cbx);
-		    inputFunc(_this.fakeInput,null,_this.selectedTags);
+		    _this.toggleTag(value,on,cbx,true);
 		}
 		let clickId = this.getFilterId()+"_popup";
 		$("#" + clickId).click(()=>{
@@ -12633,7 +12724,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    this.display.ignoreFilterChange = false;
 	},
 	handleEventPropertyChanged:function(prop) {
-	    if(this.isFieldEnumeration() && (this.getProperty(this.getId()+".showFilterTags") || this.getProperty("showFilterTags"))) {
+	    if(this.isFieldEnumeration() && this.doTags()) {
 		if(this.selectedTags) {
 		    let type  = this.getFilterId();
 		    this.selectedTags.forEach(value=>{
@@ -12801,7 +12892,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		    }
 		    widget = HtmlUtils.checkbox("",attrs,checked);
 		    //			    console.log(widget);
-		} else if(this.getProperty(this.getId()+".showFilterTags") || this.getProperty("showFilterTags")) {
+		} else if(this.doTags()) {
 		    showLabel  =false;
 		    let cbxs = [];
 		    this.tagToCbx = {};
@@ -19235,6 +19326,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	{p:'minHeightGallery',ex:150},
 	{p:'maxHeightGallery',ex:150},	
 	{p:'columns',ex:'5'},
+	{p:'noun',ex:'images'},
     ];
 
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_IMAGES, properties);
@@ -19400,7 +19492,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    cnt--;
 	    if(number<records.length) {
 		header += "Showing " + (this.startIndex+1) +" - " +(this.startIndex+cnt);
-		header += " of " + records.length +" images";
+		header += " of " + records.length +" " + this.getNoun("images");
 	    }
 
 	    if(header!="") header  = header +"<br>";

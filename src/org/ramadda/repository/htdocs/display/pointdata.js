@@ -1473,9 +1473,13 @@ function RecordFilter(display,filterFieldId, properties) {
 	    return ok;
 	},
 
+	doTags:function() {
+	    if(!this.getProperty(this.getId()+".showFilterTags",true)) return false;
+	    return this.getProperty(this.getId()+".showFilterTags") || this.getProperty("showFilterTags");
+	},
 	getFieldValues: function() {
 	    if(this.isFieldEnumeration()) {
-		if(this.getProperty(this.getId()+".showFilterTags") || this.getProperty("showFilterTags")) {
+		if(this.doTags()) {
 		    return this.selectedTags ||[];
 		}
 	    }
@@ -1508,12 +1512,13 @@ function RecordFilter(display,filterFieldId, properties) {
 	    value = tmp;
 	    return value;
 	},
-	toggleTag:function(value,on,cbx) {
+	toggleTag:function(value,on,cbx, propagateEvent) {
 	    let _this = this;
 	    let type  = this.getFilterId();
 	    let tagId = Utils.makeId(type +"_" +  value);
 
 	    if(on) {
+		if(this.selectedTags.includes(value)) return;
 		this.selectedTags = Utils.addUnique(this.selectedTags,value);
 		let tagGroup = this.display.jq(ID_TAGBAR).find(".tag-group" +HU.attrSelect("tag-type",this.getFilterId()));
 		if(tagGroup.length==0) {
@@ -1537,9 +1542,13 @@ function RecordFilter(display,filterFieldId, properties) {
 		this.selectedTags = Utils.removeElement(this.selectedTags,value);
 		$("#" + tagId).remove();
 	    }
+	    if(propagateEvent && this.inputFunc) {
+		this.inputFunc(this.fakeInput,null,this.selectedTags);
+	    }
 	},
 	    
 	initWidget: function(inputFunc) {
+	    if(!this.isEnabled()) return;
 	    this.inputFunc = inputFunc;
 	    this.fakeInput  = {
 		attr:function(key) {
@@ -1558,8 +1567,7 @@ function RecordFilter(display,filterFieldId, properties) {
         	    let cbx = $(this);
 	            let on = cbx.is(':checked');
 		    let value  = $(this).attr("metadata-value");
-		    _this.toggleTag(value,on,cbx);
-		    inputFunc(_this.fakeInput,null,_this.selectedTags);
+		    _this.toggleTag(value,on,cbx,true);
 		}
 		let clickId = this.getFilterId()+"_popup";
 		$("#" + clickId).click(()=>{
@@ -1609,7 +1617,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    this.display.ignoreFilterChange = false;
 	},
 	handleEventPropertyChanged:function(prop) {
-	    if(this.isFieldEnumeration() && (this.getProperty(this.getId()+".showFilterTags") || this.getProperty("showFilterTags"))) {
+	    if(this.isFieldEnumeration() && this.doTags()) {
 		if(this.selectedTags) {
 		    let type  = this.getFilterId();
 		    this.selectedTags.forEach(value=>{
@@ -1777,7 +1785,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		    }
 		    widget = HtmlUtils.checkbox("",attrs,checked);
 		    //			    console.log(widget);
-		} else if(this.getProperty(this.getId()+".showFilterTags") || this.getProperty("showFilterTags")) {
+		} else if(this.doTags()) {
 		    showLabel  =false;
 		    let cbxs = [];
 		    this.tagToCbx = {};

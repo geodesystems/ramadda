@@ -431,6 +431,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	{p:'minHeightGallery',ex:150},
 	{p:'maxHeightGallery',ex:150},	
 	{p:'columns',ex:'5'},
+	{p:'noun',ex:'images'},
     ];
 
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_IMAGES, properties);
@@ -596,7 +597,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    cnt--;
 	    if(number<records.length) {
 		header += "Showing " + (this.startIndex+1) +" - " +(this.startIndex+cnt);
-		header += " of " + records.length +" images";
+		header += " of " + records.length +" " + this.getNoun("images");
 	    }
 
 	    if(header!="") header  = header +"<br>";
