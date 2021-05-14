@@ -1424,8 +1424,9 @@ function RecordFilter(display,filterFieldId, properties) {
 		    ok = this.mySearch.values.includes(rowValue);
 		}
 	    } else if(this.isFieldNumeric()) {
-		if(isNaN(this.mySearch.value[0]) && isNaN(this.mySearch.value[0])) return ok;
-		if(!isNaN(this.mySearch.value[0]) && rowValue<this.mySearch.value[0]) ok = false;
+		if(isNaN(this.mySearch.value[0]) && isNaN(this.mySearch.value[1])) return ok;
+		if(isNaN(rowValue) || rowValue=="")  ok =false;
+		else if(!isNaN(this.mySearch.value[0]) && rowValue<this.mySearch.value[0]) ok = false;
 		else if(!isNaN(this.mySearch.value[1]) && rowValue>this.mySearch.value[1]) ok = false;
 	    } else if(this.getFieldType()=="date"){
 		if(this.mySearch.value &&  Array.isArray(this.mySearch.value)) {

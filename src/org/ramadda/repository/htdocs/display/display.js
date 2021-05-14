@@ -5001,8 +5001,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    step: step,
 		    values: [minValue, maxValue],
 		    slide: function( event, ui ) {
-			let minv = number_format(ui.values[0], numDecimals);
-			let maxv = number_format(ui.values[1], numDecimals);			
+			let minv = String(number_format(ui.values[0], numDecimals));
+			let maxv = String(number_format(ui.values[1], numDecimals));			
+			if(minv.endsWith(".")) minv = minv.replace(/\./,"");
+			if(maxv.endsWith(".")) maxv = maxv.replace(/\./,"");			
 			min.val(minv);
 			max.val(maxv);
 			min.attr("data-value",min.val());

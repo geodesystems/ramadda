@@ -1257,7 +1257,7 @@ var Utils =  {
 			    }
 			}
 
-			if(t.attrs["missing"] && isNaN(value)) {
+			if(t.attrs["missing"] && (value=="" || isNaN(value))) {
 			    return  t.attrs["missing"]
 			} 
 			if(t.attrs["youtube"]) {

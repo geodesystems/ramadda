@@ -7963,8 +7963,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    step: step,
 		    values: [minValue, maxValue],
 		    slide: function( event, ui ) {
-			let minv = number_format(ui.values[0], numDecimals);
-			let maxv = number_format(ui.values[1], numDecimals);			
+			let minv = String(number_format(ui.values[0], numDecimals));
+			let maxv = String(number_format(ui.values[1], numDecimals));			
+			if(minv.endsWith(".")) minv = minv.replace(/\./,"");
+			if(maxv.endsWith(".")) maxv = maxv.replace(/\./,"");			
 			min.val(minv);
 			max.val(maxv);
 			min.attr("data-value",min.val());
@@ -12531,8 +12533,9 @@ function RecordFilter(display,filterFieldId, properties) {
 		    ok = this.mySearch.values.includes(rowValue);
 		}
 	    } else if(this.isFieldNumeric()) {
-		if(isNaN(this.mySearch.value[0]) && isNaN(this.mySearch.value[0])) return ok;
-		if(!isNaN(this.mySearch.value[0]) && rowValue<this.mySearch.value[0]) ok = false;
+		if(isNaN(this.mySearch.value[0]) && isNaN(this.mySearch.value[1])) return ok;
+		if(isNaN(rowValue) || rowValue=="")  ok =false;
+		else if(!isNaN(this.mySearch.value[0]) && rowValue<this.mySearch.value[0]) ok = false;
 		else if(!isNaN(this.mySearch.value[1]) && rowValue>this.mySearch.value[1]) ok = false;
 	    } else if(this.getFieldType()=="date"){
 		if(this.mySearch.value &&  Array.isArray(this.mySearch.value)) {
