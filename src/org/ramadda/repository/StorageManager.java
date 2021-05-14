@@ -496,7 +496,7 @@ public class StorageManager extends RepositoryManager implements PointFile
     public void addOkToReadFromDirectory(File dir) {
         if ( !okToReadFromDirs.contains(dir)) {
             okToReadFromDirs.add(dir);
-            IO.setOkToReadFromDirs(okToReadFromDirs);
+            IO.addOkToReadFromDirs(okToReadFromDirs);
         }
     }
 
@@ -510,7 +510,7 @@ public class StorageManager extends RepositoryManager implements PointFile
     public void addOkToWriteToDirectory(File dir) {
         if ( !okToWriteToDirs.contains(dir)) {
             okToWriteToDirs.add(dir);
-            IO.setOkToWriteToDirs(okToWriteToDirs);
+            IO.addOkToWriteToDirs(okToWriteToDirs);
         }
         addOkToReadFromDirectory(dir);
     }

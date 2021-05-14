@@ -69,9 +69,14 @@ public class IO {
      *
      * @param files _more_
      */
-    public static void setOkToWriteToDirs(List<File> files) {
-	System.err.println("setOkToWriteTo:" + files);
-        okToWriteToDirs = files;
+    public static void addOkToWriteToDirs(List<File> files) {
+	synchronized(okToWriteToDirs) {
+	    for(File f: files) {
+		if(!okToWriteToDirs.contains(f)) {
+		    okToWriteToDirs.add(f);
+		}
+	    }
+	}
     }
 
     /**
@@ -79,8 +84,14 @@ public class IO {
      *
      * @param files _more_
      */
-    public static void setOkToReadFromDirs(List<File> files) {
-        okToReadFromDirs = files;
+    public static void addOkToReadFromDirs(List<File> files) {
+	synchronized(okToReadFromDirs) {
+	    for(File f: files) {
+		if(!okToReadFromDirs.contains(f)) {
+		    okToReadFromDirs.add(f);
+		}
+	    }
+	}
     }
 
 
@@ -95,17 +106,12 @@ public class IO {
      * @throws Exception _more_
      */
     public static boolean okToWriteTo(String file) throws Exception {
-	System.err.println("okToWriteTo:" + file);
-	System.err.println("dirs:" + okToWriteToDirs);	
         File f = new File(file);
         if (okToWriteToDirs.size() > 0) {
             for (File dir : okToWriteToDirs) {
-		System.err.println("\tdir:" + dir);
                 if (IOUtil.isADescendent(dir, f)) {
-		    System.err.println("\tis a descendant");
 		    return true;
                 }
-		System.err.println("\tis not a descendant");
             }
 	    return false;
         }
