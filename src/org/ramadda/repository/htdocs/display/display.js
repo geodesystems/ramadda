@@ -689,7 +689,7 @@ function DisplayThing(argId, argProperties) {
 	    }
 	    this.addMacroAttributes(macros,row,attrs);
 	    let handler = (tag,value) =>{
-		if(tag.attrs["handle"] =="tags") {
+		if(tag.attrs["display"] =="tags") {
 		    let type = tag.tag;
 		    let filter = this.filterMap[type];
 		    let color = Utils.getEnumColor(type);

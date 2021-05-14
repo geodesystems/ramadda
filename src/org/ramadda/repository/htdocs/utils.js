@@ -1256,7 +1256,7 @@ var Utils =  {
 			if(value.getTime) {
 			    return  Utils.formatDateWithFormat(value,t.attrs["format"]||opts.dateFormat);
 			} 
-			if(t.attrs["handle"]) {
+			if(t.attrs["display"]) {
 			    if(handler) {
 				let result = handler(t,value);
 				if(result!==false) return result;
