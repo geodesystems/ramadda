@@ -3503,6 +3503,16 @@ public class Utils extends IO {
         }
     }
 
+    public static String replaceAll(String s, String pattern, String value) {
+	String newString=s;
+	while(true) {
+	    newString=  s.replace(pattern, value);	    
+	    if(newString.equals(s)) break;
+    s= newString;
+	}
+	return newString;
+    }
+
     /**
      * _more_
      *
