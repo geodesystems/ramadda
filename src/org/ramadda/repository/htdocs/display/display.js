@@ -2499,7 +2499,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let f = this.getProperty("sortFields", "", true);
 		if(f=="${fields}") f = this.getProperty("fields", "", true);
 		sortFields = this.getFieldsByIds(null, f);
+		if(sortFields.length==0 && this.sortByFields && this.sortByFields.length>0) {
+		    sortFields = [this.sortByFields[0]];
+		}
 	    }
+
 	    if(sortFields.length>0) {
 		records = Utils.cloneList(records);
 		let sortAscending = this.getProperty("sortAscending",true);
@@ -5143,27 +5147,32 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		header2 += HU.span([CLASS,filterClass],
 				   this.makeFilterLabel("Color by: ") + HU.select("",[ID,this.getDomId("colorbyselect")],enums,selected))+SPACE;
 	    }
+	    let sortAscending = this.getProperty("sortAscending",true);
 	    if(this.sortByFields.length>0) {
 		let enums = [];
 		this.sortByFields.forEach(field=>{
 		    if(field.isFieldGeo()) return;
 		    let id = field.getId();
 		    let label = field.getLabel();
-		    let suffix1=" increasing";
-		    let suffix2=" decreasing";
+		    let suffix1=" &uarr;";
+		    let suffix2=" &darr;";
 		    if(field.isFieldString()) {
 			suffix1 = "A-Z";
 			suffix2 = "Z-A";
 		    }
-		    enums.push([id+"_up",label + " " + suffix1]);
-		    enums.push([id+"_down",label + " " + suffix2]);		    
+		    if(sortAscending) {
+			enums.push([id+"_up",label + " " + suffix1]);
+			enums.push([id+"_down",label + " " + suffix2]);
+		    } else {
+			enums.push([id+"_down",label + " " + suffix2]);
+			enums.push([id+"_up",label + " " + suffix1]);
+		    }
 		});
 		header2 += HU.span([CLASS,filterClass],
 				   this.makeFilterLabel("Order: ") + HU.select("",[ID,this.getDomId("sortbyselect")],enums,this.getProperty("sortFields","")))+SPACE;
 	    }
 
 	    if(this.getProperty("showSortDirection")) {
-		let sortAscending = this.getProperty("sortAscending",true);
 		header2 +=HU.select("",[ID,this.getDomId("sortdirection")],[["up", "Sort Up"],["down","Sort Down"]],
 				    sortAscending?"up":"down") + SPACE;
 	    }
