@@ -766,6 +766,9 @@ public class WikiUtil {
         List<TableState> tableStates       = new ArrayList<TableState>();
         String           currentVar        = null;
         StringBuilder    currentVarValue   = null;
+	List<NamedList<String>> repeatList = null;
+        StringBuilder    repeatBuffer = null;
+
         boolean          inScroll          = false;
         String           slidesId           = null;
         Hashtable        slidesProps       = null;
@@ -868,8 +871,7 @@ public class WikiUtil {
                                 keys.hasMoreElements(); ) {
                             Object key   = keys.nextElement();
                             Object value = myVars.get(key);
-                            line = line.replace("${" + key + "}",
-                                    value.toString());
+                            line = Utils.replaceAll(line,"${" + key + "}",   value.toString());
                         }
                     }
                     if (globalProperties != null) {
@@ -909,6 +911,78 @@ public class WikiUtil {
                     buff.append("\n");
                     continue;
                 }
+
+
+                if (tline.startsWith("+macro")) {
+                    List<String> toks = Utils.splitUpTo(tline, " ", 3);
+                    currentVar      = ((toks.size() > 1)
+                                       ? toks.get(1)
+                                       : "");
+		    currentVar = currentVar.trim();
+                    currentVarValue = new StringBuilder();
+                    continue;
+                }
+
+                if (tline.startsWith("-macro")) {
+		    String macro = currentVarValue.toString();
+		    macro = wikify(macro, handler);
+                    myVars.put(currentVar, macro);
+                    currentVar      = null;
+                    currentVarValue = null;
+                    continue;
+                }
+
+                if (currentVar != null) {
+                    currentVarValue.append(line);
+                    currentVarValue.append("\n");		    
+                    continue;
+                }
+
+
+                if (tline.startsWith("+repeat")) {
+                    List<String> toks  = Utils.splitUpTo(tline, " ", 2);
+		    String args = toks.size()>1?toks.get(1):"";
+		    repeatList = new ArrayList<NamedList<String>>();
+		    List<String> argList  = Utils.parseCommandLine(args);
+		    for(int i=0;i<argList.size();i+=2) {
+			if(i+1>=argList.size())  throw new IllegalArgumentException("Bad repeat:" +tline);
+			NamedList<String> l = new NamedList<String>(argList.get(i),Utils.split(argList.get(i+1),","));
+			repeatList.add(l);
+			
+		    }
+		    if(repeatList.size()==0)  throw new IllegalArgumentException("Bad repeat:" +tline);
+		    repeatBuffer = new StringBuilder();
+		    continue;
+		}
+
+                if (tline.startsWith("-repeat")) {
+		    if(repeatBuffer!=null) {
+			int max = 0;
+			for(NamedList<String> l: repeatList)
+			    max = Math.max(l.getList().size(), max);
+			
+			for(int i=0;i<max;i++) {
+			    String s = repeatBuffer.toString();
+			    for(NamedList<String> l: repeatList) {
+				String key = l.getName();
+				String value = i<l.getList().size()?(String)l.getList().get(i):l.getList().get(l.getList().size()-1);
+				s = Utils.replaceAll(s,"${" + key +"}",value);
+			    }
+			    buff.append(s);
+			}
+		    }
+		    repeatBuffer = null;
+		    repeatList= null;		    
+		    continue;
+		}
+
+		if(repeatBuffer!=null) {
+		    repeatBuffer.append(line);
+		    repeatBuffer.append("\n");		    
+		    continue;
+		}
+
+
 
                 if (tline.startsWith("@(")) {
                     handleEmbed(buff, tline);
@@ -1030,8 +1104,6 @@ public class WikiUtil {
 
 
 
-
-
                 if (tline.startsWith(":macro")) {
                     hasSet = true;
                     List<String> toks  = Utils.splitUpTo(tline, " ", 3);
@@ -1045,26 +1117,9 @@ public class WikiUtil {
                     continue;
                 }
 
-                if (tline.startsWith("+macro")) {
-                    List<String> toks = Utils.splitUpTo(tline, " ", 3);
-                    currentVar      = ((toks.size() > 1)
-                                       ? toks.get(1)
-                                       : "");
-                    currentVarValue = new StringBuilder();
-                    continue;
-                }
 
-                if (tline.startsWith("-macro")) {
-                    myVars.put(currentVar, currentVarValue.toString());
-                    currentVar      = null;
-                    currentVarValue = null;
-                    continue;
-                }
 
-                if (currentVar != null) {
-                    currentVarValue.append(tline);
-                    continue;
-                }
+
                 if (tline.equals("+leftright")) {
                     buff.append("<table width=100%><tr>");
                     lmrWidth = "50%";
@@ -2133,7 +2188,6 @@ public class WikiUtil {
                     List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     if (toks.size() > 1) {
                         String label = toks.get(1);
-
                         if (label.indexOf("{{") >= 0) {
                             label = wikify(label, handler);
                             label = label.replaceAll(".*<.*?>(.*)</.*>.*",
@@ -3065,12 +3119,14 @@ public class WikiUtil {
         }
 
 
+	/** We do this at the top of the loop with each line
         for (java.util.Enumeration keys = myVars.keys();
                 keys.hasMoreElements(); ) {
             Object key   = keys.nextElement();
             Object value = myVars.get(key);
-            s = s.replace("${" + key + "}", value.toString());
+	    s = s.replaceAll("\\$\\{" + key + "\\}", value.toString());
         }
+	*/
 
 	//	System.err.println("WIKI:" + s);
         return s;
@@ -4478,8 +4534,11 @@ public class WikiUtil {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        String s = "hello\n<pre>prestuff\nand then some</pre>more";
-        System.out.println(Utils.wrap(Chunk.splitText(s), "Chunk:", "\n"));
+        String s = "XX ${macro} YY";
+	String   p = "\\$\\{" + "macro" + "\\}";
+	s = s.replaceAll(p,  "${asdsad}MACRO");
+	System.err.println(s);
+	//        System.out.println(Utils.wrap(Chunk.splitText(s), "Chunk:", "\n"));
 
     }
 
