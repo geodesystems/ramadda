@@ -19505,7 +19505,12 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		header += " of " + records.length +" " + this.getNoun("images");
 	    }
 
-	    if(header!="") header  = header +"<br>";
+	    if(header!="") {
+		header = HU.div([STYLE,HU.css('margin-right','10px', "display","inline-block")],header);
+		this.jq(ID_HEADER2_PREFIX).html(header);
+		this.jq(ID_HEADER2).css("text-align","left");
+	    }
+	    header ="";
 
 	    if(this.getPropertyMinHeightGallery() || this.getPropertyMaxHeightGallery()) {
 		let css = "";

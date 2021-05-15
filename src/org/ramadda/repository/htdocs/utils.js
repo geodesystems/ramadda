@@ -2198,7 +2198,7 @@ var Utils =  {
     },
 
     enumTypeCount: -1,
-    enumColorPalette: ["#FDF5E6", "#F0FFFF","#FFE3D5","#a7d0cd","#fbeeac","#dbe3e5","#e8e9a1"],
+    enumColorPalette: ["#f8d49d", "#F0FFFF","#8fd6e1","#96bb7c","#fff5c0", "#da7f8f","#949cdf"],
     enumColors: {},
     getEnumColor:function(type) {
 	if(type.color) return type.color;

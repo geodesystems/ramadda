@@ -258,7 +258,8 @@ a.display-container {
 }
 
 .display-header-span {
-    display:none;
+    text-align:right;
+    display:inline-block;
 }
 
 .display-anim-button {
