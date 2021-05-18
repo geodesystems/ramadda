@@ -443,7 +443,18 @@ This gets draw in maps as a direction indicator.
     </type>
 
 
+    <type
+       name="CSV Convert Commands"
+       id="csv_commands">
+      <element name="Commands" 	 rows="10"/>
+
+    </type>
+    
+
 </handler>
+
+
+
 
 
 
