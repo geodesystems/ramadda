@@ -805,7 +805,6 @@ RepositoryMap.prototype = {
     },
     locationChanged: function() {
 	ramaddaMapShareState(this,"bounds");
-	if(this.doSelect) return;
 	let latlon = this.getBounds();
 	let bits = 100000;
 	let r = (v=>{
@@ -815,6 +814,7 @@ RepositoryMap.prototype = {
 	latlon.left = r(latlon.left);
 	latlon.bottom = r(latlon.bottom);
 	latlon.right = r(latlon.right);
+
 	HU.addToDocumentUrl("map_bounds",latlon.top + "," + latlon.left + "," + latlon.bottom + "," + latlon.right);
 	HU.addToDocumentUrl("zoomLevel" , this.getMap().getZoom());
 
@@ -822,21 +822,10 @@ RepositoryMap.prototype = {
         HU.addToDocumentUrl("mapCenter", r(center.lat)+","+ r(center.lon));
     },
     baseLayerChanged: function() {
-        var baseLayer = this.getMap().baseLayer;
+        let baseLayer = this.getMap().baseLayer;
         if (!baseLayer) return;
         baseLayer = baseLayer.ramaddaId;
-        var latlon = this.transformProjBounds(this.getMap().getExtent());
-        var arg = "map_layer=" + baseLayer;
-        var url = "" + window.location;
-        url = url.replace(/\&?map_layer=[a-z\.]+/g, "");
-        if (!url.includes("?")) url += "?";
-        url += "&" + arg;
-        try {
-            if (window.history.replaceState)
-                window.history.replaceState("", "", url);
-        } catch (e) {
-            console.log("err:" + e);
-        }
+	HU.addToDocumentUrl("defaultMapLayer",baseLayer);
 	ramaddaMapShareState(this,"baseLayer");
     },
     appendToolbar: function(html) {

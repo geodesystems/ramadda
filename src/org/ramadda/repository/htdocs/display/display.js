@@ -355,7 +355,7 @@ function DisplayThing(argId, argProperties) {
 	},
 	getEntriesMenu: function(argProperties) {
 	    if(argProperties && argProperties.entryCollection) {
-		var entries  = argProperties.entryCollection.split(",");
+		let entries  = argProperties.entryCollection.split(",");
 		this.changeEntries = [];
 		let enums = [];
 		entries.forEach(t=>{
@@ -363,9 +363,9 @@ function DisplayThing(argId, argProperties) {
 		    this.changeEntries.push(toks[0]);
 		    enums.push([toks[0],toks[1]]);
 		});
-		var prev = HU.span([CLASS,"display-changeentries-button", TITLE,"Previous entry", ID, this.getDomId(ID_ENTRIES_PREV), TITLE,"Previous"], HU.getIconImage("fa-chevron-left"));
- 		var next = HU.span([CLASS, "display-changeentries-button", TITLE,"Next entry", ID, this.getDomId(ID_ENTRIES_NEXT), TITLE,"Next"], HU.getIconImage("fa-chevron-right")); 
-		var label = argProperties.changeEntriesLabel||"";
+		let prev = HU.span([CLASS,"display-changeentries-button", TITLE,"Previous entry", ID, this.getDomId(ID_ENTRIES_PREV), TITLE,"Previous"], HU.getIconImage("fa-chevron-left"));
+ 		let next = HU.span([CLASS, "display-changeentries-button", TITLE,"Next entry", ID, this.getDomId(ID_ENTRIES_NEXT), TITLE,"Next"], HU.getIconImage("fa-chevron-right")); 
+		let label = argProperties.changeEntriesLabel||"";
 		if(label!="") label = label+"<br>";
 		return  HU.center(label + prev +" " + HU.select("",[ATTR_ID, this.getDomId(ID_ENTRIES_MENU)],enums) +" " + next);
 	    }
@@ -373,23 +373,25 @@ function DisplayThing(argId, argProperties) {
 	},
         initializeEntriesMenu: function() {
 	    this.jq(ID_ENTRIES_PREV).click(e=>{
-		var index = this.jq(ID_ENTRIES_MENU)[0].selectedIndex;
-		if(index<=0) return;
-		var entry  =this.changeEntries[index-1];
+		let index = this.jq(ID_ENTRIES_MENU)[0].selectedIndex;
+		if(index<=0) {
+		    index = this.changeEntries.length;
+		}
+		let entry  =this.changeEntries[index-1];
 		this.jq(ID_ENTRIES_MENU).val(entry);
 		this.handleEntryMenu(entry);
 	    });
 	    this.jq(ID_ENTRIES_NEXT).click(e=>{
-		var index = this.jq(ID_ENTRIES_MENU)[0].selectedIndex;
+		let index = this.jq(ID_ENTRIES_MENU)[0].selectedIndex;
 		if(index>=this.changeEntries.length-1) {
-		    return;
+		    index = 0;
 		}
-		var entry  =this.changeEntries[index+1];
+		let entry  =this.changeEntries[index+1];
 		this.jq(ID_ENTRIES_MENU).val(entry);
 		this.handleEntryMenu(entry);
 	    });
 	    this.jq(ID_ENTRIES_MENU).change(e=>{
-		var entry = this.jq(ID_ENTRIES_MENU).val();
+		let entry = this.jq(ID_ENTRIES_MENU).val();
 		this.handleEntryMenu(entry);
 	    });
 	},
@@ -5005,8 +5007,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    step: step,
 		    values: [minValue, maxValue],
 		    slide: function( event, ui ) {
-			let minv = String(number_format(ui.values[0], numDecimals));
-			let maxv = String(number_format(ui.values[1], numDecimals));			
+			let minv = String(Utils.roundDecimals(ui.values[0], numDecimals));
+			let maxv = String(Utils.roundDecimals(ui.values[1], numDecimals));
 			if(minv.endsWith(".")) minv = minv.replace(/\./,"");
 			if(maxv.endsWith(".")) maxv = maxv.replace(/\./,"");			
 			min.val(minv);
@@ -5160,7 +5162,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			suffix1 = "A-Z";
 			suffix2 = "Z-A";
 		    }
-		    if(sortAscending) {
+		    if(sortAscending || field.isFieldString()) {
 			enums.push([id+"_up",label + " " + suffix1]);
 			enums.push([id+"_down",label + " " + suffix2]);
 		    } else {
@@ -5176,8 +5178,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		header2 +=HU.select("",[ID,this.getDomId("sortdirection")],[["up", "Sort Up"],["down","Sort Down"]],
 				    sortAscending?"up":"down") + SPACE;
 	    }
-
-
 
 
 	    if(this.sizeByFields.length>0) {

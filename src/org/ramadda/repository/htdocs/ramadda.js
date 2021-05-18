@@ -616,7 +616,7 @@ function selectClick(id, entryId, value) {
         //        insertTagsInner(selector.elementId, selector.textComp.obj, "" +entryId+"|"+value+" "," ","importtype");
 	let editor = HU.getWikiEditor(selector.elementId);
 	if(editor) {
-	    insertTags(entryId, " ", "importtype");
+	    editor.insertTags(entryId, " ", "importtype");
 	} else {
 	    insertText(selector.elementId,entryId);
 	}
