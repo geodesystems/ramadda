@@ -20,9 +20,10 @@ package org.ramadda.data.docs;
 import org.ramadda.data.record.RecordFile;
 import org.ramadda.data.services.PointTypeHandler;
 
+
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
-
+import org.ramadda.repository.metadata.*;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 import org.ramadda.util.text.CsvUtil;
@@ -94,6 +95,16 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
             throws Exception {
         String commands =
             (String) entry.getValue(ConvertibleTypeHandler.IDX_COMMANDS);
+	if(!Utils.stringDefined(commands)) {
+	    List<Metadata> metadataList =
+		getMetadataManager().findMetadata(request, entry,
+						  "csv_commands", true);
+	    if ((metadataList != null) && (metadataList.size() > 0)) {
+		commands = metadataList.get(0).getAttr1();
+	    }
+	}
+
+
         List<StringBuilder> toks    = CsvUtil.tokenizeCommands(commands);
         List<String>        args    = new ArrayList<String>();
         for (int j = 0; j < toks.size(); j++) {
