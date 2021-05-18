@@ -380,6 +380,17 @@ public abstract class CsvOperator {
         return indices.get(0);
     }
 
+    private boolean isLastIndex(String tok) {
+	return tok.startsWith("_last") && tok.endsWith("_");
+    }
+
+    private int getLastIndex(String tok, int last) {
+	if (tok.equals("_last_")) {
+	    return last;
+	}
+	return -1;
+    }
+
     /**
      * _more_
      *
@@ -412,13 +423,21 @@ public abstract class CsvOperator {
                 columnMap = new Hashtable<String, Integer>();
                 for (int i = 0; i < header.size(); i++) {
                     String colName = (String) header.get(i);
+		    String colId = Utils.makeID(colName,false);
+		    colName = colName.trim();
                     columnMap.put(colName, i);
-                    columnMap.put(Utils.makeID(colName), i);
+                    columnMap.put(colId, i);
                     columnMap.put(colName.toLowerCase(), i);
+                    columnMap.put(i+"", i);
                 }
             }
             if (toks.size() == 1) {
                 String tok = toks.get(0);
+                if (isLastIndex(tok)) {
+		    indices.add(getLastIndex(tok,header.size()-1));
+		    return;
+		}
+
                 if (tok.equals("*")) {
                     for (int i = 0; i < header.size(); i++) {
                         if ( !colsSeen.contains(i)) {
@@ -450,12 +469,28 @@ public abstract class CsvOperator {
                     throw new RuntimeException("Could not find index:" + tok);
                 }
             } else {
-                Integer iv1 = columnMap.get(toks.get(0));
-                Integer iv2 = columnMap.get(toks.get(1));
+		String tok1 = toks.get(0);
+		String tok2 = toks.get(1);
+                if (isLastIndex(tok1)) {
+		    start = getLastIndex(tok1,header.size()-1);
+		} else {
+		    Integer iv =  columnMap.get(tok1);
+		    if(iv!=null) start=iv;
+		}
+                if (isLastIndex(tok2)) {
+		    end = getLastIndex(tok2,header.size()-1);
+		} else {
+		    Integer iv =  columnMap.get(tok2);
+		    if(iv!=null) end=iv;
+		}
+		if(start==-1 || end==-1) throw new RuntimeException("Could not find indices:" + toks);
+		/*
+                Integer iv2 = columnMap.get(tok2);
                 if ((iv1 != null) && (iv2 != null)) {
                     start = iv1;
                     end   = iv2;
                 }
+		*/
             }
         }
         if (start >= 0) {
