@@ -6831,13 +6831,19 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 children = getEntries(request, wikiUtil, entry,
                                       changeEntries, props);
             }
+	    Entry first  = getEntryUtil().findEntry(children,  getProperty(wikiUtil, props,"firstEntry"));
             StringBuilder tmp = new StringBuilder();
+	    if(first!=null)
+		tmp.append(first.getId() + ":"
+                           + first.getName().replaceAll(",", " ").replaceAll("\"","&quot;"));
+	    
             for (Entry child : children) {
+		if(first!=null && first.equals(child)) continue;
                 if (tmp.length() > 0) {
                     tmp.append(",");
                 }
                 tmp.append(child.getId() + ":"
-                           + child.getName().replaceAll(",", " "));
+                           + child.getName().replaceAll(",", " ").replaceAll("\"","&quot;"));
             }
             propList.add("entryCollection");
             propList.add(Json.quote(tmp.toString()));
