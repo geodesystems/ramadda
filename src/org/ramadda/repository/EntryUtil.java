@@ -223,6 +223,14 @@ public class EntryUtil extends RepositoryManager {
 	return null;
     }
 
+    public static Entry findEntry( List<Entry> list, String id) {
+	if(id==null) return null;
+	for(Entry e: list)
+	    if(e.getId().equals(id)) return e;
+	return null;
+    }
+
+
 
     /**
      * _more_
