@@ -2071,6 +2071,10 @@ public class Utils extends IO {
      * @return _more_
      */
     public static String makeID(String label) {
+	return makeID(label,false);
+    }
+
+    public static String makeID(String label,boolean forCode) {	
         label = stripTags(label);
         label = label.trim().toLowerCase().replaceAll(" ",
                 "_").replaceAll("\\.", "_").replaceAll("\n",
@@ -2081,8 +2085,9 @@ public class Utils extends IO {
         label = label.replaceAll("__+", "_");
         label = label.replaceAll("[\\{\\}=]+", "_");
         label = label.replaceAll("_$", "");
-	if(Pattern.matches("^[0-9]+.*", label))
+	if(forCode && Pattern.matches("^[0-9]+.*", label)) {
 	    label  = "_" + label;
+	}
         return label;
     }
 
