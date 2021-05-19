@@ -446,6 +446,7 @@ This gets draw in maps as a direction indicator.
     <type
        name="CSV Convert Commands"
        id="csv_commands">
+      <element name="Name"/>
       <element name="Commands" 	 rows="10"/>
 
     </type>

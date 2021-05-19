@@ -100,7 +100,7 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
 		getMetadataManager().findMetadata(request, entry,
 						  "csv_commands", true);
 	    if ((metadataList != null) && (metadataList.size() > 0)) {
-		commands = metadataList.get(0).getAttr1();
+		commands = metadataList.get(0).getAttr2();
 	    }
 	}
 
