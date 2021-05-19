@@ -3325,11 +3325,13 @@ function DisplayThing(argId, argProperties) {
 		    this.changeEntries.push(toks[0]);
 		    enums.push([toks[0],toks[1]]);
 		});
-		let prev = HU.span([CLASS,"display-changeentries-button", TITLE,"Previous entry", ID, this.getDomId(ID_ENTRIES_PREV), TITLE,"Previous"], HU.getIconImage("fa-chevron-left"));
- 		let next = HU.span([CLASS, "display-changeentries-button", TITLE,"Next entry", ID, this.getDomId(ID_ENTRIES_NEXT), TITLE,"Next"], HU.getIconImage("fa-chevron-right")); 
-		let label = argProperties.changeEntriesLabel||"";
+		let noun = this.getProperty("noun", "Data");
+		let prev = HU.span([CLASS,"display-changeentries-button", TITLE,"Previous " +noun, ID, this.getDomId(ID_ENTRIES_PREV), TITLE,"Previous"], HU.getIconImage("fa-chevron-left"));
+ 		let next = HU.span([CLASS, "display-changeentries-button", TITLE,"Next " + noun, ID, this.getDomId(ID_ENTRIES_NEXT), TITLE,"Next"], HU.getIconImage("fa-chevron-right")); 
+		let label = argProperties.changeEntriesLabel||"Select " + noun;
 		if(label!="") label = label+"<br>";
-		return  HU.center(label + prev +" " + HU.select("",[ATTR_ID, this.getDomId(ID_ENTRIES_MENU)],enums) +" " + next);
+
+		return  HU.center(HU.div([CLASS,"display-filter"], label + prev +" " + HU.select("",[ATTR_ID, this.getDomId(ID_ENTRIES_MENU)],enums) +" " + next));
 	    }
 	    return "";
 	},
