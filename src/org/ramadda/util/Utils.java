@@ -10,7 +10,7 @@
 * Unless required by applicable law or agreed to in writing, software
 * distributed under the License is distributed on an "AS IS" BASIS,
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-a* See the License for the specific language governing permissions and
+* See the License for the specific language governing permissions and
 * limitations under the License.
 */
 
@@ -114,13 +114,15 @@ public class Utils extends IO {
 
     /** _more_ */
     public static final SimpleDateFormat sdf;
+
+    /** _more_          */
     public static final SimpleDateFormat simpleSdf;
 
     static {
         sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         sdf.setTimeZone(TIMEZONE_DEFAULT);
         simpleSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        simpleSdf.setTimeZone(TIMEZONE_DEFAULT);	
+        simpleSdf.setTimeZone(TIMEZONE_DEFAULT);
     }
 
 
@@ -367,8 +369,7 @@ public class Utils extends IO {
             String rowDelimiter, String columnDelimiter, int skip) {
         int                cnt     = 0;
         List<List<String>> results = new ArrayList<List<String>>();
-        List<String> lines = Utils.split(source, rowDelimiter, true,
-                                 true);
+        List<String> lines = Utils.split(source, rowDelimiter, true, true);
         for (String line : lines) {
             line = line.trim();
             if (line.length() == 0) {
@@ -440,18 +441,28 @@ public class Utils extends IO {
      */
 
     public static List<String> tokenizeColumns(String line,
-					       String columnDelimiter) {
-	StrTokenizer tokenizer  =  StrTokenizer.getCSVInstance();
-	tokenizer.setEmptyTokenAsNull(true);
-	if ( !columnDelimiter.equals(",")) {
-	    tokenizer.setDelimiterChar(columnDelimiter.charAt(0));
-	}
-	return tokenizeColumns(line, tokenizer);
+            String columnDelimiter) {
+        StrTokenizer tokenizer = StrTokenizer.getCSVInstance();
+        tokenizer.setEmptyTokenAsNull(true);
+        if ( !columnDelimiter.equals(",")) {
+            tokenizer.setDelimiterChar(columnDelimiter.charAt(0));
+        }
+
+        return tokenizeColumns(line, tokenizer);
     }
 
-    public static List<String> tokenizeColumns(String line,  StrTokenizer tokenizer) {
-	tokenizer.reset(line);
-        List<String> toks      = new ArrayList<String>();
+    /**
+     * _more_
+     *
+     * @param line _more_
+     * @param tokenizer _more_
+     *
+     * @return _more_
+     */
+    public static List<String> tokenizeColumns(String line,
+            StrTokenizer tokenizer) {
+        tokenizer.reset(line);
+        List<String> toks = new ArrayList<String>();
         //        tokenizer.setQuoteChar('"');
         while (tokenizer.hasNext()) {
             String tok = tokenizer.nextToken();
@@ -460,7 +471,8 @@ public class Utils extends IO {
             }
             toks.add(tok);
         }
-	//	if(true) return toks;
+
+        //      if(true) return toks;
         return toks;
     }
 
@@ -481,8 +493,7 @@ public class Utils extends IO {
                 int    step  = 1;
                 String right = Utils.split(tok, "-", true, true).get(1);
                 if (right.indexOf(":") >= 0) {
-                    List<String> tmp = Utils.split(right, ":", true,
-                                           true);
+                    List<String> tmp = Utils.split(right, ":", true, true);
                     right = tmp.get(0);
                     if (tmp.size() > 1) {
                         step = Integer.parseInt(tmp.get(1));
@@ -941,11 +952,11 @@ public class Utils extends IO {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-	for(String dateString:new String[]{"04/01/2021"}) {
-	    debugDate = true;
-	    Date date = parseDate(dateString);
-	    System.err.println("date:" + dateString +" date:" + date);
-	}
+        for (String dateString : new String[] { "04/01/2021" }) {
+            debugDate = true;
+            Date date = parseDate(dateString);
+            System.err.println("date:" + dateString + " date:" + date);
+        }
         System.exit(0);
     }
 
@@ -970,6 +981,7 @@ public class Utils extends IO {
             if (dttm != null) {
                 dttm = dttm.replaceAll(" _ ", " ");
                 dttm = dttm.replaceAll(" / ", "/");
+
                 return makeDateFormat(dateFormats[dateFormatIdx]).parse(dttm);
             }
         }
@@ -1180,22 +1192,39 @@ public class Utils extends IO {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param properties _more_
+     *
+     * @return _more_
+     */
     public static List makeList(Hashtable properties) {
-	List l = new ArrayList();
+        List l = new ArrayList();
         for (Enumeration keys = properties.keys(); keys.hasMoreElements(); ) {
-	    Object key = keys.nextElement();
-	    l.add(key);
-	    l.add(properties.get(key));
+            Object key = keys.nextElement();
+            l.add(key);
+            l.add(properties.get(key));
         }
-	return l;
+
+        return l;
     }
 
 
+    /**
+     * _more_
+     *
+     * @param l _more_
+     *
+     * @return _more_
+     */
     public static List<String> makeStringList(List l) {
-	List<String> s = new ArrayList<String>();
-	for(Object o: l)
-	    s.add(o.toString());
-	return s;
+        List<String> s = new ArrayList<String>();
+        for (Object o : l) {
+            s.add(o.toString());
+        }
+
+        return s;
     }
 
     /**
@@ -1417,24 +1446,27 @@ public class Utils extends IO {
             int openParenIdx = tmp.indexOf("(");
             if (openParenIdx < 0) {
                 pattern.append(tmp);
+
                 break;
             }
             int closeParenIdx = tmp.indexOf(")");
             if (closeParenIdx < openParenIdx) {
                 pattern.append(tmp);
+
                 break;
             }
             int colonIdx = tmp.indexOf(":");
             if (colonIdx < 0) {
                 pattern.append(tmp);
+
                 break;
             }
-            if (colonIdx<openParenIdx) {
-                pattern.append(tmp.substring(0, colonIdx+1));
-                tmp = tmp.substring(colonIdx+1);
+            if (colonIdx < openParenIdx) {
+                pattern.append(tmp.substring(0, colonIdx + 1));
+                tmp = tmp.substring(colonIdx + 1);
                 continue;
-	    }
-	    //	    System.err.println("open:" + openParenIdx+" close:" + closeParenIdx +" colon:" + colonIdx+ " tmp:" + tmp);
+            }
+            //      System.err.println("open:" + openParenIdx+" close:" + closeParenIdx +" colon:" + colonIdx+ " tmp:" + tmp);
             if (closeParenIdx < colonIdx) {
                 pattern.append(tmp.substring(0, closeParenIdx + 1));
                 names.add("");
@@ -1845,9 +1877,10 @@ public class Utils extends IO {
      */
     public static int getProperty(Hashtable props, String key, int dflt) {
         String s = Utils.getProperty(props, key, (String) null);
-        if (!stringDefined(s)) {
+        if ( !stringDefined(s)) {
             return dflt;
         }
+
         return new Integer(s).intValue();
     }
 
@@ -1873,12 +1906,25 @@ public class Utils extends IO {
         return a;
     }
 
-    public static boolean equalsOne(Object obj, Object...values) {
-	if(obj==null) return false;
-	for(Object other: values) {
-	    if(other!=null && obj.equals(other)) return true;
-	}
-	return false;
+    /**
+     * _more_
+     *
+     * @param obj _more_
+     * @param values _more_
+     *
+     * @return _more_
+     */
+    public static boolean equalsOne(Object obj, Object... values) {
+        if (obj == null) {
+            return false;
+        }
+        for (Object other : values) {
+            if ((other != null) && obj.equals(other)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
@@ -2071,42 +2117,75 @@ public class Utils extends IO {
      * @return _more_
      */
     public static String makeID(String label) {
-	return makeID(label,false);
+        return makeID(label, false);
     }
 
-    public static String makeID(String label,boolean forCode) {	
+    /**
+     * _more_
+     *
+     * @param label _more_
+     * @param forCode _more_
+     *
+     * @return _more_
+     */
+    public static String makeID(String label, boolean forCode) {
         label = stripTags(label);
         label = label.trim().toLowerCase().replaceAll(" ",
                 "_").replaceAll("\\.", "_").replaceAll("\n",
                                 "_").replaceAll("\\(", "_").replaceAll("\\)",
                                     "_").replaceAll("\\?",
                                         "_").replaceAll("[\"'`]+", "").trim();
-        label = label.replaceAll("-", "_");	
+        label = label.replaceAll("-", "_");
         label = label.replaceAll("__+", "_");
         label = label.replaceAll("[\\{\\}=]+", "_");
         label = label.replaceAll("_$", "");
-	if(forCode && Pattern.matches("^[0-9]+.*", label)) {
-	    label  = "_" + label;
-	}
+        if (forCode && Pattern.matches("^[0-9]+.*", label)) {
+            label = "_" + label;
+        }
+
         return label;
     }
 
 
-    private static final String[] DATE_PATTERNS = {"\\d\\d\\d\\d-\\d\\d-\\d\\d","(january|february|march|april|may|june|july|august|septembe|october|november|december).*"};
+    /** _more_          */
+    private static final String[] DATE_PATTERNS = { "\\d\\d\\d\\d-\\d\\d-\\d\\d",
+            "(january|february|march|april|may|june|july|august|septembe|october|november|december).*" };
+
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
     public static boolean isDate(String s) {
-	for(String p: DATE_PATTERNS) {
-	    if(Pattern.matches(p,s)) return true;
-	}
-	return false;
+        for (String p : DATE_PATTERNS) {
+            if (Pattern.matches(p, s)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
     public static boolean isNumber(String s) {
-	if(s.equals("nan") || s.equals("NaN")) return true;
-	try {
-	    Double.parseDouble(s);
-	    return true;
-	}catch(Exception ignore) {}
-	return false;
+        if (s.equals("nan") || s.equals("NaN")) {
+            return true;
+        }
+        try {
+            Double.parseDouble(s);
+
+            return true;
+        } catch (Exception ignore) {}
+
+        return false;
     }
 
 
@@ -2618,19 +2697,27 @@ public class Utils extends IO {
     }
 
 
-    public static Hashtable<String,String> parseKeyValue(String args) {
-	Hashtable props = new Hashtable();
-	for (String tok : Utils.parseCommandLine(args)) {
-	    List<String> toks = StringUtil.splitUpTo(tok, "=", 2);
-	    if (toks.size() == 2) {
-		props.put(toks.get(0), toks.get(1));
-	    } else if(toks.size()==1) {
-		props.put(toks.get(0), "");
-	    }
-	}
-	return props;
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @return _more_
+     */
+    public static Hashtable<String, String> parseKeyValue(String args) {
+        Hashtable props = new Hashtable();
+        for (String tok : Utils.parseCommandLine(args)) {
+            List<String> toks = StringUtil.splitUpTo(tok, "=", 2);
+            if (toks.size() == 2) {
+                props.put(toks.get(0), toks.get(1));
+            } else if (toks.size() == 1) {
+                props.put(toks.get(0), "");
+            }
+        }
+
+        return props;
     }
-	
+
 
     /**
      * _more_
@@ -2849,36 +2936,35 @@ public class Utils extends IO {
 
 
     //j--
+
+    /** _more_          */
     private static DateFormat[] DATE_FORMATS = {
         new DateFormat("yyyy-MM-dd'T'HH:mm:ss Z"),
-	new DateFormat("yyyyMMdd'T'HHmmss Z"),
+        new DateFormat("yyyyMMdd'T'HHmmss Z"),
         new DateFormat("yyyy/MM/dd HH:mm:ss Z"),
-	new DateFormat("yyyy-MM-dd HH:mm:ss Z"),
+        new DateFormat("yyyy-MM-dd HH:mm:ss Z"),
         new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"),
-	new DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
+        new DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
         new DateFormat("yyyy-MM-dd HH:mm:ss'Z'"),
-	new DateFormat("yyyy-MM-dd HH:mm:ss.SSS'Z'"),
+        new DateFormat("yyyy-MM-dd HH:mm:ss.SSS'Z'"),
         new DateFormat("EEE MMM dd HH:mm:ss Z yyyy"),
-	new DateFormat("yyyy-MM-dd'T'HH:mm:ss"),
+        new DateFormat("yyyy-MM-dd'T'HH:mm:ss"),
         new DateFormat("yyyyMMdd'T'HHmmss"),
-	new DateFormat("yyyy-MM-dd'T'HH:mm Z"),
-	new DateFormat("yyyyMMdd'T'HHmm Z"),
+        new DateFormat("yyyy-MM-dd'T'HH:mm Z"),
+        new DateFormat("yyyyMMdd'T'HHmm Z"),
         new DateFormat("yyyy-MM-dd'T'HH:mm"),
-	new DateFormat("yyyyMMdd'T'HHmm"),
-	new DateFormat("yyyy/MM/dd HH:mm:ss"),
+        new DateFormat("yyyyMMdd'T'HHmm"),
+        new DateFormat("yyyy/MM/dd HH:mm:ss"),
         new DateFormat("yyyy-MM-dd HH:mm:ss"),
-	new DateFormat("yyyy/MM/dd HH:mm Z"),
-	new DateFormat("yyyy-MM-dd HH:mm Z"),
-        new DateFormat("yyyy/MM/dd HH:mm",true), 
-	new DateFormat("yyyy-MM-dd HH:mm",true),
-	new DateFormat("yyyy-MM-dd",true),
-	new DateFormat("yyyy/MM/dd",true),
-	new DateFormat("MM/dd/yyyy",true),
-        new DateFormat("yyyy-MM",true),
-	new DateFormat("yyyy/MM",true),
-	new DateFormat("yyyyMMdd",true),
-	new DateFormat("yyyyMM",true),
-	new DateFormat("yyyy",true)
+        new DateFormat("yyyy/MM/dd HH:mm Z"),
+        new DateFormat("yyyy-MM-dd HH:mm Z"),
+        new DateFormat("yyyy/MM/dd HH:mm", true),
+        new DateFormat("yyyy-MM-dd HH:mm", true),
+        new DateFormat("yyyy-MM-dd", true),
+        new DateFormat("yyyy/MM/dd", true),
+        new DateFormat("MM/dd/yyyy", true), new DateFormat("yyyy-MM", true),
+        new DateFormat("yyyy/MM", true), new DateFormat("yyyyMMdd", true),
+        new DateFormat("yyyyMM", true), new DateFormat("yyyy", true)
     };
     //j++
 
@@ -2890,6 +2976,7 @@ public class Utils extends IO {
     private static int lengthLastDate = 0;
 
 
+    /** _more_          */
     public static boolean debugDate = false;
 
     /**
@@ -2900,19 +2987,24 @@ public class Utils extends IO {
      * @return _more_
      */
     public static Date parseDate(String dttm) {
-	if(dttm==null) return null;
-        ParsePosition pp  = new ParsePosition(0);
-	for(DateFormat dateFormat:getFormatters()) {
-	    Date date = dateFormat.parse(dttm, pp);
-	    if (date != null) {
-		if (debugDate) {
-		    System.err.println("   success:" + " date:" + dttm
-				       + " format:" + dateFormat.format +" date:" + date);
-		}
-		return date;
-	    }
-	}
-	return null;
+        if (dttm == null) {
+            return null;
+        }
+        ParsePosition pp = new ParsePosition(0);
+        for (DateFormat dateFormat : getFormatters()) {
+            Date date = dateFormat.parse(dttm, pp);
+            if (date != null) {
+                if (debugDate) {
+                    System.err.println("   success:" + " date:" + dttm
+                                       + " format:" + dateFormat.format
+                                       + " date:" + date);
+                }
+
+                return date;
+            }
+        }
+
+        return null;
     }
 
 
@@ -2989,6 +3081,23 @@ public class Utils extends IO {
         }
 
         return h;
+    }
+
+    /**
+     * _more_
+     *
+     * @param set _more_
+     * @param o _more_
+     *
+     * @return _more_
+     */
+    public static boolean testAndSet(HashSet set, Object o) {
+        if (set.contains(o)) {
+            return true;
+        }
+        set.add(o);
+
+        return false;
     }
 
     /**
@@ -3508,14 +3617,26 @@ public class Utils extends IO {
         }
     }
 
+    /**
+     * _more_
+     *
+     * @param s _more_
+     * @param pattern _more_
+     * @param value _more_
+     *
+     * @return _more_
+     */
     public static String replaceAll(String s, String pattern, String value) {
-	String newString=s;
-	while(true) {
-	    newString=  s.replace(pattern, value);	    
-	    if(newString.equals(s)) break;
-    s= newString;
-	}
-	return newString;
+        String newString = s;
+        while (true) {
+            newString = s.replace(pattern, value);
+            if (newString.equals(s)) {
+                break;
+            }
+            s = newString;
+        }
+
+        return newString;
     }
 
     /**
@@ -3562,49 +3683,104 @@ public class Utils extends IO {
         return image.getSubimage(left, top, w, h);
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Tue, Jun 1, '21
+     * @author         Enter your name here...    
+     */
     public static class DateFormat {
-	SimpleDateFormat sdf;
-	String format;
-	Pattern pattern;
-	String spattern;
 
-	public DateFormat(String format, String pattern) {
-	    this.format = format;
-	    sdf = new SimpleDateFormat(this.format);
-	    sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-	    this.pattern = pattern!=null?Pattern.compile(spattern = pattern):null;
-	}
+        /** _more_          */
+        SimpleDateFormat sdf;
 
-	public DateFormat(String format) {
-	    this(format,null);
-	}
+        /** _more_          */
+        String format;
 
-	public DateFormat(String format,boolean cvrt) {
-	    this(format,convert(format));
-	}
+        /** _more_          */
+        Pattern pattern;
 
-	private static String convert(String s) {
-	    s = s.replaceAll("[yMdHms]","\\\\d");
-	    return s;
-	}
+        /** _more_          */
+        String spattern;
 
-	public synchronized Date  parse(String dttm, ParsePosition pp) {
-	    if(pattern!=null) {
-		Matcher m = pattern.matcher(dttm);
-		if(!m.matches()) {
-		    if(debugDate)
-			System.err.println("not match:" + dttm +" pattern:" + spattern);
-		    return null;
-		}
-		if(debugDate)
-		    System.err.println("match:" + dttm +" pattern:" + spattern);
-	    }
-	    try {
-		return sdf.parse(dttm,pp);
-	    } catch(Exception exc) {
-		return null;
-	    }
-	}
+        /**
+         * _more_
+         *
+         * @param format _more_
+         * @param pattern _more_
+         */
+        public DateFormat(String format, String pattern) {
+            this.format = format;
+            sdf         = new SimpleDateFormat(this.format);
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+            this.pattern = (pattern != null)
+                           ? Pattern.compile(spattern = pattern)
+                           : null;
+        }
+
+        /**
+         * _more_
+         *
+         * @param format _more_
+         */
+        public DateFormat(String format) {
+            this(format, null);
+        }
+
+        /**
+         * _more_
+         *
+         * @param format _more_
+         * @param cvrt _more_
+         */
+        public DateFormat(String format, boolean cvrt) {
+            this(format, convert(format));
+        }
+
+        /**
+         * _more_
+         *
+         * @param s _more_
+         *
+         * @return _more_
+         */
+        private static String convert(String s) {
+            s = s.replaceAll("[yMdHms]", "\\\\d");
+
+            return s;
+        }
+
+        /**
+         * _more_
+         *
+         * @param dttm _more_
+         * @param pp _more_
+         *
+         * @return _more_
+         */
+        public synchronized Date parse(String dttm, ParsePosition pp) {
+            if (pattern != null) {
+                Matcher m = pattern.matcher(dttm);
+                if ( !m.matches()) {
+                    if (debugDate) {
+                        System.err.println("not match:" + dttm + " pattern:"
+                                           + spattern);
+                    }
+
+                    return null;
+                }
+                if (debugDate) {
+                    System.err.println("match:" + dttm + " pattern:"
+                                       + spattern);
+                }
+            }
+            try {
+                return sdf.parse(dttm, pp);
+            } catch (Exception exc) {
+                return null;
+            }
+        }
 
 
     }
@@ -3909,49 +4085,106 @@ public class Utils extends IO {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
     public static List<String> splitMacros(String s) {
-	return StringUtil.splitMacros(s);
-      
+        return StringUtil.splitMacros(s);
+
     }
 
+    /**
+     * _more_
+     *
+     * @param source _more_
+     *
+     * @return _more_
+     */
     public static List<String> split(Object source) {
-	return split(source, ",");
+        return split(source, ",");
     }
 
+    /**
+     * _more_
+     *
+     * @param s _more_
+     * @param delim _more_
+     * @param cnt _more_
+     *
+     * @return _more_
+     */
     public static String[] split(Object s, String delim, int cnt) {
-	return  StringUtil.split(s.toString(), delim, cnt);
+        return StringUtil.split(s.toString(), delim, cnt);
     }
 
-    public static List<String> splitUpTo(Object s,String delim, int cnt) {
-	return StringUtil.splitUpTo(s.toString(),delim,cnt);
+    /**
+     * _more_
+     *
+     * @param s _more_
+     * @param delim _more_
+     * @param cnt _more_
+     *
+     * @return _more_
+     */
+    public static List<String> splitUpTo(Object s, String delim, int cnt) {
+        return StringUtil.splitUpTo(s.toString(), delim, cnt);
     }
 
-    public static List<String> split(Object s,String delim) {
-	return split(s,delim,false,false);
+    /**
+     * _more_
+     *
+     * @param s _more_
+     * @param delim _more_
+     *
+     * @return _more_
+     */
+    public static List<String> split(Object s, String delim) {
+        return split(s, delim, false, false);
     }
-	
 
-    public static List<String> split(Object o, String delim,  boolean trim, boolean skipBlank) {
-	//	List<String> test=    StringUtil.split(o, delim, trim, skipBlank);
-	List<String> toks = new ArrayList<String>();
-	if(o==null) return toks;
-	String s= o.toString();
-	delim = Pattern.quote(delim);
-	String[]a = s.split(delim);
-	for(String tok:a) {
-	    if(trim) tok = tok.trim();
-	    if(skipBlank && tok.length()==0) continue;
-	    toks.add(tok);
-	}
 
-	/*
-	  if(test.size()!=toks.size()) {
-	  System.err.println("Error: " + "delim:" + delim +" o:" + o);
-	  System.err.println("OLD:" + test.size());
-	  System.err.println("NEW:"+ toks.size() +" " + a.length);
-	  }
-	*/
-	return toks;
+    /**
+     * _more_
+     *
+     * @param o _more_
+     * @param delim _more_
+     * @param trim _more_
+     * @param skipBlank _more_
+     *
+     * @return _more_
+     */
+    public static List<String> split(Object o, String delim, boolean trim,
+                                     boolean skipBlank) {
+        //      List<String> test=    StringUtil.split(o, delim, trim, skipBlank);
+        List<String> toks = new ArrayList<String>();
+        if (o == null) {
+            return toks;
+        }
+        String s = o.toString();
+        delim = Pattern.quote(delim);
+        String[] a = s.split(delim);
+        for (String tok : a) {
+            if (trim) {
+                tok = tok.trim();
+            }
+            if (skipBlank && (tok.length() == 0)) {
+                continue;
+            }
+            toks.add(tok);
+        }
+
+        /*
+          if(test.size()!=toks.size()) {
+          System.err.println("Error: " + "delim:" + delim +" o:" + o);
+          System.err.println("OLD:" + test.size());
+          System.err.println("NEW:"+ toks.size() +" " + a.length);
+          }
+        */
+        return toks;
     }
 
 
@@ -4165,25 +4398,34 @@ public class Utils extends IO {
     }
 
 
-    public static List<List> splitList(List list,int max) {
-	List<List>  lists = new ArrayList<List>();
-	if(list.size()<max) {
-	    lists.add(list);
-	} else {
-	    int num =(int) Math.ceil(list.size()/(double)max);
-	    int maxPer = (int)Math.ceil(list.size()/(double)num);
-	    List current = new ArrayList();
-	    lists.add(current);
-	    for(int i=0;i<list.size();i++) {
-		Object o  = list.get(i);
-		if(current.size()>=maxPer) {
-		    current = new ArrayList();
-		    lists.add(current);
-		}
-		current.add(o);
-	    }
-	}
-	return lists;
+    /**
+     * _more_
+     *
+     * @param list _more_
+     * @param max _more_
+     *
+     * @return _more_
+     */
+    public static List<List> splitList(List list, int max) {
+        List<List> lists = new ArrayList<List>();
+        if (list.size() < max) {
+            lists.add(list);
+        } else {
+            int  num     = (int) Math.ceil(list.size() / (double) max);
+            int  maxPer  = (int) Math.ceil(list.size() / (double) num);
+            List current = new ArrayList();
+            lists.add(current);
+            for (int i = 0; i < list.size(); i++) {
+                Object o = list.get(i);
+                if (current.size() >= maxPer) {
+                    current = new ArrayList();
+                    lists.add(current);
+                }
+                current.add(o);
+            }
+        }
+
+        return lists;
     }
 
 
@@ -4218,11 +4460,21 @@ public class Utils extends IO {
         return ((o1 == null) && (o2 == null));
     }
 
+    /**
+     * _more_
+     *
+     * @param s _more_
+     * @param length _more_
+     * @param pad _more_
+     *
+     * @return _more_
+     */
     public static String clipTo(String s, int length, String pad) {
-	if(s.length()>length) {
-	    s = s.substring(0,length)+pad;
-	}
-	return s;
+        if (s.length() > length) {
+            s = s.substring(0, length) + pad;
+        }
+
+        return s;
     }
 
     /**
@@ -4343,16 +4595,27 @@ public class Utils extends IO {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param fromDate _more_
+     * @param toDate _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     *
+     * @throws java.text.ParseException _more_
+     */
     public static Date[] getDateRange(String fromDate, String toDate,
                                       Date dflt)
             throws java.text.ParseException {
 
         Date fromDttm = DateUtil.parseRelative(dflt, fromDate, -1);
         Date toDttm   = DateUtil.parseRelative(dflt, toDate, +1);
-	//	System.err.println ("dflt: " + dflt);
-	//	System.err.println ("fromDttm:" + fromDate + " " + fromDttm);
-	//	System.err.println ("toDttm:" + toDate + " " + toDttm);
-	
+        //      System.err.println ("dflt: " + dflt);
+        //      System.err.println ("fromDttm:" + fromDate + " " + fromDttm);
+        //      System.err.println ("toDttm:" + toDate + " " + toDttm);
+
 
         if ((fromDate.length() > 0) && (fromDttm == null)) {
             if ( !fromDate.startsWith("-")) {
@@ -4385,15 +4648,31 @@ public class Utils extends IO {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public static DateFormat[] getFormatters() {
-	return DATE_FORMATS;
+        return DATE_FORMATS;
     }
 
 
 
+    /** _more_          */
     private static SimpleDateFormat doySdf;
+
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     *
+     * @throws java.text.ParseException _more_
+     */
     public static Date parse(String s) throws java.text.ParseException {
-	boolean debug  = true;
+        boolean debug = true;
 
         //Check for yyyy-DDD
         if ((s.length() == 8) && s.substring(4, 5).equals("-")) {
@@ -4403,6 +4682,7 @@ public class Utils extends IO {
                 }
                 synchronized (doySdf) {
                     Date date = doySdf.parse(s);
+
                     //              System.err.println("using doy:" + s +" " + date);
                     return date;
                 }
@@ -4412,28 +4692,35 @@ public class Utils extends IO {
 
 
         if ((lastFormat != null) && (lengthLastDate == s.length())) {
-	    Date date = lastFormat.parse(s,null);
-	    if(date!=null) {
-		if (debug) {
-		    System.err.println("Using lastSdf format= "
-				       + lastFormat.format);
-		}
-		return date;
-	    }
+            Date date = lastFormat.parse(s, null);
+            if (date != null) {
+                if (debug) {
+                    System.err.println("Using lastSdf format= "
+                                       + lastFormat.format);
+                }
+
+                return date;
+            }
         }
 
-        for (DateFormat sdf: getFormatters()) {
-	    if(debug) System.err.println("   trying " + sdf.format);
-	    Date dttm = sdf.parse(s,null);
-	    if(dttm==null) continue;
-	    lastFormat = sdf;
-	    lengthLastDate = s.length();
-	    if (debug) {
-		System.err.println("   success:" + " date:" + s
-				   + " format:" + sdf.format);
-	    }
-	    return dttm;
+        for (DateFormat sdf : getFormatters()) {
+            if (debug) {
+                System.err.println("   trying " + sdf.format);
+            }
+            Date dttm = sdf.parse(s, null);
+            if (dttm == null) {
+                continue;
+            }
+            lastFormat     = sdf;
+            lengthLastDate = s.length();
+            if (debug) {
+                System.err.println("   success:" + " date:" + s + " format:"
+                                   + sdf.format);
+            }
+
+            return dttm;
         }
+
         throw new IllegalArgumentException("Could not find date format for:"
                                            + s);
     }
@@ -4505,58 +4792,152 @@ public class Utils extends IO {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param howMany _more_
+     *
+     * @return _more_
+     */
     public static String getStack(int howMany) {
-	List<String> lines = new ArrayList<String>();
-	StringBuffer sb =new StringBuffer();
-	int cnt = 0;
-	for(String line: split( Misc.getStackTrace(),"\n")) {
-	    cnt++;
-	    //skip the first 3 lines so we don't get this method, etc
-	    if(cnt<=3) continue;
-	    lines.add(line);
-	    if(lines.size()>=howMany) break;
-	}
-	return join(lines,"\n",false);
-    }
-	    
+        List<String> lines = new ArrayList<String>();
+        StringBuffer sb    = new StringBuffer();
+        int          cnt   = 0;
+        for (String line : split(Misc.getStackTrace(), "\n")) {
+            cnt++;
+            //skip the first 3 lines so we don't get this method, etc
+            if (cnt <= 3) {
+                continue;
+            }
+            lines.add(line);
+            if (lines.size() >= howMany) {
+                break;
+            }
+        }
 
+        return join(lines, "\n", false);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param d1 _more_
+     * @param d2 _more_
+     *
+     * @return _more_
+     */
     public static double max(double d1, double d2) {
-	if(Double.isNaN(d1)) return d2;
-	if(Double.isNaN(d2)) return d1;
-	return Math.max(d1,d2);
+        if (Double.isNaN(d1)) {
+            return d2;
+        }
+        if (Double.isNaN(d2)) {
+            return d1;
+        }
+
+        return Math.max(d1, d2);
     }
 
+    /**
+     * _more_
+     *
+     * @param d1 _more_
+     * @param d2 _more_
+     *
+     * @return _more_
+     */
     public static float max(float d1, float d2) {
-	if(Float.isNaN(d1)) return d2;
-	if(Float.isNaN(d2)) return d1;
-	return Math.max(d1,d2);
-    }    
+        if (Float.isNaN(d1)) {
+            return d2;
+        }
+        if (Float.isNaN(d2)) {
+            return d1;
+        }
 
+        return Math.max(d1, d2);
+    }
+
+    /**
+     * _more_
+     *
+     * @param d1 _more_
+     * @param d2 _more_
+     *
+     * @return _more_
+     */
     public static double min(double d1, double d2) {
-	if(Double.isNaN(d1)) return d2;
-	if(Double.isNaN(d2)) return d1;
-	return Math.min(d1,d2);
+        if (Double.isNaN(d1)) {
+            return d2;
+        }
+        if (Double.isNaN(d2)) {
+            return d1;
+        }
+
+        return Math.min(d1, d2);
     }
 
+    /**
+     * _more_
+     *
+     * @param d1 _more_
+     * @param d2 _more_
+     *
+     * @return _more_
+     */
     public static float min(float d1, float d2) {
-	if(Float.isNaN(d1)) return d2;
-	if(Float.isNaN(d2)) return d1;
-	return Math.min(d1,d2);
-    }    
-    
+        if (Float.isNaN(d1)) {
+            return d2;
+        }
+        if (Float.isNaN(d2)) {
+            return d1;
+        }
 
-    public static Date min(Date d1, Date d2) {
-	if(d1==null) return d2;
-	if(d2==null) return d1;
-	if(d1.getTime()<d2.getTime()) return d1;
-	return d2;
+        return Math.min(d1, d2);
     }
 
+
+    /**
+     * _more_
+     *
+     * @param d1 _more_
+     * @param d2 _more_
+     *
+     * @return _more_
+     */
+    public static Date min(Date d1, Date d2) {
+        if (d1 == null) {
+            return d2;
+        }
+        if (d2 == null) {
+            return d1;
+        }
+        if (d1.getTime() < d2.getTime()) {
+            return d1;
+        }
+
+        return d2;
+    }
+
+    /**
+     * _more_
+     *
+     * @param d1 _more_
+     * @param d2 _more_
+     *
+     * @return _more_
+     */
     public static Date max(Date d1, Date d2) {
-	if(d1==null) return d2;
-	if(d2==null) return d1;
-	if(d1.getTime()>d2.getTime()) return d1;
-	return d2;
+        if (d1 == null) {
+            return d2;
+        }
+        if (d2 == null) {
+            return d1;
+        }
+        if (d1.getTime() > d2.getTime()) {
+            return d1;
+        }
+
+        return d2;
     }
 
 
@@ -4568,9 +4949,10 @@ public class Utils extends IO {
      * @param <U>
      * @param <V>
      *
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public interface TriConsumer<T, U, V> {
+
         /**
          * _more_
          *
@@ -4581,38 +4963,81 @@ public class Utils extends IO {
         void accept(T t, U u, V v);
     }
 
-    public interface TriFunction<R,T, U, V> {
+    /**
+     * Interface description
+     *
+     *
+     * @param <R>
+     * @param <T>
+     * @param <U>
+     * @param <V>
+     *
+     * @author         Enter your name here...    
+     */
+    public interface TriFunction<R, T, U, V> {
+
         /**
          * _more_
          *
          * @param t _more_
          * @param u _more_
          * @param v _more_
+         *
+         * @return _more_
          */
         R call(T t, U u, V v);
     }
 
-    public interface QuadFunction<R,T, U, V,W> {
+    /**
+     * Interface description
+     *
+     *
+     * @param <R>
+     * @param <T>
+     * @param <U>
+     * @param <V>
+     * @param <W>
+     *
+     * @author         Enter your name here...    
+     */
+    public interface QuadFunction<R, T, U, V, W> {
+
         /**
          * _more_
          *
          * @param t _more_
          * @param u _more_
          * @param v _more_
+         * @param w _more_
+         *
+         * @return _more_
          */
         R call(T t, U u, V v, W w);
     }
 
 
-    public interface QuadConsumer < T, U, V, W > {
-	/**
+    /**
+     * Interface description
+     *
+     *
+     * @param <T>
+     * @param <U>
+     * @param <V>
+     * @param <W>
+     *
+     * @author         Enter your name here...    
+     */
+    public interface QuadConsumer<T, U, V, W> {
+
+        /**
          * _more_
          *
          * @param t _more_
          * @param u _more_
          * @param v _more_
+         * @param w _more_
          */
-	void		accept    (T t, U u, V v, W w);
+        void accept(T t, U u, V v, W w);
     }
 
 
