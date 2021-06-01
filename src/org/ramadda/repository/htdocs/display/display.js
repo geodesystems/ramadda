@@ -722,12 +722,43 @@ function DisplayThing(argId, argProperties) {
 	    }
 	    return fields;
 	},
+	getFieldLabel:function(field) {
+	    return  this.getProperty(field.getId()+".label",field.getLabel());
+	},
 	getRecordUrlHtml: function(attrs, field, record) {
 	    let value = record.getValue(field.getIndex());
 	    let label = attrs[field.getId()+".label"] || attrs["url.label"] ||attrs["label"] || "Link";
 	    return  HU.href(value,label,["target","_link"]);
 	},
 
+	getSortedFields: function(fields) {
+	    let anyGroups = fields.filter(f=>{
+		if(f==null) return true;
+		return f.getGroup()!=null;
+	    }).length>0;
+
+	    if(!anyGroups) return fields;
+	    let groups = [];
+	    let map = {};
+	    for(let i=0;i<fields.length;i++) {
+		let field = fields[i];
+		if(field==null) continue;
+		group = field.getGroup();
+		if(group==null) {
+		    group = group+"_"+ i;
+		}
+		if(!map[group]) {
+		    map[group] = [];
+		    groups.push(group);
+		}
+		map[group].push(field);
+	    }
+	    fields = [];
+	    groups.forEach(group=>{
+		fields = Utils.mergeLists(fields,map[group]);
+	    });
+	    return fields;
+	},
         getRecordHtml: function(record, fields, template, debug) {
 	    fields = this.getFields(fields);
 	    if(!fields) return "";
@@ -808,7 +839,9 @@ function DisplayThing(argId, argProperties) {
 		labelColAttrs = ["align","right"];
 	    }
 	    let labelWidth = this.getProperty("labelWidth");
+	    fields= this.getSortedFields(fields);
 
+	    let group = null;
             for (let doDerived = 0; doDerived < 2; doDerived++) {
                 for (let i = 0; i < fields.length; i++) {
                     let field = fields[i];
@@ -833,6 +866,12 @@ function DisplayThing(argId, argProperties) {
                             continue;
                         }
                     }
+		    if(group!=field.getGroup()) {
+			group = field.getGroup();
+			if(Utils.isDefined(group)) {
+			    rows.push(HU.tr([],HU.td(["colspan","2"],HU.div([CLASS,"ramadda-header-small"],group))));
+			}
+		    }
                     let initValue = record.getValue(field.getIndex());
                     let value = initValue;
 		    let fieldValue = value;
@@ -1254,6 +1293,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'binDate',ex:'day|month|year',tt:'Bin the dates'},
 	{p:'binType',ex:'count|average|total'},
 	{p:'groupBy',ex:'field',tt:'Group the data'},
+	{p:'aggregateBy',tt:'Add an extra row for the aggregated rows'},
+	{p:'aggregateOperator',ex:'sum|percent',tt:'Operator to apply on the aggregated rows'},
+	{p:'aggregateOperator.fieldName',ex:'sum|percent',tt:'Operator to apply on the aggregated rows for the given field'},	
+
+
 	{p:'convertData', label:'derived data', ex:'derived(field=new_field_id, function=foo*bar);',tt:'Add derived field'},
 	{p:'convertData',label:'merge rows',ex:'mergeRows(keyFields=f1\\\\,f2, operator=count|sum|average, valueFields=);',tt:'Merge rows together'},
 	{p:'convertData',label:'rotate data', ex:'rotateData(includeFields=true,includeDate=true,flipColumns=true);',tt:'Rotate data'},
@@ -1688,12 +1732,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return iconMap;
 	},
 	getColorByInfo: function(records, prop,colorByMapProp, defaultColorTable,propPrefix) {
-            var pointData = this.getData();
+            let pointData = this.getData();
             if (pointData == null) return null;
 	    if(this.getProperty("colorByAllRecords")) {
 		records = pointData.getRecords();
 	    }
-	    var fields = pointData.getRecordFields();
+	    let fields = pointData.getRecordFields();
 	    return new ColorByInfo(this, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix);
 	},
 	getColorByMap: function(prop) {
@@ -2116,7 +2160,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.removeProperty(PROP_FIELDS);
             this.fieldSelectionChanged();
             if (event.shiftKey) {
-                var fields = this.getSelectedFields();
+                let fields = this.getSelectedFields();
                 this.propagateEvent("handleEventFieldsSelected", fields);
             }
         },
@@ -2173,13 +2217,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     }
                 }
 
+                let disabledFields = "";
                 if ( /*this.canDoMultiFields() && */ fields.length > 0) {
-                    var selected = this.getSelectedFields([]);
-                    var selectedIds = [];
+                    let selected = this.getSelectedFields([]);
+                    let selectedIds = [];
                     for (i = 0; i < selected.length; i++) {
                         selectedIds.push(selected[i].getId());
                     }
-                    var disabledFields = "";
                     html += HU.div([ATTR_CLASS, "display-dialog-subheader"], "Displayed Fields");
                     html += HU.open(TAG_DIV, [ATTR_CLASS, "display-fields"]);
                     for (var tupleIdx = 0; tupleIdx < fields.length; tupleIdx++) {
@@ -2260,7 +2304,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.writeHtml(ID_FIELDS, html);
 
             this.userHasSelectedAField = false;
-            var theDisplay = this;
+            let theDisplay = this;
             //Listen for changes to the checkboxes
             $("." + checkboxClass).click(function(event) {
                 theDisplay.fieldSelected(event);
@@ -2324,7 +2368,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    if(debug)
 		console.log("\tsetting lastSelectedFields:" + this.lastSelectedFields);
-            var fixedFields = this.getPropertyFields();
+            let fixedFields = this.getPropertyFields();
 
 	    //NOT NOW as this nukes the fields property
             //if (fixedFields) fixedFields.length = 0;
@@ -2352,11 +2396,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		});
 		this.lastSelectedFields = fields;
+		console.log("BIN DATE:" + this.lastSelectedFields);
 	    }
 	    //	    console.log("fields:" + this.lastSelectedFields);
-	    return this.lastSelectedFields;
+	    return Utils.cloneList(this.lastSelectedFields);
         },
         getSelectedFieldsInner: function(dfltList) {
+
             if (this.debugSelected) {
                 console.log("getSelectedFieldsInner dflt:" + (dfltList ? dfltList : "null"));
                 console.log("\tlast selected = " + this.lastSelectedFields);
@@ -2566,18 +2612,32 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    return records;
 	},
-        getFieldById: function(fields, id) {
+        getFieldById: function(fields, id,debug) {
 	    //Support one arg
+	    if(debug)
+		console.log("getFieldById:" + id);
 	    if(fields!=null && id==null) {
-		if(typeof fields!="string") return null;
+		if(typeof fields!="string") {
+		    if(debug)
+			console.log("\tbadfields:" + fields);
+		    return null;
+		}
 		id = fields;
 		fields=null;
 	    }
-            if (!id) return null;
+            if (!id) {
+		if(debug)
+		    console.log("\tno id");
+		return null;
+	    }
 	    id = String(id).trim();
 	    if (!fields) {
                 let pointData = this.getData();
-                if (pointData == null) return null;
+                if (pointData == null) {
+		    if(debug)
+			console.log("\tno data");
+		    return null;
+		}
                 fields = pointData.getRecordFields();
             }
 	    let aliases= {};
@@ -2589,20 +2649,23 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 	    }
 	    let theField = null;
-//	    console.log("Looking for:" + id);
 	    id.split("|").every(fieldId=>{
 		let alias = aliases[fieldId];
 		for (let i = 0; i < fields.length; i++) {
                     let field = fields[i];
-//		    console.log("\tField:" + field.getId());
+		    if(debug)
+			console.log("\tField:" + field.getId());
                     if (field.getId() == fieldId || fieldId == ("#" + (i+1)) || field.getId()==alias) {
 			theField =  field;
-//			console.log("\tgot it:" + theField);
+			if(debug)
+			    console.log("\tgot it:" + theField);
 			return false;
                     }
 		}
 		return true;
 	    });
+	    if(debug)
+		console.log("\tgot:" + theField);
             return theField;
         },
 
