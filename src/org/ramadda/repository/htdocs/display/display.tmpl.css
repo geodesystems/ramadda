@@ -12,6 +12,16 @@ a.display-container {
     height:100%;
 }
 
+.display-table-group-header {
+    font-size:120%;
+    color: #aaa;
+    text-align:center;
+    border-bottom:1px solid #000 !important;
+}
+
+.display-table-group-header-th {
+}
+
 .display-table  td {
     padding-top: 3px;
     padding-bottom: 2px;
