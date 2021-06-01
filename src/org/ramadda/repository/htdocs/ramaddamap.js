@@ -3999,6 +3999,26 @@ RepositoryMap.prototype = {
         }	
 	return this.lines;
     },
+    centerOnFeatures: function(features) {
+	let bounds = new OpenLayers.Bounds();
+	features.forEach(feature=>{
+	    bounds.extend(feature.geometry.getBounds());
+	});
+	//var center = bounds.getCenterLonLat(); <-- you don't really need this if you want to zoom. But it will give you the center lat long coords.
+	this.zoomToExtent(bounds);
+    },
+    getHighlightLinesLayer: function() {
+        if (!this.highlightlines) {
+            let base_style = OpenLayers.Util.extend({},
+						    OpenLayers.Feature.Vector.style['default']);
+            this.highlightlines = new OpenLayers.Layer.Vector("Highlight Lines", {
+                style: base_style
+            });
+            this.addVectorLayer(this.highlightlines);
+        }	
+	return this.highlightlines;
+    },
+
     handleMarkerLayer:  function() {
         if (this.currentPopup) {
             this.getMap().removePopup(this.currentPopup);
