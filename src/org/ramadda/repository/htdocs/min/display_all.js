@@ -14167,9 +14167,7 @@ function CsvUtil() {
 		newField.id = newField.id+suffix;
 		newField.label = newField.label+suffix;
 		if(newField.isNumeric()) {
-		    newField.multiplier = prop(newField,"multiplier");
 		    newField.weightedByField = this.display.getFieldById(allFields,prop(newField,"weightedByField"));
-		    newField.multiplierField = this.display.getFieldById(allFields,prop(newField,"multiplierField"));
 		    let op = prop(newField,"operator");
 		    if(!op && newField.getUnit()=="%")
 			op = "average";
@@ -14206,7 +14204,8 @@ function CsvUtil() {
 			let v = f.getValue(record);
 			if(f.isFieldNumeric()) {
 			    if(!isNaN(v)) {
-				if(f.weightedByField) {
+				
+				if(f.operator=="average" && f.weightedByField) {
 				    let weight = f.weightedByField.getValue(record);
 				    let percent = weight/f.weight;
 				    v= v*percent;
@@ -14241,6 +14240,7 @@ function CsvUtil() {
 			let decimals = prop(f,"numberFormatDecimals");
 			if(decimals!==null)
 			    d = Utils.roundDecimals(d,decimals);
+//			if(debug) console.log(f.getId() +" d:" + d);
 			newData[f.getIndex()] = d;
 		    }
 		});
