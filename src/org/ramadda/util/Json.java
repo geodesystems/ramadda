@@ -714,6 +714,41 @@ public class Json {
     }
 
 
+    public static void geojsonPolygon(String file, PrintStream pw)
+            throws Exception {
+        InputStream    is   = IOUtil.getInputStream(file, Json.class);
+        BufferedReader br   = new BufferedReader(new InputStreamReader(is));
+        StringBuilder json = new StringBuilder();
+        String        input;
+        while ((input = br.readLine()) != null) {
+            json.append(input);
+            json.append("\n");
+        }
+        JSONObject obj      = new JSONObject(json.toString());
+        JSONArray  features = readArray(obj, "features");
+        String[] names = null;
+	pw.println("#name,latitude,longitude,points");
+        for (int i = 0; i < features.length(); i++) {
+            //            if((i%100)==0) System.err.println("cnt:" + i);
+            JSONObject feature = features.getJSONObject(i);
+            JSONObject props   = feature.getJSONObject("properties");
+	    //	    for(String name: JSONObject.getNames(props)) {pw.println(name);}
+
+	    String name = props.optString("name");
+	    if(!Utils.stringDefined(name))
+		name = props.optString("NAME");
+            Bounds    bounds   = getFeatureBounds(feature, null);
+            double[]  centroid = bounds.getCenter();
+            pw.print(name+",");
+	    //            pw.print(centroid[1] + "," + centroid[0]+",");
+            String polygon  = getFeaturePolygon(feature);
+            JSONArray geom     = readArray(feature, "geometry.coordinates");
+            String    type     = readValue(feature, "geometry.type", "NULL");
+	    //            pw.print(polygon);
+	    pw.println("");
+        }
+    }
+    
 
 
     /**
@@ -799,6 +834,22 @@ public class Json {
         return bounds;
     }
 
+    private static String getLatLonString(JSONArray points) {
+	StringBuilder sb = new StringBuilder();
+        for (int j = 0; j < points.length(); j++) {
+            JSONArray tuple = points.getJSONArray(j);
+	    System.err.println("X:" +tuple.optString(0));
+	    System.err.println("Y:"+ tuple.optString(1));
+            double    lon   = tuple.getDouble(0);
+            double    lat   = tuple.getDouble(1);
+	    if(j>0) sb.append(",");
+	    sb.append(lat);
+	    sb.append(",");	    
+	    sb.append(lon);	    
+        }
+        return sb.toString();
+    }
+    
 
     /**
      * _more_
@@ -874,6 +925,40 @@ public class Json {
         return bounds;
     }
 
+    public static String getFeaturePolygon(JSONObject feature)
+            throws Exception {
+	StringBuilder sb = new StringBuilder();
+        JSONArray coords1 = readArray(feature, "geometry.coordinates");
+        String    type    = readValue(feature, "geometry.type", "NULL");
+        if (type.equals("Polygon") || type.equals("MultiLineString")) {
+            for (int idx1 = 0; idx1 < coords1.length(); idx1++) {
+		if(sb.length()>0) sb.append(";");
+		//		System.out.println("type:" + type +" " + coords1);
+		sb.append(getLatLonString(coords1));
+            }
+        } else if (type.equals("MultiPolygon")) {
+            for (int idx1 = 0; idx1 < coords1.length(); idx1++) {
+                JSONArray coords2 = coords1.getJSONArray(idx1);
+                for (int idx2 = 0; idx2 < coords2.length(); idx2++) {
+		    JSONArray coords3 = coords2.getJSONArray(idx2);
+		    if(sb.length()>0) sb.append(";");
+		    sb.append(getLatLonString(coords3));
+                }
+            }
+        } else if (type.equals("LineString")) {
+	    if(sb.length()>0) sb.append(";");
+	    sb.append(getLatLonString(coords1));
+        } else {
+	    if(sb.length()>0) sb.append(";");
+	    //TODO
+	    //	    sb.append(lat);
+	    //	    sb.append(",");
+	    //	    sb.append(lon);
+	}
+
+        return sb.toString();
+    }
+    
 
 
 
@@ -1223,6 +1308,14 @@ public class Json {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+
+        geojsonPolygon(args[0], System.out);
+        if (true) {
+            return;
+        }
+
+
+
         geojsonSubsetByProperty(args[0], System.out, args[1], args[2]);
         if (true) {
             return;
