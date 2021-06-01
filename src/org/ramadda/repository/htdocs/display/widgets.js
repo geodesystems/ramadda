@@ -991,6 +991,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	fieldProp: prop,
 	fieldValue:display.getProperty(prop),
 	propPrefix: propPrefix,
+	colorHistory:{}
     });
 
     let colorByAttr = this.getProperty(prop||"colorBy", null);
@@ -1339,7 +1340,7 @@ ColorByInfo.prototype = {
 	let perc = this.getValuePercent(v);
 	return this.toMinValue + (perc*(this.toMaxValue-this.toMinValue));
     },
-    getColorFromRecord: function(record, dflt) {
+    getColorFromRecord: function(record, dflt, checkHistory) {
 	if(this.display.getFilterHighlight() && !record.isHighlight(this.display)) {
 	    return this.display.getProperty("unhighlightColor","#eee");
 	}
@@ -1353,7 +1354,7 @@ ColorByInfo.prototype = {
 
 	if (this.index >= 0) {
 	    let value = record.getData()[this.index];
-	    return  this.getColor(value, record);
+	    return  this.getColor(value, record,checkHistory);
 	} else if(this.timeField) {
 	    let value;
 	    if(this.timeField=="hour") {
@@ -1362,7 +1363,7 @@ ColorByInfo.prototype = {
 		value = record.getTime().getTime();
 	    }
 //	    console.log(value);
-	    return  this.getColor(value, record);
+	    return  this.getColor(value, record,checkHistory);
 	} 
 	if(this.fieldValue == "year") {
 	    let value = record.getDate().getUTCFullYear();
@@ -1373,17 +1374,28 @@ ColorByInfo.prototype = {
     hasField: function() {
 	return this.index>=0;
     },
-    getColor: function(value, pointRecord) {
+    getColor: function(value, pointRecord, checkHistory) {
+//	if(checkHistory) {
+//	    if(this.colorHistory[value]) return this.colorHistory[value];
+//	}
+	let c = this.getColorInner(value, pointRecord);
+//	if(checkHistory) {
+//	    this.colorHistory[value] = c;
+//	}
+	return c;
+    },
+
+    getColorInner: function(value, pointRecord) {
 	if(this.display.getFilterHighlight() && pointRecord && !pointRecord.isHighlight(this.display)) {
 	    return this.display.getUnhighlightColor();
 	}
 
-	var percent = 0.5;
+	let percent = 0.5;
         if (this.showPercent) {
-            var total = 0;
-            var data = pointRecord.getData();
-            for (var j = 0; j < data.length; j++) {
-                var ok = this.fields[j].isNumeric() && !this.fields[j].isFieldGeo();
+            let total = 0;
+            let data = pointRecord.getData();
+            for (let j = 0; j < data.length; j++) {
+                let ok = this.fields[j].isNumeric() && !this.fields[j].isFieldGeo();
                 if (ok && this.pctFields != null) {
                     ok = this.pctFields.indexOf(this.fields[j].getId()) >= 0 ||
                         this.pctFields.indexOf("#" + (j + 1)) >= 0;
@@ -1397,9 +1409,9 @@ ColorByInfo.prototype = {
                 percent = (percent - this.minValue) / (this.maxValue - this.minValue);
             }
         } else {
-            var v = value;
+            let v = value;
 	    if(this.stringMap) {
-		var color = this.stringMap[value];
+		let color = this.stringMap[value];
 		if(!Utils.isDefined(color)) {
 		    return this.stringMap["default"];
 		}
@@ -1420,8 +1432,7 @@ ColorByInfo.prototype = {
         }
 
 
-
-	var index=0;
+	let index=0;
 	if(this.steps) {
 	    for(;index<this.steps.length;index++) {
 		if(v<=this.steps[index]) {
@@ -1435,7 +1446,7 @@ ColorByInfo.prototype = {
         if (index >= this.colors.length) index = this.colors.length - 1;
         else if (index < 0) index = 0;
 	if(this.stringMap) {
-	    var color = this.stringMap[value];
+	    let color = this.stringMap[value];
 	    if(!Utils.isDefined(color)) {
 		return this.stringMap["default"];
 	    }
@@ -1454,7 +1465,7 @@ ColorByInfo.prototype = {
 	if(!this.convertIntensity) return color;
 	percent = (colorByValue-this.intensitySourceMin)/(this.intensitySourceMax-this.intensitySourceMin);
 	intensity=this.intensityTargetMin+percent*(this.intensityTargetMax-this.intensityTargetMin);
-	var result =  Utils.pSBC(intensity,color);
+	let result =  Utils.pSBC(intensity,color);
 	//		    console.log(color +" " + result +" intensity:" + intensity +" min:" + this.intensityTargetM
 	return result || color;
     },
@@ -1462,7 +1473,7 @@ ColorByInfo.prototype = {
 	if(!this.convertAlpha) return color;
 	percent = (colorByValue-this.alphaSourceMin)/(this.alphaSourceMax-this.alphaSourceMin);
 	alpha=this.alphaTargetMin+percent*(this.alphaTargetMax-this.alphaTargetMin);
-	var result =  Utils.addAlphaToColor(color, alpha);
+	let result =  Utils.addAlphaToColor(color, alpha);
 	return result || color;
     }
 }
@@ -1478,7 +1489,7 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
     const y    = d3.scaleLinear().domain([min, max]).range([INNER_HEIGHT, 0]);
     const recty    = d3.scaleLinear().domain([min, max]).range([0,INNER_HEIGHT]);
 
-    var tt = d3.select("body").append("div")	
+    let tt = d3.select("body").append("div")	
 	.attr(CLASS, "sparkline-tooltip")				
 	.style("opacity", 0);
 
@@ -1588,7 +1599,7 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
     let _display = display;
     let doTooltip = display.getProperty("sparklineDoTooltip", true)  || attrs.doTooltip;
     svg.on("click", function() {
-	var coords = d3.mouse(this);
+	let coords = d3.mouse(this);
 	if(records) {
 	    let record = records[Math.round(x.invert(coords[0]))]
 	    if(record)
@@ -1601,7 +1612,7 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
     if(doTooltip) {
 	svg.on("mouseover", function() {
 	    if(!records) return;
-	    var coords = d3.mouse(this);
+	    let coords = d3.mouse(this);
 	    let record = records[Math.round(x.invert(coords[0]))]
 	    if(!record) return;
 	    let html = _display.getRecordHtml(record);
@@ -1630,7 +1641,7 @@ function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
     const INNER_HEIGHT = h - margin.top - margin.bottom;
     const x    = d3.scaleLinear().domain([range.minx, range.maxx]).range([0, INNER_WIDTH]);
     const y    = d3.scaleLinear().domain([range.miny, range.maxy]).range([INNER_HEIGHT, 0]);
-    var tt = d3.select("body").append("div").attr(CLASS, "sparkline-tooltip").style("opacity", 0);
+    let tt = d3.select("body").append("div").attr(CLASS, "sparkline-tooltip").style("opacity", 0);
     const svg = d3.select(dom).append('svg')
 	  .attr('width', w)
 	  .attr('height', h)
@@ -1667,7 +1678,7 @@ function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
     let _display = display;
     let doTooltip = display.getProperty("sparklineDoTooltip", true)  || attrs.doTooltip;
     svg.on("click", function() {
-	var coords = d3.mouse(this);
+	let coords = d3.mouse(this);
 	if(records) {
 	    let record = records[Math.round(x.invert(coords[0]))]
 	    if(record)
@@ -1685,7 +1696,7 @@ function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
 	    return
 	    let record = recordMap[ele.attr(RECORD_ID)];
 	    console.log(ele.attr(RECORD_ID) +" " + record);
-	    var coords = d3.mouse(this);
+	    let coords = d3.mouse(this);
 	    if(!record) return;
 	    let html = _display.getRecordHtml(record);
 	    let offset = ele.offset().top + ele.height();
@@ -1711,27 +1722,27 @@ function drawPieChart(display, dom,width,height,array,min,max,colorBy,attrs) {
     let margin = Utils.isDefined(attrs.margin)?attrs.margin:4;
     let colors = attrs.pieColors||Utils.ColorTables.cats.colors;
 
-    var radius = Math.min(width, height) / 2 - margin
-    var svg = d3.select(dom)
+    let radius = Math.min(width, height) / 2 - margin
+    let svg = d3.select(dom)
 	.append("svg")
 	.attr("width", width)
 	.attr("height", height)
 	.append("g")
 	.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-    var data = {};
+    let data = {};
     array.forEach(tuple=>{
 	data[tuple[0]] = tuple[1];
     })
 
     // set the color scale
-    var color = d3.scaleOrdinal()
+    let color = d3.scaleOrdinal()
 	.domain(data)
 	.range(colors)
 
     // Compute the position of each group on the pie:
-    var pie = d3.pie()
+    let pie = d3.pie()
 	.value(function(d) {return d.value; })
-    var data_ready = pie(d3.entries(data))
+    let data_ready = pie(d3.entries(data))
 
     // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
     svg
@@ -2088,7 +2099,7 @@ Annotations.prototype = {
 
 
 
-var Gfx = {
+let Gfx = {
     gridData: function(gridId,fields, records,args) {
 	if(!args) args = {};
 	if(isNaN(args.cellSize) || args.cellSize == null)
@@ -2119,7 +2130,7 @@ var Gfx = {
 	opts.h*=opts.scale;
 	$(document.body).append('<canvas style="display:none;" id="' + id +'" width="' + opts.w+'" height="' + opts.h +'"></canvas>');
 	let canvas = document.getElementById(id);
-	var ctx = canvas.getContext("2d");
+	let ctx = canvas.getContext("2d");
 	//	ctx.strokeStyle= "#000";
 //	ctx.fillStyle= "rgba(255,0,0,0.25)";	
 //	ctx.fillRect(0,0,canvas.width,canvas.height);
@@ -2128,7 +2139,7 @@ var Gfx = {
 	let earthWidth = args.bounds.east-args.bounds.west;
 	let earthHeight= args.bounds.north-args.bounds.south;
 	ctx.font = opts.cellFont || "8pt Arial;"
-	var gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+	let gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
 	gradient.addColorStop(0,'white');
 	gradient.addColorStop(1,'red');
 
@@ -2138,15 +2149,15 @@ var Gfx = {
 	let scaleY;
 	if(opts.display && opts.display.map) {
 	    //Get the global bounds so we can map down to the image
-	    var n1 = opts.display.map.transformLLPoint(MapUtils.createLonLat(opts.bounds.east,85));
-	    var s1 = opts.display.map.transformLLPoint(MapUtils.createLonLat(opts.bounds.east,-85));
-	    var n2 = opts.display.map.transformLLPoint(MapUtils.createLonLat(opts.bounds.east,opts.bounds.north));
-	    var s2 = opts.display.map.transformLLPoint(MapUtils.createLonLat(opts.bounds.east,opts.bounds.south));
+	    let n1 = opts.display.map.transformLLPoint(MapUtils.createLonLat(opts.bounds.east,85));
+	    let s1 = opts.display.map.transformLLPoint(MapUtils.createLonLat(opts.bounds.east,-85));
+	    let n2 = opts.display.map.transformLLPoint(MapUtils.createLonLat(opts.bounds.east,opts.bounds.north));
+	    let s2 = opts.display.map.transformLLPoint(MapUtils.createLonLat(opts.bounds.east,opts.bounds.south));
 //	    console.log("n1:" + n1 +" s2:" + s1 +" n2:" + n2 +" s2:" + s2 +" bounds:" + JSON.stringify(opts.bounds));
 	    scaleY = (lat,lon)=> {
-		var pt = opts.display.map.transformLLPoint(MapUtils.createLonLat(lon,lat));
-		var dy = n2.lat-pt.lat;
-		var perc = dy/(n2.lat-s2.lat)
+		let pt = opts.display.map.transformLLPoint(MapUtils.createLonLat(lon,lat));
+		let dy = n2.lat-pt.lat;
+		let perc = dy/(n2.lat-s2.lat)
 		return Math.floor(perc*opts.h);
 	    };
 	} else {
@@ -2216,9 +2227,9 @@ var Gfx = {
 				  },
 				  "");
 	    opts.shape = "rect";
-	    for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
+	    for(let rowIdx=0;rowIdx<rows;rowIdx++)  {
 		let row = grid[rowIdx];
-		for(var colIdx=0;colIdx<cols;colIdx++)  {
+		for(let colIdx=0;colIdx<cols;colIdx++)  {
 		    let cell = row[colIdx];
 		    let v = cell.v;
 		    if(isNaN(v)) continue;
@@ -2260,10 +2271,10 @@ var Gfx = {
 	let alpha = opts.display.getProperty("colorTableAlpha",-1);
 	//add in the color table alpha
 	if(alpha>0) {
-	    var image = ctx.getImageData(0, 0, opts.w, opts.h);
-	    var imageData = image.data,
+	    let image = ctx.getImageData(0, 0, opts.w, opts.h);
+	    let imageData = image.data,
 		length = imageData.length;
-	    for(var i=3; i < length; i+=4){  
+	    for(let i=3; i < length; i+=4){  
 		if(imageData[i]) {
 		    imageData[i] = alpha*255;
 		}
@@ -2279,10 +2290,10 @@ var Gfx = {
     gridPoints: function(rows,cols,points,args) {
 	let debug = displayDebug.gridPoints;
 	let values = [];
-	for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
+	for(let rowIdx=0;rowIdx<rows;rowIdx++)  {
 	    let row = [];
 	    values.push(row);
-	    for(var colIdx=0;colIdx<cols;colIdx++)  {
+	    for(let colIdx=0;colIdx<cols;colIdx++)  {
 		row.push({v:NaN,count:0,total:0,min:NaN,max:NaN,t:""});
 	    }
 	}
@@ -2301,8 +2312,8 @@ var Gfx = {
 	let maxCount=0;
 	let minCount=0;
 
-	for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
-	    for(var colIdx=0;colIdx<cols;colIdx++)  {
+	for(let rowIdx=0;rowIdx<rows;rowIdx++)  {
+	    for(let colIdx=0;colIdx<cols;colIdx++)  {
 		let cell = values[rowIdx][colIdx];
 		if(cell.count==0) continue;
 		let v;
@@ -2349,9 +2360,9 @@ var Gfx = {
     },
     applyKernel: function(src, kernel) {
 	let result = this.cloneGrid(src,null,0);
-	for(var rowIdx=0;rowIdx<src.length;rowIdx++)  {
+	for(let rowIdx=0;rowIdx<src.length;rowIdx++)  {
 	    let row = result[rowIdx];
-	    for(var colIdx=0;colIdx<row.length;colIdx++)  {
+	    for(let colIdx=0;colIdx<row.length;colIdx++)  {
 		//		if(isNaN(row[colIdx])) continue;
 		if(isNaN(row[colIdx])) row[colIdx] = 0;
 		let total =[0];
@@ -2444,10 +2455,10 @@ var Gfx = {
     },
     printGrid: function(grid) {
 	console.log("grid:");
-	for(var rowIdx=0;rowIdx<grid.length;rowIdx++)  {
+	for(let rowIdx=0;rowIdx<grid.length;rowIdx++)  {
 	    let row = grid[rowIdx];
 	    let h = "";
-	    for(var colIdx=0;colIdx<row.length;colIdx++)  {
+	    for(let colIdx=0;colIdx<row.length;colIdx++)  {
 		if(Utils.isDefined(row[colIdx].v))
 		    h+=row[colIdx].v+",";
 		else
@@ -2464,13 +2475,13 @@ var Gfx = {
 	let copy = this.cloneGrid(grid,v=>v.v);
 	let filtered = copy;
 	let filterPasses = opts.display.getProperty("hmFilterPasses",1);
-	for(var i=0;i<filterPasses;i++) {
+	for(let i=0;i<filterPasses;i++) {
 	    filtered = this.blurGrid(opts.filter,filtered);
 	}
 	let filterThreshold = opts.display.getProperty("hmFilterThreshold",-999);
-	for(var rowIdx=0;rowIdx<grid.length;rowIdx++)  {
+	for(let rowIdx=0;rowIdx<grid.length;rowIdx++)  {
 	    let row = grid[rowIdx];
-	    for(var colIdx=0;colIdx<row.length;colIdx++)  {
+	    for(let colIdx=0;colIdx<row.length;colIdx++)  {
 		let cell = row[colIdx];
 		let filterValue = filtered[rowIdx][colIdx];
 		if(filterThreshold!=-999) {
@@ -2484,9 +2495,9 @@ var Gfx = {
     getMinMaxGrid: function(src,valueGetter) {
 	let min = NaN;
 	let max = NaN;
-	for(var rowIdx=0;rowIdx<src.length;rowIdx++)  {
+	for(let rowIdx=0;rowIdx<src.length;rowIdx++)  {
 	    let row = src[rowIdx];
-	    for(var colIdx=0;colIdx<row.length;colIdx++)  {
+	    for(let colIdx=0;colIdx<row.length;colIdx++)  {
 		let v = row[colIdx]
 		if(valueGetter) v = valueGetter(v,rowIdx,colIdx);
 		if(isNaN(v)) continue;
@@ -2502,11 +2513,11 @@ var Gfx = {
     cloneGrid: function(src,valueGetter,dflt) {
 	let dest = [];
 	let hasDflt = Utils.isDefined(dflt);
-	for(var rowIdx=0;rowIdx<src.length;rowIdx++)  {
+	for(let rowIdx=0;rowIdx<src.length;rowIdx++)  {
 	    let row = src[rowIdx];
 	    let nrow=[];
 	    dest.push(nrow);
-	    for(var colIdx=0;colIdx<row.length;colIdx++)  {
+	    for(let colIdx=0;colIdx<row.length;colIdx++)  {
 		let v = row[colIdx]
 		if(valueGetter) v = valueGetter(v,rowIdx,colIdx);
 		if(hasDflt)
@@ -2518,16 +2529,16 @@ var Gfx = {
 	return dest;
     },
     convertGeoToPixel:function(lat, lon,bounds,mapWidth,mapHeight) {
-	var mapLonLeft = bounds.west;
-	var mapLonRight = bounds.east;
-	var mapLonDelta = mapLonRight - mapLonLeft;
-	var mapLatBottom = bounds.south;
-	var mapLatBottomDegree = mapLatBottom * Math.PI / 180;
-	var x = (lon - mapLonLeft) * (mapWidth / mapLonDelta);
-	var lat = lat * Math.PI / 180;
-	var worldMapWidth = ((mapWidth / mapLonDelta) * 360) / (2 * Math.PI);
-	var mapOffsetY = (worldMapWidth / 2 * Math.log((1 + Math.sin(mapLatBottomDegree)) / (1 - Math.sin(mapLatBottomDegree))));
-	var y = mapHeight - ((worldMapWidth / 2 * Math.log((1 + Math.sin(lat)) / (1 - Math.sin(lat)))) - mapOffsetY);
+	let mapLonLeft = bounds.west;
+	let mapLonRight = bounds.east;
+	let mapLonDelta = mapLonRight - mapLonLeft;
+	let mapLatBottom = bounds.south;
+	let mapLatBottomDegree = mapLatBottom * Math.PI / 180;
+	let x = (lon - mapLonLeft) * (mapWidth / mapLonDelta);
+	lat = lat * Math.PI / 180;
+	let worldMapWidth = ((mapWidth / mapLonDelta) * 360) / (2 * Math.PI);
+	let mapOffsetY = (worldMapWidth / 2 * Math.log((1 + Math.sin(mapLatBottomDegree)) / (1 - Math.sin(mapLatBottomDegree))));
+	let y = mapHeight - ((worldMapWidth / 2 * Math.log((1 + Math.sin(lat)) / (1 - Math.sin(lat)))) - mapOffsetY);
 	return [x, y];
     },
 }
@@ -2893,20 +2904,20 @@ Glyph.prototype = {
     },
     draw3DRect:function(canvas,ctx,x,y,width, height, depth) {
 	// Dimetric projection functions
-	var dimetricTx = function(x,y,z) { return x + z/2; };
-	var dimetricTy = function(x,y,z) { return y + z/4; };
+	let dimetricTx = function(x,y,z) { return x + z/2; };
+	let dimetricTy = function(x,y,z) { return y + z/4; };
 	
 	// Isometric projection functions
-	var isometricTx = function(x,y,z) { return (x -z) * Math.cos(Math.PI/6); };
-	var isometricTy = function(x,y,z) { return y + (x+z) * Math.sin(Math.PI/6); };
+	let isometricTx = function(x,y,z) { return (x -z) * Math.cos(Math.PI/6); };
+	let isometricTy = function(x,y,z) { return y + (x+z) * Math.sin(Math.PI/6); };
 	
-	var drawPoly = (function(ctx,tx,ty) {
+	let drawPoly = (function(ctx,tx,ty) {
 	    return function() {
-		var args = Array.prototype.slice.call(arguments, 0);
+		let args = Array.prototype.slice.call(arguments, 0);
 		// Begin the path
 		ctx.beginPath();
 		// Move to the first point
-		var p = args.pop();
+		let p = args.pop();
 		if(p) {
 		    ctx.moveTo(tx.apply(undefined, p), ty.apply(undefined, p));
 		}
