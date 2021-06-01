@@ -645,6 +645,8 @@ function RecordField(props, source) {
 	    return newField;
 	},
 	toString: function() {
+	    if(this.group)
+		return this.getId();
 	    return this.getId();
 	},
 	getForDisplay: function() {
@@ -662,6 +664,9 @@ function RecordField(props, source) {
 	    if(!v && !Utils.isDefined(v)) return dflt;
 	    return v;
         },
+	getGroup: function() {
+	    return this.group;
+	},
         getEnumeratedValues: function(row) {
 	    return this.enumeratedValues;
 	},
@@ -2458,6 +2463,7 @@ function CsvUtil() {
 	    } catch(e) {
 		console.log("Error applying derived function:" + theCmd.command);
 		console.log(e);
+		console.log(e.stack);
 	    }
 	    return pointData;
 	},
@@ -2896,9 +2902,10 @@ function CsvUtil() {
 	    }
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
+	function: function(pointData, args) {
+	},
 	accum: function(pointData, args) {
 	    let records = pointData.getRecords(); 
-
             let allFields  = pointData.getRecordFields();
 	    let fields;
 	    let suffix = args.suffix!=null?args.suffix:"_accum";
@@ -2937,6 +2944,123 @@ function CsvUtil() {
 	    }
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
+	aggregate: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+            let allFields  = pointData.getRecordFields();
+	    let groupField = this.display.getFieldById(allFields,args.groupBy);
+	    if(!groupField) throw new Error("No groupBy defined: "+ args.groupBy +" args:" + JSON.stringify(args));
+	    let includeRows = args.includeRows;
+	    let fields;
+	    let suffix = args.suffix!==null?args.suffix:"_accum";
+	    suffix = "";
+	    if(args.fields)
+		fields = this.display.getFieldsByIds(allFields, (args.fields||"").replace(/_comma_/g,","));
+	    else 
+		fields = allFields;
+	    let newRecords  =[]
+	    let newFields = [];
+	    let totals =[];
+	    let groupMap = {};
+	    let groups = [];
+	    let prop= (f,p)=>{
+		let id = f.getId()+"." + p;
+		if(Utils.isDefined(args[id])) return args[id];
+		if(Utils.isDefined(this.display.getProperty(id))) return this.display.getProperty(id);
+		return this.display.getProperty(p);		
+	    };
+	    fields.forEach(f=>{
+		let newField = f.clone();
+		newFields.push(newField);
+		newField.id = newField.id+suffix;
+		newField.label = newField.label+suffix;
+		if(newField.isNumeric()) {
+		    newField.multiplier = prop(newField,"multiplier");
+		    newField.weightedByField = this.display.getFieldById(allFields,prop(newField,"weightedByField"));
+		    newField.multiplierField = this.display.getFieldById(allFields,prop(newField,"multiplierField"));
+		    let op = prop(newField,"operator");
+		    if(!op && newField.getUnit()=="%")
+			op = "average";
+	 	    newField.operator =op;
+		}
+	    });
+	    records.forEach(record=>{
+		let groupValue = groupField.getValue(record);
+		let group = groupMap[groupValue];
+		if(!group) {
+		    group = groupMap[groupValue] = [];
+		    groups.push(groupValue);
+		}
+		group.push(record);
+	    });
+	    groups.forEach(group=>{
+		let newData = [];
+		let rows = groupMap[group];
+		newFields.forEach(f=>{
+		    if(f.weightedByField) {
+			f.weight = Utils.sumList(rows.map(record=>{return f.weightedByField.getValue(record);}));
+		    }
+		    if(f.isFieldNumeric()) newData.push(0);
+		    else {
+			if(f.getId()==groupField.getId()) 
+			    newData.push(group);
+			else
+			    newData.push("");
+		    }
+		});
+		let debug = group=="Delaware";
+		rows.forEach((record,recordIdx)=>{
+		    newFields.forEach((f,idx)=>{
+			let v = f.getValue(record);
+			if(f.isFieldNumeric()) {
+			    if(!isNaN(v)) {
+				if(f.weightedByField) {
+				    let weight = f.weightedByField.getValue(record);
+				    let percent = weight/f.weight;
+				    v= v*percent;
+				}
+				newData[idx]+=v;
+			    }
+			} else {
+			    if(recordIdx==0)
+				newData[idx] = v;
+			    if(groupField.getId()==f.getId()) {
+				newData[idx] = groupField.getValue(record);
+			    }
+			}
+		    });
+		});
+	    	let newRecord = rows[0].clone();
+		newRecords.push(newRecord);
+		newFields.forEach(f=>{
+		    if(!f.isNumeric()) {
+			if(groupField.getId()!=f.getId())
+			    newData[f.getIndex()]="";
+			return;
+		    }
+		    let debug = group=="Delaware";
+		    let d = newData[f.getIndex()]
+		    if(!isNaN(d)) {
+			if(f.operator=="average") {
+			    if(!f.weightedByField) {
+				d =  d/rows.length;
+			    } 
+			}
+			let decimals = prop(f,"numberFormatDecimals");
+			if(decimals!==null)
+			    d = Utils.roundDecimals(d,decimals);
+			newData[f.getIndex()] = d;
+		    }
+		});
+		newRecord.setData(newData);
+		newRecord.isAggregate = true;
+		newRecord.aggregateValue=group;
+		if(includeRows) 
+		    newRecords = Utils.mergeLists(newRecords, rows);
+
+	    })
+	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
+	},
+
 
 	mean: function(pointData, args) {
 	    let records = pointData.getRecords(); 
