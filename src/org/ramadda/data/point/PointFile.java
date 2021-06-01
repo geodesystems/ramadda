@@ -1101,6 +1101,12 @@ public abstract class PointFile extends RecordFile implements Cloneable,
             }
 
 
+            String group = getProperty(field, properties, "group",null);
+            if (group != null) {
+                field.setGroup(group);
+            }
+	    
+
             String fmt = getProperty(field, properties, "fmt", (String) null);
             if (fmt == null) {
                 fmt = getProperty(field, properties, PROP_FORMAT,

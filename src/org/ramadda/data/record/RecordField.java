@@ -135,6 +135,8 @@ public class RecordField {
     /** _more_ */
     private int columnWidth = 0;
 
+    private String group;
+    
     /** _more_ */
     private boolean isTime = false;
 
@@ -448,6 +450,10 @@ public class RecordField {
         items.add(HtmlUtils.quote(name));
         items.add("label");
         items.add(Json.quote(label));
+	if(group!=null) {
+	    items.add("group");
+	    items.add(Json.quote(group));
+	}
         if (description != null) {
             items.add("description");
             items.add(Json.quote(description.replaceAll("\n", " ")));
@@ -466,6 +472,11 @@ public class RecordField {
         if (isGroup) {
             items.add("isGroup");
             items.add("true");
+        }
+
+        if (group!=null) {
+            items.add("group");
+            items.add(Json.quote(group));
         }
         items.add("type");
         items.add(Json.quote(dataType));
@@ -794,6 +805,26 @@ public class RecordField {
     public void setChartable(boolean value) {
         properties.put(PROP_CHARTABLE, value + "");
     }
+
+/**
+Set the Group property.
+
+@param value The new value for Group
+**/
+public void setGroup (String value) {
+	group = value;
+}
+
+/**
+Get the Group property.
+
+@return The Group
+**/
+public String getGroup () {
+	return group;
+}
+
+
 
     /**
      * _more_

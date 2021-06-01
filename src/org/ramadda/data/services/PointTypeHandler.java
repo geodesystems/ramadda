@@ -293,7 +293,7 @@ public class PointTypeHandler extends RecordTypeHandler {
                             HtmlUtils.squote(target),
                             HtmlUtils.squote(entry.getId()),
                             HtmlUtils.squote(field.getName()),
-                            HtmlUtils.squote(type))), field.getLabel()));
+                            HtmlUtils.squote(type))), field.getLabel() +" (" + field.getName()+")"));
             sb.append("<br>");
         }
     }
