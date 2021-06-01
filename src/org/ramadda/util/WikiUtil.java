@@ -768,6 +768,7 @@ public class WikiUtil {
         StringBuilder    currentVarValue   = null;
 	List<NamedList<String>> repeatList = null;
         StringBuilder    repeatBuffer = null;
+        StringBuilder    splashBuffer = null;	
 
         boolean          inScroll          = false;
         String           slidesId           = null;
@@ -912,6 +913,31 @@ public class WikiUtil {
                     continue;
                 }
 
+
+                if (tline.startsWith("+splash")) {
+		    splashBuffer = new StringBuilder();
+		    continue;
+		}
+
+                if (tline.startsWith("-splash")) {
+		    if(splashBuffer==null) continue;
+		    String s = wikify(splashBuffer.toString(), handler);
+		    String id = HU.getUniqueId("splash_");
+		    buff.append("\n");
+		    HU.div(buff, s,HU.attrs("id", id, "style","display:none;"));
+		    buff.append("\n");
+                    HU.script(buff,
+                              "HtmlUtils.makeSplash('',{src:'" + id +"'})");
+		    buff.append("\n");
+		    splashBuffer = null;
+		    continue;
+		}
+
+		if(splashBuffer!=null) {
+		    splashBuffer.append(line);
+		    splashBuffer.append("\n");		    
+		    continue;
+		}
 
                 if (tline.startsWith("+macro")) {
                     List<String> toks = Utils.splitUpTo(tline, " ", 3);
@@ -1075,7 +1101,7 @@ public class WikiUtil {
 			if(menuId!=null) {
 			    HU.script(buff, "$('#" +menuId+"').menu();\n");
 			}
-			menuId = HU.getUniqueId("menu_");
+
 			attrs +=HU.attrs("id",menuId);
 		    } else {
 			HU.open(buff, "li");
