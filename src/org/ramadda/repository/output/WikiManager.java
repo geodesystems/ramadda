@@ -7143,18 +7143,20 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                         }
                     }
 
-                    if (kmlIds != null) {
-                        Utils.add(propList, "kmlLayer", Json.quote(kmlIds),
-                                  "kmlLayerName", Json.quote(kmlNames));
-                    }
-                    if (geojsonIds != null) {
-                        Utils.add(propList, "geojsonLayer",
-                                  Json.quote(geojsonIds), "geojsonLayerName",
-                                  Json.quote(geojsonNames));
+		    if(props.get("kmlLayer")==null && props.get("geojsonLayer")==null) {
+			if (kmlIds != null) {
+			    Utils.add(propList, "kmlLayer", Json.quote(kmlIds),
+				      "kmlLayerName", Json.quote(kmlNames));
+			}
+			if (geojsonIds != null) {
+			    Utils.add(propList, "geojsonLayer",
+				      Json.quote(geojsonIds), "geojsonLayerName",
+				      Json.quote(geojsonNames));
+			}
                     }
                 }
             }
-        }
+	}
 
         wikiUtil.addWikiAttributes(propList);
 	js.append("\n");
