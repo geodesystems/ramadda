@@ -44,6 +44,8 @@
    --draggable-z-index:1000;
    --expandable-z-index:500;
    --draft-z-index:3000;
+   --splash-z-index:3000;
+   --splash-z-index2:3001;   
    --ol-z-index:0;
    --ol-popup-z-index:1000;
    --animation-tick-z-index:0;    
@@ -928,6 +930,12 @@ a.ramadda-menubar-button:hover {
 }
 
 
+.ramadda-header-small {
+    text-align:center;
+    font-size:120%;
+    font-weight:bold;
+}
+
 .ramadda-draggable-header {
     background:var(--header-background);
     border:var(--basic-border);    
@@ -1083,6 +1091,35 @@ a.ramadda-menubar-button:hover {
     -webkit-transform:rotate(325deg);
 }
 
+.ramadda-splash-container {
+    cursor:default;
+    background:rgba(200,200,200,0.5);
+    height:100vh;
+    overflow-y:hidden;
+    position:absolute;
+    top:0px; left:0px;right:0px;bottom:0px;
+    z-index:3000;
+    display:block;
+}
+
+.ramadda-splash-body {
+    overflow: hidden;
+}
+
+
+.ramadda-splash {
+    position:relative;
+    padding:10px;
+    width:30%;
+    margin-top: 100px;
+    margin-left: auto;
+    margin-right: auto;
+    background:#ffff;
+    z-index:3001;
+    display:block;
+}
+
+
 
 
 .baseLayersDiv, .dataLayersDiv {
@@ -1096,6 +1133,11 @@ a.ramadda-menubar-button:hover {
 
 .ramadda-div-link:hover {
     text-decoration: underline;
+}
+
+  /* avoid pink tiles */
+.olImageLoadError {
+    background-color: transparent !important;
 }
 
 .olButton, div.olMap {
@@ -1496,6 +1538,22 @@ a.ramadda-menubar-button:hover {
     padding-right:1%;
     padding-top:4px;
     padding-bottom:4px;
+}
+
+.ramadda-percent-outer {
+    display: block;
+    position: relative;
+    border: var(--basic-border);
+    height:13px;
+    width:100%;
+}
+
+.ramadda-percent-inner {
+    position: absolute;
+    left:0px;
+    top:0px;
+    bottom:0px;
+    background:#00C3B6;
 }
 
 
@@ -1962,6 +2020,10 @@ ul {
 
 .selectform-table-entry {
     padding:4px;
+}
+
+table.dataTable tbody tr {
+    background:none;
 }
 
 table.dataTable thead th, table.dataTable thead td {
@@ -4657,7 +4719,7 @@ h3.ui-accordion-header a {
     background: none;
 }
 
-.ui-dialog {
+<.ui-dialog {
     -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
     box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
     filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray');
