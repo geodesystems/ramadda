@@ -376,7 +376,7 @@ public abstract class CsvOperator {
      */
     public int getColumnIndex(String s) {
         List<Integer> indices = new ArrayList<Integer>();
-        getColumnIndex(null, indices, s);
+        getColumnIndex(null, indices, s,null);
         return indices.get(0);
     }
 
@@ -402,13 +402,15 @@ public abstract class CsvOperator {
      *
      */
     public void getColumnIndex(TextReader ctx, List<Integer> indices,
-                               String s) {
+                               String s,HashSet seen) {
+	if(seen==null) seen = new HashSet();
         s = s.toLowerCase().trim();
         List<String> toks  = Utils.splitUpTo(s, "-", 2);
         int          start = -1;
         int          end   = -1;
         try {
             if (toks.size() == 1) {
+		if(Utils.testAndSet(seen,s)) return;
                 start = end = Integer.parseInt(s);
             } else {
                 start = Integer.parseInt(toks.get(0));
@@ -495,6 +497,7 @@ public abstract class CsvOperator {
         }
         if (start >= 0) {
             for (int i = start; i <= end; i++) {
+		if(Utils.testAndSet(seen,i)) continue;
                 colsSeen.add(i);
                 indices.add(i);
             }
@@ -542,10 +545,10 @@ public abstract class CsvOperator {
             return null;
         }
         List<Integer> indices = new ArrayList<Integer>();
+	HashSet seen = new HashSet();
         for (String s : cols) {
-            getColumnIndex(ctx, indices, s);
+            getColumnIndex(ctx, indices, s, seen);
         }
-
         return indices;
     }
 
@@ -572,7 +575,7 @@ public abstract class CsvOperator {
      */
     public int getIndex(TextReader ctx, String idx) {
         List<Integer> indices = new ArrayList<Integer>();
-        getColumnIndex(ctx, indices, idx);
+        getColumnIndex(ctx, indices, idx,new HashSet());
         if (indices.size() == 0) {
             throw new IllegalArgumentException("Could not find column index:"
                     + idx);

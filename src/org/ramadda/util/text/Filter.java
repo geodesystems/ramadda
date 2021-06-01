@@ -190,7 +190,7 @@ public class Filter extends Processor {
                 return -11;
             }
             ArrayList<Integer> tmp = new ArrayList<Integer>();
-            getColumnIndex(ctx,tmp, scol);
+            getColumnIndex(ctx,tmp, scol,new HashSet());
             col = tmp.get(0);
 
             return col;

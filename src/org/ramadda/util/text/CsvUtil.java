@@ -1831,8 +1831,8 @@ public class CsvUtil {
         new Cmd("-operator",
                 "Apply the operator to the given columns and create new one",
                 new Arg("columns"), "new col name", "operator +,-,*,/"),
-        new Cmd("-round", "round the values", "columns"),
-        new Cmd("-abs", "make absolute values", "columns"),
+        new Cmd("-round", "round the values", new Arg("columns", "", "type", "columns")),
+        new Cmd("-abs", "make absolute values", new Arg("columns", "", "type", "columns")),
         new Cmd("-rand", "make random value"),		
         new Cmd(
 		"-sum",

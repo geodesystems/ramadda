@@ -985,6 +985,14 @@ public abstract class Converter extends Processor {
                 id = CsvUtil.getDbProp(props, id, i, "id", id);
 
 
+                StringBuffer attrs = new StringBuffer();
+		String group  =CsvUtil.getDbProp(props, id, i, "group",
+                            (String) null);
+		if(group!=null) {
+		    attrs.append(" group=\"" + group + "\" ");
+
+		}
+		
                 if (label == null) {
                     label = CsvUtil.getDbProp(props, id, i, "label",
                             (String) null);
@@ -995,7 +1003,6 @@ public abstract class Converter extends Processor {
                 }
                 String unit = StringUtil.findPattern(col,
                                   ".*?\\(([^\\)]+)\\).*");
-                StringBuffer attrs = new StringBuffer();
                 if (label != null) {
                     label = label.replaceAll(",", "%2C").replaceAll("<br>",
                                              " ").replaceAll("<p>", " ");
@@ -5494,6 +5501,7 @@ public abstract class Converter extends Processor {
             if ( !gotRow) {
                 return row;
             }
+	    
             List values = row.getValues();
             for (int col : cols) {
                 if (col < values.size()) {
