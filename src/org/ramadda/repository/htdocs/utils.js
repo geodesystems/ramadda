@@ -4587,6 +4587,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	let opts = {
 	    width:"50%",
 	    style:"",
+	    showOk:true
 	};
 	if(args) $.extend(opts,args);
 	if(opts.src) {
@@ -4600,9 +4601,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	let close = HU.div([ID,closeId,CLASS,"ramadda-clickable",			    
 			    STYLE,HU.css("position","absolute","right","10px","top","10px")],
 			   HU.getIconImage("far fa-window-close"));
-	let inner = HU.div([CLASS,"ramadda-shadow-box ramadda-splash",
-			    STYLE,HU.css("width",opts.width)+ opts.style],
-			   close + message);
+	let inner = close + message;
+	if(opts.showOk) {
+	    inner += HU.center(HU.div([ID,closeId+"_button"],"OK"));
+	}
+	inner = HU.div([CLASS,"ramadda-shadow-box ramadda-splash",
+			STYLE,HU.css("width",opts.width)+ opts.style],
+		       inner);
+
 	let container = $(HU.div([CLASS,"ramadda-splash-container"],inner)).appendTo($("body"));
 	$('body').addClass("ramadda-splash-body");
 	let closer = () =>{
@@ -4611,11 +4617,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	};
 
 	container.click( (event) => {
-	    closer();
+//	    closer();
 	}); 
 	$("#"+ closeId).click(() =>{
 	    closer();
 	});
+	$("#"+ closeId+"_button").button().click(() =>{
+	    closer();
+	});	
 
 
     },
