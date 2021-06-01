@@ -227,6 +227,13 @@ var Utils =  {
             $.getJSON(url, success).fail(fail);
 	},1000);
     },
+    sumList: function(l) {
+	let accum = 0;
+	l.forEach(v=>{
+	    if(!isNaN(v)) accum += v;
+	});
+	return accum;
+    },
     mergeLists: function(l1,l2,l3,l4,l5) {
 	let l = [];
 	if(l1) l1.map(e=>l.push(e));
@@ -1494,7 +1501,8 @@ var Utils =  {
 		decimals = 3;
 	    else
 		decimals = 4
-	    return number_format(number,decimals);
+	    let x =  number_format(number,decimals);
+	    return x;
 	    //	    return wholeFormatted +"." + String(Utils.formatNumber(rem)).replace("0\.","");
 	}
     },
@@ -3484,7 +3492,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
 
     row: function() {
-	let row = "<table width=100%><tr valign=center>";
+	let row = "<table cellpadding=0 cellspacing=0 border=0 width=100%><tr valign=center>";
 	Array.from(arguments).forEach(h=>{
 	    if(Array.isArray(h)) {
 		row+=HtmlUtils.tag("td",h[0],h[1]);
@@ -3878,6 +3886,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             };
             if (args)
                 $.extend(options, args);
+	    
             let height = options.height || $(this).attr("table-height");
             if (height)
                 options.scrollY = height;
@@ -4574,6 +4583,43 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    close($("#" + imageId));
 	}
     },
+    makeSplash: function(message,args) {
+	let opts = {
+	    width:"50%",
+	    style:"",
+	};
+	if(args) $.extend(opts,args);
+	if(opts.src) {
+	    message = $("#" + opts.src).html();
+    
+	}
+	if(message == null || message.trim()=="") return;
+	message=  HU.div([STYLE,"margin:10px;"], message);
+
+        let closeId = Utils.getUniqueId("close_");
+	let close = HU.div([ID,closeId,CLASS,"ramadda-clickable",			    
+			    STYLE,HU.css("position","absolute","right","10px","top","10px")],
+			   HU.getIconImage("far fa-window-close"));
+	let inner = HU.div([CLASS,"ramadda-shadow-box ramadda-splash",
+			    STYLE,HU.css("width",opts.width)+ opts.style],
+			   close + message);
+	let container = $(HU.div([CLASS,"ramadda-splash-container"],inner)).appendTo($("body"));
+	$('body').addClass("ramadda-splash-body");
+	let closer = () =>{
+	    $('body').removeClass("ramadda-splash-body");	    
+	    container.remove();
+	};
+
+	container.click( (event) => {
+	    closer();
+	}); 
+	$("#"+ closeId).click(() =>{
+	    closer();
+	});
+
+
+    },
+
     makeToggleImage: function(img,style) {
 	style = (style||"") + HU.css('color','#000');
 	return HU.div([STYLE,HU.css('display','inline-block',"min-width","10px")], HtmlUtils.getIconImage(img, ["align", "bottom"],[STYLE,style]));
@@ -4829,30 +4875,18 @@ function TextMatcher (pattern) {
 }
 
 
-
-function number_format(number, decimals, dec_point, thousands_sep) {
-    // http://kevin.vanzonneveld.net
-    // +   original by: Jonas Raoni Soares Silva (http://www.jsfromhell.com)
-    // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-    // +     bugfix by: Michael White (http://crestidg.com)
-    // +     bugfix by: Benjamin Lupton
-    // +     bugfix by: Allan Jensen (http://www.winternet.no)
-    // +    revised by: Jonas Raoni Soares Silva (http://www.jsfromhell.com)    
-    // *     example 1: number_format(1234.5678, 2, '.', '');
-    // *     returns 1: 1234.57     
-
-    var n = number,
-        c = isNaN(decimals = Math.abs(decimals)) ? 2 : decimals;
-    var d = dec_point == undefined ? "." : dec_point;
-    var t = thousands_sep == undefined ? "," : thousands_sep,
-        s = n < 0 ? "-" : "";
-    var i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "",
-        j = (j = i.length) > 3 ? j % 3 : 0;
-
-    let v =  s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
-    v = v.replace(/0+$/,"");
-    return v;
+function number_format(number, decimals) {
+    let n = Utils.roundDecimals(number,decimals);
+    let i = Math.floor(n);
+    let toks = String(n).match(/\.(.*)/);
+    let dec =toks?toks[1]:"";
+    let s = String(i).replace(/(.)(?=(\d{3})+$)/g,'$1,')
+    if(dec!="") {
+	s+= "." + dec;
+    }
+    return s;
 }
+
 
 
 //SVG Utils
@@ -5046,6 +5080,7 @@ let dttm  =new Date();
     console.log("d1:" + d1 +"    d2:" + d2);
 });
 */
+
 
 
 
