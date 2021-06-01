@@ -2988,6 +2988,11 @@ function BubbleDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_BUBBLE, properties);
     let myProps = [
 	{label:'Bubble Chart Attibutes'},
+	{p:'xField'},
+	{p:'yField'},	
+	{p:'labelField'},
+	{p:'colorBy'},
+	{p:'sizeField'},	
 	{p:'legendPosition',ex:'none|top|right|left|bottom'},
 	{p:'hAxisFormat',ex:'none|decimal|scientific|percent|short|long'},
 	{p:'vAxisFormat',ex:'none|decimal|scientific|percent|short|long'},
@@ -3030,7 +3035,7 @@ function BubbleDisplay(displayManager, id, properties) {
 	getFieldsToDisplay: function(fields) {
 	    if(fields.length>=4) return fields;
 	    let labelField=this.getFieldById(null, this.getProperty("labelField"));
-	    let colorField=this.getFieldById(null, this.getProperty("labelField"));
+	    let colorField=this.getFieldById(null, this.getColorBy(this.getProperty("colorField")));
 	    let sizeField=this.getFieldById(null, this.getProperty("sizeField"));
 	    let xField=this.getFieldById(null, this.getProperty("xField"));
 	    let yField=this.getFieldById(null, this.getProperty("yField"));	    	    	    	    
@@ -3040,7 +3045,6 @@ function BubbleDisplay(displayManager, id, properties) {
 	    let f = [labelField, xField, yField];
 	    if(colorField) f.push(colorField);
 	    if(sizeField) f.push(sizeField);
-	    console.log("F:" + f);
 	    return f;
 	},
 
