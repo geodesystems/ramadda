@@ -1540,7 +1540,7 @@ a.ramadda-menubar-button:hover {
     padding-bottom:4px;
 }
 
-.ramadda-percent-outer {
+.ramadda-bar-outer {
     display: block;
     position: relative;
     border: var(--basic-border);
@@ -1548,7 +1548,7 @@ a.ramadda-menubar-button:hover {
     width:100%;
 }
 
-.ramadda-percent-inner {
+.ramadda-bar-inner {
     position: absolute;
     left:0px;
     top:0px;

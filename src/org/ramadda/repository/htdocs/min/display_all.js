@@ -39023,7 +39023,9 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	{p:'linkField'},
         {p:'&lt;field&gt;.showBar',ex:'true',tt:'Show bar'},
         {p:'&lt;field&gt;.barMin',ex:'0',tt:'Min value'},
-        {p:'&lt;field&gt;.barMax',ex:'100',tt:'Max value'},		
+        {p:'&lt;field&gt;.barMax',ex:'100',tt:'Max value'},
+	{p:'barLabelInside',ex:'false'},
+        {p:'barStyle',ex:'background:red;',tt:'Bar style'},			
 	{p:'tableHeaderStyle'},
 	{p:'showAddRow',ex:'true'},
     ];
@@ -39250,13 +39252,17 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		    let foreground="#000";
 		    let tdAttrs = [];
 		    let showBar = false;
+		    let barLabelInside = true;		    
 		    let barMin = 0;
 		    let barMax = 100;
+		    let barStyle = "";
 		    if(f.isFieldNumeric()) {
 			tdAttrs = ["align","right"];
 			showBar = this.getProperty(f.getId()+".showBar");
 			barMin = this.getProperty(f.getId()+".barMin",barMin);
-			barMax = this.getProperty(f.getId()+".barMax",barMax);			
+			barMax = this.getProperty(f.getId()+".barMax",barMax);
+			barStyle = this.getProperty(f.getId()+".barStyle",this.getProperty("barStyle",barStyle));
+			barLabelInside = this.getProperty(f.getId()+".barLabelInside",this.getProperty("barLabelInside",barLabelInside));			
 		    }
 		    tdAttrs.push("class");
 		    tdAttrs.push("display-td");		    
@@ -39267,13 +39273,22 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		    } else if(showBar) {
 			let percent = 1-(value-barMin)/(barMax-barMin);
 			percent = (percent*100)+"%";
-			let bar = HU.div([CLASS,"ramadda-percent-inner", STYLE,HU.css("right",percent)]);
-			let width = this.getProperty("barLength","100px");
-			let outer = HU.div([CLASS,"ramadda-percent-outer", STYLE,
-					    (width?HU.css("width",HU.getDimension(width)):"")+
-					     HU.css("min-width","100px")],bar);
+			let contents = "";
 			v = Utils.formatNumberComma(value)+"%";
-			html+=HU.td(tdAttrs,HU.row([["align","right"],v],outer));
+			if(barLabelInside) {
+			    contents = HU.div([STYLE,HU.css("padding-left","2px")],v);
+			    v = "";
+			}
+			let bar = HU.div([CLASS,"ramadda-bar-inner", STYLE,HU.css("right",percent)+barStyle],contents);
+			let width = this.getProperty("barLength","100px");
+			let outer = HU.div([CLASS,"ramadda-bar-outer", STYLE,
+					    (width?HU.css("width",HU.getDimension(width)):"")+
+					    HU.css("min-width","100px")+(barLabelInside?HU.css("height","1.5em"):"")],bar);
+			if(barLabelInside) {
+			    html+=HU.td([],outer);
+			} else {
+			    html+=HU.td([],HU.row([["align","right"],v],outer));
+			}
 		    } else if(f.isFieldNumeric()) {
 			html+=handleColumn(f,Utils.formatNumberComma(v), tdAttrs);
 		    } else {
