@@ -18,8 +18,6 @@
         <property name="srcrelease_dir" value="${release_name}src${_version}" />
 	<property name="docs_dir" value="${dist_dir}/${release_name}docs"/>
         <property name="docs_javadoc_dest" value="${docs_dir}/javadoc" />
-
-        <property name="tika_jar" value="tika-app-1.26.jar" />
         <property name="unidata_jar" value="idv.jar" />
 
 
