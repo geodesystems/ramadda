@@ -39013,16 +39013,19 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_HTMLTABLE, properties);
     let myProps = [
 	{label:'Html Table'},
-	{p:'numRecords',ex:'100',d:5000},
+	{p:'numRecords',ex:'5000',d:5000,tt:'Number of records to show'},
 	{p:'scrollY',ex:'300px'},				
 	{p:'includeGeo',ex:'true',d:false},
 	{p:'includeDate',ex:'true',d:true},
 	{p:'fancy',ex:'true',d:true},
-	{p:'showAddRow',ex:'true'},
 	{p:'colorCells',ex:'field1,field2'},
 	{p:'iconField'},
 	{p:'linkField'},
-	{p:'tableHeaderStyle'}
+        {p:'&lt;field&gt;.showBar',ex:'true',tt:'Show bar'},
+        {p:'&lt;field&gt;.barMin',ex:'0',tt:'Min value'},
+        {p:'&lt;field&gt;.barMax',ex:'100',tt:'Max value'},		
+	{p:'tableHeaderStyle'},
+	{p:'showAddRow',ex:'true'},
     ];
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -39246,10 +39249,14 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		    let color = null;
 		    let foreground="#000";
 		    let tdAttrs = [];
-		    let showPercent = false;
+		    let showBar = false;
+		    let barMin = 0;
+		    let barMax = 100;
 		    if(f.isFieldNumeric()) {
 			tdAttrs = ["align","right"];
-			showPercent = this.getProperty(f.getId()+".showPercent");
+			showBar = this.getProperty(f.getId()+".showBar");
+			barMin = this.getProperty(f.getId()+".barMin",barMin);
+			barMax = this.getProperty(f.getId()+".barMax",barMax);			
 		    }
 		    tdAttrs.push("class");
 		    tdAttrs.push("display-td");		    
@@ -39257,10 +39264,8 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 			let color =  colorBy.getColorFromRecord(record);
 			let fg =  Utils.getForegroundColor(color);
 			html += HU.td(Utils.mergeLists(tdAttrs, [STYLE,HU.css('background', color,'color',fg+" !important")]),v)
-		    } else if(showPercent) {
-			let min = 0;
-			let max = 100;
-			let percent = 1-(value-min)/(max-min);
+		    } else if(showBar) {
+			let percent = 1-(value-barMin)/(barMax-barMin);
 			percent = (percent*100)+"%";
 			let bar = HU.div([CLASS,"ramadda-percent-inner", STYLE,HU.css("right",percent)]);
 			let width = this.getProperty("barLength","100px");

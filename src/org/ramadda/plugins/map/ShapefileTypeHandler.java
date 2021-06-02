@@ -175,7 +175,6 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
                                     getRecordProperties(entry),
                                     entry.getResource().getPath(), shapefile);
         String props = recordFile.getEntryFieldsProperties();
-        System.err.println("PROPS:" + props);
 
         getEntryValues(entry)[IDX_PROPERTIES] = props;
 
