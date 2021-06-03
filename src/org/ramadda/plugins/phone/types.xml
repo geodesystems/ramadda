@@ -42,6 +42,7 @@
 
 
 
+<!--
   <type name="phone_mttf"  description="Message to the future" handler="org.ramadda.plugins.phone.MTTFTypeHandler" category="Information" foruser="false">
      <property name="icon" value="/phone/sms.png"/>
      <property name="form.description.label" value="Abstract"/>
@@ -92,7 +93,7 @@ If you add a file then that file will be sent as an attachment. If you are sendi
 </wiki>
 
    </type>
-
+-->
 
 
 </types>

@@ -14,6 +14,7 @@
 
 
 
+<!--
   <type name="gadgets_weather"  description="Weather" handler="org.ramadda.plugins.gadgets.WeatherTypeHandler">
      <property name="icon" value="/gadgets/weather.png"/>
      <property name="form.description.show" value="false"/>
@@ -25,6 +26,7 @@
      <column name="orientation" type="enumeration" label="Orientation"  values="vertical,horizontal" default="horizontal" showinhtml="false"/>
 
 </type>
+-->
 
 
 
