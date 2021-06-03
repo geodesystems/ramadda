@@ -1412,6 +1412,14 @@ public class OutputHandler extends RepositoryManager {
                 ? "0"
                 : "1"))));
         formSB.append(HU.script(js.toString()));
+	Entry parent = getEntryManager().getEntryFromRequest(request, ARG_ENTRYID,
+							     getRepository().URL_ENTRY_GET,true);
+
+	if(parent!=null) {
+	    formSB.append(HU.hidden(ARG_ENTRYID,parent.getId()));
+	}
+
+
         return new String[] { link, base, formSB.toString() };
 
     }

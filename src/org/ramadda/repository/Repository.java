@@ -2999,6 +2999,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                         }
                     }
                 }
+		/*
                 boolean metadataOk = true;
                 for (Entry entry : state.getAllEntries()) {
                     if ( !getAccessManager().canDoAction(request, entry,
@@ -3016,6 +3017,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     links.add(makeLink(request, state.getEntry(),
                                        OUTPUT_METADATA_FULL));
                 }
+		*/
 
                 boolean deleteOk = true;
                 for (Entry entry : state.getAllEntries()) {
@@ -3062,6 +3064,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         };
         outputHandler.addType(OUTPUT_DELETER);
+        outputHandler.addType(OUTPUT_METADATA_SHORT);
+        outputHandler.addType(OUTPUT_METADATA_FULL);		
         addOutputHandler(outputHandler);
 
         OutputHandler copyHandler = new OutputHandler(getRepository(),
@@ -3126,7 +3130,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
         OutputHandler snapshotHandler = new OutputHandler(getRepository(),
-                                            "Entry Snapshotr") {
+                                            "Entry Snapshotter") {
             public boolean canHandleOutput(OutputType output) {
                 return output.equals(OUTPUT_MAKESNAPSHOT);
             }

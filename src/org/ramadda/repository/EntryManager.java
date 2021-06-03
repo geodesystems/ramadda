@@ -660,7 +660,7 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Entry getEntryFromRequest(Request request, String urlArg,
-                                     RequestUrl requestUrl)
+                                     RequestUrl requestUrl, boolean nullOk)
 	throws Exception {
         Entry entry = null;
         if (request.defined(urlArg)) {
@@ -668,7 +668,6 @@ public class EntryManager extends RepositoryManager {
                 entry = getEntryFromArg(request, urlArg);
             } catch (Exception exc) {
                 logError("", exc);
-
                 throw exc;
             }
             if (entry == null) {
@@ -692,6 +691,7 @@ public class EntryManager extends RepositoryManager {
                 entry = findEntryFromName(request, suffix, request.getUser(),
                                           false);
                 if (entry == null) {
+		    if(nullOk) return null;
                     fatalError(request, "Could not find entry:" + suffix);
                 }
             }
@@ -702,7 +702,6 @@ public class EntryManager extends RepositoryManager {
                                           "http://"
                                           + request.getRequestHostname());
             }
-
             if (entry == null) {
                 entry = request.getRootEntry();
             }
@@ -919,7 +918,7 @@ public class EntryManager extends RepositoryManager {
 
         if (entry == null) {
             entry = getEntryFromRequest(request, ARG_ENTRYID,
-                                        getRepository().URL_ENTRY_SHOW);
+                                        getRepository().URL_ENTRY_SHOW,false);
         }
 
         if (entry == null) {
@@ -3003,6 +3002,7 @@ public class EntryManager extends RepositoryManager {
             entries.add(entry);
         }
 
+
         return processEntryListDelete(request, entries);
 
     }
@@ -3020,20 +3020,21 @@ public class EntryManager extends RepositoryManager {
     public Result processEntryListDelete(Request request, List<Entry> entries)
 	throws Exception {
         StringBuilder sb = new StringBuilder();
+        Entry parent = getEntryFromRequest(request, ARG_ENTRYID,
+					   getRepository().URL_ENTRY_GET,true);
+
         if (request.exists(ARG_CANCEL)) {
             if (entries.size() == 0) {
                 return new Result(
 				  request.makeUrl(getRepository().URL_ENTRY_SHOW));
             }
-            String id = entries.get(0).getParentEntryId();
-
+            String id = parent!=null?parent.getId():entries.get(0).getParentEntryId();
             return new Result(request.makeUrl(getRepository().URL_ENTRY_SHOW,
 					      ARG_ENTRYID, id));
         }
 
         if (request.exists(ARG_DELETE_CONFIRM)) {
             request.ensureAuthToken();
-
             return asynchDeleteEntries(request, entries);
         }
 
@@ -3041,9 +3042,9 @@ public class EntryManager extends RepositoryManager {
         if (entries.size() == 0) {
             return new Result(
 			      "",
-			      new StringBuilder(
-						getPageHandler().showDialogWarning(
-										   msg("No entries selected"))));
+			      getPageHandler().makeEntryPage(request, parent,"Entry Delete",
+							     getPageHandler().showDialogWarning(
+												msg("No entries selected"))));
         }
 
         StringBuilder msgSB    = new StringBuilder();
@@ -3093,8 +3094,8 @@ public class EntryManager extends RepositoryManager {
         String form = PageHandler.makeOkCancelForm(request,
 						   getRepository().URL_ENTRY_DELETELIST,
 						   ARG_DELETE_CONFIRM, hidden.toString());
-        sb.append(getPageHandler().showDialogQuestion(msgSB.toString(),
-						      form));
+	sb.append(getPageHandler().makeEntryPage(request, parent,"Entry Delete",
+						 getPageHandler().showDialogQuestion(msgSB.toString(),  form)));
 
 
         return new Result(msg("Delete Confirm"), sb);
@@ -3764,7 +3765,7 @@ public class EntryManager extends RepositoryManager {
         }
 
         Entry entry = getEntryFromRequest(request, ARG_ENTRYID,
-                                          getRepository().URL_ENTRY_GET);
+                                          getRepository().URL_ENTRY_GET,false);
 
         return processEntryGet(request, entry);
     }
@@ -3982,6 +3983,15 @@ public class EntryManager extends RepositoryManager {
             request.put(ARG_ENTRYID, group.getId());
         }
 
+
+
+	if(!request.defined(ARG_OUTPUT)) {
+	    Entry parent = getEntryFromRequest(request, ARG_ENTRYID,
+					       getRepository().URL_ENTRY_GET,true);	
+	    return new Result("",getPageHandler().makeEntryPage(request, parent,"",
+								getPageHandler().showDialogError("No action specified")));
+	}
+
         OutputHandler outputHandler =
             getRepository().getOutputHandler(request);
         String dummyGroupName = request.getString(ARG_RETURNFILENAME,
@@ -4010,6 +4020,10 @@ public class EntryManager extends RepositoryManager {
      */
     public Result processEntryCopy(Request request) throws Exception {
 
+
+        Entry parent = getEntryFromRequest(request, ARG_ENTRYID,
+					   getRepository().URL_ENTRY_GET,true);
+
         String      fromIds = request.getString(ARG_FROM, "");
         List<Entry> entries = new ArrayList<Entry>();
         for (String id : Utils.split(fromIds, ",", true, true)) {
@@ -4030,15 +4044,14 @@ public class EntryManager extends RepositoryManager {
         }
 
         if (entries.size() == 0) {
-	    StringBuilder sb = new StringBuilder();
-	    sb.append(getPageHandler().showDialogWarning("No entries specified"));
-	    return new Result("", sb);
+            return new Result("", getPageHandler().makeEntryPage(request, parent,"Move/Copy/Link",
+								 getPageHandler().showDialogWarning("No entries specified")));
         }
 
         if (request.exists(ARG_CANCEL)) {
             return new Result(
 			      request.entryUrl(
-					       getRepository().URL_ENTRY_SHOW, entries.get(0)));
+					       getRepository().URL_ENTRY_SHOW, parent!=null?parent:entries.get(0)));
         }
 
 
@@ -4092,7 +4105,7 @@ public class EntryManager extends RepositoryManager {
         if ( !request.exists(ARG_CONFIRM) || (toEntry == null)) {
             StringBuilder sb = new StringBuilder();
             if (entries.size() == 1) {
-                getPageHandler().entrySectionOpen(request, entries.get(0),
+                getPageHandler().entrySectionOpen(request, parent!=null?parent:entries.get(0),
 						  sb, null);
             }
             if (request.exists(ARG_CONFIRM) && (toEntry == null)) {
@@ -4104,6 +4117,8 @@ public class EntryManager extends RepositoryManager {
             if (force != null) {
                 sb.append(HU.hidden(ARG_ACTION_FORCE, force));
             }
+	    if(parent!=null)
+		sb.append(HU.hidden(ARG_ENTRYID,parent.getId()));
 
             HU.sectionOpen(sb,msg(label),false);
 	    HU.div(sb, msg("The entries"), HU.cssClass("entry-confirm-header"));
@@ -4148,21 +4163,21 @@ public class EntryManager extends RepositoryManager {
                 right.append(toEntry.getTypeHandler().getEntryName(toEntry));
                 right.append(HU.hidden(ARG_TO, toEntry.getId()));
             } else {
-                Entry parent = entries.get(0).getParentEntry();
+                Entry theParent = entries.get(0).getParentEntry();
                 String select = OutputHandler.getSelect(request, ARG_TO,
 							HU.highlightable(
 									 HU.image("fas fa-bars")
 									 + HU.SPACE
 									 + msg("Select")
-									 + HU.SPACE), true, "", parent, false);
-		String event = OutputHandler.getSelectEvent(request, ARG_TO, true, "", parent);
+									 + HU.SPACE), true, "", theParent, false);
+		String event = OutputHandler.getSelectEvent(request, ARG_TO, true, "", theParent);
                 right.append(HU.hidden(ARG_TO + "_hidden",
-				       parent.getId(),
+				       theParent.getId(),
 				       HU.id(ARG_TO + "_hidden")));
 
 		//                right.append(select);
 		//                right.append(HU.space(1));
-                right.append(HU.disabledInput(ARG_TO, parent.getName(), HU.attr("onClick",event) +
+                right.append(HU.disabledInput(ARG_TO, theParent.getName(), HU.attr("onClick",event) +
 					      HU.clazz("disabledinput ramadda-entry-popup-select") + HU.SIZE_60 + HU.id(ARG_TO)));
 
             }
@@ -4187,11 +4202,10 @@ public class EntryManager extends RepositoryManager {
             sb.append(HU.sectionClose());
 
             if (entries.size() == 1) {
-                getPageHandler().entrySectionClose(request, entries.get(0),
+                getPageHandler().entrySectionClose(request, parent!=null?parent:entries.get(0),
 						   sb);
             }
-
-            return addEntryHeader(request, entries.get(0),
+            return addEntryHeader(request, parent!=null?parent:entries.get(0),
                                   new Result(msg("Entry Move/Copy"), sb));
         }
 

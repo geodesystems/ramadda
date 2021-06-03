@@ -2314,6 +2314,31 @@ public class Request implements Constants, Cloneable {
     }
 
 
+    public String getKeys() {
+        StringBuilder sb      = new StringBuilder();
+        for (Enumeration keys = parameters.keys(); keys.hasMoreElements(); ) {
+            sb.append((String) keys.nextElement());
+	    sb.append("\n");
+        }
+	return sb.toString();
+    }
+
+    public String getDebug() {
+        StringBuilder sb      = new StringBuilder();
+        for (Enumeration keys = parameters.keys(); keys.hasMoreElements(); ) {
+	    Object key = keys.nextElement();
+            sb.append((String) key);
+	    sb.append("=");
+	    sb.append(parameters.get(key));
+	    sb.append("\n");
+        }
+	return sb.toString();
+    }
+    
+
+
+
+
     /**
      * Set the SessionId property.
      *

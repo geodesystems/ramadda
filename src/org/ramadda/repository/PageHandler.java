@@ -3185,6 +3185,21 @@ public class PageHandler extends RepositoryManager {
         entrySectionOpen(request, entry, sb, title, false);
     }
 
+    public StringBuilder  makeEntryPage(Request request, Entry entry, String title, String s) throws Exception {
+	StringBuilder sb = new StringBuilder();
+	if(entry!=null)
+	    entrySectionOpen(request, entry, sb, title, false);
+	else
+	    sectionOpen(request, sb, title, false);
+	sb.append(s);
+	if(entry!=null)
+	    entrySectionClose(request, entry, sb);
+	else
+	    sectionClose(request, sb);	
+	return sb;
+    }
+
+
     /**
      * _more_
      *

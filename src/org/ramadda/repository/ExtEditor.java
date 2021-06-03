@@ -870,6 +870,8 @@ public class ExtEditor extends RepositoryManager {
      */
     public Result processEntryTypeChange(Request request) throws Exception {
 
+        Entry parent = getEntryManager().getEntryFromRequest(request, ARG_ENTRYID,
+					   getRepository().URL_ENTRY_GET,true);
         String      fromIds = request.getString(ARG_FROM, "");
         List<Entry> entries = new ArrayList<Entry>();
         for (String id : Utils.split(fromIds, ",", true, true)) {
@@ -882,22 +884,23 @@ public class ExtEditor extends RepositoryManager {
                 StringBuilder sb = new StringBuilder();
                 sb.append(
                     getPageHandler().showDialogNote(
-                        msg("Cannot copy top-level folder")));
+                        msg("Cannot change top-level folder")));
 
-                return new Result(msg("Entry Delete"), sb);
+                return new Result(msg("Entry Type Change"), sb);
             }
             entries.add(entry);
         }
 
 
         if (entries.size() == 0) {
-            throw new IllegalArgumentException("No entries specified");
+	    return new Result("",getPageHandler().makeEntryPage(request, parent,"Entry Type Change",
+								getPageHandler().showDialogError("No entries specified")));
         }
 
         if (request.exists(ARG_CANCEL)) {
             return new Result(
                 request.entryUrl(
-                    getRepository().URL_ENTRY_SHOW, entries.get(0)));
+				 getRepository().URL_ENTRY_SHOW, parent!=null?parent:entries.get(0)));
         }
 
 
@@ -928,12 +931,7 @@ public class ExtEditor extends RepositoryManager {
                 sb.append("<br>");
             }
             sb.append("</ul>");
-
-
-
-
-
-            return new Result(msg(""), sb);
+            return new Result("", getPageHandler().makeEntryPage(request, parent,"Entry Type Change",sb.toString()));
         }
 
 
@@ -944,9 +942,10 @@ public class ExtEditor extends RepositoryManager {
         request.formPostWithAuthToken(sb,
                                       getRepository().URL_ENTRY_TYPECHANGE);
         sb.append(HtmlUtils.hidden(ARG_FROM, fromIds));
-
+	if(parent!=null)
+	    sb.append(HtmlUtils.hidden(ARG_ENTRYID, parent.getId()));
         sb.append(HtmlUtils.p());
-
+	
         StringBuffer inner = new StringBuffer();
         inner.append(msg("Are you sure you want to change the entry types?"));
         inner.append(HtmlUtils.p());
@@ -980,9 +979,7 @@ public class ExtEditor extends RepositoryManager {
         }
         sb.append("</table>");
 
-
-        return new Result(msg(""), sb);
-
+	return new Result("", getPageHandler().makeEntryPage(request, parent,"Entry Type Change",sb.toString()));
     }
 
 
