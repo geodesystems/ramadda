@@ -1311,8 +1311,8 @@ public class OutputHandler extends RepositoryManager {
 
 
 
-        String        base   = "toggleentry" + (entryCnt++);
-        String        formId = "entryform_" + (HU.blockCnt++);
+        String        base   = request.getUniqueId("toggleentry_");
+        String        formId = request.getUniqueId("entryform_");
         StringBuilder formSB = new StringBuilder("");
 
         //FOR NOW - 
