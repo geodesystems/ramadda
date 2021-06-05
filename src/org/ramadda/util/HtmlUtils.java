@@ -721,6 +721,12 @@ public class HtmlUtils implements HtmlUtilsConstants {
     }
 
 
+    public static String backButton(String label) {
+	String link =  href("javascript:history.back()",label!=null?label:"Back");
+	return button(link);
+    }
+
+
     /**
      * _more_
      *
