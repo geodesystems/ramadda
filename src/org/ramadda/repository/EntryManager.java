@@ -902,6 +902,15 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result processEntryShow(Request request) throws Exception {
+	if(false) {
+	    return new Result("", new StringBuilder(
+						    getPageHandler().showDialogNote("There was a problem") +
+						    getPageHandler().showDialogQuestion("There was a problem","Buttons") +						    
+						    getPageHandler().showDialogWarning("There was a problem") +
+						    getPageHandler().showDialogError("There was a problem")));
+	}
+
+
         if (request.getCheckingAuthMethod()) {
             OutputHandler handler = getRepository().getOutputHandler(request);
             return new Result(handler.getAuthorizationMethod(request));
@@ -1450,7 +1459,7 @@ public class EntryManager extends RepositoryManager {
 
 
 
-        String formId = HU.getUniqueId("entryform_");
+        String formId = request.getUniqueId("entryform_");
         if (type == null) {
             sb.append(request.form(getRepository().URL_ENTRY_FORM,
                                    HU.attr("name", "entryform")
@@ -1877,8 +1886,7 @@ public class EntryManager extends RepositoryManager {
             //If we have a timestamp then check if the user 
             //was editing an up to date entry
             if (request.defined(ARG_ENTRY_TIMESTAMP)) {
-                String formTimestamp = request.getString(ARG_ENTRY_TIMESTAMP,
-							 "0");
+                String formTimestamp = request.getString(ARG_ENTRY_TIMESTAMP, "0");
                 String currentTimestamp = getEntryTimestamp(entry);
                 if ( !Misc.equals(formTimestamp, currentTimestamp)) {
                     StringBuilder sb        = new StringBuilder();
@@ -1892,7 +1900,7 @@ public class EntryManager extends RepositoryManager {
                     sb.append(
 			      getPageHandler().showDialogError(
 							       msg(
-								   "Error: The entry you are editing has been edited since the time you began the edit:"
+								   "Error: The entry you are editing has been edited since the time you began the edit"
 								   + dateRange)));
                     getPageHandler().entrySectionClose(request, entry, sb);
 
@@ -1904,23 +1912,14 @@ public class EntryManager extends RepositoryManager {
 
             if (request.exists(ARG_DELETE_CONFIRM)) {
                 if (entry.isTopEntry()) {
-                    return new Result(
-				      request.entryUrl(
-						       getRepository().URL_ENTRY_SHOW, entry,
-						       ARG_MESSAGE,
-						       getRepository().translate(
-										 request, "Cannot delete top-level folder")));
+		    return new Result("", getPageHandler().makeEntryPage(request, entry, "",
+									 getPageHandler().showDialogError("Cannot delete top-level folder")));
                 }
-
-
-                deleteEntry(request, entry);
                 Entry group = findGroup(request, entry.getParentEntryId());
+                deleteEntry(request, entry);
+		return new Result("", getPageHandler().makeEntryPage(request, group, "Entry delete",
+								     getPageHandler().showDialogError("Entry: " + entry.getName() +" is deleted")));
 
-                return new Result(
-				  request.entryUrl(
-						   getRepository().URL_ENTRY_SHOW, group, ARG_MESSAGE,
-						   getRepository().translate(
-									     request, "Entry is deleted")));
             }
 
             if (request.exists(ARG_DELETE)) {
@@ -2895,20 +2894,16 @@ public class EntryManager extends RepositoryManager {
      */
     public Result processEntryDelete(Request request) throws Exception {
         Entry         entry = getEntry(request);
-        StringBuilder sb    = new StringBuilder();
         if (entry.isTopEntry()) {
-            sb.append(
-		      getPageHandler().showDialogNote(
-						      "Cannot delete top-level folder"));
-
-            return makeEntryEditResult(request, entry, "Delete Entry", sb);
+	    return new Result("Entry Delete", getPageHandler().makeEntryPage(request, entry, "Entry delete",
+									     getPageHandler().showDialogError("Cannot delete top-level folder")));
         }
 
         if (request.exists(ARG_CANCEL)) {
-            return new Result(
-			      request.entryUrl(getRepository().URL_ENTRY_FORM, entry));
+            return new Result(request.entryUrl(getRepository().URL_ENTRY_FORM, entry));
         }
 
+        StringBuilder sb    = new StringBuilder();
         if (request.exists(ARG_DELETE_CONFIRM)) {
             request.ensureAuthToken();
             List<Entry> entries = new ArrayList<Entry>();
@@ -2992,12 +2987,8 @@ public class EntryManager extends RepositoryManager {
 							       "Could not find entry:" + id);
             }
             if (entry.isTopEntry()) {
-                StringBuilder sb = new StringBuilder();
-                sb.append(
-			  getPageHandler().showDialogNote(
-							  msg("Cannot delete top-level folder")));
-
-                return new Result(msg("Entry Delete"), sb);
+		return new Result("Entry Delete", getPageHandler().makeEntryPage(request, entry, "Entry delete",
+								     getPageHandler().showDialogError("Cannot delete top-level folder")));
             }
             entries.add(entry);
         }
@@ -3126,10 +3117,10 @@ public class EntryManager extends RepositoryManager {
 	    };
         String href = (group == null)
 	    ? ""
-	    : HU.href(
+	    : HtmlUtils.button(HU.href(
 		      request.entryUrl(
 				       getRepository().URL_ENTRY_SHOW,
-				       group), "Continue");
+				       group), "Continue"));
 
         return getActionManager().doAction(request, action, "Deleting entry",
                                            href, group);
@@ -3989,7 +3980,7 @@ public class EntryManager extends RepositoryManager {
 	    Entry parent = getEntryFromRequest(request, ARG_ENTRYID,
 					       getRepository().URL_ENTRY_GET,true);	
 	    return new Result("",getPageHandler().makeEntryPage(request, parent,"",
-								getPageHandler().showDialogError("No action specified")));
+								getPageHandler().showDialogError("No action specified",false,HtmlUtils.backButton("Back"))));
 	}
 
         OutputHandler outputHandler =
@@ -4045,7 +4036,7 @@ public class EntryManager extends RepositoryManager {
 
         if (entries.size() == 0) {
             return new Result("", getPageHandler().makeEntryPage(request, parent,"Move/Copy/Link",
-								 getPageHandler().showDialogWarning("No entries specified")));
+								 getPageHandler().showDialogError("No entries specified",false, HtmlUtils.backButton("Back"))));
         }
 
         if (request.exists(ARG_CANCEL)) {

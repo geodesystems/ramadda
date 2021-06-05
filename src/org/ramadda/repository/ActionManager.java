@@ -142,10 +142,8 @@ public class ActionManager extends RepositoryManager {
 		    sb.append(action.getContinueHtml());
 		} else {
 		    message.append("Completed");
-		    message.append(HtmlUtils.hr());
-		    message.append(action.getContinueHtml());
 		    sb.append(
-			      getPageHandler().showDialogNote(message.toString()));
+			      getPageHandler().showDialogNote(message.toString(),action.getContinueHtml()));
 		}
                 actions.remove(id);
             } else {

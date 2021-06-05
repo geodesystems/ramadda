@@ -1932,8 +1932,8 @@ public class PageHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    public String showDialogNote(String h) {
-        return getMessage(h, "/icons/information-32.png", false);
+    public String showDialogNote(String h, String...extra) {
+        return getDialog(h, extra, ICON_DIALOG_INFO, false);
     }
 
     /**
@@ -1943,8 +1943,8 @@ public class PageHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    public String showDialogBlank(String h) {
-        return getMessage(h, null, false);
+    public String showDialogBlank(String h, String...extra) {
+        return getDialog(h, extra, null, false);
     }
 
     /**
@@ -1966,8 +1966,8 @@ public class PageHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    public String showDialogWarning(String h) {
-        return getMessage(h, Constants.ICON_WARNING, false);
+    public String showDialogWarning(String h, String...extra) {
+        return getDialog(h, extra, Constants.ICON_DIALOG_WARNING, false);
     }
 
 
@@ -1980,8 +1980,8 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public String showDialogQuestion(String h, String buttons) {
-        return getMessage(h + "<p><hr>" + buttons, Constants.ICON_QUESTION,
-                          false);
+        return getDialog(h, new String[]{buttons}, Constants.ICON_DIALOG_QUESTION,
+			 false);
     }
 
     /**
@@ -1991,8 +1991,8 @@ public class PageHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    public String showDialogError(String h) {
-        return showDialogError(h, true);
+    public String showDialogError(String h, String...extra) {
+        return showDialogError(h, true, extra);
     }
 
     /**
@@ -2003,8 +2003,7 @@ public class PageHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    public String showDialogError(String h, boolean cleanString) {
-
+    public String showDialogError(String h, boolean cleanString, String...extra) {
         if (h == null) {
             h = "null error";
         }
@@ -2012,7 +2011,7 @@ public class PageHandler extends RepositoryManager {
             h = getDialogString(h);
         }
 
-        return getMessage(h, Constants.ICON_ERROR, false);
+        return getDialog(h, extra, Constants.ICON_DIALOG_ERROR, false);
     }
 
 
@@ -2040,6 +2039,53 @@ public class PageHandler extends RepositoryManager {
     }
 
 
+    public String getDialog(String msg, String []extra, String icon, boolean showClose) {
+        msg= msg.replaceAll("\n", "<br>").replaceAll("&#10;", "<br>");
+
+	if(extra!=null && extra.length>0) {
+	    String tmp = "";
+	    for(String e:extra) {
+		tmp+=e;
+	    }
+	    msg += "<br><hr style='margin-top:4px;margin-bottom:4px;' class=ramadda-thin-hr>" + tmp;
+	}
+
+
+        String html = showClose
+                      ? HU.jsLink(
+                          HU.onMouseClick("hide('messageblock')"),
+                          getIconImage(Constants.ICON_CLOSE))
+                      : "&nbsp;";
+	String clazz = Misc.equals(icon,Constants.ICON_DIALOG_INFO)?"ramadda-message":Misc.equals(icon,Constants.ICON_DIALOG_ERROR)?"alert-danger":Misc.equals(icon,Constants.ICON_DIALOG_WARNING)?"alert-warning":"ramadda-message";
+	//For now just use the message class
+	clazz = "ramadda-message";
+	String faClazz = Misc.equals(icon,Constants.ICON_DIALOG_INFO)?"":Misc.equals(icon,Constants.ICON_DIALOG_ERROR)?"text-danger":Misc.equals(icon,Constants.ICON_DIALOG_WARNING)?"text-warning":"";	
+        StringBuilder sb = new StringBuilder();
+        sb.append(HU.open(HU.TAG_DIV, "class",
+			  clazz+" ramadda-message-plain ", "id", "messageblock"));
+        sb.append("<table width=100%><tr valign=top>");
+        if (icon != null) {
+            sb.append("<td width=5%><div class=\"ramadda-message-icon\">");
+            sb.append(getIconImage(icon+" " + faClazz,"style","font-size:32pt;"));	    
+            sb.append("</div></td>");
+        }
+        sb.append("<td><div class=\"ramadda-message-inner\">");
+        sb.append(msg);
+        sb.append("</div></td>");
+        if (showClose) {
+            sb.append("<td><div class=\"ramadda-message-link\">");
+            sb.append(html);
+            sb.append("</div></td>");
+        }
+        sb.append("</tr></table>");
+        HU.close(sb, HU.TAG_DIV);
+        sb.append(HU.br());
+
+        return sb.toString();
+    }
+
+
+
     /**
      * _more_
      *
@@ -2057,9 +2103,10 @@ public class PageHandler extends RepositoryManager {
                           HU.onMouseClick("hide('messageblock')"),
                           getIconImage(Constants.ICON_CLOSE))
                       : "&nbsp;";
+
         StringBuilder sb = new StringBuilder();
         sb.append(HU.open(HU.TAG_DIV, "class",
-                                 "ramadda-message", "id", "messageblock"));
+                                 "ramadda-message ", "id", "messageblock"));
         sb.append("<table><tr valign=top>");
         if (icon != null) {
             sb.append("<td><div class=\"ramadda-message-link\">");
