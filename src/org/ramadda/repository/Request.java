@@ -2668,6 +2668,18 @@ public class Request implements Constants, Cloneable {
         extraProperties.put(key, value);
     }
 
+    public String getUniqueId(String prefix) {
+	Integer base = (Integer) extraProperties.get("uniquebase");
+	if(base==null) {
+	    base = new Integer(0);
+	    extraProperties.put("uniquebase", base);
+	}
+	base = base.intValue()+1;
+	extraProperties.put("uniquebase", base);
+	return prefix+base;
+    }
+
+
     /**
      * _more_
      *
