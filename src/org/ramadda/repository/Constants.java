@@ -141,8 +141,6 @@ public interface Constants {
     /** _more_ */
     public static final String ICON_ENTRY_UPLOAD = "/icons/flaggedentry.png";
 
-    /** _more_ */
-    public static final String ICON_ERROR = "/icons/error.png";
 
     /** _more_ */
     public static final String ICON_FAVORITE = "fas fa-star";
@@ -318,8 +316,16 @@ public interface Constants {
     /** _more_ */
     public static final String ICON_UPLOAD = "/icons/add.png";
 
+
+    public static final String ICON_DIALOG_QUESTION = "fas fa-question";
+
+    public static final String ICON_DIALOG_INFO = "fas fa-info";
+
     /** _more_ */
-    public static final String ICON_WARNING = "/icons/warning.png";
+    public static final String ICON_DIALOG_ERROR = "fas fa-exclamation-triangle";
+
+    /** _more_ */
+    public static final String ICON_DIALOG_WARNING = "fas fa-exclamation";
 
     /** _more_ */
     public static final String ICON_WIKI = "/icons/wiki.png";
