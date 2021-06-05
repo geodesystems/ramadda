@@ -113,6 +113,7 @@ function EntryFormList(formId, img, selectId, initialOn) {
 
     this.groupToggleVisibility = function() {
         this.on = !this.on;
+	HU.addToDocumentUrl(this.formId+"_visible",this.on);
         this.setVisibility();
     }
 
@@ -195,6 +196,15 @@ function EntryFormList(formId, img, selectId, initialOn) {
             }
         }
     }
+
+    let fromUrl = HU.getUrlArgument(this.formId+"_visible");
+    if(fromUrl!==null)  {
+        this.on = fromUrl =="true";
+	this.setVisibility();
+    }
+	
+
+
 }
 
 
