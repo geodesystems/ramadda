@@ -943,12 +943,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
 	for(String s: Utils.split(src,",")) {
-	    for (Column column : entry.getTypeHandler().getColumns()) {
-		if(column.isType(DataTypes.DATATYPE_URL) && column.getName().equals(s)) {
-		    Object[] values = entry.getValues();
-		    String url    = column.getString(values);
-		    if(url!=null && url.length()>0) {
-			return getWikiImage(wikiUtil, request, url, entry, props);
+	    List<Column> columns = entry.getTypeHandler().getColumns();
+	    if(columns!=null) {
+		for (Column column : columns) {
+		    if(column.isType(DataTypes.DATATYPE_URL) && column.getName().equals(s)) {
+			Object[] values = entry.getValues();
+			String url    = column.getString(values);
+			if(url!=null && url.length()>0) {
+			    return getWikiImage(wikiUtil, request, url, entry, props);
+			}
 		    }
 		}
 	    }
