@@ -98,8 +98,10 @@ public class WikiUtil {
     private StringBuilder javascript = new StringBuilder();
 
     /** _more_ */
-    private Hashtable<String, String> myVars = new Hashtable<String,
-                                                   String>();
+    private Hashtable<String, String> myVars = new Hashtable<String,String>();
+
+    private Hashtable<String, String> macros;
+    
 
     /** _more_ */
     private boolean hasSet = false;
@@ -867,11 +869,11 @@ public class WikiUtil {
             for (String line : text.split("\n")) {
                 if ((line.indexOf("${") >= 0)
                         && (hasSet || (globalProperties != null))) {
-                    if (myVars != null) {
-                        for (java.util.Enumeration keys = myVars.keys();
+                    if (macros != null) {
+                        for (java.util.Enumeration keys = macros.keys();
                                 keys.hasMoreElements(); ) {
                             Object key   = keys.nextElement();
-                            Object value = myVars.get(key);
+                            Object value = macros.get(key);
                             line = Utils.replaceAll(line,"${" + key + "}",   value.toString());
                         }
                     }
@@ -952,7 +954,8 @@ public class WikiUtil {
                 if (tline.startsWith("-macro")) {
 		    String macro = currentVarValue.toString();
 		    macro = wikify(macro, handler);
-                    myVars.put(currentVar, macro);
+		    if(macros == null) macros = new Hashtable<String,String>();    
+                    macros.put(currentVar, macro);
                     currentVar      = null;
                     currentVarValue = null;
                     continue;
@@ -1139,7 +1142,8 @@ public class WikiUtil {
                     String       value = ((toks.size() > 2)
                                           ? toks.get(2)
                                           : "");
-                    myVars.put(var.trim(), value.trim());
+		    if(macros == null) macros = new Hashtable<String,String>();    
+                    macros.put(var.trim(), value.trim());
                     continue;
                 }
 
@@ -3092,7 +3096,7 @@ public class WikiUtil {
             }
 
             if (props.get(ATTR_VAR) != null) {
-                myVars.put(props.get(ATTR_VAR).toString().trim(), inner);
+		myVars.put(props.get(ATTR_VAR).toString().trim(), inner);
             } else {
                 boolean open = Misc.getProperty(props, ATTR_OPEN, true);
                 boolean decorate = Misc.getProperty(props, ATTR_DECORATE,
@@ -3145,15 +3149,12 @@ public class WikiUtil {
         }
 
 
-	/** We do this at the top of the loop with each line
         for (java.util.Enumeration keys = myVars.keys();
                 keys.hasMoreElements(); ) {
             Object key   = keys.nextElement();
             Object value = myVars.get(key);
 	    s = s.replaceAll("\\$\\{" + key + "\\}", value.toString());
         }
-	*/
-
 	//	System.err.println("WIKI:" + s);
         return s;
 
