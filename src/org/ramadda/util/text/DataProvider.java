@@ -545,7 +545,10 @@ public abstract class DataProvider {
 		    System.err.println("Error reading array");
 		    if(s.length()>1000) s = s.substring(0,999);
 		    System.err.println("JSON:" + s);
-		    throw new IllegalArgumentException("Could not read JSON data");
+		    String msg = "Could not read JSON data";
+		    if(!Utils.stringDefined(arrayPath)) msg +=" No array path specified";
+		    msg += "\nError:" + exc;
+		    throw new IllegalArgumentException(msg);
 		}		    
             }
 
