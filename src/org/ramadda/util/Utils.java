@@ -952,6 +952,12 @@ public class Utils extends IO {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+	String s = "hello there hello";
+	System.err.println(s.replace("hello","xxx"));
+	if(true) return;
+	    
+
+
         for (String dateString : new String[] { "04/01/2021" }) {
             debugDate = true;
             Date date = parseDate(dateString);

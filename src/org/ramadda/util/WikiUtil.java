@@ -3149,14 +3149,12 @@ public class WikiUtil {
         }
 
 
-	/*
         for (java.util.Enumeration keys = myVars.keys();
                 keys.hasMoreElements(); ) {
             Object key   = keys.nextElement();
             Object value = myVars.get(key);
-	    s = s.replaceAll("\\$\\{" + key + "\\}", value.toString());
+	    s = s.replace("${" + key + "}", value.toString());
         }
-	*/
 	//	System.err.println("WIKI:" + s);
         return s;
 
