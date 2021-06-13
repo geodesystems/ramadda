@@ -1780,6 +1780,11 @@ public class CsvUtil {
                 new Arg("pattern", "", "type", "pattern"),
                 new Arg("replace with", "use 'none' for no replacement"),
                 "new column name"),
+        new Cmd("-urlarg", "Extract URL argument and make a new column",
+                new Arg("column", "", "type", "column"),
+                new Arg("argname", "URL arg name")),
+
+
         new Cmd("-map", "Change values in column to new values",
                 new Arg("column", "", "type", "columns"), "new columns name",
                 "value newvalue ..."),
@@ -2677,6 +2682,14 @@ public class CsvUtil {
 
 		return i;
 	    });
+
+
+	defineFunction("-urlarg",2,(ctx,args,i) -> {
+		ctx.addProcessor(
+				 new Converter.UrlArg(args.get(++i), args.get(++i)));
+		return i;
+	    });
+
 
 
 	defineFunction("-truncate",3,(ctx,args,i) -> {

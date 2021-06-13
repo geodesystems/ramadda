@@ -154,6 +154,19 @@ public class Utils extends IO {
         return getFormat(d).format(d);
     }
 
+    public static String getUrlArg(String urlString, String name) throws Exception {
+	URL url = new URL(urlString);
+	String query = url.getQuery();
+	for (String param : query.split("&")) {
+	    String[] pair = param.split("=");
+	    String key = URLDecoder.decode(pair[0], "UTF-8");
+	    if(key.equals(name)) return pair.length>1?URLDecoder.decode(pair[1], "UTF-8"):"";
+	}
+	return null;
+    }
+
+
+
     /**
      * _more_
      *

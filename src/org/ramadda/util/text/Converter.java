@@ -2319,6 +2319,53 @@ public abstract class Converter extends Processor {
 
     }
 
+    public static class UrlArg extends Converter {
+
+        /** _more_ */
+        private String name;
+
+	private int index = -1;
+
+        /**
+         * @param col _more_
+         * @param name _more_
+         */
+        public UrlArg(String col,  String name) {
+            super(col);
+            this.name    = name;
+        }
+
+        /**
+         *
+         *
+         *
+         *
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            //Don't process the first row
+            if (rowCnt++ == 0) {
+		row.add(name);
+                return row;
+            }
+	    if(index==-1) index = getIndex(ctx);
+	    try {
+		String arg = Utils.getUrlArg(row.getString(index),name);
+		if(arg==null) arg ="";
+		row.add(arg);
+	    } catch(Exception exc) {
+		row.add("");		
+	    }
+            return row;
+        }
+
+    }
+    
 
 
 
