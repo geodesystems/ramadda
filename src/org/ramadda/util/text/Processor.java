@@ -532,6 +532,117 @@ public abstract class Processor extends CsvOperator {
         }
     }
     
+    public static class First extends Processor {
+	private int index = -1;
+	private String name;
+	private int number;
+	public First(String col,String name, String num) {
+	    super(col);
+	    this.name = name;
+	    number = Integer.parseInt(num);
+	}
+
+
+        /**
+         * @param ctx _more
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+	public Row processRow(TextReader ctx, Row row)
+            throws Exception {
+	    if(rowCnt++==0) {
+		row.add(name);
+		return row;
+	    }
+	    if(index==-1) index =  getIndex(ctx);
+	    String v = row.getString(index);
+	    if(v.length()<number) row.add(v);
+	    else row.add(v.substring(0,number));
+	    return row;
+        }
+    }
+
+    public static class Last extends Processor {
+	private int index = -1;
+	private String name;
+	private int number;
+	public Last(String col,String name, String num) {
+	    super(col);
+	    this.name = name;
+	    number = Integer.parseInt(num);
+	}
+
+
+        /**
+         * @param ctx _more
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+	public Row processRow(TextReader ctx, Row row)
+            throws Exception {
+	    if(rowCnt++==0) {
+		row.add(name);
+		return row;
+	    }
+	    if(index==-1) index =  getIndex(ctx);
+	    String v = row.getString(index);
+	    int idx = v.length()-number;
+	    if(idx<0) row.add(v);
+	    else {
+		row.add(v.substring(idx));
+	    }
+	    return row;
+        }
+    }
+
+
+    public static class Between extends Processor {
+	private int index = -1;
+	private String name;
+	private int start;
+	private int end;    
+
+	public Between(String col,String name, String start, String end) {
+	    super(col);
+	    this.name = name;
+	    this.start = Integer.parseInt(start);
+	    this.end = Integer.parseInt(end);	    
+	}
+
+
+        /**
+         * @param ctx _more
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+	public Row processRow(TextReader ctx, Row row)
+            throws Exception {
+	    if(rowCnt++==0) {
+		row.add(name);
+		return row;
+	    }
+	    if(index==-1) index =  getIndex(ctx);
+	    String v = row.getString(index);
+	    if(start>=v.length()) {
+		row.add("");
+	    } else {
+		if(end>=v.length()) {
+		    row.add(v.substring(start));
+		} else {
+		    row.add(v.substring(start,end+1));
+		}
+	    }
+	    return row;
+        }
+    }
+    
+
 
 
     /**

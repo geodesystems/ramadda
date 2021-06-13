@@ -1883,52 +1883,6 @@ public abstract class Converter extends Processor {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sat, Mar 14, '20
-     * @author         Enter your name here...
-     */
-    public static class ColumnTrimmer extends Converter {
-
-        /**
-         *
-         * @param cols _more_
-         */
-        public ColumnTrimmer(List<String> cols) {
-            super(cols);
-        }
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         */
-        @Override
-        public Row processRow(TextReader ctx, Row row) {
-            //Don't process the first row
-            if (rowCnt++ == 0) {
-                return row;
-            }
-            List<Integer> indices = getIndices(ctx);
-            for (Integer idx : indices) {
-                int index = idx.intValue();
-                if ((index >= 0) && (index < row.size())) {
-                    String s = row.getString(index);
-                    //This is not an underscore but something else that shows up in web pages
-                    s = s.replaceAll(" ", "");
-                    s = s.trim();
-                    row.set(index, s);
-                }
-            }
-
-            return row;
-        }
-
-    }
-
 
 
     /**
@@ -4930,6 +4884,160 @@ public abstract class Converter extends Processor {
      * Class description
      *
      *
+     * @version        $version$, Wed, Dec 2, '15
+     * @author         Enter your name here...
+     */
+    public static class Trim extends Converter {
+
+        /**
+         *
+         * @param indices _more_
+         */
+        public Trim(List<String> indices) {
+            super(indices);
+        }
+
+        /**
+         *
+         *
+         *
+         *
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            List<Integer> indices = getIndices(ctx);
+            for (Integer idx : indices) {
+                int index = idx.intValue();
+                if ((index < 0) || (index >= row.size())) {
+                    continue;
+                }
+                String s = (String) row.getValues().get(index);
+                if (s == null) {
+                    continue;
+                }
+		s = s.trim();
+		row.set(index,s);
+            }
+
+            return row;
+        }
+
+    }
+
+    public static class PadLeftRight extends Converter {
+
+	private int length;
+	private String c;
+	private boolean left;
+
+        /**
+         *
+         * @param indices _more_
+         */
+        public PadLeftRight(boolean left, List<String> indices,String c,int length) {
+            super(indices);
+	    this.left = left;
+	    this.c = c;
+	    this.length = length;
+        }
+
+        /**
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+	    if(rowCnt++==0) return row;
+            List<Integer> indices = getIndices(ctx);
+            for (Integer idx : indices) {
+                int index = idx.intValue();
+                if ((index < 0) || (index >= row.size())) {
+                    continue;
+                }
+                String s = (String) row.getValues().get(index);
+                if (s == null) {
+                    continue;
+                }
+		while(s.length()<length) {
+		    if(left) s = c+s;
+		    else s = s +c;
+		}
+		row.set(index,s);
+            }
+
+            return row;
+        }
+
+    }
+
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Wed, Dec 2, '15
+     * @author         Enter your name here...
+     */
+    public static class TrimQuotes extends Converter {
+
+        /**
+         *
+         * @param indices _more_
+         */
+        public TrimQuotes(List<String> indices) {
+            super(indices);
+        }
+
+        /**
+         *
+         *
+         *
+         *
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            List<Integer> indices = getIndices(ctx);
+	    System.err.println("process:" + row);
+            for (Integer idx : indices) {
+                int index = idx.intValue();
+                if ((index < 0) || (index >= row.size())) {
+                    continue;
+                }
+                String s = (String) row.getValues().get(index);
+                if (s == null) {
+                    continue;
+                }
+		if(s.startsWith("\"")) s = s.substring(1);
+		if(s.endsWith("\"")) s = s.substring(0,s.length()-2);		
+		row.set(index,s);
+            }
+
+            return row;
+        }
+
+    }
+
+
+
+
+    /**
+     * Class description
+     *
+     *
      * @version        $version$, Wed, Mar 24, '21
      * @author         Enter your name here...    
      */
@@ -5513,6 +5621,47 @@ public abstract class Converter extends Processor {
         }
     }
 
+
+    public static class FillDown extends Converter {
+	private Hashtable<Integer,String> lastValue = new Hashtable<Integer,String>();
+
+
+        /**
+         *
+         * @param cols _more_
+         */
+        public FillDown(List<String> cols) {
+	    super(cols);
+        }
+
+        /**
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+		return row;
+	    }
+            List<Integer> indices = getIndices(ctx);
+            for (int col : indices) {
+		String v = row.getString(col);
+		v = v.trim();
+		if(v.length()==0) {
+		    v = lastValue.get(col);
+		    if(v!=null)
+			row.set(col,v);
+		} else  {
+		    lastValue.put(col, v);
+		}
+            }
+            return row;
+        }
+    }
+    
 
     /**
      * Class description

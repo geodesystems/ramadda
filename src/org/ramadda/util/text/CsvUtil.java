@@ -1604,6 +1604,25 @@ public class CsvUtil {
                 new Arg("column", "", "type", "column"), new Arg("pattern","e.g., \"(field1:.*) (field2:.*) ...\"","type","pattern","size","80")),
         new Cmd("-keyvalue", "Make fields from key/value pairs, e.g. name1=value1 name2=value2 ...",
                 new Arg("column", "", "type", "column")),
+        new Cmd(
+		"-first",
+		"Extract first N characters and create new column",
+		new Arg("column", "", "type", "column"),
+		new Arg("name", "New column name"),
+		new Arg("number", "Number of characters")),
+        new Cmd(
+		"-last",
+		"Extract last N characters and create new column",
+		new Arg("column", "", "type", "column"),
+		new Arg("name", "New column name"),
+		new Arg("number", "Number of characters")),
+        new Cmd(
+		"-between",
+		"Extract characters between the 2 indices",
+		new Arg("column", "", "type", "column"),
+		new Arg("name", "New column name"),
+		new Arg("start", "Start index"),
+		new Arg("end", "End index")),		
         /** *  Filter * */
         new Cmd(true, "Filter"),
         new Cmd("-start", "Start at pattern in source file",
@@ -1702,6 +1721,10 @@ public class CsvUtil {
 		new Arg("pattern", "", "type", "pattern"),
 		new Arg("write column", "", "type", "column"), new Arg("value")),
         new Cmd(
+		"-filldown",
+		"Fill down with last non-null value",
+		new Arg("columns", "", "type", "columns")),
+        new Cmd(
 		"-priorprefix",
 		"Append prefix from the previous element to rows that match pattern",
 		new Arg("column", "", "type", "column"),
@@ -1710,6 +1733,20 @@ public class CsvUtil {
                 new Arg("type", "", "values",
                         "lower,upper,proper,capitalize"), new Arg("column",
 								  "", "type", "column")),
+        new Cmd("-padleft", "Pad left with given character",
+                new Arg("columns", "", "type", "columns"),
+                new Arg("character", "Character to pad to"),
+                new Arg("length", "Length")),
+        new Cmd("-padright", "Pad right with given character",
+                new Arg("columns", "", "type", "columns"),
+                new Arg("character", "Character to pad to"),
+                new Arg("length", "Length")),	
+
+
+        new Cmd("-trim", "Trim leading and trailing white space",
+                new Arg("columns", "", "type", "columns")),
+        new Cmd("-trimquotes", "Trim leading and trailing quotes",
+                new Arg("columns", "", "type", "columns")),	
         new Cmd("-width", "Limit the string size of the columns",
                 new Arg("columns", "", "type", "columns"), new Arg("size")),
         new Cmd(
@@ -1736,8 +1773,6 @@ public class CsvUtil {
                 new Arg("javascript", "javascript expression", "size", "60")),
         new Cmd("-endswith", "Ensure that each column ends with the string",
                 new Arg("column", "", "type", "column"), new Arg("string")),
-        new Cmd("-trim", "Trim the string values",
-                new Arg("columns", "", "type", "columns")),
         new Cmd("-truncate", "", new Arg("column", "", "type", "columns"),
                 "max length", "suffix"),
         new Cmd("-extract", "Extract text from column and make a new column",
@@ -2521,6 +2556,20 @@ public class CsvUtil {
 		return i;
 	    });		
 
+	defineFunction("-first",3,(ctx,args,i) -> {
+		ctx.addProcessor(new Processor.First(args.get(++i), args.get(++i), args.get(++i)));
+		return i;
+	    });
+	defineFunction("-last",3,(ctx,args,i) -> {
+		ctx.addProcessor(new Processor.Last(args.get(++i), args.get(++i), args.get(++i)));
+		return i;
+	    });			
+	defineFunction("-between",4,(ctx,args,i) -> {
+		ctx.addProcessor(new Processor.Between(args.get(++i), args.get(++i),args.get(++i), args.get(++i)));
+		return i;
+	    });			
+
+
 	defineFunction("-gender",1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Genderizer(args.get(++i)));
 		return i;
@@ -2614,10 +2663,6 @@ public class CsvUtil {
 		return i;
 	    });
 
-	defineFunction("-trim",1,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.ColumnTrimmer(getCols(args.get(++i))));
-		return i;
-	    });
 
 
 	defineFunction("-extract",4,(ctx,args,i) -> {
@@ -3043,7 +3088,27 @@ public class CsvUtil {
 		ctx.addProcessor(new Converter.Case(getCols(args.get(++i)),args.get(++i)));
 		return i;
 	    });
+	defineFunction("-padleft", 3,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.PadLeftRight(true,getCols(args.get(++i)),args.get(++i),Integer.parseInt(args.get(++i))));
+		return i;
+	    });
+	defineFunction("-padright", 3,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.PadLeftRight(false,getCols(args.get(++i)),args.get(++i),Integer.parseInt(args.get(++i))));
+		return i;
+	    });	
 
+
+
+	defineFunction("-trim", 1,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.Trim(getCols(args.get(++i))));
+		return i;
+	    });	
+
+	defineFunction("-trimquotes", 1,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.TrimQuotes(getCols(args.get(++i))));
+		return i;
+	    });	
+	
 	defineFunction("-addcell", 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnNudger(Integer.parseInt(args.get(++i)),Integer.parseInt(args.get(++i)), args.get(++i)));
 		return i;
@@ -3051,6 +3116,11 @@ public class CsvUtil {
 
 	defineFunction("-deletecell", 2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnUnNudger(Integer.parseInt(args.get(++i)), getCols(args.get(++i))));
+		return i;
+	    });
+
+	defineFunction("-filldown", 1,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.FillDown(getCols(args.get(++i))));
 		return i;
 	    });
 
