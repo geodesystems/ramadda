@@ -1858,7 +1858,7 @@ public class CsvUtil {
 
 
         /** *  Numeric * */
-        new Cmd(true, "Numeric"),
+        new Cmd(true, "Numeric/Boolean"),
         new Cmd("-scale", "Set value={value+delta1}*scale+delta2",
                 new Arg("column", "", "type", "columns"), "delta1", "scale",
                 "delta2"),
@@ -1886,6 +1886,10 @@ public class CsvUtil {
         new Cmd("-bytes", "Convert suffixed values (e.g., 2 MB) into the number",
                 new Arg("unit", "", "type", "enumeration","values","binary,metric"),
                 new Arg("column", "", "type", "columns")),
+        new Cmd("-column_and", "And values", new Arg("name","New column name"), new Arg("columns", "", "type", "columns")),
+        new Cmd("-colum_nor", "Or values", new Arg("name","New column name"), new Arg("columns", "", "type", "columns")),
+        new Cmd("-column_not", "Not value", new Arg("name","New column name"), new Arg("column", "", "type", "column")),		
+
         /** * Geocode  * */
         new Cmd(true, "Geocode"),
         new Cmd("-geocode", "", new Arg("columns", "", "type", "columns"),
@@ -2523,6 +2527,18 @@ public class CsvUtil {
 		ctx.addProcessor(new Converter.ColumnIncrease(args.get(++i), Integer.parseInt(args.get(++i))));
 		return i;
 	    });
+	defineFunction("-column_and",2,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.And(args.get(++i), getCols(args.get(++i))));
+		return i;
+	    });
+	defineFunction("-column_or",2,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.Or(args.get(++i), getCols(args.get(++i))));
+		return i;
+	    });
+	defineFunction("-column_not",2,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.Not(args.get(++i), args.get(++i)));
+		return i;
+	    });			
 
 
 

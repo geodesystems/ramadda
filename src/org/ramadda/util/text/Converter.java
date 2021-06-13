@@ -1,18 +1,18 @@
 /*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (c) 2008-2021 Geode Systems LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package org.ramadda.util.text;
 
@@ -218,7 +218,7 @@ public abstract class Converter extends Processor {
 
     /** _more_ */
     private static Hashtable<String, String> imageMap = new Hashtable<String,
-                                                            String>();
+	String>();
 
     /**
      * Class description
@@ -302,8 +302,8 @@ public abstract class Converter extends Processor {
                     String image = imageMap.get(s);
                     if (image == null) {
                         Process p = Runtime.getRuntime().exec(new String[] {
-                                        "sh",
-                                        script, s });
+				"sh",
+				script, s });
                         result =
                             IO.readInputStream(p.getInputStream()).trim();
                         JSONObject obj    = new JSONObject(result);
@@ -322,11 +322,11 @@ public abstract class Converter extends Processor {
                         System.err.println("found image:" + s + " image:"
                                            + image);
                         ctx.printDebug("-image",
-                                        "value:" + s + " found:" + image);
+				       "value:" + s + " found:" + image);
                         imageMap.put(s, image);
                     } else {
                         ctx.printDebug("-image",
-                                        "value:" + s + " in cache:" + image);
+				       "value:" + s + " in cache:" + image);
                     }
                     if (imageColumnIndex >= 0) {
                         row.set(imageColumnIndex, image);
@@ -419,16 +419,16 @@ public abstract class Converter extends Processor {
                 String     title   = value.optString("title", "");
                 title = title.replaceAll(" ", "%20");
                 url = baseUrl + "?action=parse&prop=text&page=" + title
-                      + "&format=json";
+		    + "&format=json";
                 result = IO.readUrl(url);
                 obj    = new JSONObject(result);
                 obj    = Json.readObject(obj, "parse.text");
                 String contents = obj.optString("*", "");
                 String p = StringUtil.findPattern(contents,
-                               "(?s)/table>(.*?)<div id=\"toc\"");
+						  "(?s)/table>(.*?)<div id=\"toc\"");
                 if (p != null) {
                     String p2 = StringUtil.findPattern(contents,
-                                    "(?s).*?<p>(.*?)</p>");
+						       "(?s).*?<p>(.*?)</p>");
                     if (p2 != null) {
                         p = p2;
                     } else {
@@ -813,7 +813,7 @@ public abstract class Converter extends Processor {
                     String label =
                         Utils.makeLabel(col.replaceAll("\\([^\\)]+\\)", ""));
                     String unit = StringUtil.findPattern(col,
-                                      ".*?\\(([^\\)]+)\\).*");
+							 ".*?\\(([^\\)]+)\\).*");
                     StringBuffer attrs = new StringBuffer();
                     attrs.append("label=\"" + label + "\" ");
                     if (unit != null) {
@@ -821,9 +821,9 @@ public abstract class Converter extends Processor {
 
                     }
                     String id = label.replaceAll(
-                                    "\\([^\\)]+\\)", "").replaceAll(
-                                    "-", "_").trim().toLowerCase().replaceAll(
-                                    " ", "_").replaceAll(":", "_");
+						 "\\([^\\)]+\\)", "").replaceAll(
+										 "-", "_").trim().toLowerCase().replaceAll(
+															   " ", "_").replaceAll(":", "_");
                     id = id.replaceAll("/+", "_");
                     id = id.replaceAll("\\.", "_");
                     id = id.replaceAll("_+_", "_");
@@ -897,7 +897,7 @@ public abstract class Converter extends Processor {
             defaultType = CsvUtil.getDbProp(props, "default", "type",
                                             defaultType);
             defaultChartable = CsvUtil.getDbProp(props, "default",
-                    "chartable", true);
+						 "chartable", true);
             makeLabel = CsvUtil.getDbProp(props, null, "makeLabel", true);
             toStdOut  = CsvUtil.getDbProp(props, null, "stdout", false);
         }
@@ -922,7 +922,7 @@ public abstract class Converter extends Processor {
                 return null;
             }
             boolean justFields  = Misc.equals(props.get("justFields"),
-                                      "true");
+					      "true");
             boolean      debug  = Misc.equals(props.get("debug"), "true");
             PrintWriter  writer = ctx.getWriter();
             StringBuffer sb     = new StringBuffer();
@@ -933,9 +933,9 @@ public abstract class Converter extends Processor {
             }
             List values = new ArrayList<String>();
             String dfltFormat = CsvUtil.getDbProp(props, "default", "format",
-                                    null);
+						  null);
             String dfltUnit = CsvUtil.getDbProp(props, "default", "unit",
-                                  null);
+						null);
             for (int i = 0; i < firstRow.getValues().size(); i++) {
                 String   col = (String) firstRow.getValues().get(i);
                 String[] toks;
@@ -948,7 +948,7 @@ public abstract class Converter extends Processor {
                         desc = toks[0];
                         desc = desc.replaceAll(",", "_comma_");
                         desc = desc.replaceAll("\"", "").replaceAll("\n",
-                                " ");
+								    " ");
                         col = col.replaceAll("<desc>.*</desc>", "");
                     }
                     toks = Utils.findPatterns(col, "<label>(.*)</label>");
@@ -968,26 +968,26 @@ public abstract class Converter extends Processor {
                 String sample  = (String) osample.toString();
                 String _sample = sample.toLowerCase();
                 col = col.replaceAll("\u00B5", "u").replaceAll("\u00B3",
-                                     "^3").replaceAll("\n", " ");
+							       "^3").replaceAll("\n", " ");
                 String id = col.replaceAll("\\([^\\)]+\\)", "").replaceAll(
-                                "\\?", "").replaceAll("\\$", "").replaceAll(
-                                ",", "_").replaceAll(
-                                "-", "_").trim().toLowerCase().replaceAll(
-                                " ", "_").replaceAll(":", "_");
+									   "\\?", "").replaceAll("\\$", "").replaceAll(
+														       ",", "_").replaceAll(
+																	    "-", "_").trim().toLowerCase().replaceAll(
+																						      " ", "_").replaceAll(":", "_");
 
                 id = id.replaceAll("<", "_").replaceAll(">", "_");
                 id = id.replaceAll("\\+", "_").replaceAll(
-                    "\"", "_").replaceAll("%", "_").replaceAll(
-                    "\'", "_").replaceAll("/+", "_").replaceAll(
-                    "\\.", "_").replaceAll("_+_", "_").replaceAll(
-                    "_+$", "").replaceAll("^_+", "").replaceAll("\\^", "_");
+							  "\"", "_").replaceAll("%", "_").replaceAll(
+												     "\'", "_").replaceAll("/+", "_").replaceAll(
+																		 "\\.", "_").replaceAll("_+_", "_").replaceAll(
+																							       "_+$", "").replaceAll("^_+", "").replaceAll("\\^", "_");
 
                 id = CsvUtil.getDbProp(props, id, i, "id", id);
 
 
                 StringBuffer attrs = new StringBuffer();
 		String group  =CsvUtil.getDbProp(props, id, i, "group",
-                            (String) null);
+						 (String) null);
 		if(group!=null) {
 		    attrs.append(" group=\"" + group + "\" ");
 
@@ -995,19 +995,19 @@ public abstract class Converter extends Processor {
 		
                 if (label == null) {
                     label = CsvUtil.getDbProp(props, id, i, "label",
-                            (String) null);
+					      (String) null);
                 }
                 if (makeLabel && (label == null)) {
                     label = Utils.makeLabel(col.replaceAll("\\([^\\)]+\\)",
-                            ""));
+							   ""));
                 }
                 String unit = StringUtil.findPattern(col,
-                                  ".*?\\(([^\\)]+)\\).*");
+						     ".*?\\(([^\\)]+)\\).*");
                 if (label != null) {
                     label = label.replaceAll(",", "%2C").replaceAll("<br>",
-                                             " ").replaceAll("<p>", " ");
+								    " ").replaceAll("<p>", " ");
                     label = label.replaceAll("  +", " ").replace("_space_",
-                                             " ");
+								 " ");
                     attrs.append("label=\"" + label + "\" ");
                 }
                 if (desc != null) {
@@ -1025,7 +1025,7 @@ public abstract class Converter extends Processor {
                 boolean isGeo  = false;
 
                 boolean chartable = CsvUtil.getDbProp(props, id, "chartable",
-                                        defaultChartable);
+						      defaultChartable);
                 if (id.equals("date")) {
                     type = "date";
                 } else if (id.equals("year")) {
@@ -1057,7 +1057,7 @@ public abstract class Converter extends Processor {
                 } else {
                     try {
                         if (_sample.equals("true")
-                                || _sample.equals("false")) {
+			    || _sample.equals("false")) {
                             type = "enumeration";
                         } else if (_sample.equals("nan")
                                    || _sample.equals("na")) {
@@ -1071,10 +1071,10 @@ public abstract class Converter extends Processor {
                         } else if (sample.matches("^(\\+|-)?\\d+$")) {
                             type = "integer";
                         } else if (sample.matches(
-                                "^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?$")) {
+						  "^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?$")) {
                             type = "double";
                         } else if (sample.matches(
-                                "\\d\\d\\d\\d-\\d\\d-\\d\\d")) {
+						  "\\d\\d\\d\\d-\\d\\d-\\d\\d")) {
                             type   = "date";
                             format = "yyyy-MM-dd";
                         } else {}
@@ -1093,7 +1093,7 @@ public abstract class Converter extends Processor {
 
                 attrs.append(" type=\"" + type + "\"");
                 String enumeratedValues = CsvUtil.getDbProp(props, id, i,
-                                              "enumeratedValues", null);
+							    "enumeratedValues", null);
                 if (enumeratedValues != null) {
                     attrs.append(" enumeratedValues=\"" + enumeratedValues
                                  + "\"");
@@ -1192,16 +1192,16 @@ public abstract class Converter extends Processor {
             for (Integer idx : indices) {
                 String s = values.get(idx).toString().trim();
                 double v = (s.length() == 0)
-                           ? 0
-                           : Double.parseDouble(s);
+		    ? 0
+		    : Double.parseDouble(s);
                 total += v;
                 cnt++;
             }
             for (Integer idx : indices) {
                 String s = values.get(idx).toString().trim();
                 double v = (s.length() == 0)
-                           ? 0
-                           : Double.parseDouble(s);
+		    ? 0
+		    : Double.parseDouble(s);
                 if (total != 0) {
                     values.set(idx, v / total);
                 } else {
@@ -1295,6 +1295,166 @@ public abstract class Converter extends Processor {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Tue, Nov 19, '19
+     * @author         Enter your name here...
+     */
+    public static class And extends Converter {
+
+	private String name;
+
+        /**
+         * @param col _more_
+         * @param step _more_
+         */
+        public And(String name, List<String> cols) {
+            super(cols);
+	    this.name = name;
+        }
+
+
+        /**
+         *
+         *
+         *
+         *
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+		row.add(name);
+                return row;
+            }
+            List<Integer> indices = getIndices(ctx);
+	    boolean r=true;
+            for (int index: indices) {
+                if ((index >= 0) && (index < row.size())) {
+		    if(!getBoolean(row.getString(index))) {
+			r = false;
+			break;
+		    }
+		}
+	    }
+	    row.add(""+r);
+            return row;
+        }
+
+    }
+    
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Tue, Nov 19, '19
+     * @author         Enter your name here...
+     */
+    public static class Or extends Converter {
+
+	private String name;
+
+        /**
+         * @param col _more_
+         * @param step _more_
+         */
+        public Or(String name, List<String> cols) {
+            super(cols);
+	    this.name = name;
+        }
+
+
+        /**
+         *
+         *
+         *
+         *
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+		row.add(name);
+                return row;
+            }
+            List<Integer> indices = getIndices(ctx);
+	    boolean r=false;
+            for (int index: indices) {
+                if ((index >= 0) && (index < row.size())) {
+		    String v = row.getString(index);
+		    if(v==null) v = "false";
+		    if(getBoolean(row.getString(index))) {
+			r = true;
+			break;
+		    }
+		}
+	    }
+	    row.add(""+r);
+            return row;
+        }
+
+    }
+    
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Tue, Nov 19, '19
+     * @author         Enter your name here...
+     */
+    public static class Not extends Converter {
+
+	private String name;
+
+        /**
+         * @param col _more_
+         * @param step _more_
+         */
+        public Not(String name, String col) {
+            super(col);
+	    this.name = name;
+        }
+
+
+        /**
+         *
+         *
+         *
+         *
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+		row.add(name);
+                return row;
+            }
+	    boolean b = getBoolean(row.getString(getIndex(ctx)));
+	    row.add(""+!b);
+            return row;
+        }
+
+    }
+    
+    
 
     /**
      * Class description
@@ -1390,8 +1550,8 @@ public abstract class Converter extends Processor {
                     }
                 }
                 double average = (cnt == 0)
-                                 ? Double.NaN
-                                 : total / cnt;
+		    ? Double.NaN
+		    : total / cnt;
                 add(ctx, row, average);
             }
 
@@ -1736,7 +1896,7 @@ public abstract class Converter extends Processor {
          * @param value _more_
          */
         public Ascii(List<String> cols, 
-                             String value) {
+		     String value) {
             super(cols);
             this.value = value;
         }
@@ -2058,8 +2218,8 @@ public abstract class Converter extends Processor {
             try {
                 String            s   = row.get(col).toString();
                 Date              d   = (sdf == null)
-                                        ? Utils.parseDate(s)
-                                        : sdf.parse(s);
+		    ? Utils.parseDate(s)
+		    : sdf.parse(s);
                 GregorianCalendar cal = new GregorianCalendar();
                 cal.setTimeZone(TimeZone.getTimeZone("GMT"));
                 cal.setTime(d);
@@ -2639,11 +2799,11 @@ public abstract class Converter extends Processor {
             }
             for (int i = 0; i < row.size(); i++) {
                 String s  = (i < row.size())
-                            ? row.getString(i)
-                            : "";
+		    ? row.getString(i)
+		    : "";
                 String ss = (i < firstRow.size())
-                            ? firstRow.getString(i)
-                            : "";
+		    ? firstRow.getString(i)
+		    : "";
                 ss = ss + delimiter + s;
                 firstRow.set(i, ss);
             }
@@ -2801,7 +2961,7 @@ public abstract class Converter extends Processor {
                     dttm = from.parse(value);
                 } catch (java.text.ParseException exc) {
                     throw new IllegalArgumentException(
-                        "Bad parse date format:" + value);
+						       "Bad parse date format:" + value);
                 }
                 String toDate = to.format(dttm);
                 row.set(index, toDate);
@@ -3289,14 +3449,14 @@ public abstract class Converter extends Processor {
          * @throws Exception _more_
          */
         private Hashtable<String, double[]> makeMap(String filename)
-                throws Exception {
+	    throws Exception {
             Hashtable<String, double[]> map = new Hashtable<String,
-                                                  double[]>();
+		double[]>();
             long t1 = System.currentTimeMillis();
             //            System.err.println("Reading file:" + filename);
             BufferedReader br = new BufferedReader(
-                                    new InputStreamReader(
-                                        getInputStream(filename)));
+						   new InputStreamReader(
+									 getInputStream(filename)));
             //            System.err.println("Done Reading file:" + filename);
             String line;
             while ((line = br.readLine()) != null) {
@@ -3398,7 +3558,7 @@ public abstract class Converter extends Processor {
                             badCnt++;
                             if ( !seen.contains(key)) {
                                 System.err.println("No bounds:" + key + " "
-                                        + badCnt);
+						   + badCnt);
                                 seen.add(key);
                             }
                         }
@@ -3553,12 +3713,12 @@ public abstract class Converter extends Processor {
                     Double.parseDouble(row.getString(lonColumn));
                 String result =
                     IO.readUrl(
-                        new URL(
-                            "https://nationalmap.gov/epqs/pqs.php?x="
-                            + lonValue + "&y=" + latValue
-                            + "&units=feet&output=xml"));
+			       new URL(
+				       "https://nationalmap.gov/epqs/pqs.php?x="
+				       + lonValue + "&y=" + latValue
+				       + "&units=feet&output=xml"));
                 String elev = StringUtil.findPattern(result,
-                                  "<Elevation>([^<]+)</Elevation>");
+						     "<Elevation>([^<]+)</Elevation>");
                 if (elev != null) {
                     row.add(elev);
                 } else {
@@ -3636,12 +3796,12 @@ public abstract class Converter extends Processor {
                 latColumn = getIndex(ctx, lat);
                 lonColumn = getIndex(ctx, lon);
                 String label = where.equals("counties")
-                               ? "County"
-                               : where.equals("states")
-                                 ? "State"
-                               : where.equals("timezones")
-                                 ? "Timezone"
-                                 : where;
+		    ? "County"
+		    : where.equals("states")
+		    ? "State"
+		    : where.equals("timezones")
+		    ? "Timezone"
+		    : where;
                 row.add(label);
 
                 return row;
@@ -3652,7 +3812,7 @@ public abstract class Converter extends Processor {
                 double lonValue =
                     Double.parseDouble(row.getString(lonColumn));
                 String name = GeoUtils.findFeatureName(where, latValue,
-                                  lonValue, "");
+						       lonValue, "");
                 name = name.trim();
                 row.add(name);
                 return row;
@@ -3766,7 +3926,7 @@ public abstract class Converter extends Processor {
                 didOne = true;
                 //A hack for US
                 if (value.equals("US")
-                        || value.toString().startsWith("United States")) {
+		    || value.toString().startsWith("United States")) {
                     add(ctx, row, new Integer(327000000));
 
                     return row;
@@ -3824,8 +3984,8 @@ public abstract class Converter extends Processor {
             try {
                 InputStream inputStream =
                     Utils.getInputStream(
-                        "/org/ramadda/util/text/state_regions.properties",
-                        getClass());
+					 "/org/ramadda/util/text/state_regions.properties",
+					 getClass());
                 props.load(inputStream);
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
@@ -3951,8 +4111,8 @@ public abstract class Converter extends Processor {
                 try {
                     InputStream inputStream =
                         Utils.getInputStream(
-                            "/org/ramadda/util/text/gender.properties",
-                            getClass());
+					     "/org/ramadda/util/text/gender.properties",
+					     getClass());
                     genderProperties.load(inputStream);
                 } catch (Exception exc) {
                     throw new RuntimeException(exc);
@@ -4046,10 +4206,10 @@ public abstract class Converter extends Processor {
          * @throws Exception _more_
          */
         private void makeMap(String filename, int col1, int col2)
-                throws Exception {
+	    throws Exception {
             BufferedReader br = new BufferedReader(
-                                    new InputStreamReader(
-                                        getInputStream(filename)));
+						   new InputStreamReader(
+									 getInputStream(filename)));
 
             String line;
             while ((line = br.readLine()) != null) {
@@ -4508,7 +4668,7 @@ public abstract class Converter extends Processor {
 
         /** _more_ */
         private Hashtable<String, Row> prevRows = new Hashtable<String,
-                                                      Row>();
+	    Row>();
 
         /** _more_ */
         List<Integer> indices;
@@ -4635,8 +4795,8 @@ public abstract class Converter extends Processor {
             double lon    = x / shift * 180.0;
             double lat    = y / shift * 180.0;
             lat = 180 / Math.PI
-                  * (2 * Math.atan(Math.exp(lat * Math.PI / 180.0))
-                     - Math.PI / 2.0);
+		* (2 * Math.atan(Math.exp(lat * Math.PI / 180.0))
+		   - Math.PI / 2.0);
 
             row.getValues().add(lat);
             row.getValues().add(lon);
@@ -4696,8 +4856,8 @@ public abstract class Converter extends Processor {
                 }
                 String s = (String) row.getValues().get(index);
                 double v = (s.length() == 0)
-                           ? 0
-                           : Double.parseDouble(s.replaceAll(",", ""));
+		    ? 0
+		    : Double.parseDouble(s.replaceAll(",", ""));
                 row.set(index, "" + ((int) Math.round(v)));
             }
 
@@ -4808,8 +4968,8 @@ public abstract class Converter extends Processor {
                 }
                 String s = (String) row.getValues().get(index);
                 double v = (s.length() == 0)
-                           ? 0
-                           : Double.parseDouble(s.replaceAll(",", ""));
+		    ? 0
+		    : Double.parseDouble(s.replaceAll(",", ""));
                 row.set(index, "" +Math.abs(v));
             }
             return row;
@@ -4916,8 +5076,8 @@ public abstract class Converter extends Processor {
                     }
                 } else {
                     throw new IllegalArgumentException(
-                        "Unknown case:" + action
-                        + ". Needs to be one of lower, upper, camel, capitalize");
+						       "Unknown case:" + action
+						       + ". Needs to be one of lower, upper, camel, capitalize");
                 }
                 row.getValues().set(index, s);
             }
@@ -5799,8 +5959,8 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader ctx, Row row) {
             String val = row.get(col).toString();
             if ((prefix != null)
-                    && (val.matches(pattern)
-                        || (val.indexOf(pattern) >= 0))) {
+		&& (val.matches(pattern)
+		    || (val.indexOf(pattern) >= 0))) {
                 row.set(col, prefix + delim + val);
             } else {
                 prefix = val;
@@ -6086,7 +6246,7 @@ public abstract class Converter extends Processor {
             scope.put("x", scope, "33");
             Object result = cx.evaluateString(scope, s, "<cmd>", 1, null);
             System.err.println(
-                org.mozilla.javascript.Context.toString(result));
+			       org.mozilla.javascript.Context.toString(result));
         } finally {
             org.mozilla.javascript.Context.exit();
         }

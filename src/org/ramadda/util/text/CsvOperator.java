@@ -297,6 +297,21 @@ public abstract class CsvOperator {
     }
 
 
+    public boolean getBoolean(String v) {
+	if(v==null) return false;
+	if(v.equals("true")) return true;
+	if(v.equals("false") || !Utils.stringDefined(v)) return false;
+	try {
+	    double d = Double.parseDouble(v);
+	    if(d==0) return false;
+	    return true;
+	} catch(Exception exc) {
+	}
+	return false;
+    }
+
+
+
     /**
      * _more_
      *
