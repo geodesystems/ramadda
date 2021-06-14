@@ -406,6 +406,18 @@ public abstract class CsvOperator {
 	return -1;
     }
 
+    public Integer getColumnIndex(TextReader ctx, String tok) {
+	Integer iv = columnMap.get(tok);
+	if(iv==null) {
+	    tok = ctx.getFieldAlias(tok);
+	    if(tok!=null) {
+		iv = columnMap.get(tok);
+	    }
+	}
+	return iv;
+    }
+
+
     /**
      * _more_
      *
@@ -478,7 +490,7 @@ public abstract class CsvOperator {
 
                     return;
                 }
-                Integer iv = columnMap.get(tok);
+                Integer iv = getColumnIndex(ctx, tok);
                 if (iv != null) {
                     start = end = iv;
                 } else {
@@ -491,18 +503,18 @@ public abstract class CsvOperator {
                 if (isLastIndex(tok1)) {
 		    start = getLastIndex(tok1,header.size()-1);
 		} else {
-		    Integer iv =  columnMap.get(tok1);
+		    Integer iv = getColumnIndex(ctx, tok1);
 		    if(iv!=null) start=iv;
 		}
                 if (isLastIndex(tok2)) {
 		    end = getLastIndex(tok2,header.size()-1);
 		} else {
-		    Integer iv =  columnMap.get(tok2);
+		    Integer iv = getColumnIndex(ctx, tok2);
 		    if(iv!=null) end=iv;
 		}
 		if(start==-1 || end==-1) throw new RuntimeException("Could not find indices:" + toks);
 		/*
-                Integer iv2 = columnMap.get(tok2);
+		  Integer iv2 = getColumnIndex(ctx, tok2);
                 if ((iv1 != null) && (iv2 != null)) {
                     start = iv1;
                     end   = iv2;

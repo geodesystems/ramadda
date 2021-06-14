@@ -5409,6 +5409,7 @@ public abstract class Converter extends Processor {
      */
     public static class ColumnInserter extends Converter {
 
+	private String name;
 
         /** _more_ */
         private List<String> values;
@@ -5421,9 +5422,10 @@ public abstract class Converter extends Processor {
          * @param col _more_
          * @param value _more_
          */
-        public ColumnInserter(String col, String value) {
+        public ColumnInserter(String col, String name, String value) {
             super(col);
             this.values = Utils.split(value, ",", false, false);
+	    this.name =name;
         }
 
         /**
@@ -5436,7 +5438,9 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader ctx, Row row) {
             int    col = getIndex(ctx);
             String v   = "";
-            if (rowCnt < values.size()) {
+	    if(rowCnt==0) {
+		v = name;
+	    } else if (rowCnt < values.size()) {
                 v = values.get(rowCnt);
             } else {
                 v = values.get(values.size() - 1);
@@ -5445,7 +5449,7 @@ public abstract class Converter extends Processor {
             if ((col < 0) || (col > row.getValues().size())) {
                 row.getValues().add(v);
             } else {
-                row.getValues().add(col + 1, v);
+                row.getValues().add(col, v);
             }
 
             return row;

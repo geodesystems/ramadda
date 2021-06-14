@@ -66,6 +66,8 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private List<String> files = new ArrayList<String>();
 
+    private Hashtable<String,String> fieldAliases = new Hashtable<String,String>();
+
     /** _more_ */
     private PrintWriter writer;
 
@@ -274,6 +276,15 @@ public class TextReader implements Cloneable {
         this.reader = reader;
     }
 
+
+    public String getFieldAlias(String tok) {
+	return fieldAliases.get(tok);
+    }
+
+    public void putFieldAlias(String name,String alias) {
+	fieldAliases.put(name,alias);
+	fieldAliases.put(alias,name);	
+    }    
 
 
     public Row processRow(CsvUtil csvUtil,Row row) throws Exception {

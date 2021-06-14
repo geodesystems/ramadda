@@ -1538,7 +1538,8 @@ public class CsvUtil {
         new Cmd(
 		"-insert", new Label("Insert column"),
 		"Insert new column values",
-		new Arg("column", "Column to insert after", "type", "column"),
+		new Arg("column", "Column to insert before", "type", "column"),
+		new Arg("name", "Name of new column"),		
 		new Arg(
 			"values",
 			"Single value or comma separated for multiple rows", "type",
@@ -1927,6 +1928,9 @@ public class CsvUtil {
                 new Arg("column", "Column to descending sort on", "type",
                         "column")),
         new Cmd("-count", "Show count"),
+        new Cmd("-alias", "Set a field alias",
+		new Arg("name","Name"),
+		new Arg("alias","Alias")),
         new Cmd("-maxrows", "", "Max rows to print"),
         new Cmd("-changeline", new Label("Change line"), "Change the line",
                 "from", "to"),
@@ -2973,8 +2977,8 @@ public class CsvUtil {
 		return i;
 	    });
 
-	defineFunction("-insert", 2,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.ColumnInserter(args.get(++i), args.get(++i)));
+	defineFunction("-insert", 3,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.ColumnInserter(args.get(++i), args.get(++i),args.get(++i)));
 		return i;
 	    });
 
@@ -3209,6 +3213,11 @@ public class CsvUtil {
 	defineFunction("-or",0,(ctx,args,i) -> {
 		ctx.setFilterToAddTo(new Filter.FilterGroup(false));
 		ctx.addProcessor(ctx.getFilterToAddTo());
+		return i;
+	    });
+
+	defineFunction("-alias",2,(ctx,args,i) -> {
+		ctx.putFieldAlias(args.get(++i),args.get(++i));
 		return i;
 	    });
 
