@@ -77,7 +77,7 @@ public class ZipOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_ZIPTREE =
         new OutputType("Zip and Download Tree", "zip.tree",
-                       OutputType.TYPE_OTHER, "", ICON_ZIP);
+                       OutputType.TYPE_ACTION | OutputType.TYPE_OTHER, "", ICON_ZIP);
 
 
     /** _more_ */
@@ -87,7 +87,7 @@ public class ZipOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final OutputType OUTPUT_EXPORT =
-        new OutputType("Export Entries", "zip.export", OutputType.TYPE_FILE,
+        new OutputType("Export Entries", "zip.export", OutputType.TYPE_FILE | OutputType.TYPE_ACTION,
                        "", "fa-file-export");
 
 
@@ -131,14 +131,26 @@ public class ZipOutputHandler extends OutputHandler {
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
+
+
+
         if (state.entry != null) {
             if (getAccessManager().canDownload(request, state.entry)
                     && getAccessManager().canExportEntry(request,
                         state.entry)) {
                 links.add(makeLink(request, state.entry, OUTPUT_ZIP));
             }
+	    //	    if (getAccessManager().canExportEntry(request, state.entry)) {
+	    //		links.add(makeLink(request, state.entry, OUTPUT_EXPORT));
+	    //	    }
             return;
         }
+
+	if(state.group!=null && state.group.isDummy()) {
+	    if(!request.isAnonymous()) {
+		links.add(makeLink(request, state.entry, OUTPUT_EXPORT));
+	    }
+	}
 
         boolean hasFile  = false;
         boolean hasGroup = false;
@@ -161,7 +173,7 @@ public class ZipOutputHandler extends OutputHandler {
             }
         }
 
-        if ((state.group != null) && hasGroup
+        if ((state.group != null) && (hasGroup || hasFile)
 	    && ( !state.group.isTopEntry() || state.group.isDummy())) {
             links.add(makeLink(request, state.group, OUTPUT_ZIPTREE));
         }

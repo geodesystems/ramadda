@@ -1351,9 +1351,11 @@ public class OutputHandler extends RepositoryManager {
             if (outputType == null) {
                 continue;
             }
-            if (!(outputType.getIsFile() || outputType.getIsEdit())) {
-                continue;
-            }
+	    if(!outputType.getIsAction()) {
+		if (!(outputType.getIsFile() || outputType.getIsEdit())) {
+		    continue;
+		}
+	    }
             String icon = link.getIcon();
             if (icon == null) {
                 icon = getRepository().getIconUrl(ICON_BLANK);

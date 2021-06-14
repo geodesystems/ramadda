@@ -95,19 +95,19 @@ public class OutputType {
     public static final int TYPE_CONNECT = TYPE_FEEDS;
 
     /** for the  toolbar */
-    public static final int TYPE_TOOLBAR = 1 << 5;
+    public static final int TYPE_TOOLBAR = 1 << 6;
 
     /** A general action. Shows up in the action list */
-    public static final int TYPE_ACTION = 1 << 6;
+    public static final int TYPE_ACTION = 1 << 7;
 
     /** for internal uses */
-    public static final int TYPE_INTERNAL = 1 << 7;
+    public static final int TYPE_INTERNAL = 1 << 8;
 
     /** Shows up in the search result format list */
-    public static final int TYPE_FORSEARCH = 1 << 8;
+    public static final int TYPE_FORSEARCH = 1 << 9;
 
     /** _more_ */
-    public static final int TYPE_IMPORTANT = 1 << 9;
+    public static final int TYPE_IMPORTANT = 1 << 10;
 
     /** All types */
     public static final int TYPE_ALL = TYPE_VIEW | TYPE_ACTION | TYPE_FEEDS

@@ -3986,7 +3986,7 @@ public class EntryManager extends RepositoryManager {
         OutputHandler outputHandler =
             getRepository().getOutputHandler(request);
         String dummyGroupName = request.getString(ARG_RETURNFILENAME,
-						  "Search Results");
+						  "Results");
         Result result = outputHandler.outputGroup(request,
 						  request.getOutput(),
 						  getDummyGroup(dummyGroupName),
@@ -5200,7 +5200,6 @@ public class EntryManager extends RepositoryManager {
         Hashtable<String, Entry> entries = new Hashtable<String, Entry>();
         if (parent != null) {
             entries.put("", parent);
-	    System.err.println("\tparent:" + parent);
         }
 
 
@@ -7913,7 +7912,7 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Entry getDummyGroup() throws Exception {
-        return getDummyGroup("Search Results");
+        return getDummyGroup("Results");
     }
 
     /**
