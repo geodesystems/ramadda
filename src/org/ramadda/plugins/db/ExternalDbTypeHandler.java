@@ -90,6 +90,34 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
     }
 
 
+    private List<String> getEnums(Entry entry, String name) {
+	try {
+	    List<String> enums = (List<String>) entry.getTransientProperty("db.enums." + name);
+	    if(enums == null) {
+		try(Connection connection =  getConnection(entry)) {
+		    String table = entry.getValue(IDX_TABLE, (String) null);
+		    Statement stmt = SqlUtil.select(connection, SqlUtil.distinct(name),
+						    Utils.makeList(table),null,null,1000,0);
+
+		    String[] values =
+			SqlUtil.readString(
+					   getRepository().getDatabaseManager().getIterator(stmt), 1);
+
+		    stmt.close();
+		    enums = (List<String>)Misc.toList(values);
+
+		} 
+
+		entry.putTransientProperty("db.enums." + name, enums);
+	    }
+	    return enums;
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
+    }
+
+
+
     /**
      * _more_
      *
@@ -185,7 +213,6 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
             List<String[]> fieldList = getFieldList(entry);
             if (fieldList == null) {
                 System.err.println("DbTable: Could not find field list");
-
                 return null;
             }
 
@@ -194,6 +221,8 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
                 Utils.getProperties(entry.getValue(IDX_PROPERTIES,
                     (String) ""));
             recordProps.putAll(Utils.makeHashtable(displayProps));
+	    boolean displayAll  = Misc.equals(recordProps.get("request.*.display"),"true");
+			      
             for (String[] tuple : fieldList) {
                 String name = tuple[0];
                 String type = tuple[1];
@@ -201,7 +230,7 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
                     type = ((String) recordProps.get("request." + name
                             + ".type")).trim();
                 }
-                if ( !Misc.equals(recordProps.get("request." + name
+                if (!displayAll && !Misc.equals(recordProps.get("request." + name
                         + ".display"), "true")) {
                     continue;
                 }
@@ -223,6 +252,10 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
                 if (type.equals("enumeration")) {
                     String enums = (String) recordProps.get("request." + name
                                        + ".values");
+                    if (enums == null) {
+			List<String> tmp= getEnums(entry,name);
+			enums = Utils.join(tmp,",");
+		    }
                     if (enums != null) {
                         displayProps.add("request." + name + ".values");
                         displayProps.add(Json.quote(enums));
@@ -246,7 +279,7 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
      */
     private List<String[]> getFieldList(Entry entry) {
         List<String[]> fieldList =
-            (List<String[]>) entry.getTransientProperty("db.fields");
+            (List<String[]>) entry.getTransientProperty("db.fieldlist");
         if (fieldList == null) {
             try {
                 Connection connection = getConnection(entry);
@@ -266,7 +299,7 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
                     new DbRecordFile(null, entry).doMakeRecord(connection,
                                      iter);
                 fieldList = record.fieldList;
-                entry.putTransientProperty("db.fields", fieldList);
+                entry.putTransientProperty("db.fieldlist", fieldList);
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
@@ -404,8 +437,13 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
          * @return _more_
          */
         public List<RecordField> doMakeFields(boolean failureOk) {
+	    if(fields==null) {
+		getFieldList(entry);
+		fields = (List<RecordField>)entry.getTransientProperty("db.fields");
+	    }
             return fields;
         }
+
 
         /**
          * _more_
@@ -605,6 +643,9 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
              * @throws Exception _more_
              */
             private void makeFields() throws Exception {
+		Hashtable recordProps =
+		    Utils.getProperties(entry.getValue(IDX_PROPERTIES,
+						       (String) ""));
                 List<RecordField> fields = recordFile.fields =
                                                new ArrayList<RecordField>();
                 results = iter.getNext();
@@ -613,7 +654,6 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
                             "string", 1, ""));
                     closeConnection(connection);
                     initFields(fields);
-
                     return;
                 }
                 rsmd = results.getMetaData();
@@ -657,11 +697,12 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
                     }
                     fields.add(field);
                 }
-                if (entry.getTransientProperty("db.fields") == null) {
-                    entry.putTransientProperty("db.fields", fieldList);
+                if (entry.getTransientProperty("db.fieldlist") == null) {
+                    entry.putTransientProperty("db.fieldlist", fieldList);
                 }
                 //              System.err.println("DbTable fields:" + fields);
                 initFields(fields);
+		entry.putTransientProperty("db.fields", fields);
             }
 
             /**
