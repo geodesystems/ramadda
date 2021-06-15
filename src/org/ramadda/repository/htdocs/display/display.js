@@ -1235,6 +1235,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'formatNumberScale',ex:100},
 	{p:'numberTemplate',ex:'${number}%'},
 	{p:'&lt;field_id&gt;.&lt;format&gt;',ex:'...'},
+	{label:'Data Requests'},
+	{p:'requestFields',tt:'Comma separated list of fields for querying server side data'},
+	{p:'requestPrefix',ex:'search.', tt:'Prefix to prepend to the url argument'},
+	{p:'request.&lt;request field&gt;.multiple',ex:'true',tt:'Support multiple enumerated selections'},
 	{label:'Filter Data'},
 	{p:'fieldsNumeric',ex:true,tt:'Only get numeric fields'},
 	{p:'filterFields',ex:''},
@@ -4937,7 +4941,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 		if(!macro.name) return;
 		this.settingMacroValue = true;
-		var args = {
+		let args = {
 		    entryId:this.entryId,
 		    property: "macroValue",
 		    id:macro.name,

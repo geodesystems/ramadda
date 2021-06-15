@@ -3751,15 +3751,17 @@ function RequestMacro(display, macro) {
 	} else {
 	    dflt = "";
 	}
+	dflt = "";
     }
     if(dflt && macroType=="enumeration") {
 	if(dflt.split)	dflt = dflt.split(",");
     }
 
+    let prefix = this.getProperty("requestPrefix","");
     $.extend(this,{
 	name: macro,
 	values:values,
-	urlarg: this.getProperty("request." +macro+".urlarg",macro),
+	urlarg: this.getProperty("request." +macro+".urlarg",prefix+macro),
 	type:macroType,
 	triggerReload:this.getProperty("request." +macro+".triggerReload",true),
 	dflt:dflt,
@@ -3808,14 +3810,17 @@ RequestMacro.prototype = {
 			else rest.push(v);
 		    });
 		    values = Utils.mergeLists(first,rest);
+		} else {
 		}
+		
 
 		if(this.multiple) {
 		    attrs.push("multiple");
 		    attrs.push(null);
 		    attrs.push("size");
 		    attrs.push(Math.min(this.rows,values.length));
-		    console.log("m:" + attrs);
+		} else {
+		    values = Utils.mergeLists([[VALUE_NONE,"--"]],values);
 		}
 		if(debug)
 		    console.log("\tselect: dflt:" + this.dflt +" values:" + this.values);
@@ -3858,6 +3863,10 @@ RequestMacro.prototype = {
 	let value = this.dflt;
 	if(widget.length!=0) {
 	    value =  widget.val();
+	} else {
+	    if(this.type=="enumeration") {
+		return VALUE_NONE;
+	    }
 	}
 	this.display.setProperty("request." + this.name+".default",value);
 	//	console.log(this.getId() +".getValue=" + value);
@@ -3918,7 +3927,8 @@ RequestMacro.prototype = {
 	} else if(this.type=="enumeration") {
 	    let value = this.getValue();
 	    if(!Array.isArray(value)) {value=[value];}
-	    if(value[0] == "_all_" || value[0] == "_none_") return url;
+
+	    if(value[0] == "_all_" || value[0] == "_none_" || value[0] == VALUE_NONE) return url;
 	    if(value.length>0) {
 		let regexp = new RegExp(this.urlarg+"=[^$&]*",'g');
 		url = url.replace(regexp,"");

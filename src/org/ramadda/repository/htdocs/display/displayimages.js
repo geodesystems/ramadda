@@ -58,9 +58,9 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
     let myProps = [
 	{label:'Cards Attributes'},
 	{p:'groupByFields',ex:''},
-	{p:'groupBy',ex:''},
-	{p:'tooltipFields',ex:''},
 	{p:'initGroupFields',ex:''},
+	{p:'tooltipFields',ex:''},
+	{p:'captionFields'},
 	{p:'captionTemplate',ex:'${name}'},
 	{p:'sortFields',ex:''},
 	{p:'labelField',ex:''},
