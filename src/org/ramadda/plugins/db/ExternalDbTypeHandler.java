@@ -321,7 +321,7 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-   public RecordFile doMakeRecordFile(Request request, Entry entry, Hashtable properties,  Hashtable requestProperties)
+   public RecordFile doMakeRecordFile(Request request, Entry entry, Hashtable properties,  Hashtable equestProperties)
             throws Exception {
         return new DbRecordFile(request, entry);
     }
@@ -472,6 +472,11 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
 
                 return null;
             }
+            Hashtable recordProps =
+                Utils.getProperties(entry.getValue(IDX_PROPERTIES,
+                    (String) ""));
+
+
             String what   = "*";
             int    offset = (visitInfo == null)
                             ? 0
@@ -491,6 +496,7 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
                 for (String[] tuple : fieldList) {
                     String name = tuple[0];
                     String type = tuple[1];
+		    type = Utils.getProperty(recordProps,"request." + name + ".type",type);
                     if (type.equals("date")) {
                         String from = request.getString("search." + name
                                           + "_fromdate", null);
@@ -501,7 +507,7 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
                         }
                         if (to != null) {
                             andClauses.add(Clause.le(name, to));
-                        }
+			}
 
                     } else {
                         String s = request.getString("search." + name, null);
