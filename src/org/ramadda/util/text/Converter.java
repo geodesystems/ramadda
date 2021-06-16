@@ -3547,11 +3547,13 @@ public abstract class Converter extends Processor {
                     }
                     if (bounds == null) {
                         List<String> toks = Utils.splitUpTo(tok, ",", 2);
-                        bounds = map.get(toks.get(0));
+			if(toks.size()>0)
+			    bounds = map.get(toks.get(0));
                     }
                     if (bounds == null) {
                         List<String> toks = Utils.splitUpTo(tok, " ", 2);
-                        bounds = map.get(toks.get(0));
+			if(toks.size()>0)
+			    bounds = map.get(toks.get(0));
                     }
                     if (bounds == null) {
                         if (key.toString().length() > 0) {
@@ -4448,6 +4450,89 @@ public abstract class Converter extends Processor {
 
     }
 
+    public static class Ceil extends Converter {
+
+        /** _more_ */
+        private double value;
+
+        /**
+         *
+         * @param cols _more_
+         * @param decimals _more_
+         */
+        public Ceil(List<String> cols, double value) {
+            super(cols);
+            this.value= value;
+        }
+
+        /**
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+	    if(rowCnt++==0) return row;
+            List<Integer> indices = getIndices(ctx);
+            for (int index:indices) {
+                try {
+                    if ((index < 0) || (index >= row.size())) {
+                        continue;
+                    }
+                    double value =
+                        Double.parseDouble(row.get(index).toString());
+                    value = (double) Math.min(value, this.value);
+                    row.set(index, new Double(value));
+                } catch (NumberFormatException nfe) {}
+            }
+            return row;
+        }
+    }
+
+
+    public static class Floor extends Converter {
+
+        /** _more_ */
+        private double value;
+
+        /**
+         *
+         * @param cols _more_
+         * @param decimals _more_
+         */
+        public Floor(List<String> cols, double value) {
+            super(cols);
+            this.value= value;
+        }
+
+        /**
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+	    if(rowCnt++==0) return row;
+            List<Integer> indices = getIndices(ctx);
+            for (int index:indices) {
+                try {
+                    if ((index < 0) || (index >= row.size())) {
+                        continue;
+                    }
+                    double value =
+                        Double.parseDouble(row.get(index).toString());
+                    value = (double) Math.max(value, this.value);
+                    row.set(index, new Double(value));
+                } catch (NumberFormatException nfe) {}
+            }
+            return row;
+        }
+    }
+    
 
     /**
      * Class description

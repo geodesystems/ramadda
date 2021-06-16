@@ -75,6 +75,8 @@ public class CsvUtil {
     private ReadableByteChannel channel;
     
 
+    private Hashtable<String,String> macros = new Hashtable<String,String>();
+    
     /** _more_ */
     private File destDir = new File(".");
 
@@ -215,6 +217,7 @@ public class CsvUtil {
         this.comment = csvUtil.comment;
         this.js      = csvUtil.js;
 	this.sinks = csvUtil.sinks;
+	this.macros.putAll(csvUtil.macros);
         //        this.delimiter = csvUtil.delimiter;
     }
 
@@ -1866,12 +1869,16 @@ public class CsvUtil {
         new Cmd("-generate", "Add row values", "label", "start", "step"),
         new Cmd("-decimals", "", new Arg("column", "", "type", "columns"),
                 "how many decimals to round to"),
+        new Cmd("-ceil", "Set the max value", new Arg("columns", "", "type", "columns"),
+                new Arg("value","Value")),
+        new Cmd("-floor", "Set the min value", new Arg("columns", "", "type", "columns"),
+                new Arg("value","Value")),		
         new Cmd("-delta",
                 "Add column that is the delta from the previous step",
                 new Arg("key columns"), new Arg("columns")),
         new Cmd("-operator",
                 "Apply the operator to the given columns and create new one",
-                new Arg("columns"), "new col name", "operator +,-,*,/"),
+                new Arg("columns","Columns","type","columns"), "new col name", "operator +,-,*,/"),
         new Cmd("-round", "round the values", new Arg("columns", "", "type", "columns")),
         new Cmd("-abs", "make absolute values", new Arg("columns", "", "type", "columns")),
         new Cmd("-rand", "make random value"),		
@@ -1928,9 +1935,16 @@ public class CsvUtil {
                 new Arg("column", "Column to descending sort on", "type",
                         "column")),
         new Cmd("-count", "Show count"),
+
         new Cmd("-alias", "Set a field alias",
 		new Arg("name","Name"),
 		new Arg("alias","Alias")),
+        new Cmd("-value", "Define a macro value for later use",
+		new Arg("name","Name"),
+		new Arg("value","Value")),
+        new Cmd("-filepattern", "Extract a macro value from a filename",
+		new Arg("name","Macro name"),
+		new Arg("pattern","Pattern")),		
         new Cmd("-maxrows", "", "Max rows to print"),
         new Cmd("-changeline", new Label("Change line"), "Change the line",
                 "from", "to"),
@@ -1992,6 +2006,14 @@ public class CsvUtil {
     };
 
 
+    private String getValue(String s) {
+        for (Enumeration keys = macros.keys(); keys.hasMoreElements(); ) {
+	    String key =(String) keys.nextElement(); 
+	    String value = macros.get(key);
+	    s= s.replace("%" + key+"%",value);
+        }
+	return s;
+    }
 
     /**
      * _more_
@@ -2978,7 +3000,7 @@ public class CsvUtil {
 	    });
 
 	defineFunction("-insert", 3,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.ColumnInserter(args.get(++i), args.get(++i),args.get(++i)));
+		ctx.addProcessor(new Converter.ColumnInserter(args.get(++i), args.get(++i), args.get(++i)));
 		return i;
 	    });
 
@@ -3034,6 +3056,16 @@ public class CsvUtil {
 		return i;
 	    });
 
+	defineFunction("-ceil", 2,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.Ceil(getCols(args.get(++i)), Double.parseDouble(args.get(++i))));
+		return i;
+	    });
+	defineFunction("-floow", 2,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.Floor(getCols(args.get(++i)), Double.parseDouble(args.get(++i))));
+		return i;
+	    });
+
+	
 	defineFunction("-copy", 2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnCopier(args.get(++i), args.get(++i)));
 		return i;
@@ -3488,6 +3520,65 @@ public class CsvUtil {
 	if (debugArgs) {
 	    System.err.println("ParseArgs");
 	}
+	List<String> filePatterns = new ArrayList<String>();
+	List<String> filePatternNames = new ArrayList<String>();	
+	List<String> newArgs = new ArrayList<String>();
+	for (int i = 0; i < args.size(); i++) {
+	    String arg = args.get(i);
+	    if(arg.equals("-value")) {
+		macros.put(args.get(++i),args.get(++i));
+		continue;
+	    }
+	    if(arg.equals("-filepattern")) {
+		filePatternNames.add(args.get(++i));		
+		filePatterns.add(args.get(++i));
+
+		continue;
+	    }
+	    newArgs.add(arg);
+	}
+
+
+	if(filePatternNames.size()>0) {
+	    List<String> tmpFiles = new ArrayList<String>();
+	    if(files.size()>0) {
+		for(String arg: files) {
+		    File  f = new File(arg);
+		    tmpFiles.add(f.getName());
+		}
+	    } else  {
+		for (int i = newArgs.size()-1; i>=0;i--) {
+		    String arg = newArgs.get(i);
+		    File  f = new File(arg);
+		    if(f.exists()) {
+			tmpFiles.add(f.getName());
+			break;
+		    }
+		}
+	    }
+	    for(String file: tmpFiles) {
+		for(int i=0;i<filePatterns.size();i++) {
+		    String value = StringUtil.findPattern(file, ".*"+filePatterns.get(i));
+		    System.err.println("file:" + file +" pattern:" + filePatterns.get(i) +" " + value);
+		    if(value!=null) {
+			macros.put(filePatternNames.get(i), value);
+		    }
+		}
+	    }
+	}
+
+	//	System.err.println("macros:" + macros);
+
+	if(macros.size()>0) {
+	    List<String> tmp = new ArrayList<String>();
+	    for(String s: newArgs) {
+		s=  getValue(s);
+		tmp.add(s);
+	    }
+	    newArgs = tmp;
+	}
+
+	args = newArgs;
 	for (int i = 0; i < args.size(); i++) {
 	    String arg = args.get(i);
 	    if (debugArgs) {
@@ -3553,6 +3644,7 @@ public class CsvUtil {
 		    continue;
 		}
 
+
 		if (arg.equals("-args")) {
 		    doArgs = true;
 		    continue;
@@ -3581,8 +3673,6 @@ public class CsvUtil {
 		if (arg.startsWith("-")) {
 		    throw new IllegalArgumentException("Unknown arg:" + arg);
 		}
-
-
 
 
 		int idx = arg.indexOf("!=");
@@ -3767,6 +3857,9 @@ public class CsvUtil {
      * @throws Exception On badness
      */
     public static void main(String[] args) throws Exception {
+	//	String value = StringUtil.findPattern("_2019_boulder_election.csv", "(\\d\\d\\d\\d)");
+	//	System.err.println("v:" + value);
+	//	if(true) return;
 	/*
 	  FileInputStream stdin = new FileInputStream(FileDescriptor.in);
 	  ReadableByteChannel inChannel = stdin.getChannel();

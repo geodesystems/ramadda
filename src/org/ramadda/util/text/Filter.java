@@ -399,7 +399,7 @@ public class Filter extends Processor {
                 return doNegate(v.equals(""));
             }
             if (pattern.matcher(v).find()) {
-                if (debug) {
+                if (debug||true) {
                     System.err.println("R3:" + doNegate(true) + " " + row);
                 }
                 return doNegate(true);
@@ -906,9 +906,6 @@ public class Filter extends Processor {
 
 
         /** _more_ */
-        private List<Integer> cols;
-
-        /** _more_ */
         private HashSet<String> seen = new HashSet<String>();
 
         /**
@@ -917,7 +914,7 @@ public class Filter extends Processor {
          * @param toks _more_
          */
         public Unique(List<String> toks) {
-            this.cols = Utils.toInt(toks);
+	    super(toks);
         }
 
 
@@ -933,7 +930,7 @@ public class Filter extends Processor {
         public boolean rowOk(TextReader ctx, Row row) {
             boolean       inRange = false;
             StringBuilder sb      = new StringBuilder();
-            for (int i : cols) {
+            for (int i : getIndices(ctx)) {
                 Object value = row.getValues().get(i);
                 sb.append(value);
                 sb.append("--");
