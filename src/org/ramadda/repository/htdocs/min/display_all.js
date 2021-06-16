@@ -31535,7 +31535,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 		if(feature.record) {
 		    this.propagateEventRecordSelection({record:feature.record});
+		    this.propagateFilterFields(feature.record);
 		}
+
 		if(feature.record && !this.map.doPopup && this.getProperty("showRecordSelection", true)) {
 		    this.highlightPoint(feature.record.getLatitude(),feature.record.getLongitude(),true,false);
 		}
@@ -32122,6 +32124,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
             this.map.clearRegionSelector();
         },
+	propagateFilterFields: function(record) {
+	    let fields = this.getFieldsByIds(null, this.getProperty("filterFieldsToPropagate"));
+//	    console.log("F:" + fields);
+	    fields.map(field=>{
+		let args = {
+		    property: PROP_FILTER_VALUE,
+		    fieldId:field.getId(),
+		    value:record.getValue(field.getIndex())
+		};
+		this.propagateEvent("handleEventPropertyChanged", args);
+	    });
+	},	    
         handleClick: function(theMap, event, lon, lat) {
 	    if(this.lastFeatureSelectTime) {
 		let diff = new Date().getTime()-this.lastFeatureSelectTime.getTime();
@@ -32139,6 +32153,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let url = ramaddaBaseUrl +"/metadata/addform?entryid=" + this.getProperty("entryId")+"&metadata_type=map_marker&metadata_attr1=" +
 		    encodeURIComponent(text) +"&metadata_attr2=" + lat +"," + lon; 
 		window.location = url;
+//		console.log("click-shift");
 		return
 	    }
 
@@ -32148,6 +32163,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (this.doDisplayMap()) {
                 return;
             }
+//	    console.log("click-2");
             var justOneMarker = this.getProperty("justOneMarker",false);
             if(justOneMarker) {
                 var pointData = this.getPointData();
@@ -32159,9 +32175,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 	    if(!this.records) return;
+//	    console.log("click-3");
 	    let indexObj = [];
             let closest = RecordUtil.findClosest(this.records, lon, lat, indexObj);
             if (!closest) return;
+//	    console.log("click-4");
 	    this.propagateEventRecordSelection({record: closest});
 
 	    //If we are highlighting a record then change the marker
@@ -32169,15 +32187,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.highlightPoint(closest.getLatitude(),closest.getLongitude(),true,false);
 	    }
 	    
-	    let fields = this.getFieldsByIds(null, this.getProperty("filterFieldsToPropagate"));
-	    fields.map(field=>{
-		let args = {
-		    property: PROP_FILTER_VALUE,
-		    fieldId:field.getId(),
-		    value:closest.getValue(field.getIndex())
-		};
-		this.propagateEvent("handleEventPropertyChanged", args);
-	    });
+	    this.propagateFilterFields(closest);
         },
 
         getPosition: function() {
