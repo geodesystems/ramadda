@@ -1,12 +1,7 @@
-<html>
-<head>
-  <title>RAMADDA Data Tables</title>
-  <link rel="stylesheet" type="text/css" href="ramadda.css" title="Style">
-</head>
-
-<body>
-
-
+<wiki>
+<title>RAMADDA Data Tables</title>
++section title="RAMADDA Data Tables"
+<link rel="stylesheet" type="text/css" href="ramadda.css" title="Style">
 The data tables facility allow you to define a structured data base table via 
 an XML definition in a RAMADDA plugin. 
 The RAMADDA database facility looks for any file that ends with "db.xml", e.g., 
@@ -79,7 +74,7 @@ then that column value is used as the label for the entry
 
 
 
-<h2>Templates</h2>
+:heading Templates
 You can define additional display templates. These show up in the "View As" menu in the search form.
 Templates are specified within the table tag with a template tag. There can be any number of templates.
 A template is defined with an id, name and (optional) mimetype. You can define  optional prefix and suffix.
@@ -111,8 +106,56 @@ End
 &lt;/template&gt;
 &lt;/table&gt;
 &lt;/tables&gt;
+ 
+</pre>
 
+
+
+:heading External Databases
+A separate facility in RAMADDA allows for integrating external databases into the repository. To do this an administrator needs
+to specify a set of property definitions in the RAMADDA home directory.
+
+The first property is a list of the database names (can be arbitrary) that are defined. e.g. below
+there are 3 database names defined.
 <pre>
+  table.db.databases=employees,menagerie
+</pre>
 
-</body>
-</html>
+
+For each of the named databases there needs to be specified the JDBC url and the username/password. e.g.:
+<pre>
+table.db.menagerie.url=jdbc:mysql://geodesystems.com:3306/menagerie?zeroDateTimeBehavior=convertToNull&initialTimeout=1000&connectTimeout=5000               
+table.db.menagerie.user=db user
+table.db.menagerie.password=db user password
+
+table.db.employees.url=jdbc:mysql://geodesystems.com:3306/employees?zeroDateTimeBehavior=convertToNull&initialTimeout=1000&connectTimeout=5000       
+table.db.employees.user=db user
+table.db.employees.password=db password
+</pre>
+
+Once the databases are define you can create an entry for a particular table in the database. Under the 
+File-&gt;Pick a Type-&gt;Choose Entry Type select "External Database" under the "Database" category.
+When initially creating the entry you select which database is to be used, e.g., "employees". Once the entry
+is created go back and edit it. Now there will be a menu that lists all of the tables in the selected database.
+
+Once created the External Database entry can act as a source of point data and can be used to create displays.
+Database table fields can be configured to be able to be used in the display filter specifications. When editing the entry
+add the following properties in the Properties field:
+<pre>
+#This says that the particular field can be used in the display
+request.&lt;field name&gt;.display=true
+
+e.g.:
+request.gender.display=true
+
+#This says that all fields can be used in the display
+request.*.display=true
+
+#This defined the field as an enumeration
+request.&lt;field name&gt;.type=enumeration
+e.g.:
+
+request.gender.type=enumeration
+</pre>
+
+-section
