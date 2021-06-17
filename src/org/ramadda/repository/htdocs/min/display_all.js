@@ -39314,7 +39314,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 			    html+=HU.td([],HU.row([["align","right"],v],outer));
 			}
 		    } else if(f.isFieldNumeric()) {
-			html+=handleColumn(f,Utils.formatNumberComma(v), tdAttrs);
+			html+=handleColumn(f,this.formatNumber(v,f.getId()), tdAttrs);
 		    } else {
 			html+=handleColumn(f,v,tdAttrs);
 		    }
