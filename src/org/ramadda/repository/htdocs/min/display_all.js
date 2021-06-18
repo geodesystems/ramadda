@@ -40353,7 +40353,8 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 			      HU.div([CLASS, "display-correlation-heading display-correlation-heading-top"], label));
             });
             html += HU.close(TR);
-	    this.setProperty("colorTable","blue_green_red");
+	    if(!this.getProperty("colorTable"))
+		this.setProperty("colorTable","blue_white_red");
 	    let colors =  this.getColorTable(true);
             colorByMin = parseFloat(this.colorByMin);
             colorByMax = parseFloat(this.colorByMax);
