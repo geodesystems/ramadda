@@ -1507,15 +1507,19 @@ var Utils =  {
 	}
     },
 
-    roundDecimals: function(value, decimals) {
-	return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
+    roundDecimals: function(value, decimals,debug) {
+	let s = value.toLocaleString('fullwide', { useGrouping: false });
+	let v =  Number(Math.round(s+'e'+decimals)+'e-'+decimals);
+	if(debug)
+	    console.log("decimals:" +s +" " + Math.round(s+'e'+decimals));
+	return v;
     },
-    formatNumber: function(number, toFloat) {
-        var s = this.formatNumberInner(number);
+    formatNumber: function(number, toFloat,debug) {
+        var s = this.formatNumberInner(number,debug);
         if (toFloat) return parseFloat(s);
 	return s;
     },
-    formatNumberInner: function(number) {
+    formatNumberInner: function(number,debug) {
         var anumber = Math.abs(number);
         if (anumber == Math.floor(anumber)) return String(number);
         if (anumber > 1000) {
@@ -1527,8 +1531,8 @@ var Utils =  {
         } else if (anumber > 1) {
             return number_format(number, 3);
         } else {
-            var decimals = "" + (number - Math.floor(number));
-            var s = number_format(number, Math.min(decimals.length - 2, 5));
+            let decimals = "" + (number - Math.floor(number));
+            let s = number_format(number, Math.min(decimals.length - 2, 5),debug);
             return s;
         }
     },
@@ -4884,8 +4888,8 @@ function TextMatcher (pattern) {
 }
 
 
-function number_format(number, decimals) {
-    let n = Utils.roundDecimals(number,decimals);
+function number_format(number, decimals,debug) {
+    let n = Utils.roundDecimals(number,decimals,debug);
     let i = Math.floor(n);
     let toks = String(n).match(/\.(.*)/);
     let dec =toks?toks[1]:"";

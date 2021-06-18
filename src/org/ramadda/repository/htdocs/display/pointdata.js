@@ -1252,7 +1252,8 @@ function RecordFilter(display,filterFieldId, properties) {
 	prefix:display.getProperty(this.getId() +".filterPrefix"),
 	suffix:display.getProperty(this.getId() +".filterSuffix"),
 	startsWith:display.getProperty(this.getId() +".filterStartsWith",false),
-	ops:Utils.split(display.getProperty(this.getId() +".filterOps"),";",true,true)
+	ops:Utils.split(display.getProperty(this.getId() +".filterOps"),";",true,true),
+	labelField:display.getFieldById(null,display.getProperty(this.getId() +".labelField"))
     });
 
 
@@ -2019,11 +2020,18 @@ function RecordFilter(display,filterFieldId, properties) {
 			if(label.length>30) {
 			    label=  label.substring(0,29)+"...";
 			}
+			if(this.labelField) {
+			    label += " - " + this.labelField.getValue(record);
+			    console.log("l:" + label);
+			}
+
+
 			if(typeof value == "string")
 			    value = value.replace(/\'/g,"&apos;");
 			let tuple = [value, label];
 			obj.value = tuple;
 			obj.count =  counts[value];
+
 			enumValues.push(obj);
 		    });
 		});

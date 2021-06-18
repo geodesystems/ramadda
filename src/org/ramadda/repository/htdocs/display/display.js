@@ -1001,21 +1001,21 @@ function DisplayThing(argId, argProperties) {
         initTooltip: function() {
             //don't do this for now                $( document ).tooltip();
         },
-        formatNumber: function(number, propPrefix) {
+        formatNumber: function(number, propPrefix,debug) {
 	    if(!this.getProperty([propPrefix+".doFormatNumber","doFormatNumber"],true)) {
 		return number;
 	    }
 	    if(isNaN(number)) {
 		return "--";
 	    }
-	    let f = this.formatNumberInner(number, propPrefix);
+	    let f = this.formatNumberInner(number, propPrefix,debug);
 	    let fmt = this.getProperty([propPrefix+".numberTemplate","numberTemplate"]);
 	    if(fmt) f = fmt.replace("${number}", f);
 	    f = String(f);
 	    if(f.endsWith(".")) f = f.substring(0,f.length-1);
 	    return f;
 	},
-        formatNumberInner: function(number,propPrefix) {
+        formatNumberInner: function(number,propPrefix,debug) {
 	    number = +number;
 	    let scale = this.getProperty([propPrefix+".formatNumberScale","formatNumberScale"]);
             if (Utils.isDefined(scale))
@@ -1028,7 +1028,7 @@ function DisplayThing(argId, argProperties) {
 		return Utils.formatNumberComma(number);
 
 	    }
-            return Utils.formatNumber(number);
+            return Utils.formatNumber(number,false,debug);
 
         },
         propertyDefined: function(key) {

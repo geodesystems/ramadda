@@ -2346,24 +2346,23 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
             let width = 90 / fieldCnt + "%";
             html += HU.open(TR,["valign","bottom"]) + HU.td([CLASS,"display-heading","width", col1Width],SPACE);
 
-            let short = this.getProperty("short", fieldCnt > 8);
+            let short = this.getProperty("short", field.length>8);
             let showValue = this.getProperty("showValue", !short);
             let useId = this.getProperty("useId", true);
             let useIdTop = this.getProperty("useIdTop", useId);
             let useIdSide = this.getProperty("useIdSide", useId);
 	    let labelStyle = this.getProperty("labelStyle","");
-            for (let fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
-                let field1 = fields[fieldIdx];
-                if (!field1.isFieldNumeric() || field1.isFieldGeo()) continue;
-                let label = useIdTop ? field1.getId() : this.getFieldLabel(field1);
+	    fields.forEach(field=>{
+                if (!field.isFieldNumeric() || field.isFieldGeo()) return;
+                let label = useIdTop ? field.getId() : this.getFieldLabel(field);
                 if (short) label = "";
 		label = label.replace(/\/ +/g,"/").replace(/ +\//g,"/");
 		
 		label = HU.span([STYLE,labelStyle], label);
 
-                html += HU.td(["colfield", field1.getId(), "align","center","width",width],
+                html += HU.td(["colfield", field.getId(), "align","center","width",width],
 			      HU.div([CLASS, "display-correlation-heading display-correlation-heading-top"], label));
-            }
+            });
             html += HU.close(TR);
             let colors = null;
             colorByMin = parseFloat(this.colorByMin);
@@ -2378,7 +2377,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 		label = HU.span([STYLE,labelStyle], label);
                 html += HU.open(TR, ["valign","center"]);
 		html += HU.td(["rowfield",field1.getId(),CLASS, "display-correlation-heading"],  HU.div([CLASS, "display-correlation-heading-side"], label));
-                let rowName = this.getFieldLabel(field);
+                let rowName = this.getFieldLabel(field1);
                 for (let fieldIdx2 = 0; fieldIdx2 < fields.length; fieldIdx2++) {
                     let field2 = fields[fieldIdx2];
                     if (!field2.isFieldNumeric() || field2.isFieldGeo()) continue;
@@ -2418,7 +2417,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                         let index = parseInt(percent * colors.length);
                         if (index >= colors.length) index = colors.length - 1;
                         else if (index < 0) index = 0;
-                        style = "background-color:" + colors[index];
+                        style = HU.css("background-color", colors[index]);
                     }
                     let value = r.toFixed(3);
                     let label = value;
@@ -2427,7 +2426,6 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 		    if(ok) {
 			cellContents = HU.div([CLASS, "display-correlation-element", TITLE, "&rho;(" + rowName + "," + colName + ") = " + value], label);
 		    }
-
                     html += HU.td(["colfield", field2.getId(), "rowfield",field1.getId(), CLASS,"display-correlation-cell","align", "right", STYLE,style], cellContents);
                 }
                 html += HU.close(TR);
@@ -4589,8 +4587,8 @@ function RamaddaDategridDisplay(displayManager, id, properties) {
 		    let cv = r.getValue(colorBy.index);
 		    if(!isNaN(cv)) {
 			total+=cv;
-			min = isNaN(min)?cv:Math.min(min,cv);
-			max = isNaN(max)?cv:Math.max(max,cv);			
+			min = Utils.min(min,cv);
+			max = Utils.max(max,cv);			
 		    }
 		    row+=HU.div(["foo","bar", RECORD_ID,r.getId(),CLASS,"display-dategrid-box",TITLE,cv,STYLE,HU.css("left",perc,"right",right, "height",height,"background",color)+boxStyle],"&nbsp;");
 		}
@@ -4601,9 +4599,11 @@ function RamaddaDategridDisplay(displayManager, id, properties) {
 		    if(this.getShowTotal())
 			stats.push(this.formatNumber(total));
 		    if(this.getShowMin())
-			stats.push(this.formatNumber(min));
+			stats.push(this.formatNumber(min,null));
 		    if(this.getShowMax())
 			stats.push(this.formatNumber(max));
+
+
 		    if(this.getShowAverage())
 			stats.push(this.formatNumber(total/sorted.length));		    		    		    
 		    html+=HU.td(["nowrap","true"],HU.div([STYLE, rightStyle,CLASS,"display-dategrid-stats"],Utils.join(stats,SPACE)));

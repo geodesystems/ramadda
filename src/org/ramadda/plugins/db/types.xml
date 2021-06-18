@@ -7,7 +7,7 @@
      <column   name="db_id" type="string"  columns="60" label="External Database ID"  showinhtml="false"  group="Database">
 <suffix><![CDATA[The shorthand ID of the external database connection <a target="_help" href="http://ramadda.org/repository/media/dbtable.html"/>More information</a>]]></suffix>
 </column>
-     <column   name="table_name" type="string"  size="200" columns="60" label="Table name"  showinhtml="false" suffix="Database table to query"/>
+<column   name="table_name" type="string"  size="200" columns="60" label="Table name"  showinhtml="false" suffix="Database table to query"/>
 </type>
 
 
