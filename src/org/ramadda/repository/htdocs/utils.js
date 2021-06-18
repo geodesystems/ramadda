@@ -4889,14 +4889,21 @@ function TextMatcher (pattern) {
 
 
 function number_format(number, decimals,debug) {
-    let n = Utils.roundDecimals(number,decimals,debug);
-    let i = Math.floor(n);
+    let n = Utils.roundDecimals(number,decimals,false && debug);
+    let negative = n<0;
+    let i;
+    if(negative)
+	i = Math.ceil(n);
+    else
+	i = Math.floor(n);
     let toks = String(n).match(/\.(.*)/);
     let dec =toks?toks[1]:"";
     let s = String(i).replace(/(.)(?=(\d{3})+$)/g,'$1,')
     if(dec!="") {
 	s+= "." + dec;
     }
+    if(debug) console.log("number:" + number +" n:" + n +" i:" + i +" s:" +s);
+    if(negative && i==0) return "-" +s;
     return s;
 }
 

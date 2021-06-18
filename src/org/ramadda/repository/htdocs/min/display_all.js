@@ -40275,8 +40275,10 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 		    slide: function( event, ui ) {
 			let v1 = -1+ui.values[0]/100;
 			let v2 = -1+ui.values[1]/100;
-			_this.jq(ID_SLIDER_LOW_MIN).html(v1==-1?-1:number_format(v1,3));
-			_this.jq(ID_SLIDER_LOW_MAX).html(v2==0?0:number_format(v2,3));
+			let s1 = v1==-1?-1:number_format(v1,3);
+			let s2 = v2==0?0:number_format(v2,3);
+			_this.jq(ID_SLIDER_LOW_MIN).html(s1);
+			_this.jq(ID_SLIDER_LOW_MAX).html(s2);
 		    },
 		    stop: function(event,ui) {
 			_this.range.low.min =   -1+2*ui.values[0]/100;
