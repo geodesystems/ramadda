@@ -2346,7 +2346,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
             let width = 90 / fieldCnt + "%";
             html += HU.open(TR,["valign","bottom"]) + HU.td([CLASS,"display-heading","width", col1Width],SPACE);
 
-            let short = this.getProperty("short", field.length>8);
+            let short = this.getProperty("short", fields.length>8);
             let showValue = this.getProperty("showValue", !short);
             let useId = this.getProperty("useId", true);
             let useIdTop = this.getProperty("useIdTop", useId);
