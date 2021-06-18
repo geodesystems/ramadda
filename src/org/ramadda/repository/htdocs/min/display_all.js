@@ -40319,21 +40319,23 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
             let allFields = this.dataCollection.getList()[0].getRecordFields();
             let fields = this.getSelectedFields([]);
             if (fields.length == 0) fields = allFields;
-            let fieldCnt = 0;
-            for (let fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
-                let field1 = fields[fieldIdx];
-                if (!field1.isFieldNumeric() || field1.isFieldGeo()) continue;
-                fieldCnt++;
-            }
-
-            let html = HU.open(TABLE, ["cellspacing","0","cellpadding", "0", "border", "0", CLASS, "display-correlation", "width", "100%"]);
+	    fields = fields.filter(field=>{
+		if (!field.isFieldNumeric() || field.isFieldGeo()) return false;
+		return true;
+	    });
+            let fieldCnt = fields.length;
+	    let html = "";
+	    if(fields.length>8) {
+		html+=HU.openTag("div",[STYLE,HU.css('font-size','75%')]);
+	    }
+            html += HU.open(TABLE, ["cellspacing","0","cellpadding", "0", "border", "0", CLASS, "display-correlation", "width", "100%"]);
             let col1Width = 10 + "%";
             let width = 90 / fieldCnt + "%";
             html += HU.open(TR,["valign","bottom"]) + HU.td([CLASS,"display-heading","width", col1Width],SPACE);
 
-            let short = this.getProperty("short", fields.length>8);
+            let short = this.getProperty("short", false);
             let showValue = this.getProperty("showValue", !short);
-            let useId = this.getProperty("useId", true);
+            let useId = this.getProperty("useId", false);
             let useIdTop = this.getProperty("useIdTop", useId);
             let useIdSide = this.getProperty("useIdSide", useId);
 	    let labelStyle = this.getProperty("labelStyle","");
@@ -40349,11 +40351,12 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 			      HU.div([CLASS, "display-correlation-heading display-correlation-heading-top"], label));
             });
             html += HU.close(TR);
-            let colors = null;
+	    this.setProperty("colorTable","blue_green_red");
+	    let colors =  this.getColorTable(true);
             colorByMin = parseFloat(this.colorByMin);
             colorByMax = parseFloat(this.colorByMax);
-	    //            colors =  this.addAlpha(this.getColorTable(true),0.75);
-	    colors =  this.getColorTable(true);
+	    if(colors) colors =  this.addAlpha(colors,0.5);
+
             for (let fieldIdx1 = 0; fieldIdx1 < fields.length; fieldIdx1++) {
                 let field1 = fields[fieldIdx1];
                 if (!field1.isFieldNumeric() || field1.isFieldGeo()) continue;
