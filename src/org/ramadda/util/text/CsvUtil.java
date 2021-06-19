@@ -654,6 +654,9 @@ public class CsvUtil {
                     iteratePattern.setPattern(pattern);
                 }
 		boolean newWay = true;
+		for(String file: files) {
+		    if(Utils.isUrl(file)) newWay=false;
+		}
 		//		newWay=false;
                 for (DataProvider provider : providers) {
 		    if(newWay) {
@@ -912,7 +915,7 @@ public class CsvUtil {
      * @throws Exception _more_
      */
     public InputStream makeInputStream(String file) throws Exception {
-	if(!IO.okToReadFrom(file)) {
+	if(!Utils.isUrl(file) && !IO.okToReadFrom(file)) {
 	    throw new IllegalArgumentException("Cannot read file:"
 					       + file);
         }

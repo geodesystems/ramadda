@@ -196,7 +196,9 @@ public class HtmlImportHandler extends ImportHandler {
             TypeHandler typeHandler = getRepository().getTypeHandler(request);
             String      name        = link.getLabel();
             if (request.get("useurl", false) || (name.length() < 4)) {
-                name = IOUtil.getFileTail(link.getUrl().toString());
+                name = IOUtil.stripExtension(IOUtil.getFileTail(link.getUrl().toString()));
+		name = Utils.makeLabel(name);
+		name = name.replaceAll("^[0-9]+","").trim();
             }
 
             //TODO: check if we have a entry already

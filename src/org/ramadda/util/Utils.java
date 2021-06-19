@@ -3153,6 +3153,10 @@ public class Utils extends IO {
     }
 
 
+    public static boolean isUrl(String s) {
+	return s.startsWith("https:") || s.startsWith("http:");
+    }
+
     /**
      * _more_
      *
