@@ -418,7 +418,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         {p:'showFooter',d: true},	
         {p:'showType',d: true},
         {p:'types',ex:'comma separated list of types'},
-	{p:'ancestor',w:'this',tt:'Constrain search to this tree'},		
+	{p:'ancestor',ex:'this',tt:'Constrain search to this tree'},		
         {p:'doSearch',d: true,tt:'Apply search at initial display'},
 	{p:'searchHeaderLabel',d: 'Search'},
 	{p:'searchOpen',d: true},
@@ -1971,13 +1971,13 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
     let myProps = [
 	{label:'Simple Search'},
 	{p:'resultsPosition',ex:'absolute|relative'},
-	{p:'maxHeight',w:300},
-	{p:'maxWidth',w:200},
-	{p:'maxWidth',w:200},		
-	{p:"autoSearch",w:true},
-	{p:"showHeader",w:true},
-	{p:"inputSize",w:"100%"},
-	{p:"entryType",w:"",tt:"Constrain search to entries of this type"},		
+	{p:'maxHeight',ex:300},
+	{p:'maxWidth',ex:200},
+	{p:'maxWidth',ex:200},		
+	{p:"autoSearch",ex:true},
+	{p:"showHeader",ex:true},
+	{p:"inputSize",ex:"100%"},
+	{p:"entryType",ex:"",tt:"Constrain search to entries of this type"},		
     ];
 
     const SUPER   = new RamaddaSearcherDisplay(displayManager, id, DISPLAY_SIMPLESEARCH, properties);
