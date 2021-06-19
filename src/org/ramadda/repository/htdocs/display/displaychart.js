@@ -1922,7 +1922,8 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
     let SUPER = new RamaddaGoogleChart(displayManager, id, chartType, properties);
     let myProps = [
 	{label:'Chart Properties'},
-	{p:'indexField',ex:'field'},
+	{p:'indexField',ex:'field',tt:'alternate field to use as index'},
+ 	{p:'indexIsString',ex:'true',tt:'if index is a string set to true'},
 	{p:'vAxisMinValue',ex:''},
 	{p:'vAxisMaxValue',ex:''},
 	{p:'vAxisSharedRange',ex:'true',tt:'use the same max value across all time series'},
@@ -1935,9 +1936,8 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 	{p:'annotations',ex:'date,label,desc;date,label,desc;',tt:'e.g. 2008-09-29,A,Start of housing crash;2008-11-04,B,Obama elected;'},
  	{p:'annotationFields',ex:''},
 	{p:'annotationLabelField',ex:''},
-	{p:'indexField',ex:'',tt:'alternate field to use as index'},
  	{p:'dateType',ex:'datetime'},
- 	{p:'indexIsString',ex:'true',tt:'if index is a string set to true'},
+ 	{p:'addTooltip',ex:'false',tt:'Set this to false for multi-series charts if you only want the hovered series to show in the tt'},
 	{inlineLabel:'Multiples Charts'},
 	{p:'doMultiCharts',ex:'true'},
 	{p:'multiField',ex:'field'},

@@ -2655,6 +2655,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let theField = null;
 	    id.split("|").every(fieldId=>{
 		let alias = aliases[fieldId];
+		let hasRegexp = fieldId.indexOf("*")>=0;
 		for (let i = 0; i < fields.length; i++) {
                     let field = fields[i];
 		    if(debug)
@@ -2665,6 +2666,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    console.log("\tgot it:" + theField);
 			return false;
                     }
+		    if(hasRegexp) {
+			if(field.getId().match(fieldId)) {
+			    theField =  field;
+			    if(debug)
+				console.log("\tgot it from pattern:" + theField);
+			    return false;
+			}
+		    }
 		}
 		return true;
 	    });

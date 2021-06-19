@@ -1058,6 +1058,8 @@ class  WikiEditor {
 		{p:'_headers',ex:'comma separated headers'},
 		{p:'_headerTemplate',ex:'...${header}...'},
 		{p:'_columns',ex:'number of columns'},
+		{p:'_width',ex:'200',tt:'Set the width and flow the blocks'},
+		{p:'_style',ex:'padding:10px;',tt:'Style for each block'},		
 		{p:'first',ex:'.&lt;some attribute&gt;=\'attr for first tag\''},
 		{p:'last',ex:'.&lt;some attribute&gt;=\'attr for last tag\''},
 		{p:'notlast',ex:'.&lt;some attribute&gt;=\'attr for first N tags\''},

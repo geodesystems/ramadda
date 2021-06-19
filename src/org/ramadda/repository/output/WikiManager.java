@@ -2194,6 +2194,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             int           max            = 0;
             String        template       = null;
             int           columns        = -1;
+            int           width          = -1;	    
+	    String style =null;
             List<String>  headers        = null;
             String        headerProp     = null;
             String        footerProp     = null;
@@ -2220,6 +2222,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     footerProp = value;
                 } else if (key.equals("_columns")) {
                     columns = Integer.parseInt(value);
+                } else if (key.equals("_width")) {
+                    width = Integer.parseInt(value);
+                } else if (key.equals("_style")) {
+                    style=value;
                 } else if (key.startsWith("_")) {
                     key = key.substring(1);
                     List<String> toks = Utils.split(value, ",");
@@ -2326,7 +2332,16 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                         colCnt = 1;
                     }
                     buff.append("<td width='" + colWidth + "'>");
+                } else if(width>0) {
+                    buff.append("<div style='display:inline-block;width:" + width+";'>");
+		}
+		if(style!=null) 
+                    buff.append("<div style='display:inline-block;" + style+"'>\n");
+                Entry theEntry = entry;
+                if ((entries != null) && (i < entries.size())) {
+                    theEntry = entries.get(i);
                 }
+
 
                 String header = ((headers != null) && (i < headers.size()))
                                 ? headers.get(i)
@@ -2336,11 +2351,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                         header = headerTemplate.replace("${header}", header);
                     }
                     buff.append(header);
-                }
-                Entry theEntry = entry;
-                if ((entries != null) && (i < entries.size())) {
-                    theEntry = entries.get(i);
-                }
+                } else if(headerTemplate != null) {
+		    header = headerTemplate.replace("${name}",theEntry.getName());
+                    buff.append(header);
+		}
                 if (s != null) {
                     s = s.replaceAll("_dollar_", "\\$");
                     //              System.err.println("WIKIFY:" + tmp.trim());
@@ -2355,9 +2369,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     buff.append(getWikiIncludeInner(wikiUtil, request,
 						    originalEntry, theEntry, tag, _props));
                 }
+		if(style!=null) 
+                    buff.append("\n</div>");
                 if (columns > 0) {
                     buff.append("</td>");
-                }
+                } else if(width>0) {
+                    buff.append("</div>");
+		}
             }
             if (columns > 0) {
                 buff.append("</tr></table>\n");
