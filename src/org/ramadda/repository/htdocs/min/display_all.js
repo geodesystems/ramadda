@@ -20486,7 +20486,9 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 			    if(field) selectedFields.push(field);
 			}
 		    });
-                    _this.propagateEvent("handleEventFieldsSelected", selectedFields);
+		    setTimeout(()=>{
+			_this.propagateEvent("handleEventFieldsSelected", selectedFields);
+		    },20);
 		});
 	    }
 	}});
