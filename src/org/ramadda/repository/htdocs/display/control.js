@@ -271,12 +271,15 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	    if(records == null) return;
 	    let html = "";
             let selectedFields = this.getFieldsByIds(null,this.getProperty("fields", ""));
-	    let selectedMap = {};
-	    if(selectedFields && selectedFields.length!=0) {
-		selectedFields.forEach(f=>{
-		    selectedMap[f.getId()] = true;
-
-		});
+	    if(this.selectedMap ==null)  {
+		this.selectedMap={};
+		if(selectedFields && selectedFields.length!=0) {
+		    selectedFields.forEach(f=>{
+			this.selectedMap[f.getId()] = true;
+		    });
+		} else {
+		    selectedFields = null;
+		}
 	    } else {
 		selectedFields = null;
 	    }
@@ -315,7 +318,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 			f.getType();
 		}
 		let c = clazz;
-		let selected = selectedFields?selectedMap[f.getId()]:true;
+		let selected = this.selectedMap[f.getId()];
 		if(selectable) c += " display-fields-field-selectable ";
 		if(selectable && selected) c += " display-fields-field-selected ";
 		let title = "";
@@ -369,6 +372,11 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 			    if(field) selectedFields.push(field);
 			}
 		    });
+		    _this.selectedMap = {};
+		    selectedFields.forEach(f=>{
+			_this.selectedMap[f.getId()] = true;
+		    });
+		    
 		    setTimeout(()=>{
 			_this.propagateEvent("handleEventFieldsSelected", selectedFields);
 		    },20);
