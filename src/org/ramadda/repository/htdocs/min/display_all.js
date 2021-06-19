@@ -16373,7 +16373,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let fixedValueN;
 	    if(fixedValueS) fixedValueN = parseFloat(fixedValueS);
 	    let fIdx = 0;
-	    let indexIsStrings = this.getIndexIsString(this.getProperty("forceStrings",false));
+	    let indexIsString = this.getProperty("indexIsString", this.getProperty("forceStrings",false));
 	    let maxHeaderLength = this.getProperty("maxHeaderLength",-1);
 	    let maxHeaderWidth = this.getProperty("maxHeaderWidth",-1);
 	    let headerStyle= this.getProperty("headerStyle");
@@ -16408,7 +16408,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     if ((typeof value) == "object") {
                         //assume its a date
  			if(typeof value.v == "number") {
-			    if(indexIsStrings) 
+			    if(indexIsString) 
 				dataTable.addColumn('string', headerLabel);
 			    else {
 				dataTable.addColumn('number', headerLabel);
@@ -16583,7 +16583,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 for (let colIdx = 0; colIdx < row.length; colIdx++) {
 		    let field = selectedFields[fIdx++];
                     let value = row[colIdx];
-		    if(indexIsStrings) {
+		    if(indexIsString) {
 			if(value.f) value = (value.f).toString().replace(/\n/g, " ");
 		    }
 		    if(colIdx>0 && fixedValueS) {
