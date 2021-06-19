@@ -3693,7 +3693,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 		let key = $(this).attr("data-key");	
 		let cell = cells[key];
 		countFields.forEach(f=>{
-		    let html = this.getFieldLabel(f)+HU.tag(BR);
+		    let html = _this.getFieldLabel(f)+HU.tag(BR);
 		    let cf = cell.countFields[f.getId()];
 		    let data=[];
 		    cf.values.forEach(v=>{

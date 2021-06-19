@@ -2702,6 +2702,7 @@ table.dataTable tfoot td {
     padding:5px;
     margin:5px;
     user-select:none;
+    border:1px solid transparent;
 }
 
 .display-fields-field-decorated {
@@ -2713,12 +2714,20 @@ table.dataTable tfoot td {
     cursor:pointer;
 }
 
-.display-fields-field-selected {
-    background:#e0f0ff; 
+.display-fields-list-field {
+    display:block;
+    margin:0px;
+    padding:2px;
 }
 
-.display-fields-field-selected:hover {
-    border:1px solid #000;
+
+.display-fields-field-selected {
+    background:#e0f0ff; 
+    font-weight:bold;
+}
+
+.display-fields-field:hover {
+    border:var(--highlight-border);
 }
 
 .tl-slide-content-container {

@@ -5128,6 +5128,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(this.getProperty("showProgress",false)) {
 		header2 += HU.div([ID,this.getDomId(ID_DISPLAY_PROGRESS), STYLE,HU.css("display","inline-block","margin-right","4px","min-width","20px")]);
 	    }
+	    header2 += HU.div([CLASS,"display-header-span"],"");
 	    header2 += HU.div([ID,this.getDomId(ID_HEADER2_PREPREPREFIX),CLASS,"display-header-span"],"");
 	    header2 += HU.div([ID,this.getDomId(ID_HEADER2_PREPREFIX),CLASS,"display-header-span"],"");
 	    header2 += HU.div([ID,this.getDomId(ID_HEADER2_PREFIX),CLASS,"display-header-span"],"");
@@ -5379,12 +5380,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    searchBar+= HU.span([CLASS,"display-filter-label",ID,this.getDomId(ID_FILTER_COUNT)],"");
 		}
 		let filterBar = searchBar+bottom[0] + HU.div([ID,this.domId(ID_TAGBAR)],"");
-		header2+=HU.span([CLASS,filterClass,STYLE,style,ID,this.getDomId(ID_FILTERBAR)],filterBar);
+		header2+=HU.div([CLASS,"display-header-span " +  filterClass,STYLE,style,ID,this.getDomId(ID_FILTERBAR)],filterBar);
 	    }
-
 
 	    if(vertical) {
 		header2 = HU.div([CLASS,"display-header-vertical"],header2);
+	    } else {
+		header2=HU.div([STYLE,"line-height:0;"],
+			       header2);
 	    }
 
 

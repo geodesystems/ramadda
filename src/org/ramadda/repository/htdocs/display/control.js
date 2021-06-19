@@ -254,9 +254,12 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
     let myProps =[
 	{label:"Metadata"},
 	{p:"decorate",ex:true},
+	{p:"asList",ex:true},
+	{p:"reverseFields",ex:true},		
 	{p:"selectable",ex:true},
 	{p:"showFieldDetails",ex:true},
-	{p:"showPopup",d:true,ex:true,tt:"Popup the selector"},	
+	{p:"showPopup",d:true,ex:false,tt:"Popup the selector"},	
+	{p:"numericOnly",ex:true},
     ];
     
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -267,26 +270,52 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	    let records = this.filterData();
 	    if(records == null) return;
 	    let html = "";
-	    let fields = this.fields = this.getData().getRecordFields();
+            let selectedFields = this.getFieldsByIds(null,this.getProperty("fields", ""));
+	    let selectedMap = {};
+	    if(selectedFields && selectedFields.length!=0) {
+		selectedFields.forEach(f=>{
+		    selectedMap[f.getId()] = true;
+
+		});
+	    } else {
+		selectedFields = null;
+	    }
+            let fields =   this.getData().getRecordFields();
+	    if(this.getNumericOnly()) {
+		fields  = fields.filter(f=>{
+		    return f.isFieldNumeric();
+		});
+	    }
+	    if(this.getReverseFields()) {
+		let tmp = [];
+		fields.forEach(f=>{
+		    tmp.unshift(f);
+		});
+		fields=tmp;
+	    }
+	    this.fields	     = fields;
 	    this.fieldsMap={};
 	    this.fields.forEach(f=>{
 		this.fieldsMap[f.getId()] = f;
 	    });
-	    html += HU.center("#" + records.length +" records");
+//	    html += HU.center("#" + records.length +" records");
 	    let fs = [];
 	    let clazz = " display-fields-field ";
+	    let asList = this.getAsList();
 	    if(this.getDecorate(true)) clazz+= " display-fields-field-decorated ";
+	    if(asList)
+		clazz+=" display-fields-list-field";
 	    let selectable = this.getSelectable(true);
 	    let details = this.getShowFieldDetails(false);	    
 	    fields.forEach((f,idx)=>{
-		let block  =HU.b(f.getLabel());
+		let block  =f.getLabel();
 		if(details) {
 		    block+= "<br>" +
 			f.getId() + f.getUnitSuffix()+"<br>" +
 			f.getType();
 		}
 		let c = clazz;
-		let selected = true;
+		let selected = selectedFields?selectedMap[f.getId()]:true;
 		if(selectable) c += " display-fields-field-selectable ";
 		if(selectable && selected) c += " display-fields-field-selected ";
 		let title = "";

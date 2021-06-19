@@ -8101,6 +8101,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(this.getProperty("showProgress",false)) {
 		header2 += HU.div([ID,this.getDomId(ID_DISPLAY_PROGRESS), STYLE,HU.css("display","inline-block","margin-right","4px","min-width","20px")]);
 	    }
+	    header2 += HU.div([CLASS,"display-header-span"],"");
 	    header2 += HU.div([ID,this.getDomId(ID_HEADER2_PREPREPREFIX),CLASS,"display-header-span"],"");
 	    header2 += HU.div([ID,this.getDomId(ID_HEADER2_PREPREFIX),CLASS,"display-header-span"],"");
 	    header2 += HU.div([ID,this.getDomId(ID_HEADER2_PREFIX),CLASS,"display-header-span"],"");
@@ -8352,12 +8353,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    searchBar+= HU.span([CLASS,"display-filter-label",ID,this.getDomId(ID_FILTER_COUNT)],"");
 		}
 		let filterBar = searchBar+bottom[0] + HU.div([ID,this.domId(ID_TAGBAR)],"");
-		header2+=HU.span([CLASS,filterClass,STYLE,style,ID,this.getDomId(ID_FILTERBAR)],filterBar);
+		header2+=HU.div([CLASS,"display-header-span " +  filterClass,STYLE,style,ID,this.getDomId(ID_FILTERBAR)],filterBar);
 	    }
-
 
 	    if(vertical) {
 		header2 = HU.div([CLASS,"display-header-vertical"],header2);
+	    } else {
+		header2=HU.div([STYLE,"line-height:0;"],
+			       header2);
 	    }
 
 
@@ -16361,7 +16364,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let fixedValueN;
 	    if(fixedValueS) fixedValueN = parseFloat(fixedValueS);
 	    let fIdx = 0;
-	    let forceStrings = this.getProperty("forceStrings",false);
+	    let indexIsStrings = this.getIndexIsString(this.getProperty("forceStrings",false));
 	    let maxHeaderLength = this.getProperty("maxHeaderLength",-1);
 	    let maxHeaderWidth = this.getProperty("maxHeaderWidth",-1);
 	    let headerStyle= this.getProperty("headerStyle");
@@ -16396,7 +16399,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     if ((typeof value) == "object") {
                         //assume its a date
  			if(typeof value.v == "number") {
-			    if(forceStrings) 
+			    if(indexIsStrings) 
 				dataTable.addColumn('string', headerLabel);
 			    else {
 				dataTable.addColumn('number', headerLabel);
@@ -16571,7 +16574,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 for (let colIdx = 0; colIdx < row.length; colIdx++) {
 		    let field = selectedFields[fIdx++];
                     let value = row[colIdx];
-		    if(forceStrings) {
+		    if(indexIsStrings) {
 			if(value.f) value = (value.f).toString().replace(/\n/g, " ");
 		    }
 		    if(colIdx>0 && fixedValueS) {
@@ -17209,7 +17212,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 	{p:'annotationLabelField',w:''},
 	{p:'indexField',w:'',tt:'alternate field to use as index'},
  	{p:'dateType',w:'datetime'},
- 	{p:'forceStrings',w:'',tt:'if index is a string set to true'},
+ 	{p:'indexIsString',w:'true',tt:'if index is a string set to true'},
 	{inlineLabel:'Multiples Charts'},
 	{p:'doMultiCharts',w:'true'},
 	{p:'multiField',w:'field'},
@@ -20368,9 +20371,12 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
     let myProps =[
 	{label:"Metadata"},
 	{p:"decorate",ex:true},
+	{p:"asList",ex:true},
+	{p:"reverseFields",ex:true},		
 	{p:"selectable",ex:true},
 	{p:"showFieldDetails",ex:true},
-	{p:"showPopup",d:true,ex:true,tt:"Popup the selector"},	
+	{p:"showPopup",d:true,ex:false,tt:"Popup the selector"},	
+	{p:"numericOnly",ex:true},
     ];
     
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -20381,26 +20387,52 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	    let records = this.filterData();
 	    if(records == null) return;
 	    let html = "";
-	    let fields = this.fields = this.getData().getRecordFields();
+            let selectedFields = this.getFieldsByIds(null,this.getProperty("fields", ""));
+	    let selectedMap = {};
+	    if(selectedFields && selectedFields.length!=0) {
+		selectedFields.forEach(f=>{
+		    selectedMap[f.getId()] = true;
+
+		});
+	    } else {
+		selectedFields = null;
+	    }
+            let fields =   this.getData().getRecordFields();
+	    if(this.getNumericOnly()) {
+		fields  = fields.filter(f=>{
+		    return f.isFieldNumeric();
+		});
+	    }
+	    if(this.getReverseFields()) {
+		let tmp = [];
+		fields.forEach(f=>{
+		    tmp.unshift(f);
+		});
+		fields=tmp;
+	    }
+	    this.fields	     = fields;
 	    this.fieldsMap={};
 	    this.fields.forEach(f=>{
 		this.fieldsMap[f.getId()] = f;
 	    });
-	    html += HU.center("#" + records.length +" records");
+//	    html += HU.center("#" + records.length +" records");
 	    let fs = [];
 	    let clazz = " display-fields-field ";
+	    let asList = this.getAsList();
 	    if(this.getDecorate(true)) clazz+= " display-fields-field-decorated ";
+	    if(asList)
+		clazz+=" display-fields-list-field";
 	    let selectable = this.getSelectable(true);
 	    let details = this.getShowFieldDetails(false);	    
 	    fields.forEach((f,idx)=>{
-		let block  =HU.b(f.getLabel());
+		let block  =f.getLabel();
 		if(details) {
 		    block+= "<br>" +
 			f.getId() + f.getUnitSuffix()+"<br>" +
 			f.getType();
 		}
 		let c = clazz;
-		let selected = true;
+		let selected = selectedFields?selectedMap[f.getId()]:true;
 		if(selectable) c += " display-fields-field-selectable ";
 		if(selectable && selected) c += " display-fields-field-selected ";
 		let title = "";
@@ -41678,7 +41710,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 		let key = $(this).attr("data-key");	
 		let cell = cells[key];
 		countFields.forEach(f=>{
-		    let html = this.getFieldLabel(f)+HU.tag(BR);
+		    let html = _this.getFieldLabel(f)+HU.tag(BR);
 		    let cf = cell.countFields[f.getId()];
 		    let data=[];
 		    cf.values.forEach(v=>{
