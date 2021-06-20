@@ -554,7 +554,10 @@ class  WikiEditor {
 	    }
 	    attr=" " +tag.p+"=" + attr +" ";
 	    attr  =attr.replace(/\"/g,"&quot;");
-	    block.items.push(HU.div([CLASS,itemClass,TITLE,tag.tt||""], HtmlUtils.onClick("insertText('" + this.getId() +"','"+attr+"')",label)));
+	    if(block)
+		block.items.push(HU.div([CLASS,itemClass,TITLE,tag.tt||""], HtmlUtils.onClick("insertText('" + this.getId() +"','"+attr+"')",label)));
+	    else
+		console.log("no attribute block");
 	};
 	
 	attrs.forEach(attr=>{

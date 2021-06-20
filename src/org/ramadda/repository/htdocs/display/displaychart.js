@@ -2132,6 +2132,7 @@ function LinechartDisplay(displayManager, id, properties) {
 function AreachartDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaSeriesChart(displayManager, id, DISPLAY_AREACHART, properties);
     let myProps = [
+	{label:'Area Chart Properties'},
 	{p:'isStacked',ex:'true'}
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
