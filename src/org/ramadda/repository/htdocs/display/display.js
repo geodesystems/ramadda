@@ -4686,7 +4686,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let sideWidth = "1%";
             let contents = this.getContentsDiv();
 	    //display table
-            let table =   HU.open('table', [CLASS, 'display-ui-table', 'width','100%','border','0','cellpadding','0','cellspacing','0']);
+	    //We set a transparent 1px border here because for some reason the google charts will have a little bit of scroll in them if we don't set a border
+            let table =   HU.open('table', [STYLE,"border:1px solid transparent;",CLASS, 'display-ui-table', 'width','100%','border','0','cellpadding','0','cellspacing','0']);
 	    if(this.getProperty('showDisplayTop',true)) {
 		table+= HU.tr([],HU.td(['width',sideWidth]) + HU.td(['width','99%'],top) +HU.td(['width',sideWidth]));
 	    }

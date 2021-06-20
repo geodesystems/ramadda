@@ -840,7 +840,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		}});
         },
         tableHeaderMouseover: function(i, tooltip) {},
-	getAddToolTip: function() {
+	doAddTooltip: function() {
 	    return true;
 	},
 	getAddStyle: function() {
@@ -990,7 +990,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    if(debug) console.log(this.type+" makeDataTable #records" + dataList.length);
 	    if(debug) console.log("\tfields:" + selectedFields);
 	    let maxWidth = this.getProperty("maxFieldLength",this.getProperty("maxFieldWidth",-1));
-	    let addTooltip = this.getProperty("addTooltip",false) && this.getAddToolTip();
+	    let addTooltip = this.getProperty("addTooltip",false) && this.doAddTooltip();
     	    let addStyle= this.getAddStyle();
 	    let annotationTemplate = this.getAnnotationTemplate();
 	    let formatNumbers = this.getFormatNumbers();
@@ -1815,8 +1815,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 	},
 	makeGoogleChartInner: function(dataList, chartId, props, selectedFields) {
+//	    chartId="xx"
 	    let chartDiv = document.getElementById(chartId);
-	    if(!chartDiv) return;
+	    if(!chartDiv) {
+		console.log(this.type+".makeGoogleChart: no chart div found:" + chartId);
+		return;
+	    }
 	    let dataTable = this.makeDataTable(dataList, props, selectedFields, this.chartOptions);
             let chart = this.doMakeGoogleChart(dataList, props, chartDiv, selectedFields, this.chartOptions);
             if (chart == null) return null;
@@ -2015,7 +2019,6 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 		if(v) v = String(v).replace("px","");
 		chartOptions.chartArea[a] = v;
 	    });						    
-
 	},
 
         makeChartOptions: function(dataList, props, selectedFields) {
@@ -2942,7 +2945,7 @@ function TableDisplay(displayManager, id, properties) {
 	    }
             return new google.visualization.Table(chartDiv); 
         },
-	getAddToolTip: function() {
+	doAddTooltip: function() {
 	    return false;
 	},
 	getAddStyle: function() {
