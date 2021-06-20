@@ -1537,10 +1537,6 @@ public class CsvUtil {
                 "Only include specified rows",
                 new Arg("rows", "one or more rows, -1 to the end", "type",
                         "rows")),
-        new Cmd("-skip", "Skip number of rows.",
-                new Arg("rows", "How many rows to skip", "type", "number")),
-        new Cmd("-skiplines", "Skip number of lines.",
-                new Arg("lines", "How many lines to skip", "type", "number")),	
         new Cmd("-copy", new Label("Copy column"), "",
                 new Arg("column", "", "type", "column"), "name"),
         new Cmd(
@@ -1701,8 +1697,13 @@ public class CsvUtil {
         new Cmd("-decimate", "only include every <skip factor> row",
                 new Arg("rows", "# of start rows to include"),
                 new Arg("skip", "skip factor")),
-        new Cmd("-skipline", "Skip any line that matches the pattern",
+
+        new Cmd("-skiplines", "Skip number of raw lines.",
+                new Arg("lines", "How many raw lines to skip", "type", "number")),	
+        new Cmd("-skippattern", "Skip any line that matches the pattern",
                 new Arg("pattern", "", "type", "pattern")),
+        new Cmd("-skip", "Skip number of processed rows.",
+                new Arg("rows", "How many rows to skip", "type", "number")),
 
         /** *  Change values * */
         new Cmd(true, "Change"),
@@ -2267,7 +2268,7 @@ public class CsvUtil {
 		return i;
 	    });	
 
-	defineFunction("-skipline",1,(ctx,args,i) -> {
+	defineFunction("-skippattern",1,(ctx,args,i) -> {
 		ctx.setSkipPattern(args.get(++i));
 		return i;
 	    });

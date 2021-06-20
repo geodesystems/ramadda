@@ -400,7 +400,7 @@ public class Filter extends Processor {
             }
             if (pattern.matcher(v).find()) {
                 if (debug||true) {
-                    System.err.println("R3:" + doNegate(true) + " " + row);
+                    System.out.println("R3:" + doNegate(true) + " " + row);
                 }
                 return doNegate(true);
             }
