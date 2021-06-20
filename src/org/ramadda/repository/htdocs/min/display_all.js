@@ -4280,6 +4280,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'convertData',label:'rotate data', ex:'rotateData(includeFields=true,includeDate=true,flipColumns=true);',tt:'Rotate data'},
 	{p:'convertData',label:'percent increase',ex:'addPercentIncrease(replaceValues=false);',tt:'Add percent increase'},
 	{p:'convertData',label:'doubling rate',ex:'doublingRate(fields=f1\\\\,f2, keyFields=f3);',tt:'Calculate # days to double'},
+	{p:'convertData',label:'add fixed',ex:'addFixed(id=max_pool_elevation\\\\,value=3700,type=double);"',tt:'add fixed value'},	
 	{p:'convertData',label:'unfurl',ex:'unfurl(headerField=field to get header from,uniqueField=e.g. date,valueFields=);',tt:'Unfurl'},
 	{p:'convertData',label:'Accumulate data',ex:'accum(fields=);',tt:'Accumulate'},
 	{p:'convertData',label:'Add an average field',ex:'mean(fields=);',tt:'Mean'},
@@ -6058,16 +6059,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let newData = [];
 		let logic = this.getProperty("filterLogic","and");
 		this.filters.forEach(f=>f.prepareToFilter());
+		if(debug)
+		    console.log("filter:" + this.filters.length);
 		records.forEach((record,rowIdx)=>{
 		    let allOk = true;
 		    let anyOk = false;		    
-		    for(let i=0;i<this.filters.length;i++) {
-			let filter= this.filters[i];
-			if(!filter.isEnabled()) continue;
-			let filterOk = filter.isRecordOk(record,false && rowIdx<5&&debug);
+		    this.filters.forEach(filter=>{
+			if(!filter.isEnabled()) return;
+			let filterOk = filter.isRecordOk(record, rowIdx<5&&debug);
 			if(!filterOk) allOk = false;
 			else anyOk = true;
-		    }
+		    });
 		    let ok = logic=="and"?allOk:anyOk;
 		    if(opts.skipFirst && rowIdx==0) {
 			ok = true;
@@ -6082,7 +6084,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			}
 		    }
 		});
-
+		debug = false;
 		records = newData;
 	    }
 
@@ -6198,7 +6200,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let dataFilters = this.getDataFilters();
 	    if(dataFilters.length) {
 		records = records.filter((r,idx)=> {
-		    if(!this.checkDataFilters(dataFilters, r)) return false;
+		    if(!this.checkDataFilters(dataFilters, r)) {
+			return false;
+		    } 
 		    return true;
 		});
 	    }
@@ -12613,7 +12617,12 @@ function RecordFilter(display,filterFieldId, properties) {
 	isRecordOk:function(record,debug) {
 	    let ok = true;
 	    if(!this.isEnabled() || !this.mySearch) {
-		if(debug) console.log("\tfilter  enabled:" + this.isEnabled() +" mySearch:" + JSON.stringify(this.mySearch));
+		if(debug) {
+		    if(!this.isEnabled())
+			console.log("\tfilter  not enabled");
+		    if(!this.mySearch)
+			console.log("\tfilter  no mySearch");
+		}
 		return ok;
 	    }
 	    if(debug) console.log("\tfilter.isRecordOk:" + JSON.stringify(this.mySearch));
@@ -12848,10 +12857,16 @@ function RecordFilter(display,filterFieldId, properties) {
 		});
 		return;
 	    }
-		    
 
 
-	    let widget = $("#"+this.widgetId);
+	    let id = this.widgetId;
+	    if(prop.id && prop.id.endsWith("date1")) {
+		id+="_date1";
+	    } else 	if(prop.id && prop.id.endsWith("date2")) {
+		id+="_date2";
+	    }
+
+	    let widget = $("#"+id);
 	    if(widget.attr("isCheckbox")) {
 		let on = widget.attr("onValue");
 		widget.prop('checked',prop.value.includes(on));
@@ -13733,11 +13748,13 @@ function CsvUtil() {
             let setVars = "";
             fields.forEach((field,idx)=>{
 		if(/*field.isFieldNumeric() && */field.getId()!="") {
+		    if(func.indexOf(field.getId())<0) return;
 		    let varName = field.getId().replace(/^([0-9]+)/g,"v$1");
 		    setVars += "\tvar " + varName + "=displayGetFunctionValue(args[\"" + field.getId() + "\"]);\n";
 		}
             });
 
+//	    setVars+="console.log('v:' + (max_pool_elevation-lake_reservoir_elevation));\n";
             let code = "function displayDerivedEval(args) {\n" + setVars +  func + "\n}";
 //	    console.log(code);
 
@@ -13869,6 +13886,37 @@ function CsvUtil() {
 	    });
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
+	addFixed: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+            let header = this.display.getDataValues(records[0]);
+            let fields  = pointData.getRecordFields();
+	    let newRecords  =[];
+	    let value = args["value"];
+	    let type = args["type"]||"double";
+	    if(type == "double") value = parseFloat(value);
+	    let id = args["id"];
+	    let label = args["label"]||Utils.makeLabel(id);	    	    
+	    let newFields = [];
+	    fields.forEach((f,fieldIdx)=>{
+		newFields.push(f.clone());
+	    });
+	    newFields.push(new RecordField({
+		id:id,
+		index:newFields.length,
+		label:label,
+		type:type,
+		chartable:true,
+	    }));
+	    records.forEach((record, rowIdx)=>{
+		let newRecord = record.clone();
+		newRecord.data  =  [];
+		record.data.forEach(d=>{newRecord.data.push(d)});
+		newRecord.data.push(value);
+		newRecords.push(newRecord);
+	    });
+	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
+	},
+
 	addBearing: function(pointData, args) {
 	    let records = pointData.getRecords(); 
             let fields  = pointData.getRecordFields();
@@ -25596,7 +25644,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	{p:"selectField"},
 	{p:"selectValue"},
 	{p:'onlyShowSelected',ex:'true'},
-	{p:'showFirst',ex:'false'},	
+	{p:'showFirst',ex:'true'},
+	{p:'showLast',ex:'true'},		
 	{p:'selectHighlight',ex:'true'},	
 	{p:'handleSelectOnClick'},
 	{p:"groupByField"},
@@ -25625,18 +25674,21 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    if(!records) return;
 	    if(this.getPropertyOnlyShowSelected()) {
 		if(!this.selectedRecord && !this.selectedRecords) {
-		    if(this.getPropertyShowFirst(true)) {
+		    if(this.getShowFirst(true)) {
 			this.selectedRecord = records[0];
 		    }
 		}
-	    }
-	    if(this.getPropertyOnlyShowSelected()) {
 		if(!this.selectedRecord && !this.selectedRecords) {
 		    this.setContents("<br>");
 		    return;
 		}
-		
 		records = this.selectedRecords|| [this.selectedRecord];
+	    } else {
+		if(this.getShowFirst(false)) {
+		    records = [records[0]];
+		} else 	if(this.getShowLast(true)) {
+		    records = [records[records.length-1]];
+		}
 	    }
 	    records= this.sortRecords(records);
 	    let fields = pointData.getRecordFields();

@@ -1629,12 +1629,14 @@ public abstract class DataProvider {
 
 
                 if ( !ctx.lineOk(line)) {
+		    System.err.println("LINE not OK:");
                     continue;
                 }
 
 
                 rowCnt++;
-                if (rowCnt <= ctx.getSkip()) {
+                if (rowCnt <= ctx.getSkipLines()) {
+		    //		    System.err.println("skipping");
                     ctx.addHeaderLine(line);
                     continue;
                 }

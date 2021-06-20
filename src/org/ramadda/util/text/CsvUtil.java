@@ -747,7 +747,7 @@ public class CsvUtil {
             if (rowCnt <= ctx.getSkip()) {
                 continue;
             }
-            if ( !processRow(ctx, row)) {
+             if ( !processRow(ctx, row)) {
                 break;
             }
         }
@@ -1537,8 +1537,10 @@ public class CsvUtil {
                 "Only include specified rows",
                 new Arg("rows", "one or more rows, -1 to the end", "type",
                         "rows")),
-        new Cmd("-skip", "Skip number of rows",
+        new Cmd("-skip", "Skip number of rows.",
                 new Arg("rows", "How many rows to skip", "type", "number")),
+        new Cmd("-skiplines", "Skip number of lines.",
+                new Arg("lines", "How many lines to skip", "type", "number")),	
         new Cmd("-copy", new Label("Copy column"), "",
                 new Arg("column", "", "type", "column"), "name"),
         new Cmd(
@@ -2260,6 +2262,10 @@ public class CsvUtil {
 		ctx.setSkip(Integer.parseInt(args.get(++i)));
 		return i;
 	    });
+	defineFunction("-skiplines",1,(ctx,args,i) -> {
+		ctx.setSkipLines(Integer.parseInt(args.get(++i)));
+		return i;
+	    });	
 
 	defineFunction("-skipline",1,(ctx,args,i) -> {
 		ctx.setSkipPattern(args.get(++i));

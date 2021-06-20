@@ -129,6 +129,7 @@ public class TextReader implements Cloneable {
 
     /** _more_ */
     private int skip = 0;
+    private int skipLines = 0;    
 
     /** _more_ */
     private int visitedRows = 0;
@@ -1630,6 +1631,27 @@ public class TextReader implements Cloneable {
     public int getSkip() {
         return skip;
     }
+
+
+/**
+Set the SkipLines property.
+
+@param value The new value for SkipLines
+**/
+public void setSkipLines (int value) {
+	skipLines = value;
+}
+
+/**
+Get the SkipLines property.
+
+@return The SkipLines
+**/
+public int getSkipLines () {
+	return skipLines;
+}
+
+
 
 
     /**

@@ -1404,7 +1404,12 @@ function RecordFilter(display,filterFieldId, properties) {
 	isRecordOk:function(record,debug) {
 	    let ok = true;
 	    if(!this.isEnabled() || !this.mySearch) {
-		if(debug) console.log("\tfilter  enabled:" + this.isEnabled() +" mySearch:" + JSON.stringify(this.mySearch));
+		if(debug) {
+		    if(!this.isEnabled())
+			console.log("\tfilter  not enabled");
+		    if(!this.mySearch)
+			console.log("\tfilter  no mySearch");
+		}
 		return ok;
 	    }
 	    if(debug) console.log("\tfilter.isRecordOk:" + JSON.stringify(this.mySearch));
@@ -1639,10 +1644,16 @@ function RecordFilter(display,filterFieldId, properties) {
 		});
 		return;
 	    }
-		    
 
 
-	    let widget = $("#"+this.widgetId);
+	    let id = this.widgetId;
+	    if(prop.id && prop.id.endsWith("date1")) {
+		id+="_date1";
+	    } else 	if(prop.id && prop.id.endsWith("date2")) {
+		id+="_date2";
+	    }
+
+	    let widget = $("#"+id);
 	    if(widget.attr("isCheckbox")) {
 		let on = widget.attr("onValue");
 		widget.prop('checked',prop.value.includes(on));
@@ -2524,11 +2535,13 @@ function CsvUtil() {
             let setVars = "";
             fields.forEach((field,idx)=>{
 		if(/*field.isFieldNumeric() && */field.getId()!="") {
+		    if(func.indexOf(field.getId())<0) return;
 		    let varName = field.getId().replace(/^([0-9]+)/g,"v$1");
 		    setVars += "\tvar " + varName + "=displayGetFunctionValue(args[\"" + field.getId() + "\"]);\n";
 		}
             });
 
+//	    setVars+="console.log('v:' + (max_pool_elevation-lake_reservoir_elevation));\n";
             let code = "function displayDerivedEval(args) {\n" + setVars +  func + "\n}";
 //	    console.log(code);
 
@@ -2660,6 +2673,37 @@ function CsvUtil() {
 	    });
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
+	addFixed: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+            let header = this.display.getDataValues(records[0]);
+            let fields  = pointData.getRecordFields();
+	    let newRecords  =[];
+	    let value = args["value"];
+	    let type = args["type"]||"double";
+	    if(type == "double") value = parseFloat(value);
+	    let id = args["id"];
+	    let label = args["label"]||Utils.makeLabel(id);	    	    
+	    let newFields = [];
+	    fields.forEach((f,fieldIdx)=>{
+		newFields.push(f.clone());
+	    });
+	    newFields.push(new RecordField({
+		id:id,
+		index:newFields.length,
+		label:label,
+		type:type,
+		chartable:true,
+	    }));
+	    records.forEach((record, rowIdx)=>{
+		let newRecord = record.clone();
+		newRecord.data  =  [];
+		record.data.forEach(d=>{newRecord.data.push(d)});
+		newRecord.data.push(value);
+		newRecords.push(newRecord);
+	    });
+	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
+	},
+
 	addBearing: function(pointData, args) {
 	    let records = pointData.getRecords(); 
             let fields  = pointData.getRecordFields();

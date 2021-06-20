@@ -1307,6 +1307,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'convertData',label:'rotate data', ex:'rotateData(includeFields=true,includeDate=true,flipColumns=true);',tt:'Rotate data'},
 	{p:'convertData',label:'percent increase',ex:'addPercentIncrease(replaceValues=false);',tt:'Add percent increase'},
 	{p:'convertData',label:'doubling rate',ex:'doublingRate(fields=f1\\\\,f2, keyFields=f3);',tt:'Calculate # days to double'},
+	{p:'convertData',label:'add fixed',ex:'addFixed(id=max_pool_elevation\\\\,value=3700,type=double);"',tt:'add fixed value'},	
 	{p:'convertData',label:'unfurl',ex:'unfurl(headerField=field to get header from,uniqueField=e.g. date,valueFields=);',tt:'Unfurl'},
 	{p:'convertData',label:'Accumulate data',ex:'accum(fields=);',tt:'Accumulate'},
 	{p:'convertData',label:'Add an average field',ex:'mean(fields=);',tt:'Mean'},
@@ -3085,16 +3086,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let newData = [];
 		let logic = this.getProperty("filterLogic","and");
 		this.filters.forEach(f=>f.prepareToFilter());
+		if(debug)
+		    console.log("filter:" + this.filters.length);
 		records.forEach((record,rowIdx)=>{
 		    let allOk = true;
 		    let anyOk = false;		    
-		    for(let i=0;i<this.filters.length;i++) {
-			let filter= this.filters[i];
-			if(!filter.isEnabled()) continue;
-			let filterOk = filter.isRecordOk(record,false && rowIdx<5&&debug);
+		    this.filters.forEach(filter=>{
+			if(!filter.isEnabled()) return;
+			let filterOk = filter.isRecordOk(record, rowIdx<5&&debug);
 			if(!filterOk) allOk = false;
 			else anyOk = true;
-		    }
+		    });
 		    let ok = logic=="and"?allOk:anyOk;
 		    if(opts.skipFirst && rowIdx==0) {
 			ok = true;
@@ -3109,7 +3111,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			}
 		    }
 		});
-
+		debug = false;
 		records = newData;
 	    }
 
@@ -3225,7 +3227,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let dataFilters = this.getDataFilters();
 	    if(dataFilters.length) {
 		records = records.filter((r,idx)=> {
-		    if(!this.checkDataFilters(dataFilters, r)) return false;
+		    if(!this.checkDataFilters(dataFilters, r)) {
+			return false;
+		    } 
 		    return true;
 		});
 	    }

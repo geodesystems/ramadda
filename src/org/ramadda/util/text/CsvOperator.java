@@ -580,17 +580,6 @@ public abstract class CsvOperator {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param idx _more_
-     *
-     * @return _more_
-     */
-    public int getIndex(String idx) {
-        return getIndex(null, idx);
-    }
-
 
     /**
      * _more_

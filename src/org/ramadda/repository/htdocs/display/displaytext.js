@@ -505,7 +505,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	{p:"selectField"},
 	{p:"selectValue"},
 	{p:'onlyShowSelected',ex:'true'},
-	{p:'showFirst',ex:'false'},	
+	{p:'showFirst',ex:'true'},
+	{p:'showLast',ex:'true'},		
 	{p:'selectHighlight',ex:'true'},	
 	{p:'handleSelectOnClick'},
 	{p:"groupByField"},
@@ -534,18 +535,21 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    if(!records) return;
 	    if(this.getPropertyOnlyShowSelected()) {
 		if(!this.selectedRecord && !this.selectedRecords) {
-		    if(this.getPropertyShowFirst(true)) {
+		    if(this.getShowFirst(true)) {
 			this.selectedRecord = records[0];
 		    }
 		}
-	    }
-	    if(this.getPropertyOnlyShowSelected()) {
 		if(!this.selectedRecord && !this.selectedRecords) {
 		    this.setContents("<br>");
 		    return;
 		}
-		
 		records = this.selectedRecords|| [this.selectedRecord];
+	    } else {
+		if(this.getShowFirst(false)) {
+		    records = [records[0]];
+		} else 	if(this.getShowLast(true)) {
+		    records = [records[records.length-1]];
+		}
 	    }
 	    records= this.sortRecords(records);
 	    let fields = pointData.getRecordFields();

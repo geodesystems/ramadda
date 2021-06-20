@@ -434,8 +434,8 @@ public  class RowCollector extends Processor {
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
             Hashtable<String, Row> map      = new Hashtable<String, Row>();
-            int                    keyIdx   = getIndex(this.key);
-            int                    valueIdx = getIndex(this.value);
+            int                    keyIdx   = getIndex(ctx,this.key);
+            int                    valueIdx = getIndex(ctx,this.value);
             List<Row>              newRows  = new ArrayList<Row>();
             int                    cnt      = 0;
             for (Row row : getRows()) {
@@ -1000,8 +1000,8 @@ public  class RowCollector extends Processor {
 
             if (valueIndices == null) {
                 valueIndices     = getIndices(ctx, valueCols);
-                this.unfurlIndex = getIndex(unfurlCol);
-                this.uniqueIndex = getIndex(uniqueCol);
+                this.unfurlIndex = getIndex(ctx,unfurlCol);
+                this.uniqueIndex = getIndex(ctx,uniqueCol);
             }
 
             List<Integer>   includes     = getIndices(ctx);
