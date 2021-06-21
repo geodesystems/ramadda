@@ -874,7 +874,7 @@ public class WikiUtil {
                                 keys.hasMoreElements(); ) {
                             Object key   = keys.nextElement();
                             String value = (String)macros.get(key);
-			    line = Utils.replaceAll(line,"${" + key + "}",   value));
+			    line = Utils.replaceAll(line,"${" + key + "}",   value);
                         }
                     }
                     if (globalProperties != null) {
