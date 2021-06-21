@@ -25642,6 +25642,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
     let myProps = [
 	{label:"Template"},
 	{p: "template"},
+	{p:"toggleTemplate",ex:"",tt:'Used as the toggle label for hiding/showing the main template'},
 	{p:"headerTemplate",ex:"... ${totalCount} ... ${selectedCount}"},
 	{p:"footerTemplate",ex:"... ${totalCount} ... ${selectedCount}"},
 	{p:"emptyMessage"},
@@ -25691,15 +25692,17 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    } else {
 		if(this.getShowFirst(false)) {
 		    records = [records[0]];
-		} else 	if(this.getShowLast(true)) {
+		} else 	if(this.getShowLast(false)) {
 		    records = [records[records.length-1]];
 		}
 	    }
+	    console.log("rec:" + records.length);
 	    records= this.sortRecords(records);
 	    let fields = pointData.getRecordFields();
 	    let uniqueFields  = this.getFieldsByIds(fields, this.getProperty("uniqueFields"));
 	    let uniqueMap ={};
 	    let template = this.getProperty("template","");
+	    let toggleTemplate = this.getProperty("toggleTemplate");
 	    let select = this.getProperty("select","all");
 	    let selected = [];
 	    let summary = {};
@@ -25973,7 +25976,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
                     if (colorBy.index >= 0) {
 			var value =  record.getData()[colorBy.index];
 			color =  colorBy.getColor(value, record);
-                    }
+		    }
 		    let s = template.trim();
 		    let row = this.getDataValues(record);
 		    if(s.startsWith("${default")) {
@@ -26013,6 +26016,11 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    }  else {
 			s = tag +s +HU.close(DIV);
 		    }
+		    if(toggleTemplate) {
+			let t =this.applyRecordTemplate(record, row,fields,toggleTemplate,props); 
+			s =  HU.toggleBlock(t, s,false);
+		    }
+
 		    if (groupByField) {
 			let groupValue =groupByField.getValue(record);
 			if(groupValue.getTime) groupValue = this.formatDate(groupValue);
