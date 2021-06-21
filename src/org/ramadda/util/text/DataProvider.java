@@ -1629,7 +1629,7 @@ public abstract class DataProvider {
 
 
                 if ( !ctx.lineOk(line)) {
-		    System.err.println("LINE not OK:");
+		    //		    System.err.println("LINE not OK:");
                     continue;
                 }
 

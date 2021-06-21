@@ -3343,6 +3343,7 @@ public class WikiUtil {
         boolean isFacebook =
             Pattern.matches("https://www.facebook.com/.*/posts/\\d+", url);
         //Don't bother with the oembed for facebook as it requires an access token
+	String article;
         if (isFacebook) {
             if (getProperty("embedfacebook") == null) {
                 putProperty("embedfacebook", "true");
@@ -3357,6 +3358,40 @@ public class WikiUtil {
 	} else if(Pattern.matches("https://music.apple.com/.*\\d+",url)) {
 	    url = url.replace("https://music","https://embed.music");
 	    sb.append("<iframe allow='autoplay *; encrypted-media *; fullscreen *' frameborder='0' height='" + height+"' style='width:100%;max-width:660px;overflow:hidden;background:transparent;' sandbox='allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation' src='" + url+"'></iframe>");
+
+	} else if((article=StringUtil.findPattern(url,"https://.*.wikipedia.org/wiki/(.*)"))!=null) {
+	    String wikiUrl = "https://en.wikipedia.org/api/rest_v1/page/summary/" +article;
+            JSONObject obj = new JSONObject(
+                                  IO.readContents(
+						  wikiUrl));
+	    String thumb = Json.readValue(obj,"thumbnail.source",null);
+	    if(thumb!=null) {
+		String iwidth = Utils.getProperty(props, "imageWidth","200px");
+		thumb = HU.image(thumb,"width",HU.makeDim(iwidth,null));
+	    }
+
+	    String title = obj.getString("title");
+	    String wurl = Json.readValue(obj, "content_urls.desktop.page","");
+            width = Utils.getProperty(props, "width","400px");
+            height = Utils.getProperty(props, "height","200px");	    
+	    String extract = obj.optString("extract_html");
+	    if(extract.startsWith("<p>")) extract = extract.substring(3);
+	    if(height!=null) {
+		extract = HU.div(extract,HU.style("max-height:" + HU.makeDim(height,null)+";overflow-y:auto;"));
+	    }
+	    String source = "<div style='text-align:center;font-style:italic;font-size:80%;'>Source: Wikipedia</div>";
+	    if(thumb!=null) {
+		extract = HU.leftRight(extract,HU.div(thumb+source,HU.style("margin-left:5px;")));
+	    } else {
+		extract+=source;
+	    }
+	    if(width!=null) {
+		extract = HU.div(extract,HU.style("width:" + HU.makeDim(width,null)));
+	    }
+            String wstyle = Utils.getProperty(props, "style","padding:5px;border:1px solid #ccc;");
+	    extract = HU.div(extract,HU.style("display:inline-block;" +  wstyle));
+	    extract = HU.div(HU.center(HU.href(wurl,title))+extract,HU.style("display:inline-block;"));
+	    sb.append(extract);
         } else if(Pattern.matches("",url)) {
 	    sb.append("");
 	} else {
