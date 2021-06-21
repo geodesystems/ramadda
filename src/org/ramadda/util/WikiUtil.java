@@ -1143,6 +1143,7 @@ public class WikiUtil {
                                           ? toks.get(2)
                                           : "");
 		    if(macros == null) macros = new Hashtable<String,String>();    
+		    value = value.replace("\\n","\n");
 		    value =  wikify(value,handler);
                     macros.put(var.trim(), value.trim());
                     continue;
