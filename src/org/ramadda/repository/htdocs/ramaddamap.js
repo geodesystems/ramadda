@@ -1187,16 +1187,19 @@ RepositoryMap.prototype = {
 	    });
 	},1000);
     },
-    addWMSLayer: function(name, url, layer, isBaseLayer, nonSelectable) {
+    addWMSLayer: function(name, url, layer, isBaseLayer, nonSelectable,args) {
+	if(!args) args = {};
+	let attrs = {
+            wrapDateLine: MapUtils.defaults.wrapDateline,
+        };
+	if(args.opacity) attrs.opacity=args.opacity;
         var layer = new OpenLayers.Layer.WMS(name, url, {
             layers: layer,
             format: "image/png",
             isBaseLayer: false,
             srs: "epse:4326",
             transparent: true
-        }, {
-            wrapDateLine: MapUtils.defaults.wrapDateline
-        });
+        }, attrs);
         if (isBaseLayer) {
             layer.isBaseLayer = true;
             layer.visibility = false;

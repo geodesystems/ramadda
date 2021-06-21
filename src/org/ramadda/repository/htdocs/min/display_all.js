@@ -31884,7 +31884,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    let name = toks[1];
 		    let url = toks[2];
 		    let layer=toks[3];
-                    this.map.addWMSLayer(name,url,layer, false,true);
+		    let opacity = toks[4];
+                    this.map.addWMSLayer(name,url,layer, false,true,{opacity:opacity});
 		  //  "wms:ESRI Aeronautical,https://wms.chartbundle.com/mp/service,sec",
 		} else {
 		    console.log("Unknown map type:" + type)
@@ -33393,6 +33394,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    });
 		});
 	    }
+
+	    if(!this.getProperty("makeDisplay")) {
+		return;
+	    }
+
+
 
             let pointBounds = {};
             let points = RecordUtil.getPoints(records, pointBounds);
