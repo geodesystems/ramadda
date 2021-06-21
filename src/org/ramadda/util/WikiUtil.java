@@ -873,8 +873,8 @@ public class WikiUtil {
                         for (java.util.Enumeration keys = macros.keys();
                                 keys.hasMoreElements(); ) {
                             Object key   = keys.nextElement();
-                            Object value = macros.get(key);
-                            line = Utils.replaceAll(line,"${" + key + "}",   value.toString());
+                            String value = (String)macros.get(key);
+			    line = Utils.replaceAll(line,"${" + key + "}",   value));
                         }
                     }
                     if (globalProperties != null) {
@@ -1143,6 +1143,7 @@ public class WikiUtil {
                                           ? toks.get(2)
                                           : "");
 		    if(macros == null) macros = new Hashtable<String,String>();    
+		    value =  wikify(value,handler);
                     macros.put(var.trim(), value.trim());
                     continue;
                 }
