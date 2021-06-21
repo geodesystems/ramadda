@@ -3390,7 +3390,7 @@ public class WikiUtil {
 	    }
             String wstyle = Utils.getProperty(props, "style","padding:5px;border:1px solid #ccc;");
 	    extract = HU.div(extract,HU.style("display:inline-block;" +  wstyle));
-	    extract = HU.div(HU.center(HU.href(wurl,title))+extract,HU.style("display:inline-block;"));
+	    extract = HU.div(HU.center(HU.href(wurl,title,"target=_other"))+extract,HU.style("display:inline-block;"));
 	    sb.append(extract);
         } else if(Pattern.matches("",url)) {
 	    sb.append("");
