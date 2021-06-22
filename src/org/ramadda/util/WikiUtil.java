@@ -1768,15 +1768,37 @@ public class WikiUtil {
                     continue;
                 }
 
+                if (tline.equals(":filler")) {
+		    buff.append("<div style='flex:1;'></div>");
+		    continue;
+		}
+
                 if (tline.startsWith("+gridbox")) {
                     List<String> toks = Utils.splitUpTo(tline, " ", 2);
+                    Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
+                            ? toks.get(1)
+                            : "");
+		    String style = "";
+		    String flex =  Utils.getProperty(props,"flex",(String)null);
+		    if(flex!=null)
+			style+= "flex:" + flex+";";
+		    String width =  Utils.getProperty(props,"width",(String)null);
+		    if(width!=null)
+			style+= "min-width:" + width+";";		    
+
+		    String _style =  Utils.getProperty(props,"s",(String)null);
+		    if(_style!=null)
+			style+= _style;
+		    
                     buff.append(HU.open(HU.TAG_DIV,
+					HU.style(style)+
                                         HU.cssClass("ramadda-gridbox")));
-                    if (toks.size() > 1) {
+		    String title = Utils.getProperty(props,"title",(String)null);
+                    if (title!=null) {
                         buff.append(
                             HU.tag(HU.TAG_DIV,
 				   HU.cssClass("ramadda-gridbox-header"),
-                                   toks.get(1)));
+                                   title));
                     }
                     buff.append(
                         HU.open(
