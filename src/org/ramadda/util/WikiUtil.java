@@ -1775,7 +1775,7 @@ public class WikiUtil {
                     if (toks.size() > 1) {
                         buff.append(
                             HU.tag(HU.TAG_DIV,
-                                   HU.cssClass("ramadda-gridbox-header"),
+				   HU.cssClass("ramadda-gridbox-header"),
                                    toks.get(1)));
                     }
                     buff.append(
@@ -1802,10 +1802,10 @@ public class WikiUtil {
                             ? toks.get(1)
                             : "");
                     String clazz = "ramadda-" + tline +" ";
-		    String style="display:grid;";
+		    String style="";
 		    String columns = Utils.getProperty(props,"columns",(String)null);
 		    if(columns!=null)
-			style+="grid-template-columns:" + columns +";";
+			style+="display:grid;grid-template-columns:" + columns +";";
 		    if(Utils.getProperty(props,"decorated",false))
 			clazz+=" ramadda-grid-decorated ";
                     buff.append(HU.open(HU.TAG_DIV,
