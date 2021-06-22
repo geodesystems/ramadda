@@ -1768,7 +1768,7 @@ public class WikiUtil {
                     continue;
                 }
 
-                if (tline.startsWith("+grid") {
+                if (tline.startsWith("+grid")) {
                     tline = tline.substring(1);
                     List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
