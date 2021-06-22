@@ -33403,7 +33403,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		});
 	    }
 
-	    if(!this.getProperty("makeDisplay")) {
+	    if(!this.getProperty("makeDisplay",true)) {
 		return;
 	    }
 
