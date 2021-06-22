@@ -915,11 +915,6 @@ a.ramadda-menubar-button:hover {
 }
 
 
-.ramadda-gridboxes {
-    display: inline-grid;
-    column-gap: 20px;
-    row-gap: 20px;
-}
 
 
 .ramadda-draggable-frame {
@@ -963,27 +958,49 @@ a.ramadda-menubar-button:hover {
     background:#fff;
 }
 
-.ramadda-gridboxes-1 {
+
+
+
+
+.ramadda-grid {
+    vertical-align:top;
+    display:flex;
+    flex-wrap: wrap;
+}
+
+ 
+.ramadda-grid-1 {
     grid-template-columns: 1fr;
 }
 
-.ramadda-gridboxes-2 {
+.ramadda-grid-2 {
     grid-template-columns: 1fr 1fr;
 }
 
-.ramadda-gridboxes-3 {
+.ramadda-grid-3 {
     grid-template-columns: 1fr 1fr 1fr;
 }
 
-.ramadda-gridboxes-4 {
+.ramadda-grid-4 {
     grid-template-columns: 1fr 1fr 1fr 1fr;
 }
 
-.ramadda-gridboxes-5 {
+.ramadda-grid-5 {
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
 }
 
 
+.ramadda-gridbox {
+    flex-grow:1;
+    vertical-align:top;
+    margin:5px;
+    padding:10px;
+    padding-bottom:6px;
+    padding-top:6px;
+    text-align:left;
+}
+
+/*
 .ramadda-gridbox {
     --element-border: gainsboro;
     --element-color:gray;
@@ -996,8 +1013,8 @@ a.ramadda-menubar-button:hover {
     padding:10px;
     padding-left:15px;
     padding-right:15px;
-    text-align:left;
 }
+*/
 
 
 
@@ -1020,42 +1037,27 @@ a.ramadda-menubar-button:hover {
 }
 
 .ramadda-gridbox-header {
-    font-size: 21px;
+    font-size: 20px;
     font-weight: 300;
     margin-bottom: 5px;
 }
 
 
-.ramadda-grid {
-    vertical-align:top;
-    display:flex;
-    flex-wrap: wrap;
-}
 
-
-.ramadda-grid-box {
-    flex-grow:1;
-    vertical-align:top;
-    margin:10px;
-    padding:10px;
-    padding-bottom:6px;
-    padding-top:6px;
-}
-
-.ramadda-grid-decorated .ramadda-grid-box, .ramadda-grid-box-decorated {
+.ramadda-grid-decorated .ramadda-gridbox, .ramadda-gridbox-decorated {
     border : var(--basic-border);
     background: #FbFbFb;
     border-radius: 4px;
 }
 
 
-.ramadda-grid-box-decorated:hover {
+.ramadda-gridbox-decorated:hover {
     border:   var(--highlight-border)
     -webkit-box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
     box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
 }
 
-.ramadda-grid-box .ramadda-subheading {
+.ramadda-gridbox .ramadda-subheading {
     max-width:100%;
     overflow-x:auto;
     white-space:nowrap;

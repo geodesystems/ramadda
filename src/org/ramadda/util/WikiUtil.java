@@ -1768,16 +1768,48 @@ public class WikiUtil {
                     continue;
                 }
 
-                if (tline.startsWith("+grid")) {
+                if (tline.startsWith("+gridbox")) {
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
+                    buff.append(HU.open(HU.TAG_DIV,
+                                        HU.cssClass("ramadda-gridbox")));
+                    if (toks.size() > 1) {
+                        buff.append(
+                            HU.tag(HU.TAG_DIV,
+                                   HU.cssClass("ramadda-gridbox-header"),
+                                   toks.get(1)));
+                    }
+                    buff.append(
+                        HU.open(
+                            HU.TAG_DIV,
+                            HU.cssClass("ramadda-gridbox-contents")));
+
+                    continue;
+                }
+
+
+                if (tline.startsWith("-gridbox")) {
+                    buff.append(HU.close(HU.TAG_DIV));
+                    buff.append(HU.close(HU.TAG_DIV));
+                    continue;
+                }
+
+
+		if (tline.startsWith("+grid")) {
                     tline = tline.substring(1);
                     List<String> toks = Utils.splitUpTo(tline, " ", 2);
+		    tline = toks.get(0).trim();
                     Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
                             ? toks.get(1)
                             : "");
-                    String clazz = "";
+                    String clazz = "ramadda-" + tline +" ";
+		    String style="display:grid;";
+		    String columns = Utils.getProperty(props,"columns",(String)null);
+		    if(columns!=null)
+			style+="grid-template-columns:" + columns +";";
 		    if(Utils.getProperty(props,"decorated",false))
 			clazz+=" ramadda-grid-decorated ";
                     buff.append(HU.open(HU.TAG_DIV,
+					HU.style(style)+
                                         HU.cssClass("ramadda-grid "
                                             + clazz)));
 
@@ -1790,30 +1822,6 @@ public class WikiUtil {
                     continue;
                 }
 
-                if (tline.startsWith("+gridbox")) {
-                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
-                    buff.append(HU.open(HU.TAG_DIV,
-                                        HU.cssClass("ramadda-grid-box")));
-                    if (toks.size() > 1) {
-                        buff.append(
-                            HU.tag(HU.TAG_DIV,
-                                   HU.cssClass("ramadda-grid-box-header"),
-                                   toks.get(1)));
-                    }
-                    buff.append(
-                        HU.open(
-                            HU.TAG_DIV,
-                            HU.cssClass("ramadda-grid-box-contents")));
-
-                    continue;
-                }
-
-
-                if (tline.startsWith("-gridbox")) {
-                    buff.append(HU.close(HU.TAG_DIV));
-                    buff.append(HU.close(HU.TAG_DIV));
-                    continue;
-                }
 
                 if (tline.startsWith("+after")) {
                     afterId = HU.getUniqueId("after");
