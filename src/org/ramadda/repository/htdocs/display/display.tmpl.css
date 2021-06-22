@@ -551,10 +551,9 @@ a.display-container {
     -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px;
 }
 
-.display-records-grid-box:hover, .ramadda-grid-box:hover {
+.display-records-grid-box:hover {
     border:   var(--highlight-border)
 }
-
 
 
 .display-template-record a {

@@ -2757,7 +2757,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 int    colCnt   = 10000;
                 int    weight   = 12 / columns;
 
-                String boxClass = HU.cssClass("ramadda-grid-box");
+                String boxClass = HU.cssClass("ramadda-grid-box ramadda-grid-box-decorated");
                 String boxStyle = "";
                 width = getProperty(wikiUtil, props, ATTR_WIDTH,
                                     (String) null);

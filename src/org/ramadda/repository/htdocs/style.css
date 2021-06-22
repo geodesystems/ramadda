@@ -999,10 +999,7 @@ a.ramadda-menubar-button:hover {
     text-align:left;
 }
 
-.ramadda-gridbox:hover {
-    -webkit-box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
-    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
-}
+
 
 .ramadda-gridbox ul {
     margin:0px;
@@ -1038,10 +1035,24 @@ a.ramadda-menubar-button:hover {
 
 .ramadda-grid-box {
     flex-grow:1;
+    vertical-align:top;
+    margin:10px;
+    padding:10px;
+    padding-bottom:6px;
+    padding-top:6px;
 }
 
-.ramadda-grid-box:hover {
+.ramadda-grid-decorated .ramadda-grid-box, .ramadda-grid-box-decorated {
+    border : var(--basic-border);
+    background: #FbFbFb;
+    border-radius: 4px;
+}
+
+
+.ramadda-grid-box-decorated:hover {
     border:   var(--highlight-border)
+    -webkit-box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
 }
 
 .ramadda-grid-box .ramadda-subheading {
@@ -1060,17 +1071,6 @@ a.ramadda-menubar-button:hover {
     margin-top:4px;
 }
 
-.ramadda-grid-box {
-    vertical-align:top;
-    margin-top:10px;
-    margin-bottom:10px;
-    padding:10px;
-    padding-bottom:6px;
-    padding-top:6px;
-    border : var(--basic-border);
-    background: #FbFbFb;
-    border-radius: 4px;
-}
 
 
 .ramadda-draft-container {
