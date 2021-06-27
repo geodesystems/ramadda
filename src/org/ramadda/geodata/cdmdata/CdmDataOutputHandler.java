@@ -561,31 +561,32 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         sb.append("</center>");
 
         sb.append("\n<p>\n");
-        sb.append(
-            "<table class='ramadda-table stripe'><thead><tr><th>Variable</th><th>Unit</th><th>Dimensions</th><th>#Times</th></tr></thead><tbody>");
-        GridDataset gds = getCdmManager().getGridDataset(entry, path);
-        List<GridDatatype>     grids     = sortGrids(gds);
-        List<VariableSimpleIF> variables = gds.getDataVariables();
-        for (GridDatatype gdt : grids) {
-            Dimension tdim = gdt.getTimeDimension();
-            Dimension xdim = gdt.getXDimension();
-            Dimension ydim = gdt.getYDimension();
-            Dimension zdim = gdt.getZDimension();
-            sb.append("<tr>");
-            sb.append(HtmlUtils.td(gdt.getShortName()));
-            sb.append(HtmlUtils.td(gdt.getUnitsString()));
-            sb.append("<td>");
-            sb.append(xdim.getLength() + "x" + ydim.getLength()
-                      + ((zdim != null)
-                         ? "x" + zdim.getLength()
-                         : ""));
-            sb.append("</td>");
-            sb.append(HtmlUtils.td("" + tdim.getLength()));
-            sb.append("</tr>");
-        }
-        sb.append("</tbody></table>");
-        sb.append("\n");
-
+	GridDataset gds = getCdmManager().getGridDataset(entry, path);
+	if(gds!=null) {
+	    List<GridDatatype>     grids     = sortGrids(gds);
+	    sb.append(
+		      "<table class='ramadda-table stripe'><thead><tr><th>Variable</th><th>Unit</th><th>Dimensions</th><th>#Times</th></tr></thead><tbody>");
+	    List<VariableSimpleIF> variables = gds.getDataVariables();
+	    for (GridDatatype gdt : grids) {
+		Dimension tdim = gdt.getTimeDimension();
+		Dimension xdim = gdt.getXDimension();
+		Dimension ydim = gdt.getYDimension();
+		Dimension zdim = gdt.getZDimension();
+		sb.append("<tr>");
+		sb.append(HtmlUtils.td(gdt.getShortName()));
+		sb.append(HtmlUtils.td(gdt.getUnitsString()));
+		sb.append("<td>");
+		sb.append(xdim.getLength() + "x" + ydim.getLength()
+			  + ((zdim != null)
+			     ? "x" + zdim.getLength()
+			     : ""));
+		sb.append("</td>");
+		sb.append(HtmlUtils.td("" + tdim.getLength()));
+		sb.append("</tr>");
+	    }
+	    sb.append("</tbody></table>");
+	    sb.append("\n");
+	}
 
         sb.append("<p><center><h2>CDL</h2></center>");
         NetcdfDataset dataset = getCdmManager().createNetcdfDataset(path);
@@ -1766,7 +1767,9 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
     public List<GridDatatype> sortGrids(GridDataset dataset) {
         List tuples = new ArrayList();
         for (GridDatatype grid : dataset.getGrids()) {
+	    if(grid==null) continue;
             VariableEnhanced var = grid.getVariable();
+
             tuples.add(new Object[] { var.getShortName().toLowerCase(),
                                       grid });
         }

@@ -205,6 +205,7 @@ public class NetcdfPointFile extends PointFile {
                     label = var.getShortName();
                 }
                 String      unit  = var.getUnitsString();
+
                 RecordField field = dfltFields.get(var.getShortName());
                 if (field == null) {
                     field = new RecordField(var.getShortName(), label, label,
