@@ -5577,7 +5577,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 			l.call( "Tabs", "+tabs_newline_+tab tab title_newline_", "-tab_newline_-tabs_newline_"),
 			l.call( "Accordion", "+accordion decorate=true collapsible=true activeSegment=0 _newline_+segment segment  title_newline_", "-segment_newline_-accordion_newline_"),
 			l.call( "Slides", "+slides dots=true slidesToShow=1  bigArrow=true style=_qt__qt__nl_+slide Title_nl_", "-slide_nl_-slides_nl_"),
-			l.call("Grid box", "+gridboxes-2_newline_+gridbox Title 1_newline_-gridbox_newline_+gridbox Title 2_newline_-gridbox_newline_", "-gridboxes"),
+			l.call("Grid box", "+grid #decorated=true #columns=_qt_1fr 2fr_qt_ _nl_:filler_nl_+gridbox #flex=1 #style=_qt__qt_ #width=_qt__qt_ #title=_qt_Title 1_qt__nl_-gridbox_nl_+gridbox #title=_qt_Title 2_qt__nl_-gridbox_nl_:filler_nl_", "-grid"),
 			l.call("Scroll panels","+scroll_newline_+panel color=gradient1 name=home style=_quote__quote_ _newline_+center_newline_<div class=scroll-indicator>Scroll Down</div>_newline_-center_newline_-panel_newline_+panel color=gradient2 name=panel1_newline__newline_-panel_newline_+panel color=blue name=panel2_newline__newline_-panel_newline_", "-scroll") 
 			
 			); 
@@ -6538,7 +6538,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 wiki.append(fromEntry);
             } else {
                 wiki.append(
-                    "{{group  howMenu=\"true\"  layoutType=\"columns\"  layoutColumns=\"2\"  }}\n");
+                    "{{group  showMenu=true  layoutType=columns  layoutColumns=2  }}\n");
                 String chartType = (recordTypeHandler == null)
                                    ? typeHandler.getProperty(entry,
                                        "chart.type", "linechart")
@@ -6546,9 +6546,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                        request, entry, "chart.type",
                                        "linechart");
                 wiki.append(
-                    "{{display  xwidth=\"600\"  height=\"400\"   type=\""
-                    + chartType
-                    + "\"  name=\"\"  layoutHere=\"false\"  showMenu=\"false\"  showTitle=\"false\"  row=\"0\"  column=\"0\"  }}");
+                    "{{display_" + chartType +"   xwidth=600  height=400   layoutHere=false showMenu=true  showTitle=false  row=0  column=0  }}");
                 if (entry.isGeoreferenced()) {
                     String mapLayers = getMapManager().getMapLayers();
                     String layerVar  = "";
@@ -6569,7 +6567,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                         entryAttrs += " isTrajectory=\"true\" ";
                     }
                     wiki.append(
-                        "{{display  width=\"600\"  height=\"400\"   type=\"map\" "
+                        "{{display_map  width=\"600\"  height=\"400\"   "
                         + layerVar + entryAttrs
                         + " name=\"\"  layoutHere=\"false\"  showMenu=\"true\"  showTitle=\"true\"  row=\"0\"  column=\"1\"  }}");
                 }
