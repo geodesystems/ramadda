@@ -333,7 +333,7 @@ public class ImageOutputHandler extends OutputHandler {
                 return;
             }
         }
-        if (state.getEntry() != null) {
+        if (state.getEntry() != null && state.getEntry().isImage()) {
             //            links.add(makeLink(request, state.getEntry(), OUTPUT_SLIDESHOW));
             links.add(makeLink(request, state.getEntry(), OUTPUT_GALLERY));
             links.add(makeLink(request, state.getEntry(), OUTPUT_ZOOM));	    
