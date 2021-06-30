@@ -1054,6 +1054,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
         CacheManager.setDoCache(false);
+	//	IO.debugStderr();
         initProperties(properties);
         //Clear the tmp dir as it gets set by the plugin manager and any tmp dir set in a properties file will be ignored
         getStorageManager().clearTmpDir();
