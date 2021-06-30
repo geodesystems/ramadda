@@ -2226,17 +2226,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if ( /*this.canDoMultiFields() && */ fields.length > 0) {
                     let selected = this.getSelectedFields([]);
                     let selectedIds = [];
-                    for (i = 0; i < selected.length; i++) {
+                    for (let i = 0; i < selected.length; i++) {
                         selectedIds.push(selected[i].getId());
                     }
                     html += HU.div([ATTR_CLASS, "display-dialog-subheader"], "Displayed Fields");
                     html += HU.open(TAG_DIV, [ATTR_CLASS, "display-fields"]);
-                    for (var tupleIdx = 0; tupleIdx < fields.length; tupleIdx++) {
-                        var field = fields[tupleIdx];
-                        var idBase = "cbx_" + collectionIdx + "_" + tupleIdx;
+                    for (let tupleIdx = 0; tupleIdx < fields.length; tupleIdx++) {
+                        let field = fields[tupleIdx];
+                        let idBase = "cbx_" + collectionIdx + "_" + tupleIdx;
                         field.checkboxId = this.getDomId(idBase);
-                        var on = false;
-                        var hasValues = (flags ? flags[field.getIndex()] : true);
+                        let on = false;
+                        let hasValues = (flags ? flags[field.getIndex()] : true);
                         //                            console.log(tupleIdx + " field: " + field.getId() + "has values:" + hasValues);
                         if (argFields != null) {
                             //                                console.log("argFields:" + argFields);
@@ -2271,7 +2271,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             }
                             //                                console.log("cbx fields:" + on + " " + field.getId());
                         }
-                        var label = field.getUnitLabel();
+                        let label = field.getUnitLabel();
                         if (seenLabels[label]) {
                             label = label + " " + seenLabels[label];
                             seenLabels[label]++;
