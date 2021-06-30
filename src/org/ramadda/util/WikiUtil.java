@@ -3415,7 +3415,7 @@ public class WikiUtil {
 	    if(width!=null) {
 		extract = HU.div(extract,HU.style("width:" + HU.makeDim(width,null)));
 	    }
-            String wstyle = Utils.getProperty(props, "style","padding:5px;border:1px solid #ccc;");
+            String wstyle = Utils.getProperty(props, "style","padding:5px;");
 	    String pstyle =  Utils.getProperty(props, "style","");	    
 	    extract = HU.div(extract,HU.style("display:inline-block;" +  wstyle+pstyle));
 	    extract = HU.div(HU.center(HU.href(wurl,title,"target='_other' style='text-decoration:none;' "))+extract,HU.style("display:inline-block;border:1px solid #ccc;"));
