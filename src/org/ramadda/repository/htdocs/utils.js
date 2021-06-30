@@ -1520,6 +1520,7 @@ var Utils =  {
 	return s;
     },
     formatNumberInner: function(number,debug) {
+
         var anumber = Math.abs(number);
         if (anumber == Math.floor(anumber)) return String(number);
         if (anumber > 1000) {
@@ -3723,6 +3724,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 window.history.replaceState("", "", url);
         } catch (e) {
             console.log("err:" + e);
+	    console.trace();
         }
     },
     initSearchPopup:function(id,target) {
@@ -4889,13 +4891,15 @@ function TextMatcher (pattern) {
 
 
 function number_format(number, decimals,debug) {
+    let negative = number<0;
     let n = Utils.roundDecimals(number,decimals,false && debug);
-    let negative = n<0;
     let i;
-    if(negative)
+    if(negative) {
 	i = Math.ceil(n);
-    else
+	i = Math.abs(i);
+    }   else {
 	i = Math.floor(n);
+    }
     let toks = String(n).match(/\.(.*)/);
     let dec =toks?toks[1]:"";
     let s = String(i).replace(/(.)(?=(\d{3})+$)/g,'$1,')
@@ -4904,6 +4908,7 @@ function number_format(number, decimals,debug) {
     }
     if(debug) console.log("number:" + number +" n:" + n +" i:" + i +" s:" +s);
     if(negative && i==0) return "-" +s;
+    if(negative) return "-"+s;
     return s;
 }
 
