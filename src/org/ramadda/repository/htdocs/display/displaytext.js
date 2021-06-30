@@ -552,7 +552,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    records = [records[records.length-1]];
 		}
 	    }
-	    console.log("rec:" + records.length);
 	    records= this.sortRecords(records);
 	    let fields = pointData.getRecordFields();
 	    let uniqueFields  = this.getFieldsByIds(fields, this.getProperty("uniqueFields"));
