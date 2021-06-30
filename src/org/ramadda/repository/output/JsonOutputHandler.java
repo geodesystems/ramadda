@@ -177,7 +177,7 @@ public class JsonOutputHandler extends OutputHandler {
             allEntries.addAll(entries);
         }
         StringBuilder sb = new StringBuilder();
-        if (outputType.equals(OUTPUT_JSON_POINT)) {
+        if (outputType!=null && outputType.equals(OUTPUT_JSON_POINT)) {
             makePointJson(request, group, allEntries, sb);
         } else {
             makeJson(request, allEntries, sb);
