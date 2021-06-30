@@ -1783,8 +1783,8 @@ public class WikiUtil {
 		    if(flex!=null)
 			style+= "flex:" + flex+";";
 		    String width =  Utils.getProperty(props,"width",(String)null);
-		    if(width!=null)
-			style+= "min-width:" + width+";";		    
+		    if(Utils.stringDefined(width))
+			style+= "width:" + width+";";		    
 
 		    String _style =  Utils.getProperty(props,"s",(String)null);
 		    if(_style!=null)
@@ -3358,16 +3358,13 @@ public class WikiUtil {
         boolean link = Misc.equals("true",
                                    getWikiProperty(props, "link",
                                        "embedLink", "false"));
-        boolean decorate = Misc.equals("true",""+getWikiProperty(props, "label", "decorate",
-								 getWikiProperty(props, "label", "decorateEmbed","true")));								 
+        boolean decorate = Misc.equals("true",""+getWikiProperty(props,  "decorate","decorateEmbed","false"));
         String label = (String) getWikiProperty(props, "label", "embedLabel",
                            null);
         String width = (String) getWikiProperty(props, "width", "embedWidth",
                            "640");
-        String height = (String) getWikiProperty(props, "height",
-                            "embedHeight", "390");
-        String style = (String) getWikiProperty(props, "style", "embedStyle",
-                           null);
+        String height = (String) getWikiProperty(props, "height",   "embedHeight", "390");
+        String style = (String)getWikiProperty(props, "style", "embedStyle",getWikiProperty(props, "style", "style",null));
         StringBuilder sb = new StringBuilder();
 
         boolean isFacebook =
@@ -3402,7 +3399,7 @@ public class WikiUtil {
 
 	    String title = obj.getString("title");
 	    String wurl = Json.readValue(obj, "content_urls.desktop.page","");
-            width = Utils.getProperty(props, "width","400px");
+            width = Utils.getProperty(props, "width",null);
             height = Utils.getProperty(props, "height","200px");	    
 	    String extract = obj.optString("extract_html");
 	    if(extract.startsWith("<p>")) extract = extract.substring(3);
@@ -3419,8 +3416,9 @@ public class WikiUtil {
 		extract = HU.div(extract,HU.style("width:" + HU.makeDim(width,null)));
 	    }
             String wstyle = Utils.getProperty(props, "style","padding:5px;border:1px solid #ccc;");
-	    extract = HU.div(extract,HU.style("display:inline-block;" +  wstyle));
-	    extract = HU.div(HU.center(HU.href(wurl,title,"target='_other' style='text-decoration:none;' "))+extract,HU.style("display:inline-block;"));
+	    String pstyle =  Utils.getProperty(props, "style","");	    
+	    extract = HU.div(extract,HU.style("display:inline-block;" +  wstyle+pstyle));
+	    extract = HU.div(HU.center(HU.href(wurl,title,"target='_other' style='text-decoration:none;' "))+extract,HU.style("display:inline-block;border:1px solid #ccc;"));
 	    sb.append(extract);
         } else if(Pattern.matches("",url)) {
 	    sb.append("");
@@ -3802,7 +3800,7 @@ public class WikiUtil {
      * @param sb _more_
      * @param s _more_
      *
-     * @throws Exception _more_
+    * @throws Exception _more_
      */
     public static void title(Appendable sb, String s) throws Exception {
         sb.append("\n+title\n");
