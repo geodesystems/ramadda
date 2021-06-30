@@ -63,7 +63,7 @@ var MapUtils =  {
     CUSTOM_MAP : "CUSTOM",
     POSITIONMARKERID: "location",
     formatLocationValue:function(value) {
-	return number_format(value, 4, ".", "");
+	return number_format(value, 4);
     },
     createLonLat: function(lon, lat) {
 	lon = parseFloat(lon);
@@ -805,6 +805,17 @@ RepositoryMap.prototype = {
     },
     locationChanged: function() {
 	ramaddaMapShareState(this,"bounds");
+	//buffer calls
+	if(this.pendingLocationChangeTimeout) {
+	    clearTimeout(this.pendingLocationChangeTimeout);
+	}
+	this.pendingLocationChangeTimeout = setTimeout(()=>{
+	    this.locationChangedInner();
+	    this.pendingResizeTimeout = null;
+	},500);
+	
+    },
+    locationChangedInner: function() {
 	let latlon = this.getBounds();
 	let bits = 100000;
 	let r = (v=>{
@@ -2929,6 +2940,8 @@ RepositoryMap.prototype = {
     // Assume that north, south, east, and west are in degrees or
     // some variant thereof
     setSelectionBox:  function(north, west, south, east, centerView) {
+
+
         if (north == "" || west == "" || south == "" || east == "")
             return;
         let bounds = MapUtils.createBounds(west, Math.max(south,
@@ -3261,6 +3274,8 @@ RepositoryMap.prototype = {
                 newEast = this.origEast;
                 newSouth = this.origSouth;
                 newNorth = this.origNorth;
+
+
                 if (this.doWest)
                     newWest += dx;
                 if (this.doSouth)
