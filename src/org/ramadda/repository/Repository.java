@@ -1047,7 +1047,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public void init(Properties properties) throws Exception {
 
-        //      IO.debugStderr();
         //        MyTrace.startTrace();
         //This stops jython from processing jars and printing out its annoying message
         System.setProperty("python.cachedir.skip", "true");
@@ -1150,6 +1149,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
         */
 
+	if(getProperty("ramadda.debug.stderr",false)) {
+	    IO.debugStderr();
+	}
     }
 
     /**
