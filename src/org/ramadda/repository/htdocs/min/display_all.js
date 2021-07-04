@@ -40779,38 +40779,24 @@ function RamaddaRecordsDisplay(displayManager, id, properties, type) {
 
 
 function RamaddaStatsDisplay(displayManager, id, properties, type) {
-    let dflt = Utils.isDefined(properties["showDefault"]) ? properties["showDefault"] : true;
-    $.extend(this, {
-        showMin: dflt,
-        showMax: dflt,
-        showAverage: dflt,
-        showStd: dflt,
-        showCount: dflt,
-        showTotal: dflt,
-        showPercentile: dflt,
-        showMissing: dflt,
-        showUnique: dflt,
-        showType: dflt,
-        showText: dflt,
-    });
     const SUPER = new RamaddaFieldsDisplay(displayManager, id, type || DISPLAY_STATS, properties);
     if (!type)
         addRamaddaDisplay(this);
     let myProps = [
 	{label:'Summary Statistics'},
-	{p:'showMin',ex:'true'},
-	{p:'showMax',ex:'true'},
-        {p:'showAverage',ex:'true'},
-        {p:'showStd',ex:'true'},
-        {p:'showPercentile',ex:'true'},
-        {p:'showCount',ex:'true'},
-        {p:'showTotal',ex:'true'},
-        {p:'showPercentile',ex:'true'},
-        {p:'showMissing',ex:'true'},
-        {p:'showUnique',ex:'true'},
-        {p:'showType',ex:'true'},
-        {p:'showText',ex:'true'},
-	{p:'doValueSelection',ex:'true'}
+	{p:'showMin',ex:'false'},
+	{p:'showMax',ex:'false'},
+        {p:'showAverage',ex:'false'},
+        {p:'showStd',ex:'false'},
+        {p:'showPercentile',ex:'false'},
+        {p:'showCount',ex:'false'},
+        {p:'showTotal',ex:'false'},
+        {p:'showPercentile',ex:'false'},
+        {p:'showMissing',ex:'false'},
+        {p:'showUnique',ex:'false'},
+        {p:'showType',ex:'false'},
+        {p:'showText',ex:'false'},
+	{p:'doValueSelection',ex:'false'}
 
     ];
 
@@ -40832,22 +40818,15 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
             if (dfltList != null && dfltList.length > 0) {
                 return dfltList;
             }
-            let tuples = this.getStandardData(null, {
-                includeIndex: false
-            });
-            let justOne = (tuples.length == 2);
-
             //get the numeric fields
             let l = [];
-            for (i = 0; i < fields.length; i++) {
-                let field = fields[i];
-                if (!justOne && (!this.showText && !field.isNumeric())) continue;
-                let lbl = this.getFieldLabel(field).toLowerCase();
-                if (lbl.indexOf("latitude") >= 0 || lbl.indexOf("longitude") >= 0) {
-                    continue;
+	    fields.forEach(field=>{
+                if (!this.getShowText() && !field.isNumeric()) return;
+                if (field.isFieldGeo()) {
+                    return;
                 }
                 l.push(field);
-            }
+	    });
             return l;
         },
 
@@ -40863,120 +40842,110 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
         },
         updateUI: function(args) {
             SUPER.updateUI.call(this,args);
-            if (!this.hasData()) {
-                this.setDisplayMessage(this.getLoadingMessage());
-                return;
-            }
-            let dataList = this.getStandardData(null, {
-                includeIndex: false
-            });
-            let allFields = this.dataCollection.getList()[0].getRecordFields();
-            this.allFields = allFields;
+            let records = this.filterData();
+            if (!records) {
+		return;
+	    }
             let fields = this.getSelectedFields([]);
-            let fieldMap = {};
             let stats = [];
-            let justOne = (dataList.length == 2);
-            for (let rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
-                let tuple = this.getDataValues(dataList[rowIdx]);
-                if (rowIdx == 1) {
-                    for (let col = 0; col < tuple.length; col++) {
-                        stats.push({
-                            isNumber: false,
-                            count: 0,
-                            min: Number.MAX_SAFE_INTEGER,
-                            uniqueMap: {},
-                            unique: 0,
-                            std: 0,
-                            max: Number.MIN_SAFE_INTEGER,
-                            total: 0,
-                            numMissing: 0,
-                            numNotMissing: 0,
-                            type: null,
-                            values: []
-                        });
-                    }
-                }
-                for (let fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
-                    let field = fields[fieldIdx];
-                    let col = field.getIndex()
-                    stats[col].type = field.getType();
-                    let v = tuple[col];
+            let justOne = false;
+	    fields.forEach((field,idx)=>{
+                stats.push({
+		    field:field,
+                    isNumber: false,
+                    count: 0,
+                    min: NaN,
+                    uniqueMap: {},
+                    unique: 0,
+                    std: 0,
+                    max: NaN,
+                    total: 0,
+                    numMissing: 0,
+                    numNotMissing: 0,
+                    type: field.getType(),
+                    values: []
+                });
+            });
+	    records.forEach(record=>{
+                stats.forEach(stat=>{
+		    let field = stat.field;
+                    let v = field.getValue(record);
                     if (v) {
-                        if (!Utils.isDefined(stats[col].uniqueMap[v])) {
-                            stats[col].uniqueMap[v] = 1;
-                            stats[col].unique++;
+                        if (!Utils.isDefined(stat.uniqueMap[v])) {
+                            stat.uniqueMap[v] = 1;
+                            stat.unique++;
                         } else {
-                            stats[col].uniqueMap[v]++;
+                            stat.uniqueMap[v]++;
                         }
                     }
-                    stats[col].isNumber = field.isNumeric();
-                    stats[col].count++;
+                    stat.isNumber = field.isNumeric();
+                    stat.count++;
                     if (v == null) {
-                        stats[col].numMissing++;
+                        stat.numMissing++;
                     } else {
-                        stats[col].numNotMissing++;
+                        stat.numNotMissing++;
                     }
-                    if (v && (typeof v == 'number')) {
+                    if ((v!==null) && (typeof v == 'number')) {
                         let label = this.getFieldLabel(field).toLowerCase();
                         if (label.indexOf("latitude") >= 0 || label.indexOf("longitude") >= 0) {
-			    continue;
+			    return;
                         }
-                        stats[col].total += v;
-                        stats[col].max = Math.max(stats[col].max, v);
-                        stats[col].min = Math.min(stats[col].min, v);
-                        stats[col].values.push(v);
+                        stat.total += v;
+                        stat.max = Utils.max(stat.max, v);
+                        stat.min = Utils.min(stat.min, v);
+                        stat.values.push(v);
                     }
-                }
-            }
+		});
+	    });
 
+		
+	    let dflt = this.getProperty("showDefault",true);
 
-            if (this.showUnique) {
-                for (let fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
-                    let field = fields[fieldIdx];
-                    let col = field.getIndex();
-                    stats[col].uniqueMax = 0;
-                    stats[col].uniqueValue = "";
-                    for (let v in stats[col].uniqueMap) {
-                        let count = stats[col].uniqueMap[v];
-                        if (count > stats[col].uniqueMax) {
-                            stats[col].uniqueMax = count;
-                            stats[col].uniqueValue = v;
+	    if (this.getShowUnique(dflt)) {
+                stats.forEach(stat=>{
+		    let field = stat.field;
+                    stat.uniqueMax = 0;
+                    stat.uniqueValue = "";
+                    for (let v in stat.uniqueMap) {
+                        let count = stat.uniqueMap[v];
+                        if (count > stat.uniqueMax) {
+                            stat.uniqueMax = count;
+                            stat.uniqueValue = v;
                         }
                     }
-                }
-            }
+                });
+	    }
 
-            if (this.showStd) {
-                for (let fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
-                    let field = fields[fieldIdx];
-                    let col = field.getIndex();
-                    let values = stats[col].values;
+            if (this.getShowStd(dflt)) {
+                stats.forEach(stat=>{
+                    let values = stat.values;
                     if (values.length > 0) {
-                        let average = stats[col].total / values.length;
+                        let average = stat.total / values.length;
                         let stdTotal = 0;
                         for (let i = 0; i < values.length; i++) {
                             let diff = values[i] - average;
                             stdTotal += diff * diff;
                         }
                         let mean = stdTotal / values.length;
-                        stats[col].std = Math.sqrt(mean);
+                        stat.std = Math.sqrt(mean);
                     }
-                }
+                });
             }
+
             let border = (justOne ? "0" : "1");
             let html = HU.open(TABLE, ["border", border, "bordercolor", "#ccc", CLASS, "display-stats", "cellspacing", "1", "cellpadding", "5"]);
             let dummy = [SPACE];
             if (!justOne) {
                 header = [""];
-                if (this.getProperty("showCount", dflt)) {
+                if (this.getShowCount(dflt)) {
                     header.push("Count");
                     dummy.push(SPACE);
                 }
-                if (this.getProperty("showMin", dflt)) {
+                if (this.getShowMin(dflt)) {
                     header.push("Min");
                     dummy.push(SPACE);
                 }
-                if (this.getProperty("showPercentile", dflt)) {
+                if (this.getShowPercentile(dflt)) {
                     header.push("25%");
                     dummy.push(SPACE);
                     header.push("50%");
@@ -40984,23 +40953,23 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                     header.push("75%");
                     dummy.push(SPACE);
                 }
-                if (this.getProperty("showMax", dflt)) {
+                if (this.getShowMax(dflt)) {
                     header.push("Max");
                     dummy.push(SPACE);
                 }
-                if (this.getProperty("showTotal", dflt)) {
+                if (this.getShowTotal(dflt)) {
                     header.push("Total");
                     dummy.push(SPACE);
                 }
-                if (this.getProperty("showAverage", dflt)) {
+                if (this.getShowAverage(dflt)) {
                     header.push("Average");
                     dummy.push(SPACE);
                 }
-                if (this.getProperty("showStd", dflt)) {
+                if (this.getShowStd(dflt)) {
                     header.push("Std");
                     dummy.push(SPACE);
                 }
-                if (this.getProperty("showUnique", dflt)) {
+                if (this.getShowUnique(dflt)) {
                     header.push("# Unique");
                     dummy.push(SPACE);
                     header.push("Top");
@@ -41008,7 +40977,7 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                     header.push("Freq.");
                     dummy.push(SPACE);
                 }
-                if (this.getProperty("showMissing", dflt)) {
+                if (this.getShowMissing(dflt)) {
                     header.push("Not&nbsp;Missing");
                     dummy.push(SPACE);
                     header.push("Missing");
@@ -41018,64 +40987,62 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
             }
             let cats = [];
             let catMap = {};
-	    let doValueSelection = this.getProperty("doValueSelection", false);
-            for (let fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
-                let field = fields[fieldIdx];
-                let col = field.getIndex();
-                field = allFields[col];
+	    let doValueSelection = this.getDoValueSelection(false);
+            stats.forEach(stat=>{
+		let field = stat.field;
                 let right = "";
                 let total = SPACE;
                 let _label = this.getFieldLabel(field).toLowerCase();
-                let avg = stats[col].numNotMissing == 0 ? "NA" : this.formatNumber(stats[col].total / stats[col].numNotMissing);
+                let avg = stat.numNotMissing == 0 ? "NA" : this.formatNumber(stat.total / stat.numNotMissing);
                 //Some guess work about when to show a total
                 if (_label.indexOf("%") < 0 && _label.indexOf("percent") < 0 && _label.indexOf("median") < 0) {
-                    total = this.formatNumber(stats[col].total);
+                    total = this.formatNumber(stat.total);
                 }
                 if (justOne) {
-                    right = HU.tds(["xalign", "right"], [this.formatNumber(stats[col].min)]);
-                    continue;
+                    right = HU.tds(["xalign", "right"], [this.formatNumber(stat.min)]);
+		    return;
                 }
                 let values = [];
-                if (!stats[col].isNumber && this.getProperty("showText", dflt)) {
-                    if (this.getProperty("showCount", dflt))
-                        values.push(stats[col].count);
-                    if (this.getProperty("showMin", dflt))
+                if (!stat.isNumber && this.getShowText(dflt)) {
+                    if (this.getShowCount(dflt))
+                        values.push(stat.count);
+                    if (this.getShowMin(dflt))
                         values.push("-");
-                    if (this.getProperty("showPercentile", dflt)) {
+                    if (this.getShowPercentile(dflt)) {
                         values.push("-");
                         values.push("-");
                         values.push("-");
                     }
-                    if (this.getProperty("showMax", dflt))
+                    if (this.getShowMax(dflt))
                         values.push("-");
                     values.push("-");
-                    if (this.getProperty("showAverage", dflt)) {
+                    if (this.getShowAverage(dflt)) {
                         values.push("-");
                     }
-                    if (this.getProperty("showStd", dflt)) {
+                    if (this.getShowStd(dflt)) {
                         values.push("-");
                     }
-                    if (this.getProperty("showUnique", dflt)) {
-                        values.push(stats[col].unique);
-                        values.push(stats[col].uniqueValue);
-                        values.push(stats[col].uniqueMax);
+                    if (this.getShowUnique(dflt)) {
+                        values.push(stat.unique);
+                        values.push(stat.uniqueValue);
+                        values.push(stat.uniqueMax);
                     }
-                    if (this.getProperty("showMissing", dflt)) {
-                        values.push(stats[col].numNotMissing);
-                        values.push(stats[col].numMissing);
+                    if (this.getShowMissing(dflt)) {
+                        values.push(stat.numNotMissing);
+                        values.push(stat.numMissing);
                     }
                 } else {
-                    if (this.getProperty("showCount", dflt)) {
-                        values.push(stats[col].count);
+                    if (this.getShowCount(dflt)) {
+                        values.push(stat.count);
                     }
-                    if (this.getProperty("showMin", dflt)) {
-			let s=this.formatNumber(stats[col].min);
+                    if (this.getShowMin(dflt)) {
+			let s=this.formatNumber(stat.min);
                         values.push(s);
                     }
-                    if (this.getProperty("showPercentile", dflt)) {
-                        let range = stats[col].max - stats[col].min;
+                    if (this.getShowPercentile(dflt)) {
+                        let range = stat.max - stat.min;
 			let tmp =p=> {
-                            let s = this.formatNumber(stats[col].min + range * p);
+                            let s = this.formatNumber(stat.min + range * p);
 			    if(doValueSelection) {
 				s = HU.span([CLASS,"display-stats-value","data-type", "percentile","data-value", p],s);
 			    }
@@ -41084,31 +41051,31 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
 			let percs = [.25,.5,.75];
 			percs.map(v=>tmp(v));
                     }
-                    if (this.getProperty("showMax", dflt)) {
-			let s=this.formatNumber(stats[col].max);
+                    if (this.getShowMax(dflt)) {
+			let s=this.formatNumber(stat.max);
                         values.push(s);
                     }
-                    if (this.getProperty("showTotal", dflt)) {
+                    if (this.getShowTotal(dflt)) {
                         values.push(total);
                     }
-                    if (this.getProperty("showAverage", dflt)) {
+                    if (this.getShowAverage(dflt)) {
                         values.push(avg);
                     }
-                    if (this.getProperty("showStd", dflt)) {
-                        values.push(this.formatNumber(stats[col].std));
+                    if (this.getShowStd(dflt)) {
+                        values.push(this.formatNumber(stat.std));
                     }
-                    if (this.getProperty("showUnique", dflt)) {
-                        values.push(stats[col].unique);
-                        if (Utils.isNumber(stats[col].uniqueValue)) {
-                            values.push(this.formatNumber(stats[col].uniqueValue));
+                    if (this.getShowUnique(dflt)) {
+                        values.push(stat.unique);
+                        if (Utils.isNumber(stat.uniqueValue)) {
+                            values.push(this.formatNumber(stat.uniqueValue));
                         } else {
-                            values.push(stats[col].uniqueValue);
+                            values.push(stat.uniqueValue);
                         }
-                        values.push(stats[col].uniqueMax);
+                        values.push(stat.uniqueMax);
                     }
-                    if (this.getProperty("showMissing", dflt)) {
-                        values.push(stats[col].numNotMissing);
-                        values.push(stats[col].numMissing);
+                    if (this.getShowMissing(dflt)) {
+                        values.push(stat.numNotMissing);
+                        values.push(stat.numMissing);
                     }
                 }
                 right = HU.tds(["align", "right"], values);
@@ -41133,7 +41100,7 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                 } else {
                     html += row;
                 }
-            }
+            });
             html += HU.close(TABLE);
             this.setContents(html);
             this.initTooltip();
@@ -41158,13 +41125,15 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
 
 	    }
 
+	    /*
 
             //always propagate the event when loaded
-	    let record = this.dataCollection.getList()[0];
+	    let record = records[0];
 	    this.displayManager.propagateEventRecordSelection(this,
 							      record, {
 								  index: 0
 							      });
+	    */
         },
         handleEventRecordSelection: function(source, args) {
             //                this.lastHtml = args.html;
