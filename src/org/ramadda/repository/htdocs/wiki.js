@@ -436,6 +436,37 @@ class  WikiEditor {
 		};
 	    }
 	}
+
+
+	let prevIndex=index;
+	if(text[prevIndex]=="\n") prevIndex--;
+	while(prevIndex>=0 && text[prevIndex]!=="\n") {
+	    prevIndex--;
+	}
+
+	if(prevIndex<0 && text[prevIndex+1]=="+") {
+	    prevIndex=0;
+	}
+	if(prevIndex>=0) {
+	    let substring = text.substring(prevIndex).trim();
+	    //Check for the +<tag> 
+	    if(substring.startsWith("+")) {
+		let nlIndex = substring.indexOf("\n");
+		if(nlIndex>=0)  substring = substring.substring(0,nlIndex);
+		let length = substring.length;
+		let attrs = substring.match("[^ ]+([^\n]*)$");
+		if(attrs) attrs=attrs[1].trim();
+		if(!substring) return null;
+		substring = substring.match("\\+([^ \n]+)[ \n]")[1];
+		let Range = ace.require('ace/range').Range;
+		return {
+		    range:new Range(cursor.row, 0,cursor.row,length),
+		    tag:substring,
+		    type: "plus",
+		    attrs:attrs||"",
+		};
+	    }
+	}
 	return null;
     }
 
@@ -560,6 +591,7 @@ class  WikiEditor {
 		console.log("no attribute block");
 	};
 	
+	if(!attrs) return null;
 	attrs.forEach(attr=>{
 	    processAttr(attr);
 	});
@@ -648,7 +680,7 @@ class  WikiEditor {
 	let blocks = result.blocks;
 	let title = result.title;
 	let display = result.display;
-	let attrs = Utils.parseAttributes(tagInfo.attrs);
+//	let attrs = Utils.parseAttributes(tagInfo.attrs||"");
 	let contents = tagInfo.attrs;
 	let menu  = "";
 	let prefix = tagInfo.type|| tagInfo.tag;
@@ -691,7 +723,7 @@ class  WikiEditor {
 	    dialog.remove();
 	});
 
-	let func =tidy=>{
+	let tidyfunc =tidy=>{
 	    let val = this.jq(this.ID_WIKI_POPUP_EDITOR).val().trim();
 	    let attrs = Utils.parseAttributesAsList(val);
 	    let nval = "";
@@ -715,11 +747,11 @@ class  WikiEditor {
 	    this.jq(this.ID_WIKI_POPUP_EDITOR).val(nval);	    
 	}
 	this.jq(this.ID_WIKI_POPUP_TIDY).button().click(()=>{
-	    func(true);
+	    tidyfunc(true);
 	});
 
 	this.jq(this.ID_WIKI_POPUP_COMPACT).button().click(()=>{
-	    func(false);
+	    tidyfunc(false);
 	});
 	
 
@@ -731,7 +763,13 @@ class  WikiEditor {
 		if(tagInfo.type == "group") tag  = "group";
 		else if(tagInfo.type !="") tag = "display_" + tagInfo.type;
 	    }
-	    let text = "{{" +tag +" " + val +"}}";
+	    let text;
+	    if(tagInfo.type=="plus") {
+		val  = val.replace(/\n/g," ");
+		text = "+" +tag +" " + val +" ";
+	    } else {
+		text = "{{" +tag +" " + val +"}}";
+	    }
 	    this.popupShowing = false;
 	    dialog.remove();
 	    this.getSession().replace(tagInfo.range, text);
@@ -740,7 +778,7 @@ class  WikiEditor {
     handleMouseLeave(e) {
 	this.setInContext(false);
     }
-    setInContext(c) {
+    setInContext(c,type) {
 	this.inContext = c;
 	let scroller = this.getScroller();
 	if(this.tagMarker)
@@ -748,7 +786,10 @@ class  WikiEditor {
 	this.tagMarker = null;
 	if(c) {
 	    scroller.css("cursor","context-menu");
-	    this.showMessage("Right-click to show property menu<br>Cmd-click to edit");
+	    let message = "Right-click to show property menu";
+	    if(type!="plus")
+		message+="<br>Cmd-click to edit";
+	    this.showMessage(message);
 	} else {
 	    scroller.css("cursor","text");
 	    this.clearMessage();
@@ -765,7 +806,7 @@ class  WikiEditor {
 	    if(!position) return;
 	    let tagInfo = this.getTagInfo(position);
 	    if(tagInfo) {
-		this.setInContext(true);
+		this.setInContext(true, tagInfo.type);
 		//		this.tagMarker = this.editor.session.addMarker(tagInfo.range, "ace_active-line wiki-editor-tag-highlight", "text");
   	    } else {
 		this.setInContext(false);
@@ -796,6 +837,7 @@ class  WikiEditor {
 	let title = null;
 	let attrs = [];
 	let display = null;
+	if(tagInfo.type=="plus") return {attrs:null,title:null,display:null};
 	try {
 	    display = new DisplayManager().createDisplay(tagInfo.type,{dummy:true});
 	    if(display) {
@@ -908,6 +950,19 @@ class  WikiEditor {
 		{p:'class',ex:'',tt:'link css class'},
 		{p:'style',ex:'',tt:'link style'}],
 				    this.groupAttributes),		   
+	    section: [
+		{label:'Section Properties'},
+		{p:'title',ex:'"{{name}}"'},
+		{p:'subTitle',ex:'""'},
+		{p:'style',ex:'""'},
+		{p:'titleStyle',ex:'""'},
+		{p:'----',tt:'Add a line'},
+		{p:'#',tt:'Colored sections'}				
+	    ],
+	    row: [
+		{label:'Row Properties'},
+		{p:'tight',ex:'true',tt:'Layout rows with no space'}
+	    ],
 	    list: Utils.mergeLists([
 		{label:'List Properties'},
 		{p:'info',ex:':List children entries'},
