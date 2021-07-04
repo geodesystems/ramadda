@@ -2744,6 +2744,14 @@ public class WikiUtil {
                     continue;
                 }
 
+                if (tline.startsWith("-+col-")) {
+                    if (rowStates.size() == 0) {
+                        wikiError(buff, "Error: unopened column");
+                        continue;
+                    }
+                    rowStates.get(rowStates.size() - 1).closeColumn(buff);
+		    tline = tline.substring(1);
+		}
                 if (tline.startsWith("+col-")) {
                     RowState rowState = null;
                     if (rowStates.size() == 0) {
@@ -2776,11 +2784,9 @@ public class WikiUtil {
                 if (tline.startsWith("-col")) {
                     if (rowStates.size() == 0) {
                         wikiError(buff, "Error: unopened column");
-
                         continue;
                     }
                     rowStates.get(rowStates.size() - 1).closeColumn(buff);
-
                     continue;
                 }
 
