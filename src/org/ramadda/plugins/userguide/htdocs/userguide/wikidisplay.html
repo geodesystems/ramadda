@@ -315,7 +315,48 @@ Likewise, the group has a divid=maindiv which corresponds to the div at the bott
 
 
 
-<a name="displays"></a><p><div class="ramadda-help-heading">5.3.7 <a href="#displays">The Displays</a></div> 
+<a name="changeentries"></a><p><div class="ramadda-help-heading">5.3.7 <a href="#changeentries">Displaying Multiple Entries</a></div>  
+When you have multiple entries you can create a display (e.g., a time series)
+and allow the user to select which entry to display.
+
+<a href="https://geodesystems.com/repository/a/swe">Here</a> is an example
+that shows a time series plot of one of a set of data files:
+<center><img src="changeentries.png" width="80%"></center>
+
+
+Below is the relevant wiki text for the above display. You can also view the
+full wiki text <a href="https://geodesystems.com/repository/entry/show/Home/Content/RAMADDA+Examples/Science+Data/Snow+Water+Equivalent?entryid=1dfc94dc-376e-4a5b-9aaa-93db7771faa3&output=html.info">here</a>.
+
+All that is needed is to add a <i>changeEntries=true</i> attribute to the group tag.
+An optional <i>changeEntriesLabel</i> can be specified to provide a context specific label.
+The <i>firstEntry</i> attribute is an optional way of specifying which entry should be shown
+as the first entry. For the actual displays you should specify an entry that is initially used as well.
+
+<pre>
+{<noop>{group  changeEntries=true changeEntriesLabel="<b>Select Region</b>" 
+firstEntry="93198426-f87d-40e6-b206-43b25ad1d4fa"  
+}}
+<table width=100%><tr valign=top><td width=1%>
+{<noop>{display_fieldslist width=150px
+entry=93198426-f87d-40e6-b206-43b25ad1d4fa
+fields="#41,#42,#43,#44,#45,#46,#47,#48,#49,#50"
+...
+}}
+</td><td>
+{<noop>{display_linechart
+entry=93198426-f87d-40e6-b206-43b25ad1d4fa
+fields="#41,#42,#43,#44,#45,#46,#47,#48,#49,#50"
+...
+}} 
+</tr></table>
+</pre>
+
+
+The above lists the entries in a menu. Alternatively you can display the entries in a map
+or in a timeline. 
+
+
+<a name="displays"></a><p><div class="ramadda-help-heading">5.3.8 <a href="#displays">The Displays</a></div> 
 
 <a name="entrylist"></a>
 <div class="ramadda-help-subsubheading"><a href="#entrylist">Search form</a>
@@ -732,6 +773,10 @@ Color
 <a href="#groups">Display Groups</a>
 </a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
 5.3.7&nbsp;
+</span></td><td><a  class="childlist-link"  href="wikidisplay.html#changeentries" >
+<a href="#changeentries">Displaying Multiple Entries</a>
+</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+5.3.8&nbsp;
 </span></td><td><a  class="childlist-link"  href="wikidisplay.html#displays" >
 <a href="#displays">The Displays</a>
 </a><br></td></tr></table></div>

@@ -3749,10 +3749,11 @@ function DisplayThing(argId, argProperties) {
             if (Utils.isDefined(this.showGeo)) {
                 showGeo = ("" + this.showGeo) == "true";
             }
-	    if(!template)
+	    if(template=="") return "";
+	    if(template===null)
 		template = this.getProperty("recordTemplate");
 
-	    if(template) {
+	    if(template!==null) {
 		if(!template.startsWith("${default") && template!="${fields}") {
 		    return this.applyRecordTemplate(record,this.getDataValues(record), fields, template, null, null,debug);
 		}
@@ -4228,6 +4229,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'propagateEventRecordHighlight',ex:true},
 	{p:'acceptEventRecordHighlight',ex:true},		
 	{p:'propagateEventRecordList',ex:true},
+	{p:'shareSelectedEntry',ex:true,tt:'When displaying entries as data this shares the selected entry with other displays'},
+	{p:'acceptShareSelectedEntry',ex:true,tt:'When displaying entries as data this blocks the selected entry with other displays'},	
 	{p:'headerOrientation',ex:'vertical'},
 	{p:'filterSliderImmediate',ex:true,tt:'Apply the change while sliding'},
 	{p:'filterLogic',ex:'and|or',tt:'Specify logic to apply filters'},		
@@ -4753,12 +4756,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         clearCachedData: function() {},
         setEntry: function(entry) {
-	    if(this.getProperty("shareSelected")) {
-		return;
-	    }
-	    if(!this.getProperty("acceptSetEntry",true)) {
-		return;
-	    }	    
             this.entries = [];
             this.addEntry(entry);
             this.entry = entry;
@@ -4960,7 +4957,23 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.getAnimation().handleEventAnimationChanged(args);
 	    }
 	},
+        handleEventSetEntry: function(source, args) {
+	    if(this.getPropertyAcceptShareSelectedEntry(false)) {
+		this.setEntry(args.entry);
+	    }
+	},
         propagateEventRecordSelection: function(args) {
+	    if(this.getShareSelectedEntry()) {
+		let entryId = args.record.getValueFromField("id");
+		if(entryId) {
+		    let _this = this;
+		    setTimeout(async function(){
+			await getGlobalRamadda().getEntry(entryId, entry => {
+			    _this.getDisplayManager().notifyEvent("handleEventSetEntry", _this, {entry:entry});
+			});
+		    });
+		}
+	    }
 	    this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, args);
 	    if(this.getProperty("recordSelectFilterFields")) {
 		let fields = this.getFieldsByIds(null,this.getProperty("recordSelectFilterFields"));
@@ -12062,6 +12075,18 @@ PointRecord.prototype =  {
     setData: function(d) {
         this.data = d;
     },    
+    getValueFromField:function(id) {
+	let value = null;
+	this.fields.every(field=>{
+	    if(field.getId()==id) {
+		value = this.getValue(field.getIndex());
+		return false;
+	    }
+	    return true;
+	});
+	return value;
+    },
+
     allZeros: function() {
         var tuple = this.getData();
         var allZeros = false;
@@ -20191,6 +20216,7 @@ const DISPLAY_RELOADER = "reloader";
 const DISPLAY_MESSAGE = "message";
 const DISPLAY_FIELDSLIST = "fieldslist";
 const DISPLAY_TICKS = "ticks";
+const DISPLAY_MENU = "menu";
 
 addGlobalDisplayType({
     type: DISPLAY_DOWNLOAD,
@@ -20230,6 +20256,15 @@ addGlobalDisplayType({
     category: CATEGORY_CONTROLS,
     tooltip: makeDisplayTooltip("No data, just a formatted message",null,"")                                                    
 });
+addGlobalDisplayType({
+    type: DISPLAY_MENU,
+    label: "Menu",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_CONTROLS,
+    tooltip: makeDisplayTooltip("Shows records in a menu to be selected")
+});
+
 addGlobalDisplayType({
     type: DISPLAY_FIELDSLIST,
     label: "Fields List",
@@ -21006,6 +21041,54 @@ function RamaddaTicksDisplay(displayManager, id, properties) {
 		}
 		animation.init(dateInfo.dateMin, dateInfo.dateMax,info.records);
 	    });
+	}
+    });
+}
+
+
+
+function RamaddaMenuDisplay(displayManager, id, properties) {
+    const ID_MENU = "menu";
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_MENU, properties);
+    let myProps = [
+	{label:'Record Menu'},
+	{p:'labelTemplate',d:'${name}'},
+	{p:'menuLabel',ex:''},
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {    
+        needsData: function() {
+            return true;
+        },
+        handleEventRecordSelection: function(source, args) {
+	    SUPER.handleEventRecordSelection.call(this, source, args);
+	    if(!this.recordToIdx) return;
+	    let idx = this.recordToIdx[args.record.getId()];
+	    this.jq(ID_MENU).val(idx);
+	},
+	updateUI: function() {
+	    let records = this.filterData();
+	    if(!records) return;
+	    let options = [];
+	    let labelTemplate = this.getLabelTemplate();
+	    this.recordToIdx = {};
+	    records.forEach((record,idx)=>{
+		let label = this.getRecordHtml(record, null, labelTemplate);
+		options.push([idx,label]);
+		this.recordToIdx[record.getId()] = idx;
+	    });
+
+	    let menu =  HU.select("",[ATTR_ID, this.getDomId(ID_MENU)],options);
+	    let label = this.getMenuLabel();
+	    if(label) menu = label+" " + menu;
+	    this.setContents(menu);
+	    //Don't do this for now as the popup gets occluded
+	    //	    HU.initSelect(this.jq(ID_MENU));
+
+	    this.jq(ID_MENU).change(()=> {
+		let record = records[+this.jq(ID_MENU).val()];
+		this.propagateEventRecordSelection({record: record});
+	    });
+
 	}
     });
 }
@@ -38710,6 +38793,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	{label:'Timeline'},
 	{p:'titleField',ex:''},
 	{p:'imageField',ex:''},
+	{p:'urlField',ex:''},
 	{p:'textTemplate',ex:''},
 	{p:'startDateField',ex:''},
 	{p:'endDateField',ex:''},
@@ -38722,7 +38806,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	{p:'groupField',ex:''},
 	{p:'urlField',ex:''},
 	{p:'timeTo',ex:'year|day|hour|second'},
-	{p:'justTimeline',wikiVaklue:"true"},
+//	{p:'justTimeline',ex:"true"},
 	{p:'hideBanner',ex:"true"},
     ];
 
@@ -38760,21 +38844,22 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
             let records = this.filterData();
 	    if(records==null) return;
 	    let timelineId = this.domId(ID_TIMELINE);
-	    let html = HU.div([ID,timelineId]);
+	    let html = HU.div([STYLE,HU.css("height","250px"), ID,timelineId]);
 	    this.setContents(html);
 	    this.timelineReady = false;
 	    let opts = {
-		timenav_position: this.getProperty("timelinePosition","bottom"),
+		timenav_position: this.getProperty("timelinePosition","top"),
 //		debug:true,
 		start_at_end: this.getPropertyStartAtEnd(false),
 		start_at_slide: this.getPropertyStartAtSlide(0),
-		timenav_height: this.getPropertyNavHeight(150),
+		timenav_height: this.getPropertyNavHeight(200),
+		height:100,
 		menubar_height:100,
 		gotoCallback: (slide)=>{
 		    if(this.timelineReady) {
 			let record = records[slide];
 			if(record) {
-		    this.propagateEventRecordSelection({record: record});
+			    this.propagateEventRecordSelection({record: record});
 			}
 		    }
 		}
@@ -38807,8 +38892,10 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    let timeTo = this.getPropertyTimeTo("day");
 	    let showYears = this.getProperty("showYears",false);
 	    this.recordToIndex = {};
+	    this.idToRecord = {};
 	    for(let i=0;i<records.length;i++) {
 		let record = records[i]; 
+		this.idToRecord[record.getId()] = record;
 		this.recordToIndex[record.getId()] = i;
 		let tuple = record.getData();
 		let event = {
@@ -38818,10 +38905,10 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 		let text =  this.getRecordHtml(record, null, textTemplate,debug);
 		if(urlField) {
 		    let url  = record.getValue(urlField.getIndex());
-//		    text = HU.href(url,text);
 		    headline = HU.href(url,headline);
 		}
 
+		event.unique_id = record.getId();
 		event.text = {
 		    headline: headline,
 		    text:text
@@ -38862,7 +38949,8 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    this.timeline = new TL.Timeline(timelineId,json,opts);
 	    if(this.getPropertyHideBanner(false)) {
 		this.jq(ID_TIMELINE).find(".tl-storyslider").css("display","none");
-	    }
+		this.jq(ID_TIMELINE).find(".tl-menubar").css("display","none");		
+	    } 
 	    this.jq(ID_TIMELINE).find(".tl-text").css("padding","0px");
 	    this.jq(ID_TIMELINE).find(".tl-slide-content").css("padding","0px 0px");
 	    //	    this.jq(ID_TIMELINE).find(".tl-slide-content").css("width","100%");
