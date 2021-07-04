@@ -50,7 +50,7 @@ public class RepositoryUtil {
     private static final double MAJOR_VERSION = 5.0;
 
     /** _more_ */
-    private static final int MINOR_VERSION = 26;
+    private static final int MINOR_VERSION = 27;
 
 
     //When we make any real change to the css or javascript change this version
