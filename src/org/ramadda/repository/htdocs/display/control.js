@@ -12,6 +12,7 @@ const DISPLAY_RELOADER = "reloader";
 const DISPLAY_MESSAGE = "message";
 const DISPLAY_FIELDSLIST = "fieldslist";
 const DISPLAY_TICKS = "ticks";
+const DISPLAY_MENU = "menu";
 
 addGlobalDisplayType({
     type: DISPLAY_DOWNLOAD,
@@ -51,6 +52,15 @@ addGlobalDisplayType({
     category: CATEGORY_CONTROLS,
     tooltip: makeDisplayTooltip("No data, just a formatted message",null,"")                                                    
 });
+addGlobalDisplayType({
+    type: DISPLAY_MENU,
+    label: "Menu",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_CONTROLS,
+    tooltip: makeDisplayTooltip("Shows records in a menu to be selected")
+});
+
 addGlobalDisplayType({
     type: DISPLAY_FIELDSLIST,
     label: "Fields List",
@@ -827,6 +837,54 @@ function RamaddaTicksDisplay(displayManager, id, properties) {
 		}
 		animation.init(dateInfo.dateMin, dateInfo.dateMax,info.records);
 	    });
+	}
+    });
+}
+
+
+
+function RamaddaMenuDisplay(displayManager, id, properties) {
+    const ID_MENU = "menu";
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_MENU, properties);
+    let myProps = [
+	{label:'Record Menu'},
+	{p:'labelTemplate',d:'${name}'},
+	{p:'menuLabel',ex:''},
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {    
+        needsData: function() {
+            return true;
+        },
+        handleEventRecordSelection: function(source, args) {
+	    SUPER.handleEventRecordSelection.call(this, source, args);
+	    if(!this.recordToIdx) return;
+	    let idx = this.recordToIdx[args.record.getId()];
+	    this.jq(ID_MENU).val(idx);
+	},
+	updateUI: function() {
+	    let records = this.filterData();
+	    if(!records) return;
+	    let options = [];
+	    let labelTemplate = this.getLabelTemplate();
+	    this.recordToIdx = {};
+	    records.forEach((record,idx)=>{
+		let label = this.getRecordHtml(record, null, labelTemplate);
+		options.push([idx,label]);
+		this.recordToIdx[record.getId()] = idx;
+	    });
+
+	    let menu =  HU.select("",[ATTR_ID, this.getDomId(ID_MENU)],options);
+	    let label = this.getMenuLabel();
+	    if(label) menu = label+" " + menu;
+	    this.setContents(menu);
+	    //Don't do this for now as the popup gets occluded
+	    //	    HU.initSelect(this.jq(ID_MENU));
+
+	    this.jq(ID_MENU).change(()=> {
+		let record = records[+this.jq(ID_MENU).val()];
+		this.propagateEventRecordSelection({record: record});
+	    });
+
 	}
     });
 }

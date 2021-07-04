@@ -848,6 +848,18 @@ PointRecord.prototype =  {
     setData: function(d) {
         this.data = d;
     },    
+    getValueFromField:function(id) {
+	let value = null;
+	this.fields.every(field=>{
+	    if(field.getId()==id) {
+		value = this.getValue(field.getIndex());
+		return false;
+	    }
+	    return true;
+	});
+	return value;
+    },
+
     allZeros: function() {
         var tuple = this.getData();
         var allZeros = false;

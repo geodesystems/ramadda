@@ -776,10 +776,11 @@ function DisplayThing(argId, argProperties) {
             if (Utils.isDefined(this.showGeo)) {
                 showGeo = ("" + this.showGeo) == "true";
             }
-	    if(!template)
+	    if(template=="") return "";
+	    if(template===null)
 		template = this.getProperty("recordTemplate");
 
-	    if(template) {
+	    if(template!==null) {
 		if(!template.startsWith("${default") && template!="${fields}") {
 		    return this.applyRecordTemplate(record,this.getDataValues(record), fields, template, null, null,debug);
 		}
@@ -1255,6 +1256,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'propagateEventRecordHighlight',ex:true},
 	{p:'acceptEventRecordHighlight',ex:true},		
 	{p:'propagateEventRecordList',ex:true},
+	{p:'shareSelectedEntry',ex:true,tt:'When displaying entries as data this shares the selected entry with other displays'},
+	{p:'acceptShareSelectedEntry',ex:true,tt:'When displaying entries as data this blocks the selected entry with other displays'},	
 	{p:'headerOrientation',ex:'vertical'},
 	{p:'filterSliderImmediate',ex:true,tt:'Apply the change while sliding'},
 	{p:'filterLogic',ex:'and|or',tt:'Specify logic to apply filters'},		
@@ -1780,12 +1783,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         clearCachedData: function() {},
         setEntry: function(entry) {
-	    if(this.getProperty("shareSelected")) {
-		return;
-	    }
-	    if(!this.getProperty("acceptSetEntry",true)) {
-		return;
-	    }	    
             this.entries = [];
             this.addEntry(entry);
             this.entry = entry;
@@ -1987,7 +1984,23 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.getAnimation().handleEventAnimationChanged(args);
 	    }
 	},
+        handleEventSetEntry: function(source, args) {
+	    if(this.getPropertyAcceptShareSelectedEntry(false)) {
+		this.setEntry(args.entry);
+	    }
+	},
         propagateEventRecordSelection: function(args) {
+	    if(this.getShareSelectedEntry()) {
+		let entryId = args.record.getValueFromField("id");
+		if(entryId) {
+		    let _this = this;
+		    setTimeout(async function(){
+			await getGlobalRamadda().getEntry(entryId, entry => {
+			    _this.getDisplayManager().notifyEvent("handleEventSetEntry", _this, {entry:entry});
+			});
+		    });
+		}
+	    }
 	    this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, args);
 	    if(this.getProperty("recordSelectFilterFields")) {
 		let fields = this.getFieldsByIds(null,this.getProperty("recordSelectFilterFields"));

@@ -603,6 +603,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	{label:'Timeline'},
 	{p:'titleField',ex:''},
 	{p:'imageField',ex:''},
+	{p:'urlField',ex:''},
 	{p:'textTemplate',ex:''},
 	{p:'startDateField',ex:''},
 	{p:'endDateField',ex:''},
@@ -615,7 +616,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	{p:'groupField',ex:''},
 	{p:'urlField',ex:''},
 	{p:'timeTo',ex:'year|day|hour|second'},
-	{p:'justTimeline',wikiVaklue:"true"},
+//	{p:'justTimeline',ex:"true"},
 	{p:'hideBanner',ex:"true"},
     ];
 
@@ -653,21 +654,22 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
             let records = this.filterData();
 	    if(records==null) return;
 	    let timelineId = this.domId(ID_TIMELINE);
-	    let html = HU.div([ID,timelineId]);
+	    let html = HU.div([STYLE,HU.css("height","250px"), ID,timelineId]);
 	    this.setContents(html);
 	    this.timelineReady = false;
 	    let opts = {
-		timenav_position: this.getProperty("timelinePosition","bottom"),
+		timenav_position: this.getProperty("timelinePosition","top"),
 //		debug:true,
 		start_at_end: this.getPropertyStartAtEnd(false),
 		start_at_slide: this.getPropertyStartAtSlide(0),
-		timenav_height: this.getPropertyNavHeight(150),
+		timenav_height: this.getPropertyNavHeight(200),
+		height:100,
 		menubar_height:100,
 		gotoCallback: (slide)=>{
 		    if(this.timelineReady) {
 			let record = records[slide];
 			if(record) {
-		    this.propagateEventRecordSelection({record: record});
+			    this.propagateEventRecordSelection({record: record});
 			}
 		    }
 		}
@@ -700,8 +702,10 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    let timeTo = this.getPropertyTimeTo("day");
 	    let showYears = this.getProperty("showYears",false);
 	    this.recordToIndex = {};
+	    this.idToRecord = {};
 	    for(let i=0;i<records.length;i++) {
 		let record = records[i]; 
+		this.idToRecord[record.getId()] = record;
 		this.recordToIndex[record.getId()] = i;
 		let tuple = record.getData();
 		let event = {
@@ -711,10 +715,10 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 		let text =  this.getRecordHtml(record, null, textTemplate,debug);
 		if(urlField) {
 		    let url  = record.getValue(urlField.getIndex());
-//		    text = HU.href(url,text);
 		    headline = HU.href(url,headline);
 		}
 
+		event.unique_id = record.getId();
 		event.text = {
 		    headline: headline,
 		    text:text
@@ -755,7 +759,8 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    this.timeline = new TL.Timeline(timelineId,json,opts);
 	    if(this.getPropertyHideBanner(false)) {
 		this.jq(ID_TIMELINE).find(".tl-storyslider").css("display","none");
-	    }
+		this.jq(ID_TIMELINE).find(".tl-menubar").css("display","none");		
+	    } 
 	    this.jq(ID_TIMELINE).find(".tl-text").css("padding","0px");
 	    this.jq(ID_TIMELINE).find(".tl-slide-content").css("padding","0px 0px");
 	    //	    this.jq(ID_TIMELINE).find(".tl-slide-content").css("width","100%");
