@@ -845,11 +845,14 @@ function RamaddaTicksDisplay(displayManager, id, properties) {
 
 function RamaddaMenuDisplay(displayManager, id, properties) {
     const ID_MENU = "menu";
+    const ID_PREV = "prev";
+    const ID_NEXT = "next";
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_MENU, properties);
     let myProps = [
 	{label:'Record Menu'},
 	{p:'labelTemplate',d:'${name}'},
 	{p:'menuLabel',ex:''},
+	{p:'showArrows',d:false,ex:true},	
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {    
         needsData: function() {
@@ -874,12 +877,31 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 	    });
 
 	    let menu =  HU.select("",[ATTR_ID, this.getDomId(ID_MENU)],options);
+	    if(this.getShowArrows(false)) {
+		let noun = this.getProperty("noun", "Data");
+		let prev = HU.span([CLASS,"display-changeentries-button", TITLE,"Previous " +noun, ID, this.getDomId(ID_PREV), TITLE,"Previous"], HU.getIconImage("fa-chevron-left"));
+ 		let next = HU.span([CLASS, "display-changeentries-button", TITLE,"Next " + noun, ID, this.getDomId(ID_NEXT), TITLE,"Next"], HU.getIconImage("fa-chevron-right")); 
+		menu = prev + " " + menu + " " +next;
+	    }
 	    let label = this.getMenuLabel();
 	    if(label) menu = label+" " + menu;
 	    this.setContents(menu);
-	    //Don't do this for now as the popup gets occluded
-	    //	    HU.initSelect(this.jq(ID_MENU));
-
+	    if(this.getShowArrows(false)) {
+		this.jq(ID_PREV).click(e=>{
+		    let index = +this.jq(ID_MENU).val()-1;
+		    if(index<0) {
+			index = records.length-1;
+		    }
+		    this.jq(ID_MENU).val(index).trigger("change");
+		});
+		this.jq(ID_NEXT).click(e=>{
+		    let index = +this.jq(ID_MENU).val()+1;
+		    if(index>=records.length) {
+			index = 0;
+		    }
+		    this.jq(ID_MENU).val(index).trigger("change");
+		});
+	    }
 	    this.jq(ID_MENU).change(()=> {
 		let record = records[+this.jq(ID_MENU).val()];
 		this.propagateEventRecordSelection({record: record});
