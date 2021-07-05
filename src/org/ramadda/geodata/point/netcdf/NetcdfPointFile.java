@@ -201,9 +201,10 @@ public class NetcdfPointFile extends PointFile {
             List                vars = pod.getDataVariables();
             for (VariableSimpleIF var : (List<VariableSimpleIF>) vars) {
                 String label = var.getDescription();
-                if ( !Utils.stringDefined(label)) {
-                    label = var.getShortName();
+                if ( !Utils.stringDefined(label)) { 
+                   label = var.getShortName();
                 }
+		label = Utils.makeLabel(label);
                 String      unit  = var.getUnitsString();
 
                 RecordField field = dfltFields.get(var.getShortName());

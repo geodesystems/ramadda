@@ -4191,6 +4191,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'backgroundImage',ex:'',tt:'Image url to display in background'},
 	{p:'background',ex:'color'},
 	{p:'showProgress',ex:true},
+	{p:'loadingMessage',ex:'',tt:'Message to show when loading data'},	
 	{p:'doEntries',ex:true,tt:'Make the children entries be data'},
 	{p:'addAttributes',ex:true,tt:'Include the extra attributes of the children'},
 	{p:'sortFields',tt:'Comma separated list of fields to sort the data on'},
@@ -6259,8 +6260,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		console.log("filtered:" + records.length);
 	    this.jq(ID_FILTER_COUNT).html("Count: " + records.length);
 	    this.filteredRecords = records;
-            return records;
+            return this.handleResult("filterData",records);
         },
+	//TODO: this will support a handler pattern that allows for insertion
+	//of custom functionality
+	handleResult: function(type,data) {
+	    return data;
+	},
 	getBinnedRecords: function(record) {
 	    if(this.binRecordToRecords)
 		return this.binRecordToRecords[record.getId()].records;
@@ -7616,7 +7622,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 					     [ATTR_CLASS, "display-dialog-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)]));
 		button+=" ";
             }
-	    if(this.getProperty("showProgress",false)) {
+	    if(this.getShowProgress(false)) {
 		//		button += HU.image(icon_progress,[ID,this.getDomId(ID_DISPLAY_PROGRESS)]);
 	    }
             let title = "";
@@ -8125,7 +8131,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    records = this.sortRecords(records);
 	    let header2="";
 	    //	    header2 +=HU.div([ID,this.getDomId("test")],"test");
-	    if(this.getProperty("showProgress",false)) {
+	    if(this.getShowProgress(false)) {
 		header2 += HU.div([ID,this.getDomId(ID_DISPLAY_PROGRESS), STYLE,HU.css("display","inline-block","margin-right","4px","min-width","20px")]);
 	    }
 	    header2 += HU.div([CLASS,"display-header-span"],"");
@@ -40934,55 +40940,26 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
 
             let border = (justOne ? "0" : "1");
             let html = HU.open(TABLE, ["border", border, "bordercolor", "#ccc", CLASS, "display-stats", "cellspacing", "1", "cellpadding", "5"]);
-            let dummy = [SPACE];
             if (!justOne) {
                 header = [""];
-                if (this.getShowCount(dflt)) {
+                if (this.getShowCount(dflt)) 
                     header.push("Count");
-                    dummy.push(SPACE);
-                }
-                if (this.getShowMin(dflt)) {
+                if (this.getShowMin(dflt)) 
                     header.push("Min");
-                    dummy.push(SPACE);
-                }
-                if (this.getShowPercentile(dflt)) {
-                    header.push("25%");
-                    dummy.push(SPACE);
-                    header.push("50%");
-                    dummy.push(SPACE);
-                    header.push("75%");
-                    dummy.push(SPACE);
-                }
-                if (this.getShowMax(dflt)) {
+                if (this.getShowPercentile(dflt)) 
+                    header.push("25%","50%","75%");
+                if (this.getShowMax(dflt)) 
                     header.push("Max");
-                    dummy.push(SPACE);
-                }
-                if (this.getShowTotal(dflt)) {
+                if (this.getShowTotal(dflt)) 
                     header.push("Total");
-                    dummy.push(SPACE);
-                }
-                if (this.getShowAverage(dflt)) {
+                if (this.getShowAverage(dflt)) 
                     header.push("Average");
-                    dummy.push(SPACE);
-                }
-                if (this.getShowStd(dflt)) {
+                if (this.getShowStd(dflt)) 
                     header.push("Std");
-                    dummy.push(SPACE);
-                }
-                if (this.getShowUnique(dflt)) {
-                    header.push("# Unique");
-                    dummy.push(SPACE);
-                    header.push("Top");
-                    dummy.push(SPACE);
-                    header.push("Freq.");
-                    dummy.push(SPACE);
-                }
-                if (this.getShowMissing(dflt)) {
-                    header.push("Not&nbsp;Missing");
-                    dummy.push(SPACE);
-                    header.push("Missing");
-                    dummy.push(SPACE);
-                }
+                if (this.getShowUnique(dflt)) 
+                    header.push("# Unique","Top","Freq.");
+                if (this.getShowMissing(dflt)) 
+                    header.push("Not&nbsp;Missing","Missing")
                 html += HU.tr(["valign", "bottom"], HU.tds([CLASS, "display-stats-header", "align", "center"], header));
             }
             let cats = [];
@@ -41008,37 +40985,24 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                         values.push(stat.count);
                     if (this.getShowMin(dflt))
                         values.push("-");
-                    if (this.getShowPercentile(dflt)) {
-                        values.push("-");
-                        values.push("-");
-                        values.push("-");
-                    }
+                    if (this.getShowPercentile(dflt)) 
+                        values.push("-","-","-");
                     if (this.getShowMax(dflt))
                         values.push("-");
                     values.push("-");
-                    if (this.getShowAverage(dflt)) {
+                    if (this.getShowAverage(dflt)) 
                         values.push("-");
-                    }
-                    if (this.getShowStd(dflt)) {
+                    if (this.getShowStd(dflt)) 
                         values.push("-");
-                    }
-                    if (this.getShowUnique(dflt)) {
-                        values.push(stat.unique);
-                        values.push(stat.uniqueValue);
-                        values.push(stat.uniqueMax);
-                    }
-                    if (this.getShowMissing(dflt)) {
-                        values.push(stat.numNotMissing);
-                        values.push(stat.numMissing);
-                    }
+                    if (this.getShowUnique(dflt)) 
+                        values.push(stat.unique,stat.uniqueValue,stat.uniqueMax);
+                    if (this.getShowMissing(dflt)) 
+                        values.push(stat.numNotMissing,stat.numMissing);
                 } else {
-                    if (this.getShowCount(dflt)) {
+                    if (this.getShowCount(dflt)) 
                         values.push(stat.count);
-                    }
-                    if (this.getShowMin(dflt)) {
-			let s=this.formatNumber(stat.min);
-                        values.push(s);
-                    }
+                    if (this.getShowMin(dflt)) 
+                        values.push(this.formatNumber(stat.min));
                     if (this.getShowPercentile(dflt)) {
                         let range = stat.max - stat.min;
 			let tmp =p=> {
@@ -41051,19 +41015,14 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
 			let percs = [.25,.5,.75];
 			percs.map(v=>tmp(v));
                     }
-                    if (this.getShowMax(dflt)) {
-			let s=this.formatNumber(stat.max);
-                        values.push(s);
-                    }
-                    if (this.getShowTotal(dflt)) {
+                    if (this.getShowMax(dflt)) 
+                        values.push(this.formatNumber(stat.max));
+                    if (this.getShowTotal(dflt)) 
                         values.push(total);
-                    }
-                    if (this.getShowAverage(dflt)) {
+                    if (this.getShowAverage(dflt)) 
                         values.push(avg);
-                    }
-                    if (this.getShowStd(dflt)) {
+                    if (this.getShowStd(dflt)) 
                         values.push(this.formatNumber(stat.std));
-                    }
                     if (this.getShowUnique(dflt)) {
                         values.push(stat.unique);
                         if (Utils.isNumber(stat.uniqueValue)) {
@@ -41073,10 +41032,8 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                         }
                         values.push(stat.uniqueMax);
                     }
-                    if (this.getShowMissing(dflt)) {
-                        values.push(stat.numNotMissing);
-                        values.push(stat.numMissing);
-                    }
+                    if (this.getShowMissing(dflt)) 
+                        values.push(stat.numNotMissing,stat.numMissing);
                 }
                 right = HU.tds(["align", "right"], values);
                 let align = (justOne ? "right" : "left");
@@ -41088,18 +41045,13 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                     tooltip += "\n" + field.description + "\n";
                 }
                 label = toks[toks.length - 1];
-                if (field.unit && field.unit != "")
+                if (Utils.stringDefined(field.unit)) 
                     label = label + " [" + field.unit + "]";
-                if (justOne) {
+                if (justOne) 
                     label += ":";
-                }
                 label = label.replace(/ /g, SPACE)
-                let row = HU.tr([], HU.td(["align", align], field.getTypeLabel() +SPACE + HU.b(HU.span([TITLE, tooltip], label))) + right);
-                if (justOne) {
-                    html += row;
-                } else {
-                    html += row;
-                }
+                let row = HU.tr([], HU.td(["nowrap","true","align", align], field.getTypeLabel() +SPACE + HU.b(HU.span([TITLE, tooltip], label))) + right);
+                html += row;
             });
             html += HU.close(TABLE);
             this.setContents(html);
@@ -41118,15 +41070,10 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
 		});
 		values = this.find(".display-stats-value-link");
 		values.each(function() {
-		    
 		});
-
-
-
 	    }
 
-	    /*
-
+	    /*???
             //always propagate the event when loaded
 	    let record = records[0];
 	    this.displayManager.propagateEventRecordSelection(this,
@@ -41135,10 +41082,6 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
 							      });
 	    */
         },
-        handleEventRecordSelection: function(source, args) {
-            //                this.lastHtml = args.html;
-            //                this.setContents(args.html);
-        }
     });
 }
 
