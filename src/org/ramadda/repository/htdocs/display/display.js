@@ -777,10 +777,10 @@ function DisplayThing(argId, argProperties) {
                 showGeo = ("" + this.showGeo) == "true";
             }
 	    if(template=="") return "";
-	    if(template===null)
+	    if(!Utils.stringDefined(template))
 		template = this.getProperty("recordTemplate");
 
-	    if(template!==null) {
+	    if(Utils.stringDefined(template)) {
 		if(!template.startsWith("${default") && template!="${fields}") {
 		    return this.applyRecordTemplate(record,this.getDataValues(record), fields, template, null, null,debug);
 		}
@@ -1647,7 +1647,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		for(let i=colors.length-1;i>=0;i--)
 		    tmp.push(colors[i]);
 		colors = tmp;
-		console.log("INV:" + colors);
 	    }
 	    if(this.getProperty("colorTablePruneLeft")) {
 		let tmp = [];

@@ -3750,10 +3750,10 @@ function DisplayThing(argId, argProperties) {
                 showGeo = ("" + this.showGeo) == "true";
             }
 	    if(template=="") return "";
-	    if(template===null)
+	    if(!Utils.stringDefined(template))
 		template = this.getProperty("recordTemplate");
 
-	    if(template!==null) {
+	    if(Utils.stringDefined(template)) {
 		if(!template.startsWith("${default") && template!="${fields}") {
 		    return this.applyRecordTemplate(record,this.getDataValues(record), fields, template, null, null,debug);
 		}
@@ -4620,7 +4620,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		for(let i=colors.length-1;i>=0;i--)
 		    tmp.push(colors[i]);
 		colors = tmp;
-		console.log("INV:" + colors);
 	    }
 	    if(this.getProperty("colorTablePruneLeft")) {
 		let tmp = [];
@@ -34038,8 +34037,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let unhighlightStrokeColor = this.getProperty("unhighlightStrokeColor","#aaa");
 	    let unhighlightRadius = this.getProperty("unhighlightRadius",-1);
 	    this.markers = {};
-
-
 	    if(this.getPropertyScaleRadius()) {
 		let seen ={};
 		let numLocs = 0;
@@ -34051,22 +34048,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    return true;
 		});
 		let radiusScale = this.getPropertyRadiusScale();
-		if(radiusScale) {
+		if(Utils.stringDefined(radiusScale)) {
 		    radiusScale = radiusScale.split(",").map(t=>{return +t;});
 		} else  {
-		    radiusScale =[15000,2,10000,2,6000,3,4500,4,3500,5,2600,6,1300,7,800,8,300,9,275,10,250,11,225,12,175,13,125,14,100,15,50,16];
+		    //Just make up some numbers
+		    radiusScale =[10000,2,6000,3,4500,4,3500,5,2600,6,1300,7,800,8,300,9,275,10,250,11,225,12,175,13,125,14,100,15,50,16];
 		}
-		let maxRadius = radiusScale[radiusScale.length-1];
-		let delta  = radius-maxRadius;
-//		console.log("max:" + maxRadius +" delta:" + delta);
 		radius=radiusScale[1];
 		for(let i=0;i<radiusScale.length;i+=2) {
-		    if(numLocs<+radiusScale[i]) {
-			radius = +radiusScale[i+1];
+		    if(numLocs<radiusScale[i]) {
+			radius = radiusScale[i+1];
 		    }
 		}
-		radius+=delta;
-		if(radius<=0) radius = 2;
 		console.log("#records:" + numLocs +" " +records.length + " radius:" + radius);
 	    }
 
