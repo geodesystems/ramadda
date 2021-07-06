@@ -30889,7 +30889,7 @@ function RamaddaEntrytitleDisplay(displayManager, id, properties) {
 	    let html = "";
 	    if(this.sourceEntry) {
 		let e = this.sourceEntry;
-		html = this.getProperty("template","<b>${icon} ${name} Date: ${date} Sonde: ${sonde}</b>");
+		html = this.getProperty("template","<b>${icon} ${name} Date: ${date}</b>");
 		html = html.replace("${name}",e.getDisplayName());
 		html = html.replace("${icon}",e.getIconImage());
 		html = html.replace("${date}",this.formatDate(e.getStartDate()));
