@@ -612,9 +612,10 @@ function DisplayThing(argId, argProperties) {
 	    });
 
 
-	    for (var col = 0; col < fields.length; col++) {
-		var f = fields[col];
-		var value = row[f.getIndex()];
+//	    debug = true;
+	    for (let col = 0; col < fields.length; col++) {
+		let f = fields[col];
+		let value = row[f.getIndex()];
 		if(debug) console.log("macro:" + col +" field:" + f.getId() +" type:" +f.getType() + " value:" + value);
 		if(props.iconMap) {
 		    var icon = props.iconMap[f.getId()+"."+value];
@@ -649,18 +650,20 @@ function DisplayThing(argId, argProperties) {
 		    }
 		} else if(f.getType()=="movie") {
 		    if(value && value.trim().length>0) {
-			var movieAttrs = [];
+			let movieAttrs = [];
 			if(this.getProperty("movieWidth")) {
 			    movieAttrs.push("width");
 			    movieAttrs.push(this.getProperty("movieWidth"));
 			}
-			var movie =  HU.movie(value,movieAttrs);
+			let movie =  HU.movie(value,movieAttrs);
 			attrs[f.getId() +"_movie"] =  movie;
 			attrs[f.getId() +"_url"] =  value;
 		    }
 		} else if(f.getType()=="url") {
 		    if(value && value.trim().length>1) {
-			attrs[f.getId() +"_href"] =  HU.href(value,value);
+			let tokenAttrs  = macros.getAttributes(f.getId()+"_href");
+			let label = tokenAttrs?tokenAttrs["label"]:null;
+			attrs[f.getId() +"_href"] =  HU.href(value,label||value);
 			attrs[f.getId()]=  value;
 		    } else {
 			attrs[f.getId() +"_href"] =  "";
