@@ -262,6 +262,7 @@ public class JsonOutputHandler extends OutputHandler {
                               List<Entry> entries, Appendable sb)
             throws Exception {
         List<String> fields = new ArrayList<String>();
+	boolean remote= request.get("remoteRequest",false);
 
 
         /*      items.add(Json.quote(entry.getName()));
@@ -354,7 +355,7 @@ public class JsonOutputHandler extends OutputHandler {
             //Note: if the entry is a different type than the first one then
             //the columns will mismatch
             String array = toPointJson(request, entry, addSnippets, addAttributes,addPointUrl, addThumbnails, addImages,
-                                       columns, showFileUrl);
+                                       columns, showFileUrl,remote);
             entryArray.add("values");
             entryArray.add(array);
             values.add(Json.map(entryArray, false));
@@ -733,7 +734,7 @@ public class JsonOutputHandler extends OutputHandler {
      */
     private String toPointJson(Request request, Entry entry,boolean addSnippets,
                                boolean addAttributes, boolean addPointUrl, boolean addThumbnails, boolean addImages, List<Column> columns,
-                               boolean showFileUrl)
+                               boolean showFileUrl,boolean remote)
             throws Exception {
 
         List<String> items = new ArrayList<String>();
@@ -753,32 +754,34 @@ public class JsonOutputHandler extends OutputHandler {
             Json.quote(
                 request.getAbsoluteUrl(
                     getPageHandler().getIconUrl(request, entry))));
-        items.add(Json.quote(getEntryManager().getEntryUrl(request, entry)));
+	String url;
+	url = getEntryManager().getEntryUrl(request, entry);
+        items.add(Json.quote(remote?request.getAbsoluteUrl(url):url));
 
 	if(addPointUrl) {
-	    String jsonUrl = entry.getTypeHandler().getUrlForWiki(request,
+	    url = entry.getTypeHandler().getUrlForWiki(request,
 								  entry, WikiConstants.WIKI_TAG_DISPLAY, new Hashtable(), new ArrayList<String>());
 	    
-	    items.add(Json.quote(jsonUrl==null?"":jsonUrl));
+	    items.add(Json.quote(url==null?"":remote?request.getAbsoluteUrl(url):url));
 	}
 
 
 	if(addThumbnails) {
             List<String> urls = new ArrayList<String>();
             getMetadataManager().getThumbnailUrls(request, entry, urls);
-	    if(urls.size()>0)
-		items.add(Json.quote(urls.get(0)));
-	    else
+	    if(urls.size()>0) {
+		url = urls.get(0);
+		items.add(Json.quote(url==null?"":remote?request.getAbsoluteUrl(url):url));
+	    }    else {
 		items.add("null");
+	    }
 	}
 
 
 	if(addImages) {
 	    if(entry.isImage()) {
-		items.add(
-			  Json.quote(
-				     entry.getTypeHandler().getEntryResourceUrl(
-										request, entry)));
+		url = entry.getTypeHandler().getEntryResourceUrl(request, entry);
+		items.add(Json.quote(url==null?"":remote?request.getAbsoluteUrl(url):url));
 	    } else {
 		items.add(Json.quote(""));
 	    }
@@ -804,10 +807,8 @@ public class JsonOutputHandler extends OutputHandler {
             }
         }
         if (showFileUrl) {
-            items.add(
-                Json.quote(
-                    entry.getTypeHandler().getEntryResourceUrl(
-                        request, entry)));
+	    url = entry.getTypeHandler().getEntryResourceUrl(request, entry);
+	    items.add(Json.quote(url==null?"":remote?request.getAbsoluteUrl(url):url));
         }
         items.add("" + ((entry.getLatitude() == Entry.NONGEO)
                         ? "null"

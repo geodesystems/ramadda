@@ -2020,13 +2020,22 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                    || theTag.startsWith("display_")
                    || theTag.equals(WIKI_TAG_CHART)) {
             String jsonUrl = null;
+	    String remoteServer = getProperty(wikiUtil, props, "remoteServer", null);
+	    String remoteEntry = getProperty(wikiUtil, props, "remoteEntry", null);		
+
             boolean doEntries = getProperty(wikiUtil, props, "doEntries",
                                             false);
             boolean doEntry = getProperty(wikiUtil, props, "doEntry", false);
             if (doEntries || doEntry) {
-                jsonUrl = request.entryUrl(
-                    getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT,
-                    JsonOutputHandler.OUTPUT_JSON_POINT.getId());
+		if(Utils.stringDefined(remoteServer)) {
+		    jsonUrl = HtmlUtils.url(remoteServer+  "/entry/show",
+					    ARG_ENTRYID,remoteEntry, ARG_OUTPUT,
+					    JsonOutputHandler.OUTPUT_JSON_POINT.getId(),"remoteRequest","true");
+		} else {
+		    jsonUrl = request.entryUrl(
+					       getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT,
+					       JsonOutputHandler.OUTPUT_JSON_POINT.getId());
+		}
                 if (doEntry) {
                     jsonUrl += "&onlyentry=true";
                 }
@@ -2059,11 +2068,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                         props.put("max", max);
                     }
                 }
-		String remoteServer = getProperty(wikiUtil, props, "remoteServer", null);
-		String remoteEntry = getProperty(wikiUtil, props, "remoteEntry", null);		
 
 
-		if(remoteServer!=null && remoteEntry!=null) {
+
+		if(Utils.stringDefined(remoteServer) && Utils.stringDefined(remoteEntry)) {
 		    String max = Utils.getProperty(props,"max",null);
 		    String url = remoteServer +"/entry/wikiurl?entryid=" + remoteEntry +(max!=null?"&max=" + max:"");
 		    String json = IO.readContents(url);
