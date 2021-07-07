@@ -930,7 +930,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         }
 
         String extra     = "";
-        String extraArgs = (String) props.get("extraArgs");
+        String extraArgs = props==null?null:(String) props.get("extraArgs");
         if (extraArgs != null) {
             for (String tuple :
                     StringUtil.split(extraArgs, ",", true, true)) {

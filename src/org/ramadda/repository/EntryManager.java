@@ -28,6 +28,8 @@ import org.ramadda.repository.metadata.AdminMetadataHandler;
 import org.ramadda.repository.metadata.ContentMetadataHandler;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.metadata.JpegMetadataHandler;
+import org.ramadda.repository.output.WikiConstants;
+
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.output.XmlOutputHandler;
@@ -710,6 +712,8 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+
+
     public Result processMakeSnapshot(Request request, Entry entry) throws Exception {
         if (request.isAnonymous()) {
 	    return makeSnapshotForm(request, entry,getPageHandler().showDialogError("Have to be an logged in to create a file snapshot"));
@@ -890,6 +894,25 @@ public class EntryManager extends RepositoryManager {
 
 	return makeSnapshotForm(request, entry,"");
     }
+
+
+    public Result processWikiUrl(Request request) throws Exception {
+        Entry         entry = getEntry(request);
+	StringBuilder sb = new StringBuilder();
+	if(entry==null) {
+	    sb.append(Json.mapAndQuote("error", "Could not find entry"));
+	    return new Result("", sb, Json.MIMETYPE);
+	}
+	Hashtable<String,String> props = new Hashtable<String,String>();
+	String max = request.getString("max",null);
+	if(max!=null) props.put("max",max);
+	String jsonUrl = entry.getTypeHandler().getUrlForWiki(request,
+							      entry, request.getString("tag",WikiConstants.WIKI_TAG_DISPLAY), props,null);
+	jsonUrl = request.getAbsoluteUrl(jsonUrl);
+	sb.append(Json.map("url", Json.quote(jsonUrl)));
+	return new Result("", sb, Json.MIMETYPE);
+    }
+
 
 
     /**

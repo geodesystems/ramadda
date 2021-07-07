@@ -220,18 +220,18 @@ public class PointTypeHandler extends RecordTypeHandler {
                 || tag.equals(WikiConstants.WIKI_TAG_DISPLAY)
                 || tag.startsWith("display_")) {
             try {
-                if (props.get("max") == null) {
-                    props.put("max",
-                              "" + getDefaultMax(request, entry, tag, props));
-                }
-
+		if(props!=null) {
+		    if (props.get("max") == null) {
+			props.put("max",
+				  "" + getDefaultMax(request, entry, tag, props));
+		    }
+		}
                 return ((PointOutputHandler) getRecordOutputHandler())
                     .getJsonUrl(request, entry, props, topProps);
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
         }
-
         return super.getUrlForWiki(request, entry, tag, props, topProps);
     }
 

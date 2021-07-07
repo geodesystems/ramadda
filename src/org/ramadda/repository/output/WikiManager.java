@@ -60,6 +60,7 @@ import org.ramadda.util.Json;
 import org.ramadda.util.NamedValue;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
+import org.json.*;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -2058,8 +2059,22 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                         props.put("max", max);
                     }
                 }
-                jsonUrl = entry.getTypeHandler().getUrlForWiki(request,
-                        entry, theTag, props, displayProps);
+		String remoteServer = getProperty(wikiUtil, props, "remoteServer", null);
+		String remoteEntry = getProperty(wikiUtil, props, "remoteEntry", null);		
+
+
+		if(remoteServer!=null && remoteEntry!=null) {
+		    String max = Utils.getProperty(props,"max",null);
+		    String url = remoteServer +"/entry/wikiurl?entryid=" + remoteEntry +(max!=null?"&max=" + max:"");
+		    String json = IO.readContents(url);
+		    JSONObject obj      = new JSONObject(json);
+		    String error = obj.optString("error");
+		    if(Utils.stringDefined(error)) throw new RuntimeException("Error getting remote URL:" + error);
+		    jsonUrl = obj.optString("url");		    
+		} else {
+		    jsonUrl = entry.getTypeHandler().getUrlForWiki(request,
+								   entry, theTag, props, displayProps);
+		}
             }
             //      System.err.println("jsonurl:" +jsonUrl);
             //Gack - handle the files that are gridded netcdf
