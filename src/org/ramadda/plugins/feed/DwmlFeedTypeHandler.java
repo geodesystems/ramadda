@@ -214,7 +214,7 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
         StringBuilder sb = new StringBuilder();
         sb.append(
             HtmlUtils.cssBlock(
-                ".nws-contents {padding:5px;}\n.nws-block {display:inline-block;xmargin-bottom:10px; xborder: 1px #eee solid;  border-radius: 4px;}\n.nws-header {font-weight:bold;background:#eee; padding:5px;}\n.nws-block-hazard {border-color:#EED4D4;}\n.nws-block-hazard .nws-header {background:#EED4D4; color:#A80000}\n"));
+                ".nws-contents {padding:5px;}\n.nws-label {white-space:nowrap;max-width:90px;overflow-x:auto;}\n.nws-block {display:inline-block;xmargin-bottom:10px; xborder: 1px #eee solid;  border-radius: 4px;}\n.nws-header {font-weight:bold;background:#eee; padding:5px;}\n.nws-block-hazard {border-color:#EED4D4;}\n.nws-block-hazard .nws-header {background:#EED4D4; color:#A80000}\n"));
 
 	if(!tag.startsWith("nws."))  return super.getWikiInclude(wikiUtil, request, originalEntry, entry, tag,props);
 	int cnt = getWikiManager().getProperty(wikiUtil, props, "count",1000);
@@ -556,7 +556,7 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
             if (time.weather == null) {
                 td = "";
             } else {
-                td = HtmlUtils.div(time.weather, "style=\"xmargin:5px; \" ");
+                td = HtmlUtils.div(time.weather, "class=nws-label" + HU.attr("title",time.weather));
             }
             sb.append(HtmlUtils.td(td, " align=center "));
         }
