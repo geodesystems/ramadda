@@ -124,8 +124,9 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
             if ( !entry.hasLocationDefined()) {
                 return null;
             }
-            Weather forecast = forecastCache.get(entry.getId());
-            Weather current  = currentCache.get(entry.getId());
+	    String key = entry.getId() +"_" + entry.getChangeDate();
+	    Weather forecast = forecastCache.get(key);
+	    Weather current  = currentCache.get(key);
             if ((forecast == null) || (current == null)) {
                 String url =
                     URL.replace("${lat}",
@@ -140,14 +141,14 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
                     return null;
                 }
                 forecast = new Weather(forecastNode);
-                forecastCache.put(entry.getId(), forecast);
+                forecastCache.put(key, forecast);
 
                 Element currentNode =
                     XmlUtil.findElement(XmlUtil.getElements(root, "data"),
                                         "type", "current observations");
                 if (currentNode != null) {
                     current = new Weather(currentNode);
-                    currentCache.put(entry.getId(), current);
+                    currentCache.put(key, current);
                 }
             }
 
