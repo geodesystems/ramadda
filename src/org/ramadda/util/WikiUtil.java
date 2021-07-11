@@ -734,6 +734,14 @@ public class WikiUtil {
         Hashtable headingsProps = null;
 
 
+
+	Function<String,Hashtable> getProps = (tline)->{
+	    List<String> toks  = Utils.splitUpTo(tline, " ", 2);
+	    Hashtable props = HU.parseHtmlProperties(toks.size()>1?toks.get(1):"");
+	    return props;
+	};
+
+
         Utils.TriConsumer<StringBuffer,String,Integer> defineHeading = (sb,label,level) -> {
             String id = Utils.makeID(label);
             label = Utils.stripTags(label);
@@ -1050,8 +1058,7 @@ public class WikiUtil {
 
 
 		if (tline.startsWith("+popup")) {
-		    List<String> toks  = Utils.splitUpTo(tline, " ", 2);
-		    Hashtable props = HU.parseHtmlProperties(toks.size()>1?toks.get(1):"");
+		    Hashtable props = getProps.apply(tline);
 		    String icon = (String) props.get("icon");
 		    String link =  Utils.getProperty(props,"link","");
 		    if(icon!=null) link = HU.image(handler.getWikiImageUrl(this, icon, props))+HU.SPACE + link;
@@ -1085,8 +1092,7 @@ public class WikiUtil {
 		}		
 
 		if (tline.startsWith("+menuitem")) {
-                    List<String> toks  = Utils.splitUpTo(tline, " ", 2);
-		    Hashtable props = HU.parseHtmlProperties(toks.size()>1?toks.get(1):"");
+		    Hashtable props = getProps.apply(tline);
 		    String attrs = HU.attrs("style",Utils.getProperty(props,"style",""));
 		    HU.open(buff, "li",attrs);
 		    HU.open(buff,"div");
@@ -1345,13 +1351,8 @@ public class WikiUtil {
                         buff.append("Not in a table");
                         continue;
                     }
-                    List<String> toks  = Utils.splitUpTo(tline, " ", 2);
-                    String       width = null;
-                    if (toks.size() == 2) {
-                        Hashtable props = HU.parseHtmlProperties(toks.get(1));
-                        width = Utils.getProperty(props, "width", width);
-                    }
-
+		    Hashtable props = getProps.apply(tline);
+		    String width = Utils.getProperty(props, "width", null);
                     if (state.inHead) {
                         buff.append("<th " + ((width != null)
                                 ? " width=" + width
@@ -1401,9 +1402,8 @@ public class WikiUtil {
                 }
 
                 if (tline.startsWith("+slides")) {
-                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     String       divClass = "";
-		    slidesProps = HU.parseHtmlProperties(toks.size()>1?toks.get(1):"");
+		    slidesProps =  getProps.apply(tline);
 		    slideTitles = new ArrayList<String>();
 		    slidesId = HU.getUniqueId("slides_");
 		    buff.append(HU.script("HtmlUtils.loadSlides();"));
@@ -1465,27 +1465,24 @@ public class WikiUtil {
 
                 if (tline.startsWith("+tabs")) {
                     TabState     tabInfo  = new TabState();
-                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     String       divClass = "";
-                    if (toks.size() == 2) {
-                        Hashtable props = HU.parseHtmlProperties(toks.get(1));
-                        if (props.get("min") != null) {
-                            divClass = "ramadda-tabs-min";
-                        } else if (props.get("center") != null) {
-                            divClass = "ramadda-tabs-center";
-                        } else if (props.get("minarrow") != null) {
-                            divClass =
-                                "ramadda-tabs-min ramadda-tabs-minarrow";
-                        }
-                        if (props.get("transparent") != null) {
-                            divClass += " ramadda-tabs-transparent ";
-                        }
-
-                        tabInfo.minHeight = (String) props.get("minHeight");
-                        if (tabInfo.minHeight != null) {
-                            tabInfo.minHeight = getSize(tabInfo.minHeight);
-                        }
-                    }
+		    Hashtable props = getProps.apply(tline);
+		    if (props.get("min") != null) {
+			divClass = "ramadda-tabs-min";
+		    } else if (props.get("center") != null) {
+			divClass = "ramadda-tabs-center";
+		    } else if (props.get("minarrow") != null) {
+			divClass =
+			    "ramadda-tabs-min ramadda-tabs-minarrow";
+		    }
+		    if (props.get("transparent") != null) {
+			divClass += " ramadda-tabs-transparent ";
+		    }
+		    
+		    tabInfo.minHeight = (String) props.get("minHeight");
+		    if (tabInfo.minHeight != null) {
+			tabInfo.minHeight = getSize(tabInfo.minHeight);
+		    }
                     tabStates.add(tabInfo);
                     allTabStates.add(tabInfo);
                     buff.append("\n");
@@ -1559,21 +1556,18 @@ public class WikiUtil {
                         || tline.startsWith("+accordion")) {
                     AccordionState accordionState = new AccordionState();
                     accordionStates.add(accordionState);
-                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     String       divClass = "";
-                    if (toks.size() == 2) {
-                        Hashtable props = HU.parseHtmlProperties(toks.get(1));
-                        accordionState.activeSegment =
-                            Misc.getProperty(props, "activeSegment", 0);
-                        accordionState.animate = Misc.getProperty(props,
-                                "animate", accordionState.animate);
-                        accordionState.heightStyle = Misc.getProperty(props,
-                                "heightStyle", accordionState.heightStyle);
-                        accordionState.collapsible = Misc.getProperty(props,
-                                "collapsible", accordionState.collapsible);
-                        accordionState.decorate = Misc.getProperty(props,
-                                "decorate", accordionState.decorate);
-                    }
+		    Hashtable props = getProps.apply(tline);
+		    accordionState.activeSegment =
+			Misc.getProperty(props, "activeSegment", 0);
+		    accordionState.animate = Misc.getProperty(props,
+							      "animate", accordionState.animate);
+		    accordionState.heightStyle = Misc.getProperty(props,
+								  "heightStyle", accordionState.heightStyle);
+		    accordionState.collapsible = Misc.getProperty(props,
+								  "collapsible", accordionState.collapsible);
+		    accordionState.decorate = Misc.getProperty(props,
+							       "decorate", accordionState.decorate);
 
                     buff.append("\n");
                     buff.append(
@@ -1722,46 +1716,44 @@ public class WikiUtil {
                 }
 
                 if (tline.startsWith("+div")) {
-                    List<String> toks  = Utils.splitUpTo(tline, " ", 2);
                     String       style = "";
                     String       clazz = "";
-                    if (toks.size() == 2) {
-                        Hashtable props = HU.parseHtmlProperties(toks.get(1));
-                        String    tmp   = (String) props.get("class");
-                        if (tmp != null) {
-                            clazz = tmp;
-                        }
-                        style = (String) props.get("style");
-                        if (style == null) {
-                            style = "";
-                        }
-                        String image = (String) props.get("image");
-                        if (image != null) {
-                            String attach = (String) props.get("attach");
-                            if (attach == null) {
-                                attach = "fixed";
-                            }
-                            tmp = handler.getWikiImageUrl(this, image, props);
-                            if (tmp != null) {
-                                image = tmp;
-                            }
-                            style +=
-                                " background-repeat: repeat-y;background-attachment:"
-                                + attach
-                                + ";background-size:100% auto; background-image: url('"
-                                + image + "'); ";
-                        }
-                        String bg = (String) props.get("background");
-                        if (bg != null) {
-                            style += " background: " + bg + "; ";
-                        }
-                    }
-                    buff.append(HU.open(HU.TAG_DIV,
-                                        HU.cssClass(clazz)
-                                        + HU.style(style)));
+		    Hashtable props = getProps.apply(tline);
+		    String    tmp   = (String) props.get("class");
+		    if (tmp != null) {
+			clazz = tmp;
+		    }
+		    style = (String) props.get("style");
+		    if (style == null) {
+			style = "";
+		    }
+		    String image = (String) props.get("image");
+		    if (image != null) {
+			String attach = (String) props.get("attach");
+			if (attach == null) {
+			    attach = "fixed";
+			}
+			tmp = handler.getWikiImageUrl(this, image, props);
+			if (tmp != null) {
+			    image = tmp;
+			}
+			style +=
+			    " background-repeat: repeat-y;background-attachment:"
+			    + attach
+			    + ";background-size:100% auto; background-image: url('"
+			    + image + "'); ";
+		    }
+		    String bg = (String) props.get("background");
+		    if (bg != null) {
+			style += " background: " + bg + "; ";
+		    }
+		    buff.append(HU.open(HU.TAG_DIV,
+					HU.cssClass(clazz)
+					+ HU.style(style)));
 
-                    continue;
-                }
+		    continue;
+		}
+
                 if (tline.startsWith("-div")) {
                     buff.append(HU.close(HU.TAG_DIV));
 
@@ -1774,10 +1766,7 @@ public class WikiUtil {
 		}
 
                 if (tline.startsWith("+gridbox")) {
-                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
-                    Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
-                            ? toks.get(1)
-                            : "");
+		    Hashtable props = getProps.apply(tline);
 		    String style = "";
 		    String flex =  Utils.getProperty(props,"flex",(String)null);
 		    if(flex!=null)
@@ -1875,10 +1864,7 @@ public class WikiUtil {
 
 
                 if (tline.startsWith("+draggable")) {
-                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
-                    Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
-                            ? toks.get(1)
-                            : "");
+		    Hashtable props = getProps.apply(tline);
                     dragId = HU.getUniqueId("draggable");
 
                     dragToggle = Utils.getProperty(props, "toggle", false);
@@ -1930,10 +1916,7 @@ public class WikiUtil {
                 }
 
                 if (tline.startsWith("+expandable")) {
-                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
-                    Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
-                            ? toks.get(1)
-                            : "");
+		    Hashtable props = getProps.apply(tline);
                     dragId = HU.getUniqueId("expandable");
                     String  header = (String) props.get("header");
                     String  clazz  = "ramadda-expandable";

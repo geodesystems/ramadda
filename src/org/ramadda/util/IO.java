@@ -761,7 +761,7 @@ public class IO {
         connection.setRequestMethod(action);
         connection.setRequestProperty("charset", "utf-8");
         for (int i = 0; i < args.length; i += 2) {
-            //            System.err.println(args[i]+":" + args[i+1]);
+	    //	    System.err.println("IO.doHttpRequest " + args[i]+":" + args[i+1]);
             connection.setRequestProperty(args[i], args[i + 1]);
         }
         if (body != null) {

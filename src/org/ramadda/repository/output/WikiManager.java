@@ -221,6 +221,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
 
+    private WikiUtil dummyWikiUtil = new WikiUtil();
 
     /**
      * ctor
@@ -410,7 +411,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             String entryId = getProperty(wikiUtil, props, ATTR_ENTRY, null);
             if (Utils.stringDefined(entryId)) {
-                theEntry = findEntryFromId(request, entry, wikiUtil,
+                theEntry = findEntryFromId(request, entry, wikiUtil, props,
                                            entryId.trim());
                 if (theEntry == null) {
                     return getMessage(wikiUtil, props,
@@ -421,7 +422,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             String entryRoot = getProperty(wikiUtil, props, ARG_ANCESTOR,
                                            null);
             if (entryRoot != null) {
-                Entry root = findEntryFromId(request, theEntry, wikiUtil,
+                Entry root = findEntryFromId(request, theEntry, wikiUtil, props,
                                              entryRoot);
                 if (root != null) {
                     props.put(ARG_ANCESTOR, root.getId());
@@ -493,6 +494,72 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     }
 
 
+    private ServerInfo getServer(Request request, Entry entry,
+				 WikiUtil wikiUtil, Hashtable props) throws Exception {
+	ServerInfo server = entry!=null?entry.getRemoteServer():null;
+	if(server!=null) return server;
+	String remoteServer = getProperty(wikiUtil, props, "remoteServer", null);
+	return  !Utils.stringDefined(remoteServer)?null:new ServerInfo(new URL(remoteServer),"","");
+
+    }
+
+    public Result processFindEntryFromId(Request request) throws Exception {
+	StringBuilder sb = new StringBuilder();
+	String entryId = request.getString(ARG_ENTRYID,null);
+	System.err.println("processFindEntryFromId:" + entryId);
+	if(entryId==null) {
+	    sb.append("error: no entryId provided");
+	    System.err.println("\t" + sb);
+	    return new Result("", sb);
+	}
+	Hashtable props = null;
+	String propsArg = request.getString("props",null);
+	if(propsArg!=null) props = (Hashtable) getRepository().decodeObject(new String(Utils.decodeBase64(propsArg)));
+	if(props==null) props = new Hashtable();
+	Entry entry = findEntryFromId(request, null, dummyWikiUtil, props, entryId);
+	System.err.println("entry:"  + entryId +" " + entry+ " props:" + props);
+	if(entry==null) {
+	    sb.append("error: could not find entry:" + entryId);
+	    System.err.println("\t" + sb);
+	    return new Result("", sb);
+	}
+	String xml = "<entries>" + getXmlOutputHandler().getEntryXml(request, entry) +"</entries>";
+	sb.append(xml);
+	return new Result("", sb, repository.getMimeTypeFromSuffix(".xml"));
+    }
+
+    public Result processGetEntries(Request request) throws Exception {
+	StringBuilder sb = new StringBuilder();
+	return new Result("", sb, Json.MIMETYPE);
+    }
+
+
+    private Entry findEntryFromId(ServerInfo server, Entry entry,
+				  WikiUtil wikiUtil, Hashtable props, String entryId) throws Exception {
+
+
+	String url = HtmlUtils.url(server.getUrl() +"/wiki/findentryfromid");
+	String propString = Utils.encodeBase64(getRepository().encodeObject(props==null?new Hashtable():props));
+	//	System.err.println("url:" + url);
+	String xml = IO.doPost(new URL(url),HU.args(new String[]{ARG_ENTRYID,entryId,"props",propString},true));
+	if(xml!=null && xml.startsWith("error:")) 
+	    throw new RuntimeException("Error reading remote entry. Server:" + server +" entryId:" + entryId +" " + xml);
+	if(!Utils.stringDefined(xml)) throw new RuntimeException("Could not find entry. Server:" + server +" entry id:" + entryId);
+	List<Entry> entries=  getEntryManager().createRemoteEntries(getRepository().getTmpRequest(), server, xml);
+	return entries.get(0);
+    }
+
+    public List<Entry> getEntries(ServerInfo server, WikiUtil wikiUtil,
+                                  Entry originalEntry, Entry entry,
+                                  Hashtable props, boolean onlyImages,
+                                  String attrPrefix)
+            throws Exception {
+	return null;
+    }
+
+
+
+
     /**
      * _more_
      *
@@ -505,13 +572,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      *
      * @throws Exception _more_
      */
-    private Entry findEntryFromId(Request request, Entry entry,
-                                  WikiUtil wikiUtil, String entryId)
-            throws Exception {
-
+    public Entry findEntryFromId(Request request, Entry entry,
+				 WikiUtil wikiUtil, Hashtable props, String entryId)
+	throws Exception {
         Entry theEntry = null;
         int   barIndex = entryId.indexOf("|");
-
         if (barIndex >= 0) {
             entryId = entryId.substring(0, barIndex);
         }
@@ -519,9 +584,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             theEntry = entry;
         }
 
+	ServerInfo serverInfo = getServer(request, entry, wikiUtil, props);
+	if(serverInfo!=null) {
+	    return findEntryFromId(serverInfo, entry, wikiUtil, props, entryId);
+	}
+
         if (entryId.startsWith("alias:")) {
             String alias = entryId.substring("alias:".length());
-
             return getEntryManager().getEntryFromAlias(request, alias);
         }
 
@@ -531,20 +600,16 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 tok     = tok.substring("type:".length());
                 request = request.cloneMe();
                 request.put(ARG_TYPE, tok);
-                List<Entry> children = getEntryManager().getChildren(request,
-                                           entry);
+		List<Entry> children = getEntryManager().getChildren(request, entry);
                 if (children.size() > 0) {
                     return children.get(0);
                 }
-
                 return null;
             }
-            List<Entry> children = getEntryManager().getChildren(request,
-                                       entry);
+            List<Entry> children = getEntryManager().getChildren(request, entry);
             if (children.size() > 0) {
                 return children.get(0);
             }
-
             return null;
         }
 
@@ -568,10 +633,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
 
-
-
         if (entryId.equals("link") || entryId.startsWith("link:")) {
-
             String type = StringUtil.findPattern(entryId, ":(.*)$");
             //            System.err.println("Link: " + type);
             List<Association> associations =
@@ -1471,8 +1533,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 		String entryRoot = getProperty(wikiUtil, props, "root",null);
 	
 		if(entryRoot!=null) {
-		    root = findEntryFromId(request, entry, wikiUtil,
-                                             entryRoot);
+		    root = findEntryFromId(request, entry, wikiUtil, props,
+					   entryRoot);
 		}
 		if(next) {
 		    other = getEntryUtil().getNext(request,  entry,  root, tree, sort, asc);
@@ -1892,6 +1954,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         } else if (theTag.equals(WIKI_TAG_ENTRYID)) {
             return entry.getId();
         } else if (theTag.equals(WIKI_TAG_PROPERTY)) {
+            for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
+                String key   = (String) keys.nextElement();
+                String value = (String) props.get(key);
+		if(key.equals("name") || key.equals("value")) continue;
+		wikiUtil.putWikiProperty(key, value);
+	    }
+
             String name  = (String) props.get("name");
             String value = (String) props.get("value");
             if (name != null) {
@@ -1928,6 +1997,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             return "";
 
         } else if (theTag.equals(WIKI_TAG_DISPLAYPROPERTY)) {
+            for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
+                String key   = (String) keys.nextElement();
+                String value = (String) props.get(key);
+		if(key.equals("name") || key.equals("value")) continue;
+                wikiUtil.appendJavascript("addGlobalDisplayProperty('" + key
+                                          + "','" + value + "');\n");
+
+            }
+
             String name  = (String) props.get("name");
             String value = (String) props.get("value");
             if ((name != null) && (value != null)) {
@@ -2020,16 +2098,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                    || theTag.startsWith("display_")
                    || theTag.equals(WIKI_TAG_CHART)) {
             String jsonUrl = null;
-	    String remoteServer = getProperty(wikiUtil, props, "remoteServer", null);
-	    String remoteEntry = getProperty(wikiUtil, props, "remoteEntry", null);		
-
+	    ServerInfo serverInfo = getServer(request, entry, wikiUtil, props);
             boolean doEntries = getProperty(wikiUtil, props, "doEntries",
                                             false);
             boolean doEntry = getProperty(wikiUtil, props, "doEntry", false);
             if (doEntries || doEntry) {
-		if(Utils.stringDefined(remoteServer)) {
-		    jsonUrl = HtmlUtils.url(remoteServer+  "/entry/show",
-					    ARG_ENTRYID,remoteEntry, ARG_OUTPUT,
+		if(serverInfo!=null) {
+		    jsonUrl = HtmlUtils.url(serverInfo.getUrl()+  "/entry/show",
+					    ARG_ENTRYID,entry.getId(), ARG_OUTPUT,
 					    JsonOutputHandler.OUTPUT_JSON_POINT.getId(),"remoteRequest","true");
 		} else {
 		    jsonUrl = request.entryUrl(
@@ -2069,11 +2145,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     }
                 }
 
-
-
-		if(Utils.stringDefined(remoteServer) && Utils.stringDefined(remoteEntry)) {
+		if(serverInfo!=null) {
 		    String max = Utils.getProperty(props,"max",null);
-		    String url = remoteServer +"/entry/wikiurl?entryid=" + remoteEntry +(max!=null?"&max=" + max:"");
+		    String url = serverInfo.getUrl() +"/entry/wikiurl?entryid=" + entry.getId() +(max!=null?"&max=" + max:"");
 		    String json = IO.readContents(url);
 		    JSONObject obj      = new JSONObject(json);
 		    String error = obj.optString("error");
@@ -4283,6 +4357,26 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     }
 
 
+    public Result processWikiUrl(Request request) throws Exception {
+        Entry         entry = getEntryManager().getEntry(request);
+	StringBuilder sb = new StringBuilder();
+	if(entry==null) {
+	    sb.append(Json.mapAndQuote("error", "Could not find entry"));
+	    return new Result("", sb, Json.MIMETYPE);
+	}
+	Hashtable<String,String> props = new Hashtable<String,String>();
+	String max = request.getString("max",null);
+	if(max!=null) props.put("max",max);
+	String jsonUrl = entry.getTypeHandler().getUrlForWiki(request,
+							      entry, request.getString("tag",WikiConstants.WIKI_TAG_DISPLAY), props,null);
+	jsonUrl = request.getAbsoluteUrl(jsonUrl);
+	sb.append(Json.map("url", Json.quote(jsonUrl)));
+	return new Result("", sb, Json.MIMETYPE);
+    }
+
+
+
+
     /**
      * Get the entries for the request
      *
@@ -4310,6 +4404,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             tmp.putAll(props);
             props = tmp;
         }
+
+	String remoteServer = getProperty(wikiUtil, props, "remoteServer", null);
+	ServerInfo serverInfo = !Utils.stringDefined(remoteServer)?null:new ServerInfo(new URL(remoteServer),"","");
+	if(serverInfo!=null) {
+	    return getEntries(serverInfo, wikiUtil, originalEntry, entry, props, onlyImages, attrPrefix);
+	}
+
 
 
         String userDefinedEntries = getProperty(wikiUtil, props,
@@ -5348,6 +5449,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         return getRepository().getHtmlOutputHandler();
     }
 
+    public XmlOutputHandler getXmlOutputHandler() throws Exception {
+        return getRepository().getXmlOutputHandler();
+    }    
+
     /**
      * Get the calendar output handler
      *
@@ -5732,7 +5837,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 			l.call( "CSS", "+css_newline_", "-css"),
 			l.call( "PRE", "+pre_newline_", "-pre"),
 			l.call( "Javascript", "+js_newline_", "-js"),
-			l.call( "Code", "```_newline__newline_", "```"));
+			l.call( "Code", "```_newline__newline_", "```"),
+			l.call( "Property", "{{property name=value", "}}"));	
 
         Utils.appendAll(
             misc1,
@@ -6239,7 +6345,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         //TODO: We need to keep track of what is getting called so we prevent
         //infinite loops
-        String content = wikiUtil.wikify(wikiContent, this, notTags);
+        String content;
+	try {
+	    content = wikiUtil.wikify(wikiContent, this, notTags);
+	} catch(Exception exc) {
+            getLogManager().logError("WikiManager.wikifyEntry", exc);
+	    return getPageHandler().showDialogError("An error occurred:" + exc);
+	}
         if (wrapInDiv) {
             content = HU.div(content, HU.cssClass("wikicontent")) + "\n";
         }
@@ -6788,7 +6900,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         String entryParent = getProperty(wikiUtil, props, "entryParent");
         if (entryParent != null) {
-            Entry theEntry = findEntryFromId(request, entry, null,
+            Entry theEntry = findEntryFromId(request, entry, null,props,
                                              entryParent);
             if (theEntry != null) {
                 props.put("entryParent", theEntry.getId());

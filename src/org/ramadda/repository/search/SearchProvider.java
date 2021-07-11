@@ -465,20 +465,8 @@ public abstract class SearchProvider extends GenericTypeHandler {
          * @throws Exception _more_
          */
         public List<Entry> getEntries(Request request, SearchInfo searchInfo)
-                throws Exception {
-            final Entry parentEntry =
-                new Entry(getRepository().getGroupTypeHandler(), true);
+	    throws Exception {
             String serverUrl = serverInfo.getUrl();
-            parentEntry.setId(getEntryManager().getRemoteEntryId(serverUrl,
-                    ""));
-            getEntryManager().cacheEntry(parentEntry);
-            parentEntry.setRemoteServer(serverInfo);
-            parentEntry.setUser(getUserManager().getAnonymousUser());
-            //            parentEntry.setParentEntry(tmpEntry);
-            parentEntry.setName(serverUrl);
-
-
-            List<Entry> entries = new ArrayList<Entry>();
             request = request.cloneMe();
             request.remove(SearchManager.ARG_PROVIDER);
             request.put(ARG_OUTPUT, XmlOutputHandler.OUTPUT_XML);
@@ -486,42 +474,11 @@ public abstract class SearchProvider extends GenericTypeHandler {
             String remoteSearchUrl =
                 serverUrl + getSearchManager().URL_ENTRY_SEARCH.getPath()
                 + "?" + linkUrl;
-            //            System.err.println("Remote URL:" + remoteSearchUrl);
-            try {
-                String entriesXml = getStorageManager().readSystemResource(
-                                        new URL(remoteSearchUrl));
-                Element  root     = XmlUtil.getRoot(entriesXml);
-                NodeList children = XmlUtil.getElements(root);
-                for (int i = 0; i < children.getLength(); i++) {
-                    Element node = (Element) children.item(i);
-                    //                    if (!node.getTagName().equals(TAG_ENTRY)) {continue;}
-                    List<Entry> entryList =
-                        getEntryManager().createEntryFromXml(request, node,
-							     parentEntry, new Hashtable(), false, false);
+	    String entriesXml = getStorageManager().readSystemResource(
+								       new URL(remoteSearchUrl));
 
-                    Entry entry = entryList.get(0);
-                    //                            entry.setName("remote:" + entry.getName());
-		    entry.setRemoteServer(serverInfo);
-                    entry.setResource(
-                        new Resource(
-                            "remote:"
-                            + XmlUtil.getAttribute(
-                                node, ATTR_RESOURCE,
-                                ""), Resource.TYPE_REMOTE_FILE));
-                    String id = XmlUtil.getAttribute(node, ATTR_ID);
-                    entry.setId(getEntryManager().getRemoteEntryId(serverUrl,
-                            id));
-                    entry.setRemoteServer(serverInfo);
-                    entry.setRemoteUrl(serverUrl + "/entry/show?entryid="
-                                       + id);
-                    getEntryManager().cacheEntry(entry);
-                    entries.add((Entry) entry);
-                }
-            } finally {}
-
-            return entries;
-        }
-
+	    return getEntryManager().createRemoteEntries(request, serverInfo, entriesXml);
+	}
     }
 
 

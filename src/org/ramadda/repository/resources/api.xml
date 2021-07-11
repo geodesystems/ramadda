@@ -40,7 +40,6 @@
       <api request="/entry/*"                method="processEntryShowPath"        authmethod="httpauth"  />
       <api request="/entry/dump"             method="processEntryDump" admin="true"/>
       <api request="/entry/types"             method="processEntryTypes"/>
-      <api request="/entry/wikiurl"             method="processWikiUrl"/>      
   </group>
 
 
@@ -61,6 +60,9 @@
       <api request="/getnotebook"        method="processGetNotebook" />
       <api request="/savenotebook"       method="processSaveNotebook" />
       <api request="/wikitags"           method="processWikiTags" />
+      <api request="/wiki/wikiurl"             method="processWikiUrl"/>
+      <api request="/wiki/findentryfromid"             method="processFindEntryFromId"/>
+      <api request="/wiki/getentries"             method="processGetEntries"/>                  
    </group>
 
   <group handler="commentmanager">

@@ -42,18 +42,18 @@ import java.util.regex.*;
 public class Row {
 
     /** _more_ */
-    private List values;
+    private static int cnt = 0;
 
-    private List<Hashtable> properties;
+    /** _more_ */
+    private String id = "" + (cnt++);
+
+
+    /** _more_ */
+    private List values;
 
     /** _more_ */
     private Object skipTo;
 
-    /** _more_ */
-    static int cnt = 0;
-
-    /** _more_ */
-    private String id = "" + (cnt++);
 
     /**
      * _more_
@@ -78,7 +78,6 @@ public class Row {
      */
     public Row(List values) {
         this.values = values;
-        check();
     }
 
     /**
@@ -91,15 +90,7 @@ public class Row {
         for (Object o : values) {
             this.values.add(o);
         }
-        check();
     }
-
-
-    /** _more_ */
-    public static int xcnt = 0;
-
-    /** _more_ */
-    public static boolean doit = false;
 
     /**
      * _more_
@@ -109,25 +100,6 @@ public class Row {
     public String getId() {
         return id;
     }
-
-    /**
-     * _more_
-     */
-    public void check() {
-        if ((values != null) && (values.size() > 0)) {
-            String v = values.get(0).toString();
-            if ( !v.equals("Mean")) {
-                xcnt = 0;
-            } else {
-                xcnt++;
-                if ((xcnt > 5) && (xcnt < 8)) {
-                    //              System.out.println("Row xcnt:"+ xcnt);
-                    //              if(true) throw new IllegalArgumentException("");
-                }
-            }
-        }
-    }
-
 
 
     /**
@@ -147,9 +119,6 @@ public class Row {
     public Object getSkipTo() {
         return skipTo;
     }
-
-
-
 
 
     /**
@@ -176,7 +145,6 @@ public class Row {
                               ? r.get(i)
                               : "") + "[" + i + "]=" + values.get(i) + "\n");
         }
-
         return sb.toString();
     }
 
@@ -187,7 +155,6 @@ public class Row {
      */
     public void setValues(List value) {
         values = value;
-        check();
     }
 
     /**
@@ -239,7 +206,6 @@ public class Row {
             values.add("");
         }
         values.set(index, object);
-        check();
     }
 
     /**
@@ -249,7 +215,6 @@ public class Row {
      */
     public void insert(Object object) {
         values.add(object);
-        check();
     }
 
     /**
@@ -260,7 +225,6 @@ public class Row {
     public void add(Object... args) {
 	for(Object object: args)
 	    values.add(object);
-        check();
     }
 
     /**
@@ -271,7 +235,6 @@ public class Row {
      */
     public void insert(int index, Object object) {
         values.add(index, object);
-        check();
     }
 
     /**

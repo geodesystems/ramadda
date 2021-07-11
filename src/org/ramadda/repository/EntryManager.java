@@ -38,6 +38,7 @@ import org.ramadda.repository.type.ProcessFileTypeHandler;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.type.TypeInsertInfo;
 import org.ramadda.repository.util.SelectInfo;
+import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.repository.util.FileWriter;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
@@ -896,22 +897,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    public Result processWikiUrl(Request request) throws Exception {
-        Entry         entry = getEntry(request);
-	StringBuilder sb = new StringBuilder();
-	if(entry==null) {
-	    sb.append(Json.mapAndQuote("error", "Could not find entry"));
-	    return new Result("", sb, Json.MIMETYPE);
-	}
-	Hashtable<String,String> props = new Hashtable<String,String>();
-	String max = request.getString("max",null);
-	if(max!=null) props.put("max",max);
-	String jsonUrl = entry.getTypeHandler().getUrlForWiki(request,
-							      entry, request.getString("tag",WikiConstants.WIKI_TAG_DISPLAY), props,null);
-	jsonUrl = request.getAbsoluteUrl(jsonUrl);
-	sb.append(Json.map("url", Json.quote(jsonUrl)));
-	return new Result("", sb, Json.MIMETYPE);
-    }
 
 
 
@@ -960,7 +945,7 @@ public class EntryManager extends RepositoryManager {
 	getSessionManager().setLastEntry(request, entry);
         addSessionEntry(request, entry);
         if (entry.getIsRemoteEntry()) {
-            String redirectUrl = entry.getRemoteServer()
+            String redirectUrl = entry.getRemoteServer().getUrl()
 		+ getRepository().URL_ENTRY_SHOW.getPath();
             String[] tuple = getRemoteEntryInfo(entry.getId());
             request.put(ARG_ENTRYID, tuple[1]);
@@ -5318,6 +5303,55 @@ public class EntryManager extends RepositoryManager {
 
         return newEntries;
     }
+
+    public List<Entry> createRemoteEntries(Request request, ServerInfo serverInfo, String entriesXml) throws Exception {
+	String serverUrl = serverInfo.getUrl();
+	final Entry parentEntry =
+	    new Entry(getRepository().getGroupTypeHandler(), true);
+	parentEntry.setId(getEntryManager().getRemoteEntryId(serverUrl,
+							     ""));
+	getEntryManager().cacheEntry(parentEntry);
+	parentEntry.setRemoteServer(serverInfo);
+	parentEntry.setUser(getUserManager().getAnonymousUser());
+	//            parentEntry.setParentEntry(tmpEntry);
+	parentEntry.setName(serverUrl);
+
+
+	List<Entry> entries = new ArrayList<Entry>();
+	//            System.err.println("Remote URL:" + remoteSearchUrl);
+	try {
+	    Element  root     = XmlUtil.getRoot(entriesXml);
+	    NodeList children = XmlUtil.getElements(root);
+	    for (int i = 0; i < children.getLength(); i++) {
+		Element node = (Element) children.item(i);
+		//                    if (!node.getTagName().equals(TAG_ENTRY)) {continue;}
+		List<Entry> entryList =
+		    getEntryManager().createEntryFromXml(request, node,
+							 parentEntry, new Hashtable(), false, false);
+
+		Entry entry = entryList.get(0);
+		//                            entry.setName("remote:" + entry.getName());
+		entry.setRemoteServer(serverInfo);
+		entry.setResource(
+				  new Resource(
+					       "remote:"
+					       + XmlUtil.getAttribute(
+								      node, ATTR_RESOURCE,
+								      ""), Resource.TYPE_REMOTE_FILE));
+		String id = XmlUtil.getAttribute(node, ATTR_ID);
+		entry.setId(getEntryManager().getRemoteEntryId(serverUrl,
+							       id));
+		entry.setRemoteServer(serverInfo);
+		entry.setRemoteUrl(serverUrl + "/entry/show?entryid="
+				   + id);
+		getEntryManager().cacheEntry(entry);
+		entries.add((Entry) entry);
+	    }
+	} finally {}
+
+	return entries;
+    }
+
 
     static boolean didone  = false;
     /**

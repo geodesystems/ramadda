@@ -1050,14 +1050,10 @@ public class TextReader implements Cloneable {
                             if (debug) {
                                 sb.append("\tnew line:" + inQuote + "\n");
                             }
-
                             break;
                         }
                         if (nextChar == CARRIAGE_RETURN) {
                             nextChar = readChar();
-			    if (nextChar == UNDEF) {
-				System.err.println("ZZZ");
-			    }
                             if (nextChar == UNDEF) {
                                 break;
                             }
@@ -1087,10 +1083,6 @@ public class TextReader implements Cloneable {
         }
 
         String line = lb.toString();
-        //        if (line.length() == 0) {
-        //            return null;
-        //        }
-	//	System.out.println("LINE:" + line);
         return line;
     }
 

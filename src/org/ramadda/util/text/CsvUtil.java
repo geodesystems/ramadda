@@ -740,17 +740,31 @@ public class CsvUtil {
             processRow(ctx, firstRow);
             rowCnt++;
         }
+	/*
+        while (true) {
+	    String line = ctx.readLine();
+	    if(line==null) break;
+            rowCnt++;
+	    if((rowCnt%10000)==0) System.err.print(".");
+	}
+	if(true) return;
+	*/
+	
+	long t1 = System.currentTimeMillis();
         Row row;
         while ((row = provider.readRow()) != null) {
 	    if(row==null) break;
             rowCnt++;
+	    if((rowCnt%100000)==0) System.err.print(".");
             if (rowCnt <= ctx.getSkip()) {
                 continue;
             }
-             if ( !processRow(ctx, row)) {
-                break;
-            }
+	    if ( !processRow(ctx, row)) {
+		break;
+	    }
         }
+	long t2 = System.currentTimeMillis();
+	//	System.err.println("time:" + (t2-t1));
         if (okToRun) {
             ctx.finishProcessing();
         }
