@@ -301,6 +301,8 @@ other groups of entries with any of the following arguments:
 <pre>{{<i>tag</i> entry="some other entry" 
                entries="entryid1,entryid2,entryid3.." 
                entries.filter="file|folder|image|type:some type|geo|name:name aptterh|suffix:file suffixes"
+               entries.fromDate="absolute or relative date"
+               entries.toDate="absolute or relative date"
                exclude="entryid1,entryid2,entryid3.."  
                first="entryid1,entryid2,entryid3.."  
                last="entryid1,entryid2,entryid3.."  
@@ -423,6 +425,28 @@ You can also:
 <li> If <i>images</i> is set to true then only entries that are image files are included
 
 </ul>
+
+
+Using the following attributes you can filter entries based on their date.
+You can specify a from date, a to date or both.
+The absolute dates should be of the form "yyyy-MM-dd hh:mm". The relative dates are either relative to the other date (if given)
+or the current time. Relative dates are of the form "+|- minute|hour|day|week|month|year"
+<pre>
+    entries.fromDate="absolute or relative date"
+    entries.toDate="absolute or relative date"
+e.g.:
+    entries.fromDate="2021-06-01 12:32"
+or:
+    entries.fromDate="-1 week"
+or:
+   entries.fromDate="-2 weeks"
+or:
+    entries.fromDate="-2 months"
+or:
+    entries.fromDate="-4 years"        
+</pre>
+
+
 
 
 <a name="virtual_groups"></a>
