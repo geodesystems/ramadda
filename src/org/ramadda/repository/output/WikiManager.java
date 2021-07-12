@@ -4623,6 +4623,33 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             entries = applyFilter(request, wikiUtil, entries, filter, props);
         }
 
+        String fromDate = getProperty(wikiUtil, props,
+                                    attrPrefix + ATTR_ENTRIES + ".fromDate",
+                                    (String) null);
+
+
+        String toDate = getProperty(wikiUtil, props,
+                                    attrPrefix + ATTR_ENTRIES + ".toDate",
+                                    (String) null);
+	
+	//	System.err.println("date:" + fromDate +" " + toDate);
+	if(Utils.stringDefined(fromDate) || Utils.stringDefined(toDate)) {
+	    Date[] range = Utils.getDateRange(fromDate, toDate, new Date());
+	    //	    System.err.println(range[0] +" " + range[1]);
+	    List<Entry> tmp = new ArrayList<Entry>();
+	    for(Entry e: entries) {
+		if(range[0]!=null&& e.getStartDate()<range[0].getTime()) {
+		    //		    System.err.println("too old:" + e);
+		    continue;
+		}
+		if(range[1]!=null && e.getEndDate()>range[1].getTime()) {
+		    //		    System.err.println("too young:" + e);
+		    continue;
+		}
+		tmp.add(e);
+	    }
+	    entries=tmp;
+	}
 
 
         if (onlyImages
