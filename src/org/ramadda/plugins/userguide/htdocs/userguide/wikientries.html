@@ -124,12 +124,13 @@ adds both the ID of the entry as well as its name.
 The <i>property</i> tag supports defining 
 an attribute property that is shared by all tags in the page. 
 
-<pre>{<noop>{property <i>name="property name" value="property value"</i>}}</pre>
+<pre>{<noop>{property <i>"some name"="some value" "some other name"="some other value"</i>}}</pre>
 
 For example, if you are creating a wiki page full of charts 
 (e.g., <a href="https://geodesystems.com/repository/entry/form?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb">here</a>) 
 that refer to another point data entry for their data then you use the property like, e.g.:
-<pre>{<noop>{property <i>name="entry" value="9b2f87fc-91f2-485c-8035-7ef588c35fda"</i>}}</pre>
+<pre>{<noop>{property <i>entry="9b2f87fc-91f2-485c-8035-7ef588c35fda"</i>}}</pre>
+
 
 <a name="message"></a>
 <div class="ramadda-help-subsubheading"><a href="#message">Message attribute</a>
@@ -432,18 +433,20 @@ You can specify a from date, a to date or both.
 The absolute dates should be of the form "yyyy-MM-dd hh:mm". The relative dates are either relative to the other date (if given)
 or the current time. Relative dates are of the form "+|- minute|hour|day|week|month|year"
 <pre>
-    entries.fromDate="absolute or relative date"
-    entries.toDate="absolute or relative date"
+entries.fromDate="absolute or relative date"
+entries.toDate="absolute or relative date"
 e.g.:
-    entries.fromDate="2021-06-01 12:32"
+entries.fromDate="2021-06-01 12:32"
 or:
-    entries.fromDate="-1 week"
+entries.fromDate="-1 week"
 or:
-   entries.fromDate="-2 weeks"
+entries.fromDate="-2 weeks"
 or:
-    entries.fromDate="-2 months"
+entries.fromDate="2 weeks"
 or:
-    entries.fromDate="-4 years"        
+entries.toDate="2 months"
+or:
+entries.toDate="4 years"        
 </pre>
 
 
