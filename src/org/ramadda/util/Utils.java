@@ -4624,25 +4624,25 @@ public class Utils extends IO {
                                       Date dflt)
             throws java.text.ParseException {
 
-        Date fromDttm = DateUtil.parseRelative(dflt, fromDate, -1);
-        Date toDttm   = DateUtil.parseRelative(dflt, toDate, +1);
+        Date fromDttm = Utils.stringDefined(fromDate)?DateUtil.parseRelative(dflt, fromDate, -1):dflt;
+        Date toDttm   = Utils.stringDefined(toDate)?DateUtil.parseRelative(dflt, toDate, +1):dflt;
         //      System.err.println ("dflt: " + dflt);
         //      System.err.println ("fromDttm:" + fromDate + " " + fromDttm);
         //      System.err.println ("toDttm:" + toDate + " " + toDttm);
 
 
-        if ((fromDate.length() > 0) && (fromDttm == null)) {
+        if ((Utils.stringDefined(fromDate)) && (fromDttm == null)) {
             if ( !fromDate.startsWith("-")) {
                 fromDttm = Utils.parseDate(fromDate);
             }
         }
-        if ((toDate.length() > 0) && (toDttm == null)) {
+        if ((Utils.stringDefined(toDate)) && (toDttm == null)) {
             if ( !toDate.startsWith("+")) {
                 toDttm = Utils.parseDate(toDate);
             }
         }
 
-        if ((fromDttm == null) && fromDate.startsWith("-")) {
+        if ((fromDttm == null) && fromDate!=null && fromDate.startsWith("-")) {
             if (toDttm == null) {
                 throw new IllegalArgumentException(
                     "Cannot do relative From Date when To Date is not set");
@@ -4650,7 +4650,7 @@ public class Utils extends IO {
             fromDttm = DateUtil.getRelativeDate(toDttm, fromDate);
         }
 
-        if ((toDttm == null) && toDate.startsWith("+")) {
+        if ((toDttm == null) && toDate!=null && toDate.startsWith("+")) {
             if (fromDttm == null) {
                 throw new IllegalArgumentException(
                     "Cannot do relative From Date when To Date is not set");
