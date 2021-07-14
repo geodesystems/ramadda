@@ -109,17 +109,22 @@ select:focus {
 
 /*Resets for bootstrap*/
 h1 {
+    font-size: 170%;
     margin-top:1em;
     margin-bottom:0px;    
-    font-size: 170%;
 }
 h2 {
+    font-size:150%;
     margin-top:1em;
     margin-bottom:0px;    
-    font-size:150%;
 }
 h3 {
     font-size: 125%;
+    margin-top:1em;
+    margin-bottom:0px;    
+}
+h4 {
+    font-size: 110%;
     margin-top:1em;
     margin-bottom:0px;    
 }
