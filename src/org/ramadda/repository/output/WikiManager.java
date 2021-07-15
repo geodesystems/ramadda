@@ -595,6 +595,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
         if (entryId.startsWith("child:")) {
+	    //child:type:<some type>
             String tok = entryId.substring("child:".length());
             if (tok.startsWith("type:")) {
                 tok     = tok.substring("type:".length());
@@ -2158,7 +2159,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 								   entry, theTag, props, displayProps);
 		}
             }
-            //      System.err.println("jsonurl:" +jsonUrl);
+	    //	    System.err.println("tag:" + theTag+ " jsonurl:" +jsonUrl);
             //Gack - handle the files that are gridded netcdf
             //This is awful to have this here but I just don't know how to 
             //handle these entries
