@@ -120,37 +120,52 @@ public class NetcdfPointFile extends PointFile {
         }
         Repository repository = entry.getTypeHandler().getRepository();
 
+	String ncml =null;
+	String ncmlFileName=null;
+
+
         List<Metadata> metadataList =
             repository.getMetadataManager().findMetadata(
                 repository.getTmpRequest(), entry,
                 ContentMetadataHandler.TYPE_ATTACHMENT, true);
-        if (metadataList == null) {
-            return filename;
-        }
-        for (Metadata metadata : metadataList) {
-            String fileAttachment = metadata.getAttr1();
-            if ( !fileAttachment.endsWith(".ncml")) {
-                continue;
-            }
-            File templateNcmlFile =
-                new File(
-                    IOUtil.joinDir(
-                        repository.getStorageManager().getEntryDir(
-                            metadata.getEntryId(),
-                            false), metadata.getAttr1()));
-            String ncml = repository.getStorageManager().readSystemResource(
-                              templateNcmlFile).replace(
-                              "${location}", filename);
-            String dttm = templateNcmlFile.lastModified() + "";
-            String fileName = dttm + "_" + entry.getId() + "_"
-                              + metadata.getId() + ".ncml";
-            File ncmlFile =
-                repository.getStorageManager().getScratchFile(fileName);
-            IOUtil.writeBytes(ncmlFile, ncml.getBytes());
-            filename = ncmlFile.toString();
+        if (metadataList != null) {
+	    for (Metadata metadata : metadataList) {
+		String fileAttachment = metadata.getAttr1();
+		if ( !fileAttachment.endsWith(".ncml")) {
+		    continue;
+		}
+		File templateNcmlFile =
+		    new File(
+			     IOUtil.joinDir(
+					    repository.getStorageManager().getEntryDir(
+										       metadata.getEntryId(),
+										       false), metadata.getAttr1()));
+		ncml = repository.getStorageManager().readSystemResource(templateNcmlFile);
+		String dttm = templateNcmlFile.lastModified() + "";
+		ncmlFileName = dttm + "_" + entry.getId() + "_"
+		    + metadata.getId() + ".ncml";
+		break;
+	    }
+	}
 
-            break;
-        }
+
+
+	if(ncml==null) {
+	    String property = entry.getTypeHandler().getTypeProperty("netcdf.ncml",(String)null);
+	    if(property!=null) {
+		ncml = repository.getStorageManager().readUncheckedSystemResource(property);
+		ncmlFileName = IOUtil.getFileTail(property);
+	    }
+	}
+
+
+	if(ncml!=null) {
+	    ncml = ncml.replace("${location}", filename);
+	    File ncmlFile = repository.getStorageManager().getScratchFile(ncmlFileName);
+	    IOUtil.writeBytes(ncmlFile, ncml.getBytes());
+	    filename = ncmlFile.toString();
+	}
+
 
         return filename;
     }
