@@ -16,6 +16,7 @@
   </type>
 
   <type name="type_point_netcdf_t28"  super="type_point_netcdf_trajectory" description="T28 NetCDF Trajectory Data">
+     <property name="netcdf.ncml" value="/org/ramadda/geodata/point/resources/t28.ncml"/>
 	<wiki><![CDATA[
 +section title={{name}}
 +accordion decorate=false collapsible=true activeSegment=-1
