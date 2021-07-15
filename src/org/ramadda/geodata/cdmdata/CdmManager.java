@@ -1343,56 +1343,66 @@ public class CdmManager extends RepositoryManager {
         }
         getStorageManager().checkPath(location);
 
-        List<Metadata> metadataList =
-            getMetadataManager().findMetadata(request, entry,
-                ContentMetadataHandler.TYPE_ATTACHMENT, true);
-        //        System.err.println("getPath");
-        if (metadataList == null) {
-            return location;
-        }
         //        System.err.println("nd:" + metadataList);
-        for (Metadata metadata : metadataList) {
-            String  fileAttachment = metadata.getAttr1();
-            boolean isNcml         = fileAttachment.endsWith(SUFFIX_NCML);
-            boolean isCtl          = fileAttachment.endsWith(SUFFIX_CTL);
-            if (isNcml || isCtl) {
-                File templateNcmlFile =
-                    new File(
-                        IOUtil.joinDir(
-                            getRepository().getStorageManager().getEntryDir(
-                                metadata.getEntryId(),
-                                false),
-                            metadata.getAttr1()));
-                String ncml =
-                    getStorageManager().readSystemResource(templateNcmlFile);
-                if (isNcml) {
-                    ncml = ncml.replace("${location}", location);
-                } else {  // CTL
-                    int dsetIdx = ncml.indexOf("${location}");
-                    if (dsetIdx >= 0) {
-                        ncml = ncml.replace("${location}", location);
-                    } else {
-                        ncml = Pattern.compile(
-                            "^dset.*$",
-                            Pattern.MULTILINE
-                            | Pattern.CASE_INSENSITIVE).matcher(
-                                ncml).replaceAll("DSET " + location);
-                    }
-                }
-                //                System.err.println("ncml:" + ncml);
-                //Use the last modified time of the ncml file so we pick up any updated file
-                String dttm = templateNcmlFile.lastModified() + "";
-                String fileName = dttm + "_" + entry.getId() + "_"
-                                  + metadata.getId() + (isNcml
-                        ? SUFFIX_NCML
-                        : SUFFIX_CTL);
-                File ncmlFile = getStorageManager().getScratchFile(fileName);
-                IOUtil.writeBytes(ncmlFile, ncml.getBytes());
-                location = ncmlFile.toString();
+	String ncml =null;
+	String ncmlFileName=null;
 
-                break;
-            }
-        }
+	List<Metadata> metadataList =
+	    getMetadataManager().findMetadata(request, entry,
+					      ContentMetadataHandler.TYPE_ATTACHMENT, true);
+	if (metadataList != null) {
+	    for (Metadata metadata : metadataList) {
+		String  fileAttachment = metadata.getAttr1();
+		boolean isNcml         = fileAttachment.endsWith(SUFFIX_NCML);
+		boolean isCtl          = fileAttachment.endsWith(SUFFIX_CTL);
+		if (isNcml || isCtl) {
+		    File templateNcmlFile =
+			new File(
+				 IOUtil.joinDir(
+						getRepository().getStorageManager().getEntryDir(
+												metadata.getEntryId(),
+												false),
+						metadata.getAttr1()));
+		    ncml =
+			getStorageManager().readSystemResource(templateNcmlFile);
+		    if (!isNcml) {
+			int dsetIdx = ncml.indexOf("${location}");
+			if (dsetIdx < 0) {
+			    ncml = Pattern.compile(
+						   "^dset.*$",
+						   Pattern.MULTILINE
+						   | Pattern.CASE_INSENSITIVE).matcher(
+										       ncml).replaceAll("DSET " + location);
+			}
+		    }
+		    //                System.err.println("ncml:" + ncml);
+		    //Use the last modified time of the ncml file so we pick up any updated file
+		    String dttm = templateNcmlFile.lastModified() + "";
+		    ncmlFileName = dttm + "_" + entry.getId() + "_"
+			+ metadata.getId() + (isNcml
+					      ? SUFFIX_NCML
+					      : SUFFIX_CTL);
+		    break;
+		}
+	    }
+	}
+
+
+	if(ncml==null) {
+	    String property = entry.getTypeHandler().getTypeProperty("netcdf.ncml",(String)null);
+	    if(property!=null) {
+		ncml = getStorageManager().readUncheckedSystemResource(property);
+		ncmlFileName = IOUtil.getFileTail(property);
+	    }
+	}
+	    
+	if(ncml!=null) {
+	    ncml = ncml.replace("${location}", location);
+	    File ncmlFile = getStorageManager().getScratchFile(ncmlFileName);
+	    IOUtil.writeBytes(ncmlFile, ncml.getBytes());
+	    location = ncmlFile.toString();
+	}
+
 
         return location;
     }
