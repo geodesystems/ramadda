@@ -1044,7 +1044,7 @@ function Entry(props) {
             return HtmlUtils.tag("a", ["href", this.getResourceUrl()], label);
         },
         toString: function() {
-            return "entry:" + this.getName();
+            return "entry:" + this.getName()+" id:" + this.getId();
         }
     });
 }
