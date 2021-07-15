@@ -2155,6 +2155,7 @@ public class Utils extends IO {
                                     "_").replaceAll("\\?",
                                         "_").replaceAll("[\"'`]+", "").trim();
         label = label.replaceAll("-", "_");
+        label = label.replaceAll("/", "_");	
         label = label.replaceAll("__+", "_");
         label = label.replaceAll("[\\{\\}=]+", "_");
         label = label.replaceAll("_$", "");

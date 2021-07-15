@@ -5495,10 +5495,19 @@ public class HtmlUtils implements HtmlUtilsConstants {
      */
     public static List<Link> extractLinks(URL url, String html,
                                           String linkPattern)
-            throws Exception {
+	throws Exception {
+	return extractLinks(url,html,linkPattern, false);
+    }
+
+
+    public static List<Link> extractLinks(URL url, String html,
+                                          String linkPattern, boolean images)
+	throws Exception {	
+	HashSet seen = new HashSet();
         List<Link> links = new ArrayList<Link>();
-        String pattern =
-            "(?s)(?i)<\\s*a[^>]*?\\s*href\\s*=\\s*(\"|')([^\"'>]+)(\"|')[^>]*?>(.*?)</a>";
+        String pattern = images?
+	    "(?s)(?i)<\\s*img [^>]*?src\\s*=\\s*(\"|')([^\"'>]+)(\"|')[^>]*?>":
+	    "(?s)(?i)<\\s*a[^>]*?\\s*href\\s*=\\s*(\"|')([^\"'>]+)(\"|')[^>]*?>(.*?)<";
 
         html = html.replaceAll("\t", " ");
         //<a target="_blank" title="/gov/data/GISDLData/Footprints.kmz" href="/gov/data/GISDLData/Footprints.kmz">KMZ</a>
@@ -5507,23 +5516,27 @@ public class HtmlUtils implements HtmlUtilsConstants {
         while (matcher.find()) {
             String href = matcher.group(2);
             href = href.replaceAll(" ", "");
-            String label = matcher.group(4);
-
+            String label = images?"":matcher.group(4);
             label = StringUtil.stripTags(label).trim();
-            if (linkPattern != null) {
-                //              System.err.println("\tHREF:" + href +" matches:" + href.matches(linkPattern));
-                if ( !(href.matches(linkPattern)
-                        || label.matches(linkPattern))) {
-                    continue;
-                }
-            }
-            if (href.toLowerCase().startsWith("javascript:")) {
-                continue;
-            }
             try {
-                URL newUrl = new URL(url, href);
-                links.add(new Link(newUrl, label));
-            } catch (Exception exc) {}
+                URL newUrl = new URL(url, href.replace("\\","/").replaceAll("#.*",""));
+		if(seen.contains(newUrl)) continue;
+		seen.add(newUrl);
+
+		label = label.replaceAll("\\s+"," ");
+		Link link = new Link(href, newUrl, label);
+		if (!link.matches(linkPattern)) {
+		    //			System.err.println("\tHREF:" + newUrl +" " + label +" not match");
+		    continue;
+		}
+		if (href.toLowerCase().startsWith("javascript:")) {
+		    continue;
+		}
+		links.add(link);
+            } catch (Exception exc) {
+		System.err.println("Error:" + exc);
+		exc.printStackTrace();
+	    }
         }
 
         return links;
@@ -5563,7 +5576,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
                     }
                 }
                 URL newUrl = new URL(url, href);
-                links.add(new Link(newUrl, label, files[i].getSize()));
+                links.add(new Link(href,newUrl, label, files[i].getSize()));
             }
 
             return links;
@@ -5585,6 +5598,8 @@ public class HtmlUtils implements HtmlUtilsConstants {
      */
     public static class Link {
 
+	private String link; 
+
         /** _more_ */
         private URL url;
 
@@ -5601,8 +5616,8 @@ public class HtmlUtils implements HtmlUtilsConstants {
          * @param label _more_
          * @param size _more_
          */
-        public Link(URL url, String label, long size) {
-            this(url, label);
+        public Link(String link, URL url, String label, long size) {
+            this(link,url, label);
             this.size = size;
         }
 
@@ -5612,10 +5627,19 @@ public class HtmlUtils implements HtmlUtilsConstants {
          * @param url _more_
          * @param label _more_
          */
-        public Link(URL url, String label) {
+        public Link(String link, URL url, String label) {
+	    this.link = link;
             this.url   = url;
             this.label = label;
         }
+
+	public boolean matches(String pattern) {
+	    if(!Utils.stringDefined(pattern)) return true;
+	    if (link.matches(pattern)
+		|| label.matches(pattern)
+		|| url.toString().matches(pattern)) return true;
+	    return false;
+	}
 
         /**
          *  Set the Url property.
@@ -5625,6 +5649,11 @@ public class HtmlUtils implements HtmlUtilsConstants {
         public void setUrl(URL value) {
             url = value;
         }
+
+        public String  getLink() {
+	    return link;
+	}
+
 
         /**
          *  Get the Url property.
