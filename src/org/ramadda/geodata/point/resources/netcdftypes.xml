@@ -18,6 +18,12 @@
   <type name="type_point_netcdf_t28"  super="type_point_netcdf_trajectory" description="T28 NetCDF Trajectory Data">
 	<wiki><![CDATA[
 +section title={{name}}
++accordion decorate=false collapsible=true activeSegment=-1
++segment Metadata
+{{information  details="true"  showTitle="false"  }} 
+-segment
+-accordion
+
 {{description wikify=true}}
 {{display_fieldslist   
 displayStyle="font-size:80%;"
