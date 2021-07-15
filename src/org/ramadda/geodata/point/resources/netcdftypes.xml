@@ -8,4 +8,33 @@
      <property name="record.file.class" value="org.ramadda.geodata.point.netcdf.NetcdfSinglePointGridFile"/>
   </type>
   
+  <type name="type_point_netcdf_trajectory"  super="type_point" description="NetCDF Trajectory Data"  handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="isTrajectory" value="true"/>
+     <property name="icon" value="/point/plane.png"/>
+     <property name="record.file.class" value="org.ramadda.geodata.point.netcdf.NetcdfTrajectoryFile"/>
+     <column  name="platform"  type="enumerationplus" label="Platform" cansearch="true"/>
+  </type>
+
+  <type name="type_point_netcdf_t28"  super="type_point_netcdf_trajectory" description="T28 NetCDF Trajectory Data">
+	<wiki><![CDATA[
++section title={{name}}
+{{description wikify=true}}
+{{display_fieldslist   
+displayStyle="font-size:80%;"
+numericOnly=true  showPopup=true
+}}
+{{display_linechart fields=TEMPERATURE_REVERSE_FLOW_SENSOR}} 
+{{display_map  doAnimation=true
+animationMode=sliding
+animationStartShowAll=true   
+animationMode=cumulative 
+colorByFields=*
+colorBy=TEMPERATURE_REVERSE_FLOW_SENSOR isPath="true" markerIcon="/icons/plane.png" strokeColor=red  radius=0
+colorTable=plotly_bluered
+pathWidth=4
+}} 
+-section
+]]></wiki>
+</type>
+
 </types>
