@@ -342,7 +342,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 
 	    if(this.getShowPopup()) {
 		html = HU.div([ID,this.domId(ID_POPUP_BUTTON)],"Select fields") +
-		    HU.div([ID,this.domId(ID_POPUP),STYLE,"display:none;width:600px;"], html);
+		    HU.div([ID,this.domId(ID_POPUP),STYLE,"display:none;max-height:300px;overflow-y:auto;width:600px;"], html);
 	    }
 	    this.setContents(html);
 	    if(this.getShowPopup()) {
