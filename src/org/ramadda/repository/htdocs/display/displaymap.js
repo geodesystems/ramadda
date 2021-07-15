@@ -199,6 +199,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'isPath',ex:'true',tt:'Make a path from the points'},	
 	{p:'pathWidth',ex:'2'},
 	{p:'pathColor',ex:'red'},	
+	{p:'isTrajectory',ex:'true',tt:'Make a path from the points'},	
 	{p:'showPathEndPoint',ex:true},
 	{p:'pathEndPointShape',ex:'arrow'},
 	{p:'latField1',tt:'Field id for segments'},
@@ -428,7 +429,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	    this.map.closePopup();
 	    setTimeout(()=>{
-		this.getDisplayManager().notifyEvent("handleEventDataSelection", this, {data:newData});
+		this.getDisplayManager().notifyEvent("dataSelection", this, {data:newData});
 	    },100);
 	},
         createMap: function() {
@@ -507,7 +508,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
             this.map.initMap(false);
             this.map.addRegionSelectorControl(function(bounds) {
-                _this.getDisplayManager().handleEventMapBoundsChanged(this, bounds, true);
+		_this.propagateEvent("mapBoundsChanged", {"bounds": bounds,    "force": true});
             });
 	    this.map.popupHandler = (feature,popup) =>{
 		this.handlePopup(feature, popup);
@@ -556,7 +557,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(feature.record) {
 		    if(this.lastHighlightedRecord) {
 			var args = {highlight:false,record: this.lastHighlightedRecord};
-			this.getDisplayManager().notifyEvent("handleEventRecordHighlight", this, args);
+			this.getDisplayManager().notifyEvent("recordHighlight", this, args);
 			if (this.getAnimationEnabled()) {
 			    this.getAnimation().handleEventRecordHighlight(this, args);
 			}
@@ -566,7 +567,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			this.lastHighlightedRecord = feature.record;
 		    }
 		    var args = {highlight:highlight,record: feature.record};
-		    this.getDisplayManager().notifyEvent("handleEventRecordHighlight", this, args);
+		    this.getDisplayManager().notifyEvent("recordHighlight", this, args);
 		    if (this.getAnimationEnabled()) {
 			this.getAnimation().handleEventRecordHighlight(this, args);
 		    }
@@ -1027,8 +1028,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         mapBoundsChanged: function() {
             let bounds = this.map.getMap().calculateBounds().transform(this.map.sourceProjection,
 								       this.map.displayProjection);
-            this.getDisplayManager().handleEventMapBoundsChanged(this, bounds);
-
+	    this.propagateEvent("mapBoundsChanged", {"bounds": bounds,    "force": false});
 	    if(this.clipToView || this.getClipToBounds()) {
 		if(this.lastUpdateTime) {
 		    let now = new Date();
@@ -1173,7 +1173,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 var pointData = this.getPointData();
                 if(pointData) {
                     pointData.handleEventMapClick(this, this, lon, lat);
-		    this.getDisplayManager().notifyEvent("handleEventMapClick", this, {lat:lat,lon:lon});
+		    this.getDisplayManager().notifyEvent("mapClick", this, {lat:lat,lon:lon});
                 }
             }
 
@@ -2147,7 +2147,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    _this.map.setZoom(10);
 		    if(record.trackData) {
 			setTimeout(()=>{
-			    _this.getDisplayManager().notifyEvent("handleEventDataSelection", _this, {data:record.trackData});
+			    _this.getDisplayManager().notifyEvent("dataSelection", _this, {data:record.trackData});
 			},100);
 		    }
 		});

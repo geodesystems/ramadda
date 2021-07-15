@@ -1254,7 +1254,7 @@ function RamaddaChernoffDisplay(displayManager, id, properties) {
             if (string) {
                 this.find(".ramadda-div-link").click(function() {
                     var value = $(this).attr("value");
-                    _this.propagateEvent("handleEventFieldValueSelect", {
+                    _this.propagateEvent("fieldValueSelected", {
                         field: string,
                         value: value
                     });

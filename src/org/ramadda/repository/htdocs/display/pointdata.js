@@ -301,11 +301,12 @@ function PointData(name, recordFields, records, url, properties) {
                 console.log("No URL");
                 return;
             }
-            var props = {
+            let props = {
                 lat: this.lat,
                 lon: this.lon,
             };
-            var jsonUrl = display.displayManager.getJsonUrl(root.url, display, props);
+            let jsonUrl = display.displayManager.getJsonUrl(root.url, display, props);
+//	    console.log("root.url:" + root.url +" json:" + jsonUrl);
 	    root.jsonUrl = jsonUrl;
             root.loadPointJson(jsonUrl, display, reload);
         },
@@ -325,11 +326,12 @@ function PointData(name, recordFields, records, url, properties) {
         loadPointJson: function(url, display, reload) {
 	    let debug =  displayDebug.loadPointJson;
 	    let debug2 = false;
+//	    debug = true;
             let pointData = this;
             this.startLoading();
             let _this = this;
 	    if(debug) {
-		console.log("loadPointJson: "+ display.type +" " + display.getId() +" reload:" + reload);
+		console.log("loadPointJson: "+ display.type +" " + display.getId() +" url:" + url);
 	    } 
             let cacheObject = pointDataCache[url];
             if (cacheObject == null) {
@@ -413,7 +415,15 @@ function PointData(name, recordFields, records, url, properties) {
 
             var success=function(data) {
 		if(typeof data == "string") {
-		    data = JSON.parse(data);
+		    try {
+			data = JSON.parse(data);
+		    } catch(exc) {
+			console.log("Error:" + exc);
+			if(data.length>1000) data = data.substring(0,999);
+			console.log("data:" + data);
+			display.displayError("Error loading data:" + exc+"<br>URL:"+ url);
+			return;
+		    }
 		}
 		if(debug) console.log("pointDataLoaded");
                 if (GuiUtils.isJsonError(data)) {
@@ -427,11 +437,11 @@ function PointData(name, recordFields, records, url, properties) {
 		    if(debug)
 			console.log("\tno data:" + url);
 		    let dummy = new PointData("", [],[]);
-                    var tmp = cacheObject.pending;
+                    let pending = cacheObject.pending;
                     cacheObject.pending = [];
-                    for (var i = 0; i < tmp.length; i++) {
-			tmp[i].handleNoData(dummy);
-		    }
+		    pending.forEach(d=>{
+			d.handleNoData(dummy);
+		    });
 		    return;
 		}
 		if(debug)
@@ -449,9 +459,9 @@ function PointData(name, recordFields, records, url, properties) {
 		if(data.properties) {
 		    display.applyRequestProperties(data.properties);
 		}
+                let tmp = cacheObject.pending;
 		if(debug)
 		    console.log("\tcalling pointDataLoaded on  " + tmp.length + " displays");
-                var tmp = cacheObject.pending;
                 cacheObject.pending = [];
                 for (let i = 0; i < tmp.length; i++) {
 		    if(debug)
@@ -493,7 +503,7 @@ function PointData(name, recordFields, records, url, properties) {
 		let root = String(window.location).replace(/\/[^\/]+$/,"");
 		url = root + "/" + url;
 	    }
-	    console.log("point data:" + url);
+//	    console.log("display:" + display.type+" point data:" + url);
             Utils.doFetch(url, success,fail,null);	    
 //            var jqxhr = $.getJSON(url, success,{crossDomain:true}).fail(fail);
         }
@@ -1083,9 +1093,9 @@ function makePointData(json, derived, source,url) {
                     for (var i = 0; i < funcParams.length; i++) {
                         code += "var v" + (i + 1) + "=args[" + i + "];\n";
                     }
-                    var tmp = d["function"];
-                    if (tmp.indexOf("return") < 0) tmp = "return " + tmp;
-                    code += tmp + "\n";
+                    let tmpFunc = d["function"];
+                    if (tmpFunc.indexOf("return") < 0) tmpFunc = "return " + tmpFunc;
+                    code += tmpFunc + "\n";
                     d.compiledFunction = new Function("args", code);
                     //                    console.log("Func:" + d.compiledFunction);
                 }

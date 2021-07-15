@@ -582,7 +582,6 @@ function RamaddaMultiDisplay(displayManager, id, properties) {
         needsData: function() {
             return true;
         },
-
         pointDataLoaded: function(pointData, url, reload) {
             SUPER.pointDataLoaded.call(this, pointData, url, reload);
             this.initDisplay();

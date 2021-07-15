@@ -1888,7 +1888,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     let records = pointData.getRecords();
 	            let record = records[event.row];
 		    if(!record) return;
-		    _this.getDisplayManager().notifyEvent("handleEventRecordHighlight", _this, {highlight:true,record: record});
+		    _this.getDisplayManager().notifyEvent("recordHighlight", _this, {highlight:true,record: record});
 		});
 	    }
             google.visualization.events.addListener(chart, 'select', function(event) {
@@ -3319,7 +3319,7 @@ function TreemapDisplay(displayManager, id, properties) {
 
         valueClicked: function(field, value) {
             field = this.getFieldById(this.getFields(), field);
-            this.propagateEvent("handleEventFieldValueSelect", {
+            this.propagateEvent("fieldValueSelected", {
                 field: field,
                 value: value
             });
