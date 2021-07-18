@@ -7,7 +7,7 @@ See the main site [here](https://geodesystems.com).
 Check out the [Boulder Data Hub](https://boulderdata.org).
 Here are some [examples](https://geodesystems.com/repository/alias/example_charts) of what you can do with RAMADDA:
 
-<center><img src=content/gallery.png width="80%"></center>
+<center><img src=gallery.png width="80%"></center>
 
 
 # Download
