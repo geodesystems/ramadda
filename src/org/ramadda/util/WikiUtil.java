@@ -103,6 +103,8 @@ public class WikiUtil {
     private Hashtable<String, String> macros;
     
 
+    private Hashtable<String,String> templates=  new Hashtable<String,String>();
+
     /** _more_ */
     private boolean hasSet = false;
 
@@ -149,6 +151,7 @@ public class WikiUtil {
      */
     public WikiUtil(WikiUtil that) {
         this.properties = that.properties;
+	this.templates = that.templates;
     }
 
 
@@ -188,6 +191,11 @@ public class WikiUtil {
 	if(andClear) javascript = null;
         return j;
     }
+
+    public void addTemplate(String name, String value) {
+	templates.put(name, value);
+    }
+
 
     /**
      * Set the GlobalProperties property.
@@ -776,6 +784,15 @@ public class WikiUtil {
         List<TableState> tableStates       = new ArrayList<TableState>();
         String           currentVar        = null;
         StringBuilder    currentVarValue   = null;
+	String templateName = null;
+	StringBuilder templateSB = null;
+
+
+	String applyTemplateName = null;
+	Hashtable<String,String> applyTemplateVars= null;
+	String applyVarName = null;
+	StringBuilder applySB=null;
+	
 	List<NamedList<String>> repeatList = null;
         StringBuilder    repeatBuffer = null;
         StringBuilder    splashBuffer = null;	
@@ -948,6 +965,108 @@ public class WikiUtil {
 		    splashBuffer.append("\n");		    
 		    continue;
 		}
+
+                if (tline.startsWith("+template")) {
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
+		    templateName = toks.size()==2?toks.get(1): "template";
+		    templateSB = new StringBuilder();
+		    //		    System.err.println("Put:" + templateName+":");
+		    continue;
+		}
+		if (tline.startsWith("-template")) {
+		    if(templateSB==null) {
+			wikiError(buff, "Error: No +template section specified:" + line);
+			continue;
+		    }
+		    templates.put(templateName.trim(), templateSB.toString());
+		    templateSB = null;
+		    templateName = null;		    
+		    continue;
+		}
+		if(templateSB!=null) {
+		    templateSB.append(line);
+		    templateSB.append("\n");
+		    continue;
+		}
+
+                if (tline.startsWith("+apply")) {
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
+		    applyTemplateName = toks.size()==2?toks.get(1): "template";
+		    applyTemplateVars = new Hashtable<String,String>();
+		    continue;
+		}
+
+                if (tline.startsWith(":var")) {
+		    if(applyTemplateVars==null) {
+			wikiError(buff, "Error: No +apply section specified:" + line);
+			continue;
+		    }
+                    List<String> toks = Utils.splitUpTo(tline, " ", 3);
+		    String name = toks.size()>1?toks.get(1):"name";
+		    String value= toks.size()>2?toks.get(2):"value";
+		    applyTemplateVars.put(name,value);
+		    continue;
+		    
+		}
+
+                if (tline.startsWith("+var")) {
+		    if(applyTemplateVars==null) {
+			wikiError(buff, "Error: No +apply section specified:" + line);
+			continue;
+		    }
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
+		    applyVarName = toks.size()==2?toks.get(1): "template";
+		    applySB = new StringBuilder();
+		    continue;
+		}
+
+                if (tline.startsWith("-var")) {
+		    if(applySB!=null && applyVarName!=null) {
+			applyTemplateVars.put(applyVarName,applySB.toString());
+		    } else {
+			wikiError(buff, "Error: No +var section specified:" + line);
+		    }
+		    applySB = null;
+		    continue;
+		}
+
+		if(tline.startsWith("-apply")) {
+		    if(applyTemplateName==null) {
+                        wikiError(buff, "Error: no template specified");
+			continue;
+		    }
+		    String template = templates.get(applyTemplateName.trim());
+		    if(template==null) {
+                        wikiError(buff, "Error: no template found:"+ applyTemplateName);
+			continue;
+		    }
+		    if(applyTemplateVars==null) {
+                        wikiError(buff, "Error: no template apply section found:"+ applyTemplateName);
+			continue;
+		    }
+		    //		    System.err.println("T:" + template);
+		    for (java.util.Enumeration keys = applyTemplateVars.keys();  keys.hasMoreElements(); ) {
+			String key   = (String) keys.nextElement();
+			String value = (String) applyTemplateVars.get(key);
+			//			System.err.println("\t" + "key: " + key +" value:" + value);
+			value = wikify(value, handler);
+			template = template.replace("${" + key +"}",value);
+		    }
+		    //		    System.err.println("after T:" + template);
+		    buff.append(template);
+		    applyTemplateVars = null;
+		    applySB = null;
+		    continue;
+		}
+		
+		if (applySB!=null) {
+		    applySB.append(line);
+		    applySB.append("\n");
+		    continue;
+		}
+
+
+
 
                 if (tline.startsWith("+macro")) {
                     List<String> toks = Utils.splitUpTo(tline, " ", 3);
