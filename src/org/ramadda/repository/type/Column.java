@@ -65,6 +65,9 @@ import java.util.List;
 
 public class Column implements DataTypes, Constants, Cloneable {
 
+    public static final HtmlUtils HU=null;
+
+
     /** _more_ */
     static int xcnt;
 
@@ -163,6 +166,9 @@ public class Column implements DataTypes, Constants, Cloneable {
 
     /** _more_ */
     public static final String ATTR_SUFFIX = "suffix";
+
+        /** _more_ */
+    public static final String ATTR_SEARCHDB = "searchDB";
 
     /** _more_ */
     public static final String ATTR_HELP = "help";
@@ -430,6 +436,8 @@ public class Column implements DataTypes, Constants, Cloneable {
     /** _more_ */
     private boolean showInForm = true;
 
+    private String searchDB;
+
     /** _more_ */
     private Hashtable<String, String> properties = new Hashtable<String,
                                                        String>();
@@ -555,6 +563,8 @@ public class Column implements DataTypes, Constants, Cloneable {
         required       = getAttributeOrTag(element, ATTR_REQUIRED, required);
         rows           = getAttributeOrTag(element, ATTR_ROWS, rows);
         columns        = getAttributeOrTag(element, ATTR_COLUMNS, columns);
+
+        searchDB       = getAttributeOrTag(element, ATTR_SEARCHDB, (String) null);	
 
         String tmp = getAttributeOrTag(element, "numberFormat", null);
         if (tmp != null) {
@@ -1541,6 +1551,19 @@ public class Column implements DataTypes, Constants, Cloneable {
     protected int setValues(PreparedStatement statement, Object[] values,
                             int statementIdx)
             throws Exception {
+
+	try {
+	    return setValuesInner(statement, values, statementIdx);
+	} catch(Exception exc) {
+	    String msg = "Error setting value. Column:"+ getName() +" value:" + values[offset];
+	    System.err.println(msg);
+	    throw new RuntimeException(msg, exc);
+	}
+    }
+
+    private int setValuesInner(PreparedStatement statement, Object[] values,
+			       int statementIdx)
+	throws Exception {	
 
         if (offset >= values.length) {
             return 0;
@@ -3060,6 +3083,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         }
 
 
+
         String       searchArg  = getSearchArg();
         String       columnName = getFullName();
 
@@ -3238,11 +3262,23 @@ public class Column implements DataTypes, Constants, Cloneable {
                 //                widget = HtmlUtils.textArea(searchArg, request.getString(searchArg, ""),
                 //                                           rows, columns);
             } else {
+
                 String text = request.getString(searchArg, "");
                 text = text.replaceAll("\"", "&quot;");
                 //                String text  = Utils.unquote(request.getString(searchArg, ""));
 
-                widget = HtmlUtils.input(searchArg, text, HtmlUtils.SIZE_20);
+		String widgetId = searchArg.replaceAll("\\.","_");
+                widget = HtmlUtils.input(searchArg, text, HtmlUtils.SIZE_20 +HU.attr("id",widgetId));
+
+		if(searchDB!=null) {
+		    //This uses the plugins/db plugin
+		    List<String> toks = StringUtil.splitUpTo(searchDB,":",2);
+		    String otherCol = toks.size()==2?toks.get(1):getName();
+		    String extraLink  = "DB.doDbSearch(" + HU.squote(this.getName()) +"," + HU.squote(widgetId)+","+HU.squote(searchDB) +"," + HU.squote(otherCol)+");";
+		    //		    System.err.println(extraLink);
+		    widget += " " + HU.href("javascript:" + extraLink,"Search");
+		}
+
             }
         }
 
@@ -4037,6 +4073,15 @@ public class Column implements DataTypes, Constants, Cloneable {
 
             return v;
         }
+    }
+
+    /**
+       Get the SearchDB property.
+
+       @return The SearchDB
+    **/
+    public String getSearchDB () {
+	return searchDB;
     }
 
 
