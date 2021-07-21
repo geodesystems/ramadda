@@ -91,6 +91,9 @@ public class GeoUtils {
     /** _more_ */
     private static String googleKey;
 
+    private static String geocodeioKey;
+
+
     /** _more_ */
     private static File cacheDir;
 
@@ -108,6 +111,10 @@ public class GeoUtils {
     public static void setGoogleKey(String key) {
         googleKey = key;
     }
+
+    public static void setGeocodeIO(String key) {
+        geocodeioKey = key;
+    }    
 
     /**
      * _more_
@@ -317,7 +324,7 @@ public class GeoUtils {
      * @return _more_
      */
     public static Place getLocationFromAddress(String address,
-            String googleKey) {
+					       String googleKey) {
         return getLocationFromAddress(address, googleKey, null);
     }
 
@@ -756,9 +763,16 @@ public class GeoUtils {
             return place;
         }
 
+	System.err.println("address:" + address);
         if (googleKey == null) {
             googleKey = GeoUtils.googleKey;
+	    if(googleKey == null)
+		googleKey = System.getenv("GOOGLE_API_KEY");
         }
+
+	if(geocodeioKey==null)  {
+	    geocodeioKey = System.getenv("GEOCIDEIO_API_KEY");
+	}
 
         if (addressToLocation == null) {
             addressToLocation = new Hashtable<String, Place>();
@@ -809,10 +823,24 @@ public class GeoUtils {
         String encodedAddress = StringUtil.replace(address, " ", "%20");
         String name           = null;
 
-	if(googleKey == null)
-	    googleKey = System.getenv("GOOGLE_API_KEY");
 
-        if (googleKey != null) {
+
+	//	System.err.println("new key:" + geocodeioKey);
+	if(geocodeioKey!=null) {
+	    String url = "https://api.geocod.io/v1.6/geocode?";
+	    url +=HtmlUtils.arg("q",address,true);
+	    url +="&";
+	    url +=HtmlUtils.arg("api_key",geocodeioKey,true);
+	    System.err.println(url);
+	    String result = IO.readContents(url, GeoUtils.class);
+	    System.err.println(result);
+	    //"lat":39.988424,"lng":-105.226083
+	    latString = StringUtil.findPattern(result,
+					       "\"lat\"\\s*:\\s*([-\\d\\.]+),");
+	    lonString = StringUtil.findPattern(result,
+					       "\"lng\"\\s*:\\s*([-\\d\\.]+)\\s*");
+	    System.err.println(latString +" " + lonString);
+	} else    if (googleKey != null) {
 	    String result= null;
             try {
                 //                https://maps.googleapis.com/maps/api/geocode/json?address=Winnetka&bounds=34.172684,118.604794|34.236144,-118.500938&key=YOUR_API_KEY
@@ -825,7 +853,6 @@ public class GeoUtils {
                            + bounds.getEast();
                 }
                 result = IO.readContents(url, GeoUtils.class);
-
 
                 name = StringUtil.findPattern(result,
                         "\"formatted_address\"\\s*:\\s*\"([^\"]+)\"");
@@ -1023,24 +1050,16 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        String path = "uscounties";
-        path = "states";
-	path="timezones";
-        Object f = findFeatureName(path, 40, -105, null);
-        System.err.println("f:" + f);
-        if (true) {
-            return;
-        }
-
-
         String key = null;
         try {
-            for (String arg : args) {
-                if (key == null) {
-                    key = arg;
-                    continue;
-                }
-                Place place = getLocationFromAddress(arg, key);
+            for (int i=0;i<args.length;i++) {
+		String arg  = args[i];
+		if(arg.equals("-googlekey")) {
+		    key = args[++i];
+		    continue;
+		}
+
+                Place place = getLocationFromAddress(arg, !Utils.stringDefined(key)?null:key);
                 if (place == null) {
                     System.out.println(arg + ": NA");
                 } else {
