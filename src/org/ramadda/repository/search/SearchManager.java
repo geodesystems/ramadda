@@ -127,6 +127,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     /** _more_ */
     public static final String ARG_SEARCH_SUBMIT = "search.submit";
 
+
+
     /** _more_ */
     public static final String ARG_PROVIDER = "provider";
 
@@ -271,6 +273,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     
     private Object luceneMutex = new Object();
 
+    private Hashtable<String,List<String>> synonyms;
+
     /**
      * _more_
      *
@@ -294,6 +298,46 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    System.err.println("Error calling TikaConfig:" + exc);
 	}
     }
+
+
+    public List<String> getSynonyms(String word) throws Exception {
+	word = word.toLowerCase().trim();
+	if(synonyms==null)synonyms = getSynonyms();
+	return synonyms.get(word);
+    }
+
+
+
+
+    public Hashtable<String,List<String>>getSynonyms() throws Exception {
+	if(synonyms==null) {
+	    Hashtable<String,List<String>>tmp = new Hashtable<String,List<String>>();
+	    String resource = getStorageManager().readSystemResource("/org/ramadda/repository/resources/synonyms.csv");
+	    //big,adjective,large
+	    for(String line: Utils.split(resource,"\n",true,true)) {
+		List<String> toks = Utils.splitUpTo(line,",",2);
+		String word  = toks.get(0);
+		toks = Utils.split(toks.get(1),";");
+		List<String> row = new ArrayList<String>();
+		System.out.println("word:" + word);
+		for(String tuple: toks) {
+		    List<String> pair = StringUtil.split(tuple,",",true,true);
+		    if(pair.size()>1) {
+			System.out.println("\tsyn:" + pair.get(1));
+			row.add(pair.get(1));
+		    }
+		}
+		System.out.println("word:" + word +" row:" + row);
+		tmp.put(word,row);
+	    }
+
+	    synonyms = tmp;
+	}
+	return synonyms;
+    }
+
+
+
 
 
     /**
@@ -850,9 +894,26 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	List<Query> queries = new ArrayList<Query>();
 	text = text.trim();
 	if(text.length()>0) {
+	    Hashtable<String,List<String>>synonyms=null; 
 	    text = text.toLowerCase();
 	    BooleanQuery.Builder builder = new BooleanQuery.Builder();
-	    List<String> words = Utils.split(text," ",true,true);
+	    List<String> toks= Utils.split(text," ",true,true);
+	    List<String> words = new ArrayList<String>();
+	    for (String word : toks) {
+		boolean isSyn = false;
+		if(word.startsWith("~")) {
+		    word = word.substring(1);
+		    isSyn = true;
+		}
+		words.add(word);
+		if(isSyn) {
+		    List<String> syns = getSynonyms(word);
+		    if(syns!=null)  {
+			words.addAll(syns);
+		    }
+		}
+	    }
+
 	    for(String field: SEARCH_FIELDS) {
 		boolean isName = field.equals(FIELD_NAME);
 		if(searchField!=null && !field.equals(searchField)) continue;
