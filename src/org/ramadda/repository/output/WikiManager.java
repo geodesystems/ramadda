@@ -4868,7 +4868,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 continue;
             }
 
-
             if (entryid.startsWith("entries.max=")) {
                 max = Integer.parseInt(
                     entryid.substring("entries.max=".length()));
@@ -4890,8 +4889,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             entryid = entryid.replace("_COMMA_", ",");
 
+
             Entry  theBaseEntry = baseEntry;
+	    //	    System.err.println("the Base ENTRY:" + theBaseEntry);
             String type         = null;
+	    //children;filter:
             //            entries="children:<other id>
             List<String> toks = Utils.splitUpTo(entryid, ":", 2);
             if (toks.size() == 2) {
@@ -4915,8 +4917,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 entryid = toks.get(0);
                 filter  = toks.get(1);
             }
-
-
 
 
             if (entryid.equals(ID_ANCESTORS)) {
@@ -4992,6 +4992,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 
 
+
+
             boolean isRemote = entryid.startsWith(ATTR_SEARCH_URL);
             if ( !isRemote && entryid.startsWith(ID_SEARCH + ".")) {
 
@@ -5047,8 +5049,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 //List<Entry>[] pair = getEntryManager().getEntries(myRequest);
                 entries.addAll(applyFilter(request, wikiUtil, pair[0],
                                            filter, props));
-                entries.addAll(applyFilter(request, wikiUtil, pair[1],
-                                           filter, props));
+                entries.addAll(applyFilter(request, wikiUtil, pair[1], filter, props));
 
                 continue;
             }
@@ -5106,10 +5107,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
             if (entryid.equals(ID_CHILDREN)) {
+		//		System.err.println("base:" + theBaseEntry);
                 List<Entry> children = getEntryManager().getChildren(request,
-                                           theBaseEntry);
-                entries.addAll(children);
-
+								     theBaseEntry);
+		entries.addAll(children);
+		//TODO:
+		//                entries.addAll(applyFilter(request, wikiUtil, children,filter, props));
                 continue;
             }
 
