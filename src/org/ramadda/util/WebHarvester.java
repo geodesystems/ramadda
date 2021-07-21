@@ -91,6 +91,7 @@ public class WebHarvester {
     private HashSet seenImage = new HashSet();    
     private Page page;
     private int cnt=0;
+    private int maxCnt = -1;
     private int maxDepth = -1;
     private List<String> images = new ArrayList<String>();
 
@@ -143,7 +144,8 @@ public class WebHarvester {
     }
 
     public Page harvest(Page parent, URL url, String label, String link,boolean recurse, String linkPattern,String indent, int depth) throws Exception {	
-	//	if(cnt++>2) return null;
+	cnt++;
+	if(maxCnt>=0 &&   cnt>maxCnt) return null;
 	Page page;
 	if((page = seen.get(url.toString()))!=null) {
 	    //	    System.out.println("SEEN:" + url);
@@ -193,8 +195,17 @@ public class WebHarvester {
 	    //		System.err.println(body.substring(0,500));
 	    //	    }
 	}
+
+	if(body.length()>30000)  {
+	    body = body.replaceAll(">\n+",">");
+	}
+	if(body.length()>30000)  {
+	    body = body.replaceAll("<tr[^>]+>","<tr>");
+	}	
+
 	if(body.length()>30000)  {
 	    System.err.println("***** bad length: " + url +" " + body.length());
+	    body = body.replaceAll(">\n+",">");
 	    body = body.substring(0,29000);
 	}
 	System.err.println(indent +"URL:" + url);// +" label:"  + label+" " +body.length());
@@ -301,6 +312,7 @@ public class WebHarvester {
 	addReplace("<!\\[if.*?\\]>","");
 	addReplace("<!\\[endif\\]-->","");
 	addReplace("<!\\[endif\\]>","");
+	addReplace("<!--msnavigation-->","");
 	addReplace("<o\\:p>","");
 	addReplace("</o\\:p>","");
 	addReplace("<span\\s+>","<span>");
@@ -313,17 +325,22 @@ public class WebHarvester {
 	addReplace("<i *>\\s*</i>","");
 	addReplace("<i +>","<i>");
 	addReplace("<td.*?>(.*?)</td>","<td>$1</td>");			
-	addReplace("\\r\\n","\n");
-	addReplace("\\n\\s+","\n");
+	addReplace("([^\\s]+)<h","$1\n<h");
 	addReplace(">\\n",">");
-	addReplace("<td><p>(.*?)</p></td>","<td>$1</td>");
 	addReplace("<table","\n<table");
+	addReplace("<h","\n<h");	
+	addReplace("<tr","\n<tr");	
 	addReplace("/tr>","/tr>\n");
 	addReplace("/div>","/div>\n");			
+	addReplace("<td><p>(.*?)</p></td>","<td>$1</td>");
 	addReplace("<font.*?>","");
 	addReplace("</font>","");
 	addReplace("<p> *&nbsp; *</p>","");
 	addReplace("–","-");
+	addReplace("\\r","\n");
+	addReplace("\\s*\\n\\s*","\n");
+	addReplace("\\n\\n+","\n");
+	addReplace("(<a[^>]*>)\\n","$1");
     }
 
     private static int idCnt=0;
@@ -425,6 +442,10 @@ public class WebHarvester {
 	attrs += XmlUtil.attr("type",type) + XmlUtil.attr("id",page.id) + (parent==null?"":XmlUtil.attr("parent",parent.id));
 	sb.append(XmlUtil.openTag("entry",attrs));
 	sb.append("\n");
+	String year = StringUtil.findPattern(page.title,"\\d\\d\\d\\d");
+	if(year!=null) {
+	    attrs += XmlUtil.attr("fromdate",year) + XmlUtil.attr("todate",year);
+	}
 	sb.append(XmlUtil.tag("name","", XmlUtil.getCdata(page.title)));
 	sb.append("\n");
 	if(!page.isResource) {
@@ -466,6 +487,10 @@ public class WebHarvester {
 		harvester.setMaxDepth(Integer.parseInt(args[++i]));
 		continue;
 	    }
+	    if(arg.equals("-max")) {
+		harvester.maxCnt = Integer.parseInt(args[++i]);
+		continue;
+	    }	    
 	    if(arg.equals("-pattern")) {
 		pattern = args[++i];
 		continue;
