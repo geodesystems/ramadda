@@ -457,7 +457,9 @@ class  WikiEditor {
 		let attrs = substring.match("[^ ]+([^\n]*)$");
 		if(attrs) attrs=attrs[1].trim();
 		if(!substring) return null;
-		substring = substring.match("\\+([^ \n]+)[ \n]")[1];
+		let match = substring.match("\\+([^ \n]+)[ \n]");
+		if(!match) return;
+		substring = match[1]
 		let Range = ace.require('ace/range').Range;
 		return {
 		    range:new Range(cursor.row, 0,cursor.row,length),
