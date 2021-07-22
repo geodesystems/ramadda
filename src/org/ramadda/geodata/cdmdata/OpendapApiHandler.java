@@ -192,12 +192,19 @@ public class OpendapApiHandler extends RepositoryManager implements RequestHandl
      * @throws Exception on badness
      */
     public Result processOpendapRequest(Request request) throws Exception {
-        String prefix = getRepository().getUrlBase() + "/" + PATH_OPENDAP;
-        Entry entry =
-            getDataOutputHandler().getCdmManager().findEntryFromPath(request,
-                prefix);
+	try {
+	    String prefix = getRepository().getUrlBase() + "/" + PATH_OPENDAP;
+	    Entry entry =
+		getDataOutputHandler().getCdmManager().findEntryFromPath(request,
+									 prefix);
 
-        return getDataOutputHandler().outputOpendap(request, entry);
+	    System.err.println("OpenDap.processOpendapRequest entry:" + entry);
+	    return getDataOutputHandler().outputOpendap(request, entry);
+	} catch(Exception exc) {
+	    System.err.println("OpenDap an error has occurred:" + exc);
+	    exc.printStackTrace();
+	    throw exc;
+	}
     }
 
 
