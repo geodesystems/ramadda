@@ -17,12 +17,10 @@
 package org.ramadda.repository.util;
 
 
-import org.ramadda.repository.Request;
-import org.ramadda.repository.Entry;
 import org.ramadda.repository.Constants;
 import org.ramadda.repository.RepositoryBase;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.WikiUtil;
+
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
