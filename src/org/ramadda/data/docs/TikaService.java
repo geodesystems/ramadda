@@ -17,7 +17,7 @@
 package org.ramadda.data.docs;
 
 
-/*
+
 import org.apache.tika.Tika;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
@@ -25,7 +25,7 @@ import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.apache.tika.sax.BodyContentHandler;
-*/
+
 import org.ramadda.repository.*;
 import org.ramadda.service.*;
 import org.ramadda.util.Utils;
@@ -101,7 +101,6 @@ public class TikaService extends Service {
             throw new IllegalArgumentException("No file entry found");
         }
 
-	/*
 	//	System.out.println("TikaService.extractText:" + entry.getFile());
         Parser parser = new AutoDetectParser(getRepository().getSearchManager().getTikaConfig());
         //Set the max char length to be 5 meg
@@ -143,7 +142,6 @@ public class TikaService extends Service {
 	    IOUtil.writeFile(newFile, fileContent);
 	    fileOut.close();
 	}
-	*/
         return true;
 
     }
