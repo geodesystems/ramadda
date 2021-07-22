@@ -111,9 +111,10 @@ import java.util.zip.*;
 import java.util.concurrent.*;
 import org.ramadda.repository.job.JobManager;
 
-import org.apache.tika.config.TikaConfig;
-import org.apache.tika.parser.AutoDetectParser;
-import org.apache.tika.parser.Parser;
+
+//import org.apache.tika.config.TikaConfig;
+//import org.apache.tika.parser.AutoDetectParser;
+//import org.apache.tika.parser.Parser;
 
 /**
  *
@@ -269,7 +270,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         new ArrayList<SearchProvider>();
 
 
-    private TikaConfig tikaConfig;
+    //    private TikaConfig tikaConfig;
     
     private Object luceneMutex = new Object();
 
@@ -293,7 +294,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         isLuceneEnabled =
             getRepository().getProperty(PROP_SEARCH_LUCENE_ENABLED, false);
 	try {
-	    tikaConfig = new TikaConfig(getClass().getResourceAsStream("/org/ramadda/repository/resources/tika-config.xml"));
+	    //	    tikaConfig = new TikaConfig(getClass().getResourceAsStream("/org/ramadda/repository/resources/tika-config.xml"));
 	} catch(Exception exc) {
 	    System.err.println("Error calling TikaConfig:" + exc);
 	}
@@ -359,10 +360,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
+    /*
     public TikaConfig getTikaConfig() {
 	return tikaConfig;
     }
-
+    */
 
     /**
      * _more_
@@ -754,6 +756,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
+    /*
     private String readContents(File f,List<org.apache.tika.metadata.Metadata> metadataList) throws Exception {
 	//Don't do really big files or images
 	if(f.length()>LUCENE_MAX_LENGTH) return null;
@@ -775,7 +778,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    return null;
 	}
     }	
-
+    */
 
     /**
      * _more_
@@ -792,6 +795,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                                  File f, StringBuilder corpus)
 	throws Exception {
         try {
+	    /*
 	    List<org.apache.tika.metadata.Metadata> metadata = new ArrayList<org.apache.tika.metadata.Metadata>();
 	    String contents = readContents(f,metadata);
 	    //	    System.out.println(f+"\n" + contents);
@@ -807,6 +811,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    doc.add(new StringField("document_metadata_"+ name, value, Field.Store.NO));
 		}
 	    }
+	    */
         } catch (Exception exc) {
             System.err.println("SearchManager: error harvesting corpus from:" + f);
             exc.printStackTrace();
@@ -2871,6 +2876,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      */
     public static void main(String[] args) throws Exception {
         for (String f : args) {
+	    /*
             InputStream stream = new FileInputStream(f);
             org.apache.tika.metadata.Metadata metadata =
                 new org.apache.tika.metadata.Metadata();
@@ -2880,7 +2886,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                 new org.apache.tika.sax.BodyContentHandler(100000000);
             parser.parse(stream, handler, metadata);
             String contents = handler.toString();
-	    System.out.println("contents: " + contents);
+	    System.out.println("contents: " + contents);*/
+	    
         }
     }
 
