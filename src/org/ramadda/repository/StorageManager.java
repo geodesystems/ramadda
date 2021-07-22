@@ -1121,8 +1121,8 @@ public class StorageManager extends RepositoryManager implements PointFile
                     "RAMADDA: Configuring log4j with properties:" + log4JFile
                     + " (this may print out a stack trace)");
                 */
-                org.apache.log4j.PropertyConfigurator.configure(
-                    log4JFile.toString());
+		
+		//TODO:                org.apache.log4j.PropertyConfigurator.configure(log4JFile.toString());
             } catch (Exception exc) {
                 System.err.println("RAMADDA: Error configuring log4j:" + exc);
                 exc.printStackTrace();
