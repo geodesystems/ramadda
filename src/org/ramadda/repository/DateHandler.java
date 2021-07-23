@@ -751,6 +751,7 @@ public class DateHandler extends RepositoryManager {
             parseFormats.add(
                 RepositoryUtil.makeDateFormat("yyyy-MM-dd HH:mm"));
             parseFormats.add(RepositoryUtil.makeDateFormat("yyyy-MM-dd"));
+            parseFormats.add(RepositoryUtil.makeDateFormat("yyyy-MM"));	    
         }
 
 
