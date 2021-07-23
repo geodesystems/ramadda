@@ -136,6 +136,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
     /** _more_ */
     private static final boolean debug = false;
 
+    public static final boolean debugOpendap = false;
+
 
     /** set of suffixes */
     private HashSet<String> suffixSet;
@@ -2567,19 +2569,24 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
         //Get the ncFile from the pool
 
-	System.err.println("OpenDap.outputOpendap location:" + location);
+	if(debugOpendap)
+	    System.err.println("OpenDap.outputOpendap location:" + location);
         NetcdfFile ncFile = getCdmManager().createNetcdfFile(location);
-	System.err.println("OpenDap.outputOpendap ncfile:" + ncFile);
+	if(debugOpendap)
+	    System.err.println("OpenDap.outputOpendap ncfile:" + ncFile);
         opendapCounter.incr();
 
         //Bridge the ramadda servlet to the opendap servlet
-	System.err.println("OpenDap.outputOpendap creating the servlet bridge");
+	if(debugOpendap)
+	    System.err.println("OpenDap.outputOpendap creating the servlet bridge");
         NcDODSServlet servlet = new NcDODSServlet(request, entry, ncFile) {
             @Override
             public ServletConfig getServletConfig() {
-		System.err.println("NcDODSServlet.getServletConfig");
+		if(debugOpendap)
+		    System.err.println("NcDODSServlet.getServletConfig");
                 ServletConfig config= request.getHttpServlet().getServletConfig();
-		System.err.println("NcDODSServlet.getServletConfig got config:" + config);
+		if(debugOpendap)
+		    System.err.println("NcDODSServlet.getServletConfig got config:" + config);
 		return config;
             }
             @Override
@@ -2594,23 +2601,29 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                                  .getRealPath("/"));
                 */
 
-		System.err.println("NcDODSServlet.getServletContext");
+		if(debugOpendap)
+		    System.err.println("NcDODSServlet.getServletContext");
 		ServletContext ctx = request.getHttpServlet().getServletContext();
-		System.err.println("NcDODSServlet.getServletContext got context:" + ctx);
+		if(debugOpendap)
+		    System.err.println("NcDODSServlet.getServletContext got context:" + ctx);
                 return ctx;
             }
             @Override
             public String getServletInfo() {
-		System.err.println("NcDODSServlet.getServletInfo");
+		if(debugOpendap)
+		    System.err.println("NcDODSServlet.getServletInfo");
                 String info =  request.getHttpServlet().getServletInfo();
-		System.err.println("NcDODSServlet.getServletInfo info:" + info);
+		if(debugOpendap)
+		    System.err.println("NcDODSServlet.getServletInfo info:" + info);
 		return info;
             }
             @Override
             public Enumeration getInitParameterNames() {
-		System.err.println("NcDODSServlet.getInitParameterNames");
+		if(debugOpendap)
+		    System.err.println("NcDODSServlet.getInitParameterNames");
                 Enumeration names =  request.getHttpServlet().getInitParameterNames();
-		System.err.println("NcDODSServlet.getInitParameterNames names:" + names);
+		if(debugOpendap)
+		    System.err.println("NcDODSServlet.getInitParameterNames names:" + names);
 		return names;
             }
         };
@@ -2618,24 +2631,30 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         //If we are running as a normal servlet then init the ncdods servlet with the servlet config info
         if ((request.getHttpServlet() != null)
                 && (request.getHttpServlet().getServletConfig() != null)) {
-	    System.err.println("OpenDap calling servlet.init");
+	    if(debugOpendap)
+		System.err.println("OpenDap calling servlet.init");
             servlet.init(request.getHttpServlet().getServletConfig());
         } else {
-	    System.err.println("OpenDap calling no servlet.init to call");
+	    if(debugOpendap)
+		System.err.println("OpenDap calling no servlet.init to call");
 	}
 
         //Do the work
-	System.err.println("OpenDap calling servlet.doGet");
+	if(debugOpendap)
+	    System.err.println("OpenDap calling servlet.doGet");
         servlet.doGet(request.getHttpServletRequest(),
                       request.getHttpServletResponse());
-	System.err.println("OpenDap called servlet.doGet");
+	if(debugOpendap)
+	    System.err.println("OpenDap called servlet.doGet");
         //We have to pass back a result though we set needtowrite to false because the opendap servlet handles the writing
         Result result = new Result("");
         result.setNeedToWrite(false);
         opendapCounter.decr();
-	System.err.println("OpenDap returning netcdfile to cache");
+	if(debugOpendap)
+	    System.err.println("OpenDap returning netcdfile to cache");
         getCdmManager().returnNetcdfFile(location, ncFile);
-	System.err.println("OpenDap done");
+	if(debugOpendap)
+	    System.err.println("OpenDap done");
         return result;
     }
 

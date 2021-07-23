@@ -34,6 +34,8 @@ import java.util.List;
  */
 public class OpendapApiHandler extends RepositoryManager implements RequestHandler {
 
+
+
     /** My id. defined in resources/opendapapi.xml */
     public static final String API_ID = "opendap";
 
@@ -198,7 +200,6 @@ public class OpendapApiHandler extends RepositoryManager implements RequestHandl
 		getDataOutputHandler().getCdmManager().findEntryFromPath(request,
 									 prefix);
 
-	    System.err.println("OpenDap.processOpendapRequest entry:" + entry);
 	    return getDataOutputHandler().outputOpendap(request, entry);
 	} catch(Exception exc) {
 	    System.err.println("OpenDap an error has occurred:" + exc);
