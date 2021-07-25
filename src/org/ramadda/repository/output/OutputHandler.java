@@ -1479,7 +1479,7 @@ public class OutputHandler extends RepositoryManager {
         String cbx = HU.checkbox(cbxArgId, cbxArgValue, false,
                                         attrSB.toString());
         decorateEntryRow(request, entry, htmlSB,
-                         getEntryManager().getAjaxLink(request, entry, getEntryDisplayName(entry),null, true, null, true, showIcon), rowId, cbx,
+                         getEntryManager().getAjaxLink(request, entry, getEntryDisplayName(entry, request.getString("nameTemplate",null)),null, true, null, true, showIcon), rowId, cbx,
 			 showDetails);
 
     }
@@ -1515,10 +1515,20 @@ public class OutputHandler extends RepositoryManager {
      */
     public String getEntriesList(Request request, Appendable sb,
                                  List entries, boolean doForm,
-                                 boolean showCrumbs, boolean showDetails, boolean...args)
+                                 boolean showCrumbs, boolean showDetails) 
+            throws Exception {
+	return getEntriesList(request, sb, entries, doForm, showCrumbs, showDetails, false, null);
+    }
+
+
+    public String getEntriesList(Request request, Appendable sb,
+                                 List entries, boolean doForm,
+                                 boolean showCrumbs, boolean showDetails, boolean showIcon, String nameTemplate) 
             throws Exception {	
 
-	boolean showIcon = args.length>0?args[0]:true;
+	if(nameTemplate!=null)
+	    request.put("nameTemplate",nameTemplate);
+
         String link        = "";
         String base        = "";
         String afterHeader = "";
@@ -1671,9 +1681,7 @@ public class OutputHandler extends RepositoryManager {
                         false);
             }
 
-            String displayName = getEntryDisplayName(entry);
-
-
+            String displayName = getEntryDisplayName(entry,nameTemplate);
             EntryLink entryLink = getEntryManager().getAjaxLink(request,
 								entry, displayName, null, true, crumbs,true,showIcon);
 

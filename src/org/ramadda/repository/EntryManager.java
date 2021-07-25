@@ -5985,7 +5985,8 @@ public class EntryManager extends RepositoryManager {
 
         boolean showUrl     = request.get(ARG_DISPLAYLINK, true);
         boolean showDetails = request.get(ARG_DETAILS, true);
-        showIcon    = request.get("showIcon", showIcon);	
+        showIcon    = request.get("showIcon", showIcon);
+        String nameTemplate   = request.getString("nameTemplate",null);
         String  entryId     = entry.getId();
         String  uid         = HU.getUniqueId("link_");
         String  output      = "inline";
@@ -6005,6 +6006,8 @@ public class EntryManager extends RepositoryManager {
 					   Boolean.toString(showUrl), forTreeView
 					   ? ARG_TREEVIEW
 					   : "nop", "true");
+	    if(nameTemplate!=null)
+		folderClickUrl+="&"+HU.arg("nameTemplate",nameTemplate);
             String message = entry.isGroup()
 		? "Click to open folder"
 		: "Click to view contents";

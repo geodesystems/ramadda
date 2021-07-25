@@ -3265,9 +3265,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             } else if (max > 0) {
                 newRequest.put(ARG_MAX, max + "");
             }
+	    
             String link = getHtmlOutputHandler().getEntriesList(newRequest,
                               sb, children, true, false, showDetails,
-                              showIcon);
+								showIcon,getProperty(wikiUtil, props,"nameTemplate",(String)null));
             if (getProperty(wikiUtil, props, "form", false)) {
                 return treePrefix + link + HU.br() + sb.toString();
             } else {
