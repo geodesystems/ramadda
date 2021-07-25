@@ -123,8 +123,8 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
             throws Exception {
         super(repository, element, true);
         addType(OUTPUT_WIKI);
-        addType(OUTPUT_WIKI_HISTORY);
-        addType(OUTPUT_WIKI_DETAILS);
+	//	addType(OUTPUT_WIKI_HISTORY);
+	addType(OUTPUT_WIKI_DETAILS);
         addType(OUTPUT_WIKI_TEXT);
     }
 
@@ -152,7 +152,7 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
                     WikiPageTypeHandler.TYPE_WIKIPAGE)) {
                 //                links.add(makeLink(request, stateEntry, OUTPUT_WIKI));
                 //                links.add(makeLink(request, stateEntry, OUTPUT_WIKI_DETAILS));
-                links.add(makeLink(request, stateEntry, OUTPUT_WIKI_HISTORY));
+		//                links.add(makeLink(request, stateEntry, OUTPUT_WIKI_HISTORY));
                 //                links.add(makeLink(request, stateEntry, OUTPUT_WIKI_TEXT));
             }
         }

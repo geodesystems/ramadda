@@ -273,18 +273,20 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
         super.initializeEntryFromForm(request, entry, parent, newEntry);
         String newText = (String) entry.getValues()[0];
         if ((originalText == null) || !Misc.equals(originalText, newText)) {
-            String desc = "";
-            if (wasNew) {
+	    /** For now don't keep around the history as problably no human has ever viewed or used it 
+		String desc = "";
+		if (wasNew) {
                 desc = "Created";
-            } else {
+		} else {
                 desc = request.getString(
-                    WikiPageOutputHandler.ARG_WIKI_CHANGEDESCRIPTION, "");
-            }
-
-            getDatabaseManager().executeInsert(Tables.WIKIPAGEHISTORY.INSERT,
-                    new Object[] { entry.getId(),
-                                   request.getUser().getId(), new Date(),
-                                   desc, newText });
+		WikiPageOutputHandler.ARG_WIKI_CHANGEDESCRIPTION, "");
+		}
+		
+		getDatabaseManager().executeInsert(Tables.WIKIPAGEHISTORY.INSERT,
+		new Object[] { entry.getId(),
+		request.getUser().getId(), new Date(),
+		desc, newText });
+	    **/
             WikiUtil wikiUtil =
                 getWikiManager().initWikiUtil(request,
                     new WikiUtil(Misc.newHashtable(new Object[] {
@@ -295,35 +297,7 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
             getRepository().getWikiManager().wikifyEntry(request, entry,
 							 wikiUtil, newText, true, null, null, null,true);
 
-            List categories = (List) wikiUtil.getProperty("wikicategories");
-            if (categories == null) {
-                categories = new ArrayList();
-            }
-            //TODO: 
-            List<Metadata> metadataList =
-                getMetadataManager().getMetadata(entry);
-            for (Metadata metadata :
-                    (List<Metadata>) new ArrayList(metadataList)) {
-                if (metadata.getType().equals("wikicategory")) {
-                    if ( !categories.contains(metadata.getAttr1())) {
-                        metadataList.remove(metadata);
-                        //getMetadataManager().deleteMetadata(metadata);
-                    } else {
-                        categories.remove(metadata.getAttr1());
-                    }
-                }
-            }
-            for (String cat : (List<String>) categories) {
-                Metadata metadata = new Metadata(getRepository().getGUID(),
-                                        entry.getId(), "wikicategory", false,
-                                        cat, Metadata.DFLT_ATTR,
-                                        Metadata.DFLT_ATTR,
-                                        Metadata.DFLT_ATTR,
-                                        Metadata.DFLT_EXTRA);
-                //                getMetadataManager().insertMetadata(metadata);
-                metadataList.add(metadata);
-            }
-            entry.setMetadata(metadataList);
+
             Hashtable<Entry, Entry> links =
                 (Hashtable<Entry, Entry>) wikiUtil.getProperty("wikilinks");
             if (links == null) {
@@ -362,7 +336,7 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
                 }
             }
 
-        }
+	}
 
 
 
@@ -455,12 +429,14 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
                                       HU.input(ARG_NAME, name, size)));
 
         if (entry != null) {
+	    /**
             sb.append(
                 HU.formEntry(
                     msgLabel("Edit&nbsp;Summary"),
                     HU.input(
                         WikiPageOutputHandler.ARG_WIKI_CHANGEDESCRIPTION, "",
                         size)));
+	    */
         }
 
 
