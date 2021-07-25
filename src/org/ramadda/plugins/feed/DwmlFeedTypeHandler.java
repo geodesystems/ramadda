@@ -297,7 +297,6 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
         Weather forecast = getForecast(entry);
         if (forecast == null) {
             sb.append("No forecast defined");
-
             return;
         }
         if (forecast.hazards == null) {
@@ -318,6 +317,7 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
 	HtmlUtils.close(sb, "div");
         if (addHeader) {
             HtmlUtils.close(sb, "div");
+            HtmlUtils.close(sb, "div");	    
         }
         HtmlUtils.close(sb, "div");
 
