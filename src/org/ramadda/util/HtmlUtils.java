@@ -5507,7 +5507,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
         List<Link> links = new ArrayList<Link>();
         String pattern = images?
 	    "(?s)(?i)<\\s*img [^>]*?src\\s*=\\s*(\"|')([^\"'>]+)(\"|')[^>]*?>":
-	    "(?s)(?i)<\\s*a[^>]*?\\s*href\\s*=\\s*(\"|')([^\"'>]+)(\"|')[^>]*?>(.*?)<";
+	    "(?s)(?i)<\\s*a[^>]*?\\s*href\\s*=\\s*(\"|')([^\"'>]+)(\"|')[^>]*?>(.*?)</a";
 
         html = html.replaceAll("\t", " ");
         //<a target="_blank" title="/gov/data/GISDLData/Footprints.kmz" href="/gov/data/GISDLData/Footprints.kmz">KMZ</a>
@@ -5518,6 +5518,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
             href = href.replaceAll(" ", "");
             String label = images?"":matcher.group(4);
             label = StringUtil.stripTags(label).trim();
+	    label = label.replace("&nbsp;"," ");
             try {
                 URL newUrl = new URL(url, href.replace("\\","/").replaceAll("#.*",""));
 		if(seen.contains(newUrl)) continue;
