@@ -1123,6 +1123,73 @@ public  class RowCollector extends Processor {
     }
 
 
+    public static class CountUnique extends RowCollector {
+
+	private Row header;
+
+	private List<String> keys = new ArrayList<String>();
+
+	private Hashtable<String,Row> rowMap = new Hashtable<String,Row>();
+	private Hashtable<String,Integer> countMap = new Hashtable<String,Integer>();	
+
+        /**
+         */
+        public CountUnique(List<String> cols) {
+            super(cols);
+        }
+
+	public Row processRow(TextReader ctx, Row row) throws Exception {
+            if(rowCnt++==0) {
+		header = row;
+		return null;
+	    }
+	    List<Integer> indices = getIndices(ctx);
+	    String key = "";
+	    for(int idx: indices) {
+		key +="_" + row.getString(idx);
+	    }
+	    Row sample = rowMap.get(key);
+	    Integer cnt = countMap.get(key);
+	    if(sample==null) {
+		keys.add(key);
+		rowMap.put(key,row);
+		countMap.put(key,0);
+		cnt = 0;
+	    }
+	    cnt++;
+	    countMap.put(key,cnt);
+	    return null;
+	}
+
+
+
+        /**
+         * _more_
+         *
+         * @param ctx _more_
+         * @param rows _more_
+         *
+         *
+         * @return _more_
+         * @throws Exception On badness
+         */
+        @Override
+        public List<Row> finish(TextReader ctx, List<Row> rows)
+	    throws Exception {
+	    rows= new ArrayList<Row>();
+	    header.add("Count");
+	    rows.add(header);
+	    for(String key: keys) {
+		Row sample = rowMap.get(key);
+		int cnt = countMap.get(key);
+		sample.add(cnt);
+		rows.add(sample);
+	    }
+	    return rows;
+        }
+    }
+    
+
 
     /**
      * Class description

@@ -399,8 +399,8 @@ public class Filter extends Processor {
                 return doNegate(v.equals(""));
             }
             if (pattern.matcher(v).find()) {
-                if (debug||true) {
-                    System.out.println("R3:" + doNegate(true) + " " + row);
+                if (debug) {
+		    System.out.println("R3:" + doNegate(true) + " " + row);
                 }
                 return doNegate(true);
             }

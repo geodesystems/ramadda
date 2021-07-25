@@ -755,7 +755,7 @@ public class CsvUtil {
         while ((row = provider.readRow()) != null) {
 	    if(row==null) break;
             rowCnt++;
-	    if((rowCnt%100000)==0) System.err.print(".");
+	    //	    if((rowCnt%100000)==0) System.err.print(".");
             if (rowCnt <= ctx.getSkip()) {
                 continue;
             }
@@ -1619,6 +1619,10 @@ public class CsvUtil {
                 new Arg("value_columns", "value columns"),
                 new Arg("file", "File to join with", "type", "file"),
                 new Arg("source_columns", "source key columns")),
+        new Cmd(
+		"-countunique",
+		"Count number of unique values",
+		new Arg("columns", "", "type", "columns")),
         new Cmd("-dissect", "Make fields based on patterns",
                 new Arg("column", "", "type", "column"), new Arg("pattern","e.g., \"(field1:.*) (field2:.*) ...\"","type","pattern","size","80")),
         new Cmd("-keyvalue", "Make fields from key/value pairs, e.g. name1=value1 name2=value2 ...",
@@ -2301,6 +2305,12 @@ public class CsvUtil {
 		ctx.addProcessor(new Converter.ImageSearch(getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });
+	defineFunction("-countunique",1, (ctx,args,i) -> {
+		ctx.addProcessor(new RowCollector.CountUnique(getCols(args.get(++i))));
+		return i;
+	    });
+
+
 	defineFunction("-download",2, (ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Downloader(this, args.get(++i), args.get(++i)));
 		return i;

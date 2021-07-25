@@ -379,6 +379,8 @@ public abstract class Processor extends CsvOperator {
 
 
 
+
+
     public static class Dissector extends Processor {
 	Pattern pattern;
 	List<String> patternNames;
