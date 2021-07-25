@@ -237,6 +237,7 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
             addForecast(request, entry, sb, addHeader, cnt);
         } else if (tag.equals("nws.all")) {
             addHazard(request, entry, sb, addHeader);
+	    sb.append("<br>");
             addCurrent(request, entry, sb, addHeader, vertical, true);
             addForecast(request, entry, sb, addHeader, 1000);
             addDetails(request, entry, sb, addHeader, 1000);
