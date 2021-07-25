@@ -95,6 +95,10 @@ public class WebHarvester {
     private int maxDepth = -1;
     private List<String> images = new ArrayList<String>();
 
+    private static SimpleDateFormat mmmyyyysdf = new SimpleDateFormat("MMMMM yyyy");
+
+    private static SimpleDateFormat mmmyyyysdf2 = new SimpleDateFormat("yyyy-MM");    
+
     public WebHarvester() {
     }
 
@@ -208,7 +212,7 @@ public class WebHarvester {
 	    body = body.replaceAll(">\n+",">");
 	    body = body.substring(0,29000);
 	}
-	System.err.println(indent +"URL:" + url);// +" label:"  + label+" " +body.length());
+	System.err.println(indent +"URL:" + url +" " + label);// +" label:"  + label+" " +body.length());
 	//	System.err.println(indent +"URL:" + url +" link:" + link);
 	if(!Utils.stringDefined(title)) {
 	    title = StringUtil.findPattern(body, "(?s)(?i)<h1.*?>(.*?)<.h1>");
@@ -219,6 +223,7 @@ public class WebHarvester {
 	}	    
 	page = new Page(url, title,body);
 	page.href=link;
+	page.hrefLabel=label;
 	seen.put(url.toString(),page);
 
 	if(parent!=null)
@@ -352,6 +357,7 @@ public class WebHarvester {
 	boolean processed = false;
 	String id = "page_" + (idCnt++);
 	String href;
+	String hrefLabel;
 	URL url;
 	String title;
 	String body;
@@ -411,7 +417,7 @@ public class WebHarvester {
     private static void writeEntryXml(Page page, Page parent) throws Exception {
 	//	System.out.println("TITLE:" + page.title  +" " + page.href +" " + page.url);
 	StringBuilder sb = new StringBuilder();
-	String type= "group";
+	String type= "wikipage";
 	String attrs = "";
 	if(page.isResource) {
 	    String surl = page.url.toString().toLowerCase();
@@ -440,19 +446,49 @@ public class WebHarvester {
 	    }
 	}	    
 	attrs += XmlUtil.attr("type",type) + XmlUtil.attr("id",page.id) + (parent==null?"":XmlUtil.attr("parent",parent.id));
+	String date = null;
+
+	for(String title: new String[]{page.title,page.hrefLabel}) {
+	    //	    System.err.println("title:" + title);
+	    if(title==null) continue;
+	    String[] mmmyyyy = Utils.findPatterns(title,"(?i)(january|february|march|april|may|june|july|august|september|october|november|december)\\s*(\\d\\d\\d\\d)");
+	    if(mmmyyyy!=null) {
+		Date dttm = mmmyyyysdf.parse(mmmyyyy[0]+" " + mmmyyyy[1]);
+		date  = mmmyyyysdf2.format(dttm);
+	    }
+
+
+	    if(date==null) {
+		String[] mmddyy = Utils.findPatterns(title,"[^\\d]+(\\d\\d)/(\\d\\d)/(\\d\\d)[^\\d]+");
+		if(mmddyy!=null) {
+		    date = "20" + mmddyy[2]+"-" + mmddyy[0] +"-" + mmddyy[1];
+		}
+	    }
+	    if(date==null) {
+		String year = StringUtil.findPattern(title,"\\d\\d\\d\\d");
+		if(year!=null) {
+		    date = year;
+		}
+	    }
+	    //	    System.err.println(title+" date:" + date);
+	    if(date!=null) {
+		attrs += XmlUtil.attr("fromdate",date) + XmlUtil.attr("todate",date);
+		break;
+	    }
+	}
 	sb.append(XmlUtil.openTag("entry",attrs));
 	sb.append("\n");
-	String year = StringUtil.findPattern(page.title,"\\d\\d\\d\\d");
-	if(year!=null) {
-	    attrs += XmlUtil.attr("fromdate",year) + XmlUtil.attr("todate",year);
-	}
+
 	sb.append(XmlUtil.tag("name","", XmlUtil.getCdata(page.title)));
 	sb.append("\n");
 	if(!page.isResource) {
-	    String content = HtmlUtils.href(page.url.toString(),"Source") +"<br>" + page.body;
-	    if(page.children.size()>0)
-		content+="\n----\n:heading Links\n{{tree details=false}}";
-	    sb.append(XmlUtil.tag("description","", XmlUtil.getCdata("<wiki>\n+section title={{name}}\n"+content+"\n-section\n")));
+	    //	    String content = HtmlUtils.href(page.url.toString(),"Source") +"<br>" + page.body;
+	    String content =  "+section title={{name}}\n" + page.body +"\n-section\n";
+	    //	    if(page.children.size()>0)
+	    //		content+="\n----\n:heading Links\n{{tree details=false}}";
+	    //If we are creating something other than a wikipage then set the description
+	    //sb.append(XmlUtil.tag("description","", XmlUtil.getCdata(content)));
+	    sb.append(XmlUtil.tag("wikitext","", XmlUtil.getCdata(content)));
 	}
 	sb.append("</entry>");	
 	System.out.println(sb);
@@ -528,3 +564,8 @@ public class WebHarvester {
 	}
     }
 }
+
+/*
+{{tree entries.filter="name:Flight.*" details=false 
+treePrefix="<h3>Flights</h3>" message="" nameTemplate="${name} - ${date}" sort="date" sortdir=up}}
+*/
