@@ -862,6 +862,10 @@ public class RepositoryManager implements RepositorySource, Constants,
      * @return _more_
      */
     public String getEntryDisplayName(Entry entry) {
+	return getEntryDisplayName(entry, null);
+    }
+
+    public String getEntryDisplayName(Entry entry, String template) {	
         String name = entry.getTypeHandler().getEntryName(entry);
         if ( !Utils.stringDefined(name)) {
             name = entry.getBaseLabel();
@@ -871,6 +875,11 @@ public class RepositoryManager implements RepositorySource, Constants,
             }
         }
 
+	if(template!=null) {
+	    name = template.replace("${name}",name);
+	    String date = getDateHandler().formatYYYYMMDD(new Date(entry.getStartDate()));
+	    name = name.replace("${date}",date);
+	}
         return name;
     }
 
