@@ -1285,7 +1285,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             if (values[offset] == null) {
                 sb.append("null");
             } else {
-                String s = sdf.format((Date) values[offset]);
+                String s;
                 if (sdf != null) {
                     s = sdf.format((Date) values[offset]);
                 } else {
