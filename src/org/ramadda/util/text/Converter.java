@@ -166,6 +166,51 @@ public abstract class Converter extends Processor {
     }
 
 
+    public static class ColumnFirst extends Converter {
+
+	private HashSet<Integer> firstSeen;
+
+
+        /**
+         * @param cols _more_
+         */
+        public ColumnFirst(List<String> cols) {
+            super(cols);
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            List<Integer> indices = getIndices(ctx);
+            if (indices.size() == 0) {
+                return row;
+            }
+            List<String> result = new ArrayList<String>();
+	    if(firstSeen==null) {
+		firstSeen = new HashSet<Integer>();
+		for (Integer idx : indices) {
+		    firstSeen.add(idx);
+		}
+	    }
+            for (Integer idx : indices) {
+		String s = row.getString(idx);
+		result.add(s);
+	    } 
+	    for(int i=0;i<row.size();i++) {
+		if(!firstSeen.contains(i))
+		    result.add(row.getString(i));
+	    }
+
+            return new Row(result);
+	}
+    }
+    
+
     /**
      * Class description
      *

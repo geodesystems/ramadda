@@ -1858,6 +1858,8 @@ public abstract class Processor extends CsvOperator {
         /** _more_ */
         private Row headerRow2;
 
+	private String dflt;
+	
         /**
          * _more_
          *
@@ -1868,11 +1870,12 @@ public abstract class Processor extends CsvOperator {
          * @param keys2 _more_
          */
         public Joiner(List<String> keys1, List<String> values1, String file,
-                      List<String> keys2) {
+                      List<String> keys2, String dflt) {
             this.keys1   = keys1;
             this.values1 = values1;
             this.keys2   = keys2;
             this.file    = file;
+	    this.dflt = dflt;
             try {
                 init();
             } catch (Exception exc) {
@@ -1924,6 +1927,7 @@ public abstract class Processor extends CsvOperator {
         }
 
 
+	List<Integer> keys2Indices;
 
         /**
          * _more_
@@ -1937,7 +1941,9 @@ public abstract class Processor extends CsvOperator {
          */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
-            List<Integer> keys2Indices = getIndices(ctx, keys2);
+
+	    if(keys2Indices==null)
+		keys2Indices = getIndices(ctx, keys2);
             if (headerRow2 == null) {
                 headerRow2 = row;
 		//                System.err.println("ROW:" + headerRow1);
@@ -1945,7 +1951,6 @@ public abstract class Processor extends CsvOperator {
 		    //                    System.err.println("idx:" + j);
                     row.add(headerRow1.get(j));
                 }
-
                 return row;
             }
             String key = "";
@@ -1954,13 +1959,10 @@ public abstract class Processor extends CsvOperator {
             }
             Row other = map.get(key);
             if (other == null) {
-		//		System.err.println("no join:" + " key=" + key + " row:");
                 for (int j : values1Indices) {
-                    row.add("");
+                    row.add(dflt);
                 }
-
-                return null;
-                //              return row;
+                return row;
             }
             for (int j : values1Indices) {
                 row.add(other.get(j));

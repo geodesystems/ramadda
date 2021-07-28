@@ -1543,6 +1543,9 @@ public class CsvUtil {
         new Cmd("-notcolumns", new Label("Deselect columns"),
                 "Don't include given columns",
                 new Arg("columns", "", "type", "columns")),
+        new Cmd("-firstcolumns", new Label("Move columns to starts"),
+                "Move columns",
+                new Arg("columns", "", "type", "columns")),
         new Cmd("-delete", new Label("Delete columns"), "Remove the columns",
                 new Arg("columns", "", "type", "columns")),
         new Cmd("-cut", new Label("Drop rows"), "",
@@ -1620,7 +1623,8 @@ public class CsvUtil {
                 new Arg("key columns", "Numeric column numbers of the file to join with", "type", "columns"),
                 new Arg("value_columns", "numeric columns of the values to join"),
                 new Arg("file", "File to join with", "type", "file"),
-                new Arg("source_columns", "source key columns")),
+                new Arg("source_columns", "source key columns"),
+		new Arg("default_value", "default value")),
         new Cmd(
 		"-countunique",
 		"Count number of unique values",
@@ -2326,6 +2330,10 @@ public class CsvUtil {
 		ctx.addProcessor(ctx.getSelector());
 		return i;
 	    });
+	defineFunction("-firstcolumns",1,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.ColumnFirst(getCols(args.get(++i))));
+		return i;
+	    });
 
 	defineFunction("-notcolumns",1,(ctx,args,i) -> {
 		List<String> cols = getCols(args.get(++i));
@@ -2435,12 +2443,12 @@ public class CsvUtil {
 		return i;
 	    });
 
-	defineFunction("-join",4,(ctx,args,i) -> {
+	defineFunction("-join",5,(ctx,args,i) -> {
 		List<String> keys1   = getCols(args.get(++i));
 		List<String> values1 = getCols(args.get(++i));
 		String       file    = args.get(++i);
 		List<String> keys2   = getCols(args.get(++i));
-		ctx.addProcessor(new Processor.Joiner(keys1, values1, file, keys2));
+		ctx.addProcessor(new Processor.Joiner(keys1, values1, file, keys2,args.get(++i)));
 		return i;
 	    });
 
