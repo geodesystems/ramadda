@@ -142,12 +142,12 @@ public class WebHarvester {
 	imageReplace.add(new Replace(pattern, with));
     }    
 
-    public Page harvest(boolean recurse, String pattern) throws Exception {
-	page = harvest(null, url, null, null, recurse, pattern,"",0);
+    public Page harvest(boolean recurse, String pattern, String notpattern) throws Exception {
+	page = harvest(null, url, null, null, recurse, pattern,notpattern,"",0);
 	return page;
     }
 
-    public Page harvest(Page parent, URL url, String label, String link,boolean recurse, String linkPattern,String indent, int depth) throws Exception {	
+    public Page harvest(Page parent, URL url, String label, String link,boolean recurse, String linkPattern,String notpattern, String indent, int depth) throws Exception {	
 	cnt++;
 	if(maxCnt>=0 &&   cnt>maxCnt) return null;
 	Page page;
@@ -200,17 +200,24 @@ public class WebHarvester {
 	    //	    }
 	}
 
-	if(body.length()>30000)  {
+	/*
+	  <p><a href="f800track.gif">Flight track&nbsp; <br>
+	  <a href="800summary.htm">T
+	*/
+
+	body = fixUnclosedHrefs(body);
+	int maxLength = 256000;
+
+	if(body.length()>maxLength)  {
 	    body = body.replaceAll(">\n+",">");
 	}
-	if(body.length()>30000)  {
+	if(body.length()>maxLength)  {
 	    body = body.replaceAll("<tr[^>]+>","<tr>");
 	}	
-
-	if(body.length()>30000)  {
+	if(body.length()>maxLength)  {
 	    System.err.println("***** bad length: " + url +" " + body.length());
 	    body = body.replaceAll(">\n+",">");
-	    body = body.substring(0,29000);
+	    //	    body = body.substring(0,29000);
 	}
 	System.err.println(indent +"URL:" + url +" " + label);// +" label:"  + label+" " +body.length());
 	//	System.err.println(indent +"URL:" + url +" link:" + link);
@@ -246,8 +253,13 @@ public class WebHarvester {
 
 	if(recurse) {
 	    for(HtmlUtils.Link childLink: HtmlUtils.extractLinks(url, page.body, null)) {
+		if(Utils.stringDefined(notpattern) &&childLink.matches(notpattern)) {
+		    System.err.println("not:" + childLink);
+		    continue;
+		}
+
 		if(childLink.matches(linkPattern)) {
-		    Page child = harvest(page, childLink.getUrl(), childLink.getLabel(),childLink.getLink(), recurse, linkPattern,indent+"  ",depth+1);
+		    Page child = harvest(page, childLink.getUrl(), childLink.getLabel(),childLink.getLink(), recurse, linkPattern,notpattern,indent+"  ",depth+1);
 		    if(child==null)  {
 			//			System.err.println(indent +" " +"NO CHILD:"  + childLink.getUrl());
 			continue;
@@ -509,9 +521,22 @@ public class WebHarvester {
 	System.err.println("\t<url> (url to start)");
 	System.exit(0);
     }
+
+    public static String fixUnclosedHrefs(String html) {
+	//This is a hack to replace '</a' with a single character that probably won't show up in the html
+	//That way we can use a negate pattern with the single replace chart [^c]
+	//since I can't figure out how to do negative lookaheads in regexps
+	String c = "\uabcd";
+ 	html = html.replace("</a",c);
+	html = html.replaceAll("<a([^" + c+"]+)<a","<a$1</a><a");	
+	html = html.replace(c,"</a");
+	return html;
+    }
+
     public static void main(String[]args) throws Exception {
 	WebHarvester harvester = new WebHarvester();
 	String pattern= null;
+	String notpattern= null;	
 	boolean doImages = false;
 	boolean doEntries = false;	
 	for(int i=0;i<args.length;i++) {
@@ -529,6 +554,10 @@ public class WebHarvester {
 	    }	    
 	    if(arg.equals("-pattern")) {
 		pattern = args[++i];
+		continue;
+	    }
+	    if(arg.equals("-notpattern")) {
+		notpattern = args[++i];
 		continue;
 	    }
 	    if(arg.equals("-doimages")) {
@@ -553,7 +582,7 @@ public class WebHarvester {
 	    }
 	    harvester.setUrl(arg);
 	}
-	Page page = harvester.harvest(true,pattern);
+	Page page = harvester.harvest(true,pattern,notpattern);
 	if(doEntries) {
 	    System.out.println("<entries>");
 	    writeEntryXml(page,null);
