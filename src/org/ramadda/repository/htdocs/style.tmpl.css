@@ -4192,7 +4192,7 @@ a.toggleblocklabellink:visited {
     padding-left:0px !important;
 }
 
-.formtable  {
+.formtable, .formtable_tight  {
     padding-top: 0px;
     padding-bottom: 0px;
 }
@@ -4200,6 +4200,13 @@ a.toggleblocklabellink:visited {
 .formtable td {
     padding-top: 5px;
     padding-bottom: 5px;
+    padding-left: 4px;
+    padding-right: 3px;
+}
+
+.formtable_tight td {
+    padding-top: 1px;
+    padding-bottom: 1px;
     padding-left: 4px;
     padding-right: 3px;
 }
