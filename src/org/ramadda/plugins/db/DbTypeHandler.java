@@ -2132,7 +2132,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                 + HtmlUtils.radio(
                                     ARG_DB_SORTDIR, "desc",
                                     dir.equals("desc"),
-                                    " default='asc' ") + " Descending"
+                                    " default='asc' ") + " Descending" + HtmlUtils.space(1) 
                                         + HtmlUtils.radio(
                                             ARG_DB_SORTDIR, "asc",
                                             dir.equals("asc"),
@@ -2144,7 +2144,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     HtmlUtils.select(
                         ARG_DB_ITERATE, aggtfos,
                         request.getString(ARG_DB_ITERATE, ""),
-                        HtmlUtils.cssClass("search-select")) + HtmlUtils.br()
+                        HtmlUtils.cssClass("search-select")) + HtmlUtils.space(1) + "Enter values to iterate search on:" + HtmlUtils.br()
                             + HtmlUtils.textArea(
                                 ARG_DB_ITERATE_VALUES,
                                 request.getString(ARG_DB_ITERATE_VALUES, ""),
@@ -2157,7 +2157,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     HtmlUtils.checkbox(
                         ARG_DB_OR, "true",
                         request.get(ARG_DB_OR, false)) + " "
-                            + msg("Use OR logic")));
+		    + "Match any of the above search criteria (OR logic)"));
 
 
             String suffix = getAccessManager().canEditEntry(request, entry)
@@ -3085,8 +3085,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 HtmlUtils.textArea(ARG_EMAIL_MESSAGE, "", 30, 60)));
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.submit(msg("Send Message")));
-
-
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.formClose());
 
@@ -4666,7 +4664,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                  entry, dbid));
             String        href = HtmlUtils.href(viewUrl, label);
             StringBuilder desc = new StringBuilder(href + "<br>");
-            getHtml(request, desc, entry, values);
+            getHtml(request, desc, entry, values,false);
             Element placemark = KmlUtil.placemark(folder, label,
                                     desc.toString(), lat, lon, 0, null);
             if (dbInfo.getDateColumn() != null) {
@@ -6708,7 +6706,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         Object[] values = getValues(entry, dbid);
 
-        getHtml(request, sb, entry, values);
+        getHtml(request, sb, entry, values,asXml);
         if ( !asXml) {
             addViewFooter(request, entry, sb);
         }
@@ -6734,9 +6732,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      * @throws Exception _more_
      */
     public void getHtml(Request request, StringBuilder sb, Entry entry,
-                        Object[] values)
+                        Object[] values, boolean asXml)
             throws Exception {
-        sb.append(HtmlUtils.formTable());
+	if(asXml) {
+	    sb.append(HtmlUtils.formTable("formtable_tight"));
+	} else {
+	    sb.append(HtmlUtils.formTable());
+	}
+
         SimpleDateFormat sdf = getDateFormat(entry);
         for (Column column : getColumns(true)) {
             if ( !isDataColumn(column)) {
