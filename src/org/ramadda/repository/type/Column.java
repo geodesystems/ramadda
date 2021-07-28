@@ -2160,21 +2160,15 @@ public class Column implements DataTypes, Constants, Cloneable {
         } else if (isType(DATATYPE_LIST)) {
             String value = getSearchValue(request, null);
             if (Utils.stringDefined(value)) {
-
-                //value
-                //value,...
-                //....,value
-                //....,value,...
                 List<Clause> ors = new ArrayList<Clause>();
-                ors.add(Clause.eq(columnName, value));
-                ors.add(dbm.makeLikeTextClause(columnName, "%" + value + "%",
-                        false));
-                //                ors.add(Clause.like(columnName, value+",%"));
-                //                ors.add(Clause.like(columnName, "%," + value));
-                //                ors.add(Clause.like(columnName, "%," + value+",%"));
+		for(String v: Utils.split(value.trim(),"\n",true,true)) {
+		    ors.add(Clause.eq(columnName, v));
+		    ors.add(dbm.makeLikeTextClause(columnName, "%" + v + "%",  false));
+		}
+                //                ors.add(Clause.like(columnName, v+",%"));
+                //                ors.add(Clause.like(columnName, "%," + v));
+                //                ors.add(Clause.like(columnName, "%," + v+",%"));
                 where.add(Clause.or(ors));
-
-                //                System.err.println("ORS:" + Clause.or(ors));
             }
         } else if (isEnumeration()) {
             List<String> values = getSearchValues(request);
@@ -3267,8 +3261,13 @@ public class Column implements DataTypes, Constants, Cloneable {
                 text = text.replaceAll("\"", "&quot;");
                 //                String text  = Utils.unquote(request.getString(searchArg, ""));
 
+		boolean isList = isType(DATATYPE_LIST);
 		String widgetId = searchArg.replaceAll("\\.","_");
-                widget = HtmlUtils.input(searchArg, text, HtmlUtils.SIZE_20 +HU.attr("id",widgetId));
+		if(isList) {
+		    widget = HtmlUtils.textArea(searchArg, text,5,20,  HU.attr("id",widgetId));
+		} else {
+		    widget = HtmlUtils.input(searchArg, text, HtmlUtils.SIZE_20 +HU.attr("id",widgetId));
+		}
 
 		if(searchDB!=null) {
 		    //This uses the plugins/db plugin
