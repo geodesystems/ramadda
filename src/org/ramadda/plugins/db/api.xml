@@ -1,0 +1,5 @@
+
+
+<api handler="org.ramadda.plugins.db.DbAdminHandler" id="db">
+      <api request="/db/search/list"    method="processList"/>
+</api>
