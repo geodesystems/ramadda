@@ -761,7 +761,7 @@ public class IO {
         connection.setRequestMethod(action);
         connection.setRequestProperty("charset", "utf-8");
         for (int i = 0; i < args.length; i += 2) {
-	    //	    System.err.println("IO.doHttpRequest " + args[i]+":" + args[i+1]);
+	    //	    System.err.println(args[i]+":" + args[i+1]);
             connection.setRequestProperty(args[i], args[i + 1]);
         }
         if (body != null) {
@@ -849,8 +849,9 @@ public class IO {
         //        connection.setInstanceFollowRedirects(false);
         connection.setRequestMethod("GET");
         //        connection.setRequestProperty("charset", "utf-8");
+	//	System.err.println("header:");
         for (int i = 0; i < args.length; i += 2) {
-            //System.err.println(args[i]+":" + args[i+1]);
+	    //            System.err.println(args[i]+":" + args[i+1]);
             connection.setRequestProperty(args[i], args[i + 1]);
         }
         try {
@@ -868,9 +869,9 @@ public class IO {
 
             return sb.toString();
         } catch (Exception exc) {
-            System.err.println("Error:" + connection.getResponseCode());
-            System.err.println(connection.getHeaderFields());
-
+            System.err.println("Error reading URL:" + url +" code:" + connection.getResponseCode());
+            System.err.println(readError(connection));
+            System.err.println("Fields:" + connection.getHeaderFields());
             throw exc;
             //            System.err.println(connection.getContent());
         }
