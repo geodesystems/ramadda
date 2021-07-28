@@ -1888,6 +1888,7 @@ public abstract class Processor extends CsvOperator {
          */
         private void init() throws Exception {
             List<Integer> keys1Indices = getIndices(null, keys1);
+	    //	    System.err.println("key:" + keys1 +" " + keys1Indices);
             values1Indices = getIndices(null, values1);
             BufferedReader br = new BufferedReader(
 						   new InputStreamReader(
@@ -1917,6 +1918,7 @@ public abstract class Processor extends CsvOperator {
                 if (headerRow1 == null) {
                     headerRow1 = row;
                 }
+		//		System.err.println("key:" + key +" row:" + row);
                 map.put(key, row);
             }
         }
@@ -1938,9 +1940,9 @@ public abstract class Processor extends CsvOperator {
             List<Integer> keys2Indices = getIndices(ctx, keys2);
             if (headerRow2 == null) {
                 headerRow2 = row;
-                System.err.println("ROW:" + headerRow1);
+		//                System.err.println("ROW:" + headerRow1);
                 for (int j : values1Indices) {
-                    System.err.println("idx:" + j);
+		    //                    System.err.println("idx:" + j);
                     row.add(headerRow1.get(j));
                 }
 
@@ -1952,7 +1954,7 @@ public abstract class Processor extends CsvOperator {
             }
             Row other = map.get(key);
             if (other == null) {
-                //              System.err.println("no join:" + " key=" + key + " row:"+ row);
+		//		System.err.println("no join:" + " key=" + key + " row:");
                 for (int j : values1Indices) {
                     row.add("");
                 }

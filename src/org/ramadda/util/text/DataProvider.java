@@ -655,6 +655,44 @@ public abstract class DataProvider {
         }
     }
 
+    public static class GeoJsonDataProvider extends BulkDataProvider {
+
+	boolean addPolygon;
+
+        /**
+         * _more_
+         *
+         * @param arrayPath _more_
+         * @param objectPath _more_
+         */
+        public GeoJsonDataProvider(boolean addPolygon) {
+            super();
+	    this.addPolygon = addPolygon;
+        }
+
+
+        /**
+         * _more_
+         *
+         * @param ctx _more_
+         * @param s _more_
+         *
+         * @throws Exception _more_
+         */
+        public void tokenize(TextReader ctx, String s) throws Exception {
+	    StringBuilder sb = new StringBuilder();
+	    Json.geojsonToCsv(s,sb,null,addPolygon);
+	    StrTokenizer tokenizer = StrTokenizer.getCSVInstance();
+	    tokenizer.setEmptyTokenAsNull(true);
+	    for(String line: Utils.split(sb.toString(),"\n",true,true)) {
+		System.err.println("line:" + line);
+		List<String> toks = Utils.tokenizeColumns(line,tokenizer);
+		Row row = new Row(toks);
+		addRow(row);
+	    }
+        }
+    }
+    
     /**
      * Class description
      *

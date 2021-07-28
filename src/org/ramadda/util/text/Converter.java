@@ -3736,6 +3736,75 @@ public abstract class Converter extends Processor {
     }
 
 
+    public static class Neighborhood extends Converter {
+
+
+        /** _more_          */
+        private int rowIdx = 0;
+
+        /** _more_          */
+        private String lat;
+
+        /** _more_          */
+        private String lon;
+
+
+        /** _more_ */
+        private int latColumn = -1;
+
+        /** _more_          */
+        private int lonColumn = -1;
+
+
+        /**
+         *
+         * @param col _more_
+         *
+         * @param lat _more_
+         * @param lon _more_
+         */
+        public Neighborhood(String lat, String lon) {
+            super();
+            this.lat = lat;
+            this.lon = lon;
+        }
+
+        /**
+         *
+         *
+         *
+         *
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowIdx++ == 0) {
+                latColumn = getIndex(ctx, lat);
+                lonColumn = getIndex(ctx, lon);
+                row.add("Neighborhood");
+                return row;
+            }
+            try {
+                double latValue =
+                    Double.parseDouble(row.getString(latColumn));
+                double lonValue =
+                    Double.parseDouble(row.getString(lonColumn));
+                String result =GeoUtils.getNeighborhood(latValue, lonValue);
+		if(result==null) result="";
+		row.add(result);
+                return row;
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
+        }
+
+    }
+    
+
     /**
      * Class description
      *

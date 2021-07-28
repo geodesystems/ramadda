@@ -19,6 +19,7 @@ package org.ramadda.util.text;
 import org.json.*;
 
 import org.ramadda.util.IO;
+import org.ramadda.util.GeoUtils;
 import org.ramadda.util.Json;
 import org.ramadda.util.NamedInputStream;
 import org.ramadda.util.NamedChannel;
@@ -741,13 +742,13 @@ public class CsvUtil {
             rowCnt++;
         }
 	/*
-        while (true) {
-	    String line = ctx.readLine();
-	    if(line==null) break;
-            rowCnt++;
-	    if((rowCnt%10000)==0) System.err.print(".");
-	}
-	if(true) return;
+	  while (true) {
+	  String line = ctx.readLine();
+	  if(line==null) break;
+	  rowCnt++;
+	  if((rowCnt%10000)==0) System.err.print(".");
+	  }
+	  if(true) return;
 	*/
 	
 	long t1 = System.currentTimeMillis();
@@ -1499,6 +1500,7 @@ public class CsvUtil {
 							"One or more paths to the objects e.g. geometry,features",
 							"size", "30", "label", "Object paths", "type",
 							"list", "size", "30")),
+        new Cmd("-geojson", "Parse the input as geojson",new Arg("includePolygon","true|false Include polygon")),
         new Cmd("-lines", "Parse the input as text lines"),
         new Cmd("-pdf", "Read input from a PDF file"),	
         new Cmd("-xml", "Parse the input as xml",
@@ -1615,8 +1617,8 @@ public class CsvUtil {
         new Cmd("-explode", "Make separate files based on value of column",
                 new Arg("column", "", "type", "column")),
         new Cmd("-join", "Join the 2 files together",
-                new Arg("key columns", "", "type", "columns"),
-                new Arg("value_columns", "value columns"),
+                new Arg("key columns", "Numeric column numbers of the file to join with", "type", "columns"),
+                new Arg("value_columns", "numeric columns of the values to join"),
                 new Arg("file", "File to join with", "type", "file"),
                 new Arg("source_columns", "source key columns")),
         new Cmd(
@@ -1758,9 +1760,8 @@ public class CsvUtil {
 		new Arg("column", "", "type", "column"),
 		new Arg("pattern", "", "type", "pattern"), new Arg("delimiter")),
         new Cmd("-case", "Change case of column",
-                new Arg("type", "", "values",
-                        "lower,upper,proper,capitalize"), new Arg("column",
-								  "", "type", "column")),
+		new Arg("column", "", "type", "column"),
+                new Arg("type", "", "values", "lower,upper,proper,capitalize")),
         new Cmd("-padleft", "Pad left with given character",
                 new Arg("columns", "", "type", "columns"),
                 new Arg("character", "Character to pad to"),
@@ -1950,6 +1951,10 @@ public class CsvUtil {
         new Cmd("-population", "Add in population from address",
                 new Arg("columns", "", "type", "columns"),
                 new Arg("prefix", "e.g., state: or county:"), "suffix"),
+	new Cmd("-neighborhood", "Look up neighborhood",
+                new Arg("lat", "Latitude column", "type", "column"),
+                new Arg("lon", "Longitude column", "type", "column")),	
+
 
         /** * Other  * */
         new Cmd(true, "Misc."),
@@ -2682,7 +2687,11 @@ public class CsvUtil {
 	defineFunction("-elevation",2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Elevation(args.get(++i),args.get(++i)));
 		return i;
-	    });		
+	    });
+	defineFunction("-neighborhood",2,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.Neighborhood(args.get(++i),args.get(++i)));
+		return i;
+	    });			
 
 	defineFunction("-geocode",3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Geocoder(getCols(args.get(++i)), args.get(++i).trim(),args.get(++i).trim()));
@@ -2943,6 +2952,12 @@ public class CsvUtil {
 		return i;
 	    });
 
+	defineFunction("-geojson",1,(ctx,args,i) -> {
+		ctx.getProviders().add(new DataProvider.GeoJsonDataProvider(args.get(++i).equals("true")));
+
+		return i;
+	    });
+	
 	defineFunction("-sql",4,(ctx,args,i) -> {
 		//-sql db table cols "col1 value col2 value"
 		ctx.getProviders().add(new DataProvider.SqlDataProvider(args.get(++i),
@@ -3891,6 +3906,7 @@ public class CsvUtil {
      * @throws Exception On badness
      */
     public static void main(String[] args) throws Exception {
+	GeoUtils.setCacheDir(new File("."));
 	//	String value = StringUtil.findPattern("_2019_boulder_election.csv", "(\\d\\d\\d\\d)");
 	//	System.err.println("v:" + value);
 	//	if(true) return;
