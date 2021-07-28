@@ -3873,11 +3873,9 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @return _more_
      */
     public static String formTable(String clazz) {
-        return open(TAG_TABLE, cssClass(((clazz != null)
-                                         ? clazz
-                                         : "") + " formtable") + attrs(
-                                             ATTR_CELLPADDING, "0",
-                                             ATTR_CELLSPACING, "0"));
+        return open(TAG_TABLE, cssClass(" formtable " + (clazz != null? clazz: "")) + attrs(
+											    ATTR_CELLPADDING, "0",
+											    ATTR_CELLSPACING, "0"));
     }
 
 
