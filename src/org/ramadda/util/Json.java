@@ -1,18 +1,18 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (c) 2008-2019 Geode Systems LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package org.ramadda.util;
 
@@ -98,7 +98,7 @@ public class Json {
      */
     public static void addGeolocation(Appendable pw, double lat, double lon,
                                       double elevation)
-            throws Exception {
+	throws Exception {
 
         pw.append(attr(FIELD_LATITUDE, lat));
         pw.append(",\n");
@@ -219,19 +219,19 @@ public class Json {
 	StringBuilder    row = new StringBuilder();
 	row.append(mapOpen());
 	int cnt = 0;
-            for (int i = 0; i < values.size(); i += 2) {
-                String name  = values.get(i);
-                String value = values.get(i + 1);
-                if (value == null) {
-                    continue;
-                }
-                if (cnt > 0) {
-                    row.append(",\n");
-                }
-                cnt++;
-                row.append(attrGuessType(name, value));
-            }
-            row.append(mapClose());
+	for (int i = 0; i < values.size(); i += 2) {
+	    String name  = values.get(i);
+	    String value = values.get(i + 1);
+	    if (value == null) {
+		continue;
+	    }
+	    if (cnt > 0) {
+		row.append(",\n");
+	    }
+	    cnt++;
+	    row.append(attrGuessType(name, value));
+	}
+	row.append(mapClose());
         return row.toString();
     }
 
@@ -528,7 +528,7 @@ public class Json {
         }
 
         if ((d == Double.NEGATIVE_INFINITY)
-                || (d == Double.POSITIVE_INFINITY)) {
+	    || (d == Double.POSITIVE_INFINITY)) {
             return "null";
 
         }
@@ -654,20 +654,11 @@ public class Json {
      *
      * @throws Exception _more_
      */
-    public static void geojsonToCsv(String file, PrintStream pw,
-                                    String colString)
-            throws Exception {
+    public static void geojsonFileToCsv(String file, PrintStream pw,
+					String colString)
+	throws Exception {
         InputStream    is   = IOUtil.getInputStream(file, Json.class);
         BufferedReader br   = new BufferedReader(new InputStreamReader(is));
-
-        HashSet        cols = null;
-        if (colString != null) {
-            cols = new HashSet();
-            for (String tok : StringUtil.split(colString, ",", true, true)) {
-                cols.add(tok);
-            }
-
-        }
 
         StringBuilder json = new StringBuilder();
         String        input;
@@ -675,7 +666,23 @@ public class Json {
             json.append(input);
             json.append("\n");
         }
-        JSONObject obj      = new JSONObject(json.toString());
+
+	geojsonToCsv(json.toString(),pw, colString,false);
+    }
+
+
+    public static void geojsonToCsv(String json, Appendable pw,
+                                    String colString,boolean addPolygons)
+	throws Exception {
+        HashSet        cols = null;
+        if (colString != null) {
+            cols = new HashSet();
+            for (String tok : StringUtil.split(colString, ",", true, true)) {
+                cols.add(tok);
+            }
+        }
+
+        JSONObject obj      = new JSONObject(json);
         JSONArray  features = readArray(obj, "features");
         //        List<String> names    = null;
         String[] names = null;
@@ -689,14 +696,21 @@ public class Json {
                     if ((cols != null) && !cols.contains(name)) {
                         continue;
                     }
-                    pw.print(name);
-                    pw.println(",");
+                    pw.append(name.toLowerCase());
+                    pw.append(",");
                 }
-                //                pw.println("latitude,longitude");
-                pw.println("location");
+                pw.append("longitude,latitude");
+		if(addPolygons) {
+		    pw.append(",polygon");
+		}
+		pw.append("\n");
+		//		pw.append("location\n");
             }
 
-            Bounds    bounds   = getFeatureBounds(feature, null);
+	    List<double[]> pts=null;
+	    if(addPolygons)
+		pts = new ArrayList<double[]>();
+            Bounds    bounds   = getFeatureBounds(feature, null,pts);
             JSONArray geom     = readArray(feature, "geometry.coordinates");
             String    type     = readValue(feature, "geometry.type", "NULL");
             double[]  centroid = bounds.getCenter();
@@ -705,17 +719,27 @@ public class Json {
                 if (value.indexOf(",") >= 0) {
                     value = "\"" + value + "\"";
                 }
-                pw.print(value);
-                pw.println(",");
+                pw.append(value);
+                pw.append(",");
             }
-            //            pw.println(centroid[1] + "," + centroid[0]);
-            pw.println(centroid[1] + ";" + centroid[0]);
+	    pw.append(centroid[1] + "," + centroid[0]);
+	    if(addPolygons) {
+		pw.append(",");
+		for(double[]tuple: pts) {
+		    pw.append(""+tuple[0]);
+		    pw.append(";");
+		    pw.append(""+tuple[1]);
+		    pw.append(";");		    
+		}
+	    }
+	    pw.append("\n");
+	    //            pw.println(centroid[1] + ";" + centroid[0]);
         }
     }
 
 
     public static void geojsonPolygon(String file, PrintStream pw)
-            throws Exception {
+	throws Exception {
         InputStream    is   = IOUtil.getInputStream(file, Json.class);
         BufferedReader br   = new BufferedReader(new InputStreamReader(is));
         StringBuilder json = new StringBuilder();
@@ -737,7 +761,7 @@ public class Json {
 	    String name = props.optString("name");
 	    if(!Utils.stringDefined(name))
 		name = props.optString("NAME");
-            Bounds    bounds   = getFeatureBounds(feature, null);
+            Bounds    bounds   = getFeatureBounds(feature, null,null);
             double[]  centroid = bounds.getCenter();
             pw.print(name+",");
 	    //            pw.print(centroid[1] + "," + centroid[0]+",");
@@ -762,8 +786,8 @@ public class Json {
      * @throws Exception _more_
      */
     public static void geojsonSubsetByProperty(String file, PrintStream pw,
-            String prop, String value)
-            throws Exception {
+					       String prop, String value)
+	throws Exception {
         InputStream    is   = IOUtil.getInputStream(file, Json.class);
         BufferedReader br   = new BufferedReader(new InputStreamReader(is));
 
@@ -793,7 +817,7 @@ public class Json {
             boolean    haveIt  = false;
             for (int j = 0; (j < names.length) && !haveIt; j++) {
                 haveIt = names[j].equals(prop)
-                         && props.optString(names[j], "").equals(value);
+		    && props.optString(names[j], "").equals(value);
             }
             if ( !haveIt) {
                 continue;
@@ -819,11 +843,13 @@ public class Json {
      *
      * @return _more_
      */
-    private static Bounds getBounds(JSONArray points, Bounds bounds) {
+    private static Bounds getBounds(JSONArray points, Bounds bounds,List<double[]> pts) {
         for (int j = 0; j < points.length(); j++) {
             JSONArray tuple = points.getJSONArray(j);
             double    lon   = tuple.getDouble(0);
             double    lat   = tuple.getDouble(1);
+	    if(pts!=null) pts.add(new double[]{lat,lon});
+	    
             if (bounds == null) {
                 bounds = new Bounds(lat, lon, lat, lon);
             } else {
@@ -863,8 +889,8 @@ public class Json {
     public static Bounds getBounds(String file) throws Exception {
         Bounds bounds = null;
         BufferedReader br = new BufferedReader(
-                                new InputStreamReader(
-                                    IOUtil.getInputStream(file, Json.class)));
+					       new InputStreamReader(
+								     IOUtil.getInputStream(file, Json.class)));
         StringBuilder json = new StringBuilder();
         String        input;
         while ((input = br.readLine()) != null) {
@@ -877,7 +903,7 @@ public class Json {
         for (int i = 0; i < features.length(); i++) {
             //            if((i%100)==0) System.err.println("cnt:" + i);
             JSONObject feature = features.getJSONObject(i);
-            bounds = getFeatureBounds(feature, bounds);
+            bounds = getFeatureBounds(feature, bounds,null);
         }
 
         return bounds;
@@ -893,25 +919,25 @@ public class Json {
      *
      * @throws Exception _more_
      */
-    public static Bounds getFeatureBounds(JSONObject feature, Bounds bounds)
-            throws Exception {
+    public static Bounds getFeatureBounds(JSONObject feature, Bounds bounds,List<double[]>pts)
+	throws Exception {
         JSONArray coords1 = readArray(feature, "geometry.coordinates");
         String    type    = readValue(feature, "geometry.type", "NULL");
         if (type.equals("Polygon") || type.equals("MultiLineString")) {
             for (int idx1 = 0; idx1 < coords1.length(); idx1++) {
                 JSONArray coords2 = coords1.getJSONArray(idx1);
-                bounds = getBounds(coords2, bounds);
+                bounds = getBounds(coords2, bounds,pts);
             }
         } else if (type.equals("MultiPolygon")) {
             for (int idx1 = 0; idx1 < coords1.length(); idx1++) {
                 JSONArray coords2 = coords1.getJSONArray(idx1);
                 for (int idx2 = 0; idx2 < coords2.length(); idx2++) {
                     JSONArray coords3 = coords2.getJSONArray(idx2);
-                    bounds = getBounds(coords3, bounds);
+                    bounds = getBounds(coords3, bounds,pts);
                 }
             }
         } else if (type.equals("LineString")) {
-            bounds = getBounds(coords1, bounds);
+            bounds = getBounds(coords1, bounds,pts);
         } else {
             double lon = coords1.getDouble(0);
             double lat = coords1.getDouble(1);
@@ -926,7 +952,7 @@ public class Json {
     }
 
     public static String getFeaturePolygon(JSONObject feature)
-            throws Exception {
+	throws Exception {
 	StringBuilder sb = new StringBuilder();
         JSONArray coords1 = readArray(feature, "geometry.coordinates");
         String    type    = readValue(feature, "geometry.type", "NULL");
@@ -989,17 +1015,17 @@ public class Json {
                 continue;
             }
             double lat = Double.parseDouble(readValue(camera,
-                             "Location.Latitude", "0.0"));
+						      "Location.Latitude", "0.0"));
             double lon = Double.parseDouble(readValue(camera,
-                             "Location.Longitude", "0.0"));
+						      "Location.Longitude", "0.0"));
             JSONArray views = readArray(camera, "CameraView");
             for (int j = 0; j < views.length(); j++) {
                 JSONObject view = views.getJSONObject(j);
                 StringBuilder desc = new StringBuilder(readValue(view,
-                                         "ViewDescription", ""));
+								 "ViewDescription", ""));
                 String dttm = readValue(view, "LastUpdatedDate", "");
                 String url = "http://www.cotrip.org/"
-                             + readValue(view, "ImageLocation", "");
+		    + readValue(view, "ImageLocation", "");
                 desc.append("<br>");
                 String cameraName = readValue(view, "CameraName", "NA");
                 String roadName   = readValue(view, "RoadName", "NA");
@@ -1045,10 +1071,10 @@ public class Json {
                 inner += HtmlUtils.tag("description", "",
                                        "<![CDATA[" + desc + "]]>");
                 System.out.println(XmlUtil.tag("entry",
-                        XmlUtil.attrs(new String[] {
-                    "type", "type_image_webcam", "url", url, "latitude",
-                    lat + "", "longitude", "" + lon, "name", name
-                }), inner));
+					       XmlUtil.attrs(new String[] {
+						       "type", "type_image_webcam", "url", url, "latitude",
+						       lat + "", "longitude", "" + lon, "name", name
+						   }), inner));
 
             }
         }
@@ -1084,7 +1110,7 @@ public class Json {
      * @throws Exception _more_
      */
     private static void xmlToJson(Element node, Appendable sb)
-            throws Exception {
+	throws Exception {
         List<String> attrs = new ArrayList<String>();
         attrs.add("xml_tag");
         attrs.add(quote(node.getTagName()));
@@ -1269,26 +1295,26 @@ public class Json {
      * @throws Exception _more_
      */
     public static String format(String json, boolean forHtml)
-            throws Exception {
+	throws Exception {
         JSONObject obj  = new JSONObject(json.toString());
         //        String     s    = forHtml?obj.toString().replaceAll("\n"," "):obj.toString(3);
         String s = forHtml
-                   ? obj.toString(1)
-                   : obj.toString(3);
+	    ? obj.toString(1)
+	    : obj.toString(3);
         if (forHtml) {
             s = s.replaceAll("\t", "  ").replaceAll("<",
-                             "&lt;").replaceAll(">", "&gt;");
+						    "&lt;").replaceAll(">", "&gt;");
 
             s = s.replaceAll(
-                "\\{",
-                "<span class=ramadda-json-openbracket>{</span><span class='ramadda-json-block'>");
+			     "\\{",
+			     "<span class=ramadda-json-openbracket>{</span><span class='ramadda-json-block'>");
             s = s.replaceAll("( *)\\}( *)([^,])", "</span>$1$2}$3");
             s = s.replaceAll("( *)\\}( *),", "</span>$1}$2,");
             s = s.replaceAll("}}", "}</span>}");
 
             s = s.replaceAll(
-                "\\[",
-                "<span class=ramadda-json-openbracket>[</span><span class='ramadda-json-block'>");
+			     "\\[",
+			     "<span class=ramadda-json-openbracket>[</span><span class='ramadda-json-block'>");
             s = s.replaceAll("( *)\\]( *)([^,])", "</span>$1$2]$3");
             s = s.replaceAll("( *)\\]( *),", "</span>$1]$2,");
 
@@ -1309,50 +1335,51 @@ public class Json {
      */
     public static void main(String[] args) throws Exception {
 
-        geojsonPolygon(args[0], System.out);
-        if (true) {
-            return;
-        }
+	/*
+	  geojsonPolygon(args[0], System.out);
+	  if (true) {
+	  return;
+	  }
 
 
 
-        geojsonSubsetByProperty(args[0], System.out, args[1], args[2]);
-        if (true) {
-            return;
-        }
+	  geojsonSubsetByProperty(args[0], System.out, args[1], args[2]);
+	  if (true) {
+	  return;
+	  }
+
+	  geojsonFileToCsv(args[0], System.out, (args.length > 1)
+	  ? args[1]
+	  : null);
+	  if (true) {
+	  return;
+	  }
 
 
-        geojsonToCsv(args[0], System.out, (args.length > 1)
-                                          ? args[1]
-                                          : null);
-        if (true) {
-            return;
-        }
+	  String  file = args[0];
+	  boolean html = true;
+	  if (file.equals("-plain")) {
+	  html = false;
+	  file = args[1];
+	  }
+	  String s = format(file, html);
+	  if (s != null) {
+	  System.out.println(s);
+	  }
+	  if (true) {
+	  return;
+	  }
+
+	  System.err.println(getBounds(args[0]));
+	  if (true) {
+	  return;
+	  }
 
 
-        String  file = args[0];
-        boolean html = true;
-        if (file.equals("-plain")) {
-            html = false;
-            file = args[1];
-        }
-        String s = format(file, html);
-        if (s != null) {
-            System.out.println(s);
-        }
-        if (true) {
-            return;
-        }
-
-        System.err.println(getBounds(args[0]));
-        if (true) {
-            return;
-        }
-
-
-        geojsonToCsv(args[0], System.out, (args.length > 1)
-                                          ? args[1]
-                                          : null);
+	*/
+        geojsonFileToCsv(args[0], System.out, (args.length > 1)
+			 ? args[1]
+			 : null);
         //        convertCameras(args);
     }
 
