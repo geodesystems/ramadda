@@ -32,6 +32,7 @@ import org.ramadda.util.Utils;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.Misc;
+import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
 import java.lang.reflect.*;
@@ -44,7 +45,7 @@ import java.util.List;
  *
  */
 
-public class DbAdminHandler extends AdminHandlerImpl {
+public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler {
 
     /** _more_ */
     public static final String TAG_TABLES = "tables";
@@ -218,6 +219,31 @@ public class DbAdminHandler extends AdminHandlerImpl {
         }
 
         return true;
+    }
+
+
+    public Result processList(Request request) throws Exception {
+	StringBuilder sb = new StringBuilder();
+	getPageHandler().sectionOpen(request, sb,"Select Database",false);
+	List<Entry> entries = getEntryManager().getEntries(request);
+	if(entries.size()==0) {
+	    sb.append("No databases found");
+	}
+	List<TwoFacedObject> items= new ArrayList<TwoFacedObject>();
+	sb.append(request.form(getRepository().URL_ENTRY_SHOW));
+        sb.append(HtmlUtils.formTable());
+	sb.append(HtmlUtils.hidden("column",request.getString("column","")));
+	sb.append(HtmlUtils.hidden("columnname",request.getString("columnname","")));
+	sb.append(HtmlUtils.hidden("widgetid",request.getString("widgetid","")));
+	for(Entry entry: entries) {
+	    items.add(new TwoFacedObject(entry.getName(),entry.getId()));
+	}
+	HU.formEntry(sb, msgLabel("Database Entry"), HU.select(ARG_ENTRYID, items));
+        sb.append(HtmlUtils.formTableClose());
+	sb.append(HU.submit(msg("Search"), ARG_OK));
+        sb.append(HtmlUtils.formClose());
+	getPageHandler().sectionClose(request, sb);
+	return new Result("",sb);
     }
 
 

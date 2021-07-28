@@ -115,7 +115,7 @@ public interface DbConstants extends Constants {
     public static final String PROP_ANONFORM_MESSAGE = "anonform.message";
 
     /** _more_ */
-    public static final int DEFAULT_MAX = DB_VIEW_ROWS;
+    public static final int DEFAULT_MAX = 500;
 
     /** _more_ */
     public static final String ATTR_RSS_VERSION = "version";
@@ -197,6 +197,10 @@ public interface DbConstants extends Constants {
     /** _more_ */
     public static final String CSS_DB_TABLEHEADER_INNER =
         "dbtableheader_inner";
+
+    public static final String ARG_FOR_PRINT = "forprint";
+
+    public static final String ARG_ENTRIES_PER_PAGE = "entriesperpage";
 
     /** _more_ */
     public static final String ARG_AGG_PERCENT = "aggpercent";
