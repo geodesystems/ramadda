@@ -1161,7 +1161,7 @@ function RamaddaTopfieldsDisplay(displayManager, id, properties) {
 	    });
 	    rows.click(function() {
 		var field = $(this).attr("field-id");
-		_this.getDisplayManager().notifyEvent("handleEventFieldsSelected", _this, [field]);
+		_this.getDisplayManager().notifyEvent(DisplayEvent.fieldsSelected, _this, [field]);
 		
 	    });
 	},
@@ -1530,7 +1530,7 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
 		});
 		this.frequencyTable.on( 'search.dt', ()=>{
 		    if(this.settingSearch) return;
-		    this.propagateEvent("handleEventPropertyChanged", {
+		    this.propagateEvent(DisplayEvent.propertyChanged, {
 			property: "searchValue",
 			value: this.frequencyTable.search()
 		    });
@@ -1799,8 +1799,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 			value: value
 		    });
 		} else if(click == "selectother") {
-		    _this.propagateEvent("handleEventPropertyChanged", {
-			property: PROP_FILTER_VALUE,
+		    _this.propagateEvent(DisplayEvent.fitlerChanged, {
 			value: value,
 			id:_this.getFilterId(fieldId),
 			fieldId: fieldId,
@@ -1810,8 +1809,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 	    this.find(".display-frequency-label").click(function(){
 		let field = $(this).attr("data-field");
 		//		    _this.find("[data-field=" + field+"]").css("color","black");
-		_this.handleEventPropertyChanged(_this,{
-		    property: PROP_FILTER_VALUE,
+		_this.handleEventFilterChanged(_this,{
 		    id:ID,
 		    fieldId: field,
 		    value: "-all-"
@@ -2052,7 +2050,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             this.jq(ID_SEARCH).keypress(function(event) {
                 if (event.which == 13) {
                     _this.setProperty("pattern", $(this).val());
-		    _this.propagateEvent("handleEventPropertyChanged", {
+		    _this.propagateEvent(DisplayEvent.propertyChanged, {
 			property: "pattern",
 			value: $(this).val()
 		    });
@@ -2410,7 +2408,7 @@ function RamaddaTextDisplay(displayManager, id, properties) {
 	updateUI: function() {
             SUPER.updateUI.call(this);
 	    if(this.getProperty("annotations")) {
-		var pointData = this.getData();
+		let pointData = this.getData();
 		if (pointData == null) return;
 		if(!this.annotations) {
 		    this.annotations  = new Annotations(this,this.filterData());
@@ -2421,17 +2419,36 @@ function RamaddaTextDisplay(displayManager, id, properties) {
 		}
 	    }
 	    if(this.selectedRecord) {
+		console.log(this.type+".updateUI has record:" + this.selectedRecord);
 		this.setContents(this.getRecordHtml(this.selectedRecord));
 	    } else  if(this.getPropertyShowDefault()) {
+		this.recordMap = {};
 		let records = this.filterData();
 		if(records && records.length>0) {
+		    records.forEach((record,idx)=>{
+			this.recordMap[record.getId()] = record;
+		    });
+		    this.selectedRecord =records[0];
+		    console.log(this.type+".updateUI using first:" + this.selectedRecord.getDate());			
 		    this.setContents(this.getRecordHtml(records[0]));
 		}
 	    } else  if(this.getPropertyMessage()) {
 		this.setDisplayMessage(this.getPropertyMessage());
 	    }
         },
+        pointDataLoaded: function(pointData, url, reload) {
+	    this.selectedRecord= null;
+	    console.log(this.type+".pointDataLoaded");
+	    SUPER.pointDataLoaded.call(this, pointData,url,reload);
+	},
         handleEventRecordSelection: function(source, args) {
+	    console.log(this.type+".handleEventRecordSelection:" + args.record);
+	    if(this.recordMap) {
+		if(!this.recordMap[args.record.getId()]) {
+		    console.log(this.type+".handleEventRecordSelection: not mine");
+		    return;
+		}
+	    }
 	    this.selectedRecord= args.record;
 	    this.updateUI();
         }

@@ -116,23 +116,23 @@ function DisplayManager(argId, argProperties) {
             return this.dataList;
         },
         handleEventFieldValueSelect: function(source, args) {
-            this.notifyEvent("handleEventFieldValueSelected", source, args);
+            this.notifyEvent(DisplayEvent.fieldValueSelected, source, args);
         },
         handleEventFieldsSelected: function(source, fields) {
-            this.notifyEvent("handleEventFieldsSelected", source, fields);
+            this.notifyEvent(DisplayEvent.fieldsSelected, source, fields);
         },
         handleEventPropertyChanged: function(source, prop) {
-            this.notifyEvent("handleEventPropertyChanged", source, prop);
+            this.notifyEvent(DisplayEvent.propertyChanged, source, prop);
         },
         handleEventEntriesChanged: function(source, entries) {
-            this.notifyEvent("handleEventEntriesChanged", source, entries);
+            this.notifyEvent(DisplayEvent.entriesChanged, source, entries);
         },
         handleEventMapBoundsChanged: function(source, bounds, forceSet) {
             var args = {
                 "bounds": bounds,
                 "force": forceSet
             };
-            this.notifyEvent("handleEventMapBoundsChanged", source, args);
+            this.notifyEvent(DisplayEvent.mapBoundsChanged, source, args);
         },
         addMapLayer: function(source, entry) {
             this.notifyEvent("addMapLayer", source, {
@@ -174,7 +174,7 @@ function DisplayManager(argId, argProperties) {
                 html: values,
                 data: pointData
             };
-            this.notifyEvent("handleEventRecordSelection", source, params);
+            this.notifyEvent(DisplayEvent.recordSelection, source, params);
             var entries = source.getEntries();
             if (entries != null && entries.length > 0) {
                 this.handleEventEntrySelection(source, {
@@ -184,16 +184,16 @@ function DisplayManager(argId, argProperties) {
             }
         },
         handleEventEntrySelection: function(source, props) {
-            this.notifyEvent("handleEventEntrySelection", source, props);
+            this.notifyEvent(DisplayEvent.entrySelection, source, props);
         },
         handleEventEntryMouseover: function(source, props) {
-            this.notifyEvent("handleEventEntryMouseover", source, props);
+            this.notifyEvent(DisplayEvent.entryMouseover, source, props);
         },
         handleEventEntryMouseout: function(source, props) {
-            this.notifyEvent("handleEventEntryMouseout", source, props);
+            this.notifyEvent(DisplayEvent.entryMouseout, source, props);
         },
         handleEventPointDataLoaded: function(source, pointData) {
-            this.notifyEvent("handleEventPointDataLoaded", source, pointData);
+            this.notifyEvent(DisplayEvent.pointDataLoaded, source, pointData);
         },
         ranges: {
             //               "TRF": [0,100],
@@ -500,19 +500,17 @@ function DisplayManager(argId, argProperties) {
 	getDisplays: function() {
 	    return this.getLayoutManager().getDisplays();
 	},
-        notifyEvent: function(func, source, data) {
-            this.getLayoutManager().notifyEvent(func, source, data);
+        notifyEvent: function(event, source, data) {
+            this.getLayoutManager().notifyEvent(event, source, data);
         },
         removeDisplay: function(display) {
             this.getLayoutManager().removeDisplay(display);
-            this.notifyEvent("handleEventRemoveDisplay", this, display);
+            this.notifyEvent(DisplayEvent.removeDisplay, this, display);
         },
 	setEntry: function(entry) {
-	    var displays = this.getLayoutManager().getDisplays();
-	    for (var i = 0; i < displays.length; i++) {
-		var display = displays[i];
+	    this.getLayoutManager().getDisplays().forEach(display=>{
 		display.setEntry(entry);
-	    }
+	    });
 	},
     });
 

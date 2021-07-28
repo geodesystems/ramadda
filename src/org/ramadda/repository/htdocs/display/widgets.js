@@ -818,7 +818,7 @@ function DisplayAnimation(display, enabled,attrs) {
 	},
 	dateRangeChanged: function(skipSlider) {
 	    this.applyAnimation(skipSlider);
-	    this.display.getDisplayManager().notifyEvent("handleEventAnimationChanged", this.display, {
+	    this.display.getDisplayManager().notifyEvent(DisplayEvent.animationChanged, this.display, {
 		begin:this.begin,
 		end: this.end
 	    });

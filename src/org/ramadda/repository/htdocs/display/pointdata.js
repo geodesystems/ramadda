@@ -306,7 +306,6 @@ function PointData(name, recordFields, records, url, properties) {
                 lon: this.lon,
             };
             let jsonUrl = display.displayManager.getJsonUrl(root.url, display, props);
-//	    console.log("root.url:" + root.url +" json:" + jsonUrl);
 	    root.jsonUrl = jsonUrl;
             root.loadPointJson(jsonUrl, display, reload);
         },
@@ -396,7 +395,7 @@ function PointData(name, recordFields, records, url, properties) {
                     return;
 		}
 	    }
-            var fail = function(jqxhr, textStatus, error) {
+            let fail = function(jqxhr, textStatus, error) {
 		console.log("Point data load error:" + textStatus +" " + error);
                 var err = textStatus;
 		if(err) {
@@ -413,10 +412,13 @@ function PointData(name, recordFields, records, url, properties) {
                 pointData.stopLoading();
             }
 
-            var success=function(data) {
+            let success=function(data) {
 		if(typeof data == "string") {
 		    try {
+//			if(displayDebug.setEntry)
+//			    console.log("pointdata got data:"+ data.substring(0,2000));
 			data = JSON.parse(data);
+
 		    } catch(exc) {
 			console.log("Error:" + exc);
 			if(data.length>1000) data = data.substring(0,999);
@@ -503,7 +505,7 @@ function PointData(name, recordFields, records, url, properties) {
 		let root = String(window.location).replace(/\/[^\/]+$/,"");
 		url = root + "/" + url;
 	    }
-//	    console.log("display:" + display.type+" point data:" + url);
+	    console.log(display.type+" load point data:" + url);
             Utils.doFetch(url, success,fail,null);	    
 //            var jqxhr = $.getJSON(url, success,{crossDomain:true}).fail(fail);
         }

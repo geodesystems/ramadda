@@ -508,7 +508,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
             this.map.initMap(false);
             this.map.addRegionSelectorControl(function(bounds) {
-		_this.propagateEvent("mapBoundsChanged", {"bounds": bounds,    "force": true});
+		_this.propagateEvent(DisplayEvent.mapBoundsChanged, {"bounds": bounds,    "force": true});
             });
 	    this.map.popupHandler = (feature,popup) =>{
 		this.handlePopup(feature, popup);
@@ -557,7 +557,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(feature.record) {
 		    if(this.lastHighlightedRecord) {
 			var args = {highlight:false,record: this.lastHighlightedRecord};
-			this.getDisplayManager().notifyEvent("recordHighlight", this, args);
+			this.getDisplayManager().notifyEvent(DisplayEvent.recordHighlight, this, args);
 			if (this.getAnimationEnabled()) {
 			    this.getAnimation().handleEventRecordHighlight(this, args);
 			}
@@ -567,7 +567,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			this.lastHighlightedRecord = feature.record;
 		    }
 		    var args = {highlight:highlight,record: feature.record};
-		    this.getDisplayManager().notifyEvent("recordHighlight", this, args);
+		    this.getDisplayManager().notifyEvent(DisplayEvent.recordHighlight, this, args);
 		    if (this.getAnimationEnabled()) {
 			this.getAnimation().handleEventRecordHighlight(this, args);
 		    }
@@ -1028,7 +1028,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         mapBoundsChanged: function() {
             let bounds = this.map.getMap().calculateBounds().transform(this.map.sourceProjection,
 								       this.map.displayProjection);
-	    this.propagateEvent("mapBoundsChanged", {"bounds": bounds,    "force": false});
+	    this.propagateEvent(DisplayEvent.mapBoundsChanged, {"bounds": bounds,    "force": false});
 	    if(this.clipToView || this.getClipToBounds()) {
 		if(this.lastUpdateTime) {
 		    let now = new Date();
@@ -1130,14 +1130,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         },
 	propagateFilterFields: function(record) {
 	    let fields = this.getFieldsByIds(null, this.getProperty("filterFieldsToPropagate"));
-//	    console.log("F:" + fields);
 	    fields.map(field=>{
 		let args = {
-		    property: PROP_FILTER_VALUE,
 		    fieldId:field.getId(),
 		    value:record.getValue(field.getIndex())
 		};
-		this.propagateEvent("handleEventPropertyChanged", args);
+		this.propagateEvent(DisplayEvent.filterChanged, args);
 	    });
 	},	    
         handleClick: function(theMap, event, lon, lat) {
@@ -1145,7 +1143,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let diff = new Date().getTime()-this.lastFeatureSelectTime.getTime();
 		this.lastFeatureSelectTime = null;
 		if(diff<1000) {
-//		    console.log("too soon to handle click");
 		    return;
 		}
 	    }
@@ -3356,7 +3353,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(polygonField) {
 		    let s = values[polygonField.getIndex()];
 		    let delimiter;
-		    console.log("p:" + polygonField);
 		    [";",","].forEach(d=>{
 			if(s.indexOf(d)>=0) delimiter = d;
 		    });

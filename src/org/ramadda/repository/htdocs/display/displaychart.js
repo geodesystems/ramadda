@@ -950,8 +950,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			    property: "highlightFields",
 			    value:v
 			};
-
-			this.propagateEvent("handleEventPropertyChanged", props);
+			this.propagateEvent(DisplayEvent.propertyChanged, props);
 		    });
 		}
 	    }
@@ -1888,7 +1887,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     let records = pointData.getRecords();
 	            let record = records[event.row];
 		    if(!record) return;
-		    _this.getDisplayManager().notifyEvent("recordHighlight", _this, {highlight:true,record: record});
+		    _this.getDisplayManager().notifyEvent(DisplayEvent.recordHighlight, _this, {highlight:true,record: record});
 		});
 	    }
             google.visualization.events.addListener(chart, 'select', function(event) {

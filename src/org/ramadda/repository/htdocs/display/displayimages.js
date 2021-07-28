@@ -647,7 +647,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    });
 
 	    if(this.getProperty("propagateEventRecordList",false)) {
-		this.getDisplayManager().notifyEvent("handleEventRecordList", this, {
+		this.getDisplayManager().notifyEvent(DisplayEvent.recordList, this, {
 		    recordList: displayedRecords,
 		});
 	    }
@@ -971,7 +971,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	    this.jq(ID_SLIDE).html(html);
 	    var args = {highlight:true,record: record};
 	    if(propagateEvent)
-		this.getDisplayManager().notifyEvent("handleEventRecordHighlight", this, args);
+		this.getDisplayManager().notifyEvent(DisplayEvent.recordHighlight, this, args);
 	},
         handleEventRecordHighlight: function(source, args) {
 	}

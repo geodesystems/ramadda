@@ -388,7 +388,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 		    });
 		    
 		    setTimeout(()=>{
-			_this.propagateEvent("handleEventFieldsSelected", selectedFields);
+			_this.propagateEvent(DisplayEvent.fieldsSelected, selectedFields);
 		    },20);
 		});
 	    }
@@ -862,15 +862,31 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 	    SUPER.handleEventRecordSelection.call(this, source, args);
 	    if(!this.recordToIdx) return;
 	    let idx = this.recordToIdx[args.record.getId()];
-	    this.jq(ID_MENU).val(idx);
+	    if(Utils.isDefined(idx)) {
+		this.jq(ID_MENU).val(idx);
+	    }
 	},
+        pointDataLoaded: function(pointData, url, reload) {
+	    SUPER.pointDataLoaded.call(this, pointData,url,reload);
+	    console.log("menu pointDataLoaded");
+	    if(this.haveLoadedData&& this.records) {
+		setTimeout(()=>{
+		    let record = this.records[+this.jq(ID_MENU).val()];
+		    console.log("changing:" + record);
+		    if(record) {
+			this.propagateEventRecordSelection({record: record});
+		    }},100);
+	    }
+	    this.haveLoadedData= true;
+	},
+
 	updateUI: function() {
-	    let records = this.filterData();
-	    if(!records) return;
+	    this.records = this.filterData();
+	    if(!this.records) return;
 	    let options = [];
 	    let labelTemplate = this.getLabelTemplate();
 	    this.recordToIdx = {};
-	    records.forEach((record,idx)=>{
+	    this.records.forEach((record,idx)=>{
 		let label = this.getRecordHtml(record, null, labelTemplate);
 		options.push([idx,label]);
 		this.recordToIdx[record.getId()] = idx;
@@ -890,20 +906,20 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 		this.jq(ID_PREV).click(e=>{
 		    let index = +this.jq(ID_MENU).val()-1;
 		    if(index<0) {
-			index = records.length-1;
+			index = this.records.length-1;
 		    }
 		    this.jq(ID_MENU).val(index).trigger("change");
 		});
 		this.jq(ID_NEXT).click(e=>{
 		    let index = +this.jq(ID_MENU).val()+1;
-		    if(index>=records.length) {
+		    if(index>=this.records.length) {
 			index = 0;
 		    }
 		    this.jq(ID_MENU).val(index).trigger("change");
 		});
 	    }
 	    this.jq(ID_MENU).change(()=> {
-		let record = records[+this.jq(ID_MENU).val()];
+		let record = this.records[+this.jq(ID_MENU).val()];
 		this.propagateEventRecordSelection({record: record});
 	    });
 

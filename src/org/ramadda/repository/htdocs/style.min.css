@@ -5106,3 +5106,12 @@ h3 a:visited {
 
 .ramadda-frame-title a:hover {
 }
+
+
+@media print {
+    .pagebreak {
+	clear: both;
+	break-after:always;
+	page-break-after:always; 	
+    } 
+}
