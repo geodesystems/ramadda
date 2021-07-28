@@ -983,6 +983,7 @@ RepositoryMap.prototype = {
         if (layer.selectedFeature) {
             this.unselectFeature(layer.selectedFeature);
         }
+
 	if(!this.doSelect) return;
         this.selectedFeature = feature;
         layer.selectedFeature = feature;
@@ -4085,9 +4086,11 @@ RepositoryMap.prototype = {
 	    ramaddaDisplaySetSelectedEntry(id);
 	}
 
+//xxxx
 	if(!this.doPopup) {
 	    return;
 	}
+
 
         this.hiliteBox(id);
         let _this = this;
@@ -4109,7 +4112,6 @@ RepositoryMap.prototype = {
 	if(!markerText) return;
 	if(this.displayDiv) {
 	    $("#" + this.displayDiv).html(markerText);
-	    return;
 	}
 
         if (fromClick && marker.locationKey != null) {
