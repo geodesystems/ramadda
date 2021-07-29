@@ -1620,10 +1620,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public void loadTypeHandlers() throws Exception {
         List<String> badFiles = new ArrayList<String>();
+	String theFile=null;
+	try {
         for (String file : getPluginManager().getTypeDefFiles()) {
             try {
                 file = getStorageManager().localizePath(file);
-                //              System.err.println(file);
+		theFile = file;
                 if (getPluginManager().haveSeen("types:" + file, false)) {
                     continue;
                 }
@@ -1633,13 +1635,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 }
 		loadTypeHandlers(root, false);
                 getPluginManager().markSeen("types:" + file);
+	    } catch(java.lang.NoClassDefFoundError ncdfe) {
+		throw new RuntimeException(ncdfe);
             } catch (Exception exc) {
+		System.err.println("CATCH:" + exc);
                 badFiles.add(file);
-            }
+	    }
         }
 
         for (String file : badFiles) {
             System.err.println("bad file:" + file);
+	    theFile = file;
             try {
                 Element root = XmlUtil.getRoot(file, getClass());
                 if (root == null) {
@@ -1655,7 +1661,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 throw exc;
             }
         }
-
+	} catch(Exception exc) {
+	    System.err.println("Error loading typehandler from file:" + theFile);
+	    throw exc;
+	}
 
 
     }
