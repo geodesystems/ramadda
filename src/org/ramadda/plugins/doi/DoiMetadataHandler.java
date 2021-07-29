@@ -46,16 +46,8 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
-import visad.Unit;
-import visad.UnitException;
-
-
-import visad.data.units.NoSuchUnitException;
-
-import visad.jmet.MetUnits;
 
 import java.io.File;
-
 
 import java.sql.Statement;
 
