@@ -1388,12 +1388,12 @@ public class Request implements Constants, Cloneable {
         if (result == null) {
             return dflt;
         }
-        if (result instanceof List) {
-            return (List) result;
-        }
         List tmp = new ArrayList();
+        if (result instanceof List) {
+	    tmp.addAll((List) result);
+            return tmp;
+        }
         tmp.add(result);
-
         return tmp;
     }
 
