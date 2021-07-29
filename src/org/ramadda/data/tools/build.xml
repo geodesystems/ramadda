@@ -18,9 +18,9 @@
 
         <property name="point_src_dir" value="${src_dir}/org/ramadda/data"/>
         <property name="lib_dir" value="${basedir}/lib"/>
-       <property name="classpath" value="${lib_dir}/ramaddalib.jar:${lib_dir}/idv.jar:${lib_dir}/tika-app-1.13.jar:${lib_dir}/ramaddatds.jar:${lib_dir}/servlet-api.jar"/>
+       <property name="classpath" value="${lib_dir}/ramaddalib.jar:${lib_dir}/idv.jar:${lib_dir}/tika.jar:${lib_dir}/ramaddatds.jar:${lib_dir}/servlet-api.jar"/>
 <!--
-        <property name="classpath" value="${src_dir}:${lib_dir}/ramadda.jar:${lib_dir}/ramaddalib.jar:${lib_dir}/unidatautil.jar:${lib_dir}/jmapproj.jar:${lib_dir}/tika-app-1.13.jar"/>
+        <property name="classpath" value="${src_dir}:${lib_dir}/ramadda.jar:${lib_dir}/ramaddalib.jar:${lib_dir}/unidatautil.jar:${lib_dir}/jmapproj.jar:${lib_dir}/tika.jar"/>
 -->
         <property name="build.sysclasspath"    value="ignore" />
 

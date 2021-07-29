@@ -71,10 +71,17 @@ This is the combination of the following all the jetty modules:
 abom.jar:
 This holds the Barnes analysis code from the IDV release
 
-tika-app-1.4.jar
-  The tika-app-1.4.jar  has been modified. I (jeffmc) removed the
-  dods, ucar, thredds, org/slf4j, org/apache/http  and  com/drew  tree and org.joda from and com.google.common.cache this because we had too many
-  conflicts with other libs
+tika.jar:
+tika.jar has been modified by the base tika-app-1.4.jar to remove a bunch
+of conflicting dependencies including:
+/com/google
+/dods
+/ucar
+/thredds
+/org/slf4j
+/org/apache/http
+/com/drew 
+/org.joda
 
 jmapproj.jar:
 
