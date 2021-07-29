@@ -4050,6 +4050,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     private Result checkForSslRedirect(Request request, ApiMethod apiMethod) {
+	boolean debug = false;
 
 
         boolean sslEnabled = isSSLEnabled(request);
@@ -4058,10 +4059,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (apiMethod.getRequest().startsWith("/repos/")) {
             return null;
         }
-	System.err.println("checkForSslRedirect allSsl:" + allSsl +" request secrure:" + request.getSecure());
+	if(debug) System.err.println("checkForSslRedirect allSsl:" + allSsl +" request secrure:" + request.getSecure());
         if (sslEnabled) {
             if (allSsl && !request.getSecure()) {
-		System.err.println("\tredirecting 1");
+		if(debug) System.err.println("\tredirecting 1");
                 return new Result(httpsUrl(request, request.getUrl()));
             }
         }
@@ -4070,7 +4071,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             if ( !request.get(ARG_NOREDIRECT, false)) {
                 if (apiMethod.getNeedsSsl() && !request.getSecure()) {
                     //redirect them to the https request
-		    System.err.println("\tredirecting 2");
+		    if(debug)    System.err.println("\tredirecting 2");
                     return new Result(httpsUrl(request, request.getUrl()));
 
                 } else if ( !allSsl && !apiMethod.getNeedsSsl()
