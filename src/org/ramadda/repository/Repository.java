@@ -4058,9 +4058,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (apiMethod.getRequest().startsWith("/repos/")) {
             return null;
         }
-
+	System.err.println("checkForSslRedirect allSsl:" + allSsl +" request secrure:" + request.getSecure());
         if (sslEnabled) {
             if (allSsl && !request.getSecure()) {
+		System.err.println("\tredirecting 1");
                 return new Result(httpsUrl(request, request.getUrl()));
             }
         }
@@ -4069,7 +4070,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
             if ( !request.get(ARG_NOREDIRECT, false)) {
                 if (apiMethod.getNeedsSsl() && !request.getSecure()) {
                     //redirect them to the https request
+		    System.err.println("\tredirecting 2");
                     return new Result(httpsUrl(request, request.getUrl()));
+
                 } else if ( !allSsl && !apiMethod.getNeedsSsl()
                             && request.getSecure()) {
                     /*
@@ -4441,6 +4444,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         adminOnly             = getProperty(PROP_ACCESS_ADMINONLY, false);
         requireLogin          = getProperty(PROP_ACCESS_REQUIRELOGIN, false);
         allSsl                = getProperty(PROP_ACCESS_ALLSSL, false);
+	System.err.println("initRepositoryAttributes: all ssl:" + allSsl);
         sslIgnore             = getProperty(PROP_SSL_IGNORE, false);
         cacheResources        = getProperty(PROP_CACHERESOURCES, false);
         repositoryName = getProperty(PROP_REPOSITORY_NAME, repositoryName);
