@@ -313,6 +313,8 @@ public class Column implements DataTypes, Constants, Cloneable {
     private boolean showEmpty = true;
 
 
+    private int numberOfSearchWidgets = 1;
+
     /** _more_ */
     private String suffix;
 
@@ -579,6 +581,8 @@ public class Column implements DataTypes, Constants, Cloneable {
         }
 
 
+	numberOfSearchWidgets = XmlUtil.getAttribute(element,"numberOfSearchWidgets",
+						     numberOfSearchWidgets);
 
         if (isEnumeration()) {
             String valueString = XmlUtil.getAttribute(element, ATTR_VALUES,
@@ -2274,9 +2278,12 @@ public class Column implements DataTypes, Constants, Cloneable {
     private List<String> getSearchValues(Request request) {
         List<String> result    = new ArrayList<String>();
         String       searchArg = getSearchArg();
-        for (String arg : (List<String>) request.get(searchArg, result)) {
-            //            result.addAll(Utils.split(arg, ",", true));
-            result.add(arg);
+	for(int i=0;i<numberOfSearchWidgets;i++) {
+	    String sarg = searchArg+(i==0?"":""+i);
+	    for (String arg : (List<String>) request.get(sarg, result)) {
+		//            result.addAll(Utils.split(arg, ",", true));
+		result.add(arg);
+	    }
         }
 
         return result;
@@ -3139,12 +3146,12 @@ public class Column implements DataTypes, Constants, Cloneable {
                                 DATATYPE_DATETIME)) + HtmlUtils.space(4)
                                     + msgLabel("Or") + dateSelectInput;
         } else if (isType(DATATYPE_BOOLEAN)) {
-            widget = HtmlUtils.select(
-                searchArg,
-                Misc.newList(TypeHandler.ALL_OBJECT, "True", "False"),
-                request.getString(searchArg, ""),
-                HtmlUtils.cssClass("search-select"));
-            //        } else if (isType(DATATYPE_ENUMERATION)) {
+	    widget = HtmlUtils.select(
+				      searchArg,
+				      Misc.newList(TypeHandler.ALL_OBJECT, "True", "False"),
+				      request.getString(searchArg, ""),
+				      HtmlUtils.cssClass("search-select"));
+	    //        } else if (isType(DATATYPE_ENUMERATION)) {
             //            List tmpValues = Misc.newList(TypeHandler.ALL_OBJECT);
             //            tmpValues.addAll(enumValues);
             //            widget = HtmlUtils.select(searchArg, tmpValues, request.getString(searchArg));
@@ -3178,9 +3185,15 @@ public class Column implements DataTypes, Constants, Cloneable {
                 selectExtra += HtmlUtils.cssClass("search-select");
             }
             //            System.err.println(getName() + " values=" + tmpValues);
-            widget = HtmlUtils.select(
-                searchArg, tmpValues,
-                request.get(searchArg, new ArrayList<String>()), selectExtra);
+	    widget = "";
+	    for(int i=0;i<numberOfSearchWidgets;i++) {
+		String arg = searchArg+(i==0?"":""+i);
+		widget += HtmlUtils.select(
+					   arg, tmpValues,
+					   request.get(arg, new ArrayList<String>()), selectExtra);
+
+		widget+= " ";
+	    }
 
         } else if (isNumeric()) {
             String expr =

@@ -2132,7 +2132,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                 + HtmlUtils.radio(
                                     ARG_DB_SORTDIR, "desc",
                                     dir.equals("desc"),
-                                    " default='asc' ") + " Descending" + HtmlUtils.space(1) 
+                                    " default='asc' ") + " Descending" + HtmlUtils.space(2) 
                                         + HtmlUtils.radio(
                                             ARG_DB_SORTDIR, "asc",
                                             dir.equals("asc"),
