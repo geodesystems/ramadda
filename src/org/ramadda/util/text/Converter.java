@@ -209,7 +209,114 @@ public abstract class Converter extends Processor {
             return new Row(result);
 	}
     }
+
+
+    public static class ColumnsBefore extends Converter {
+
+	private HashSet<Integer> set;
+
+	private String col;
+	private int colIdx=-1;
+
+        /**
+         * @param cols _more_
+         */
+        public ColumnsBefore(String col,List<String> cols) {
+            super(cols);
+	    this.col = col;
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+	    if(colIdx==-1) colIdx= getColumnIndex(col);
+            List<Integer> indices = getIndices(ctx);
+	    if(set==null) {
+		set = new HashSet<Integer>();
+		for(int i: indices) {
+		    set.add(i);
+		}
+	    }
+            if (indices.size() == 0) {
+                return row;
+            }
+
+	    List values = row.getValues();
+	    List newList =new ArrayList();
+	    for(int i=0;i<colIdx;i++) {
+		if(!set.contains(i))
+		    newList.add(values.get(i));
+	    }
+	    for(int i: indices) {
+		newList.add(values.get(i));
+	    }
+	    for(int i=colIdx;i<values.size();i++) {
+		if(set.contains(i)) continue;
+		newList.add(values.get(i));
+	    }
+            return new Row(newList);
+	}
+    }
     
+
+    public static class ColumnsAfter extends Converter {
+
+	private HashSet<Integer> set;
+
+	private String col;
+	private int colIdx=-1;
+
+        /**
+         * @param cols _more_
+         */
+        public ColumnsAfter(String col,List<String> cols) {
+            super(cols);
+	    this.col = col;
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+	    if(colIdx==-1) colIdx= getColumnIndex(col);
+            List<Integer> indices = getIndices(ctx);
+	    if(set==null) {
+		set = new HashSet<Integer>();
+		for(int i: indices) {
+		    set.add(i);
+		}
+	    }
+            if (indices.size() == 0) {
+                return row;
+            }
+
+	    List values = row.getValues();
+	    List newList =new ArrayList();
+	    for(int i=colIdx+1;i<values.size();i++) {
+		if(!set.contains(i))
+		    newList.add(values.get(i));
+	    }
+	    newList.add(0,values.get(colIdx));
+	    for(int i=indices.size()-1;i>=0;i--) {
+		newList.add(0,values.get(indices.get(i)));
+	    }
+	    for(int i=colIdx-1;i>=0;i--) {
+		if(set.contains(i)) continue;
+		newList.add(0,values.get(i));
+	    }
+            return new Row(newList);
+	}
+    }
+
 
     /**
      * Class description
@@ -6440,6 +6547,16 @@ public abstract class Converter extends Processor {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+	List l= new ArrayList();
+	l.add("a");
+	l.add("b");
+	l.add("c");
+	l.add(0,"x");
+	System.err.println(l);
+	if(true) return;
+
+
+
         String s = "x";
         try {
             org.mozilla.javascript.Context cx =

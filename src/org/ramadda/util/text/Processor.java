@@ -1287,6 +1287,8 @@ public abstract class Processor extends CsvOperator {
                 colId = colId.replaceAll("_$", "");
                 colId = CsvUtil.getDbProp(props, colId, "id", colId);
                 label = Utils.makeLabel(colId);
+
+
                 label = CsvUtil.getDbProp(props, colId, "label", label);
                 label = label.replaceAll("\n", " ").replaceAll("\r", " ");
 
@@ -1312,6 +1314,12 @@ public abstract class Processor extends CsvOperator {
 
                 attrs.append(XmlUtil.attrs(new String[] { "name", colId }));
 
+                String numberOfSearchWidgets = CsvUtil.getDbProp(props, colId, "numberOfSearchWidgets", (String)null);
+		if(numberOfSearchWidgets!=null) {
+                    attrs.append(XmlUtil.attrs(new String[] { "numberOfSearchWidgets",
+							      numberOfSearchWidgets }));
+
+		}
                 if (CsvUtil.getDbProp(props, colId, "changetype",
                                       dfltChangeType).equals("true")) {
                     attrs.append(XmlUtil.attrs(new String[] { "changetype",

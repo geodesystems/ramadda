@@ -843,6 +843,7 @@ public class CsvUtil {
         ArrayList<NamedChannel> channels=
             new ArrayList<NamedChannel>();
         for (String file : files) {
+	    try {
 	    if (file.toLowerCase().endsWith(".xls")) {
 		String csv = XlsUtil.xlsToCsv(file);
 		InputStream bais=  new ByteArrayInputStream(csv.getBytes());
@@ -866,6 +867,9 @@ public class CsvUtil {
 	    }
 
             channels.add(new NamedChannel(file, new RandomAccessFile(file,"r").getChannel()));
+	    } catch(FileNotFoundException fnfe) {
+		throw new RuntimeException("Error missing file:" + file);
+	    }
         }
         if (inputStream != null) {
 	    ReadableByteChannel in = Channels.newChannel(inputStream);
@@ -1543,9 +1547,19 @@ public class CsvUtil {
         new Cmd("-notcolumns", new Label("Deselect columns"),
                 "Don't include given columns",
                 new Arg("columns", "", "type", "columns")),
-        new Cmd("-firstcolumns", new Label("Move columns to starts"),
+        new Cmd("-firstcolumns", new Label("Move columns to start"),
                 "Move columns",
                 new Arg("columns", "", "type", "columns")),
+        new Cmd("-columnsbefore", new Label("Move columns before given column"),
+                "Move columns",
+                new Arg("column", "Column to move before", "type", "column"),
+                new Arg("columns", "Columns to move", "type", "columns")),
+        new Cmd("-columnsafter", new Label("Move columns after given column"),
+                "Move columns",
+                new Arg("column", "Column to move after", "type", "column"),
+                new Arg("columns", "Columns to move", "type", "columns")),	
+
+
         new Cmd("-delete", new Label("Delete columns"), "Remove the columns",
                 new Arg("columns", "", "type", "columns")),
         new Cmd("-cut", new Label("Drop rows"), "",
@@ -2330,6 +2344,14 @@ public class CsvUtil {
 		ctx.addProcessor(ctx.getSelector());
 		return i;
 	    });
+	defineFunction("-columnsbefore",2,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.ColumnsBefore(args.get(++i),getCols(args.get(++i))));
+		return i;
+	    });
+	defineFunction("-columnsafter",2,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.ColumnsAfter(args.get(++i),getCols(args.get(++i))));
+		return i;
+	    });		
 	defineFunction("-firstcolumns",1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnFirst(getCols(args.get(++i))));
 		return i;
