@@ -2280,7 +2280,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         String       searchArg = getSearchArg();
 	for(int i=0;i<numberOfSearchWidgets;i++) {
 	    String sarg = searchArg+(i==0?"":""+i);
-	    for (String arg : (List<String>) request.get(sarg, result)) {
+	    for (String arg : (List<String>) request.get(sarg, new ArrayList<String>())) {
 		//            result.addAll(Utils.split(arg, ",", true));
 		result.add(arg);
 	    }
