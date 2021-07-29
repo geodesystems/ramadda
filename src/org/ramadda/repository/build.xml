@@ -367,7 +367,9 @@
         <unjar src="${lib_dir}/extra.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/json.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/jython.jar" dest="${tmpjar_dir}"/>
+<!--
         <unjar src="${lib_dir}/gdata.jar" dest="${tmpjar_dir}"/>
+-->
         <unjar src="${lib_dir}/javax.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/jmapproj.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/lucene-core-8.8.2.jar" dest="${tmpjar_dir}"/>
@@ -406,7 +408,6 @@
               <include name="**"/>
               <exclude name="ucar/multiarray/**"/>
         </jar>
-
         <delete dir="${tmpjar_dir}"/>
     </target>
 
