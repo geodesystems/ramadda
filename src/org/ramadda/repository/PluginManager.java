@@ -351,9 +351,18 @@ public class PluginManager extends RepositoryManager {
                 continue;
             }
             String pluginFile = plugin.toString();
-            if (haveSeen(pluginFile)) {
+	    if (haveSeen(pluginFile)) {
                 continue;
             }
+	    //Check for bad ones. Should be in a property list
+	    boolean ok = true;
+	    if(pluginFile.endsWith("gdataplugin.jar")) 
+		ok = false;
+	    if(!ok) {
+		System.err.println("Skipping plugin file:" + pluginFile);
+		continue;
+	    }
+
             try {
                 processPluginFile(pluginFile, pluginFilesList, classLoader,
                                   true);
