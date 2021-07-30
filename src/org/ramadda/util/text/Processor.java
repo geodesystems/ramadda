@@ -1239,14 +1239,14 @@ public abstract class Processor extends CsvOperator {
             }
 
 
+	    String tableAttrs = XmlUtil.attrs("id", tableId, "name", label, "labelColumns", labels,
+					      "icon",CsvUtil.getDbProp(props, "table", "icon", "/db/database.png"));
+	    String addressTemplate = CsvUtil.getDbProp(props, "table", "addressTemplate", (String)null);
+	    if(addressTemplate!=null)
+		tableAttrs+=XmlUtil.attr("addressTemplate", addressTemplate);
             writer.println(
 			   XmlUtil.openTag(
-					   "table",
-					   XmlUtil.attrs(
-							 "id", tableId, "name", label, "labelColumns", labels,
-							 "icon",
-							 CsvUtil.getDbProp(
-									   props, "table", "icon", "/db/database.png"))));
+					   "table", tableAttrs));
             List<Row> samples = new ArrayList<Row>();
             samples.add(row);
             boolean[] isNumeric = new boolean[row1.getValues().size()];

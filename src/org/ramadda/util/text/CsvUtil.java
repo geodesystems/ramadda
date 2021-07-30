@@ -3873,8 +3873,8 @@ public class CsvUtil {
 	s = s.replaceAll("_quote_", "\"");
 	s = s.replaceAll("\n", " ");
 	List<String> toks = Utils.parseCommandLine(s);
-	//      System.err.println("s:" + s);
-	//      System.err.println("toks:" + toks);
+	//	System.err.println("s:" + s);
+	//	System.err.println("toks:" + toks);
 	Hashtable<String, String> props = new Hashtable<String, String>();
 	for (int j = 0; j < toks.size(); j += 2) {
 	    if (j >= toks.size() - 1) {
@@ -3891,7 +3891,10 @@ public class CsvUtil {
 		throw new IllegalArgumentException(
 						   "Error: Odd number of arguments:\n" + err);
 	    }
+	    //	    System.err.println(toks.get(j)+"="+ toks.get(j + 1));
 	    props.put(toks.get(j), toks.get(j + 1));
+	    //	    System.err.println(toks.get(j) +" " + toks.get(j+1));
+
 	}
 	return props;
     }
