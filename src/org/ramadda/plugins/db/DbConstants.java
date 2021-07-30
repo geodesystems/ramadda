@@ -159,6 +159,8 @@ public interface DbConstants extends Constants {
     /** _more_ */
     public static final String VIEW_MAP = "map";
 
+    public static final String VIEW_ADDRESSLABELS = "addresslabels";    
+
 
     /** _more_ */
     public static final String VIEW_SEARCH = "search";
@@ -197,6 +199,8 @@ public interface DbConstants extends Constants {
     /** _more_ */
     public static final String CSS_DB_TABLEHEADER_INNER =
         "dbtableheader_inner";
+
+    public static final String ARG_SEARCH_FROM = "searchfrom";
 
     public static final String ARG_FOR_PRINT = "forprint";
 

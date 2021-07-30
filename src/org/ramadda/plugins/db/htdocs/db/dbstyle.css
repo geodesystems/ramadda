@@ -171,3 +171,24 @@
   min-width:100px;
   text-align: center;
 }
+
+.db_address_label {
+    display:inline;
+    /* originally from  Boulder Information Services */
+    width: 2.623in; 
+    height: 1in; 
+    margin-right: .125in; 
+    padding: 0px;
+    float: left;
+    text-align: center;
+    overflow: hidden;
+    border-radius:4px;
+    border:1px solid #000;
+}
+
+.db_address_pagebreak {
+    height:0.5in;
+    clear: both;
+    break-before:always;
+    page-break-before:always; 	
+}

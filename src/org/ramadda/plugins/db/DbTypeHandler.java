@@ -100,6 +100,7 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.zip.*;
 
+import java.util.function.*;
 
 /**
  *
@@ -175,6 +176,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     private String labelColumnNames;
 
     private String labelTemplate;
+    private String addressTemplate;
 
     private String mapLabelTemplate;
     private String mapLabelTemplatePrint;
@@ -203,6 +205,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         this.labelColumnNames = XmlUtil.getAttribute(tableNode,
 						     "labelColumns", "");
+        this.addressTemplate = XmlUtil.getAttribute(tableNode,
+						    "addressTemplate", "");	
 	this.labelTemplate  = XmlUtil.getAttribute(tableNode,
 						   "labelTemplate",(String)null);
 	this.mapLabelTemplate  = XmlUtil.getAttribute(tableNode,
@@ -314,6 +318,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             viewList.add(new TwoFacedObject("Map", VIEW_MAP));
             //            viewList.add(new TwoFacedObject("KML", VIEW_KML));
         }
+	 
+
+	 if(addressTemplate!=null)
+	     viewList.add(new TwoFacedObject("Addresses", VIEW_ADDRESSLABELS));
+
 
         viewList.add(new TwoFacedObject("CSV", VIEW_CSV));
 
@@ -1487,6 +1496,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             if (view.equals(VIEW_MAP)) {
                 return handleListMap(request, entry, valueList, fromSearch);
             }
+            if (view.equals(VIEW_ADDRESSLABELS)) {
+                return handleListAddresses(request, entry, valueList, fromSearch);
+            }	    
             if (view.equals(VIEW_STICKYNOTES)) {
                 return handleListStickyNotes(request, entry, valueList,
                                              fromSearch);
@@ -2172,13 +2184,18 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                 HtmlUtils.input(ARG_DB_SEARCHNAME,
                                     request.getString(ARG_DB_SEARCHNAME, ""),
 						HtmlUtils.SIZE_50) + suffix));
-            sb.append(formEntry(request, "",
-				HtmlUtils.checkbox(ARG_FOR_PRINT,
-                                  "true",
-                                  request.get(ARG_FOR_PRINT,
-					      false)) + " For printing   Entries per page:" +
-				HU.input(ARG_ENTRIES_PER_PAGE,request.getString(ARG_ENTRIES_PER_PAGE,"8"),HtmlUtils.SIZE_5)));
+	    String searchFrom = request.getString(ARG_SEARCH_FROM,null);
+	    if(searchFrom!=null) {
+		sb.append(HU.hidden(ARG_SEARCH_FROM, searchFrom));
+	    }
 
+	    String print = HtmlUtils.checkbox(ARG_FOR_PRINT, "true", request.get(ARG_FOR_PRINT, false)) + 
+		" For printing   Entries per page:" +
+		HU.input(ARG_ENTRIES_PER_PAGE,request.getString(ARG_ENTRIES_PER_PAGE,"8"),HtmlUtils.SIZE_5);
+	    if(addressTemplate!=null) {
+		print+="<br> Address label skip:" + HU.input("addresslabelskip",request.getString("addresslabelskip","0"),HtmlUtils.SIZE_5);
+	    }
+	    sb.append(formEntry(request, "",print));
         }
 
 
@@ -3637,7 +3654,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             hb.append(HtmlUtils.open(HtmlUtils.TAG_TR, "valign", "top",
                                      "class", (even
                     ? " ramadda-row-even "
-                    : " ramadda-row-odd ") + " dbrow ", "id", rowId));
+					       : " ramadda-row-odd ") + " dbrow ", "id", rowId,"title","Click to view details"));
 
             even = !even;
 	    if(!forPrint) {
@@ -3676,6 +3693,19 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		HtmlUtils.close(hb, "div", "td");
 	    }
 
+	    String searchFrom = request.getString(ARG_SEARCH_FROM,null);
+	    String searchColumn = null;
+	    String sourceName=null;
+	    String sourceColumn=null;
+	    if(searchFrom!=null) {
+		List<String> toks = Utils.split(searchFrom,";");
+		sourceName = toks.get(0);
+		sourceColumn = toks.get(1);
+		searchColumn = toks.get(3);
+	    }
+
+		
+
             for (int i = 0; i < columnsToUse.size(); i++) {
                 Column column = columnsToUse.get(i);
                 if (column.isNumeric()) {
@@ -3706,6 +3736,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 }
 
                 HtmlUtils.open(hb, HtmlUtils.TAG_DIV, "class", "dbtablecell");
+
 
                 if (column.isEnumeration()) {
                     String value = (String) values[column.getOffset()];
@@ -3758,11 +3789,17 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 
                 String label = formatTableValue(request, entry, hb, column,
-                                   values, sdf);
+						values, sdf);
                 hb.append("&nbsp;");
+
+		boolean addSelect = searchColumn!=null && column.getName().equals(searchColumn);
+		if(addSelect) {
+		    hb.append("&nbsp;");
+		    hb.append(HU.href("javascript:DB.doDbSelect('" +searchFrom +"','" + label+"')",getRepository().getIconImage("fas fa-external-link-alt"),HU.attr("title","Select for " + sourceName+":" + sourceColumn)));
+		    hb.append("&nbsp;");
+		}
                 HtmlUtils.close(hb, HtmlUtils.TAG_DIV);
                 HtmlUtils.close(hb, HtmlUtils.TAG_TD);
-
 
                 if (column.isEnumeration() && column.getDoStats()) {
                     Hashtable<Object, Integer> numUniques =
@@ -4066,7 +4103,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                        + dbInfo.getDfltSortColumn().getName();
                             }
                             s = HtmlUtils.href(url, s,
-                                    HtmlUtils.cssClass("ramadda-db-link"));
+					       HtmlUtils.attr("title","Click to search") + HtmlUtils.cssClass("ramadda-db-link"));
                         }
                         cb.append(s);
                         HtmlUtils.close(cb, "div");
@@ -4152,14 +4189,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                    Object[] values, SimpleDateFormat sdf)
             throws Exception {
         StringBuilder htmlSB = new StringBuilder();
-
         column.formatValue(request, entry, htmlSB, Column.OUTPUT_HTML, values, sdf,
                            false);
         String html = htmlSB.toString();
-
-
+	String value = null;
         if (column.getCanSearch() && column.isString()) {
-            String value = (String) values[column.getOffset()];
+            value = (String) values[column.getOffset()];
             if (value == null) {
                 value = "";
             }
@@ -4185,13 +4220,17 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 }
 
                 html = HtmlUtils.href(url, html,
-                                      HtmlUtils.cssClass("ramadda-db-link"));
+                                     HtmlUtils.attr("title","Click to search") +  HtmlUtils.cssClass("ramadda-db-link"));
             }
         }
 
         sb.append(html);
 
-        return html;
+	if(value==null) {
+	    Object tmp = values[column.getOffset()];
+	    value= tmp==null?"":tmp.toString();
+	}
+        return value;
     }
 
     /**
@@ -4342,8 +4381,26 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 
         Column  theColumn = null;
+	Column searchColumn = null;
         boolean bbox      = true;
+
+	String searchFrom = request.getString(ARG_SEARCH_FROM,null);
+	String searchColumnName = null;
+	String sourceName=null;
+	String sourceColumn=null;
+	if(searchFrom!=null) {
+	    List<String> toks = Utils.split(searchFrom,";");
+	    sourceName = toks.get(0);
+	    sourceColumn = toks.get(1);
+	    searchColumnName = toks.get(3);
+	}
+
+
+
+
         for (Column column : tableHandler.getColumns()) {
+	    if(searchColumnName!=null &&searchColumnName.equals(column.getName()))
+		searchColumn = column;
             if (column.getType().equals(Column.DATATYPE_LATLONBBOX)) {
                 theColumn = column;
                 break;
@@ -4408,6 +4465,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             catMap = new Hashtable<String, StringBuilder>();
             cats   = new ArrayList<String>();
         }
+
+
+	
 
 
         for (Object[] values : valueList) {
@@ -4480,6 +4540,15 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                               + "/db/database_edit.png"*/
                 , msg("Edit entry"))));
             }
+	    if(searchColumn!=null) {
+		theSB.append("&nbsp;");
+		String value = searchColumn.getString(values); 
+		theSB.append(HU.href("javascript:DB.doDbSelect('" +searchFrom +"','" + value+"')",getRepository().getIconImage("fas fa-external-link-alt"),HU.attr("title","Select for " + sourceName+":" + sourceColumn)));
+		theSB.append("&nbsp;");
+	    }
+
+
+
             String viewUrl = getViewUrl(request, entry, dbid);
 	    if(!forPrint) {
 		theSB.append(HtmlUtils.href(viewUrl, HtmlUtils.img(iconToUse,
@@ -4567,6 +4636,44 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
     }
 
+
+    public Result handleListAddresses(Request request, Entry entry,
+				      List<Object[]> valueList, boolean fromSearch)
+            throws Exception {
+	request.put(ARG_TEMPLATE,"empty");
+	StringBuilder sb = new StringBuilder();
+        HtmlUtils.cssLink(sb,
+                          getPageHandler().makeHtdocsUrl("/db/dbstyle.css"));
+	sb.append(HU.importCss(" body { margin:0px; width: 8.5in; margin-top:0.5in;   margin-left:0.19in;margin-right:0.19in;}"));
+        SimpleDateFormat                 sdf    = getDateFormat(entry);
+	final int[] A={0,0};
+	int skip = request.get("addresslabelskip",0);
+	Consumer<String> printer = (label) ->{
+	    sb.append(label);
+	    A[0]++;
+	    if(A[0]==3) {
+		A[0]=0;
+		sb.append("<br>");
+		A[1]++;
+		if(A[1]==10) {
+		    sb.append("<div class=db_address_pagebreak></div>");
+		    A[1]=0;
+		}
+	    }
+
+	};
+	for(int i=0;i<skip;i++) {
+	    printer.accept("<div class=db_address_label style='border:0px'>"+"</div>\n");
+	}
+
+	String contents =null;
+        for (Object[] values : valueList) {
+	    printer.accept("<div class=db_address_label>"+
+			   applyTemplate(request, entry,  values, sdf, addressTemplate)+"</div>\n");
+	}	    
+        return new Result(getTitle(request, entry), sb);
+    }
+    
     /**
      * _more_
      *

@@ -45,7 +45,7 @@ import java.util.List;
  *
  */
 
-public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler {
+public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler, DbConstants {
 
     /** _more_ */
     public static final String TAG_TABLES = "tables";
@@ -225,16 +225,24 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler {
     public Result processList(Request request) throws Exception {
 	StringBuilder sb = new StringBuilder();
 	getPageHandler().sectionOpen(request, sb,"Select Database",false);
+	//	let url = HtmlUtils.getUrl("/db/search/list",["type", otherTable,"widgetId",widgetId,"column",column,"otherColumn",otherColumn]);
 	List<Entry> entries = getEntryManager().getEntries(request);
 	if(entries.size()==0) {
 	    sb.append("No databases found");
 	}
+	String searchFrom = request.getString("sourceName","")+";"+request.getString("column","") +";" + request.getString("widgetId","") +";" + request.getString("otherColumn","");
+
+	if(entries.size()==1) {
+	    return new Result(HtmlUtils.url(
+					    request.makeUrl(getRepository().URL_ENTRY_SHOW),
+					    new String[] { ARG_ENTRYID,
+							   entries.get(0).getId(),
+							   ARG_SEARCH_FROM, searchFrom}));
+	}
+	sb.append(HtmlUtils.formTable());
 	List<TwoFacedObject> items= new ArrayList<TwoFacedObject>();
 	sb.append(request.form(getRepository().URL_ENTRY_SHOW));
-        sb.append(HtmlUtils.formTable());
-	sb.append(HtmlUtils.hidden("column",request.getString("column","")));
-	sb.append(HtmlUtils.hidden("columnname",request.getString("columnname","")));
-	sb.append(HtmlUtils.hidden("widgetid",request.getString("widgetid","")));
+	sb.append(HtmlUtils.hidden(ARG_SEARCH_FROM,searchFrom));
 	for(Entry entry: entries) {
 	    items.add(new TwoFacedObject(entry.getName(),entry.getId()));
 	}

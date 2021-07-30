@@ -1,8 +1,26 @@
 
 var DB =  {
-    doDbSearch: function(columnName,widgetId,dbTable,dbColumn) {
-	console.log("c:" + columnName +" " + dbTable);
-	let url = HtmlUtils.getUrl("/db/search/list",["type", dbTable,"column",dbColumn,"widgetid",widgetId,"columnname",columnName]);
+    doDbSelect: function(forSearch, value) {
+//	String searchFrom = request.getString("column","") +";" + request.getString("widgetId","") +";" + request.getString("otherColumn","");
+	let [sourceName, sourceColumn, widgetId, otherCol]= forSearch.split(";");
+	console.log(value+" " + sourceColumn +":" + widgetId +":" +  otherCol);
+	let widget = 	window.opener.document.getElementById(widgetId);
+	console.log(widget + sourceName +" " + widgetId);
+	if(!widget) {
+	    alert("Unable to find widget in source window:" + sourceName);
+	    return;
+	}
+	widget.value=widget.value||"";
+	widget.value = widget.value.trim();
+	if(widget.value!="")
+	    widget.value+="\n";
+	widget.value+=value;
+
+    },
+
+    doDbSearch: function(sourceName,column,widgetId,otherTable,otherColumn) {
+	console.log("c:" + column +" " + otherTable +" other column:" + otherColumn);
+	let url = HtmlUtils.getUrl("/db/search/list",["sourceName",sourceName,"type", otherTable,"widgetId",widgetId,"column",column,"otherColumn",otherColumn]);
 	window.open(url);
     },
 
