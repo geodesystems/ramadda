@@ -4622,14 +4622,14 @@ public class Utils extends IO {
      * @throws java.text.ParseException _more_
      */
     public static Date[] getDateRange(String fromDate, String toDate,
-                                      Date dflt)
+                                      Date base)
             throws java.text.ParseException {
 
-        Date fromDttm = Utils.stringDefined(fromDate)?DateUtil.parseRelative(dflt, fromDate, -1):dflt;
-        Date toDttm   = Utils.stringDefined(toDate)?DateUtil.parseRelative(dflt, toDate, +1):dflt;
-        //      System.err.println ("dflt: " + dflt);
-        //      System.err.println ("fromDttm:" + fromDate + " " + fromDttm);
-        //      System.err.println ("toDttm:" + toDate + " " + toDttm);
+        Date fromDttm = Utils.stringDefined(fromDate)?DateUtil.parseRelative(base, fromDate, -1):null;
+        Date toDttm   = Utils.stringDefined(toDate)?DateUtil.parseRelative(base, toDate, +1):null;
+	//	System.err.println ("dflt: " + base);
+	//	System.err.println ("fromDttm:" + fromDate + " date:" + fromDttm);
+	//	System.err.println ("toDttm:" + toDate + " date:" + toDttm);
 
 
         if ((Utils.stringDefined(fromDate)) && (fromDttm == null)) {
