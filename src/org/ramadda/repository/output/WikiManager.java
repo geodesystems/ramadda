@@ -2484,6 +2484,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 
             return buff.toString();
+        } else if (theTag.equals(WIKI_TAG_TEMPLATE)) {
+            String template = getProperty(wikiUtil, props,
+					  "template","empty");
+	    request.put("template",template);
+	    return "";
         } else if (theTag.equals(WIKI_TAG_APPLY)) {
             StringBuilder style = new StringBuilder(getProperty(wikiUtil,
                                       props, APPLY_PREFIX + ATTR_STYLE, ""));

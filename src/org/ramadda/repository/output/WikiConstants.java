@@ -325,6 +325,8 @@ public interface WikiConstants {
     /** _more_ */
     public static final String WIKI_TAG_GROUP = "group";
 
+    public static final String WIKI_TAG_TEMPLATE = "template";
+
     /** _more_ */
     public static final String WIKI_TAG_WIKITEXT = "wikitext";
 
