@@ -21,6 +21,7 @@ import org.ramadda.repository.*;
 
 import org.w3c.dom.*;
 
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 
 
@@ -132,7 +133,8 @@ public class OpendapApiHandler extends RepositoryManager implements RequestHandl
             //entry.getFullName?
             //            url = getRepository().getUrlBase() + "/" + PATH_OPENDAP + "/"
             //                  + entry.getId() + "/" + OPENDAP_SUFFIX;
-            url = "/" + entry.getId() + "/" + OPENDAP_SUFFIX;
+            url = "/" + HtmlUtils.urlEncode(entry.getId()) + "/" + OPENDAP_SUFFIX;
+	    System.err.println("OpendapApuHandler.getOpendapSuffix: encoded path:" + url);
         } else {
             url = "/" + ARG_OUTPUT + ":"
                   + Request.encodeEmbedded(
@@ -143,6 +145,7 @@ public class OpendapApiHandler extends RepositoryManager implements RequestHandl
                           + OPENDAP_SUFFIX;
         }
 
+	System.err.println("OPENDAP URL:" + url);
         url = url.replaceAll(" ", "+");
 
         return url;
