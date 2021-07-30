@@ -2147,14 +2147,17 @@ public class Column implements DataTypes, Constants, Cloneable {
             String relativeArg = searchArg + "_relative";
             Date[] dateRange = request.getDateRange(searchArg + "_fromdate",
                                    searchArg + "_todate", relativeArg,
-                                   new Date());
-            //      System.err.println("D:" + dateRange[0] +" - " + dateRange[1] +" " + request.getString(searchArg + "_fromdate"));
+						    null/*new Date()*/);
+		
+	    Clause tmp;
             if (dateRange[0] != null) {
-                where.add(Clause.ge(columnName, dateRange[0]));
+                where.add(tmp=Clause.ge(columnName, dateRange[0]));
+		System.err.println("min date:" + dateRange[0] +" " + tmp);
             }
 
             if (dateRange[1] != null) {
-                where.add(Clause.le(columnName, dateRange[1]));
+                where.add(tmp = Clause.le(columnName, dateRange[1]));
+		System.err.println("max date:" + dateRange[1] +" " + tmp);
             }
         } else if (isType(DATATYPE_ENTRY)) {
             String value = request.getString(searchArg + "_hidden", "");
@@ -3285,10 +3288,11 @@ public class Column implements DataTypes, Constants, Cloneable {
 		if(searchDB!=null) {
 		    //This uses the plugins/db plugin
 		    List<String> toks = StringUtil.splitUpTo(searchDB,":",2);
+		    String otherTable = toks.get(0);
 		    String otherCol = toks.size()==2?toks.get(1):getName();
-		    String extraLink  = "DB.doDbSearch(" + HU.squote(this.getName()) +"," + HU.squote(widgetId)+","+HU.squote(searchDB) +"," + HU.squote(otherCol)+");";
+		    String extraLink  = "DB.doDbSearch(" + HU.squote(entry.getName()) +","+HU.squote(this.getName()) +"," + HU.squote(widgetId)+","+HU.squote(otherTable) +"," + HU.squote(otherCol)+");";
 		    //		    System.err.println(extraLink);
-		    widget += " " + HU.href("javascript:" + extraLink,"Search");
+		    widget += " " + HU.href("javascript:" + extraLink,"Lookup " + getName());
 		}
 
             }
