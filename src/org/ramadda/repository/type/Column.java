@@ -168,7 +168,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     public static final String ATTR_SUFFIX = "suffix";
 
         /** _more_ */
-    public static final String ATTR_SEARCHDB = "searchDB";
+    public static final String ATTR_LOOKUPDB = "lookupdb";
 
     /** _more_ */
     public static final String ATTR_HELP = "help";
@@ -438,7 +438,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     /** _more_ */
     private boolean showInForm = true;
 
-    private String searchDB;
+    private String lookupDB;
 
     /** _more_ */
     private Hashtable<String, String> properties = new Hashtable<String,
@@ -566,7 +566,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         rows           = getAttributeOrTag(element, ATTR_ROWS, rows);
         columns        = getAttributeOrTag(element, ATTR_COLUMNS, columns);
 
-        searchDB       = getAttributeOrTag(element, ATTR_SEARCHDB, (String) null);	
+        lookupDB       = getAttributeOrTag(element, ATTR_LOOKUPDB, (String) null);	
 
         String tmp = getAttributeOrTag(element, "numberFormat", null);
         if (tmp != null) {
@@ -3093,6 +3093,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 
         List<Clause> tmp        = new ArrayList<Clause>(where);
         String       widget     = "";
+	String widgetId = searchArg.replaceAll("\\.","_");
         if (isType(DATATYPE_LATLON)) {
             String[] nwseValues = getNWSE(request, null, searchArg, false);
             String[] nwseView   = getNWSE(request, entry, searchArg, true);
@@ -3181,7 +3182,8 @@ public class Column implements DataTypes, Constants, Cloneable {
                 }
             }
 
-            String selectExtra = HtmlUtils.id(searchArg + "_id");
+	    //            String selectExtra = HtmlUtils.id(searchArg + "_id");
+            String selectExtra = "";
             if (searchRows > 1) {
                 selectExtra += " multiple rows=\"" + searchRows + "\" ";
             } else {
@@ -3193,8 +3195,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 		String arg = searchArg+(i==0?"":""+i);
 		widget += HtmlUtils.select(
 					   arg, tmpValues,
-					   request.get(arg, new ArrayList<String>()), selectExtra);
-
+					   request.get(arg, new ArrayList<String>()), selectExtra+(i==0?HU.attr("id",widgetId):""));
 		widget+= " ";
 	    }
 
@@ -3278,25 +3279,23 @@ public class Column implements DataTypes, Constants, Cloneable {
                 //                String text  = Utils.unquote(request.getString(searchArg, ""));
 
 		boolean isList = isType(DATATYPE_LIST);
-		String widgetId = searchArg.replaceAll("\\.","_");
 		if(isList) {
 		    widget = HtmlUtils.textArea(searchArg, text,5,20,  HU.attr("id",widgetId));
 		} else {
 		    widget = HtmlUtils.input(searchArg, text, HtmlUtils.SIZE_20 +HU.attr("id",widgetId));
 		}
-
-		if(searchDB!=null) {
-		    //This uses the plugins/db plugin
-		    List<String> toks = StringUtil.splitUpTo(searchDB,":",2);
-		    String otherTable = toks.get(0);
-		    String otherCol = toks.size()==2?toks.get(1):getName();
-		    String extraLink  = "DB.doDbSearch(" + HU.squote(entry.getName()) +","+HU.squote(this.getName()) +"," + HU.squote(widgetId)+","+HU.squote(otherTable) +"," + HU.squote(otherCol)+");";
-		    //		    System.err.println(extraLink);
-		    widget += " " + HU.href("javascript:" + extraLink,"Lookup " + getName());
-		}
-
             }
         }
+	if(lookupDB!=null) {
+	    //This uses the plugins/db plugin
+	    List<String> toks = StringUtil.splitUpTo(lookupDB,":",2);
+	    String otherTable = toks.get(0);
+	    String otherCol = toks.size()==2?toks.get(1):getName();
+	    String extraLink  = "DB.doDbSearch(" + HU.squote(entry.getName()) +","+HU.squote(this.getName()) +"," + HU.squote(widgetId)+","+HU.squote(otherTable) +"," + HU.squote(otherCol)+");";
+	    //		    System.err.println(extraLink);
+	    widget += " " + HU.href("javascript:" + extraLink,"Lookup " + getName());
+	}
+
 
         formBuffer.append(typeHandler.formEntry(request, getLabel() + ":",
                 "<table cellspacing=0 cellpadding=0 border=0>"
@@ -4092,12 +4091,12 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
     /**
-       Get the SearchDB property.
+       Get the Lookupdb property.
 
-       @return The SearchDB
+       @return The Lookupdb
     **/
-    public String getSearchDB () {
-	return searchDB;
+    public String getLookupDB () {
+	return lookupDB;
     }
 
 
