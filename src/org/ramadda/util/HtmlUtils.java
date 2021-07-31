@@ -877,6 +877,8 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static Appendable squote(Appendable sb, String s) {
         try {
             sb.append("'");
+	    if(s.indexOf("\\'")<=0)
+	       s = s.replace("'","\\'");
             sb.append(s);
             sb.append("'");
         } catch (IOException ioe) {
@@ -2329,7 +2331,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
      */
     public static String makeLatLonInput(String id, String arg,
                                          String value) {
-        return makeLatLonInput(id, arg, value, null);
+        return makeLatLonInput(id, arg, value, null,"");
     }
 
 
@@ -2345,10 +2347,10 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @return _more_
      */
     public static String makeLatLonInput(String id, String arg, String value,
-                                         String tip) {
+                                         String tip, String extra) {
         return input(arg, value,
                      id(id) + style("margin:0px;") + attrs(ATTR_SIZE, "5")
-                     + id(arg) + ((tip != null)
+                     + id(arg) + extra + ((tip != null)
                                   ? title(tip)
                                   : ""));
     }
@@ -2402,19 +2404,19 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return "<table border=0 cellspacing=0 cellpadding=0><tr><td colspan=\"2\" align=\"center\">"
                + makeLatLonInput(
                    baseId + SUFFIX_NORTH, northArg, northValue,
-                   "North") + "</td></tr>" + "<tr><td>"
+                   "North"," data-dir=north ") + "</td></tr>" + "<tr><td>"
                             + makeLatLonInput(
                                 baseId + SUFFIX_WEST, westArg, westValue,
-                                "West") + "</td><td>"
+                                "West", " data-dir=west ") + "</td><td>"
                                         + makeLatLonInput(
                                             baseId + SUFFIX_EAST, eastArg,
-                                            eastValue, "East") + "</tr>"
+                                            eastValue, "East", " data-dir=east ") + "</tr>"
                                                 + "<tr><td colspan=\"2\" align=\"center\">"
                                                     + makeLatLonInput(
                                                         baseId + SUFFIX_SOUTH,
                                                             southArg,
                                                                 southValue,
-                                                                    "South") + "</table>";
+							"South", " data-dir=south ") + "</table>";
     }
 
     /**
