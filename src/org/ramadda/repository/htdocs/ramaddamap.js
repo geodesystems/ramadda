@@ -3454,7 +3454,7 @@ RepositoryMap.prototype = {
             this.zoomToExtent(projBounds);
         } else {
 	    if(debugBounds) console.log("hiliteMarker");
-            this.getMap().setCenter(mymarker.lonlat);
+            this.setCenter(mymarker.lonlat);
         }
 
         this.showMarkerPopup(mymarker);
@@ -3590,7 +3590,7 @@ RepositoryMap.prototype = {
         if (Array.isArray(location)) {
             location = MapUtils.createLonLat(location[0], location[1]);
         }
-        if (size == null) size = 16;
+        if (size == null) size = 20;
         if (xoffset == null) xoffset = 0;
         if (yoffset == null) yoffset = 0;
         if (!this.markers) {
@@ -3669,10 +3669,13 @@ RepositoryMap.prototype = {
     },
 
     addMarker:  function(id, location, iconUrl, markerName, text, parentId, size, yoffset, canSelect, attrs) {
+
 	if(Utils.isDefined(location.x)) {
 	    location = MapUtils.createLonLat(location.x,location.y);
 	}
+
         let marker = this.createMarker(id, location, iconUrl, markerName, text, parentId, size, 0, yoffset, canSelect,attrs);
+	marker.lonlat = location;
         this.addMarkers([marker]);
         return marker;
     },
