@@ -1,21 +1,49 @@
 
 var DB =  {
+    applyMapSearch:function(map, formId) {
+	let bounds = map.getBounds();
+	let north = $("#"+formId).find("input[data-dir='north']");
+	let west = $("#"+formId).find("input[data-dir='west']");	
+	let east = $("#"+formId).find("input[data-dir='east']");
+	let south = $("#"+formId).find("input[data-dir='south']");
+
+	north.val(bounds.top);
+	west.val(bounds.left);
+	south.val(bounds.bottom);
+	east.val(bounds.right);	
+	let submit = $("#"+formId).find("input[name='db.search']");
+	submit.click();
+//	$("#"+formId).submit();
+    },
+
     doDbSelect: function(forSearch, value) {
-//	String searchFrom = request.getString("column","") +";" + request.getString("widgetId","") +";" + request.getString("otherColumn","");
-	let [sourceName, sourceColumn, widgetId, otherCol]= forSearch.split(";");
-	console.log(value+" " + sourceColumn +":" + widgetId +":" +  otherCol);
-	let widget = 	window.opener.document.getElementById(widgetId);
-	console.log(widget + sourceName +" " + widgetId);
-	if(!widget) {
-	    alert("Unable to find widget in source window:" + sourceName);
+	if(!window.opener) {
+	    alert("No source window");
 	    return;
 	}
-	widget.value=widget.value||"";
-	widget.value = widget.value.trim();
-	if(widget.value!="")
-	    widget.value+="\n";
-	widget.value+=value;
-
+	let [sourceName, sourceColumn, widgetId, otherCol]= forSearch.split(";");
+	let widget = 	window.opener.document.getElementById(widgetId);
+	if(!widget) {
+	    alert("Unable to find widget in source window:" + sourceName +" id:" + widgetId);
+	    return;
+	}
+	let v = widget.value;
+	if(widget.type=="select-one") {
+	    let select = $(widget);
+	    select.val(value);
+	} else if(widget.type=="text") {
+	    widget.value = value;
+	} else {
+	    let v=widget.value||"";
+	    v = v.trim();
+	    v = v.split("\n").map(v=>{return v.trim()});
+	    if(v.includes(value)) {
+		return
+	    }
+	    v.push(value);
+	    v = Utils.join(v,"\n");
+	    widget.value = v;
+	}
     },
 
     doDbSearch: function(sourceName,column,widgetId,otherTable,otherColumn) {
