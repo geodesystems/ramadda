@@ -4827,17 +4827,20 @@ public abstract class Converter extends Processor {
         /** _more_ */
         private String delimiter;
 
+	private String name;
 
         /**
+
          *
          *
          *
          * @param indices _more_
          * @param delimiter _more_
          */
-        public ColumnNewer(List<String> indices, String delimiter) {
+        public ColumnNewer(List<String> indices, String delimiter, String name) {
             super(indices);
             this.delimiter = delimiter;
+	    this.name =name;
         }
 
         /**
@@ -4853,6 +4856,10 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
+	    if(rowCnt++==0) {
+		row.add(name);
+		return row;
+	    }
             List<Integer> indices = getIndices(ctx);
             StringBuilder sb      = new StringBuilder();
             int           cnt     = 0;

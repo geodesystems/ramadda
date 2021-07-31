@@ -1359,6 +1359,7 @@ public abstract class Processor extends CsvOperator {
                 }
 
 
+
                 canSearch = "true".equals(CsvUtil.getDbProp(props, colId,
 							    "cansearch", canSearch + ""));
                 canList = "true".equals(CsvUtil.getDbProp(props, colId,
@@ -1371,6 +1372,13 @@ public abstract class Processor extends CsvOperator {
                     attrs.append(XmlUtil.attrs(new String[] { "values",
 							      values }));
                 }
+                String lookupDB = CsvUtil.getDbProp(props, colId,
+						    "lookupdb", (String)null);
+
+		if(lookupDB!=null) {
+                    attrs.append(XmlUtil.attrs(new String[] { "lookupdb",
+							      lookupDB}));
+		}
                 if (searchRows.length() > 0) {
                     attrs.append(XmlUtil.attrs(new String[] { "searchrows",
 							      searchRows }));

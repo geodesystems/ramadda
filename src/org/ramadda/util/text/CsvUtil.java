@@ -1582,7 +1582,8 @@ public class CsvUtil {
 			"Single value or comma separated for multiple rows", "type",
 			"list")),
         new Cmd("-concat", "Create a new column from the given columns",
-                new Arg("columns", "", "type", "columns"), "delimiter"),
+                new Arg("columns", "", "type", "columns"), "delimiter",
+		new Arg("name","Name of new colums")),
         new Cmd("-split", "Split the column",
                 new Arg("column", "", "type", "column"),
                 new Arg("delimiter", "What to split on"),
@@ -3150,8 +3151,8 @@ public class CsvUtil {
 		return i;
 	    });
 
-	defineFunction("-concat", 2,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.ColumnNewer(getCols(args.get(++i)), args.get(++i)));
+	defineFunction("-concat", 3,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.ColumnNewer(getCols(args.get(++i)), args.get(++i),args.get(++i)));
 		return i;
 	    });
 
