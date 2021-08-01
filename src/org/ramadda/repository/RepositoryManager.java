@@ -190,6 +190,12 @@ public class RepositoryManager implements RepositorySource, Constants,
         }
     }
 
+    public String formEntry(Request request, String label) {
+	return "<tr><td colspan=2 class=ramadda-form-header><div style='font-weight:bold;margin-left:10px;'>" + label + "</b></td></tr>";
+    }
+
+
+
     /**
      * _more_
      *
