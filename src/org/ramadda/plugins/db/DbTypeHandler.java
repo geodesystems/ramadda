@@ -2019,12 +2019,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	}	
 
 
-        sb.append(
-            formEntry(
-                request, "",
-                HtmlUtils.div(
-                    "Search For",
-                    HtmlUtils.cssClass("ramadda-form-header"))));
+        sb.append(formEntry(request, "Search For"));
         DbInfo        dbInfo   = getDbInfo();
 
         StringBuilder advanced = new StringBuilder();
@@ -2064,12 +2059,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         if (normalForm) {
             if (tfos.size() > 0) {
-                sb.append(
-                    formEntry(
-                        request, "",
-                        HtmlUtils.div(
-                            "Group By",
-                            HtmlUtils.cssClass("ramadda-form-header"))));
+                sb.append(formEntry(request, "Group By"));
                 sb.append(
                     formEntry(
                         request, msgLabel("Group By"),
@@ -2113,11 +2103,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
 
-        sb.append(
-            formEntry(
-                request, "",
-                HtmlUtils.div(
-                    "Options", HtmlUtils.cssClass("ramadda-form-header"))));
+        sb.append(formEntry(request,"Options"));
         StringBuilder viewSB      = new StringBuilder();
         boolean       defaultShow = false;
         viewSB.append(HtmlUtils.checkbox(ARG_DB_SHOW + "toggleall", "true",
@@ -2203,13 +2189,15 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		sb.append(HU.hidden(ARG_SEARCH_FROM, searchFrom));
 	    }
 
-	    String print = HtmlUtils.checkbox(ARG_FOR_PRINT, "true", request.get(ARG_FOR_PRINT, false)) + 
-		" For printing   Entries per page:" +
+	    String print = 
+		HtmlUtils.checkbox(ARG_FOR_PRINT, "true", request.get(ARG_FOR_PRINT, false)) +
+		HU.space(1) +"Print for table" + HU.space(2) +
+		"Entries per page:" +
 		HU.input(ARG_ENTRIES_PER_PAGE,request.getString(ARG_ENTRIES_PER_PAGE,"12"),HtmlUtils.SIZE_5);
 	    if(addressTemplate!=null) {
-		print+="<br> Address label skip:" + HU.input("addresslabelskip",request.getString("addresslabelskip","0"),HtmlUtils.SIZE_5);
+		print+="<br>" + HU.b("Address label: ")+" Skip:" + HU.input("addresslabelskip",request.getString("addresslabelskip","0"),HtmlUtils.SIZE_5) +" Use Avery 8160 or 5160. Print with top margin: 0.5in, left: 0.19in";
 	    }
-	    sb.append(formEntry(request, "",print));
+	    sb.append(formEntry(request, msgLabel("Printing"),print));
         }
 
 
@@ -4671,19 +4659,31 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	StringBuilder sb = new StringBuilder();
         HtmlUtils.cssLink(sb,
                           getPageHandler().makeHtdocsUrl("/db/dbstyle.css"));
-	sb.append(HU.importCss(" body { margin:0px; width: 8.5in; margin-top:0.5in;   margin-left:0.19in;margin-right:0.19in;}"));
+	sb.append(HU.importCss(" body {height:initial; paddingL:0px; margin:0px; width: 8.5in; margin-top:0.0in;   margin-left:0.0in;margin-right:0.0in;}"));
         SimpleDateFormat                 sdf    = getDateFormat(entry);
 	final int[] A={0,0};
 	int skip = request.get("addresslabelskip",0);
+	final boolean []putBreak = {false};
+	final boolean []putPageBreak = {false};
+
+
 	Consumer<String> printer = (label) ->{
+	    if(putBreak[0]) {
+		sb.append("<br>");
+		putBreak[0] = false;
+	    }
+	    if(putPageBreak[0]) {
+		sb.append("<div class=db_address_pagebreak></div>");
+		putPageBreak[0]=false;
+	    }
 	    sb.append(label);
 	    A[0]++;
 	    if(A[0]==3) {
 		A[0]=0;
-		sb.append("<br>");
+		putBreak[0] = true;
 		A[1]++;
 		if(A[1]==10) {
-		    sb.append("<div class=db_address_pagebreak></div>");
+		    putPageBreak[0] = true;
 		    A[1]=0;
 		}
 	    }
@@ -4695,8 +4695,16 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 	String contents =null;
         for (Object[] values : valueList) {
-	    printer.accept("<div class=db_address_label>"+
-			   applyTemplate(request, entry,  values, sdf, addressTemplate)+"</div>\n");
+	    String label = applyTemplate(request, entry,  values, sdf, addressTemplate);
+	    //Check for long lines
+	    List<String> lines = Utils.split(label,"<br>");
+	    int length = 0;
+	    for(String line: lines)
+		length = Math.max(length, line.length());
+	    String extra = "";
+	    if(length>25)  extra = "style='font-size:80%;' ";
+	    printer.accept("<div class=db_address_label "  + extra+">"+
+			   label+"</div>\n");
 	}	    
         return new Result(getTitle(request, entry), sb);
     }

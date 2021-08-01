@@ -183,7 +183,7 @@
     text-align: center;
     overflow: hidden;
     border-radius:4px;
-    border:1px solid #000;
+    border:1px solid transparent;
 }
 
 .db_address_pagebreak {
