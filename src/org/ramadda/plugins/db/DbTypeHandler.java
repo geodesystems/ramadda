@@ -148,6 +148,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     protected List<TwoFacedObject> viewList = new ArrayList<TwoFacedObject>();
 
 
+    List<TwoFacedObject> orderTfos;
+
+    private int numOrders = 3;
+    
     /** _more_ */
     SimpleDateFormat rssSdf =
         new SimpleDateFormat("EEE dd, MMM yyyy HH:mm:ss z");
@@ -264,7 +268,18 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     }
 
 
+    private List<TwoFacedObject> getOrderTfos() {
+	if(orderTfos==null) {
+	    orderTfos=new ArrayList<TwoFacedObject>();
+	    orderTfos.add(new TwoFacedObject("Down","desc"));
+	    orderTfos.add(new TwoFacedObject("Up","asc"));
+	}
+	return orderTfos;
+    }
+
+
     /**
+
      * _more_
      *
      * @param template _more_
@@ -2126,30 +2141,24 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         if (aggtfos.size() > 0) {
             String orderBy = "";
-            String dir = request.getString(ARG_DB_SORTDIR,
-                                           dbInfo.getDfltSortAsc()
-                                           ? "asc"
-                                           : "desc");
             if (dbInfo.getDfltSortColumn() != null) {
                 orderBy = dbInfo.getDfltSortColumn().getName();
             }
+	    String order = "";
+	    for(int i=1;i<=numOrders;i++) {
+		order+=HtmlUtils.select(ARG_DB_SORTBY+i, aggtfos,
+					request.getString(ARG_DB_SORTBY+i, orderBy),
+					HtmlUtils.cssClass("search-select")) + 
+		    HU.select(ARG_DB_SORTDIR+i,getOrderTfos(), request.getString(ARG_DB_SORTDIR+i, "desc"),HtmlUtils.cssClass("search-select"))
+		    +
+		    HU.space(2);
+	    }
+
+
             sb.append(
                 formEntry(
                     request, msgLabel("Order By"),
-                    HtmlUtils.select(
-                        ARG_DB_SORTBY, aggtfos,
-                        request.getString(ARG_DB_SORTBY, orderBy),
-                        HtmlUtils.cssClass(
-                            "search-select")) + HtmlUtils.space(2)
-                                + HtmlUtils.radio(
-                                    ARG_DB_SORTDIR, "desc",
-                                    dir.equals("desc"),
-                                    " default='asc' ") + " Descending" + HtmlUtils.space(2) 
-                                        + HtmlUtils.radio(
-                                            ARG_DB_SORTDIR, "asc",
-                                            dir.equals("asc"),
-                                            " default='asc' ") + " Ascending "));
-
+		    order));
             sb.append(
                 formEntry(
                     request, msgLabel("Iterate"),
@@ -3525,15 +3534,17 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	int     entriesPerPage = request.get(ARG_ENTRIES_PER_PAGE,8);
 	if(forPrint) canEdit= false;
         HashSet<String> except = new HashSet<String>();
-        except.add(ARG_DB_SORTBY);
-        except.add(ARG_DB_SORTDIR);
+	for(int i=1;i<=numOrders;i++) {
+	    except.add(ARG_DB_SORTBY+i);
+	    except.add(ARG_DB_SORTDIR+i);
+	}
 
         String baseUrl = request.getUrl(except, null);
-        boolean asc = request.getString(ARG_DB_SORTDIR,
+        boolean asc = request.getString(ARG_DB_SORTDIR1,
                                         (dbInfo.getDfltSortAsc()
                                          ? "asc"
                                          : "desc")).equals("asc");
-        String sortBy = request.getString(ARG_DB_SORTBY,
+        String sortBy = request.getString(ARG_DB_SORTBY1,
                                           ((dbInfo.getDfltSortColumn()
                                             == null)
                                            ? ""
@@ -3607,9 +3618,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                 HtmlUtils.attr("width", "10"));
                 }
 
-                String link = HtmlUtils.href(baseUrl + "&" + ARG_DB_SORTBY
+                String link = HtmlUtils.href(baseUrl + "&" + ARG_DB_SORTBY1
                                              + "=" + sortColumn + "&"
-                                             + ARG_DB_SORTDIR + (asc
+                                             + ARG_DB_SORTDIR1 + (asc
                         ? "=asc"
                         : "=desc"), label) + extra;
                 makeTableHeader(tableHeader, link);
@@ -4094,14 +4105,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                         .makeUrl(getRepository()
                                             .URL_ENTRY_SHOW), new String[] {
                                 ARG_ENTRYID, entry.getId(), ARG_DB_SEARCH,
-                                "true", searchArg, value, ARG_DB_SORTDIR,
+                                "true", searchArg, value, ARG_DB_SORTDIR1,
                                 dbInfo.getDfltSortAsc()
                                 ? "asc"
                                 : "desc"
                             });
 
                             if (dbInfo.getDfltSortColumn() != null) {
-                                url += "&" + ARG_DB_SORTBY + "="
+                                url += "&" + ARG_DB_SORTBY1 + "="
                                        + dbInfo.getDfltSortColumn().getName();
                             }
 			    s = HtmlUtils.href(url, s,
@@ -4211,13 +4222,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         request.makeUrl(getRepository().URL_ENTRY_SHOW),
                         new String[] {
                     ARG_ENTRYID, entry.getId(), ARG_DB_SEARCH, "true",
-                    searchArg, value, ARG_DB_SORTDIR, dbInfo.getDfltSortAsc()
+                    searchArg, value, ARG_DB_SORTDIR1, dbInfo.getDfltSortAsc()
                             ? "asc"
                             : "desc", ARG_DB_VIEW,
                     request.getString(ARG_DB_VIEW, VIEW_TABLE)
                 });
                 if (dbInfo.getDfltSortColumn() != null) {
-                    url += "&" + ARG_DB_SORTBY + "="
+                    url += "&" + ARG_DB_SORTBY1 + "="
                            + dbInfo.getDfltSortColumn().getName();
                 }
 
@@ -6141,33 +6152,40 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 
         List<String> colNames = tableHandler.getColumnNames();
-        String       extra    = "";
 
         if ((dbInfo.getDfltSortColumn() != null)
-                && !request.defined(ARG_DB_SORTBY)) {
-            request.put(ARG_DB_SORTBY, dbInfo.getDfltSortColumn().getName());
-            request.put(ARG_DB_SORTDIR, dbInfo.getDfltSortAsc()
+                && !request.defined(ARG_DB_SORTBY1)) {
+            request.put(ARG_DB_SORTBY1, dbInfo.getDfltSortColumn().getName());
+            request.put(ARG_DB_SORTDIR1, dbInfo.getDfltSortAsc()
                                         ? "asc"
                                         : "desc");
         }
 
 
+        String       order   = "";
+        String       extra    = "";
+
         boolean doGroupBy = isGroupBy(request);
         if ( !doGroupBy) {
-            if (request.defined(ARG_DB_SORTBY)) {
-                String by     = request.getString(ARG_DB_SORTBY, "");
-                Column column = getColumn(by);
-                if (column != null) {
-                    by = column.getSortByColumn();
-                    boolean asc = request.getString(ARG_DB_SORTDIR,
-                                      "asc").equals("asc");
-                    extra += SqlUtil.orderBy(by, !asc);
-                }
-            }
+	    for(int i=1;i<=numOrders;i++) {
+		if (request.defined(ARG_DB_SORTBY+i)) {
+		    String by     = request.getString(ARG_DB_SORTBY+i, "");
+		    Column column = getColumn(by);
+		    if (column != null) {
+			by = column.getSortByColumn();
+			boolean asc = request.getString(ARG_DB_SORTDIR+i,
+							"asc").equals("asc");
+			if(order.length()>0) order+=",";
+			order += SqlUtil.sanitize(by)+" " + (asc?SqlUtil.ORDER_ASC:SqlUtil.ORDER_DESC);
+		    }
+		}
+	    }
         }
+	if(order.length()>0) order = "ORDER BY " + order;
         int max  = getMax(request);
         int skip = request.get(ARG_SKIP, 0);
-        extra += getDatabaseManager().getLimitString(skip, max);
+        extra = order;
+	extra += getDatabaseManager().getLimitString(skip, max);
 
         return readValues(request, clause, extra, max);
     }
@@ -6255,7 +6273,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         tmp);
                     //                    extract (year from col)
                     orderBy = SqlUtil.orderBy(col,
-                            request.getEnum(ARG_DB_SORTDIR, "desc", "desc",
+                            request.getEnum(ARG_DB_SORTDIR1, "desc", "desc",
                                             "asc").equals("desc"));
                 }
 
@@ -6308,7 +6326,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 colNames.add(aggSelector);
                 if (orderBy == null) {
                     orderBy = SqlUtil.orderBy(aggSelector,
-                            request.getString(ARG_DB_SORTDIR,
+                            request.getString(ARG_DB_SORTDIR1,
                                 "desc").equals("desc"));
                 }
                 String label = agg;

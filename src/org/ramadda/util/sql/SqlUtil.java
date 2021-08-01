@@ -71,6 +71,9 @@ public class SqlUtil {
     public static final String DB_ORACLE = "oracle";
 
 
+    public static final String ORDER_ASC = "asc";
+    public static final String ORDER_DESC = "desc";
+
     /** _more_ */
     public static boolean debug = false;
 
@@ -597,8 +600,8 @@ public class SqlUtil {
         }
 
         return " ORDER BY " + sanitize(what) + " " + (desc
-                ? "desc"
-                : "asc") + " ";
+                ? ORDER_DESC
+                : ORDER_ASC) + " ";
     }
 
     /**
