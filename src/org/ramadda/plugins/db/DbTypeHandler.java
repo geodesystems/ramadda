@@ -4384,6 +4384,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         Hashtable     entryProps = getProperties(entry);
         boolean canEdit = getAccessManager().canEditEntry(request, entry);
         StringBuilder sb         = new StringBuilder();
+	sb.append("<meta id='request-method' name='request-method' content='POST'></meta>");
+
 
         String links = getHref(request, entry, VIEW_KML,
                                msg("Google Earth KML"));
