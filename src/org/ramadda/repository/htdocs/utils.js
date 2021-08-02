@@ -85,6 +85,11 @@ var Utils =  {
 	console.log("writing" +value);
     },
 
+    isPost:function() {
+	let meta = $("#request-method");
+	if(meta.length==0) return false;
+	return meta.attr('content')=="POST";
+    },
     max: function(v1,v2) {
 	if(isNaN(v1)) return v2;
 	if(isNaN(v2)) return v1;	
@@ -3704,6 +3709,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	return popup;
     },
     addToDocumentUrl:function(name,value,append) {
+	if(Utils.isPost()) { return}
         var url = String(window.location);
 	if(!append) {
 	    url = new URL(url);
