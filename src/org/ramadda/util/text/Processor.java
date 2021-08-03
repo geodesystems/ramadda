@@ -1220,6 +1220,7 @@ public abstract class Processor extends CsvOperator {
             label   = label.replaceAll("\n", " ").replaceAll("\r", " ");
             tableId = Utils.makeLabel(name).toLowerCase().replaceAll(" ",
 								     "_");
+	    String defaultOrder= (String)props.get("defaultOrder");
             tableId = CsvUtil.getDbProp(props, "table", "id", tableId);
 
             String labels = CsvUtil.getDbProp(props, "table", "labelColumns",
@@ -1244,6 +1245,8 @@ public abstract class Processor extends CsvOperator {
 	    String addressTemplate = CsvUtil.getDbProp(props, "table", "addressTemplate", (String)null);
 	    if(addressTemplate!=null)
 		tableAttrs+=XmlUtil.attr("addressTemplate", addressTemplate);
+	    if(defaultOrder!=null)
+		tableAttrs+=XmlUtil.attr("defaultOrder", defaultOrder);
             writer.println(
 			   XmlUtil.openTag(
 					   "table", tableAttrs));
@@ -1291,6 +1294,9 @@ public abstract class Processor extends CsvOperator {
                 label = Utils.makeLabel(colId);
 
 
+                String suffix = CsvUtil.getDbProp(props, colId, "suffix",(String)null);
+		
+
                 label = CsvUtil.getDbProp(props, colId, "label", label);
                 label = label.replaceAll("\n", " ").replaceAll("\r", " ");
 
@@ -1316,6 +1322,10 @@ public abstract class Processor extends CsvOperator {
 
 
                 attrs.append(XmlUtil.attrs(new String[] { "name", colId }));
+		if(suffix!=null)
+		    attrs.append(XmlUtil.attrs(new String[] { "suffix", suffix }));
+
+
 
                 String numberOfSearchWidgets = CsvUtil.getDbProp(props, colId, "numberOfSearchWidgets", (String)null);
 		if(numberOfSearchWidgets!=null) {
