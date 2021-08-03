@@ -2056,9 +2056,15 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         List<TwoFacedObject> tfos    = new ArrayList<TwoFacedObject>();
         List<TwoFacedObject> aggtfos = new ArrayList<TwoFacedObject>();
+        List<TwoFacedObject> sorttfos = new ArrayList<TwoFacedObject>();
         tfos.add(new TwoFacedObject("----", ""));
         aggtfos.add(new TwoFacedObject("----", ""));
+        sorttfos.add(new TwoFacedObject("----", ""));	
         for (Column column : dbInfo.getColumnsToUse()) {
+            if (column.getCanSearch() || column.getCanSort())
+                sorttfos.add(new TwoFacedObject(column.getLabel(),
+						column.getName()));
+		
             if (column.getCanSearch()) {
                 tfos.add(new TwoFacedObject(column.getLabel(),
                                             column.getName()));
@@ -2139,14 +2145,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         sb.append(HtmlUtils.script("DB.toggleAllInit();"));
 
-        if (aggtfos.size() > 0) {
+        if (sorttfos.size() > 0) {
             String orderBy = "";
             if (dbInfo.getDfltSortColumn() != null) {
                 orderBy = dbInfo.getDfltSortColumn().getName();
             }
 	    String order = "";
 	    for(int i=1;i<=numOrders;i++) {
-		order+=HtmlUtils.select(ARG_DB_SORTBY+i, aggtfos,
+		order+=HtmlUtils.select(ARG_DB_SORTBY+i, sorttfos,
 					request.getString(ARG_DB_SORTBY+i, orderBy),
 					HtmlUtils.cssClass("search-select")) + 
 		    HU.select(ARG_DB_SORTDIR+i,getOrderTfos(), request.getString(ARG_DB_SORTDIR+i, "desc"),HtmlUtils.cssClass("search-select"))
@@ -3137,6 +3143,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             throws Exception {
         DbInfo        dbInfo = getDbInfo();
         StringBuilder sb     = new StringBuilder();
+        List<Column> columns = getColumnsToUse(request, false);
+        for (int i = 0; i < columns.size(); i++) {
+            Column c = columns.get(i);
+	    if(i>0) sb.append(",");
+	    sb.append(c.getName());
+        }
+	sb.append("\n");
+
         for (int cnt = 0; cnt < valueList.size(); cnt++) {
             Object[] values = valueList.get(cnt);
             if (doGroupBy) {
@@ -3156,7 +3170,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 continue;
             }
 
-            List<Column> columns = getColumnsToUse(request, false);
             for (int i = 0; i < columns.size(); i++) {
                 StringBuilder cb = new StringBuilder();
                 columns.get(i).formatValue(request, entry, cb, Column.OUTPUT_CSV,
@@ -3212,7 +3225,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         List<String> cols    = new ArrayList<String>();
         List<String> results = new ArrayList<String>();
         List<Column> columns = getColumnsToUse(request, false);
-
         for (int i = 0; i < columns.size(); i++) {
             Column c = columns.get(i);
             cols.add(c.getJson(request));
