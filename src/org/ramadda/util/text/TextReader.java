@@ -1673,6 +1673,7 @@ public int getSkipLines () {
      * @param value The new value for Delimiter
      */
     public void setDelimiter(String value) {
+	System.err.println("SET DELIMITER:" + value +":");
         delimiter = value;
         if (delimiter != null) {
             if (delimiter.equals("tab")) {
