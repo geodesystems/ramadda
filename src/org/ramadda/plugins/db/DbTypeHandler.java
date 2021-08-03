@@ -3670,6 +3670,27 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             HtmlUtils.close(tableHeader, "tr");
         }
 
+
+	String searchFrom = request.getString(ARG_SEARCH_FROM,null);
+	String searchColumn = null;
+	String sourceName=null;
+	String sourceColumn=null;
+	if(searchFrom!=null) {
+	    List<String> toks = Utils.split(searchFrom,";");
+	    sourceName = toks.get(0);
+	    sourceColumn = toks.get(1);
+	    searchColumn = toks.get(3);
+	}
+	if(searchColumn!=null) {
+	    String href = HU.href("#",getRepository().getIconImage("fas fa-external-link-alt")+ " " + "Select all for " + sourceName+":" + sourceColumn,
+				  HU.attr("onclick", "javascript:return DB.doDbSelectAll(event,'" +searchFrom+"')")+ HU.attr("class","ramadda-clickable") +HU.attr("title","Select all for " + sourceName+":" + sourceColumn));
+	    String clear = HU.href("#","Clear all " + sourceName+":" + sourceColumn,
+				   HU.attr("onclick", "javascript:return DB.doDbClearAll(event,'" +searchFrom+"')")+ HU.attr("class","ramadda-clickable"));
+	    hb.append(HU.space(2)+href + HU.space(2) + clear);
+	}
+
+
+
 	hb.append(tableHeader);
 
         Hashtable<String, Hashtable<Object, Integer>> uniques =
@@ -3685,6 +3706,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         double[] sum  = new double[columnsToUse.size()];
         double[] min  = new double[columnsToUse.size()];
         double[] max  = new double[columnsToUse.size()];
+
+
 
 
         boolean  even = true;
@@ -3748,18 +3771,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		HtmlUtils.close(hb, "div", "td");
 	    }
 
-	    String searchFrom = request.getString(ARG_SEARCH_FROM,null);
-	    String searchColumn = null;
-	    String sourceName=null;
-	    String sourceColumn=null;
-	    if(searchFrom!=null) {
-		List<String> toks = Utils.split(searchFrom,";");
-		sourceName = toks.get(0);
-		sourceColumn = toks.get(1);
-		searchColumn = toks.get(3);
-	    }
-
-		
 
             for (int i = 0; i < columnsToUse.size(); i++) {
                 Column column = columnsToUse.get(i);
@@ -3849,8 +3860,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 		boolean addSelect = searchColumn!=null && column.getName().equals(searchColumn);
 		if(addSelect) {
-		    hb.append("&nbsp;");
-		    hb.append(HU.href("javascript:DB.doDbSelect('" +searchFrom +"','" + label+"')",getRepository().getIconImage("fas fa-external-link-alt"),HU.attr("title","Select for " + sourceName+":" + sourceColumn)));
+		    String value = ""+ values[column.getOffset()];
+		    hb.append(HU.space(1));
+		    hb.append(HU.href("#",getRepository().getIconImage("fas fa-external-link-alt"),HU.attr("onclick","return DB.doDbSelect(event,'" +searchFrom +"','" + label+"')") +  HU.attr("select-value",value) +HU.attr("class","db-select-link ramadda-clickable") +HU.attr("title","Select for " + sourceName+":" + sourceColumn)));
 		    hb.append("&nbsp;");
 		}
                 HtmlUtils.close(hb, HtmlUtils.TAG_DIV);
@@ -4438,7 +4450,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	}
 
 
-
         Column  theColumn = null;
 	Column searchColumn = null;
         boolean bbox      = true;
@@ -4454,8 +4465,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    searchColumnName = toks.get(3);
 	}
 
+	if(sourceName!=null) {
+	    String href = HU.href("#",getRepository().getIconImage("fas fa-external-link-alt")+ " " + "Select all for " + sourceName+":" + sourceColumn,
+				  HU.attr("onclick", "javascript:return DB.doDbSelectAll(event,'" +searchFrom+"')")+ HU.attr("class","ramadda-clickable") +HU.attr("title","Select all for " + sourceName+":" + sourceColumn));
+	    String clear = HU.href("#","Clear all " + sourceName+":" + sourceColumn,
+				   HU.attr("onclick", "javascript:return DB.doDbClearAll(event,'" +searchFrom+"')")+ HU.attr("class","ramadda-clickable"));
 
-
+	    sb.append(HU.space(2) + href + HU.space(2) + clear);
+	}
 
         for (Column column : tableHandler.getColumns()) {
 	    if(searchColumnName!=null &&searchColumnName.equals(column.getName()))
@@ -4603,7 +4620,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    if(searchColumn!=null) {
 		theSB.append("&nbsp;");
 		String value = searchColumn.getString(values); 
-		String href = HU.href("javascript:DB.doDbSelect('" +searchFrom +"','" + value+"')",getRepository().getIconImage("fas fa-external-link-alt"),HU.attr("title","Select for " + sourceName+":" + sourceColumn));
+		String href = HU.href("#",getRepository().getIconImage("fas fa-external-link-alt"),HU.attr("onclick", "javascript:return DB.doDbSelect(event,'" +searchFrom +"','" + value+"')")+ HU.attr("select-value",value) +HU.attr("class","db-select-link ramadda-clickable") +HU.attr("title","Select for " + sourceName+":" + sourceColumn));
 		theSB.append(href);
 		theSB.append("&nbsp;");
 		extraLabel=href+"<br>";
@@ -4675,7 +4692,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		String searchLink = "";
 		if(formId!=null) {
 		    String mapVar = map.getVariableName();
-		    searchLink = HU.center(HU.href("javascript:DB.applyMapSearch(" + mapVar+",'" + formId +"')","Search in this area"));
+		    searchLink = HU.center(HU.href("javascript:return DB.applyMapSearch(" + mapVar+",'" + formId +"')","Search in this area"));
 		}
 		String rightDiv =searchLink + "<div id=\"" + mapDisplayId
 		    + "\" style=\"width:250px;max-width:250px;overflow-x:hidden;max-height:"
