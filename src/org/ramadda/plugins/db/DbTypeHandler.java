@@ -147,6 +147,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     /** _more_ */
     protected List<TwoFacedObject> viewList = new ArrayList<TwoFacedObject>();
 
+    private List<List<String>> dfltOrder;
+
 
     List<TwoFacedObject> orderTfos;
 
@@ -203,6 +205,17 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                          Element tableNode, String desc)
             throws Exception {
         super(repository, tableName, desc);
+
+	String dfltOrderProp = XmlUtil.getAttribute(tableNode, "defaultOrder",(String) null);
+
+	if(dfltOrderProp!=null) {
+	    dfltOrder = new ArrayList<List<String>>();
+	    for(String tok: Utils.split(dfltOrderProp,";")) {
+		List<String> toks = Utils.split(tok,",");
+		dfltOrder.add(toks);
+	    }
+	}
+        numOrders = XmlUtil.getAttribute(tableNode, "numberOrderBy",numOrders);
 
         this.tableIcon = XmlUtil.getAttribute(tableNode, "icon",
 					      "/db/database.png");
@@ -2152,10 +2165,18 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
 	    String order = "";
 	    for(int i=1;i<=numOrders;i++) {
+		String dfltCol = orderBy;
+		String dfltDir = "desc";
+		if(dfltOrder!=null&& (i-1<dfltOrder.size())) {
+		    List<String> toks = dfltOrder.get(i-1);
+		    if(toks.size()>0) dfltCol = toks.get(0);
+		    if(toks.size()>1) dfltDir = toks.get(1);		    
+		}
+
 		order+=HtmlUtils.select(ARG_DB_SORTBY+i, sorttfos,
-					request.getString(ARG_DB_SORTBY+i, orderBy),
+					request.getString(ARG_DB_SORTBY+i, dfltCol),
 					HtmlUtils.cssClass("search-select")) + 
-		    HU.select(ARG_DB_SORTDIR+i,getOrderTfos(), request.getString(ARG_DB_SORTDIR+i, "desc"),HtmlUtils.cssClass("search-select"))
+		    HU.select(ARG_DB_SORTDIR+i,getOrderTfos(), request.getString(ARG_DB_SORTDIR+i, dfltDir),HtmlUtils.cssClass("search-select"))
 		    +
 		    HU.space(2);
 	    }
@@ -2596,6 +2617,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             throws Exception {
 
         String delimiter = request.getString(ARG_DB_BULK_DELIMITER, ",");
+	if(!Utils.stringDefined(delimiter)) delimiter = ",";
         int                       skip = request.get(ARG_DB_BULK_SKIP, 1);
         final DbInfo              dbInfo     = getDbInfo();
         final ArrayList<Object[]> valueList  = new ArrayList<Object[]>();
