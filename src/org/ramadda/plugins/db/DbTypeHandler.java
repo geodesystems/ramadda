@@ -150,10 +150,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     private List<List<String>> dfltOrder;
 
 
-    List<TwoFacedObject> orderTfos;
+    private List<TwoFacedObject> orderTfos;
 
     private int numOrders = 3;
     
+    private String formJS;
+
+
     /** _more_ */
     SimpleDateFormat rssSdf =
         new SimpleDateFormat("EEE dd, MMM yyyy HH:mm:ss z");
@@ -217,6 +220,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	}
         numOrders = XmlUtil.getAttribute(tableNode, "numberOrderBy",numOrders);
 
+	formJS =  XmlUtil.getGrandChildText(tableNode,"formjs",(String) null);
         this.tableIcon = XmlUtil.getAttribute(tableNode, "icon",
 					      "/db/database.png");
 
@@ -1996,6 +2000,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         sb.append(formEntry(request, "", buttons));
         getSearchFormInner(request, entry, sb, true);
+	if(formJS!=null) {
+	    sb.append(formEntry(request, "", HU.div("",HU.id("formjs_div"))));
+	    sb.append(HU.script(formJS));
+	}
         sb.append(formEntry(request, "", buttons));
         sb.append(HtmlUtils.formTableClose());
         StringBuilder js = new StringBuilder();
@@ -2229,7 +2237,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		HtmlUtils.checkbox(ARG_FOR_PRINT, "true", request.get(ARG_FOR_PRINT, false)) +
 		HU.space(1) +"Print for table" + HU.space(2) +
 		"Entries per page:" +
-		HU.input(ARG_ENTRIES_PER_PAGE,request.getString(ARG_ENTRIES_PER_PAGE,"12"),HtmlUtils.SIZE_5);
+		HU.input(ARG_ENTRIES_PER_PAGE,request.getString(ARG_ENTRIES_PER_PAGE,"30"),HtmlUtils.SIZE_5);
 	    if(addressTemplate!=null) {
 		print+="<br>" + HU.b("Address label: ")+" Skip:" + HU.input("addresslabelskip",request.getString("addresslabelskip","0"),HtmlUtils.SIZE_5) +" Use Avery 8160 or 5160. Print with top margin: 0.5in, left: 0.19in";
 	    }
