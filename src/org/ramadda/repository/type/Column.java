@@ -197,6 +197,8 @@ public class Column implements DataTypes, Constants, Cloneable {
     /** _more_ */
     public static final String ATTR_CANSEARCH = "cansearch";
 
+    public static final String ATTR_CANSORT = "cansort";
+
     /** _more_ */
     public static final String ATTR_SEARCHROWS = "searchrows";
 
@@ -341,6 +343,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 
     /** _more_ */
     private boolean canSearch;
+    private boolean canSort;    
 
     /** _more_ */
     private int searchRows;
@@ -545,6 +548,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         isWiki     = getAttributeOrTag(element, "iswiki", false);
         isCategory = getAttributeOrTag(element, ATTR_ISCATEGORY, false);
         canSearch  = getAttributeOrTag(element, ATTR_CANSEARCH, false);
+        canSort  = getAttributeOrTag(element, ATTR_CANSORT, false);	
         searchRows = getAttributeOrTag(element, ATTR_SEARCHROWS, 1);
         canSearchText = getAttributeOrTag(element, ATTR_CANSEARCHTEXT,
                                           canSearch);
@@ -930,6 +934,8 @@ public class Column implements DataTypes, Constants, Cloneable {
         col.add("" + getCanShow());
         col.add("cansearch");
         col.add("" + getCanSearch());
+        col.add("cansort");
+        col.add("" + getCanSort());	
         col.add("searchrows");
         col.add("" + getSearchRows());
         col.add("cansearchtext");
@@ -3601,6 +3607,12 @@ public class Column implements DataTypes, Constants, Cloneable {
         return canSearch;
     }
 
+    /**
+     */
+    public boolean getCanSort() {
+        return canSort;
+    }
+    
     /**
      * Set the SearchRows property.
      *
