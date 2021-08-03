@@ -16,17 +16,43 @@ var DB =  {
 //	$("#"+formId).submit();
     },
 
-    doDbSelect: function(forSearch, value) {
+    doDbSelectAll: function(event,forSearch, value) {
+	let seen = {};
+	let v = "";
+	$(".db-select-link").each(function() {
+	    let value = $(this).attr("select-value");
+	    if(seen[value]) return;
+	    v+=value+"\n";
+	});
+	return DB.doDbSelect(event, forSearch, v);
+    },
+    doDbClearAll: function(event,forSearch, value) {
+	let [sourceName, sourceColumn, widgetId, otherCol]= forSearch.split(";");
+	let widget = 	window.opener.document.getElementById(widgetId);
+	if(!widget) {
+	    alert("Unable to find widget in source window:" + sourceName +" id:" + widgetId);
+	    return false;
+	}
+
+	if(widget.val)
+	    widget.val("");
+	widget.value = "";
+	return false;
+    },
+    doDbSelect: function(event,forSearch, value) {
+	if(event) event.stopPropagation();
 	if(!window.opener) {
 	    alert("No source window");
-	    return;
+	    return false;
 	}
 	let [sourceName, sourceColumn, widgetId, otherCol]= forSearch.split(";");
 	let widget = 	window.opener.document.getElementById(widgetId);
 	if(!widget) {
 	    alert("Unable to find widget in source window:" + sourceName +" id:" + widgetId);
-	    return;
+	    return false;
 	}
+	value = value||"";
+	value = value.trim();
 	let v = widget.value;
 	if(widget.type=="select-one") {
 	    let select = $(widget);
@@ -36,14 +62,21 @@ var DB =  {
 	} else {
 	    let v=widget.value||"";
 	    v = v.trim();
-	    v = v.split("\n").map(v=>{return v.trim()});
-	    if(v.includes(value)) {
-		return
-	    }
-	    v.push(value);
-	    v = Utils.join(v,"\n");
-	    widget.value = v;
+	    let existingLines = v.split("\n").map(v=>{return v.trim()});
+	    let newValue = "";
+	    newValue+= Utils.join(existingLines,"\n").trim();
+	    if(newValue!="") newValue+="\n";
+	    value.split("\n").forEach(line=>{
+		line = line.trim();
+		if(line=="") return;
+		if(existingLines.includes(line)) {
+		    return
+		}
+		newValue+=line+"\n"
+	    });
+	    widget.value = newValue;
 	}
+	return false;
     },
 
     doDbSearch: function(sourceName,column,widgetId,otherTable,otherColumn) {
