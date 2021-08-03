@@ -1,6 +1,7 @@
-set pdfFile to "capture.pdf"
-set thePDFPath to (path to home folder as string)
-set posixFolderPath to POSIX path of thePDFPath
+on run arg
+   set pdfFile to arg
+   set thePDFPath to (path to home folder as string)
+   set posixFolderPath to POSIX path of thePDFPath
 
 
 tell application "System Events"
@@ -70,3 +71,5 @@ tell application "System Events" to tell process theProcess
        end tell
    end tell
 end tell
+
+end run
