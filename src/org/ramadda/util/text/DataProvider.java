@@ -1687,7 +1687,7 @@ public abstract class DataProvider {
                     if ((i2 >= 0) && ((i1 < 0) || (i2 < i1))) {
                         delimiter = "|";
                     }
-		    System.err.println("CsvUtil.delimiter is null new one is:" + delimiter);
+		    //		    System.err.println("CsvUtil.delimiter is null new one is:" + delimiter);
                     ctx.setDelimiter(delimiter);
                 }
                 if (line.length() == 0) {
@@ -1703,7 +1703,6 @@ public abstract class DataProvider {
 			tokenizer = StrTokenizer.getCSVInstance();
 			tokenizer.setEmptyTokenAsNull(true);
 			if ( !ctx.getDelimiter().equals(",")) {
-			    System.err.println("DELIM:" +ctx.getDelimiter()+":");
 			    tokenizer.setDelimiterChar(ctx.getDelimiter().charAt(0));
 			}
 		    }
