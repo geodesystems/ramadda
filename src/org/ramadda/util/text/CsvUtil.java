@@ -1926,6 +1926,8 @@ public class CsvUtil {
         new Cmd("-round", "round the values", new Arg("columns", "", "type", "columns")),
         new Cmd("-abs", "make absolute values", new Arg("columns", "", "type", "columns")),
         new Cmd("-rand", "make random value"),		
+        new Cmd("-even", "Add true if the column starts with an even number",
+		new Arg("columns", "", "type", "columns")),
         new Cmd(
 		"-sum",
 		"Sum values keying on name column value. If no value columns specified then do a count",
@@ -3217,6 +3219,10 @@ public class CsvUtil {
 		ctx.addProcessor(new Converter.MD(getCols(args.get(++i)),args.get(++i)));
 		return i;
 	    });
+	defineFunction("-even", 1,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.Even(getCols(args.get(++i))));
+		return i;
+	    });	
 
 
 	defineFunction("-striptags", 1,(ctx,args,i) -> {

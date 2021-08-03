@@ -5713,6 +5713,64 @@ public abstract class Converter extends Processor {
 
     }
 
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Feb 12, '21
+     * @author         Enter your name here...
+     */
+    public static class Even extends Converter {
+
+
+        /**
+         * @param indices _more_
+         */
+        public Even(List<String> indices) {
+            super(indices);
+        }
+
+
+        /**
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+                row.add("Even");
+                return row;
+            }
+	    String v ="";
+            List<Integer> indices = getIndices(ctx);
+            for (Integer idx : indices) {
+                int index = idx.intValue();
+                if ((index < 0) || (index >= row.size())) {
+                    continue;
+                }
+                String s = (String) row.getValues().get(index);
+                if (s == null) {
+                    s = "";
+                }
+		v+=s;
+            }
+	    
+	    String snum  = StringUtil.findPattern(v,"^(\\d+)");
+	    boolean even = true;
+	    if(snum!=null) {
+		int num = (int)Double.parseDouble(snum);
+		even = ((num%2)==0);
+	    }
+	    row.add(even?"even":"odd");
+            return row;
+        }
+
+    }
+    
     /**
      * Class description
      *

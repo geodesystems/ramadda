@@ -1271,6 +1271,8 @@ public abstract class Processor extends CsvOperator {
 						    "dostats", "false").equals("true");
             boolean dfltCanSearch = CsvUtil.getDbProp(props, "table",
 						      "cansearch", "true").equals("true");
+            boolean dfltCanSort = CsvUtil.getDbProp(props, "table",
+						      "cansort", "false").equals("true");	    
             boolean dfltCanList = CsvUtil.getDbProp(props, "table",
 						    "canlist", "true").equals("true");
             String dfltChangeType = CsvUtil.getDbProp(props, "table",
@@ -1309,6 +1311,7 @@ public abstract class Processor extends CsvOperator {
                 StringBuilder attrs     = new StringBuilder();
                 boolean       canList   = dfltCanList;
                 boolean       canSearch = dfltCanSearch;
+                boolean       canSort = dfltCanSort;		
 
 
 
@@ -1362,12 +1365,18 @@ public abstract class Processor extends CsvOperator {
 
                 canSearch = "true".equals(CsvUtil.getDbProp(props, colId,
 							    "cansearch", canSearch + ""));
+                canSort = "true".equals(CsvUtil.getDbProp(props, colId,
+							    "cansort", canSort + ""));		
                 canList = "true".equals(CsvUtil.getDbProp(props, colId,
 							  "canlist", canList + ""));
                 attrs.append(XmlUtil.attrs(new String[] {
 			    "type", type, "label", label, "cansearch", "" + canSearch,
 			    "canlist", "" + canList
 			}));
+		if(canSort) {
+                    attrs.append(XmlUtil.attrs(new String[] { "cansort",
+							      "true"}));
+		}
                 if (values != null) {
                     attrs.append(XmlUtil.attrs(new String[] { "values",
 							      values }));
