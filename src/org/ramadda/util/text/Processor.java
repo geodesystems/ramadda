@@ -1220,6 +1220,7 @@ public abstract class Processor extends CsvOperator {
             label   = label.replaceAll("\n", " ").replaceAll("\r", " ");
             tableId = Utils.makeLabel(name).toLowerCase().replaceAll(" ",
 								     "_");
+
 	    String defaultOrder= (String)props.get("defaultOrder");
             tableId = CsvUtil.getDbProp(props, "table", "id", tableId);
 
@@ -1250,6 +1251,23 @@ public abstract class Processor extends CsvOperator {
             writer.println(
 			   XmlUtil.openTag(
 					   "table", tableAttrs));
+
+	    String formjs = (String)props.get("table.formjs");
+	    if(formjs!=null) {
+		writer.println("<formjs><![CDATA[");
+		if(formjs.startsWith("file:")) {
+		    String jsfile = formjs.substring("file:".length());
+		    if(!IO.okToReadFrom(jsfile)) {
+			throw new RuntimeException("Cannot read file:" + jsfile);
+		    }
+		    formjs = IO.readContents(jsfile);
+		}
+		writer.println(formjs);
+		writer.println("]]></formjs>");
+
+	    }
+
+
             List<Row> samples = new ArrayList<Row>();
             samples.add(row);
             boolean[] isNumeric = new boolean[row1.getValues().size()];
