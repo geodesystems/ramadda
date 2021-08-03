@@ -3683,9 +3683,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	}
 	if(searchColumn!=null) {
 	    String href = HU.href("#",getRepository().getIconImage("fas fa-external-link-alt")+ " " + "Select all for " + sourceName+":" + sourceColumn,
-				  HU.attr("onclick", "javascript:return DB.doDbSelectAll(event,'" +searchFrom+"')")+ HU.attr("class","ramadda-clickable") +HU.attr("title","Select all for " + sourceName+":" + sourceColumn));
+				  HU.attr("onclick", "return DB.doDbSelectAll(event,'" +searchFrom+"')")+ HU.attr("class","ramadda-clickable") +HU.attr("title","Select all for " + sourceName+":" + sourceColumn));
 	    String clear = HU.href("#","Clear all " + sourceName+":" + sourceColumn,
-				   HU.attr("onclick", "javascript:return DB.doDbClearAll(event,'" +searchFrom+"')")+ HU.attr("class","ramadda-clickable"));
+				   HU.attr("onclick", "return DB.doDbClearAll(event,'" +searchFrom+"')")+ HU.attr("class","ramadda-clickable"));
 	    hb.append(HU.space(2)+href + HU.space(2) + clear);
 	}
 
@@ -4467,9 +4467,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 	if(sourceName!=null) {
 	    String href = HU.href("#",getRepository().getIconImage("fas fa-external-link-alt")+ " " + "Select all for " + sourceName+":" + sourceColumn,
-				  HU.attr("onclick", "javascript:return DB.doDbSelectAll(event,'" +searchFrom+"')")+ HU.attr("class","ramadda-clickable") +HU.attr("title","Select all for " + sourceName+":" + sourceColumn));
+				  HU.attr("onclick", "return DB.doDbSelectAll(event,'" +searchFrom+"')")+ HU.attr("class","ramadda-clickable") +HU.attr("title","Select all for " + sourceName+":" + sourceColumn));
 	    String clear = HU.href("#","Clear all " + sourceName+":" + sourceColumn,
-				   HU.attr("onclick", "javascript:return DB.doDbClearAll(event,'" +searchFrom+"')")+ HU.attr("class","ramadda-clickable"));
+				   HU.attr("onclick", "return DB.doDbClearAll(event,'" +searchFrom+"')")+ HU.attr("class","ramadda-clickable"));
 
 	    sb.append(HU.space(2) + href + HU.space(2) + clear);
 	}
@@ -4620,7 +4620,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    if(searchColumn!=null) {
 		theSB.append("&nbsp;");
 		String value = searchColumn.getString(values); 
-		String href = HU.href("#",getRepository().getIconImage("fas fa-external-link-alt"),HU.attr("onclick", "javascript:return DB.doDbSelect(event,'" +searchFrom +"','" + value+"')")+ HU.attr("select-value",value) +HU.attr("class","db-select-link ramadda-clickable") +HU.attr("title","Select for " + sourceName+":" + sourceColumn));
+		String href = HU.href("#",getRepository().getIconImage("fas fa-external-link-alt"),HU.attr("onclick", "return DB.doDbSelect(event,'" +searchFrom +"','" + value+"')")+ HU.attr("select-value",value) +HU.attr("class","db-select-link ramadda-clickable") +HU.attr("title","Select for " + sourceName+":" + sourceColumn));
 		theSB.append(href);
 		theSB.append("&nbsp;");
 		extraLabel=href+"<br>";
@@ -4692,7 +4692,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		String searchLink = "";
 		if(formId!=null) {
 		    String mapVar = map.getVariableName();
-		    searchLink = HU.center(HU.href("javascript:return DB.applyMapSearch(" + mapVar+",'" + formId +"')","Search in this area"));
+		    searchLink = HU.center(HU.href("javascript:DB.applyMapSearch(" + mapVar+",'" + formId +"')","Search in this area"));
 		}
 		String rightDiv =searchLink + "<div id=\"" + mapDisplayId
 		    + "\" style=\"width:250px;max-width:250px;overflow-x:hidden;max-height:"
