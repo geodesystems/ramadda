@@ -4458,7 +4458,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         var base = window.location.protocol + "//" + window.location.host;
         url = base + url;
 
-        var input = HtmlUtils.input("formurl", url, ["size", "80"]);
+        var input = HtmlUtils.input("formurl", url, ["size", "80","id","formurl"]);
         var html = HtmlUtils.div(["class", "ramadda-form-url"], HtmlUtils.href(url, HtmlUtils.image(ramaddaBaseUrl + "/icons/link.png")) + " " + input);
         if (hook) {
             html += hook({
