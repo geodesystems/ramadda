@@ -212,6 +212,8 @@ public interface DbConstants extends Constants {
     /** _more_ */
     public static final String ARG_DB_VIEW = "db.view";
 
+
+
     /** _more_ */
     public static final String ARG_DB_ITERATE = "dbiterate";
 
@@ -230,7 +232,7 @@ public interface DbConstants extends Constants {
     /** _more_ */
     public static final String ARG_DB_SHOW = "show";
 
-
+    public static final String ARG_DB_UNIQUE = "db_view";    
 
     /** _more_ */
     public static final String ARG_ENUM_ICON = "db.icon";

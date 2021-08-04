@@ -1985,8 +1985,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	return getSearchForm(request, entry, formId);
     }
 
-	public StringBuilder getSearchForm(Request request, Entry entry, String formId)
-            throws Exception {	
+    public StringBuilder getSearchForm(Request request, Entry entry, String formId)
+	throws Exception {	
 
         StringBuilder sb     = new StringBuilder();
         String formUrl       =
@@ -2065,6 +2065,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 continue;
             }
             if (column.getCanSearch()) {
+		String group = column.getGroup();
+		if(group!=null)
+		    sb.append(formEntry(request, group));
                 if (column.getAdvancedSearch()) {
                     column.addToSearchForm(request, advanced, where, entry);
                 } else {
@@ -2146,6 +2149,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
         sb.append(formEntry(request,"Options"));
+
+
         StringBuilder viewSB      = new StringBuilder();
         boolean       defaultShow = false;
         viewSB.append(HtmlUtils.checkbox(ARG_DB_SHOW + "toggleall", "true",
@@ -2163,8 +2168,24 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                             HtmlUtils.makeShowHideBlock("",
                                 viewSB.toString(), false)));
 
-
         sb.append(HtmlUtils.script("DB.toggleAllInit();"));
+
+
+        StringBuilder uniqueSB      = new StringBuilder();
+        for (Column column : dbInfo.getColumnsToUse()) {
+            String arg = ARG_DB_UNIQUE + "_" + column.getName();
+            uniqueSB.append(HtmlUtils.checkbox(arg, "true",
+                                             request.get(arg,
+							 false)) + " "
+                                                     + column.getLabel());
+            uniqueSB.append("<br>");
+        }
+        sb.append(formEntry(request, msgLabel("Uniques"),
+                            HtmlUtils.makeShowHideBlock("",
+                                uniqueSB.toString(), false)));
+
+
+
 
         if (sorttfos.size() > 0) {
             String orderBy = "";
@@ -6443,6 +6464,18 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             SqlUtil.debug = false;
         }
 
+	HashSet seenValue = new HashSet();
+	List<Column> uniqueCols = null;
+
+	for (Column column : selectedColumns) {
+            if(request.get(ARG_DB_UNIQUE + "_" + column.getName(),false)) {
+		if(uniqueCols==null)
+		    uniqueCols = new ArrayList<Column>();
+		uniqueCols.add(column);
+	    }
+	}
+	//	System.err.println("Uniques:" + uniqueCols);
+
         try {
             SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
             ResultSet        results;
@@ -6488,6 +6521,19 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         pw.println(
                             Utils.encodeBase64(xmlEncoder.toXml(values)));
                     } else {
+			if(uniqueCols!=null) {
+			    boolean dup = false;
+			    for(Column c: uniqueCols) {
+				Object o = c.getObject(values);
+				Object key = c.getName() +"_"+o;
+				if(seenValue.contains(key)) {
+				    dup = true;
+				    break;
+				}
+				seenValue.add(key);
+			    }
+			    if(dup) continue;
+			}
                         result.add(values);
                     }
                 }
