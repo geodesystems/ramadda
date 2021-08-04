@@ -1563,7 +1563,7 @@ public class CdmManager extends RepositoryManager {
         String  path     = request.getRequestPath();
 	path = HtmlUtils.urlDecode(path);
 	
-	System.err.println("CdmManager.findEntryFromPath decoded path:" + path);
+	//System.err.println("CdmManager.findEntryFromPath decoded path:" + path);
         boolean doLatest = false;
         path = path.substring(prefix.length());
         if (path.startsWith("/latest")) {

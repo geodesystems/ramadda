@@ -134,7 +134,7 @@ public class OpendapApiHandler extends RepositoryManager implements RequestHandl
             //            url = getRepository().getUrlBase() + "/" + PATH_OPENDAP + "/"
             //                  + entry.getId() + "/" + OPENDAP_SUFFIX;
             url = "/" + HtmlUtils.urlEncode(entry.getId()) + "/" + OPENDAP_SUFFIX;
-	    System.err.println("OpendapApuHandler.getOpendapSuffix: encoded path:" + url);
+	    //System.err.println("OpendapApuHandler.getOpendapSuffix: encoded path:" + url);
         } else {
             url = "/" + ARG_OUTPUT + ":"
                   + Request.encodeEmbedded(
@@ -145,7 +145,7 @@ public class OpendapApiHandler extends RepositoryManager implements RequestHandl
                           + OPENDAP_SUFFIX;
         }
 
-	System.err.println("OPENDAP URL:" + url);
+	//System.err.println("OPENDAP URL:" + url);
         url = url.replaceAll(" ", "+");
 
         return url;
