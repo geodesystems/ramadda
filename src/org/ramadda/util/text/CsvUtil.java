@@ -132,6 +132,7 @@ public class CsvUtil {
 
     private boolean hasSink = false;
 
+
     /**
      * _more_
      *
@@ -613,8 +614,6 @@ public class CsvUtil {
 	    pw.close();
 	    return;
 	}
-
-
 
         if ( !parseArgs(extra, myTextReader, files)) {
             currentArg = null;
@@ -1922,7 +1921,7 @@ public class CsvUtil {
                 new Arg("key columns"), new Arg("columns")),
         new Cmd("-operator",
                 "Apply the operator to the given columns and create new one",
-                new Arg("columns","Columns","type","columns"), "new col name", "operator +,-,*,/"),
+                new Arg("columns","Columns","type","columns"), "new col name", "operator +,-,*,/,average"),
         new Cmd("-round", "round the values", new Arg("columns", "", "type", "columns")),
         new Cmd("-abs", "make absolute values", new Arg("columns", "", "type", "columns")),
         new Cmd("-rand", "make random value"),		
@@ -2045,6 +2044,11 @@ public class CsvUtil {
 		new Arg(
 			"properties",
 			"Name value pairs:\n\t\ttable.id <new id> table.name <new name> table.cansearch false table.canlist false table.icon <icon, e.g., /db/database.png>\n\t\t<column>.id <new id for column> <column>.label <new label>\n\t\t<column>.type <string|enumeration|double|int|date>\n\t\t<column>.format <yyyy MM dd HH mm ss format for dates>\n\t\t<column>.canlist false <column>.cansearch false\n\t\tinstall <true|false install the new db table>\n\t\tnukedb <true|false careful! this deletes any prior created dbs", "rows", "6")),
+        new Cmd(
+		"-dbprop", "Print to stdout props for db generation",
+		new Arg("id pattern"),
+		new Arg("suffix pattern")),		
+
         new Cmd("-run", "", "Name of process directory"),
         new Cmd("-dots", "", "Print a dot every count row",
 		new Arg("every", "Dot every")),
@@ -2425,6 +2429,12 @@ public class CsvUtil {
 		ctx.setMaxRows(30);
 		return i;
 	    });
+
+	defineFunction(new String[]{"-dbprops"},2,(ctx,args,i) -> {
+		ctx.addProcessor(new Processor.DbProps(args.get(++i),args.get(++i)));
+		return i;
+	    });
+
 
 	CsvFunction unfurlFunc = (ctx,args,i) -> {
 	    String       mainCol   = args.get(++i);
@@ -3179,7 +3189,8 @@ public class CsvUtil {
 		List<String> idxs = getCols(args.get(++i));
 		String       name = args.get(++i);
 		String       op   = args.get(++i);
-		ctx.addProcessor(new Converter.ColumnMathOperator(idxs, name, op));
+		Processor processor = new Converter.ColumnMathOperator(idxs, name, op);
+		ctx.addProcessor(processor);
 		return i;
 	    });
 
@@ -3550,6 +3561,7 @@ public class CsvUtil {
 		return i;
 	    });
 
+	
 	defineFunction("-pointheader",0,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.PrintHeader(true));
 		return i;

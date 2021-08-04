@@ -257,6 +257,7 @@ public abstract class Processor extends CsvOperator {
     }
 
     private Row extraRow;
+    private boolean consumeColumns = false;
 
     public Row handleRow(TextReader ctx, Row row) throws Exception {
 	setHeaderIfNeeded(row);
@@ -267,6 +268,10 @@ public abstract class Processor extends CsvOperator {
 	return row;
     }
 
+
+    public void setConsumeColumns(boolean b) {
+	consumeColumns = b;
+    }
 
     /**
      * _more_
@@ -1401,6 +1406,11 @@ public abstract class Processor extends CsvOperator {
 			    "type", type, "label", label, "cansearch", "" + canSearch,
 			    "canlist", "" + canList
 			}));
+                String group = CsvUtil.getDbProp(props, colId, "group", (String) null);
+		if(group!=null)
+                    attrs.append(XmlUtil.attrs(new String[] { "group",
+							      group}));
+
 		if(canSort) {
                     attrs.append(XmlUtil.attrs(new String[] { "cansort",
 							      "true"}));
@@ -1473,6 +1483,74 @@ public abstract class Processor extends CsvOperator {
         }
     }
 
+
+    public static class DbProps extends Processor {
+
+	String idPattern;
+	String suffixPattern;	
+
+        /**
+         * _more_
+         *
+         * @param props _more_
+         */
+        public DbProps(String idPattern,String suffixPattern) {
+	    this.idPattern = idPattern;
+	    if(this.idPattern.length()>0) this.idPattern = ".*" + this.idPattern +".*";
+	    this.suffixPattern = suffixPattern;
+	    if(this.suffixPattern.length()>0) this.suffixPattern = ".*" + this.suffixPattern +".*";	    
+        }
+
+	
+
+	private boolean print(String id, String suffix, String  value) {
+	    if(Utils.stringDefined(idPattern)) {
+		if(!id.matches(idPattern)) return false;
+	    }
+	    if(Utils.stringDefined(suffixPattern)) {
+		if(!suffix.matches(suffixPattern)) return false;
+	    }	    
+	    System.out.print(id+"." + suffix +" " + value +"  ");
+	    return true;
+	}
+
+        /**
+         * _more_
+         *
+         * @param reader _more_
+         * @param row _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public Row processRow(TextReader reader, Row row) throws Exception {
+	    if(rowCnt++>0) return null;
+	    boolean didone = false;
+	    for(Object o: row.getValues()) {
+		boolean p = false;
+		String id = Utils.makeID(o.toString());
+		p|= print(id,"type","enumeration");
+		p|= 		print(id,"cansearch","true");
+		p|= 		print(id,"canlist","true" );
+		p|= 		print(id,"cansort","true");
+		didone|=p;
+		if(p)
+		    System.out.print("\n");
+	    }
+	    if(!didone) {
+		for(Object o: row.getValues()) {
+		    String id = Utils.makeID(o.toString());
+		    if(Utils.stringDefined(idPattern)) {
+			if(!id.matches(idPattern)) continue;
+		    }
+		    System.out.println(id);
+		}
+	    }
+	    return row;
+	}
+    }
 
     /**
      * Class description
@@ -1943,12 +2021,12 @@ public abstract class Processor extends CsvOperator {
          * @throws Exception _more_
          */
         private void init() throws Exception {
-            List<Integer> keys1Indices = getIndices(null, keys1);
+            List<Integer> keys1Indices = null;
 	    //	    System.err.println("key:" + keys1 +" " + keys1Indices);
-            values1Indices = getIndices(null, values1);
             BufferedReader br = new BufferedReader(
 						   new InputStreamReader(
 									 getInputStream(file)));
+	    CsvOperator operator = null;
             TextReader reader = new TextReader(br);
             map        = new Hashtable<String, Row>();
             headerRow1 = null;
@@ -1966,6 +2044,13 @@ public abstract class Processor extends CsvOperator {
                     }
                 }
                 List<String> cols = Utils.tokenizeColumns(line, delimiter);
+		if(operator==null) {
+		    operator = new CsvOperator();
+		    operator.setHeader(cols);
+		    keys1Indices = operator.getIndices(reader, keys1);	    
+		    values1Indices = operator.getIndices(reader, values1);
+		}
+
                 String       key  = "";
                 for (int i : keys1Indices) {
                     key += cols.get(i) + "_";

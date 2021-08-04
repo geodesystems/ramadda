@@ -344,21 +344,7 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader ctx, Row row) {
             List<Integer> indices = getIndices(ctx);
-            if (indices.size() == 0) {
-                debug("processRow- no indices");
-
-                return row;
-            }
-            List<String> result = new ArrayList<String>();
-            for (int i = 0; i < row.size(); i++) {
-                if ( !indices.contains(i)) {
-                    result.add(row.getString(i));
-                }
-            }
-
-            debug("processRow", new Row(result));
-
-            return new Row(result);
+	    return removeColumns(indices, row);
         }
 
     }
@@ -4924,14 +4910,14 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
+            List<Integer> indices = getIndices(ctx);
             if (rowCnt++ == 0) {
                 row.getValues().add(name);
-
-                return row;
+		return row;
             }
-            List<Integer> indices = getIndices(ctx);
             double        value   = 0;
             int           cnt     = 0;
+	    double total = 0;
             for (Integer idx : indices) {
                 int index = idx.intValue();
                 if ((index < 0) || (index >= row.size())) {
@@ -4939,6 +4925,7 @@ public abstract class Converter extends Processor {
                 }
                 String s = row.getValues().get(index).toString();
                 double v = parse(s);
+		if(!Double.isNaN(v)) total+=v;
                 if (op.equals("+")) {
                     value += v;
                 } else {
@@ -4954,6 +4941,10 @@ public abstract class Converter extends Processor {
                         }
                     }
                 }
+		if (op.equals("average")) {
+		    if(cnt==0) value=Double.NaN;
+		    else value = value/cnt;
+		}
                 cnt++;
             }
             row.getValues().add(value + "");
@@ -5167,7 +5158,7 @@ public abstract class Converter extends Processor {
                 if ((index < 0) || (index >= row.size())) {
                     continue;
                 }
-                String s = (String) row.getValues().get(index);
+                String s =  row.getString(index);
                 double v = (s.length() == 0)
 		    ? 0
 		    : Double.parseDouble(s.replaceAll(",", ""));
@@ -5807,7 +5798,7 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
-            int    col = getIndex(ctx);
+            int    col = hasColumns()?getIndex(ctx):-1;
             String v   = "";
 	    if(rowCnt==0) {
 		v = name;

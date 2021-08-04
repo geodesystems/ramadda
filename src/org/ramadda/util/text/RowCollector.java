@@ -208,7 +208,7 @@ public  class RowCollector extends Processor {
         public static final int OP_AVERAGE = 3;
 
         /** _more_ */
-        public static final int OP_COUNT = 3;
+        public static final int OP_COUNT = 4;
 
 
         /** _more_ */
@@ -243,9 +243,22 @@ public  class RowCollector extends Processor {
                 this.op = OP_MAX;
             } else if (op.equals("count")) {
                 this.op = OP_COUNT;
-            }
+            } else {
+		throw new RuntimeException("unknown operator:" + op);
+	    }
             this.valueCols = values;
         }
+
+	private static class Tuple {
+	    int count = 0;
+	    double min = 0;
+	    double max = 0;
+	    double sum = 0;
+	    public String toString() {
+		return "cnt:" + count +" min:" + min +" max:" + max +" sum:" + sum;
+	    }
+	}
+
 
         /**
          * _more_
@@ -268,6 +281,7 @@ public  class RowCollector extends Processor {
             allRows.remove(0);
             Hashtable<Object, List<Row>> groups = groupRows(allRows,
 							    getIndices(ctx), keys);
+
             for (int idx : valueIndices) {
                 if (idx >= headerRow.size()) {
                     continue;
@@ -275,18 +289,11 @@ public  class RowCollector extends Processor {
                 headerRow.set(idx, headerRow.get(idx) + " " + opLabel);
             }
             rows.add(headerRow);
-            List<double[]> tuples = new ArrayList<double[]>();
+            List<Tuple> tuples = new ArrayList<Tuple>();
             for (int i = 0; i < valueIndices.size(); i++) {
-                tuples.add(new double[] { 0, 0, 0, 0 });
+                tuples.add(new Tuple());
             }
             for (Object key : keys) {
-                for (int i = 0; i < valueIndices.size(); i++) {
-                    double[] tuple = tuples.get(i);
-                    tuple[0] = 0;
-                    tuple[1] = 0;
-                    tuple[2] = 0;
-                    tuple[3] = 0;
-                }
                 Row       aggRow = null;
                 List<Row> group  = groups.get(key);
                 int       count  = 0;
@@ -307,15 +314,15 @@ public  class RowCollector extends Processor {
                         if (Double.isNaN(v)) {
                             continue;
                         }
-                        double[] tuple = tuples.get(i);
-                        tuple[0]++;
-                        tuple[1] = first
+                        Tuple  tuple = tuples.get(i);
+                        tuple.count++;
+                        tuple.min = first
 			    ? v
-			    : Math.min(v, tuple[0]);
-                        tuple[2] = first
+			    : Math.min(v, tuple.min);
+                        tuple.max = first
 			    ? v
-			    : Math.max(v, tuple[1]);
-                        tuple[3] += v;
+			    : Math.max(v, tuple.max);
+                        tuple.sum+= v;
                     }
                 }
                 for (int i = 0; i < valueIndices.size(); i++) {
@@ -323,22 +330,24 @@ public  class RowCollector extends Processor {
                     if (idx >= aggRow.size()) {
                         continue;
                     }
-                    double[] tuple = tuples.get(i);
+                    Tuple tuple = tuples.get(i);
                     if (op == OP_SUM) {
-                        aggRow.set(idx, new Double(tuple[3]));
+                        aggRow.set(idx, new Double(tuple.sum));
                     } else if (op == OP_COUNT) {
                         aggRow.set(idx, group.size());
                     } else if (op == OP_MIN) {
-                        aggRow.set(idx, tuple[1]);
+                        aggRow.set(idx, tuple.min);
                     } else if (op == OP_MAX) {
-                        aggRow.set(idx, tuple[2]);
+                        aggRow.set(idx, tuple.max);
                     } else if (op == OP_AVERAGE) {
-                        if (tuple[0] == 0) {
+                        if (tuple.count == 0) {
                             aggRow.set(idx, Double.NaN);
                         } else {
-                            aggRow.set(idx, tuple[3] / tuple[0]);
+                            aggRow.set(idx, tuple.sum / tuple.count);
                         }
-                    }
+                    }  else {
+		    }
+
                 }
             }
 

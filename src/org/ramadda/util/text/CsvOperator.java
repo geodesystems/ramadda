@@ -33,6 +33,7 @@ import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -48,7 +49,7 @@ import java.util.regex.*;
  * @version        $version$, Fri, Jan 9, '15
  * @author         Jeff McWhirter
  */
-public abstract class CsvOperator {
+public class CsvOperator {
 
     public static final HtmlUtils HU = null;
 
@@ -125,8 +126,9 @@ public abstract class CsvOperator {
      */
     public CsvOperator(String col) {
         sindices = new ArrayList<String>();
-        sindices.add(col);
-        scol = col;
+	if(Utils.stringDefined(col)) {
+	    sindices.add(col);
+	}
     }
 
     /**
@@ -138,6 +140,10 @@ public abstract class CsvOperator {
         this.sindices = cols;
     }
 
+
+    public boolean hasColumns() {
+	return sindices!=null && sindices.size()>0;
+    }
 
     /** _more_ */
     private Hashtable<String, Integer> debugCounts = new Hashtable<String,
@@ -407,6 +413,7 @@ public abstract class CsvOperator {
     }
 
     public Integer getColumnIndex(TextReader ctx, String tok) {
+	checkColumns();
 	Integer iv = columnMap.get(tok);
 	if(iv==null) {
 	    tok = ctx.getFieldAlias(tok);
@@ -415,6 +422,29 @@ public abstract class CsvOperator {
 	    }
 	}
 	return iv;
+    }
+
+
+    private void checkColumns() {
+	if (columnNames == null) {
+	    columnNames = new ArrayList<String>();
+	    columnMap = new Hashtable<String, Integer>();
+	    if (header == null) {
+		debug("no names or header");
+		return;
+	    }
+
+	    for (int i = 0; i < header.size(); i++) {
+		String colName = (String) header.get(i);
+		String colId = Utils.makeID(colName,false);
+		columnNames.add(colName);
+		colName = colName.trim();
+		columnMap.put(colName, i);
+		columnMap.put(colId, i);
+		columnMap.put(colName.toLowerCase(), i);
+		columnMap.put(i+"", i);
+	    }
+	}
     }
 
 
@@ -435,6 +465,24 @@ public abstract class CsvOperator {
         List<String> toks  = Utils.splitUpTo(s, "-", 2);
         int          start = -1;
         int          end   = -1;
+	checkColumns();
+	if(s.startsWith("regex:")) {
+	    s = s.substring("regex:".length());
+	    //	    System.err.println("S:" + s+":");
+	    Pattern      p      = Pattern.compile(s);
+	    for(String name: columnNames) {
+		Matcher      m      = p.matcher(name);
+		if(m.matches()) {
+		    indices.add(columnMap.get(name));
+
+		} else {
+		    //		    System.err.println("no matches:" + name);
+		}
+	    }
+	    return;
+	}
+
+
         try {
             if (toks.size() == 1) {
 		if(Utils.testAndSet(seen,s)) return;
@@ -444,22 +492,6 @@ public abstract class CsvOperator {
                 end   = Integer.parseInt(toks.get(1));
             }
         } catch (NumberFormatException exc) {
-            if (columnNames == null) {
-                if (header == null) {
-                    debug("no names or header");
-                    return;
-                }
-                columnMap = new Hashtable<String, Integer>();
-                for (int i = 0; i < header.size(); i++) {
-                    String colName = (String) header.get(i);
-		    String colId = Utils.makeID(colName,false);
-		    colName = colName.trim();
-                    columnMap.put(colName, i);
-                    columnMap.put(colId, i);
-                    columnMap.put(colName.toLowerCase(), i);
-                    columnMap.put(i+"", i);
-                }
-            }
             if (toks.size() == 1) {
                 String tok = toks.get(0);
                 if (isLastIndex(tok)) {
@@ -495,6 +527,14 @@ public abstract class CsvOperator {
                     start = end = iv;
                 } else {
                     //Not sure whether we should throw an error
+		    for(String colName:columnNames) {
+			//			System.err.println(colName);
+		    }			
+		    for (Enumeration keys = columnMap.keys(); keys.hasMoreElements(); ) {
+			String key =(String) keys.nextElement(); 
+			System.err.println("key:" + key);
+		    }
+		    //		    System.err.println(columnMap);
                     throw new RuntimeException("Could not find index:" + tok);
                 }
             } else {
@@ -512,7 +552,13 @@ public abstract class CsvOperator {
 		    Integer iv = getColumnIndex(ctx, tok2);
 		    if(iv!=null) end=iv;
 		}
-		if(start==-1 || end==-1) throw new RuntimeException("Could not find indices:" + toks);
+		if(start==-1 || end==-1) {
+		    for (Enumeration keys = columnMap.keys(); keys.hasMoreElements(); ) {
+			String key =(String) keys.nextElement(); 
+			System.err.println("key:" + key);
+		    }
+		    throw new RuntimeException("Could not find indices:" + toks);
+		}
 		/*
 		  Integer iv2 = getColumnIndex(ctx, tok2);
                 if ((iv1 != null) && (iv2 != null)) {
@@ -599,6 +645,22 @@ public abstract class CsvOperator {
         }
 
         return indices.get(0);
+    }
+
+
+
+    public Row removeColumns(List<Integer> indices, Row row)  {
+	if (indices.size() == 0) {
+	    debug("processRow- no indices");
+	    return row;
+	}
+	List<String> result = new ArrayList<String>();
+	for (int i = 0; i < row.size(); i++) {
+	    if ( !indices.contains(i)) {
+		result.add(row.getString(i));
+	    }
+	}
+	return new Row(result);
     }
 
 
