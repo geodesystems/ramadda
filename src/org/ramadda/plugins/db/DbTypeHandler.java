@@ -1993,7 +1993,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             request.makeUrl(getRepository().URL_ENTRY_SHOW);
         sb.append(HtmlUtils.formPost(formUrl, HtmlUtils.id(formId)));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
-        sb.append(HtmlUtils.formTable());
+        sb.append(HtmlUtils.formTable(true));
         String buttons = HtmlUtils.submit(msg("Search"), ARG_DB_SEARCH)
                          + HtmlUtils.space(2)
                          + HtmlUtils.submit(msg("Cancel"), ARG_DB_LIST);
@@ -2006,6 +2006,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	}
         sb.append(formEntry(request, "", buttons));
         sb.append(formEntry(request,"Links"));
+
         sb.append(HtmlUtils.formTableClose());
         StringBuilder js = new StringBuilder();
         js.append("HtmlUtil.initSelect('.search-select');\n");
@@ -2067,8 +2068,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
             if (column.getCanSearch()) {
 		String group = column.getGroup();
-		if(group!=null)
+		if(group!=null) {
+		    sb.append(HtmlUtils.formTableClose());
+		    sb.append(HtmlUtils.formTable(true));
 		    sb.append(formEntry(request, group));
+		}
                 if (column.getAdvancedSearch()) {
                     column.addToSearchForm(request, advanced, where, entry);
                 } else {
@@ -2105,6 +2109,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         if (normalForm) {
             if (tfos.size() > 0) {
+		sb.append(HtmlUtils.formTableClose());
+		sb.append(HtmlUtils.formTable(true));
                 sb.append(formEntry(request, "Group By"));
                 sb.append(
                     formEntry(
@@ -2149,6 +2155,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
 
+	sb.append(HtmlUtils.formTableClose());
+	sb.append(HtmlUtils.formTable(true));
         sb.append(formEntry(request,"Options"));
 
 
@@ -2221,8 +2229,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 
 
+	sb.append(HtmlUtils.formTableClose());
+	sb.append(HtmlUtils.formTable(true));
 	sb.append(formEntry(request,"Advanced Options"));
-
 	if(aggtfos.size()>0) {
 	    sb.append(
 			 formEntry(
@@ -2265,7 +2274,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 	    String print = 
 		HtmlUtils.checkbox(ARG_FOR_PRINT, "true", request.get(ARG_FOR_PRINT, false)) +
-		HU.space(1) +"Print for table" + HU.space(2) +
+		HU.space(1) +"Printable" + HU.space(2) +
 		"Entries per page:" +
 		HU.input(ARG_ENTRIES_PER_PAGE,request.getString(ARG_ENTRIES_PER_PAGE,"30"),HtmlUtils.SIZE_5);
 	    if(addressTemplate!=null) {
@@ -3148,7 +3157,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         sb.append(HtmlUtils.submit(msg("Send Message")));
         sb.append(HtmlUtils.space(2));
         sb.append(HtmlUtils.submit(msg("Cancel"), ARG_DB_LIST));
-        sb.append(HtmlUtils.formTable());
+a        sb.append(HtmlUtils.formTable());
 
         for (Object[] values : valueList) {
             String toId = (String) values[IDX_DBID];
@@ -3916,8 +3925,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             hb.append("</tr>");
         }
 
-
-        if (valueList.size() > 0) {
+        if (!forPrint && valueList.size() > 0) {
             HtmlUtils.comment(hb, "summmary");
             HtmlUtils.open(hb, "tr", "valign", "top");
             HtmlUtils.tag(hb, "td", HtmlUtils.attrs("align", "right"),
