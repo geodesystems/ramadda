@@ -6469,6 +6469,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             System.err.println("clause:" + clause);
             System.err.println("cols:" + SqlUtil.comma(colNames));
             System.err.println("extra:" + extra);
+	    exc.printStackTrace();
         } finally {
             SqlUtil.debug = false;
         }
