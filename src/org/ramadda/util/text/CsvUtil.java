@@ -1690,6 +1690,12 @@ public class CsvUtil {
                 "Pass through rows that don't match the pattern",
                 new Arg("column", "", "type", "column"),
                 new Arg("pattern", "", "type", "pattern")),
+        new Cmd("-same", "Pass through where the 2 columns have the same value",
+                new Arg("column1", "", "type", "column"),
+                new Arg("column2", "", "type", "column")),
+        new Cmd("-notsame", "Pass through where the 2 columns don't have the same value",
+                new Arg("column1", "", "type", "column"),
+                new Arg("column2", "", "type", "column")),			
         new Cmd("-unique", "Pass through unique values", new Arg("columns")),
         new Cmd("-dups", new Label("Duplicate values"),
                 "Pass through duplicate values", new Arg("columns")),
@@ -1768,6 +1774,12 @@ public class CsvUtil {
 		new Arg("column", "match col #", "type", "column"),
 		new Arg("pattern", "", "type", "pattern"),
 		new Arg("write column", "", "type", "column"), new Arg("value")),
+        new Cmd(
+		"-copyif",
+		"Copy column 1 to column 2 if column 2 matches pattern",
+		new Arg("column1", "", "type", "column"),
+		new Arg("column2", "", "type", "column"),
+		new Arg("pattern", "")),		
         new Cmd(
 		"-filldown",
 		"Fill down with last non-null value",
@@ -3281,10 +3293,16 @@ public class CsvUtil {
 		return i;
 	    });
 
+	defineFunction("-copyif", 3,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.CopyIf(args.get(++i),args.get(++i),args.get(++i)));
+		return i;
+	    });
+
 	defineFunction("-filldown", 1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.FillDown(getCols(args.get(++i))));
 		return i;
 	    });
+
 
 	defineFunction("-priorprefix", 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.PriorPrefixer(Integer.parseInt(args.get(++i)), args.get(++i), args.get(++i)));
@@ -3360,6 +3378,15 @@ public class CsvUtil {
 		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.PatternFilter(args.get(++i), args.get(++i)));
 		return i;
 	    });
+	defineFunction("-same", 2,(ctx,args,i) -> {
+		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.Same(args.get(++i), args.get(++i),false));
+		return i;
+	    });
+
+	defineFunction("-notsame", 2,(ctx,args,i) -> {
+		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.Same(args.get(++i), args.get(++i),true));
+		return i;
+	    });		
 
 
 	defineFunction("-notpattern", 2,(ctx,args,i) -> {

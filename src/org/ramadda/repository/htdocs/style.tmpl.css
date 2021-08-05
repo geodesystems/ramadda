@@ -2104,10 +2104,12 @@ table.dataTable tbody td {
 }
 
 .ramadda-form-header {
-    padding:4px;
+    padding:4px !important;    
+    padding-bottom:2px !important;     
+    padding-left:2px !important;    
     font-weight: bold; 
-    padding-left:8px;
     background-color: var(--header-background);
+    border-top-left-radius: 12px;
 }
 
 

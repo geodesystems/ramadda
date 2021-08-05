@@ -160,6 +160,10 @@ public class Filter extends Processor {
             this.negate = negate;
         }
 
+        public ColumnFilter(boolean negate) {
+            this.negate = negate;
+        }	
+
         /**
          * _more_
          *
@@ -411,6 +415,46 @@ public class Filter extends Processor {
 
     }
 
+    public static class Same extends ColumnFilter {
+
+        /** _more_ */
+        String scol1;
+        String scol2;	
+	int col1 = -1;
+	int col2 = -1;
+
+        /**
+         * _more_
+         */
+        public Same(String col1, String col2, boolean negate) {
+            super(negate);
+	    scol1 =col1;
+	    scol2 =col2;	    
+        }
+
+        /**
+         * _more_
+         *
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public boolean rowOk(TextReader ctx, Row row) {
+            if (cnt++ == 0) {
+		col1 = getIndex(ctx,scol1);
+		col2 = getIndex(ctx,scol2);		
+                return true;
+            }
+	    String s1 = row.getString(col1);
+	    String s2 = row.getString(col2);	    
+	    return doNegate(s1.equals(s2));
+        }
+
+    }
+    
 
     /**
      * Class description

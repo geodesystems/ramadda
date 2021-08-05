@@ -5983,6 +5983,58 @@ public abstract class Converter extends Processor {
      * @version        $version$, Wed, Dec 2, '15
      * @author         Enter your name here...
      */
+    public static class CopyIf extends Converter {
+
+	String pattern;
+
+        /** _more_ */
+        String scol1;
+        String scol2;	
+	int col1 = -1;
+	int col2 = -1;
+
+        /**
+         * _more_
+         */
+        public CopyIf(String col1, String col2, String pattern) {
+	    scol1 =col1;
+	    scol2 =col2;	    
+	    this.pattern = pattern;
+        }
+
+        /**
+
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+	    if(rowCnt++==0) {
+		col1 = getIndex(ctx,scol1);
+		col2 = getIndex(ctx,scol2);		
+		return row;
+	    }
+	    String v  = row.getString(col2);
+	    if(v.matches(pattern)) {
+		row.set(col2, row.getString(col1));
+	    }
+	    return row;
+        }
+    }
+
+
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Wed, Dec 2, '15
+     * @author         Enter your name here...
+     */
     public static class ColumnNudger extends Converter {
 
         /* */
