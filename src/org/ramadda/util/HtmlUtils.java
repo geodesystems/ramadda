@@ -3867,6 +3867,10 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return formTable((String) null);
     }
 
+    public static String formTable(boolean fullWidth) {
+        return formTable((String) null, fullWidth);
+    }    
+
     /**
      * _more_
      *
@@ -3875,9 +3879,12 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @return _more_
      */
     public static String formTable(String clazz) {
-        return open(TAG_TABLE, cssClass(" formtable " + (clazz != null? clazz: "")) + attrs(
-											    ATTR_CELLPADDING, "0",
-											    ATTR_CELLSPACING, "0"));
+	return formTable(clazz, false);
+    }
+
+    public static String formTable(String clazz,boolean fullWidth) {	
+        return open(TAG_TABLE, (fullWidth?attr("width","100%"):"") +
+		    cssClass(" formtable " + (clazz != null? clazz: "") + (fullWidth?" formtable-fullwidth ":"")) + attrs(ATTR_CELLPADDING, "0", ATTR_CELLSPACING, "0"));
     }
 
 
