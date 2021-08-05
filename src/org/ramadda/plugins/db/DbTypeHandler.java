@@ -2005,6 +2005,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    sb.append(HU.script(formJS));
 	}
         sb.append(formEntry(request, "", buttons));
+        sb.append(formEntry(request,"Links"));
         sb.append(HtmlUtils.formTableClose());
         StringBuilder js = new StringBuilder();
         js.append("HtmlUtil.initSelect('.search-select');\n");
@@ -2151,6 +2152,38 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         sb.append(formEntry(request,"Options"));
 
 
+        if (sorttfos.size() > 0) {
+            String orderBy = "";
+            if (dbInfo.getDfltSortColumn() != null) {
+                orderBy = dbInfo.getDfltSortColumn().getName();
+            }
+	    String order = "";
+	    for(int i=1;i<=numOrders;i++) {
+		String dfltCol = orderBy;
+		String dfltDir = "desc";
+		if(dfltOrder!=null&& (i-1<dfltOrder.size())) {
+		    List<String> toks = dfltOrder.get(i-1);
+		    if(toks.size()>0) dfltCol = toks.get(0);
+		    if(toks.size()>1) dfltDir = toks.get(1);		    
+		}
+
+		order+=HtmlUtils.select(ARG_DB_SORTBY+i, sorttfos,
+					request.getString(ARG_DB_SORTBY+i, dfltCol),
+					HtmlUtils.cssClass("search-select")) + 
+		    HU.select(ARG_DB_SORTDIR+i,getOrderTfos(), request.getString(ARG_DB_SORTDIR+i, dfltDir),HtmlUtils.cssClass("search-select"))
+		    +
+		    HU.space(2);
+	    }
+
+            sb.append(
+                formEntry(
+                    request, msgLabel("Order By"),
+		    order));
+
+	}
+
+
+
         StringBuilder viewSB      = new StringBuilder();
         boolean       defaultShow = false;
         viewSB.append(HtmlUtils.checkbox(ARG_DB_SHOW + "toggleall", "true",
@@ -2187,36 +2220,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 
 
-        if (sorttfos.size() > 0) {
-            String orderBy = "";
-            if (dbInfo.getDfltSortColumn() != null) {
-                orderBy = dbInfo.getDfltSortColumn().getName();
-            }
-	    String order = "";
-	    for(int i=1;i<=numOrders;i++) {
-		String dfltCol = orderBy;
-		String dfltDir = "desc";
-		if(dfltOrder!=null&& (i-1<dfltOrder.size())) {
-		    List<String> toks = dfltOrder.get(i-1);
-		    if(toks.size()>0) dfltCol = toks.get(0);
-		    if(toks.size()>1) dfltDir = toks.get(1);		    
-		}
 
-		order+=HtmlUtils.select(ARG_DB_SORTBY+i, sorttfos,
-					request.getString(ARG_DB_SORTBY+i, dfltCol),
-					HtmlUtils.cssClass("search-select")) + 
-		    HU.select(ARG_DB_SORTDIR+i,getOrderTfos(), request.getString(ARG_DB_SORTDIR+i, dfltDir),HtmlUtils.cssClass("search-select"))
-		    +
-		    HU.space(2);
-	    }
+	sb.append(formEntry(request,"Advanced Options"));
 
-
-            sb.append(
-                formEntry(
-                    request, msgLabel("Order By"),
-		    order));
-            sb.append(
-                formEntry(
+	if(aggtfos.size()>0) {
+	    sb.append(
+			 formEntry(
                     request, msgLabel("Iterate"),
                     HtmlUtils.select(
                         ARG_DB_ITERATE, aggtfos,
