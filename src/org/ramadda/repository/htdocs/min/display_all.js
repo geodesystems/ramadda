@@ -20937,7 +20937,6 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
             fields = fields || this.getData().getRecordFields();
 	    let csv = DataUtils.getCsv(fields, records);
 	    if(copy) {
-		console.log(csv);
 		Utils.copyToClipboard(csv);
 		alert("Copied to clipboard");
 	    } else {
