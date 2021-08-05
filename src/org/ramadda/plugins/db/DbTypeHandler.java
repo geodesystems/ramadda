@@ -43,7 +43,7 @@ import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.FileWriter;
 import org.ramadda.util.Bounds;
 import org.ramadda.util.FormInfo;
-import org.ramadda.util.GoogleChart;
+import org.ramadda.util.NamedBuffer;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
@@ -1045,6 +1045,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    formId = HtmlUtils.getUniqueId("form_");
             sb.append(HtmlUtils.makeShowHideBlock(msg("Search again"),
 						  getSearchForm(request, entry,formId).toString(), false));
+	    sb.append("<br>");
         }
 
 
@@ -1993,34 +1994,39 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             request.makeUrl(getRepository().URL_ENTRY_SHOW);
         sb.append(HtmlUtils.formPost(formUrl, HtmlUtils.id(formId)));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
-        sb.append(HtmlUtils.formTable(true));
+	HU.open(sb,"div",HU.cssClass("ramadda-form-block"));
         String buttons = HtmlUtils.submit(msg("Search"), ARG_DB_SEARCH)
                          + HtmlUtils.space(2)
                          + HtmlUtils.submit(msg("Cancel"), ARG_DB_LIST);
 
-        sb.append(formEntry(request, "", buttons));
+        sb.append(buttons);
         getSearchFormInner(request, entry, sb, true);
 	if(formJS!=null) {
-	    sb.append(formEntry(request, "", HU.div("",HU.id("formjs_div"))));
+	    HU.div(sb,"",HU.id("formjs_div"));
 	    sb.append(HU.script(formJS));
 	}
-        sb.append(formEntry(request, "", buttons));
-        sb.append(formEntry(request,"Links"));
-
-        sb.append(HtmlUtils.formTableClose());
+        sb.append(buttons);
         StringBuilder js = new StringBuilder();
         js.append("HtmlUtil.initSelect('.search-select');\n");
         HtmlUtils.script(sb, js.toString());
         sb.append(HtmlUtils.formClose());
+
+
+        HU.div(sb, "Links",HU.cssClass("ramadda-form-header"));
+	//	HU.open(sb,"div",HU.cssClass("ramadda-form-block"));
         OutputHandler.addUrlShowingForm(sb, entry, formId,
                                         "[\".*OpenLayers_Control.*\"]",
                                         request.isAnonymous()
                                         ? null
                                         : "DB.addUrlShowingForm");
-
+	//	HU.close(sb,"div");
 
         return sb;
     }
+
+    //    private static class MyNamedBuffer extends NamedBuffer {
+	//	boolean 
+    //    }
 
 
 
@@ -2045,42 +2051,34 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 				  + HtmlUtils.attr("default",
 						   "" + DEFAULT_MAX));
 
-            sb.append(
-                formEntry(
-                    request, msgLabel("View As"),
-                    HtmlUtils.select(
-                        ARG_DB_VIEW, viewList,
-                        request.getString(ARG_DB_VIEW, ""),
-                        HtmlUtils.attr("default", VIEW_TABLE)
-                        + HtmlUtils.cssClass(
-                            "search-select")) + HtmlUtils.space(2) + count));
+	    sb.append(HU.space(2));
+            sb.append("View As: ");
+	    sb.append(HtmlUtils.select(
+				       ARG_DB_VIEW, viewList,
+				       request.getString(ARG_DB_VIEW, ""),
+				       HtmlUtils.attr("default", VIEW_TABLE)
+				       + HtmlUtils.cssClass(
+							    "search-select")) + HtmlUtils.space(2) + count);
 	}	
 
 
-        sb.append(formEntry(request, "Search For"));
-        DbInfo        dbInfo   = getDbInfo();
-
-        StringBuilder advanced = new StringBuilder();
         List<Clause>  where    = new ArrayList<Clause>();
+        DbInfo        dbInfo   = getDbInfo();
+	List<NamedBuffer> buffers = new ArrayList<NamedBuffer>();
+	String formHeader = HtmlUtils.formTable(true);
+	NamedBuffer buffer = new NamedBuffer("Search For",formHeader);
+	buffers.add(buffer);
         for (Column column : getColumns(true)) {
             if ( !normalForm && column.isType(column.DATATYPE_LATLON)) {
                 continue;
             }
-            if (column.getCanSearch()) {
-		String group = column.getGroup();
-		if(group!=null) {
-		    sb.append(HtmlUtils.formTableClose());
-		    sb.append(HtmlUtils.formTable(true));
-		    sb.append(formEntry(request, group));
-		}
-                if (column.getAdvancedSearch()) {
-                    column.addToSearchForm(request, advanced, where, entry);
-                } else {
-                    column.addToSearchForm(request, sb, where, entry);
-                }
-            }
+            if (!column.getCanSearch()) continue;
+	    String group = column.getGroup();
+	    if(group!=null) {
+		buffers.add(buffer = new NamedBuffer(group,formHeader));
+	    }
+	    column.addToSearchForm(request, buffer.getBuffer(), where, entry);
         }
-
 
 
         List<TwoFacedObject> tfos    = new ArrayList<TwoFacedObject>();
@@ -2109,10 +2107,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         if (normalForm) {
             if (tfos.size() > 0) {
-		sb.append(HtmlUtils.formTableClose());
-		sb.append(HtmlUtils.formTable(true));
-                sb.append(formEntry(request, "Group By"));
-                sb.append(
+		buffers.add(buffer = new NamedBuffer("Group By",formHeader));
+                buffer.append(
                     formEntry(
                         request, msgLabel("Group By"),
                         HtmlUtils.select(
@@ -2149,17 +2145,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 aggSB.append(HtmlUtils.checkbox(ARG_AGG_PERCENT, "true",
                         request.get(ARG_AGG_PERCENT,
                                     false)) + " show percentage");
-                sb.append(formEntry(request, msgLabel("Aggregate"),
-                                    aggSB.toString()));
+                buffer.append(formEntry(request, msgLabel("Aggregate"),
+					aggSB.toString()));
 
             }
         }
 
-	sb.append(HtmlUtils.formTableClose());
-	sb.append(HtmlUtils.formTable(true));
-        sb.append(formEntry(request,"Options"));
-
-
+	buffers.add(buffer = new NamedBuffer("Order By/Display",formHeader));
         if (sorttfos.size() > 0) {
             String orderBy = "";
             if (dbInfo.getDfltSortColumn() != null) {
@@ -2183,7 +2175,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		    HU.space(2);
 	    }
 
-            sb.append(
+            buffer.append(
                 formEntry(
                     request, msgLabel("Order By"),
 		    order));
@@ -2205,11 +2197,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                                      + column.getLabel());
             viewSB.append("<br>");
         }
-        sb.append(formEntry(request, msgLabel("Display"),
-                            HtmlUtils.makeShowHideBlock("",
-                                viewSB.toString(), false)));
+        buffer.append(formEntry(request, msgLabel("Display"),
+				HtmlUtils.makeShowHideBlock("",
+							    viewSB.toString(), false)));
 
-        sb.append(HtmlUtils.script("DB.toggleAllInit();"));
+        buffer.append(HtmlUtils.script("DB.toggleAllInit();"));
 
 
         StringBuilder uniqueSB      = new StringBuilder();
@@ -2221,19 +2213,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                                      + column.getLabel());
             uniqueSB.append("<br>");
         }
-        sb.append(formEntry(request, msgLabel("Uniques"),
+        buffer.append(formEntry(request, msgLabel("Uniques"),
                             HtmlUtils.makeShowHideBlock("",
                                 uniqueSB.toString(), false)));
 
-
-
-
-
-	sb.append(HtmlUtils.formTableClose());
-	sb.append(HtmlUtils.formTable(true));
-	sb.append(formEntry(request,"Advanced Options"));
+	buffers.add(buffer = new NamedBuffer("Advanced Options", formHeader));
 	if(aggtfos.size()>0) {
-	    sb.append(
+	    buffer.append(
 			 formEntry(
                     request, msgLabel("Iterate"),
                     HtmlUtils.select(
@@ -2246,7 +2232,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                 4, 50)));
         }
         if (normalForm) {
-            sb.append(
+            buffer.append(
                 HtmlUtils.formEntry(
                     msgLabel("Search Type"),
                     HtmlUtils.checkbox(
@@ -2263,13 +2249,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                       false)) + " Save Search"
                             : "";
 
-            sb.append(formEntry(request, msgLabel("Search Name"),
+            buffer.append(formEntry(request, msgLabel("Search Name"),
                                 HtmlUtils.input(ARG_DB_SEARCHNAME,
                                     request.getString(ARG_DB_SEARCHNAME, ""),
 						HtmlUtils.SIZE_50) + suffix));
 	    String searchFrom = request.getString(ARG_SEARCH_FROM,null);
 	    if(searchFrom!=null) {
-		sb.append(HU.hidden(ARG_SEARCH_FROM, searchFrom));
+		buffer.append(HU.hidden(ARG_SEARCH_FROM, searchFrom));
 	    }
 
 	    String print = 
@@ -2280,8 +2266,17 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    if(addressTemplate!=null) {
 		print+="<br>" + HU.b("Address label: ")+" Skip:" + HU.input("addresslabelskip",request.getString("addresslabelskip","0"),HtmlUtils.SIZE_5) +" Use Avery 8160 or 5160. Print with top margin: 0.5in, left: 0.19in";
 	    }
-	    sb.append(formEntry(request, msgLabel("Printing"),print));
+	    buffer.append(formEntry(request, msgLabel("Printing"),print));
         }
+
+
+	int cnt = 0;
+	for(NamedBuffer b: buffers) {
+	    b.append(HtmlUtils.formTableClose());
+	    String contents = b.getBuffer().toString();
+	    sb.append(HU.div(b.getName(),HU.cssClass("ramadda-form-header")));
+	    HU.div(sb, HtmlUtils.makeShowHideBlock("Show",contents, cnt++==0),HU.cssClass("ramadda-form-block"));
+	}
 
 
         /*
@@ -2302,7 +2297,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
           sb.append("</td></tr>");
         */
 
-        sb.append(advanced);
+
 
     }
 
@@ -3671,7 +3666,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 } else {
                     type = "string";
                 }
-                //                GoogleChart.DataTable.addColumn(chartJS, type, column.getLabel());
 
                 String label = column.getLabel();
                 if ( !showHeaderLinks) {
