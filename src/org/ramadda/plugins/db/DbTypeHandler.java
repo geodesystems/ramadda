@@ -6477,11 +6477,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	HashSet seenValue = new HashSet();
 	List<Column> uniqueCols = null;
 
-	for (Column column : selectedColumns) {
-            if(request.get(ARG_DB_UNIQUE + "_" + column.getName(),false)) {
-		if(uniqueCols==null)
-		    uniqueCols = new ArrayList<Column>();
-		uniqueCols.add(column);
+	if(selectedColumns!=null) {
+	    for (Column column : selectedColumns) {
+		if(request.get(ARG_DB_UNIQUE + "_" + column.getName(),false)) {
+		    if(uniqueCols==null)
+			uniqueCols = new ArrayList<Column>();
+		    uniqueCols.add(column);
+		}
 	    }
 	}
 	//	System.err.println("Uniques:" + uniqueCols);
