@@ -2057,7 +2057,7 @@ public class CsvUtil {
 			"properties",
 			"Name value pairs:\n\t\ttable.id <new id> table.name <new name> table.cansearch false table.canlist false table.icon <icon, e.g., /db/database.png>\n\t\t<column>.id <new id for column> <column>.label <new label>\n\t\t<column>.type <string|enumeration|double|int|date>\n\t\t<column>.format <yyyy MM dd HH mm ss format for dates>\n\t\t<column>.canlist false <column>.cansearch false\n\t\tinstall <true|false install the new db table>\n\t\tnukedb <true|false careful! this deletes any prior created dbs", "rows", "6")),
         new Cmd(
-		"-dbprop", "Print to stdout props for db generation",
+		"-dbprops", "Print to stdout props for db generation",
 		new Arg("id pattern"),
 		new Arg("suffix pattern")),		
 
