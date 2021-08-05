@@ -20857,7 +20857,8 @@ function RamaddaLegendDisplay(displayManager, id, properties) {
 function RamaddaDownloadDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_DOWNLOAD, properties);
     const ID_DOWNLOAD_CSV = "downloadcsv";
-    const ID_DOWNLOAD_JSON = "downloadjson";    
+    const ID_DOWNLOAD_JSON = "downloadjson";
+    const ID_DOWNLOAD_COPY = "downloadcopy";        
     const ID_CANCEL = "cancel";    
     let myProps =[
 	{label:'Download'},
@@ -20931,10 +20932,17 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 		});
 	    }
 	},
-	getCsv: function(fields, records) {
+
+	getCsv: function(fields, records,copy) {
             fields = fields || this.getData().getRecordFields();
 	    let csv = DataUtils.getCsv(fields, records);
-	    Utils.makeDownloadFile(this.getPropertyFileName()+".csv", csv);	    
+	    if(copy) {
+		console.log(csv);
+		Utils.copyToClipboard(csv);
+		alert("Copied to clipboard");
+	    } else {
+		Utils.makeDownloadFile(this.getPropertyFileName()+".csv", csv);
+	    }
 	},
 	getJson: function(fields, records) {
             fields = fields || this.getData().getRecordFields();
@@ -20960,26 +20968,30 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 		});
 	    }
 	    
+	    let space = SPACE;
 	    let html = HU.center("#" +records.length +" records") +
-		HU.center(HU.div([ID,this.getDomId(ID_DOWNLOAD_CSV)],"Download CSV") +"&nbsp;&nbsp;" +
-			  HU.div([ID,this.getDomId(ID_DOWNLOAD_JSON)],"Download JSON") +"&nbsp;&nbsp;" +			     			     HU.div([ID,this.getDomId(ID_CANCEL)],"Cancel"));
-	    html += "<b>Include:<br></b>";
+		HU.center(HU.div([ID,this.getDomId(ID_DOWNLOAD_CSV)],"CSV") +space +
+			  HU.div([ID,this.getDomId(ID_DOWNLOAD_JSON)],"JSON") +space +
+			  HU.div([ID,this.getDomId(ID_DOWNLOAD_COPY)],"Copy") +space +
+			  HU.div([ID,this.getDomId(ID_CANCEL)],"Cancel"));
+	    
+	    html += "<b>Include:</b>";
 	    let cbx = "";
+	    cbx += HU.checkbox(this.getDomId("cbx_toggle_all"),[],true,"Toggle all") +"<br>";
 	    this.getData().getRecordFields().forEach((f,idx)=>{
 		let on = this.fieldOn[f.getId()];
 		if(!Utils.isDefined(on)) {
 		    on = true;
 		}
-		cbx += HU.checkbox(this.getDomId("cbx_" + f.getId()),[],on) +" " + f.getLabel() +"<br>";
+		cbx += HU.checkbox(this.getDomId("cbx_" + f.getId()),[CLASS,"display-downloader-field-cbx"],on,f.getLabel()) +"<br>";
 	    });
-	    
+	    html += HU.div([STYLE,HU.css("max-height","200px","overflow-y","auto","margin-left","10px")], cbx);
 	    html = HU.div([STYLE,HU.css("margin","5px")],html);
-	    html += HU.div([STYLE,HU.css("max-height","200px","overflow-y","auto","margin","5px")], cbx);
 	    return html;
 	},
 	doDownload: function() {
 	    let records = this.filterData();
-	    let func = json=>{
+	    let func = (json,copy)=>{
 		this.jq(ID_DIALOG).hide();
 		let fields = [];
 		this.applyFieldSelection();
@@ -20990,13 +21002,21 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 		});
 		if(json) 
 		    this.getJson(fields, records);
-		else
-		    this.getCsv(fields, records);
+		else	
+		    this.getCsv(fields, records,copy);
 		if(this.dialog) this.dialog.remove();
 		this.dialog =null;	    };
 	    if(this.getPropertyAskFields(true)) {
 		let html = this.getDownloadDialog(records);
+		let dialog;
 		let init = ()=>{
+		    let _this = this;
+		    this.jq("cbx_toggle_all").click(function() {
+			let on = $(this).is(':checked');
+			dialog.find(".display-downloader-field-cbx").each(function() {
+			    $(this).prop("checked",on);
+			});
+		    });
 		    this.jq(ID_CANCEL).button().click(() =>{
 			this.applyFieldSelection();
 			this.jq(ID_DIALOG).hide();
@@ -21008,9 +21028,12 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 		    });
 		    this.jq(ID_DOWNLOAD_JSON).button().click(() =>{
 			func(true);
-		    });		
+		    });
+		    this.jq(ID_DOWNLOAD_COPY).button().click(() =>{
+			func(false,true);
+		    });				    
 		};
-		this.showDialog(html,this.getDomId(ID_DISPLAY_CONTENTS),init,this.getTitle());
+		dialog = this.showDialog(html,this.getDomId(ID_DISPLAY_CONTENTS),init,this.getTitle());
 	    } else  {
 		this.getCsv(null, records);
 	    }

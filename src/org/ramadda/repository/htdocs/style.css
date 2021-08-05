@@ -4200,8 +4200,8 @@ a.toggleblocklabellink:visited {
 }
 
 .formtable td {
-    padding-top: 5px;
-    padding-bottom: 5px;
+    padding-top: 4px;
+    padding-bottom: 3px;
     padding-left: 4px;
     padding-right: 3px;
 }
@@ -4229,6 +4229,11 @@ a.toggleblocklabellink:visited {
     text-align:right;
     vertical-align: top;
     color: #000;
+}
+
+.formtable-fullwidth .formlabel, .formtable-fullwidth .formlabeltop {
+    white-space: nowrap;
+    width:15%;
 }
 
 
