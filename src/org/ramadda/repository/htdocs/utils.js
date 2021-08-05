@@ -158,7 +158,7 @@ var Utils =  {
 	return b3;
     },
     copyToClipboard:function(text) {
-	var $temp = $("<input>");
+	var $temp = $("<textarea></textarea>");
 	$("body").append($temp);
 	$temp.val(text).select();
 	document.execCommand("copy");
@@ -4356,7 +4356,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return this.tag("a", myAttrs, html);
     },
 
-    checkbox: function(id, attrs, checked) {
+    checkbox: function(id, attrs, checked,label) {
         attrs.push("id");
         attrs.push(id);
         attrs.push("type");
@@ -4367,7 +4367,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             attrs.push("checked");
             attrs.push(null);
         }
-        return this.tag("input", attrs);
+        let cbx =  this.tag("input", attrs);
+	if(label) {
+	    cbx += "&nbsp;" + HU.tag("label",["for", id],label);
+	}
+	return cbx;
     },
 
     radio: function(id, name, radioclass, value, checked, extra) {
