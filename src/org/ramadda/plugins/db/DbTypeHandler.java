@@ -1320,6 +1320,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             if ( !request.get(ARG_EMBEDDED, false)) {
                 sb.append(HtmlUtils.makeShowHideBlock(msg("Search again"),
                         getSearchForm(request, entry).toString(), false));
+		sb.append("<br>");
             }
             Column iterateColumn = null;
             for (Column column : dbInfo.getColumnsToUse()) {
@@ -2012,7 +2013,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         sb.append(HtmlUtils.formClose());
 
 
-        HU.div(sb, "Links",HU.cssClass("ramadda-form-header"));
+	sb.append("<br>");
+	sb.append(HU.b("Links"));
+	//        HU.div(sb, "Links",HU.cssClass("ramadda-form-header"));
 	//	HU.open(sb,"div",HU.cssClass("ramadda-form-block"));
         OutputHandler.addUrlShowingForm(sb, entry, formId,
                                         "[\".*OpenLayers_Control.*\"]",
@@ -2273,9 +2276,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	int cnt = 0;
 	for(NamedBuffer b: buffers) {
 	    b.append(HtmlUtils.formTableClose());
+	    String label = HU.div(b.getName(),HU.cssClass("ramadda-form-header"));
 	    String contents = b.getBuffer().toString();
-	    sb.append(HU.div(b.getName(),HU.cssClass("ramadda-form-header")));
-	    HU.div(sb, HtmlUtils.makeShowHideBlock("Show",contents, cnt++==0),HU.cssClass("ramadda-form-block"));
+	    //	    sb.append(label);
+	    HU.div(sb, HtmlUtils.makeShowHideBlock(b.getName(),contents, cnt++==0),HU.cssClass("ramadda-form-block"));
 	}
 
 
