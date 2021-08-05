@@ -3157,7 +3157,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         sb.append(HtmlUtils.submit(msg("Send Message")));
         sb.append(HtmlUtils.space(2));
         sb.append(HtmlUtils.submit(msg("Cancel"), ARG_DB_LIST));
-a        sb.append(HtmlUtils.formTable());
+        sb.append(HtmlUtils.formTable());
 
         for (Object[] values : valueList) {
             String toId = (String) values[IDX_DBID];
