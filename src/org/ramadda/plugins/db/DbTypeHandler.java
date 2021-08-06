@@ -1996,7 +1996,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         StringBuilder sb     = new StringBuilder();
         String formUrl       =
             request.makeUrl(getRepository().URL_ENTRY_SHOW);
+	sb.append(HU.comment("search form open"));
         sb.append(HtmlUtils.formPost(formUrl, HtmlUtils.id(formId)));
+	sb.append("\n");
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
 	HU.open(sb,"div",HU.cssClass("ramadda-form-block"));
         String buttons = HtmlUtils.submit(msg("Search"), ARG_DB_SEARCH)
@@ -2004,15 +2006,17 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                          + HtmlUtils.submit(msg("Cancel"), ARG_DB_LIST);
 
         sb.append(buttons);
-        getSearchFormInner(request, entry, sb, true);
+	getSearchFormInner(request, entry, sb, true);
 	if(formJS!=null) {
 	    HU.div(sb,"",HU.id("formjs_div"));
 	    sb.append(HU.script(formJS));
 	}
         sb.append(buttons);
+	HU.close(sb,"div");
         StringBuilder js = new StringBuilder();
         js.append("HtmlUtil.initSelect('.search-select');\n");
         HtmlUtils.script(sb, js.toString());
+	sb.append(HU.comment("search form close"));
         sb.append(HtmlUtils.formClose());
 
 
@@ -2275,7 +2279,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		"Entries per page:" +
 		HU.input(ARG_ENTRIES_PER_PAGE,request.getString(ARG_ENTRIES_PER_PAGE,"30"),HtmlUtils.SIZE_5);
 	    if(addressTemplate!=null) {
-		print+="<br>" + HU.b("Address label: ")+" Skip:" + HU.input("addresslabelskip",request.getString("addresslabelskip","0"),HtmlUtils.SIZE_5) +" Use Avery 8160 or 5160. Print with top margin: 0.5in, left: 0.19in";
+		print+="<br>" + HU.b("Address label: ")+" Skip:" + HU.input("addresslabelskip",request.getString("addresslabelskip",""),HtmlUtils.SIZE_5) +" Use Avery 8160 or 5160. Print with top margin: 0.5in, left: 0.19in";
 	    }
 	    buffer.append(formEntry(request, msgLabel("Printing"),print));
         }

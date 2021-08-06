@@ -988,6 +988,13 @@ public class StorageManager extends RepositoryManager implements PointFile
                              "_").replaceAll("\\?", "_").replaceAll("/",
                                              "_").replaceAll("=", "_");
 
+	//	System.err.println("key:" + key );
+	try {
+	    //	    String c = Utils.compress(key);
+	    //	    System.err.println("key:" + key.length() + " c:" + c.length());
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
         return key;
     }
 

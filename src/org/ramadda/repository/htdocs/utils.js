@@ -4450,7 +4450,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                     }
                 }
             }
-            //                console.log("item:"   + item.id +" type:" +item.type + " value:" + item.value);
+	    if(item.id=="formurl") return;
+//            console.log("item:"   + item.id +" type:" +item.type + " value:" + item.value);
             var values = [];
             if (item.type == "select-multiple" && item.selectedOptions) {
                 for (a in item.selectedOptions) {

@@ -1,4 +1,4 @@
-/*
+/**
 * Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,6 +22,7 @@ import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.output.PageStyle;
 import org.ramadda.repository.util.RequestArgument;
+import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 import org.ramadda.util.SelectionRectangle;
@@ -940,7 +941,9 @@ public class Request implements Constants, Cloneable {
                              HashSet<String> exceptValues,
                              String exceptArgsPattern) {
 
-        if (exceptArgs == null) {
+
+	//	System.err.println("getUrlArgs");
+	if (exceptArgs == null) {
             exceptArgs = new HashSet<String>();
         }
         //Just in case, never want to let slip the passwords
@@ -968,9 +971,6 @@ public class Request implements Constants, Cloneable {
             //      System.out.println(arg+":" + exceptArgsPattern+":");
 
             Object value = parameters.get(arg);
-            if ((exceptValues != null) && (exceptValues.contains(value))) {
-                continue;
-            }
             if (value instanceof List) {
                 List l = (List) value;
                 if (l.size() == 0) {
@@ -978,9 +978,13 @@ public class Request implements Constants, Cloneable {
                 }
                 for (int i = 0; i < l.size(); i++) {
                     String svalue = (String) l.get(i);
-                    if (svalue.length() == 0) {
+                    if (svalue.length() == 0 || svalue.equals(TypeHandler.ALL)) {
                         continue;
                     }
+		    if ((exceptValues != null) && (exceptValues.contains(svalue))) {
+			continue;
+		    }
+
                     if (cnt++ > 0) {
                         sb.append("&");
                     }
@@ -990,9 +994,13 @@ public class Request implements Constants, Cloneable {
                 continue;
             }
             String svalue = value.toString();
-            if (svalue.length() == 0) {
+	    if (svalue.length() == 0 || svalue.equals(TypeHandler.ALL)) {
                 continue;
             }
+	    if ((exceptValues != null) && (exceptValues.contains(svalue))) {
+		continue;
+	    }
+	    //	    System.err.println("\targ:" + arg+" v:" + svalue);
             if (cnt++ > 0) {
                 sb.append("&");
             }
