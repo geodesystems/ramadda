@@ -156,6 +156,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     
     private String formJS;
 
+    private String defaultView;
+
 
     /** _more_ */
     SimpleDateFormat rssSdf =
@@ -218,6 +220,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		dfltOrder.add(toks);
 	    }
 	}
+        defaultView = XmlUtil.getAttribute(tableNode, "defaultView",VIEW_TABLE);
         numOrders = XmlUtil.getAttribute(tableNode, "numberOrderBy",numOrders);
 
 	formJS =  XmlUtil.getGrandChildText(tableNode,"formjs",(String) null);
@@ -2058,7 +2061,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             sb.append("View As: ");
 	    sb.append(HtmlUtils.select(
 				       ARG_DB_VIEW, viewList,
-				       request.getString(ARG_DB_VIEW, ""),
+				       request.getString(ARG_DB_VIEW, defaultView),
 				       HtmlUtils.attr("default", VIEW_TABLE)
 				       + HtmlUtils.cssClass(
 							    "search-select")) + HtmlUtils.space(2) + count);
@@ -2080,6 +2083,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    if(group!=null) {
 		buffers.add(buffer = new NamedBuffer(group,formHeader));
 	    }
+	    String help  = column.getHelp();
+	    if(help!=null) {
+		buffer.getBuffer().append(formEntry(request,"",help));
+	    }
+
 	    column.addToSearchForm(request, buffer.getBuffer(), where, entry);
         }
 

@@ -1225,6 +1225,7 @@ public abstract class Processor extends CsvOperator {
             label   = label.replaceAll("\n", " ").replaceAll("\r", " ");
             tableId = Utils.makeLabel(name).toLowerCase().replaceAll(" ",
 								     "_");
+            String defaultView   = CsvUtil.getDbProp(props, "table", "defaultView", (String)null);
 
 	    String defaultOrder= (String)props.get("defaultOrder");
             tableId = CsvUtil.getDbProp(props, "table", "id", tableId);
@@ -1251,6 +1252,8 @@ public abstract class Processor extends CsvOperator {
 	    String addressTemplate = CsvUtil.getDbProp(props, "table", "addressTemplate", (String)null);
 	    if(addressTemplate!=null)
 		tableAttrs+=XmlUtil.attr("addressTemplate", addressTemplate);
+	    if(defaultView!=null)
+		tableAttrs+=XmlUtil.attr("defaultView", defaultView);
 	    if(defaultOrder!=null)
 		tableAttrs+=XmlUtil.attr("defaultOrder", defaultOrder);
             writer.println(
@@ -1318,6 +1321,7 @@ public abstract class Processor extends CsvOperator {
 
 
                 String suffix = CsvUtil.getDbProp(props, colId, "suffix",(String)null);
+                String help = CsvUtil.getDbProp(props, colId, "help",(String)null);		
 		
 
                 label = CsvUtil.getDbProp(props, colId, "label", label);
@@ -1347,7 +1351,18 @@ public abstract class Processor extends CsvOperator {
                 attrs.append(XmlUtil.attrs(new String[] { "name", colId }));
 		if(suffix!=null)
 		    attrs.append(XmlUtil.attrs(new String[] { "suffix", suffix }));
+		if(help!=null)
+		    attrs.append(XmlUtil.attrs(new String[] { "help", help }));		
 
+                String placeholderMin = CsvUtil.getDbProp(props, colId, "placeholderMin",(String)null);		
+		if(placeholderMin!=null)
+		    attrs.append(XmlUtil.attrs(new String[] { "placeholderMin", placeholderMin }));
+                String placeholderMax = CsvUtil.getDbProp(props, colId, "placeholderMax",(String)null);		
+		if(placeholderMax!=null)
+		    attrs.append(XmlUtil.attrs(new String[] { "placeholderMax", placeholderMax }));
+                String placeholder = CsvUtil.getDbProp(props, colId, "placeholder",(String)null);		
+		if(placeholder!=null)
+		    attrs.append(XmlUtil.attrs(new String[] { "placeholder", placeholder }));						
 
 
                 String numberOfSearchWidgets = CsvUtil.getDbProp(props, colId, "numberOfSearchWidgets", (String)null);

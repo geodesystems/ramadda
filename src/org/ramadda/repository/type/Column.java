@@ -167,6 +167,8 @@ public class Column implements DataTypes, Constants, Cloneable {
     /** _more_ */
     public static final String ATTR_SUFFIX = "suffix";
 
+
+
         /** _more_ */
     public static final String ATTR_LOOKUPDB = "lookupdb";
 
@@ -322,6 +324,11 @@ public class Column implements DataTypes, Constants, Cloneable {
 
     /** _more_ */
     private String help;
+
+    private String placeholder;
+    private String placeholderMin;
+    private String placeholderMax;        
+
 
     /** _more_ */
     private int sortOrder = 1000;
@@ -490,6 +497,13 @@ public class Column implements DataTypes, Constants, Cloneable {
         suffix    = Utils.getAttributeOrTag(element, ATTR_SUFFIX, "");
         help      = Utils.getAttributeOrTag(element, ATTR_HELP,
                                             (String) null);
+        placeholder      = Utils.getAttributeOrTag(element, "placeholder",
+						      (String) null);	
+        placeholderMin      = Utils.getAttributeOrTag(element, "placeholderMin",
+						      (String) null);	
+        placeholderMax      = Utils.getAttributeOrTag(element, "placeholderMax",
+						      (String) null);	
+
         sortOrder = Utils.getAttributeOrTag(element, ATTR_SORT_ORDER, 1000);
         //The suffix might have the ${root} macro in it
         if (typeHandler != null) {
@@ -3195,6 +3209,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             } else {
                 selectExtra += HtmlUtils.cssClass("search-select");
             }
+
             //            System.err.println(getName() + " values=" + tmpValues);
 	    widget = "";
 	    for(int i=0;i<numberOfSearchWidgets;i++) {
@@ -3214,10 +3229,10 @@ public class Column implements DataTypes, Constants, Cloneable {
                 expr
                 + HtmlUtils.input(searchArg + "_from",
                                   request.getString(searchArg + "_from", ""),
-                                  "size=\"10\"") + " "
+                                  (placeholderMin!=null?HU.attr("placeholder",placeholderMin):"") + " size=\"10\"") + " "
                                       + HtmlUtils.input(searchArg + "_to",
                                           request.getString(searchArg
-                                              + "_to", ""), "size=\"10\"");
+                                              + "_to", ""), (placeholderMax!=null?HU.attr("placeholder",placeholderMax):"") +  "size=\"10\"");
         } else if (isType(DATATYPE_ENTRY)) {
             String entryId  = request.getString(searchArg + "_hidden", "");
             Entry  theEntry = null;
@@ -3285,10 +3300,13 @@ public class Column implements DataTypes, Constants, Cloneable {
                 //                String text  = Utils.unquote(request.getString(searchArg, ""));
 
 		boolean isList = isType(DATATYPE_LIST);
+		String attrs =HU.attr("id",widgetId);
+		if(placeholder!=null)
+		    attrs += HU.attr("placeholder", placeholder);
 		if(isList) {
-		    widget = HtmlUtils.textArea(searchArg, text,5,20,  HU.attr("id",widgetId));
+		    widget = HtmlUtils.textArea(searchArg, text,5,20,  attrs);
 		} else {
-		    widget = HtmlUtils.input(searchArg, text, HtmlUtils.SIZE_20 +HU.attr("id",widgetId));
+		    widget = HtmlUtils.input(searchArg, text, HtmlUtils.SIZE_20 +attrs);
 		}
             }
         }
@@ -3811,6 +3829,10 @@ public class Column implements DataTypes, Constants, Cloneable {
     public String getSuffix() {
         return suffix;
     }
+
+    public String getHelp() {
+        return help;
+    }    
 
 
 
