@@ -20904,6 +20904,9 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	{p:'useIcon',d:'false',ex:'false'},
 	{p:'fileName',d:'download',ex:'download'},
 	{p:'askFields',d:'false',ex:'true'},
+	{p:'showCsvButton',ex:false,tt:'Show/hide the CSV button'},
+	{p:'showJsonButton',ex:false,tt:'Show/hide the JSON button'},
+	{p:'showCopyButton',ex:false,tt:'Show/hide the Copy button'},		
 //	{p:'doSave',d:false,tt:'Show the save file button'}
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -21006,11 +21009,15 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	    }
 	    
 	    let space = SPACE;
-	    let html = HU.center("#" +records.length +" records") +
-		HU.center(HU.div([ID,this.getDomId(ID_DOWNLOAD_CSV)],"CSV") +space +
-			  HU.div([ID,this.getDomId(ID_DOWNLOAD_JSON)],"JSON") +space +
-			  HU.div([ID,this.getDomId(ID_DOWNLOAD_COPY)],"Copy") +space +
-			  HU.div([ID,this.getDomId(ID_CANCEL)],"Cancel"));
+	    let buttons = "";
+	    if(this.getShowCsvButton(true))
+		buttons+=HU.div([ID,this.getDomId(ID_DOWNLOAD_CSV)],"CSV") +space;
+	    if(this.getShowJsonButton(true))
+		buttons+=HU.div([ID,this.getDomId(ID_DOWNLOAD_JSON)],"JSON") +space;
+	    if(this.getShowCopyButton(true))
+		buttons+=  HU.div([ID,this.getDomId(ID_DOWNLOAD_COPY)],"Copy") +space;
+	    buttons+=  HU.div([ID,this.getDomId(ID_CANCEL)],"Cancel");
+	    let html = HU.center("#" +records.length +" records") +HU.center(buttons);
 	    
 	    html += "<b>Include:</b>";
 	    let cbx = "";
