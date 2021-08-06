@@ -138,6 +138,7 @@ displayDefineEvent("recordHighlight");
 displayDefineEvent("propertyChanged");
 displayDefineEvent("pointDataLoaded");
 displayDefineEvent("fieldsSelected");
+displayDefineEvent("filterFieldsSelected");
 displayDefineEvent("fieldsChanged");
 displayDefineEvent("fieldValueSelected");
 displayDefineEvent("entrySelection");
@@ -1550,7 +1551,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let func = this.getEventHandler(event);
             if (func==null) {
 		if(displayDebug.notifyEvent)
-		    console.log(this.type+".notifyEvent no event handler function:" + event.name);
+		    console.log(this.type+".notifyEvent no event handler function:" + event.name  +" " + event.handler);
                 return;
             }
 	    if(displayDebug.notifyEvent)
@@ -1935,6 +1936,27 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.callUpdateUI();
             }
         },
+
+        handleEventFilterFieldsSelected: function(source, fields) {
+	    if(fields.length>0 && (typeof fields[0] =="string")) {
+		var tmp = [];
+		fields.forEach(f=>{
+		    f = this.getFieldById(null, f);
+		    if(f) tmp.push(f);
+		});
+		fields=tmp;
+	    }
+	    let prop = "";
+	    fields.forEach(f=>{
+		if(prop!="") prop+=",";
+		prop+=f.getId();
+	    });
+
+	    this.setProperty("filterFields",prop);
+	    this.haveCalledUpdateUI = false;
+            this.checkSearchBar();
+        },
+
 
         handleEventFieldValueSelected: function(source, args) {
             this.setProperty("filterPattern", args.value);
@@ -7208,6 +7230,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
 	    let group = (source!=null&&source.getProperty?source.getProperty(event+".shareGroup"):"");
 	    if(displayDebug.notifyEvent)
 		console.log("displayManager.notifyEvent:" + event);
+
             for (let i = 0; i < this.displays.length; i++) {
                 let display = this.displays[i];
                 if (display == source) {
@@ -7238,7 +7261,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                     }
                 }
 //		if(displayDebug.notifyEvent)
-//		    console.log("\t" + display.type+" calling notifyEvent:" + event);
+//		console.log("\t" + display.type+" calling notifyEvent:" + event);
                 display.notifyEvent(event, source, data);
             }
         },
@@ -7664,6 +7687,7 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
             this.setSelectedFields(fields);
             this.fieldSelectionChanged();
         },
+
         getFieldsToSelect: function(pointData) {
             return pointData.getRecordFields();
         },
