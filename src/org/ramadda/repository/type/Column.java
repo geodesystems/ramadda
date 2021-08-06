@@ -123,7 +123,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     /** _more_ */
     public static final List EXPR_ITEMS =
         Misc.newList(new TwoFacedObject("", ""),
-                     new TwoFacedObject("=", EXPR_EQUALS),
+		     new TwoFacedObject("=", EXPR_EQUALS),		     
                      new TwoFacedObject("<=", EXPR_LE),
                      new TwoFacedObject(">=", EXPR_GE),
                      new TwoFacedObject("between", EXPR_BETWEEN));
@@ -500,9 +500,9 @@ public class Column implements DataTypes, Constants, Cloneable {
         placeholder      = Utils.getAttributeOrTag(element, "placeholder",
 						      (String) null);	
         placeholderMin      = Utils.getAttributeOrTag(element, "placeholderMin",
-						      (String) null);	
+						      placeholder);	
         placeholderMax      = Utils.getAttributeOrTag(element, "placeholderMax",
-						      (String) null);	
+						      placeholder);	
 
         sortOrder = Utils.getAttributeOrTag(element, ATTR_SORT_ORDER, 1000);
         //The suffix might have the ${root} macro in it
@@ -3221,18 +3221,20 @@ public class Column implements DataTypes, Constants, Cloneable {
 	    }
 
         } else if (isNumeric()) {
+	    String toId = Utils.makeID(searchArg + "_to");
             String expr =
                 HtmlUtils.select(searchArg + "_expr", EXPR_ITEMS,
                                  request.getString(searchArg + "_expr", ""),
-                                 HtmlUtils.cssClass("search-select"));
+				 HU.attr("to-id",toId) +
+                                 HtmlUtils.cssClass("search-select ramadda-range-select"));
             widget =
                 expr
                 + HtmlUtils.input(searchArg + "_from",
                                   request.getString(searchArg + "_from", ""),
-                                  (placeholderMin!=null?HU.attr("placeholder",placeholderMin):"") + " size=\"10\"") + " "
+                                  (placeholderMin!=null?HU.attr("placeholder",placeholderMin):"") + HU.attr("size","10")) + " "
                                       + HtmlUtils.input(searchArg + "_to",
                                           request.getString(searchArg
-                                              + "_to", ""), (placeholderMax!=null?HU.attr("placeholder",placeholderMax):"") +  "size=\"10\"");
+							    + "_to", ""), (placeholderMax!=null?HU.attr("placeholder",placeholderMax):"") +  HU.attr("id",toId) +HU.attr("size","10"));
         } else if (isType(DATATYPE_ENTRY)) {
             String entryId  = request.getString(searchArg + "_hidden", "");
             Entry  theEntry = null;

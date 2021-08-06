@@ -2291,6 +2291,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	}
 
 
+        sb.append(HtmlUtils.script("Utils.initRangeSelect()"));
+
+
         /*
           if (false && request.getUser().getAdmin()) {
           advanced.append(

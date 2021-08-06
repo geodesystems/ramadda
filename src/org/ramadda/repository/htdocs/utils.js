@@ -1621,6 +1621,22 @@ var Utils =  {
 
 
 
+    initRangeSelect:function() {
+	let select = $(".ramadda-range-select");
+	let func = function() {
+	    let toId = $(this).attr("to-id");
+	    let val = $(this).val();
+	    if(val=="between")
+		$("#"+toId).show();
+	    else
+		$("#"+toId).hide();
+
+	};
+	select.each(func);
+	select.change(func);
+    },
+
+
     initPageReload:function(time, id, showLabel) {
 	let cbx = $("#" + id);
 	let label = $("#" + id+"_label");
