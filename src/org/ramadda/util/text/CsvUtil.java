@@ -645,7 +645,7 @@ public class CsvUtil {
             if (iterateColumn == null) {
                 iterateValues.add("dummy");
             } else {
-                iteratePattern = new Filter.PatternFilter(iterateColumn, "");
+                iteratePattern = new Filter.PatternFilter(getCols(iterateColumn), "");
                 myTextReader.addProcessor(iteratePattern);
             }
             for (int i = 0; i < iterateValues.size(); i++) {
@@ -1668,6 +1668,7 @@ public class CsvUtil {
 		new Arg("end", "End index")),		
         /** *  Filter * */
         new Cmd(true, "Filter"),
+        new Cmd("-if", "Next N args specify a filter command followed by any change commands followed by an -endif"),
         new Cmd("-start", "Start at pattern in source file",
                 new Arg("start pattern", "", "type", "pattern")),
         new Cmd("-stop", "End at pattern in source file",
@@ -1683,12 +1684,12 @@ public class CsvUtil {
 		"-max",
 		"Only pass through lines that have no more than this number of columns",
 		new Arg("max # columns", "", "type", "number")),
-        new Cmd("-pattern", "Pass through rows that match the pattern",
-                new Arg("column", "", "type", "column"),
+        new Cmd("-pattern", "Pass through rows that the columns each match the pattern",
+                new Arg("columns", "", "type", "columns"),
                 new Arg("pattern", "", "type", "pattern")),
         new Cmd("-notpattern",
                 "Pass through rows that don't match the pattern",
-                new Arg("column", "", "type", "column"),
+                new Arg("columns", "", "type", "columns"),
                 new Arg("pattern", "", "type", "pattern")),
         new Cmd("-same", "Pass through where the 2 columns have the same value",
                 new Arg("column1", "", "type", "column"),
@@ -1776,10 +1777,17 @@ public class CsvUtil {
 		new Arg("write column", "", "type", "column"), new Arg("value")),
         new Cmd(
 		"-copyif",
-		"Copy column 1 to column 2 if column 2 matches pattern",
+		"Copy column 2 to column 3 if all of the columns match the pattern",
+		new Arg("columns", "", "type", "columns"),
+		new Arg("pattern", ""),
 		new Arg("column1", "", "type", "column"),
-		new Arg("column2", "", "type", "column"),
-		new Arg("pattern", "")),		
+		new Arg("column2", "", "type", "column")),		
+        new Cmd(
+		"-copycolumns",
+		"Copy columns 1  to columns 2",
+		new Arg("columns1", "", "type", "columns"),
+		new Arg("columns2", "", "type", "columns")),		
+
         new Cmd(
 		"-filldown",
 		"Fill down with last non-null value",
@@ -2359,8 +2367,7 @@ public class CsvUtil {
 	    });	
 
 	defineFunction("-columns",1,(ctx,args,i) -> {
-		ctx.setSelector(new Converter.ColumnSelector(getCols(args.get(++i))));
-		ctx.addProcessor(ctx.getSelector());
+		ctx.addProcessor(new Converter.ColumnSelector(getCols(args.get(++i))));
 		return i;
 	    });
 	defineFunction("-columnsbefore",2,(ctx,args,i) -> {
@@ -2378,9 +2385,7 @@ public class CsvUtil {
 
 	defineFunction("-notcolumns",1,(ctx,args,i) -> {
 		List<String> cols = getCols(args.get(++i));
-		ctx.addProcessor(
-				 new Converter.ColumnNotSelector(cols));
-
+		ctx.addProcessor(new Converter.ColumnNotSelector(cols));
 		return i;
 	    });
 
@@ -2444,6 +2449,49 @@ public class CsvUtil {
 
 	defineFunction(new String[]{"-dbprops"},2,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.DbProps(args.get(++i),args.get(++i)));
+		return i;
+	    });
+
+
+	defineFunction("-if",3, (ctx,args,i) -> {
+		String type = args.get(++i);
+		CsvFunctionHolder pfunc = getFunction(type);
+		if(pfunc==null) throw new RuntimeException("Unknown -if predicate:" + type);
+		TextReader predicate =new TextReader();
+		try {
+		    i = pfunc.run(predicate, args,i);
+		} catch(Exception exc) {
+		    throw new RuntimeException(exc);
+		}
+		List<String> ifArgs = new ArrayList<String>();
+		while(true) {
+		    if(i>=args.size()) throw new RuntimeException("Unclosed -if");
+		    String a = args.get(++i);
+		    if(a.equals("-endif")) break;
+		    ifArgs.add(a);
+		}
+		//		System.err.println("if args:" + ifArgs);
+		TextReader ifCtx = new TextReader();
+		for(int j=0;j<ifArgs.size();j++) {
+		    String arg = ifArgs.get(j);
+		    CsvFunctionHolder func = getFunction(arg);
+		    if(func==null) {
+			throw new RuntimeException("Unknown function in -if:" + ifArgs);
+		    }
+		    int idx=0;
+		    try {
+			idx = func.run(ifCtx, ifArgs,j);
+		    } catch(Exception exc) {
+			throw new RuntimeException(exc);
+		    }
+		    if(idx==SKIP_INDEX) {
+			continue;
+		    }
+		    if(idx<0)
+			throw new RuntimeException("Unknown function in -if:" + ifArgs);
+		    j=idx;
+		}
+		ctx.addProcessor(new Processor.If(this,predicate,ifCtx));
 		return i;
 	    });
 
@@ -3293,10 +3341,14 @@ public class CsvUtil {
 		return i;
 	    });
 
-	defineFunction("-copyif", 3,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.CopyIf(args.get(++i),args.get(++i),args.get(++i)));
+	defineFunction("-copyif", 4,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.CopyIf(getCols(args.get(++i)),args.get(++i),args.get(++i),args.get(++i)));
 		return i;
 	    });
+	defineFunction("-copycolumns", 2,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.CopyColumns(getCols(args.get(++i)), getCols(args.get(++i))));
+		return i;
+	    });	
 
 	defineFunction("-filldown", 1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.FillDown(getCols(args.get(++i))));
@@ -3374,10 +3426,7 @@ public class CsvUtil {
 		return i;
 	    });
 
-	defineFunction("-pattern", 2,(ctx,args,i) -> {
-		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.PatternFilter(args.get(++i), args.get(++i)));
-		return i;
-	    });
+
 	defineFunction("-same", 2,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.Same(args.get(++i), args.get(++i),false));
 		return i;
@@ -3389,8 +3438,12 @@ public class CsvUtil {
 	    });		
 
 
+	defineFunction("-pattern", 2,(ctx,args,i) -> {
+		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.PatternFilter(getCols(args.get(++i)), args.get(++i)));
+		return i;
+	    });
 	defineFunction("-notpattern", 2,(ctx,args,i) -> {
-		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.PatternFilter(args.get(++i),args.get(++i), true));
+		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.PatternFilter(getCols(args.get(++i)),args.get(++i), true));
 		return i;
 	    });
 
@@ -3799,24 +3852,6 @@ public class CsvUtil {
 		    throw new IllegalArgumentException("Unknown arg:" + arg);
 		}
 
-
-		int idx = arg.indexOf("!=");
-		if (idx >= 0) {
-		    handlePattern(ctx, ctx.getFilterToAddTo(),
-				  new Filter.PatternFilter(arg.substring(0,
-									 idx).trim(), arg.substring(idx
-												    + 2).trim(), true));
-		    continue;
-		}
-
-		idx = arg.indexOf("=~");
-		if (idx >= 0) {
-		    handlePattern(ctx, ctx.getFilterToAddTo(),
-				  new Filter.PatternFilter(arg.substring(0,
-									 idx).trim(), arg.substring(idx
-												    + 2).trim()));
-		    continue;
-		}
 
 		if (arg.length() == 0) {
 		    throw new IllegalArgumentException("Unknown argument:"

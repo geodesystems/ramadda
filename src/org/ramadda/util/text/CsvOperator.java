@@ -141,6 +141,11 @@ public class CsvOperator {
     }
 
 
+    public void setIndices(List<Integer> i) {
+	indices=i;
+    }
+
+
     public boolean hasColumns() {
 	return sindices!=null && sindices.size()>0;
     }
@@ -485,7 +490,7 @@ public class CsvOperator {
 
         try {
             if (toks.size() == 1) {
-		if(Utils.testAndSet(seen,s)) return;
+		//not now		if(Utils.testAndSet(seen,s)) return;
                 start = end = Integer.parseInt(s);
             } else {
                 start = Integer.parseInt(toks.get(0));
@@ -570,7 +575,7 @@ public class CsvOperator {
         }
         if (start >= 0) {
             for (int i = start; i <= end; i++) {
-		if(Utils.testAndSet(seen,i)) continue;
+		//not now		if(Utils.testAndSet(seen,i)) continue;
                 colsSeen.add(i);
                 indices.add(i);
             }

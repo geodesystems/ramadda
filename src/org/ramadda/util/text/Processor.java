@@ -733,7 +733,59 @@ public abstract class Processor extends CsvOperator {
         }
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Tue, Nov 19, '19
+     * @author         Enter your name here...
+     */
+    public static class If extends Processor {
+	CsvUtil csvUtil;
+	TextReader predicate;
+	TextReader ctx;
 
+        /**
+         * _more_
+         */
+        public If(CsvUtil csvUtil, TextReader predicate, TextReader ctx) {
+	    this.csvUtil = csvUtil;
+	    this.predicate = predicate;
+	    this.ctx = ctx;
+	}
+
+	@Override
+        public void finish(TextReader ctx) 
+	    throws Exception {
+	    super.finish(ctx);
+	}
+
+        /**
+         * _more_
+         *
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) throws Exception {
+	    Row tmp =  predicate.processRow(csvUtil,row);
+	    if(tmp==null) return row;
+	    row=tmp;
+	    boolean debug = false;
+	    debug = rowCnt>1;
+	    if(debug)
+		System.err.println("IF:" + row);
+	    row =  this.ctx.processRow(csvUtil,row);
+	    if(debug)
+		System.err.println("After:" + row);
+	    return row;
+        }
+    }
 
     /**
      * Class description
@@ -1381,8 +1433,6 @@ public abstract class Processor extends CsvOperator {
                 boolean       canSearch = dfltCanSearch;
                 boolean       canSort = dfltCanSort;		
 
-
-
                 attrs.append(XmlUtil.attrs(new String[] { "name", colId }));
 		if(suffix!=null)
 		    attrs.append(XmlUtil.attrs(new String[] { "suffix", suffix }));
@@ -1395,6 +1445,11 @@ public abstract class Processor extends CsvOperator {
                 String placeholderMax = getDbProp( colId, "placeholderMax",(String)null);		
 		if(placeholderMax!=null)
 		    attrs.append(XmlUtil.attrs(new String[] { "placeholderMax", placeholderMax }));
+                String addNot = getDbProp( colId, "addnot",(String)null);		
+
+		if(addNot!=null)
+		    attrs.append(XmlUtil.attrs(new String[] { "addnot", addNot}));						
+
                 String placeholder = getDbProp( colId, "placeholder",(String)null);		
 		if(placeholder!=null)
 		    attrs.append(XmlUtil.attrs(new String[] { "placeholder", placeholder }));						

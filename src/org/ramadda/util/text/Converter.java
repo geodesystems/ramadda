@@ -2003,7 +2003,7 @@ public abstract class Converter extends Processor {
                     } else {
                         s = s.replaceAll(pattern, value);
                     }
-                    //              System.err.println("P:"  + pattern +" os:" + os +" s:" + s);
+		    //		    System.err.println("\tP:"  + pattern +" os:" + os +" s:" + s);
                     row.set(index, s);
                 }
             }
@@ -5989,17 +5989,18 @@ public abstract class Converter extends Processor {
 
         /** _more_ */
         String scol1;
-        String scol2;	
+        String scol2;
 	int col1 = -1;
 	int col2 = -1;
 
         /**
          * _more_
          */
-        public CopyIf(String col1, String col2, String pattern) {
-	    scol1 =col1;
-	    scol2 =col2;	    
+        public CopyIf(List<String> cols, String pattern, String col1, String col2 ) {
+	    super(cols);
 	    this.pattern = pattern;
+	    scol1 =col1;
+	    scol2 =col2;
         }
 
         /**
@@ -6014,12 +6015,62 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader ctx, Row row) {
 	    if(rowCnt++==0) {
 		col1 = getIndex(ctx,scol1);
-		col2 = getIndex(ctx,scol2);		
+		col2 = getIndex(ctx,scol2);
 		return row;
 	    }
-	    String v  = row.getString(col2);
-	    if(v.matches(pattern)) {
-		row.set(col2, row.getString(col1));
+	    
+	    //	    System.err.println("Row:");
+	    for(int i:getIndices(ctx)) {
+		String v  = row.getString(i);
+		//		System.err.println("\ti:" + i +" v:" + v +" p:" + pattern);
+		if(!v.matches(pattern)) {
+		    //		    System.err.println("\tno match:" +row);
+		    return row;
+		}
+	    }
+
+	    row.set(col2, row.getString(col1));
+	    return row;
+        }
+    }
+
+    public static class CopyColumns extends Converter {
+
+	List<String> toCols;
+	List<Integer> toIndices;
+
+        /**
+         * _more_
+         */
+        public CopyColumns(List<String> cols, List<String> cols2) {
+	    super(cols);
+	    if(cols.size()!=cols2.size()) {
+		throw new IllegalArgumentException("Mismatched columns in -copycolumns:"+ cols +" " +cols2);
+	    }
+	    this.toCols = cols2;
+        }
+
+        /**
+
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+	    if(rowCnt++==0) {
+		toIndices = getIndices(ctx, toCols);
+		return row;
+	    }
+	    
+	    List<Integer> from = getIndices(ctx);
+	    //	    System.err.println("copy");
+	    for(int i=0;i<from.size();i++) {
+		String v  = row.getString(from.get(i));
+		//		System.err.println("\tsetting:" + toIndices.get(i) +" to:" + v);
+		row.set(toIndices.get(i),v);
 	    }
 	    return row;
         }

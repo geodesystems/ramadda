@@ -118,7 +118,7 @@ public class Filter extends Processor {
         private String scol;
 
         /** _more_ */
-        private boolean negate = false;
+        protected boolean negate = false;
 
         /**
          * _more_
@@ -147,6 +147,11 @@ public class Filter extends Processor {
         public ColumnFilter(List<String> cols) {
             super(cols);
         }
+
+        public ColumnFilter(List<String> cols, boolean negate) {
+            super(cols);
+	    this.negate= negate;
+        }	
 
 
         /**
@@ -313,9 +318,12 @@ public class Filter extends Processor {
          * @param pattern _more_
          * @param negate _more_
          */
-        public PatternFilter(String col, String pattern, boolean negate) {
-            super(col, negate);
+        public PatternFilter(List<String> cols, String pattern, boolean negate) {
+            super(cols, negate);
             setPattern(pattern);
+	    if(cols.size()==1 && cols.get(0).equals("-1")) {
+		setIndex(-1);
+	    }
         }
 
 
@@ -325,15 +333,27 @@ public class Filter extends Processor {
          * @param col _more_
          * @param pattern _more_
          */
-        public PatternFilter(String col, String pattern) {
-            super(col);
+        public PatternFilter(List<String> cols, String pattern) {
+            super(cols);
             setPattern(pattern);
+	    if(cols.size()==1 && cols.get(0).equals("-1")) {
+		setIndex(-1);
+	    }
         }
 
-        public PatternFilter(int col, String pattern) {
-            super(col);
+
+        public PatternFilter(int idx, String pattern) {
+	    super(idx);
             setPattern(pattern);
-        }	
+	    setIndex(idx);
+	}
+
+	private void setIndex(int idx) {
+	    List<Integer> indices = new ArrayList<Integer>();
+	    indices.add(idx);
+	    setIndices(indices);
+	}
+
 
         /**
          * _more_
@@ -371,47 +391,61 @@ public class Filter extends Processor {
             if (cnt++ == 0) {
                 return true;
             }
-            int idx = getIndex(ctx);
-            if (idx >= row.size()) {
-                return doNegate(false);
-            }
-            Pattern pattern = this.pattern;
-            if (isTemplate) {
-                String tmp = spattern;
-                for (int i = 0; i < row.size(); i++) {
-                    tmp = tmp.replace("${" + i + "}", (String) row.get(i));
-                }
-                pattern = Pattern.compile(tmp);
-            }
-
-            if (idx < 0) {
-                for (int i = 0; i < row.size(); i++) {
-                    String v = row.getString(i);
-                    if (blank) {
-                        return doNegate(v.equals(""));
-                    }
-                    if (pattern.matcher(v).find()) {
-                        return doNegate(true);
-                    }
-                }
-
-                return doNegate(false);
-            }
-
-            String v = row.getString(idx);
-            if (blank) {
-                return doNegate(v.equals(""));
-            }
-            if (pattern.matcher(v).find()) {
-                if (debug) {
-		    System.out.println("R3:" + doNegate(true) + " " + row);
-                }
-                return doNegate(true);
-            }
-
-            //            if(debug) System.err.println ("R4:" + doNegate(false) +" " +row);
-            return doNegate(false);
-        }
+	    boolean ok = true;
+	    boolean debug = false;//cnt<3;
+	    if(debug) System.err.println("rowOk");
+	    for(int idx: getIndices(ctx)) {
+		if(debug) System.err.println("\tidx:"+ idx);
+		if(!ok) {
+		    if(debug) System.err.println("\tbreak1:"+ ok);
+		    break;
+		}
+		if (idx >= row.size()) {
+		    ok = doNegate(false);
+		    if(!ok) {
+			if(debug) System.err.println("\tbreak2:"+ ok);
+			break;
+		    }
+		}
+		Pattern pattern = this.pattern;
+		if (isTemplate) {
+		    String tmp = spattern;
+		    for (int i = 0; i < row.size(); i++) {
+			tmp = tmp.replace("${" + i + "}", (String) row.get(i));
+		    }
+		    pattern = Pattern.compile(tmp);
+		}
+		if (idx < 0) {
+		    ok = false;
+		    for (int i = 0; i < row.size(); i++) {
+			String v = row.getString(i);
+			if (blank) {
+			    ok= doNegate(v.equals(""));
+			} else 	if (pattern.matcher(v).find()) {
+			    ok= doNegate(true);
+			} 
+			if(ok) break;
+		    }
+		    return ok;
+		}
+		String v = row.getString(idx);
+		if (blank) {
+		    ok= doNegate(v.equals(""));
+		    if(debug) System.err.println("\tcontinue2:"+ ok);
+		    continue;
+		}
+		if (pattern.matcher(v).find()) {
+		    if (debug) {
+			System.out.println("\tR3:" + doNegate(true) + " " + row);
+		    }
+		    ok= doNegate(true);
+		} else {
+		    ok= doNegate(false);
+		}
+	    }
+	    if(debug) System.err.println("\tfinal:"+ ok);
+	    return ok;
+	}
 
     }
 

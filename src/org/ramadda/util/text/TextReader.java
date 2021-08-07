@@ -155,9 +155,6 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private List<String> changeStrings;
 
-    /** _more_ */
-    private Converter.ColumnSelector selector;
-
 
     private Processor firstProcessor;
     private Processor lastProcessor;    
@@ -298,7 +295,6 @@ public class TextReader implements Cloneable {
 	}
 	return row;
     }
-
 
     public void finishProcessing() throws Exception {
 	if(firstProcessor!=null) {
@@ -1105,24 +1101,6 @@ public class TextReader implements Cloneable {
     }
 
 
-
-    /**
-     *  Set the Selector property.
-     *
-     *  @param value The new value for Selector
-     */
-    public void setSelector(Converter.ColumnSelector value) {
-        selector = value;
-    }
-
-    /**
-     *  Get the Selector property.
-     *
-     *  @return The Selector
-     */
-    public Converter.ColumnSelector getSelector() {
-        return selector;
-    }
 
 
 
