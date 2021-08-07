@@ -316,6 +316,8 @@ public class Column implements DataTypes, Constants, Cloneable {
     /** _more_ */
     private boolean showEmpty = true;
 
+    private boolean addNot = false;    
+
 
     private int numberOfSearchWidgets = 1;
 
@@ -554,6 +556,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         changeType = getAttributeOrTag(element, ATTR_CHANGETYPE, false);
 
         showEmpty  = getAttributeOrTag(element, "showempty", true);
+        addNot     = getAttributeOrTag(element, "addnot", addNot);
         dflt       = getAttributeOrTag(element, ATTR_DEFAULT, "").trim();
         databaseDflt = getAttributeOrTag(element, "databaseDefault",
                                          (String) null);
@@ -2055,8 +2058,12 @@ public class Column implements DataTypes, Constants, Cloneable {
             throws Exception {
 
         String          searchArg  = getSearchArg();
-        String          columnName = getFullName();
+	boolean doNegate = false;
+	if(addNot && request.defined(searchArg+"_not"))
+	    doNegate = request.get(searchArg+"_not",false);
 
+
+        String          columnName = getFullName();
         DatabaseManager dbm        = getDatabaseManager();
         //      System.err.println("s:" + searchArg);
         if (isType(DATATYPE_LATLON)) {
@@ -2210,9 +2217,9 @@ public class Column implements DataTypes, Constants, Cloneable {
                     }
                     if (value.startsWith("!")) {
                         subClauses.add(Clause.neq(columnName,
-                                value.substring(1)));
+						  value.substring(1),doNegate));
                     } else {
-                        subClauses.add(Clause.eq(columnName, value));
+                        subClauses.add(Clause.eq(columnName, value,doNegate));
                     }
                 }
                 if (subClauses.size() > 0) {
@@ -2222,7 +2229,8 @@ public class Column implements DataTypes, Constants, Cloneable {
         } else {
             String value = getSearchValue(request, null);
             if (Utils.stringDefined(value)) {
-                addTextSearch(value, where);
+		if(value.equals("_blank_")) value="";
+                addTextSearch(value, where,doNegate);
             }
             //            typeHandler.addOrClause(columnName,
             //                                    value, where);
@@ -2236,41 +2244,48 @@ public class Column implements DataTypes, Constants, Cloneable {
      * @param text _more_
      * @param where _more_
      */
-    public void addTextSearch(String text, List<Clause> where) {
+    public void addTextSearch(String text, List<Clause> where, boolean doNegate) {
         text = text.trim();
         if (text.startsWith("\"") && text.endsWith("\"")) {
             text = Utils.unquote(text);
-            where.add(Clause.eq(getFullName(), text));
-
+            where.add(Clause.eq(getFullName(), text,doNegate));
             return;
         }
         List<String> values  = Utils.split(text, ",", true, true);
+	if(values.size()==0) values.add("");
         List<Clause> clauses = new ArrayList<Clause>();
         for (String value : values) {
-            if (value.equals("<blank>")) {
-                clauses.add(Clause.eq(getFullName(), ""));
+            if (value.equals("<blank>") || value.equals("_blank_")) {
+                clauses.add(Clause.eq(getFullName(), "",doNegate));
             } else if (value.startsWith("!")) {
                 value = value.substring(1);
                 if (value.length() == 0) {
-                    clauses.add(Clause.neq(getFullName(), ""));
+                    clauses.add(Clause.neq(getFullName(), "",doNegate));
                 } else {
                     clauses.add(Clause.notLike(getFullName(),
                             "%" + value + "%"));
                 }
             } else if (value.startsWith("=")) {
                 value = value.substring(1);
-                clauses.add(Clause.eq(getFullName(), value));
+                clauses.add(Clause.eq(getFullName(), value,doNegate));
             } else if ( !value.startsWith("%") && value.endsWith("%")) {
                 clauses.add(
                     getDatabaseManager().makeLikeTextClause(
-                        getFullName(), value, false));
+                        getFullName(), value, doNegate));
             } else {
-                clauses.add(
-                    getDatabaseManager().makeLikeTextClause(
-                        getFullName(), "%" + value + "%", false));
+		if(value.length()==0) {
+		    clauses.add(Clause.eq(getFullName(),value,doNegate));
+		} else {
+		    clauses.add(
+				getDatabaseManager().makeLikeTextClause(
+									getFullName(), "%" + value + "%", doNegate));
+		}
             }
         }
-        where.add(Clause.or(clauses));
+	//	System.err.println(this+" CLAUSES:" + clauses);
+	if(clauses.size()>0) {
+	    where.add(Clause.or(clauses));
+	}	    
     }
 
     /**
@@ -3106,8 +3121,6 @@ public class Column implements DataTypes, Constants, Cloneable {
             return;
         }
 
-
-
         String       searchArg  = getSearchArg();
         String       columnName = getFullName();
 
@@ -3312,6 +3325,10 @@ public class Column implements DataTypes, Constants, Cloneable {
 		}
             }
         }
+	if(addNot) {
+	    widget+=" " +HU.labeledCheckbox(searchArg+"_not","true",
+				       request.get(searchArg+"_not", false), "Not");
+	}
 	if(lookupDB!=null) {
 	    //This uses the plugins/db plugin
 	    List<String> toks = StringUtil.splitUpTo(lookupDB,":",2);

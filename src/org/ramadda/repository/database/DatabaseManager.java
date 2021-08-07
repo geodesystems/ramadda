@@ -3461,8 +3461,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     public Clause makeLikeTextClause(String column, String value,
                                      boolean not) {
         Clause clause = Clause.like(column, value.toUpperCase(), not);
+	//	System.err.println("CLAUSE:" + clause);
         clause.setColumnModifier("UPPER(", ")");
-
         return clause;
     }
 
