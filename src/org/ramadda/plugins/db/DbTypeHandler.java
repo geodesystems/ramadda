@@ -2033,9 +2033,21 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return sb;
     }
 
-    //    private static class MyNamedBuffer extends NamedBuffer {
-	//	boolean 
-    //    }
+    private static class MyNamedBuffer extends NamedBuffer {
+	String anchor;
+
+	MyNamedBuffer(String name) {
+	    super(name);
+	}
+
+	MyNamedBuffer(String name, String b) {
+	    super(name,b);
+	}
+	MyNamedBuffer(String name, String b, String anchor) {
+	    super(name,b);
+	    this.anchor = anchor;
+	}	
+    }
 
 
 
@@ -2073,9 +2085,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         List<Clause>  where    = new ArrayList<Clause>();
         DbInfo        dbInfo   = getDbInfo();
-	List<NamedBuffer> buffers = new ArrayList<NamedBuffer>();
+	List<MyNamedBuffer> buffers = new ArrayList<MyNamedBuffer>();
 	String formHeader = HtmlUtils.formTable(true);
-	NamedBuffer buffer = new NamedBuffer(searchForLabel,formHeader);
+	MyNamedBuffer buffer = new MyNamedBuffer(searchForLabel,formHeader,Utils.makeID(searchForLabel));
 	buffers.add(buffer);
         for (Column column : getColumns(true)) {
             if ( !normalForm && column.isType(column.DATATYPE_LATLON)) {
@@ -2084,7 +2096,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             if (!column.getCanSearch()) continue;
 	    String group = column.getGroup();
 	    if(group!=null) {
-		buffers.add(buffer = new NamedBuffer(group,formHeader));
+		buffers.add(buffer = new MyNamedBuffer(group,formHeader,Utils.makeID(group)));
 	    }
 	    String help  = column.getHelp();
 	    if(help!=null) {
@@ -2121,8 +2133,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         if (normalForm) {
             if (tfos.size() > 0) {
-		buffers.add(buffer = new NamedBuffer("Summary",formHeader));
-		buffer.append(HU.anchorName("summary"));
+		buffers.add(buffer = new MyNamedBuffer("Summary",formHeader,"summary"));
                 buffer.append(
                     formEntry(
                         request, msgLabel("Group By"),
@@ -2169,8 +2180,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
 
-	buffers.add(buffer = new NamedBuffer("Order By/Display",formHeader));
-	buffer.append(HU.anchorName("orderby"));
+	buffers.add(buffer = new MyNamedBuffer("Order By/Display",formHeader,"orderby"));
         if (sorttfos.size() > 0) {
             String orderBy = "";
             if (dbInfo.getDfltSortColumn() != null) {
@@ -2230,8 +2240,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                             HtmlUtils.makeShowHideBlock("",
                                 uniqueSB.toString(), false)));
 
-	buffers.add(buffer = new NamedBuffer("Advanced Options", formHeader));
-	buffer.append(HU.anchorName("advanced"));
+	buffers.add(buffer = new MyNamedBuffer("Advanced Options", formHeader,"advanced"));
 	if(aggtfos.size()>0) {
 	    buffer.append(
 			 formEntry(
@@ -2283,12 +2292,20 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 
 	int cnt = 0;
-	for(NamedBuffer b: buffers) {
+	String formSection = request.getString("formsection",null);
+	for(MyNamedBuffer b: buffers) {
 	    b.append(HtmlUtils.formTableClose());
+	    if(b.anchor!=null)
+		sb.append(HU.anchorName(b.anchor));
 	    String label = HU.div(b.getName(),HU.cssClass("ramadda-form-header"));
 	    String contents = b.getBuffer().toString();
 	    //	    sb.append(label);
-	    HU.div(sb, HtmlUtils.makeShowHideBlock(b.getName(),contents, cnt++==0),HU.cssClass("ramadda-form-block"));
+	    boolean  show = cnt++==0;
+	    if(formSection!=null) {
+		if(b.anchor==null) show =false;
+		else show = b.anchor.equals(formSection);
+	    }
+	    HU.div(sb, HtmlUtils.makeShowHideBlock(b.getName(),contents, show),HU.cssClass("ramadda-form-block"));
 	}
 
 
