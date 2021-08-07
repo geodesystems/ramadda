@@ -169,6 +169,7 @@
 handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
      <property name="icon" value="/icons/image.gif"/>
      <column   name="showcontrols" label="Show Controls" type="boolean" default="true"/>
+     <column   name="addbuttons" label="Add Buttons" type="boolean" default="true"/>
      <column   name="autoplay" label="Auto Play" type="boolean" default="true"/>
      <column   name="maxwidth" label="Max width" type="int" default="-1"/>
      <column   name="loop_delay" label="Loop Delay" type="int" default="-1" help="milliseconds"/>          

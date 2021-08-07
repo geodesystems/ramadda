@@ -42,6 +42,7 @@ public class AnimatedGifTypeHandler extends ImageTypeHandler {
 
     public static int IDX=ImageTypeHandler.IDX_LAST+1;
     public static final int IDX_SHOWCONTROLS = IDX++;
+    public static final int IDX_ADDBUTTONS = IDX++;        
     public static final int IDX_AUTOPLAY = IDX++;
     public static final int IDX_MAXWIDTH = IDX++;
     public static final int IDX_LOOPDELAY = IDX++;        
@@ -76,10 +77,15 @@ public class AnimatedGifTypeHandler extends ImageTypeHandler {
 	    HU.importJS(
 			sb,
 			getRepository().getUrlBase()+"/lib/libgif/rubbable.js");	    
+
+	    HU.importJS(
+			sb,
+			getRepository().getUrlBase()+"/media/animatedgif.js");	    
 	    String imgUrl = entry.getTypeHandler().getEntryResourceUrl(request,  entry);
 	    String id = HU.getUniqueId("image");
 	    boolean showControls = "true".equals(Utils.getString(props.get("showControls"),entry.getValue(IDX_SHOWCONTROLS,"true")));
 	    boolean autoplay = "true".equals(Utils.getString(props.get("autoplay"),entry.getValue(IDX_AUTOPLAY,"true")));
+	    boolean addButtons = "true".equals(Utils.getString(props.get("addButtons"),entry.getValue(IDX_ADDBUTTONS,"true")));	    
 	    if(showControls) {
 		sb.append("<a href='javascript:;' onmousedown='" + id +".pause(); return false;'>" +
 			  HtmlUtils.faIconClass("fa-stop", "ramadda-clickable","title", "Pause") +
@@ -98,6 +104,7 @@ public class AnimatedGifTypeHandler extends ImageTypeHandler {
 			  "</a>&nbsp;&nbsp;");
 		sb.append("<br>");
 	    }
+	    HU.div(sb,"",HU.attrs("id",id+"_div"));
 	    String attrs = HU.attrs("id",id,"src",imgUrl,"rel:animated_src",imgUrl,"rel:auto_play",autoplay?"1":"0");
 	    int maxWidth = Integer.parseInt(Utils.getString(props.get("maxwidth"),entry.getValue(IDX_MAXWIDTH),"-1"));
 	    int loopDelay = Integer.parseInt(Utils.getString(props.get("loopdelay"),entry.getValue(IDX_LOOPDELAY),"-1"));	    
@@ -113,7 +120,8 @@ public class AnimatedGifTypeHandler extends ImageTypeHandler {
 		objAttrs.add(""+loopDelay);
 	    }
 	    sb.append(HU.tag("img",attrs));
-	    HU.script(sb,"var " + id +" = new " +(true?"RubbableGif":"SuperGif") +"( " + Json.map(objAttrs)+" );\n" + id +".load();\n");
+	    HU.script(sb,"var " + id +" = new " +(false?"RubbableGif":"SuperGif") +"( " + Json.map(objAttrs)+" );\n");
+	    HU.script(sb,"AnimatedGif.init(" + id +",'" + id+"_div"+"'," + addButtons+");");
 	    return sb.toString();
         }
 
