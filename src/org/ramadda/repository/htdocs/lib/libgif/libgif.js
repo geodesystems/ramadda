@@ -16,7 +16,7 @@
 
 	Image tag attributes:
 
-		rel:animated_src -	If this url is specified, it's loaded into the player instead of src.
+		rel:animated_src -	If this url is specified, it's loaded into the player. instead of src.
 							This allows a preview frame to be shown until animated gif data is streamed into the canvas
 
 		rel:auto_play -		Defaults to 1 if not specified. If set to zero, a call to the play() method is needed
@@ -689,6 +689,9 @@
         };
 
         var player = (function () {
+	    //jeffmc: Add a frame change listener
+	    var listener;
+
             var i = -1;
             var iterationCount = 0;
 
@@ -765,6 +768,10 @@
                 tmpCanvas.getContext("2d").putImageData(frames[i].data, offset.x, offset.y);
                 ctx.globalCompositeOperation = "copy";
                 ctx.drawImage(tmpCanvas, 0, 0);
+		//jeffmc: Add a frame change listener
+		if(listener) {
+		    listener(i);
+		}
             };
 
             var play = function () {
@@ -798,6 +805,8 @@
                 pause: pause,
                 playing: playing,
                 move_relative: stepFrame,
+		//jeffmc: add listener
+		add_listener: function(l) {listener=l;},
                 current_frame: function() { return i; },
                 length: function() { return frames.length },
                 move_to: function ( frame_idx ) {
@@ -916,6 +925,11 @@
             move_relative: player.move_relative,
             move_to: player.move_to,
 
+	    //jeffmc:add a get_player
+	    add_frame_listener:function(listener) {
+		player.add_listener(listener);
+	    },
+
             // getters for instance vars
             get_playing      : function() { return playing },
             get_canvas       : function() { return canvas },
@@ -926,7 +940,6 @@
             get_current_frame: function() { return player.current_frame() },
             load_url: function(src,callback){
                 if (!load_setup(callback)) return;
-
                 var h = new XMLHttpRequest();
                 // new browsers (XMLHttpRequest2-compliant)
                 h.open('GET', src, true);
