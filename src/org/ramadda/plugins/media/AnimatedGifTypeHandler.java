@@ -1,0 +1,124 @@
+/*
+* Copyright (c) 2008-2019 Geode Systems LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+* 
+*     http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+
+package org.ramadda.plugins.media;
+
+
+import org.ramadda.repository.*;
+import org.ramadda.repository.type.*;
+import org.ramadda.repository.metadata.*;
+import org.ramadda.util.Utils;
+import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Json;
+import org.ramadda.util.Utils;
+import org.ramadda.util.WikiUtil;
+
+import org.w3c.dom.*;
+import ucar.unidata.util.IOUtil;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Hashtable;
+
+/**
+ *
+ *
+ */
+public class AnimatedGifTypeHandler extends ImageTypeHandler {
+
+
+    public static int IDX=ImageTypeHandler.IDX_LAST+1;
+    public static final int IDX_RUBBABLE = IDX++;
+    public static final int IDX_AUTOPLAY = IDX++;
+    public static final int IDX_MAXWIDTH = IDX++;
+    public static final int IDX_LOOPDELAY = IDX++;        
+    
+
+    /**
+     * _more_
+     *
+     * @param repository _more_
+     * @param entryNode _more_
+     *
+     * @throws Exception _more_
+     */
+    public AnimatedGifTypeHandler(Repository repository, Element entryNode)
+            throws Exception {
+        super(repository, entryNode);
+    }
+
+
+    @Override
+    public String getWikiInclude(WikiUtil wikiUtil, Request request,
+                                 Entry originalEntry, Entry entry,
+                                 String tag, Hashtable props)
+            throws Exception {
+        if (tag.equals("animatedgif")) {
+	    StringBuilder sb = new StringBuilder();
+	    sb.append("\n\n");
+	    request.putExtraProperty("libgif","true");
+	    HU.importJS(
+			sb,
+			getRepository().getUrlBase()+"/lib/libgif/libgif.js");
+	    HU.importJS(
+			sb,
+			getRepository().getUrlBase()+"/lib/libgif/rubbable.js");	    
+	    String imgUrl = entry.getTypeHandler().getEntryResourceUrl(request,  entry);
+	    String id = HU.getUniqueId("image");
+	    boolean rubbable = "true".equals(Utils.getString(props.get("runnable"),entry.getValue(IDX_RUBBABLE,"false")));
+	    boolean autoplay = "true".equals(Utils.getString(props.get("autoplay"),entry.getValue(IDX_AUTOPLAY,"true")));
+	    if(!rubbable) {
+		sb.append("<a href='javascript:;' onmousedown='" + id +".pause(); return false;'>" +
+			  HtmlUtils.faIconClass("fa-stop", "ramadda-clickable","title", "Pause") +
+			  "</a>&nbsp;&nbsp;");
+		sb.append("<a href='javascript:;' onmousedown='" + id +".play(); return false;'>" +
+			  HtmlUtils.faIconClass("fa-play", "ramadda-clickable","title", "Play") +
+			  "</a>&nbsp;&nbsp;");
+		sb.append("<a href='javascript:;' onmousedown='" + id +".move_to(0); return false;'>" +
+			  HtmlUtils.faIconClass("fa-redo", "ramadda-clickable","title", "Restart") +
+			  "</a>&nbsp;&nbsp;");				
+		sb.append("<a href='javascript:;' onmousedown='" + id +".move_relative(-1); return false;'>" +
+			  HtmlUtils.faIconClass("fa-step-backward", "ramadda-clickable","title", "Step back") +
+			  "</a>&nbsp;&nbsp;");		
+		sb.append("<a href='javascript:;' onmousedown='" + id +".move_relative(1); return false;'>" +
+			  HtmlUtils.faIconClass("fa-step-forward", "ramadda-clickable","title", "Step forward") +
+			  "</a>&nbsp;&nbsp;");
+		sb.append("<br>");
+	    }
+	    String attrs = HU.attrs("id",id,"src",imgUrl,"rel:animated_src",imgUrl,"rel:auto_play",autoplay?"1":"0");
+	    int maxWidth = Integer.parseInt(Utils.getString(props.get("maxwidth"),entry.getValue(IDX_MAXWIDTH),"-1"));
+	    int loopDelay = Integer.parseInt(Utils.getString(props.get("loopdelay"),entry.getValue(IDX_LOOPDELAY),"-1"));	    
+	    List<String> objAttrs = new ArrayList<String>();
+	    objAttrs.add("gif");
+	    objAttrs.add("document.getElementById('" + id +"')");
+	    if(maxWidth>0) {
+		objAttrs.add("max_width");
+		objAttrs.add("" + maxWidth);
+	    }
+	    if(loopDelay>0) {
+		objAttrs.add("loop_delay");
+		objAttrs.add(""+loopDelay);
+	    }
+	    sb.append(HU.tag("img",attrs));
+	    HU.script(sb,"var " + id +" = new " +(rubbable?"RubbableGif":"SuperGif") +"( " + Json.map(objAttrs)+" );\n" + id +".load();\n");
+	    return sb.toString();
+        }
+
+	return super.getWikiInclude(wikiUtil, request, originalEntry,
+				    entry, tag, props);
+
+    }
+}

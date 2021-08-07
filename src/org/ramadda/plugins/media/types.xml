@@ -165,6 +165,29 @@
 </type>
 
 
+<type name="type_animatedgif"  super="type_image" description="Animated GIF" foruser="true" category="Media"
+handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
+     <property name="icon" value="/icons/image.gif"/>
+     <column   name="rubbable" label="Rubbable" type="boolean" default="false"/>
+     <column   name="autoplay" label="Auto Play" type="boolean" default="true"/>
+     <column   name="maxwidth" label="Max width" type="int" default="-1"/>
+     <column   name="loop_delay" label="Loop Delay" type="int" default="-1" help="milliseconds"/>          
+
+     <wiki><![CDATA[
+{{noheading}}
++section title={{name}}
+{{description wikify=true}}
++inset top=10 left=10 bottom=10 right=10
++center
+{{animatedgif}}
++center
+-inset
+-section
+]]>
+</wiki>
+</type>
+
+
 <type name="type_360image"  super="type_image" description="360 Image" metadata="3d_label,content.alias" foruser="true" category="Media"
       help="Displays a 360 degree image"      >
      <property name="icon" value="/icons/image.gif"/>
