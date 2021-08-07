@@ -2121,7 +2121,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         if (normalForm) {
             if (tfos.size() > 0) {
-		buffers.add(buffer = new NamedBuffer("Group By",formHeader));
+		buffers.add(buffer = new NamedBuffer("Summary",formHeader));
+		buffer.append(HU.anchorName("summary"));
                 buffer.append(
                     formEntry(
                         request, msgLabel("Group By"),
@@ -2169,6 +2170,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
 	buffers.add(buffer = new NamedBuffer("Order By/Display",formHeader));
+	buffer.append(HU.anchorName("orderby"));
         if (sorttfos.size() > 0) {
             String orderBy = "";
             if (dbInfo.getDfltSortColumn() != null) {
@@ -2229,6 +2231,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                 uniqueSB.toString(), false)));
 
 	buffers.add(buffer = new NamedBuffer("Advanced Options", formHeader));
+	buffer.append(HU.anchorName("advanced"));
 	if(aggtfos.size()>0) {
 	    buffer.append(
 			 formEntry(
