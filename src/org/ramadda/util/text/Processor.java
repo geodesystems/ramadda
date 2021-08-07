@@ -1164,6 +1164,8 @@ public abstract class Processor extends CsvOperator {
         /** _more_ */
         private Hashtable<String, String> props;
 
+	private List<String[]> patternProps = new ArrayList<String[]>();
+
         /** _more_ */
         private Row row1;
 
@@ -1178,7 +1180,24 @@ public abstract class Processor extends CsvOperator {
          */
         public DbXml(Hashtable<String, String> props) {
             this.props = props;
+	    for (Enumeration k = props.keys(); k.hasMoreElements(); ) {
+		String key = (String) k.nextElement();
+		if(containsRegExp(key)) 
+		    patternProps.add(new String[]{key, props.get(key)});
+	    }
         }
+
+	private  static boolean containsRegExp(String patternString) {
+	    return ((patternString.indexOf('^') >= 0)
+		    || (patternString.indexOf('*') >= 0)
+		    || (patternString.indexOf('|') >= 0)
+		    || (patternString.indexOf('(') >= 0)
+		    || (patternString.indexOf('$') >= 0)
+		    || (patternString.indexOf('?') >= 0)
+		    || ((patternString.indexOf('[') >= 0)
+			&& (patternString.indexOf(']')
+			    >= 0)) || (patternString.indexOf('+') >= 0));
+	}
 
 
         /**
@@ -1189,6 +1208,18 @@ public abstract class Processor extends CsvOperator {
         public String getTableId() {
             return tableId;
         }
+
+	public  String getDbProp(String colId, String prop, String dflt) {
+	    String v =  CsvUtil.getDbProp(props, colId,prop,(String) null);
+	    if(v!=null) return v;
+	    String key   = (colId == null)
+		? prop
+		: colId + "." + prop;
+	    for(String[]tuple:patternProps) {
+		if(key.matches(tuple[0])) return tuple[1];
+	    }
+	    return dflt;
+	}
 
 
         /**
@@ -1218,19 +1249,19 @@ public abstract class Processor extends CsvOperator {
             String      file   = reader.getInputFile();
             PrintWriter writer = null;
             String      name = IOUtil.stripExtension(Utils.getFileTail(file));
-            name = CsvUtil.getDbProp(props, "table", "name", name);
+            name = getDbProp( "table", "name", name);
 
             String label = Utils.makeLabel(name);
-            label   = CsvUtil.getDbProp(props, "table", "label", label);
+            label   = getDbProp( "table", "label", label);
             label   = label.replaceAll("\n", " ").replaceAll("\r", " ");
             tableId = Utils.makeLabel(name).toLowerCase().replaceAll(" ",
 								     "_");
-            String defaultView   = CsvUtil.getDbProp(props, "table", "defaultView", (String)null);
+            String defaultView   = getDbProp( "table", "defaultView", (String)null);
 
 	    String defaultOrder= (String)props.get("defaultOrder");
-            tableId = CsvUtil.getDbProp(props, "table", "id", tableId);
+            tableId = getDbProp( "table", "id", tableId);
 
-            String labels = CsvUtil.getDbProp(props, "table", "labelColumns",
+            String labels = getDbProp( "table", "labelColumns",
 					      "");
 
             File output = reader.getOutputFile();
@@ -1248,8 +1279,8 @@ public abstract class Processor extends CsvOperator {
 
 
 	    String tableAttrs = XmlUtil.attrs("id", tableId, "name", label, "labelColumns", labels,
-					      "icon",CsvUtil.getDbProp(props, "table", "icon", "/db/database.png"));
-	    String addressTemplate = CsvUtil.getDbProp(props, "table", "addressTemplate", (String)null);
+					      "icon",getDbProp( "table", "icon", "/db/database.png"));
+	    String addressTemplate = getDbProp( "table", "addressTemplate", (String)null);
 	    if(addressTemplate!=null)
 		tableAttrs+=XmlUtil.attr("addressTemplate", addressTemplate);
 	    if(defaultView!=null)
@@ -1296,18 +1327,18 @@ public abstract class Processor extends CsvOperator {
                 }
             }
 
-            boolean dfltDoStats = CsvUtil.getDbProp(props, "table",
+            boolean dfltDoStats = getDbProp( "table",
 						    "dostats", "false").equals("true");
-            boolean dfltCanSearch = CsvUtil.getDbProp(props, "table",
+            boolean dfltCanSearch = getDbProp( "table",
 						      "cansearch", "true").equals("true");
-            boolean dfltCanSort = CsvUtil.getDbProp(props, "table",
+            boolean dfltCanSort = getDbProp( "table",
 						      "cansort", "false").equals("true");	    
-            boolean dfltCanList = CsvUtil.getDbProp(props, "table",
+            boolean dfltCanList = getDbProp( "table",
 						    "canlist", "true").equals("true");
-            String dfltChangeType = CsvUtil.getDbProp(props, "table",
+            String dfltChangeType = getDbProp( "table",
 						      "changetype", "false");
 
-            String format = CsvUtil.getDbProp(props, "table", "format",
+            String format = getDbProp( "table", "format",
 					      "yyyy-MM-dd HH:mm");
             for (int colIdx = 0; colIdx < row1.getValues().size(); colIdx++) {
                 Object col   = row1.getValues().get(colIdx);
@@ -1316,18 +1347,18 @@ public abstract class Processor extends CsvOperator {
 						       "_").replaceAll("[^a-z0-9]", "_");
                 colId = colId.replaceAll("_+_", "_");
                 colId = colId.replaceAll("_$", "");
-                colId = CsvUtil.getDbProp(props, colId, "id", colId);
+                colId = getDbProp( colId, "id", colId);
                 label = Utils.makeLabel(colId);
 
 
-                String suffix = CsvUtil.getDbProp(props, colId, "suffix",(String)null);
-                String help = CsvUtil.getDbProp(props, colId, "help",(String)null);		
+                String suffix = getDbProp( colId, "suffix",(String)null);
+                String help = getDbProp( colId, "help",(String)null);		
 		
 
-                label = CsvUtil.getDbProp(props, colId, "label", label);
+                label = getDbProp( colId, "label", label);
                 label = label.replaceAll("\n", " ").replaceAll("\r", " ");
 
-                if (CsvUtil.getDbProp(props, colId, "skip",
+                if (getDbProp( colId, "skip",
                                       "false").equals("true")) {
                     continue;
                 }
@@ -1335,7 +1366,7 @@ public abstract class Processor extends CsvOperator {
 
 
                 boolean isNumber = isNumeric[colIdx];
-                String type = CsvUtil.getDbProp(props, "table", "type",
+                String type = getDbProp( "table", "type",
 						"string");
                 if (isNumber) {
                     type = "double";
@@ -1354,29 +1385,27 @@ public abstract class Processor extends CsvOperator {
 		if(help!=null)
 		    attrs.append(XmlUtil.attrs(new String[] { "help", help }));		
 
-                String placeholderMin = CsvUtil.getDbProp(props, colId, "placeholderMin",(String)null);		
+                String placeholderMin = getDbProp( colId, "placeholderMin",(String)null);		
 		if(placeholderMin!=null)
 		    attrs.append(XmlUtil.attrs(new String[] { "placeholderMin", placeholderMin }));
-                String placeholderMax = CsvUtil.getDbProp(props, colId, "placeholderMax",(String)null);		
+                String placeholderMax = getDbProp( colId, "placeholderMax",(String)null);		
 		if(placeholderMax!=null)
 		    attrs.append(XmlUtil.attrs(new String[] { "placeholderMax", placeholderMax }));
-                String placeholder = CsvUtil.getDbProp(props, colId, "placeholder",(String)null);		
+                String placeholder = getDbProp( colId, "placeholder",(String)null);		
 		if(placeholder!=null)
 		    attrs.append(XmlUtil.attrs(new String[] { "placeholder", placeholder }));						
-
-
-                String numberOfSearchWidgets = CsvUtil.getDbProp(props, colId, "numberOfSearchWidgets", (String)null);
+                String numberOfSearchWidgets = getDbProp( colId, "numberOfSearchWidgets", (String)null);
 		if(numberOfSearchWidgets!=null) {
                     attrs.append(XmlUtil.attrs(new String[] { "numberOfSearchWidgets",
 							      numberOfSearchWidgets }));
 
 		}
-                if (CsvUtil.getDbProp(props, colId, "changetype",
+                if (getDbProp( colId, "changetype",
                                       dfltChangeType).equals("true")) {
                     attrs.append(XmlUtil.attrs(new String[] { "changetype",
 							      "true" }));
                 }
-                String size = CsvUtil.getDbProp(props, colId, "size", null);
+                String size = getDbProp( colId, "size", null);
                 if (size != null) {
                     attrs.append(XmlUtil.attrs(new String[] { "size",
 							      size }));
@@ -1391,17 +1420,17 @@ public abstract class Processor extends CsvOperator {
                     }
                 }
 
-                type = CsvUtil.getDbProp(props, colId, "type", type);
-                String values = CsvUtil.getDbProp(props, colId, "values",
+                type = getDbProp( colId, "type", type);
+                String values = getDbProp( colId, "values",
 						  null);
-                String searchRows = CsvUtil.getDbProp(props, colId,
+                String searchRows = getDbProp( colId,
 						      "searchrows", "");
-                String defaultsort = CsvUtil.getDbProp(props, colId,
+                String defaultsort = getDbProp( colId,
 						       "defaultsort", (String) null);
                 if ((defaultsort != null) && defaultsort.equals("true")) {
                     attrs.append(XmlUtil.attrs(new String[] { "defaultsort",
 							      "true" }));
-                    String asc = CsvUtil.getDbProp(props, colId, "ascending",
+                    String asc = getDbProp( colId, "ascending",
 						   (String) null);
                     if (asc != null) {
                         attrs.append(XmlUtil.attrs(new String[] { "ascending",
@@ -1411,17 +1440,17 @@ public abstract class Processor extends CsvOperator {
 
 
 
-                canSearch = "true".equals(CsvUtil.getDbProp(props, colId,
+                canSearch = "true".equals(getDbProp( colId,
 							    "cansearch", canSearch + ""));
-                canSort = "true".equals(CsvUtil.getDbProp(props, colId,
+                canSort = "true".equals(getDbProp( colId,
 							    "cansort", canSort + ""));		
-                canList = "true".equals(CsvUtil.getDbProp(props, colId,
+                canList = "true".equals(getDbProp( colId,
 							  "canlist", canList + ""));
                 attrs.append(XmlUtil.attrs(new String[] {
 			    "type", type, "label", label, "cansearch", "" + canSearch,
 			    "canlist", "" + canList
 			}));
-                String group = CsvUtil.getDbProp(props, colId, "group", (String) null);
+                String group = getDbProp( colId, "group", (String) null);
 		if(group!=null)
                     attrs.append(XmlUtil.attrs(new String[] { "group",
 							      group}));
@@ -1434,7 +1463,7 @@ public abstract class Processor extends CsvOperator {
                     attrs.append(XmlUtil.attrs(new String[] { "values",
 							      values }));
                 }
-                String lookupDB = CsvUtil.getDbProp(props, colId,
+                String lookupDB = getDbProp( colId,
 						    "lookupdb", (String)null);
 
 		if(lookupDB!=null) {
@@ -1447,12 +1476,12 @@ public abstract class Processor extends CsvOperator {
                 }
                 if (type.equals("date")) {
                     attrs.append(XmlUtil.attrs(new String[] { "format",
-							      CsvUtil.getDbProp(props, colId, "format",
+							      getDbProp( colId, "format",
 										format) }));
                 }
 
                 StringBuffer inner = new StringBuffer();
-                boolean doStats = "true".equals(CsvUtil.getDbProp(props,
+                boolean doStats = "true".equals(getDbProp(
 								  colId, "dostats", dfltDoStats + ""));
 
                 if (doStats) {
