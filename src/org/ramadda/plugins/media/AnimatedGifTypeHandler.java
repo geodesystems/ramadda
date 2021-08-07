@@ -41,7 +41,7 @@ public class AnimatedGifTypeHandler extends ImageTypeHandler {
 
 
     public static int IDX=ImageTypeHandler.IDX_LAST+1;
-    public static final int IDX_RUBBABLE = IDX++;
+    public static final int IDX_SHOWCONTROLS = IDX++;
     public static final int IDX_AUTOPLAY = IDX++;
     public static final int IDX_MAXWIDTH = IDX++;
     public static final int IDX_LOOPDELAY = IDX++;        
@@ -78,9 +78,9 @@ public class AnimatedGifTypeHandler extends ImageTypeHandler {
 			getRepository().getUrlBase()+"/lib/libgif/rubbable.js");	    
 	    String imgUrl = entry.getTypeHandler().getEntryResourceUrl(request,  entry);
 	    String id = HU.getUniqueId("image");
-	    boolean rubbable = "true".equals(Utils.getString(props.get("runnable"),entry.getValue(IDX_RUBBABLE,"false")));
+	    boolean showControls = "true".equals(Utils.getString(props.get("showControls"),entry.getValue(IDX_SHOWCONTROLS,"true")));
 	    boolean autoplay = "true".equals(Utils.getString(props.get("autoplay"),entry.getValue(IDX_AUTOPLAY,"true")));
-	    if(!rubbable) {
+	    if(showControls) {
 		sb.append("<a href='javascript:;' onmousedown='" + id +".pause(); return false;'>" +
 			  HtmlUtils.faIconClass("fa-stop", "ramadda-clickable","title", "Pause") +
 			  "</a>&nbsp;&nbsp;");
@@ -113,7 +113,7 @@ public class AnimatedGifTypeHandler extends ImageTypeHandler {
 		objAttrs.add(""+loopDelay);
 	    }
 	    sb.append(HU.tag("img",attrs));
-	    HU.script(sb,"var " + id +" = new " +(rubbable?"RubbableGif":"SuperGif") +"( " + Json.map(objAttrs)+" );\n" + id +".load();\n");
+	    HU.script(sb,"var " + id +" = new " +(true?"RubbableGif":"SuperGif") +"( " + Json.map(objAttrs)+" );\n" + id +".load();\n");
 	    return sb.toString();
         }
 
