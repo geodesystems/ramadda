@@ -999,6 +999,11 @@ public class HtmlUtils implements HtmlUtilsConstants {
 	return span(tag("i"," class='" + clazz + "' " + attrs(args),""),"");
     }
 
+    public static String faIconClass(String icon, String extraClass, String... args) {
+	String clazz = icon.trim().indexOf(" ") >= 0?icon:"fas " + icon;
+	return span(tag("i"," class='" + clazz + " " + extraClass+"' " + attrs(args),""),"");
+    }
+    
 
 
     /**

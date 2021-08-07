@@ -4301,6 +4301,21 @@ public class Utils extends IO {
     }
 
     /**
+       return first non-null object
+     */
+    public static Object get(Object...args) {
+	for(Object obj:args)
+	    if(obj!=null) return obj;
+	return null;
+    }
+
+    public static String getString(Object...args) {
+	for(Object obj:args)
+	    if(obj!=null) return obj.toString();
+	return null;
+    }
+
+    /**
      * _more_
      *
      * @param parent _more_
