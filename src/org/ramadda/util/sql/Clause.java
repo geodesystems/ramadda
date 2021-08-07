@@ -319,6 +319,12 @@ public class Clause {
         return new Clause(column, EXPR_EQUALS, value);
     }
 
+    public static Clause neq(String column, Object value, boolean not) {
+	if(not) return eq(column,value);
+	return neq(column,value);
+    }
+
+
     /**
      * Make an NOT EQUALS clause
      *
