@@ -120,7 +120,7 @@ public class AnimatedGifTypeHandler extends ImageTypeHandler {
 		objAttrs.add(""+loopDelay);
 	    }
 	    sb.append(HU.tag("img",attrs));
-	    HU.script(sb,"var " + id +" = new " +(false?"RubbableGif":"SuperGif") +"( " + Json.map(objAttrs)+" );\n");
+	    HU.script(sb,"var " + id +" = new " +(true?"RubbableGif":"SuperGif") +"( " + Json.map(objAttrs)+" );\n");
 	    HU.script(sb,"AnimatedGif.init(" + id +",'" + id+"_div"+"'," + addButtons+");");
 	    return sb.toString();
         }
