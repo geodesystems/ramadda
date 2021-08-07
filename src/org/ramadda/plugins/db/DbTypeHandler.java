@@ -192,6 +192,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     private String mapLabelTemplate;
     private String mapLabelTemplatePrint;
 
+    private String searchForLabel = "Search For";
+
     /** _more_ */
     private List<DbTemplate> templates = new ArrayList<DbTemplate>();
 
@@ -220,6 +222,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		dfltOrder.add(toks);
 	    }
 	}
+        searchForLabel = XmlUtil.getAttribute(tableNode, "searchForLabel", searchForLabel);
         defaultView = XmlUtil.getAttribute(tableNode, "defaultView",VIEW_TABLE);
         numOrders = XmlUtil.getAttribute(tableNode, "numberOrderBy",numOrders);
 
@@ -1048,7 +1051,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    formId = HtmlUtils.getUniqueId("form_");
             sb.append(HtmlUtils.makeShowHideBlock(msg("Search again"),
 						  getSearchForm(request, entry,formId).toString(), false));
-	    sb.append("<br>");
         }
 
 
@@ -1323,7 +1325,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             if ( !request.get(ARG_EMBEDDED, false)) {
                 sb.append(HtmlUtils.makeShowHideBlock(msg("Search again"),
                         getSearchForm(request, entry).toString(), false));
-		sb.append("<br>");
             }
             Column iterateColumn = null;
             for (Column column : dbInfo.getColumnsToUse()) {
@@ -1347,7 +1348,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             if (iterateColumn == null) {
                 sb.append("Incorrect column");
                 getPageHandler().entrySectionClose(request, entry, sb);
-
                 return new Result("", sb);
             }
 
@@ -1392,7 +1392,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
             }
             getPageHandler().entrySectionClose(request, entry, sb);
-
             return new Result("", sb);
         }
 
@@ -2076,7 +2075,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         DbInfo        dbInfo   = getDbInfo();
 	List<NamedBuffer> buffers = new ArrayList<NamedBuffer>();
 	String formHeader = HtmlUtils.formTable(true);
-	NamedBuffer buffer = new NamedBuffer("Search For",formHeader);
+	NamedBuffer buffer = new NamedBuffer(searchForLabel,formHeader);
 	buffers.add(buffer);
         for (Column column : getColumns(true)) {
             if ( !normalForm && column.isType(column.DATATYPE_LATLON)) {
@@ -2157,12 +2156,15 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                                 "search-select")));
                     aggSB.append("<br>");
                 }
-                aggSB.append(HtmlUtils.checkbox(ARG_AGG_PERCENT, "true",
+                aggSB.append(HtmlUtils.labeledCheckbox(ARG_AGG_PERCENT, "true",
                         request.get(ARG_AGG_PERCENT,
-                                    false)) + " show percentage");
+                                    false), "Show percentage"));
                 buffer.append(formEntry(request, msgLabel("Aggregate"),
 					aggSB.toString()));
 
+		String dfltDir = "desc";
+		buffer.append(formEntry(request, msgLabel("Order"),
+					     HU.select(ARG_DB_GROUPSORTDIR,getOrderTfos(), request.getString(ARG_DB_GROUPSORTDIR, dfltDir),HtmlUtils.cssClass("search-select"))));
             }
         }
 
@@ -2201,15 +2203,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         StringBuilder viewSB      = new StringBuilder();
         boolean       defaultShow = false;
-        viewSB.append(HtmlUtils.checkbox(ARG_DB_SHOW + "toggleall", "true",
-                                         false) + " " + "Toggle All");
+        viewSB.append(HtmlUtils.labeledCheckbox(ARG_DB_SHOW + "toggleall", "true",false,"Toggle All"));
         viewSB.append("<br>");
         for (Column column : dbInfo.getColumnsToUse()) {
             String arg = ARG_DB_SHOW + "_" + column.getName();
-            viewSB.append(HtmlUtils.checkbox(arg, "true",
-                                             request.get(arg,
-                                                 defaultShow)) + " "
-                                                     + column.getLabel());
+            viewSB.append(HtmlUtils.labeledCheckbox(arg, "true",request.get(arg, defaultShow), column.getLabel()));
             viewSB.append("<br>");
         }
         buffer.append(formEntry(request, msgLabel("Display"),
@@ -2222,10 +2220,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         StringBuilder uniqueSB      = new StringBuilder();
         for (Column column : dbInfo.getColumnsToUse()) {
             String arg = ARG_DB_UNIQUE + "_" + column.getName();
-            uniqueSB.append(HtmlUtils.checkbox(arg, "true",
-                                             request.get(arg,
-							 false)) + " "
-                                                     + column.getLabel());
+            uniqueSB.append(HtmlUtils.labeledCheckbox(arg, "true",                      request.get(arg,
+												    false), column.getLabel()));
             uniqueSB.append("<br>");
         }
         buffer.append(formEntry(request, msgLabel("Uniques"),
@@ -2250,19 +2246,17 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             buffer.append(
                 HtmlUtils.formEntry(
                     msgLabel("Search Type"),
-                    HtmlUtils.checkbox(
+                    HtmlUtils.labeledCheckbox(
                         ARG_DB_OR, "true",
-                        request.get(ARG_DB_OR, false)) + " "
-		    + "Match any of the above search criteria (OR logic)"));
+                        request.get(ARG_DB_OR, false), "Match any of the above search criteria (OR logic)")));
 
 
             String suffix = getAccessManager().canEditEntry(request, entry)
                             ? HtmlUtils.space(2)
-                              + HtmlUtils.checkbox(ARG_DB_DOSAVESEARCH,
+                              + HtmlUtils.labeledCheckbox(ARG_DB_DOSAVESEARCH,
                                   "true",
                                   request.get(ARG_DB_DOSAVESEARCH,
-                                      false)) + " Save Search"
-                            : "";
+					      false), "Save Search")  : "";
 
             buffer.append(formEntry(request, msgLabel("Search Name"),
                                 HtmlUtils.input(ARG_DB_SEARCHNAME,
@@ -2274,12 +2268,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    }
 
 	    String print = 
-		HtmlUtils.checkbox(ARG_FOR_PRINT, "true", request.get(ARG_FOR_PRINT, false)) +
-		HU.space(1) +"Printable" + HU.space(2) +
-		"Entries per page:" +
+		HtmlUtils.labeledCheckbox(ARG_FOR_PRINT, "true", request.get(ARG_FOR_PRINT, false),"Printable") +
+		HU.space(4) +
+		"Entries per page: " +
 		HU.input(ARG_ENTRIES_PER_PAGE,request.getString(ARG_ENTRIES_PER_PAGE,"30"),HtmlUtils.SIZE_5);
 	    if(addressTemplate!=null) {
-		print+="<br>" + HU.b("Address label: ")+" Skip:" + HU.input("addresslabelskip",request.getString("addresslabelskip",""),HtmlUtils.SIZE_5) +" Use Avery 8160 or 5160. Print with top margin: 0.5in, left: 0.19in";
+		print+="<br>" + HU.b("Address label skip: ")+ HU.input("addresslabelskip",request.getString("addresslabelskip",""),HtmlUtils.SIZE_5) +" Use Avery 8160 or 5160. Print with top margin: 0.5in, left: 0.19in";
 	    }
 	    buffer.append(formEntry(request, msgLabel("Printing"),print));
         }
@@ -3616,8 +3610,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         List<Column>     columnsToUse = getColumnsToUse(request, true);
         SimpleDateFormat sdf          = getDateFormat(entry);
         Hashtable        entryProps   = getProperties(entry);
-
-        StringBuilder    chartJS      = new StringBuilder();
         StringBuilder    hb           = new StringBuilder();
         if (doForm) {
             String formUrl = request.makeUrl(getRepository().URL_ENTRY_SHOW);
@@ -3639,6 +3631,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                         (dbInfo.getDfltSortAsc()
                                          ? "asc"
                                          : "desc")).equals("asc");
+
+
         String sortBy = request.getString(ARG_DB_SORTBY1,
                                           ((dbInfo.getDfltSortColumn()
                                             == null)
@@ -4146,13 +4140,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             Object[] values = valueList.get(cnt);
             if (cnt == 0) {
                 HtmlUtils.open(hb, "tr", "valign", "top", "class", "dbrow");
-                int cnt2 = 0;
-                for (Object obj : values) {
+                for (int cnt2=0;cnt2<values.length;cnt2++) {
+		    Object obj = values[cnt2];
                     makeTableHeader(hb, "" + obj);
-                    if (addPercent && (cnt2 > 0)) {
+                    if (addPercent && (cnt2 ==values.length-1)) {
                         makeTableHeader(hb, "Percent");
                     }
-                    cnt2++;
                 }
                 HtmlUtils.close(hb, "tr");
             } else {
@@ -4247,12 +4240,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                             hb, format(sum[i], false),
                             "align=right  style=\"background:#eee;\"");
                     }
-                    if (addPercent) {
-                        HtmlUtils.td(hb, "&nbsp;",
-                                     "style=\"background:#eee;\"");
-                    }
+
                 }
             }
+	    if (addPercent) {
+		HtmlUtils.td(hb, "&nbsp;",  "style=\"background:#eee;\"");
+	    }
             HtmlUtils.close(hb, "tr");
             HtmlUtils.close(hb, "table");
         } else {
@@ -6298,7 +6291,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         int skip = request.get(ARG_SKIP, 0);
         extra = order;
 	extra += getDatabaseManager().getLimitString(skip, max);
-
         return readValues(request, clause, extra, max);
     }
 
@@ -6385,8 +6377,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         tmp);
                     //                    extract (year from col)
                     orderBy = SqlUtil.orderBy(col,
-                            request.getEnum(ARG_DB_SORTDIR1, "desc", "desc",
-                                            "asc").equals("desc"));
+					      request.getEnum(ARG_DB_GROUPSORTDIR, "desc", "desc",
+							      "asc").equals("desc"));
                 }
 
                 if (groupByColumn != null) {
@@ -6438,7 +6430,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 colNames.add(aggSelector);
                 if (orderBy == null) {
                     orderBy = SqlUtil.orderBy(aggSelector,
-                            request.getString(ARG_DB_SORTDIR1,
+                            request.getString(ARG_DB_GROUPSORTDIR,
                                 "desc").equals("desc"));
                 }
                 String label = agg;

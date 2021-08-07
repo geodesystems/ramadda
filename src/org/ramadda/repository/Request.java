@@ -1667,6 +1667,7 @@ public class Request implements Constants, Cloneable {
             //checker =  Pattern.compile(repository.getProperty(PROP_REQUEST_PATTERN));
         }
 
+	//	if(key.equals("dbsortdir1")) System.err.println("getString:\n"+ Utils.getStack(5));
         return getCheckedString(key, dflt, checker);
     }
 

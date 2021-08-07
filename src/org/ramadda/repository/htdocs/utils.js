@@ -4663,7 +4663,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
 
     makeToggleImage: function(img,style) {
-	style = (style||"") + HU.css('color','#000');
+	style = (style||"");// + HU.css('color','#000');
 	return HU.div([STYLE,HU.css('display','inline-block',"min-width","10px")], HtmlUtils.getIconImage(img, ["align", "bottom"],[STYLE,style]));
     },
     toggleBlock: function(label, contents, visible, args) {

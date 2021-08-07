@@ -2612,7 +2612,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
 	    attrs+=" " + HtmlUtils.id(id);
 	}
 	
-        return checkbox(name, value, checked, attrs) + space(1) + tag("label", cssClass("ramadda-clickable") +attr("for",id),label);
+        return checkbox(name, value, checked, attrs) + /*space(1) +*/ tag("label", cssClass("ramadda-clickable") +attr("for",id),label);
     }
 
     /**

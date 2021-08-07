@@ -277,6 +277,9 @@ public interface DbConstants extends Constants {
     /** _more_ */
     public static final String ARG_DB_DOSAVESEARCH = "dosavesearch";
 
+    public static final String ARG_DB_GROUPSORTDIR = "groupsortdir";
+
+
     public static final String ARG_DB_SORTBY = "dbsortby";
 
     /** _more_ */

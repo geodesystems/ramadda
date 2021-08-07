@@ -1280,6 +1280,10 @@ public abstract class Processor extends CsvOperator {
 
 	    String tableAttrs = XmlUtil.attrs("id", tableId, "name", label, "labelColumns", labels,
 					      "icon",getDbProp( "table", "icon", "/db/database.png"));
+	    String searchForLabel = getDbProp( "table", "searchForLabel", (String)null);
+	    if(searchForLabel!=null)
+		tableAttrs+=XmlUtil.attr("searchForLabel", searchForLabel);
+
 	    String addressTemplate = getDbProp( "table", "addressTemplate", (String)null);
 	    if(addressTemplate!=null)
 		tableAttrs+=XmlUtil.attr("addressTemplate", addressTemplate);
