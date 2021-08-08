@@ -2621,7 +2621,7 @@ RepositoryMap.prototype = {
 		    zoom=9;
 		else if(width<1.2)
 		    zoom=8;								
-//		console.log(width +" " + zoom);
+		console.log(width +" " + zoom);
 		this.initialZoom = zoom;
 	    }
             this.defaultBounds = null;
