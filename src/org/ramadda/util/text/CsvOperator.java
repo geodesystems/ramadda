@@ -1,4 +1,4 @@
-/*
+/**
 * Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -289,6 +289,15 @@ public class CsvOperator {
     }
 
 
+    public void fatal(String msg) throws RuntimeException {
+	throw new RuntimeException(msg +" function: " + getClass().getSimpleName());
+    }
+
+    public void fatal(String msg,Exception exc) throws RuntimeException {
+	throw new RuntimeException( msg +" function: " + getClass().getSimpleName(),exc);
+    }
+
+
     /**
      * _more_
      *
@@ -301,7 +310,7 @@ public class CsvOperator {
             return index;
         }
 	List<Integer>  indices = getIndices(ctx);
-	if(indices.size()==0) throw new IllegalStateException("Could not find index for " + getClass().getSimpleName());
+	if(indices.size()==0) fatal("No indices specified");
 	index = indices.get(0);
 
         return index;
@@ -354,7 +363,7 @@ public class CsvOperator {
             return OP_MATCH;
         }
 
-        throw new IllegalArgumentException("unknown operator:" + s);
+        throw new RuntimeException("unknown operator:" + s);
     }
 
 
@@ -389,7 +398,7 @@ public class CsvOperator {
             }
         }
 
-        throw new IllegalArgumentException("Could not open file:" + filename);
+        throw new RuntimeException("Could not open file:" + filename);
     }
 
 
@@ -540,7 +549,7 @@ public class CsvOperator {
 			System.err.println("key:" + key);
 		    }
 		    //		    System.err.println(columnMap);
-                    throw new RuntimeException("Could not find index:" + tok);
+                    fatal("Could not find index:" + tok);
                 }
             } else {
 		String tok1 = toks.get(0);
@@ -562,7 +571,7 @@ public class CsvOperator {
 			String key =(String) keys.nextElement(); 
 			System.err.println("key:" + key);
 		    }
-		    throw new RuntimeException("Could not find indices:" + toks);
+		    fatal("Could not find indices:" + toks);
 		}
 		/*
 		  Integer iv2 = getColumnIndex(ctx, tok2);

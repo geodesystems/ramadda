@@ -343,6 +343,7 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
+	    //	    System.err.println("row:" + row);
             List<Integer> indices = getIndices(ctx);
 	    return removeColumns(indices, row);
         }
@@ -5282,12 +5283,18 @@ public abstract class Converter extends Processor {
     }
 
     public static class ColumnRand extends Converter {
+	String name;
+	double min;
+	double max;		
 
         /**
          *
          * @param indices _more_
          */
-        public ColumnRand() {
+        public ColumnRand(String name, double min, double max) {
+	    this.name = name;
+	    this.min  = min;
+	    this.max = max;
         }
 
         /**
@@ -5300,10 +5307,12 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
-		row.add("random");
+		row.add(name);
 		return row;
             }
-	    row.add(Math.random());
+	    double r = Math.random();
+	    r = r*(max-min) + min;
+	    row.add(""+r);
             return row;
         }
 
@@ -5661,7 +5670,7 @@ public abstract class Converter extends Processor {
                 }
                 md = MessageDigest.getInstance(type);
             } catch (Exception exc) {
-                throw new RuntimeException(exc);
+                fatal("Creating message digest:" + type,exc);
             }
         }
 
@@ -5695,8 +5704,7 @@ public abstract class Converter extends Processor {
             try {
                 row.add(Utils.encodeMD(md.digest()));
             } catch (Exception exc) {
-                throw new RuntimeException("Error making message digest",
-                                           exc);
+                fatal("Error making message digest",  exc);
             }
 
             return row;

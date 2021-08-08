@@ -1332,13 +1332,6 @@ public abstract class Processor extends CsvOperator {
 
 	    String tableAttrs = XmlUtil.attrs("id", tableId, "name", label, "labelColumns", labels,
 					      "icon",getDbProp( "table", "icon", "/db/database.png"));
-	    String searchForLabel = getDbProp( "table", "searchForLabel", (String)null);
-	    if(searchForLabel!=null)
-		tableAttrs+=XmlUtil.attr("searchForLabel", searchForLabel);
-
-	    String addressTemplate = getDbProp( "table", "addressTemplate", (String)null);
-	    if(addressTemplate!=null)
-		tableAttrs+=XmlUtil.attr("addressTemplate", addressTemplate);
 	    if(defaultView!=null)
 		tableAttrs+=XmlUtil.attr("defaultView", defaultView);
 	    if(defaultOrder!=null)
@@ -1346,6 +1339,13 @@ public abstract class Processor extends CsvOperator {
             writer.println(
 			   XmlUtil.openTag(
 					   "table", tableAttrs));
+
+	    for(String prop: new String[]{"searchForLabel", "addressTemplate","mapLabelTemplate","mapLabelTemplatePrint"}) {
+		String v= getDbProp( "table", prop, (String)null);
+		if(v!=null) {
+		    writer.println("<" + prop +"><![CDATA[" + v +"]]></"+ prop+">");
+		}
+	    }
 
 	    String formjs = (String)props.get("table.formjs");
 	    if(formjs!=null) {

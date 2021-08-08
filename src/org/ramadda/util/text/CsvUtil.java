@@ -1944,7 +1944,10 @@ public class CsvUtil {
                 new Arg("columns","Columns","type","columns"), "new col name", "operator +,-,*,/,average"),
         new Cmd("-round", "round the values", new Arg("columns", "", "type", "columns")),
         new Cmd("-abs", "make absolute values", new Arg("columns", "", "type", "columns")),
-        new Cmd("-rand", "make random value"),		
+        new Cmd("-rand", "make random value",
+		new Arg("column name"),
+		new Arg("minrange","Minimum range (e.g. 0)"),
+		new Arg("maxrange","Maximum range (e.g. 1)")),		
         new Cmd("-even", "Add true if the column starts with an even number",
 		new Arg("columns", "", "type", "columns")),
         new Cmd(
@@ -3282,8 +3285,8 @@ public class CsvUtil {
 		ctx.addProcessor(new Converter.ColumnAbs(getCols(args.get(++i))));
 		return i;
 	    });
-	defineFunction("-rand", 1,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.ColumnRand());
+	defineFunction("-rand", 3,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.ColumnRand(args.get(++i), Double.parseDouble(args.get(++i)),Double.parseDouble(args.get(++i))));
 		return i;
 	    });		
 	defineFunction("-md", 2,(ctx,args,i) -> {
