@@ -2604,24 +2604,24 @@ RepositoryMap.prototype = {
 	    if(debugBounds)
 		console.log("applying default bounds: center:" +  llPoint +" b:" + this.defaultBounds +" zoom:" + this.initialZoom);
             this.getMap().setCenter(projPoint);
-            this.zoomToExtent(this.transformLLBounds(this.defaultBounds));
+	    let extent = this.transformLLBounds(this.defaultBounds);
+            this.zoomToExtent(extent);
 	    if(this.initialZoom<0) {
 		let width = this.defaultBounds.right-this.defaultBounds.left;
 		let zoom = -1;
 		//a hack for zoomed in boxes
-		if(width<0.05)
-		    zoom=13;
-		else if(width<0.1)
-		    zoom=12;
-		else if(width<0.3)
-		    zoom=11;
-		else if(width<0.5)
-		    zoom=10;
-		else if(width<0.8)
-		    zoom=9;
-		else if(width<1.2)
-		    zoom=8;								
+		zoom = this.map.getZoomForExtent(extent)+2;
+		/*
+		[0.05,0.1,0.2,0.3,0.5,0.8,1.2].every((v,idx)=>{
+		    return false;
+		    if(width<v) {
+			zoom = 14-idx;			
+			return false
+		    }
+		    return true;
+		});
 		console.log(width +" " + zoom);
+		*/
 		this.initialZoom = zoom;
 	    }
             this.defaultBounds = null;
