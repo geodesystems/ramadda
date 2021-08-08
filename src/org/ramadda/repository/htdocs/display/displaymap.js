@@ -109,7 +109,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'strokeWidth',d:1},
 	{p:'strokeColor',d:'#000'},
 	{p:"fillColor",d:"blue"},
-	{p:"fillOpacity",d:0.8},
+	{p:"fillOpacity",d:0.5},
 	{p:'radius',d:5,tt:"Size of the map points"},
 	{p:'scaleRadius',ex:"true",tt:'Scale the radius based on # points shown'},
 	{p:'radiusScale',ex:"value,size,value,size e.g.: 10000,1,8000,2,5000,3,2000,3,1000,5,500,6,250,8,100,10,50,12",tt:'Radius scale'},
@@ -2032,7 +2032,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    $.extend(this.baseStyle,{
 			strokeColor: this.getProperty("vectorLayerStrokeColor","#000"),
 			fillColor:this.getProperty("vectorLayerFillColor","#ccc"),
-			fillOpacity:this.getProperty("vectorLayerFillOpacity",0.25),
+			fillOpacity:this.getProperty("vectorLayerFillOpacity",0.10),
 			strokeWidth: this.getProperty("vectorLayerStrokeWidth",1),
 			cursor:'pointer'
 		    });
@@ -3361,6 +3361,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			if(cidx>=polygonColorTable.length) cidx=0;
 			polygonProps.strokeColor=polygonColorTable[cidx++];
 		    }
+		    
 		    this.map.addPolygonString(s, polygonProps,latlon).forEach(poly=>{
 			poly.textGetter = textGetter;
 			poly.record = record;
