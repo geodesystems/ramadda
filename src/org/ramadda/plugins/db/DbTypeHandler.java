@@ -4606,11 +4606,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             cats   = new ArrayList<String>();
         }
 
+	Column polygonColumn = getDbInfo().getPolygonColumn();
 
-	
 
-
+	//	int rowCnt = 0;
         for (Object[] values : valueList) {
+	    //	    rowCnt++;
+	    //	    if(rowCnt>4) continue;
             String dbid  = (String) values[IDX_DBID];
             double lat   = 0;
             double lon   = 0;
@@ -4711,9 +4713,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             mapInfo = mapInfo.replace("\"", "\\\"");
 	    String mapLabel =  label;
 
+
             if ( !bbox) {
-                map.addMarker(dbid, new LatLonPointImpl(lat, lon), iconToUse,
-                              mapLabel, mapInfo);
+		map.addMarker(dbid, lat,lon, (polygonColumn!=null?polygonColumn.getString(values):null),
+			      iconToUse,
+			      mapLabel, mapInfo,null);
             } else {
                 if ( !makeRectangles) {
                     map.addMarker(dbid, new LatLonPointImpl(south, east),
@@ -7243,6 +7247,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             if ( !isDataColumn(column)) {
                 continue;
             }
+	    if(column.getName().equals("polygon")) continue;
+	    
             StringBuilder tmpSb = new StringBuilder();
             formatTableValue(request, entry, tmpSb, column, values, sdf,true);
             //            column.formatValue(request, entry, tmpSb, Column.OUTPUT_HTML, values);

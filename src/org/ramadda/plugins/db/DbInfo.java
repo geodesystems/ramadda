@@ -197,7 +197,7 @@ public class DbInfo {
     /** _more_ */
     private Column lonColumn;
 
-
+    private Column polygonColumn;
 
     /**
      * _more_
@@ -298,6 +298,9 @@ public class DbInfo {
                 hasLocation = (latColumn != null) && (lonColumn != null);
             }
 
+	    if(column.getName().equals("polygon")) {
+		polygonColumn = column;
+	    }
             if (column.getType().equals(Column.DATATYPE_LATLONBBOX)
                     || column.getType().equals(Column.DATATYPE_LATLON)) {
                 hasLocation  = true;
@@ -603,6 +606,10 @@ public class DbInfo {
      */
     public Column getLonColumn() {
         return lonColumn;
+    }
+
+    public Column getPolygonColumn() {
+	return polygonColumn;
     }
 
     /**
