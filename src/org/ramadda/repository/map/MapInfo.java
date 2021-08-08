@@ -1143,6 +1143,12 @@ public class MapInfo {
      */
     public void addMarker(String id, double lat, double lon, String icon,
                           String markerName, String info, String parentId) {
+	addMarker(id,lat,lon,null,icon,markerName,info,parentId);
+    }
+
+    public void addMarker(String id, double lat, double lon, String polygon, String icon,
+                          String markerName, String info, String parentId) {
+
         getJS().append(mapVarName + ".addMarker(" + HU.squote(id)
                        + "," + llp(lat, lon) + "," + ((icon == null)
                 ? "null"
@@ -1155,7 +1161,7 @@ public class MapInfo {
                                                               + ((parentId
                                                                   == null)
                 ? "null"
-                : HU.squote(parentId)) + ");\n");
+								 : HU.squote(parentId)) + ",null,null,null,null," + (polygon!=null?HU.squote(polygon):"null") + ");\n");
     }
 
 
