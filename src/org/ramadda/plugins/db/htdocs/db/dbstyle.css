@@ -74,7 +74,6 @@
 }
 
 .db-map-list-outer { 
-//      border:  1px #888888 solid;
 }
 
 .db-map-list-entry {
@@ -82,18 +81,29 @@
   margin-top:2px;
 }
 
+.db-map-table-print .db-map-list-entry {
+    font-size:80%;
+}
+
 .db-map-table { 
-//    border:  1px #888888 solid;
-//    border:  1px #ccc solid;
 }
 
 .db-map-column { 
-//    border:  1px #888888 solid;
     border:  1px #ccc solid;
 }
 
+.db-map-table-print .db-map-column {
+    border:  0px #ccc solid;
+}
+
+.db-map-table-print  {
+    margin-left:10px;
+    margin-right:10px;
+    margin-bottom:20px;        
+}
+
 .db-map-table #ramadda-map-latlonreadout {
-       display:none;
+    display:none;
 }
 
 

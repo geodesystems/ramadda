@@ -232,14 +232,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         this.labelColumnNames = XmlUtil.getAttribute(tableNode,
 						     "labelColumns", "");
-        this.addressTemplate = XmlUtil.getAttribute(tableNode,
-						    "addressTemplate", (String)null);	
-	this.labelTemplate  = XmlUtil.getAttribute(tableNode,
-						   "labelTemplate",(String)null);
-	this.mapLabelTemplate  = XmlUtil.getAttribute(tableNode,
-						      "mapLabelTemplate",(String)null);
-	this.mapLabelTemplatePrint  = XmlUtil.getAttribute(tableNode,
-							   "mapLabelTemplatePrint",(String)null);		
+        this.addressTemplate = Utils.getAttributeOrTag(tableNode,
+						       "addressTemplate", (String)null);	
+	this.labelTemplate  = Utils.getAttributeOrTag(tableNode,
+						      "labelTemplate",(String)null);
+	this.mapLabelTemplate  = Utils.getAttributeOrTag(tableNode,"mapLabelTemplate",null);
+	this.mapLabelTemplatePrint  = Utils.getAttributeOrTag(tableNode,"mapLabelTemplatePrint",null);	
+
         //Initialize this type handler with a string blob
         Element root = XmlUtil.getRoot("<type></type>");
         root.setAttribute(ATTR_SUPER, "type_point");
@@ -2445,7 +2444,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             column.assembleWhereClause(request, where, searchCriteria);
         }
 
-	System.err.println("where:" + where);
 
         Clause mainClause = null;
         if (where.size() > 0) {
@@ -4561,10 +4559,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         String    width        = "";
         String    height       = "500";
-        String mapDisplayId = "mapDisplay_" + Utils.getGuid();
-
-        Hashtable props = Utils.makeHashtable("displayDiv", mapDisplayId,
-                              "style", "");
+	if(forPrint) {
+	    width = "300";
+	    height="300";
+	}
+        Hashtable props = Utils.makeHashtable("style", "");
         if (request.defined("mapLayer")) {
             props.put("defaultMapLayer", request.getString("mapLayer", ""));
         }
@@ -4578,10 +4577,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             props.put("mapCenter", request.getString("mapCenter", ""));
         }
 
-        MapInfo map = getRepository().getMapManager().createMap(request,
-                          entry, width, height, false, props);
         boolean       makeRectangles = valueList.size() <= 20;
-
         String        leftWidth      = "300px";
 	String mapAttrs = "";
 	if(forPrint) {
@@ -4590,199 +4586,199 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	}
 
         String        icon           = getMapIcon(request, entry);
-        StringBuilder entryList      = new StringBuilder();
-	if(!forPrint) {
-	    sb.append(
-		      HtmlUtils.cssBlock(
-					 "\n.db-map-list-inner {max-height: " + height
-					 + "px; overflow-y: auto; overflow-x:auto; }\n\n"));
-	} else {
-	}
-        HtmlUtils.open(entryList, "div", "class", "db-map-list-outer");
-        HtmlUtils.open(entryList, "div", "class", "db-map-list-inner");
         SimpleDateFormat                 sdf    = getDateFormat(entry);
-        Hashtable<String, StringBuilder> catMap = null;
-        List<String>                     cats   = null;
-        if (getDbInfo().getMapCategoryColumn() != null) {
-            catMap = new Hashtable<String, StringBuilder>();
-            cats   = new ArrayList<String>();
-        }
-
 	Column polygonColumn = getDbInfo().getPolygonColumn();
-
-
 	//	int rowCnt = 0;
-        for (Object[] values : valueList) {
-	    //	    rowCnt++;
-	    //	    if(rowCnt>4) continue;
-            String dbid  = (String) values[IDX_DBID];
-            double lat   = 0;
-            double lon   = 0;
-            double north = 0,
-                   west  = 0,
-                   south = 0,
-                   east  = 0;
-
-            if (theColumn == null) {
-                lat  = dbInfo.getLatColumn().getDouble(values);
-                lon  = dbInfo.getLonColumn().getDouble(values);
-                bbox = false;
-            } else {
-                if ( !bbox) {
-                    //Check if the lat/lon is defined
-                    if ( !theColumn.hasLatLon(values)) {
-                        continue;
-                    }
-                    double[] ll = theColumn.getLatLon(values);
-                    lat = ll[0];
-                    lon = ll[1];
-                } else {
-                    if ( !theColumn.hasLatLonBox(values)) {
-                        continue;
-                    }
-                    double[] ll = theColumn.getLatLonBbox(values);
-                    north = ll[0];
-                    west  = ll[1];
-                    south = ll[2];
-                    east  = ll[3];
-                }
-            }
-
-            if (bbox) {
-                map.addBox("", "", "", new MapBoxProperties("red", false),
-                           north, west, south, east);
-            }
+	int     entriesPerPage = request.get(ARG_ENTRIES_PER_PAGE,30);
+	int lineCnt=0;
+	List<List> lists;
+	if(forPrint) {
+	    lists = (List<List>)Utils.splitList(valueList,entriesPerPage);
+	} else {
+	    lists = new ArrayList<List>();
+	    lists.add(valueList);
+	}
+	for(List listValues: lists) {
+	    String mapDisplayId = "mapDisplay_" + Utils.getGuid();
+	    props.put("displayDiv", mapDisplayId);
+	    MapInfo map = getRepository().getMapManager().createMap(request,
+								    entry, width, height, false, props);
+	    StringBuilder entryList      = new StringBuilder();
+	    if(!forPrint) {
+		sb.append(
+			  HtmlUtils.cssBlock(
+					     "\n.db-map-list-inner {max-height: " + height
+					     + "px; overflow-y: auto; overflow-x:auto; }\n\n"));
+	    } else {
+	    }
+	    HtmlUtils.open(entryList, "div", "class", "db-map-list-outer");
+	    HtmlUtils.open(entryList, "div", "class", "db-map-list-inner");
             StringBuilder theSB = entryList;
-            if (getDbInfo().getMapCategoryColumn() != null) {
-                String cat =
-                    getDbInfo().getMapCategoryColumn().getString(values);
-                if (cat == null) {
-                    cat = "";
-                }
-                theSB = catMap.get(cat);
-                if (theSB == null) {
-                    theSB = new StringBuilder();
-                    catMap.put(cat, theSB);
-                    cats.add(cat);
-                }
-            }
-
-
-            theSB.append("\n");
-            theSB.append("<div class=\"db-map-list-entry\" data-mapid=\""
-                         + dbid + "\">");
-            String iconToUse = icon;
-            String attrIcon  = getIconFor(entry, entryProps, values);
-            if (attrIcon != null) {
-                iconToUse = getDbIconUrl(attrIcon);
-                //                theSB.append(HtmlUtils.img(iconToUse,"", "width=16"));
-            }
-            if (false && canEdit) {
-                String editUrl = getEditUrl(request, entry, dbid);
-                theSB.append(HtmlUtils.href(editUrl, HtmlUtils.img(iconToUse
-                /*                            getRepository().getUrlBase()
-                                              + "/db/database_edit.png"*/
-                , msg("Edit entry"))));
-            }
-	    String extraLabel = "";
-	    if(searchColumn!=null) {
-		theSB.append("&nbsp;");
-		String value = searchColumn.getString(values); 
-		String href = HU.href("#",getRepository().getIconImage("fas fa-external-link-alt"),HU.attr("onclick", "return DB.doDbSelect(event,'" +searchFrom +"','" + value+"')")+ HU.attr("select-value",value) +HU.attr("class","db-select-link ramadda-clickable") +HU.attr("title","Select for " + sourceName+":" + sourceColumn));
-		theSB.append(href);
-		theSB.append("&nbsp;");
-		extraLabel=href+"<br>";
+	    Hashtable<String, StringBuilder> catMap = null;
+	    List<String>                     cats   = null;
+	    if (getDbInfo().getMapCategoryColumn() != null) {
+		catMap = new Hashtable<String, StringBuilder>();
+		cats   = new ArrayList<String>();
 	    }
-
-
-
-            String viewUrl = getViewUrl(request, entry, dbid);
-	    if(!forPrint) {
-		theSB.append(HtmlUtils.href(viewUrl, HtmlUtils.img(iconToUse,
-								   //                        getRepository().getUrlBase() + "/db/database_go.png",
-								   msg("View entry"), "width=16")));
-	    }
-	    theSB.append(" ");
-	    String label = getMapLabel(request, entry, values, sdf,forPrint);
-            theSB.append(map.getHiliteHref(dbid, label));
-            theSB.append("</div>");
-            //            theSB.append(HtmlUtils.br());
-            String info = getHtml(request, entry, dbid, getColumns(), values,
-                                  sdf);
-	    String mapInfo = extraLabel + info;
-            mapInfo = mapInfo.replace("\r", " ");
-            mapInfo = mapInfo.replace("\n", " ");
-            mapInfo = mapInfo.replace("\"", "\\\"");
-	    String mapLabel =  label;
-
-
-            if ( !bbox) {
-		map.addMarker(dbid, lat,lon, (polygonColumn!=null?polygonColumn.getString(values):null),
-			      iconToUse,
-			      mapLabel, mapInfo,null);
-            } else {
-                if ( !makeRectangles) {
-                    map.addMarker(dbid, new LatLonPointImpl(south, east),
-                                  iconToUse, mapLabel, mapInfo);
-                } else {
-                    map.addMarker(dbid, new LatLonPointImpl(south
-                            + (north - south) / 2, west
-                                + (east - west) / 2), mapLabel, icon, mapInfo);
-                }
-            }
-        }
-
-        boolean simpleMap = request.get("simpleMap", false);
-        if (catMap != null) {
-            boolean open = true;
-            for (String cat : cats) {
-                StringBuilder theSB = catMap.get(cat);
-                String content = HtmlUtils.insetLeft(theSB.toString(), 20);
-                entryList.append(HtmlUtils.makeShowHideBlock(cat, content,
-                        open));
-                open = false;
-            }
-        }
-        entryList.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
-        entryList.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
-
-        if ( !simpleMap) {
-            HtmlUtils.open(sb, "table", "class", "db-map-table",
-                           "cellpadding", "0", "border", "0", "width",
-                           "100%");
-            HtmlUtils.open(sb, "tr", "valign", "top");
-            map.center();
-            sb.append(HtmlUtils.col(entryList.toString(),
-                                    " class=\"db-map-column\" "
-                                    + HtmlUtils.attr("width",
-                                        leftWidth)));
-            sb.append(HtmlUtils.col(map.getHtml(),
-                                    "  class=\"db-map-column\" "  + mapAttrs));
-	    if(!forPrint) {
-		String searchLink = "";
-		if(formId!=null) {
-		    String mapVar = map.getVariableName();
-		    searchLink = HU.center(HU.href("javascript:DB.applyMapSearch(" + mapVar+",'" + formId +"')","Search in this area"));
+	    for(Object obj:listValues) {
+		Object[]values = (Object[]) obj;
+		//	    if(forPrint && lineCnt>=entriesPerPage) {
+		//		lineCnt=0;
+		//		sb.append("<div class=pagebreak></div>");
+		//	    }
+		String dbid  = (String) values[IDX_DBID];
+		double lat   = 0;
+		double lon   = 0;
+		double north = 0,
+		    west  = 0,
+		    south = 0,
+		    east  = 0;
+		if (theColumn == null) {
+		    lat  = dbInfo.getLatColumn().getDouble(values);
+		    lon  = dbInfo.getLonColumn().getDouble(values);
+		    bbox = false;
+		} else {
+		    if ( !bbox) {
+			//Check if the lat/lon is defined
+			if ( !theColumn.hasLatLon(values)) {
+			    continue;
+			}
+			double[] ll = theColumn.getLatLon(values);
+			lat = ll[0];
+			lon = ll[1];
+		    } else {
+			if ( !theColumn.hasLatLonBox(values)) {
+			    continue;
+			}
+			double[] ll = theColumn.getLatLonBbox(values);
+			north = ll[0];
+			west  = ll[1];
+			south = ll[2];
+			east  = ll[3];
+		    }
 		}
-		String rightDiv =searchLink + "<div id=\"" + mapDisplayId
-		    + "\" style=\"width:250px;max-width:250px;overflow-x:hidden;max-height:"
-		    + height
-		    + "px; overflow-y:hidden;\"></div>"; 
 
-		sb.append(HtmlUtils.col(rightDiv," class=\"db-map-column\"  width=250"));
+		if (bbox) {
+		    map.addBox("", "", "", new MapBoxProperties("red", false),
+			       north, west, south, east);
+		}
+		if (getDbInfo().getMapCategoryColumn() != null) {
+		    String cat =
+			getDbInfo().getMapCategoryColumn().getString(values);
+		    if (cat == null) {
+			cat = "";
+		    }
+		    theSB = catMap.get(cat);
+		    if (theSB == null) {
+			theSB = new StringBuilder();
+			catMap.put(cat, theSB);
+			cats.add(cat);
+		    }
+		}
 
+		theSB.append("\n");
+		theSB.append("<div class=\"db-map-list-entry\" data-mapid=\""   + dbid + "\">");
+		String iconToUse = icon;
+		String attrIcon  = getIconFor(entry, entryProps, values);
+		if (attrIcon != null) {
+		    iconToUse = getDbIconUrl(attrIcon);
+		    //                theSB.append(HtmlUtils.img(iconToUse,"", "width=16"));
+		}
+		String extraLabel = "";
+		if(searchColumn!=null) {
+		    theSB.append("&nbsp;");
+		    String value = searchColumn.getString(values); 
+		    String href = HU.href("#",getRepository().getIconImage("fas fa-external-link-alt"),HU.attr("onclick", "return DB.doDbSelect(event,'" +searchFrom +"','" + value+"')")+ HU.attr("select-value",value) +HU.attr("class","db-select-link ramadda-clickable") +HU.attr("title","Select for " + sourceName+":" + sourceColumn));
+		    theSB.append(href);
+		    theSB.append("&nbsp;");
+		    extraLabel=href+"<br>";
+		}
+		String viewUrl = getViewUrl(request, entry, dbid);
+		if(!forPrint) {
+		    theSB.append(HtmlUtils.href(viewUrl, HtmlUtils.img(iconToUse,
+								       //                        getRepository().getUrlBase() + "/db/database_go.png",
+								       msg("View entry"), "width=16")));
+		}
+		theSB.append(" ");
+		String label = getMapLabel(request, entry, values, sdf,forPrint);
+		theSB.append(map.getHiliteHref(dbid, label));
+		theSB.append("</div>");
+		//            theSB.append(HtmlUtils.br());
+		String info = getHtml(request, entry, dbid, getColumns(), values,
+				      sdf);
+		String mapInfo = extraLabel + info;
+		mapInfo = mapInfo.replace("\r", " ");
+		mapInfo = mapInfo.replace("\n", " ");
+		mapInfo = mapInfo.replace("\"", "\\\"");
+		String mapLabel =  label;
+		if(forPrint) mapLabel = "";
+		if ( !bbox) {
+		    map.addMarker(dbid, lat,lon, (polygonColumn!=null?polygonColumn.getString(values):null),
+				  iconToUse,
+				  mapLabel, mapInfo,null);
+		} else {
+		    if ( !makeRectangles) {
+			map.addMarker(dbid, new LatLonPointImpl(south, east),
+				      iconToUse, mapLabel, mapInfo);
+		    } else {
+			map.addMarker(dbid, new LatLonPointImpl(south
+								+ (north - south) / 2, west
+								+ (east - west) / 2), mapLabel, icon, mapInfo);
+		    }
+		}
 	    }
-            HtmlUtils.close(sb, "tr", "table");
-        } else {
-            sb.append(map.getHtml());
-        }
+	    boolean simpleMap = request.get("simpleMap", false);
+	    if (catMap != null) {
+		boolean open = true;
+		for (String cat : cats) {
+		    StringBuilder catSB = catMap.get(cat);
+		    String content = HtmlUtils.insetLeft(catSB.toString(), 20);
+		    entryList.append(HtmlUtils.makeShowHideBlock(cat, content,
+								 open));
+		    open = false;
+		}
+	    }
+	    entryList.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+	    entryList.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+
+	    if ( !simpleMap) {
+		HtmlUtils.open(sb, "table", "class", " db-map-table " + (forPrint?" db-map-table-print ":""),
+			       "cellpadding", "0", "border", "0", "width",
+			       "100%");
+		HtmlUtils.open(sb, "tr", "valign", "top");
+		map.center();
+		sb.append(HtmlUtils.col(entryList.toString(),
+					" class=\"db-map-column\" "
+					+ HtmlUtils.attr("width",
+							 leftWidth)));
+		sb.append(HtmlUtils.col(map.getHtml(),
+					"  class=\"db-map-column\" "  + mapAttrs));
+		if(!forPrint) {
+		    String searchLink = "";
+		    if(formId!=null) {
+			String mapVar = map.getVariableName();
+			searchLink = HU.center(HU.href("javascript:DB.applyMapSearch(" + mapVar+",'" + formId +"')","Search in this area"));
+		    }
+		    String rightDiv =searchLink + "<div id=\"" + mapDisplayId
+			+ "\" style=\"width:250px;max-width:250px;overflow-x:hidden;max-height:"
+			+ height
+			+ "px; overflow-y:hidden;\"></div>"; 
+		    
+		    sb.append(HtmlUtils.col(rightDiv," class=\"db-map-column\"  width=250"));
+		    
+		}
+		HtmlUtils.close(sb, "tr", "table");
+	    } else {
+		sb.append(map.getHtml());
+	    }
+	    String js =
+		"highlightMarkers('.db-map-list-outer .db-map-list-entry', "
+		+ map.getVariableName() + ", '#ffffcc', 'white');";
+	    sb.append(HtmlUtils.script(JQuery.ready(js)));
+	}
 
 
 
-        String js =
-            "highlightMarkers('.db-map-list-outer .db-map-list-entry', "
-            + map.getVariableName() + ", '#ffffcc', 'white');";
-        sb.append(HtmlUtils.script(JQuery.ready(js)));
 
         if ( !request.get(ARG_EMBEDDED, false) && !forPrint) {
             addViewFooter(request, entry, sb);
