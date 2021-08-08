@@ -694,8 +694,6 @@ function  ConvertForm(inputId, entry) {
 		    this.output(HtmlUtil.tag("pre",[],window.atob(data.message)));
 		    return;
 		}
-		
-
 		if(data.file) {
 		    this.output(HtmlUtil.tag("pre",[],""));
 		    iframe = '<iframe src="' + data.file +'"  style="display:none;"></iframe>';
@@ -718,12 +716,13 @@ function  ConvertForm(inputId, entry) {
 
 
 		if(Utils.isDefined(data.result)) {
-		    result = window.atob(data.result);
+		    result = window.atob(data.result).trim();
 		    if(isScript) {
 			//		    Utils.makeDownloadFile("script.sh",result);
 			//		    return;
 		    }
-		    if(result.match(".*<(table|row|div).*")) showHtml = true;
+		    if(result.indexOf("<table")>0  || result.indexOf("<div")>0  || result.indexOf("<row")>0)
+			showHtml = true;
 		    if(debug) {
 			result = result.replace(/</g,"&lt;").replace(/>/g,"&gt;");
 			writePre(result);
@@ -786,10 +785,8 @@ function  ConvertForm(inputId, entry) {
 			})
 
 		    } else if(csv) {
-			result = result.trim();
-			let isJson = (result.startsWith("{") && result.endsWith("}")) || (result.startsWith("[") && result.endsWith("]"));
-			let isXml = result.startsWith("<") && result.endsWith(">")
-			if(isJson) {
+			let isResultJson = (result.startsWith("{") && result.endsWith("}")) || (result.startsWith("[") && result.endsWith("]"));
+			if(isResultJson) {
 			    try {
 				let json= JSON.parse(result);
 				result = Utils.formatJson(json,5);
@@ -799,6 +796,9 @@ function  ConvertForm(inputId, entry) {
 				console.log("Err:" + err);
 			    }
 			}
+
+			result = result.trim();
+			let isXml = result.startsWith("<") && result.endsWith(">")
 			if(isXml) {
 			    try {
 				let html =Utils.formatXml(result.trim());
@@ -908,31 +908,34 @@ function  ConvertForm(inputId, entry) {
 		    } else {
 			result = result.trim();
 			let isJson = (result.startsWith("{") && result.endsWith("}")) || (result.startsWith("[") && result.endsWith("]"));
+			console.log("isJson:" + isJson);
 			let isXml = result.startsWith("<") && result.endsWith(">")
-			/*
-			  if(isJson) {
-			  try {
-			  result= JSON.parse(result.trim());
-			  result = Utils.formatJson(result,5);
-			  output.html(HU.pre(result));
-			  return
-			  } catch(err) {
-			  console.log("Err:" + err);
-			  }
-			  } else if(isXml) {
-			  try {
-			  let html =Utils.formatXml(result.trim());
-			  output.html(HU.pre(html));
-			  output.find(".ramadda-xmlnode").click(function(){
-			  _this.insertText($(this).attr("data-path"));
-			  });
-			  return;
-			  } catch (err) {
-			  console.log("err");
-			  console.log("Couldn't display as xml:" + err);
-			  }
-			  }
-			*/
+			let out = "";
+			if(isJson) {
+			    try {
+				result= JSON.parse(result.trim());
+				result = Utils.formatJson(result,5);
+				out=HU.pre(result);
+				return
+			    } catch(err) {
+				console.log("Err:" + err);
+				out = "<b>Error processing json:" + err+"</b><br>";
+				out +=HU.pre(result);
+				output.html(out);
+			    }
+			    return
+			} else if(isXml) {
+			    try {
+				let html =Utils.formatXml(result.trim());
+				output.find(".ramadda-xmlnode").click(function(){
+				    _this.insertText($(this).attr("data-path"));
+				});
+				return;
+			    } catch (err) {
+				out="error processing xml:" + err;
+				console.log("Couldn't display as xml:" + err);
+			    }
+			}
  			if(printHeader) {
 			    let tmp = "";
 			    result = result.replace("#fields=","");
@@ -987,7 +990,7 @@ function  ConvertForm(inputId, entry) {
 			    writePre(result);
 			    return;
 			} 
-			output.html(html);
+		    output.html(html);
 			if(printHeader) {
 			    output.find(".csv_header_field").click(function(event) {
 				let index = $(this).attr("index").replace("#","").trim();

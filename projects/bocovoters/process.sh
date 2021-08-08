@@ -16,6 +16,27 @@ init_files() {
     ${csv}  -skiplines 1 -p source/Master_Voting_History_List_Part3.csv >>voter_history.csv        
 }
 
+do_precincts() {
+    ${csv} -join precinct_name active_voters source/precincts_voters.csv precinct 0   \
+	   -join precinct city source/precincts_city.csv precinct ""   \
+	   -columnsafter  neighborhood city \
+	   -columnsafter  city active_voters \
+	   -concat "latitude,longitude" ";" Location -notcolumns latitude,longitude \
+	   -p boco_precincts.csv > precincts_final.csv
+    ${csv} -db "precinct.type string neighborhood.type enumeration city.type enumeration location.type latlon \
+    table.icon /icons/map/marker-blue.png \
+    table.defaultView map \
+    table.mapLabelTemplate _quote_\${precinct} - \${neighborhood}_quote_ \
+    table.id precincts table.label {Precincts}  \
+    table.cansearch false \
+    polygon.canlist false location.canlist false \
+    polygon.size 20000 \
+    precinct.cansearch true active_voters.cansearch true  neighborhood.cansearch true  city.cansearch true  location.cansearch true \ 
+" precincts_final.csv > precinctsdb.xml
+}
+
+do_precincts
+exit
 
 do_prep() {
     echo "prepping voters"
