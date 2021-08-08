@@ -30,7 +30,7 @@ do_precincts() {
     table.id precincts table.label {Precincts}  \
     table.cansearch false \
     polygon.canlist false location.canlist false \
-    polygon.size 20000 \
+    polygon.type clob     polygon.size 200000 \
     precinct.cansearch true active_voters.cansearch true  neighborhood.cansearch true  city.cansearch true  location.cansearch true \ 
 " precincts_final.csv > precinctsdb.xml
 }
