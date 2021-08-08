@@ -973,6 +973,8 @@ RepositoryMap.prototype = {
         }
     },
     handleFeatureclick: function(layer, feature, center) {
+	console.log("fclick");
+
         if (!layer)
             layer = feature.layer;
 
@@ -2054,6 +2056,7 @@ RepositoryMap.prototype = {
             strokeWidth: 1,
         }
 	if(args) $.extend(opts, args);
+//	console.log(JSON.stringify(opts));
         layer.styleMap = this.getVectorLayerStyleMap(layer, opts);
         this.initMapVectorLayer(layer, canSelect, selectCallback, unselectCallback, loadCallback, zoomToExtent);
         return layer;
@@ -3668,8 +3671,7 @@ RepositoryMap.prototype = {
         return feature;
     },
 
-    addMarker:  function(id, location, iconUrl, markerName, text, parentId, size, yoffset, canSelect, attrs) {
-
+    addMarker:  function(id, location, iconUrl, markerName, text, parentId, size, yoffset, canSelect, attrs,polygon) {
 	if(Utils.isDefined(location.x)) {
 	    location = MapUtils.createLonLat(location.x,location.y);
 	}
@@ -3677,7 +3679,43 @@ RepositoryMap.prototype = {
         let marker = this.createMarker(id, location, iconUrl, markerName, text, parentId, size, 0, yoffset, canSelect,attrs);
 	marker.lonlat = location;
         this.addMarkers([marker]);
+	if(polygon) {
+	    this.addPolygonString(polygon,{
+		fill: true,
+		fillColor: "#0000ff",
+		fillOpacity: 0.10,
+		strokeWidth:1,
+		strokeColor:"blue"},true,text);
+	}
         return marker;
+    },
+
+    addPolygonString:function(s,polygonProps,latlon,text) {
+	let delimiter;
+	[";",","].forEach(d=>{
+	    if(s.indexOf(d)>=0) delimiter = d;
+	});
+	let toks  = s.split(delimiter);
+	let polys = [];
+	let p = [];
+	for(let pIdx=2;pIdx<toks.length;pIdx+=2) {
+	    let lat1 = parseFloat(toks[pIdx-2]);
+	    let lon1 = parseFloat(toks[pIdx-1]);
+	    let lat2 = parseFloat(toks[pIdx]);
+	    let lon2 = parseFloat(toks[pIdx+1]);
+	    if(!latlon) {
+		let tmp =lat1;
+		lat1=lon1;
+		lon1=tmp;
+		tmp =lat2;
+		lat2=lon2;
+		lon2=tmp;
+	    }
+	    p.push(new OpenLayers.Geometry.Point(lon1,lat1));
+	    p.push(new OpenLayers.Geometry.Point(lon2,lat2));
+	}
+	polys.push(this.addPolygon("polygon", "",p,polygonProps,text));
+	return polys;
     },
 
     addMarkers:  function(markers) {
@@ -3967,34 +4005,26 @@ RepositoryMap.prototype = {
         for (let i = 0; i < points.length; i++) {
             points[i].transform(this.displayProjection, this.sourceProjection);
         }
-
-
         let base_style = OpenLayers.Util.extend({},
 						OpenLayers.Feature.Vector.style['default']);
         let style = OpenLayers.Util.extend({}, base_style);
-        style.strokeColor = "blue";
-        style.strokeWidth = 1;
         if (attrs) {
             for (let key in attrs) {
                 style[key] = attrs[key];
             }
         }
-
         if (!this.lines) {
             this.lines = new OpenLayers.Layer.Vector("Lines", {
                 style: base_style
             });
             this.addVectorLayer(this.lines);
         }
+	points.push(points[0]);
 
-        let lineString = new OpenLayers.Geometry.LineString(points);
-        let line = new OpenLayers.Feature.Vector(lineString, null, style);
-        /*
-         * line.events.register("click", line, function (e) { alert("box
-         * click"); _this.showMarkerPopup(box); OpenLayers.Event.stop(evt); });
-         */
+        let linearRing = new OpenLayers.Geometry.LinearRing(points);
+	let geom = new OpenLayers.Geometry.Polygon(linearRing);
+        let line = new OpenLayers.Feature.Vector(geom,null,style);
 	if(!marker) marker = name;
-
         line.text = marker;
         line.ramaddaId = id;
         line.location = location;
@@ -4002,7 +4032,7 @@ RepositoryMap.prototype = {
         let visible = this.isLayerVisible(line.ramaddaId);
         if (visible) {
             line.style.display = 'inline';
-        } else {
+	} else {
             line.style.display = 'none';
         }
 

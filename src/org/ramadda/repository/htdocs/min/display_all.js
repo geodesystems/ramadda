@@ -33092,6 +33092,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			feature.style.fillColor = "rgba(230,230,230,0.5)";
 			feature.style.strokeColor = "rgba(200,200,200,0.5)";
 			feature.style.strokeWidth=1;
+
 		    }
 		    redrawCnt++;
 		    this.vectorLayer.drawFeature(feature);
@@ -34816,11 +34817,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 		if(polygonField) {
 		    let s = values[polygonField.getIndex()];
-		    let delimiter;
-		    [";",","].forEach(d=>{
-			if(s.indexOf(d)>=0) delimiter = d;
-		    });
-		    let toks  = s.split(delimiter);
 		    let polygonProps ={};
 		    $.extend(polygonProps,props);
 		    if(polygonProps.strokeWidth==0)
@@ -34829,23 +34825,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			if(cidx>=polygonColorTable.length) cidx=0;
 			polygonProps.strokeColor=polygonColorTable[cidx++];
 		    }
-		    for(let pIdx=2;pIdx<toks.length;pIdx+=2) {
-			let p = [];
-			let lat1 = parseFloat(toks[pIdx-2]);
-			let lon1 = parseFloat(toks[pIdx-1]);
-			let lat2 = parseFloat(toks[pIdx]);
-			let lon2 = parseFloat(toks[pIdx+1]);
-			if(!latlon) {
-			    let tmp =lat1;
-			    lat1=lon1;
-			    lon1=tmp;
-			    tmp =lat2;
-			    lat2=lon2;
-			    lon2=tmp;
-			}
-			p.push(new OpenLayers.Geometry.Point(lon1,lat1));
-			p.push(new OpenLayers.Geometry.Point(lon2,lat2));
-			let poly = this.map.addPolygon("polygon" + pIdx, "",p,polygonProps);
+		    this.map.addPolygonString(s, polygonProps,latlon).forEach(poly=>{
 			poly.textGetter = textGetter;
 			poly.record = record;
 			let recordDate = record.getDate();
@@ -34853,7 +34833,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			    poly.date = recordDate.getTime();
 			}
 			this.lines.push(poly);
-		    }
+		    });
 		}
 
 
