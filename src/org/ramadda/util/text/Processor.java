@@ -1308,9 +1308,7 @@ public abstract class Processor extends CsvOperator {
             label   = label.replaceAll("\n", " ").replaceAll("\r", " ");
             tableId = Utils.makeLabel(name).toLowerCase().replaceAll(" ",
 								     "_");
-            String defaultView   = getDbProp( "table", "defaultView", (String)null);
 
-	    String defaultOrder= (String)props.get("defaultOrder");
             tableId = getDbProp( "table", "id", tableId);
 
             String labels = getDbProp( "table", "labelColumns",
@@ -1330,12 +1328,18 @@ public abstract class Processor extends CsvOperator {
             }
 
 
-	    String tableAttrs = XmlUtil.attrs("id", tableId, "name", label, "labelColumns", labels,
-					      "icon",getDbProp( "table", "icon", "/db/database.png"));
-	    if(defaultView!=null)
-		tableAttrs+=XmlUtil.attr("defaultView", defaultView);
-	    if(defaultOrder!=null)
-		tableAttrs+=XmlUtil.attr("defaultOrder", defaultOrder);
+	    String tableAttrs = XmlUtil.attrs("id", tableId, "name", label, "labelColumns", labels);
+
+	    for(String prop: new String[]{"defaultView", "defaultOrder","icon"}) {
+		String v   = getDbProp( "table", prop, (String)null);
+		if(v!=null)
+		    tableAttrs+=XmlUtil.attr(prop,v);
+	    }
+
+
+
+
+
             writer.println(
 			   XmlUtil.openTag(
 					   "table", tableAttrs));

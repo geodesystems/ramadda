@@ -259,6 +259,7 @@ do_final() {
 do_db() {
     echo "making db"
     ${csv} -db "table.id boco_voters table.name {Boulder County Voters}  \
+    table.icon /db/user.png \
     table.format  MM/dd/yyyy defaultOrder {full_street_name,asc;address_even;address,asc} \
     table.formjs file:formjs.js \
 table.cansearch false table.searchForLabel {Basic Voter Properties} \
@@ -298,6 +299,8 @@ do_geode() {
 }
 
 
+do_db
+exit
 
 init_files
 do_geocode
