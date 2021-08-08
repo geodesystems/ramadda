@@ -2445,6 +2445,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             column.assembleWhereClause(request, where, searchCriteria);
         }
 
+	System.err.println("where:" + where);
+
         Clause mainClause = null;
         if (where.size() > 0) {
             if (request.get(ARG_DB_OR, false)) {
