@@ -6,15 +6,68 @@ dots=2000
 source=voters_boulder.csv
 unique_voter_history=voter_history_unique.csv
 
+
 init_files() {
     echo "initializing files"
     cp source/voters_all.csv .
     cp source/voters_geocode.csv .
     cp source/boco_precincts.csv .
+    cp source/Election_Contributions.csv .
     ${csv}  -p source/Master_Voting_History_List_Part1.csv >voter_history.csv
     ${csv}  -skiplines 1 -p source/Master_Voting_History_List_Part2.csv >>voter_history.csv
     ${csv}  -skiplines 1 -p source/Master_Voting_History_List_Part3.csv >>voter_history.csv        
 }
+
+do_contributions() {
+    ${csv} -notcolumns "0,committeenum" \
+	   -set filingdate 0 "Filing Date" \
+	   -set transactiondate  0 transaction_date \
+	   -set lastname  0 last_name \
+	   -set firstname  0 first_name \
+	   -set match  0 matching_amount \
+	   -if -same first_name last_name  -change last_name ".*" "" -endif \
+	   -concat "first_name,last_name" " " "Full Name"  \
+	   -case full_name upper -trim full_name   -change full_name "  +" " " \
+	   -change full_name ".*COCA-COLA.*" "THE COCA-COLA COMPANY" \
+	   -change full_name "INDIAN PEAKS GROUP SIERRA CLUB" "SIERRA CLUB INDIAN PEAKS GROUP" \
+	   -change full_name "HOUSING HELPERS OF BOULDER, LLC" "HOUSING HELPERS OF BOULDER" \
+	   -change full_name "BOULDER AREA REALTORS ASSN" "BOULDER AREA REALTORS" \
+	   -change full_name "SIERRA CLUB IPG" "SIERRA CLUB INDIAN PEAKS GROUP" \
+	   -change full_name ".*NEW ERA.*" "NEW ERA" \
+	   -change full_name "PLAN.*BOULDER.*" "PLAN BOULDER" \
+	   -change full_name "VOTERS AGAINST XCEL BUYING ELECTIONS" "XXXX" \
+	   -change full_name ".*XCEL.*" "XCEL ENERGY" \
+	   -change full_name "XXXX" "VOTERS AGAINST XCEL BUYING ELECTIONS" \
+	   -change full_name "OPEN BOULDER.*" "OPEN BOULDER" \
+	   -change full_name ".*AMERICAN BEVERAGE ASSOCIATION.*" "AMERICAN BEVERAGE ASSOCIATION" \
+	   -columnsbefore last_name full_name \
+	   -set amendeddate	 0 amended_date	   \
+	   -change contribution,fromcandidate,matching_amount "_dollar_" "" \
+	   -change contribution,fromcandidate,matching_amount "_leftparen_(.*)_rightparen_" "-\$1" \
+	   -change contribution,fromcandidate,matching_amount "," "" \
+	   -change Contribution "_dollar_" "" \
+	   -p Election_Contributions.csv > contributions_final.csv
+    ${csv} -db " table.id boulder_campaign_contributions table.label {Boulder Campaign Contributions} \
+committee.numberOfSearchWidgets 5 \
+committee.type enumeration type.type enumeration candidate.type enumeration \
+official_filing.type enumeration \
+from_candidate.type enumeration \
+table.format yyyy/MM/dd \
+table.addressTemplate _quote_\${first_name} \${last_name}<br>\${street}<br>\${city} \${state}<br>\${zip}_quote_ 
+table.canlist false   \
+committee.canlist true  candidate.canlist true  filing_date.canlist true  full_name.canlist true  \
+street.canlist true  city.canlist true  contribution.canlist true  \
+state.type enumeration \
+filing_date.type date amended_date.type date transaction_date.type date 
+transactiondate.format yyyy/MM/dd \
+city.type enumeration zip.type string contribution_type.type enumeration anonymous.type enumeration \
+" contributions_final.csv > boulder_campaign_contributionsdb.xml
+}
+
+#init_files
+#do_contributions
+#exit
+
 
 do_precincts() {
     ${csv} -join precinct_name active_voters source/precincts_voters.csv precinct 0   \
@@ -31,12 +84,12 @@ do_precincts() {
     table.cansearch false \
     polygon.canlist false location.canlist false \
     polygon.type clob     polygon.size 200000 \
-    precinct.cansearch true active_voters.cansearch true  neighborhood.cansearch true  city.cansearch true  location.cansearch true \ 
+    precinct.cansearch true active_voters.cansearch true  neighborhood.cansearch true  city.cansearch true  location.cansearch true \
 " precincts_final.csv > precinctsdb.xml
 }
 
-do_precincts
-exit
+#do_precincts
+#exit
 
 do_prep() {
     echo "prepping voters"
@@ -61,6 +114,7 @@ do_history() {
    ${csv} -dots ${dots} -unique  "voter_id,election_date" -p voter_history.csv > ${unique_voter_history}
    echo "making off year"
    ${csv} -dots ${dots} -pattern election_date "(11/../2001|11/../2003|11/../2005|11/../2007|11/../2009|11/../2011|11/../2013|11/../2015|11/../2017|11/../2019)" -p ${unique_voter_history} > history_offyears10.csv
+   ${csv} -dots ${dots} -pattern election_date "(11/../2020)" -p ${unique_voter_history} > history_2020.csv   
    ${csv} -dots ${dots} -pattern election_date "(11/../2015|11/../2017|11/../2019)" -p ${unique_voter_history} > history_offyears3.csv   
 }
 
@@ -68,6 +122,8 @@ do_history() {
 do_counts() {
     echo "making off year count"
     cols=VOTER_ID,count
+    ${csv}   -countunique voter_id -columns ${cols} -set 1 0 "Voted in 2020" -p history_2020.csv   >tmp.csv
+    ${csv}   -change voted_in_2020 1 true  -p tmp.csv   >count_2020.csv
     ${csv}   -countunique voter_id -columns ${cols} -set 1 0 "Last 3 offyear elections" -p history_offyears3.csv   >count_offyears3.csv
     ${csv}   -countunique voter_id -columns ${cols} -set 1 0 "Last 10 offyear elections" -p history_offyears10.csv   >count_offyears10.csv
     echo "making all count"
@@ -78,6 +134,8 @@ do_counts() {
     ${csv} -pattern election_type Primary  -countunique voter_id -columns ${cols} -set 1 0 "Primary elections"  -p ${unique_voter_history} >count_primary.csv
 }
 
+#do_counts
+#exit
 
 
 do_geocode() {
@@ -235,6 +293,10 @@ do_joins() {
     echo "doing joins"
     infile=${source}
     cp ${infile} working.csv
+    ${csv} -join precinct_name precinct_turnout_2019 source/precincts_turnout.csv precinct 0 -p working.csv > tmp.csv
+    mv tmp.csv working.csv
+    ${csv} -join 0 1 count_2020.csv voter_id false   -dots ${dots} -p working.csv > tmp.csv
+    mv tmp.csv working.csv
     ${csv} -join 0 1 count_offyears3.csv voter_id 0   -dots ${dots} -p working.csv > tmp.csv
     mv tmp.csv working.csv
     ${csv} -join 0 1 count_offyears10.csv voter_id 0   -dots ${dots} -p working.csv > tmp.csv
@@ -254,6 +316,8 @@ do_joins() {
     rm working.csv
 }
 
+#do_joins
+#exit
 
 
 do_final() {
@@ -270,6 +334,7 @@ do_final() {
 	    -columnsafter  city  location  \
 	    -concat street_name,street_type " " "full street name" \
 	    -columnsafter street_name full_street_name \
+	    -columnsafter precinct precinct_turnout_2019 \
 	    -even address \
 	    -set even 0 "Address even" \
 	    -p  voters_joined.csv > voters_final.csv
@@ -290,8 +355,10 @@ table.addressTemplate _quote_\${name}<br>\${address}<br>\${city} \${state}<br>\$
 voter_id.type string \
 address_even.cansort true status.canlist true city.canlist true mailing_country.help {Enter &quot;_blank_&quot; to search for empty country} mailing_country.cansearch true mailing_country.addnot true \
 name.canlist true birth_year.canlist true gender.canlist true  party.canlist true  status.canlist true  address.canlist true  phone.canlist true \
-registration_date.cansearch true  neighborhood.cansearch true  city.cansearch true name.cansearch true  birth_year.cansearch true  yob.cansearch true gender.cansearch true party.cansearch true status.cansearch true status_reason.cansearch true precinct.cansearch true address.cansearch true \
-last_3_offyear_elections.group {Voting History} \
+registration_date.cansearch true  neighborhood.cansearch true  city.cansearch true name.cansearch true  birth_year.cansearch true  yob.cansearch true gender.cansearch true party.cansearch true status.cansearch true status_reason.cansearch true precinct.cansearch true  precinct_turnout_2019.cansearch true address.cansearch true \
+precinct_turnout_2019.placeholder {0-100} \
+voted_in_2020.type enumeration voted_in_2020.cansearch true  voted_in_2020.group {Voting History} \
+xxxlast_3_offyear_elections.group {Voting History} \
 .*elections.cansearch true  .*elections.type int \
 last_3_offyear_elections.suffix {# Times Voted in last 3 off year elections}\
 last_10_offyear_elections.suffix {# Times Voted in last 10 off year elections}\
@@ -320,10 +387,11 @@ do_geode() {
 }
 
 
-do_db
-exit
+#do_db
+#exit
 
 init_files
+#do_contributions
 do_geocode
 do_prep
 do_history
