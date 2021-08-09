@@ -973,8 +973,6 @@ RepositoryMap.prototype = {
         }
     },
     handleFeatureclick: function(layer, feature, center) {
-	console.log("fclick");
-
         if (!layer)
             layer = feature.layer;
 
@@ -995,13 +993,16 @@ RepositoryMap.prototype = {
 	    strokeColor:this.highlightColor,
 	    strokeWidth: this.highlightStrokeWidth,
 	    strokeOpacity: 0.75,
-	    fillOpacity: 0.75,
+	    fillOpacity: 0.40,
+	    fill:this.highlightColor,
 	    fill: true,
 	});
 
 	if(style.fillColor!="transparent") {
 	    style.fillColor  = this.highlightColor;
 	} 
+
+
 
 	if(Utils.isDefined(style.pointRadius)) {
 	    style.pointRadius = Math.round(style.pointRadius*1.5);
