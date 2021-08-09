@@ -300,9 +300,11 @@ public class SessionManager extends RepositoryManager {
     public void setArea(Request request, double north, double west,
                         double south, double east)
             throws Exception {
-        putSessionProperty(request, ARG_AREA,
-                           north + ";" + west + ";" + south + ";" + east
-                           + ";");
+	if(!Double.isNaN(north) && !Double.isNaN(west)&& !Double.isNaN(south) && !Double.isNaN(east)) {
+	    putSessionProperty(request, ARG_AREA,
+			       north + ";" + west + ";" + south + ";" + east
+			       + ";");
+	}
     }
 
 
