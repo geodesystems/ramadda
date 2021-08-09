@@ -234,7 +234,7 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
-	    if(colIdx==-1) colIdx= getColumnIndex(col);
+	    if(colIdx==-1) colIdx= getColumnIndex(ctx, col);
             List<Integer> indices = getIndices(ctx);
 	    if(set==null) {
 		set = new HashSet<Integer>();
@@ -287,7 +287,12 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
-	    if(colIdx==-1) colIdx= getColumnIndex(col);
+	    if(colIdx==-1) {
+		Integer i =  getColumnIndex(ctx,col);
+		if(i==null) fatal("Could not find index:" + col);
+		colIdx=i;
+	    }
+
             List<Integer> indices = getIndices(ctx);
 	    if(set==null) {
 		set = new HashSet<Integer>();
@@ -2001,6 +2006,7 @@ public abstract class Converter extends Processor {
                     String os = s;
                     if (isRegex) {
                         s = s.replaceAll(pattern, value);
+			//			System.err.println(value);
                     } else {
                         s = s.replaceAll(pattern, value);
                     }

@@ -2431,7 +2431,7 @@ public  class RowCollector extends Processor {
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
 	    super.processRow(ctx, row);
-	    if(sdest!=null) dest = getColumnIndex(sdest);
+	    if(sdest!=null) dest = getColumnIndex(ctx,sdest);
 	    sdest = null;
 	    return null;
         }
@@ -2563,7 +2563,7 @@ public  class RowCollector extends Processor {
             }
             try {
                 if (col == -1) {
-                    col = getColumnIndex(colName);
+                    col = getColumnIndex(ctx,colName);
                 }
                 Date d1 = sdf.parse(prevRow.get(col).toString());
                 Date d2 = sdf.parse(row.get(col).toString());

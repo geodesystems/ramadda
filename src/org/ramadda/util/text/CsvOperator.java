@@ -409,7 +409,7 @@ public class CsvOperator {
      *
      * @return _more_
      */
-    public int getColumnIndex(String s) {
+    public int xgetColumnIndex(String s) {
         List<Integer> indices = new ArrayList<Integer>();
         getColumnIndex(null, indices, s,null);
         return indices.get(0);

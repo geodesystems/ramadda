@@ -2169,6 +2169,8 @@ public abstract class Processor extends CsvOperator {
 		//		System.err.println("key:" + key +" row:" + row);
                 map.put(key, row);
             }
+	    if(operator==null)
+		fatal("Unable to read any data from:" + file);
         }
 
 
