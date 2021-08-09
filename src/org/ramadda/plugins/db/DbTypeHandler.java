@@ -4821,6 +4821,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		putBreak[0] = true;
 		A[1]++;
 		if(A[1]==10) {
+		    putBreak[0] = false;
 		    putPageBreak[0] = true;
 		    A[1]=0;
 		}

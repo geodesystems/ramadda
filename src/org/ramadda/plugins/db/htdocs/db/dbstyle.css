@@ -184,20 +184,22 @@
 
 .db_address_label {
     display:inline;
+    font-size:80%;
     /* originally from  Boulder Information Services */
     width: 2.623in; 
     height: 1in; 
     margin-right: .125in; 
     padding: 0px;
+    padding-top:5px;
     float: left;
     text-align: center;
     overflow: hidden;
     border-radius:4px;
-    border:1px solid transparent;
+    border:0px solid #ccc;
 }
 
 .db_address_pagebreak {
-    height:0.5in;
+    xheight:0.5in;
     clear: both;
     break-before:always;
     page-break-before:always; 	
