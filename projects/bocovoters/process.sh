@@ -9,13 +9,10 @@ unique_voter_history=voter_history_unique.csv
 
 init_files() {
     echo "initializing files"
-    cp source/voters_all.csv .
-    cp source/voters_geocode.csv .
     cp source/boco_precincts.csv .
-    cp source/Election_Contributions.csv .
-    ${csv}  -p source/Master_Voting_History_List_Part1.csv >voter_history.csv
-    ${csv}  -skiplines 1 -p source/Master_Voting_History_List_Part2.csv >>voter_history.csv
-    ${csv}  -skiplines 1 -p source/Master_Voting_History_List_Part3.csv >>voter_history.csv        
+    cp source/Master_Voting_History_List_Part1.csv voter_history.csv
+    tail -n+2 source/Master_Voting_History_List_Part2.csv >>voter_history.csv
+    tail -n+2 source/Master_Voting_History_List_Part3.csv >>voter_history.csv        
 }
 
 do_contributions() {
@@ -46,7 +43,7 @@ do_contributions() {
 	   -change contribution,fromcandidate,matching_amount "_leftparen_(.*)_rightparen_" "-\$1" \
 	   -change contribution,fromcandidate,matching_amount "," "" \
 	   -change Contribution "_dollar_" "" \
-	   -p Election_Contributions.csv > contributions_final.csv
+	   -p source/Election_Contributions.csv > contributions_final.csv
     ${csv} -db " table.id boulder_campaign_contributions table.label {Boulder Campaign Contributions} \
 committee.numberOfSearchWidgets 5 \
 committee.type enumeration type.type enumeration candidate.type enumeration \
@@ -93,7 +90,13 @@ do_precincts() {
 
 do_prep() {
     echo "prepping voters"
-    ${csv}  -notcolumns "regex:(?i)BALLOT_.*"   -p voters_all.csv > voters_base.csv    
+    ${csv}  -notcolumns "regex:(?i)BALLOT_.*"   -p source/voters_all.csv > voters_base.csv    
+    ${csv}  -delimiter "|" 	    -pattern RES_CITY BOULDER \
+	    -columns voter_id,MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE \
+	    -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "" voted_in_2021 \
+	    -change voted_in_2021 "" false \
+	    -change voted_in_2021 ".*[0-9]+.*" true \
+	    -p source/ce-068.txt  > voted_in_2021.csv
     ${csv} -pattern res_city BOULDER   -dots ${dots} -p voters_base.csv > tmp.csv
     ${csv} -if -pattern mail_addr1,mailing_country "^$" -copycolumns res_address mail_addr1  -endif\
 	   -if -pattern mailing_city,mailing_country "^$" -copycolumns res_city mailing_city  -endif \
@@ -278,7 +281,7 @@ ACS Housing/Value of owner_occupied housing units/\$2_000_000 or more/Percentage
 -notcolumns "regex:(?i).*households/.*" \
 -notcolumns "regex:(?i).*ethnicity/.*" \
 -notcolumns "regex:(?i).*income/.*" \
--p  voters_geocode.csv >  voters_geocode_trim.csv
+-p  source/voters_geocode.csv >  voters_geocode_trim.csv
 ${csv} -db "location.type latlon location.cansearch true" voters_geocode_trim.csv > geocodedb.xml
 }
 
@@ -294,6 +297,8 @@ do_joins() {
     infile=${source}
     cp ${infile} working.csv
     ${csv} -join precinct_name precinct_turnout_2019 source/precincts_turnout.csv precinct 0 -p working.csv > tmp.csv
+    mv tmp.csv working.csv
+    ${csv} -join 0 voted_in_2021 voted_in_2021.csv voter_id false   -dots ${dots} -p working.csv > tmp.csv
     mv tmp.csv working.csv
     ${csv} -join 0 1 count_2020.csv voter_id false   -dots ${dots} -p working.csv > tmp.csv
     mv tmp.csv working.csv
@@ -354,11 +359,13 @@ table.mapLabelTemplatePrint _quote_<div style='display: flex;  justify-content: 
 table.addressTemplate _quote_\${name}<br>\${address}<br>\${city} \${state}<br>\${zip_code}_quote_ table.canlist false   \
 voter_id.type string \
 address_even.cansort true status.canlist true city.canlist true mailing_country.help {Enter &quot;_blank_&quot; to search for empty country} mailing_country.cansearch true mailing_country.addnot true \
-name.canlist true birth_year.canlist true gender.canlist true  party.canlist true  status.canlist true  address.canlist true  phone.canlist true \
+name.canlist true birth_year.canlist true gender.canlist true  \
+party.canlist true  status.canlist true  address.canlist true  phone.canlist true \
 registration_date.cansearch true  neighborhood.cansearch true  city.cansearch true name.cansearch true  birth_year.cansearch true  yob.cansearch true gender.cansearch true party.cansearch true status.cansearch true status_reason.cansearch true precinct.cansearch true  precinct_turnout_2019.cansearch true address.cansearch true \
+party.values {REP:Republican,UAF:Unaffiliated,DEM:Democrat,GRN:Green,LBR:Labor,ACN:American Constitution Party,UNI:Unity,APV:Approval Voting} \
 precinct_turnout_2019.placeholder {0-100} \
-voted_in_2020.type enumeration voted_in_2020.cansearch true  voted_in_2020.group {Voting History} \
-xxxlast_3_offyear_elections.group {Voting History} \
+voted_in_2021.type enumeration voted_in_2021.cansearch true  voted_in_2021.group {Voting History} voted_in_2021.suffix {Not working until 3 weeks before the election} \
+voted_in_2020.type enumeration voted_in_2020.cansearch true  \
 .*elections.cansearch true  .*elections.type int \
 last_3_offyear_elections.suffix {# Times Voted in last 3 off year elections}\
 last_10_offyear_elections.suffix {# Times Voted in last 10 off year elections}\
@@ -380,6 +387,9 @@ percent_house_value_500000_to_1_million.cansearch true  percent_house_value_grea
 voters_final.csv > bocovotersdb.xml
  }
 
+do_db
+exit
+
 do_geode() {
     echo "Copying to geode"
     sh /Users/jeffmc/source/ramadda/bin/scpgeode.sh 50.112.99.202 voters_final.csv staging
@@ -390,12 +400,12 @@ do_geode() {
 #do_db
 #exit
 
-init_files
+#init_files
 #do_contributions
-do_geocode
+#do_geocode
 do_prep
-do_history
-do_counts
+#do_history
+#do_counts
 do_joins
 do_final
 do_db
