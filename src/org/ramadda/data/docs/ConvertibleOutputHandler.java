@@ -589,9 +589,11 @@ public class ConvertibleOutputHandler extends OutputHandler {
                     ? ""
                     : lastResult));
             s = Json.mapAndQuote("result", s);
-
+	    System.err.println("OK");
             return new Result(s, "application/json");
+
         } catch (Exception exc) {
+	    System.err.println("Error");
             Throwable inner = LogUtil.getInnerException(exc);
             String    s     = inner.getMessage();
             //Better messaging
@@ -618,6 +620,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 inner.printStackTrace();
             }
 
+	    System.err.println("Error:" + s);
             return new Result(s, "application/json");
 
         }
@@ -675,10 +678,16 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 request.ensureAdmin();
                 for (String file : csvUtil.getNewFiles()) {
                     if (file.endsWith("db.xml")) {
-                        getRepository().getPluginManager().installPlugin(
-                            file);
-                        getRepository().clearCache();
+			try {
+			    getRepository().getPluginManager().installPlugin(
+									     file,true);
+			    getRepository().clearCache();
+			} catch(Exception exc) {
+			    //Clean up the mess
+			    throw exc;
+			}
                     }
+		    System.err.println("after");
                 }
             }
         } finally {

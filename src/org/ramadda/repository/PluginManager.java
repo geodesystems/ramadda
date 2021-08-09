@@ -593,8 +593,13 @@ public class PluginManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public boolean installPlugin(String pluginPath) throws Exception {
+	return installPlugin(pluginPath,false);
+    }
+
+    public boolean installPlugin(String pluginPath, boolean throwError) throws Exception {	
+	String newPluginFile = null;
         try {
-            String newPluginFile = copyPlugin(pluginPath);
+            newPluginFile = copyPlugin(pluginPath);
             boolean haveLoadedBefore =
                 getPluginManager().reloadFile(newPluginFile);
 
@@ -602,8 +607,13 @@ public class PluginManager extends RepositoryManager {
             //            loadPlugins();
             return haveLoadedBefore;
         } catch (Exception exc) {
-            getLogManager().logError("Error installing plugin:" + pluginPath,
-                                     exc);
+	    if(throwError) {
+		new File(newPluginFile).delete();
+		throw new RuntimeException("Error installing plugin:" + pluginPath,
+					   exc);
+	    }
+	    getLogManager().logError("Error installing plugin:" + pluginPath,
+				     exc);
         }
 
         return false;
