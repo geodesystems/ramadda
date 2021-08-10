@@ -902,10 +902,10 @@ RepositoryMap.prototype = {
             return;
         }
 	//            if (layer.canSelect === false || !(layer.isMapLayer === true)) return;
-	if (layer.canSelect === false) return;
-        var _this = this;
 
-	//xxxx
+	if (layer.canSelect === false) return;
+
+        var _this = this;
         if (!feature.isSelected) {
             feature.originalStyle = feature.style;
             feature.style = null;
@@ -913,6 +913,10 @@ RepositoryMap.prototype = {
 	    let highlightStyle = $.extend({},this.highlightStyle);
 	    if(feature.originalStyle) {
 		highlightStyle.fillColor  = Utils.brighterColor(feature.originalStyle.fillColor||highlightStyle.fillColor,0.4);
+	    }
+	    if(!highlightStyle.fillColor) {
+		highlightStyle.fillColor = "blue";
+		highlightStyle.fillOpacity = 0.25;
 	    }
             layer.drawFeature(feature, highlightStyle);
             if (this.displayDiv) {
@@ -2055,9 +2059,10 @@ RepositoryMap.prototype = {
 	let opts =  {
             strokeColor: 'blue',
             strokeWidth: 1,
+	    fillColor:"#ccc",
+	    fillOpacity:0.4
         }
 	if(args) $.extend(opts, args);
-//	console.log(JSON.stringify(opts));
         layer.styleMap = this.getVectorLayerStyleMap(layer, opts);
         this.initMapVectorLayer(layer, canSelect, selectCallback, unselectCallback, loadCallback, zoomToExtent);
         return layer;

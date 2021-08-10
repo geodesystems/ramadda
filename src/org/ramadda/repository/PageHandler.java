@@ -776,6 +776,8 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public String translate(Request request, String s) {
+	//Don't translate for now
+	if(true) return s;
 
         if (s == null) {
             return "";
@@ -1647,6 +1649,9 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public static String msg(String msg) {
+	//for now no translation
+	if(true) return msg;
+
         if (msg == null) {
             return null;
         }
