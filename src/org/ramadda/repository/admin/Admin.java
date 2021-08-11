@@ -533,7 +533,7 @@ public class Admin extends RepositoryManager {
                 "Install Error",
                 new StringBuffer(
                     getPageHandler().showDialogError(
-                        "Error: No installation password has been specified.<br>You need to add a .properties file to your RAMADDA home directory with the following set and then restart your server<br>&nbsp;<br><pre>\n\n" + PROP_INSTALL_PASSWORD + "=some password\n\n</pre>")));
+a						     "Error: No installation password has been specified.<br>You need to add a some_name.properties file to your RAMADDA home directory (" + getStorageManager().getRepositoryDir() +") with the following set and then restart your server<br>&nbsp;<br><pre>\n" + PROP_INSTALL_PASSWORD + "=some password\n\n</pre>")));
         }
 
         String givenPassword = request.getString(PROP_INSTALL_PASSWORD,
