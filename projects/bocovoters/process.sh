@@ -2,7 +2,7 @@
 export csv=~/bin/csv.sh 
 
 
-dots=2000
+dots=5000
 registered_voters=source/ce-vr011b.txt
 voting_report=source/ce-068.txt
 source=voters_boulder.csv
@@ -22,9 +22,9 @@ do_prep() {
     ${csv}  -delimiter "|" 	 -dots ${dots}    -pattern RES_CITY BOULDER \
 	    -columns voter_id,MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE \
 	    -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "" voted_in_2021 \
-	    -change voted_in_2021 "" false \
-	    -change voted_in_2021 ".*[0-9]+.*" true \
+	    -change voted_in_2021 "^.*$" false \
 	    -p ${voting_report}  > voted_in_2021.csv
+#	    -change voted_in_2021 ".*[0-9]+.*" true \
 
 
     echo "processing registered voters"
@@ -39,7 +39,7 @@ do_prep() {
     rm voters_base.csv
 }
 
-#do_prep
+<#do_prep
 #exit
 
 do_precincts() {

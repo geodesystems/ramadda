@@ -3,9 +3,16 @@ export csv=~/bin/csv.sh
 
 dots=2000
 do_convert() {
-    ${csv} -set Match 0 MatchAmount -set CommitteeNum 0 CommitteeNumber  -p source/old.csv > oldtmp.csv
-    ${csv} -notcolumns "YTDAmount,AmendsContributionID,ContributionID" -p source/new.csv > newtmp.csv
+    ${csv} -set Match 0 MatchAmount -set CommitteeNum 0 CommitteeNumber  \
+	   -change filingdate,amendeddate,transactiondate "(....)/(..)/(..).*" "\$1/\$2/\$3" \
+	   -p source/old.csv > oldtmp.csv
+    ${csv} -notcolumns "YTDAmount,AmendsContributionID,ContributionID" \
+	   -change filingdate,amendeddate,transactiondate "(..)/(..)/(....)" "\$3/\$1/\$2" \
+	   -p source/new.csv > newtmp.csv
 }
+
+#do_convert
+#exit
 
 
 do_contributions() {
@@ -66,7 +73,6 @@ committee.canlist true  candidate.canlist true  filing_date.canlist true  full_n
 street.canlist true  city.canlist true  contribution.canlist true  \
 state.type enumeration \
 filing_date.type date amended_date.type date transaction_date.type date 
-transactiondate.format yyyy/MM/dd \
 city.type enumeration zip.type string contribution_type.type enumeration anonymous.type enumeration \
 " contributions_old.csv > boulder_campaign_contributionsdb.xml
 

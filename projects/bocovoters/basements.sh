@@ -25,7 +25,6 @@ ${csv} -sum strap bsmtsf "" -p basements.csv > basementsums.csv
 ${csv} -unique strap -columns strap,nbrBedRoom -set nbrBedRoom 0 "number bedrooms" -change number_bedrooms "\..*$" "" -p Buildings.csv  > bedrooms.csv
 
 
-
 echo "joining"
 ${csv} -join 0 1 basementsums.csv strap 0 -join 0 1 bedrooms.csv strap 0 -p boulderowners.csv > bedrooms_basement.csv
 
@@ -34,7 +33,7 @@ ${csv} -join full_address  bsmtsf,number_bedrooms bedrooms_basement.csv main_add
 
 grep "\-999" results.csv > nomatch.csv
 grep -v "\-999" results.csv > match.csv
-${csv} -addheader "" -p match.csv  >  rental_bedrooms_basement.csv
+${csv} -addheader "rental_type.type enumeration" -p match.csv  >  rental_bedrooms_basement.csv
 wc -l nomatch.csv
 wc -l match.csv
 
