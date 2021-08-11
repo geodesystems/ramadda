@@ -158,6 +158,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
     private String defaultView;
 
+    private boolean showEntryCreate = true;
+
 
     /** _more_ */
     SimpleDateFormat rssSdf =
@@ -224,6 +226,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	}
         searchForLabel = XmlUtil.getAttribute(tableNode, "searchForLabel", searchForLabel);
         defaultView = XmlUtil.getAttribute(tableNode, "defaultView",VIEW_TABLE);
+        showEntryCreate = XmlUtil.getAttribute(tableNode, "showEntryCreate",true);
         numOrders = XmlUtil.getAttribute(tableNode, "numberOrderBy",numOrders);
 
 	formJS =  XmlUtil.getGrandChildText(tableNode,"formjs",(String) null);
@@ -2467,6 +2470,23 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 
 
+    private void deleteEntireDatabase(Request request, Entry entry) throws Exception {
+        if(!getAccessManager().canEditEntry(request, entry))
+	    throw new RuntimeException("Don't have permission to delete entire database");
+	Statement statement      = getDatabaseManager().createStatement();
+	try {
+	    String query = SqlUtil.makeDelete(
+					      tableHandler.getTableName(), COL_ID,
+					      SqlUtil.quote(entry.getId().toString()));
+	    statement.execute(query);
+	} finally {
+            getRepository().getDatabaseManager().closeAndReleaseConnection(
+                statement);
+            dbChanged(entry);
+        }
+    }
+
+
 
     /**
      * _more_
@@ -2483,32 +2503,24 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         String    action = request.getString(ARG_DB_ACTION, ACTION_DELETE);
         boolean   deleteSelected = action.equals(ACTION_DELETE);
         List      dbids = request.get(ARG_DBID_SELECTED, new ArrayList());
-        Statement statement      = getDatabaseManager().createStatement();
-
-
-        try {
-            if (deleteSelected) {
-                for (Object dbid : dbids) {
+	if (deleteSelected) {
+	    Statement statement      = getDatabaseManager().createStatement();
+	    try {
+		for (Object dbid : dbids) {
                     String query =
                         SqlUtil.makeDelete(tableHandler.getTableName(),
                                            COL_DBID,
                                            SqlUtil.quote(dbid.toString()));
                     statement.execute(query);
                 }
-            } else {
-                String query = SqlUtil.makeDelete(
-                                   tableHandler.getTableName(), COL_ID,
-                                   SqlUtil.quote(entry.getId().toString()));
-                statement.execute(query);
-            }
-        } finally {
-            getRepository().getDatabaseManager().closeAndReleaseConnection(
-                statement);
-            dbChanged(entry);
-        }
-
-
-
+	    } finally {
+		getRepository().getDatabaseManager().closeAndReleaseConnection(
+									       statement);
+		dbChanged(entry);
+	    }
+	} else {
+	    deleteEntireDatabase(request, entry);
+	}
 
         String url =
             HtmlUtils.url(request.makeUrl(getRepository().URL_ENTRY_SHOW),
@@ -2795,6 +2807,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 }
             }
         };
+	if(request.get(ARG_DB_BULK_NUKEIT,false)) {
+	    deleteEntireDatabase(request, entry);
+	}
+
+
+
         textReader.addProcessor(myProcessor);
         CsvUtil csvUtil = new CsvUtil(new ArrayList<String>());
 	DataProvider.CsvDataProvider provider = new DataProvider.CsvDataProvider(textReader);
@@ -6954,6 +6972,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 + HtmlUtils.space(2) + msgLabel("# Header Lines")
                 + HtmlUtils.input(ARG_DB_BULK_SKIP, "1", HtmlUtils.SIZE_5)));
 
+        bulkSB.append(
+            HtmlUtils.formEntry(
+				"",
+				HtmlUtils.labeledCheckbox(ARG_DB_BULK_NUKEIT,"true",false,"Delete existing database") 
+				+ HtmlUtils.space(2) + HU.b("!!! Important: this will delete everything in the existing database before doing the bulk load !!!")));
+
         bulkSB.append(HtmlUtils.formTableClose());
         bulkSB.append(HtmlUtils.p());
         bulkSB.append(msgLabel("Or enter text"));
@@ -6975,11 +6999,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         bulkSB.append(HtmlUtils.p());
         bulkSB.append(bulkButtons);
         bulkSB.append(HtmlUtils.formClose());
-        List<String> tabTitles = (List<String>) Misc.newList(msg("Form"),
-                                     msg("Bulk Create"));
-        List<String> tabContents =
-            (List<String>) Misc.newList(formBuffer.toString(),
-                                        bulkSB.toString());
+        List<String> tabTitles =new ArrayList<String>();
+        List<String> tabContents =new ArrayList<String>();	
+	if(showEntryCreate) {
+	    tabTitles.add(msg("Form"));
+	    tabContents.add(formBuffer.toString());
+	}
+	tabTitles.add(msg("Bulk Create"));
+	tabContents.add(bulkSB.toString());
         String contents = OutputHandler.makeTabs(tabTitles, tabContents,
                               true);
         Utils.append(sb, contents);
