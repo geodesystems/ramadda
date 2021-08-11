@@ -1639,6 +1639,14 @@ public class CsvUtil {
                 new Arg("file", "File to join with", "type", "file"),
                 new Arg("source_columns", "source key columns"),
 		new Arg("default_value", "default value")),
+        new Cmd("-fuzzyjoin", "Join the 2 files together using fuzzy matching logic",
+                new Arg("threshold", "Score threshold 0-100. Default:85. Higher number better match"),
+                new Arg("key columns", "Numeric column numbers of the file to join with", "type", "columns"),
+                new Arg("value_columns", "numeric columns of the values to join"),
+                new Arg("file", "File to join with", "type", "file"),
+                new Arg("source_columns", "source key columns"),
+		new Arg("default_value", "default value")),
+
         new Cmd(
 		"-countunique",
 		"Count number of unique values",
@@ -2369,7 +2377,7 @@ public class CsvUtil {
 		return i;
 	    });	
 
-	defineFunction("-columns",1,(ctx,args,i) -> {
+	defineFunction(new String[]{"-c","-columns"},1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnSelector(getCols(args.get(++i))));
 		return i;
 	    });
@@ -2550,6 +2558,16 @@ public class CsvUtil {
 		return i;
 	    });
 
+	defineFunction("-fuzzyjoin",6,(ctx,args,i) -> {
+		int threshold = Integer.parseInt(args.get(++i));
+		List<String> keys1   = getCols(args.get(++i));
+		List<String> values1 = getCols(args.get(++i));
+		String       file    = args.get(++i);
+		List<String> keys2   = getCols(args.get(++i));
+		ctx.addProcessor(new Processor.FuzzyJoiner(threshold, keys1, values1, file, keys2,args.get(++i)));
+		return i;
+	    });
+	
 	defineFunction("-sum",3,(ctx,args,i) -> {
 		List<String> keys   = getCols(args.get(++i));
 		List<String> values = getCols(args.get(++i));

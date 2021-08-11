@@ -2143,6 +2143,8 @@ public abstract class Processor extends CsvOperator {
                 if (line == null) {
                     break;
                 }
+		line = line.trim();
+		if(line.length()==0) continue;
                 if (delimiter == null) {
                     if (line.indexOf("\t") >= 0) {
                         delimiter = "\t";
@@ -2160,6 +2162,9 @@ public abstract class Processor extends CsvOperator {
 
                 String       key  = "";
                 for (int i : keys1Indices) {
+		    if(i<0 || i>=cols.size()) {
+			fatal("Mismatch between columns and keys. Columns:" + cols +" key index:" + i);
+		    }
                     key += cols.get(i) + "_";
                 }
                 Row row = new Row(cols);
@@ -2219,6 +2224,191 @@ public abstract class Processor extends CsvOperator {
         }
     }
 
+
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Wed, Feb 20, '19
+     * @author         Enter your name here...
+     */
+    public static class FuzzyJoiner extends Processor {
+
+	private int threshold = 85;
+
+	private String dflt;
+
+        /** _more_ */
+        private List<String> keys1;
+
+	private List<Integer> keys2Indices;
+
+        /** _more_ */
+        private List<String> values1;
+
+        /** _more_ */
+        private List<String> keys2;
+
+        /** _more_ */
+	private List<KeyRow> rows;
+
+        /** _more_ */
+        private Row headerRow1;
+
+        /** _more_ */
+        private List<Integer> values1Indices;
+
+        /** _more_ */
+        private Row headerRow2;
+
+
+	
+        /**
+         * _more_
+         *
+         *
+         * @param keys1 _more_
+         * @param values1 _more_
+         * @param file _more_
+         * @param keys2 _more_
+         */
+        public FuzzyJoiner(int threshold, List<String> keys1, List<String> values1, String file,
+			   List<String> keys2, String dflt) {
+	    this.threshold = threshold;
+            this.keys1   = keys1;
+            this.values1 = values1;
+            this.keys2   = keys2;
+	    this.dflt = dflt;
+            try {
+                init(file);
+            } catch (Exception exc) {
+		fatal("Error opening file:" + file,exc);
+            }
+        }
+
+
+	static class KeyRow {
+	    String key;
+	    Row row;
+	    KeyRow(String key, Row row) {
+		this.key = key;
+		this.row = row;
+	    }
+	}
+
+
+        /**
+         * _more_
+         *
+         * @throws Exception _more_
+         */
+        private void init(String file) throws Exception {
+            List<Integer> keys1Indices = null;
+            BufferedReader br = new BufferedReader(
+						   new InputStreamReader(
+									 getInputStream(file)));
+	    CsvOperator operator = null;
+            TextReader reader = new TextReader(br);
+	    rows = new ArrayList<KeyRow>();
+            headerRow1 = null;
+            String delimiter = null;
+            while (true) {
+                String line = reader.readLine();
+                if (line == null) {
+                    break;
+                }
+		line = line.trim();
+		if(line.length()==0) continue;
+                if (delimiter == null) {
+                    if (line.indexOf("\t") >= 0) {
+                        delimiter = "\t";
+                    } else {
+                        delimiter = ",";
+                    }
+                }
+                List<String> cols = Utils.tokenizeColumns(line, delimiter);
+		if(operator==null) {
+		    operator = new CsvOperator();
+		    operator.setHeader(cols);
+		    keys1Indices = operator.getIndices(reader, keys1);	    
+		    values1Indices = operator.getIndices(reader, values1);
+		}
+
+                String       key  = "";
+		for (int i=0;i<keys1Indices.size();i++) {
+		    if(i>0) key+="_";
+		    int index = keys1Indices.get(i);
+		    if(index<0 || index>=cols.size()) {
+			fatal("Mismatch between columns and keys. Columns:" + cols +" key index:" + index);
+		    }
+                    key += cols.get(index);
+                }
+                Row row = new Row(cols);
+                if (headerRow1 == null) {
+                    headerRow1 = row;
+                }
+		rows.add(new KeyRow(key,row));
+            }
+	    if(operator==null)
+		fatal("Unable to read any data from:" + file);
+        }
+
+
+        /**
+         * _more_
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         * @throws Exception On badness
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) throws Exception {
+	    if(keys2Indices==null)
+		keys2Indices = getIndices(ctx, keys2);
+            if (headerRow2 == null) {
+                headerRow2 = row;
+                for (int j : values1Indices) {
+                    row.add(headerRow1.get(j));
+                }
+                return row;
+            }
+            String key = "";
+            for (int i=0;i<keys2Indices.size();i++) {
+		if(i>0) key+="_";
+                key += row.getString(keys2Indices.get(i));
+            }
+	    int bestScore = -1;
+	    Row bestMatch = null;
+	    //	    System.err.println("key:" + key);
+	    for(KeyRow keyRow: rows) {
+		int score = me.xdrop.fuzzywuzzy.FuzzySearch.ratio(key,keyRow.key);
+		if(score<threshold) continue;
+		if(bestMatch==null || score>bestScore) {
+		    bestScore = score;
+		    bestMatch=keyRow.row;
+		}
+	    }
+
+            Row other = bestMatch;
+            if (other == null) {
+                for (int j : values1Indices) {
+                    row.add(dflt);
+                }
+                return row;
+            }
+            for (int j : values1Indices) {
+                row.add(other.get(j));
+            }
+            return row;
+        }
+    }
+
+    
+    
     public static class Doit extends Processor {
 	private HashSet genres = new HashSet();
 	private SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
