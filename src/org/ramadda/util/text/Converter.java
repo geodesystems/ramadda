@@ -2551,7 +2551,9 @@ public abstract class Converter extends Processor {
         /* */
 
         /** _more_ */
-        private int col;
+        private int col=-1;
+
+	private String scol;
 
         /* */
 
@@ -2578,9 +2580,9 @@ public abstract class Converter extends Processor {
          * @param replace _more_
          * @param name _more_
          */
-        public ColumnExtracter(int col, String pattern, String replace,
+        public ColumnExtracter(String col, String pattern, String replace,
                                String name) {
-            this.col     = col;
+	    this.scol = col;
             this.pattern = pattern;
             this.replace = replace;
             this.name    = name;
@@ -2601,6 +2603,7 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader ctx, Row row) {
             //Don't process the first row
             if (rowCnt++ == 0) {
+		this.col     = getColumnIndex(ctx,scol);
                 add(ctx, row, name);
 
                 return row;

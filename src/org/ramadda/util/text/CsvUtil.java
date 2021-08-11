@@ -2885,7 +2885,7 @@ public class CsvUtil {
 
 
 	defineFunction("-extract",4,(ctx,args,i) -> {
-		int    col     = new Integer(args.get(++i));
+		String   col     = args.get(++i);
 		String pattern = args.get(++i);
 		String replace = args.get(++i);
 		String name    = args.get(++i);
