@@ -359,12 +359,12 @@ function CollectionForm(formId, plottype, args) {
                 filehtml += "<b>Files used for plot:</b><br/>";
                 for (var i = 0; i < files.length; i++) {
                     var entry = files[i];
-                    if (entry.toString().endsWith(".txt")) {
+                    if (entry.getFilename().endsWith(".txt")) {
                       //filehtml += "PDF values: ";
                       filehtml += entry.getResourceLink();
                       filehtml += "<br/>";
                       /*
-                    } else if (entry.toString().endsWith(".r")) {
+                    } else if (entry.getFilename().endsWith(".r")) {
                       //filehtml += "R Script: ";
                       filehtml += entry.getResourceLink();
                       filehtml += "<br/>";
