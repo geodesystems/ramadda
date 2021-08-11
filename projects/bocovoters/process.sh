@@ -3,68 +3,44 @@ export csv=~/bin/csv.sh
 
 
 dots=2000
+registered_voters=source/ce-vr011b.txt
+voting_report=source/ce-068.txt
 source=voters_boulder.csv
 unique_voter_history=voter_history_unique.csv
-
+precincts=source/boco_precincts.csv
 
 init_files() {
     echo "initializing files"
-    cp source/boco_precincts.csv .
     cp source/Master_Voting_History_List_Part1.csv voter_history.csv
     tail -n+2 source/Master_Voting_History_List_Part2.csv >>voter_history.csv
     tail -n+2 source/Master_Voting_History_List_Part3.csv >>voter_history.csv        
 }
 
-do_contributions() {
-    ${csv} -notcolumns "0,committeenum" \
-	   -set filingdate 0 "Filing Date" \
-	   -set transactiondate  0 transaction_date \
-	   -set lastname  0 last_name \
-	   -set firstname  0 first_name \
-	   -set match  0 matching_amount \
-	   -if -same first_name last_name  -change last_name ".*" "" -endif \
-	   -concat "first_name,last_name" " " "Full Name"  \
-	   -case full_name upper -trim full_name   -change full_name "  +" " " \
-	   -change full_name ".*COCA-COLA.*" "THE COCA-COLA COMPANY" \
-	   -change full_name "INDIAN PEAKS GROUP SIERRA CLUB" "SIERRA CLUB INDIAN PEAKS GROUP" \
-	   -change full_name "HOUSING HELPERS OF BOULDER, LLC" "HOUSING HELPERS OF BOULDER" \
-	   -change full_name "BOULDER AREA REALTORS ASSN" "BOULDER AREA REALTORS" \
-	   -change full_name "SIERRA CLUB IPG" "SIERRA CLUB INDIAN PEAKS GROUP" \
-	   -change full_name ".*NEW ERA.*" "NEW ERA" \
-	   -change full_name "PLAN.*BOULDER.*" "PLAN BOULDER" \
-	   -change full_name "VOTERS AGAINST XCEL BUYING ELECTIONS" "XXXX" \
-	   -change full_name ".*XCEL.*" "XCEL ENERGY" \
-	   -change full_name "XXXX" "VOTERS AGAINST XCEL BUYING ELECTIONS" \
-	   -change full_name "OPEN BOULDER.*" "OPEN BOULDER" \
-	   -change full_name ".*AMERICAN BEVERAGE ASSOCIATION.*" "AMERICAN BEVERAGE ASSOCIATION" \
-	   -columnsbefore last_name full_name \
-	   -set amendeddate	 0 amended_date	   \
-	   -change contribution,fromcandidate,matching_amount "_dollar_" "" \
-	   -change contribution,fromcandidate,matching_amount "_leftparen_(.*)_rightparen_" "-\$1" \
-	   -change contribution,fromcandidate,matching_amount "," "" \
-	   -change Contribution "_dollar_" "" \
-	   -p source/Election_Contributions.csv > contributions_final.csv
-    ${csv} -db " table.id boulder_campaign_contributions table.label {Boulder Campaign Contributions} \
-committee.numberOfSearchWidgets 5 \
-committee.type enumeration type.type enumeration candidate.type enumeration \
-official_filing.type enumeration \
-from_candidate.type enumeration \
-table.format yyyy/MM/dd \
-table.addressTemplate _quote_\${first_name} \${last_name}<br>\${street}<br>\${city} \${state}<br>\${zip}_quote_ 
-table.canlist false   \
-committee.canlist true  candidate.canlist true  filing_date.canlist true  full_name.canlist true  \
-street.canlist true  city.canlist true  contribution.canlist true  \
-state.type enumeration \
-filing_date.type date amended_date.type date transaction_date.type date 
-transactiondate.format yyyy/MM/dd \
-city.type enumeration zip.type string contribution_type.type enumeration anonymous.type enumeration \
-" contributions_final.csv > boulder_campaign_contributionsdb.xml
+
+do_prep() {
+    echo "processing voting report"
+    ${csv}  -delimiter "|" 	 -dots ${dots}    -pattern RES_CITY BOULDER \
+	    -columns voter_id,MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE \
+	    -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "" voted_in_2021 \
+	    -change voted_in_2021 "" false \
+	    -change voted_in_2021 ".*[0-9]+.*" true \
+	    -p ${voting_report}  > voted_in_2021.csv
+
+
+    echo "processing registered voters"
+    ${csv}  -delimiter "|"  -dots ${dots}  -notcolumns "regex:(?i)BALLOT_.*"  -pattern res_city BOULDER  -p ${registered_voters} > voters_base.csv    
+    ${csv} -if -pattern mail_addr1,mailing_country "^$" -copycolumns res_address mail_addr1  -endif\
+	   -if -pattern mailing_city,mailing_country "^$" -copycolumns res_city mailing_city  -endif \
+	   -if -pattern mailing_state,mailing_country "^$" -copycolumns res_state mailing_state  -endif\
+	   -if -pattern mailing_zip,mailing_country "^$" -copycolumns res_zip_code mailing_zip  -endif\
+	   -p voters_base.csv > ${source}
+    ${csv} -columns res_address,res_city -unique res_address -insert "" state Colorado  -set 0 0 address -set 1 0 city -dots ${dots} -p ${source} > voters_addresses.csv
+    ${csv} -maxrows 100  -p voters_addresses.csv > voters_addresses_short.csv        
+    rm voters_base.csv
 }
 
-#init_files
-#do_contributions
+#do_prep
 #exit
-
 
 do_precincts() {
     ${csv} -join precinct_name active_voters source/precincts_voters.csv precinct 0   \
@@ -72,7 +48,7 @@ do_precincts() {
 	   -columnsafter  neighborhood city \
 	   -columnsafter  city active_voters \
 	   -concat "latitude,longitude" ";" Location -notcolumns latitude,longitude \
-	   -p boco_precincts.csv > precincts_final.csv
+	   -p ${precincts}> precincts_final.csv
     ${csv} -db "precinct.type string neighborhood.type enumeration city.type enumeration location.type latlon \
     table.icon /icons/map/marker-blue.png \
     table.defaultView map \
@@ -88,28 +64,6 @@ do_precincts() {
 #do_precincts
 #exit
 
-do_prep() {
-    echo "prepping voters"
-    ${csv}  -notcolumns "regex:(?i)BALLOT_.*"   -p source/voters_all.csv > voters_base.csv    
-    ${csv}  -delimiter "|" 	    -pattern RES_CITY BOULDER \
-	    -columns voter_id,MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE \
-	    -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "" voted_in_2021 \
-	    -change voted_in_2021 "" false \
-	    -change voted_in_2021 ".*[0-9]+.*" true \
-	    -p source/ce-068.txt  > voted_in_2021.csv
-    ${csv} -pattern res_city BOULDER   -dots ${dots} -p voters_base.csv > tmp.csv
-    ${csv} -if -pattern mail_addr1,mailing_country "^$" -copycolumns res_address mail_addr1  -endif\
-	   -if -pattern mailing_city,mailing_country "^$" -copycolumns res_city mailing_city  -endif \
-	   -if -pattern mailing_state,mailing_country "^$" -copycolumns res_state mailing_state  -endif\
-	   -if -pattern mailing_zip,mailing_country "^$" -copycolumns res_zip_code mailing_zip  -endif\
-	   -p tmp.csv > ${source}
-    ${csv} -columns res_address,res_city -unique res_address -insert "" state Colorado  -set 0 0 address -set 1 0 city -dots ${dots} -p ${source} > voters_addresses.csv
-    ${csv} -maxrows 100  -dots ${dots} -p voters_addresses.csv > voters_addresses_short.csv        
-    rm voters_base.csv
-}
-
-#do_prep
-#exit
 
 
 do_history() {
@@ -282,7 +236,6 @@ ACS Housing/Value of owner_occupied housing units/\$2_000_000 or more/Percentage
 -notcolumns "regex:(?i).*ethnicity/.*" \
 -notcolumns "regex:(?i).*income/.*" \
 -p  source/voters_geocode.csv >  voters_geocode_trim.csv
-${csv} -db "location.type latlon location.cansearch true" voters_geocode_trim.csv > geocodedb.xml
 }
 
 
@@ -313,7 +266,7 @@ do_joins() {
     ${csv} -join 0 1 count_municipal.csv voter_id 0   -dots ${dots} -p working.csv > tmp.csv
     mv tmp.csv working.csv
 #join the precincts
-    ${csv} -join 0 1 boco_precincts.csv precinct  "" -dots ${dots} -p working.csv > tmp.csv
+    ${csv} -join 0 1 ${precincts} precinct  "" -dots ${dots} -p working.csv > tmp.csv
     mv tmp.csv working.csv
 #join the  demographics
     do_join_demographics working.csv tmp.csv
@@ -351,8 +304,9 @@ do_db() {
     echo "making db"
     ${csv} -db "table.id boco_voters table.name {Boulder County Voters}  \
     table.icon /db/user.png \
+    table.showEntryCreate false \
     table.format  MM/dd/yyyy defaultOrder {full_street_name,asc;address_even;address,asc} \
-    table.formjs file:formjs.js \
+    table.formjs file:source/formjs.js \
 table.cansearch false table.searchForLabel {Basic Voter Properties} \
 table.mapLabelTemplate _quote_\${name}_quote_ \
 table.mapLabelTemplatePrint _quote_<div style='display: flex;  justify-content: space-between;margin-right:5px;'><span>\${name}</span><span>\${address}</span></div>_quote_ \
@@ -387,8 +341,6 @@ percent_house_value_500000_to_1_million.cansearch true  percent_house_value_grea
 voters_final.csv > bocovotersdb.xml
  }
 
-do_db
-exit
 
 do_geode() {
     echo "Copying to geode"
@@ -400,12 +352,11 @@ do_geode() {
 #do_db
 #exit
 
-#init_files
-#do_contributions
-#do_geocode
+init_files
+do_geocode
 do_prep
-#do_history
-#do_counts
+do_history
+do_counts
 do_joins
 do_final
 do_db
