@@ -1699,6 +1699,11 @@ public class CsvUtil {
                 "Pass through rows that don't match the pattern",
                 new Arg("columns", "", "type", "columns"),
                 new Arg("pattern", "", "type", "pattern")),
+        new Cmd("-fuzzypattern", "Pass through rows that the columns each fuzzily match the pattern",
+                new Arg("threshold", "Score threshold 0-100. Default:85. Higher number better match"),
+                new Arg("columns", "", "type", "columns"),
+                new Arg("pattern", "", "type", "pattern")),
+
         new Cmd("-same", "Pass through where the 2 columns have the same value",
                 new Arg("column1", "", "type", "column"),
                 new Arg("column2", "", "type", "column")),
@@ -3465,6 +3470,11 @@ public class CsvUtil {
 	    });
 	defineFunction("-notpattern", 2,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.PatternFilter(getCols(args.get(++i)),args.get(++i), true));
+		return i;
+	    });
+
+	defineFunction("-fuzzypattern", 3,(ctx,args,i) -> {
+		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.FuzzyFilter(Integer.parseInt(args.get(++i)), getCols(args.get(++i)), args.get(++i),false));
 		return i;
 	    });
 

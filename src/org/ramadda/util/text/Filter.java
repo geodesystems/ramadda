@@ -449,6 +449,108 @@ public class Filter extends Processor {
 
     }
 
+
+    public static class FuzzyFilter extends ColumnFilter {
+
+	int threshold;
+
+        /** _more_ */
+        String spattern;
+
+        /** _more_ */
+        boolean not = false;
+
+        /** _more_ */
+        boolean debug = false;
+
+        /**
+         * _more_
+         *
+         * @param col _more_
+         * @param pattern _more_
+         * @param negate _more_
+         */
+        public FuzzyFilter(int threshold,List<String> cols, String pattern, boolean negate) {
+            super(cols, negate);
+	    this.threshold = threshold;
+	    spattern = pattern;
+	    if(cols.size()==1 && cols.get(0).equals("-1")) {
+		setIndex(-1);
+	    }
+        }
+
+
+	private boolean matches(String s) {
+	    int score = me.xdrop.fuzzywuzzy.FuzzySearch.ratio(spattern,s);
+	    if(score>threshold) return true;
+	    return false;
+	}
+
+	private void setIndex(int idx) {
+	    List<Integer> indices = new ArrayList<Integer>();
+	    indices.add(idx);
+	    setIndices(indices);
+	}
+
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public boolean rowOk(TextReader ctx, Row row) {
+            if (cnt++ == 0) {
+                return true;
+            }
+	    boolean ok = true;
+	    boolean debug = false;//cnt<3;
+	    if(debug) System.err.println("rowOk");
+	    for(int idx: getIndices(ctx)) {
+		if(debug) System.err.println("\tidx:"+ idx);
+		if(!ok) {
+		    if(debug) System.err.println("\tbreak1:"+ ok);
+		    break;
+		}
+		if (idx >= row.size()) {
+		    ok = doNegate(false);
+		    if(!ok) {
+			if(debug) System.err.println("\tbreak2:"+ ok);
+			break;
+		    }
+		}
+		if (idx < 0) {
+		    ok = false;
+		    for (int i = 0; i < row.size(); i++) {
+			String v = row.getString(i);
+		     	if (matches(v)) {
+			    ok= doNegate(true);
+			} 
+			if(ok) break;
+		    }
+		    return ok;
+		}
+		String v = row.getString(idx);
+		if (matches(v)) {
+		    if (debug) {
+			System.out.println("\tR3:" + doNegate(true) + " " + row);
+		    }
+		    ok= doNegate(true);
+		} else {
+		    ok= doNegate(false);
+		}
+	    }
+	    if(debug) System.err.println("\tfinal:"+ ok);
+	    return ok;
+	}
+
+    }
+    
     public static class Same extends ColumnFilter {
 
         /** _more_ */
