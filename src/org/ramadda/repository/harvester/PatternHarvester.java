@@ -1451,8 +1451,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         Entry dirTemplateEntry =
             getEntryManager().getTemplateEntry(dirPathFile, entriesMap);
 
-        System.err.println("dirTemplateEntry:" + dirTemplateEntry + " "
-                           + dirPathFile);
+        //System.err.println("dirTemplateEntry:" + dirTemplateEntry + " "
+        //                   + dirPathFile);
         dirPath =
             dirPath.substring(fileInfo.getRootDir().toString().length());
         dirPath = dirPath.replace("\\", "/");
