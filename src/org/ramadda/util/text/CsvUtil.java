@@ -2083,7 +2083,9 @@ public class CsvUtil {
         new Cmd(
 		"-dbprops", "Print to stdout props for db generation",
 		new Arg("id pattern"),
-		new Arg("suffix pattern")),		
+		new Arg("suffix pattern")),
+        new Cmd(
+		"-fields", "Print the fields"),
 
         new Cmd("-run", "", "Name of process directory"),
         new Cmd("-dots", "", "Print a dot every count row",
@@ -2468,6 +2470,11 @@ public class CsvUtil {
 		return i;
 	    });
 
+	defineFunction(new String[]{"-fields"},0,(ctx,args,i) -> {
+		ctx.addProcessor(new Processor.Fields());
+		return i;
+	    });
+	
 
 	defineFunction("-if",3, (ctx,args,i) -> {
 		String type = args.get(++i);
@@ -2694,10 +2701,6 @@ public class CsvUtil {
 		return i;
 	    });
 
-	defineFunction("-fields",0,(ctx,args,i) -> {
-		ctx.setPrintFields(true);
-		return i;
-	    });
 
 	
 	defineFunction("-percent",  1,(ctx,args,i) -> {

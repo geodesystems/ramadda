@@ -141,6 +141,16 @@ public class CsvOperator {
     }
 
 
+    public String makeID(Object obj) {
+	String colId = Utils.makeLabel(obj.toString());
+	colId = colId.toLowerCase().replaceAll(" ",
+					       "_").replaceAll("[^a-z0-9]", "_");
+	colId = colId.replaceAll("_+_", "_");
+	colId = colId.replaceAll("_$", "");
+	return colId;
+    }
+	
+
     public void setIndices(List<Integer> i) {
 	indices=i;
     }
@@ -475,27 +485,28 @@ public class CsvOperator {
     public void getColumnIndex(TextReader ctx, List<Integer> indices,
                                String s,HashSet seen) {
 	if(seen==null) seen = new HashSet();
-        s = s.toLowerCase().trim();
         List<String> toks  = Utils.splitUpTo(s, "-", 2);
         int          start = -1;
         int          end   = -1;
 	checkColumns();
 	if(s.startsWith("regex:")) {
 	    s = s.substring("regex:".length());
-	    //	    System.err.println("S:" + s+":");
+	    //	    System.err.println("pattern:" + s+":");
 	    Pattern      p      = Pattern.compile(s);
 	    for(String name: columnNames) {
 		Matcher      m      = p.matcher(name);
 		if(m.matches()) {
+		    //System.err.println("\tmatch:" + name);
 		    indices.add(columnMap.get(name));
 
 		} else {
-		    //		    System.err.println("no matches:" + name);
+		    //		    System.err.println("\tno match:" + name);
 		}
 	    }
 	    return;
 	}
 
+        s = s.toLowerCase().trim();
 
         try {
             if (toks.size() == 1) {
@@ -546,6 +557,8 @@ public class CsvOperator {
 		    }			
 		    for (Enumeration keys = columnMap.keys(); keys.hasMoreElements(); ) {
 			String key =(String) keys.nextElement(); 
+			if(key.length()==0) continue;
+			if(key.matches("^[0-9]+$")) continue;
 			System.err.println("key:" + key);
 		    }
 		    //		    System.err.println(columnMap);

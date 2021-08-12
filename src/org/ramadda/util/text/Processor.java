@@ -1415,11 +1415,8 @@ public abstract class Processor extends CsvOperator {
 					      "yyyy-MM-dd HH:mm");
             for (int colIdx = 0; colIdx < row1.getValues().size(); colIdx++) {
                 Object col   = row1.getValues().get(colIdx);
-                String colId = Utils.makeLabel(col.toString());
-                colId = colId.toLowerCase().replaceAll(" ",
-						       "_").replaceAll("[^a-z0-9]", "_");
-                colId = colId.replaceAll("_+_", "_");
-                colId = colId.replaceAll("_$", "");
+                String colId = makeID(col);
+		if(colId.length()==0) continue;
                 colId = getDbProp( colId, "id", colId);
                 label = Utils.makeLabel(colId);
 
@@ -1486,6 +1483,7 @@ public abstract class Processor extends CsvOperator {
                     attrs.append(XmlUtil.attrs(new String[] { "size",
 							      size }));
                 }
+
                 if ((colId.indexOf("type") >= 0)
 		    || (colId.indexOf("category") >= 0)) {
                     type = "enumerationplus";
@@ -1496,7 +1494,9 @@ public abstract class Processor extends CsvOperator {
                     }
                 }
 
-                type = getDbProp( colId, "type", type);
+		String tmp = getDbProp( colId, "type", type);
+		if(tmp.length()==0) tmp = type;
+		type=tmp;
                 String values = getDbProp( colId, "values",
 						  null);
                 String searchRows = getDbProp( colId,
@@ -1650,14 +1650,22 @@ public abstract class Processor extends CsvOperator {
 	    boolean didone = false;
 	    for(Object o: row.getValues()) {
 		boolean p = false;
-		String id = Utils.makeID(o.toString());
-		p|= print(id,"type","enumeration");
-		p|= 		print(id,"cansearch","true");
-		p|= 		print(id,"canlist","true" );
-		p|= 		print(id,"cansort","true");
+		String colId = makeID(o.toString());
+		if(colId.length()==0) continue;
+		String type = "{}";
+                if ((colId.indexOf("type") >= 0)
+		    || (colId.indexOf("category") >= 0)) {
+                    type = "enumerationplus";
+                } else if (colId.indexOf("date")>=0) {
+		    type="date";
+		}
+		p|= print(colId,"type",type);
+		p|= 		print(colId,"cansearch","true");
+		p|= 		print(colId,"canlist","true" );
+		p|= 		print(colId,"cansort","true");
 		didone|=p;
 		if(p)
-		    System.out.print("\n");
+		    System.out.print(" \\\n");
 	    }
 	    if(!didone) {
 		for(Object o: row.getValues()) {
@@ -1672,6 +1680,46 @@ public abstract class Processor extends CsvOperator {
 	}
     }
 
+    public static class Fields extends Processor {
+
+
+        /**
+         * _more_
+         *
+         * @param props _more_
+         */
+        public Fields() {
+        }
+
+
+        /**
+         * _more_
+         *
+         * @param reader _more_
+         * @param row _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public Row processRow(TextReader reader, Row row) throws Exception {
+	    if(rowCnt++==0) {
+		int cnt=0;
+		for(Object id: row.getValues()) {
+		    String sid = Utils.makeID(id.toString());
+		    if(sid.length()>0) {
+			if(cnt++>0)  System.out.print(",");
+			System.out.print(sid);
+		    }
+		}
+		System.out.print("\n");
+
+	    }
+	    return row;
+	}
+    }
+    
     /**
      * Class description
      *
