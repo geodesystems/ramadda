@@ -3059,7 +3059,11 @@ public class Column implements DataTypes, Constants, Cloneable {
         }
 
         if (dateParser != null) {
-            return dateParser.parse(value);
+	    try {
+		return dateParser.parse(value);
+	    } catch(java.text.ParseException pe) {
+		throw new IllegalArgumentException("Column:"+ getName() +" could not parse date:" + value);
+	    }
         }
 
         return Utils.parseDate(value);
