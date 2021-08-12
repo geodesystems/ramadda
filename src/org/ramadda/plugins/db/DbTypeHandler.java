@@ -128,6 +128,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     /** _more_ */
     public static final int IDX_MAX_INTERNAL = 3;
 
+    private Element tableNode;
+
     /** _more_ */
     private DbInfo dbInfo;
 
@@ -196,8 +198,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
     private String searchForLabel = "Search For";
 
+
+    
+
     /** _more_ */
     private List<DbTemplate> templates = new ArrayList<DbTemplate>();
+
+    private List<MacroStatement> macros = new ArrayList<MacroStatement>();
 
     /**
      * _more_
@@ -215,6 +222,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             throws Exception {
         super(repository, tableName, desc);
 
+	this.tableNode = tableNode;
+	
 	String dfltOrderProp = XmlUtil.getAttribute(tableNode, "defaultOrder",(String) null);
 
 	if(dfltOrderProp!=null) {
@@ -250,6 +259,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             "256000", Column.ATTR_SHOWINFORM, "false", Column.ATTR_SHOWINHTML,
             "false"
         });
+
         List<Element> nodes = new ArrayList<Element>();
         nodes.add(node);
         super.initTypeHandler(root);
@@ -290,6 +300,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 return Clause.eq(COL_ID, entry.getId());
             }
         };
+
+
+
     }
 
 
@@ -383,7 +396,41 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
         viewList.add(new TwoFacedObject("RSS", VIEW_RSS));
         viewList.add(new TwoFacedObject("JSON", VIEW_JSON));
+
+	List stmts = XmlUtil.findChildren(tableNode, "macro");
+        for (int j = 0; j < stmts.size(); j++) {
+            Element macroNode = (Element) stmts.get(j);
+	    String stmt = XmlUtil.getChildText(macroNode);
+	    String desc = XmlUtil.getGrandChildText(macroNode,"description","");	    
+	    List<Column> columns = new ArrayList<Column>();
+	    String name = XmlUtil.getAttribute(macroNode,"name","Select");
+	    String type= XmlUtil.getAttribute(macroNode,"type",MacroStatement.TYPE_NOTIN);
+	    String incolumn= XmlUtil.getAttribute(macroNode,"column",(String) null);
+	    List<String> cols = Utils.split(XmlUtil.getAttribute(macroNode,"columns"),",");
+	    for(int i=0;i<cols.size();i++) {
+		String col = cols.get(i);
+		String label= "";
+		if(col.indexOf(":")>=0) {
+		    List<String> toks = StringUtil.splitUpTo(col,":",2);
+		    col = toks.get(0);
+		    if(toks.size()>1)
+			label = toks.get(1);
+		}
+		
+		Column column = dbInfo.getColumn(col);
+		if(column==null) {
+		    throw new IllegalStateException("Unknown column in macro:" +cols.get(i));
+		}
+		if(label.trim().length()==0) label = column.getLabel();
+		column = column.cloneColumn();
+		column.setSearchArg(column.getSearchArg()+"_macro" + j +"_" + i);
+		column.setLabel(label);
+		columns.add(column);
+	    }
+	    macros.add(new MacroStatement(name, type, desc, incolumn, columns, stmt));
+	}
     }
+
 
 
     /**
@@ -2108,6 +2155,20 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    column.addToSearchForm(request, buffer.getBuffer(), where, entry);
         }
 
+	for(MacroStatement macro: macros) {
+	    buffer = new MyNamedBuffer(macro.name,formHeader,Utils.makeID(macro.name));
+	    buffers.add(buffer);
+	    if(Utils.stringDefined(macro.desc)) {
+		buffer.append(HU.colspan(macro.desc,2));
+	    }
+	    for(int i=0;i<macro.columns.size();i++) {
+		Column column = macro.columns.get(i);
+		column.addToSearchForm(request, buffer.getBuffer(), where, entry);
+	    }
+	}
+	
+
+
 
         List<TwoFacedObject> tfos    = new ArrayList<TwoFacedObject>();
         List<TwoFacedObject> aggtfos = new ArrayList<TwoFacedObject>();
@@ -2447,7 +2508,45 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             column.assembleWhereClause(request, where, searchCriteria);
         }
 
+	//candidate = '${value1}' AND full_name   not in (select full_name from db_boulder_campaign_contributions where
+	//candidate = '${value2}')
 
+	for(MacroStatement macro:  macros) {
+	    String stmt = macro.statement;
+	    boolean allSet = true;
+	    List<Clause> ands = new ArrayList<Clause>();
+	    //	    System.err.println(macro.name);
+	    for(int i=0;i<macro.columns.size();i++) {
+		Column c =  macro.columns.get(i);
+		List<Clause> macroClauses = new ArrayList<Clause>();
+		c.assembleWhereClause(request, macroClauses, searchCriteria);
+		//		System.err.println("\t" + macroClauses);
+		if(macroClauses.size()==0) {
+		    allSet = false;
+		    continue;
+		}
+		if(macro.type.equals(macro.TYPE_NOTIN)) {
+		    ands.add(Clause.and(macroClauses));
+		    //xxxx
+
+		} else {
+		    if(!allSet) break;
+		    Clause and =Clause.and(macroClauses);
+		    and.sanitizeValues();
+		    stmt = stmt.replace("${expr" + (i+1)+"}",and.toString());
+		}
+	    }
+
+	    if(macro.type.equals(macro.TYPE_NOTIN)) {
+		if(ands.size()>0) {
+		    System.err.println(macro.name +" clause:" + ands);
+		    where.add(Clause.notin(macro.column, macro.column,tableHandler.getTableName(), Clause.and(ands)));
+		}
+	    }   else  if(allSet) {
+		where.add(new Clause(stmt.trim()));
+	    }
+	}
+	//	System.err.println("where:"+ where);
         Clause mainClause = null;
         if (where.size() > 0) {
             if (request.get(ARG_DB_OR, false)) {
@@ -6500,7 +6599,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         Statement stmt = null;
         extra += limitString;
         try {
-            //SqlUtil.debug = true;
+	    //            SqlUtil.debug = true;
             if (SqlUtil.debug) {
                 System.err.println("table:" + tableHandler.getTableName());
                 System.err.println("clause:" + clause);
@@ -7634,5 +7733,29 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             mime   = XmlUtil.getAttribute(node, "mimetype", (String) null);
         }
     }
+
+    private static class MacroStatement {
+
+	public static final String TYPE_TEMPLATE = "template";
+	public static final String TYPE_NOTIN = "notin";
+
+	String type;
+	String name;
+	String desc;
+	String column;
+	List<Column> columns;
+	String statement;
+	MacroStatement(String name, String type, String desc,
+		       String column, List<Column> columns,   String statement) {
+	    this.type = type;
+	    this.name = name;
+	    this.desc = desc;
+	    this.column = column;
+	    this.columns = columns;
+	    this.statement = statement;
+	}
+    }
+
+
 
 }

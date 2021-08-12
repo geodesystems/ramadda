@@ -273,6 +273,8 @@ public interface DbConstants extends Constants {
     /** _more_ */
     public static final String ARG_DB_SEARCHID = "searchid";
 
+    public static final String ARG_DB_MACRO = "macro";
+
     /** _more_ */
     public static final String METADATA_SAVEDSEARCH = "db_saved_search";
 
