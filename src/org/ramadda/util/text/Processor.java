@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2008-2021 Geode Systems LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -1365,6 +1365,19 @@ public abstract class Processor extends CsvOperator {
 		writer.println("]]></formjs>");
 
 	    }
+
+	    String include = (String)props.get("table.include");
+	    if(include!=null) {
+		if(include.startsWith("file:")) {
+		    String jsfile = include.substring("file:".length());
+		    if(!IO.okToReadFrom(jsfile)) {
+			throw new RuntimeException("Cannot read file:" + jsfile);
+		    }
+		    include = IO.readContents(jsfile);
+		}
+		writer.println(include);
+	    }
+	    
 
 
             List<Row> samples = new ArrayList<Row>();

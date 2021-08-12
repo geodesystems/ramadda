@@ -1810,7 +1810,7 @@ public class CsvUtil {
 		"Append prefix from the previous element to rows that match pattern",
 		new Arg("column", "", "type", "column"),
 		new Arg("pattern", "", "type", "pattern"), new Arg("delimiter")),
-        new Cmd("-case", "Change case of column",
+        new Cmd("-case", "Change case of column - type:lower,upper,proper,capitalize",
 		new Arg("column", "", "type", "column"),
                 new Arg("type", "", "values", "lower,upper,proper,capitalize")),
         new Cmd("-padleft", "Pad left with given character",

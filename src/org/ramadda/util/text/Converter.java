@@ -5371,6 +5371,7 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
+	    if(rowCnt++==0) return row;
             List<Integer> indices = getIndices(ctx);
             for (Integer idx : indices) {
                 int index = idx.intValue();
