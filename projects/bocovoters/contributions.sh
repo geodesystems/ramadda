@@ -60,7 +60,7 @@ do_contributions() {
 echo "converting"
 do_convert
 echo "making old"
-#do_contributions oldtmp.csv    contributions_old.csv
+do_contributions oldtmp.csv    contributions_old.csv
 echo "making new"
 do_contributions newtmp.csv    contributions_new.csv
 
