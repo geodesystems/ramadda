@@ -2198,7 +2198,6 @@ public class SqlUtil {
         String s =
             value.toString().replaceAll("[^\\s\\*\\.,\\(\\)a-zA-Z0-9_]",
                                         "_X_");
-
         return s;
     }
 

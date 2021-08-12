@@ -16,6 +16,7 @@
 
 package org.ramadda.util.sql;
 
+import org.ramadda.util.Utils;
 
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
@@ -103,6 +104,8 @@ public class Clause {
     /** expression */
     public static final String EXPR_IN = "IN";
 
+    public static final String EXPR_NOTIN = "NOTIN";
+
     /** expression */
     public static final String EXPR_OR = "OR";
 
@@ -135,6 +138,13 @@ public class Clause {
     private Clause[] subClauses;
 
 
+    private String freeFormSql;
+
+
+    public Clause(String freeFormSql) {
+	this.freeFormSql = freeFormSql;
+    }	
+
     /**
      * ctor
      */
@@ -165,7 +175,19 @@ public class Clause {
             expr = EXPR_NOTEQUALS;
         }
         this.expr  = expr;
+	//Sanitize the string 
         this.value = value;
+    }
+
+    public void sanitizeValues() {
+	//Note: This should? sanitize the value to prevent a sql injection
+	if(value!=null && value instanceof String) {
+	    value =  value.toString().replaceAll("['\"\\\\]", "\\\\$0");
+	}
+	if(subClauses!=null)
+	    for(Clause clause: subClauses)
+		clause.sanitizeValues();
+
     }
 
 
@@ -515,6 +537,40 @@ public class Clause {
         return clause;
     }
 
+    /**
+     * Makes a simple COLUMN NOT IN (a,b,c,...) clause
+     *
+     * @param column Column name
+     * @param inner The inner set
+     *
+     * @return The new Clause
+     */
+    public static Clause notin(String column, String inner) {
+        return new Clause(column, EXPR_NOTIN, inner);
+    }
+
+    /**
+     * Makes a COLUMN NOT IN (SELECT what FROM from where <inner clause>) caluse
+     *
+     * @param column Column name
+     * @param what What to select in the inner select
+     * @param from from where
+     * @param inner with clause
+     *
+     * @return The new Clause
+     */
+    public static Clause notin(String column, String what, String from,
+                            Clause inner) {
+        Clause clause = new Clause(EXPR_NOTIN, new Clause[] { inner });
+        clause.column = column;
+        clause.extraSelectForInClause = " select " + what + " from " + from
+                                        + " ";
+
+        return clause;
+    }
+
+
+
 
     /**
      * makes a join clause
@@ -697,6 +753,9 @@ public class Clause {
         if (expr.equals(EXPR_IN)) {
             return;
         }
+        if (expr.equals(EXPR_NOTIN)) {
+            return;
+        }	
         if (subClauses != null) {
 
 
@@ -778,9 +837,14 @@ public class Clause {
      * @return the given sb buffer
      */
     public StringBuffer addClause(StringBuffer sb) {
+	if(freeFormSql!=null) {
+	    sb.append(freeFormSql);
+	    return sb;
+	}
         if (expr == null) {
             return sb;
         }
+	
         String columnName = column;
         if (columnPrefix != null) {
             columnName = columnPrefix + columnName + columnSuffix;
@@ -801,6 +865,15 @@ public class Clause {
                                             + extraSelectForInClause + ")"));
                 } else {
                     sb.append(SqlUtil.group(columnName + "  IN ( "
+                                            + extraSelectForInClause
+                                            + " WHERE " + toks.get(0) + ")"));
+                }
+	    } else if (expr.equals(EXPR_NOTIN)) {
+                if (toks.size() == 0) {
+                    sb.append(SqlUtil.group(columnName + "  NOT IN ( "
+                                            + extraSelectForInClause + ")"));
+                } else {
+                    sb.append(SqlUtil.group(columnName + "  NOT IN ( "
                                             + extraSelectForInClause
                                             + " WHERE " + toks.get(0) + ")"));
                 }
@@ -827,6 +900,8 @@ public class Clause {
             sb.append(SqlUtil.group(columnName + "  like ?"));
         } else if (expr.equals(EXPR_IN)) {
             sb.append(SqlUtil.group(columnName + "  IN (" + value + ")"));
+        } else if (expr.equals(EXPR_NOTIN)) {
+            sb.append(SqlUtil.group(columnName + "  NOT IN (" + value + ")"));	    
         } else if (expr.equals(EXPR_NOTLIKE)) {
             sb.append(SqlUtil.group("NOT " + columnName + "  like ?"));
         } else {
@@ -871,7 +946,8 @@ public class Clause {
             return col;
         }
         if (SqlUtil.debug) {
-            System.err.println("   value:" + value + " col #:" + col);
+            System.err.println("\tvalue:" + value + " col #:" + col);
+	    //            System.err.println(Utils.getStack(10));
         }
         SqlUtil.setValue(stmt, value, col);
 
@@ -951,6 +1027,10 @@ public class Clause {
      * @return to string
      */
     public String toString() {
+	if(freeFormSql!=null) {
+	    return freeFormSql;
+	}
+
         if (column != null) {
             String columnName = column;
             if (columnPrefix != null) {
@@ -967,6 +1047,17 @@ public class Clause {
                            + extraSelectForInClause + ")";
                 }
             }
+            if (expr.equals(EXPR_NOTIN)) {
+                if ((subClauses != null) && (subClauses.length > 0)) {
+                    return columnName + " " + expr + " ("
+                           + extraSelectForInClause + " WHERE "
+                           + subClauses[0] + ")";
+                } else {
+                    return columnName + " " + expr + " ("
+                           + extraSelectForInClause + ")";
+                }
+            }
+
             String svalue;
             if (value instanceof String) {
                 svalue = "'" + value + "'";
