@@ -2433,12 +2433,19 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
+    private String overrideSearchArg;
+
+    public void setSearchArg(String arg) {
+	overrideSearchArg = arg;
+    }
+
     /**
      * _more_
      *
      * @return _more_
      */
     public String getSearchArg() {
+	if(overrideSearchArg!=null) return overrideSearchArg;
         return ARG_SEARCH_PREFIX + getFullName();
     }
 
