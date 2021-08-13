@@ -39,7 +39,7 @@ do_prep() {
     rm voters_base.csv
 }
 
-<#do_prep
+#do_prep
 #exit
 
 do_precincts() {

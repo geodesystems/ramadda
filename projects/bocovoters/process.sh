@@ -360,4 +360,7 @@ do_counts
 do_joins
 do_final
 do_db
+
+cp bocovotersdb.xml  ~/.ramadda/plugins
+
 #do_geode

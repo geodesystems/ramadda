@@ -4,7 +4,7 @@ export csv=~/bin/csv.sh
 source=source/electionExpenditures.csv
 
 
-#wget -O ${source} --post-data="exportType=Expenditure&electionID=20&committeeID=-1&filingDateStart=&filingDateStop=&transactionDateStart=&transactionDateStop=" https://election.bouldercolorado.gov/electionExpenditures.php 
+wget -O ${source} --post-data="exportType=Expenditure&electionID=20&committeeID=-1&filingDateStart=&filingDateStop=&transactionDateStart=&transactionDateStop=" https://election.bouldercolorado.gov/electionExpenditures.php 
 
 
 ${csv} -columns "committee,type,candidate,filingdate,amendeddate,officialfiling,transactiondate,lastname,firstname,street,city,state,zip,expenditure,purpose" \
@@ -17,10 +17,12 @@ ${csv} -columns "committee,type,candidate,filingdate,amendeddate,officialfiling,
        -change full_name "(?i)Google; LLC" "Google" \
        -change full_name "(?i)Squarespace; Inc." "Square Space" \
        -change full_name "Amazon.com Services LLC" "Amazon" \
+       -columnsafter committee "full_name,expenditure" \
 -p ${source} > expenditures_final.csv
 
 
 ${csv} -db " table.id boulder_campaign_expenditures table.label {Boulder Campaign Expenditures} \
+defaultOrder expenditure \
 table.showEntryCreate false \
 table.cansearch false table.canlist false table.format {MM/dd/yyyy} \
 committee.type enumeration committee.cansearch true  committee.canlist true   \
@@ -35,6 +37,7 @@ street.cansearch true  street.canlist true   \
 city.type {enumeration}  city.cansearch true  city.canlist true   \
 state.type {enumeration}  state.cansearch true  state.canlist true   \
 zip.type {string} \
+expenditure.unit \$  expenditure.canlist true   \
 expenditure.cansearch true  expenditure.canlist true   \
 purpose.cansearch true  purpose.canlist true   \
 " \
