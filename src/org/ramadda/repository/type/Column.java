@@ -310,6 +310,8 @@ public class Column implements DataTypes, Constants, Cloneable {
     /** _more_ */
     private String type;
 
+    private String unit;
+
     /** _more_ */
     private boolean changeType = false;
 
@@ -493,6 +495,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         this.offset      = offset;
 
         name             = XmlUtil.getAttribute(element, ATTR_NAME);
+        unit             = XmlUtil.getAttribute(element, ATTR_UNIT,(String)null);
         group = XmlUtil.getAttribute(element, ATTR_GROUP, (String) null);
         oldNames = Utils.split(XmlUtil.getAttribute(element,
                 ATTR_OLDNAMES, ""), ",", true, true);
@@ -2002,7 +2005,9 @@ public class Column implements DataTypes, Constants, Cloneable {
         return typeHandler.getTableName();
     }
 
-
+    public String getUnit() {
+	return unit;
+    }
 
     /**
      * _more_
