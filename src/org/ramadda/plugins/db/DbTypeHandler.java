@@ -4239,6 +4239,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             throws Exception {
 
         List<Column>  groupByColumns = getGroupByColumns(request, false);
+	int numGroupByColumns = groupByColumns.size();
         StringBuilder hb             = new StringBuilder();
         if (valueList.size() > 0) {
             HtmlUtils.open(hb, "table", "class", "dbtable", "border", "1",
@@ -4281,7 +4282,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 for (int cnt2=0;cnt2<values.length;cnt2++) {
 		    Object obj = values[cnt2];
                     makeTableHeader(hb, "" + obj);
-                    if (addPercent && (cnt2 ==values.length-1)) {
+                    if (addPercent && cnt2>=numGroupByColumns/*&& (cnt2 ==values.length-1)*/) {
                         makeTableHeader(hb, "Percent");
                     }
                 }
@@ -4294,6 +4295,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     Column groupByColumn = (i < groupByColumns.size())
                                            ? groupByColumns.get(i)
                                            : null;
+		    //		    String unit = groupByColumn!=null?groupByColumn.getUnit():null;
+		    //		    String prefix = unit!=null&&unit.equals("$")?"$":"";
+		    //		    System.err.println(groupByColumn + " " + unit +" " + prefix);
                     if (obj instanceof Double) {
                         double d = (Double) obj;
                         HtmlUtils.td(cb, format((Double) obj, false),
@@ -4368,7 +4372,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             hb.append(cb);
             HtmlUtils.open(hb, "tr", "valign", "top", "class", "dbrow");
             for (int i = 0; i < sum.length; i++) {
-                if (i == 0) {
+                if (i<numGroupByColumns) {
                     HtmlUtils.td(hb, "Total", "style=\"background:#eee;\"");
                 } else {
                     if (Double.isNaN(sum[i])) {
@@ -4378,12 +4382,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                             hb, format(sum[i], false),
                             "align=right  style=\"background:#eee;\"");
                     }
-
+		    if(i>=numGroupByColumns && addPercent) {
+                        HtmlUtils.td(hb, "", "style=\"background:#eee;\"");
+		    }
                 }
             }
-	    if (addPercent) {
-		HtmlUtils.td(hb, "&nbsp;",  "style=\"background:#eee;\"");
-	    }
+	    //	    if (addPercent) {
+	    //		HtmlUtils.td(hb, "&nbsp;",  "style=\"background:#eee;\"");
+	    //	    }
             HtmlUtils.close(hb, "tr");
             HtmlUtils.close(hb, "table");
         } else {
