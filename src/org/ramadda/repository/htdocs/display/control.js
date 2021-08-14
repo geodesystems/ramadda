@@ -537,6 +537,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	{label:'Download'},
 	{p:'csvLabel',ex:'Download'},
 	{p:'useIcon',d:'false',ex:'false'},
+	{p:'iconSize',ex:''},	
 	{p:'fileName',d:'download',ex:'download'},
 	{p:'askFields',d:'false',ex:'true'},
 	{p:'showCsvButton',ex:false,tt:'Show/hide the CSV button'},
@@ -553,7 +554,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	    let label = this.getPropertyCsvLabel("Download Data");
 	    label = label.replace("${title}",this.getProperty("title",""));
 	    let useIcon = this.getPropertyUseIcon(true);
-	    label = HU.span([ID,this.getDomId("csv")], useIcon?HU.getIconImage("fa-download",[STYLE,"cursor:pointer;",TITLE,label]):label);
+	    label = HU.span([ID,this.getDomId("csv")], useIcon?HU.getIconImage("fa-download",[STYLE,"cursor:pointer;font-size:32pt !important;",TITLE,label]):label);
 	    /*
 	    if(!Utils.isAnonymous() && this.getDoSave()) {
 		label+=SPACE2 +HU.span([ID,this.domId("save"),CLASS,"ramadda-clickable"], HU.getIconImage("fas fa-save")) +SPACE +HU.span([ID,this.domId("savelabel")]);

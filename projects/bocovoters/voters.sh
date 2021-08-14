@@ -283,10 +283,13 @@ do_joins() {
 do_final() {
     echo "making final"
 #-maxrows 2000\
+
     ${csv}  \
 	    -notcolumns county,preference,uocava,uocava_type,issue_method,split \
 	    -set county_regn_date 0 registration_date  \
 	    -set vr_phone 0 phone -set voter_name 0 name  -set yob 0 birth_year \
+	    -ranges birth_year "Birth year range" 1930 10 \
+	    -columnsafter birth_year birth_year_range \
 	    -set res_address 0 address -set res_city 0 city -set res_state 0 state \
 	    -set res_zip_code 0 zip_code -set res_zip_plus 0 zip_plus \
 	    -columnsbefore first_name  name,party,status,status_reason,gender,address,city,state,zip_code \
@@ -317,7 +320,9 @@ voter_id.type string \
 address_even.cansort true status.canlist true city.canlist true mailing_country.help {Enter &quot;_blank_&quot; to search for empty country} mailing_country.cansearch true mailing_country.addnot true \
 name.canlist true birth_year.canlist true gender.canlist true  \
 party.canlist true  status.canlist true  address.canlist true  phone.canlist true \
-registration_date.cansearch true  neighborhood.cansearch true  city.cansearch true name.cansearch true  birth_year.cansearch true  yob.cansearch true gender.cansearch true party.cansearch true status.cansearch true status_reason.cansearch true precinct.cansearch true  precinct_turnout_2019.cansearch true address.cansearch true \
+registration_date.cansearch true  neighborhood.cansearch true  city.cansearch true name.cansearch true  \
+birth_year_range.cansearch true birth_year_range.type enumeration \
+birth_year.cansearch true  yob.cansearch true gender.cansearch true party.cansearch true status.cansearch true status_reason.cansearch true precinct.cansearch true  precinct_turnout_2019.cansearch true address.cansearch true \
 party.values {REP:Republican,UAF:Unaffiliated,DEM:Democrat,GRN:Green,LBR:Labor,ACN:American Constitution Party,UNI:Unity,APV:Approval Voting} \
 precinct_turnout_2019.placeholder {0-100} \
 voted_in_2021.type enumeration voted_in_2021.cansearch true  voted_in_2021.group {Voting History} voted_in_2021.suffix {Not working until 3 weeks before the election} \
@@ -353,6 +358,13 @@ do_geode() {
 
 #do_db
 #exit
+
+do_geode
+exit
+do_final
+do_db
+exit
+
 
 init_files
 do_geocode

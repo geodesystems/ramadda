@@ -128,7 +128,7 @@ h4 {
     margin-top:1em;
     margin-bottom:0px;    
 }
-.ramadda-page-heading, .ramadda-heading, .ramadda-blurb {
+.ramadda-page-heading, .ramadda-heading, .ramadda-lheading, .ramadda-blurb {
     font-size:140%;
 }
 
@@ -139,7 +139,13 @@ h4 {
     text-align: center;
 }
 
-.ramadda-heading-inner {
+.ramadda-lheading  {
+    padding: 0px;
+    margin: 0px;
+    color: #000;
+}
+
+.ramadda-heading-inner, .ramadda-lheading-inner {
     display:inline-block;
     position:relative;
 }
@@ -720,7 +726,7 @@ a.ramadda-menubar-button:hover {
 }
 
 
-.ramadda-heading.ramadda-linkable {
+.ramadda-heading.ramadda-linkable, .ramadda-lheading.ramadda-linkable {
     display:inline-block;
 }
 
@@ -776,7 +782,7 @@ a.ramadda-menubar-button:hover {
 
 
 
-.ramadda-page-title  a , .ramadda-page-title  a:visited, .ramadda-page-heading a, .ramadda-page-heading  a:visited,.ramadda-heading a, .ramadda-heading  a:visited, .ramadda-page-heading-small a, .ramadda-page-heading-small  a:visited, .ramadda-page-blurb a, .ramadda-page-blurb  a:visited {
+.ramadda-page-title  a , .ramadda-page-title  a:visited, .ramadda-page-heading a, .ramadda-page-heading  a:visited,.ramadda-heading a,.ramadda-lheading a, .ramadda-heading  a:visited, .ramadda-lheading  a:visited, .ramadda-page-heading-small a, .ramadda-page-heading-small  a:visited, .ramadda-page-blurb a, .ramadda-page-blurb  a:visited {
     color: black;
 }
 
