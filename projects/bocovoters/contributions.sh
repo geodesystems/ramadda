@@ -1,6 +1,7 @@
 #!/bin/sh
+mydir=`dirname $0`
+set -e
 export csv=~/bin/csv.sh 
-
 wget -O source/new.csv --post-data="exportType=Contribution&electionID=20&committeeID=-1&filingDateStart=&filingDateStop=&transactionDateStart=&transactionDateStop=" https://election.bouldercolorado.gov/electionContributions.php
 
 do_convert() {
@@ -8,7 +9,7 @@ do_convert() {
 	   -change filingdate,amendeddate,transactiondate "(....)/(..)/(..).*" "\$1/\$2/\$3" \
 	   -case  FromCandidate lower \
 	   -case  anonymous lower \
-	   -p source/old.csv > oldtmp.csv
+	   -p source/Election_Contributions.csv > oldtmp.csv
     ${csv} -notcolumns "YTDAmount,AmendsContributionID,ContributionID" \
 	   -change filingdate,amendeddate,transactiondate "(..)/(..)/(....)" "\$3/\$1/\$2" \
 	   -case  FromCandidate lower \
@@ -30,18 +31,8 @@ do_contributions() {
 	   -columnsafter transaction_date election_year \
 	   -concat "first_name,last_name" " " "Full Name"  \
 	   -case full_name upper -trim full_name   -change full_name "  +" " " \
-	   -change full_name ".*COCA-COLA.*" "THE COCA-COLA COMPANY" \
-	   -change full_name "INDIAN PEAKS GROUP SIERRA CLUB" "SIERRA CLUB INDIAN PEAKS GROUP" \
-	   -change full_name "HOUSING HELPERS OF BOULDER, LLC" "HOUSING HELPERS OF BOULDER" \
-	   -change full_name "BOULDER AREA REALTORS ASSN" "BOULDER AREA REALTORS" \
-	   -change full_name "SIERRA CLUB IPG" "SIERRA CLUB INDIAN PEAKS GROUP" \
-	   -change full_name ".*NEW ERA.*" "NEW ERA" \
-	   -change full_name "PLAN.*BOULDER.*" "PLAN BOULDER" \
-	   -change full_name "VOTERS AGAINST XCEL BUYING ELECTIONS" "XXXX" \
-	   -change full_name ".*XCEL.*" "XCEL ENERGY" \
-	   -change full_name "XXXX" "VOTERS AGAINST XCEL BUYING ELECTIONS" \
-	   -change full_name "OPEN BOULDER.*" "OPEN BOULDER" \
-	   -change full_name ".*AMERICAN BEVERAGE ASSOCIATION.*" "AMERICAN BEVERAGE ASSOCIATION" \
+	   -change full_name "file:${mydir}/contributions_patterns.txt" "" \
+	   -case full_name,first_name,last_name proper \
 	   -columnsbefore last_name full_name \
 	   -set amendeddate	 0 amended_date	   \
 	   -change contribution,fromcandidate,matchamount "_dollar_" "" \
@@ -50,6 +41,7 @@ do_contributions() {
 	   -change Contribution "_dollar_" "" \
 	   -p ${infile} > ${outfile}
 }
+
 
 echo "converting"
 do_convert
@@ -63,7 +55,7 @@ tail -n+2 contributions_new.csv >>contributions_final.csv
 echo "making db"
 ${csv} -db " table.id boulder_campaign_contributions table.label {Boulder Campaign Contributions} \
 table.cansearch false table.canlist false \
-table.include file:source/include.txt \
+table.include file:${mydir}/contributions_include.txt \
 committee.cansearch true  committee.canlist true   \
 type.cansearch true  type.canlist true   \
 candidate.cansearch true  candidate.canlist true   \

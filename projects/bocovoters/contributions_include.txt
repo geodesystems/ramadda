@@ -1,0 +1,11 @@
+<macro name="But not donations that..." column="full_name" 
+columns="election_year:Donation in year,candidate:Donation to,committee:Donation to committee">
+<description>
+<![CDATA[
+<center>
+<div class="ramadda-note">Don't select donations that match this criteria</div>
+</center>
+]]>
+</description>
+
+</macro>

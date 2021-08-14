@@ -1,24 +1,29 @@
 #!/bin/sh
+mydir=`dirname $0`
+set -e
 export csv=~/bin/csv.sh 
 
 source=source/electionExpenditures.csv
 
 
-wget -O ${source} --post-data="exportType=Expenditure&electionID=20&committeeID=-1&filingDateStart=&filingDateStop=&transactionDateStart=&transactionDateStop=" https://election.bouldercolorado.gov/electionExpenditures.php 
+#wget -O ${source} --post-data="exportType=Expenditure&electionID=20&committeeID=-1&filingDateStart=&filingDateStop=&transactionDateStart=&transactionDateStop=" https://election.bouldercolorado.gov/electionExpenditures.php 
 
 
 ${csv} -columns "committee,type,candidate,filingdate,amendeddate,officialfiling,transactiondate,lastname,firstname,street,city,state,zip,expenditure,purpose" \
        -concat firstname,lastname " " "Full Name" \
        -columnsafter firstname full_name \
        -change "regex:.*Date" ".*Invalid Date.*" "" \
-       -change "expenditure" "_dollar_" "" \
-       -change full_name "(?i)^wix$" "Wix.com" \
-       -change full_name "(?i)Pure Buttons" "Purebuttons.com" \
-       -change full_name "(?i)Google; LLC" "Google" \
-       -change full_name "(?i)Squarespace; Inc." "Square Space" \
-       -change full_name "Amazon.com Services LLC" "Amazon" \
+       -normal full_name \
+       -change full_name "file:${mydir}/expenditure_patterns.txt" "" \
        -columnsafter committee "full_name,expenditure" \
--p ${source} > expenditures_final.csv
+       -c firstname,lastname,full_name \
+       -p ${source} > expenditures_final.csv
+
+#       -change "expenditure" "_dollar_" "" \
+
+
+
+
 
 
 ${csv} -db " table.id boulder_campaign_expenditures table.label {Boulder Campaign Expenditures} \

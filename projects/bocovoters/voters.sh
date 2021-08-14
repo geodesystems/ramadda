@@ -1,6 +1,7 @@
 #!/bin/sh
+mydir=`dirname $0`
+set -e
 export csv=~/bin/csv.sh 
-
 
 dots=5000
 registered_voters=source/ce-vr011b.txt
@@ -68,7 +69,8 @@ do_precincts() {
 
 do_history() {
    echo "making unique voting history"
-   ${csv} -dots ${dots} -unique  "voter_id,election_date" -p voter_history.csv > ${unique_voter_history}
+   ${csv} -ifin voter_id voters_boulder.csv  voter_id -p voter_history.csv  > voter_history_boulder.csv
+   ${csv} -dots ${dots} -unique  "voter_id,election_date" -p voter_history_boulder.csv > ${unique_voter_history}
    echo "making off year"
    ${csv} -dots ${dots} -pattern election_date "(11/../2001|11/../2003|11/../2005|11/../2007|11/../2009|11/../2011|11/../2013|11/../2015|11/../2017|11/../2019)" -p ${unique_voter_history} > history_offyears10.csv
    ${csv} -dots ${dots} -pattern election_date "(11/../2020)" -p ${unique_voter_history} > history_2020.csv   
@@ -306,7 +308,7 @@ do_db() {
     table.icon /db/user.png \
     table.showEntryCreate false \
     table.format  MM/dd/yyyy defaultOrder {full_street_name,asc;address_even;address,asc} \
-    table.formjs file:source/formjs.js \
+    table.formjs file:${mydir}/formjs.js \
 table.cansearch false table.searchForLabel {Basic Voter Properties} \
 table.mapLabelTemplate _quote_\${name}_quote_ \
 table.mapLabelTemplatePrint _quote_<div style='display: flex;  justify-content: space-between;margin-right:5px;'><span>\${name}</span><span>\${address}</span></div>_quote_ \

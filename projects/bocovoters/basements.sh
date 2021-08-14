@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 export csv=~/bin/csv.sh
 
 echo "cleaning up addresses"

@@ -1,0 +1,5 @@
+(?i)^wix$::Wix.com
+(?i)Pure Buttons::Purebuttons.com
+(?i)Google; LLC::Google
+(?i)Squarespace; Inc.::Square Space
+Amazon.com Services LLC::Amazon
