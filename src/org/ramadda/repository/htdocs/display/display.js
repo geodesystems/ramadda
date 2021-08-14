@@ -2314,6 +2314,24 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
             }
 
+	    let fieldsMap = null;
+	    if(fixedFields!=null) {
+		fieldsMap = {};
+		fixedFields.forEach(id=>{
+		    if(id.startsWith("#")) {
+			let toks = id.split("-");
+			if(toks.length==2) {
+			    let idx1 = +toks[0].replace("#","");
+			    let idx2 = +toks[1].replace("#","");			
+			    for(let i=idx1;i<=idx2;i++) {
+				fieldsMap["#"+i] = true;
+			    }
+			}
+		    }
+		    fieldsMap[id]  = true;
+		});
+	    }
+
             var html = "";
             var checkboxClass = this.getId() + "_checkbox";
             var groupByClass = this.getId() + "_groupby";
@@ -2385,10 +2403,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         } else if (selectedIds.length > 0) {
                             on = selectedIds.indexOf(field.getId()) >= 0;
                             //                                console.log("selected ids   on:" + on +" " + field.getId());
-                        } else if (fixedFields != null) {
-                            on = (fixedFields.indexOf(field.getId()) >= 0);
+                        } else if (fieldsMap != null) {
+                            on = fixedFields[field.getId()];
                             if (!on) {
-                                on = (fixedFields.indexOf("#" + (tupleIdx + 1)) >= 0);
+                                on = fixedFields["#" + (tupleIdx + 1)];
                             }
                             //                                console.log("fixed fields  on:" + on +" " + field.getId());
                         } else if (this.overrideFields != null) {
@@ -2838,7 +2856,24 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
                 fields = pointData.getRecordFields();
             }
+	    console.log("XX");
             for (let i = 0; i < ids.length; i++) {
+		let id = ids[i];
+		console.log(id);
+		//Check for numeric range
+		if(id.startsWith("#")) {
+		    let toks = id.split("-");
+		    if(toks.length==2) {
+			let idx1 = +toks[0].replace("#","");
+			let idx2 = +toks[1].replace("#","");			
+			console.log(idx1 +" " + idx2);
+			for(let j=idx1;j<=idx2;j++) {
+			    let f = this.getFieldById(fields, "#" + idx1);
+			    if (f) result.push(f);
+			}
+			continue;
+		    }
+		}
                 let f = this.getFieldById(fields, ids[i]);
                 if (f) result.push(f);
             }

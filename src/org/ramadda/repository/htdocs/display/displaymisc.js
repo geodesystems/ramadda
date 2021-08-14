@@ -2572,6 +2572,7 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
         addRamaddaDisplay(this);
     let myProps = [
 	{label:'Summary Statistics'},
+	{p:'showDefault',ex:'false'},
 	{p:'showMin',ex:'false'},
 	{p:'showMax',ex:'false'},
         {p:'showAverage',ex:'false'},
@@ -2584,7 +2585,11 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
         {p:'showUnique',ex:'false'},
         {p:'showType',ex:'false'},
         {p:'showText',ex:'false'},
-	{p:'doValueSelection',ex:'false'}
+	{p:"sortStatsBy",ex:'min|max|total|average'},
+	{p:"sortStatsAscending",ex:'false'},
+	{p:'doValueSelection',ex:'false'},
+	{p:"fieldHeaderLabel",ex:''},
+	{p:"statsTableWidth",ex:'100%'},
 
     ];
 
@@ -2721,9 +2726,16 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
             }
 
             let border = (justOne ? "0" : "1");
-            let html = HU.open(TABLE, ["border", border, "bordercolor", "#ccc", CLASS, "display-stats", "cellspacing", "1", "cellpadding", "5"]);
+	    let attrs = [ID,this.getDomId("statstable"), CLASS, "row-border stripe  display-stats"];
+	    let tableWidth = this.getStatsTableWidth();
+	    if(tableWidth) {
+		attrs.push("width");
+		attrs.push(tableWidth);
+	    }
+            let html = HU.open(TABLE, attrs);
+	    html+=HU.open(THEAD);
             if (!justOne) {
-                header = [""];
+                header = [this.getFieldHeaderLabel("")];
                 if (this.getShowCount(dflt)) 
                     header.push("Count");
                 if (this.getShowMin(dflt)) 
@@ -2742,11 +2754,38 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                     header.push("# Unique","Top","Freq.");
                 if (this.getShowMissing(dflt)) 
                     header.push("Not&nbsp;Missing","Missing")
-                html += HU.tr(["valign", "bottom"], HU.tds([CLASS, "display-stats-header", "align", "center"], header));
+                html += HU.tr(["valign", "bottom"], HU.ths([CLASS, "display-stats-header", "align", "center"], header));
             }
+	    html+=HU.close(THEAD);
+	    html+=HU.open(TBODY);
             let cats = [];
             let catMap = {};
 	    let doValueSelection = this.getDoValueSelection(false);
+            stats.forEach(stat=>{
+                stat.average = stat.numNotMissing == 0 ? NaN : (stat.total / stat.numNotMissing);
+	    });
+
+	    let sortBy = this.getSortStatsBy();
+	    let sortAscending = this.getSortStatsAscending(true);
+	    if(sortBy) {
+		let sortFunc =(a,b)=>{
+		    let result  =0
+		    if(sortBy == "total")
+			result= a.total-b.total;
+		    else if(sortBy == "min")
+			result= a.min-b.min;
+		    else if(sortBy == "max")
+			result= a.max-b.max;
+		    else if(sortBy == "average")
+			result= a.average-b.average;
+		    if(result==0) return result;
+		    if(sortAscending) return result;
+		    return -result;
+		    
+		};
+		stats.sort(sortFunc);
+	    }
+
             stats.forEach(stat=>{
 		let field = stat.field;
                 let right = "";
@@ -2835,8 +2874,9 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                 let row = HU.tr([], HU.td(["nowrap","true","align", align], field.getTypeLabel() +SPACE + HU.b(HU.span([TITLE, tooltip], label))) + right);
                 html += row;
             });
-            html += HU.close(TABLE);
+            html += HU.close(TBODY, TABLE);
             this.setContents(html);
+	    HU.formatTable("#" +this.getDomId("statstable"),{ordering:true});
             this.initTooltip();
 
 	    if(doValueSelection) {

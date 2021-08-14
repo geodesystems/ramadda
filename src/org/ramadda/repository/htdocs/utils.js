@@ -3891,6 +3891,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         }
         return html;
     },
+    ths: function(attrs, cols) {
+        var html = "";
+        for (var i = 0; i < cols.length; i++) {
+            html += this.th(attrs, cols[i]);
+        }
+        return html;
+    },    
     onReturnEvent: function(selector,func) {
 	if((typeof selector) == "string") selector = $(selector);
 	selector.keyup(function(event) {
@@ -4138,6 +4145,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     td: function(attrs, inner) {
         return this.tag("td", attrs, inner);
     },
+    th: function(attrs, inner) {
+        return this.tag("th", attrs, inner);
+    },    
 
     tag: function(tagName, attrs, inner) {
         if (!inner && (typeof attrs) == "string") {
