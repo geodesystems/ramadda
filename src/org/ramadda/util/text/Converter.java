@@ -60,6 +60,9 @@ import java.util.regex.Pattern;
 import javax.script.*;
 
 
+import org.apache.commons.codec.language.Soundex;
+
+
 /**
  * Class description
  *
@@ -1949,16 +1952,7 @@ public abstract class Converter extends Processor {
         /** _more_ */
         private boolean isRegex;
 
-        /* */
-
-        /** _more_ */
-        private String pattern;
-
-        /* */
-
-        /** _more_ */
-        private String value;
-
+	private List<String[]> patterns  = new ArrayList<String[]>();
 
         /**
          *
@@ -1972,12 +1966,33 @@ public abstract class Converter extends Processor {
         public ColumnChanger(List<String> cols, String pattern,
                              String value) {
             super(cols);
-            this.pattern = pattern;
-            this.isRegex = StringUtil.containsRegExp(pattern);
-            //            if(!isRegex)
-            //                this.pattern = ".*" + this.pattern +".*";
-            this.value = value;
+	    if(pattern.startsWith("file:")) {
+		String file = pattern.substring("file:".length());
+		if(!IO.okToReadFrom(file)) {
+		    fatal("Cannot read file:" + file);
+		}
+		try {
+		    init(file);
+		} catch(Exception exc) {
+		    fatal("Reading file:" + file, exc);
+		}
+		this.isRegex = true;
+	    } else {
+		this.isRegex = StringUtil.containsRegExp(pattern);		
+		patterns.add(new String[]{pattern, value});
+	    }
         }
+
+	private void init(String file) throws Exception {
+	    String contents = IO.readContents(file);
+	    List<String> lines = Utils.split(contents,"\n");
+	    for(int i=0;i<lines.size();i++) {
+		String line = lines.get(i).trim();
+		if(line.length()==0) continue;
+		List<String> toks = Utils.split(line,"::");
+		patterns.add(new String[]{toks.get(0),toks.size()>1?toks.get(1):""});
+	    }
+	}
 
         /**
          *
@@ -2000,18 +2015,22 @@ public abstract class Converter extends Processor {
             }
             List<Integer> indices = getIndices(ctx);
             for (Integer idx : indices) {
-                int index = idx.intValue();
-                if ((index >= 0) && (index < row.size())) {
-                    String s  = row.getString(index).trim();
-                    String os = s;
-                    if (isRegex) {
-                        s = s.replaceAll(pattern, value);
-			//			System.err.println(value);
-                    } else {
-                        s = s.replaceAll(pattern, value);
-                    }
-		    //		    System.err.println("\tP:"  + pattern +" os:" + os +" s:" + s);
-                    row.set(index, s);
+		for(String[]tuple: patterns) {
+		    String pattern = tuple[0];
+		    String value = tuple[1];
+		    int index = idx.intValue();
+		    if ((index >= 0) && (index < row.size())) {
+			String s  = row.getString(index).trim();
+			String os = s;
+			if (isRegex) {
+			    s = s.replaceAll(pattern, value);
+			    //			System.err.println(value);
+			} else {
+			    s = s.replaceAll(pattern, value);
+			}
+			//		    System.err.println("\tP:"  + pattern +" os:" + os +" s:" + s);
+			row.set(index, s);
+		    }
                 }
             }
 
@@ -5379,6 +5398,7 @@ public abstract class Converter extends Processor {
                     continue;
                 }
                 String s = (String) row.getValues().get(index);
+		String os=s;
                 if (s == null) {
                     return row;
                 }
@@ -5387,7 +5407,7 @@ public abstract class Converter extends Processor {
                 } else if (action.equals("upper")) {
                     s = s.toUpperCase();
                 } else if (action.equals("proper")) {
-                    s = Utils.upperCaseFirst(s);
+                    s = Utils.nameCase(s);
                 } else if (action.equals("camel")) {		    
                     s = Utils.upperCaseFirst(s);
                 } else if (action.equals("capitalize")) {
@@ -5402,6 +5422,9 @@ public abstract class Converter extends Processor {
 						       "Unknown case:" + action
 						       + ". Needs to be one of lower, upper, camel, capitalize");
                 }
+		//		s = s.replaceAll("  +"," ");
+		//		os = os.replaceAll("  +"," ");
+		//		if(!s.trim().equals(os.trim())) System.out.println(os +":" + s+":");
                 row.getValues().set(index, s);
             }
 
@@ -5721,6 +5744,60 @@ public abstract class Converter extends Processor {
         }
 
     }
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Feb 12, '21
+     * @author         Enter your name here...
+     */
+    public static class SoundexMaker extends Converter {
+
+	private Soundex soundex;
+
+        /**
+         * @param indices _more_
+         * @param type _more_
+         */
+        public SoundexMaker(List<String> indices) {
+            super(indices);
+	    soundex= new Soundex();
+        }
+
+
+        /**
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+                row.add("Soundex");
+                return row;
+            }
+            List<Integer> indices = getIndices(ctx);
+            for (Integer idx : indices) {
+                int index = idx.intValue();
+                if ((index < 0) || (index >= row.size())) {
+                    continue;
+                }
+                String s = (String) row.getValues().get(index);
+                if (s == null) {
+                    s = "";
+                }
+		row.add(soundex.soundex(s));
+            }
+            return row;
+        }
+
+    }
+
+
 
 
     /**

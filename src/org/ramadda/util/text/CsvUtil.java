@@ -1647,6 +1647,9 @@ public class CsvUtil {
                 new Arg("source_columns", "source key columns"),
 		new Arg("default_value", "default value")),
 
+        new Cmd("-normal", "Normalize the strings",
+                new Arg("columns", "Columns", "type", "columns")
+		),
         new Cmd(
 		"-countunique",
 		"Count number of unique values",
@@ -1755,6 +1758,12 @@ public class CsvUtil {
         new Cmd("-decimate", "only include every <skip factor> row",
                 new Arg("rows", "# of start rows to include"),
                 new Arg("skip", "skip factor")),
+
+        new Cmd("-ifin", "Pass through rows that the columns with ID is in given file",
+                new Arg("column", "Column in the file", "type", "column"),
+                new Arg("file", "The file"),
+                new Arg("column2", "Column in mainr file", "type", "column")),
+
 
         new Cmd("-skiplines", "Skip number of raw lines.",
                 new Arg("lines", "How many raw lines to skip", "type", "number")),	
@@ -1897,6 +1906,8 @@ public class CsvUtil {
         new Cmd("-number", "Add 1,2,3... as column"),
         new Cmd("-letter", "Add 'A','B', ... as column"),
 	//        new Cmd(true, "Lookup"),
+        new Cmd("-soundex", "Generate a soundex code",
+                new Arg("columns", "", "type", "columns")),
         new Cmd("-wikidesc", "Add a description from wikipedia",
                 new Arg("column", "", "type", "columns"), "suffix"),
         new Cmd("-image", "Search for an image",
@@ -2561,6 +2572,12 @@ public class CsvUtil {
 		return i;
 	    });
 
+	defineFunction("-ifin",3,(ctx,args,i) -> {
+		ctx.addProcessor(new Filter.IfIn(args.get(++i),args.get(++i),args.get(++i)));
+		return i;
+	    });
+
+
 	defineFunction("-join",5,(ctx,args,i) -> {
 		List<String> keys1   = getCols(args.get(++i));
 		List<String> values1 = getCols(args.get(++i));
@@ -2580,6 +2597,14 @@ public class CsvUtil {
 		return i;
 	    });
 	
+	defineFunction("-normal",1,(ctx,args,i) -> {
+		List<String> cols   = getCols(args.get(++i));
+		ctx.addProcessor(new RowCollector.Normal(cols));
+		return i;
+	    });
+
+
+
 	defineFunction("-sum",3,(ctx,args,i) -> {
 		List<String> keys   = getCols(args.get(++i));
 		List<String> values = getCols(args.get(++i));
@@ -2588,7 +2613,7 @@ public class CsvUtil {
 		return i;
 	    });
 
-	defineFunction("-unique",1,(ctx,args,i) -> {
+	defineFunction(new String[]{"-u","-unique"},1,(ctx,args,i) -> {
 		List<String> toks = getCols(args.get(++i));
 		ctx.addProcessor(new Filter.Unique(toks));
 		return i;
@@ -3319,6 +3344,10 @@ public class CsvUtil {
 		ctx.addProcessor(new Converter.MD(getCols(args.get(++i)),args.get(++i)));
 		return i;
 	    });
+	defineFunction("-soundex", 1,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.SoundexMaker(getCols(args.get(++i))));
+		return i;
+	    });	
 	defineFunction("-even", 1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Even(getCols(args.get(++i))));
 		return i;
@@ -4098,7 +4127,13 @@ public class CsvUtil {
 		}
 	    });
 
-	csvUtil.run(null);
+	try {
+	    csvUtil.run(null);
+	} catch(Exception exc) {
+	    System.err.println("Error:" + exc);
+	    exc.printStackTrace();
+	    System.exit(1);
+	}
 	System.exit(0);
     }
 

@@ -17,6 +17,7 @@
 package org.ramadda.util.text;
 
 
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
 
@@ -279,6 +280,99 @@ public class Filter extends Processor {
 
             return true;
         }
+    }
+
+
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Jan 9, '15
+     * @author         Jeff McWhirter
+     */
+    public static class IfIn extends Filter {
+
+	private HashSet seen;
+	
+	private int idx1;
+	private int idx2;	
+	private String column2;
+	
+        /**
+         * _more_
+         *
+         * @param col _more_
+         * @param pattern _more_
+         * @param negate _more_
+         */
+        public IfIn(String column1, String file, String column2) {
+	    if(!IO.okToReadFrom(file)) {
+		throw new RuntimeException("Cannot read file:" + file);
+	    }
+	    this.column2 = column2;
+            try {
+                init(file, column1);
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+	    }
+        }
+
+	private void init(String file, String col1) throws Exception {
+            BufferedReader br = new BufferedReader(
+						   new InputStreamReader(
+									 getInputStream(file)));
+	    CsvOperator operator = null;
+            TextReader reader = new TextReader(br);
+	    seen = new HashSet();
+            String delimiter = null;
+            while (true) {
+                String line = reader.readLine();
+                if (line == null) {
+                    break;
+                }
+		line = line.trim();
+		if(line.length()==0) continue;
+                if (delimiter == null) {
+                    if (line.indexOf("\t") >= 0) {
+                        delimiter = "\t";
+                    } else {
+                        delimiter = ",";
+                    }
+                }
+                List<String> cols = Utils.tokenizeColumns(line, delimiter);
+		if(operator==null) {
+		    operator = new CsvOperator();
+		    operator.setHeader(cols);
+		    idx1=operator.getColumnIndex(reader,col1);
+		}
+		String v = cols.get(idx1);
+		seen.add(v);
+	    }
+	}
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public boolean rowOk(TextReader ctx, Row row) {
+            if (cnt++ == 0) {
+		idx2 = getColumnIndex(ctx, column2);
+                return true;
+            }
+	    
+	    Object v = row.get(idx2);
+	    return seen.contains(v);
+	}
+
     }
 
 

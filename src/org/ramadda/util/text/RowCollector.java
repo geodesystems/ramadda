@@ -1197,6 +1197,134 @@ public  class RowCollector extends Processor {
 	    return rows;
         }
     }
+
+
+    public static class Normal extends RowCollector {
+
+        /**
+         */
+        public Normal(List<String> cols) {
+            super(cols);
+        }
+
+        /**
+         * _more_
+         *
+         * @param ctx _more_
+         * @param rows _more_
+         *
+         *
+         * @return _more_
+         * @throws Exception On badness
+         */
+        @Override
+        public List<Row> finish(TextReader ctx, List<Row> rows)
+	    throws Exception {
+            rows =  getRows();
+	    for(int i: getIndices(ctx)) {
+		List<KeyValue> values= new ArrayList<KeyValue>();
+		for(int rowIdx=0;rowIdx<rows.size();rowIdx++) {
+		    Row row = rows.get(rowIdx);
+		    String v = row.getString(i);
+		    String key = cleanName(v);
+		    //v.toLowerCase().replace(";"," ").replace("."," ");
+		    //key = key.replaceAll(" ","");
+		    //		    System.out.println("key:" + key);
+		    values.add(new KeyValue(rowIdx,key,v));
+		}
+		for(int rowIdx1=1;rowIdx1<rows.size();rowIdx1++) {
+		    Row row = rows.get(rowIdx1);
+		    KeyValue kv1 = values.get(rowIdx1);
+		    if(kv1.matched) {
+			continue;
+		    }
+		    boolean matched = false;
+		    for(int rowIdx2=1;rowIdx2<rows.size();rowIdx2++) {
+			if(rowIdx1 == rowIdx2) continue;
+			KeyValue kv2 = values.get(rowIdx2);			
+			if(kv2.key.equals(kv1.key)) {
+			    matched = true;
+			} else if(kv2.key.startsWith(kv1.key)) {
+			    matched = true;
+			} else {
+			    if(kv1.key.length()<=kv2.key.length()) {
+				int score = similarScore(kv1.key,kv2.key);
+				if(score>90) {
+				    //  System.err.println("score:" + score +" " + kv1.key +" " + kv2.key);
+				    matched = true;
+				}
+			    }
+			}
+			if(matched) {
+			    row.set(i,kv2.value);
+			    if(!kv1.value.equals(kv2.value)) 
+				System.err.println("match:k1:" + kv1.key +" k2:" + kv2.key+" v:" + kv1.value +" v2:" + kv2.value);
+			    kv1.value =  kv2.value;
+			    kv1.key =  cleanName(kv1.value);
+			    kv2.matched = true;
+			    break;
+			}
+		    }
+		    if(!matched) {
+			//			System.err.println("not match:" + kv1.value);
+		    }
+		}
+
+	    }
+	    return rows;
+        }
+	private static class KeyValue {
+	    int index;
+	    String key;
+	    String value;
+	    boolean matched = false;
+	    KeyValue(int index,String key, String value) {
+		this.index = index;
+		this.key = key;
+		this.value = value;
+	    }
+	}
+
+	private static String[] replace = new String[]{
+	    "ÁĂẮẶẰẲẴǍÂẤẬẦẨẪÄǞȦǠẠȀÀẢȂĀĄÅǺḀÃǼǢ",       "A",
+	    "ḂḄḆ",                                   "B",
+	    "ĆČÇḈĈĊ",                                "C",
+	    "ĎḐḒḊḌḎ",                                "D",
+	    "ÉĔĚȨḜÊẾỆỀỂỄḘËĖẸȄÈẺȆĒḖḔĘẼḚÉ",            "E",
+	    "Ḟ",                                     "F",
+	    "ǴĞǦĢĜĠḠ",                               "G",
+	    "ḪȞḨĤḦḢḤẖ",                              "H",
+	    "ÍĬǏÎÏḮİỊȈÌỈȊĪĮĨḬ",                      "I",
+	    "ǰĴ",                                    "J",
+	    "ḰǨĶḲḴ",                                 "K",
+	    "ĹĽĻḼḶḸḺ",                               "L",
+	    "ḾṀṂ",                                   "M",
+	    "ŃŇŅṊṄṆǸṈÑ",                             "N",
+	    "ÓŎǑÔỐỘỒỔỖÖȪȮȰỌŐȌÒỎƠỚỢỜỞỠȎŌṒṐǪǬÕṌṎȬǾØ",  "O",
+	    "ṔṖ",                                    "P",
+	    "ŔŘŖṘṚṜȐȒṞ",                             "R",
+	    "ŚṤŠṦŞŜȘṠẛṢṨ",                           "S",
+	    "ŤŢṰȚẗṪṬṮ",                              "T",
+	    "ÚŬǓÛṶÜǗǙǛǕṲỤŰȔÙỦƯỨỰỪỬỮȖŪṺŲŮŨṸṴ",        "U",
+	    "ṾṼ",                                    "V",
+	    "ẂŴẄẆẈẀẘ",                               "W",
+	    "ẌẊ",                                    "X",
+	    "ÝŶŸẎỴỲỶȲẙỸ",                            "Y",
+	    "ŹŽẐŻẒẔ",                                "Z",
+	    "(\\bTHE\\b|\\bAND\\b)","",
+	    "(\\W|\\d)","",
+	    //	    "  +"," "
+	};
+
+	public static String cleanName(String s) {
+	    s=s.toUpperCase();
+	    for(int i=0;i<replace.length;i+=2) {
+		s = s.replaceAll(replace[i],replace[i+1]);
+	    }
+	    return s;
+	}
+
+    }
     
 
 

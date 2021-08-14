@@ -49,7 +49,9 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.regex.*;
-
+import org.apache.commons.text.similarity.JaroWinklerDistance;
+import org.apache.commons.codec.language.Soundex;
+import org.apache.commons.text.similarity.LevenshteinDistance;
 
 /**
  *
@@ -2190,6 +2192,9 @@ public abstract class Processor extends CsvOperator {
          * @throws Exception _more_
          */
         private void init() throws Exception {
+	    if(!IO.okToReadFrom(file)) {
+		throw new RuntimeException("Cannot read file:" + file);
+	    }
             List<Integer> keys1Indices = null;
 	    //	    System.err.println("key:" + keys1 +" " + keys1Indices);
             BufferedReader br = new BufferedReader(
@@ -2297,6 +2302,8 @@ public abstract class Processor extends CsvOperator {
      * @author         Enter your name here...
      */
     public static class FuzzyJoiner extends Processor {
+
+	private JaroWinklerDistance distance = new JaroWinklerDistance();
 
 	private int threshold = 85;
 
@@ -2447,7 +2454,8 @@ public abstract class Processor extends CsvOperator {
 	    Row bestMatch = null;
 	    //	    System.err.println("key:" + key);
 	    for(KeyRow keyRow: rows) {
-		int score = me.xdrop.fuzzywuzzy.FuzzySearch.ratio(key,keyRow.key);
+		//		int score = me.xdrop.fuzzywuzzy.FuzzySearch.ratio(key,keyRow.key);
+		int score = ((int)(100*distance.apply(key, keyRow.key)));
 		if(score<threshold) continue;
 		if(bestMatch==null || score>bestScore) {
 		    bestScore = score;
@@ -2579,6 +2587,26 @@ public abstract class Processor extends CsvOperator {
 	    ctx.getWriter().println("</entries>");
 	}
 
+    }
+
+
+
+
+    public static void main(String[] args) throws Exception {
+	String s = args[0];
+	org.apache.commons.text.similarity.JaroWinklerDistance distance = new org.apache.commons.text.similarity.JaroWinklerDistance();
+	org.apache.commons.text.similarity.FuzzyScore fuzzy =  new org.apache.commons.text.similarity.FuzzyScore(java.util.Locale.getDefault());
+	LevenshteinDistance lev = new LevenshteinDistance(10);
+	Soundex soundex = new Soundex();
+	for(int i=1;i<args.length;i++) {
+	    int fuzzyScore = fuzzy.fuzzyScore(s,args[i]).intValue();
+	    int levenshteinScore = me.xdrop.fuzzywuzzy.FuzzySearch.ratio(s,args[i]);
+	    //	    int fuzzy = me.xdrop.fuzzywuzzy.FuzzySearch.ratio(s,args[i]);
+	    int sound = 25*soundex.difference(s,args[i]);
+	    double jaro = distance.apply(s,args[i]);
+	    System.err.println("lev:" + lev.apply(s, args[i]));
+	    //	    System.err.println("lev:" + levenshteinScore +" fuzzy:" + fuzzyScore +" sound:" + sound +" jaro:" + ((int)(100*jaro)) +" " + args[i]);
+	}
     }
 
 }

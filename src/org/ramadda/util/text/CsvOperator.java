@@ -40,7 +40,9 @@ import java.util.List;
 
 import java.util.regex.*;
 
-
+import org.apache.commons.text.similarity.JaroWinklerDistance;
+import org.apache.commons.codec.language.Soundex;
+import org.apache.commons.text.similarity.FuzzyScore;
 
 /**
  * Class description
@@ -148,6 +150,28 @@ public class CsvOperator {
 	colId = colId.replaceAll("_+_", "_");
 	colId = colId.replaceAll("_$", "");
 	return colId;
+    }
+	
+
+
+    private JaroWinklerDistance jaro;
+    private Soundex soundex;
+    private FuzzyScore fuzzy;
+    public int similarScore(String s1, String s2) throws Exception {
+	int levenshteinScore = me.xdrop.fuzzywuzzy.FuzzySearch.ratio(s1,s2);
+	if(true) return levenshteinScore;
+	if(soundex==null) {
+	    soundex = new Soundex();
+	    jaro = new JaroWinklerDistance();
+	    //	    fuzzy = new FuzzyScore(java.util.Locale.getDefault());
+	}
+	//	int fuzzyScore = fuzzy.fuzzyScore(s1,s2).intValue();
+	//	int soundexScore = 25*soundex.difference(s1,s2);
+	int jaroScore = (int)(100*jaro.apply(s1,s2));
+	int max =  Math.max(levenshteinScore,   jaroScore);
+	//	if(max>90)
+	//	    System.err.println(levenshteinScore +" " + jaroScore);
+	return max;
     }
 	
 
@@ -782,6 +806,8 @@ public class CsvOperator {
 
         return rowMap;
     }
+
+
 
 
 
