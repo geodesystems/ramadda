@@ -2672,6 +2672,7 @@ public class WikiUtil {
 
 
                 if (tline.startsWith(":heading")
+		    ||  tline.startsWith(":lheading")
                         || tline.startsWith(":block")
                         || tline.startsWith(":credit")
                         || tline.startsWith(":note")
@@ -2692,7 +2693,7 @@ public class WikiUtil {
                         clazz = "ramadda-" + what;
                     }
 		    String attrs = "";
-                    if (what.startsWith("heading")) {
+                    if (what.startsWith("heading") || what.startsWith("lheading")) {
 			String id = "heading-" +Utils.makeID(blob);
                         defineHeading.accept(buff, blob, 1);
 			buff.append(HU.anchorName(id));

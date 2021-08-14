@@ -5532,7 +5532,9 @@ public class HtmlUtils implements HtmlUtilsConstants {
             label = StringUtil.stripTags(label).trim();
 	    label = label.replace("&nbsp;"," ");
             try {
-                URL newUrl = new URL(url, href.replace("\\","/").replaceAll("#.*",""));
+		String tmp = href.replace("\\","/").replaceAll("#.*","");
+		if(tmp.toLowerCase().startsWith("javascript")) continue;
+		URL newUrl = new URL(url, tmp);
 		if(seen.contains(newUrl)) continue;
 		seen.add(newUrl);
 
