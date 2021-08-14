@@ -151,6 +151,7 @@ public class Utils extends IO {
      * @return _more_
      */
     public static String format(double d) {
+	if(d == (int) d) return ""+(int)d;
         return getFormat(d).format(d);
     }
 
