@@ -2119,14 +2119,39 @@ public class Utils extends IO {
     public static String upperCaseFirst(String s) {
         StringBuilder sb = new StringBuilder();
         for (String tok : Utils.split(s, " ", true, true)) {
-            sb.append(tok.substring(0, 1).toUpperCase()
-                      + tok.substring(1).toLowerCase());
+	    sb.append(tok.substring(0, 1).toUpperCase()
+		      + tok.substring(1).toLowerCase());
             sb.append(" ");
         }
 
         return sb.toString().trim();
     }
 
+    public static String nameCase(String s) {
+        StringBuilder sb = new StringBuilder();
+        for (String tok : Utils.split(s, " ", true, true)) {
+	    List<String> toks2 = Utils.split(tok, "-", true, true);
+	    for (int i=0;i<toks2.size();i++) {
+		String tok2 = toks2.get(i);
+		if(i>0)
+		    sb.append("-");
+		if(tok2.indexOf(".")>=0) {
+		    sb.append(tok2.toUpperCase());
+		} else if(tok2.startsWith("Mc")) {
+		    sb.append(tok2);
+		} else if(tok2.startsWith("Mac")) {
+		    sb.append(tok2);		
+		} else {
+		    sb.append(tok2.substring(0, 1).toUpperCase()
+			      + tok2.substring(1).toLowerCase());
+		}
+	    }
+            sb.append(" ");
+        }
+
+        return sb.toString().trim();
+    }
+    
 
     /**
      * _more_
