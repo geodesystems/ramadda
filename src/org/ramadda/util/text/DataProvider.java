@@ -37,6 +37,7 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
+import java.net.URL;
 import java.io.*;
 
 import java.sql.*;
@@ -370,6 +371,52 @@ public abstract class DataProvider {
     }
 
 
+    public static class Harvester extends BulkDataProvider {
+
+
+        /** _more_ */
+        private String pattern;
+
+
+        /**
+         * _more_
+         *
+         * @param sSkip _more_
+         * @param htmlPattern _more_
+         * @param props _more_
+         */
+        public Harvester(String pattern) {
+            this.pattern = pattern;
+        }
+
+        /**
+         * _more_
+         *
+         * @param ctx _more_
+         * @param s _more_
+         *
+         * @throws Exception _more_
+         */
+        public void tokenize(TextReader ctx, String s) throws Exception {
+	    URL url = new URL(ctx.getInputFile());
+	    List<HtmlUtils.Link> links = HtmlUtils.extractLinks(url, s, pattern);
+	    Row row  = new Row();
+	    row.add("Label");
+	    row.add("URL");
+	    addRow(row);
+	    for(HtmlUtils.Link link: links) {
+		row  = new Row();
+		row.add(link.getLabel());
+		row.add(link.getUrl().toString());
+		addRow(row);
+	    }
+        }
+
+
+
+    }
+
+    
 
     /**
      * Class description

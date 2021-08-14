@@ -615,6 +615,8 @@ public class CsvUtil {
 	    return;
 	}
 
+
+
         if ( !parseArgs(extra, myTextReader, files)) {
             currentArg = null;
             return;
@@ -951,7 +953,7 @@ public class CsvUtil {
             ZipInputStream zin = new ZipInputStream(fis);
             ZipEntry       ze  = null;
             while ((ze = zin.getNextEntry()) != null) {
-                if (ze.isDirectory()) {
+		if (ze.isDirectory()) {
                     continue;
                 }
                 String p = ze.getName().toLowerCase();
@@ -1496,6 +1498,12 @@ public class CsvUtil {
                 new Arg("endPattern", "", "type", "pattern"),
                 new Arg("pattern", "Row pattern. Use (...) to match columns",
                         "type", "pattern")),
+        new Cmd("-harvest", "Harvest links in web page",
+		new Arg("pattern","regexp to match")),
+
+		
+
+
         new Cmd("-json", "Parse the input as json",
                 new Arg("arrayPath",
 			"Path to the array e.g., obj1.arr[2].obj2", "size", "30",
@@ -1912,6 +1920,8 @@ public class CsvUtil {
                 new Arg("column", "", "type", "columns"), "suffix"),
         new Cmd("-image", "Search for an image",
                 new Arg("column", "", "type", "columns"), "suffix"),
+        new Cmd("-embed", "Download the URL and embed the image contents",
+                new Arg("url")),
         new Cmd(
 		"-imagefill",
 		"Search for an image with the query column text if the given image column is blank. Add the given suffix to the search. ",
@@ -1983,6 +1993,11 @@ public class CsvUtil {
                 new Arg("column", "", "type", "columns"), "how far back"),
         new Cmd("-average", "Calculate a moving average", "columns",
                 "period", "label"),
+        new Cmd("-ranges", "Create a new column with the (string) ranges where the value falls in",
+                new Arg("column", "", "type", "columns"),
+		new Arg("name", "New column name"),		
+		new Arg("start", "Numeric start of range"),
+		new Arg("size", "Numeric size of range")),		
         new Cmd("-bytes", "Convert suffixed values (e.g., 2 MB) into the number",
                 new Arg("unit", "", "type", "enumeration","values","binary,metric"),
                 new Arg("column", "", "type", "columns")),
@@ -2356,6 +2371,7 @@ public class CsvUtil {
     }
 
     private void makeFunctions() {
+
 	defineFunction("-skip",1,(ctx,args,i) -> {
 		ctx.setSkip(Integer.parseInt(args.get(++i)));
 		return i;
@@ -2384,6 +2400,10 @@ public class CsvUtil {
 		ctx.addProcessor(new Converter.ImageSearch(getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });
+	defineFunction("-embed",1, (ctx,args,i) -> {
+		ctx.addProcessor(new Converter.Embed(args.get(++i)));
+		return i;
+	    });	
 	defineFunction("-countunique",1, (ctx,args,i) -> {
 		ctx.addProcessor(new RowCollector.CountUnique(getCols(args.get(++i))));
 		return i;
@@ -2603,7 +2623,10 @@ public class CsvUtil {
 		return i;
 	    });
 
-
+	defineFunction("-ranges",4,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.Ranges(args.get(++i),args.get(++i), Double.parseDouble(args.get(++i)), Double.parseDouble(args.get(++i))));
+		return i;
+	    });
 
 	defineFunction("-sum",3,(ctx,args,i) -> {
 		List<String> keys   = getCols(args.get(++i));
@@ -3073,6 +3096,11 @@ public class CsvUtil {
 				       new DataProvider.HtmlPatternDataProvider(args.get(++i), args.get(++i),
 										args.get(++i), args.get(++i)));
 
+		return i;
+	    });
+
+	defineFunction("-harvest",1,(ctx,args,i) -> {
+		ctx.getProviders().add(new DataProvider.Harvester( args.get(++i)));
 		return i;
 	    });
 

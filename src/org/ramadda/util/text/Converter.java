@@ -28,6 +28,7 @@ import org.ramadda.util.Json;
 import org.ramadda.util.Place;
 import org.ramadda.util.Utils;
 
+import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
@@ -497,6 +498,64 @@ public abstract class Converter extends Processor {
 
     }
 
+    public static class Embed extends Converter {
+        /** _more_ */
+        private String imageColumn;
+
+        /** _more_ */
+        private int imageColumnIndex = -1;
+
+        /**
+         * @param cols _more_
+         * @param suffix _more_
+         */
+        public Embed(String col) {
+            super();
+	    imageColumn = col;
+        }
+
+
+
+
+        /**
+         *
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+                imageColumnIndex = getIndex(ctx, imageColumn);
+		row.add("Image Data");
+                return row;
+            }
+
+	    String url = row.getString(imageColumnIndex);
+	    if(!Utils.stringDefined(url)) {
+		row.add("");
+		return row;
+	    }
+	    url = url.trim();
+	    if(url.toLowerCase().startsWith("file")) {
+		fatal("Bad url:" + url);
+	    }
+	    String type = Misc.getFileExtension(url);
+	    if(!Utils.stringDefined(type)) type  = "png";
+	    try {
+		URL _url = new URL(url);
+		InputStream is = IO.getInputStream(_url);
+		byte[] bytes = IOUtil.readBytes(is);
+		String b  = "data:image/" + type +";base64, " + Utils.encodeBase64Bytes(bytes);
+		row.add(b);
+	    } catch(Exception exc) {
+		fatal("Reading url:" + url, exc);
+	    }
+            return row;
+        }
+
+    }
+    
 
     /**
      * Class description
@@ -1435,6 +1494,71 @@ public abstract class Converter extends Processor {
                 }
             }
             values.add(v);
+
+            return row;
+        }
+
+    }
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Tue, Nov 19, '19
+     * @author         Enter your name here...
+     */
+    public static class Ranges extends Converter {
+
+        /** _more_ */
+	String name;
+	double start;
+	double size;
+
+        /**
+         *
+         *
+         *
+         *
+         *
+         * @param col _more_
+         * @param step _more_
+         */
+        public Ranges(String col, String name,double start, double size) {
+            super(col);
+	    this.name = name;
+	    this.start = start;
+	    this.size = size;
+        }
+
+        /**
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            int col = getIndex(ctx);
+            if (rowCnt++ == 0) {
+                add(ctx, row, name);
+                return row;
+            }
+            double v = Double.parseDouble(row.get(col).toString());
+	    if(Double.isNaN(v)) {
+		add(ctx, row, "");
+	    } else if(v<start) {
+		add(ctx, row, "<" + start);
+	    } else {
+		double offset =  v-start;
+		int buckets = (int)(offset/size);
+		double s= start+buckets*size;
+		double e = s+size;
+		String ss = ""+(((int)s)==s?(int)s:s);
+		String se = ""+(((int)e)==e?(int)e:e);		
+		add(ctx, row, Utils.format(s)+"-"+Utils.format(e));
+	    }
 
             return row;
         }
