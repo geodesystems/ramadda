@@ -2876,7 +2876,8 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
             });
             html += HU.close(TBODY, TABLE);
             this.setContents(html);
-	    HU.formatTable("#" +this.getDomId("statstable"),{ordering:true});
+	    //the aaSorting turns off the inital sorting
+	    HU.formatTable("#" +this.getDomId("statstable"),{ordering:true,"aaSorting": []});	    
             this.initTooltip();
 
 	    if(doValueSelection) {
