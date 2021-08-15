@@ -796,9 +796,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         List<String> colNames = tableHandler.getColumnNames();
         String       view     = getWhatToShow(request);
 
-
-
-
         if (request.get(ARG_DB_SETPOS, false)) {
             if ( !canEdit) {
                 throw new IllegalArgumentException(
@@ -2238,8 +2235,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 					aggSB.toString()));
 
 		String dfltDir = "desc";
-		buffer.append(formEntry(request, msgLabel("Order"),
-					     HU.select(ARG_DB_GROUPSORTDIR,getOrderTfos(), request.getString(ARG_DB_GROUPSORTDIR, dfltDir),HtmlUtils.cssClass("search-select"))));
+		String groupOrder=HtmlUtils.select(ARG_DB_GROUP_SORTBY, sorttfos,
+					request.getString(ARG_DB_GROUP_SORTBY, ""),
+						   HtmlUtils.cssClass("search-select")); 
+		groupOrder+=HU.space(2);
+		groupOrder += HU.select(ARG_DB_GROUP_SORTDIR,getOrderTfos(), 
+					request.getString(ARG_DB_GROUP_SORTDIR, dfltDir),HtmlUtils.cssClass("search-select"));
+		buffer.append(formEntry(request, msgLabel("Order"),groupOrder));
             }
         }
 
@@ -3358,13 +3360,22 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             throws Exception {
         DbInfo        dbInfo = getDbInfo();
         StringBuilder sb     = new StringBuilder();
-        List<Column> columns = getColumnsToUse(request, false);
-        for (int i = 0; i < columns.size(); i++) {
-            Column c = columns.get(i);
-	    if(i>0) sb.append(",");
-	    sb.append(c.getName());
-        }
-	sb.append("\n");
+	List<String> colNames=null;
+	List<Column> columns = null;
+	if(!doGroupBy) {
+	    columns = getColumnsToUse(request, false);
+            colNames        = Column.getNames(columns);
+	    for (int i = 0; i < colNames.size(); i++) {
+		if(i>0) sb.append(",");
+		sb.append(colNames.get(i));
+	    }
+	    sb.append("\n");
+	} else  {
+	    //TODO: use these later for formatting
+	    List<Column>  groupByColumns = getGroupByColumns(request, false);
+            List<Column> aggColumns = getAggColumns(request);
+	    groupByColumns.addAll(aggColumns);
+	}
 
         for (int cnt = 0; cnt < valueList.size(); cnt++) {
             Object[] values = valueList.get(cnt);
@@ -3385,17 +3396,28 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 continue;
             }
 
-            for (int i = 0; i < columns.size(); i++) {
-                StringBuilder cb = new StringBuilder();
-                columns.get(i).formatValue(request, entry, cb, Column.OUTPUT_CSV,
-                            values, true);
-                String colValue = cb.toString();
-                colValue = colValue.replaceAll("\n", " ");
-                if (i > 0) {
-                    sb.append(",");
-                }
-                sb.append(colValue);
-            }
+	    if(columns!=null) {
+		for (int i = 0; i < columns.size(); i++) {
+		    StringBuilder cb = new StringBuilder();
+		    columns.get(i).formatValue(request, entry, cb, Column.OUTPUT_CSV,
+					       values, true);
+		    String colValue = cb.toString();
+		    colValue = colValue.replaceAll("\n", " ");
+		    if (i > 0) {
+			sb.append(",");
+		    }
+		    sb.append(colValue);
+		}
+	    } else {
+		for (int i = 0; i < values.length; i++) {
+		    String colValue = values[i].toString();
+		    colValue = colValue.replaceAll("\n", " ");
+		    if (i > 0) {
+			sb.append(",");
+		    }
+		    sb.append(colValue);
+		}
+	    }
             sb.append("\n");
         }
 
@@ -4166,40 +4188,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             groupByColumns.add(column.cloneColumn());
         }
         if (includeAgg) {
-            List<Column> aggColumns = new ArrayList<Column>();
-            for (String col :
-                    (List<String>) request.get(ARG_AGG,
-                        new ArrayList<String>())) {
-                Column aggColumn = getColumn(col);
-                if (aggColumn == null) {
-                    continue;
-                }
-                aggColumn = aggColumn.cloneColumn();
-                aggColumns.add(aggColumn);
-                String aggType = request.getEnum(ARG_AGG_TYPE, "count",
-                                     "sum", "min", "max", "avg");
-                String name = aggType + "_of_" + aggColumn.getName();
-                //              aggColumn.setName(name);
-                aggColumn.setLabel(Utils.makeLabel(name));
-                aggColumn.setType(aggColumn.DATATYPE_DOUBLE);
-            }
-            for (int i = 0; i < 3; i++) {
-                Column aggColumn = getColumn(request.getString(ARG_AGG + i,
-                                       ""));
-                if (aggColumn == null) {
-                    continue;
-                }
-                aggColumn = aggColumn.cloneColumn();
-                aggColumns.add(aggColumn);
-                System.err.println("agg -2:" + aggColumn);
-                String aggType = request.getEnum(ARG_AGG_TYPE + i, "count",
-                                     "sum", "min", "max", "avg");
-                String name = aggType + "_of_" + aggColumn.getName();
-                //              aggColumn.setName(name);
-                aggColumn.setLabel(Utils.makeLabel(name));
-                aggColumn.setType(aggColumn.DATATYPE_DOUBLE);
-
-            }
+            List<Column> aggColumns = getAggColumns(request);
             groupByColumns.addAll(aggColumns);
             if (aggColumns.size() == 0) {
                 Column aggColumn = groupByColumns.get(0).cloneColumn();
@@ -4221,6 +4210,45 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         return groupByColumns;
     }
+
+    private List<Column> getAggColumns(Request request) throws Exception {
+	
+	List<Column> aggColumns = new ArrayList<Column>();
+	for (String col :
+		 (List<String>) request.get(ARG_AGG,
+					    new ArrayList<String>())) {
+	    Column aggColumn = getColumn(col);
+	    if (aggColumn == null) {
+		continue;
+	    }
+	    aggColumn = aggColumn.cloneColumn();
+	    aggColumns.add(aggColumn);
+	    String aggType = request.getEnum(ARG_AGG_TYPE, "count",
+					     "sum", "min", "max", "avg");
+	    String name = aggType + "_of_" + aggColumn.getName();
+	    //              aggColumn.setName(name);
+	    aggColumn.setLabel(Utils.makeLabel(name));
+	    aggColumn.setType(aggColumn.DATATYPE_DOUBLE);
+	}
+	for (int i = 0; i < 3; i++) {
+	    Column aggColumn = getColumn(request.getString(ARG_AGG + i,
+							   ""));
+	    if (aggColumn == null) {
+		continue;
+	    }
+	    aggColumn = aggColumn.cloneColumn();
+	    aggColumns.add(aggColumn);
+	    String aggType = request.getEnum(ARG_AGG_TYPE + i, "count",
+					     "sum", "min", "max", "avg");
+	    String name = aggType + "_of_" + aggColumn.getName();
+	    //              aggColumn.setName(name);
+	    aggColumn.setLabel(Utils.makeLabel(name));
+	    aggColumn.setType(aggColumn.DATATYPE_DOUBLE);
+
+	}
+	return aggColumns;
+    }
+
 
     /**
      * _more_
@@ -6524,7 +6552,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         tmp);
                     //                    extract (year from col)
                     orderBy = SqlUtil.orderBy(col,
-					      request.getEnum(ARG_DB_GROUPSORTDIR, "desc", "desc",
+					      request.getEnum(ARG_DB_GROUP_SORTDIR, "desc", "desc",
 							      "asc").equals("desc"));
                 }
 
@@ -6576,10 +6604,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 String aggSelector = agg + "(" + aggColumn + ") ";
                 colNames.add(aggSelector);
                 if (orderBy == null) {
+		    String tmp = request.getString(ARG_DB_GROUP_SORTBY, aggSelector);
+		    if(!Utils.stringDefined(tmp)) tmp = aggSelector;
                     orderBy = SqlUtil.orderBy(aggSelector,
-                            request.getString(ARG_DB_GROUPSORTDIR,
+                            request.getString(ARG_DB_GROUP_SORTDIR,
                                 "desc").equals("desc"));
                 }
+
                 String label = agg;
                 if (label.equals("avg")) {
                     label = "average";
@@ -6601,12 +6632,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             selectedColumns = getSelectedColumns(request, true);
             colNames        = Column.getNames(selectedColumns);
         }
+
         boolean forTable = request.getString(ARG_DB_VIEW,
                                              VIEW_TABLE).equals(VIEW_TABLE);
         Statement stmt = null;
         extra += limitString;
         try {
-	    //            SqlUtil.debug = true;
+	    //	    SqlUtil.debug = true;
             if (SqlUtil.debug) {
                 System.err.println("table:" + tableHandler.getTableName());
                 System.err.println("clause:" + clause);
@@ -6619,7 +6651,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             stmt = getDatabaseManager().select(SqlUtil.comma(colNames),
                     Misc.newList(tableHandler.getTableName()), clause, extra,
                     max);
-	    //	    SqlUtil.debug = false;
+	    SqlUtil.debug = false;
 	    long t2 = System.currentTimeMillis();
 	    //	    Utils.printTimes("DbTypeHandler select: "+ clause,t1,t2);
 
