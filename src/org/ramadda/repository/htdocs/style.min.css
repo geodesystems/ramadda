@@ -81,6 +81,8 @@ html, body {
 }
 
 
+
+
 form {
     margin:0px;
     padding: 0px;
@@ -128,6 +130,15 @@ h4 {
     margin-top:1em;
     margin-bottom:0px;    
 }
+
+/* for centering */
+.ramadda-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;       
+}
+
+
 .ramadda-page-heading, .ramadda-heading, .ramadda-lheading, .ramadda-blurb {
     font-size:140%;
 }
@@ -166,10 +177,7 @@ h4 {
     border:1px solid rgb(211, 220, 228); 
 }
 
-
-
-
-p {margin-top:1.5em;}
+p {margin-top:1em;}
 
 a {
     color: var(--href-color);
