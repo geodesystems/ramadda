@@ -6604,9 +6604,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 String aggSelector = agg + "(" + aggColumn + ") ";
                 colNames.add(aggSelector);
                 if (orderBy == null) {
-		    String tmp = request.getString(ARG_DB_GROUP_SORTBY, aggSelector);
-		    if(!Utils.stringDefined(tmp)) tmp = aggSelector;
-                    orderBy = SqlUtil.orderBy(aggSelector,
+		    String sort = request.getString(ARG_DB_GROUP_SORTBY, aggSelector);
+		    if(!Utils.stringDefined(sort)) sort = aggSelector;
+                    orderBy = SqlUtil.orderBy(sort,
                             request.getString(ARG_DB_GROUP_SORTDIR,
                                 "desc").equals("desc"));
                 }
