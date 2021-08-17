@@ -601,12 +601,13 @@ begin
   yint = 1
   if (numyears .gt. 150) then
     yint = 4
-  end if
-  if (numyears .gt. 75) then
-    yint = 3
   else
-    if (numyears .gt. 50) then
-      yint = 2
+    if (numyears .gt. 75) then
+      yint = 3
+    else
+      if (numyears .gt. 50) then
+        yint = 2
+      end if
     end if
   end if
   ymod = numyears/(5*yint)

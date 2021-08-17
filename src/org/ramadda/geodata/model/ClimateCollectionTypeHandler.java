@@ -163,6 +163,8 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
         String        formId = openForm(request, entry, sb, js);
         addSelectorWidgets(request, entry, sb, js, formId);
         addProcessWidgets(request, entry, sb, js, formId);
+        sb.append(HtmlUtils.hidden(ARG_MAX,
+                                   request.getString(ARG_MAX, "9999")));
         sb.append(HtmlUtils.formClose());
         sb.append(HtmlUtils.script(js.toString()));
     }

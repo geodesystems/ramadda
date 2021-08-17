@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2020 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -197,8 +197,8 @@ public class CDOArealStatisticsService extends CDODataService {
         GridDatatype grid  = dataset.getGrids().get(0);
         String       units = grid.getUnitsString();
         boolean hasPrecipUnits = (SimpleUnit.isCompatible(units, "kg m-2 s-1")
-                                  //|| SimpleUnit.isCompatible(units, "mm/day")
-                                  || units.equals("mm/day")
+        //|| SimpleUnit.isCompatible(units, "mm/day")
+        || units.equals("mm/day")
                                   || units.equals("mm"));  // for cpc global precip
 
         boolean     isAnom = first.getValue(3).toString().equals("anom");
@@ -207,13 +207,17 @@ public class CDOArealStatisticsService extends CDODataService {
         if ((climos == null) || climos.isEmpty()) {
             haveClimo = false;
         }
+        millis = System.currentTimeMillis();
         addStatsWidget(request, sb, input, hasPrecipUnits, isAnom, haveClimo,
                        type);
+        //System.out.println("Time to add stats widget: "+(System.currentTimeMillis()-millis));
 
+        millis = System.currentTimeMillis();
         addTimeWidget(request, sb, input, periods);
+        //System.out.println("Time to add time widget: "+(System.currentTimeMillis()-millis));
 
         addMapWidget(request, sb, dataset);
-        
+
         if (dataset != null) {
             dataset.close();
         }
@@ -1720,9 +1724,9 @@ public class CDOArealStatisticsService extends CDODataService {
                                boolean isAnom, boolean haveClimo, String type)
             throws Exception {
 
-        if (getFrequency(request,
-                         si.getEntries().get(0)).equals(
-                             CDOOutputHandler.FREQUENCY_DAILY)) {
+        if (ModelUtil.getFrequency(request,
+                                   si.getEntries().get(0)).equals(
+                                       CDOOutputHandler.FREQUENCY_DAILY)) {
             sb.append(HtmlUtils.hidden(CDOOutputHandler.ARG_CDO_PERIOD,
                                        request.getSanitizedString(
                                            CDOOutputHandler.ARG_CDO_PERIOD,
@@ -1759,9 +1763,10 @@ public class CDOArealStatisticsService extends CDODataService {
         String type =
             input.getProperty(
                 "type", ClimateModelApiHandler.ARG_ACTION_COMPARE).toString();
-        String frequency =
-            getFrequency(request,
-                         input.getOperands().get(0).getEntries().get(0));
+        String frequency = ModelUtil.getFrequency(
+                               request,
+                               input.getOperands().get(0).getEntries().get(
+                                   0));
         if ((periods == null) || (periods.isEmpty())) {
             if (frequency.equals(CDOOutputHandler.FREQUENCY_DAILY)) {
                 CDOOutputHandler.makeMonthDaysWidget(request, sb, null);
@@ -1842,9 +1847,12 @@ public class CDOArealStatisticsService extends CDODataService {
          */
         //int numOps = input.getOperands().size();
         long millis = System.currentTimeMillis();
+        //System.out.println("Ops size before sorting = "+ input.getOperands().size());
         List<List<ServiceOperand>> sortedOps =
             ModelUtil.sortOperandsByCollection(request, input.getOperands());
+        //System.out.println("Time to sort ops: "+(System.currentTimeMillis()-millis));
         int numOps = sortedOps.size();
+        //System.out.println("New ops size after sorting = "+numOps);
         boolean isCompare =
             type.equals(ClimateModelApiHandler.ARG_ACTION_COMPARE)
             || type.equals(ClimateModelApiHandler.ARG_ACTION_ENS_COMPARE);
@@ -1860,7 +1868,10 @@ public class CDOArealStatisticsService extends CDODataService {
         int                idx        = 0;
         for (List<ServiceOperand> ops : sortedOps) {
             datesIndex[idx] = dateIdx;
+            //System.out.println("sortedOps["+idx+"] has "+ops.size()+" operands");
+            int opIdx = 0;
             for (ServiceOperand op : ops) {
+                //System.out.println("op["+opIdx+"] has "+op.getEntries().size()+" entries");
                 List<GridDataset> grids = new ArrayList<GridDataset>();
                 for (Entry first : op.getEntries()) {
                     millis = System.currentTimeMillis();
@@ -1920,6 +1931,11 @@ public class CDOArealStatisticsService extends CDODataService {
                 }
                 dataYears.add(opYears);
                 dateIdx++;
+                opIdx++;
+                // Assumes that each ensemble member has the same time range
+                if (isCompare) {
+                    break;
+                }
             }
             idx++;
         }

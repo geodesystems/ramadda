@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.Resource;
+import org.ramadda.repository.type.GranuleTypeHandler;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.service.ServiceOperand;
 
@@ -65,9 +66,9 @@ public class ModelUtil {
     public static Entry aggregateEntriesByTime(Request request,
             List<Entry> sameEntries, String id, File processDir)
             throws Exception {
-        Repository   repo     = request.getRepository();
+        Repository    repo     = request.getRepository();
         StringBuilder sb       = new StringBuilder();
-        NcmlUtil     ncmlUtil = new NcmlUtil(NcmlUtil.AGG_JOINEXISTING);
+        NcmlUtil      ncmlUtil = new NcmlUtil(NcmlUtil.AGG_JOINEXISTING);
         // TODO: get the time coordinate from the file
         String timeCoordinate = "time";
 
@@ -90,13 +91,14 @@ public class ModelUtil {
             //            System.err.println("   file:" + s);
             String s = child.getResource().getPath();
             File   f = new File(s);
-            sb.append(XmlUtil
-                .tag(NcmlUtil.TAG_NETCDF,
-                     XmlUtil.attrs(NcmlUtil.ATTR_LOCATION,
-                                   IOUtil.getURL(s,
-                                       new ModelUtil().getClass())
-                                           .toString(), NcmlUtil
-                                           .ATTR_ENHANCE, "true"), ""));
+            sb.append(XmlUtil.tag(NcmlUtil.TAG_NETCDF,
+                                  XmlUtil.attrs(NcmlUtil.ATTR_LOCATION,
+                                          IOUtil.getURL(s,
+                                                  new ModelUtil().getClass())
+                                                  .toString(),
+                                          NcmlUtil.ATTR_ENHANCE,
+                                          "true"),
+                                  ""));
         }
 
         sb.append(XmlUtil.closeTag(NcmlUtil.TAG_AGGREGATION));
@@ -153,7 +155,9 @@ public class ModelUtil {
         int           i       = 0;
         for (Object o : values) {
             i++;
-            String ohFace = (o == null) ? "null" : o.toString();
+            String ohFace = (o == null)
+                            ? "null"
+                            : o.toString();
             if (dupList.contains(ohFace) && excludeDoops) {
                 continue;
             }
@@ -236,8 +240,7 @@ public class ModelUtil {
         Hashtable<String, List<Entry>> table = new Hashtable<String,
                                                    List<Entry>>();
         for (Entry entry : entries) {
-            String valuesKey = makeValuesKey(entry.getValues(),
-                                   true);
+            String      valuesKey = makeValuesKey(entry.getValues(), true);
             List<Entry> myEntries = table.get(valuesKey);
             if (myEntries == null) {
                 myEntries = new ArrayList<Entry>();
@@ -311,40 +314,49 @@ public class ModelUtil {
         return sortedList;
     }
 
-    /**
-     * Copy the entry collection properties if they exist
-     *
-     * @param oldEntry  the old Entry
-     * @param newEntry  the new Entry
-     * public static void copyEntryCollectionProperties(Entry oldEntry,
-     *       Entry newEntry) {
-     *   String prop = oldEntry.getTransientProperty(
-     *                     ClimateModelApiHandler.ARG_COLLECTION).toString();
-     *   System.err.println(prop);
-     *   //TODO: do we want to set a default?
-     *   //if (prop == null) {
-     *   //    prop = ClimateModelApiHandler.ARG_COLLECTION1;
-     *   //}
-     *   if (prop != null) {
-     *       newEntry.putTransientProperty(
-     *           ClimateModelApiHandler.ARG_COLLECTION, prop);
-     *   }
-     *
-     * }
-     */
 
     /**
-     * Copy the entry collection properties if they exist
+     * Get the collection number from the ServiceOperand
      *
-     * @param oldEntry  the old Entry
-     * @param newEntries  the new Entries
-     * public static void copyEntryCollectionProperties(Entry oldEntry,
-     *       List<Entry> newEntries) {
-     *   for (Entry e : newEntries) {
-     *       copyEntryCollectionProperties(oldEntry, e);
-     *   }
-     * }
+     * @param so  the ServiceOperand
+     *
+     * @return the collection number (0 (default) or 1)
      */
+    public static int getOperandCollectionNumber(ServiceOperand so) {
+        Object collection =
+            so.getProperty(ClimateModelApiHandler.ARG_COLLECTION);
+        if ((collection == null)
+                || collection.toString().equals(
+                    ClimateModelApiHandler.ARG_COLLECTION1)) {
+            return 0;
+        } else if (collection.toString().equals(
+                ClimateModelApiHandler.ARG_COLLECTION2)) {
+            return 1;
+        }
 
+        return 2;
+    }
+
+    /**
+     * Get the time frequency for this entry
+     *
+     * @param request  the request
+     * @param sample   the sample Entry
+     *
+     * @return  the time frequency (e.g. monthly, daily, etc)
+     */
+    public static String getFrequency(Request request, Entry sample) {
+        Entry collection = GranuleTypeHandler.getCollectionEntry(request,
+                               sample);
+        String frequency = CDOOutputHandler.FREQUENCY_MONTHLY;
+        if (collection != null) {
+            String sval = collection.getValue(0).toString();
+            if ( !sval.toLowerCase().contains("mon")) {
+                frequency = CDOOutputHandler.FREQUENCY_DAILY;
+            }
+        }
+
+        return frequency;
+    }
 
 }

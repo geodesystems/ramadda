@@ -1791,18 +1791,24 @@ begin
     vartitle = opts@varTitle
     rscript(linenum) = "a<-sm.density(data[,1],col='black',lwd="+lwd+",ylab='Density',xlab='"+vartitle+"'"+xlims+ylims+")"
     rscript(linenum+1) = "a<-cbind(a$eval.points,a$estimate)"
-    rscript(linenum+2) = "rug(data[,1],lwd=1.,col='black',side=1)"
-    if (opts@isanom) then  ; add a line at 0
-        rscript(linenum+3) = "abline(v=0.0,lwd=2,col='black')"
-        linenum = linenum+3
-    else
-        linenum = linenum+2
+    linenum = linenum+1
+    if (opts@showrug) then
+      linenum = linenum+1
+      rscript(linenum) = "rug(data[,1],lwd=1.,col='black',side=1)"
     end if
-    rscript(linenum+1) = "sm.options(add=TRUE)"
+    if (opts@isanom) then  ; add a line at 0
+        linenum = linenum+1
+        rscript(linenum) = "abline(v=0.0,lwd=2,col='black')"
+    end if
+    linenum = linenum+1
+    rscript(linenum) = "sm.options(add=TRUE)"
     if (numpdfs .gt. 1) then
-        rscript(linenum+2) = "a2<-sm.density(data2[,1],col='red',lwd="+lwd+xlims+ylims+")"
-        rscript(linenum+3) = "a2<-cbind(a2$eval.points,a2$estimate)"
-        rscript(linenum+4) = "rug(data2[,1],lwd=1.,col='red',side=1)"
+        rscript(linenum+1) = "a2<-sm.density(data2[,1],col='red',lwd="+lwd+xlims+ylims+")"
+        rscript(linenum+2) = "a2<-cbind(a2$eval.points,a2$estimate)"
+        if (opts@showrug) then
+          rscript(linenum+4) = "rug(data2[,1],lwd=1.,col='red',side=1)"
+          linenum = linenum+1
+        end if
         linenum = linenum+3
     end if
     rscript(linenum+2) = "title(main='"+opts@mainTitle+"',line=2., cex.main=1.2, font.main=1)"
@@ -2586,6 +2592,13 @@ begin
     pdfstat = "none"
   end if
   
+  temp = getenv("showrug")
+  if (.not. ismissing(temp)) then
+    showrug = temp .eq. "true"
+  else
+    showrug = True
+  end if
+  
   options = True
   options@plottype=plotType
   options@imageformat=imageFormat
@@ -2631,6 +2644,7 @@ begin
   options@average_time = time_average
   options@pdfstat = pdfstat
   options@latlonlines = latlonlines
+  options@showrug = showrug
 
   ; add in the path to R if it is defined
   temp = getenv("rpath")
