@@ -2087,7 +2087,7 @@ public class CsvUtil {
         new Cmd("-printheader", "Print header"),
         new Cmd("-raw", "Print the file raw"),
         new Cmd("-table", "Print table and stats"),	
-        new Cmd("-stats", "Print summary stats"),	
+        new Cmd("-stats", "Print summary stats"),
         new Cmd("-record", "Print records"),
         new Cmd("-toxml", "Generate XML", new Arg("tag1"),new Arg("tag2")),
         new Cmd("-tojson", "Generate JSON"),	

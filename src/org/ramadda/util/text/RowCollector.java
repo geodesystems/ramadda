@@ -1780,7 +1780,7 @@ public  class RowCollector extends Processor {
             if (cols == null) {
                 cols = new ArrayList<ColStat>();
                 for (int i = 0; i < row.size(); i++) {
-                    cols.add(new ColStat(util, i<headerRow.size()?headerRow.getString(i):"",
+                    cols.add(new ColStat(util, interactive,i<headerRow.size()?headerRow.getString(i):"",
                                          row.getString(i)));
                 }
             }
@@ -1868,10 +1868,10 @@ public  class RowCollector extends Processor {
 	    };
 
 	    w.println("#rows:" + rowCnt);
-	    w.println(HU.SPACE2);
-	    w.println("<span id=header></span>");
 	    if(cols ==null) cols = new ArrayList<ColStat>();
             if (interactive) {
+		w.println(HU.SPACE2);
+		w.println("<span id=header></span>");
                 w.println("<table width='100%' class='stripe hover display nowrap ramadda-table ramadda-csv-table' >");
                 w.println("<thead>");
                 w.println("<tr valign=top>");
@@ -2038,6 +2038,8 @@ public  class RowCollector extends Processor {
             /** _more_          */
             int numMissing = 0;
 
+	    boolean interactive;
+	    
             /** _more_          */
             Hashtable<Object, Integer> uniques = new Hashtable<Object,
 		Integer>();
@@ -2058,7 +2060,8 @@ public  class RowCollector extends Processor {
              * @param n _more_
              * @param sample _more_
              */
-            public ColStat(CsvUtil util, String n, String sample) {
+            public ColStat(CsvUtil util, boolean interactive, String n, String sample) {
+		this.interactive = interactive;
                 label = name;
 		name = n;
                 if (name.startsWith("#fields=")) {
@@ -2189,7 +2192,9 @@ public  class RowCollector extends Processor {
              * @param writer _more_
              */
             public void finish(PrintWriter writer) {
-                writer.print("<pre>");
+		if (interactive) {
+		    writer.print("<pre>");
+		}
                 writer.print(name + " [" + type + "]  ");
                 writer.print("sample:" + sample + "  ");
                 if (type.equals("numeric")) {
@@ -2206,7 +2211,9 @@ public  class RowCollector extends Processor {
                     writer.print("#uniques:" + uniques.size());
                 }
                 writer.print("\n");
-                writer.print("</pre>");
+		if (interactive) {
+		    writer.print("</pre>");
+		}
             }
 
         }
