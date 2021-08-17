@@ -2251,45 +2251,60 @@ public class Column implements DataTypes, Constants, Cloneable {
      * @param where _more_
      */
     public void addTextSearch(String text, List<Clause> where, boolean doNegate) {
+	String DELIM_AND= " AND ";
+	String DELIM_OR= " OR ";	
 	text = text.replace("\\,","_comma_");
         List<String> values  = Utils.split(text, ",");
 	if(values.size()==0) values.add("");
         List<Clause> clauses = new ArrayList<Clause>();
-        for (String value : values) {
-	    //	    System.err.println("V:" + value +":");
-	    value = value.replace("_comma_",",").replace("_space_"," ");
-	    String trimmed = value.trim();
-	    if (trimmed.startsWith("\"") && trimmed.trim().endsWith("\"")) {
-		value = Utils.unquote(trimmed);
-		clauses.add(Clause.eq(getFullName(), value,doNegate));
-		continue;
-	    }
-            if (trimmed.equals("<blank>") || trimmed.equals("_blank_")) {
-                clauses.add(Clause.eq(getFullName(), "",doNegate));
-            } else if (trimmed.startsWith("!")) {
-                value = trimmed.substring(1);
-                if (value.length() == 0) {
-                    clauses.add(Clause.neq(getFullName(), "",doNegate));
-                } else {
-                    clauses.add(Clause.notLike(getFullName(),
-                            "%" + value + "%"));
-                }
-            } else if (trimmed.startsWith("=")) {
-                value = trimmed.substring(1);
-                clauses.add(Clause.eq(getFullName(), value,doNegate));
-            } else if ( !trimmed.startsWith("%") && trimmed.endsWith("%")) {
-                clauses.add(
-                    getDatabaseManager().makeLikeTextClause(
-                        getFullName(), value, doNegate));
-            } else {
-		if(trimmed.length()==0) {
-		    clauses.add(Clause.eq(getFullName(),"",doNegate));
-		} else {
-		    clauses.add(
-				getDatabaseManager().makeLikeTextClause(
-									getFullName(), "%" + value + "%", doNegate));
+        for (String commaedValue : values) {
+	    //	    System.err.println("V:" + commaedValue +":");
+	    commaedValue = commaedValue.replace("_comma_",",").replace("_space_"," ");
+	    String delimiter = commaedValue.indexOf(DELIM_AND)>=0?DELIM_AND:DELIM_OR;
+	    List<String> andToks  = Utils.split(commaedValue, delimiter);
+	    if(andToks.size()==0) andToks.add("");
+	    List<Clause> subClauses = new ArrayList<Clause>();
+	    for(String value: andToks) {
+		String trimmed = value.trim();
+		if (trimmed.startsWith("\"") && trimmed.trim().endsWith("\"")) {
+		    value = Utils.unquote(trimmed);
+		    subClauses.add(Clause.eq(getFullName(), value,doNegate));
+		    continue;
 		}
-            }
+		if (trimmed.equals("<blank>") || trimmed.equals("_blank_")) {
+		    subClauses.add(Clause.eq(getFullName(), "",doNegate));
+		} else if (trimmed.startsWith("!")) {
+		    value = trimmed.substring(1);
+		    if (value.length() == 0) {
+			subClauses.add(Clause.neq(getFullName(), "",doNegate));
+		    } else {
+			subClauses.add(Clause.notLike(getFullName(),
+						   "%" + value + "%"));
+		    }
+		} else if (trimmed.startsWith("=")) {
+		    value = trimmed.substring(1);
+		    subClauses.add(Clause.eq(getFullName(), value,doNegate));
+		} else if ( !trimmed.startsWith("%") && trimmed.endsWith("%")) {
+		    subClauses.add(
+				getDatabaseManager().makeLikeTextClause(
+									getFullName(), value, doNegate));
+		} else {
+		    if(trimmed.length()==0) {
+			subClauses.add(Clause.eq(getFullName(),"",doNegate));
+		    } else {
+			subClauses.add(
+				    getDatabaseManager().makeLikeTextClause(
+									    getFullName(), "%" + value + "%", doNegate));
+		    }
+		}
+	    }
+	    if(subClauses.size()==1) clauses.add(subClauses.get(0));
+	    else if(subClauses.size()>1) {
+		if(delimiter.equals(DELIM_AND)) 
+		    clauses.add(Clause.and(subClauses));
+		else
+		    clauses.add(Clause.or(subClauses));
+	    }
         }
 	//	System.err.println(this+" CLAUSES:" + clauses);
 	if(clauses.size()>0) {
