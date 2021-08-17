@@ -1421,6 +1421,11 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
         }
 
 
+	if(!haveLocation && props!=null && (props.get("mapCenter")!=null ||props.get("mapBounds")!=null))
+	    haveLocation  = true;
+
+
+
         if ( !haveLocation) {
             map.centerOn(bounds, forceBounds);
         }

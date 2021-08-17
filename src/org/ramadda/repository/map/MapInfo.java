@@ -1338,6 +1338,7 @@ public class MapInfo {
      */
     public void centerOn(Rectangle2D.Double bounds, boolean force) {
         if (bounds != null) {
+	    //	    System.err.println("Center on A:" +Utils.getStack(5));
             Utils.append(getJS(), "var bounds = new OpenLayers.Bounds(",
                          bounds.getX(), ",", bounds.getY(), ",",
                          (bounds.getX() + bounds.getWidth()), ",",
@@ -1366,7 +1367,6 @@ public class MapInfo {
     public void centerOn(Entry entry) {
         if (entry == null) {
             center();
-
             return;
         }
         if (entry.hasAreaDefined()) {
@@ -1390,6 +1390,7 @@ public class MapInfo {
                          double east) {
         Utils.append(getJS(), "var bounds = new OpenLayers.Bounds(", west,
                      ",", south, ",", east, ",", north, ");\n");
+	//	System.err.println("Center on B:" +Utils.getStack(5));
         Utils.append(getJS(), mapVarName, ".centerOnMarkers(bounds);\n");
     }
 
