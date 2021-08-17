@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2020 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -72,12 +72,16 @@ public class NCLModelPlotDataService extends NCLDataService {
     private final static String ARG_INCLUDE_STAT = ARG_NCL_PREFIX
                                                    + "plot_stat";
 
-    /** argument for plotting means on PDFs */
+    /** argument for plotting lat/lon lines on maps */
     private final static String ARG_LATLONLINES = ARG_NCL_PREFIX
                                                   + "latlonlines";
 
-    /** argument for plotting means on PDFs */
+    /** argument for plotting ensemble mean on maps */
     private final static String ARG_ENSAVG = ARG_NCL_PREFIX + "ensavg";
+
+    /** argument for plotting value ticks (rug) on PDFs */
+    private final static String ARG_SHOW_VALUE_TICKS = ARG_NCL_PREFIX
+                                                       + "show_rug";
 
     /**
      * Create a new map process
@@ -259,56 +263,68 @@ public class NCLModelPlotDataService extends NCLDataService {
         }
         if ( !isCorrelation) {
             if (type.equals(ClimateModelApiHandler.ARG_ACTION_ENS_COMPARE)) {
-                StringBuilder plotTypes = new StringBuilder();
-                plotTypes.append(
-                    HtmlUtils.radio(NCLOutputHandler.ARG_NCL_PLOTTYPE,
-                                    "pdf",
-                                    RepositoryManager.getShouldButtonBeSelected(
-                                        request,
-                                        NCLOutputHandler.ARG_NCL_PLOTTYPE,
-                                        "pdf",
-                                        true)));
-                plotTypes.append(space1);
-                plotTypes.append(Repository.msg("Histogram"));
-                plotTypes.append(space2);
-                plotTypes.append(
-                    HtmlUtils.radio(NCLOutputHandler.ARG_NCL_PLOTTYPE,
-                                    "image",
-                                    RepositoryManager.getShouldButtonBeSelected(
-                                        request,
-                                        NCLOutputHandler.ARG_NCL_PLOTTYPE,
-                                        "image",
-                                        false)));
-                plotTypes.append(space1);
-                plotTypes.append(Repository.msg("Maps"));
 
-                StringBuilder yearsSB = new StringBuilder();
-                yearsSB.append(Repository.msgLabel("Plot"));
-                yearsSB.append(HtmlUtils.space(1));
-                yearsSB.append(HtmlUtils.radio(ARG_TIME_AVERAGE,
-                        "true",
-                        RepositoryManager.getShouldButtonBeSelected(request,
+                if ( !ModelUtil.getFrequency(request,
+                                             first)
+                                             .equals(CDOOutputHandler
+                                                 .FREQUENCY_DAILY)) {
+                    StringBuilder plotTypes = new StringBuilder();
+                    plotTypes.append(
+                        HtmlUtils.radio(NCLOutputHandler.ARG_NCL_PLOTTYPE,
+                                        "pdf",
+                                        RepositoryManager.getShouldButtonBeSelected(
+                                            request,
+                                            NCLOutputHandler.ARG_NCL_PLOTTYPE,
+                                            "pdf",
+                                            true)));
+                    plotTypes.append(space1);
+                    plotTypes.append(Repository.msg("Histogram"));
+                    plotTypes.append(space2);
+                    plotTypes.append(
+                        HtmlUtils.radio(NCLOutputHandler.ARG_NCL_PLOTTYPE,
+                                        "image",
+                                        RepositoryManager.getShouldButtonBeSelected(
+                                            request,
+                                            NCLOutputHandler.ARG_NCL_PLOTTYPE,
+                                            "image",
+                                            false)));
+                    plotTypes.append(space1);
+                    plotTypes.append(Repository.msg("Maps"));
+
+                    StringBuilder yearsSB = new StringBuilder();
+                    yearsSB.append(Repository.msgLabel("Plot"));
+                    yearsSB.append(HtmlUtils.space(1));
+                    yearsSB.append(HtmlUtils.radio(ARG_TIME_AVERAGE,
+                            "true",
+                            RepositoryManager.getShouldButtonBeSelected(
+                                request,
                                 ARG_TIME_AVERAGE,
                                 "true",
                                 true)));
-                yearsSB.append(HtmlUtils.space(1));
-                yearsSB.append(Repository.msg("Average"));
-                yearsSB.append(HtmlUtils.space(2));
-                boolean timeSelected =
-                    RepositoryManager.getShouldButtonBeSelected(request,
-                        ARG_TIME_AVERAGE, "false", false);
-                String anomRB = HtmlUtils.radio(ARG_TIME_AVERAGE, "false",
-                                    timeSelected);
+                    yearsSB.append(HtmlUtils.space(1));
+                    yearsSB.append(Repository.msg("Average"));
+                    yearsSB.append(HtmlUtils.space(2));
+                    boolean timeSelected =
+                        RepositoryManager.getShouldButtonBeSelected(request,
+                            ARG_TIME_AVERAGE, "false", false);
+                    String anomRB = HtmlUtils.radio(ARG_TIME_AVERAGE,
+                                        "false", timeSelected);
 
-                yearsSB.append(anomRB);
-                yearsSB.append(HtmlUtils.space(1));
-                yearsSB.append(Repository.msg("Individual Years"));
-                plotTypes.append(HtmlUtils.div(yearsSB.toString(),
-                        HtmlUtils.id("comp-years")));
+                    yearsSB.append(anomRB);
+                    yearsSB.append(HtmlUtils.space(1));
+                    yearsSB.append(Repository.msg("Individual Years"));
+                    plotTypes.append(HtmlUtils.div(yearsSB.toString(),
+                            HtmlUtils.id("comp-years")));
 
-                sb.append(
-                    HtmlUtils.formEntry(Repository.msgLabel("Plot Type"),
-                                        plotTypes.toString()));
+                    sb.append(
+                        HtmlUtils.formEntry(Repository.msgLabel("Plot Type"),
+                                            plotTypes.toString()));
+                } else {
+                    sb.append(
+                        HtmlUtils.hidden(NCLOutputHandler.ARG_NCL_PLOTTYPE,
+                                         "pdf"));
+                    sb.append(HtmlUtils.hidden(ARG_TIME_AVERAGE, "false"));
+                }
             } else {
                 sb.append(HtmlUtils.hidden(NCLOutputHandler.ARG_NCL_PLOTTYPE,
                                            "image"));
@@ -321,110 +337,121 @@ public class NCLModelPlotDataService extends NCLDataService {
         addDataMaskWidget(request, sb);
         sb.append(HtmlUtils.formTableClose());
 
-        StringBuilder plotOpts = new StringBuilder();
-        plotOpts.append(HtmlUtils.formTable());
-        plotOpts.append(HtmlUtils.formEntry(Repository.msgLabel("Overlays"),
-                                            HtmlUtils.labeledCheckbox(
-                                            ARG_LATLONLINES,
+        if ( !(type.equals(ClimateModelApiHandler.ARG_ACTION_ENS_COMPARE)
+                && ModelUtil.getFrequency(request,
+                                          first)
+                                          .equals(CDOOutputHandler
+                                              .FREQUENCY_DAILY))) {
+            StringBuilder plotOpts = new StringBuilder();
+            plotOpts.append(HtmlUtils.formTable());
+            plotOpts.append(
+                HtmlUtils.formEntry(Repository.msgLabel("Overlays"),
+                                    HtmlUtils.labeledCheckbox(ARG_LATLONLINES,
                                             "true",
-                                            request.get(ARG_LATLONLINES,
-                                                    false),
+                                            request.get(
+                                            ARG_LATLONLINES, false),
                                             "Lat/Lon Lines")));
-        if (handleMultiple) {
-            String ensavgLabel = "Ensemble Mean";
-            if (type.equals(
-                    ClimateModelApiHandler.ARG_ACTION_MULTI_COMPARE)) {
-                ensavgLabel = "Multi-Model Mean";
-            } else if (type.equals(
-                    ClimateModelApiHandler.ARG_ACTION_CORRELATION)) {
-                ensavgLabel = "Average";
+            if (handleMultiple) {
+                String ensavgLabel = "Ensemble Mean";
+                if (type.equals(
+                        ClimateModelApiHandler.ARG_ACTION_MULTI_COMPARE)) {
+                    ensavgLabel = "Multi-Model Mean";
+                } else if (type.equals(
+                        ClimateModelApiHandler.ARG_ACTION_CORRELATION)) {
+                    ensavgLabel = "Average";
+                }
+                plotOpts.append(
+                    HtmlUtils.formEntry(Repository.msgLabel("Other"),
+                                        HtmlUtils.labeledCheckbox(ARG_ENSAVG,
+                                                "true",
+                                                request.get(
+                                                ARG_ENSAVG, false),
+                                                "Create " + ensavgLabel
+                                                + " Plot")));
             }
-            plotOpts.append(HtmlUtils.formEntry(Repository.msgLabel("Other"),
-                    HtmlUtils.labeledCheckbox(ARG_ENSAVG,
-                            "true",
-                            request.get(ARG_ENSAVG, false),
-                            "Create " + ensavgLabel + " Plot")));
-        }
 
-        // TODO:  For now, don't get value from request.  May not
-        // be valid if variable changes.
-        // Contour options
-        StringBuilder contourOpts = new StringBuilder();
-        contourOpts.append(HtmlUtils.labeledCheckbox(ARG_NCL_CFILL,
-                "true",
-                request.get(ARG_NCL_CFILL, true),
-                "Color-fill"));
-        contourOpts.append(HtmlUtils.space(3));
-        contourOpts.append(HtmlUtils.labeledCheckbox(ARG_NCL_CLINES,
-                "true",
-                request.get(ARG_NCL_CLINES, false),
-                "Lines"));
-        contourOpts.append(HtmlUtils.space(3));
-        contourOpts.append(HtmlUtils.labeledCheckbox(ARG_NCL_CLABELS,
-                "true",
-                request.get(ARG_NCL_CLABELS, false),
-                "Labels"));
-        // Contour interval
-        //StringBuilder contourSB = new StringBuilder();
-        //contourOpts.append("</p>");
-        contourOpts.append("</br>");
-        contourOpts.append(
-            HtmlUtils.bold(
-                Repository.msg("Override Contour Interval Defaults:")));
-        contourOpts.append("<br>");
-        contourOpts.append(Repository.msg("Interval: "));
-        contourOpts.append(HtmlUtils.makeLatLonInput(ARG_NCL_CINT,
-                ARG_NCL_CINT,
-                ""));
-        //request.getString(ARG_NCL_CINT, "")));
-        contourOpts.append("<br/>");
-        contourOpts.append(Repository.msg("Range: Low"));
-        contourOpts.append(HtmlUtils.makeLatLonInput(ARG_NCL_CMIN,
-                ARG_NCL_CMIN,
-                ""));
-        //request.getString(ARG_NCL_CMIN, "")));
-        contourOpts.append(Repository.msg("High"));
-        contourOpts.append(HtmlUtils.makeLatLonInput(ARG_NCL_CMAX,
-                ARG_NCL_CMAX,
-                ""));
-        //request.getString(ARG_NCL_CMAX, "")));
-        /*
-        sb.append(
-            HtmlUtils.formEntry(
-                "<div style=\"width:9em\">"
-                + Repository.msgLabel("Override Contour Defaults")
-                + "</div>", contour.toString()));
-                */
-        plotOpts.append(HtmlUtils.formEntry(Repository.msgLabel("Contours"),
-                                            contourOpts.toString()));
-        /* for now, don't give the option of turning on/off the shading
-        plotOpts.append(HtmlUtils.formEntry(Repository.msgLabel("Shading"),
-                HtmlUtils.labeledCheckbox(ARG_NCL_SHADEMASK, "true",
-                request.get(ARG_NCL_SHADEMASK, true),
-                Repository.msg("Shade Masked Areas"))));
-        */
-        // colormaps
-        List          cmaps    = getColorMaps();
-        StringBuilder cmapOpts = new StringBuilder();
-        cmapOpts.append(HtmlUtils.select(ARG_NCL_COLORMAP,
-                                         cmaps,
-                                         request.getSanitizedString(
+            // TODO:  For now, don't get value from request.  May not
+            // be valid if variable changes.
+            // Contour options
+            StringBuilder contourOpts = new StringBuilder();
+            contourOpts.append(HtmlUtils.labeledCheckbox(ARG_NCL_CFILL,
+                    "true",
+                    request.get(ARG_NCL_CFILL, true),
+                    "Color-fill"));
+            contourOpts.append(HtmlUtils.space(3));
+            contourOpts.append(HtmlUtils.labeledCheckbox(ARG_NCL_CLINES,
+                    "true",
+                    request.get(ARG_NCL_CLINES, false),
+                    "Lines"));
+            contourOpts.append(HtmlUtils.space(3));
+            contourOpts.append(HtmlUtils.labeledCheckbox(ARG_NCL_CLABELS,
+                    "true",
+                    request.get(ARG_NCL_CLABELS, false),
+                    "Labels"));
+            // Contour interval
+            //StringBuilder contourSB = new StringBuilder();
+            //contourOpts.append("</p>");
+            contourOpts.append("</br>");
+            contourOpts.append(
+                HtmlUtils.bold(
+                    Repository.msg("Override Contour Interval Defaults:")));
+            contourOpts.append("<br>");
+            contourOpts.append(Repository.msg("Interval: "));
+            contourOpts.append(HtmlUtils.makeLatLonInput(ARG_NCL_CINT,
+                    ARG_NCL_CINT,
+                    ""));
+            //request.getString(ARG_NCL_CINT, "")));
+            contourOpts.append("<br/>");
+            contourOpts.append(Repository.msg("Range: Low"));
+            contourOpts.append(HtmlUtils.makeLatLonInput(ARG_NCL_CMIN,
+                    ARG_NCL_CMIN,
+                    ""));
+            //request.getString(ARG_NCL_CMIN, "")));
+            contourOpts.append(Repository.msg("High"));
+            contourOpts.append(HtmlUtils.makeLatLonInput(ARG_NCL_CMAX,
+                    ARG_NCL_CMAX,
+                    ""));
+            //request.getString(ARG_NCL_CMAX, "")));
+            /*
+            sb.append(
+                HtmlUtils.formEntry(
+                    "<div style=\"width:9em\">"
+                    + Repository.msgLabel("Override Contour Defaults")
+                    + "</div>", contour.toString()));
+                    */
+            plotOpts.append(
+                HtmlUtils.formEntry(Repository.msgLabel("Contours"),
+                                    contourOpts.toString()));
+            /* for now, don't give the option of turning on/off the shading
+            plotOpts.append(HtmlUtils.formEntry(Repository.msgLabel("Shading"),
+                    HtmlUtils.labeledCheckbox(ARG_NCL_SHADEMASK, "true",
+                    request.get(ARG_NCL_SHADEMASK, true),
+                    Repository.msg("Shade Masked Areas"))));
+            */
+            // colormaps
+            List          cmaps    = getColorMaps();
+            StringBuilder cmapOpts = new StringBuilder();
+            cmapOpts.append(HtmlUtils.select(ARG_NCL_COLORMAP,
+                                             cmaps,
+                                             request.getSanitizedString(
                                              ARG_NCL_COLORMAP,
                                              "default"),
-                                         HtmlUtils.cssClass(
+                                             HtmlUtils.cssClass(
                                              "ramadda-pulldown-with-icons")));
-        cmapOpts.append("<br/>");
-        cmapOpts.append(HtmlUtils.labeledCheckbox(ARG_NCL_REVERSE_CMAP,
-                "true",
-                request.get(ARG_NCL_REVERSE_CMAP, false),
-                Repository.msg("Reverse Colormap")));
-        plotOpts.append(HtmlUtils.formEntry(Repository.msgLabel("Colormap"),
-                                            cmapOpts.toString()));
+            cmapOpts.append("<br/>");
+            cmapOpts.append(HtmlUtils.labeledCheckbox(ARG_NCL_REVERSE_CMAP,
+                    "true",
+                    request.get(ARG_NCL_REVERSE_CMAP, false),
+                    Repository.msg("Reverse Colormap")));
+            plotOpts.append(
+                HtmlUtils.formEntry(Repository.msgLabel("Colormap"),
+                                    cmapOpts.toString()));
 
-        plotOpts.append(HtmlUtils.formTableClose());
+            plotOpts.append(HtmlUtils.formTableClose());
 
-        sb.append(HtmlUtils.div(plotOpts.toString(),
-                                HtmlUtils.id("plotopts")));
+            sb.append(HtmlUtils.div(plotOpts.toString(),
+                                    HtmlUtils.id("plotopts")));
+        }
 
 
         if (type.equals(ClimateModelApiHandler.ARG_ACTION_ENS_COMPARE)) {
@@ -492,24 +519,37 @@ public class NCLModelPlotDataService extends NCLDataService {
             chartOpts.append(
                 HtmlUtils.formEntry(Repository.msgLabel("Show Statistic"),
                                     statOpts.toString()));
+
+            chartOpts.append(HtmlUtils.formEntry(Repository.msgLabel("Other"),
+                    HtmlUtils.labeledCheckbox(ARG_SHOW_VALUE_TICKS,
+                            "true",
+                            request.get(ARG_SHOW_VALUE_TICKS, true),
+                            "Show Value Ticks")));
+
             chartOpts.append(HtmlUtils.formTableClose());
 
             sb.append(HtmlUtils.div(chartOpts.toString(),
                                     HtmlUtils.id("chartopts")));
 
-            sb.append(
-                HtmlUtils.script(
-                    "$('input[name=\"" + NCLOutputHandler.ARG_NCL_PLOTTYPE
-                    + "\"]').on('change',\n function() {\n"
-                    + "  if (this.value != 'pdf' && this.checked) {\n"
-                    + "    $('#plotopts').toggle(true);\n"
-                    + "    $('#chartopts').toggle(false);\n"
-                    + "    $('#comp-years').toggle(false);\n"
-                    + "  } else if (this.value === 'pdf' && this.checked) {\n"
-                    + "    $('#chartopts').toggle(true);\n"
-                    + "    $('#plotopts').toggle(false);\n"
-                    + "    $('#comp-years').toggle(true);\n" + "  }\n"
-                    + "}).change();\n"));
+            if ( !(type.equals(ClimateModelApiHandler.ARG_ACTION_ENS_COMPARE)
+                    && ModelUtil.getFrequency(request,
+                            first).equals(
+                                CDOOutputHandler.FREQUENCY_DAILY))) {
+                sb.append(
+                    HtmlUtils.script(
+                        "$('input[name=\""
+                        + NCLOutputHandler.ARG_NCL_PLOTTYPE
+                        + "\"]').on('change',\n function() {\n"
+                        + "  if (this.value != 'pdf' && this.checked) {\n"
+                        + "    $('#plotopts').toggle(true);\n"
+                        + "    $('#chartopts').toggle(false);\n"
+                        + "    $('#comp-years').toggle(false);\n"
+                        + "  } else if (this.value === 'pdf' && this.checked) {\n"
+                        + "    $('#chartopts').toggle(true);\n"
+                        + "    $('#plotopts').toggle(false);\n"
+                        + "    $('#comp-years').toggle(true);\n" + "  }\n"
+                        + "}).change();\n"));
+            }
         }
 
 
@@ -831,7 +871,7 @@ public class NCLModelPlotDataService extends NCLDataService {
                                || mapid.startsWith("sh")
                                || mapid.startsWith("arctic")
                                || mapid.startsWith("ant");
-            if (mapid.isEmpty()) { // CUSTOM map
+            if (mapid.isEmpty()) {  // CUSTOM map
                 usepolar = false;
             }
             envMap.put("usepolar", Boolean.toString(usepolar));
@@ -1076,6 +1116,7 @@ public class NCLModelPlotDataService extends NCLDataService {
         String  plotType    = "pdf";
         boolean tavg        = request.get(ARG_TIME_AVERAGE, true);
         String  pdfstat     = request.getString(ARG_INCLUDE_STAT, "none");
+        boolean showRug     = request.get(ARG_SHOW_VALUE_TICKS, true);
         String  imageFormat = request.getString(ARG_NCL_IMAGEFORMAT, "gif");
         String  suffix      = imageFormat;
         String  outputType  = request.getString(ARG_NCL_OUTPUT, "enscomp");
@@ -1124,6 +1165,7 @@ public class NCLModelPlotDataService extends NCLDataService {
         }
         envMap.put("time_average", Boolean.toString(tavg));
         envMap.put("pdfstat", pdfstat);
+        envMap.put("showrug", Boolean.toString(showRug));
 
         Hashtable    args     = request.getArgs();
         List<String> varNames = new ArrayList<String>();

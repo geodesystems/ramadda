@@ -202,6 +202,9 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
     /** select level operator */
     public static final String OP_SELLEVEL = "-sellevel";
 
+    /** statistic none */
+    public static final String STAT_NONE = "none";
+    
     /** statistic mean */
     public static final String STAT_MEAN = "mean";
 
@@ -1699,7 +1702,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
                 && request.defined(ARG_CDO_STAT)) {
             String period = request.getString(ARG_CDO_PERIOD);
             String stat   = request.getString(ARG_CDO_STAT);
-            if ((period == null) || (stat == null)) {
+            if ((period == null) || (stat == null) || stat.equals(STAT_NONE)) {
                 return;
             }
             // TODO:  Handle anomaly
@@ -1955,4 +1958,5 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
         return needAnom;
     }
 
+    
 }

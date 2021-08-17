@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2020 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -190,8 +190,9 @@ public abstract class CDODataService extends Service {
             }
 
         }
-	return outputHandler.getEntryManager().getEntries(request, clauses,
-							ctypeHandler.getGranuleTypeHandler());
+
+        return outputHandler.getEntryManager().getEntries(request, clauses,
+                ctypeHandler.getGranuleTypeHandler());
 
     }
 
@@ -263,9 +264,8 @@ public abstract class CDODataService extends Service {
         statName = cleanName(statName);
         File statFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
                                                 statName));
-        boolean isMonthly =
-            getFrequency(request,
-                         mean).equals(CDOOutputHandler.FREQUENCY_MONTHLY);
+        boolean isMonthly = ModelUtil.getFrequency(request, mean).equals(
+                                CDOOutputHandler.FREQUENCY_MONTHLY);
         if ( !statFile.exists()) {  // make the file
             List<String> commands = initCDOService();
             boolean      spanYear = doMonthsSpanYearEnd(request, mean);
@@ -729,13 +729,24 @@ public abstract class CDODataService extends Service {
                                String type)
             throws Exception {
 
-        boolean isMonthly = getFrequency(
+        boolean isMonthly = ModelUtil.getFrequency(
                                 request, si.getEntries().get(0)).equals(
                                 CDOOutputHandler.FREQUENCY_MONTHLY);
         if ( !isAnom) {
             List<TwoFacedObject> stats = new ArrayList<TwoFacedObject>();
-            stats.add(new TwoFacedObject("Average",
-                                         CDOOutputHandler.STAT_MEAN));
+            if ( !isMonthly
+                    && type.equals(
+                        ClimateModelApiHandler.ARG_ACTION_ENS_COMPARE)) {
+                // don't show widget if doing a pdf
+                return;
+                /*
+                stats.add(new TwoFacedObject("None",
+                                         CDOOutputHandler.STAT_NONE));
+                                         */
+            } else {
+                stats.add(new TwoFacedObject("Average",
+                                             CDOOutputHandler.STAT_MEAN));
+            }
             if ( !isMonthly && addPct) {  // for now, don't allow this
                 stats.add(new TwoFacedObject("Accumulation",
                                              CDOOutputHandler.STAT_SUM));
@@ -830,7 +841,9 @@ public abstract class CDODataService extends Service {
                         + "$('.ref-years').toggle(!($(this).val() == \""
                         + CDOOutputHandler.STAT_MEAN
                         + "\" || $(this).val() == \""
-                        + CDOOutputHandler.STAT_STD + "\"));\n"
+                        + CDOOutputHandler.STAT_STD
+                        + "\" || $(this).val() == \""
+                        + CDOOutputHandler.STAT_NONE + "\" ));\n"
                         + "}).change();\n"));
             }
             sb.append(HtmlUtils.formEntry(Repository.msgLabel("Statistic"),
@@ -1052,24 +1065,28 @@ public abstract class CDODataService extends Service {
             new ArrayList<ServiceOperand>(input.getOperands().size());
         int opNum = 0;
         for (ServiceOperand so : input.getOperands()) {
+            int collectionNum     = ModelUtil.getOperandCollectionNumber(so);
             List<Entry> opEntries = so.getEntries();
             Entry       oneOfThem = opEntries.get(0);
             if (oneOfThem.getTypeHandler()
                     instanceof ClimateModelFileTypeHandler) {
-                if (opEntries.size() == 1 || request.defined(ClimateModelApiHandler.ARG_FORMULA)) {
+                if ((opEntries.size() == 1)
+                        || request.defined(
+                            ClimateModelApiHandler.ARG_FORMULA)) {
                     newOps.add(so);
                 } else {
                     // Aggregate by time via ncml
                     String id =
                         ModelUtil.makeValuesKey(oneOfThem.getValues(), true);
+                    id += "-" + collectionNum;
                     List<Entry> aggEntries = opEntries;
                     // reduce the daily files to just the years requested
-                    if (getFrequency(request,
-                                     oneOfThem).equals(
-                                         CDOOutputHandler.FREQUENCY_DAILY)) {
+                    if (ModelUtil.getFrequency(request,
+                            oneOfThem).equals(
+                                CDOOutputHandler.FREQUENCY_DAILY)) {
                         if (adjustDaily) {
                             aggEntries = extractDailyEntries(request,
-                                    opEntries, opNum);
+                                    opEntries, collectionNum);
                             id += "_reduced_" + opNum;
                         }
                     }
@@ -1146,7 +1163,9 @@ public abstract class CDODataService extends Service {
         // only compare has 2 different years, others only use the single years string
         // this convoluted code handles the case where the user doesn't enter anything for the second
         // dataset and is using years for dataset 1
-        if (request.defined(ClimateModelApiHandler.ARG_ACTION_COMPARE)) {
+        if (request.defined(ClimateModelApiHandler.ARG_ACTION_COMPARE)
+                || request.defined(
+                    ClimateModelApiHandler.ARG_ACTION_ENS_COMPARE)) {
             if (opStr.isEmpty()) {
                 haveYears =
                     timeRequest.defined(CDOOutputHandler.ARG_CDO_YEARS);
@@ -1261,27 +1280,6 @@ public abstract class CDODataService extends Service {
         return (type instanceof ClimateModelFileTypeHandler);
     }
 
-    /**
-     * Get the time frequency for this entry
-     *
-     * @param request  the request
-     * @param sample   the sample Entry
-     *
-     * @return  the time frequency (e.g. monthly, daily, etc)
-     */
-    public static String getFrequency(Request request, Entry sample) {
-        Entry collection = GranuleTypeHandler.getCollectionEntry(request,
-                               sample);
-        String frequency = CDOOutputHandler.FREQUENCY_MONTHLY;
-        if (collection != null) {
-            String sval = collection.getValue(0).toString();
-            if ( !sval.toLowerCase().contains("mon")) {
-                frequency = CDOOutputHandler.FREQUENCY_DAILY;
-            }
-        }
-
-        return frequency;
-    }
 
     /**
      * Common code for cdo evaluations
@@ -1300,7 +1298,8 @@ public abstract class CDODataService extends Service {
             ServiceInput input, String argPrefix, String name, String type)
             throws Exception {
 
-        boolean isFormula = request.defined(ClimateModelApiHandler.ARG_FORMULA);
+        boolean isFormula =
+            request.defined(ClimateModelApiHandler.ARG_FORMULA);
         // The first time we adjust without reducing daily entries so we have something
         // for the climatology if necessary
         ServiceInput climInput = adjustInput(request, input, false);
@@ -1315,17 +1314,18 @@ public abstract class CDODataService extends Service {
                 "type", ClimateModelApiHandler.ARG_ACTION_COMPARE).toString();
 
 
-        
+
         List<List<ServiceOperand>> sortedOps = null;
         if (isFormula) {
             sortedOps = new ArrayList<List<ServiceOperand>>();
             sortedOps.add(climInput.getOperands());
         } else {
             sortedOps = ModelUtil.sortOperandsByCollection(request,
-                climInput.getOperands());
+                    climInput.getOperands());
         }
         Entry freqSample = sortedOps.get(0).get(0).getEntries().get(0);
-        boolean isMonthly = getFrequency(request, freqSample).equals(
+        boolean isMonthly = ModelUtil.getFrequency(
+                                request, freqSample).equals(
                                 CDOOutputHandler.FREQUENCY_MONTHLY);
         Entry[] climSamples = new Entry[sortedOps.size()];
         if (needAnom

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2020 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ import org.ramadda.repository.RepositoryManager;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.RequestHandler;
 import org.ramadda.repository.Result;
-import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.database.Tables;
+import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.type.CollectionTypeHandler;
 import org.ramadda.repository.type.Column;
 import org.ramadda.service.Service;
@@ -636,6 +636,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 }
                 List<Entry> entries = findModelEntries(request, collection,
                                           collectionEntry, collectionCnt);
+                //System.err.println("Found "+entries.size()+" entries");
                 if (entries.isEmpty()) {
                     if (operands.isEmpty()) {
                         if (returnjson) {
@@ -668,12 +669,12 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                         operands.add(op);
                     }
                 } else {
-                    List<Entry>   allEntries = new ArrayList();
+                    List<Entry> allEntries = new ArrayList();
                     /* Should only be one, but just in case, get the first */
                     Entry e = sordidEntries.get(0).get(0);
                     ServiceOperand op = new ServiceOperand(e.getName(),
-                            sordidEntries.get(0));
-                    /* Should only be one, unless a formula like vectors 
+                                            sordidEntries.get(0));
+                    /* Should only be one, unless a formula like vectors
                     StringBuilder opName     = new StringBuilder();
                     for (List<Entry> eList : sordidEntries) {
                         for (Entry e : eList) {
@@ -791,7 +792,10 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                                     + "/model/model.css"));
 
         String formAttrs = HtmlUtils.attrs(ATTR_ID, formId);
-        sb.append(HtmlUtils.form(getApiUrlPath(request, type), formAttrs));
+        sb.append(HtmlUtils.formPost(getApiUrlPath(request, type),
+                                     formAttrs));
+        sb.append(HtmlUtils.hidden(ARG_MAX,
+                                   request.getString(ARG_MAX, "9999")));
         getWikiManager().addDisplayImports(request, sb);
 
         List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
@@ -986,12 +990,12 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                                 HtmlUtils.id("title")));
         //        sb.append(HtmlUtils.leftRight("",fieldsHelp.toString()));
         sb.append(HtmlUtils.open("div", HtmlUtils.id("content")));
-        int          collectionNumber = 0;
+        int           collectionNumber = 0;
 
-	StringBuilder ack = new StringBuilder();
-	HashSet seenAck = new HashSet();
+        StringBuilder ack              = new StringBuilder();
+        HashSet       seenAck          = new HashSet();
 
-        List<String> datasets = new ArrayList<String>(collectionArgs.length);
+        List<String>  datasets = new ArrayList<String>(collectionArgs.length);
         List<String> datasetTitles =
             new ArrayList<String>(collectionArgs.length);
         for (String collection : collectionArgs) {
@@ -1042,28 +1046,40 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             if (collectionEntry != null) {
                 columns =
                     ((CollectionTypeHandler) (collectionEntry.getTypeHandler())).getGranuleColumns();
-		//Add the ack
-		//This metadadata type is define in repository/resources/metadata/metadata.xml
-		//bit a different one could be used
-		List<Metadata> metadataList =
-		    getMetadataManager().findMetadata(request, collectionEntry, "content.acknowledgement",true);
-		if (metadataList != null) {
-		for (Metadata metadata : metadataList) {
-		    //Check for duplicates
-		    if(seenAck.contains(metadata.getId())) continue;
-		    seenAck.add(metadata.getId());
-		    if(ack.length()==0) {
-			//some verbiage
-			ack.append("\n");
-			HtmlUtils.open(ack, "div",HtmlUtils.attrs("style","margin:10px;"));
- 			ack.append("<h3>Citation</h3>\n");
-			ack.append("<br>When using this data please cite the below blah blah blah...\n");
-			HtmlUtils.open(ack, "div",HtmlUtils.attrs("style","margin:10px;"));
-		    }
-		    //Style the div to your liking
-		    HtmlUtils.div(ack,metadata.getAttr1(),HtmlUtils.attrs("class","someclass","style",""));
-		}
-	    }
+                //Add the ack
+                //This metadadata type is define in repository/resources/metadata/metadata.xml
+                //bit a different one could be used
+                List<Metadata> metadataList =
+                    getMetadataManager().findMetadata(request,
+                        collectionEntry, "content.acknowledgement", true);
+                if (metadataList != null) {
+                    for (Metadata metadata : metadataList) {
+                        //Check for duplicates
+                        if (seenAck.contains(metadata.getId())) {
+                            continue;
+                        }
+                        seenAck.add(metadata.getId());
+                        if (ack.length() == 0) {
+                            //some verbiage
+                            ack.append("\n");
+                            HtmlUtils.open(ack, "div",
+                                           HtmlUtils.attrs("style",
+                                                   "margin:10px;"));
+                            ack.append("<h3>Citation</h3>\n");
+                            ack.append(
+                                "<br>When using this data please cite the below blah blah blah...\n");
+                            HtmlUtils.open(ack, "div",
+                                           HtmlUtils.attrs("style",
+                                                   "margin:10px;"));
+                        }
+                        //Style the div to your liking
+                        HtmlUtils.div(ack, metadata.getAttr1(),
+                                      HtmlUtils.attrs("class",
+                                              "someclass",
+                                              "style",
+                                              ""));
+                    }
+                }
 
 
 
@@ -1295,15 +1311,15 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
         sb.append(HtmlUtils.formClose());
 
-	
 
-	//Tack on the acknowldgement
-	if(ack.length()>=0) {
-	    ack.append(HtmlUtils.close("div"));
-	    ack.append(HtmlUtils.close("div"));
-	}
-		       
-	sb.append(ack);
+
+        //Tack on the acknowldgement
+        if (ack.length() >= 0) {
+            ack.append(HtmlUtils.close("div"));
+            ack.append(HtmlUtils.close("div"));
+        }
+
+        sb.append(ack);
 
         sb.append("\n-section\n");
 
@@ -1412,7 +1428,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         Request tmpRequest = new Request(getRepository(), request.getUser());
 
         tmpRequest.put(ARG_TYPE, "type_psd_monthly_climate_index");
-	return  getEntryManager().getEntries(tmpRequest);
+
+        return getEntryManager().getEntries(tmpRequest);
     }
 
 
@@ -1449,6 +1466,13 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
     private List<Entry> findModelEntries(Request request, String collection,
                                          Entry entry, int collectionCnt)
             throws Exception {
+
+        //if (!request.defined(ARG_MAX)) {
+        //    request.put(ARG_MAX, 9999);
+        //}
+        //if (request.defined(ARG_MAX)) {
+        //    System.err.println("Request max arg = "+request.getString(ARG_MAX, "9999"));
+        //}
         CollectionTypeHandler typeHandler =
             (CollectionTypeHandler) entry.getTypeHandler();
         List<Clause>    clauses       = new ArrayList<Clause>();
@@ -1518,10 +1542,11 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         }
 
 
-        List<Entry>entries = getEntryManager().getEntries(request, clauses,
-							     typeHandler.getGranuleTypeHandler());
+        List<Entry> entries = getEntryManager().getEntries(request, clauses,
+                                  typeHandler.getGranuleTypeHandler());
 
         entries = getEntryUtil().sortEntriesOnName(entries, false);
+
         return entries;
     }
 
@@ -1824,7 +1849,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                         ""));
         }
 
-	return getEntryManager().getEntries(tmpRequest);
+        return getEntryManager().getEntries(tmpRequest);
     }
 
     /**
