@@ -2236,6 +2236,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             if (Utils.stringDefined(value)) {
 		if(value.equals("_blank_")) value="";
                 addTextSearch(value, where,doNegate);
+		System.err.println(where);
             }
             //            typeHandler.addOrClause(columnName,
             //                                    value, where);
@@ -2250,36 +2251,39 @@ public class Column implements DataTypes, Constants, Cloneable {
      * @param where _more_
      */
     public void addTextSearch(String text, List<Clause> where, boolean doNegate) {
-        text = text.trim();
-        if (text.startsWith("\"") && text.endsWith("\"")) {
-            text = Utils.unquote(text);
-            where.add(Clause.eq(getFullName(), text,doNegate));
-            return;
-        }
-        List<String> values  = Utils.split(text, ",", true, true);
+	text = text.replace("\\,","_comma_");
+        List<String> values  = Utils.split(text, ",");
 	if(values.size()==0) values.add("");
         List<Clause> clauses = new ArrayList<Clause>();
         for (String value : values) {
-            if (value.equals("<blank>") || value.equals("_blank_")) {
+	    //	    System.err.println("V:" + value +":");
+	    value = value.replace("_comma_",",").replace("_space_"," ");
+	    String trimmed = value.trim();
+	    if (trimmed.startsWith("\"") && trimmed.trim().endsWith("\"")) {
+		value = Utils.unquote(trimmed);
+		clauses.add(Clause.eq(getFullName(), value,doNegate));
+		continue;
+	    }
+            if (trimmed.equals("<blank>") || trimmed.equals("_blank_")) {
                 clauses.add(Clause.eq(getFullName(), "",doNegate));
-            } else if (value.startsWith("!")) {
-                value = value.substring(1);
+            } else if (trimmed.startsWith("!")) {
+                value = trimmed.substring(1);
                 if (value.length() == 0) {
                     clauses.add(Clause.neq(getFullName(), "",doNegate));
                 } else {
                     clauses.add(Clause.notLike(getFullName(),
                             "%" + value + "%"));
                 }
-            } else if (value.startsWith("=")) {
-                value = value.substring(1);
+            } else if (trimmed.startsWith("=")) {
+                value = trimmed.substring(1);
                 clauses.add(Clause.eq(getFullName(), value,doNegate));
-            } else if ( !value.startsWith("%") && value.endsWith("%")) {
+            } else if ( !trimmed.startsWith("%") && trimmed.endsWith("%")) {
                 clauses.add(
                     getDatabaseManager().makeLikeTextClause(
                         getFullName(), value, doNegate));
             } else {
-		if(value.length()==0) {
-		    clauses.add(Clause.eq(getFullName(),value,doNegate));
+		if(trimmed.length()==0) {
+		    clauses.add(Clause.eq(getFullName(),"",doNegate));
 		} else {
 		    clauses.add(
 				getDatabaseManager().makeLikeTextClause(
