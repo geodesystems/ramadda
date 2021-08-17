@@ -1076,6 +1076,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             HtmlUtils.sectionHeader(sb,
                                     request.getString(ARG_DB_SEARCHNAME, ""));
         }
+	if (request.defined(ARG_DB_SEARCHDESC)) {
+	    sb.append(getWikiManager().wikifyEntry(request, entry, request.getString(ARG_DB_SEARCHDESC, "")));
+	}
 
 	String searchFrom = request.getString(ARG_SEARCH_FROM,null);
 	if(searchFrom!=null) {
@@ -2339,6 +2342,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                 HtmlUtils.input(ARG_DB_SEARCHNAME,
                                     request.getString(ARG_DB_SEARCHNAME, ""),
 						HtmlUtils.SIZE_50) + suffix));
+            buffer.append(formEntry(request, msgLabel("Description"),
+                                HtmlUtils.textArea(ARG_DB_SEARCHDESC,
+						   request.getString(ARG_DB_SEARCHDESC, ""),
+						   5,40)));
 	    String searchFrom = request.getString(ARG_SEARCH_FROM,null);
 	    if(searchFrom!=null) {
 		buffer.append(HU.hidden(ARG_SEARCH_FROM, searchFrom));
@@ -5548,6 +5555,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 HtmlUtils.sectionHeader(
                     sb, newRequest.getString(ARG_DB_SEARCHNAME, ""));
             }
+            if (newRequest.defined(ARG_DB_SEARCHDESC)) {
+		sb.append(getWikiManager().wikifyEntry(newRequest, entry, newRequest.getString(ARG_DB_SEARCHDESC, "")));
+
+	    }
+
             Result result = handleSearch(newRequest, entry);
 
             sb.append(result.getStringContent());
@@ -6638,7 +6650,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         Statement stmt = null;
         extra += limitString;
         try {
-	    SqlUtil.debug = true;
+	    //	    SqlUtil.debug = true;
             if (SqlUtil.debug) {
                 System.err.println("table:" + tableHandler.getTableName());
                 System.err.println("clause:" + clause);
