@@ -10,6 +10,21 @@ source=voters_boulder.csv
 unique_voter_history=voter_history_unique.csv
 precincts=source/boco_precincts.csv
 
+do_all() {
+    init_files
+    do_demographics
+    do_prep
+    do_history
+    do_counts
+    do_joins
+    do_final
+    do_db
+    cp bocovotersdb.xml  ~/.ramadda/plugins
+    #do_geode
+}
+
+
+
 init_files() {
     echo "initializing files"
     cp source/Master_Voting_History_List_Part1.csv voter_history.csv
@@ -35,7 +50,7 @@ do_prep() {
 	   -if -pattern mailing_state,mailing_country "^$" -copycolumns res_state mailing_state  -endif\
 	   -if -pattern mailing_zip,mailing_country "^$" -copycolumns res_zip_code mailing_zip  -endif\
 	   -p voters_base.csv > ${source}
-    ${csv} -columns res_address,res_city -unique res_address -insert "" state Colorado  -set 0 0 address -set 1 0 city -dots ${dots} -p ${source} > voters_addresses.csv
+    ${csv} -columns res_address,res_city -change res_address " APT .*" "" -change res_address " UNIT .*" "" -trim res_address -unique res_address -insert "" state Colorado  -set 0 0 address -set 1 0 city -dots ${dots} -p ${source} > voters_addresses.csv
     ${csv} -maxrows 100  -p voters_addresses.csv > voters_addresses_short.csv        
     rm voters_base.csv
 }
@@ -97,7 +112,7 @@ do_counts() {
 #exit
 
 
-do_geocode() {
+do_demographics() {
     echo "cleaning up the demographics"
     ${csv}  \
 	-notcolumns "regex:(?i).*veteran.*" \
@@ -241,10 +256,6 @@ ACS Housing/Value of owner_occupied housing units/\$2_000_000 or more/Percentage
 }
 
 
-do_join_demographics() {
-    echo "doing demographics join"
-    ${csv} -join address "*" voters_geocode_trim.csv res_address "0"  -dots ${dots} -p $1 > $2
-}
 
 
 do_joins() {
@@ -271,13 +282,27 @@ do_joins() {
     ${csv} -join 0 1 ${precincts} precinct  "" -dots ${dots} -p working.csv > tmp.csv
     mv tmp.csv working.csv
 #join the  demographics
+
+#create a new column and remove the UNIT and APT suffix to do the join with the geocoded addresses
+    ${csv} -copy res_address res_address_trim -change res_address " APT .*" "" -change res_address " UNIT .*" "" -p working.csv > tmp.csv
+    mv tmp.csv working.csv
     do_join_demographics working.csv tmp.csv
+    mv tmp.csv working.csv
+
+##Delete the temp address
+    ${csv} -notcolumns res_address_trim -p working.csv > tmp.csv
+
+
     mv tmp.csv voters_joined.csv
     rm working.csv
 }
 
-#do_joins
-#exit
+do_join_demographics() {
+    echo "doing demographics join"
+    ${csv} -join address "*" voters_geocode_trim.csv res_address_trim "0"  -dots ${dots} -p $1 > $2
+}
+
+
 
 
 do_final() {
@@ -356,25 +381,7 @@ do_geode() {
 }
 
 
-#do_db
-#exit
-
-do_geode
-exit
-do_final
-do_db
-exit
 
 
-init_files
-do_geocode
-do_prep
-do_history
-do_counts
-do_joins
-do_final
-do_db
 
-cp bocovotersdb.xml  ~/.ramadda/plugins
-
-#do_geode
+do_all
