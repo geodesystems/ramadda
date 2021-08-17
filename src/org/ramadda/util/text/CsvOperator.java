@@ -509,26 +509,31 @@ public class CsvOperator {
     public void getColumnIndex(TextReader ctx, List<Integer> indices,
                                String s,HashSet seen) {
 	if(seen==null) seen = new HashSet();
-        List<String> toks  = Utils.splitUpTo(s, "-", 2);
-        int          start = -1;
-        int          end   = -1;
 	checkColumns();
 	if(s.startsWith("regex:")) {
 	    s = s.substring("regex:".length());
 	    //	    System.err.println("pattern:" + s+":");
 	    Pattern      p      = Pattern.compile(s);
-	    for(String name: columnNames) {
-		Matcher      m      = p.matcher(name);
-		if(m.matches()) {
-		    //System.err.println("\tmatch:" + name);
+	    for (int i = 0; i < header.size(); i++) {
+		String name =  columnNames.get(i);
+		String id =  makeID(header.get(i));
+		boolean matches = p.matcher(name).matches();
+		if(!matches)
+		    matches = p.matcher(id).matches();
+		if(matches) {
+		    //		    System.err.println("\tmatch:" + name);
 		    indices.add(columnMap.get(name));
-
 		} else {
-		    //		    System.err.println("\tno match:" + name);
+		    //		    System.err.println("\tno match:" + name +" " + id);
 		}
 	    }
+	    //	    System.err.println("Indices:" + indices);
 	    return;
 	}
+
+        List<String> toks  = Utils.splitUpTo(s, "-", 2);
+        int          start = -1;
+        int          end   = -1;
 
         s = s.toLowerCase().trim();
 

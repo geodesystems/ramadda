@@ -151,7 +151,7 @@ public abstract class Converter extends Processor {
                     ctx.printDebug("-columns", "No indices");
                 }
 
-                return row;
+		//                return row;
             }
             List<String> result = new ArrayList<String>();
             for (Integer idx : indices) {
