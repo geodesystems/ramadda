@@ -259,7 +259,7 @@ function RepositoryMap(mapId, params) {
         defaultCanSelect: true,
 	highlightColor:"blue",
 	highlightStrokeWidth:2,
-	highlightOpacity:1,
+	highlightOpacity:0.3,
         layer: null,
         markers: null,
         vectors: null,
@@ -916,7 +916,9 @@ RepositoryMap.prototype = {
 	    }
 	    if(!highlightStyle.fillColor) {
 		highlightStyle.fillColor = "blue";
-		highlightStyle.fillOpacity = 0.25;
+	    }
+	    if(!Utils.isDefined(highlightStyle.fillOpacity)) {
+		highlightStyle.fillOpacity = 0.3;
 	    }
             layer.drawFeature(feature, highlightStyle);
             if (this.displayDiv) {
