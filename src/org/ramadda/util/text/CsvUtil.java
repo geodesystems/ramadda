@@ -1724,6 +1724,8 @@ public class CsvUtil {
         new Cmd("-unique", "Pass through unique values", new Arg("columns")),
         new Cmd("-dups", new Label("Duplicate values"),
                 "Pass through duplicate values", new Arg("columns")),
+        new Cmd("-sample", "Pass through rows based on probablity",
+                new Arg("probablity", "0-1 probability of passing through a row")),
         new Cmd("-maxvalue", new Label("Max value"), "", "key column",
                 "value column"),
         new Cmd("-eq", new Label("Equals"),
@@ -2641,6 +2643,10 @@ public class CsvUtil {
 		ctx.addProcessor(new Filter.Unique(toks));
 		return i;
 	    });
+	defineFunction(new String[]{"-sample"},1,(ctx,args,i) -> {
+		ctx.addProcessor(new Filter.Sample(Double.parseDouble(args.get(++i))));
+		return i;
+	    });	
 
 	defineFunction("-dups",1,(ctx,args,i) -> {
 		ctx.addProcessor(new RowCollector.Dups(getCols(args.get(++i))));

@@ -1219,6 +1219,37 @@ public class Filter extends Processor {
         }
     }
 
+    public static class Sample extends Filter {
+
+
+	private double prob;
+
+        /**
+         * _more_
+         *
+         * @param toks _more_
+         */
+        public Sample(double prob) {
+	    this.prob = prob;
+        }
+
+
+        /**
+         * _more_
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public boolean rowOk(TextReader ctx, Row row) {
+	    if(rowCnt++==0) return true;
+	    double r = Math.random();
+	    return r<=prob;
+        }
+    }
+    
 
 
 }
