@@ -5566,6 +5566,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
             return sb.toString();
         } catch (Exception exc) {
+	    exc.printStackTrace();
             return getPageHandler().showDialogError("An error occurred:<br>"
                     + exc.toString(), false);
         }

@@ -20,7 +20,7 @@ do_all() {
     do_final
     do_db
     cp bocovotersdb.xml  ~/.ramadda/plugins
-    #do_geode
+    #do_release
 }
 
 
@@ -51,7 +51,7 @@ do_prep() {
 	   -if -pattern mailing_zip,mailing_country "^$" -copycolumns res_zip_code mailing_zip  -endif\
 	   -p voters_base.csv > ${source}
     ${csv} -columns res_address,res_city -change res_address " APT .*" "" -change res_address " UNIT .*" "" -trim res_address -unique res_address -insert "" state Colorado  -set 0 0 address -set 1 0 city -dots ${dots} -p ${source} > voters_addresses.csv
-    ${csv} -maxrows 100  -p voters_addresses.csv > voters_addresses_short.csv        
+    ${csv} -sample 0.01  -p voters_addresses.csv > voters_addresses_short.csv        
     rm voters_base.csv
 }
 
@@ -374,13 +374,11 @@ voters_final.csv > bocovotersdb.xml
  }
 
 
-do_geode() {
+do_release() {
     echo "Copying to geode"
     sh /Users/jeffmc/source/ramadda/bin/scpgeode.sh 50.112.99.202 voters_final.csv staging
     sh /Users/jeffmc/source/ramadda/bin/scpgeode.sh 50.112.99.202 bocovotersdb.xml plugins
 }
-
-
 
 
 
