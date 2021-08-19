@@ -205,7 +205,7 @@ public class CsvOperator {
      */
     public void debug(String msg, Object extra) {
         if (true) {
-            return;
+	    return;
         }
         Integer cnt = debugCounts.get(msg);
         if (cnt == null) {
@@ -462,12 +462,18 @@ public class CsvOperator {
 
     public Integer getColumnIndex(TextReader ctx, String tok) {
 	checkColumns();
+	//	System.err.println("\tgetColumnIndex:" + tok);
 	Integer iv = columnMap.get(tok);
+	//	System.err.println("\t\tiv-a:" + iv);
 	if(iv==null) {
-	    tok = ctx.getFieldAlias(tok);
-	    if(tok!=null) {
-		iv = columnMap.get(tok);
+	    String tmp = ctx.getFieldAlias(tok);
+	    if(tmp!=null) {
+		iv = columnMap.get(tmp);
 	    }
+	}
+	if(iv==null) {
+	    String colId = Utils.makeID(tok,false);
+	    iv = columnMap.get(colId);
 	}
 	return iv;
     }
@@ -531,7 +537,9 @@ public class CsvOperator {
 	    return;
 	}
 
+	//	System.err.println("getColumnIndex:" + s);
         List<String> toks  = Utils.splitUpTo(s, "-", 2);
+	//	System.err.println("\ttoks:" + toks);
         int          start = -1;
         int          end   = -1;
 
@@ -563,19 +571,6 @@ public class CsvOperator {
 
                     return;
                 }
-                if (StringUtil.containsRegExp(tok)) {
-                    for (int i = 0; i < header.size(); i++) {
-                        if ( !colsSeen.contains(i)) {
-                            String colName = (String) header.get(i);
-                            if (colName.matches(tok)) {
-                                colsSeen.add(i);
-                                indices.add(i);
-                            }
-                        }
-                    }
-
-                    return;
-                }
                 Integer iv = getColumnIndex(ctx, tok);
                 if (iv != null) {
                     start = end = iv;
@@ -584,11 +579,12 @@ public class CsvOperator {
 		    for(String colName:columnNames) {
 			//			System.err.println(colName);
 		    }			
+		    //		    System.out.println("TOK:" + tok);
 		    for (Enumeration keys = columnMap.keys(); keys.hasMoreElements(); ) {
 			String key =(String) keys.nextElement(); 
 			if(key.length()==0) continue;
 			if(key.matches("^[0-9]+$")) continue;
-			System.err.println("key:" + key);
+			//			System.out.println("KEY:" + key);
 		    }
 		    //		    System.err.println(columnMap);
                     fatal("Could not find index:" + tok);

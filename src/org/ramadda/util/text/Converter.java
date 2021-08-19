@@ -1799,7 +1799,6 @@ public abstract class Converter extends Processor {
                     values.add(new ArrayList<Double>());
                     add(ctx, row, row.get(indices.get(i)) + " " + label);
                 }
-
                 return row;
             }
 
@@ -5041,15 +5040,18 @@ public abstract class Converter extends Processor {
         private String op;
 
 
+	String foo;
         /**
          *
          * @param indices _more_
          * @param name _more_
          * @param op _more_
          */
+
         public ColumnMathOperator(List<String> indices, String name,
                                   String op) {
             super(indices);
+	    foo=""+indices;
             this.name = name;
             this.op   = op;
         }
@@ -5071,13 +5073,16 @@ public abstract class Converter extends Processor {
             double        value   = 0;
             int           cnt     = 0;
 	    double total = 0;
+	    //	    System.err.println("op:" + op +" " + foo +" indices:" + indices);
             for (Integer idx : indices) {
                 int index = idx.intValue();
                 if ((index < 0) || (index >= row.size())) {
+		    //		    System.err.println("\tSkipping:" + index);
                     continue;
                 }
                 String s = row.getValues().get(index).toString();
                 double v = parse(s);
+		//		System.err.println("\tindex::" + index +" value:" + value);
 		if(!Double.isNaN(v)) total+=v;
                 if (op.equals("+")) {
                     value += v;
@@ -5093,15 +5098,15 @@ public abstract class Converter extends Processor {
                             value = value / v;
                         }
                     }
-                }
-		if (op.equals("average")) {
-		    if(cnt==0) value=Double.NaN;
-		    else value = value/cnt;
 		}
                 cnt++;
-            }
+	    }
+	    if (op.equals("average")) {
+		if(cnt==0) value=Double.NaN;
+		else value = total/cnt;
+	    }
+	    //	    System.err.println("\tfinal value:" + value);
             row.getValues().add(value + "");
-
             return row;
         }
 
