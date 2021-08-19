@@ -1714,7 +1714,6 @@ public class CsvUtil {
                 new Arg("threshold", "Score threshold 0-100. Default:85. Higher number better match"),
                 new Arg("columns", "", "type", "columns"),
                 new Arg("pattern", "", "type", "pattern")),
-
         new Cmd("-same", "Pass through where the 2 columns have the same value",
                 new Arg("column1", "", "type", "column"),
                 new Arg("column2", "", "type", "column")),
@@ -1746,6 +1745,14 @@ public class CsvUtil {
         new Cmd("-le", new Label("Less than/equals"),
                 "Extract rows that pass the expression",
                 new Arg("column", "", "type", "column"), new Arg("value")),
+        new Cmd("-between", new Label("Between"),
+                "Extract rows that are within the range",
+                new Arg("column", "", "type", "column"), new Arg("min value"),new Arg("max value")),
+
+	new Cmd("-notbetween", new Label("Not between"),
+                "Extract rows that are not within the range",
+                new Arg("column", "", "type", "column"), new Arg("min value"),new Arg("max value")),
+
         new Cmd("-groupfilter", new Label("Group filter"),
                 "One row in each group has to match",
                 new Arg("column", "", "type", "column"),
@@ -1773,6 +1780,10 @@ public class CsvUtil {
                 new Arg("column", "Column in the file", "type", "column"),
                 new Arg("file", "The file"),
                 new Arg("column2", "Column in mainr file", "type", "column")),
+        new Cmd("-ifnotin", "Pass through rows that the columns with ID is not in given file",
+                new Arg("column", "Column in the file", "type", "column"),
+                new Arg("file", "The file"),
+                new Arg("column2", "Column in mainr file", "type", "column")),	
 
 
         new Cmd("-skiplines", "Skip number of raw lines.",
@@ -1980,6 +1991,8 @@ public class CsvUtil {
                 new Arg("columns","Columns","type","columns"), "new col name", "operator +,-,*,/,average"),
         new Cmd("-round", "round the values", new Arg("columns", "", "type", "columns")),
         new Cmd("-abs", "make absolute values", new Arg("columns", "", "type", "columns")),
+	//TODO:
+        new Cmd("-clip", "clip the number to within the range", new Arg("columns", "", "type", "columns"),new Arg("min"), new Arg("max")),
         new Cmd("-rand", "make random value",
 		new Arg("column name"),
 		new Arg("minrange","Minimum range (e.g. 0)"),
@@ -2595,10 +2608,15 @@ public class CsvUtil {
 	    });
 
 	defineFunction("-ifin",3,(ctx,args,i) -> {
-		ctx.addProcessor(new Filter.IfIn(args.get(++i),args.get(++i),args.get(++i)));
+		ctx.addProcessor(new Filter.IfIn(true, args.get(++i),args.get(++i),args.get(++i)));
 		return i;
 	    });
 
+	defineFunction("-ifnotin",3,(ctx,args,i) -> {
+		ctx.addProcessor(new Filter.IfIn(false,args.get(++i),args.get(++i),args.get(++i)));
+		return i;
+	    });
+	
 
 	defineFunction("-join",5,(ctx,args,i) -> {
 		List<String> keys1   = getCols(args.get(++i));
@@ -3574,8 +3592,6 @@ public class CsvUtil {
 	    });
 
 
-
-
 	defineFunction("-lt", 2,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(),
 			      new Filter.ValueFilter(
@@ -3591,6 +3607,26 @@ public class CsvUtil {
 						     Double.parseDouble(args.get(++i))));
 		return i;
 	    });
+
+
+	defineFunction("-between", 3,(ctx,args,i) -> {
+		handlePattern(ctx, ctx.getFilterToAddTo(),
+			      new Filter.RangeFilter(true,
+						     getCols(args.get(++i)), 
+						     Double.parseDouble(args.get(++i)),
+						     Double.parseDouble(args.get(++i))));						     
+		return i;
+	    });
+
+	defineFunction("-notbetween", 3,(ctx,args,i) -> {
+		handlePattern(ctx, ctx.getFilterToAddTo(),
+			      new Filter.RangeFilter(false,
+						     getCols(args.get(++i)), 
+						     Double.parseDouble(args.get(++i)),
+						     Double.parseDouble(args.get(++i))));						     
+		return i;
+	    });
+	
 
 
 	defineFunction("-defined", 1,(ctx,args,i) -> {

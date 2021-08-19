@@ -294,6 +294,7 @@ public class Filter extends Processor {
      */
     public static class IfIn extends Filter {
 
+	private boolean in;
 	private HashSet seen;
 	
 	private int idx1;
@@ -307,15 +308,16 @@ public class Filter extends Processor {
          * @param pattern _more_
          * @param negate _more_
          */
-        public IfIn(String column1, String file, String column2) {
+        public IfIn(boolean in, String column1, String file, String column2) {
+	    this.in = in;
 	    if(!IO.okToReadFrom(file)) {
-		throw new RuntimeException("Cannot read file:" + file);
+		fatal("Cannot read file:" + file);
 	    }
 	    this.column2 = column2;
             try {
                 init(file, column1);
             } catch (Exception exc) {
-                throw new RuntimeException(exc);
+                fatal("Reading file:" + file, exc);
 	    }
         }
 
@@ -370,7 +372,10 @@ public class Filter extends Processor {
             }
 	    
 	    Object v = row.get(idx2);
-	    return seen.contains(v);
+	    if(seen.contains(v))
+		return in;
+	    else
+		return !in;
 	}
 
     }
@@ -1091,6 +1096,83 @@ public class Filter extends Processor {
         }
     }
 
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Mon, Jan 12, '15
+     * @author         Enter your name here...
+     */
+    public static class RangeFilter extends ColumnFilter {
+
+	private boolean between;
+
+        /** _more_ */
+        private double min;
+        private double max;	
+
+
+
+
+        /**
+         * _more_
+         *
+         * @param cols _more_
+         * @param op _more_
+         * @param value _more_
+         */
+        public RangeFilter(boolean between, List<String> cols, double min, double max) {
+            super(cols);
+	    this.between = between;
+            this.min = min;
+            this.max = max;	    
+        }
+
+
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public boolean rowOk(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+                return true;
+            }
+	    boolean debug = rowCnt<50;
+	    boolean ok = true;
+            for (int idx : getIndices(ctx)) {
+                if (idx >= row.size()) {
+                    continue;
+                }
+                try {
+                    String v     = row.getString(idx).trim();
+		    if(v.length()==0) return false;
+                    double value = Double.parseDouble(v);
+		    if(Double.isNaN(value)) return false;
+		    boolean inRange = (value>=min && value<=max);
+		    if(inRange && !between)
+			ok = false;
+		    else if(!inRange && between)
+			ok = false;
+		    //		    if(debug) System.out.println(min +" " + value  +" " +max  +" " + inRange +" " + ok);
+
+		    if(!ok) break;
+                } catch (Exception exc) {
+		    return false;
+		}		    
+	    }
+            return ok;
+        }
+    }
+    
     /**
      * Class description
      *
