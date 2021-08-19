@@ -237,7 +237,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		dfltOrder.add(toks);
 	    }
 	}
-        searchForLabel = XmlUtil.getAttribute(tableNode, "searchForLabel", searchForLabel);
+        searchForLabel = XmlUtil.getAttribute(tableNode, "searchForLabel", 
+					      XmlUtil.getGrandChildText(tableNode,"searchForLabel",searchForLabel));
         defaultView = XmlUtil.getAttribute(tableNode, "defaultView",VIEW_TABLE);
         showEntryCreate = XmlUtil.getAttribute(tableNode, "showEntryCreate",true);
 
