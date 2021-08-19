@@ -1116,6 +1116,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
 
+	System.err.println("addnext:" + addNext +" values:" + numValues);
         if (addNext[0]) {
             if (numValues > 0) {
                 if (isGroupBy(request)) {
@@ -1130,8 +1131,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                            ? " result"
                                            : " results"));
                 }
-            } else {
-		sb.append(msgLabel("Showing") + numValues);
 	    }
         }
 
