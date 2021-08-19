@@ -15,11 +15,11 @@ ${csv} -columns "committee,type,candidate,filingdate,amendeddate,officialfiling,
        -change "regex:.*Date" ".*Invalid Date.*" "" \
        -normal full_name \
        -change full_name "file:${mydir}/expenditure_patterns.txt" "" \
-       -columnsafter committee "full_name,expenditure" \
-       -c firstname,lastname,full_name \
+       -columnsafter committee "full_name,expenditure,purpose" \
+       -change "expenditure" "_dollar_" "" \
        -p ${source} > expenditures_final.csv
 
-#       -change "expenditure" "_dollar_" "" \
+
 
 
 
@@ -44,6 +44,7 @@ state.type {enumeration}  state.cansearch true  state.canlist true   \
 zip.type {string} \
 expenditure.unit \$  expenditure.canlist true   \
 expenditure.cansearch true  expenditure.canlist true   \
+purpose.canlist true   \
 purpose.cansearch true  purpose.canlist true   \
 " \
        expenditures_final.csv > boulder_campaign_expendituresdb.xml

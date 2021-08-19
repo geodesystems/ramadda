@@ -9,8 +9,14 @@ voting_report=source/ce-068.txt
 source=voters_boulder.csv
 unique_voter_history=voter_history_unique.csv
 precincts=source/boco_precincts.csv
+geocodio=source/voters_addresses_geocodio.csv
+
+
 
 do_all() {
+    do_db
+    exit
+
     init_files
     do_demographics
     do_prep
@@ -20,7 +26,7 @@ do_all() {
     do_final
     do_db
     cp bocovotersdb.xml  ~/.ramadda/plugins
-    #do_release
+    do_release
 }
 
 
@@ -114,10 +120,10 @@ do_counts() {
 
 do_demographics() {
     echo "cleaning up the demographics"
+#	-rand latitude 39.983 40.042  -rand longitude -105.303 -105.216 \
+#	-notcolumns latitude,longitude \
     ${csv}  \
 	-notcolumns "regex:(?i).*veteran.*" \
-	-notcolumns latitude,longitude\
-	-rand latitude 39.983 40.042  -rand longitude -105.303 -105.216 \
 	-concat "latitude,longitude" ";" Location -notcolumns latitude,longitude \
     -columns "address,location,\
 ACS Demographics/Median age/Total/Value, \
@@ -252,10 +258,12 @@ ACS Housing/Value of owner_occupied housing units/\$2_000_000 or more/Percentage
 -notcolumns "regex:(?i).*households/.*" \
 -notcolumns "regex:(?i).*ethnicity/.*" \
 -notcolumns "regex:(?i).*income/.*" \
--p  source/voters_geocode.csv >  voters_geocode_trim.csv
+-p  ${geocodio} >  voters_geocode_trim.csv
 }
 
 
+#do_demographics
+#exit
 
 
 do_joins() {
@@ -335,7 +343,7 @@ do_db() {
     ${csv} -db "table.id boco_voters table.name {Boulder County Voters}  \
     table.icon /db/user.png \
     table.showEntryCreate false \
-    table.format  MM/dd/yyyy defaultOrder {full_street_name,asc;address_even;address,asc} \
+    table.format  MM/dd/yyyy table.defaultOrder {full_street_name,asc;address_even;address,asc} \
     table.formjs file:${mydir}/formjs.js \
 table.cansearch false table.searchForLabel {Basic Voter Properties} \
 table.mapLabelTemplate _quote_\${name}_quote_ \
@@ -379,6 +387,10 @@ do_release() {
     sh /Users/jeffmc/source/ramadda/bin/scpgeode.sh 50.112.99.202 voters_final.csv staging
     sh /Users/jeffmc/source/ramadda/bin/scpgeode.sh 50.112.99.202 bocovotersdb.xml plugins
 }
+
+
+#${foo}
+#exit
 
 
 

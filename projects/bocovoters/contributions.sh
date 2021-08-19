@@ -60,12 +60,12 @@ committee.cansearch true  committee.canlist true   \
 type.cansearch true  type.canlist true   \
 candidate.cansearch true  candidate.canlist true   \
 filing_date.cansearch true  filing_date.canlist true   \
-official_filing.cansearch true  official_filing.canlist true   \
+official_filing.cansearch true   \
 election_year.cansearch true  election_year.canlist true   \
 full_name.cansearch true  full_name.canlist true   \
 contribution.cansearch true  contribution.canlist true   \
 contribution_type.cansearch true  contribution_type.canlist true   \
-from_candidate.cansearch true  from_candidate.canlist true   \
+from_candidate.cansearch true    \
 committee.numberOfSearchWidgets 4 \
 committee.type enumeration type.type enumeration candidate.type enumeration \
 candidate.numberOfSearchWidgets 4 \
