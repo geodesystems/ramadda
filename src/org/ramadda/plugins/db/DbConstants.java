@@ -202,6 +202,9 @@ public interface DbConstants extends Constants {
 
     public static final String ARG_SEARCH_FROM = "searchfrom";
 
+    public static final String ARG_EXTRA_COLUMNS = "extracolumns";
+
+
     public static final String ARG_FOR_PRINT = "forprint";
 
     public static final String ARG_ENTRIES_PER_PAGE = "entriesperpage";
