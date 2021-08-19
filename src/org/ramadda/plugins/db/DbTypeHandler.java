@@ -2049,10 +2049,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	sb.append("\n");
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
 	HU.open(sb,"div",HU.cssClass("ramadda-form-block"));
-        String buttons = HtmlUtils.submit(msg("Search"), ARG_DB_SEARCH)
-                         + HtmlUtils.space(2)
-                         + HtmlUtils.submit(msg("Cancel"), ARG_DB_LIST);
-
+        String buttons = HtmlUtils.submit(msg("Search"), ARG_DB_SEARCH);
         sb.append(buttons);
 	getSearchFormInner(request, entry, sb, true);
 	if(formJS!=null) {
