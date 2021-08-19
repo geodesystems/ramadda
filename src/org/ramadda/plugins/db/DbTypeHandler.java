@@ -1380,6 +1380,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         List<Object[]> valueList = null;
 
 
+
         if (request.defined(ARG_DB_ITERATE)
                 && request.defined(ARG_DB_ITERATE_VALUES)) {
             StringBuilder sb = new StringBuilder();
@@ -1404,7 +1405,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             if (values.size() == 0) {
                 sb.append("Need to specify a set of values");
                 getPageHandler().entrySectionClose(request, entry, sb);
-
                 return new Result("", sb);
             }
             if (iterateColumn == null) {
@@ -4731,7 +4731,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	}
 
         for (Column column : tableHandler.getColumns()) {
-	    if(searchColumnName!=null &&searchColumnName.equals(column.getName()))
+	    if(searchColumnName!=null && searchColumnName.equals(column.getName()))
 		searchColumn = column;
             if (column.getType().equals(Column.DATATYPE_LATLONBBOX)) {
                 theColumn = column;
@@ -4834,6 +4834,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		    if ( !bbox) {
 			//Check if the lat/lon is defined
 			if ( !theColumn.hasLatLon(values)) {
+			    //			    for(int i=0;i<values.length;i++) System.err.println(i +" " + values[i]);
+			    //			    System.exit(0);
 			    continue;
 			}
 			double[] ll = theColumn.getLatLon(values);
@@ -6575,6 +6577,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         List<String>   aggColumns      = null;
         List<String>   aggLabels       = null;
         List<String>   aggSelectors    = null;
+        boolean forMap = request.getString(ARG_DB_VIEW,"").equals(VIEW_MAP);
+        boolean forTable = request.getString(ARG_DB_VIEW,  VIEW_TABLE).equals(VIEW_TABLE);
 
         if (doGroupBy) {
             colNames       = new ArrayList<String>();
@@ -6676,12 +6680,30 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 extra += orderBy;
             }
         } else {
+	    //If for map then make sure the latlon column is one of the ones selected
             selectedColumns = getSelectedColumns(request, true);
-            colNames        = Column.getNames(selectedColumns);
-        }
+	    if(forMap) {
+		Column theColumn = null;
+		for (Column column : tableHandler.getColumns()) {
+		    if (column.getType().equals(Column.DATATYPE_LATLONBBOX)) {
+			theColumn = column;
+			break;
+		    }
+		    if (column.getType().equals(Column.DATATYPE_LATLON)) {
+			theColumn = column;
+			break;
+		    }
+		}
+		if(theColumn==null) {
+		    theColumn = dbInfo.getLatLonColumn();
+		}
+		if(theColumn!=null) {
+		    if(!selectedColumns.contains(theColumn)) selectedColumns.add(theColumn);
+		}
+	    }
+	    colNames = Column.getNames(selectedColumns);
+	}
 
-        boolean forTable = request.getString(ARG_DB_VIEW,
-                                             VIEW_TABLE).equals(VIEW_TABLE);
         Statement stmt = null;
         extra += limitString;
         try {
