@@ -4697,9 +4697,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         StringBuilder sb         = new StringBuilder();
 	sb.append("<meta id='request-method' name='request-method' content='POST'></meta>");
 
-
         String links = getHref(request, entry, VIEW_KML,
                                msg("Google Earth KML"));
+	links = "";
 	String formId=null;
         if (!request.get(ARG_EMBEDDED, false)) {
             formId = addViewHeader(request, entry, sb, VIEW_MAP, valueList.size(),
@@ -4816,10 +4816,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    }
 	    for(Object obj:listValues) {
 		Object[]values = (Object[]) obj;
-		//	    if(forPrint && lineCnt>=entriesPerPage) {
-		//		lineCnt=0;
-		//		sb.append("<div class=pagebreak></div>");
-		//	    }
 		String dbid  = (String) values[IDX_DBID];
 		double lat   = 0;
 		double lon   = 0;

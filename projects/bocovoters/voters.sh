@@ -14,9 +14,6 @@ geocodio=source/voters_addresses_geocodio.csv
 
 
 do_all() {
-    do_db
-    exit
-
     init_files
     do_demographics
     do_prep
@@ -292,8 +289,9 @@ do_joins() {
 #join the  demographics
 
 #create a new column and remove the UNIT and APT suffix to do the join with the geocoded addresses
-    ${csv} -copy res_address res_address_trim -change res_address " APT .*" "" -change res_address " UNIT .*" "" -p working.csv > tmp.csv
+    ${csv} -copy res_address res_address_trim -change res_address_trim " APT .*" "" -change res_address_trim " UNIT .*" "" -p working.csv > tmp.csv
     mv tmp.csv working.csv
+
     do_join_demographics working.csv tmp.csv
     mv tmp.csv working.csv
 
@@ -305,12 +303,14 @@ do_joins() {
     rm working.csv
 }
 
+
+
 do_join_demographics() {
     echo "doing demographics join"
     ${csv} -join address "*" voters_geocode_trim.csv res_address_trim "0"  -dots ${dots} -p $1 > $2
 }
 
-
+#do_joins
 
 
 do_final() {
