@@ -585,6 +585,7 @@ RepositoryMap.prototype = {
             }
         }
         this.dfltBounds = dfltBounds;
+
         if (!force) {
 	    let didMarkers = false;
             if (this.markers) {
@@ -3701,6 +3702,11 @@ RepositoryMap.prototype = {
     },
 
     addMarker:  function(id, location, iconUrl, markerName, text, parentId, size, yoffset, canSelect, attrs,polygon) {
+	if(iconUrl=="dot") {
+	    this.addPoint(id,location,{},text);
+	    return;
+	}
+
 	if(Utils.isDefined(location.x)) {
 	    location = MapUtils.createLonLat(location.x,location.y);
 	}
@@ -3946,6 +3952,8 @@ RepositoryMap.prototype = {
 	//["star", "cross", "x", "square", "triangle", "circle", "lightning", "rectangle", "church"];
         let center = new OpenLayers.Geometry.Point(point.x, point.y);
         center.transform(this.displayProjection, this.sourceProjection);
+
+
         let feature = new OpenLayers.Feature.Vector(center, null, cstyle);
         feature.center = center;
         feature.ramaddaId = id;

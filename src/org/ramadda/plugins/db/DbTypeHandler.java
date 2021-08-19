@@ -1003,7 +1003,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	if(forPrint) {
 	    String name = request.getString(ARG_DB_SEARCHNAME,(String)null);
 	    getPageHandler().entrySectionOpen(request, entry, name,sb,null,false);
-	    sb.append(getWikiManager().wikifyEntry(request, entry, request.getString(ARG_DB_SEARCHDESC, "")));
+	    //	    sb.append(getWikiManager().wikifyEntry(request, entry, request.getString(ARG_DB_SEARCHDESC, "")));
 	    addStyleSheet(sb);
 	    request.put(ARG_TEMPLATE,"empty");
 	    return null;
@@ -1130,7 +1130,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                            ? " result"
                                            : " results"));
                 }
-            }
+            } else {
+		sb.append(msgLabel("Showing") + numValues);
+	    }
         }
 
 	return formId;
@@ -4909,7 +4911,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		if(forPrint) mapLabel = "";
 		if ( !bbox) {
 		    map.addMarker(dbid, lat,lon, (polygonColumn!=null?polygonColumn.getString(values):null),
-				  iconToUse,
+				  forPrint?"dot":iconToUse,
 				  mapLabel, mapInfo,null);
 		} else {
 		    if ( !makeRectangles) {
