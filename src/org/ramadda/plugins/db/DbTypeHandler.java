@@ -162,6 +162,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
     private boolean showEntryCreate = true;
 
+    private boolean showChartView = true;
+    private boolean showFeedView = true;
+    private boolean showDateView = true;    
+
 
     /** _more_ */
     SimpleDateFormat rssSdf =
@@ -236,6 +240,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         searchForLabel = XmlUtil.getAttribute(tableNode, "searchForLabel", searchForLabel);
         defaultView = XmlUtil.getAttribute(tableNode, "defaultView",VIEW_TABLE);
         showEntryCreate = XmlUtil.getAttribute(tableNode, "showEntryCreate",true);
+
+        showFeedView = XmlUtil.getAttribute(tableNode, "showFeedView",true);
+        showChartView = XmlUtil.getAttribute(tableNode, "showChartView",true);	
+        showDateView = XmlUtil.getAttribute(tableNode, "showDateView",true);
+
+
         numOrders = XmlUtil.getAttribute(tableNode, "numberOrderBy",numOrders);
 
 	formJS =  XmlUtil.getGrandChildText(tableNode,"formjs",(String) null);
@@ -376,17 +386,16 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	 if(addressTemplate!=null)
 	     viewList.add(new TwoFacedObject("Address Labels", VIEW_ADDRESSLABELS));
 
-
         viewList.add(new TwoFacedObject("CSV", VIEW_CSV));
 
 	//Not for now
 	//        viewList.add(new TwoFacedObject("Sticky Notes", VIEW_STICKYNOTES));
-        if (dbInfo.getHasDate()) {
+        if (showDateView && dbInfo.getHasDate()) {
             viewList.add(new TwoFacedObject("Calendar", VIEW_CALENDAR));
             viewList.add(new TwoFacedObject("Timeline", VIEW_TIMELINE));
             viewList.add(new TwoFacedObject("ICAL", VIEW_ICAL));
         }
-        if (dbInfo.getNumberColumns().size() > 0) {
+        if (showChartView && dbInfo.getNumberColumns().size() > 0) {
             viewList.add(new TwoFacedObject("Chart", VIEW_CHART));
         }
         for (Column gridColumn : dbInfo.getCategoryColumns()) {
@@ -394,8 +403,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                             + "Category", VIEW_CATEGORY
                                                 + gridColumn.getName()));
         }
-        viewList.add(new TwoFacedObject("RSS", VIEW_RSS));
-        viewList.add(new TwoFacedObject("JSON", VIEW_JSON));
+	if(showFeedView) {
+	    viewList.add(new TwoFacedObject("RSS", VIEW_RSS));
+	    viewList.add(new TwoFacedObject("JSON", VIEW_JSON));
+	}
 
 	List stmts = XmlUtil.findChildren(tableNode, "macro");
         for (int j = 0; j < stmts.size(); j++) {

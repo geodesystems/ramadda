@@ -344,6 +344,7 @@ do_db() {
     table.icon /db/user.png \
     table.showEntryCreate false \
     table.format  MM/dd/yyyy table.defaultOrder {full_street_name,asc;address_even;address,asc} \
+    table.showDateView false table.showChartView false table.showFeedView false \
     table.formjs file:${mydir}/formjs.js \
 table.cansearch false table.searchForLabel {Basic Voter Properties} \
 table.mapLabelTemplate _quote_\${name}_quote_ \
