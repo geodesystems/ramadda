@@ -1003,6 +1003,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	if(forPrint) {
 	    String name = request.getString(ARG_DB_SEARCHNAME,(String)null);
 	    getPageHandler().entrySectionOpen(request, entry, name,sb,null,false);
+	    sb.append(getWikiManager().wikifyEntry(request, entry, request.getString(ARG_DB_SEARCHDESC, "")));
 	    addStyleSheet(sb);
 	    request.put(ARG_TEMPLATE,"empty");
 	    return null;
@@ -2375,6 +2376,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		print+="<br>" + HU.b("Address label skip: ")+ HU.input("addresslabelskip",request.getString("addresslabelskip",""),HtmlUtils.SIZE_5) +" Use Avery 8160 or 5160. Print with top margin: 0.5in, left: 0.19in";
 	    }
 	    buffer.append(formEntry(request, msgLabel("Printing"),print));
+
         }
 
 
@@ -6771,17 +6773,15 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                             Utils.encodeBase64(xmlEncoder.toXml(values)));
                     } else {
 			if(uniqueCols!=null) {
-			    boolean dup = false;
+			    String key = "";
 			    for(Column c: uniqueCols) {
 				Object o = c.getObject(values);
-				Object key = c.getName() +"_"+o;
-				if(seenValue.contains(key)) {
-				    dup = true;
-				    break;
-				}
-				seenValue.add(key);
+				key = key+ "_"+o;
 			    }
-			    if(dup) continue;
+			    if(seenValue.contains(key)) {
+				continue;
+			    }
+			    seenValue.add(key);
 			}
                         result.add(values);
                     }
