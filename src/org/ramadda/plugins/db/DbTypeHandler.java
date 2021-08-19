@@ -1116,16 +1116,16 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
 
-	System.err.println("addnext:" + addNext +" values:" + numValues);
         if (addNext[0]) {
             if (numValues > 0) {
                 if (isGroupBy(request)) {
                     numValues--;
                 }
-                if ((numValues == getMax(request))
+		int max = getMax(request);
+                if ((numValues == max)
                         || request.defined(ARG_SKIP)) {
                     getRepository().getHtmlOutputHandler().showNext(request,
-                            numValues, sb);
+								    numValues, max, sb);
                 } else {
                     sb.append(numValues + ((numValues == 1)
                                            ? " result"
