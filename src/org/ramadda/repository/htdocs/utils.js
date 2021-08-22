@@ -2378,9 +2378,28 @@ var Utils =  {
 	    stride:1
         }
 	if (args) $.extend(options, args);
-        var stringValues = options.stringValues;
-        if (stringValues && stringValues.length)
+        let colorToString = null;
+        if (options.stringValues && options.stringValues.length) {
             options.showRange = false;
+	    colorToString ={};
+	    ct = [];
+	    let seenColor = {};
+	    options.stringValues.forEach(v=>{
+		let style = "";
+		if(!seenColor[v.color]) {
+		    seenColor[v.color] = true;
+		    ct.push(v.color);
+		    colorToString[v.color] = "";
+		}  else {
+		    style = HU.css("border-top","1px solid #ccc");
+		}
+		let value = v.value;
+		if(value=="") value = "&lt;blank&gt;";
+		colorToString[v.color]+=HtmlUtils.div(["title",v.value,STYLE,style],value);
+	    });
+
+	    
+	}
         min = parseFloat(min);
         max = parseFloat(max);
 	let divargs = [CLASS, " display-colortable " +(options.showColorTableDots?"display-colortable-dots":"")];
@@ -2460,30 +2479,18 @@ var Utils =  {
 	}
         html += HtmlUtils.close(DIV);
         html += HtmlUtils.open(DIV, [CLASS, "display-colortable-extra"]);
-        if (stringValues && stringValues.length) {
-            var tdw = 100 / ct.length + "%";
+
+
+        if (colorToString!=null) {
+            let tdw = 100 / ct.length + "%";
             html += "<div style='width:100%;vertical-align:top;text-align:center;'>"
 	    let colCnt =0;
 	    let bin ={};
-            for (var i = 0; i < stringValues.length; i++) {
-		if(colCnt>=ct.length) {
-		    colCnt=0;
-		}
-		if (!bin[colCnt]) {
-		    bin[colCnt]=""
-		} else {
-		    bin[colCnt]+="<div style='border-top:1px solid #eee;'></div>";
-		}
-		bin[colCnt]+=HtmlUtils.span(["title",stringValues[i]],stringValues[i]);
-		colCnt++;
-            }
-            for (var i = 0; i < stringValues.length; i++) {
-		if(!bin[i]) break;
-		let cell = HtmlUtils.div(["style","padding:2px;vertical-align:top;display:inline-block;width:" + tdw+";max-width:" + tdw+";overflow-x:auto;"],bin[i]);
+	    ct.forEach(color=>{
+		let cell = HtmlUtils.div(["style","padding:2px;vertical-align:top;display:inline-block;width:" + tdw+";max-width:" + tdw+";overflow-x:auto;"],colorToString[color]);
 		html+=cell;
-
-	    }
-	    //            html += "</tr></table>"
+//		bin[colCnt]+="<div style='border-top:1px solid #eee;'></div>";
+            });
 	    html+="</div>"
         }
 	html += HtmlUtils.close(DIV);
@@ -2769,6 +2776,7 @@ Utils.ColorTables =  {
     d3_schemeCategory20b: {colors: ['#393b79','#5254a3','#6b6ecf','#9c9ede','#637939','#8ca252','#b5cf6b','#cedb9c','#8c6d31','#bd9e39','#e7ba52','#e7cb94','#843c39','#ad494a','#d6616b','#e7969c','#7b4173','#a55194','#ce6dbd','#de9ed6',]},
     d3_schemeCategory20c: {colors: ['#3182bd','#6baed6','#9ecae1','#c6dbef','#e6550d','#fd8d3c','#fdae6b','#fdd0a2','#31a354','#74c476','#a1d99b','#c7e9c0','#756bb1','#9e9ac8','#bcbddc','#dadaeb','#636363','#969696','#bdbdbd','#d9d9d9',]},
     d3_schemeCategory20: {colors: ['#1f77b4','#aec7e8','#ff7f0e','#ffbb78','#2ca02c','#98df8a','#d62728','#ff9896','#9467bd','#c5b0d5','#8c564b','#c49c94','#e377c2','#f7b6d2','#7f7f7f','#c7c7c7','#bcbd22','#dbdb8d','#17becf','#9edae5',]},
+
     mixed: {label:"Mixed"},
     plotly_picnic:{colors: ['rgb(0,0,255)','rgb(5,15,255)','rgb(10,31,255)','rgb(15,46,255)','rgb(20,61,255)','rgb(26,77,255)','rgb(31,92,255)','rgb(36,107,255)','rgb(41,122,255)','rgb(46,138,255)','rgb(51,153,255)','rgb(56,158,255)','rgb(61,163,255)','rgb(66,168,255)','rgb(71,173,255)','rgb(77,179,255)','rgb(82,184,255)','rgb(87,189,255)','rgb(92,194,255)','rgb(97,199,255)','rgb(102,204,255)','rgb(107,204,255)','rgb(112,204,255)','rgb(117,204,255)','rgb(122,204,255)','rgb(128,204,255)','rgb(133,204,255)','rgb(138,204,255)','rgb(143,204,255)','rgb(148,204,255)','rgb(153,204,255)','rgb(158,204,255)','rgb(163,204,255)','rgb(168,204,255)','rgb(173,204,255)','rgb(179,204,255)','rgb(184,204,255)','rgb(189,204,255)','rgb(194,204,255)','rgb(199,204,255)','rgb(204,204,255)','rgb(209,209,255)','rgb(214,214,255)','rgb(219,219,255)','rgb(224,224,255)','rgb(230,230,255)','rgb(235,235,255)','rgb(240,240,255)','rgb(245,245,255)','rgb(250,250,255)','rgb(255,255,255)','rgb(255,250,255)','rgb(255,245,255)','rgb(255,240,255)','rgb(255,235,255)','rgb(255,229,255)','rgb(255,224,255)','rgb(255,219,255)','rgb(255,214,255)','rgb(255,209,255)','rgb(255,204,255)','rgb(255,199,255)','rgb(255,194,255)','rgb(255,189,255)','rgb(255,184,255)','rgb(255,178,255)','rgb(255,173,255)','rgb(255,168,255)','rgb(255,163,255)','rgb(255,158,255)','rgb(255,153,255)','rgb(255,148,250)','rgb(255,143,245)','rgb(255,138,240)','rgb(255,133,235)','rgb(255,127,229)','rgb(255,122,224)','rgb(255,117,219)','rgb(255,112,214)','rgb(255,107,209)','rgb(255,102,204)','rgb(255,102,194)','rgb(255,102,184)','rgb(255,102,173)','rgb(255,102,163)','rgb(255,102,153)','rgb(255,102,143)','rgb(255,102,133)','rgb(255,102,122)','rgb(255,102,112)','rgb(255,102,102)','rgb(255,92,92)','rgb(255,82,82)','rgb(255,71,71)','rgb(255,61,61)','rgb(255,51,51)','rgb(255,41,41)','rgb(255,31,31)','rgb(255,20,20)','rgb(255,10,10)',]},
     plotly_rainbow:{colors: ['rgb(150,0,90)','rgb(138,0,99)','rgb(126,0,108)','rgb(114,0,116)','rgb(102,0,125)','rgb(90,0,134)','rgb(78,0,143)','rgb(66,0,152)','rgb(54,0,160)','rgb(42,0,169)','rgb(30,0,178)','rgb(18,0,187)','rgb(6,0,196)','rgb(0,1,202)','rgb(0,3,207)','rgb(0,5,211)','rgb(0,7,215)','rgb(0,9,220)','rgb(0,11,224)','rgb(0,13,229)','rgb(0,15,233)','rgb(0,17,237)','rgb(0,19,242)','rgb(0,21,246)','rgb(0,23,251)','rgb(0,25,255)','rgb(0,35,255)','rgb(0,45,255)','rgb(0,55,255)','rgb(0,66,255)','rgb(0,76,255)','rgb(0,86,255)','rgb(0,96,255)','rgb(0,106,255)','rgb(0,116,255)','rgb(0,127,255)','rgb(0,137,255)','rgb(0,147,255)','rgb(2,156,251)','rgb(5,164,242)','rgb(9,173,234)','rgb(12,181,226)','rgb(16,189,217)','rgb(19,197,209)','rgb(23,206,200)','rgb(26,214,192)','rgb(30,222,184)','rgb(33,230,175)','rgb(37,239,167)','rgb(40,247,158)','rgb(44,255,150)','rgb(53,255,138)','rgb(61,255,126)','rgb(70,255,114)','rgb(78,255,102)','rgb(87,255,90)','rgb(95,255,78)','rgb(104,255,66)','rgb(112,255,54)','rgb(121,255,42)','rgb(130,255,30)','rgb(138,255,18)','rgb(147,255,6)','rgb(155,254,0)','rgb(163,252,0)','rgb(172,251,0)','rgb(180,249,0)','rgb(188,247,0)','rgb(197,246,0)','rgb(205,244,0)','rgb(213,242,0)','rgb(222,241,0)','rgb(230,239,0)','rgb(238,237,0)','rgb(247,236,0)','rgb(255,234,0)','rgb(255,224,0)','rgb(255,214,0)','rgb(255,204,0)','rgb(255,195,0)','rgb(255,185,0)','rgb(255,175,0)','rgb(255,165,0)','rgb(255,155,0)','rgb(255,145,0)','rgb(255,136,0)','rgb(255,126,0)','rgb(255,116,0)','rgb(255,107,0)','rgb(255,98,0)','rgb(255,89,0)','rgb(255,80,0)','rgb(255,71,0)','rgb(255,62,0)','rgb(255,53,0)','rgb(255,44,0)','rgb(255,36,0)','rgb(255,27,0)','rgb(255,18,0)','rgb(255,9,0)',]},
