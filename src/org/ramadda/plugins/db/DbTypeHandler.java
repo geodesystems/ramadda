@@ -1492,8 +1492,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         }
         boolean doingGeo = view.equals(VIEW_KML) || view.equals(VIEW_MAP);
+	boolean forPrint = request.get(ARG_FOR_PRINT,false);
 
-        if (doingGeo) {
+	//Only add the geo clauses if we aren't also doing the print output
+        if (!forPrint && doingGeo) {
             List<Clause> geoClauses = new ArrayList<Clause>();
             for (Column column : getColumns()) {
                 column.addGeoExclusion(geoClauses);
@@ -2835,8 +2837,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         final DbInfo              dbInfo     = getDbInfo();
         final ArrayList<Object[]> valueList  = new ArrayList<Object[]>();
         final int[]               cnt        = { 0 };
-        TextReader                textReader = new TextReader();
         final int[]               scnt       = { 0 };
+        TextReader                textReader = new TextReader();
+
         final Bounds bounds = new Bounds(Double.NaN, Double.NaN, Double.NaN,
                                          Double.NaN);
 
@@ -2930,7 +2933,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
                     return row;
                 } catch (Exception exc) {
-                    throw new RuntimeException(exc);
+		    fatal("Loading db",exc);
                 }
             }
         };
@@ -2957,7 +2960,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         } else {
             scnt[0] += valueList.size();
             doStore(entry, valueList, true);
-            System.err.println("DbTypeHandler.bulkUpload: stored: "
+            System.err.println("DbTypeHandler.bulkUpload: final stored: "
                                + scnt[0]);
         }
 
