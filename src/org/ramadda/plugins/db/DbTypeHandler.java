@@ -2909,25 +2909,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
                     valueList.add(values);
                     if (valueList.size() > 10000) {
-                        if (false) {
-                            for (Object[] tuple : valueList) {
-                                scnt[0]++;
-                                if ((scnt[0] % 1000) == 0) {
-                                    System.err.println(
-                                        "DbTypeHandler.bulkUpload: stored: "
-                                        + scnt[0]);
-                                }
-                                doStore(entry, tuple, true);
-                            }
-                        } else {
-                            scnt[0] += valueList.size();
-                            long t1 = System.currentTimeMillis();
-                            doStore(entry, valueList, true);
-                            long t2 = System.currentTimeMillis();
-                            Utils.printTimes(
-                                "DbTypeHandler.bulkUpload: stored: "
-                                + scnt[0], t1, t2);
-                        }
+			scnt[0] += valueList.size();
+			long t1 = System.currentTimeMillis();
+			//			doStore(entry, valueList, true);
+			long t2 = System.currentTimeMillis();
+			Utils.printTimes(
+					 "DbTypeHandler.bulkUpload: stored: "
+					 + scnt[0], t1, t2);
                         valueList.clear();
                     }
 
@@ -2949,21 +2937,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	DataProvider.CsvDataProvider provider = new DataProvider.CsvDataProvider(textReader);
         csvUtil.process(textReader, provider);
 
-        if (false) {
-            for (Object[] tuple : valueList) {
-                scnt[0]++;
-                if ((scnt[0] % 1000) == 0) {
-                    System.err.println("DbTypeHandler.bulkUpload: stored: "
-                                       + scnt[0]);
-                }
-                doStore(entry, tuple, true);
-            }
-        } else {
-            scnt[0] += valueList.size();
-            doStore(entry, valueList, true);
-            System.err.println("DbTypeHandler.bulkUpload: final stored: "
-                               + scnt[0]);
-        }
+	scnt[0] += valueList.size();
+	//	doStore(entry, valueList, true);
+	System.err.println("DbTypeHandler.bulkUpload: final stored: "
+			   + scnt[0]);
 
         if ( !entry.hasAreaDefined() && !Double.isNaN(bounds.getNorth())) {
             entry.setBounds(bounds);
@@ -7862,6 +7839,32 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    this.statement = statement;
 	}
     }
+
+
+    public static void main(String[]args) throws Exception {
+	TextReader                textReader = new TextReader();
+        textReader.setInput(new NamedInputStream("input",new BufferedInputStream(new FileInputStream("tmp.csv"))));
+        Processor myProcessor =
+            new Processor() {
+            @Override
+            public org.ramadda.util.text.Row handleRow(
+                    TextReader textReader, org.ramadda.util.text.Row row) {
+                try {
+		    System.out.println("row:" + row);
+                    return row;
+                } catch (Exception exc) {
+		    fatal("Loading db",exc);
+		    return null;
+                }
+            }
+        };
+        textReader.addProcessor(myProcessor);
+        CsvUtil csvUtil = new CsvUtil(new ArrayList<String>());
+	DataProvider.CsvDataProvider provider = new DataProvider.CsvDataProvider(textReader);
+        csvUtil.process(textReader, provider);
+
+    }
+
 
 
 
