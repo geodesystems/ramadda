@@ -1455,6 +1455,9 @@ public class CsvUtil {
          */
         public String getLine() {
             StringBuilder sb = new StringBuilder();
+	    //	    if(true)
+	    //		return cmd +  " " +desc;
+		
             if (args != null) {
                 for (Arg arg : args) {
                     sb.append("<" + arg.id + ((arg.desc.length() > 0)
@@ -2181,7 +2184,7 @@ public class CsvUtil {
             pw.println("{\"commands\":[");
         }
         int     cnt             = 0;
-        String  pad             = "\t";
+        String  pad             = "    ";
         boolean matchedCategory = false;
         for (Cmd c : commands) {
             String cmd = c.getLine();

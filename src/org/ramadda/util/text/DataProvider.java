@@ -1699,9 +1699,9 @@ public abstract class DataProvider {
                     rawLines--;
                     continue;
                 }
-                if (ctx.getVerbose()) {
+                if (true || ctx.getVerbose()) {
                     if (((++cnt) % 1000) == 0) {
-                        System.err.println("processed:" + cnt);
+                        System.err.println("lines: " + cnt);
                     }
                 }
                 if (deHeader) {
@@ -1714,7 +1714,7 @@ public abstract class DataProvider {
 
 
                 if ( !ctx.lineOk(line)) {
-		    //		    System.err.println("LINE not OK:");
+		    System.err.println("LINE not OK:" + line);
                     continue;
                 }
 
@@ -1738,6 +1738,7 @@ public abstract class DataProvider {
                     ctx.setDelimiter(delimiter);
                 }
                 if (line.length() == 0) {
+		    System.err.println("empty line");
                     continue;
                 }
                 Row row = null;
