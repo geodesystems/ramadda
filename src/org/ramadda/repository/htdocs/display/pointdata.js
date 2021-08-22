@@ -1210,7 +1210,8 @@ function BaseFilter(display,properties) {
         isRecordOk: function(display, record, values) {
             return true;
         },
-	getWidget: function() {return ""}
+	getWidget: function() {return ""},
+	initWidget: function(inputFunc) {}
     });
 }
 
@@ -1219,9 +1220,31 @@ function BaseFilter(display,properties) {
 function BoundsFilter(display, properties) {
     RamaddaUtil.inherit(this, new BaseFilter(display, properties));
     $.extend(this, {
+	enabled:true,
+	getWidget: function() {
+	    let id = this.display.getDomId("boundsfilter");
+	    return HtmlUtils.span([STYLE,HU.css("margin-left","4px","margin-right","4px"), ID,id,CLASS,"ramadda-clickable", TITLE,"Filter records on map view. Shift-click to clear"], HtmlUtils.getIconImage("fas fa-globe-americas"));
+	},
+	initWidget: function(inputFunc) {
+	    this.inputFunc = inputFunc;
+	    let id = this.display.getDomId("boundsfilter");
+	    let _this = this;
+	    this.display.jq("boundsfilter").click(function(event){
+		if (event.shiftKey) {
+		    if(!_this.bounds) return;
+		    _this.bounds = null;
+		} else {
+		    _this.bounds = _this.display.getBounds();
+		}
+		inputFunc($(this),null,_this.bounds);
+	    });
+	},
 	isRecordOk: function(record) {
-	    if(this.display.filterBounds && record.hasLocation()) {
-		var b = this.display.filterBounds;
+	    if(!this.bounds) {
+		return true;
+	    }
+	    if(record.hasLocation()) {
+		var b = this.bounds;
 		var lat = record.getLatitude();
 		var lon = record.getLongitude();
 		if(lat>b.top || lat<b.bottom || lon <b.left || lon>b.right)
@@ -1853,7 +1876,9 @@ function RecordFilter(display,filterFieldId, properties) {
 		    }); 
 		    this.tagCbxs  = cbxs;
 		    let clickId = this.getFilterId()+"_popup";
-		    widget= HU.div([STYLE, HU.css("border","1px solid #ccc",  "margin-top","6px","padding-right","5px",  "background", Utils.getEnumColor(this.getFieldId())), TITLE,"Click to select tag", ID,clickId,CLASS,"ramadda-clickable entry-toggleblock-label"], HU.makeToggleImage("fas fa-plus","font-size:8pt;") +" " +this.getLabel()+" ("+ cbxs.length+")");   
+		    let label = " " +this.getLabel()+" ("+ cbxs.length+")";
+		    label = label.replace(/ /g,"&nbsp;");
+		    widget= HU.div([STYLE, HU.css("white-space","nowrap", "line-height","1.5em","border","1px solid #ccc",  "margin-top","6px","padding-right","5px",  "background", Utils.getEnumColor(this.getFieldId())), TITLE,"Click to select tag", ID,clickId,CLASS,"ramadda-clickable entry-toggleblock-label"], HU.makeToggleImage("fas fa-plus","font-size:8pt;") +label);   
 		} else {
 		    if(debug) console.log("\tis select");
 		    let tmp = [];
