@@ -272,6 +272,11 @@ a.display-container {
     display:inline-block;
 }
 
+
+.display-header-vertical .display-header-span {
+    text-align:right;
+}
+
 .display-anim-button {
     cursor:pointer;
 }
