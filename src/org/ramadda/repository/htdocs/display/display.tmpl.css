@@ -259,7 +259,8 @@ a.display-container {
 
 
 .display-header-vertical {
-  text-align:left;
+    text-align:left;
+    padding-right:2px;
 }
 
 .display-header1, .display-header2, .display-header3 {
