@@ -1689,7 +1689,7 @@ public abstract class DataProvider {
             while (true) {
                 String line = ctx.readLine();
 		if (line == null) {
-		    System.err.println("Done reading CSV file");
+		    //		    System.err.println("Done reading CSV file");
 		   return null;
                 }
 		cnt++;
@@ -1698,8 +1698,8 @@ public abstract class DataProvider {
                     rawLines--;
                     continue;
                 }
-                if (true ||ctx.getVerbose()) {
-                    if (cnt > 292000 || ((cnt) % 10000) == 0) {
+                if (ctx.getVerbose()) {
+                    if (((cnt) % 10000) == 0) {
 			System.err.println("lines: " + cnt +" LINE:" + line);
                     }
                 }
@@ -1711,13 +1711,10 @@ public abstract class DataProvider {
                     }
                 }
 
-
-
                 if ( !ctx.lineOk(line)) {
 		    System.err.println("LINE not OK:" + line);
                     continue;
                 }
-
 
                 rowCnt++;
                 if (rowCnt <= ctx.getSkipLines()) {
