@@ -3043,11 +3043,16 @@ public class Column implements DataTypes, Constants, Cloneable {
                 values[offset] = new Boolean(false);
             }
         } else if (isType(DATATYPE_INT)) {
-            if (Utils.stringDefined(value)) {
-                values[offset] = new Integer(value);
-            } else {
-                values[offset] = new Integer(0);
-            }
+	    try {
+		if (Utils.stringDefined(value)) {
+		    values[offset] = new Integer(value);
+		} else {
+		    values[offset] = new Integer(0);
+		}
+	    } catch(NumberFormatException nfe) {
+		throw new RuntimeException("Error parsing integer column:" + getName() +" value:" + value);
+
+	    }
         } else if (isType(DATATYPE_PERCENTAGE) || isDouble()) {
             if (Utils.stringDefined(value)) {
                 values[offset] = new Double(value);
