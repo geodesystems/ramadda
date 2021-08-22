@@ -978,7 +978,8 @@ function DisplayAnimation(display, enabled,attrs) {
 }
 
 
-function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix, theField, props) {
+
+function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix, theField, props,lastColorBy) {
     this.properties = props || {};
     if(!prop) prop = "colorBy";
     if ( !propPrefix ) {
@@ -1039,6 +1040,11 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
         pctFields:null,
 	compareFields: display.getFieldsByIds(null, this.getProperty("CompareFields", "")),
     });
+    //Reuse the last color map if there is one so the string->color stays the same
+    if(lastColorBy && !lastColorBy.colorOverflow) {
+//	this.lastColorByMap= lastColorBy.colorByMap;
+    }
+    
     if(this.fieldValue == "year") {
 	let seen= {};
 	this.dates = [];
@@ -1179,6 +1185,8 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     if(this.field && this.field.isString()) this.isString = true;
     this.index = this.field != null ? this.field.getIndex() : -1;
     this.stringMap = this.display.getColorByMap(colorByMapProp);
+    let uniqueValues = [];
+    let seenValue = {};
     if(this.index>=0 || this.timeField) {
 	let min = NaN;
 	let max = NaN;
@@ -1194,12 +1202,9 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 		v = tuple[this.index];		
 	    }
             if (this.isString) {
-		if (!Utils.isDefined(this.colorByMap[v])) {
-		    var index = this.colorByValues.length;
-                    this.colorByValues.push(v);
-                    var color  = index>=this.colors.length?this.colors[this.colors.length-1]:this.colors[index];
-		    this.colorByMap[v] = color;
-                    this.setRange(1,  this.colorByValues.length, true);
+		if(!seenValue[v]) {
+		    seenValue[v] = true;
+		    uniqueValues.push(v);
 		}
 		return;
 	    }
@@ -1213,6 +1218,33 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	this.minValue =min;
 	this.maxValue =max;	
 	this.origRange = [min,max];
+    }
+
+    if(uniqueValues.length>0) {
+	uniqueValues.sort((a,b)=>{
+	    return a.toString().localeCompare(b.toString());
+	});
+	uniqueValues.forEach(v=>{
+	    if (!Utils.isDefined(this.colorByMap[v])) {
+		let index = this.colorByValues.length;
+                let color;
+		if(this.lastColorByMap && this.lastColorByMap[v]) {
+		    color = this.lastColorByMap[v];
+		    //			console.log("\tlast v:" + v +" c:" + color);
+		} 	else {
+		    if(index>=this.colors.length) {
+			this.colorOverflow = true;
+			index = index%this.colors.length;
+			//			    console.log("\tmod index:" + index +" l:" + this.colors.length);
+		    }
+		    color = this.colors[index];
+		    //			console.log("\tindex:" + index +" v:" + v +" c:" + color);
+		}
+                this.colorByValues.push({value:v,color:color});
+		this.colorByMap[v] = color;
+                this.setRange(1,  this.colorByValues.length, true);
+	    }
+	});
     }
 
     if (this.display.showPercent) {
@@ -1277,28 +1309,33 @@ ColorByInfo.prototype = {
 	}
 	if(!force && this.index<0) return;
 	if(this.stringMap) {
-	    var colors = [];
+	    let colors = [];
 	    this.colorByValues= [];
 	    for (var i in this.stringMap) {
-		this.colorByValues.push(i);
-		colors.push(this.stringMap[i]);
+		let color = this.stringMap[i];
+		this.colorByValues.push({value:i,color:color});
+		colors.push(color);
 	    }
 	    this.display.displayColorTable(colors, domId || ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
 		colorByInfo:this,
 		width:width,
 		stringValues: this.colorByValues});
 	} else {
-	    var colors = this.colors;
+	    let colors = this.colors;
 	    if(this.getProperty("clipColorTable",true) && this.colorByValues.length) {
 		var tmp = [];
 		for(var i=0;i<this.colorByValues.length && i<colors.length;i++) 
 		    tmp.push(this.colors[i]);
 		colors = tmp;
 	    }
+	    let cbs = this.colorByValues.map(v=>{return v;});
+	    cbs.sort((a,b)=>{
+		return a.value.toString().localeCompare(b.value.toString());
+	    });
 	    this.display.displayColorTable(colors, domId || ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
 		colorByInfo:this,
 		width:width,
-		stringValues: this.colorByValues
+		stringValues: cbs
 	    });
 	}
     },
@@ -1344,6 +1381,7 @@ ColorByInfo.prototype = {
 	if(this.display.getFilterHighlight() && !record.isHighlight(this.display)) {
 	    return this.display.getProperty("unhighlightColor","#eee");
 	}
+
 
 	if(this.colorThresholdField && this.display.selectedRecord) {
 	    let v=this.display.selectedRecord.getValue(this.colorThresholdField.getIndex());
