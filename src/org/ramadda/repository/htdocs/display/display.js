@@ -1036,6 +1036,7 @@ function DisplayThing(argId, argProperties) {
         setProperty: function(key, value) {
 	    //            this[key] = value;
             this.properties[key] = value;
+	    this.transientProperties[key]  = value;
         },
         getSelfProperty: function(key, dflt) {
             if (this[key] != null) {
@@ -1106,10 +1107,19 @@ function DisplayThing(argId, argProperties) {
 	getPropertyFields: function(dflt) {
 	    return this.getPropertyFromUrl(PROP_FIELDS,dflt);
 	},
+	transientProperties:{},
+	xxcnt:0,
         getProperty: function(key, dflt, skipThis, skipParent) {
+	    if(typeof this.transientProperties[key]!='undefined') {
+		return this.transientProperties[key];
+	    }
+	    let debug = false;
+//	    if(key=="filterHighlight")if(this.xxcnt++<100) debug =true;
+
 	    if(this.debugGetProperty)
 		console.log("\tgetProperty:" + key);
 	    let value =  this.getPropertyInner(key,null,skipThis, skipParent);
+
 	    if(this.debugGetProperty)
 		console.log("\tgot:" + value);
 	    if(this.writePropertyDef!=null) {
@@ -1122,13 +1132,17 @@ function DisplayThing(argId, argProperties) {
 		    this.seenWriteProperty[key] = true;
 		}
 	    }
+	    if(debug)
+		console.log(key +":" + value +" dflt:" + dflt);
 	    if(!Utils.isDefined(value)) {
 		if(this.debugGetProperty)
 		    console.log("\treturning dflt:" + dflt);
+		this.transientProperties[key]  = dflt;	    
 		return dflt;
 	    }
 	    if(this.debugGetProperty)
 		console.log("\treturning value:" + value);
+	    this.transientProperties[key]  = value;	    
 	    return value;
 	},
         getPropertyInner: function(keys, dflt,skipThis, skipParent) {	    
@@ -1273,6 +1287,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'showDisplayFieldsMenu',ex:true},
 	{p:'displayFieldsMenuMultiple',ex:true},
 	{p:'displayFieldsMenuSide',ex:'left'},
+	{p:'displayHeaderSide',ex:'left'},	
 	{label:'Formatting'},
 	{p:'dateFormat',ex:'yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm'},
 	{p:'dateFormatDaysAgo',ex:true},
@@ -1290,7 +1305,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'filterFields',ex:''},
 	{p:'filterFieldsToPropagate'},
 	{p:'hideFilterWidget',ex:true},
-	{p:'filterHighlight',ex:true,tt:'Highlight the records'},
+	{p:'filterHighlight',d:false,ex:true,tt:'Highlight the records'},
         {p:'showFilterTags',d: true},
         {p:'tagDiv',tt:'Div id to show tags in'},		
 	{p:'showFilterHighlight',ex:false,tt:'show/hide the filter highlight widget'},
@@ -1817,14 +1832,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 	    return iconMap;
 	},
-	getColorByInfo: function(records, prop,colorByMapProp, defaultColorTable,propPrefix) {
+	getColorByInfo: function(records, prop,colorByMapProp, defaultColorTable,propPrefix,lastColorBy) {
             let pointData = this.getData();
             if (pointData == null) return null;
 	    if(this.getProperty("colorByAllRecords")) {
 		records = pointData.getRecords();
 	    }
 	    let fields = pointData.getRecordFields();
-	    return new ColorByInfo(this, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix);
+	    return new ColorByInfo(this, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix,null,null,lastColorBy);
 	},
 	getColorByMap: function(prop) {
 	    prop = this.getProperty(prop||"colorByMap");
@@ -5586,7 +5601,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 
-	    this.jq(ID_HEADER2).html(header2);
+	    let headerSide = this.getDisplayHeaderSide();
+	    if(headerSide == "left") 
+		this.jq(ID_LEFT).html(header2);
+	    else if(headerSide == "right") 
+		this.jq(ID_RIGHT).html(header2);	    	    
+	    else
+		this.jq(ID_HEADER2).html(header2);
+
 	    this.initHeader2();
 	    this.jq("test").button().click(()=>{
 		this.haveCalledUpdateUI = false;
