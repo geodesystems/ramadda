@@ -1689,7 +1689,7 @@ public abstract class DataProvider {
             while (true) {
                 String line = ctx.readLine();
 		if (line == null) {
-		    System.err.println("DONE");
+		    System.err.println("Done reading CSV file");
 		   return null;
                 }
 
@@ -1702,7 +1702,7 @@ public abstract class DataProvider {
                     rawLines--;
                     continue;
                 }
-                if (ctx.getVerbose()) {
+                if (true ||ctx.getVerbose()) {
                     if (((++cnt) % 1000) == 0) {
 			System.err.println("lines: " + cnt +" LINE:" + line);
                     }
