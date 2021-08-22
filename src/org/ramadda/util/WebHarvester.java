@@ -94,7 +94,7 @@ public class WebHarvester {
     private int maxCnt = -1;
     private int maxDepth = -1;
     private List<String> images = new ArrayList<String>();
-
+    private boolean wrapWithSection = true;
     private static SimpleDateFormat mmmyyyysdf = new SimpleDateFormat("MMMMM yyyy");
 
     private static SimpleDateFormat mmmyyyysdf2 = new SimpleDateFormat("yyyy-MM");    
@@ -265,9 +265,13 @@ public class WebHarvester {
 			continue;
 		    }
 		    String l = childLink.getLink().replace("\\","\\\\");
-		    page.body = page.body.replaceAll("href=\"" + l +"\"","href=\"/repository/entry/show?entryid=" + child.id+"\"");
-		    page.body = page.body.replaceAll("href=\'" + l +"\'","href=\"/repository/entry/show?entryid=" + child.id+"\"");
-		    page.body = page.body.replaceAll("href=" + l,"href=\"/repository/entry/show?entryid=" + child.id+"\"");
+		    //		    System.out.println("Link:" + l);
+		    page.body = page.body.replaceAll("(?i)<a +href=\"" + l +"\" *>([^<>]*?)</a>","[[" + child.id+"|$1]]");
+		    page.body = page.body.replaceAll("(?i)href=\"" + l +"\"","href=\"/repository/entry/show?entryid=" + child.id+"\"");
+		    page.body = page.body.replaceAll("(?i)href=\'" + l +"\'","href=\"/repository/entry/show?entryid=" + child.id+"\"");
+		    page.body = page.body.replaceAll("(?i)href=" + l,"href=\"/repository/entry/show?entryid=" + child.id+"\"");
+		    //		    System.out.println(page.body);
+		    //		    System.exit(0);
 		} else {
 
 		    String l = childLink.getLink().replace("\\","\\\\");
@@ -319,6 +323,8 @@ public class WebHarvester {
 
     public void addReplaceMS() {
 	//Non ascii
+	addReplace("<strong>([^<]+)</a>","$1</a>");
+	addReplace(" "," ");
 	addReplace("[^\\x00-\\x7F]","");
 	addReplace("style *= *'.*?'","");
 	addReplace("class=MsoNormal","");
@@ -426,7 +432,7 @@ public class WebHarvester {
 	}
     }
 
-    private static void writeEntryXml(Page page, Page parent) throws Exception {
+    private  void writeEntryXml(Page page, Page parent) throws Exception {
 	//	System.out.println("TITLE:" + page.title  +" " + page.href +" " + page.url);
 	StringBuilder sb = new StringBuilder();
 	String type= "wikipage";
@@ -495,7 +501,7 @@ public class WebHarvester {
 	sb.append("\n");
 	if(!page.isResource) {
 	    //	    String content = HtmlUtils.href(page.url.toString(),"Source") +"<br>" + page.body;
-	    String content =  "+section title={{name}}\n" + page.body +"\n-section\n";
+	    String content =  wrapWithSection?("+section title={{name}}\n" + page.body +"\n-section\n"): page.body;
 	    //	    if(page.children.size()>0)
 	    //		content+="\n----\n:heading Links\n{{tree details=false}}";
 	    //If we are creating something other than a wikipage then set the description
@@ -544,6 +550,10 @@ public class WebHarvester {
 	    if(arg.startsWith("#")) {
 		continue;
 	    }
+	    if(arg.equals("-nosection")) {
+		harvester.wrapWithSection = false;
+		continue;
+	    }
 	    if(arg.equals("-maxdepth")) {
 		harvester.setMaxDepth(Integer.parseInt(args[++i]));
 		continue;
@@ -582,10 +592,13 @@ public class WebHarvester {
 	    }
 	    harvester.setUrl(arg);
 	}
+
+
 	Page page = harvester.harvest(true,pattern,notpattern);
+
 	if(doEntries) {
 	    System.out.println("<entries>");
-	    writeEntryXml(page,null);
+	    harvester.writeEntryXml(page,null);
 	    System.out.println("</entries>");
 	}
 	if(doImages) {
