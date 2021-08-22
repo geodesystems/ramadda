@@ -3866,13 +3866,6 @@ RepositoryMap.prototype = {
     },
 
 
-    uncircleMarker:  function(id) {
-        feature = this.features[id + "_circle"];
-        if (feature && this.circles) {
-            this.circles.removeFeatures([feature]);
-        }
-        this.hideFeatureText(feature);
-    },
 
     addFeatureHighlightHandler:  function( callback) {
 	this.featureHighlightHandler = callback;
@@ -3914,6 +3907,8 @@ RepositoryMap.prototype = {
     
     addPoint:  function(id, point, attrs, text, notReally, textGetter) {
         //Check if we have a LonLat instead of a Point
+
+
         let location = point;
         if (typeof point.x === 'undefined') {
             point = new OpenLayers.Geometry.Point(point.lon, point.lat);
@@ -3921,7 +3916,8 @@ RepositoryMap.prototype = {
             location = MapUtils.createLonLat(point.x, point.y);
         }
 
-        let _this = this;
+
+
 	if(!this.basePointStyle) {
 	    this.basePointStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
             $.extend(this.basePointStyle, {
@@ -3936,10 +3932,9 @@ RepositoryMap.prototype = {
             });
 	}
 
-        let cstyle = $.extend({},this.basePointStyle);
-
+	let cstyle= Object.assign({},this.basePointStyle);
         if (attrs) {
-            $.extend(cstyle, attrs);
+	    cstyle = Object.assign(cstyle, attrs);
             if (cstyle.pointRadius <= 0) cstyle.pointRadius = 1;
         }
         if (cstyle.fillColor == "" || cstyle.fillColor == "none") {
@@ -3948,6 +3943,7 @@ RepositoryMap.prototype = {
         if (cstyle.strokeColor == "" || cstyle.strokeColor == "none") {
             cstyle.strokeOpacity = 0.0;
         }
+
 
 	//["star", "cross", "x", "square", "triangle", "circle", "lightning", "rectangle", "church"];
         let center = new OpenLayers.Geometry.Point(point.x, point.y);
@@ -3967,6 +3963,9 @@ RepositoryMap.prototype = {
         return feature;
     },
 
+    addPoints:function(points) {
+	this.getMarkersLayer().addFeatures(points,{silent:true});
+    },
     getMarkersLayer:  function() {
         if (this.circles == null) {
             this.circles = new OpenLayers.Layer.Vector("Shapes");
@@ -3983,10 +3982,6 @@ RepositoryMap.prototype = {
 	    this.circles.setVisibility(visible);
     },
 
-    removePoint:  function(point) {
-        if (this.circles)
-            this.circles.removeFeatures([point]);
-    },
 
     addRectangle:  function(id, north, west, south, east, attrs, info) {
         let points = [new OpenLayers.Geometry.Point(west, north),
@@ -4300,11 +4295,44 @@ RepositoryMap.prototype = {
         displayManager.createDisplay(props.chartType, chartProps);
     },
 
-    removeMarker:  function(marker) {
-        if (this.markers) {
-            //            this.markers.removeMarker(marker);            
-            this.markers.removeFeatures([marker]);
+    uncircleMarker:  function(id) {
+        feature = this.features[id + "_circle"];
+        if (feature && this.circles) {
+            this.circles.removeFeatures([feature]);
         }
+        this.hideFeatureText(feature);
     },
+
+    removePoint:  function(point) {
+	this.removePoints([point]);
+    },
+    removePointsLayer:  function() {
+        if (this.circles) {
+	    this.removeLayer(this.circles);
+	    this.circles = null;
+	}
+    },
+    removeMarkersLayer:  function() {
+        if (this.markers) {
+	    this.removeLayer(this.markers);
+	    this.markers= null;
+	}
+    },    
+
+    removePoints:  function(points) {
+	console.log("removePoints-1");
+        if (this.circles) {
+	    this.circles.removeFeatures(points);
+	}
+	console.log("removePoints-2");
+    },
+    removeMarker:  function(marker) {
+	this.removeMarkers([marker]);
+    },
+    removeMarkers:  function(markers) {
+        if (this.markers) {
+            this.markers.removeFeatures(markers);
+        }
+    },    
 }
 
