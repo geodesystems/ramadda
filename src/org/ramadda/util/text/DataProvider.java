@@ -1689,8 +1689,11 @@ public abstract class DataProvider {
             while (true) {
                 String line = ctx.readLine();
 		if (line == null) {
+		    System.err.println("DONE");
 		   return null;
                 }
+
+		//		System.out.println("LINE:" + line);
 
 		//		line = line.replaceAll("\\u000d", " ");
 		//		System.out.println("LINE:" + line);
@@ -1699,9 +1702,9 @@ public abstract class DataProvider {
                     rawLines--;
                     continue;
                 }
-                if (true || ctx.getVerbose()) {
+                if (ctx.getVerbose()) {
                     if (((++cnt) % 1000) == 0) {
-                        System.err.println("lines: " + cnt);
+			System.err.println("lines: " + cnt +" LINE:" + line);
                     }
                 }
                 if (deHeader) {
@@ -1711,6 +1714,7 @@ public abstract class DataProvider {
                         deHeader = false;
                     }
                 }
+
 
 
                 if ( !ctx.lineOk(line)) {
