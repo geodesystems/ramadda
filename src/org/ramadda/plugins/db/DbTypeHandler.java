@@ -2911,7 +2911,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     if (valueList.size() > 10000) {
 			scnt[0] += valueList.size();
 			long t1 = System.currentTimeMillis();
-			//			doStore(entry, valueList, true);
+			doStore(entry, valueList, true);
 			long t2 = System.currentTimeMillis();
 			Utils.printTimes(
 					 "DbTypeHandler.bulkUpload: stored: "
@@ -2938,7 +2938,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         csvUtil.process(textReader, provider);
 
 	scnt[0] += valueList.size();
-	//	doStore(entry, valueList, true);
+	doStore(entry, valueList, true);
 	System.err.println("DbTypeHandler.bulkUpload: final stored: "
 			   + scnt[0]);
 
