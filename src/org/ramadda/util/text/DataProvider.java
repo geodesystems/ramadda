@@ -1692,18 +1692,14 @@ public abstract class DataProvider {
 		    System.err.println("Done reading CSV file");
 		   return null;
                 }
-
-		//		System.out.println("LINE:" + line);
-
-		//		line = line.replaceAll("\\u000d", " ");
-		//		System.out.println("LINE:" + line);
+		cnt++;
                 if (rawLines > 0) {
                     ctx.getWriter().println(line);
                     rawLines--;
                     continue;
                 }
                 if (true ||ctx.getVerbose()) {
-                    if (((++cnt) % 1000) == 0) {
+                    if (cnt > 292000 || ((cnt) % 10000) == 0) {
 			System.err.println("lines: " + cnt +" LINE:" + line);
                     }
                 }
