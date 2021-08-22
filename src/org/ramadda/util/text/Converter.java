@@ -1057,6 +1057,48 @@ public abstract class Converter extends Processor {
     }
 
 
+    public static class HeaderNames extends Converter {
+
+        /**
+         *
+         * @param props _more_
+         */
+        public HeaderNames() {
+        }
+
+        /**
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if(rowCnt++>0) return row;
+	    for(int i=0;i<row.size();i++) {
+		String s = row.getString(i);
+		s = s.replaceAll("([A-Z])","xdelimiter$1");
+		s = Utils.makeID(s);
+		s = s.replace("_","xdelimiter");
+		List<String> toks = Utils.split(s,"xdelimiter",true,true);
+		String tmp = "";
+		for(String tok: toks) {
+		    if(tmp.length()>0) {
+			tmp += " ";
+		    } 
+		    tok = Utils.upperCaseFirst(tok);
+		    tmp+=tok;
+		}
+		row.set(i,tmp);
+	    }
+
+	    return row;
+	}
+
+    }
+
+
 
     /**
      * Class description

@@ -591,7 +591,7 @@ public class CsvUtil {
                 continue;
             }
 
-            if (arg.startsWith("-header")) {
+            if (arg.startsWith("-header ")) {
                 myTextReader.setFirstRow(
 					 new Row(Utils.split(args.get(++i), ",")));
                 continue;
@@ -2115,6 +2115,7 @@ public class CsvUtil {
                         "6"), new Arg("delimiter", "Output between rows",
                                       "size", "40"), new Arg("suffix", "",
 							     "size", "40")),
+        new Cmd("-headernames", "Clean up names"),
         new Cmd("-addheader", new Label("Add header"),
                 "Add the RAMADDA point properties",
                 new Arg("properties", "name1 value1 ... nameN valueN",
@@ -3666,6 +3667,11 @@ public class CsvUtil {
 	    });
 
 
+	defineFunction("-headernames",0,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.HeaderNames());
+		return i;
+	    });
+
 
 	defineFunction("-addheader",1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.HeaderMaker(parseProps(args.get(++i))));
@@ -3893,6 +3899,7 @@ public class CsvUtil {
 	}
 
 	args = newArgs;
+
 	for (int i = 0; i < args.size(); i++) {
 	    String arg = args.get(i);
 	    if (debugArgs) {
