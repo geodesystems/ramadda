@@ -978,7 +978,8 @@ function DisplayAnimation(display, enabled,attrs) {
 }
 
 
-function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix, theField, props) {
+
+function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix, theField, props,lastColorBy) {
     this.properties = props || {};
     if(!prop) prop = "colorBy";
     if ( !propPrefix ) {
@@ -1039,6 +1040,11 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
         pctFields:null,
 	compareFields: display.getFieldsByIds(null, this.getProperty("CompareFields", "")),
     });
+    //Reuse the last color map if there is one so the string->color stays the same
+    if(lastColorBy && !lastColorBy.colorOverflow) {
+//	this.lastColorByMap= lastColorBy.colorByMap;
+    }
+    
     if(this.fieldValue == "year") {
 	let seen= {};
 	this.dates = [];
@@ -1179,6 +1185,8 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     if(this.field && this.field.isString()) this.isString = true;
     this.index = this.field != null ? this.field.getIndex() : -1;
     this.stringMap = this.display.getColorByMap(colorByMapProp);
+    let uniqueValues = [];
+    let seenValue = {};
     if(this.index>=0 || this.timeField) {
 	let min = NaN;
 	let max = NaN;
@@ -1194,12 +1202,9 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 		v = tuple[this.index];		
 	    }
             if (this.isString) {
-		if (!Utils.isDefined(this.colorByMap[v])) {
-		    var index = this.colorByValues.length;
-                    this.colorByValues.push(v);
-                    var color  = index>=this.colors.length?this.colors[this.colors.length-1]:this.colors[index];
-		    this.colorByMap[v] = color;
-                    this.setRange(1,  this.colorByValues.length, true);
+		if(!seenValue[v]) {
+		    seenValue[v] = true;
+		    uniqueValues.push(v);
 		}
 		return;
 	    }
@@ -1213,6 +1218,33 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	this.minValue =min;
 	this.maxValue =max;	
 	this.origRange = [min,max];
+    }
+
+    if(uniqueValues.length>0) {
+	uniqueValues.sort((a,b)=>{
+	    return a.toString().localeCompare(b.toString());
+	});
+	uniqueValues.forEach(v=>{
+	    if (!Utils.isDefined(this.colorByMap[v])) {
+		let index = this.colorByValues.length;
+                let color;
+		if(this.lastColorByMap && this.lastColorByMap[v]) {
+		    color = this.lastColorByMap[v];
+		    //			console.log("\tlast v:" + v +" c:" + color);
+		} 	else {
+		    if(index>=this.colors.length) {
+			this.colorOverflow = true;
+			index = index%this.colors.length;
+			//			    console.log("\tmod index:" + index +" l:" + this.colors.length);
+		    }
+		    color = this.colors[index];
+		    //			console.log("\tindex:" + index +" v:" + v +" c:" + color);
+		}
+                this.colorByValues.push({value:v,color:color});
+		this.colorByMap[v] = color;
+                this.setRange(1,  this.colorByValues.length, true);
+	    }
+	});
     }
 
     if (this.display.showPercent) {
@@ -1277,28 +1309,33 @@ ColorByInfo.prototype = {
 	}
 	if(!force && this.index<0) return;
 	if(this.stringMap) {
-	    var colors = [];
+	    let colors = [];
 	    this.colorByValues= [];
 	    for (var i in this.stringMap) {
-		this.colorByValues.push(i);
-		colors.push(this.stringMap[i]);
+		let color = this.stringMap[i];
+		this.colorByValues.push({value:i,color:color});
+		colors.push(color);
 	    }
 	    this.display.displayColorTable(colors, domId || ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
 		colorByInfo:this,
 		width:width,
 		stringValues: this.colorByValues});
 	} else {
-	    var colors = this.colors;
+	    let colors = this.colors;
 	    if(this.getProperty("clipColorTable",true) && this.colorByValues.length) {
 		var tmp = [];
 		for(var i=0;i<this.colorByValues.length && i<colors.length;i++) 
 		    tmp.push(this.colors[i]);
 		colors = tmp;
 	    }
+	    let cbs = this.colorByValues.map(v=>{return v;});
+	    cbs.sort((a,b)=>{
+		return a.value.toString().localeCompare(b.value.toString());
+	    });
 	    this.display.displayColorTable(colors, domId || ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
 		colorByInfo:this,
 		width:width,
-		stringValues: this.colorByValues
+		stringValues: cbs
 	    });
 	}
     },
@@ -1344,6 +1381,7 @@ ColorByInfo.prototype = {
 	if(this.display.getFilterHighlight() && !record.isHighlight(this.display)) {
 	    return this.display.getProperty("unhighlightColor","#eee");
 	}
+
 
 	if(this.colorThresholdField && this.display.selectedRecord) {
 	    let v=this.display.selectedRecord.getValue(this.colorThresholdField.getIndex());
@@ -4009,6 +4047,7 @@ function DisplayThing(argId, argProperties) {
         setProperty: function(key, value) {
 	    //            this[key] = value;
             this.properties[key] = value;
+	    this.transientProperties[key]  = value;
         },
         getSelfProperty: function(key, dflt) {
             if (this[key] != null) {
@@ -4079,10 +4118,19 @@ function DisplayThing(argId, argProperties) {
 	getPropertyFields: function(dflt) {
 	    return this.getPropertyFromUrl(PROP_FIELDS,dflt);
 	},
+	transientProperties:{},
+	xxcnt:0,
         getProperty: function(key, dflt, skipThis, skipParent) {
+	    if(typeof this.transientProperties[key]!='undefined') {
+		return this.transientProperties[key];
+	    }
+	    let debug = false;
+//	    if(key=="filterHighlight")if(this.xxcnt++<100) debug =true;
+
 	    if(this.debugGetProperty)
 		console.log("\tgetProperty:" + key);
 	    let value =  this.getPropertyInner(key,null,skipThis, skipParent);
+
 	    if(this.debugGetProperty)
 		console.log("\tgot:" + value);
 	    if(this.writePropertyDef!=null) {
@@ -4095,13 +4143,17 @@ function DisplayThing(argId, argProperties) {
 		    this.seenWriteProperty[key] = true;
 		}
 	    }
+	    if(debug)
+		console.log(key +":" + value +" dflt:" + dflt);
 	    if(!Utils.isDefined(value)) {
 		if(this.debugGetProperty)
 		    console.log("\treturning dflt:" + dflt);
+		this.transientProperties[key]  = dflt;	    
 		return dflt;
 	    }
 	    if(this.debugGetProperty)
 		console.log("\treturning value:" + value);
+	    this.transientProperties[key]  = value;	    
 	    return value;
 	},
         getPropertyInner: function(keys, dflt,skipThis, skipParent) {	    
@@ -4246,6 +4298,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'showDisplayFieldsMenu',ex:true},
 	{p:'displayFieldsMenuMultiple',ex:true},
 	{p:'displayFieldsMenuSide',ex:'left'},
+	{p:'displayHeaderSide',ex:'left'},	
 	{label:'Formatting'},
 	{p:'dateFormat',ex:'yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm'},
 	{p:'dateFormatDaysAgo',ex:true},
@@ -4263,7 +4316,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'filterFields',ex:''},
 	{p:'filterFieldsToPropagate'},
 	{p:'hideFilterWidget',ex:true},
-	{p:'filterHighlight',ex:true,tt:'Highlight the records'},
+	{p:'filterHighlight',d:false,ex:true,tt:'Highlight the records'},
         {p:'showFilterTags',d: true},
         {p:'tagDiv',tt:'Div id to show tags in'},		
 	{p:'showFilterHighlight',ex:false,tt:'show/hide the filter highlight widget'},
@@ -4790,14 +4843,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 	    return iconMap;
 	},
-	getColorByInfo: function(records, prop,colorByMapProp, defaultColorTable,propPrefix) {
+	getColorByInfo: function(records, prop,colorByMapProp, defaultColorTable,propPrefix,lastColorBy) {
             let pointData = this.getData();
             if (pointData == null) return null;
 	    if(this.getProperty("colorByAllRecords")) {
 		records = pointData.getRecords();
 	    }
 	    let fields = pointData.getRecordFields();
-	    return new ColorByInfo(this, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix);
+	    return new ColorByInfo(this, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix,null,null,lastColorBy);
 	},
 	getColorByMap: function(prop) {
 	    prop = this.getProperty(prop||"colorByMap");
@@ -8559,7 +8612,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 
-	    this.jq(ID_HEADER2).html(header2);
+	    let headerSide = this.getDisplayHeaderSide();
+	    if(headerSide == "left") 
+		this.jq(ID_LEFT).html(header2);
+	    else if(headerSide == "right") 
+		this.jq(ID_RIGHT).html(header2);	    	    
+	    else
+		this.jq(ID_HEADER2).html(header2);
+
 	    this.initHeader2();
 	    this.jq("test").button().click(()=>{
 		this.haveCalledUpdateUI = false;
@@ -12622,7 +12682,8 @@ function BaseFilter(display,properties) {
         isRecordOk: function(display, record, values) {
             return true;
         },
-	getWidget: function() {return ""}
+	getWidget: function() {return ""},
+	initWidget: function(inputFunc) {}
     });
 }
 
@@ -12631,9 +12692,31 @@ function BaseFilter(display,properties) {
 function BoundsFilter(display, properties) {
     RamaddaUtil.inherit(this, new BaseFilter(display, properties));
     $.extend(this, {
+	enabled:true,
+	getWidget: function() {
+	    let id = this.display.getDomId("boundsfilter");
+	    return HtmlUtils.span([STYLE,HU.css("margin-left","4px","margin-right","4px"), ID,id,CLASS,"ramadda-clickable", TITLE,"Filter records on map view. Shift-click to clear"], HtmlUtils.getIconImage("fas fa-globe-americas"));
+	},
+	initWidget: function(inputFunc) {
+	    this.inputFunc = inputFunc;
+	    let id = this.display.getDomId("boundsfilter");
+	    let _this = this;
+	    this.display.jq("boundsfilter").click(function(event){
+		if (event.shiftKey) {
+		    if(!_this.bounds) return;
+		    _this.bounds = null;
+		} else {
+		    _this.bounds = _this.display.getBounds();
+		}
+		inputFunc($(this),null,_this.bounds);
+	    });
+	},
 	isRecordOk: function(record) {
-	    if(this.display.filterBounds && record.hasLocation()) {
-		var b = this.display.filterBounds;
+	    if(!this.bounds) {
+		return true;
+	    }
+	    if(record.hasLocation()) {
+		var b = this.bounds;
 		var lat = record.getLatitude();
 		var lon = record.getLongitude();
 		if(lat>b.top || lat<b.bottom || lon <b.left || lon>b.right)
@@ -13265,7 +13348,9 @@ function RecordFilter(display,filterFieldId, properties) {
 		    }); 
 		    this.tagCbxs  = cbxs;
 		    let clickId = this.getFilterId()+"_popup";
-		    widget= HU.div([STYLE, HU.css("border","1px solid #ccc",  "margin-top","6px","padding-right","5px",  "background", Utils.getEnumColor(this.getFieldId())), TITLE,"Click to select tag", ID,clickId,CLASS,"ramadda-clickable entry-toggleblock-label"], HU.makeToggleImage("fas fa-plus","font-size:8pt;") +" " +this.getLabel()+" ("+ cbxs.length+")");   
+		    let label = " " +this.getLabel()+" ("+ cbxs.length+")";
+		    label = label.replace(/ /g,"&nbsp;");
+		    widget= HU.div([STYLE, HU.css("white-space","nowrap", "line-height","1.5em","border","1px solid #ccc",  "margin-top","6px","padding-right","5px",  "background", Utils.getEnumColor(this.getFieldId())), TITLE,"Click to select tag", ID,clickId,CLASS,"ramadda-clickable entry-toggleblock-label"], HU.makeToggleImage("fas fa-plus","font-size:8pt;") +label);   
 		} else {
 		    if(debug) console.log("\tis select");
 		    let tmp = [];
@@ -31613,6 +31698,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'radius',d:5,tt:"Size of the map points"},
 	{p:'scaleRadius',ex:"true",tt:'Scale the radius based on # points shown'},
 	{p:'radiusScale',ex:"value,size,value,size e.g.: 10000,1,8000,2,5000,3,2000,3,1000,5,500,6,250,8,100,10,50,12",tt:'Radius scale'},
+	{p:'maxRadius',ex:"16",d:1000},
 	{p:'shape',d:'circle',ex:'plane|star|cross|x|square|triangle|circle|lightning|church',tt:'Use shape'},
 	{p:'markerIcon',ex:"/icons/..."},
 	{p:'iconSize',ex:16},
@@ -33333,7 +33419,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 	addFilters: function(filters) {
 	    SUPER.addFilters.call(this, filters);
-	    filters.push(new BoundsFilter(this));
+	    if(this.getProperty("showBoundsFilter")) {
+		filters.push(new BoundsFilter(this));
+	    }
 	},
 	getHeader2:function() {
 	    let html = SUPER.getHeader2.call(this);
@@ -33729,7 +33817,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.haveCalledUpdateUI = true;
 
 
-
 	    if(this.getProperty("showRegionSelector")) {
 		//Fetch the regions
 		if(!ramaddaMapRegions) {
@@ -33789,10 +33876,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let pointBounds = {};
             let points = RecordUtil.getPoints(records, pointBounds);
 
+
 	    if(this.clipBounds) {
 		this.clipBounds = false;
 		let clipRecords = false;
-		if(this.lastPointBounds && this.lastPointBounds!=pointBounds) {
+		if(!this.lastPointBounds || (this.lastPointBounds && this.lastPointBounds!=pointBounds)) {
 		    clipRecords = true;
 		}
 		this.lastPointBounds = pointBounds;
@@ -33801,13 +33889,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    let tmpRecords =records.filter(r=>{
 			return viewbounds.containsLonLat(new OpenLayers.LonLat(r.getLongitude(),r.getLatitude()));
 		    });
-		    //		console.log("clipped records:" + tmpRecords.length);
+//		    console.log("clipped records:" + tmpRecords.length);
 		    this.records = records = tmpRecords;
 		    pointBounds = {};
 		    points = RecordUtil.getPoints(records, pointBounds);
 		}
 	    }
-
 
 
 
@@ -33841,7 +33928,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             this.addLabels(records,fields,points);
             this.applyVectorMap(true, this.textGetter,args);
 	    let t4= new Date();
-	    if(debug) Utils.displayTimes("time pts=" + points.length,[t2,t3], true);
+	    if(debug) Utils.displayTimes("time pts=" + points.length,[t1,t2,t3,t4], true);
 	    this.lastUpdateTime = new Date();
 	},
 	heatmapCnt:0,
@@ -34289,10 +34376,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    dot.style.pointRadius=dotRadius;
 	},
         createPoints: function(records, fields, points,bounds, debug) {
-	    let t1  =new Date();
 	    debug = debug ||displayDebug.displayMapAddPoints;
 	    let features = [];
-            let colorBy = this.getColorByInfo(records);
+	    //getColorByInfo: function(records, prop,colorByMapProp, defaultColorTable,propPrefix) {
+            let colorBy = this.getColorByInfo(records,null,null,null,null,this.lastColorBy);
+	    this.lastColorBy = colorBy;
 	    let cidx=0
 	    let polygonField = this.getFieldById(fields, this.getProperty("polygonField"));
 	    let polygonColorTable = this.getColorTable(true, "polygonColorTable",null);
@@ -34331,6 +34419,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		console.log("#records:" + numLocs +" " +records.length + " radius:" + radius);
 	    }
 
+	    radius = Math.min(radius, this.getMaxRadius());
 
 
 
@@ -34365,7 +34454,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let showPoints = this.getProperty("showPoints", true);
             let lineColor = this.getProperty("lineColor", "green");
 	    let lineCap = this.getProperty('lineCap', 'round');
-
             let iconField = this.getFieldById(fields, this.getProperty("iconField"));
             let rotateField = this.getFieldById(fields, this.getProperty("rotateField"));	    
 	    let markerIcon = this.getProperty("markerIcon",this.getProperty("pointIcon"));
@@ -34375,8 +34463,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let usingIcon = markerIcon || iconField;
             let iconSize = parseFloat(this.getProperty("iconSize",32));
 	    let iconMap = this.getIconMap();
-
-
 	    let dfltShape = this.getProperty("defaultShape",null);
 	    let dfltShapes = ["circle","triangle","star",  "square", "cross","x", "lightning","rectangle","church"];
 	    let dfltShapeIdx=0;
@@ -34393,6 +34479,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    shapeBy.map[tuple[0]] = tuple[1];
 		})
 	    }
+
 
 
 	    let sizeBy = new SizeBy(this, this.getProperty("sizeByAllRecords",true)?this.getData().getRecords():records);
@@ -34436,6 +34523,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let justOneMarker = this.getPropertyJustOneMarker();
 
 
+
             for (let i = 0; i < records.length; i++) {
                 let pointRecord = records[i];
 		dates.push(pointRecord.getDate());
@@ -34465,14 +34553,26 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
             if (this.points) {
+		let markers = [];
+		let points = [];		
 		this.points.forEach(point=>{
 		    if(point.isMarker)
-			this.map.removeMarker(point);
+			markers.push(point);
 		    else
-			this.map.removePoint(point);
+			points.push(point);
 		});
+		//For now just remove the whole layer as it is speedier
+		if(points.length) {
+//		    this.map.removePoints(points);
+		    this.map.removePointsLayer();
+		}
+		if(markers.length) {
+//		    this.map.removeMarkers(markers);
+		    this.map.removeMarkersLayer();
+		}
                 this.points = [];
             }
+
 
 
 
@@ -34668,10 +34768,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		});
 	    }
 
-	    let t2  =new Date();
-//	    Utils.displayTimes("map points 1:",[t1,t2], true);
 
-	    let t3,t4,t5,t6;
 	    let i=0;
 	    let sizeByFunc = function(percent, size) {
                 if (sizeEndPoints &&!isNaN(percent)) {
@@ -34690,7 +34787,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 	    if(isPath && groups) {
-		let i=0;
 		groups.values.forEach(value=>{
 		    let firstRecord = null;
 		    let lastRecord = null;
@@ -34744,6 +34840,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let colorByEnabled = colorBy.isEnabled();
 	    let graphicName = this.getPropertyShape();
 	    let didMarker = false;
+	    let times=[new Date()];
+	    let pointsToAdd = [];
+
 	    records.forEach(record=>{
 		i++;
 		let recordLayout = displayInfo[record.getId()];
@@ -34807,11 +34906,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
 		}
 
+
                 segmentWidth = dfltSegmentWidth;
                 props.pointRadius = sizeBy.getSize(values, props.pointRadius,sizeByFunc);
+
 		if(props.pointRadius<0) return;
-
-
 		if(isNaN(props.pointRadius) || props.pointRadius == 0) props.pointRadius= radius;
 		let hasColorByValue = false;
 		let colorByValue;
@@ -34836,6 +34935,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			theColor =  colorBy.getColorFromRecord(record, theColor);
 		    }
                 }
+
+
 
 		if(theColor) {
                     didColorBy = true;
@@ -34968,6 +35069,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    } 
 
 
+
 		    if(!usingIcon || colorByEnabled)  {
 			if(!props.graphicName)
 			    props.graphicName = graphicName;
@@ -34975,7 +35077,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			props.pointRadius= radius;
 			props.fillColor =   colorBy.getColorFromRecord(record, props.fillColor);
 			if(radius>0) {
+			    dontAddPoint=true;
 			    mapPoint = this.map.addPoint("pt-" + i, point, props, null, dontAddPoint);
+			    pointsToAdd.push(mapPoint);
+//			    if(pointsToAdd.length<5)console.log(JSON.stringify(props));
 			    if(mapPoint) {
 				this.markers[record.getId()] = mapPoint;
 				mapPoints.push(mapPoint);
@@ -35013,6 +35118,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 	    });
 
+	    
+	    times.push(new Date());
+	    this.map.addPoints(pointsToAdd);
+	    times.push(new Date());
+//	    Utils.displayTimes("map points:",times, true);
+
+
 	    if(records.length>0 && this.getProperty("selectFirstRecord")&& !this.haveSelectedFirstRecord) {
 		this.haveSelectedFirstRecord = true;
 		let record = records[0];
@@ -35028,9 +35140,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 
 
-
-	    t3  =new Date();
-//	    Utils.displayTimes("map points 2:",[t2,t3], true);
 	    if (showSegments) {
 		this.map.centerOnMarkers();
 	    }
