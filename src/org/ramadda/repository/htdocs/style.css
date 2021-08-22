@@ -2591,6 +2591,11 @@ pre {
 
 
 
+.selectboxit-text {
+    float: none !important;
+}
+
+
 .selectboxit-container {
     color:black;
 }
