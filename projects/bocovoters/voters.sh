@@ -11,8 +11,6 @@ unique_voter_history=voter_history_unique.csv
 precincts=source/boco_precincts.csv
 geocodio=source/voters_addresses_geocodio.csv
 
-
-
 do_all() {
     init_files
     do_demographics
@@ -121,6 +119,8 @@ do_demographics() {
 #	-notcolumns latitude,longitude \
     ${csv}  \
 	-notcolumns "regex:(?i).*veteran.*" \
+	-between latitude 39.955 40.1 \
+	-between longitude -105.3777 -105.155 \
 	-concat "latitude,longitude" ";" Location -notcolumns latitude,longitude \
     -columns "address,location,\
 ACS Demographics/Median age/Total/Value, \
@@ -315,10 +315,9 @@ do_join_demographics() {
 
 do_final() {
     echo "making final"
-#-maxrows 2000\
-
     ${csv}  \
 	    -notcolumns county,preference,uocava,uocava_type,issue_method,split \
+	    -ifin precinct_name source/city_boulder_precincts.csv precinct \
 	    -set county_regn_date 0 registration_date  \
 	    -set vr_phone 0 phone -set voter_name 0 name  -set yob 0 birth_year \
 	    -ranges birth_year "Birth year range" 1930 10 \
@@ -336,6 +335,8 @@ do_final() {
 	    -p  voters_joined.csv > voters_final.csv
 }
 
+#do_final
+#exit
 
 
 do_db() {
