@@ -555,6 +555,71 @@ public abstract class Converter extends Processor {
         }
 
     }
+
+
+    public static class Fetch extends Converter {
+
+	private Row headerRow;
+
+        /** _more_ */
+        private String name;
+
+        /** _more_ */
+        private String urlTemplate;
+
+        /**
+         * @param cols _more_
+         * @param suffix _more_
+         */
+        public Fetch(String name, String urlTemplate) {
+            super();
+	    this.name = name;
+	    this.urlTemplate = urlTemplate;
+        }
+
+
+        /**
+         *
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+		headerRow = row;
+		row.add(name);
+                return row;
+            }
+	    if(rowCnt>5) {
+		//		row.add("FILLER");
+		//		return row;
+	    }
+		
+	    String url = urlTemplate;
+	    //Offset by -1 because we added the name to the end
+	    for(int i=0;i<headerRow.size()-1;i++) {
+		String id = Utils.makeID(headerRow.getString(i));
+		url = url.replace("${" + id +"}",row.getString(i));
+	    }
+
+	    System.err.println("URL:" + url);
+	    if(url.toLowerCase().startsWith("file")) {
+		fatal("Bad url:" + url);
+	    }
+	    try {
+		URL _url = new URL(url);
+		InputStream is = IO.getInputStream(_url);
+		String contents = IO.readInputStream(is);
+		is.close();
+		row.add(contents);
+	    } catch(Exception exc) {
+		fatal("Reading url:" + url, exc);
+	    }
+            return row;
+        }
+
+    }
     
 
     /**

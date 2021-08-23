@@ -1937,7 +1937,10 @@ public class CsvUtil {
         new Cmd("-image", "Search for an image",
                 new Arg("column", "", "type", "columns"), "suffix"),
         new Cmd("-embed", "Download the URL and embed the image contents",
-                new Arg("url")),
+                new Arg("url column")),
+        new Cmd("-fetch", "Fetch the the URL and embed the contents",
+                new Arg("name","Name of new column"),
+                new Arg("url","URL template, e.g., https://foo.com/${column_name}")),	
         new Cmd(
 		"-imagefill",
 		"Search for an image with the query column text if the given image column is blank. Add the given suffix to the search. ",
@@ -2422,12 +2425,15 @@ public class CsvUtil {
 	defineFunction("-embed",1, (ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Embed(args.get(++i)));
 		return i;
-	    });	
+	    });
+	defineFunction("-fetch",2, (ctx,args,i) -> {
+		ctx.addProcessor(new Converter.Fetch(args.get(++i), args.get(++i)));
+		return i;
+	    });		
 	defineFunction("-countunique",1, (ctx,args,i) -> {
 		ctx.addProcessor(new RowCollector.CountUnique(getCols(args.get(++i))));
 		return i;
 	    });
-
 
 	defineFunction("-download",2, (ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Downloader(this, args.get(++i), args.get(++i)));
