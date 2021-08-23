@@ -175,7 +175,9 @@ a.display-container {
     font-weight:bold;
 }
 
-
+.display-filter-label-vertical {
+    text-align:left;
+}
 
 .display-changeentries-button {
     cursor:pointer;
@@ -269,8 +271,9 @@ a.display-container {
 }
 
 .display-header-span {
-    text-align:right;
+//    text-align:right;
     display:inline-block;
+    line-height:1.5em;
 }
 
 
