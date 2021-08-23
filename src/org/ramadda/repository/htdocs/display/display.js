@@ -1110,11 +1110,16 @@ function DisplayThing(argId, argProperties) {
 	transientProperties:{},
 	xxcnt:0,
         getProperty: function(key, dflt, skipThis, skipParent) {
+	    let debug = false;
+//	    if(key=="species.showFilterTags") debug = true;
 	    if(typeof this.transientProperties[key]!='undefined') {
+		if(debug)
+		    console.log("transient:" + key);
 		return this.transientProperties[key];
 	    }
-	    let debug = false;
-//	    if(key=="filterHighlight")if(this.xxcnt++<100) debug =true;
+
+	    if(debug)
+		console.log("getProperty:" + key +" dflt:" + dflt);
 
 	    if(this.debugGetProperty)
 		console.log("\tgetProperty:" + key);
@@ -1137,7 +1142,6 @@ function DisplayThing(argId, argProperties) {
 	    if(!Utils.isDefined(value)) {
 		if(this.debugGetProperty)
 		    console.log("\treturning dflt:" + dflt);
-		this.transientProperties[key]  = dflt;	    
 		return dflt;
 	    }
 	    if(this.debugGetProperty)
@@ -1287,7 +1291,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'showDisplayFieldsMenu',ex:true},
 	{p:'displayFieldsMenuMultiple',ex:true},
 	{p:'displayFieldsMenuSide',ex:'left'},
-	{p:'displayHeaderSide',ex:'left'},	
+	{p:'displayHeaderSide',ex:'left'},
+	{p:'leftSideWidth',ex:'150px'},		
 	{label:'Formatting'},
 	{p:'dateFormat',ex:'yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm'},
 	{p:'dateFormatDaysAgo',ex:true},
@@ -1306,7 +1311,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'filterFieldsToPropagate'},
 	{p:'hideFilterWidget',ex:true},
 	{p:'filterHighlight',d:false,ex:true,tt:'Highlight the records'},
-        {p:'showFilterTags',d: true},
+        {p:'showFilterTags',d: false},
         {p:'tagDiv',tt:'Div id to show tags in'},		
 	{p:'showFilterHighlight',ex:false,tt:'show/hide the filter highlight widget'},
 
@@ -4877,7 +4882,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		bottom+=colorTable;
 	    }
 	    bottom+=legend;
-	    let left = HU.div([ATTR_ID, this.getDomId(ID_LEFT)],leftInner);
+	    let leftStyle = "";
+	    if(this.getProperty("leftSideWidth"))
+		leftStyle = HU.css("width",HU.getDimension(this.getProperty("leftSideWidth")));
+	    let left = HU.div([ATTR_ID, this.getDomId(ID_LEFT),STYLE,leftStyle],leftInner);
 	    let right = HU.div([ATTR_ID, this.getDomId(ID_RIGHT)],rightInner);
 	    let sideWidth = "1%";
             let contents = this.getContentsDiv();
@@ -5215,8 +5223,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return HU.div([CLASS,"display-filter-widget"],this.makeFilterLabel(label,title)+(label.trim().length==0?" ":": ") +
 			  widget);
 	},
-	makeFilterLabel: function(label,tt) {
-	    let attrs = [CLASS,"display-filter-label"];
+	makeFilterLabel: function(label,tt,vertical) {
+	    let clazz = "display-filter-label";
+	    if(vertical)
+		clazz+= " display-filter-label-vertical ";
+	    let attrs = [CLASS,clazz];
 	    if(tt)  {
 		attrs.push(TITLE);
 		attrs.push(tt);
