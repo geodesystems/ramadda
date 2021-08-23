@@ -193,6 +193,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'collisionDotRadius',ex:'3',tt:"Radius of dot drawn at center"},
 	{p:'collisionScaleDots',ex:'false',d:true,tt:"Scale the group dots"},					
 	{p:'collisionLineColor',ex:'red',tt:"Color of line drawn at center"},
+	{p:'collisionIcon',ex:'/icons/...',tt:"Use an icon for collisions"},
+	{p:'collisionIconSize',d:16,ex:'16'},
 
 
 	{label:"Map Lines"},
@@ -1167,6 +1169,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
 //	    console.log("click-2");
             var justOneMarker = this.getProperty("justOneMarker",false);
+
             if(justOneMarker) {
                 var pointData = this.getPointData();
                 if(pointData) {
@@ -2876,7 +2879,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 markerIcon =  ramaddaBaseUrl + markerIcon;
 	    }
 	    let usingIcon = markerIcon || iconField;
-            let iconSize = parseFloat(this.getProperty("iconSize",32));
+            let iconSize = parseFloat(this.getProperty("iconSize",this.getProperty("radius",32)));
 	    let iconMap = this.getIconMap();
 	    let dfltShape = this.getProperty("defaultShape",null);
 	    let dfltShapes = ["circle","triangle","star",  "square", "cross","x", "lightning","rectangle","church"];
@@ -2936,8 +2939,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    let dates = [];
             let justOneMarker = this.getPropertyJustOneMarker();
-
-
 
             for (let i = 0; i < records.length; i++) {
                 let pointRecord = records[i];
@@ -3110,10 +3111,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(pixelsPer<pixels[i]) break;
 		    decimals++;
 		}
-//		console.log(pixelsPer  +" decimals:" + decimals);
 		let rnd = (v)=>{
-		    if(decimals>0)
-			return Math.floor(v * decimals + 0.5) / decimals;
+		    if(decimals>0) {
+			let v0 = Utils.roundDecimals(v,decimals);
+			return v0;
+		    }
 		    v= Math.round(v);
 		    if(decimals<0)
 			if (v%2 != 0)
@@ -3137,6 +3139,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		});
 		let collisionState= this.collisionState = {};
 		let collisionVisible = this.getPropertyCollisionFixed();
+		let collisionIcon=this.getCollisionIcon();
+		let collisionIconSize=this.getCollisionIconSize(16);		
 
 
 		records.forEach((record,idx)=>{
@@ -3171,7 +3175,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			this.map.checkFeatureVisible(line,true);
 		    }
 		    if(!info.dot)  {
-			info.dot = this.map.addPoint("dot-" + idx, rpoint, {});
+			if(collisionIcon)
+			    info.dot = this.map.addMarker("dot-" + idx, [rpoint.x,rpoint.y], collisionIcon, "", "",null,collisionIconSize);
+			else
+			    info.dot = this.map.addPoint("dot-" + idx, rpoint, {});
 			info.dot.collisionInfo  = info;
 			this.styleCollisionDot(info.dot);
                         this.points.push(info.dot);
@@ -3476,7 +3483,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			    let attrs = {
 			    }
 			    if(rotateField) attrs.rotation = record.getValue(rotateField.getIndex());
-			    mapPoint = this.map.addMarker("pt-" + i, point, markerIcon, "pt-" + i,null,null,props.pointRadius,null,null,attrs);
+			    mapPoint = this.map.addMarker("pt-" + i, point, markerIcon, "pt-" + i,null,null,iconSize,null,null,attrs);
 			    mapPoint.isMarker = true;
 			    mapPoints.push(mapPoint);
 			    this.markers[record.getId()] = mapPoint;
