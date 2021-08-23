@@ -2336,6 +2336,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    let fieldsMap = null;
 	    if(fixedFields!=null) {
+		if(!Array.isArray(fixedFields)) fixedFields=fixedFields.split(",");
 		fieldsMap = {};
 		fixedFields.forEach(id=>{
 		    if(id.startsWith("#")) {
@@ -2876,7 +2877,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
                 fields = pointData.getRecordFields();
             }
-	    console.log("XX");
+
+
             for (let i = 0; i < ids.length; i++) {
 		let id = ids[i];
 		console.log(id);
