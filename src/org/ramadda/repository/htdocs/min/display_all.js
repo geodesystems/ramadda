@@ -5347,6 +5347,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    let fieldsMap = null;
 	    if(fixedFields!=null) {
+		if(!Array.isArray(fixedFields)) fixedFields=fixedFields.split(",");
 		fieldsMap = {};
 		fixedFields.forEach(id=>{
 		    if(id.startsWith("#")) {
@@ -5887,7 +5888,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
                 fields = pointData.getRecordFields();
             }
-	    console.log("XX");
+
+
             for (let i = 0; i < ids.length; i++) {
 		let id = ids[i];
 		console.log(id);
@@ -16653,7 +16655,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    if(debug) console.log(this.type+" makeDataTable #records" + dataList.length);
 	    if(debug) console.log("\tfields:" + selectedFields);
 	    let maxWidth = this.getProperty("maxFieldLength",this.getProperty("maxFieldWidth",-1));
-	    let addTooltip = this.getProperty("addTooltip",false) && this.doAddTooltip();
+	    let addTooltip = (this.getProperty("tooltip") || this.getProperty("addTooltip",false)) && this.doAddTooltip();
     	    let addStyle= this.getAddStyle();
 	    let annotationTemplate = this.getAnnotationTemplate();
 	    let formatNumbers = this.getFormatNumbers();
