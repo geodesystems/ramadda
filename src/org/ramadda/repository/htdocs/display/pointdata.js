@@ -1535,8 +1535,15 @@ function RecordFilter(display,filterFieldId, properties) {
 
 	doTags:function() {
 	    if(!this.getProperty(this.getId()+".showFilterTags",true)) return false;
-	    return this.getProperty(this.getId()+".showFilterTags") || this.getProperty("showFilterTags");
+	    let tags =  this.getProperty(this.getId()+".showFilterTags") || this.getProperty("showFilterTags");
+	    return tags;
 	},
+	doTagsColor:function() {
+	    if(!this.getProperty(this.getId()+".colorFilterTags",true)) return false;
+	    let tags =  this.getProperty(this.getId()+".colorFilterTags", true) || this.getProperty("colorFilterTags");
+	    return tags;
+	},
+
 	getFieldValues: function() {
 	    if(this.isFieldEnumeration()) {
 		if(this.doTags()) {
@@ -1852,6 +1859,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		    widget = HtmlUtils.checkbox("",attrs,checked);
 		    //			    console.log(widget);
 		} else if(this.doTags()) {
+		    let doColor = this.doTagsColor();
 		    showLabel  =false;
 		    let cbxs = [];
 		    this.tagToCbx = {};
@@ -1863,7 +1871,7 @@ function RecordFilter(display,filterFieldId, properties) {
 			if(Array.isArray(value)) {
 			    value = e.value[0];
 			    label = e.value[1];
-			    if(value == "")
+			    if(value === "")
 				label = "-blank-";
 			}
 			let showCount  = true;
@@ -1878,7 +1886,12 @@ function RecordFilter(display,filterFieldId, properties) {
 		    let clickId = this.getFilterId()+"_popup";
 		    let label = " " +this.getLabel()+" ("+ cbxs.length+")";
 		    label = label.replace(/ /g,"&nbsp;");
-		    widget= HU.div([STYLE, HU.css("white-space","nowrap", "line-height","1.5em","border","1px solid #ccc",  "margin-top","6px","padding-right","5px",  "background", Utils.getEnumColor(this.getFieldId())), TITLE,"Click to select tag", ID,clickId,CLASS,"ramadda-clickable entry-toggleblock-label"], HU.makeToggleImage("fas fa-plus","font-size:8pt;") +label);   
+		    let style = HU.css("white-space","nowrap", "line-height","1.5em",  "margin-top","6px","padding-right","5px");
+		    if(doColor)
+			style+=HU.css("border","1px solid #ccc","background", Utils.getEnumColor(this.getFieldId()));
+		    else
+			style+=HU.css();
+		    widget= HU.div([STYLE, style, TITLE,"Click to select tag", ID,clickId,CLASS,"ramadda-clickable entry-toggleblock-label"], HU.makeToggleImage("fas fa-plus","font-size:8pt;") +label);   
 		} else {
 		    if(debug) console.log("\tis select");
 		    let tmp = [];
@@ -1890,7 +1903,7 @@ function RecordFilter(display,filterFieldId, properties) {
 			if(Array.isArray(v)) {
 			    v = e.value[0];
 			    label = e.value[1];
-			    if(v == "")
+			    if(v === "")
 				label = "-blank-";
 			}
 			if(count) label = label +(showCount?" (" + count+")":"");
@@ -1973,7 +1986,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		else
 		    widgetLabel = widgetLabel+": ";
 		let labelVertical = vertical || this.getProperty(this.getId()+".filterLabelVertical",false)  || this.getProperty("filterLabelVertical",false);
-		widgetLabel = this.display.makeFilterLabel(widgetLabel,tt);
+		widgetLabel = this.display.makeFilterLabel(widgetLabel,tt,labelVertical);
 		if(labelVertical) widgetLabel = widgetLabel+"<br>";
 		if(vertical) {
 		    widget = HtmlUtils.div([],(showLabel?widgetLabel:"") + widget+suffix);
@@ -1990,7 +2003,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    let isMulti  = this.isFieldMultiEnumeration();
 	    records.forEach((record,idx)=>{
 		let value = this.getValue(record);
-		if(!value) return;
+		if(value ===null) return;
 		value = String(value);
 		let values = isMulti?value.split(","):[value];
 		values.forEach(v=>{
