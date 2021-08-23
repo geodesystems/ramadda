@@ -589,7 +589,6 @@ public class ConvertibleOutputHandler extends OutputHandler {
                     ? ""
                     : lastResult));
             s = Json.mapAndQuote("result", s);
-	    System.err.println("OK");
             return new Result(s, "application/json");
 
         } catch (Exception exc) {
