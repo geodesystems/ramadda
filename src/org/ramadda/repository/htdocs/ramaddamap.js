@@ -4263,7 +4263,7 @@ RepositoryMap.prototype = {
 		slider.hide();
 		let contents = HU.div([STYLE,HU.css("padding","5px")], HU.div([ID,this.mapDivId+"_sliderclose",CLASS,"ramadda-clickable"], HU.getIconImage(icon_close)) + markerText);
 		slider.html(contents);
-		slider.slideDown(600);
+		slider.slideDown(800);
 		$("#" +this.mapDivId+"_sliderclose").click(()=>{
 		    slider.slideUp();
 		});

@@ -76,6 +76,7 @@ function MapFeature(source, points) {
 
 function RamaddaMapDisplay(displayManager, id, properties) {
     const ID_MAP = "map";
+    const ID_MAP_SLIDER = "map_slider";    
     const ID_LATFIELD = "latfield";
     const ID_LONFIELD = "lonfield";
     const ID_SIZEBY_LEGEND = "sizebylegend";
@@ -134,6 +135,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'extraLayers',tt:'comma separated list of layers to display',
 	 ex:'baselayer:goes-visible,baselayer:nexrad,geojson:US States:/resources/usmap.json:fillColor:transparent'},
 	{p:'doPopup', ex:'false',tt:"Don't show popups"},
+	{p:'doPopupSlider', ex:'true',tt:"Do the inline popup that slides down"},
+	{p:'popupSliderRight', ex:'true',tt:"Position the inline slider to the right"},	
+	{p:'popupSliderStyle', ex:'max-width:300px;overflow-x:auto;',tt:""},	
 	{p:'labelField',ex:'',tt:'field to show in TOC'},
 	{p:'showRegionSelector',ex:true},
 	{p:'regionSelectorLabel'},	
@@ -299,7 +303,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let map =HU.div([ATTR_CLASS, "display-map-map ramadda-expandable-target", STYLE,
 			     extraStyle, ATTR_ID, this.domId(ID_MAP)]);
 
-            this.setContents(map);
+	    let mapContainer = HU.div([CLASS,"ramadda-map-container"],
+				      map+
+				      HU.div([CLASS,"ramadda-map-slider",STYLE,this.getPopupSliderStyle("max-height:400px;overflow-y:auto;max-width:300px;overflow-x:auto;"),ID,this.domId(ID_MAP)+"_slider"]));
+
+            this.setContents(mapContainer);
 
             if (!this.map) {
                 this.createMap();
@@ -492,6 +500,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    params.initialLocation = {
 			lat:+toks[0],
 			lon:+toks[1]
+		    }
+		}
+		if(this.getDoPopupSlider()) {
+		    params.doPopupSlider = true;
+		    if(this.getPopupSliderRight()) {
+			params.popupSliderRight = true;
 		    }
 		}
                 this.map = new RepositoryMap(this.domId(ID_MAP), params);
