@@ -5433,8 +5433,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 if ( !captionPos.equals("none")) {
                     popupExtras += HU.attr("title", theCaption);
                 }
+		String dataCaption = HU.href(entryUrl,theCaption).replace("\"","'");
                 popupExtras += HU.attr("data-fancybox", idPrefix)
-                               + HU.attr("data-caption", theCaption);
+		    + HU.attr("data-caption", dataCaption);
                 buff.append(
                     HU.href(
                         child.getTypeHandler().getEntryResourceUrl(
