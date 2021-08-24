@@ -3645,7 +3645,9 @@ function DisplayThing(argId, argProperties) {
 	    //Look for a list
 	    macros.tokens.forEach(t=>{
 		if(!t.attrs) return;
-		if(t.attrs["type"]=="list" && t.attrs["fields"]) {
+		if(t.tag=="default") {
+		    attrs[t.tag] =  this.getRecordHtml(record, fields, "${default}");
+		} else 	if(t.attrs["type"]=="list" && t.attrs["fields"]) {
 		    let html = "<table class=display-table>";
 		    t.attrs.fields.split(",").forEach(fieldName=>{
 			let f = idToField[fieldName];

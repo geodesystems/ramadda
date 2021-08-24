@@ -1247,6 +1247,7 @@ var Utils =  {
 			    }
 			    let code = "function macroFunc() {\n"
 			    for(a in source) {
+				if(a=="default") continue;
 				let v = source[a];
 				if((typeof v)!="number") v = '"' + v +'"';
 				code += a +"=" + v+";\n";
@@ -1256,6 +1257,7 @@ var Utils =  {
 			    try {
 				value=  eval(code);
 			    } catch(err) {
+				console.log("Error applying macro function:" + code +"\n" + err);
 				return "&lt;Error:" + err+"&gt;";
 			    }
 			}
