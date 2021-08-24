@@ -1189,7 +1189,6 @@ a.ramadda-menubar-button:hover {
     padding-right:8px !important;
     padding-bottom:8px !important;        
     z-index:var(--ol-popup-z-index)  !important;
-    max-height:200px;
     overflow-y:auto;
 }
 

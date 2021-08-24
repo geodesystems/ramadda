@@ -852,10 +852,10 @@ RepositoryMap.prototype = {
         this.centerOnMarkers(this.dfltBounds);
     },
     makePopup: function(projPoint, text) {
-
+	let size  =  new OpenLayers.Size(this.popupWidth||200, this.popupHeight||200);
 	return  new OpenLayers.Popup("popup",
 				     projPoint,
-				     null,
+				     size,
 				     text,
 				     true,
 				     ()=>{this.onPopupClose()});
@@ -1018,10 +1018,15 @@ RepositoryMap.prototype = {
 	if(feature.style) {
 	    if(feature.style.externalGraphic) {
 		style = $.extend({},feature.style);
-		style.graphicHeight*=1.5;
-		style.graphicWidth*=1.5;
-		style.graphicXOffset = -style.graphicWidth/ 2;
-		style.graphicYOffset = -style.graphicHeight/ 2;
+		if(Utils.isDefined(style.graphicHeight))  {
+		    style.graphicHeight*=1.5;
+		    style.graphicYOffset = -style.graphicHeight/ 2;
+		}
+		if(Utils.isDefined(style.graphicWidth)) {
+		    style.graphicWidth*=1.5;
+		    style.graphicXOffset = -style.graphicWidth/ 2;
+		}
+
 	    } else {
 		//		    if(Utils.isDefined(feature.style.pointRadius)) {
 		//			style.pointRadius = feature.style.pointRadius;
@@ -3623,7 +3628,10 @@ RepositoryMap.prototype = {
         if (Array.isArray(location)) {
             location = MapUtils.createLonLat(location[0], location[1]);
         }
-        if (size == null) size = 20;
+	//TODO: sometime clean up the size, etc
+	let width = size || this.iconWidth || this.iconSize || 20;
+	let height = size || this.iconHeight || this.iconSize || 20;	
+	size=width;
         if (xoffset == null) xoffset = 0;
         if (yoffset == null) yoffset = 0;
         if (!this.markers) {
@@ -3633,8 +3641,10 @@ RepositoryMap.prototype = {
         if (!iconUrl) {
             iconUrl = ramaddaBaseUrl + '/icons/marker.png';
         }
-        let sz = new OpenLayers.Size(size, size);
-        let calculateOffset = function(size) {
+
+
+        let sz = new OpenLayers.Size(width,height);
+        let calculateOffset = function(width) {
             let offset = new OpenLayers.Pixel(-(size.w / 2)-xoffset, -(size.h / 2) - yoffset);
 	    return offset;
         };
@@ -3645,7 +3655,7 @@ RepositoryMap.prototype = {
 	let pt = new OpenLayers.Geometry.Point(location.lon, location.lat).transform(this.displayProjection, this.sourceProjection);
 	let style = {
                 externalGraphic: iconUrl,
-                graphicHeight: size,
+//                graphicHeight: size,
                 graphicWidth: size,
                 graphicXOffset: xoffset + (-size / 2),
                 graphicYOffset: -size / 2,
@@ -4236,6 +4246,7 @@ RepositoryMap.prototype = {
 	    console.log("No location for feature popup");
 	    return;
 	}
+
 
 
 	if(simplePopup || this.simplePopup) {

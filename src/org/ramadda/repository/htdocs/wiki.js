@@ -1036,7 +1036,12 @@ class  WikiEditor {
 		{p:'showLocationSearch',ex:'true'},
 		{p:'showCheckbox',ex:'true'},
 		{p:'showSearch',ex:'false'},
-		{p:'icon',ex:'/icons/dots/green.png'},
+		{p:'useThumbnail',ex:'true'},		
+		{p:'iconSize',ex:'32'},
+		{p:'iconWidth',ex:'32'},
+		{p:'iconHeight',ex:'32'},				
+		{p:'popupWidth',ex:'200'},
+		{p:'popupHeight',ex:'200'},				
 		{p:'iconsonly',ex:'false'},],
 	    name:[
 		{label:'Name Properties'},
