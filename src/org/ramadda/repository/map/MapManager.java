@@ -352,6 +352,7 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
 
         //        System.err.println("MapManager.createMap: " + width + " " + height);
 
+
         if (props == null) {
             props = new Hashtable<String, String>();
         }
@@ -364,6 +365,9 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
             mapInfo.setStyle(style);
         }
         mapInfo.setMapHidden(hidden);
+
+
+
         String showSearch = (String) props.get("showSearch");
         if (showSearch != null) {
             mapInfo.addProperty("showSearch", "" + showSearch.equals("true"));
@@ -1127,8 +1131,6 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
         if (isImage) {
             int width = Utils.getDimension(request.getString(ATTR_WIDTH,
                             (String) null), 400);
-            int height = Utils.getDimension(request.getString(ATTR_HEIGHT,
-                             (String) null), 270);
             String alt = request.getString(ATTR_ALT,
                                            getEntryDisplayName(entry));
             int imageWidth =
@@ -1334,6 +1336,15 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
         if (map == null) {
             return null;
         }
+
+	for(String prop: new String[]{"iconSize","popupWidth","popupHeight"}) {
+	    String v= (String) props.get(prop);
+	    if (v != null) {
+		map.addProperty(prop, v);
+	    }
+        }
+
+
         if (selectFields != null) {
             map.setSelectFields(selectFields);
         }
@@ -1367,6 +1378,8 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
                 "mapCenter", Json.quote((String) props.get("mapCenter")));
         }
         map.getMapProps().put("showLocationSearch", "" + showLocationSearch);
+
+
 
         Hashtable theProps = Utils.makeMap(PROP_DETAILED, "" + details,
                                            PROP_SCREENBIGRECTS, "true");
@@ -1555,6 +1568,8 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
                                      false);
 
         boolean  showCameraDirection =  Misc.getProperty(props, "showCameraDirection",true);
+        boolean  useThumbnail =  Misc.getProperty(props, "useThumbnail",false);	
+
 
         boolean showLines = Utils.getProperty(props, "showLines", false);
         //            map.addLines(entry, "", polyLine, null);
@@ -1626,6 +1641,7 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
         }
 
 
+
         for (Entry entry : entriesToUse) {
             boolean addMarker = true;
             String  idBase    = entry.getId();
@@ -1688,7 +1704,7 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
                             false)) {
                         map.addCircle(request, entry);
                     } else {
-                        map.addMarker(request, entry);
+                        map.addMarker(request, entry,useThumbnail);
                     }
                 }
             }

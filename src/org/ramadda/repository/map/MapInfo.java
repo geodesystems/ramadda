@@ -1173,9 +1173,17 @@ public class MapInfo {
      *
      * @throws Exception _more_
      */
-    public void addMarker(Request request, Entry entry) throws Exception {
+    public void addMarker(Request request, Entry entry, boolean useThumbnail) throws Exception {
         String   icon = repository.getPageHandler().getIconUrl(request,
                             entry);
+
+
+	if(useThumbnail) {
+            List<String> urls = new ArrayList<String>();
+            repository.getMetadataManager().getThumbnailUrls(request, entry, urls);
+	    if(urls.size()>0) icon = urls.get(0);
+	}
+
         double[] location = entry.getCenter();
         String   id       = entry.getId();
         String info = repository.getMapManager().makeInfoBubble(request,
