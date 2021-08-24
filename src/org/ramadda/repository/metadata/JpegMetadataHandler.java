@@ -80,7 +80,28 @@ public class JpegMetadataHandler extends MetadataHandler {
 	    
 	    return null;
 	}
-	//            Image newImage = ImageUtils.resize(image, 300, -1);
+	
+
+        if (path.toLowerCase().endsWith(".jpg")
+	    || path.toLowerCase().endsWith(".jpeg")) {
+            File jpegFile = new File(path);
+	    com.drew.metadata.Metadata metadata =
+                JpegMetadataReader.readMetadata(jpegFile);
+	    ExifIFD0Directory exifIFD0 = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
+	    int orientation = exifIFD0.getInt(ExifIFD0Directory.TAG_ORIENTATION);
+	    int rotation = 0;
+	    if(orientation== 6)
+		image = ImageUtils.rotate90(ImageUtils.toBufferedImage(image,
+								       BufferedImage.TYPE_INT_RGB), false);
+
+	    else if(orientation== 3)
+		//todo
+		rotation = 180;
+	    else if(orientation== 8)
+		image = ImageUtils.rotate90(ImageUtils.toBufferedImage(image,
+								       BufferedImage.TYPE_INT_RGB), true);
+	}
+
 	Image newImage = image.getScaledInstance(300, -1,
 						 Image.SCALE_FAST);
 	ImageUtils.waitOnImage(newImage);
