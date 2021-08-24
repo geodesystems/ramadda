@@ -1032,6 +1032,7 @@ class  WikiEditor {
 		{p:'showLines',ex:'true'},
 		{p:'showBounds',ex:'false'},
 		{p:'showMarkers',ex:'false'},
+		{p:'showCameraDirection',ex:'false'},		
 		{p:'showLocationSearch',ex:'true'},
 		{p:'showCheckbox',ex:'true'},
 		{p:'showSearch',ex:'false'},

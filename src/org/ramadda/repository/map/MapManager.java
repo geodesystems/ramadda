@@ -1554,6 +1554,8 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
         boolean screenBigRects = Misc.getProperty(props, PROP_SCREENBIGRECTS,
                                      false);
 
+        boolean  showCameraDirection =  Misc.getProperty(props, "showCameraDirection",true);
+
         boolean showLines = Utils.getProperty(props, "showLines", false);
         //            map.addLines(entry, "", polyLine, null);
 
@@ -1609,6 +1611,9 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
         }
 
 
+
+
+
         boolean          makeRectangles = cnt <= 100;
         MapBoxProperties mapProperties  = new MapBoxProperties(null, false);
 
@@ -1657,24 +1662,26 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
                     location = entry.getCenter();
                 }
 
-                for (Metadata metadata : metadataList) {
-                    if (metadata.getType().equals(
-                            JpegMetadataHandler.TYPE_CAMERA_DIRECTION)) {
-                        double dir = Double.parseDouble(metadata.getAttr1());
-                        double km  = 1.0;
-                        String kms = metadata.getAttr2();
-                        if (Utils.stringDefined(kms)) {
-                            km = Double.parseDouble(kms);
-                        }
-                        LatLonPointImpl fromPt =
-                            new LatLonPointImpl(location[0], location[1]);
-                        LatLonPointImpl pt = Bearing.findPoint(fromPt, dir,
-                                                 km, null);
-                        map.addLine(entry, entry.getId(), fromPt, pt, null);
+		if(showCameraDirection) {
+		    for (Metadata metadata : metadataList) {
+			if (metadata.getType().equals(
+						      JpegMetadataHandler.TYPE_CAMERA_DIRECTION)) {
+			    double dir = Double.parseDouble(metadata.getAttr1());
+			    double km  = 1.0;
+			    String kms = metadata.getAttr2();
+			    if (Utils.stringDefined(kms)) {
+				km = Double.parseDouble(kms);
+			    }
+			    LatLonPointImpl fromPt =
+				new LatLonPointImpl(location[0], location[1]);
+			    LatLonPointImpl pt = Bearing.findPoint(fromPt, dir,
+								   km, null);
+			    map.addLine(entry, entry.getId(), fromPt, pt, null);
 
-                        break;
-                    }
-                }
+			    break;
+			}
+		    }
+		}
 
                 if (addMarker && showMarkers) {
                     if (entry.getTypeHandler().getTypeProperty("map.circle",
