@@ -1165,6 +1165,10 @@ public class MapInfo {
     }
 
 
+    public void addMarker(Request request, Entry entry) throws Exception {
+	addMarker(request, entry, false);
+    }
+
     /**
      * _more_
      *
