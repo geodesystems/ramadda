@@ -2848,7 +2848,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (isTrajectory) {
                 let attrs = {
                     strokeWidth: 2,
-                    strokeColor: "blue"
+                    strokeColor: "blue",
+		    fillColor:this.getProperty("fillColor","transparent")
                 }
 		if(points.length==1) {
 		    this.map.addPoint(ID,  points[0], attrs, null);
