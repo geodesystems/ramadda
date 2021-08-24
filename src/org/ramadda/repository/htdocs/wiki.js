@@ -1042,6 +1042,8 @@ class  WikiEditor {
 		{p:'iconHeight',ex:'32'},				
 		{p:'popupWidth',ex:'200'},
 		{p:'popupHeight',ex:'200'},				
+		{p:'doPopupSlider',ex:'true'},
+		{p:'popupSliderRight',ex:'true'},
 		{p:'iconsonly',ex:'false'},],
 	    name:[
 		{label:'Name Properties'},

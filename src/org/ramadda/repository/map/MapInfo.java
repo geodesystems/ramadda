@@ -73,7 +73,7 @@ public class MapInfo {
     private String mapVarName;
 
     /** _more_ */
-    private String mapDiv;
+    private String mapDivId;
 
     /** _more_ */
     private String mapStyle;
@@ -167,7 +167,7 @@ public class MapInfo {
         this.request      = request;
         this.repository   = repository;
 
-        this.mapDiv       = this.mapVarName = makeMapVar();
+        this.mapDivId       = this.mapVarName = makeMapVar();
         this.width        = width;
         this.height       = height;
         this.forSelection = forSelection;
@@ -216,7 +216,7 @@ public class MapInfo {
      * @param mapVar _more_
      */
     public void setMapVar(String mapVar) {
-        this.mapDiv     = mapVar;
+        this.mapDivId     = mapVar;
         this.mapVarName = mapVar.replaceAll("-", "_");
     }
 
@@ -245,7 +245,7 @@ public class MapInfo {
      * @return _more_
      */
     public String getMapId() {
-        return mapDiv;
+        return mapDivId;
     }
 
 
@@ -416,27 +416,34 @@ public class MapInfo {
         String footer2 =
             HU.div("",
                           HU.cssClass("ramadda-map-footer")
-                          + HU.id(mapDiv + "_footer2"));
+                          + HU.id(mapDivId + "_footer2"));
         String popup = HU.div("", HU.cssClass("ramadda-popup")
-			      + HU.id(mapDiv + "_loc_popup"));
+			      + HU.id(mapDivId + "_loc_popup"));
 
         String readout =
             HU.div("&nbsp;",
                           HU.cssClass("ramadda-map-latlonreadout")
-                          + HU.id(mapDiv + "_latlonreadout")
+                          + HU.id(mapDivId + "_latlonreadout")
                           + HU.style(swidth));
 	if(!Misc.equals("true", getMapProps().get("showLatLonReadout"))) readout = "";
         String footer =
             HU.div("",
                           HU.cssClass("ramadda-map-footer")
-                          + HU.id(mapDiv + "_footer"));
+                          + HU.id(mapDivId + "_footer"));
         HU.div(result, "",
                       HU.cssClass("ramadda-map-search")
-                      + HU.id(mapDiv + "_search"));
+                      + HU.id(mapDivId + "_search"));
+	String mapDiv =   HU.div(contents,
+				 HU.cssClass("ramadda-map")
+				 + HU.style(styles) + " " + HU.id(mapDivId));
+	String mapSlider =   HU.div("",
+				    HU.cssClass("ramadda-map-slider") +HU.id(mapDivId+"_slider"));
+	
 
-        HU.div(result, contents,
-                      HU.cssClass("ramadda-map")
-                      + HU.style(styles) + " " + HU.id(mapDiv));
+        HU.div(result, mapDiv+mapSlider,
+	       HU.cssClass("ramadda-map-container"));
+
+
         String url = request.getUrl();
         String label;
         if (request.get("mapdetails", false)) {
@@ -554,7 +561,7 @@ public class MapInfo {
             js.append("\n//map javascript\n");
             Utils.append(js, "var params = ", formatProps(), ";\n");
             Utils.append(js, "var ", mapVarName, " = new RepositoryMap(",
-                         HU.squote(mapDiv), ", params);\n");
+                         HU.squote(mapDivId), ", params);\n");
             Utils.append(js, "var theMap = ", mapVarName, ";\n");
             // TODO: why is this here?
             if ( !forSelection) {
@@ -857,7 +864,7 @@ public class MapInfo {
                         HU.call(
                             "MapUtils.mapRegionSelected",
                             HU.squote(regionSelectId),
-                            HU.squote(mapDiv)))));
+                            HU.squote(mapDivId)))));
         }
 
         return widget.toString();
@@ -883,7 +890,7 @@ public class MapInfo {
         }
 
         if (doRegion) {
-            widget.append(HU.makeLatLonBox(mapDiv, arg, nwse[2],
+            widget.append(HU.makeLatLonBox(mapDivId, arg, nwse[2],
                     nwse[0], nwse[3], nwse[1]));
 
         } else {

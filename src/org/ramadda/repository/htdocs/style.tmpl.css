@@ -1205,6 +1205,19 @@ a.ramadda-menubar-button:hover {
 }
 
 
+.ramadda-map-slider {
+    position:absolute;
+    top:0px;
+    background:#ffffff;
+    border:1px solid #ccc; 
+}
+
+
+.ramadda-map-container {
+    position:relative;
+}
+
+
 .ramadda-map-loc:hover {
     background:#eee;
 }

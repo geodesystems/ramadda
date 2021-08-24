@@ -1337,7 +1337,7 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
             return null;
         }
 
-	for(String prop: new String[]{"iconSize","popupWidth","popupHeight"}) {
+	for(String prop: new String[]{"iconSize","popupWidth","popupHeight","doPopupSlider"}) {
 	    String v= (String) props.get(prop);
 	    if (v != null) {
 		map.addProperty(prop, v);

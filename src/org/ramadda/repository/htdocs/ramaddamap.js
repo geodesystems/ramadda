@@ -4249,6 +4249,31 @@ RepositoryMap.prototype = {
 
 
 
+	if(this.doPopupSlider) {
+	    //Set location then do the popup later to allow map to repaint
+	    if(marker.location)
+		this.setCenter(marker.location);
+	    setTimeout(()=> {
+		let slider = $("#" +this.mapDivId+"_slider");
+		if(this.popupSliderRight) {
+		    slider.css("right","0px");
+		} else {
+		    slider.css("left","0px");
+		}
+		slider.hide();
+		let contents = HU.div([STYLE,HU.css("padding","5px")], HU.div([ID,this.mapDivId+"_sliderclose",CLASS,"ramadda-clickable"], HU.getIconImage(icon_close)) + markerText);
+		slider.html(contents);
+		slider.slideDown(600);
+		$("#" +this.mapDivId+"_sliderclose").click(()=>{
+		    slider.slideUp();
+		});
+	    },10);
+	    return
+	}
+
+
+
+
 	if(simplePopup || this.simplePopup) {
 	    /* makePopup always makes a simpler popup just keep this here as fallback
 	      popup = new OpenLayers.Popup("popup",
