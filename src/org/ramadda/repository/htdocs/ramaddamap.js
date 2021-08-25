@@ -4356,11 +4356,9 @@ RepositoryMap.prototype = {
     },    
 
     removePoints:  function(points) {
-	console.log("removePoints-1");
         if (this.circles) {
 	    this.circles.removeFeatures(points);
 	}
-	console.log("removePoints-2");
     },
     removeMarker:  function(marker) {
 	this.removeMarkers([marker]);

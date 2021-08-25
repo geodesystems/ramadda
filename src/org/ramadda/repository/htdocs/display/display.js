@@ -2883,7 +2883,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             for (let i = 0; i < ids.length; i++) {
 		let id = ids[i];
-		console.log(id);
 		//Check for numeric range
 		if(id.startsWith("#")) {
 		    let toks = id.split("-");

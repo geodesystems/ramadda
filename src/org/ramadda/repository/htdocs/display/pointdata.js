@@ -208,6 +208,7 @@ function PointData(name, recordFields, records, url, properties) {
         recordFields: recordFields,
         records: records,
         url: url,
+	baseUrl:url,
         loadingCnt: 0,
 	getRootPointData: function() {
 	    if(this.parentPointData)
@@ -219,6 +220,11 @@ function PointData(name, recordFields, records, url, properties) {
 	    if(this.parentPointData) return this.parentPointData.getUrl();
 	    return null;
 	},
+        getCacheUrl: function() {
+	    if(this.baseUrl) return this.baseUrl;
+	    if(this.parentPointData) return this.parentPointData.getCacheUrl();
+	    return null;
+	},	
         equals: function(that) {
 	    if(this.jsonUrl) {
 		return this.jsonUrl == that.jsonUrl;
@@ -230,6 +236,7 @@ function PointData(name, recordFields, records, url, properties) {
         },
         handleEventMapClick: function(myDisplay, source, lon, lat) {
 	    let url = this.getUrl();
+            let cacheObject = pointDataCache[url];
             this.lon = lon;
             this.lat = lat;
 	    ///repository/grid/json?entryid=3715ca8e-3c42-4105-96b1-da63e3813b3a&location.latitude=0&location.longitude=179.5
@@ -309,8 +316,17 @@ function PointData(name, recordFields, records, url, properties) {
 	    root.jsonUrl = jsonUrl;
             root.loadPointJson(jsonUrl, display, reload);
         },
+	getCacheObject: function() {
+            let cacheObject = pointDataCache[this.getUrl()];
+	    if(!cacheObject) {
+		let cacheUrl = this.getCacheUrl();
+		if(cacheUrl) cacheObject = pointDataCache[cacheUrl];
+	    }
+	    return cacheObject;
+	},
+
 	propagateEventDataChanged:function(source) {
-            let cacheObject = pointDataCache[this.url];
+            let cacheObject = this.getCacheObject();
             if(cacheObject) {
 		let displays = cacheObject.displays;
 		if(displays) {
@@ -325,14 +341,14 @@ function PointData(name, recordFields, records, url, properties) {
         loadPointJson: function(url, display, reload) {
 	    let debug =  displayDebug.loadPointJson;
 	    let debug2 = false;
-//	    debug = true;
             let pointData = this;
             this.startLoading();
             let _this = this;
 	    if(debug) {
 		console.log("loadPointJson: "+ display.type +" " + display.getId() +" url:" + url);
 	    } 
-            let cacheObject = pointDataCache[url];
+	    let cacheId = this.getCacheUrl();
+            let cacheObject = pointDataCache[cacheId];
             if (cacheObject == null) {
                 cacheObject = {
                     pointData: null,
@@ -346,8 +362,8 @@ function PointData(name, recordFields, records, url, properties) {
 
                 };
 		if(debug)
-                    console.log("\tcreated new obj in cache: " +url);
-                pointDataCache[url] = cacheObject;
+                    console.log("\tcreated cache object: " +cacheId);
+                pointDataCache[cacheId] = cacheObject;
             } else {
 		if(cacheObject.pending.indexOf(display)>=0) {
 		    if(debug)
@@ -462,8 +478,11 @@ function PointData(name, recordFields, records, url, properties) {
 		    display.applyRequestProperties(data.properties);
 		}
                 let tmp = cacheObject.pending;
-		if(debug)
-		    console.log("\tcalling pointDataLoaded on  " + tmp.length + " displays");
+		if(debug) {
+		    console.log("\tcalling pointDataLoaded on  " + tmp.length + " pending displays");
+		    if(cacheObject.displays)
+			console.log("\tcacheObject.displays:" + cacheObject.displays.length)
+		}
                 cacheObject.pending = [];
                 for (let i = 0; i < tmp.length; i++) {
 		    if(debug)
