@@ -32061,7 +32061,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let bounds = {};
 	    let attrs = {
 		strokeColor:this.getStrokeColor("blue"),
-		strokeWidth:this.getStrokeWidth(1)
+		strokeWidth:this.getStrokeWidth(1),
+		fillColor:this.getProperty("fillColor") ||'transparent',
 	    };
             let polygon = this.map.addPolygon("", "", points, attrs);
 	    polygon.record = record;
