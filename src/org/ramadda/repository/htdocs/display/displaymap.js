@@ -2005,12 +2005,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		_this.clipToView = !_this.clipToView;
 		if(!_this.clipToView) {
 		    $(this).css("border","1px solid rgba(0,0,0,0)");
-		    _this.clipToView = false;
-		    return;
+		} else {
+		    $(this).css("border","1px solid #aaa");
 		}
-		$(this).css("border","1px solid #aaa");
 		_this.haveCalledUpdateUI = false;
-		_this.clipBounds = true;
 		_this.updateUI();
 	    });
 	},
@@ -2308,16 +2306,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
             let pointBounds = {};
             let points = RecordUtil.getPoints(records, pointBounds);
-
-
-	    if(this.clipBounds) {
+	    if(this.clipBounds || this.clipToView) {
 		this.clipBounds = false;
 		let clipRecords = false;
 		if(!this.lastPointBounds || (this.lastPointBounds && this.lastPointBounds!=pointBounds)) {
 		    clipRecords = true;
 		}
 		this.lastPointBounds = pointBounds;
-		if(clipRecords) {
+		if(this.clipToView || clipRecords) {
 		    let viewbounds = this.map.getMap().calculateBounds().transform(this.map.sourceProjection, this.map.displayProjection);
 		    let tmpRecords =records.filter(r=>{
 			return viewbounds.containsLonLat(new OpenLayers.LonLat(r.getLongitude(),r.getLatitude()));
