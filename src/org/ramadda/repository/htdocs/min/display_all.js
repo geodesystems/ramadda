@@ -34500,6 +34500,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(points.length==1) {
 		    this.map.addPoint(ID,  points[0], attrs, null);
 		} else {
+		    if(this.getShowPathEndPoint()) {
+			this.map.addMarker("startpoint", points[0],ramaddaBaseUrl+"/icons/map/marker-green.png");
+			this.map.addMarker("endpoint", points[points.length-1],ramaddaBaseUrl+"/icons/map/marker-blue.png");
+		    }
                     this.map.addPolygon(ID, "", points, attrs, null);
 		}
                 return;
@@ -34887,7 +34891,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    });
 		    if(lastRecord) {
 			let color=  colorBy.getColorFromRecord(lastRecord, pathAttrs.strokeColor);
-			if(secondRecord && this.getProperty("showPathEndPoint",false)) {
+			if(secondRecord && this.getShowPathEndPoint(false)) {
 			    let shape = this.getProperty("pathEndPointShape",null);
 			    var angleDeg = Utils.getBearing({lon:secondRecord.getLongitude(),
 							     lat:secondRecord.getLatitude()},
