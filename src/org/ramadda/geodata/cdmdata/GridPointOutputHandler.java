@@ -551,7 +551,6 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
 			didOne = true;
 			for (int i = 0; i < vars.size(); i++) {
 			    VariableEnhanced var = vars.get(i);
-			    System.err.println("var:" + var.getShortName());
 			    RecordField recordField =
 				new RecordField(
 						getAlias(var.getShortName()),
