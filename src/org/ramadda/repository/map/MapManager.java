@@ -1380,6 +1380,9 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
         map.getMapProps().put("showLocationSearch", "" + showLocationSearch);
 
 
+	if(entriesToUse.size()==1 && !entriesToUse.get(0).hasAreaDefined()) {
+	    map.getMapProps().put("zoomLevel","12");
+	}
 
         Hashtable theProps = Utils.makeMap(PROP_DETAILED, "" + details,
                                            PROP_SCREENBIGRECTS, "true");

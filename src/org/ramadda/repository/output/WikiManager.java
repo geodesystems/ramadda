@@ -3614,7 +3614,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             for (Entry child : children) {
                 if (child.hasLocationDefined() || child.hasAreaDefined()) {
                     anyHaveLatLon = true;
-
                     break;
                 }
             }
@@ -3662,6 +3661,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             Hashtable mapProps = new Hashtable();
             String[]  mapArgs  = {
+		"zoomLevel",
                 "strokeColor", "strokeWidth", "fillColor", "fillOpacity",
                 "scrollToZoom", "boxColor", "shareSelected", "doPopup",
                 "fill", "selectOnHover", "onSelect", "showDetailsLink",
