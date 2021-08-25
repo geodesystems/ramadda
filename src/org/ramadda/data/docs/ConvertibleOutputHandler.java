@@ -686,7 +686,6 @@ public class ConvertibleOutputHandler extends OutputHandler {
 			    throw exc;
 			}
                     }
-		    System.err.println("after");
                 }
             }
         } finally {

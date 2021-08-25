@@ -281,7 +281,7 @@ function  ConvertForm(inputId, entry) {
 	    this.editor.setOptions(options);
 	    this.editor.session.setMode("ace/mode/csvconvert");
 	    this.editor.on("guttermousedown", (e)=> {
-		if(e.domEvent.metaKey) {
+		if(e.domEvent.ctrlKey) {
 		    let row = +e.getDocumentPosition().row+1;
 		    let lines =this.editor.getValue().split("\n");
 		    let text = "";
@@ -289,6 +289,7 @@ function  ConvertForm(inputId, entry) {
 			text+=lines[i]+"\n";
 		    }
 		    this.display("-table",null,true,text);
+		    this.gutterMouseDown = true;
 		}
 	    });
 	    this.editor.commands.addCommand({
@@ -312,6 +313,10 @@ function  ConvertForm(inputId, entry) {
 	    });
 
 	    this.editor.container.addEventListener("contextmenu",(e)=> {
+		if(e.ctrlKey) {
+		    e.preventDefault();
+		    return;
+		}
 		this.handleMouseUp(e,null,true);
 	    });
 
@@ -605,6 +610,13 @@ function  ConvertForm(inputId, entry) {
 		cleanCmds+=line+"\n";
 	    }
 	    cmds = cleanCmds;
+	    //If its the -db command then force -print
+	    let hasDb = cmds.match(/[^ \t]-db[ \t]+/);
+	    if(hasDb && Utils.stringDefined(args.csvoutput)) {
+		args.csvoutput = "-print";
+	    }
+
+
 	    let isScript  = args.csvoutput=="-script";
 	    let isArgs  = args.csvoutput=="-args";
 	    let debug = cmds.match("-debug");
@@ -619,7 +631,7 @@ function  ConvertForm(inputId, entry) {
 	    let isJson = args.csvoutput=="-tojson";
 	    let isXml = args.csvoutput=="-toxml";	
 	    let csv = args.csvoutput=="-print";
-	    let stats = args.csvoutput=="-stats";
+	    let stats = args.csvoutput=="-htmlstats";
 	    let table =  args.csvoutput=="-table";					    
 	    let showHtml =false;
 	    let printHeader = args.csvoutput == "-printheader";
@@ -727,20 +739,23 @@ function  ConvertForm(inputId, entry) {
 			result = result.replace(/</g,"&lt;").replace(/>/g,"&gt;");
 			writePre(result);
 		    } else if(isDb) {
-			let db = result.replace("<tables>","Database:");
+			let db = result.replace(/<tables>[ \n]/,"Database:");
 			db = db.replace(/<property[^>]+>/g,"");
 			db = db.replace(/> *<\/column>/g,"/>");
 			db = db.replace(/\n *\n/g,"\n");
 			db = db.replace(/\/>/g,"");
 			db = db.replace(/>/g,"");
 			db = db.replace(/<table +id="(.*?)"/g,"\t<table <a class=csv_db_field field='table' onclick=noop()  title='Add to input'>$1</a>");
-			db = db.replace("<table ","table:");
+			db = db.replace("<table "," ");
+			db = db.replace(/Database:[ \t]+/,"Database: ");
 			db = db.replace("</table","");
 			db = db.replace("</tables","");
 
 			db = db.replace(/<column +name="(.*?)"/g,"\tcolumn: name=\"<a class=csv_db_field field='$1' onclick=noop() title='Add to input'>$1</a>\"");
 			db = db.replace(/ ([^ ]+)="([^"]+)"/g,"\t$1:$2");
 			db = db.replace(/ ([^ ]+)="([^"]*)"/g,"\t$1:\"$2\"");
+			db = db.replace(/name:/g," ");
+			db = db.replace(/column:[ \t]+/g,"column: ");			
 			writePre(db);
 			output.find(".csv_db_field").click(function(event) {
                             let space = "&nbsp;"
@@ -750,9 +765,12 @@ function  ConvertForm(inputId, entry) {
                             let w=$(this).width();
                             let field  = $(this).attr("field");
                             let html = "<div style=\"margin:2px;margin-left:5px;margin-right:5px;\">\n";
+			    html+="<b>Add arguments to -db tag</b><div style='margin-left:5px;'>";
                             if(field  == "table") {
 				html +=_this.makeDbMenu(field+".name")+"<br>";
 				html +=_this.makeDbMenu(field+".label")+"<br>";
+				html +=_this.makeDbMenu("install","true")+"<br>";
+				html +=_this.makeDbMenu("nukedb","true")+"<br>";								
                             } else {
 				html +=_this.makeDbMenu(field+".id")+"<br>";
 				html +=_this.makeDbMenu(field+".label")+"<br>";
@@ -762,7 +780,8 @@ function  ConvertForm(inputId, entry) {
                                     _this.makeDbMenu(field+".type","double","double")+space +
                                     _this.makeDbMenu(field+".type","int","int")+space +
                                     _this.makeDbMenu(field+".type","enumeration","enumeration")+space +
-                                    _this.makeDbMenu(field+".type","enumerationplus","enumerationplus")+space +
+                                    _this.makeDbMenu(field+".type","enumerationplus","enumeration+")+space +
+                                    _this.makeDbMenu(field+".type","date","date")+space +				    
                                     "<br>";
 				html +=
                                     _this.makeDbMenu(field+".cansearch")+space +
@@ -775,7 +794,7 @@ function  ConvertForm(inputId, entry) {
                                     _this.makeDbMenu(field+".canlist","false","false")+
                                     "<br>";
                             }
-                            html+="</div>";
+                            html+="</div></div>";
 			    _this.dbDialog=HU.makeDialog({content:html,anchor:$(this)});
 			    _this.dbDialog.find(".ramadda-clickable").click(function() {
 				_this.insertDb($(this).attr('field'),$(this).attr('value'));

@@ -1330,7 +1330,8 @@ public abstract class Processor extends CsvOperator {
             }
 
 
-	    String tableAttrs = XmlUtil.attrs("id", tableId, "name", label, "labelColumns", labels);
+	    String tableAttrs = XmlUtil.attrs("id", tableId, "name", label);
+	    if(labels.length()>0) tableAttrs+=XmlUtil.attrs("labelColumns", labels);
 
 	    for(String prop: new String[]{"defaultView", "defaultOrder","icon","showEntryCreate","showFeedView","showDateView","showChartView"}) {
 		String v   = getDbProp( "table", prop, (String)null);
