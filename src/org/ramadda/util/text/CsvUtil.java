@@ -591,7 +591,7 @@ public class CsvUtil {
                 continue;
             }
 
-            if (arg.startsWith("-header ")) {
+            if (arg.equals("-header")) {
                 myTextReader.setFirstRow(
 					 new Row(Utils.split(args.get(++i), ",")));
                 continue;
