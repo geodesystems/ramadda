@@ -175,6 +175,8 @@ function  ConvertForm(inputId, entry) {
 		popup.css("display","none");
 	    });
 
+
+
 	    let helpUrl = this.getUrl("-helpjson");
 	    let jqxhr = $.getJSON( helpUrl, (data) =>{
 		if(data.error!=null) {
@@ -325,6 +327,7 @@ function  ConvertForm(inputId, entry) {
 		    _this.insertText("entry:" + entryId);
 		}
 	    },this.inputId);
+	    $(".ace_gutter").attr("title","control-click to evaluate to here");
 	},
 
 
