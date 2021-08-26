@@ -53,19 +53,21 @@ public class Result {
     public static final int RESPONSE_BLOCKED = 777;
 
     /** HTML mime type */
-    public static String TYPE_HTML = "text/html";
+    public static final  String TYPE_HTML = "text/html";
 
     /** the redirect URL */
     private String redirectUrl;
 
+    public static final String TYPE_JS = "application/x-javascript";
+
     /** XML mime type */
-    public static String TYPE_XML = "text/xml";
+    public static final String TYPE_XML = "text/xml";
 
     /** CSV mime type */
-    public static String TYPE_CSV = "text/csv";
+    public static final String TYPE_CSV = "text/csv";
 
     /** CSV mime type */
-    public static String TYPE_JSON = "text/json";
+    public static final String TYPE_JSON = "text/json";
 
     /** content bytes */
     private byte[] byteContent;
