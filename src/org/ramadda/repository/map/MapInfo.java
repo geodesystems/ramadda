@@ -568,8 +568,7 @@ public class MapInfo {
                 Utils.append(js, "theMap.initMap(", forSelection, ");\n");
             }
             js.append(getJS());
-
-            return js.toString();
+	    return js.toString();
         } catch (Exception exc) {
             throw new IllegalArgumentException(exc);
         }

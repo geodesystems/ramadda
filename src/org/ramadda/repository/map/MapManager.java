@@ -70,9 +70,6 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
     /** _more_ */
     public static final String ADDED_IMPORTS = "initmap";
 
-
-
-
     /** _more_ */
     public static final String PROP_SCREENBIGRECTS = "screenBigRects";
 
@@ -98,6 +95,8 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
     /** GoogleEarth keys */
     private List<List<String>> geKeys;
 
+    private StringBuilder extraJS = new StringBuilder();
+
     /**
      * Create a new MapManager for the repository
      *
@@ -105,6 +104,13 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
      */
     public MapManager(Repository repository) {
         super(repository);
+    }
+
+
+
+    public void addExtraMapJS(String s) {
+    	extraJS.append(s);
+	extraJS.append("\n");
     }
 
 
@@ -282,6 +288,14 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
             throws Exception {
         return createMap(request, entry, width, height, forSelection, false,
                          props);
+    }
+
+    public Result processExtraJS(Request request) throws Exception {
+	String extra = extraJS.toString();
+	if(extra.length()>0)  {
+	    extra =  "function initExtraMap(map) {\n" +	extra +"\n}\n";
+	}
+	return new Result(extra, Result.TYPE_JS);
     }
 
 
@@ -528,6 +542,9 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
                 sb, getPageHandler().getCdnPath("/ramaddamap3.js"));
 	    sb.append("\n");
         }
+	HtmlUtils.importJS(
+			   sb, getRepository().getUrlBase()+"/map/extra.js");
+
         if (minified) {
             HtmlUtils.cssLink(
                 sb, getPageHandler().getCdnPath("/min/ramaddamap.min.css"));
