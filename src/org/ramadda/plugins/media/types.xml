@@ -27,10 +27,12 @@
 -section
 +section
 +center
-  <iframe frameborder="0" scrolling="no"
-     width="640" height="800"
-     src="{{resource url=true}}">
-  </iframe>
+<iframe src="{{resource url=true}}" 
+    type="application/pdf"
+    frameBorder="0"
+    scrolling="auto"
+    width="100%" height="2100px"
+></iframe>
 -center
 -section
 ]]>
