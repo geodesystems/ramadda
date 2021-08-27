@@ -509,7 +509,12 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                                       boolean internal)
             throws Exception {
 
-	if(!internal || entry.getIsRemoteEntry()) return true;
+	//don't check internal as I forgot what its intent was and it is keeping us from processing attachments
+	//	if(!internal || entry.getIsRemoteEntry()) {
+	if(entry.getIsRemoteEntry()) {
+	    //	    System.err.println("\tinternal: " + internal  +" "  + entry.getIsRemoteEntry());
+	    return true;
+	}
         NodeList elements = XmlUtil.getElements(node);
 
         for (MetadataElement element : getChildren()) {
