@@ -14,6 +14,8 @@ var map_esri_topo = "esri.topo";
 var map_esri_street = "esri.street";
 var map_esri_worldimagery = "esri.worldimagery";
 var map_esri_terrain = "esri.terrain";
+var map_shaded_relief = "shadedrelief";
+var map_historic = "historic";
 var map_esri_shaded = "esri.shaded";
 var map_esri_lightgray = "esri.lightgray";
 var map_esri_darkgray = "esri.darkgray";
@@ -24,13 +26,14 @@ var map_usgs_topo = "usgs.topo";
 var map_usgs_imagery = "usgs.imagery";
 var map_usgs_relief = "usgs.relief";
 var map_watercolor = "watercolor";
-var map_weather = "weather";
 var map_lightblue = "lightblue";
 var map_white = "white";
 var map_blue = "blue";
 var map_black = "black";
 var map_gray = "gray";
-var map_usfs_ownership = "usfs.ownership";
+var map_forestservice = "usfs";
+var map_naip = "naip";
+var map_publiclands = "publiclands";
 var map_osm = "osm";
 var map_osm_toner = "osm.toner";
 var map_osm_toner_lite = "osm.toner.lite";
@@ -56,6 +59,7 @@ OpenLayers.Renderer.symbol._x = [0, 0, 6,6,3,3,6,0,0,6,3,3];
 OpenLayers.Renderer.symbol.arrow = [0,0,5,10,10,0];
 OpenLayers.Renderer.symbol.plane = [5,0,5,0,4,1,4,3,0,5,0,6,4,5,4,8,2,10,3,10,5,9,5,9,8,10,8,10,6,8,6,5,10,6,10,5,6,3,6,1,5,0,5,0];
 OpenLayers.Renderer.symbol.arrow = [4,0,-2,10,12,10,6,0,4,0,-2,10,12,10,6,0];
+
 
 
 var MapUtils =  {
@@ -264,6 +268,7 @@ function RepositoryMap(mapId, params) {
         markers: null,
         vectors: null,
 	allLayers: [],
+	externalLayers:[],
         loadedLayers: [],
 	nonSelectLayers: [],
 	doPopup:true,
@@ -588,6 +593,15 @@ RepositoryMap.prototype = {
 
         if (!force) {
 	    let didMarkers = false;
+
+	    this.externalLayers.forEach(layer=>{
+                var dataBounds = layer.getDataExtent();
+		if(debugBounds)
+		    console.log("centerOnMarkers using external layer");
+                bounds = this.transformProjBounds(dataBounds);
+		didMarkers = true;
+	    });
+
             if (this.markers) {
                 // markers are in projection coordinates
                 var dataBounds = this.markers.getDataExtent();
@@ -689,6 +703,9 @@ RepositoryMap.prototype = {
 	this.getMap().panTo(this.transformLLPoint(to));
 //        this.getMap().setCenter(this.transformLLPoint(to));
     },
+    getZoom: function() {
+	return this.getMap().getZoom();
+    },
     setZoom: function(zoom) {
 	if(debugBounds)
 	    console.log("setZoom");
@@ -783,6 +800,13 @@ RepositoryMap.prototype = {
         }
 
         this.addBaseLayers();
+	try {
+	    initExtraMap(this);
+	} catch(err) {
+	    console.log("Error calling initExtraMap:" + err);
+	}
+
+
         if (this.kmlLayer) {
             var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + this.kmlLayer;
             this.addKMLLayer(this.kmlLayerName, url, false, null, null, null, null);
@@ -892,8 +916,6 @@ RepositoryMap.prototype = {
 		}
 	    }
 	}
-
-
 
         var layer = feature.layer;
         if (!(layer.isMapLayer === true)) {
@@ -1124,6 +1146,9 @@ RepositoryMap.prototype = {
 	this.loadedLayers.every(layer=>{
 	    this.getMap().setLayerIndex(layer, base++);		
 	    return true;
+	});
+	this.externalLayers.forEach(layer=>{
+            this.getMap().setLayerIndex(layer, base++);
 	});
 	if (this.boxes) {
             this.getMap().setLayerIndex(this.boxes, base++);
@@ -1500,7 +1525,7 @@ RepositoryMap.prototype = {
             this.setFeatureVisibility(layer);
         }
     },
-    checkFeatureVisible: function(feature, redraw) {
+    checkFeatureVisible: function(feature, redraw,debug) {
         let layer = feature.layer;
         let visible = this.getFeatureVisible(feature);
         if (feature.originalStyle) {
@@ -1509,7 +1534,7 @@ RepositoryMap.prototype = {
         let style = feature.style;
         if (!style) {
             style = {};
-            let defaultStyle = layer.styleMap.styles["default"].defaultStyle;
+            let defaultStyle = layer?layer.styleMap.styles["default"].defaultStyle:{};
             $.extend(style, defaultStyle);
             feature.style = style;
         } else {}
@@ -1521,7 +1546,8 @@ RepositoryMap.prototype = {
         if (redraw) {
             if (!feature.isSelected)
                 feature.renderIntent = null;
-            layer.drawFeature(feature, feature.style || "default");
+	    if(layer)
+		layer.drawFeature(feature, feature.style || "default");
         }
         return visible;
     },
@@ -1706,6 +1732,7 @@ RepositoryMap.prototype = {
 	this.removeLayer(layer);
     },
     removeLayer:  function(layer) {
+	this.externalLayers = OpenLayers.Util.removeItem(this.externalLayers, layer);
 	this.allLayers = OpenLayers.Util.removeItem(this.allLayers, layer);
 	if(this.nonSelectLayers)
 	    this.nonSelectLayers = OpenLayers.Util.removeItem(this.nonSelectLayers, layer);
@@ -2101,11 +2128,13 @@ RepositoryMap.prototype = {
         return layer;
     },
 
-    createXYZLayer:  function(name, url, attribution) {
+    createXYZLayer:  function(name, url, attribution,notBaseLayer) {
         let options = {
             sphericalMercator: MapUtils.defaults.doSphericalMercator,
             numZoomLevels: MapUtils.defaults.zoomLevels,
-            wrapDateLine: MapUtils.defaults.wrapDateline
+            wrapDateLine: MapUtils.defaults.wrapDateline,
+	    isBaseLayer: !notBaseLayer,
+	    visibility: false
         };
         if (attribution)
             options.attribution = attribution;
@@ -2125,14 +2154,16 @@ RepositoryMap.prototype = {
 		map_esri_terrain,
 		map_esri_aeronautical,
                 map_opentopo,
-                map_usfs_ownership,
+                map_forestservice,
                 map_usgs_topo,
                 map_usgs_imagery,
-                map_usgs_relief,
+		map_naip,
+		map_publiclands,
+		map_shaded_relief,
+		map_historic,
                 map_osm_toner,
                 map_osm_toner_lite,
                 map_watercolor,
-                map_weather,
                 map_white,
 		map_lightblue,
                 map_gray,
@@ -2180,62 +2211,18 @@ RepositoryMap.prototype = {
                 newLayer = new OpenLayers.Layer.OSM("Watercolor", urls);
             } else if (mapLayer == map_opentopo) {
                 newLayer = this.createXYZLayer("OpenTopo", "//a.tile.opentopomap.org/${z}/${x}/${y}.png}");
-            } else if (mapLayer == map_weather) {
-		let maxZoom =  8;
-                let wlayers = [ 
-		    {name:'GOES Infrared',maxZoom:maxZoom,		    id:'goes-ir-4km-900913', alias:'goes-ir'},
-		    {name:'GOES Water Vapor', maxZoom:maxZoom,id:'goes-wv-4km-900913', alias:'goes-wv'},
-		    {name:'GOES Visible', maxZoom:maxZoom,id:'goes-vis-1km-900913', alias:'goes-visible'},
-		    {name:'NWS Radar', maxZoom:maxZoom,id:'nexrad-n0q-900913',alias:'nexrad'},
-		    {name:'24 hr precip', maxZoom:maxZoom,id:'q2-p24h-900913',alias:'precipition'}];
-
-                wlayers = [ 
-		    {name:'NWS Radar', maxZoom:maxZoom,id:'nexrad-n0q-900913',alias:'nexrad'}]
-
-
-		let _this = this;
-		let get_my_url = function(bounds) {
-		    let res = _this.getMap().getResolution();
-		    let z = _this.getMap().getZoom();
-		    let x = Math.round((bounds.left - this.maxExtent.left) / (res * this.tileSize.w));
-		    let y = Math.round((this.maxExtent.top - bounds.top) / (res * this.tileSize.h));
-		    let path = z + "/" + x + "/" + y + "." + this.type + "?" + parseInt(Math.random() * 9999);
-		    let url = this.url;
-		    if (url instanceof Array) {
-			url = this.selectUrl(path, url);
-		    }
-		    return url + this.service + "/" + this.layername + "/" + path;
-		};
-
-
-		wlayers.forEach(l=>{
-                    let layer = new OpenLayers.Layer.TMS(
-                        l.name,
-                        'https://mesonet.agron.iastate.edu/cache/tile.py/', {
-                            layername: l.id,
-                            service: '1.0.0',
-                            type: 'png',
-                            visibility: false,
-                            getURL: get_my_url,
-                            isBaseLayer: false,
-			    maxZoomLevel: l.maxZoom,
-			    minZoomLevel: l.minZoom,			    
-                        }, {}
-                    );
-		    let redrawFunc = () =>{
-			if(layer.getVisibility()) {
-			    layer.redraw(true);
-			}
-			setTimeout(redrawFunc,1000*60*5);
-		    };
-		    setTimeout(redrawFunc,1000*60*5);
-
-		    this.baseLayers[l.id] = layer;
-		    if(l.alias) this.baseLayers[l.alias] = layer;		    
-                    layer.ramaddaId = l.id;
-                    this.addLayer(layer,true);
-                });
-
+	    } else if (mapLayer == map_forestservice) {
+		newLayer = this.createXYZLayer("Forest Service", "https://caltopo.com/tile/f16a/${z}/${x}/${y}.png","Map from Caltopo");
+	    } else if (mapLayer == map_naip) {
+		newLayer = this.createXYZLayer("NAIP Imagery", "https://caltopo.com/tile/n/${z}/${x}/${y}.png","Map from Caltopo");
+	    } else if(mapLayer == map_publiclands) {
+		this.addLayer(this.createXYZLayer("Public Lands","https://caltopo.com/tile/sma/${z}/${x}/${y}.png","Map from Caltopo",true));
+		continue;
+	    } else if(mapLayer == map_shaded_relief) {
+		newLayer = this.createXYZLayer("Shaded Relief", "https://caltopo.com/tile/hs_m315z45s3/${z}/${x}/${y}.png","Map from Caltopo");
+	    } else if(mapLayer == map_historic) {
+		
+		newLayer = this.createXYZLayer("Historic", "https://caltopo.com/tile/1900/${z}/${x}/${y}.png","Map from Caltopo",true);		
             } else if (mapLayer == map_white || mapLayer== map_lightblue || mapLayer == map_gray || mapLayer == map_blue || mapLayer == map_black || mapLayer == map_gray) {
 		this.makeSimpleWms(mapLayer);
 		continue;
@@ -2251,9 +2238,6 @@ RepositoryMap.prototype = {
                 newLayer = this.createXYZLayer("USGS Shaded Relief",
 					       "https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSShadedReliefOnly/MapServer/tile/${z}/${y}/${x}",
 					       'USGS - The National Map');
-            } else if (mapLayer == map_usfs_ownership) {
-                newLayer = this.createXYZLayer("USFS Ownership",
-					       "https://apps.fs.usda.gov/arcx/rest/services/wo_nfs_gstc/GSTC_TravelAccessBasemap_01/MapServer/tile/${z}/${y}/${x}");
             } else if (mapLayer == map_esri_worldimagery) {
                 //Not working
                 newLayer = this.createXYZLayer("ESRI World Imagery",
@@ -2332,8 +2316,7 @@ RepositoryMap.prototype = {
                 if (mapLayer == this.defaultMapLayer) {
                     this.defaultOLMapLayer = newLayer;
                 }
-                this.addLayer(newLayer);
-		this.numberOfBaseLayers++;
+		this.addBaseLayer(newLayer);
             }
 
         }
@@ -2348,6 +2331,11 @@ RepositoryMap.prototype = {
         this.getMap().addControl(this.graticule);
     },
 
+    addBaseLayer: function(layer) {
+        this.addLayer(layer);
+	this.numberOfBaseLayers++;
+
+    },
     getBaseLayer: function(id) {
 	if(this.baseLayers) return this.baseLayers[id];
     },
@@ -3624,6 +3612,15 @@ RepositoryMap.prototype = {
 
 
     createMarker:  function(id, location, iconUrl, markerName, text, parentId, size, xoffset, yoffset, canSelect,attrs) {
+	if(iconUrl=="dot") {
+	    return this.createPoint(id, location,{}, text);
+	}
+
+	if(Utils.isDefined(location.x)) {
+	    location = MapUtils.createLonLat(location.x,location.y);
+	}
+
+
 	if(!attrs) attrs  = {};
         if (Array.isArray(location)) {
             location = MapUtils.createLonLat(location[0], location[1]);
@@ -3711,19 +3708,12 @@ RepositoryMap.prototype = {
         return feature;
     },
 
-    addMarker:  function(id, location, iconUrl, markerName, text, parentId, size, yoffset, canSelect, attrs,polygon) {
-	if(iconUrl=="dot") {
-	    this.addPoint(id,location,{},text);
-	    return;
-	}
-
-	if(Utils.isDefined(location.x)) {
-	    location = MapUtils.createLonLat(location.x,location.y);
-	}
-
+    addMarker:  function(id, location, iconUrl, markerName, text, parentId, size, yoffset, canSelect, attrs,polygon, justCreate) {
         let marker = this.createMarker(id, location, iconUrl, markerName, text, parentId, size, 0, yoffset, canSelect,attrs);
 	marker.lonlat = location;
-        this.addMarkers([marker]);
+	if(!justCreate) {
+            this.addMarkers([marker]);
+	}
 	if(polygon) {
 	    this.addPolygonString(polygon,{
 		fill: true,
@@ -3735,13 +3725,12 @@ RepositoryMap.prototype = {
         return marker;
     },
 
-    addPolygonString:function(s,polygonProps,latlon,text) {
+    createPolygonString:function(s,polygonProps,latlon,text) {
 	let delimiter;
 	[";",","].forEach(d=>{
 	    if(s.indexOf(d)>=0) delimiter = d;
 	});
 	let toks  = s.split(delimiter);
-	let polys = [];
 	let p = [];
 	for(let pIdx=2;pIdx<toks.length;pIdx+=2) {
 	    let lat1 = parseFloat(toks[pIdx-2]);
@@ -3759,7 +3748,16 @@ RepositoryMap.prototype = {
 	    p.push(new OpenLayers.Geometry.Point(lon1,lat1));
 	    p.push(new OpenLayers.Geometry.Point(lon2,lat2));
 	}
-	polys.push(this.addPolygon("polygon", "",p,polygonProps,text));
+	let polys = [];
+	polys.push(this.createPolygon("polygon", "",p,polygonProps,text));
+	return polys;
+    },
+
+    addPolygonString:function(s,polygonProps,latlon,text) {
+	let polys = this.createPolygonString(s,polygonProps,latlon,text);
+	polys.forEach(poly=>{
+	    this.addPolygon(poly);
+	});
 	return polys;
     },
 
@@ -3915,18 +3913,14 @@ RepositoryMap.prototype = {
     },
     
     
-    addPoint:  function(id, point, attrs, text, notReally, textGetter) {
+    createPoint:  function(id, point, attrs, text,  textGetter) {
         //Check if we have a LonLat instead of a Point
-
-
         let location = point;
         if (typeof point.x === 'undefined') {
             point = new OpenLayers.Geometry.Point(point.lon, point.lat);
         } else {
             location = MapUtils.createLonLat(point.x, point.y);
         }
-
-
 
 	if(!this.basePointStyle) {
 	    this.basePointStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
@@ -3959,18 +3953,21 @@ RepositoryMap.prototype = {
         let center = new OpenLayers.Geometry.Point(point.x, point.y);
         center.transform(this.displayProjection, this.sourceProjection);
 
-
         let feature = new OpenLayers.Feature.Vector(center, null, cstyle);
         feature.center = center;
         feature.ramaddaId = id;
 	if(text)
             feature.text = this.getPopupText(text, feature);
+        feature.textGetter = textGetter;
         feature.location = location;
         this.features[id] = feature;
-        if (!notReally) {
-	    this.getMarkersLayer().addFeatures([feature],{silent:true});
-	}
         return feature;
+    },
+
+    addPoint:  function(id, point, attrs, text, textGetter) {
+	let feature = this.createPoint(id,point,attrs,text,textGetter);
+	this.getMarkersLayer().addFeatures([feature],{silent:true});
+        return point;
     },
 
     addPoints:function(points) {
@@ -4004,11 +4001,19 @@ RepositoryMap.prototype = {
     },
 
 
-    addLine:  function(id, name, lat1, lon1, lat2, lon2, attrs, info) {
+    createLine:  function(id, name, lat1, lon1, lat2, lon2, attrs, info) {
         let points = [new OpenLayers.Geometry.Point(lon1, lat1),
 		      new OpenLayers.Geometry.Point(lon2, lat2)
 		     ];
-        return this.addPolygon(id, name, points, attrs, info);
+        return this.createPolygon(id, name, points, attrs, info);
+    },
+
+
+    addLine:  function(id, name, lat1, lon1, lat2, lon2, attrs, info,justCreate) {
+        let points = [new OpenLayers.Geometry.Point(lon1, lat1),
+		      new OpenLayers.Geometry.Point(lon2, lat2)
+		     ];
+        return this.addPolygon(id, name, points, attrs, info,justCreate);
     },
 
     addLines:  function(id, name, attrs, values, info) {
@@ -4035,7 +4040,7 @@ RepositoryMap.prototype = {
         }
     },
 
-    addPolygon:  function(id, name, points, attrs, marker) {
+    createPolygon:  function(id, name, points, attrs, marker) {
         let _this = this;
         let location;
         if (points.length > 1) {
@@ -4055,14 +4060,7 @@ RepositoryMap.prototype = {
                 style[key] = attrs[key];
             }
         }
-        if (!this.lines) {
-            this.lines = new OpenLayers.Layer.Vector("Lines", {
-                style: base_style
-            });
-            this.addVectorLayer(this.lines);
-        }
 	points.push(points[0]);
-
         let linearRing = new OpenLayers.Geometry.LinearRing(points);
 	let geom = new OpenLayers.Geometry.Polygon(linearRing);
         let line = new OpenLayers.Feature.Vector(geom,null,style);
@@ -4077,9 +4075,22 @@ RepositoryMap.prototype = {
 	} else {
             line.style.display = 'none';
         }
-
-        this.lines.addFeatures([line]);
         return line;
+    },
+    addPolygon:  function(id, name, points, attrs, marker,justCreate) {
+	let polygon  =this.createPolygon(id,name,points,attrs,marker);
+        if (!this.lines) {
+            let base_style = OpenLayers.Util.extend({},
+						    OpenLayers.Feature.Vector.style['default']);
+            this.lines = new OpenLayers.Layer.Vector("Lines", {
+                style: base_style
+            });
+            this.addVectorLayer(this.lines);
+        }
+	if(!justCreate) {
+            this.lines.addFeatures([polygon]);
+	}
+        return polygon;
     },
 
     getLinesLayer: function() {
@@ -4251,6 +4262,7 @@ RepositoryMap.prototype = {
 
 	if(this.doPopupSlider) {
 	    //Set location then do the popup later to allow map to repaint
+	    this.doingPopup = true;
 	    if(marker.location)
 		this.setCenter(marker.location);
 	    setTimeout(()=> {
@@ -4267,6 +4279,11 @@ RepositoryMap.prototype = {
 		$("#" +this.mapDivId+"_sliderclose").click(()=>{
 		    slider.slideUp();
 		});
+		//Wait a bit so the above setCenter can happen
+		setTimeout(()=>{
+		    this.doingPopup = false;
+		},1000);
+
 	    },10);
 	    return
 	}
@@ -4354,7 +4371,6 @@ RepositoryMap.prototype = {
 	    this.markers= null;
 	}
     },    
-
     removePoints:  function(points) {
         if (this.circles) {
 	    this.circles.removeFeatures(points);
@@ -4368,5 +4384,16 @@ RepositoryMap.prototype = {
             this.markers.removeFeatures(markers);
         }
     },    
+    createFeatureLayer: function(name, canSelect) {
+        let base_style = OpenLayers.Util.extend({},
+						OpenLayers.Feature.Vector.style['default']);
+        let layer =  new OpenLayers.Layer.Vector(name||"Markers", {
+            style: base_style
+        });
+	this.externalLayers.push(layer);
+        this.addVectorLayer(layer,canSelect);
+	return layer;
+    },
+
 }
 

@@ -1884,8 +1884,7 @@ SizeBy.prototype = {
 	    return dflt;
 	}
         let value = values[this.index];
-	let size = this.getSizeFromValue(value,func);
-//	console.log("G: " + value +  " s:" + size);
+	let size = this.getSizeFromValue(value,func,false);
 	return size;
     },
 
@@ -1920,7 +1919,7 @@ SizeBy.prototype = {
             } else {
                 size = 6 + parseInt(15 * percent);
             }
-	    if(debug) console.log("value:" + value +" v:" + v +" size:" + size);
+	    if(debug) console.log("min:" + this.minValue +" max:" + this.maxValue+ " value:" + value +" v:" + v +" size:" + size);
 	    if(isNaN(size)) size =  this.radiusMin;
 	    if(func) func(percent, size);
 	    return size;
