@@ -738,16 +738,22 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    var footerTemplate = this.getProperty("footerTemplate","");
 
 	    if(selected.length==1) {
-		var row = this.getDataValues(selected[0]);
+		let row = this.getDataValues(selected[0]);
 		headerTemplate = this.applyRecordTemplate(selected[0],row,fields,headerTemplate);
 		footerTemplate = this.applyRecordTemplate(selected[0],row,fields,footerTemplate);
 	    }
 
 	    if(this.filters) {
+		let replace = (pattern,value)=>{
+		    headerTemplate = headerTemplate.replace(pattern,value);
+		    footerTemplate = footerTemplate.replace(pattern,value);		    
+		};
 		for(var filterIdx=0;filterIdx<this.filters.length;filterIdx++) {
 		    let filter = this.filters[filterIdx];
-		    if(!filter.field)continue;
-		    let f = filter.field;
+		    if(!filter.isEnabled()) {
+			continue;
+		    }
+		    let f = filter.getField();
 		    if(f.isNumeric()) {
 			var min = $("#" + this.domId("filterby_" + f.getId()+"_min")).val().trim();
 			var max = $("#" + this.domId("filterby_" + f.getId()+"_max")).val().trim();
@@ -769,21 +775,16 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			value = value.trim();
 			if(value==FILTER_ALL) {
 			    var regexp = new RegExp("\\${filter_" + f.getId()+"[^}]*\\}",'g');
-			    headerTemplate = headerTemplate.replace(regexp,"");
-			    footerTemplate = footerTemplate.replace(regexp,"");
+			    replace(regexp,"");
 			} else {
 			    var regexp = new RegExp("\\${filter_" + f.getId()+" +prefix='([^']*)' +suffix='([^']*)' *\\}",'g');
-			    headerTemplate = headerTemplate.replace(regexp,"$1" + value +"$2");
-			    footerTemplate = footerTemplate.replace(regexp,"$1" + value +"$2");
+			    replace(regexp,"$1" + value +"$2");
 			    var regexp = new RegExp("\\${filter_" + f.getId()+" +prefix='([^']*)' *\\}",'g');
-			    headerTemplate = headerTemplate.replace(regexp,"$1" + value);
-			    footerTemplate = footerTemplate.replace(regexp,"$1" + value);
+			    replace(regexp,"$1" + value);
 			    var regexp = new RegExp("\\${filter_" + f.getId()+" +suffix='([^']*)' *\\}",'g');
-			    headerTemplate = headerTemplate.replace(regexp,value +"$1");
-			    footerTemplate = footerTemplate.replace(regexp,value +"$1");
+			    replace(regexp,value +"$1");
 			    var regexp = new RegExp("\\${filter_" + f.getId()+" *\\}",'g');
-			    headerTemplate = headerTemplate.replace(regexp,value);
-			    footerTemplate = footerTemplate.replace(regexp,value);
+			    replace(regexp,value);
 			}
 		    }
 		}
@@ -925,6 +926,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 
 	    if(this.getPropertyHighlightOnScroll(false)) {
 		let items = this.find(".display-template-record");
+		this.getContents().css('overflow-y','scroll');
 		this.getContents().scroll(()=>{
 		    let topElement = null;
 		    items.each(function() {
