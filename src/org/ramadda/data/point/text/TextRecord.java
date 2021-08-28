@@ -567,6 +567,10 @@ public class TextRecord extends DataRecord {
         String sfmt = field.getSDateFormat();
         if (sfmt != null) {
             if (sfmt.equals("SSS")) {
+		long l = new Long(tok);
+		Date d =  new Date(l);
+		return d;
+	    } else  if (sfmt.equals("sss")) {
 		long l = new Long(tok)*1000;
 		Date d =  new Date(l);
 		return d;
