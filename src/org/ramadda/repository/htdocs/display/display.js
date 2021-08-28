@@ -1679,7 +1679,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return this.colorList;
 	},
         getColorTableName: function(names) {
-	    if(names && !Array.isArray(names)) names  = [name];
+	    if(names && !Array.isArray(names)) {
+		names  = [names];
+	    }
             let ct = null;
             if (names) {
 		names.every(name=>{

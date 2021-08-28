@@ -3231,7 +3231,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let graphicName = this.getPropertyShape();
 	    let didMarker = false;
 	    let times=[new Date()];
-	    records.forEach(record=>{
+	    records.forEach((record,idx)=>{
 		i++;
 		let recordLayout = displayInfo[record.getId()];
 		if(!recordLayout) return;

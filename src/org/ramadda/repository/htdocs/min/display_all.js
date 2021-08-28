@@ -4693,7 +4693,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return this.colorList;
 	},
         getColorTableName: function(names) {
-	    if(names && !Array.isArray(names)) names  = [name];
+	    if(names && !Array.isArray(names)) {
+		names  = [names];
+	    }
             let ct = null;
             if (names) {
 		names.every(name=>{
@@ -34868,7 +34870,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let graphicName = this.getPropertyShape();
 	    let didMarker = false;
 	    let times=[new Date()];
-	    records.forEach(record=>{
+	    records.forEach((record,idx)=>{
 		i++;
 		let recordLayout = displayInfo[record.getId()];
 		if(!recordLayout) return;
