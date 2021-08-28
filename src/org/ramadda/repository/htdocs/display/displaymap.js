@@ -2887,7 +2887,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let dfltEndPointSize = endPointSize;
             let segmentWidth = parseInt(this.getProperty("segmentWidth", "1"));
             let dfltSegmentWidth = segmentWidth;
-            let showPoints = this.getProperty("showPoints", true);
+	    let haveLayer = this.getProperty("geojsonLayer") || this.getProperty("kmlLayer");
+            let showPoints = this.getProperty("showPoints", !haveLayer);
             let lineColor = this.getProperty("lineColor", "green");
 	    let lineCap = this.getProperty('lineCap', 'round');
             let iconField = this.getFieldById(fields, this.getProperty("iconField"));
