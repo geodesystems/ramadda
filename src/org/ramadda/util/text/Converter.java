@@ -549,7 +549,10 @@ public abstract class Converter extends Processor {
 		String b  = "data:image/" + type +";base64, " + Utils.encodeBase64Bytes(bytes);
 		row.add(b);
 	    } catch(Exception exc) {
-		fatal("Reading url:" + url, exc);
+		System.err.println("Error reading url:" + url);
+		exc.printStackTrace();
+		row.add("");
+		//		fatal("Reading url:" + url, exc);
 	    }
             return row;
         }
