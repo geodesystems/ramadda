@@ -3749,7 +3749,10 @@ RepositoryMap.prototype = {
 	    p.push(new OpenLayers.Geometry.Point(lon2,lat2));
 	}
 	let polys = [];
-	polys.push(this.createPolygon("polygon", "",p,polygonProps,text));
+//	console.log("p:" + p);
+
+	if(p.length>0)
+	    polys.push(this.createPolygon("polygon", "",p,polygonProps,text));
 	return polys;
     },
 
@@ -4027,7 +4030,6 @@ RepositoryMap.prototype = {
 
         let points = [];
         for (let i = 0; i < values.length; i += 2) {
-//	    console.log("pt:" + values[i+1] + " " + values[i]);
             points.push(new OpenLayers.Geometry.Point(values[i + 1], values[i]));
         }
         return this.addPolygon(id, name, points, attrs, info);
@@ -4039,6 +4041,7 @@ RepositoryMap.prototype = {
             this.lines.removeFeatures([line]);
         }
     },
+
 
     createPolygon:  function(id, name, points, attrs, marker) {
         let _this = this;
@@ -4060,9 +4063,10 @@ RepositoryMap.prototype = {
                 style[key] = attrs[key];
             }
         }
-	points.push(points[0]);
-        let linearRing = new OpenLayers.Geometry.LinearRing(points);
-	let geom = new OpenLayers.Geometry.Polygon(linearRing);
+//	points.push(points[0]);
+//        let linearRing = new OpenLayers.Geometry.LinearRing(points);
+//	let geom = new OpenLayers.Geometry.Polygon(linearRing);
+	let geom = new OpenLayers.Geometry.LineString(points);
         let line = new OpenLayers.Feature.Vector(geom,null,style);
 	if(!marker) marker = name;
         line.text = marker;

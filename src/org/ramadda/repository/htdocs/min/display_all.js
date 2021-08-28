@@ -34980,14 +34980,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    let s = values[polygonField.getIndex()];
 		    let polygonProps ={};
 		    $.extend(polygonProps,props);
+		    polygonProps.fillColor = "transparent";
 		    if(polygonProps.strokeWidth==0)
 			polygonProps.strokeWidth=1;
 		    if(polygonColorTable) {
 			if(cidx>=polygonColorTable.length) cidx=0;
 			polygonProps.strokeColor=polygonColorTable[cidx++];
 		    }
-		    
-		    let polys = this.map.createPolygonString(s, polygonProps,latlon).forEach(poly=>{
+		    let polys = this.map.createPolygonString(s, polygonProps,latlon);
+		    polys.forEach(poly=>{
 			poly.textGetter = textGetter;
 			poly.record = record;
 			let recordDate = record.getDate();
