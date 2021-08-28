@@ -8348,6 +8348,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return null;
 	},
         checkSearchBar: function() {
+	    let hideFilterWidget = this.getProperty("hideFilterWidget",false, true);
 	    let vertical =  this.getProperty("headerOrientation","horizontal") == "vertical";
 	    let filterClass = "display-filter";
 	    let debug = displayDebug.checkSearchBar;
@@ -8503,8 +8504,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    let  highlight = this.getFilterHighlight();
 	    if(this.getProperty("showFilterHighlight")) {
+
 		let enums =[["filter","Filter"],["highlight","Highlight"]];
-		header2 += HU.select("",["fieldId","_highlight", ID,this.getDomId(ID_FILTER_HIGHLIGHT)],enums,!highlight?"filter":"highlight") + SPACE2;
+		let select =  HU.select("",["fieldId","_highlight", ID,this.getDomId(ID_FILTER_HIGHLIGHT)],enums,!highlight?"filter":"highlight") + SPACE2;
+		if(hideFilterWidget) {
+		    select = HU.div([STYLE,HU.css("display","none")], select);
+		}
+		header2+=select;
 	    }
 
 
@@ -8560,15 +8566,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		prefix += HU.div([ID,this.getDomId("filterDateStepForward"),STYLE,HU.css("display","inline-block"),TITLE,"Step Forward"],
  				 HU.getIconImage("fa-step-forward",[STYLE,HU.css("cursor","pointer")])) +SPACE1;
 
-		header2 += HU.span([CLASS,filterClass,STYLE,style],
-				   prefix +
-				   HU.select("",["fieldId","filterDate", ATTR_ID,selectId],enums,selected))+SPACE;
+		let widget =  HU.span([CLASS,filterClass,STYLE,style],
+				      prefix +
+				      HU.select("",["fieldId","filterDate", ATTR_ID,selectId],enums,selected))+SPACE;
+		if(hideFilterWidget) {
+		    widget = HU.div([STYLE,HU.css("display","none")], widget);
+		}
+		header2+=widget;
+
 	    }
 	    
 
 
             let filterBy = this.getProperty("filterFields","").split(",").map(tok=>{return tok.trim();}); 
-	    let hideFilterWidget = this.getProperty("hideFilterWidget",false, true);
 	    let fieldMap = {};
 	    //Have this here so it can be used in the menu change events later. May cause problems if more than  one
 	    let displayType = "";
@@ -8858,10 +8868,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    items.forEach(item=>{
 			let match = item[0];
 			item =  item[1];
-			if(item.length>50) return;
+//			if(item.length>50) return;
 			let label = item.replace(regexp,"<span style='background:" + TEXT_HIGHLIGHT_COLOR +";'>" + match +"</span>");
 			item = item.replace(/\'/g,"\'");
-			html+=HU.div([CLASS,"ramadda-hoverable ramadda-clickable display-filter-popup-item","item",item],label)+"\n";
+			html+=HU.div([TITLE,item,CLASS,"ramadda-hoverable ramadda-clickable display-filter-popup-item","item",item],label)+"\n";
 			itemCnt++;
 		    });	
 		    if(itemCnt>0) {
@@ -16681,7 +16691,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    if(debug) console.log(this.type+" makeDataTable #records" + dataList.length);
 	    if(debug) console.log("\tfields:" + selectedFields);
 	    let maxWidth = this.getProperty("maxFieldLength",this.getProperty("maxFieldWidth",-1));
-	    let addTooltip = (this.getProperty("tooltip") || this.getProperty("addTooltip",false)) && this.doAddTooltip();
+	    let tt = this.getProperty("tooltip");
+	    let addTooltip = (tt || this.getProperty("addTooltip",false)) && this.doAddTooltip();
+
+	    
     	    let addStyle= this.getAddStyle();
 	    let annotationTemplate = this.getAnnotationTemplate();
 	    let formatNumbers = this.getFormatNumbers();
@@ -16785,6 +16798,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let maxHeaderWidth = this.getProperty("maxHeaderWidth",-1);
 	    let headerStyle= this.getProperty("headerStyle");
             for (let j = 0; j < header.length; j++) {
+		console.log("H:" + j);
 		let field=null;
 		if(j>0 || !props.includeIndex) {
 		    field = selectedFields[fIdx++];
@@ -16853,22 +16867,24 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			    console.log("add style column");
 			dataTable.addColumn({ type: 'string', role: 'style' });
 		    }
-		    if(addTooltip) {
-			if(debug)
-			    console.log("add tooltip column");
-			dataTable.addColumn({
-                            type: 'string',
-                            role: 'tooltip',
-                            'p': {
-				'html': true
-                            }
-			});
-		    }
 		    if(j>0 && fixedValueS) {
 			break;
 		    }
                 }
-            }
+	    }
+
+	    if(addTooltip) {
+		if(debug)
+		    console.log("add tooltip column");
+		dataTable.addColumn({
+                    type: 'string',
+                    role: 'tooltip',
+                    'p': {
+			'html': true
+                    }
+		});
+	    }
+
 
 	    if(debug) {
 		for(let i=0;i<dataTable.getNumberOfColumns();i++)
@@ -16975,13 +16991,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    tooltip += HU.b(label) + ":" + SPACE + value;
                 }
 
-		let tt = this.getProperty("tooltip");
-		if(tt) {
-		    tt  = this.getRecordHtml(theRecord,null,tt);
-		    tt = tt.replace("${default}",tooltip);
-		    tooltip = tt;
-		}
-		tooltip = HU.div([STYLE,HU.css('padding','8px')],tooltip);
                 let newRow = [];
 		if(debug && rowIdx<debugRows)
 		    console.log("row[" + rowIdx+"]:");
@@ -17032,15 +17041,21 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			    //			    if(debug && rowIdx<debugRows)
 			    //				console.log("\t style:" + color);
 			}
-			if(addTooltip) {
-                            newRow.push(tooltip);
-			    if(debug && rowIdx<debugRows)
-			    	console.log("\t tooltip:");
-			}
                     }
 		    if(colIdx>0 && fixedValueS) {
 			break;
 		    }
+		}
+
+
+		if(addTooltip) {
+		    if(tt) {
+			tooltip  = this.getRecordHtml(theRecord,null,tt);
+		    }
+		    tooltip = HU.div([STYLE,HU.css('padding','8px')],tooltip);
+                    newRow.push(tooltip);
+		    if(debug && rowIdx<debugRows)
+			console.log("\t tooltip:");
 		}
 
 
@@ -26846,14 +26861,12 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
     const ID_BLOCKS_FOOTER = "blocks_footer";
     let myProps = [
 	{label:'Block'},
-	{p:'animStep',d:1000,ex:"1000",tt:'Delay'},
+	{p:'animStep',d:0,ex:"1000",tt:'Animation delay (ms)'},
 	{p:'doSum',d:true,ex:"false",tt:''},
 	{p:'numBlocks',d:1000,ex:"1000",tt:'How many blocks to show'},
 	{p:'header',d:true,ex:"Each block represents ${blockValue} ... There were a total of ${total} ...",tt:''},
-
-//	{p:'counts',d:100,ex:"100",tt:''},	
 	{p:'blockIcon',d:null,ex:"fa-male",tt:'Use an icon'},
-//	{p:'',d:"",ex:"",tt:''},
+	{p:'emptyBlockStyle',d:"background:transparent;border:1px solid #ccc;",tt:'Style for blocks not displayed yet'},	
     ];
 
 
@@ -26916,21 +26929,23 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 		this.footers.push("");
 	    while(this.headers.length< this.counts.length)
 		this.headers.push("");
-	    this.showBlocks(true);
-
 	    this.setContents(
 		HU.div([CLASS,"display-blocks-header",STYLE, this.getProperty("headerStyle","", true),ID,this.domId(ID_BLOCKS_HEADER)]) +
-		    HU.div([CLASS,"display-blocks-blocks",ID,this.domId(ID_BLOCKS)])+
+		    HU.div([CLASS,"display-blocks-blocks",ID,this.domId(ID_BLOCKS)],"")+
 		    HU.div([CLASS,"display-blocks-footer", STYLE, this.getProperty("footerStyle","", true), ID,this.domId(ID_BLOCKS_FOOTER)]));
 	    //Show the outline
-	    this.showBlocks(false);
+	    this.showBlocks(true);
 	    if(this.getProperty("displayOnScroll")) {
 		HU.callWhenScrolled(this.domId(ID_DISPLAY_CONTENTS),()=>{
 		    if(!this.displayedBlocks) {
 			this.displayedBlocks = true;
-			setTimeout(()=>{this.showBlocks(false)},this.getPropertyAnimStep());
+			if(this.timeout)
+			    clearTimeout(this.timeout);
+			this.tmeout = setTimeout(()=>{this.showBlocks(false)},this.getPropertyAnimStep());
 		    }
 		},500);
+	    }  else {
+		this.showBlocks(false);
 	    }
 	},
 	showBlocks: function(initial, step) {
@@ -26947,14 +26962,14 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 		ct.push(ct[ct.length-1]);
 	    }
 
-
 	    let multiplier = parseFloat(this.getProperty("multiplier","1",true));
 	    let dim=this.getProperty("blockDimensions","8",true);
 	    let labelStyle = this.getProperty("labelStyle","", true);
 	    let blockCnt = 0;
 	    let iconProp = this.getProperty("blockIcon");
 	    let clazz = iconProp?"display-block-icon":"display-block";
-	    for(var i=0;i<this.counts2.length;i++) {
+	    let emptyStyle = this.getEmptyBlockStyle();
+	    for(let i=0;i<this.counts2.length;i++) {
 		let num = multiplier*this.counts[i];
 		if(isNaN(num)) num = 0;
 		let label = this.footers[i].replace("${count}",Utils.formatNumberComma(num));
@@ -26963,14 +26978,17 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 		if(!initial) {
 		    if(i<step) {
 			if(!iconProp)
-			    style += "background:" + ct[i]+";" ;
+			    style += HU.css("background", ct[i]);
 			else
-			    iconStyle+="color:" + ct[i]+";";
+			    iconStyle+=HU.css("color" ,ct[i]);
 			let footerIcon =  iconProp?HU.getIconImage(iconProp, null, [STYLE, iconStyle]):"";
 			footer += HU.div([CLASS,clazz,STYLE,style],footerIcon) +" " + HU.span([STYLE,labelStyle], label)+"&nbsp;&nbsp;";
 		    } else {
+			style += HU.css("background","transparent","border","1px solid #ccc");
 			footer += "&nbsp;&nbsp;";
 		    }
+		} else {
+		    style+=emptyStyle;
 		}
 		let icon = iconProp?HU.getIconImage(iconProp, null, [STYLE, iconStyle]):"";
 		let cnt = this.counts2[i];
@@ -26979,7 +26997,6 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 		}
 		blockCnt++;
 	    }
-
 	    contents += HU.closeDiv();
 	    let header = this.getProperty("header","");
 	    header = header.replace("${total}",Utils.formatNumberComma(this.total)).replace("${blockValue}", Utils.formatNumberComma(Math.round(this.blockValue)));
@@ -26988,10 +27005,12 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 	    this.jq(ID_BLOCKS).html(contents);
 	    this.jq(ID_BLOCKS_FOOTER).html(footer);
 	    if(step < this.counts.length) {
-		if(this.getPropertyAnimStep()==0) {
+		if(!this.getPropertyAnimStep()) {
 		    this.showBlocks(false, step+1);
 		} else {
-		    setTimeout(()=>{this.showBlocks(false, step+1)},this.getPropertyAnimStep());
+		    if(this.timeout)
+			clearTimeout(this.timeout);
+		    this.timeout = setTimeout(()=>{this.showBlocks(false, step+1)},this.getPropertyAnimStep());
 		}
 	    }
 	}
@@ -28065,7 +28084,6 @@ function RamaddaTextDisplay(displayManager, id, properties) {
 		}
 	    }
 	    if(this.selectedRecord) {
-		console.log(this.type+".updateUI has record:" + this.selectedRecord);
 		this.setContents(this.getRecordHtml(this.selectedRecord));
 	    } else  if(this.getPropertyShowDefault()) {
 		this.recordMap = {};
@@ -28075,7 +28093,6 @@ function RamaddaTextDisplay(displayManager, id, properties) {
 			this.recordMap[record.getId()] = record;
 		    });
 		    this.selectedRecord =records[0];
-		    console.log(this.type+".updateUI using first:" + this.selectedRecord.getDate());			
 		    this.setContents(this.getRecordHtml(records[0]));
 		}
 	    } else  if(this.getPropertyMessage()) {
@@ -28084,14 +28101,11 @@ function RamaddaTextDisplay(displayManager, id, properties) {
         },
         pointDataLoaded: function(pointData, url, reload) {
 	    this.selectedRecord= null;
-	    console.log(this.type+".pointDataLoaded");
 	    SUPER.pointDataLoaded.call(this, pointData,url,reload);
 	},
         handleEventRecordSelection: function(source, args) {
-	    console.log(this.type+".handleEventRecordSelection:" + args.record);
 	    if(this.recordMap) {
 		if(!this.recordMap[args.record.getId()]) {
-		    console.log(this.type+".handleEventRecordSelection: not mine");
 		    return;
 		}
 	    }

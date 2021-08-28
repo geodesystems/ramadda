@@ -5334,6 +5334,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return null;
 	},
         checkSearchBar: function() {
+	    let hideFilterWidget = this.getProperty("hideFilterWidget",false, true);
 	    let vertical =  this.getProperty("headerOrientation","horizontal") == "vertical";
 	    let filterClass = "display-filter";
 	    let debug = displayDebug.checkSearchBar;
@@ -5489,8 +5490,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    let  highlight = this.getFilterHighlight();
 	    if(this.getProperty("showFilterHighlight")) {
+
 		let enums =[["filter","Filter"],["highlight","Highlight"]];
-		header2 += HU.select("",["fieldId","_highlight", ID,this.getDomId(ID_FILTER_HIGHLIGHT)],enums,!highlight?"filter":"highlight") + SPACE2;
+		let select =  HU.select("",["fieldId","_highlight", ID,this.getDomId(ID_FILTER_HIGHLIGHT)],enums,!highlight?"filter":"highlight") + SPACE2;
+		if(hideFilterWidget) {
+		    select = HU.div([STYLE,HU.css("display","none")], select);
+		}
+		header2+=select;
 	    }
 
 
@@ -5546,15 +5552,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		prefix += HU.div([ID,this.getDomId("filterDateStepForward"),STYLE,HU.css("display","inline-block"),TITLE,"Step Forward"],
  				 HU.getIconImage("fa-step-forward",[STYLE,HU.css("cursor","pointer")])) +SPACE1;
 
-		header2 += HU.span([CLASS,filterClass,STYLE,style],
-				   prefix +
-				   HU.select("",["fieldId","filterDate", ATTR_ID,selectId],enums,selected))+SPACE;
+		let widget =  HU.span([CLASS,filterClass,STYLE,style],
+				      prefix +
+				      HU.select("",["fieldId","filterDate", ATTR_ID,selectId],enums,selected))+SPACE;
+		if(hideFilterWidget) {
+		    widget = HU.div([STYLE,HU.css("display","none")], widget);
+		}
+		header2+=widget;
+
 	    }
 	    
 
 
             let filterBy = this.getProperty("filterFields","").split(",").map(tok=>{return tok.trim();}); 
-	    let hideFilterWidget = this.getProperty("hideFilterWidget",false, true);
 	    let fieldMap = {};
 	    //Have this here so it can be used in the menu change events later. May cause problems if more than  one
 	    let displayType = "";
@@ -5844,10 +5854,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    items.forEach(item=>{
 			let match = item[0];
 			item =  item[1];
-			if(item.length>50) return;
+//			if(item.length>50) return;
 			let label = item.replace(regexp,"<span style='background:" + TEXT_HIGHLIGHT_COLOR +";'>" + match +"</span>");
 			item = item.replace(/\'/g,"\'");
-			html+=HU.div([CLASS,"ramadda-hoverable ramadda-clickable display-filter-popup-item","item",item],label)+"\n";
+			html+=HU.div([TITLE,item,CLASS,"ramadda-hoverable ramadda-clickable display-filter-popup-item","item",item],label)+"\n";
 			itemCnt++;
 		    });	
 		    if(itemCnt>0) {

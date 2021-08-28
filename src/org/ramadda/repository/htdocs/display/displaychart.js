@@ -989,7 +989,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    if(debug) console.log(this.type+" makeDataTable #records" + dataList.length);
 	    if(debug) console.log("\tfields:" + selectedFields);
 	    let maxWidth = this.getProperty("maxFieldLength",this.getProperty("maxFieldWidth",-1));
-	    let addTooltip = (this.getProperty("tooltip") || this.getProperty("addTooltip",false)) && this.doAddTooltip();
+	    let tt = this.getProperty("tooltip");
+	    let addTooltip = (tt || this.getProperty("addTooltip",false)) && this.doAddTooltip();
+
+	    
     	    let addStyle= this.getAddStyle();
 	    let annotationTemplate = this.getAnnotationTemplate();
 	    let formatNumbers = this.getFormatNumbers();
@@ -1093,6 +1096,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let maxHeaderWidth = this.getProperty("maxHeaderWidth",-1);
 	    let headerStyle= this.getProperty("headerStyle");
             for (let j = 0; j < header.length; j++) {
+		console.log("H:" + j);
 		let field=null;
 		if(j>0 || !props.includeIndex) {
 		    field = selectedFields[fIdx++];
@@ -1161,22 +1165,24 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			    console.log("add style column");
 			dataTable.addColumn({ type: 'string', role: 'style' });
 		    }
-		    if(addTooltip) {
-			if(debug)
-			    console.log("add tooltip column");
-			dataTable.addColumn({
-                            type: 'string',
-                            role: 'tooltip',
-                            'p': {
-				'html': true
-                            }
-			});
-		    }
 		    if(j>0 && fixedValueS) {
 			break;
 		    }
                 }
-            }
+	    }
+
+	    if(addTooltip) {
+		if(debug)
+		    console.log("add tooltip column");
+		dataTable.addColumn({
+                    type: 'string',
+                    role: 'tooltip',
+                    'p': {
+			'html': true
+                    }
+		});
+	    }
+
 
 	    if(debug) {
 		for(let i=0;i<dataTable.getNumberOfColumns();i++)
@@ -1283,13 +1289,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    tooltip += HU.b(label) + ":" + SPACE + value;
                 }
 
-		let tt = this.getProperty("tooltip");
-		if(tt) {
-		    tt  = this.getRecordHtml(theRecord,null,tt);
-		    tt = tt.replace("${default}",tooltip);
-		    tooltip = tt;
-		}
-		tooltip = HU.div([STYLE,HU.css('padding','8px')],tooltip);
                 let newRow = [];
 		if(debug && rowIdx<debugRows)
 		    console.log("row[" + rowIdx+"]:");
@@ -1340,15 +1339,21 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			    //			    if(debug && rowIdx<debugRows)
 			    //				console.log("\t style:" + color);
 			}
-			if(addTooltip) {
-                            newRow.push(tooltip);
-			    if(debug && rowIdx<debugRows)
-			    	console.log("\t tooltip:");
-			}
                     }
 		    if(colIdx>0 && fixedValueS) {
 			break;
 		    }
+		}
+
+
+		if(addTooltip) {
+		    if(tt) {
+			tooltip  = this.getRecordHtml(theRecord,null,tt);
+		    }
+		    tooltip = HU.div([STYLE,HU.css('padding','8px')],tooltip);
+                    newRow.push(tooltip);
+		    if(debug && rowIdx<debugRows)
+			console.log("\t tooltip:");
 		}
 
 

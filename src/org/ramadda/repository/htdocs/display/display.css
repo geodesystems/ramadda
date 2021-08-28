@@ -69,8 +69,12 @@ a.display-container {
 }
 
 .display-filter-popup-item {
-  font-size:80% !important;
-  cursor:pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 300px;
+    text-overflow: ellipsis;
+    font-size:80% !important;
+    cursor:pointer;
 }
 
 .display-filter-widget {
