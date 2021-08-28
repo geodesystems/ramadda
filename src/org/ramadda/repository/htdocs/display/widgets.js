@@ -2292,7 +2292,7 @@ let Gfx = {
 		},attr));
 	    }
 	    glyphs.forEach(glyph=>{
-		records.map((record,idx)=>{
+		records.forEach((record,idx)=>{
 		    let lat = record.getLatitude();
 		    let lon = record.getLongitude();
 		    let x = scaleX(lat,lon);
@@ -2300,7 +2300,7 @@ let Gfx = {
 		    record[gridId+"_coordinates"] = {x:x,y:y};
 		    let colorValue = opts.colorBy? record.getData()[opts.colorBy.index]:null;
 		    let lengthValue = opts.lengthBy? record.getData()[opts.lengthBy.index]:null;
-		    glyph.draw(opts, canvas, ctx, x,y,{colorValue:colorValue, lengthValue:lengthValue,record:record});
+		    glyph.draw(opts, canvas, ctx, x,y,{colorValue:colorValue, lengthValue:lengthValue,record:record},idx<10);
 		});
 	    });
 	}
@@ -2594,6 +2594,9 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	width:8,
 	fill:true,
 	stroke:true,
+	toString: function() {
+	    return this.type;
+	}
     });
     $.extend(this,args);
     attrs.split(",").forEach(attr=>{
@@ -2699,7 +2702,7 @@ function Glyph(display, scale, fields, records, args, attrs) {
 
 
 Glyph.prototype = {
-    draw: function(opts, canvas, ctx, x,y,args) {
+    draw: function(opts, canvas, ctx, x,y,args,debug) {
 	let color =   null;
 	if(this.colorByInfo) {
 	    if(this.colorByField) {
@@ -2869,6 +2872,7 @@ Glyph.prototype = {
 		console.log("make Vector: no sizeByInfo");
 		return;
 	    }
+	    ctx.strokeStyle =   color || this.color;
 	    let v = args.record.getValue(this.sizeByField.getIndex());
 	    lengthPercent = this.sizeByInfo.getValuePercent(v);
 	    let length = opts.cellSizeH;
