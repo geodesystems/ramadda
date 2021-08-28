@@ -32090,7 +32090,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.myFeatureLayerNoSelect = this.map.createFeatureLayer("Features-2",false);		
 		this.myFeatureLayer = this.map.createFeatureLayer("Features",true);
 		if(this.getProperty("showMarkersToggle") && !this.getProperty("markersVisibility", true)) {
-		    applyToFeatureLayers(layer=>{layer.setVisibility(false);});
+		    this.applyToFeatureLayers(layer=>{layer.setVisibility(false);});
 		}
 		this.myFeatures= [];
 	    }
@@ -32103,7 +32103,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 	removeFeature: function(feature) {
 	    if(feature) {
-		applyToFeatureLayers(layer=>{
+		this.applyToFeatureLayers(layer=>{
 		    layer.removeFeatures([feature]);
 		});
 	    }
@@ -33451,7 +33451,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 	    }
 
-	    applyToFeatureLayers(layer=>{layer.redraw();});
+	    this.applyToFeatureLayers(layer=>{layer.redraw();});
             this.applyVectorMap(true, this.textGetter);
 	},
         showAllPoints: function() {
@@ -33463,7 +33463,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if (this.map.lines)
 		    this.map.lines.redraw();
 	    }
-	    applyToFeatureLayers(layer=>{layer.redraw();});
+	    this.applyToFeatureLayers(layer=>{layer.redraw();});
             this.applyVectorMap(true);
         },
 
@@ -33648,7 +33648,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    this.jq("showMarkersToggle").change(function() {
 		let visible = $(this).is(':checked');
-		applyToFeatureLayers(layer=>{layer.setVisibility(visible);})
+		_this.applyToFeatureLayers(layer=>{layer.setVisibility(visible);})
 	    });
 	    this.jq("showVectorLayerToggle").change(function() {
 		_this.toggleVectorLayer();
