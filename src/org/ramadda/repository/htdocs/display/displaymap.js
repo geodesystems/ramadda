@@ -3595,27 +3595,25 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         addLabels:function(records, fields, points) {
             let labelTemplate = this.getProperty("labelTemplate");
             if(!labelTemplate) return;
-	    if(labelTemplate) {
-		labelTemplate = labelTemplate.replace(/_nl_/g,"\n");
-		if(!this.map.labelLayer) {
-		    this.map.labelLayer = new OpenLayers.Layer.Vector("Labels", {
-			styleMap: new OpenLayers.StyleMap({'default':{
-                            label : labelTemplate,
-                            fontColor: this.getProperty("labelFontColor","#000"),
-                            fontSize: this.getProperty("labelFontSize","12px"),
-                            fontFamily: this.getProperty("labelFontFamily","'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"),
-                            fontWeight: this.getProperty("labelFontWeight","plain"),
-                            labelAlign: this.getProperty("labelAlign","lb"),
-                            labelXOffset: this.getProperty("labelXOffset","0"),
-                            labelYOffset: this.getProperty("labelYOffset","0"),
-                            labelOutlineColor:this.getProperty("labelOutlineColor","#fff"),
-                            labelOutlineWidth: this.getProperty("labelOutlineWidth","0"),
-			    labelSelect:true,
-			}}),
-                    });
-		    this.map.addVectorLayer(this.map.labelLayer, true);
-                    this.map.labelLayer.setZIndex(100);
-		}
+	    labelTemplate = labelTemplate.replace(/_nl_/g,"\n");
+	    if(!this.map.labelLayer) {
+		this.map.labelLayer = new OpenLayers.Layer.Vector("Labels", {
+		    styleMap: new OpenLayers.StyleMap({'default':{
+                        label : labelTemplate,
+                        fontColor: this.getProperty("labelFontColor","#000"),
+                        fontSize: this.getProperty("labelFontSize","12px"),
+                        fontFamily: this.getProperty("labelFontFamily","'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"),
+                        fontWeight: this.getProperty("labelFontWeight","plain"),
+                        labelAlign: this.getProperty("labelAlign","lb"),
+                        labelXOffset: this.getProperty("labelXOffset","0"),
+                        labelYOffset: this.getProperty("labelYOffset","0"),
+                        labelOutlineColor:this.getProperty("labelOutlineColor","#fff"),
+                        labelOutlineWidth: this.getProperty("labelOutlineWidth","0"),
+			labelSelect:true,
+		    }}),
+                });
+		this.map.addVectorLayer(this.map.labelLayer, true);
+                this.map.labelLayer.setZIndex(100);
 	    }
 
 
@@ -3637,6 +3635,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 pointFeature.attributes = {
                 };
                 pointFeature.attributes[RECORD_INDEX] = (i+1);
+                pointFeature.attributes["recordIndex"] = (i+1)+"";
                 for (var fieldIdx = 0;fieldIdx < fields.length; fieldIdx++) {
                     var field = fields[fieldIdx];
                     pointFeature.attributes[field.getId()] = field.getValue(record);

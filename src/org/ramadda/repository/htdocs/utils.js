@@ -1411,7 +1411,7 @@ var Utils =  {
 			    value = t.attrs["prefix"]+value;
 			}
 			if(t.attrs["toggle"]) {
-			    value = HtmlUtils.toggleBlock(t.attrs["label"]||"More", value,false);
+			    //value = HtmlUtils.toggleBlock(t.attrs["label"]||"More", value,false);
 			}
 			if(t.attrs["image"]) {
 			    if(value!="") {
@@ -1429,6 +1429,8 @@ var Utils =  {
 				    attrs.push("width");
 				    attrs.push(t.attrs["width"]||"100%");
 				}
+				attrs.push("loading");
+				attrs.push("lazy");
 				value = HtmlUtils.image(value,attrs);
 			    }
 			}
@@ -1500,8 +1502,8 @@ var Utils =  {
 			    if(hook) v = hook(t,  source[t.tag]);
 			    if(!v) v = tokenFunc(t);
 			    if(!v) return;
-			    if(v.trim().length>0 && t.attrs["toggle"]) {
-				v = HU.toggleBlock(t.attrs["toggle"],v);
+			    if(v.trim().length>0 && t.attrs["toggle"]) {	
+				v = HU.toggleBlock(t.attrs["label"]||"More",v);
 			    }
 
 			    s+=v;

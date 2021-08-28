@@ -754,6 +754,7 @@ function DisplayThing(argId, argProperties) {
 		}
 		return "Unknown tag handler:" + tag.attrs["handle"];
 	    };
+	    attrs.recordIndex = record.rowIndex+1;
 	    return macros.apply(attrs,debug,handler);
 	},
 	addMacroAttributes:function(macros,row,attrs) {
