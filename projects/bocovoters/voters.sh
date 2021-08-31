@@ -89,7 +89,8 @@ do_history() {
    ${csv} -dots ${dots} -unique  "voter_id,election_date" -p voter_history_boulder.csv > ${unique_voter_history}
    echo "making off year"
    ${csv} -dots ${dots} -pattern election_date "(11/../2001|11/../2003|11/../2005|11/../2007|11/../2009|11/../2011|11/../2013|11/../2015|11/../2017|11/../2019)" -p ${unique_voter_history} > history_offyears10.csv
-   ${csv} -dots ${dots} -pattern election_date "(11/../2020)" -p ${unique_voter_history} > history_2020.csv   
+   ${csv} -dots ${dots} -pattern election_date "(11/../2020)" -p ${unique_voter_history} > history_2020.csv
+   ${csv} -dots ${dots} -pattern election_date "(11/../2019)" -p ${unique_voter_history} > history_2019.csv      
    ${csv} -dots ${dots} -pattern election_date "(11/../2015|11/../2017|11/../2019)" -p ${unique_voter_history} > history_offyears3.csv   
 }
 
@@ -99,12 +100,14 @@ do_counts() {
     cols=VOTER_ID,count
     ${csv}   -countunique voter_id -columns ${cols} -set 1 0 "Voted in 2020" -p history_2020.csv   >tmp.csv
     ${csv}   -change voted_in_2020 1 true  -p tmp.csv   >count_2020.csv
+    ${csv}   -countunique voter_id -columns ${cols} -set 1 0 "Voted in 2019" -p history_2019.csv   >tmp.csv
+    ${csv}   -change voted_in_2019 1 true  -p tmp.csv   >count_2019.csv    
     ${csv}   -countunique voter_id -columns ${cols} -set 1 0 "Last 3 offyear elections" -p history_offyears3.csv   >count_offyears3.csv
     ${csv}   -countunique voter_id -columns ${cols} -set 1 0 "Last 10 offyear elections" -p history_offyears10.csv   >count_offyears10.csv
     echo "making all count"
     ${csv}   -countunique voter_id -columns ${cols} -set 1 0 "All elections" -p ${unique_voter_history}  >count_all.csv
-    echo "making municipal count"
-    ${csv} -pattern election_type Municipal  -countunique voter_id -columns ${cols} -set 1 0 "Municipal elections"  -p ${unique_voter_history}  >count_municipal.csv
+#    echo "making municipal count"
+#    ${csv} -pattern election_type Municipal  -countunique voter_id -columns ${cols} -set 1 0 "Municipal elections"  -p ${unique_voter_history}  >count_municipal.csv
     echo "making primary count"
     ${csv} -pattern election_type Primary  -countunique voter_id -columns ${cols} -set 1 0 "Primary elections"  -p ${unique_voter_history} >count_primary.csv
 }
@@ -273,6 +276,8 @@ do_joins() {
     mv tmp.csv working.csv
     ${csv} -join 0 1 count_2020.csv voter_id false   -dots ${dots} -p working.csv > tmp.csv
     mv tmp.csv working.csv
+    ${csv} -join 0 1 count_2019.csv voter_id false   -dots ${dots} -p working.csv > tmp.csv
+    mv tmp.csv working.csv    
     ${csv} -join 0 1 count_offyears3.csv voter_id 0   -dots ${dots} -p working.csv > tmp.csv
     mv tmp.csv working.csv
     ${csv} -join 0 1 count_offyears10.csv voter_id 0   -dots ${dots} -p working.csv > tmp.csv
@@ -281,8 +286,8 @@ do_joins() {
     mv tmp.csv working.csv
     ${csv} -join 0 1 count_primary.csv voter_id 0   -dots ${dots} -p working.csv > tmp.csv
     mv tmp.csv working.csv    
-    ${csv} -join 0 1 count_municipal.csv voter_id 0   -dots ${dots} -p working.csv > tmp.csv
-    mv tmp.csv working.csv
+#    ${csv} -join 0 1 count_municipal.csv voter_id 0   -dots ${dots} -p working.csv > tmp.csv
+#    mv tmp.csv working.csv
 #join the precincts
     ${csv} -join 0 1 ${precincts} precinct  "" -dots ${dots} -p working.csv > tmp.csv
     mv tmp.csv working.csv
@@ -362,6 +367,7 @@ party.values {REP:Republican,UAF:Unaffiliated,DEM:Democrat,GRN:Green,LBR:Labor,A
 precinct_turnout_2019.placeholder {0-100} \
 voted_in_2021.type enumeration voted_in_2021.cansearch true  voted_in_2021.group {Voting History} voted_in_2021.suffix {Not working until 3 weeks before the election} \
 voted_in_2020.type enumeration voted_in_2020.cansearch true  \
+voted_in_2019.type enumeration voted_in_2019.cansearch true  \
 .*elections.cansearch true  .*elections.type int \
 last_3_offyear_elections.suffix {# Times Voted in last 3 off year elections}\
 last_10_offyear_elections.suffix {# Times Voted in last 10 off year elections}\
