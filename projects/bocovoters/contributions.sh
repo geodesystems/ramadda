@@ -2,21 +2,29 @@
 mydir=`dirname $0`
 set -e
 export csv=~/bin/csv.sh 
-wget -O source/new.csv --post-data="exportType=Contribution&electionID=20&committeeID=-1&filingDateStart=&filingDateStop=&transactionDateStart=&transactionDateStop=" https://election.bouldercolorado.gov/electionContributions.php
+
+do_fetch() {
+    wget -O source/new.csv --post-data="exportType=Contribution&electionID=20&committeeID=-1&filingDateStart=&filingDateStop=&transactionDateStart=&transactionDateStop=" https://election.bouldercolorado.gov/electionContributions.php
+}
 
 do_convert() {
     ${csv} -set Match 0 MatchAmount -set CommitteeNum 0 CommitteeNumber  \
 	   -change filingdate,amendeddate,transactiondate "(....)/(..)/(..).*" "\$1/\$2/\$3" \
+	   -change filingdate,amendeddate,transactiondate "(....)-(..)-(..).*" "\$1/\$2/\$3" \
 	   -case  FromCandidate lower \
 	   -case  anonymous lower \
 	   -p source/Election_Contributions.csv > oldtmp.csv
     ${csv} -notcolumns "YTDAmount,AmendsContributionID,ContributionID" \
 	   -change filingdate,amendeddate,transactiondate "(..)/(..)/(....)" "\$3/\$1/\$2" \
+	   -change filingdate,amendeddate,transactiondate "(....)-(..)-(..).*" "\$1/\$2/\$3" \
 	   -case  FromCandidate lower \
 	   -case  anonymous lower \
 	   -p source/new.csv > newtmp.csv
 }
 
+
+#do_convert
+#exit
 
 do_contributions() {
     infile=$1
@@ -43,6 +51,7 @@ do_contributions() {
 }
 
 
+do_fetch
 echo "converting"
 do_convert
 echo "making old"
@@ -88,6 +97,7 @@ anonymous.type enumeration \
 cp boulder_campaign_contributionsdb.xml ~/.ramadda/plugins
 cp contributions_new.csv ~/
 cp contributions_final.csv ~/
+sh /Users/jeffmc/source/ramadda/bin/scpgeode.sh 50.112.99.202 contributions_new.csv staging
 sh /Users/jeffmc/source/ramadda/bin/scpgeode.sh 50.112.99.202 contributions_final.csv staging
 sh /Users/jeffmc/source/ramadda/bin/scpgeode.sh 50.112.99.202  boulder_campaign_contributionsdb.xml plugins
 
