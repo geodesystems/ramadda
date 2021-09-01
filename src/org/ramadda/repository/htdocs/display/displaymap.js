@@ -382,7 +382,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         theMap: null
     });
 
-    const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_MAP, properties);
+    const SUPER = new RamaddaBaseMapDisplay(displayManager, id, DISPLAY_MAP, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     this.defineSizeByProperties();
