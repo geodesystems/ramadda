@@ -654,7 +654,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
             let records = this.filterData();
 	    if(records==null) return;
 	    let timelineId = this.domId(ID_TIMELINE);
-	    let html = HU.div([STYLE,HU.css("height","250px"), ID,timelineId]);
+	    let html = HU.div([ID,timelineId]);
 	    this.setContents(html);
 	    this.timelineReady = false;
 	    let opts = {
