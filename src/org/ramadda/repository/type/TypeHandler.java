@@ -2020,6 +2020,10 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+    public String getDefaultFilename() {
+	return   getTypeProperty("defaultFilename","tmp.txt");
+    }
+
     /**
      * _more_
      *
