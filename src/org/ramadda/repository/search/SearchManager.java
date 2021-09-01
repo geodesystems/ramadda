@@ -760,6 +760,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	//Don't do really big files or images
 	if(f.length()>LUCENE_MAX_LENGTH) return null;
 	if(Utils.isImage(f.toString())) return null;
+	if(f.length()==0) return null;
 	try(InputStream stream = getStorageManager().getFileInputStream(f)) {
 	    //	    System.err.println("SearchManager.readContents:" + f.getName());
             org.apache.tika.metadata.Metadata metadata =
