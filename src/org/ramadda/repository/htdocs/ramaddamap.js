@@ -374,15 +374,28 @@ function RepositoryMap(mapId, params) {
         div: this.mapDivId,
         eventListeners: {
             featureover: function(e) {
+		if(_this.featureOverHandler) {
+		    _this.featureOverHandler(e);
+		    return;
+		}
                 _this.handleFeatureover(e.feature);
             },
             featureout: function(e) {
+		if(_this.featureOutHandler) {
+		    _this.featureOutHandler(e);
+		    return;
+		}
                 _this.handleFeatureout(e.feature);
             },
             nofeatureclick: function(e) {
                 _this.handleNofeatureclick(e.layer);
             },
             featureclick: function(e) {
+		if(_this.featureClickHandler) {
+		    _this.featureClickHandler(e);
+		    return;
+		}
+
                 if(e.feature && e.feature.noSelect) {
                     return;
                 }
@@ -1696,6 +1709,7 @@ RepositoryMap.prototype = {
         return out;
     },
     onFeatureSelect: function(layer) {
+
 	let _this = this;
         if (this.onSelect) {
             func = window[this.onSelect];
@@ -4189,8 +4203,6 @@ RepositoryMap.prototype = {
         }
         let markerText;
 
-
-
 	if(marker.textGetter) {
 	    markerText =marker.textGetter(marker);
 	} else if(this.textGetter) {
@@ -4388,9 +4400,11 @@ RepositoryMap.prototype = {
             this.markers.removeFeatures(markers);
         }
     },    
-    createFeatureLayer: function(name, canSelect) {
+    createFeatureLayer: function(name, canSelect,style) {
         let base_style = OpenLayers.Util.extend({},
 						OpenLayers.Feature.Vector.style['default']);
+	if(style)
+	    $.extend(base_style,style);
         let layer =  new OpenLayers.Layer.Vector(name||"Markers", {
             style: base_style
         });
