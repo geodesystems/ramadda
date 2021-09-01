@@ -73,6 +73,287 @@ function MapFeature(source, points) {
     });
 }
 
+var ID_MAP = "map";
+
+function RamaddaBaseMapDisplay(displayManager, type, id, properties) {
+    $.extend(this, {
+        theMap: null
+    });
+
+    const SUPER = new RamaddaDisplay(displayManager, id, type, properties);
+    RamaddaUtil.inherit(this,SUPER);
+    this.defineSizeByProperties();
+    let myProps = [
+	{label:'Base Map Properties'},
+	{p:'bounds',ex:'north,west,south,east',tt:'initial bounds'},
+	{p:'gridBounds',ex:'north,west,south,east'},	
+	{p:'mapCenter',ex:'lat,lon',tt:"initial position"},
+	{p:'zoomLevel',ex:4,tt:"initial zoom"},
+	{p:'zoomTimeout',ex:500,tt:"initial zoom timeout delay. set this if the map is in tabs, etc, and not going to the initial zoom"},
+	{p:'linked',ex:true,tt:"Link location with other maps"},
+	{p:'linkGroup',ex:'some_name',tt:"Map groups to link with"},
+	{p:'initialLocation', ex:'lat,lon',tt:"initial location"},
+	{p:'defaultMapLayer',ex:'ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|esri.lightgray|esri.physical|opentopo|usgs.topo|usgs.imagery|usgs.relief|osm.toner|osm.toner.lite|watercolor'},
+	{p:'mapLayers',ex:'ol.openstreetmap,esri.topo,esri.street,esri.worldimagery,esri.lightgray,esri.physical,opentopo,usgs.topo,usgs.imagery,usgs.relief,osm.toner,osm.toner.lite,watercolor'},
+	{p:'extraLayers',tt:'comma separated list of layers to display'},
+	{p:'showLocationSearch',ex:'true'},
+	{p:'showLatLonPosition',ex:'false'},
+	{p:'showLayerSwitcher',ex:'false'},
+	{p:'showScaleLine',ex:'true'},
+	{p:'showZoomPanControl',ex:'true'},
+	{p:'showZoomOnlyControl',ex:'false'},
+	{p:'enableDragPan',ex:'false'},
+	{p:'showLayers',d:true,ex:'false'},
+	{p:'locations',ex:'usairports.json,usstates.json'},
+	{p:'highlightColor',ex:'#ccc',tt:''},
+	{p:'highlightStrokeWidth',ex:'2',tt:''},	
+];
+    
+    displayDefineMembers(this, myProps, {
+        mapBoundsSet: false,
+        initDisplay: function() {
+            SUPER.initDisplay.call(this);
+	    if(!HU.documentReady) {
+		$( document ).ready(()=> {
+		    if(this.map) {
+			setTimeout(()=>{
+			    this.callingUpdateSize = true;
+			    this.map.getMap().updateSize();
+			    this.callingUpdateSize = false;
+			},50);
+		    }
+		});
+	    }
+            var _this = this;
+            var html = "";
+            var extraStyle="";
+            var height = this.getProperty("height", this.getProperty("mapHeight", 300));
+            if (height < 0) {
+		height = (-height)+"%";
+	    }
+	    height = HU.getDimension(height);
+            extraStyle += HU.css(HEIGHT, height);
+
+	    let map =HU.div([ATTR_CLASS, "display-map-map ramadda-expandable-target", STYLE,
+			     extraStyle, ATTR_ID, this.domId(ID_MAP)]);
+
+	    let mapContainer = HU.div([CLASS,"ramadda-map-container"],
+				      map+
+				      HU.div([CLASS,"ramadda-map-slider",STYLE,this.getProperty("popupSliderStyle", "max-height:400px;overflow-y:auto;max-width:300px;overflow-x:auto;"),ID,this.domId(ID_MAP)+"_slider"]));
+
+            this.setContents(mapContainer);
+
+            if (!this.map) {
+                this.createMap();
+            } else {
+                this.map.setMapDiv(this.domId(ID_MAP));
+            }
+            if (!this.haveCalledUpdateUI) {
+                var callback = function() {
+                    _this.updateUI();
+                }
+                setTimeout(callback, 1);
+            }
+        },
+        checkLayout: function() {
+            if (!this.map) {
+                return;
+            }
+            var d = this.jq(ID_MAP);
+            if (d.width() > 0 && this.lastWidth != d.width() && this.map) {
+                this.lastWidth = d.width();
+                this.map.getMap().updateSize();
+            }
+	    if(!this.setMapLocationAndZoom && this.mapParams) {
+		this.setMapLocationAndZoom = true;
+		if(this.mapParams.initialZoom>=0) {
+		    this.map.getMap().zoomTo(this.mapParams.initialZoom);
+		}
+		if(this.mapParams.initialLocation) {
+		    let loc = MapUtils.createLonLat(this.mapParams.initialLocation.lon, this.mapParams.initialLocation.lat);
+		    this.map.setCenter(loc);
+		}
+
+	    }
+        },
+
+        initMapParams: function(params) {
+
+	},
+	initMap:function(map) {
+	},
+        doDisplayMap: function() {
+	    return true;
+	},
+        createMap: function() {
+            let _this = this;
+            var params = {
+                defaultMapLayer: this.getDefaultMapLayer(map_default_layer),
+		showLayerSwitcher: this.getShowLayerSwitcher(true),
+		showScaleLine: this.getShowScaleLine(false),
+		showLatLonPosition: this.getShowLatLonPosition(true),
+		showZoomPanControl: this.getShowZoomPanControl(false),
+		showZoomOnlyControl: this.getShowZoomOnlyControl(true),
+		enableDragPan: this.getEnableDragPan(true),
+		highlightColor: this.getHighlightColor("blue"),
+		highlightStrokeWidth: this.getHighlightStrokeWidth(1)
+            };
+	    this.mapParams = params;
+            var displayDiv = this.getProperty("displayDiv", null);
+            if (displayDiv) {
+                params.displayDiv = displayDiv;
+		params.displayDivSticky = this.getProperty("displayDivSticky", false);
+            }
+            if (!this.getShowLocationSearch(true)) {
+                params.showLocationSearch = false;
+            }
+            var mapLayers = this.getMapLayers(null);
+            if (mapLayers) {
+                params.mapLayers = [mapLayers];
+            }
+
+	    params.linked = this.getLinked(false);
+	    params.linkGroup = this.getLinkGroup(null);
+
+	    this.hadInitialPosition = false;
+            if (this.getProperty("latitude")) {
+		this.hadInitialPosition = true;
+                params.initialLocation = {lon:+this.getProperty("longitude", -105),
+					  lat:+this.getProperty("latitude", 40)};
+	    }
+	    if(this.getMapCenter()) {
+		this.hadInitialPosition = true;
+		[lat,lon] =  this.getMapCenter().split(",");
+                params.initialLocation = {lon:lon,lat:lat};
+	    }
+
+	    if(this.getZoomLevel()) {
+		this.hadInitialPosition = true;
+                params.initialZoom = +this.getZoomLevel();
+		params.initialZoomTimeout = this.getZoomTimeout();
+	    }
+
+            this.map = this.getProperty("theMap", null);
+            if (this.map) {
+                this.map.setMapDiv(this.domId(ID_MAP));
+            } else {
+		if(this.getInitialLocation()) {
+		    let toks = this.getInitialLocation().split(",");
+		    params.initialLocation = {
+			lat:+toks[0],
+			lon:+toks[1]
+		    }
+		}
+		this.initMapParams(params);
+                this.map = new RepositoryMap(this.domId(ID_MAP), params);
+		//Set this so there is no popup on the off feature
+		this.map.textGetter = (layer,feature) =>{
+		    return null;
+		};
+                this.lastWidth = this.jq(ID_MAP).width();
+            }
+	    this.initMap(this.map);
+
+            if (this.doDisplayMap()) {
+                this.map.setDefaultCanSelect(false);
+            }
+            this.map.initMap(false);
+
+	    let hasLoc = Utils.isDefined(this.getZoomLevel())   ||
+		Utils.isDefined(this.getMapCenter()) ||
+		this.hadInitialPosition;
+	    
+            if (this.getPropertyBounds() ||this.getPropertyGridBounds() ) {
+		this.hadInitialPosition = true;
+                let toks = this.getPropertyBounds(this.getGridBounds("")).split(",");
+                if (toks.length == 4) {
+                    if (this.getProperty("showBounds", false)) {
+                        var attrs = {};
+                        if (this.getProperty("boundsColor")) {
+                            attrs.strokeColor = this.getProperty("boundsColor", "");
+                        }
+                        this.map.addRectangle("bounds", parseFloat(toks[0]), parseFloat(toks[1]), parseFloat(toks[2]), parseFloat(toks[3]), attrs, "");
+                    }
+		    if(!hasLoc)
+			this.setInitMapBounds(parseFloat(toks[0]), parseFloat(toks[1]), parseFloat(toks[2]), parseFloat(toks[3]));
+                }
+            }
+
+	    
+
+	    this.getProperty("extraLayers","").split(",").forEach(tuple=>{
+		if(tuple.trim().length==0) return;
+		let toks = tuple.split(":");
+		toks = toks.map(tok=>{return tok.replace(/_semicolon_/g,":")});
+		let getUrl = url =>{
+		    if(url.startsWith("resources")) {
+			url = ramaddaBaseUrl +"/" + url;
+		    } else if(url.startsWith("/resources")) {
+			url = ramaddaBaseUrl + url;			
+		    } else    if(!url.startsWith("/") && !url.startsWith("http")) {
+			url = ramaddaBaseUrl +"/entry/get?entryid=" + url;
+		    }
+		    return url;
+		};
+
+		let type = toks[0];
+		if(type=="baselayer") {
+		    let layer = this.map.getBaseLayer(toks[1]);
+		    if(!layer) {
+			console.log("Could not find base layer:" + toks[1]);
+		    } else {
+			layer.setVisibility(true);
+		    }
+		} else 	if(type=="geojson" || type=="kml") {
+		    let name = toks[1];		
+		    let url = getUrl(toks[2]);
+//		    console.log("Adding geojson:" + url);
+		    let args = {
+			fillColor:'transparent',
+		    }
+		    for(let i=3;i<toks.length;i+=2) {
+			args[toks[i]] = toks[i+1];
+		    }
+		    //(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent)
+		    if(type=="kml") {
+			this.map.addKmlLayer(name, url, false, null, null, args, null);
+		    } else {
+			this.map.addGeoJsonLayer(name, url, false, null, null, args, null);
+		    }
+		} else if(type=="wms") {
+		    let name = toks[1];
+		    let url = toks[2];
+		    let layer=toks[3];
+		    let opacity = toks[4];
+                    this.map.addWMSLayer(name,url,layer, false,true,{opacity:opacity});
+		  //  "wms:ESRI Aeronautical,https://wms.chartbundle.com/mp/service,sec",
+		} else {
+		    console.log("Unknown map type:" + type)
+		}
+	    });
+
+
+            if (this.getShowLayers()) {
+		//do this later so the map displays its initial location OK
+		setTimeout(()=>{
+                    if (_this.getProperty("kmlLayer")) {
+			var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + _this.getProperty("kmlLayer");
+			_this.addBaseMapLayer(url, true);
+                    }
+                    if (_this.getProperty("geojsonLayer")) {
+			url = _this.getRamadda().getEntryDownloadUrl(_this.getProperty("geojsonLayer"));
+			_this.addBaseMapLayer(url, false);
+                    }
+		},500);
+            }
+        },
+        getBounds: function() {
+	    return this.map.getBounds();
+	},
+    });
+}
+	
+
 
 function RamaddaMapDisplay(displayManager, id, properties) {
     const ID_MAP = "map";
@@ -156,15 +437,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'showClipToBounds',ex:'true',tt:'Show the clip bounds checkbox'},
 	{p:'clipToBounds',ex:'true',tt:'Clip to bounds'},	
 	{p:'showMarkers',ex:'false',tt: 'Hide the markers'},
-	{p:'showLocationSearch',ex:'true'},
-	{p:'showLatLonPosition',ex:'false'},
-	{p:'showLayerSwitcher',ex:'false'},
-	{p:'showScaleLine',ex:'true'},
-	{p:'showZoomPanControl',ex:'true'},
-	{p:'showZoomOnlyControl',ex:'false'},
-	{p:'enableDragPan',ex:'false'},
-	{p:'showLayers',d:true,ex:'false'},
-	{p:'locations',ex:'usairports.json,usstates.json'},
+
 	{label:'Map Highlight'},
 	{p:'showRecordSelection',ex:'false'},
 	{p:'highlight',ex:'true',tt:"Show mouse over highlights"},
@@ -485,6 +758,37 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.myFeatures= null;
 	},
 
+        initMapParams: function(params) {
+	    if(this.getDoPopupSlider()) {
+		params.doPopupSlider = true;
+		if(this.getPopupSliderRight()) {
+		    params.popupSliderRight = true;
+		}
+	    }
+	},
+	initMap: function(map) {
+	    if(!this.getShowMarkers(this.getProperty("markersVisibility", true))) {
+		map.getMarkersLayer().setVisibility(false);
+	    }
+	    var boundsAnimation = this.getProperty("boundsAnimation");
+
+	    if(boundsAnimation) {
+		this.didAnimationBounds = false;
+                let animationBounds = boundsAnimation.split(",");
+                if (animationBounds.length == 4) {
+		    var pause = parseFloat(this.getProperty("animationPause","1000"));
+		    HU.callWhenScrolled(this.domId(ID_MAP),()=>{
+			if(_this.didAnimationBounds) {
+			    return;
+			}
+			_this.didAnimationBounds = true;
+			var a = animationBounds;
+			var b = MapUtils.createBounds(parseFloat(a[1]),parseFloat(a[2]),parseFloat(a[3]),parseFloat(a[0]));
+			_this.map.animateViewToBounds(b);
+		    },pause);
+		}
+            }
+	},
         createMap: function() {
             let _this = this;
             var params = {
@@ -544,12 +848,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			lon:+toks[1]
 		    }
 		}
-		if(this.getDoPopupSlider()) {
-		    params.doPopupSlider = true;
-		    if(this.getPopupSliderRight()) {
-			params.popupSliderRight = true;
-		    }
-		}
+		this.initMapParams(params);
+
                 this.map = new RepositoryMap(this.domId(ID_MAP), params);
 		//Set this so there is no popup on the off feature
 		this.map.textGetter = (layer,feature) =>{
@@ -2258,6 +2558,29 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    });
 
 	},
+	filterDataPhase2:function(records) {
+	    records = SUPER.filterDataPhase2.call(this,records);
+	    if(this.clipBounds || this.clipToView) {
+		let bounds = RecordUtil.getBounds(records);
+		this.clipBounds = false;
+		let clipRecords = false;
+		if(!this.lastPointBounds || (this.lastPointBounds && this.lastPointBounds!=bounds)) {
+		    clipRecords = true;
+		}
+		this.lastPointBounds = bounds;
+		if(this.clipToView || clipRecords) {
+		    let viewbounds = this.map.getMap().calculateBounds().transform(this.map.sourceProjection, this.map.displayProjection);
+		    let tmpRecords =records.filter(r=>{
+			return viewbounds.containsLonLat(new OpenLayers.LonLat(r.getLongitude(),r.getLatitude()));
+		    });
+//		    console.log("clipped records:" + tmpRecords.length);
+		    records = tmpRecords;
+		}
+	    }
+	    return records;
+	},
+
+
 	updateUIInner: function(args, pointData, records, debug) {
 	    let _this = this;
 	    let t1= new Date();
@@ -2324,25 +2647,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
             let pointBounds = {};
             let points = RecordUtil.getPoints(records, pointBounds);
-	    if(this.clipBounds || this.clipToView) {
-		this.clipBounds = false;
-		let clipRecords = false;
-		if(!this.lastPointBounds || (this.lastPointBounds && this.lastPointBounds!=pointBounds)) {
-		    clipRecords = true;
-		}
-		this.lastPointBounds = pointBounds;
-		if(this.clipToView || clipRecords) {
-		    let viewbounds = this.map.getMap().calculateBounds().transform(this.map.sourceProjection, this.map.displayProjection);
-		    let tmpRecords =records.filter(r=>{
-			return viewbounds.containsLonLat(new OpenLayers.LonLat(r.getLongitude(),r.getLatitude()));
-		    });
-//		    console.log("clipped records:" + tmpRecords.length);
-		    this.records = records = tmpRecords;
-		    pointBounds = {};
-		    points = RecordUtil.getPoints(records, pointBounds);
-		}
-	    }
-
 
 
             let fields = pointData.getRecordFields();
@@ -2372,7 +2676,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(debug) console.log("displaymap calling addPoints");
             this.addPoints(records,fields,points,pointBounds,debug);
 	    let t3= new Date();
-            this.addLabels(records,fields,points);
+            this.addLabels(records,fields);
             this.applyVectorMap(true, this.textGetter,args);
 	    let t4= new Date();
 	    if(debug) Utils.displayTimes("time pts=" + points.length,[t1,t2,t3,t4], true);
@@ -2846,7 +3150,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			radius = radiusScale[i+1];
 		    }
 		}
-		console.log("#locs:" + numLocs +" #records:" +records.length + " radius:" + radius);
+//		console.log("#locs:" + numLocs +" #records:" +records.length + " radius:" + radius);
 	    }
 
 	    radius = Math.min(radius, this.getMaxRadius());
@@ -3592,7 +3896,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
         },
 
-        addLabels:function(records, fields, points) {
+        addLabels:function(records, fields) {
             let labelTemplate = this.getProperty("labelTemplate");
             if(!labelTemplate) return;
 	    labelTemplate = labelTemplate.replace(/_nl_/g,"\n");
