@@ -337,6 +337,7 @@ do_final() {
 	    -columnsafter precinct precinct_turnout_2019 \
 	    -even address \
 	    -set even 0 "Address even" \
+	    -notpattern address "1731 HAWTHORN AVE" \
 	    -p  voters_joined.csv > voters_final.csv
 }
 
