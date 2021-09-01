@@ -239,7 +239,8 @@ width="100%" height="400" details="true" defaultMapLayer="esri.topo"
    </type>
 
   <type name="geo_editable_json"  description="Editable Map File"  >
-     <property name="icon" value="/icons/map.png"/>
+    <property name="defaultFilename" value="map.json"/>
+    <property name="icon" value="/icons/map.png"/>
 <wiki>
 <![CDATA[
 +section title={{name}}
