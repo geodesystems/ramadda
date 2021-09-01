@@ -179,6 +179,10 @@ a.display-container {
     font-weight:bold;
 }
 
+.display-header-vertical .display-header-span {
+    display:block;
+}
+
 .display-filter-label-vertical {
     text-align:left;
 }
@@ -778,6 +782,8 @@ padding:4px;
 
 
 .display-menu {
+    padding-left:4px;
+    padding-right:10px;    
 }
 
 
@@ -2748,5 +2754,17 @@ table.dataTable tfoot td {
 
 
 
+.ramadda-display-editablemap-commands {
+    margin:5px;
+    width:150px;
+}
 
-.
+.ramadda-display-editablemap-command {
+    width:100%;
+    margin-bottom:5px;
+}
+
+.ramadda-display-editablemap-command-active, .ramadda-display-editablemap-command-active:hover {
+    border:1px solid #000;
+    background:#ccc;
+}
