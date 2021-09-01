@@ -1725,16 +1725,35 @@ public class EntryManager extends RepositoryManager {
 	    sb.append(Json.mapAndQuote("error", "No permision to edit entry"));
 	    return new Result("", sb, Json.MIMETYPE);
 	}
-	String contents = request.getString("file","");
-
-        if (!entry.isFile()) {
-	    sb.append(Json.mapAndQuote("error", "Entry is not a file"));
+	String contents = request.getString("file",(String)null);
+	if(contents==null)  {
+	    contents = request.getString("base64file",(String)null);
+	    if(contents!=null) {
+		contents = new String(Utils.decodeBase64(contents));
+	    }
+	}
+	
+	if(contents==null) {
+	    sb.append(Json.mapAndQuote("error", "No file contents given"));
 	    return new Result("", sb, Json.MIMETYPE);
 	}
 
+        if (!entry.isFile()) {
+	    //Probably don't need/want this check
+	    //	    sb.append(Json.mapAndQuote("error", "Entry is not a file"));
+	    //	    return new Result("", sb, Json.MIMETYPE);
+	}
+
 	removeFromCache(entry);
+	String oldFileName = null;
 	File oldFile = entry.getResource().getTheFile();
-	File tmpFile = getStorageManager().getTmpFile(request,oldFile.getName());
+	if(oldFile!=null) {
+	    oldFileName = getStorageManager().getFileTail(oldFile.getName());
+	} else {
+	    oldFileName = entry.getTypeHandler().getDefaultFilename();
+	    System.err.println("F:" + oldFileName);
+	}
+	File tmpFile = getStorageManager().getTmpFile(request,oldFileName);
         OutputStream  toStream   = getStorageManager().getFileOutputStream(tmpFile);
         IOUtil.writeTo(new ByteArrayInputStream(contents.getBytes()), toStream);
         IOUtil.close(toStream);
@@ -1742,7 +1761,7 @@ public class EntryManager extends RepositoryManager {
 							 tmpFile);
 	entry.getResource().setPath(newFile.toString());
 	updateEntry(request, entry);
-	sb.append(Json.mapAndQuote("message", "OK, file has been changed"));
+	sb.append(Json.mapAndQuote("message", "OK, file has been saved"));
 	return new Result("", sb, Json.MIMETYPE);
     }
 
@@ -1831,7 +1850,6 @@ public class EntryManager extends RepositoryManager {
     private Result doProcessEntryChange(Request request, boolean forUpload,
                                         Object actionId)
 	throws Exception {
-
 
         User user = request.getUser();
         if (forUpload) {
@@ -2321,8 +2339,6 @@ public class EntryManager extends RepositoryManager {
                     }
                 }
 
-
-
                 if ( !canBeCreatedBy(request, typeHandlerToUse)) {
                     fatalError(request,
                                "Cannot create an entry of type "
@@ -2371,7 +2387,7 @@ public class EntryManager extends RepositoryManager {
                 setEntryState(request, entry, parent, newEntry);
                 entries.add(entry);
             }
-        } else {
+	} else {
             boolean fileUpload      = false;
             String  newResourceName = request.getUploadedFile(ARG_FILE);
             String  newResourceType = null;
@@ -2460,7 +2476,6 @@ public class EntryManager extends RepositoryManager {
 
 
         if (request.getUser().getAdmin() && request.defined(ARG_USER_ID)) {
-
             User newUser =
                 getUserManager().findUser(request.getString(ARG_USER_ID,
 							    "").trim());
@@ -2522,6 +2537,17 @@ public class EntryManager extends RepositoryManager {
 					       getRepository().translate(
 									 request, "File has been uploaded")));
         }
+
+	if(request.responseAsJson()) {
+	    List<String> ids = new ArrayList<String>();
+	    for(Entry e: entries) {
+		ids.add(Json.quote(e.getId()));
+	    }
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(Json.map("entries",Json.list(ids)));
+	    System.err.println("sb:" + sb);
+	    return new Result("", sb, Json.MIMETYPE);
+	}
 
         if (entries.size() == 1) {
             entry = (Entry) entries.get(0);
