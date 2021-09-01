@@ -221,6 +221,11 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
     border-radius: 4px;
 }
 
+.ramadda-menu-divider {
+    margin-top:4px;
+    margin-bottom:4px;    
+    border-bottom:1px solid #ccc;
+}
 .ramadda-menu-button.bold {
     border:1px solid #888;
 }

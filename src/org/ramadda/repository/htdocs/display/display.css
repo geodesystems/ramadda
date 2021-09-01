@@ -805,6 +805,7 @@ padding:4px;
 
 
 .display-button {
+    display:inline-block;
 }
 
 .display-button .ui-button-text {
