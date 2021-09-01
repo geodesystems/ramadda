@@ -7081,8 +7081,29 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             props.remove("displayDiv");
         }
 
+	if(entry.getParentEntry()!=null) {
+	    topProps.add("parentEntryId");
+	    topProps.add(HU.quote(entry.getParentEntry().getId()));
+	}
+
+        if ( !request.isAnonymous()) {
+	    String sessionId = request.getSessionId();
+	    if(sessionId!=null) {
+		String authToken = RepositoryUtil.hashString(sessionId);
+		topProps.add("authToken");
+		topProps.add(HU.quote(authToken));
+	    }
+	}
+
+	if(entry.isFile()) {
+            String fileUrl = entry.getTypeHandler().getEntryResourceUrl(request,  entry);
+	    topProps.add("fileUrl");
+	    topProps.add(HU.quote(fileUrl));
+	}
         topProps.add("entryId");
         topProps.add(HU.quote(entry.getId()));
+        topProps.add("entryType");
+        topProps.add(HU.quote(entry.getTypeHandler().getType()));
 
 
         String mainDivId = getProperty(wikiUtil, props, "divid");
@@ -7405,68 +7426,27 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 HU.cssLink(
                     sb, getPageHandler().getCdnPath("/display/display.css"));
 		sb.append("\n");
-                HU.importJS(
-                    sb, getPageHandler().getCdnPath("/display/pointdata.js"));
-		sb.append("\n");
-                HU.importJS(
-                    sb, getPageHandler().getCdnPath("/display/widgets.js"));
-		sb.append("\n");
-                HU.importJS(
-                    sb, getPageHandler().getCdnPath("/display/display.js"));
-		sb.append("\n");
-                HU.importJS(
-                    sb,
-                    getPageHandler().getCdnPath(
-                        "/display/displaymanager.js"));
-		sb.append("\n");
-                HU.importJS(
-                    sb,
-                    getPageHandler().getCdnPath("/display/displayentry.js"));
-		sb.append("\n");
-                HU.importJS(
-                    sb,
-                    getPageHandler().getCdnPath("/display/displaymap.js"));
-		sb.append("\n");
-                HU.importJS(
-                    sb,
-                    getPageHandler().getCdnPath("/display/displayimages.js"));
-		sb.append("\n");
-                HU.importJS(
-                    sb,
-                    getPageHandler().getCdnPath("/display/displaymisc.js"));
-		sb.append("\n");
-                HU.importJS(
-                    sb,
-                    getPageHandler().getCdnPath("/display/displaychart.js"));
-		sb.append("\n");
-                HU.importJS(
-                    sb,
-                    getPageHandler().getCdnPath("/display/displaytable.js"));
-		sb.append("\n");
-                HU.importJS(
-                    sb, getPageHandler().getCdnPath("/display/control.js"));
-		sb.append("\n");
-                HU.importJS(
-                    sb, getPageHandler().getCdnPath("/display/notebook.js"));
-		sb.append("\n");
-                HU.importJS(
-                    sb,
-                    getPageHandler().getCdnPath("/display/displayplotly.js"));
-		sb.append("\n");
-                HU.importJS(
-                    sb, getPageHandler().getCdnPath("/display/displayd3.js"));
-		sb.append("\n");
-                HU.importJS(
-                    sb,
-                    getPageHandler().getCdnPath("/display/displaytext.js"));
-		sb.append("\n");
-                HU.importJS(
-                    sb,
-                    getPageHandler().getCdnPath("/display/displayext.js"));
-		sb.append("\n");
-            }
-            HU.importJS(sb, getPageHandler().getCdnPath("/repositories.js"));
-	    sb.append("\n");
+		for(String js: new String[]{"/display/pointdata.js", "/display/widgets.js",
+					    "/display/display.js",
+					    "/display/displaymanager.js",
+					    "/display/displayentry.js",
+					    "/display/displaymap.js",
+					    "/display/editablemap.js",
+					    "/display/displayimages.js",
+					    "/display/displaymisc.js",
+					    "/display/displaychart.js",
+					    "/display/displaytable.js",
+					    "/display/control.js",
+					    "/display/notebook.js",
+					    "/display/displayplotly.js",
+					    "/display/displayd3.js",
+					    "/display/displaytext.js",
+					    "/display/displayext.js",
+					    "/repositories.js"}) {
+		    HU.importJS(sb, getPageHandler().getCdnPath(js));
+		    sb.append("\n");
+		}
+	    }
 
             String includes =
                 getRepository().getProperty("ramadda.display.includes",
