@@ -782,6 +782,27 @@ RepositoryMap.prototype = {
 	if(this.showBookmarks || true) {
 	    //		$("#" + this.mapDivId+"_themap").append(HtmlUtils.div(["id",this.mapDivId+"_bookmarks", "style","z-index:2000;position:absolute;top:140px;left:20px;"],HtmlUtils.getIconImage("fa-bookmark")));
 	}
+
+
+	if(this.showOpacitySlider) {
+	    let slider = HU.div([ID,this.mapDivId +"_filter_range",STYLE,HU.css("display","inline-block","width","200px")],"");
+	    $("#" + this.mapDivId+"_header").append("Image Opacity: " + slider);
+	    $("#"+ this.mapDivId +"_filter_range").slider({
+		min: 0,
+		max: 1,
+		step:0.05,
+		value:_this.imageOpacity,
+		slide: function( event, ui ) {
+		    _this.imageOpacity = ui.value;
+		    if(!_this.imageLayers) return;
+                    for (id in _this.imageLayers) {
+                        image = _this.imageLayers[id];
+			image.setOpacity(_this.imageOpacity);
+		    };
+		},
+	    });
+	}
+
         this.map = new OpenLayers.Map(this.mapDivId+"_themap", this.mapOptions);
         //register the location listeners later since the map triggers a number of
 

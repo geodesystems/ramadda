@@ -436,11 +436,13 @@ public class MapInfo {
 	String mapDiv =   HU.div(contents,
 				 HU.cssClass("ramadda-map")
 				 + HU.style(styles) + " " + HU.id(mapDivId));
+	String mapHeader =   HU.div("",
+				    HU.cssClass("ramadda-map-header") +HU.id(mapDivId+"_header"));
 	String mapSlider =   HU.div("",
 				    HU.cssClass("ramadda-map-slider") +HU.id(mapDivId+"_slider"));
 	
 
-        HU.div(result, mapDiv+mapSlider,
+        HU.div(result, mapHeader+mapDiv+mapSlider,
 	       HU.cssClass("ramadda-map-container"));
 
 
