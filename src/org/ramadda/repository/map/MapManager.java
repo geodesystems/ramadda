@@ -382,6 +382,10 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
 
 
 
+        String imageOpacity = (String) props.get("imageOpacity");
+        if (imageOpacity != null) {
+            mapInfo.addProperty("imageOpacity", imageOpacity);
+        }
         String showSearch = (String) props.get("showSearch");
         if (showSearch != null) {
             mapInfo.addProperty("showSearch", "" + showSearch.equals("true"));
@@ -1376,6 +1380,11 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
         if (mapProps != null) {
             map.getMapProps().putAll(mapProps);
         }
+        String imageOpacity = (String) props.get("imageOpacity");
+        if (imageOpacity != null) {
+	    map.getMapProps().put("imageOpacity", imageOpacity);
+        }
+
         map.getMapProps().put("showSearch", "" + search);
         map.getMapProps().put("linked",
                               Utils.getProperty(props, "linked", "false"));
