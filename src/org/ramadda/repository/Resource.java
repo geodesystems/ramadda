@@ -268,7 +268,6 @@ public class Resource {
                 || type.equals(TYPE_REMOTE_FILE)) {
             return getTheFile().exists();
         }
-
         return false;
     }
 
@@ -357,6 +356,12 @@ public class Resource {
         path = value;
         file = null;
     }
+
+    public void setFile(File file, String type) {
+	setPath(file.toString());
+	this.type=type;
+    }
+
 
     /**
      * Get the Path property.
