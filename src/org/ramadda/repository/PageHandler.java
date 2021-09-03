@@ -1,4 +1,4 @@
-/*
+/**
 * Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -444,7 +444,10 @@ public class PageHandler extends RepositoryManager {
         String content = contents.toString();
 
 	String head0 = request.getHead0();
-	String head = (head0==null?"":head0)+webImports;
+	String head = (head0==null?"":head0);
+	//make the request to base.js be unique every time so the browser does not cache it
+	head+=HU.importJS(getRepository().getUrlBase()+"/htdocs_v" + (new Date().getTime())+"/base.js");
+	head+=webImports;
 	String head2 = request.getHead();
 	if(head2!=null) head+=head2;
         if (request.get("ramadda.showjsonld", true)&& showJsonLd && (currentEntry != null)) {
@@ -3492,7 +3495,8 @@ public class PageHandler extends RepositoryManager {
             getRepository().getProperty(
                 "ramadda.bootstrap.version", "bootstrap-3.3"));
 
-        return s.replace("${htdocs}", htdocsBase).replace(
+	String now = htdocsBase + (new Date().getTime());
+        return s.replace("${now}",now).replace("${htdocs}", htdocsBase).replace(
             "${cdnpath}", path).replace("${root}", root).replace(
             "${baseentry}", getEntryManager().getRootEntry().getId()).replace(
             "${min}", mini).replace("${dotmin}", dotmini);
