@@ -1747,11 +1747,11 @@ public class EntryManager extends RepositoryManager {
 	removeFromCache(entry);
 	String oldFileName = null;
 	File oldFile = entry.getResource().getTheFile();
-	if(oldFile!=null) {
+	if(oldFile!=null && oldFile.exists()) {
 	    oldFileName = getStorageManager().getFileTail(oldFile.getName());
 	} else {
 	    oldFileName = entry.getTypeHandler().getDefaultFilename();
-	    System.err.println("F:" + oldFileName);
+	    System.err.println("default file:" + oldFileName);
 	}
 	File tmpFile = getStorageManager().getTmpFile(request,oldFileName);
         OutputStream  toStream   = getStorageManager().getFileOutputStream(tmpFile);
@@ -1759,7 +1759,7 @@ public class EntryManager extends RepositoryManager {
         IOUtil.close(toStream);
 	File newFile = getStorageManager().moveToStorage(request,
 							 tmpFile);
-	entry.getResource().setPath(newFile.toString());
+	entry.getResource().setFile(newFile,Resource.TYPE_STOREDFILE);
 	updateEntry(request, entry);
 	sb.append(Json.mapAndQuote("message", "OK, file has been saved"));
 	return new Result("", sb, Json.MIMETYPE);
