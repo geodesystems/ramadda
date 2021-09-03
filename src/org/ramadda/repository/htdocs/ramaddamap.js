@@ -786,7 +786,7 @@ RepositoryMap.prototype = {
 
 	if(this.showOpacitySlider) {
 	    let slider = HU.div([ID,this.mapDivId +"_filter_range",STYLE,HU.css("display","inline-block","width","200px")],"");
-	    $("#" + this.mapDivId+"_header").append("Image Opacity: " + slider);
+	    $("#" + this.mapDivId+"_header").append("<center>Image Opacity: " + slider+"</center>");
 	    $("#"+ this.mapDivId +"_filter_range").slider({
 		min: 0,
 		max: 1,
