@@ -264,6 +264,7 @@ function RepositoryMap(mapId, params) {
 	highlightColor:"blue",
 	highlightStrokeWidth:2,
 	highlightOpacity:0.3,
+	imageOpacity:1.0,
         layer: null,
         markers: null,
         vectors: null,
@@ -1223,6 +1224,8 @@ RepositoryMap.prototype = {
         image.west = west;
         image.south = south;
         image.east = east;
+	image.opacity=this.imageOpacity;
+
         if (!this.imageLayers) this.imageLayers = {}
         if (!theArgs.isBaseLayer) {
             this.imageLayers[layerId] = image;
@@ -3722,7 +3725,7 @@ RepositoryMap.prototype = {
         return feature;
     },
 
-    addMarker:  function(id, location, iconUrl, markerName, text, parentId, size, yoffset, canSelect, attrs,polygon, justCreate) {
+   addMarker:  function(id, location, iconUrl, markerName, text, parentId, size, yoffset, canSelect, attrs,polygon, justCreate) {
         let marker = this.createMarker(id, location, iconUrl, markerName, text, parentId, size, 0, yoffset, canSelect,attrs);
 	marker.lonlat = location;
 	if(!justCreate) {
@@ -3930,7 +3933,7 @@ RepositoryMap.prototype = {
     },
     
     
-    createPoint:  function(id, point, attrs, text,  textGetter) {
+    createPoint:  function(id, point, attrs, text,  textGetter,skipDefaultStyle) {
         //Check if we have a LonLat instead of a Point
         let location = point;
         if (typeof point.x === 'undefined') {
@@ -3969,6 +3972,7 @@ RepositoryMap.prototype = {
 	//["star", "cross", "x", "square", "triangle", "circle", "lightning", "rectangle", "church"];
         let center = new OpenLayers.Geometry.Point(point.x, point.y);
         center.transform(this.displayProjection, this.sourceProjection);
+
 
         let feature = new OpenLayers.Feature.Vector(center, null, cstyle);
         feature.center = center;
