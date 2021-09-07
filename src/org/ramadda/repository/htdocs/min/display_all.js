@@ -32219,6 +32219,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'trackUrlField',ex:'field id',tt:'The data can contain a URL that points to data'},
 
 	{label:"Map Labels"},
+	{p:"labelTemplate",ex:"${field}",tt:"Display labels in the map"},
+	{p:"labelKeyField",ex:"field",tt:"Make a key, e.g., A, B, C, ... based on the value of the key field"},	
+	{p:"labelLimit",ex:"1000",tt:"Max number of records to display labels"},	
 	{p:"labelFontColor",ex:"#000"},
 	{p:"labelFontSize",ex:"12px"},
 	{p:"labelFontFamily",ex:"'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"},
@@ -32482,6 +32485,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.myFeatureLayerNoSelect) {
 		this.map.removeLayer(this.myFeatureLayerNoSelect);
 	    }	    
+	    if(this.labelFeatures) {
+		this.map.labelLayer.removeFeatures(this.labelFeatures);
+		this.labelFeatures = null;
+		this.jq("legendid").html("");
+	    }
 	    this.myFeatureLayer = null;
 	    this.myFeatureLayerNoSelect = null;
 	    this.myFeatures= null;
@@ -35626,8 +35634,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         },
 
         addLabels:function(records, fields) {
-            let labelTemplate = this.getProperty("labelTemplate");
-            if(!labelTemplate) return;
+	    let limit = this.getLabelLimit(100000);
+	    if(records.length>limit) return;
+            let labelTemplate = this.getLabelTemplate();
+	    let labelKeyField;
+	    if(this.getLabelKeyField()) {
+		labelKeyField = this.getFieldById(fields,this.getLabelKeyField());
+	    }
+            if(!labelTemplate && !labelKeyField) return;
+	    if(labelKeyField) labelTemplate= "${_key}";
 	    labelTemplate = labelTemplate.replace(/_nl_/g,"\n");
 	    if(!this.map.labelLayer) {
 		this.map.labelLayer = new OpenLayers.Layer.Vector("Labels", {
@@ -35650,11 +35665,24 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 
 
-
+	    let keyMap={};
+	    let keyLegend="";
 	    var features =  [];
             var seen = {};
 	    var colorBy = this.getProperty("colorBy");
 	    var sizeBy = this.getProperty("sizeBy");
+	    let keyIndex = 0;
+	    let alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+	    let  keys = [];
+	    for(let j=0;j<3;j++) {
+		alpha.forEach(c=>{
+		    let cc = "";
+		    for(let i=0;i<=j;i++) {
+			cc+=c;
+		    }
+		    keys.push(cc);
+		});
+	    }
             for (var i = 0; i < records.length; i++) {
 		var record = records[i];
                 var point = record.point;
@@ -35662,24 +35690,39 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		point = {x:record.getLongitude(),y:record.getLatitude()};
                 var center = new OpenLayers.Geometry.Point(point.x, point.y);
                 center.transform(this.map.displayProjection, this.map.sourceProjection);
-                var tuple = record.getData();
                 var pointFeature = new OpenLayers.Feature.Vector(center);
                 pointFeature.noSelect = true;
                 pointFeature.attributes = {
                 };
                 pointFeature.attributes[RECORD_INDEX] = (i+1);
                 pointFeature.attributes["recordIndex"] = (i+1)+"";
-                for (var fieldIdx = 0;fieldIdx < fields.length; fieldIdx++) {
-                    var field = fields[fieldIdx];
-                    pointFeature.attributes[field.getId()] = field.getValue(record);
+		if(labelKeyField) {
+		    let v = labelKeyField.getValue(record);
+		    if(!keyMap[v]) {
+			if(keyIndex>=keys.length) keyIndex=0;
+			keyMap[v] = keys[keyIndex++];
+			keyLegend+=keyMap[v]+": " + v+"<br>";
+		    }
+		    pointFeature.attributes["_key"] = keyMap[v];
+                }
+		for (var fieldIdx = 0;fieldIdx < fields.length; fieldIdx++) {
+		    var field = fields[fieldIdx];
+		    pointFeature.attributes[field.getId()] = field.getValue(record);
 		    if(colorBy && field.getId() == colorBy) {
 			pointFeature.attributes["colorBy"] = field.getValue(record);
 		    }
 		    if(sizeBy && field.getId() == sizeBy) {
 			pointFeature.attributes["sizeBy"] = field.getValue(record);
-		    }
-                }
+                    }
+		}
                 features.push(pointFeature);
+	    }
+	    if(keyLegend.length>0) {
+		if(!this.legendId) {
+		    this.legendId = this.domId("legendid");
+		    this.jq(ID_RIGHT).append(HU.div([ID,this.legendId, CLASS,"display-map-legend",STYLE, HU.css("max-height",this.getHeight("400px"))]));
+		}
+		this.jq("legendid").html(keyLegend);
 	    }
 	    if(this.labelFeatures)
 		this.map.labelLayer.removeFeatures(this.labelFeatures);
@@ -39115,57 +39158,31 @@ addGlobalDisplayType({
 function RamaddaEditablemapDisplay(displayManager, id, properties) {
 
 
-OpenLayers.Handler.BoxHandler = OpenLayers.Class(OpenLayers.Handler.Path, {
-    count:0,
-    createFeature: function(pixel) {
-	console.log("createFeature");
-	OpenLayers.Handler.Path.prototype.createFeature.apply(this, arguments);
+
+OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPolygon, {
+    initialize: function(control, callbacks, options) {
+	OpenLayers.Handler.RegularPolygon.prototype.initialize.apply(this,arguments);
+	this.display = options.display;
     },
-    addPoint: function(pixel) {
-	this.count++;
-	if(this.count==2) {
-	    console.log("done");
-            this.finishGeometry();
-	    this.deactivate();
-	    return;
+    finalize: function() {
+	this.theImage = this.image;
+	this.image =null;
+	OpenLayers.Handler.RegularPolygon.prototype.finalize.apply(this,arguments);
+    },
+    move: function(evt) {
+	OpenLayers.Handler.RegularPolygon.prototype.move.apply(this,arguments);
+	let mapBounds = this.feature.geometry.getBounds();
+	if(this.image) {
+	    this.display.map.removeLayer(this.image);
 	}
-	console.log("addPoint:" + this.count);
-	OpenLayers.Handler.Path.prototype.addPoint.apply(this, arguments);
+	let b = this.display.map.transformProjBounds(mapBounds);
+	this.image=  this.display.map.addImageLayer("","","",this.style.imageUrl,true,  b.top,b.left,b.bottom,b.right);
+	this.image.setOpacity(this.style.imageOpacity);
     }
-
-
+    
 });
 
 
-
-
-OpenLayers.Control.EditListener = OpenLayers.Class(OpenLayers.Control, {
-    display:null,
-    setDisplay:function(display) {
-	this.display = display;
-    },
-    defaultHandlerOptions: {
-        'single': true,
-        'double': false,
-        'pixelTolerance': 0,
-        'stopSingle': false,
-        'stopDouble': false
-    },
-
-    initialize: function(options) {
-        this.handlerOptions = OpenLayers.Util.extend({},
-						     this.defaultHandlerOptions);
-        OpenLayers.Control.prototype.initialize.apply(this, arguments);
-        this.handler = new OpenLayers.Handler.Click(this, {
-            'click': this.trigger
-        }, this.handlerOptions);
-    },
-    trigger: function(e) {
-        var xy = this.display.map.getMap().getLonLatFromViewPortPx(e.xy);
-        var lonlat = this.display.map.transformProjPoint(xy)
-	this.display.handleEvent(e,lonlat);
-    }
-});
 
 
 
@@ -39178,18 +39195,24 @@ OpenLayers.Control.EditListener = OpenLayers.Class(OpenLayers.Control, {
     const ID_MENU_FILE = "menu_file";
     const ID_MENU_EDIT = "menu_edit";    
     const ID_DELETE_ALL = "deleteall";
+    const ID_TOBACK = "toback";
+    const ID_TOFRONT = "tofront";    
+
     const ID_CUT = "cut";
     const ID_COPY= "copy";
     const ID_PASTE= "paste";        
     const ID_COMMANDS = "commands";
     const ID_PROPERTIES = "properties";
+    const ID_NAVIGATE = "navigate";
     const ID_SAVE = "save";
     const ID_SAVEAS = "saveas";    
     const ID_DOWNLOAD = "download";    
     const ID_SELECTOR = "selector";
     const ID_EDIT = "edit";
     const ID_MOVER = "mover";
-    const ID_MODIFIER = "modifier";    
+    const ID_RESIZE = "resize";
+    const ID_RESHAPE = "reshape";    
+
 
 
 
@@ -39207,11 +39230,12 @@ OpenLayers.Control.EditListener = OpenLayers.Class(OpenLayers.Control, {
 	{p:"fontSize",d:"14px"},
 	{p:"fontWeight",d:"normal"},
 	{p:"fontFamily",d:"'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"},
+	{p:"imageOpacity",d:1},
     ];
     
     displayDefineMembers(this, myProps, {
 	commands: [],
-        features: [],
+        myLayer: [],
 	selected:{},
 	getMap: function() {
 	    return this.map;
@@ -39235,7 +39259,12 @@ OpenLayers.Control.EditListener = OpenLayers.Class(OpenLayers.Control, {
 		    let styleMap = new OpenLayers.StyleMap({"default":{}});
 		    let tmpStyle = {};
 		    $.extend(tmpStyle,glyph.style);
-		    if(glyph.isLabel()) {
+		    if(glyph.isImage()) {
+			let url = prompt("Image URL:",this.lastImageUrl);
+			if(!url) return;
+			this.lastImageUrl = url;
+			tmpStyle.imageUrl = this.lastImageUrl;
+		    } else if(glyph.isLabel()) {
 			let text = prompt("Label text:",this.lastText);
 			if(!text) return;
 			this.lastText = text;
@@ -39251,6 +39280,7 @@ OpenLayers.Control.EditListener = OpenLayers.Class(OpenLayers.Control, {
 	    });
 	},
 	clearCommands:function() {
+	    
 	    let buttons = this.jq(ID_COMMANDS).find(".ramadda-clickable");
 	    buttons.removeClass("ramadda-display-editablemap-command-active");
 	    buttons.each(function() {
@@ -39260,10 +39290,10 @@ OpenLayers.Control.EditListener = OpenLayers.Class(OpenLayers.Control, {
 		cmd.deactivate();
 	    });
 	    this.command= null;
-	    this.features.redraw();
+	    this.myLayer.redraw();
 	},
 	addFeatures:function(features) {
-	    let layer = this.features;
+	    let layer = this.myLayer;
 	    layer.addFeatures(features);
 	    features.forEach(feature=>{
 		feature.layer = layer;
@@ -39275,35 +39305,61 @@ OpenLayers.Control.EditListener = OpenLayers.Class(OpenLayers.Control, {
 	    control.message=msg;
 	    this.map.getMap().addControl(control);
 	    this.commands.push(control);
+	    return control;
 	},
 
-	doPaste: function() {
+	pasteCount:0,
+	doPaste: function(evt) {
 	    if(!this.clipboard) return;
 	    let newOnes = this.clipboard.map(feature=>{return feature.clone();});
-	    this.features.addFeatures(newOnes);
+	    for(let i=0;i<newOnes.length;i++) {
+		newOnes[i].type = this.clipboard[i].type;
+	    }
+	    let h = this.map.getMap().getExtent().getHeight();
+	    this.pasteCount++;
+	    let delta = (this.pasteCount*0.05)*h;
+	    newOnes.forEach(feature=>{
+		feature.geometry.move(delta,-delta);
+		this.checkImage(feature);
+	    });
+	    this.myLayer.addFeatures(newOnes);
 	},
 	doEdit: function(feature) {
 //	    this.clearCommands();
 	    if(!feature) {
-		if(!this.features.selectedFeatures) return;
-		if(this.features.selectedFeatures.length==0) return;
-		feature = this.features.selectedFeatures[0];
+		if(!this.myLayer.selectedFeatures) return;
+		if(this.myLayer.selectedFeatures.length==0) return;
+		feature = this.myLayer.selectedFeatures[0];
 	    }
 	    if(!feature) return;
 	    let style = feature.style;
 	    let html =HU.div([STYLE,HU.css("margin","8px")], "Feature: " + feature.type); 
-	    this.features.redraw(feature);
+	    this.myLayer.redraw(feature);
 	    let apply = props=>{
 		props.forEach(prop=>{
 		    if(prop=="labelSelect") return;
 		    let v = this.jq(prop).val();
 		    feature.style[prop] = v;
 		});
-		this.features.redraw();
+		if(feature.style.imageUrl) {
+		    this.checkImage(feature);
+		}
+		this.myLayer.redraw();
 	    };
+	    if(feature.image && Utils.isDefined(feature.image.opacity)) {
+		feature.style.imageOpacity=feature.image.opacity;
+	    }
+
 	    this.doProperties(feature.style,apply, feature);
 	},
 
+	
+	makeMenu: function(html) {
+	    return  HU.div([CLASS,"wiki-editor-popup"], html);
+	},
+	menuItem: function(id,label) {
+	    return  HU.div([ID,id,CLASS,"ramadda-clickable"],label);
+	},
 	doProperties: function(style, apply,feature) {
 	    let html = "";
 	    html +=HU.formTable();
@@ -39311,7 +39367,11 @@ OpenLayers.Control.EditListener = OpenLayers.Class(OpenLayers.Control, {
 	    let values = {};
 	    if(style) {
 		props = [];
+		let isImage = style.imageUrl;
 		for(a in style) {
+		    if(isImage) {
+			if(a!="imageUrl" && a!="imageOpacity") continue;
+		    }
 		    props.push(a);
 		    values[a] = style[a];
 		}
@@ -39353,8 +39413,9 @@ OpenLayers.Control.EditListener = OpenLayers.Class(OpenLayers.Control, {
 //			console.log("value:" + v);
 		    }
 		    let size = "20";
-		    if(prop=="strokeWidth" || prop=="pointRadius" || prop=="fontSize" || prop=="fontWeight") size="4";
+		    if(prop=="strokeWidth" || prop=="pointRadius" || prop=="fontSize" || prop=="fontWeight" || prop=="imageOpacity") size="4";
 		    else if(prop=="fontFamily") size="60";
+		    else if(prop=="imageUrl") size="80";		    
 		    widget =  HU.input("",v,[ID,this.domId(prop),"size",size]);
 		}
 		html+=HU.formEntry(label+":",widget);
@@ -39398,7 +39459,7 @@ OpenLayers.Control.EditListener = OpenLayers.Class(OpenLayers.Control, {
 	    }
 	    if(feature) {
 		this.jq(ID_DELETE).button().click(()=>{
-		    this.features.removeFeatures([feature]);
+		    this.myLayer.removeFeatures([feature]);
 		    close();
 		});
 	    }
@@ -39470,24 +39531,38 @@ OpenLayers.Control.EditListener = OpenLayers.Class(OpenLayers.Control, {
 	    console.log(JSON.stringify(json,null,2));
 	    Utils.makeDownloadFile("map.json",json);
 	},
-
 	makeJson: function() {
 	    let list =[];
-            this.features.features.forEach(feature=>{
+            this.myLayer.features.forEach(feature=>{
 		if(!feature.type) return;
 		let geom = feature.geometry;
 		let obj = {
 		    type:feature.type,
 		    points:[]
 		};
-		if(feature.style) obj.style = feature.style;
+		if(feature.style) {
+		    if(feature.image && Utils.isDefined(feature.image.opacity)) {
+			feature.style.imageOpacity=feature.image.opacity;
+		    }
+		    obj.style = feature.style;
+		}
 		list.push(obj);
 		let vertices  = geom.getVertices();
-//		console.log(feature.type +" vertices:" + vertices);
-		vertices.forEach(vertex=>{
-		    let pt = vertex.clone().transform(this.map.sourceProjection, this.map.displayProjection);
-		    obj.points.push({latitude:pt.y,longitude:pt.x});
-		});
+		obj.geometryType=geom.CLASS_NAME;
+		if(feature.image) {
+		    let mapBounds = feature.geometry.getBounds();
+		    let b = this.map.transformProjBounds(mapBounds);
+		    obj.points.push({latitude:b.top,longitude:b.left});
+		    obj.points.push({latitude:b.top,longitude:b.right});
+		    obj.points.push({latitude:b.bottom,longitude:b.right});
+		    obj.points.push({latitude:b.bottom,longitude:b.left});
+		    obj.points.push({latitude:b.top,longitude:b.left});		    		    		    		    
+		} else {
+		    vertices.forEach(vertex=>{
+			let pt = vertex.clone().transform(this.map.sourceProjection, this.map.displayProjection);
+			obj.points.push({latitude:pt.y,longitude:pt.x});
+		    });
+		}
 
 	    });
 	    return  JSON.stringify(list,null,2);
@@ -39497,18 +39572,22 @@ OpenLayers.Control.EditListener = OpenLayers.Class(OpenLayers.Control, {
 	showFileMenu: function(button) {
 	    let html ="";
 	    if(!Utils.isAnonymous()) {	    
-		html +=HU.div([ID,this.domId(ID_SAVE),CLASS,"ramadda-clickable"],"Save");
-//		html +=HU.div([ID,this.domId(ID_SAVEAS),CLASS,"ramadda-clickable"],"Save As...");		
+		html +=this.menuItem(this.domId(ID_SAVE),"Save");
+		//html +=this.menuItem(this.domId(ID_SAVEAS),"Save As...");		
 	    }
-	    html+=
-		HU.div([ID,this.domId(ID_DOWNLOAD),CLASS,"ramadda-clickable"],"Download")
-	    html+=
-		HU.div([ID,this.domId(ID_PROPERTIES),CLASS,"ramadda-clickable"],"Set Default Properties")	    
-	    html  = HU.div([CLASS,"wiki-editor-popup"], html);
+	    html+= this.menuItem(this.domId(ID_DOWNLOAD),"Download")
+	    html+= this.menuItem(this.domId(ID_PROPERTIES),"Set Default Properties");
+//	    html+= this.menuItem(this.domId(ID_NAVIGATE),"Navigate");	    
+
+	    html  = this.makeMenu(html);
+
 	    this.dialog = HU.makeDialog({content:html,anchor:button});
 	    let _this = this;
-	    
 
+	    this.jq(ID_NAVIGATE).click(function() {
+		HtmlUtils.hidePopupObject();
+		_this.setCommand(null);
+	    });
 	    this.jq(ID_SAVE).click(function(){
 		HtmlUtils.hidePopupObject();
 		_this.doSave();
@@ -39529,9 +39608,9 @@ OpenLayers.Control.EditListener = OpenLayers.Class(OpenLayers.Control, {
 	showNewMenu: function(button) {
 	    let html ="";
 	    this.glyphs.forEach(g=>{
-		html+= HU.div([ID,this.domId("menunew_" + g.type),CLASS,"ramadda-clickable"],"New " + g.label);
+		html+= this.menuItem(this.domId("menunew_" + g.type),"New " + g.label);
 	    });
-	    html  = HU.div([CLASS,"wiki-editor-popup"], html);
+	    html  = this.makeMenu(html);
 	    this.dialog = HU.makeDialog({content:html,anchor:button});
 	    let _this = this;
 	    this.glyphs.forEach(g=>{
@@ -39546,21 +39625,26 @@ OpenLayers.Control.EditListener = OpenLayers.Class(OpenLayers.Control, {
 
 	showEditMenu: function(button) {
 	    let html = 
-		HU.div([ID,this.domId(ID_CUT),CLASS,"ramadda-clickable"],"Cut") +
-		HU.div([ID,this.domId(ID_COPY),CLASS,"ramadda-clickable"],"Copy") +
-		HU.div([ID,this.domId(ID_PASTE),CLASS,"ramadda-clickable"],"Paste") +
+		this.menuItem(this.domId(ID_CUT),"Cut") +
+		this.menuItem(this.domId(ID_COPY),"Copy") +
+		this.menuItem(this.domId(ID_PASTE),"Paste") +
 		HU.div([CLASS,"ramadda-menu-divider"]) +						
-		HU.div([ID,this.domId(ID_SELECTOR),CLASS,"ramadda-clickable"],"Select") +
-		HU.div([ID,this.domId(ID_MOVER),CLASS,"ramadda-clickable"],"Move") +
-		HU.div([ID,this.domId(ID_MODIFIER),CLASS,"ramadda-clickable"],"Modify") +
+		this.menuItem(this.domId(ID_SELECTOR),"Select") +
+		HU.div([CLASS,"ramadda-menu-divider"]) +						
+		this.menuItem(this.domId(ID_MOVER),"Move") +
+		this.menuItem(this.domId(ID_RESHAPE),"Reshape") +
+		this.menuItem(this.domId(ID_RESIZE),"Resize") +
+		HU.div([CLASS,"ramadda-menu-divider"]) +						
+		this.menuItem(this.domId(ID_TOFRONT),"To Front") +
+		this.menuItem(this.domId(ID_TOBACK),"To Back") +		
+		HU.div([CLASS,"ramadda-menu-divider"]) +		
+		this.menuItem(this.domId(ID_EDIT),"Edit Properties") +
 		HU.div([CLASS,"ramadda-menu-divider"]) +
-		HU.div([ID,this.domId(ID_EDIT),CLASS,"ramadda-clickable"],"Edit Properties") +
-		HU.div([CLASS,"ramadda-menu-divider"]) +
-		HU.div([ID,this.domId(ID_DELETE_ALL),CLASS,"ramadda-clickable"],"Delete All");		
+		this.menuItem(this.domId(ID_DELETE_ALL),"Delete All");		
 	    
-	    html  = HU.div([CLASS,"wiki-editor-popup display-menu"], html);
+	    html  = this.makeMenu(html);
 	    this.dialog = HU.makeDialog({content:html,anchor:button});
-	    let buttons = [ID_EDIT,ID_SELECTOR,ID_MOVER,ID_MODIFIER];
+	    let buttons = [ID_EDIT,ID_SELECTOR,ID_MOVER,ID_RESHAPE,ID_RESIZE];
 	    let _this = this;
 	    this.jq(ID_DELETE_ALL).click(function(){
 		HtmlUtils.hidePopupObject();
@@ -39578,33 +39662,101 @@ OpenLayers.Control.EditListener = OpenLayers.Class(OpenLayers.Control, {
 		HtmlUtils.hidePopupObject();
 		_this.doPaste();
 	    });
+	    this.jq(ID_TOFRONT).click(function(){
+		HtmlUtils.hidePopupObject();
+		_this.toFront(true);
+	    });
+	    this.jq(ID_TOBACK).click(function(){
+		HtmlUtils.hidePopupObject();
+		_this.toFront(false);
+	    });
 	    buttons.forEach(command=>{
 		this.jq(command).click(function(){
 		    HtmlUtils.hidePopupObject();
 		    if(ID_SELECTOR==command) {
-			_this.features.selectedFeatures  = [];
+			_this.myLayer.selectedFeatures  = [];
 		    }
 		    _this.setCommand(command);
 		});
 	    });
 	},
 	
+	setClipboard:function(features) {
+	    if(features)
+		this.clipboard = features.map(feature=>{return feature;});
+	    else
+		this.clipboard=null;
+	    this.pasteCount=0;
+	},
+	removeImages: function(features) {
+	    if(!features) return;
+	    features.forEach(feature=>{
+		if(feature.image) {
+		    this.map.removeLayer(feature.image);
+		    feature.image = null;
+		}
+	    });
+	},
+	clearBounds:function(geom) {
+	    if(geom.clearBounds) geom.clearBounds();
+	    if(geom.components) {
+		geom.components.forEach(g=>{
+		    this.clearBounds(g);
+		});
+	    }
+	},
+	checkImage:function(feature) {
+	    if(!feature.style || !feature.style.imageUrl) return;
+	    if(feature.image && Utils.isDefined(feature.image.opacity)) {
+		feature.style.imageOpacity=feature.image.opacity;
+	    }
+	    this.removeImages([feature]);
+	    this.clearBounds(feature.geometry);
+	    let mapBounds = feature.geometry.getBounds();
+	    let b = this.map.transformProjBounds(mapBounds);
+	    feature.image=  this.map.addImageLayer("","","",feature.style.imageUrl,true,  b.top,b.left,b.bottom,b.right);
+	    if(Utils.isDefined(feature.style.imageOpacity))
+		feature.image.setOpacity(feature.style.imageOpacity);
+	},
+	toFront: function(toFront) {
+	    if(!this.myLayer.selectedFeatures) return;
+//	    this.clearCommands();
+	    let selected = this.myLayer.selectedFeatures;
+	    let features = this.myLayer.features;
+	    selected.forEach(s=>{
+		const index = features.indexOf(s);
+		console.log("index:" + index);
+		if (index > -1) {
+		    features.splice(index, 1);
+		    if(toFront)
+			features.push(s);
+		    else
+			features.unshift(s);			
+		}
+	    });
+	    this.myLayer.redraw();
+	},
+
 	doCut: function() {
 	    this.clearCommands();
-	    if(!this.features.selectedFeatures) return;
-	    this.clipboard = this.features.selectedFeatures.map(feature=>{return feature;});
-	    this.features.removeFeatures(this.features.selectedFeatures);
+	    if(this.myLayer.selectedFeatures) {
+		this.removeImages(this.myLayer.selectedFeatures);
+		let features = this.myLayer.selectedFeatures.map(feature=>{return feature;});
+		this.setClipboard(features);
+		this.myLayer.removeFeatures(features);
+	    }
 	},
 	doDeleteAll: function() {
 	    this.clearCommands();
 	    if(!window.confirm("Are you sure you want to delete all map features?")) return
-	    this.clipboard = this.features.features.map(feature=>{return feature;});
-	    this.features.removeFeatures(this.features.features);
+	    this.removeImages(this.myLayer.features);
+	    this.setClipboard(this.myLayer.features.map(feature=>{return feature;}));
+	    this.myLayer.removeFeatures(this.myLayer.features);
 	},
 	doCopy: function() {
 	    this.clearCommands();
-	    if(!this.features.selectedFeatures) return;
-	    this.clipboard = this.features.selectedFeatures.map(feature=>{return feature;});
+	    if(!this.myLayer.selectedFeatures) return;
+	    this.setClipboard(this.myLayer.selectedFeatures.map(feature=>{return feature;}));
 	},
 	loadJson: function(map) {
 //	    console.log(JSON.stringify(map,null,2));
@@ -39615,29 +39767,37 @@ OpenLayers.Control.EditListener = OpenLayers.Class(OpenLayers.Control, {
 		}
 		let glyph = this.glyphMap[mapGlyph.type];
 		let style = mapGlyph.style||(glyph?glyph.style:{});
-		if(mapGlyph.type=="line" || mapGlyph.type=="freehand") {
+		if(style.label) {
+		    style.pointRadius=0
+		}
+		let feature;
+		if(mapGlyph.points.length>1) {
 		    let points = [];
 		    mapGlyph.points.forEach(pt=>{
 			points.push(new OpenLayers.Geometry.Point(pt.longitude,pt.latitude));
 		    });
-		    let feature = this.map.createPolygon("","",points,style);
-		    feature.type=mapGlyph.type;
-		    feature.style = style;
-		    this.features.addFeatures([feature]);
-		} else {
-		    if(style["label"]) {
-			style.pointRadius=0
+		    if(mapGlyph.geometryType=="OpenLayers.Geometry.Polygon") {
+			this.map.transformPoints(points);
+			let linearRing = new OpenLayers.Geometry.LinearRing(points);
+			let geom = new OpenLayers.Geometry.Polygon(linearRing);
+			feature = new OpenLayers.Feature.Vector(geom,null,style);
+		    } else {
+			feature = this.map.createPolygon("","",points,style);
 		    }
+		} else {
 		    let point =  MapUtils.createLonLat(mapGlyph.points[0].longitude, mapGlyph.points[0].latitude);
-		    let feature = this.map.createPoint("",point,style);
-		    feature.style  = style;
-		    feature.type=mapGlyph.type;
-		    this.features.addFeatures([feature]);
+		    feature = this.map.createPoint("",point,style);
 		}
+		feature.type=mapGlyph.type;
+		feature.style = style;
+		this.checkImage(feature);
+
+		this.myLayer.addFeatures([feature]);
+
 	    });
-	    if(this.features.length>0) {
+	    if(this.myLayer.length>0) {
 		let bounds = new OpenLayers.Bounds();
-		this.features.features.forEach(feature=>{
+		this.myLayer.features.forEach(feature=>{
 		    bounds.extend(feature.geometry.getBounds());
 		});
 		this.map.zoomToExtent(bounds);
@@ -39656,6 +39816,7 @@ OpenLayers.Control.EditListener = OpenLayers.Class(OpenLayers.Control, {
 			_this.loadJson(JSON.parse(data));
 		    } catch(err) {
 			this.showMessage("failed to load map:" + err);
+			console.log("error:" + err);
 			console.log("map json:" + data);
 		    }
                 }
@@ -39672,13 +39833,13 @@ OpenLayers.Control.EditListener = OpenLayers.Class(OpenLayers.Control, {
 			     {strokeWidth:0, 
 			      fillColor:"transparent",
 			      externalGraphic: ramaddaBaseUrl+this.getExternalGraphic(),
-			      pointRadius:this.getPointRadius()},
+			      pointRadius:this.getPointRadius(10)},
 			     OpenLayers.Handler.Point),
-		new MapGlyph(this,"circle","Circle",
+		new MapGlyph(this,"point","Point",
 			     {strokeWidth:this.getProperty("strokeWidth",2), 
 			      fillColor:"transparent",
 			      strokeColor:this.getStrokeColor(),
-			      pointRadius:this.getPointRadius()},
+			      pointRadius:this.getPointRadius(4)},
 			     OpenLayers.Handler.Point),
 		new MapGlyph(this,"label","Label",
 			     {label : "label",
@@ -39693,15 +39854,61 @@ OpenLayers.Control.EditListener = OpenLayers.Class(OpenLayers.Control, {
 			      labelOutlineWidth: this.getProperty("labelOutlineWidth","0"),
 			      labelSelect:true,
 			     }, OpenLayers.Handler.Point),
+		new MapGlyph(this,"box", "Box",
+			     {strokeColor:this.getStrokeColor(),
+			      strokeWidth:this.getStrokeWidth(),
+			      fillColor:"transparent",
+			      fillOpacity:1.0},
+			     OpenLayers.Handler.RegularPolygon,
+			     {snapAngle:90,sides:4,irregular:true}
+			    ),
+		new MapGlyph(this,"circle", "Circle",
+			     {strokeColor:this.getStrokeColor(),
+			      strokeWidth:this.getStrokeWidth(),
+			      fillColor:"transparent",
+			      fillOpacity:1.0},
+			     OpenLayers.Handler.RegularPolygon,
+			     {snapAngle:45,sides:40}
+			    ),
+		new MapGlyph(this,"triangle", "Triangle",
+			     {strokeColor:this.getStrokeColor(),
+			      strokeWidth:this.getStrokeWidth(),
+			      fillColor:"transparent",
+			      fillOpacity:1.0},
+			     OpenLayers.Handler.RegularPolygon,
+			     {snapAngle:10,sides:3}
+			    ),				
+		new MapGlyph(this,"hexagon", "Hexagon",
+			     {strokeColor:this.getStrokeColor(),
+			      strokeWidth:this.getStrokeWidth(),
+			      fillColor:"transparent",
+			      fillOpacity:1.0},
+			     OpenLayers.Handler.RegularPolygon,
+			     {snapAngle:90,sides:6}
+			    ),		
 		new MapGlyph(this,"line", "Line",
 			     {strokeColor:this.getStrokeColor(),
 			      strokeWidth:this.getStrokeWidth()},
-			     OpenLayers.Handler.BoxHandler),
+			     OpenLayers.Handler.Path,{maxVertices:2}),		
+
+		new MapGlyph(this,"polyline", "Polyline",
+			     {strokeColor:this.getStrokeColor(),
+			      strokeWidth:this.getStrokeWidth()},
+			     OpenLayers.Handler.Path),
 		new MapGlyph(this,"freehand","Freehand",
 			     {strokeColor:this.getStrokeColor(),
 			      strokeWidth:this.getStrokeWidth()},
 			     OpenLayers.Handler.Path,
-			     {freehand:true})		
+			     {freehand:true}),
+		new MapGlyph(this,"image", "Image",
+			     {strokeColor:"transparent",
+			      strokeWidth:1,
+			      imageOpacity:this.getImageOpacity(1),
+			      fillColor:"transparent"},
+			     OpenLayers.Handler.ImageHandler,
+			     {snapAngle:90,sides:4,irregular:true,isImage:true}
+			    ),
+		
 	    ];
 	},
 	showMessage:function(msg)  {
@@ -39714,28 +39921,23 @@ OpenLayers.Control.EditListener = OpenLayers.Class(OpenLayers.Control, {
 	},
         initDisplay: function() {
             SUPER.initDisplay.call(this);
-	    this.features = this.map.createFeatureLayer("Features",false);
-	    this.map.featureClickHandler = e=>{
-	    };
+	    this.myLayer = this.map.createFeatureLayer("Features",false,null,{rendererOptions: {zIndexing: true}});
 	    this.icon = "/icons/map/marker-blue.png";
-            this.eventHandler = new OpenLayers.Control.EditListener();
-	    this.eventHandler.setDisplay(this);
-            this.map.getMap().addControl(this.eventHandler);
-            this.eventHandler.activate();	    
 	    let _this = this;
-
+	    let control;
 	    if(!this.getDisplayOnly()) {
 //		this.jq(ID_LEFT).html(HU.div([ID,this.domId(ID_COMMANDS),CLASS,"ramadda-display-editablemap-commands"]));
 		var keyboardControl = new OpenLayers.Control();
-		var control = new OpenLayers.Control();
+		control = new OpenLayers.Control();
 		var callbacks = { keydown: function(evt) {
                     if(!evt.metaKey) return;
+//		    console.log(evt.keyCode);
 		    switch(evt.keyCode) {
 		    case 88: // x
 			_this.doCut();
 			return;
 		    case 86: // v
-			_this.doPaste();
+			_this.doPaste(evt);
 			return;
 		    case 67: // c
 			_this.doCopy();
@@ -39750,25 +39952,7 @@ OpenLayers.Control.EditListener = OpenLayers.Class(OpenLayers.Control, {
 		var handler = new OpenLayers.Handler.Keyboard(control, callbacks, options);
 		handler.activate();
 		this.map.getMap().addControl(keyboardControl);
-		var clickHandler = new OpenLayers.Handler.Click(this.features, { 
-		    click: function(evt) {
-			if(evt.metaKey) {
-			    var feature = _this.features.getFeatureFromEvent(evt);
-			    if(feature) {
-				_this.doEdit(feature);
-			    }
-			}
-		    },
-		    dblclick: function(evt) {}
-		},{
-		    single: true  
-		    ,double: true
-		    ,stopSingle: true
-		    ,stopDouble: true
-		} );
-		clickHandler.activate();
-
-		this.addControl(ID_SELECTOR,"Click-drag to select",new OpenLayers.Control.SelectFeature(this.features, {
+		this.addControl(ID_SELECTOR,"Click-drag to select",new OpenLayers.Control.SelectFeature(this.myLayer, {
 		    highlight: function(feature) {
 			let tmp = {};
 			$.extend(tmp,feature.style);
@@ -39804,7 +39988,7 @@ OpenLayers.Control.EditListener = OpenLayers.Class(OpenLayers.Control, {
 		    box: true
 		}));
 
-		this.addControl(ID_EDIT,"Click to edit properties",new OpenLayers.Control.SelectFeature(this.features, {
+		this.addControl(ID_EDIT,"Click to edit properties",new OpenLayers.Control.SelectFeature(this.myLayer, {
 		    onSelect: function(feature) {
 			_this.doEdit(feature);
 		    },
@@ -39818,19 +40002,68 @@ OpenLayers.Control.EditListener = OpenLayers.Class(OpenLayers.Control, {
 		}));
 
 
-		this.addControl(ID_MOVER,"Click drag to move",new OpenLayers.Control.DragFeature(this.features));
-		let Modder = OpenLayers.Class(OpenLayers.Control.ModifyFeature, {
-		    dragStart:function(feature) {
-			this.theFeature = feature;
-			return OpenLayers.Control.ModifyFeature.prototype.dragStart.apply(this,arguments);
-		    },
-		    dragVertex:function(vertex,pixel) {
+
+		let imageChecker = feature=>{
+		    if(feature.image) {
+			_this.checkImage(feature);
+		    }
+		};
+		let MyMover =  OpenLayers.Class(OpenLayers.Control.ModifyFeature, {
+		    dragVertex: function(vertex, pixel) {
+			if(!this.feature.image) {
+			    OpenLayers.Control.ModifyFeature.prototype.dragVertex.apply(this, arguments);
+			    return;
+			}
+			let v  = this.feature.geometry.getVertices();
+			let p  = vertex.geometry.getVertices()[0];
+			let index = -1;
+			v.every((v,idx)=>{
+			    if(v.x==p.x && v.y == p.y) {
+				index = idx;
+				return false;
+			    }
+			    return true
+			});
 			var pos = this.map.getLonLatFromViewPortPx(pixel);
-			//		    console.log("dragVertex:" + pos);
-			OpenLayers.Control.ModifyFeature.prototype.dragVertex.apply(this,arguments);
+			var geom = vertex.geometry;
+			geom.move(pos.lon - geom.x, pos.lat - geom.y);
+			p  = vertex.geometry.getVertices()[0];
+			if(index==0) {
+			    //nw
+			    v[3].x = p.x;
+			    v[1].y = p.y;			    
+			} else 	if(index==1) {
+			    //ne
+			    v[2].x = p.x;
+			    v[0].y = p.y;
+			} else 	if(index==2) {
+			    //se
+			    v[1].x = p.x;
+			    v[3].y = p.y;			    
+			} else 	if(index==3) {
+			    //sw
+			    v[0].x = p.x;
+			    v[2].y = p.y;
+			}
+			this.feature.geometry.clearBounds();
+			this.layer.drawFeature(this.feature, this.standalone ? undefined :
+					       'select');
+			this.layer.drawFeature(vertex);
+			imageChecker(this.feature);
 		    }
 		});
-		this.addControl(ID_MODIFIER,"Click drag to move",new Modder(this.features,{}));
+		let mover =  this.addControl(ID_MOVER,"Click drag to move",new OpenLayers.Control.DragFeature(this.myLayer,{
+		    onDrag: function(feature, pixel) {imageChecker(feature);}
+		}));
+		let resizer = new MyMover(this.myLayer,{
+		    onDrag: function(feature, pixel) {imageChecker(feature);},
+		    mode:OpenLayers.Control.ModifyFeature.RESIZE|OpenLayers.Control.ModifyFeature.DRAG});
+		let reshaper = new MyMover(this.myLayer, {
+		    onDrag: function(feature, pixel) {imageChecker(feature);},
+		    createVertices:false,
+		    mode:OpenLayers.Control.ModifyFeature.RESHAPE});
+		this.addControl(ID_RESIZE,"Click to resize",resizer);
+		this.addControl(ID_RESHAPE,"Click to reshape",reshaper);
 
 		let menuBar=  HU.div([ID,this.domId(ID_MENU_FILE),CLASS,"ramadda-menubar-button"],"File")+
 		    HU.div([ID,this.domId(ID_MENU_EDIT),CLASS,"ramadda-menubar-button"],"Edit") +
@@ -39884,18 +40117,22 @@ OpenLayers.Control.EditListener = OpenLayers.Class(OpenLayers.Control, {
 }
 
 
-var MapGlyph = function(map,type,label,style,handler,options) {
-    this.map = map;
+var MapGlyph = function(display,type,label,style,handler,options) {
+    this.display = display;
     this.label = label;
     this.type = type;
     this.style = style;
     this.handler = handler;
-    this.options = options;
     this.options = options || {};
+    this.options.display = display;
+    this.options.mapGlyph = this;
     $.extend(this,{
 	isLabel:  function() {
 	    return this.style.label!=null;
 	},
+	isImage:  function() {
+	    return this.options.isImage;
+	},	
 	isIcon:  function() {
 	    return this.style.externalGraphic!=null;
 	},	
@@ -39906,7 +40143,7 @@ var MapGlyph = function(map,type,label,style,handler,options) {
 	},
 	createDrawer:function() {
 	    let _this = this;
-	    let layer = this.map.features;
+	    let layer = this.display.myLayer;
 	    let Drawer = OpenLayers.Class(OpenLayers.Control.DrawFeature, {
 		initialize: function(layer, options) {
 		    let defaultStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style["default"]);
@@ -39929,6 +40166,9 @@ var MapGlyph = function(map,type,label,style,handler,options) {
 		drawFeature: function(geometry) {
 		    OpenLayers.Control.DrawFeature.prototype.drawFeature.apply(this, arguments);
 		    let feature =this.layer.features[this.layer.features.length-1];
+		    if(this.handler.theImage) {
+			feature.image = this.handler.theImage;
+		    }
 		    feature.type = _this.type;
 		    let newStyle;
 		    if(this.handler.style) {
@@ -39946,13 +40186,12 @@ var MapGlyph = function(map,type,label,style,handler,options) {
 		    }
 		    this.layer.redraw();
 		    if(_this.isLabel()) {
-			_this.map.setCommand(null);
+			_this.display.setCommand(null);
 		    }
-
 		}
 	    });
 	    this.drawer = new Drawer(layer);
-	    this.map.addControl(this.type,"",this.drawer);
+	    this.display.addControl(this.type,"",this.drawer);
 	    return this.drawer;
 	},
     });	

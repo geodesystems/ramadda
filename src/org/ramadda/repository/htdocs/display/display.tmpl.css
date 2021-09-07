@@ -399,6 +399,8 @@ a.display-container {
     margin:0px;
     padding-left:15px;
 }
+
+
 .display-map-toc-item {
     padding:2px;
     display:inline-block;
@@ -409,6 +411,12 @@ a.display-container {
 
 .display-map-toc-item-on {
     background:var(--highlight-background);
+}
+
+.display-map-legend {
+    overflow-y:auto;
+    padding-left:4px;
+    width:150px;
 }
 
 .display-map-toolbar .ramadda-button {
