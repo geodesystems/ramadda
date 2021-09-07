@@ -338,6 +338,8 @@ public class TypeHandler extends RepositoryManager {
     /** Should users be shown this type when doing a New Entry... */
     private boolean forUser = true;
 
+    private boolean isGroup = false;
+
     /** can be set for abstract types */
     private boolean includeInSearch = false;
 
@@ -528,6 +530,9 @@ public class TypeHandler extends RepositoryManager {
             forUser = Utils.getAttributeOrTag(node, ATTR_FORUSER,
                     XmlUtil.getAttributeFromTree(node, ATTR_FORUSER,
                         forUser));
+            isGroup = Utils.getAttributeOrTag(node, "isgroup",
+                    XmlUtil.getAttributeFromTree(node, "isgroup",
+						 isGroup));	    
 
 
             String tmpCanCache = Utils.getAttributeOrTag(node, "canCache",
@@ -2553,7 +2558,7 @@ public class TypeHandler extends RepositoryManager {
      * @return _more_
      */
     public boolean isGroup() {
-        return false;
+        return isGroup;
     }
 
 
