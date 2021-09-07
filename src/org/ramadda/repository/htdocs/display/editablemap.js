@@ -126,6 +126,7 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 		    } else if(glyph.isLabel()) {
 			let text = prompt("Label text:",this.lastText);
 			if(!text) return;
+			text = text.replace(/\\n/g,"\n");
 			this.lastText = text;
 			tmpStyle.label = text;
 		    }
@@ -198,9 +199,13 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 		props.forEach(prop=>{
 		    if(prop=="labelSelect") return;
 		    let v = this.jq(prop).val();
+		    if(prop=="label") {
+			v = v.replace(/\\n/g,"\n");
+		    }
 		    feature.style[prop] = v;
 		});
 		if(feature.style.imageUrl) {
+		    if(feature.image) feature.image.setOpacity(feature.style.imageOpacity);
 		    this.checkImage(feature);
 		}
 		this.myLayer.redraw();
@@ -272,10 +277,16 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 //			console.log("value:" + v);
 		    }
 		    let size = "20";
-		    if(prop=="strokeWidth" || prop=="pointRadius" || prop=="fontSize" || prop=="fontWeight" || prop=="imageOpacity") size="4";
-		    else if(prop=="fontFamily") size="60";
-		    else if(prop=="imageUrl") size="80";		    
-		    widget =  HU.input("",v,[ID,this.domId(prop),"size",size]);
+		    if(prop=="label") {
+//			v = v.replace(/\n/g,"\\n");
+			size="80"
+			widget =  HU.textarea("",v,[ID,this.domId(prop),"rows",5,"cols", 60]);
+		    } else {
+			if(prop=="strokeWidth" || prop=="pointRadius" || prop=="fontSize" || prop=="fontWeight" || prop=="imageOpacity") size="4";
+			else if(prop=="fontFamily") size="60";
+			else if(prop=="imageUrl") size="80";		    
+			widget =  HU.input("",v,[ID,this.domId(prop),"size",size]);
+		    }
 		}
 		html+=HU.formEntry(label+":",widget);
 	    });
@@ -970,6 +981,10 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 	    */
 	    if(this.getProperty("entryType")=="geo_editable_json") {
 		this.loadMap(this.getProperty("entryId"));
+		//Do it in a bit so the layer gets its bounds set
+		setTimeout(()=>{
+		    this.map.zoomToLayer(this.myLayer);		    
+		},1000);
 	    }
         },
     });

@@ -290,6 +290,7 @@ function RepositoryMap(mapId, params) {
         fixedText: false,
         initialLayers: [],
         imageLayers: {},
+        imageLayersList: [],	
         tickSelectColor: "red",
         tickHoverColor: "blue",
         tickColor: "#888"
@@ -794,11 +795,10 @@ RepositoryMap.prototype = {
 		value:_this.imageOpacity,
 		slide: function( event, ui ) {
 		    _this.imageOpacity = ui.value;
-		    if(!_this.imageLayers) return;
-                    for (id in _this.imageLayers) {
-                        image = _this.imageLayers[id];
+		    if(!_this.imageLayersList) return;
+		    _this.imageLayersList.forEach(image=>{
 			image.setOpacity(_this.imageOpacity);
-		    };
+		    });
 		},
 	    });
 	}
@@ -1227,7 +1227,7 @@ RepositoryMap.prototype = {
                 maxResolution: this.getMap().layers[0] ? this.getMap().layers[0].resolutions[0] : null
             }
         );
-
+	image.id = layerId;
         image.latLonBounds = latLonBounds;
         //        image.setOpacity(0.5);
         if (theArgs.forSelect) {
@@ -1250,6 +1250,7 @@ RepositoryMap.prototype = {
         if (!this.imageLayers) this.imageLayers = {}
         if (!theArgs.isBaseLayer) {
             this.imageLayers[layerId] = image;
+	    this.imageLayersList.push(image);
         }
 
 	if(!this.noPointerEventsLayers) this.noPointerEventsLayers = [];
@@ -1776,6 +1777,9 @@ RepositoryMap.prototype = {
 	    this.nonSelectLayers = OpenLayers.Util.removeItem(this.nonSelectLayers, layer);
 	if(this.loadedLayers)
 	    this.loadedLayers = OpenLayers.Util.removeItem(this.loadedLayers, layer);
+	if(this.imageLayersList) {
+	    this.imageLayersList = OpenLayers.Util.removeItem(this.imageLayersList, layer);
+	}
         this.getMap().removeLayer(layer);
     },
 
@@ -2528,9 +2532,8 @@ RepositoryMap.prototype = {
         let callbacks = {
             keydown: function(evt) {
                 if (evt.keyCode == 79) {
-                    if (!_this.imageLayers) return;
-                    for (id in _this.imageLayers) {
-                        image = _this.imageLayers[id];
+                    if (!_this.imageLayersList) return;
+		    _this.imageLayersList.forEach(image=>{
                         if (!Utils.isDefined(image.opacity)) {
                             image.opacity = 1.0;
                         }
@@ -2543,7 +2546,7 @@ RepositoryMap.prototype = {
                         if (opacity < 0) opacity = 0;
                         else if (opacity > 1) opacity = 1;
                         image.setOpacity(opacity);
-                    }
+                    });
                 }
                 if (evt.keyCode == 84) {
                     if (_this.selectImage) {
@@ -3484,10 +3487,9 @@ RepositoryMap.prototype = {
 
 
     checkImageLayerVisibility:  function() {
-        if (!this.imageLayers) return;
-        for (let i in this.imageLayers) {
-            let visible = this.isLayerVisible(i);
-            let image = this.imageLayers[i];
+        if (!this.imageLayersList) return;
+	this.imageLayersList.forEach(image=>{
+            let visible = this.isLayerVisible(image.id);
             image.setVisibility(visible);
             if (!visible) {
                 if (image.box) {
@@ -3500,7 +3502,7 @@ RepositoryMap.prototype = {
                     image.box = this.createBox(i, "", image.north, image.west, image.south, image.east, image.text, {});
                 }
             }
-        }
+        });
     },
 
     hiliteMarker:  function(id) {
