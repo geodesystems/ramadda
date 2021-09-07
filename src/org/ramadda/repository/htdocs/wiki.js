@@ -546,6 +546,7 @@ class  WikiEditor {
 	let callback =a => {
 	    this.getAttributeBlocks(tagInfo, forPopup, finalCallback);
 	};
+
 	let wikiAttrs = this.getWikiAttributes(tagInfo,callback);
 	//Callback later
 	if(wikiAttrs===false) return false;
@@ -603,6 +604,7 @@ class  WikiEditor {
 	    let ctItems =  Utils.getColorTablePopup(this, true);
 	    blocks.push({title:"Color table",items:ctItems});
 	}
+
 
 	if(!title) {
 	    title = Utils.makeLabel(tagInfo.tag) +" Properties";
@@ -845,7 +847,13 @@ class  WikiEditor {
 	    if(display) {
 		attrs = display.getWikiEditorTags();
 		if(display.getTypeLabel) {
-		    title = display.getTypeLabel() +" Properties";
+		    title = display.getTypeLabel();
+		    if(title==null) {
+			title = Utils.makeLabel(tagInfo.type||"");
+		    }
+
+
+		    title =  title +" Properties";
 		    let url = display.getTypeHelpUrl();
 		    if(url) title = HU.href(url, title + SPACE + HU.getIconImage(icon_help),["target","_ramaddahelp"]);
 		}
