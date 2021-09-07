@@ -490,6 +490,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'trackUrlField',ex:'field id',tt:'The data can contain a URL that points to data'},
 
 	{label:"Map Labels"},
+	{p:"labelTemplate",ex:"${field}",tt:"Display labels in the map"},
+	{p:"labelKeyField",ex:"field",tt:"Make a key, e.g., A, B, C, ... based on the value of the key field"},	
+	{p:"labelLimit",ex:"1000",tt:"Max number of records to display labels"},	
 	{p:"labelFontColor",ex:"#000"},
 	{p:"labelFontSize",ex:"12px"},
 	{p:"labelFontFamily",ex:"'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"},
@@ -753,6 +756,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.myFeatureLayerNoSelect) {
 		this.map.removeLayer(this.myFeatureLayerNoSelect);
 	    }	    
+	    if(this.labelFeatures) {
+		this.map.labelLayer.removeFeatures(this.labelFeatures);
+		this.labelFeatures = null;
+		this.jq("legendid").html("");
+	    }
 	    this.myFeatureLayer = null;
 	    this.myFeatureLayerNoSelect = null;
 	    this.myFeatures= null;
@@ -3897,8 +3905,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         },
 
         addLabels:function(records, fields) {
-            let labelTemplate = this.getProperty("labelTemplate");
-            if(!labelTemplate) return;
+	    let limit = this.getLabelLimit(100000);
+	    if(records.length>limit) return;
+            let labelTemplate = this.getLabelTemplate();
+	    let labelKeyField;
+	    if(this.getLabelKeyField()) {
+		labelKeyField = this.getFieldById(fields,this.getLabelKeyField());
+	    }
+            if(!labelTemplate && !labelKeyField) return;
+	    if(labelKeyField) labelTemplate= "${_key}";
 	    labelTemplate = labelTemplate.replace(/_nl_/g,"\n");
 	    if(!this.map.labelLayer) {
 		this.map.labelLayer = new OpenLayers.Layer.Vector("Labels", {
@@ -3921,11 +3936,24 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 
 
-
+	    let keyMap={};
+	    let keyLegend="";
 	    var features =  [];
             var seen = {};
 	    var colorBy = this.getProperty("colorBy");
 	    var sizeBy = this.getProperty("sizeBy");
+	    let keyIndex = 0;
+	    let alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+	    let  keys = [];
+	    for(let j=0;j<3;j++) {
+		alpha.forEach(c=>{
+		    let cc = "";
+		    for(let i=0;i<=j;i++) {
+			cc+=c;
+		    }
+		    keys.push(cc);
+		});
+	    }
             for (var i = 0; i < records.length; i++) {
 		var record = records[i];
                 var point = record.point;
@@ -3933,24 +3961,39 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		point = {x:record.getLongitude(),y:record.getLatitude()};
                 var center = new OpenLayers.Geometry.Point(point.x, point.y);
                 center.transform(this.map.displayProjection, this.map.sourceProjection);
-                var tuple = record.getData();
                 var pointFeature = new OpenLayers.Feature.Vector(center);
                 pointFeature.noSelect = true;
                 pointFeature.attributes = {
                 };
                 pointFeature.attributes[RECORD_INDEX] = (i+1);
                 pointFeature.attributes["recordIndex"] = (i+1)+"";
-                for (var fieldIdx = 0;fieldIdx < fields.length; fieldIdx++) {
-                    var field = fields[fieldIdx];
-                    pointFeature.attributes[field.getId()] = field.getValue(record);
+		if(labelKeyField) {
+		    let v = labelKeyField.getValue(record);
+		    if(!keyMap[v]) {
+			if(keyIndex>=keys.length) keyIndex=0;
+			keyMap[v] = keys[keyIndex++];
+			keyLegend+=keyMap[v]+": " + v+"<br>";
+		    }
+		    pointFeature.attributes["_key"] = keyMap[v];
+                }
+		for (var fieldIdx = 0;fieldIdx < fields.length; fieldIdx++) {
+		    var field = fields[fieldIdx];
+		    pointFeature.attributes[field.getId()] = field.getValue(record);
 		    if(colorBy && field.getId() == colorBy) {
 			pointFeature.attributes["colorBy"] = field.getValue(record);
 		    }
 		    if(sizeBy && field.getId() == sizeBy) {
 			pointFeature.attributes["sizeBy"] = field.getValue(record);
-		    }
-                }
+                    }
+		}
                 features.push(pointFeature);
+	    }
+	    if(keyLegend.length>0) {
+		if(!this.legendId) {
+		    this.legendId = this.domId("legendid");
+		    this.jq(ID_RIGHT).append(HU.div([ID,this.legendId, CLASS,"display-map-legend",STYLE, HU.css("max-height",this.getHeight("400px"))]));
+		}
+		this.jq("legendid").html(keyLegend);
 	    }
 	    if(this.labelFeatures)
 		this.map.labelLayer.removeFeatures(this.labelFeatures);
