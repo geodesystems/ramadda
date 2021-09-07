@@ -3119,6 +3119,11 @@ RepositoryMap.prototype = {
         return llbounds.transform(this.displayProjection, this.sourceProjection);
     },
 
+    transformPoints: function(points) {
+        for (let i = 0; i < points.length; i++) {
+            points[i].transform(this.displayProjection, this.sourceProjection);
+        }
+    },
     transformLLPoint:  function(point) {
         if (!point)
             return null;
@@ -4425,14 +4430,14 @@ RepositoryMap.prototype = {
             this.markers.removeFeatures(markers);
         }
     },    
-    createFeatureLayer: function(name, canSelect,style) {
+    createFeatureLayer: function(name, canSelect,style,opts) {
         let base_style = OpenLayers.Util.extend({},
 						OpenLayers.Feature.Vector.style['default']);
 	if(style)
 	    $.extend(base_style,style);
-        let layer =  new OpenLayers.Layer.Vector(name||"Markers", {
-            style: base_style
-        });
+	opts = opts||{};
+	opts.style = base_style;
+        let layer =  new OpenLayers.Layer.Vector(name||"Markers", opts);
 	this.externalLayers.push(layer);
         this.addVectorLayer(layer,canSelect);
 	return layer;
