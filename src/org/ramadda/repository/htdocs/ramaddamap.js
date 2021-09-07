@@ -2533,6 +2533,7 @@ RepositoryMap.prototype = {
             keydown: function(evt) {
                 if (evt.keyCode == 79) {
                     if (!_this.imageLayersList) return;
+		    if(_this.ignoreKeyEvents) return;
 		    _this.imageLayersList.forEach(image=>{
                         if (!Utils.isDefined(image.opacity)) {
                             image.opacity = 1.0;

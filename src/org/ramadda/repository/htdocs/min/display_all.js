@@ -39446,6 +39446,7 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 	    html +=HU.div([ID,this.domId(ID_CANCEL), CLASS,"display-button"], "Cancel");	    
 	    html  = HU.div([CLASS,"wiki-editor-popup"], html);
 	    html+="</center>";
+	    this.map.ignoreKeyEvents = true;
 	    let dialog = HU.makeDialog({content:html,anchor:this.jq(ID_MENU_FILE),title:"Map Properties",header:true,draggable:true,remove:false});
 
 	    this.jq("externalGraphic").iconselectmenu().iconselectmenu("menuWidget").addClass("ui-menu-icons ramadda-select-icon");
@@ -39465,6 +39466,7 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 		});
 	    }
 	    let close = ()=>{
+		this.map.ignoreKeyEvents = false;
 		dialog.hide();
 		dialog.remove();
 	    }
@@ -39936,7 +39938,7 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 	    this.icon = "/icons/map/marker-blue.png";
 	    let _this = this;
 	    let control;
-	    if(!this.getDisplayOnly()) {
+	    if(!this.getDisplayOnly() || !Utils.isAnonymous()) {
 //		this.jq(ID_LEFT).html(HU.div([ID,this.domId(ID_COMMANDS),CLASS,"ramadda-display-editablemap-commands"]));
 		var keyboardControl = new OpenLayers.Control();
 		control = new OpenLayers.Control();
