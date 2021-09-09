@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -17,9 +17,16 @@
 package org.ramadda.util;
 
 
-import java.util.Date;
-import java.util.Hashtable;
+import ucar.unidata.util.Misc;
 
+
+
+import java.util.ArrayList;
+import java.util.Date;
+
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.List;
 
 
 /**
@@ -31,6 +38,15 @@ import java.util.Hashtable;
  * @param <VALUE>
  */
 public class TTLCache<KEY, VALUE> {
+
+    /** _more_          */
+    private static Object mutex = new Object();
+
+    /** _more_          */
+    private static List<TTLCache> caches = new ArrayList<TTLCache>();
+
+    /** _more_          */
+    private static Runnable ttlRunnable;
 
     /** helper for ttl */
     public static long MS_IN_A_MINUTE = 1000 * 60;
@@ -54,6 +70,8 @@ public class TTLCache<KEY, VALUE> {
     /** how big should the cache become until its cleared */
     private int sizeLimit = -1;
 
+    /** _more_          */
+    public boolean debug = false;
 
     /**
      * default ctor. 1 hour in cache. No time reset. No size limit
@@ -97,7 +115,25 @@ public class TTLCache<KEY, VALUE> {
         this.timeThreshold   = timeThresholdInMilliseconds;
         this.sizeLimit       = sizeLimit;
         this.updateTimeOnGet = updateTimeOnGet;
+        synchronized (mutex) {
+            caches.add(this);
+            if (ttlRunnable == null) {
+                ttlRunnable = new Runnable() {
+                    public void run() {
+                        while (true) {
+                            //Check every 60 seconds
+                            Misc.sleepSeconds(60);
+                            for (TTLCache cache : caches) {
+                                cache.checkCache();
+                            }
+                        }
+                    }
+                };
+                Misc.run(ttlRunnable);
+            }
+        }
     }
+
 
     /**
      * _more_
@@ -120,11 +156,52 @@ public class TTLCache<KEY, VALUE> {
     /**
      * _more_
      */
-    public void clearCache() {
+    public synchronized void clearCache() {
+        List toRemove = new ArrayList();
+        for (Enumeration keys = cache.keys(); keys.hasMoreElements(); ) {
+            toRemove.add(keys.nextElement());
+        }
+        for (Object o : toRemove) {
+            remove(o);
+        }
         cache = new Hashtable<KEY, CacheEntry<VALUE>>();
     }
 
+    /**
+     * _more_
+     *
+     * @param value _more_
+     */
+    public void cacheRemove(VALUE value) {}
 
+    /**
+     * _more_
+     */
+    private synchronized void checkCache() {
+        if (debug) {
+            System.err.println("checkCache");
+        }
+        List toRemove = new ArrayList();
+        Date now      = new Date();
+        for (Enumeration keys = cache.keys(); keys.hasMoreElements(); ) {
+            Object key = keys.nextElement();
+            if (debug) {
+                System.err.println("\tkey:" + key);
+            }
+            CacheEntry cacheEntry = (CacheEntry) cache.get(key);
+            long       timeDiff   = now.getTime() - cacheEntry.time;
+            if (timeDiff > timeThreshold) {
+                toRemove.add(key);
+            }
+        }
+        for (Object o : toRemove) {
+            if (debug) {
+                System.err.println("\tremoving:" + o);
+            }
+            remove(o);
+        }
+
+    }
 
     /**
      * put the value
@@ -132,10 +209,11 @@ public class TTLCache<KEY, VALUE> {
      * @param key key
      * @param value value
      */
-    public void put(KEY key, VALUE value) {
+    public synchronized void put(KEY key, VALUE value) {
         if ((sizeLimit > 0) && (cache.size() > sizeLimit)) {
-            cache = new Hashtable<KEY, CacheEntry<VALUE>>();
+            clearCache();
         }
+        remove(key);
         cache.put(key, new CacheEntry<VALUE>(value));
     }
 
@@ -144,7 +222,11 @@ public class TTLCache<KEY, VALUE> {
      *
      * @param key _more_
      */
-    public void remove(Object key) {
+    public synchronized void remove(Object key) {
+        CacheEntry<VALUE> entry = cache.get(key);
+        if (entry != null) {
+            cacheRemove(entry.object);
+        }
         cache.remove(key);
     }
 
@@ -156,7 +238,7 @@ public class TTLCache<KEY, VALUE> {
      *
      * @return value or null if not in cache or entry has expired
      */
-    public VALUE get(Object key) {
+    public synchronized VALUE get(Object key) {
         CacheEntry cacheEntry = cache.get(key);
         if (cacheEntry == null) {
             return null;
