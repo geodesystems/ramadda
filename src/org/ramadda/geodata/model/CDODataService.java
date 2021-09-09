@@ -474,7 +474,7 @@ public abstract class CDODataService extends Service {
         long millis = System.currentTimeMillis();
         JobManager.CommandResults results =
             getRepository().getJobManager().executeCommand(commands, envMap,
-                processDir, 90);
+                processDir, 240);
         //System.out.println("processing took: " + (System.currentTimeMillis()-millis));
         String errorMsg = results.getStderrMsg();
         String outMsg   = results.getStdoutMsg();
