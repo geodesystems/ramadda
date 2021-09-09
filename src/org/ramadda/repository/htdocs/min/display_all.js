@@ -31907,7 +31907,9 @@ function RamaddaBaseMapDisplay(displayManager, type, id, properties) {
         },
 
         initMapParams: function(params) {
-
+	    if(this.getProperty("showOpacitySlider")||true) {
+		params.showOpacitySlider=true;
+	    }
 	},
 	initMap:function(map) {
 	},
@@ -32496,6 +32498,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 
         initMapParams: function(params) {
+	    SUPER.initMapParams.call(this,params);
 	    if(this.getDoPopupSlider()) {
 		params.doPopupSlider = true;
 		if(this.getPopupSliderRight()) {
@@ -39933,11 +39936,14 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 	    },3000);
 	},
         initDisplay: function() {
-            SUPER.initDisplay.call(this);
+            SUPER.initDisplay.call(this)
+
 	    this.myLayer = this.map.createFeatureLayer("Features",false,null,{rendererOptions: {zIndexing: true}});
 	    this.icon = "/icons/map/marker-blue.png";
 	    let _this = this;
 	    let control;
+
+
 	    if(!this.getDisplayOnly() || !Utils.isAnonymous()) {
 //		this.jq(ID_LEFT).html(HU.div([ID,this.domId(ID_COMMANDS),CLASS,"ramadda-display-editablemap-commands"]));
 		var keyboardControl = new OpenLayers.Control();
@@ -40082,7 +40088,11 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 		    HU.div([ID,this.domId(ID_MENU_EDIT),CLASS,"ramadda-menubar-button"],"Edit") +
 		    HU.div([ID,this.domId(ID_MENU_NEW),CLASS,"ramadda-menubar-button"],"New");		    
 	    	menuBar = HU.div([CLASS,"ramadda-menubar"], menuBar);
-		menuBar+=HU.span([ID,this.domId(ID_MESSAGE),STYLE,HU.css("margin-left","10px")],"");
+		let message = HU.span([ID,this.domId(ID_MESSAGE),STYLE,HU.css("margin-left","10px")],"");
+		menuBar+=message;
+		let mapHeader = HU.div([STYLE,HU.css("margin-left","20px","display","inline-block"), ID,this.domId(ID_MAP)+"_header"]);
+		menuBar= HU.table(['width','100%'],HU.tr(["valign","bottom"],HU.td(['width','50%'],menuBar) +
+							 HU.td(['width','50%'],mapHeader)));
 		this.jq(ID_TOP_LEFT).append(menuBar);
 
 		this.jq(ID_MENU_NEW).click(function() {
@@ -40095,6 +40105,9 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 		    _this.showEditMenu($(this));
 		});
 
+	    } else {
+		let menuBar=HU.div([STYLE,HU.css("display","inline-block"), ID,this.domId(ID_MAP)+"_header"]);
+		this.jq(ID_TOP_LEFT).append(HU.center(menuBar));
 	    }
 
 	    let cmds = "";
@@ -40122,6 +40135,8 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 		});
 	    });
 	    */
+
+
 	    if(this.getProperty("entryType")=="geo_editable_json") {
 		this.loadMap(this.getProperty("entryId"));
 		//Do it in a bit so the layer gets its bounds set

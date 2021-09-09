@@ -178,7 +178,9 @@ function RamaddaBaseMapDisplay(displayManager, type, id, properties) {
         },
 
         initMapParams: function(params) {
-
+	    if(this.getProperty("showOpacitySlider")||true) {
+		params.showOpacitySlider=true;
+	    }
 	},
 	initMap:function(map) {
 	},
@@ -767,6 +769,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 
         initMapParams: function(params) {
+	    SUPER.initMapParams.call(this,params);
 	    if(this.getDoPopupSlider()) {
 		params.doPopupSlider = true;
 		if(this.getPopupSliderRight()) {
