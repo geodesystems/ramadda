@@ -28,14 +28,14 @@ import org.ramadda.repository.output.KmlOutputHandler;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.output.WikiConstants;
-import org.ramadda.util.geo.*;
+import org.ramadda.util.ColorTable;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
 import org.ramadda.util.KmlUtil;
-import org.ramadda.util.ColorTable;
 
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
+import org.ramadda.util.geo.*;
 import org.ramadda.util.text.CsvUtil;
 
 import org.w3c.dom.CDATASection;
@@ -45,17 +45,14 @@ import ucar.unidata.gis.GisPart;
 import ucar.unidata.gis.shapefile.DbaseData;
 import ucar.unidata.gis.shapefile.DbaseFile;
 import ucar.unidata.gis.shapefile.EsriShapefile;
-import ucar.unidata.util.IOUtil;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
-import java.util.Map;
-import java.util.Iterator;
-import java.awt.geom.Rectangle2D;
 import java.awt.Color;
+import java.awt.geom.Rectangle2D;
 
 
 import java.io.*;
@@ -65,7 +62,10 @@ import java.text.DecimalFormat;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
+
+import java.util.Map;
 import java.util.Properties;
 
 import java.util.zip.ZipEntry;
@@ -78,7 +78,7 @@ import java.util.zip.ZipOutputStream;
  */
 public class ShapefileOutputHandler extends OutputHandler implements WikiConstants {
 
-    /** _more_          */
+    /** _more_ */
     public static boolean debug = false;
 
     /** Map output type */
@@ -125,7 +125,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
 
 
     /** _more_ */
-    private TTLCache<String, EsriShapefile> cache;
+    private TTLCache<String, ShapefileWrapper> cache;
 
 
 
@@ -145,9 +145,12 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         addType(OUTPUT_FIELDS_TABLE);
         addType(OUTPUT_FIELDS_LIST);
         //Create the cache with a 1 minute TTL
-        cache = new TTLCache<String, EsriShapefile>(60 * 1000);
-	
-
+        cache = new TTLCache<String, ShapefileWrapper>(60 * 1000) {
+            @Override
+            public void cacheRemove(ShapefileWrapper wrapper) {
+                IOUtil.close(wrapper.inputStream);
+            }
+        };
     }
 
 
@@ -163,7 +166,10 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
      */
     public EsriShapefile getShapefile(Entry entry) throws Exception {
         synchronized (cache) {
-            EsriShapefile shapefile = cache.get(entry.getId());
+            ShapefileWrapper wrapper   = cache.get(entry.getId());
+            EsriShapefile    shapefile = (wrapper != null)
+                                         ? wrapper.shapefile
+                                         : null;
             if ((shapefile != null) && debug) {
                 System.err.println(
                     "ShapefileOutputHandler.getShapefile: in cache");
@@ -176,28 +182,42 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                         "ShapefileOutputHandler.getShapefile: new EsriShapefile");
                     System.err.println("stack:" + Utils.getStack(5));
                 }
-                String path = entry.getFile().toString();
-                if (false && path.endsWith(".shp")) {
-                    File tmp = getStorageManager().getTmpFile(
-                                   getRepository().getTmpRequest(),
-                                   "tmp.zip");
-                    ZipEntry zipEntry = new ZipEntry("tmp.shp");
-                    ZipOutputStream zos =
-                        new ZipOutputStream(new FileOutputStream(tmp));
-                    zos.putNextEntry(zipEntry);
-                    InputStream shpIS =
-                        getStorageManager().getInputStream(path);
-                    IOUtil.writeTo(shpIS, zos);
-                    IOUtil.close(shpIS);
-                    IOUtil.close(zos);
-                    shapefile = new EsriShapefile(tmp.toString());
-                } else {
-                    shapefile = new EsriShapefile(path);
-                }
-                cache.put(entry.getId(), shapefile);
+                String      path        = entry.getFile().toString();
+                InputStream inputStream = new FileInputStream(path);
+                shapefile = new EsriShapefile(inputStream, null, 1.0f);
+                cache.put(entry.getId(),
+                          new ShapefileWrapper(shapefile, inputStream));
             }
 
             return shapefile;
+        }
+    }
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Wed, Sep 8, '21
+     * @author         Enter your name here...    
+     */
+    private static class ShapefileWrapper {
+
+        /** _more_          */
+        EsriShapefile shapefile;
+
+        /** _more_          */
+        InputStream inputStream;
+
+        /**
+         * _more_
+         *
+         * @param shapefile _more_
+         * @param inputStream _more_
+         */
+        public ShapefileWrapper(EsriShapefile shapefile,
+                                InputStream inputStream) {
+            this.shapefile   = shapefile;
+            this.inputStream = inputStream;
         }
     }
 
@@ -278,9 +298,10 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                 getRepository().loadProperties(properties, f.toString());
             }
 
-	    Hashtable props = new Hashtable();
-	    props.putAll(properties);
-	    return props;
+            Hashtable props = new Hashtable();
+            props.putAll(properties);
+
+            return props;
         }
 
         return null;
@@ -300,9 +321,11 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
     public List<DbaseDataWrapper> getDatum(Request request, Entry entry,
                                            DbaseFile dbfile)
             throws Exception {
-        Hashtable          properties = getExtraProperties(request,   entry);
+        Hashtable  properties       = getExtraProperties(request, entry);
         Properties pluginProperties = getRepository().getPluginProperties();
-	return FeatureCollection.getDatum(dbfile, properties, pluginProperties);
+
+        return FeatureCollection.getDatum(dbfile, properties,
+                                          pluginProperties);
     }
 
 
@@ -324,15 +347,15 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         if (shapefile == null) {
             shapefile = getShapefile(entry);
         }
-        DbaseFile              dbfile    = shapefile.getDbFile();
+        DbaseFile              dbfile = shapefile.getDbFile();
         String                 schemaName;
         String                 schemaId;
         List<DbaseDataWrapper> fieldDatum = null;
-        DbaseDataWrapper       nameField = null;
+        DbaseDataWrapper       nameField  = null;
 
-        Hashtable                collectionProps      = new Hashtable<String, Object>();
-        Metadata       colorBy = null;
-        List<Metadata> metadataList;
+        Hashtable collectionProps         = new Hashtable<String, Object>();
+        Metadata               colorBy    = null;
+        List<Metadata>         metadataList;
         metadataList = getMetadataManager().findMetadata(request, entry,
                 "shapefile_color", true);
         if ((metadataList != null) && (metadataList.size() > 0)) {
@@ -357,22 +380,25 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
 
         collectionProps.putAll(getRepository().getPluginProperties());
         if (dbfile != null) {
-	    Hashtable     extraProperties = getExtraProperties(request,   entry);
-	    fieldDatum =  FeatureCollection.getDatum(dbfile, extraProperties, (Hashtable<String,Object>) collectionProps);
-	    nameField = FeatureCollection.getNameField(fieldDatum);
-            collectionProps.put(FeatureCollection.PROP_SCHEMANAME, schemaName);
+            Hashtable extraProperties = getExtraProperties(request, entry);
+            fieldDatum = FeatureCollection.getDatum(dbfile, extraProperties,
+                    (Hashtable<String, Object>) collectionProps);
+            nameField = FeatureCollection.getNameField(fieldDatum);
+            collectionProps.put(FeatureCollection.PROP_SCHEMANAME,
+                                schemaName);
             collectionProps.put(FeatureCollection.PROP_SCHEMAID, schemaId);
             collectionProps.put(FeatureCollection.PROP_STYLEID, schemaId);
             if (balloonTemplate != null) {
                 collectionProps.put(FeatureCollection.PROP_BALLOON_TEMPLATE,
-                          balloonTemplate);
+                                    balloonTemplate);
             }
         }
 
-        Hashtable  properties = getExtraProperties(request,    entry);
-	return  FeatureCollection.makeFeatureCollection(entry.getName(), entry.getDescription(), shapefile,
-							 properties,
-							 collectionProps);
+        Hashtable properties = getExtraProperties(request, entry);
+
+        return FeatureCollection.makeFeatureCollection(entry.getName(),
+                entry.getDescription(), shapefile, properties,
+                collectionProps);
     }
 
 
@@ -1059,6 +1085,8 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
      * Turn this into KML
      *
      *
+     *
+     * @param fc _more_
      * @param decimate _more_
      * @param bounds _more_
      * @param fieldValues _more_
@@ -1066,26 +1094,31 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
      *
      * @throws Exception _more_
      */
-    public Element toKml(FeatureCollection fc, boolean decimate, Rectangle2D.Double bounds,
-                         List<String> fieldValues)
+    public Element toKml(FeatureCollection fc, boolean decimate,
+                         Rectangle2D.Double bounds, List<String> fieldValues)
             throws Exception {
-	Hashtable properties = fc.getProperties();
-	List<Feature> features = fc.getFeatures();
 
-	List<DbaseDataWrapper> fieldDatum = fc.getDatum();
-        Element root       = KmlUtil.kml(getName());
-        Element doc        = KmlUtil.document(root, getName(), true);
-        boolean haveSchema = false;
+        Hashtable              properties = fc.getProperties();
+        List<Feature>          features   = fc.getFeatures();
+
+        List<DbaseDataWrapper> fieldDatum = fc.getDatum();
+        Element                root       = KmlUtil.kml(getName());
+        Element                doc = KmlUtil.document(root, getName(), true);
+        boolean                haveSchema = false;
         if ( !properties.isEmpty()
-                && (properties.get(FeatureCollection.PROP_SCHEMANAME) != null)
-                && (properties.get(FeatureCollection.PROP_SCHEMAID) != null)
-                && (properties.get(FeatureCollection.PROP_SCHEMA) != null)) {
+                && (properties.get(FeatureCollection.PROP_SCHEMANAME)
+                    != null) && (properties
+                        .get(FeatureCollection
+                            .PROP_SCHEMAID) != null) && (properties
+                                .get(FeatureCollection
+                                    .PROP_SCHEMA) != null)) {
             makeKmlSchema(properties, doc);
             haveSchema = true;
         }
         Element folder = KmlUtil.folder(doc, getName(), true);
         // Apply one style to the entire document
-        String styleName = (String) properties.get(FeatureCollection.PROP_STYLEID);
+        String styleName =
+            (String) properties.get(FeatureCollection.PROP_STYLEID);
         if (styleName == null) {
             styleName = "" + (int) (Math.random() * 1000);
         }
@@ -1112,6 +1145,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                 if (fieldDatum.get(j).getName().equalsIgnoreCase(
                         colorByFieldAttr)) {
                     colorByField = fieldDatum.get(j);
+
                     break;
                 }
             }
@@ -1137,7 +1171,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                 max = Double.parseDouble(colorBy.getAttr(5));
             }
 
-	    //            List features = shapefile.getFeatures();
+            //            List features = shapefile.getFeatures();
             styleUrls = new ArrayList<String>();
 
 
@@ -1357,9 +1391,27 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         }
 
         return root;
+
     }
 
 
+    /**
+     * _more_
+     *
+     * @param fc _more_
+     * @param color _more_
+     * @param colorMap _more_
+     * @param lineColor _more_
+     * @param doLine _more_
+     * @param folder _more_
+     * @param styleCnt _more_
+     * @param balloonSchema _more_
+     * @param balloonTemplate _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     private String makeFillStyle(FeatureCollection fc, Color color,
                                  Hashtable<Color, String> colorMap,
                                  Color lineColor, boolean doLine,
@@ -1376,7 +1428,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             if (Utils.stringDefined(balloonTemplate)) {
                 balloonTemplate = balloonTemplate.replaceAll("\\["
                         + balloonSchema + "/", "[" + styleUrl + "/");
-                makeBalloonForDB(fc,style, balloonTemplate);
+                makeBalloonForDB(fc, style, balloonTemplate);
             }
             Element polystyle = KmlUtil.makeElement(style,
                                     KmlUtil.TAG_POLYSTYLE);
@@ -1468,18 +1520,24 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
     /**
      * Make the KML schema element
      *
+     *
+     * @param properties _more_
      * @param parent  the one to add to
      *
      * @return  the element
      */
     public Element makeKmlSchema(Hashtable properties, Element parent) {
         Element schema = KmlUtil.makeElement(parent, KmlUtil.TAG_SCHEMA);
-        schema.setAttribute(KmlUtil.ATTR_NAME,
-                            (String) properties.get(FeatureCollection.PROP_SCHEMANAME));
-        schema.setAttribute(KmlUtil.ATTR_ID,
-                            (String) properties.get(FeatureCollection.PROP_SCHEMAID));
+        schema.setAttribute(
+            KmlUtil.ATTR_NAME,
+            (String) properties.get(FeatureCollection.PROP_SCHEMANAME));
+        schema.setAttribute(
+            KmlUtil.ATTR_ID,
+            (String) properties.get(FeatureCollection.PROP_SCHEMAID));
         Hashtable<String, String[]> data =
-            (Hashtable<String, String[]>) properties.get(FeatureCollection.PROP_SCHEMA);
+            (Hashtable<String,
+                       String[]>) properties.get(
+                           FeatureCollection.PROP_SCHEMA);
         Iterator<Map.Entry<String, String[]>> entries =
             data.entrySet().iterator();
         while (entries.hasNext()) {
@@ -1504,13 +1562,16 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
     /**
      * Make a balloon style for the db schema
      *
+     *
+     * @param fc _more_
      * @param parent  the parent to add to
      * @param template _more_
      *
      * @return the balloon element
      */
-    private Element makeBalloonForDB(FeatureCollection fc, Element parent, String template) {
-	List<DbaseDataWrapper> fieldDatum = fc.getDatum();
+    private Element makeBalloonForDB(FeatureCollection fc, Element parent,
+                                     String template) {
+        List<DbaseDataWrapper> fieldDatum = fc.getDatum();
         Element balloon = KmlUtil.makeElement(parent,
                               KmlUtil.TAG_BALLOONSTYLE);
         StringBuilder sb = new StringBuilder();
@@ -1519,8 +1580,8 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         } else {
             sb.append("<table cellpadding=\"5\" border=\"0\">\n");
             //            Hashtable<String, String[]> schema =   (Hashtable<String, String[]>) properties.get(PROP_SCHEMA);
-	    Hashtable properties = fc.getProperties();
-	    for (DbaseDataWrapper dbd : fieldDatum) {
+            Hashtable properties = fc.getProperties();
+            for (DbaseDataWrapper dbd : fieldDatum) {
                 //            String label = props.get
                 sb.append("<tr><td align=right><b>");
                 sb.append(dbd.getLabel());
