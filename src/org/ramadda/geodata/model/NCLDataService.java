@@ -203,7 +203,7 @@ public class NCLDataService extends Service {
         long millis = System.currentTimeMillis();
         JobManager.CommandResults results =
             getRepository().getJobManager().executeCommand(commands, envMap,
-                processDir, 60);
+                processDir, 90);
         //System.out.println("processing took: " + (System.currentTimeMillis()-millis));
         String errorMsg = results.getStderrMsg();
         String outMsg   = results.getStdoutMsg();
