@@ -1277,10 +1277,16 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     this.toMinValue = this.getProperty("ToMin", this.toMinValue);
     this.toMaxValue = this.getProperty("ToMax", this.toMaxValue);
     this.enabled = this.timeField!=null || (this.getProperty("doColorBy",true) && this.index>=0);
+    this.initDisplayCalled = false;
 }
 
 
+
 ColorByInfo.prototype = {
+    initDisplay: function() {
+	this.filterHighlight = this.display.getFilterHighlight();
+	this.initDisplayCalled = true;
+    },
     getProperty: function(prop, dflt, debug) {
 	if(this.properties[prop]) return this.properties[prop];
 	if(this.debug) console.log("getProperty:" + prop);
@@ -1378,10 +1384,11 @@ ColorByInfo.prototype = {
 	return this.toMinValue + (perc*(this.toMaxValue-this.toMinValue));
     },
     getColorFromRecord: function(record, dflt, checkHistory) {
-	if(this.display.getFilterHighlight() && !record.isHighlight(this.display)) {
+	if(!this.initDisplayCalled)   this.initDisplay();
+
+	if(this.filterHighlight && !record.isHighlight(this.display)) {
 	    return this.display.getProperty("unhighlightColor","#eee");
 	}
-
 
 	if(this.colorThresholdField && this.display.selectedRecord) {
 	    let v=this.display.selectedRecord.getValue(this.colorThresholdField.getIndex());
@@ -1424,7 +1431,9 @@ ColorByInfo.prototype = {
     },
 
     getColorInner: function(value, pointRecord) {
-	if(this.display.getFilterHighlight() && pointRecord && !pointRecord.isHighlight(this.display)) {
+	if(!this.initDisplayCalled)   this.initDisplay();
+
+	if(this.filterHighlight && pointRecord && !pointRecord.isHighlight(this.display)) {
 	    return this.display.getUnhighlightColor();
 	}
 
