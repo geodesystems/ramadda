@@ -57,7 +57,8 @@
 +row
 :col-2
 +col-8
-  {{display_map  
+{{display_map  
+addEntryMarkers=true
 recordHighlightStrokeWidth=1 
 recordHighlightStrokeColor=#000 
 recordHighlightRadius=10 
