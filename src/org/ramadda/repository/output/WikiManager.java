@@ -5420,7 +5420,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             if ((name != null) && !name.isEmpty()) {
                 extra = extra + HU.attr(HU.ATTR_ALT, name);
             }
-            extra = extra + HU.attr("id", idPrefix + "img" + num);
+            extra = extra + HU.attr("id", idPrefix + "img" + num) +
+		HU.attr("loading","lazy");
             String img = HU.img(url, "", extra);
 
             String entryUrl =
