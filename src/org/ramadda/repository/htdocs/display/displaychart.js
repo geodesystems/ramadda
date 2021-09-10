@@ -1096,7 +1096,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let maxHeaderWidth = this.getProperty("maxHeaderWidth",-1);
 	    let headerStyle= this.getProperty("headerStyle");
             for (let j = 0; j < header.length; j++) {
-		console.log("H:" + j);
 		let field=null;
 		if(j>0 || !props.includeIndex) {
 		    field = selectedFields[fIdx++];
