@@ -75,7 +75,7 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 
 
 
-    const SUPER = new RamaddaBaseMapDisplay(displayManager, id, DISPLAY_EDITABLEMAP, properties);
+    const SUPER = new RamaddaBaseMapDisplay(displayManager,  DISPLAY_EDITABLEMAP, id, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     this.defineSizeByProperties();
@@ -798,8 +798,6 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 	    this.icon = "/icons/map/marker-blue.png";
 	    let _this = this;
 	    let control;
-
-
 	    if(!this.getDisplayOnly() || !Utils.isAnonymous()) {
 //		this.jq(ID_LEFT).html(HU.div([ID,this.domId(ID_COMMANDS),CLASS,"ramadda-display-editablemap-commands"]));
 		var keyboardControl = new OpenLayers.Control();
