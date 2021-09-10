@@ -109,8 +109,7 @@ function DisplayManager(argId, argProperties) {
             return this.group;
         },
         collectEntries: function() {
-            var entries = this.getLayoutManager().collectEntries();
-            return entries;
+            return  this.getLayoutManager().collectEntries();
         },
         getData: function() {
             return this.dataList;
@@ -469,8 +468,9 @@ function DisplayManager(argId, argProperties) {
                 return;
             }
             let displayId = props.displayId;
-	    if(!displayId) 
+	    if(!displayId)  {
 		displayId = this.getUniqueId("display");
+	    }
             if (props.theData == null && this.dataList.length > 0) {
                 props.theData = this.dataList[0];
             }
