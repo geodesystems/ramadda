@@ -295,13 +295,16 @@ var Utils =  {
     },
 
 
-    displayTimes: function(label,times,oneLine) {
+    displayTimes: function(label,times,oneLine,labels) {
 	let t = "";
 	let delim = oneLine?" "  :"\n";
 	let pre = oneLine?" ":"\t";
 	t+=label +delim;
 	for(var i=0;i<times.length-1;i++) {
-	    t+=pre + "time" +(i+1) +": " + ((times[i+1].getTime()-times[i].getTime())/1000) + delim;
+	    let label=null;
+	    if(labels && i<labels.length) label = labels[i];
+	    if(!label)label = "time" +(i+1)
+	    t+=pre + label +": " + ((times[i+1].getTime()-times[i].getTime())/1000) + delim;
 	}
 	console.log(t);
     },
