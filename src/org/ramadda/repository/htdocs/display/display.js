@@ -2220,9 +2220,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (entries != null && entries.length > 0) {
                 return Utils.call(callback, entries[0]);
             }
-            if (this.entryId) {
+	    let entryId = this.entryId|| this.getProperty("entryId");
+            if (entryId) {
                 var entry;
-                await this.getRamadda().getEntry(this.entryId, e => {
+                await this.getRamadda().getEntry(entryId, e => {
                     entry = e
                     Utils.call(callback, entry);
                 });
