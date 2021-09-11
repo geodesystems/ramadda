@@ -31894,6 +31894,35 @@ function RamaddaBaseMapDisplay(displayManager, type, id, properties) {
                 setTimeout(callback, 1);
             }
         },
+	setErrorMessage: function(msg) {
+	    if(this.map)
+		this.map.setProgress(HU.div([ATTR_CLASS, "display-map-message"], msg));
+	    else
+		SUPER.setErrorMessage.call(this,msg);
+	},
+	setMessage: function(msg) {
+	    if(this.map) {
+		if(msg!="")
+		    msg = HU.div([ATTR_CLASS, "display-map-message"], msg);
+		this.map.setProgress(msg);
+	    }
+	},
+	setMapLabel: function(msg) {
+	    if(this.map)
+		this.map.setLabel(HU.div([ATTR_CLASS, "display-map-message"], msg));
+	},	
+	startProgress: function() {
+	    this.setMessage(this.getProperty("loadingMessage","Creating map..."));
+	},
+	clearProgress: function() {
+	    if(this.errorMessage) {
+		this.errorMessage = null;
+		return;
+	    }
+	    if(this.map)
+		this.map.setProgress("");
+	},
+
         checkLayout: function() {
             if (!this.map) {
                 return;
@@ -33909,32 +33938,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.jq(ID_PAGE_COUNT).html("");
             this.addPoints([],[],[]);
 	    this.setMessage(this.getNoDataMessage());
-	},
-	setErrorMessage: function(msg) {
-	    if(this.map)
-		this.map.setProgress(HU.div([ATTR_CLASS, "display-map-message"], msg));
-	    else
-		SUPER.setErrorMessage.call(this,msg);
-	},
-	setMessage: function(msg) {
-	    if(this.map) {
-		this.map.setProgress(HU.div([ATTR_CLASS, "display-map-message"], msg));
-	    }
-	},
-	setMapLabel: function(msg) {
-	    if(this.map)
-		this.map.setLabel(HU.div([ATTR_CLASS, "display-map-message"], msg));
-	},	
-	startProgress: function() {
-	    this.setMessage(this.getProperty("loadingMessage","Creating map..."));
-	},
-	clearProgress: function() {
-	    if(this.errorMessage) {
-		this.errorMessage = null;
-		return;
-	    }
-	    if(this.map)
-		this.map.setProgress("");
 	},
 	createFeature:function(polygon,record, textGetter, style){
 	    if(!style) {
@@ -39060,6 +39063,7 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
     const ID_COPY= "copy";
     const ID_PASTE= "paste";        
     const ID_COMMANDS = "commands";
+    const ID_CLEAR = "clear";
     const ID_PROPERTIES = "properties";
     const ID_NAVIGATE = "navigate";
     const ID_SAVE = "save";
@@ -39085,7 +39089,7 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 	{p:"strokeWidth",d:2},
 	{p:"pointRadius",d:10},
 	{p:"externalGraphic",d:"/map/marker-blue.png"},
-	{p:"fontSize",d:"14px"},
+	{p:"fontSize",d:"16px"},
 	{p:"fontWeight",d:"normal"},
 	{p:"fontFamily",d:"'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"},
 	{p:"imageOpacity",d:1},
@@ -39132,14 +39136,15 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 		    cmd.handler.style = tmpStyle;
 		    cmd.handler.layerOptions.styleMap=styleMap;
 		}
-		if(cmd.message)
-		    this.showMessage(cmd.message);
+		let message = glyph?"New " + glyph.label:cmd.message;
+		message = message||"";
+		this.showCommandMessage(message);
 		cmd.activate();
 		return false;
 	    });
 	},
 	clearCommands:function() {
-	    
+	    this.showCommandMessage("");
 	    let buttons = this.jq(ID_COMMANDS).find(".ramadda-clickable");
 	    buttons.removeClass("ramadda-display-editablemap-command-active");
 	    buttons.each(function() {
@@ -39448,6 +39453,7 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 	    }
 	    html+= this.menuItem(this.domId(ID_DOWNLOAD),"Download")
 	    html+= this.menuItem(this.domId(ID_PROPERTIES),"Set Default Properties");
+	    html+= this.menuItem(this.domId(ID_CLEAR),"Clear Commands");
 //	    html+= this.menuItem(this.domId(ID_NAVIGATE),"Navigate");	    
 
 	    html  = this.makeMenu(html);
@@ -39475,6 +39481,10 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 		HtmlUtils.hidePopupObject();
 		_this.doProperties();
 	    });
+	    this.jq(ID_CLEAR).click(function(){
+		HtmlUtils.hidePopupObject();
+		_this.clearCommands();
+	    });	    
 	},
 	showNewMenu: function(button) {
 	    let html ="";
@@ -39609,7 +39619,7 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 	},
 
 	doCut: function() {
-	    this.clearCommands();
+//	    this.clearCommands();
 	    if(this.myLayer.selectedFeatures) {
 		this.removeImages(this.myLayer.selectedFeatures);
 		let features = this.myLayer.selectedFeatures.map(feature=>{return feature;});
@@ -39618,14 +39628,14 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 	    }
 	},
 	doDeleteAll: function() {
-	    this.clearCommands();
+//	    this.clearCommands();
 	    if(!window.confirm("Are you sure you want to delete all map features?")) return
 	    this.removeImages(this.myLayer.features);
 	    this.setClipboard(this.myLayer.features.map(feature=>{return feature;}));
 	    this.myLayer.removeFeatures(this.myLayer.features);
 	},
 	doCopy: function() {
-	    this.clearCommands();
+//	    this.clearCommands();
 	    if(!this.myLayer.selectedFeatures) return;
 	    this.setClipboard(this.myLayer.selectedFeatures.map(feature=>{return feature;}));
 	},
@@ -39662,11 +39672,9 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 		feature.type=mapGlyph.type;
 		feature.style = style;
 		this.checkImage(feature);
-
 		this.myLayer.addFeatures([feature]);
-
 	    });
-	    if(this.myLayer.length>0) {
+	    if(this.myLayer.features.length>0 && !this.getProperty("zoomLevel")) {
 		let bounds = new OpenLayers.Bounds();
 		this.myLayer.features.forEach(feature=>{
 		    bounds.extend(feature.geometry.getBounds());
@@ -39782,12 +39790,16 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 		
 	    ];
 	},
-	showMessage:function(msg)  {
+	showCommandMessage:function(msg)  {
 	    this.jq(ID_MESSAGE).html(msg);
 	    this.jq(ID_MESSAGE).show();
+	},
+	showMessage:function(msg)  {
+	    this.setMessage(msg)
 	    if(this.messageErase) clearTimeout(this.messageErase);
 	    this.messageErase = setTimeout(()=>{
-		this.jq(ID_MESSAGE).hide();
+//		this.jq(ID_MESSAGE).hide();
+		this.setMessage("");
 	    },3000);
 	},
         initDisplay: function() {
@@ -39992,10 +40004,12 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 
 	    if(this.getProperty("entryType")=="geo_editable_json") {
 		this.loadMap(this.getProperty("entryId"));
+		/* not now
 		//Do it in a bit so the layer gets its bounds set
 		setTimeout(()=>{
 		    this.map.zoomToLayer(this.myLayer);		    
 		},1000);
+*/
 	    }
         },
     });
