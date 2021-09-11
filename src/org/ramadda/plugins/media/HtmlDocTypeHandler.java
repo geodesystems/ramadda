@@ -105,51 +105,6 @@ public class HtmlDocTypeHandler extends ExtensibleGroupTypeHandler {
     /**
      * _more_
      *
-     * @param newEntry _more_
-     * @param idList _more_
-     *
-     * @return _more_
-     */
-    @Override
-    public boolean convertIdsFromImport(Entry newEntry,
-                                        List<String[]> idList) {
-        super.convertIdsFromImport(newEntry, idList);
-        if (idList.size() == 0) {
-            return false;
-        }
-
-        if ( !newEntry.getResource().isFile()) {
-            return false;
-        }
-        File f = newEntry.getResource().getTheFile();
-        //Check that it is a stored file
-        File storageDir = new File(getStorageManager().getStorageDir());
-        if ( !IOUtil.isADescendent(storageDir, f)) {
-            return false;
-        }
-        try {
-            String html = IO.readContents(f.toString());
-            String orig = html;
-            for (String[] tuple : idList) {
-                if (tuple[0].trim().length() == 0) {
-                    continue;
-                }
-                html = html.replaceAll(tuple[0].trim(), tuple[1]);
-            }
-            if ( !orig.equals(html)) {
-                getStorageManager().writeFile(f, html);
-            }
-        } catch (Exception exc) {
-            throw new RuntimeException(exc);
-        }
-
-        return false;
-
-    }
-
-    /**
-     * _more_
-     *
      * @param request _more_
      * @param entry _more_
      * @param subGroups _more_
