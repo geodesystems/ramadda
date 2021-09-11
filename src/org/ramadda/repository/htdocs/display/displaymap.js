@@ -156,6 +156,35 @@ function RamaddaBaseMapDisplay(displayManager, type, id, properties) {
                 setTimeout(callback, 1);
             }
         },
+	setErrorMessage: function(msg) {
+	    if(this.map)
+		this.map.setProgress(HU.div([ATTR_CLASS, "display-map-message"], msg));
+	    else
+		SUPER.setErrorMessage.call(this,msg);
+	},
+	setMessage: function(msg) {
+	    if(this.map) {
+		if(msg!="")
+		    msg = HU.div([ATTR_CLASS, "display-map-message"], msg);
+		this.map.setProgress(msg);
+	    }
+	},
+	setMapLabel: function(msg) {
+	    if(this.map)
+		this.map.setLabel(HU.div([ATTR_CLASS, "display-map-message"], msg));
+	},	
+	startProgress: function() {
+	    this.setMessage(this.getProperty("loadingMessage","Creating map..."));
+	},
+	clearProgress: function() {
+	    if(this.errorMessage) {
+		this.errorMessage = null;
+		return;
+	    }
+	    if(this.map)
+		this.map.setProgress("");
+	},
+
         checkLayout: function() {
             if (!this.map) {
                 return;
@@ -2171,32 +2200,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.jq(ID_PAGE_COUNT).html("");
             this.addPoints([],[],[]);
 	    this.setMessage(this.getNoDataMessage());
-	},
-	setErrorMessage: function(msg) {
-	    if(this.map)
-		this.map.setProgress(HU.div([ATTR_CLASS, "display-map-message"], msg));
-	    else
-		SUPER.setErrorMessage.call(this,msg);
-	},
-	setMessage: function(msg) {
-	    if(this.map) {
-		this.map.setProgress(HU.div([ATTR_CLASS, "display-map-message"], msg));
-	    }
-	},
-	setMapLabel: function(msg) {
-	    if(this.map)
-		this.map.setLabel(HU.div([ATTR_CLASS, "display-map-message"], msg));
-	},	
-	startProgress: function() {
-	    this.setMessage(this.getProperty("loadingMessage","Creating map..."));
-	},
-	clearProgress: function() {
-	    if(this.errorMessage) {
-		this.errorMessage = null;
-		return;
-	    }
-	    if(this.map)
-		this.map.setProgress("");
 	},
 	createFeature:function(polygon,record, textGetter, style){
 	    if(!style) {
