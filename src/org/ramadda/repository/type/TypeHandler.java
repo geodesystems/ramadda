@@ -42,6 +42,7 @@ import org.ramadda.service.ServiceOutput;
 import org.ramadda.util.FileInfo;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.Json;
 import org.ramadda.util.SelectionRectangle;
@@ -1897,19 +1898,66 @@ public class TypeHandler extends RepositoryManager {
      */
     public boolean convertIdsFromImport(Entry newEntry,
                                         List<String[]> idList) {
+	boolean changed = false;
+
+	if(getTypeProperty("convertidsinfile",false)) {
+	    changed = convertIdsFromImportInFile(newEntry, idList);
+	}
+
         String desc = newEntry.getDescription();
         if ((desc != null) && (desc.length() > 0)) {
             String converted = convertIdsFromImport(desc, idList);
             if ( !converted.equals(desc)) {
                 newEntry.setDescription(converted);
 
-                return true;
+                changed = true;
             }
         }
-
-        return false;
+        return changed;
     }
 
+
+
+    /**
+     * _more_
+     *
+     * @param newEntry _more_
+     * @param idList _more_
+     *
+     * @return _more_
+     */
+    public boolean convertIdsFromImportInFile(Entry newEntry,
+                                        List<String[]> idList) {
+        if (idList.size() == 0) {
+            return false;
+        }
+
+        if ( !newEntry.getResource().isFile()) {
+            return false;
+        }
+        File f = newEntry.getResource().getTheFile();
+        //Check that it is a stored file
+        File storageDir = new File(getStorageManager().getStorageDir());
+        if ( !IOUtil.isADescendent(storageDir, f)) {
+            return false;
+        }
+        try {
+            String txt = IO.readContents(f.toString());
+            String orig = txt;
+            for (String[] tuple : idList) {
+                if (tuple[0].trim().length() == 0) {
+                    continue;
+                }
+                txt = txt.replaceAll(tuple[0].trim(), tuple[1]);
+            }
+            if ( !orig.equals(txt)) {
+                getStorageManager().writeFile(f, txt);
+            }
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
+        return false;
+    }
 
 
     /**
