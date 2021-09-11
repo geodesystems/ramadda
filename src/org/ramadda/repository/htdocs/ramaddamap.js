@@ -736,7 +736,7 @@ RepositoryMap.prototype = {
     },
     zoomToExtent: function(bounds,flag) {
 	if(debugBounds) {
-	    console.log("zoomToExtent:" );
+	    console.log("zoomToExtent:"  + bounds);
 	}
 	this.getMap().zoomToExtent(bounds,flag);
     },
@@ -3600,7 +3600,7 @@ RepositoryMap.prototype = {
         if (dataBounds) {
 	    if(scale)
 		dataBounds = dataBounds.scale(parseFloat(scale),dataBounds.getCenterPixel());
-            this.zoomToExtent(dataBounds, true);
+            this.zoomToExtent(dataBounds, false);
 	}
     },
 
