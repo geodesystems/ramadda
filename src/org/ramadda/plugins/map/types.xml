@@ -241,13 +241,13 @@ width="100%" height="400" details="true" defaultMapLayer="esri.topo"
 
   <type name="geo_editable_json"  description="Editable Map File"  isgroup="true">
     <property name="defaultFilename" value="map.json"/>
+     <property name="convertidsinfile" value="true"/>
     <property name="icon" value="/icons/map.png"/>
 <wiki>
 <![CDATA[
 +section title={{name}}
 {{description wikify="true"}}
-{{display_editablemap height=80vh  showBounds=false  
-zoomLevel=4 mapCenter=38.82633,-95.56096
+{{display_editablemap height=90vh  showBounds=false  
 }}
 -section
 ]]>
