@@ -65,21 +65,24 @@ ALTER table entries add column entryorder int;
 
 CREATE INDEX ENTRIES_INDEX_ID ON entries (ID);
 CREATE INDEX ENTRIES_INDEX_RESOURCE ON entries (RESOURCE);
-CREATE INDEX ENTRIES_INDEX_DATATYPE ON entries (DATATYPE);
 CREATE INDEX ENTRIES_INDEX_PARENT_GROUP_ID ON entries (PARENT_GROUP_ID);
 CREATE INDEX ENTRIES_INDEX_TYPE ON entries (TYPE);
 CREATE INDEX ENTRIES_INDEX_USER_ID ON entries (USER_ID);
 CREATE INDEX ENTRIES_INDEX_FROMDATE ON entries (FROMDATE);
 CREATE INDEX ENTRIES_INDEX_TODATE ON entries (TODATE);
 
+--Never used
+#if  derby postgres oracle
+DROP INDEX ENTRIES_INDEX_DATATYPE;
+#endif
 
-CREATE TABLE ancestors (id varchar(200),
-	                ancestor_id varchar(200));
-
-CREATE INDEX ancestors_index_id ON ancestors (id);
-CREATE INDEX ancestors_index_ancestor_id ON ancestors (ancestor_id);
+#if  mysql
+DROP INDEX ENTRIES_INDEX_DATATYPE ON ENTRIES;
+#endif
 
 
+--- We used to have an ancestors table but it was never used
+DROP TABLE ancestors;
 
 
 -----------------------------------------------------------------------
@@ -320,9 +323,6 @@ CREATE TABLE  pointdatametadata (
        longname varchar(1000),
        unit varchar(100),
        vartype varchar(100));
-
-
----- CREATE INDEX POINTDATAMETADATA_INDEX_TABLENAME ON pointdatametadata (TABLENAME);
 
 
 
