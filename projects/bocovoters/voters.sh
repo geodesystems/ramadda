@@ -24,6 +24,23 @@ do_all() {
     do_release
 }
 
+do_histogram() {
+    
+    ${csv} -delimiter "|" \
+	   -ifin voter_id voters_boulder.csv  voter_id  \
+	   -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "," "voted_date" \
+	   -change voted_date "," "" \
+	   -notpattern voted_date "" \
+	   -sum voted_date "" "" \
+	   -change voted_date "(..)/(..)/(....)" "\$3-\$1-\$2" \
+	   -sort voted_date \
+	   -addheader "voted_date.type date voted_date.format yyyy-MM-dd" \
+	   -p ${voting_report} > boulder_voting_2020_histogram.csv
+}
+
+do_histogram
+exit
+    
 
 
 init_files() {
