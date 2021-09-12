@@ -2388,6 +2388,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return (db.equals(SqlUtil.DB_POSTGRES));
     }
 
+
     /**
      * _more_
      *
@@ -2480,10 +2481,9 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      *
      * @return _more_
      */
-    public HashSet getFlags() {
+    private HashSet getFlags() {
         HashSet flags = new HashSet();
         flags.add(db);
-
         return flags;
     }
 
@@ -2508,9 +2508,11 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             int existsCnt = 0;
             for (SqlUtil.SqlError error : errors) {
                 String errorString =
-                    error.getException().toString().toLowerCase();
+                    error.getException().toString().toLowerCase() +" " + error.getSql().toLowerCase();
                 if ((errorString.indexOf("already exists") < 0)
-                        && (errorString.indexOf("duplicate") < 0)) {
+		    && (errorString.indexOf("drop table") < 0)
+		    && (errorString.indexOf("drop index") < 0)
+		    && (errorString.indexOf("duplicate") < 0)) {
                     System.err.println(
                         "RAMADDA: Error in DatabaseManager.loadSql: "
                         + error.getException() + "\nsql:" + error.getSql());
