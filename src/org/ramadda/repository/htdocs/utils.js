@@ -3486,7 +3486,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     getUniqueId: function() {
 	if (!window["uniqueCnt"]) {
-	    window["uniqueCnt"] = 1;
+	    window["uniqueCnt"] = new Date().getTime();
 	}
         var cnt = window["uniqueCnt"]++;
         return "id_" + cnt;
