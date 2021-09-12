@@ -617,6 +617,7 @@ public class MetadataTypeBase extends RepositoryManager {
         String extra = (forLink
                         ? HtmlUtils.cssClass("ramadda-thumbnail-image img-thumbnail")
                         : "");
+	extra+=HU.attr("style","max-width:100%;");
         String tail  = getStorageManager().getFileTail(f.toString());
         String path =
             Utils.concatString(handler.getRepository().getMetadataManager()
@@ -627,7 +628,7 @@ public class MetadataTypeBase extends RepositoryManager {
             String img = HtmlUtils.img(HtmlUtils.url(path, ARG_ELEMENT,
                              element.getIndex() + "", ARG_ENTRYID,
                              metadata.getEntryId(), ARG_METADATA_ID,
-                             metadata.getId()), (forLink
+						     metadata.getId()), (forLink
                     ? msg("Click to enlarge")
                     : ""), extra);
 

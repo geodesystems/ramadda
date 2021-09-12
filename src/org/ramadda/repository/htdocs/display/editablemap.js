@@ -96,6 +96,7 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
     displayDefineMembers(this, myProps, {
 	commands: [],
         myLayer: [],
+	glyphs:{},
 	selected:{},
 	getMap: function() {
 	    return this.map;
@@ -104,8 +105,9 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 	    return;
 	},
 	setCommand:function(command) {
-	    let glyph = this.glyphMap[command];
 	    this.clearCommands();
+	    this.command = command;
+	    let glyph = this.glyphMap[command];
 	    this.commands.forEach(cmd=>{
 		cmd.deactivate();
 	    });
@@ -637,6 +639,9 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 	    if(!this.myLayer.selectedFeatures) return;
 	    this.setClipboard(this.myLayer.selectedFeatures.map(feature=>{return feature;}));
 	},
+	addGlyph: function(glyph) {
+	    this.glyphs[glyph.getId()]= glyph;
+	},
 	loadJson: function(map) {
 //	    console.log(JSON.stringify(map,null,2));
 	    map.forEach(mapGlyph=>{
@@ -706,19 +711,19 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 	},
 	doMakeMapGlyphs:function() {
 	    return [
-		new MapGlyph(this,"marker","Marker",
+		new GlyphType(this,"marker","Marker",
 			     {strokeWidth:0, 
 			      fillColor:"transparent",
 			      externalGraphic: ramaddaBaseUrl+this.getExternalGraphic(),
 			      pointRadius:this.getPointRadius(10)},
 			     OpenLayers.Handler.Point),
-		new MapGlyph(this,"point","Point",
+		new GlyphType(this,"point","Point",
 			     {strokeWidth:this.getProperty("strokeWidth",2), 
 			      fillColor:"transparent",
 			      strokeColor:this.getStrokeColor(),
 			      pointRadius:this.getPointRadius(4)},
 			     OpenLayers.Handler.Point),
-		new MapGlyph(this,"label","Label",
+		new GlyphType(this,"label","Label",
 			     {label : "label",
 			      fontColor: this.getProperty("labelFontColor","#000"),
 			      fontSize: this.getFontSize(),
@@ -731,7 +736,7 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 			      labelOutlineWidth: this.getProperty("labelOutlineWidth","0"),
 			      labelSelect:true,
 			     }, OpenLayers.Handler.Point),
-		new MapGlyph(this,"box", "Box",
+		new GlyphType(this,"box", "Box",
 			     {strokeColor:this.getStrokeColor(),
 			      strokeWidth:this.getStrokeWidth(),
 			      fillColor:"transparent",
@@ -739,7 +744,7 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 			     OpenLayers.Handler.RegularPolygon,
 			     {snapAngle:90,sides:4,irregular:true}
 			    ),
-		new MapGlyph(this,"circle", "Circle",
+		new GlyphType(this,"circle", "Circle",
 			     {strokeColor:this.getStrokeColor(),
 			      strokeWidth:this.getStrokeWidth(),
 			      fillColor:"transparent",
@@ -747,7 +752,7 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 			     OpenLayers.Handler.RegularPolygon,
 			     {snapAngle:45,sides:40}
 			    ),
-		new MapGlyph(this,"triangle", "Triangle",
+		new GlyphType(this,"triangle", "Triangle",
 			     {strokeColor:this.getStrokeColor(),
 			      strokeWidth:this.getStrokeWidth(),
 			      fillColor:"transparent",
@@ -755,7 +760,7 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 			     OpenLayers.Handler.RegularPolygon,
 			     {snapAngle:10,sides:3}
 			    ),				
-		new MapGlyph(this,"hexagon", "Hexagon",
+		new GlyphType(this,"hexagon", "Hexagon",
 			     {strokeColor:this.getStrokeColor(),
 			      strokeWidth:this.getStrokeWidth(),
 			      fillColor:"transparent",
@@ -763,21 +768,21 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 			     OpenLayers.Handler.RegularPolygon,
 			     {snapAngle:90,sides:6}
 			    ),		
-		new MapGlyph(this,"line", "Line",
+		new GlyphType(this,"line", "Line",
 			     {strokeColor:this.getStrokeColor(),
 			      strokeWidth:this.getStrokeWidth()},
 			     OpenLayers.Handler.Path,{maxVertices:2}),		
 
-		new MapGlyph(this,"polyline", "Polyline",
+		new GlyphType(this,"polyline", "Polyline",
 			     {strokeColor:this.getStrokeColor(),
 			      strokeWidth:this.getStrokeWidth()},
 			     OpenLayers.Handler.Path),
-		new MapGlyph(this,"freehand","Freehand",
+		new GlyphType(this,"freehand","Freehand",
 			     {strokeColor:this.getStrokeColor(),
 			      strokeWidth:this.getStrokeWidth()},
 			     OpenLayers.Handler.Path,
 			     {freehand:true}),
-		new MapGlyph(this,"image", "Image",
+		new GlyphType(this,"image", "Image",
 			     {strokeColor:"transparent",
 			      strokeWidth:1,
 			      imageOpacity:this.getImageOpacity(1),
@@ -802,6 +807,11 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 	},
         initDisplay: function() {
             SUPER.initDisplay.call(this)
+
+	    this.map.featureClickHandler = e=>{
+		if(this.command!=null) return;
+		console.log(e.feature);
+	    };
 
 	    this.myLayer = this.map.createFeatureLayer("Features",false,null,{rendererOptions: {zIndexing: true}});
 	    this.icon = "/icons/map/marker-blue.png";
@@ -935,7 +945,9 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 		    }
 		});
 		let mover =  this.addControl(ID_MOVER,"Click drag to move",new OpenLayers.Control.DragFeature(this.myLayer,{
-		    onDrag: function(feature, pixel) {imageChecker(feature);}
+		    onDrag: function(feature, pixel) {
+			imageChecker(feature);
+		    }
 		}));
 		let resizer = new MyMover(this.myLayer,{
 		    onDrag: function(feature, pixel) {imageChecker(feature);},
@@ -1014,7 +1026,22 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 }
 
 
-var MapGlyph = function(display,type,label,style,handler,options) {
+var MapObject = function(display, glyphType,feature) {
+    this.id = HU.getUniqueId("");
+    feature.objectId = this.id;
+    this.display = display;
+    this.feature = feature;
+    this.display.addGlyph(this);
+}
+
+
+MapObject.prototype = {
+    getId:function() {
+	return this.id;
+    }
+}
+
+var GlyphType = function(display,type,label,style,handler,options) {
     this.display = display;
     this.label = label;
     this.type = type;
@@ -1037,6 +1064,9 @@ var MapGlyph = function(display,type,label,style,handler,options) {
 	    for(a in style) {
 		if(this.style[a]) this.style[a] = style[a];
 	    }
+	},
+	newFeature: function(feature) {
+	    let glyph = new MapObject(this.display,this.type, feature);
 	},
 	createDrawer:function() {
 	    let _this = this;
@@ -1074,14 +1104,13 @@ var MapGlyph = function(display,type,label,style,handler,options) {
 		    if(newStyle) {
 			if(feature.style && feature.style.label)
 			    newStyle.label = feature.style.label;
-			else if(this.handler.style && this.handler.style.label)
-			    newStyle.label = this.handler.style.label;
 //			console.log(JSON.stringify(newStyle));
 			let tmp = {};
 			$.extend(tmp, newStyle);
 			feature.style=tmp;
 		    }
 		    this.layer.redraw();
+		    _this.newFeature(feature);
 		    if(_this.isLabel()) {
 			_this.display.setCommand(null);
 		    }

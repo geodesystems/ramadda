@@ -227,6 +227,7 @@ public class MailTypeHandler extends GenericTypeHandler {
                                       String wikiTemplate)
             throws Exception {
         StringBuffer sb   = new StringBuffer();
+        getPageHandler().entrySectionOpen(request, entry, sb,null);
         String       from = entry.getValue(0, "");
         String       to   = entry.getValue(1, "");
         sb.append(HtmlUtils.formTable());
@@ -259,6 +260,7 @@ public class MailTypeHandler extends GenericTypeHandler {
                     false));
         }
 
+        getPageHandler().entrySectionClose(request, entry, sb);
         return sb.toString();
     }
 
