@@ -1305,12 +1305,14 @@ public class SqlUtil {
                 }
             } catch (Exception exc) {
                 errors.add(new SqlError(command, exc));
-                String msg = exc.toString().toLowerCase();
+                String msg = exc.toString().toLowerCase() +" " + command.toLowerCase();
                 if ((msg.indexOf("duplicate") < 0)
-                        && (msg.indexOf("already exists") < 0)
-                        && (msg.indexOf("can't drop") < 0)
-                        && (msg.indexOf("doesn't exist") < 0)
-                        && (msg.indexOf("is not a column in table") < 0)) {
+		    && (msg.indexOf("already exists") < 0)
+		    && (msg.indexOf("can't drop") < 0)
+		    && (msg.indexOf("doesn't exist") < 0)
+		    && (msg.indexOf("drop table") < 0)
+		    && (msg.indexOf("drop index") < 0)
+		    && (msg.indexOf("is not a column in table") < 0)) {
                     System.err.println(
                         "\n*********************************************");
                     System.err.println("Bad sql:" + command);
@@ -1334,6 +1336,7 @@ public class SqlUtil {
      * @return _more_
      */
     public static List<String> parseSql(String sql, HashSet flags) {
+	boolean debug = false;
         List<String> result = new ArrayList<String>();
         List<String> lines  = (List<String>) StringUtil.split(sql, "\n");
         StringBuffer sb     = new StringBuffer();
@@ -1365,13 +1368,15 @@ public class SqlUtil {
                                 break;
                             }
                         }
-                        //                      System.err.println("\tskip flag:" +flag +" ok:" + contains);
+                        if(debug)
+			    System.out.println("\tskip flag:" +flag +" ok:" + contains);
                         if (contains) {
                             ok = true;
                         }
                     }
                     skip = !ok;
-                    //              System.err.println("SqlUtil: skip flag:" +trimLine +" skip:" + skip);
+                    if(debug)
+			System.out.println("SqlUtil: skip flag:" +trimLine +" skip:" + skip);
                 }
                 continue;
             }
@@ -1382,7 +1387,8 @@ public class SqlUtil {
             }
 
             if (skip) {
-                //              System.err.println("SqlUtil: skipping:" + line);
+		if(debug)
+		    System.out.println("SqlUtil: skipping:" + line);
                 continue;
             }
 
