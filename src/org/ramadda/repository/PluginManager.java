@@ -435,7 +435,6 @@ public class PluginManager extends RepositoryManager {
         pluginFiles = remainder;
         for (String file : pluginFiles) {
 	    if(file.endsWith("mapextra.js")) {
-		System.err.println("file:" + file);
 		getMapManager().addExtraMapJS(getStorageManager().readSystemResource(file));
 	    }
 	}

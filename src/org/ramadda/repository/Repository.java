@@ -4445,7 +4445,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         adminOnly             = getProperty(PROP_ACCESS_ADMINONLY, false);
         requireLogin          = getProperty(PROP_ACCESS_REQUIRELOGIN, false);
         allSsl                = getProperty(PROP_ACCESS_ALLSSL, false);
-	System.err.println("initRepositoryAttributes: all ssl:" + allSsl);
         sslIgnore             = getProperty(PROP_SSL_IGNORE, false);
         cacheResources        = getProperty(PROP_CACHERESOURCES, false);
         repositoryName = getProperty(PROP_REPOSITORY_NAME, repositoryName);

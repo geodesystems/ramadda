@@ -1080,7 +1080,6 @@ public class PageHandler extends RepositoryManager {
                 continue;
             }
             path = applyBaseMacros(path);
-            System.err.println("file:" + path);
             String css = getStorageManager().readSystemResource(prefix
                              + path);
             sb.append("/* from " + path + "*/\n");
