@@ -9633,23 +9633,44 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let paginate = this.getProperty("filterPaginate");
 	    if(this.getProperty("pageRequest") || paginate) {
 		if(debug) console.log("\tupdating pageRequest");
-		let count;
-		let skip;
-		let max;
-		if(paginate) {
-		    skip = this.pageSkip||0;
-		    count = +this.getProperty("pageCount",1000);
-		    max = records.length;
-		} else {
-		    count = records.length;
-		    let skipToks = url?url.match(/skip=([0-9]+)/):null;
-		    if(skipToks) skip = +skipToks[1];
-		    max = +this.getProperty("max",5000);
+		let count = pointData.getRecords().length;
+		let skip = null;
+		let skipToks = url?url.match(/skip=([0-9]+)/):null;
+		if(skipToks) skip = +skipToks[1];
+		let max = +this.getProperty("max",5000);
+		//		console.log("max:" +max +" count:" + count +" skip:" + skip);
+		let label = count;
+		if(skip!=null && skip>0)
+		    label = String(skip+1)+"-"+(count+skip);
+		else if(count==max)
+		    label = "1" +"-"+count;
+		let pageInfo = this.getProperty("pageRequestLabel","Showing: ${count}").replace("${count}",label) +" ";
+		let gotAll = !skip &&  count<max;
+
+		if(skip!=null && skip>0) {
+		    pageInfo+= HU.getIconImage("fa-step-backward",[ID,this.getDomId(ID_PAGE_PREV),CLASS,"display-page-button",TITLE,"View previous"])
+		}  else if(!gotAll) {
+		    pageInfo+= HU.getIconImage("fa-step-backward",[CLASS,"display-page-button fa-disabled"])
 		}
-		let pageInfo = HU.span([ID,this.domId(ID_PAGE_LABEL)])+" " +
-		    HU.span([ID,this.domId(ID_PAGE_BUTTONS)]);
-		this.jq(ID_PAGE_COUNT).html(pageInfo);
-		this.updatePaginateLabel(skip, count,max);
+		if(count==max) {
+		    pageInfo+= HU.getIconImage("fa-step-forward",[ID,this.getDomId(ID_PAGE_NEXT),CLASS,"display-page-button",TITLE,"View next"])
+		}  else if(!gotAll) {
+		    pageInfo+= HU.getIconImage("fa-step-forward",[CLASS,"display-page-button fa-disabled"])
+		}
+		this.jq(ID_PAGE_COUNT).html(pageInfo+"&nbsp;&nbsp;");
+		this.jq(ID_PAGE_NEXT).click(()=>{
+		    if(!this.pageSkip)
+			this.pageSkip=0;
+		    this.pageSkip+=max;
+		    this.reloadData();
+		});
+		this.jq(ID_PAGE_PREV).click(()=>{
+		    if(!this.pageSkip)
+			this.pageSkip=0;
+		    this.pageSkip-=max;
+		    if(this.pageSkip<0) this.pageSkip=0;
+		    this.reloadData();
+		});		
 	    }
 
             if (url != null) {
