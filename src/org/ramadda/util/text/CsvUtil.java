@@ -1546,6 +1546,7 @@ public class CsvUtil {
                         "number")),
         new Cmd("-deheader", new Label("Remove the  header"),
 		"Strip off the point header"),
+        new Cmd("-headernames", "Clean up names"),
         new Cmd("-cat", "One or more csv files", "*.csv"),
 
         /** *  Filter * */
@@ -2119,7 +2120,6 @@ public class CsvUtil {
                         "6"), new Arg("delimiter", "Output between rows",
                                       "size", "40"), new Arg("suffix", "",
 							     "size", "40")),
-        new Cmd("-headernames", "Clean up names"),
         new Cmd("-addheader", new Label("Add header"),
                 "Add the RAMADDA point properties",
                 new Arg("properties", "name1 value1 ... nameN valueN",
