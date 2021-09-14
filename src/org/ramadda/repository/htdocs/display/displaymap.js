@@ -525,7 +525,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{label:"Map Labels"},
 	{p:"labelTemplate",ex:"${field}",tt:"Display labels in the map"},
 	{p:"labelKeyField",ex:"field",tt:"Make a key, e.g., A, B, C, ... based on the value of the key field"},	
-	{p:"labelLimit",ex:"1000",tt:"Max number of records to display labels"},	
+	{p:"labelLimit",ex:"1000",tt:"Max number of records to display labels"},
+	{p:"doLabelGrid",ex:"true",tt:"Use a grid to determine if a label should be shown"},		
 	{p:"labelFontColor",ex:"#000"},
 	{p:"labelFontSize",ex:"12px"},
 	{p:"labelFontFamily",ex:"'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"},
@@ -800,7 +801,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             this.map.initMap(false);
             this.map.addRegionSelectorControl(function(bounds) {
 		_this.propagateEvent(DisplayEvent.mapBoundsChanged, {"bounds": bounds,    "force": true});
-            });
+            },true);
 	    this.map.popupHandler = (feature,popup) =>{
 		this.handlePopup(feature, popup);
 	    };
@@ -2950,7 +2951,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
         createPoints: function(records, fields, points,bounds, debug) {
 	    debug = debug ||displayDebug.displayMapAddPoints;
-	    let debugTimes  = false;
+	    let debugTimes  = true;
 	    let features = [];
 	    let featuresToAdd = [];
 	    let pointsToAdd = [];	    
@@ -3669,13 +3670,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    });
 	    
 	    times.push(new Date());
-	    if(showPoints)
+	    if(showPoints) {
 		this.addFeatures(pointsToAdd);
+	    }
 	    this.myPoints = pointsToAdd;
 	    this.addFeatures(featuresToAdd);
 	    times.push(new Date());
 	    if(debugTimes)
-		Utils.displayTimes("map points:",times, true,["create markers","add features"]);
+		Utils.displayTimes("map: #records:" + records.length+" times:",times, true,["create markers","add features"]);
 
 
 	    if(records.length>0 && this.getProperty("selectFirstRecord")&& !this.haveSelectedFirstRecord) {
@@ -3757,8 +3759,22 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         },
 
         addLabels:function(records, fields) {
-	    let limit = this.getLabelLimit(100000);
+	    let limit = this.getLabelLimit(1000);
 	    if(records.length>limit) return;
+	    
+
+	    let pixelsPerCell = 10;
+            let width = this.map.getMap().viewPortDiv.offsetWidth;
+            let height = this.map.getMap().viewPortDiv.offsetHeight;
+	    let bounds = this.map.getBounds();
+	    let numCellsX = Math.round(width/pixelsPerCell);
+	    let numCellsY = Math.round(height/pixelsPerCell);	    
+	    let cellWidth = (bounds.right-bounds.left)/numCellsX;
+	    let cellHeight = (bounds.top-bounds.bottom)/numCellsY;	    
+	    let grid = {};
+	    let doLabelGrid = this.getDoLabelGrid();
+	    console.log(cellWidth +" " + cellHeight +" " + numCellsX +" " + numCellsY);
+	    //
             let labelTemplate = this.getLabelTemplate();
 	    let labelKeyField;
 	    if(this.getLabelKeyField()) {
@@ -3772,7 +3788,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    styleMap: new OpenLayers.StyleMap({'default':{
                         label : labelTemplate,
                         fontColor: this.getProperty("labelFontColor","#000"),
-                        fontSize: this.getProperty("labelFontSize","12px"),
+                        fontSize: this.getProperty("labelFontSize","10pt"),
                         fontFamily: this.getProperty("labelFontFamily","'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"),
                         fontWeight: this.getProperty("labelFontWeight","plain"),
                         labelAlign: this.getProperty("labelAlign","lb"),
@@ -3810,6 +3826,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		var record = records[i];
                 var point = record.point;
 		//For now just set the lat/lon
+		let indexX = Math.floor((record.getLongitude()-bounds.left)/cellWidth);
+		let indexY = Math.floor((record.getLatitude()-bounds.bottom)/cellHeight);		
+		if(i<10)
+		    console.log(record.getLongitude() +" " + record.getLatitude() +" " + indexX +" " + indexY);
+		if(doLabelGrid) {
+		    let key = indexX +"_"+ indexY;
+		    if(grid[key]) continue;
+		    grid[key] = true;
+		}
 		point = {x:record.getLongitude(),y:record.getLatitude()};
                 var center = new OpenLayers.Geometry.Point(point.x, point.y);
                 center.transform(this.map.displayProjection, this.map.sourceProjection);
