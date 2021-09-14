@@ -2612,6 +2612,8 @@ RepositoryMap.prototype = {
         }
         this.initialLayers = [];
 
+
+	
         if (doRegion) {
             this.addRegionSelectorControl();
         }
@@ -3238,12 +3240,11 @@ RepositoryMap.prototype = {
             this.selectorControl.box.removeBox();
         }
     },
-    addRegionSelectorControl:  function(listener) {
+    addRegionSelectorControl:  function(listener, forZoom) {
         let _this = this;
         if (_this.selectorControl)
             return;
         _this.selectorListener = listener;
-
         _this.selectorControl = new OpenLayers.Control();
         OpenLayers.Util.extend(_this.selectorControl, {
             draw: function() {
@@ -3253,7 +3254,8 @@ RepositoryMap.prototype = {
                     keyMask: OpenLayers.Handler.MOD_SHIFT,
                     xxxboxDivClassName: "map-drag-box"
                 });
-                this.box.activate();
+		if(!forZoom)
+                    this.box.activate();
             },
 
             notice: function(bounds) {
