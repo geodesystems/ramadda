@@ -60,21 +60,42 @@ do_prep() {
 #exit
 
 do_histogram() {
-    
+    file1=source/ce-068-2019.txt
+    file2=source/ce-068-2020.txt
+    ${csv} -delimiter "|" \
+	   -ifin voter_id voters_boulder.csv  voter_id  \
+	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" 05-NOV-09 \
+	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" ".*SEP.*" \
+	   -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "," "voted_date" \
+	   -change voted_date "," "" \
+	   -notpattern voted_date "" \
+	   -change voted_date "-19" "-2019" \
+	   -change voted_date "OCT" "10" \
+	   -change voted_date "NOV" "11" \
+	   -change voted_date "(..)-(..)-(....)" "\$3-\$2-\$1" \
+	   -change voted_date "(..)/(..)/(....)" "\$3-\$1-\$2" \
+	   -sum voted_date "" "" \
+	   -sort voted_date \
+	   -addheader "voted_date.type date voted_date.format yyyy-MM-dd" \
+	   -p ${file1} > boulder_voting_2019_histogram.csv
+exit
+
     ${csv} -delimiter "|" \
 	   -ifin voter_id voters_boulder.csv  voter_id  \
 	   -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "," "voted_date" \
 	   -change voted_date "," "" \
 	   -notpattern voted_date "" \
-	   -sum voted_date "" "" \
 	   -change voted_date "(..)/(..)/(....)" "\$3-\$1-\$2" \
+	   -sum voted_date "" "" \
 	   -sort voted_date \
 	   -addheader "voted_date.type date voted_date.format yyyy-MM-dd" \
-	   -p ${voting_report} > boulder_voting_2020_histogram.csv
+	   -p ${file2} > boulder_voting_2020_histogram.csv
+
+
 }
 
-#do_histogram
-#exit
+do_histogram
+exit
     
 
 do_precincts() {
