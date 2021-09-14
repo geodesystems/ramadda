@@ -7048,7 +7048,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return  the message
      */
     public String getSystemMessage() {
-        return getProperty(PROP_SYSTEM_MESSAGE, (String) null);
+	//For now
+	return "";
+	//        return getProperty(PROP_SYSTEM_MESSAGE, (String) null);
     }
 
     /**
