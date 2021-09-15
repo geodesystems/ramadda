@@ -1692,6 +1692,13 @@ public class Request implements Constants, Cloneable {
     }
 
 
+    public static String cleanupInput(String v) {
+	//The (?i) is a case insensitive directive
+	v = v.replaceAll("(?i)(script)", "_$1_");
+	v = v.replaceAll("(?i)(src)(" + Utils.WHITESPACE_CHARCLASS+"*=)","_$1_$2");
+	return v;
+    }
+
     /**
      * _more_
      *
@@ -1709,7 +1716,7 @@ public class Request implements Constants, Cloneable {
 
         //If the user is anonymous then replace all "script" strings with "_script_"
         if (isAnonymous()) {
-            v = v.replaceAll("([sS][cC][rR][iI][pP][tT])", "_$1_");
+            v = cleanupInput(v);
         }
 
 
@@ -3149,7 +3156,16 @@ public class Request implements Constants, Cloneable {
      *
      * @throws Exception _more_
      */
-    public static void main(String[] args) throws Exception {}
+    public static void main(String[] args) throws Exception {
+	if(args.length==0) {
+	    args = new String[]{
+		"script","Script","src=http","src \n=http","src\t\t\n\r=http"
+	    };
+	}
+	for(String s: args) {
+	    System.err.println("value:" + s +" cleaned:" +  cleanupInput(s));
+	}
+    }
 
 
 
