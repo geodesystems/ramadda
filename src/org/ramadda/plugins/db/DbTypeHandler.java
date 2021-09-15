@@ -2859,10 +2859,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     List<String> toks = row.getValues();
                     if (toks.size() != dbInfo.getColumnsToUse().size()) {
                         System.err.println("bad count: " + toks.size()   + " " + toks);
-                        throw new IllegalArgumentException(
-                            "Wrong number of values. Given line has: "
-                            + toks.size() + " Expected:"
-                            + dbInfo.getColumnsToUse().size());
+			String error =  "Wrong number of values. Given line has: "
+			    + toks.size() + " Expected:"
+			    + dbInfo.getColumnsToUse().size() +"\n" +
+			    "Columns:" + dbInfo.getColumnsToUse() +"\n" +
+			    "Data:" + toks;
+                        throw new IllegalArgumentException(error);
                     }
                     String keyValue = null;
 
