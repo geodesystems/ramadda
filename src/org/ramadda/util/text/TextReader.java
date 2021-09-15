@@ -114,6 +114,8 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private String delimiter = ",";
 
+    private boolean quotesNotSpecial =false;
+
     /** _more_ */
     private boolean splitOnSpaces = false;
 
@@ -1016,7 +1018,7 @@ public class TextReader implements Cloneable {
             if (debug) {
                 sb.append("\tchar:" + (char) c + "  inQuote: " + inQuote);
             }
-            if (c == QUOTE_DOUBLE) {
+            if (!quotesNotSpecial && c == QUOTE_DOUBLE) {
                 if (debug2) {
                     sb.append("\tquote: " + inQuote + "\n");
                 }
@@ -1663,6 +1665,11 @@ public int getSkipLines () {
             }
         }
     }
+
+    public void setQuotesNotSpecial(boolean v) {
+	quotesNotSpecial = v;
+    }
+
 
     /**
      * Get the Delimiter property.

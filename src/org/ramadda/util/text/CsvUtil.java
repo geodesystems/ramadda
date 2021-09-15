@@ -1485,6 +1485,7 @@ public class CsvUtil {
         new Cmd("-tab", "Use tabs"),
         new Cmd("-widths", "Columns are fixed widths",
                 new Arg("widths", "w1,w2,...,wN")),
+        new Cmd("-quotesnotspecial", "Don't treat quotes as special characters"),
         new Cmd("-header", "Raw header",
                 new Arg("header", "Column names", "type", "list")),
         new Cmd("-html", "Parse the table in the input html file",
@@ -2736,6 +2737,10 @@ public class CsvUtil {
 		ctx.setDelimiter(delimiter = args.get(++i));
 		return i;
 	    });
+	defineFunction("-quotesnotspecial",0,(ctx,args,i) -> {
+		ctx.setQuotesNotSpecial(true);
+		return i;
+	    });	
 
 	defineFunction("-widths",1,(ctx,args,i) -> {
 		List<Integer> widths = new ArrayList<Integer>();
