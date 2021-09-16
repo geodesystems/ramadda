@@ -6105,7 +6105,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	dataFilterChanged: function(args) {
 	    args = args||{};
 	    args.dataFilterChanged = true;
-	    console.log("DF");
 	    this.callUpdateUI(args);
 	},
 	addFieldClickHandler: function(jq, records, addHighlight) {

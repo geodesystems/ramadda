@@ -9138,7 +9138,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	dataFilterChanged: function(args) {
 	    args = args||{};
 	    args.dataFilterChanged = true;
-	    console.log("DF");
 	    this.callUpdateUI(args);
 	},
 	addFieldClickHandler: function(jq, records, addHighlight) {
@@ -34736,7 +34735,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
         createPoints: function(records, fields, points,bounds, debug) {
 	    debug = debug ||displayDebug.displayMapAddPoints;
-	    let debugTimes  = true;
+	    let debugTimes  = false;
 	    let features = [];
 	    let featuresToAdd = [];
 	    let pointsToAdd = [];	    
