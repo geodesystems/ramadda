@@ -146,7 +146,7 @@ public class ContentMetadataHandler extends MetadataHandler {
 		img = img.replace("cc-","").replace("-4.0","");
 		img = getIconUrl("/cc/" + img +".png");
 		img = HU.image(img,"width","100px");
-		contents+=img;
+		contents+="<br>"+img;
 	    }
 	    if(spdxLink!=null)
 		contents = HU.href(spdxLink,contents,"target=_other");
