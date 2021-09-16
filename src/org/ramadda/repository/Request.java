@@ -455,8 +455,8 @@ public class Request implements Constants, Cloneable {
      */
     public void setReturnFilename(String filename) {
         filename = filename.replaceAll(" ", "_");
-        httpServletResponse.setHeader("Content-disposition",
-                                      "attachment; filename=" + filename);
+	//httpServletResponse.setHeader("Content-disposition",  "attachment; filename=" + filename);
+	httpServletResponse.setHeader("Content-disposition",  "filename=" + filename);	
     }
 
 

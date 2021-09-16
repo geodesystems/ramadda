@@ -559,8 +559,8 @@ public class Result {
      */
     public void setReturnFilename(String filename) {
         filename = filename.replaceAll(" ", "_");
-        addHttpHeader("Content-disposition",
-                      "attachment; filename=" + filename);
+	//        addHttpHeader("Content-disposition", "attachment; filename=" + filename);
+	addHttpHeader("Content-disposition", "filename=" + filename);	
     }
 
 
