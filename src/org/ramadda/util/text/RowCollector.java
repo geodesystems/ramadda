@@ -406,6 +406,76 @@ public  class RowCollector extends Processor {
      * Class description
      *
      *
+     * @version        $version$, Fri, Jan 9, '15
+     * @author         Jeff McWhirter
+     */
+    public static class RowShuffler extends RowCollector {
+
+	boolean atStart;
+	String pattern;
+
+        /**
+         * _more_
+         *
+         */
+        public RowShuffler(boolean atStart, List<String> cols,String pattern) {
+	    super(cols);
+	    this.atStart = atStart;
+	    this.pattern  = pattern;
+	}
+
+        /**
+         * _more_
+         *
+         * @param ctx _more_
+         * @param rows _more_
+         *
+         *
+         * @return _more_
+         * @throws Exception On badness
+         */
+        @Override
+        public List<Row> finish(TextReader ctx, List<Row> rows)
+	    throws Exception {
+            List<Row> newRows = new ArrayList<Row>();
+            List<Row> matchedRows = new ArrayList<Row>();
+            List<Row> unmatchedRows = new ArrayList<Row>();	    	    
+	    List<Integer>indices     = getIndices(ctx);
+	    Row header = null;
+            for (Row row : getRows()) {
+		if(header==null) {
+		    header= row;
+		    newRows.add(row);
+		    continue;
+		}
+		boolean matches = false;
+		for(int col:indices) {
+		    if(row.getString(col).matches(pattern)) {
+			matches = true;
+			break;
+		    }
+		}
+		if(matches) matchedRows.add(row);
+		else unmatchedRows.add(row);		
+            }
+	    if(atStart) {
+		newRows.addAll(matchedRows);
+		newRows.addAll(unmatchedRows);		
+	    } else {
+		newRows.addAll(unmatchedRows);		
+		newRows.addAll(matchedRows);
+	    }
+
+            return newRows;
+        }
+
+    }
+
+
+    /**
+     * Class description
+     *
+     *
      * @version        $version$, Mon, Oct 14, '19
      * @author         Enter your name here...
      */

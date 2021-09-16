@@ -1488,12 +1488,12 @@ public class CsvUtil {
         new Cmd("-quotesnotspecial", "Don't treat quotes as special characters"),
         new Cmd("-header", "Raw header",
                 new Arg("header", "Column names", "type", "list")),
-        new Cmd("-html", "Parse the table in the input html file",
+        new Cmd("-htmltable", "Parse the table in the input html file",
                 new Arg("skip", "Number of tables to skip", "type",
 			"number"), new Arg("pattern", "Pattern to skip to",
 					   "type", "pattern", "size",
 					   "40"), new Arg("properties",
-							  "Other attributes - <br>&nbsp;&nbsp;removeEntity false removePattern pattern",
+							  "Other attributes - <br>&nbsp;&nbsp;removeEntity false removePattern pattern exrtractUrls true column1.extractUrls true stripTags false column1.stripTags false",
 							  "rows", "6", "size", "40")),
         new Cmd("-htmlpattern", new Label("Extract from html"),
                 "Parse the input html file",
@@ -1691,6 +1691,15 @@ public class CsvUtil {
                 "Only include specified rows",
                 new Arg("rows", "one or more rows, -1 to the end", "type",
                         "rows")),
+	new Cmd("-rows_first", new Label("Move rows that match"),
+                "Move rows to the top that match the pattern",
+                new Arg("columns", "columns to match on", "type",  "columns"),
+                new Arg("pattern", "Pattern")),
+	new Cmd("-rows_last", new Label("Move rows that match"),
+                "Move rows to the end of list that match the pattern",
+                new Arg("columns", "columns to match on", "type",  "columns"),
+                new Arg("pattern", "Pattern")),
+
         new Cmd("-copy", new Label("Copy column"), "",
                 new Arg("column", "", "type", "column"), "name"),
         new Cmd(
@@ -1781,13 +1790,13 @@ public class CsvUtil {
         new Cmd("-keyvalue", "Make fields from key/value pairs, e.g. name1=value1 name2=value2 ...",
                 new Arg("column", "", "type", "column")),
         new Cmd(
-		"-first",
+		"-firstchars",
 		"Extract first N characters and create new column",
 		new Arg("column", "", "type", "column"),
 		new Arg("name", "New column name"),
 		new Arg("number", "Number of characters")),
         new Cmd(
-		"-last",
+		"-lastchars",
 		"Extract last N characters and create new column",
 		new Arg("column", "", "type", "column"),
 		new Arg("name", "New column name"),
@@ -2424,6 +2433,14 @@ public class CsvUtil {
 		ctx.addProcessor(new Converter.ImageSearch(getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });
+	defineFunction("-rows_first",2, (ctx,args,i) -> {
+		ctx.addProcessor(new RowCollector.RowShuffler(true,getCols(args.get(++i)), args.get(++i)));
+		return i;
+	    });
+	defineFunction("-rows_last",2, (ctx,args,i) -> {
+		ctx.addProcessor(new RowCollector.RowShuffler(false,getCols(args.get(++i)), args.get(++i)));
+		return i;
+	    });		
 	defineFunction("-embed",1, (ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Embed(args.get(++i)));
 		return i;
@@ -2862,11 +2879,11 @@ public class CsvUtil {
 		return i;
 	    });		
 
-	defineFunction("-first",3,(ctx,args,i) -> {
+	defineFunction("-firstchars",3,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.First(args.get(++i), args.get(++i), args.get(++i)));
 		return i;
 	    });
-	defineFunction("-last",3,(ctx,args,i) -> {
+	defineFunction("-lastchars",3,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Last(args.get(++i), args.get(++i), args.get(++i)));
 		return i;
 	    });			
@@ -3125,7 +3142,7 @@ public class CsvUtil {
 
 
 
-	defineFunction("-html",3,(ctx,args,i) -> {
+	defineFunction(new String[]{"-htmltable","-html"},3,(ctx,args,i) -> {
 		ctx.getProviders().add(new DataProvider.HtmlDataProvider(args.get(++i), args.get(++i),
 									 parseProps(args.get(++i))));
 
