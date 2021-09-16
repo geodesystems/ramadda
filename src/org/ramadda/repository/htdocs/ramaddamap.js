@@ -1187,7 +1187,11 @@ RepositoryMap.prototype = {
 	    return true;
 	});
 	this.externalLayers.forEach(layer=>{
-            this.getMap().setLayerIndex(layer, base++);
+	    if(layer.ramaddaLayerIndex) {
+		this.getMap().setLayerIndex(layer, layer.ramaddaLayerIndex);
+	    } else {
+		this.getMap().setLayerIndex(layer, base++);
+	    }
 	});
 	if (this.boxes) {
             this.getMap().setLayerIndex(this.boxes, base++);
