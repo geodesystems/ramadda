@@ -229,6 +229,17 @@ public abstract class DataProvider {
 
         }
 
+	private static class ColInfo {
+	    int index;
+	    boolean extractUrls;
+	    boolean stripTags;
+	    ColInfo(int index,  boolean extractUrls,   boolean stripTags) {
+		this.index=index;
+		this.extractUrls  = extractUrls;
+		this.stripTags = stripTags;
+	    }
+	}
+
         /**
          * _more_
          *
@@ -246,6 +257,20 @@ public abstract class DataProvider {
             String skipAttr = props.get("skipAttr");
             boolean removeEntity = Utils.equals(props.get("removeEntity"),
                                        "true");
+            boolean extractUrls = Utils.getProperty(props,"extractUrls",false);
+            boolean stripTags = Utils.getProperty(props,"stripTags",true);	    
+	    List<ColInfo> cols = new ArrayList<ColInfo>();
+	    Hashtable<Integer,Object> extractUrlsColumns =new Hashtable<Integer,Object>();
+	    
+	    for(int i=0;i<50;i++) {
+		String prefix = "column" + (i+1)+".";
+		cols.add(new ColInfo(i,
+				     Utils.getProperty(props,prefix +"extractUrls",extractUrls),
+				     Utils.getProperty(props,prefix +"stripTags",stripTags)));				     
+	    }
+
+
+
             String removePattern =
                 Utils.convertPattern(props.get("removePattern"));
             String removePattern2 =
@@ -295,7 +320,10 @@ public abstract class DataProvider {
                     }
                     Row     row         = new Row();
                     boolean checkHeader = true;
+		    int colCnt=0;
                     while (true) {
+			ColInfo info = colCnt<cols.size()?cols.get(colCnt):cols.get(cols.size()-1);
+			colCnt++;
                         toks = Utils.tokenizePattern(tr, "(<td|<th)",
                                 "(</td|</th)");
                         if (toks == null) {
@@ -324,7 +352,16 @@ public abstract class DataProvider {
                         //              System.err.println("td:" + td);
                         td = td.substring(idx + 1);
                         //              System.err.println("after TD:" + td);
-                        td = Utils.stripTags(td);
+			if(info.extractUrls) {
+			    String url = StringUtil.findPattern(td,"href *= *\"([^\"]+)\"");
+			    if(url==null)
+				url = StringUtil.findPattern(td,"href *= *\'([^\"]+)\'");
+			    if(url!=null) td = url;
+			}
+			if(info.stripTags) {
+			    td = Utils.stripTags(td);
+			} 
+
                         //              System.err.println("after Strip:" + td);
                         td = td.replaceAll("\n", " ").replaceAll("  +", "");
                         td = HtmlUtils.unescapeHtml3(td);
@@ -356,7 +393,7 @@ public abstract class DataProvider {
                     if (row.size() > 0) {
                         addRow(row);
                     }
-                }
+		}
                 if (--count <= 0) {
                     break;
                 }
