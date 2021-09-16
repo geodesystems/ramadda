@@ -1461,6 +1461,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'animationDwell',ex:1000},
 	{p:'animationStartShowAll',ex:true,tt:'Show full range at start'},
 	{p:'animationShowButtons',ex:false},
+	{p:'animationShowLabel',ex:false},
 	{p:'animationShowSlider',ex:false},
 	{p:'animationWidgetShort',ex:true}
     ];
@@ -2505,7 +2506,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             });
         },
         fieldSelectionChanged: function() {
-            var name = "the display";
             this.setDisplayTitle();
             if (this.displayData) {
                 this.clearCachedData();
@@ -2589,7 +2589,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return Utils.cloneList(this.lastSelectedFields);
         },
         getSelectedFieldsInner: function(dfltList) {
-
             if (this.debugSelected) {
                 console.log("getSelectedFieldsInner dflt:" + (dfltList ? dfltList : "null"));
                 console.log("\tlast selected = " + this.lastSelectedFields);
@@ -2655,16 +2654,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 	    }
 
-            if (fixedFields != null && fixedFields.length > 0) {
+	    
+            if (!this.userHasSelectedAField && fixedFields != null && fixedFields.length > 0) {
                 if (this.debugSelected)
                     console.log("\tfrom fixed:" + df.length);
                 return df;
             }
 
+	    this.userHasSelectedAField = false;
             var fieldsToSelect = null;
             var firstField = null;
             this.selectedCbx = [];
             var cbxExists = false;
+
 
             for (var collectionIdx = 0; collectionIdx < dataList.length; collectionIdx++) {
                 var pointData = dataList[collectionIdx];
