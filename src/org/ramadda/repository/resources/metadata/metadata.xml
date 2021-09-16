@@ -51,12 +51,18 @@
       <template type="oaidc"><![CDATA[<dc:subject>${attr1.cdata}</dc:subject>]]></template>
     </type>
 
-    <type name="License" id="content.license" searchable="true" browsable="true" displaygroup="Acknowledgements"
-	  handler="org.ramadda.repository.metadata.ContentMetadataHandler">
-      <element name="License" datatype="enumerationplus"
-	       values="cc-by:Create Commons By,cc-by-sa:Create Commons By ShareAlike,cc-by-nc:Create Commons By Non-Commercial,cc-by-nc-sa:Create Commons By Non-Commercial ShareAlike,cc-by-nd:Create Commons By No Derivatives,cc-by-nc-nd:Create Commons By Non-Commercial No Derivatives,cc-zero:Create Commons Zero"	       
-/>
-    </type>
+    <handler class="org.ramadda.repository.metadata.ContentMetadataHandler"        category="Basic Properties">
+      <type name="License" id="content.license" searchable="true" browsable="true" >
+	<help>
+	  <![CDATA[
+		   More information at <a href="https://spdx.org/licenses/preview/" target=_other>https://spdx.org/licenses/preview/</a>
+]]>
+	</help>
+	<element name="License" datatype="enumerationplus"
+		 values="file:/org/ramadda/repository/resources/metadata/spdxvalues.txt"/>
+	<element name="Description" rows="3" />
+      </type>
+    </handler>
 
 
 
