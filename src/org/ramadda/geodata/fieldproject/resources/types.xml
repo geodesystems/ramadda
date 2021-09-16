@@ -1,30 +1,43 @@
 <types  supercategory="Science and Education"  category="Science Project">
 
   <type name="fair_collection"  description="FAIR Data Collection"
-	metadata="content.license"
+	metadata="content.license,enum_tag,content.keyword,metadata_author,dif.data_set_citation,enum_gcmdkeyword,"
 	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" >
      <property name="icon" value="/fieldproject/fair.png"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.altitude.show" value="false"/>
      <property name="form.altitude.top.show" value="false"/>
+     <column name="show_download"  type="boolean" label="Show Download" default="true"/>
+<children><![CDATA[
+<entries>
+<entry  name="Data"  type="group"/>
+<entry  name="Documents"  type="group"/>
+<entry  name="Code"  type="group"/>
+</entries>
+]]>
+</children>
+
      <wiki><![CDATA[
 +section title={{name}}
-<table width="100%">
-<tr valign=top>
-<td width="50%">
 <div style="max-height: 400px; overflow-y: auto;">
+{{entrylink title="Download All Data" link="zip.tree" button=true if="show_download:true"}}
 {{description wikify="true"}}
 </div>
-{{properties xmetadata.types="project_pi,project_person,project_funding" message="" prefix="==Metadata=="}}
++row
++col-6
+<center>
+{{gallery entry="Documents" thumbnail=true width=200 columns=1 popup=false
+}}
+</center>
+-col
++col-6
 <p>
-{{tree message="" details="false" prefix="==All Sub-Folders =="}}
-</td>
-<td width="50%">
-{{image src="::*" message="" width="300"}}
-<p>
+{{properties metadata.types="content.license" message=""}}
 {{map  message="" width="300" }}
-</td></tr>
-</table>
+{{tree message="" details="false" prefix=":lheading Folders"}}
+{{properties metadata.types="!content.license" message=""}}
+-col
+-row
 -inset
 ]]>
 </wiki>
