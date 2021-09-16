@@ -747,7 +747,7 @@ public class HtmlOutputHandler extends OutputHandler {
             }
 
             String        group   = type.getDisplayGroup();
-            StringBuilder sb      = cb.get(group);
+            StringBuilder sb      = cb.get(HU.div(group,HU.cssClass("ramadda-lheading")));
             Boolean       rowFlag = typeRow.get(group);
             if (rowFlag == null) {
                 rowFlag = new Boolean(true);
@@ -805,7 +805,8 @@ public class HtmlOutputHandler extends OutputHandler {
 		    sb.append("<br>");
 		    continue;
 		}
-                String header = HU.div(category, HU.cssClass("wiki-h2"));
+		//                String header = HU.div(category, HU.cssClass("wiki-h2"));
+                String header = category;
                 if (showTitle) {
                     sb.append(header);
                 }
