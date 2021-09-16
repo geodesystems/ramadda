@@ -51,6 +51,7 @@ import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
 
+import org.ramadda.util.TTLCache;
 import java.io.*;
 
 
@@ -87,7 +88,7 @@ public class GpxTypeHandler extends PointTypeHandler {
     /** _more_ */
     private static int IDX_LOSS = IDX++;
 
-
+    private static TTLCache<String, List<String>> extraTagsCache = new TTLCache<String,List<String>>(60 * 60 * 1000);
 
 
     /**
@@ -922,7 +923,7 @@ public class GpxTypeHandler extends PointTypeHandler {
     @Override
     public RecordFile doMakeRecordFile(Request request, Entry entry, Hashtable properties,  Hashtable requestProperties)
             throws Exception {
-        return new GpxRecordFile(entry.getResource().getPath());
+        return new GpxRecordFile(this, entry, entry.getResource().getPath());
     }
 
 
@@ -936,6 +937,10 @@ public class GpxTypeHandler extends PointTypeHandler {
     public static class GpxRecordFile extends CsvFile {
 
 
+	GpxTypeHandler typeHandler;
+
+	Entry entry;
+
         /**
          * _more_
          *
@@ -943,8 +948,10 @@ public class GpxTypeHandler extends PointTypeHandler {
          *
          * @throws IOException _more_
          */
-        public GpxRecordFile(String filename) throws IOException {
+        public GpxRecordFile(GpxTypeHandler typeHandler, Entry entry, String filename) throws IOException {
             super(filename);
+	    this.typeHandler = typeHandler;
+	    this.entry = entry;
         }
 
         /**
@@ -966,6 +973,19 @@ public class GpxTypeHandler extends PointTypeHandler {
             boolean       didTrack = false;
             SimpleDateFormat sdf =
                 new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+	    List<String> extraTags=getExtraTags(this.entry);
+	    List<String> extra = new ArrayList<String>();
+
+	    /*
+        <extensions>
+          <ns3:TrackPointExtension>
+            <ns3:atemp>14.0</ns3:atemp>
+            <ns3:hr>127</ns3:hr>
+            <ns3:cad>0</ns3:cad>
+          </ns3:TrackPointExtension>
+        </extensions>
+	    */
+
             for (Element track :
                     ((List<Element>) XmlUtil.findChildren(root,
                         GpxUtil.TAG_TRK))) {
@@ -978,6 +998,30 @@ public class GpxTypeHandler extends PointTypeHandler {
                     for (Element pt :
                             ((List<Element>) XmlUtil.findChildren(trackSeg,
                                 GpxUtil.TAG_TRKPT))) {
+			if(extraTags.size()>0) {
+			    extra.clear();
+			    Element extensions = XmlUtil.findChild(pt,"extensions");
+			    if(extensions!=null) {
+				NodeList grandchildren = XmlUtil.getGrandChildren(extensions);
+				for(String tag: extraTags) {
+				    boolean gotIt = false;
+				    for (int i = 0; i < grandchildren.getLength(); i++) {
+					Element ele =(Element) grandchildren.item(i);
+					if(tag.equals(ele.getTagName())) {
+					    extra.add(XmlUtil.getChildText(ele));
+					    gotIt=true;
+					    break;
+					}
+				    }
+				    if(!gotIt) extra.add("NaN");
+				}
+			    }
+			    if(extra.size()==0) {
+				for(String dummy:extraTags)
+				    extra.add("NaN");
+			    }
+			    //			    System.err.println("extra:" + extra);
+			}
                         double lat = XmlUtil.getAttribute(pt,
                                          GpxUtil.ATTR_LAT, 0.0);
                         double lon = XmlUtil.getAttribute(pt,
@@ -990,14 +1034,14 @@ public class GpxTypeHandler extends PointTypeHandler {
                         Date dttm = ((time == null)
                                      ? null
                                      : sdf.parse(time));
-                        trackInfo.setPoint(lat, lon, elevation, dttm, time,
+			
+                        trackInfo.setPoint(lat, lon, elevation, dttm, time,extra,
                                            s);
                     }
                 }
             }
 
             if ( !didTrack) {
-
                 Element rte = XmlUtil.findChild(root, GpxUtil.TAG_RTE);
                 if (rte != null) {
                     TrackInfo trackInfo = new TrackInfo();
@@ -1016,7 +1060,7 @@ public class GpxTypeHandler extends PointTypeHandler {
                         Date dttm = ((time == null)
                                      ? null
                                      : sdf.parse(time));
-                        trackInfo.setPoint(lat, lon, elevation, dttm, time,
+                        trackInfo.setPoint(lat, lon, elevation, dttm, time,null,
                                            s);
                     }
                 } else {
@@ -1041,7 +1085,7 @@ public class GpxTypeHandler extends PointTypeHandler {
                         Date dttm = ((time == null)
                                      ? null
                                      : sdf.parse(time));
-                        trackInfo.setPoint(lat, lon, elevation, dttm, time,
+                        trackInfo.setPoint(lat, lon, elevation, dttm, time,null,
                                            s);
 		    }
 		}
@@ -1055,6 +1099,42 @@ public class GpxTypeHandler extends PointTypeHandler {
 
         }
 
+	private List<String> getExtraTags(Entry entry) throws Exception {
+	    List<String> tags = extraTagsCache.get(entry.getId());
+	    if(tags ==null) {
+		tags=new ArrayList<String>();				
+		extraTagsCache.put(entry.getId(), tags);
+		Element root = typeHandler.readXml(entry);
+		for (Element track :
+			 ((List<Element>) XmlUtil.findChildren(root,
+							       GpxUtil.TAG_TRK))) {
+		    for (Element trackSeg :
+			     ((List<Element>) XmlUtil.findChildren(track,
+								   GpxUtil.TAG_TRKSEG))) {
+			for (Element pt :
+				 ((List<Element>) XmlUtil.findChildren(trackSeg,
+								       GpxUtil.TAG_TRKPT))) {
+			    Element extensions = XmlUtil.findChild(pt,"extensions");
+			    if(extensions!=null) {
+				NodeList grandchildren = XmlUtil.getGrandChildren(extensions);
+				for (int i = 0; i < grandchildren.getLength(); i++) {
+				    Element ele =(Element) grandchildren.item(i);
+				    String tag = ele.getTagName();
+				    String name = tag;
+				    tags.add(tag);
+				}
+			    }
+			    break;
+			}
+			break;
+		    }
+		    break;
+		}
+	    }
+	    return tags;
+	}
+
+
         /**
          * _more_
          *
@@ -1067,8 +1147,10 @@ public class GpxTypeHandler extends PointTypeHandler {
         public VisitInfo prepareToVisit(VisitInfo visitInfo)
                 throws Exception {
             super.prepareToVisit(visitInfo);
+	    List<String> tags=getExtraTags(this.entry);
+	    List<String> fields = new ArrayList<String>();
 
-            putFields(new String[] {
+            for(String s:new String[] {
                 makeField(FIELD_DATE, attrType("date"),
                           attrFormat("yyyy-MM-dd'T'HH:mm:ss")),
                 makeField("point_altitude", attrType("double"),
@@ -1090,15 +1172,24 @@ public class GpxTypeHandler extends PointTypeHandler {
                 makeField("latitude", attrType("double"),
                           attrLabel("Latitude")),
                 makeField("longitude", attrType("double"),
-                          attrLabel("Longitude")),
-            });
-
+                          attrLabel("Longitude"))}) {
+		fields.add(s);
+	    }
+	    for(String tag: tags) {
+		int index = tag.indexOf(":");
+		if(index>=0) tag = tag.substring(index+1);
+		String label = Utils.makeLabel(tag);
+		//A hack for garmin
+		if(tag.equals("atemp")) label = "Temperature";
+		else if(tag.equals("wtemp")) label = "Temperature";
+		else if(tag.equals("hr")) label = "Heart Rate";
+		else if(tag.equals("cad")) label = "Cadence";				
+                fields.add(makeField(tag, attrType("double"),
+				     attrLabel(label)));
+	    }
+	    putFields(fields);
             return visitInfo;
         }
-
-
-
-
     }
 
     /**
@@ -1112,6 +1203,7 @@ public class GpxTypeHandler extends PointTypeHandler {
         return "'" + s + "'";
     }
 
+    
 
     /**
      * Class description
@@ -1182,7 +1274,7 @@ public class GpxTypeHandler extends PointTypeHandler {
          * @throws Exception _more_
          */
         void setPoint(double lat, double lon, double elevation, Date dttm,
-                      String time, StringBuilder s)
+                      String time, List<String> extra, StringBuilder s)
                 throws Exception {
             if (lastElevation != 0) {
                 if (elevation > lastElevation) {
@@ -1243,9 +1335,14 @@ public class GpxTypeHandler extends PointTypeHandler {
             s.append(lat);
             s.append(",");
             s.append(lon);
-            s.append("\n");
+	    if(extra!=null) {
+		for(String v:extra) {
+		    s.append(",");
+		    s.append(v);
+		}
+	    }
+	    s.append("\n");
         }
-
 
 
 
