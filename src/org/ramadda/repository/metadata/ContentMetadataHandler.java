@@ -16,10 +16,7 @@
 
 package org.ramadda.repository.metadata;
 
-
 import org.ramadda.repository.*;
-
-
 import org.ramadda.util.HtmlTemplate;
 import org.ramadda.util.HtmlUtils;
 
@@ -43,7 +40,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-
+import java.util.Properties;
 
 /**
  *
@@ -112,6 +109,9 @@ public class ContentMetadataHandler extends MetadataHandler {
     }
 
 
+    private Properties licenseUrls;
+
+
     /**
      * _more_
      *
@@ -126,19 +126,34 @@ public class ContentMetadataHandler extends MetadataHandler {
     @Override
     public String[] getHtml(Request request, Entry entry, Metadata metadata)
             throws Exception {
-	/*
         if (metadata.getType().equals(TYPE_LICENSE)) {
-            String license     = metadata.getAttr1();
-	    if(license.startsWith("cc-")) {
-		String[] html = super.getHtml(request,entry,metadata);
-		return html
-
-	       values="cc-by:Create Commons By,cc-by-sa:Create Commons By ShareAlike,cc-by-nc:Create Commons By N
-on-Commercial,cc-by-nc-sa:Create Commons By Non-Commercial ShareAlike,cc-by-nd:Create Commons By No Derivatives,cc-by-nc-nd:Create Commons By Non-Commercial No Derivatives,cc-zero:Create Commons Zero"	       
-	    if(license
-
+	    if(licenseUrls==null) {
+		licenseUrls = new Properties();
+		getRepository().loadProperties(licenseUrls,"/org/ramadda/repository/resources/metadata/spdxurls.properties");
+	    }
+	    String license     = metadata.getAttr1();
+	    MetadataType type = getType(metadata.getType());
+	    MetadataElement element = type.getChildren().get(0);
+	    String label = element.getLabel(license);
+	    if(label==null) label=license;
+	    String desc     = metadata.getAttr1();	    
+	    String spdxLink =(String) licenseUrls.get(license);
+	    String searchLink = getSearchLink(request, metadata);
+	    String _license = license.toLowerCase();
+	    String contents = " "+label +" "; 
+	    if(license.startsWith("CC-")) {
+		String img = _license;
+		img = img.replace("cc-","").replace("-4.0","");
+		img = getIconUrl("/cc/" + img +".png");
+		img = HU.image(img,"width","100px");
+		contents+=img;
+	    }
+	    if(spdxLink!=null)
+		contents = HU.href(spdxLink,contents,"target=_other");
+	    //"<b>License:</b>&nbsp;"+
+	    return new String[]{"License:&nbsp;",searchLink +" " + contents};
 	}
-		*/
+
 
         if (metadata.getType().equals(TYPE_ALIAS)) {
             Hashtable props =
@@ -159,6 +174,7 @@ on-Commercial,cc-by-nc-sa:Create Commons By Non-Commercial ShareAlike,cc-by-nd:C
         return super.getHtml(request, entry, metadata);
     }
 
+
     /**
      * _more_
      *
@@ -166,6 +182,7 @@ on-Commercial,cc-by-nc-sa:Create Commons By Non-Commercial ShareAlike,cc-by-nd:C
      *
      * @return _more_
      */
+    @Override
     public String getEnumerationValues(MetadataElement element) {
         if (element.getName().equals("template")) {
             StringBuffer sb = new StringBuffer();
