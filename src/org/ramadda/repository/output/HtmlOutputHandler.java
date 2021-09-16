@@ -984,7 +984,6 @@ public class HtmlOutputHandler extends OutputHandler {
             HU.tag("hr",
                    HU.style("padding:0px;margin:0px;margin-bottom:0px;"));
 
-
         boolean addExtra = false;
         //If we have a localeid that means this is the first call
         if (localeId != null) {
@@ -1938,7 +1937,16 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
         if (outputType.equals(OUTPUT_SELECTXML)) {
+	    //First check if this entry type can add anything
             request.setCORSHeaderOnResponse();
+            StringBuilder sb     = new StringBuilder();
+            String        target = request.getString(ATTR_TARGET, "");
+            String        type   = request.getString(ARG_SELECTTYPE, "");
+            group.getTypeHandler().addToSelectMenu(request, group, sb, type,
+						   target);
+	    if(sb.length()>0) 
+		return makeAjaxResult(request, sb.toString());
+	    //Else handle it as a group
             return getSelectXml(request, group, subGroups, entries);
         }
 
