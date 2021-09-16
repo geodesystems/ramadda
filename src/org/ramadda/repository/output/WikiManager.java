@@ -102,7 +102,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag(WIKI_TAG_INFORMATION, null, ATTR_DETAILS, "false",ATTR_SHOWTITLE,"false"),
                             new WikiTag(WIKI_TAG_NAME,null,"link","true"), 
                             new WikiTag(WIKI_TAG_DESCRIPTION),
-                            new WikiTag(WIKI_TAG_RESOURCE, null, ATTR_TITLE,"",ATTR_SHOWICON,"true"), 
+                            new WikiTag(WIKI_TAG_RESOURCE, null, ATTR_TITLE,"",ATTR_SHOWICON,"true"),
+                            new WikiTag(WIKI_TAG_ENTRYLINK, null, "link","",ATTR_TITLE,"",ATTR_SHOWICON,"true"), 			    
                             new WikiTag(WIKI_TAG_DATERANGE,"Date Range", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT),
                             new WikiTag(WIKI_TAG_DATE_FROM, "From Date", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT),
                             new WikiTag(WIKI_TAG_DATE_TO,"To Date", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT), 
@@ -1474,6 +1475,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                        String theTag, Hashtable props)
             throws Exception {
 
+	if(!checkIf(wikiUtil,request,entry,props)) return "";
+
         boolean wikify  = getProperty(wikiUtil, props, ATTR_WIKIFY, true);
         String criteria = getProperty(wikiUtil, props, ATTR_IF,
                                       (String) null);
@@ -1723,6 +1726,29 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
             String extra = "";
 
+            return HU.href(url, label, extra);
+        } else if (theTag.equals(WIKI_TAG_ENTRYLINK)) {
+	    String link = getProperty(wikiUtil, props, "link","");
+            String label =  getProperty(wikiUtil, props, ATTR_TITLE, link);
+
+
+            String url =  HU.url(getRepository().getUrlBase() +"/entry/show",
+				 ARG_ENTRYID, entry.getId(),
+				 ARG_OUTPUT,link);
+
+            boolean makeButton = getProperty(wikiUtil, props, "makeButton", false);
+            boolean showicon = getShowIcon(wikiUtil, props, false);
+            if (showicon) {
+                label = HU.img(getIconUrl("/icons/download.png"))
+                        + HU.space(2) + label;
+            }
+
+            if (makeButton) {
+                return HU.div(HU.href(url, label,
+                                      HU.cssClass("ramadda-button")
+                                      + HU.attr("role", "button")));
+            }
+            String extra = "";
             return HU.href(url, label, extra);
         } else if (theTag.equals(WIKI_TAG_UPLOAD)) {
             Entry group = getEntryManager().findGroup(request);
@@ -3175,7 +3201,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_GALLERY)) {
             List<Entry> children = getEntries(request, wikiUtil,
-                                       originalEntry, entry, props, true);
+                                       originalEntry, entry, props);
             if (children.size() == 0) {
                 String message = getProperty(wikiUtil, props, ATTR_MESSAGE,
                                              (String) null);
@@ -3505,6 +3531,23 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         return null;
     }
 
+
+
+    public boolean checkIf(WikiUtil wikiUtil, Request request,Entry entry, Hashtable props) {
+	String column =  getProperty(wikiUtil, props, "if",null);
+	if(column==null) return true;
+	int idx =column.indexOf(":");
+	String value = "true";
+	if(idx>0) {
+	    value = column.substring(idx+1);
+	    column = column.substring(0,idx);
+
+	} 
+	//	System.err.println(column +"=" + value);
+	Object obj = entry.getValue(column);
+	if(obj==null) return true;
+	return value.equals(obj.toString());
+    }
 
 
     public String embedJson(Request request, String json) throws Exception {
