@@ -20,7 +20,7 @@
      <wiki><![CDATA[
 +section title={{name}}
 <div style="max-height: 400px; overflow-y: auto;">
-{{entrylink title="Download All Data" link="zip.tree" button=true if="show_download:true"}}
+{{entrylink title="Download All Data" link="zip.tree" makeButton=true if="show_download:true"}}
 {{description wikify="true"}}
 </div>
 +row
