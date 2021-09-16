@@ -396,15 +396,22 @@ function DisplayAnimation(display, enabled,attrs) {
 	    decade: 1000 * 60 * 60 * 24 * 365 * 10,
 	    halfdecade: 1000 * 60 * 60 * 24 * 365 * 5,
 	    year: 1000 * 60 * 60 * 24 * 365 * 1,
+	    years: 1000 * 60 * 60 * 24 * 365 * 1,	    
 	    month: 1000 * 60 * 60 * 24 * 31,
+	    months: 1000 * 60 * 60 * 24 * 31,	    
 	    week: 1000 * 60 * 60 * 24 * 7,
-	    day: 1000 * 60 * 60 * 24 * 1,		    
+	    weeks: 1000 * 60 * 60 * 24 * 7,	    
+	    day: 1000 * 60 * 60 * 24 * 1,
+	    days: 1000 * 60 * 60 * 24 * 1,		    	    
 	    hour: 1000 * 60 * 60,
-	    hour: 1000 * 60,
-	    second: 1000		    
+	    hours: 1000 * 60 * 60,
+	    minute: 1000 * 60,
+	    minutes: 1000 * 60,	    
+	    second: 1000,
+	    seconds: 1000		    
 	},
 	getMillis:function(window) {
-	    window =window.trim();
+	    window =(""+window).trim();
 	    let cnt = 1;
 	    let unit = "day";
 	    let toks = window.match("^([0-9]+)(.*)");
@@ -485,6 +492,7 @@ function DisplayAnimation(display, enabled,attrs) {
             let buttons =  "";
 	    let showButtons  = this.display.getProperty("animationShowButtons",true);
 	    let showSlider = display.getProperty("animationShowSlider",true);
+	    let showLabel = display.getProperty("animationShowLabel",true);	    
 	    if(showButtons) {
 		let short = display.getProperty("animationWidgetShort",false);
 		buttons +=   HtmlUtils.span([ID, this.getDomId(ID_SETTINGS),TITLE,"Settings"], HtmlUtils.getIconImage("fas fa-cog")); 
@@ -498,10 +506,12 @@ function DisplayAnimation(display, enabled,attrs) {
 		    buttons +=HtmlUtils.span([ID, this.getDomId(ID_END), TITLE,"Go to end"], HtmlUtils.getIconImage("fa-fast-forward"));
 	    }
 
-	    if(showButtons) {
-		buttons+=HtmlUtils.span([ID, this.getDomId(ID_ANIMATION_LABEL), CLASS, "display-animation-label",STYLE,this.labelStyle+HU.css("font-size",this.labelSize)]);
-	    } else {
-		buttons+=HtmlUtils.div([ID, this.getDomId(ID_ANIMATION_LABEL), CLASS, "display-animation-label",STYLE,this.labelStyle+HU.css("text-align","center","font-size",this.labelSize)]);
+	    if(showLabel) {
+		if(showButtons) {
+		    buttons+=HtmlUtils.span([ID, this.getDomId(ID_ANIMATION_LABEL), CLASS, "display-animation-label",STYLE,this.labelStyle+HU.css("font-size",this.labelSize)]);
+		} else {
+		    buttons+=HtmlUtils.div([ID, this.getDomId(ID_ANIMATION_LABEL), CLASS, "display-animation-label",STYLE,this.labelStyle+HU.css("text-align","center","font-size",this.labelSize)]);
+		}
 	    }
             buttons = HtmlUtils.div([ CLASS,"display-animation-buttons"], buttons);
 	    if(showSlider) {
