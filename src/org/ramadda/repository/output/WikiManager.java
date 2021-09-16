@@ -7313,6 +7313,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 String kmlIds       = null;
                 String geojsonIds   = null;
                 String kmlNames     = null;
+                String annotatedIds     = null;		
+                String annotatedNames     = null;		
                 String geojsonNames = null;
 
                 for (Metadata metadata : metadataList) {
@@ -7324,8 +7326,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             metadata.getAttr1());
                     if ((mapEntry == null)
                             || !(mapEntry.getTypeHandler()
-                                .isType("geo_shapefile") || mapEntry
-                                .getTypeHandler().isType("geo_geojson"))) {
+                                .isType("geo_shapefile") || mapEntry.getTypeHandler().isType("geo_geojson") ||
+				 mapEntry.getTypeHandler().isType("geo_editable_json"))) {
                         continue;
                     }
                     if (mapEntry.getTypeHandler().isType("geo_shapefile")) {
@@ -7339,6 +7341,18 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                         + mapEntry.getName().replaceAll(",",
                                             " ");
                         }
+		    } else  if (mapEntry.getTypeHandler().isType("geo_editable_json")) {
+                        if (annotatedIds == null) {
+                            annotatedIds   = mapEntry.getId();
+                            annotatedNames = mapEntry.getName().replaceAll(",",
+                                    " ");
+                        } else {
+                            annotatedIds += "," + mapEntry.getId();
+                            annotatedNames += ","
+                                        + mapEntry.getName().replaceAll(",",
+                                            " ");
+                        }
+
                     } else {
                         if (geojsonIds == null) {
                             geojsonIds = mapEntry.getId();
@@ -7357,6 +7371,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                         }
                     }
 
+		    if(annotatedIds!=null) {
+			Utils.add(propList, "annotationLayer", Json.quote(annotatedIds),
+				  "annotationLayerName", Json.quote(annotatedNames));
+		    }
+			
 		    if(props.get("kmlLayer")==null && props.get("geojsonLayer")==null) {
 			if (kmlIds != null) {
 			    Utils.add(propList, "kmlLayer", Json.quote(kmlIds),
