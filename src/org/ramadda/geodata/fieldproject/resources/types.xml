@@ -1,6 +1,38 @@
-<types  supercategory="Science and Education">
+<types  supercategory="Science and Education"  category="Science Project">
 
-  <type name="project_program"  description="Program" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project">
+  <type name="fair_collection"  description="FAIR Data Collection"
+	metadata="content.license"
+	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" >
+     <property name="icon" value="/fieldproject/fair.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+     <property name="form.altitude.top.show" value="false"/>
+     <wiki><![CDATA[
++section title={{name}}
+<table width="100%">
+<tr valign=top>
+<td width="50%">
+<div style="max-height: 400px; overflow-y: auto;">
+{{description wikify="true"}}
+</div>
+{{properties xmetadata.types="project_pi,project_person,project_funding" message="" prefix="==Metadata=="}}
+<p>
+{{tree message="" details="false" prefix="==All Sub-Folders =="}}
+</td>
+<td width="50%">
+{{image src="::*" message="" width="300"}}
+<p>
+{{map  message="" width="300" }}
+</td></tr>
+</table>
+-inset
+]]>
+</wiki>
+   </type>
+
+
+
+  <type name="project_program"  description="Program" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">
      <property name="icon" value="/fieldproject/chart_organisation.png"/>
      <property name="form.file.show" value="false"/>
      <property name="form.url.show" value="true"/>

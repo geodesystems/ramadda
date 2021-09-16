@@ -99,6 +99,7 @@ public class ContentMetadataHandler extends MetadataHandler {
     /** _more_ */
     public static final String TYPE_TEMPLATE = "content.pagetemplate";
 
+    public static final String TYPE_LICENSE = "content.license";
     /**
      * _more_
      *
@@ -125,6 +126,20 @@ public class ContentMetadataHandler extends MetadataHandler {
     @Override
     public String[] getHtml(Request request, Entry entry, Metadata metadata)
             throws Exception {
+	/*
+        if (metadata.getType().equals(TYPE_LICENSE)) {
+            String license     = metadata.getAttr1();
+	    if(license.startsWith("cc-")) {
+		String[] html = super.getHtml(request,entry,metadata);
+		return html
+
+	       values="cc-by:Create Commons By,cc-by-sa:Create Commons By ShareAlike,cc-by-nc:Create Commons By N
+on-Commercial,cc-by-nc-sa:Create Commons By Non-Commercial ShareAlike,cc-by-nd:Create Commons By No Derivatives,cc-by-nc-nd:Create Commons By Non-Commercial No Derivatives,cc-zero:Create Commons Zero"	       
+	    if(license
+
+	}
+		*/
+
         if (metadata.getType().equals(TYPE_ALIAS)) {
             Hashtable props =
                 (Hashtable) request.getExtraProperty("wiki.props");

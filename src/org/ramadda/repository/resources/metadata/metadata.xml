@@ -51,8 +51,11 @@
       <template type="oaidc"><![CDATA[<dc:subject>${attr1.cdata}</dc:subject>]]></template>
     </type>
 
-    <type name="License" id="content.license" searchable="true" browsable="true" displaygroup="Acknowledgements"  >
-      <element name="License" />
+    <type name="License" id="content.license" searchable="true" browsable="true" displaygroup="Acknowledgements"
+	  handler="org.ramadda.repository.metadata.ContentMetadataHandler">
+      <element name="License" datatype="enumerationplus"
+	       values="cc-by:Create Commons By,cc-by-sa:Create Commons By ShareAlike,cc-by-nc:Create Commons By Non-Commercial,cc-by-nc-sa:Create Commons By Non-Commercial ShareAlike,cc-by-nd:Create Commons By No Derivatives,cc-by-nc-nd:Create Commons By Non-Commercial No Derivatives,cc-zero:Create Commons Zero"	       
+/>
     </type>
 
 

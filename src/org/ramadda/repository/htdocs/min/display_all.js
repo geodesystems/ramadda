@@ -396,15 +396,22 @@ function DisplayAnimation(display, enabled,attrs) {
 	    decade: 1000 * 60 * 60 * 24 * 365 * 10,
 	    halfdecade: 1000 * 60 * 60 * 24 * 365 * 5,
 	    year: 1000 * 60 * 60 * 24 * 365 * 1,
+	    years: 1000 * 60 * 60 * 24 * 365 * 1,	    
 	    month: 1000 * 60 * 60 * 24 * 31,
+	    months: 1000 * 60 * 60 * 24 * 31,	    
 	    week: 1000 * 60 * 60 * 24 * 7,
-	    day: 1000 * 60 * 60 * 24 * 1,		    
+	    weeks: 1000 * 60 * 60 * 24 * 7,	    
+	    day: 1000 * 60 * 60 * 24 * 1,
+	    days: 1000 * 60 * 60 * 24 * 1,		    	    
 	    hour: 1000 * 60 * 60,
-	    hour: 1000 * 60,
-	    second: 1000		    
+	    hours: 1000 * 60 * 60,
+	    minute: 1000 * 60,
+	    minutes: 1000 * 60,	    
+	    second: 1000,
+	    seconds: 1000		    
 	},
 	getMillis:function(window) {
-	    window =window.trim();
+	    window =(""+window).trim();
 	    let cnt = 1;
 	    let unit = "day";
 	    let toks = window.match("^([0-9]+)(.*)");
@@ -485,6 +492,7 @@ function DisplayAnimation(display, enabled,attrs) {
             let buttons =  "";
 	    let showButtons  = this.display.getProperty("animationShowButtons",true);
 	    let showSlider = display.getProperty("animationShowSlider",true);
+	    let showLabel = display.getProperty("animationShowLabel",true);	    
 	    if(showButtons) {
 		let short = display.getProperty("animationWidgetShort",false);
 		buttons +=   HtmlUtils.span([ID, this.getDomId(ID_SETTINGS),TITLE,"Settings"], HtmlUtils.getIconImage("fas fa-cog")); 
@@ -498,10 +506,12 @@ function DisplayAnimation(display, enabled,attrs) {
 		    buttons +=HtmlUtils.span([ID, this.getDomId(ID_END), TITLE,"Go to end"], HtmlUtils.getIconImage("fa-fast-forward"));
 	    }
 
-	    if(showButtons) {
-		buttons+=HtmlUtils.span([ID, this.getDomId(ID_ANIMATION_LABEL), CLASS, "display-animation-label",STYLE,this.labelStyle+HU.css("font-size",this.labelSize)]);
-	    } else {
-		buttons+=HtmlUtils.div([ID, this.getDomId(ID_ANIMATION_LABEL), CLASS, "display-animation-label",STYLE,this.labelStyle+HU.css("text-align","center","font-size",this.labelSize)]);
+	    if(showLabel) {
+		if(showButtons) {
+		    buttons+=HtmlUtils.span([ID, this.getDomId(ID_ANIMATION_LABEL), CLASS, "display-animation-label",STYLE,this.labelStyle+HU.css("font-size",this.labelSize)]);
+		} else {
+		    buttons+=HtmlUtils.div([ID, this.getDomId(ID_ANIMATION_LABEL), CLASS, "display-animation-label",STYLE,this.labelStyle+HU.css("text-align","center","font-size",this.labelSize)]);
+		}
 	    }
             buttons = HtmlUtils.div([ CLASS,"display-animation-buttons"], buttons);
 	    if(showSlider) {
@@ -4484,6 +4494,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'animationDwell',ex:1000},
 	{p:'animationStartShowAll',ex:true,tt:'Show full range at start'},
 	{p:'animationShowButtons',ex:false},
+	{p:'animationShowLabel',ex:false},
 	{p:'animationShowSlider',ex:false},
 	{p:'animationWidgetShort',ex:true}
     ];
@@ -5528,7 +5539,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             });
         },
         fieldSelectionChanged: function() {
-            var name = "the display";
             this.setDisplayTitle();
             if (this.displayData) {
                 this.clearCachedData();
@@ -5612,7 +5622,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return Utils.cloneList(this.lastSelectedFields);
         },
         getSelectedFieldsInner: function(dfltList) {
-
             if (this.debugSelected) {
                 console.log("getSelectedFieldsInner dflt:" + (dfltList ? dfltList : "null"));
                 console.log("\tlast selected = " + this.lastSelectedFields);
@@ -5678,16 +5687,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 	    }
 
-            if (fixedFields != null && fixedFields.length > 0) {
+	    
+            if (!this.userHasSelectedAField && fixedFields != null && fixedFields.length > 0) {
                 if (this.debugSelected)
                     console.log("\tfrom fixed:" + df.length);
                 return df;
             }
 
+	    this.userHasSelectedAField = false;
             var fieldsToSelect = null;
             var firstField = null;
             this.selectedCbx = [];
             var cbxExists = false;
+
 
             for (var collectionIdx = 0; collectionIdx < dataList.length; collectionIdx++) {
                 var pointData = dataList[collectionIdx];
@@ -31856,6 +31868,7 @@ function RamaddaBaseMapDisplay(displayManager, type, id, properties) {
 	{p:'defaultMapLayer',ex:'ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|esri.lightgray|esri.physical|opentopo|usgs.topo|usgs.imagery|usgs.relief|osm.toner|osm.toner.lite|watercolor'},
 	{p:'mapLayers',ex:'ol.openstreetmap,esri.topo,esri.street,esri.worldimagery,esri.lightgray,esri.physical,opentopo,usgs.topo,usgs.imagery,usgs.relief,osm.toner,osm.toner.lite,watercolor'},
 	{p:'extraLayers',tt:'comma separated list of layers to display'},
+	{p:'annotationLayerTop',ex:'true',tt:'If showing the extra annotation layer put it on top'},
 	{p:'showLocationSearch',ex:'true'},
 	{p:'showLatLonPosition',ex:'false'},
 	{p:'showLayerSwitcher',ex:'false'},
@@ -32072,7 +32085,20 @@ function RamaddaBaseMapDisplay(displayManager, type, id, properties) {
             }
 
 	    
+	    if(this.getProperty("annotationLayer")) {
+		let opts = {theMap:this.map,
+			    embedded:true,
+			    displayOnly:true,
+			   };
+		if(this.getPropertyAnnotationLayerTop()) {
+		    opts.layerIndex = 100;
+		}
 
+		this.editableMap = new  RamaddaEditablemapDisplay(this.getDisplayManager(),HU.getUniqueId(""),opts);
+		this.editableMap.initDisplay(true);
+		this.editableMap.loadMap(this.getProperty("annotationLayer"));
+	    }
+	    
 	    this.getProperty("extraLayers","").split(",").forEach(tuple=>{
 		if(tuple.trim().length==0) return;
 		let toks = tuple.split(":");
@@ -32285,7 +32311,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:"labelTemplate",ex:"${field}",tt:"Display labels in the map"},
 	{p:"labelKeyField",ex:"field",tt:"Make a key, e.g., A, B, C, ... based on the value of the key field"},	
 	{p:"labelLimit",ex:"1000",tt:"Max number of records to display labels"},
-	{p:"doLabelGrid",ex:"true",tt:"Use a grid to determine if a label should be shown"},		
+  	{p:"doLabelGrid",ex:"true",tt:"Use a grid to determine if a label should be shown"},		
 	{p:"labelFontColor",ex:"#000"},
 	{p:"labelFontSize",ex:"12px"},
 	{p:"labelFontFamily",ex:"'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"},
@@ -35532,7 +35558,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let cellHeight = (bounds.top-bounds.bottom)/numCellsY;	    
 	    let grid = {};
 	    let doLabelGrid = this.getDoLabelGrid();
-	    console.log(cellWidth +" " + cellHeight +" " + numCellsX +" " + numCellsY);
 	    //
             let labelTemplate = this.getLabelTemplate();
 	    let labelKeyField;
@@ -39064,33 +39089,28 @@ addGlobalDisplayType({
 
 function RamaddaEditablemapDisplay(displayManager, id, properties) {
 
-
-
-OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPolygon, {
-    initialize: function(control, callbacks, options) {
-	OpenLayers.Handler.RegularPolygon.prototype.initialize.apply(this,arguments);
-	this.display = options.display;
-    },
-    finalize: function() {
-	this.theImage = this.image;
-	this.image =null;
-	OpenLayers.Handler.RegularPolygon.prototype.finalize.apply(this,arguments);
-    },
-    move: function(evt) {
-	OpenLayers.Handler.RegularPolygon.prototype.move.apply(this,arguments);
-	let mapBounds = this.feature.geometry.getBounds();
-	if(this.image) {
-	    this.display.map.removeLayer(this.image);
+    OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPolygon, {
+	initialize: function(control, callbacks, options) {
+	    OpenLayers.Handler.RegularPolygon.prototype.initialize.apply(this,arguments);
+	    this.display = options.display;
+	},
+	finalize: function() {
+	    this.theImage = this.image;
+	    this.image =null;
+	    OpenLayers.Handler.RegularPolygon.prototype.finalize.apply(this,arguments);
+	},
+	move: function(evt) {
+	    OpenLayers.Handler.RegularPolygon.prototype.move.apply(this,arguments);
+	    let mapBounds = this.feature.geometry.getBounds();
+	    if(this.image) {
+		this.display.map.removeLayer(this.image);
+	    }
+	    let b = this.display.map.transformProjBounds(mapBounds);
+	    this.image=  this.display.map.addImageLayer("","","",this.style.imageUrl,true,  b.top,b.left,b.bottom,b.right);
+	    this.image.setOpacity(this.style.imageOpacity);
 	}
-	let b = this.display.map.transformProjBounds(mapBounds);
-	this.image=  this.display.map.addImageLayer("","","",this.style.imageUrl,true,  b.top,b.left,b.bottom,b.right);
-	this.image.setOpacity(this.style.imageOpacity);
-    }
-    
-});
-
-
-
+	
+    });
 
 
     const ID_MESSAGE  ="message";
@@ -39128,6 +39148,8 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     this.defineSizeByProperties();
+    //do this here as this might be used by displaymap for annotation
+    this.map = this.getProperty("theMap");
     let myProps = [
 	{label:'Editable Map Properties'},
 	{p:"displayOnly",d:false},
@@ -39690,14 +39712,14 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 	addGlyph: function(glyph) {
 	    this.glyphs[glyph.getId()]= glyph;
 	},
-	loadJson: function(map) {
-//	    console.log(JSON.stringify(map,null,2));
-	    map.forEach(mapGlyph=>{
+	loadAnnotationJson: function(mapJson,map,layer, glyphMap) {
+//	    console.log(JSON.stringify(mapJson,null,2));
+	    mapJson.forEach(mapGlyph=>{
 		if(!mapGlyph.points || mapGlyph.points.length==0) {
 		    console.log("No points defined:" + JSON.stringify(mapGlyph));
 		    return;
 		}
-		let glyph = this.glyphMap[mapGlyph.type];
+		let glyph = glyphMap?glyphMap[mapGlyph.type]:null;
 		let style = mapGlyph.style||(glyph?glyph.style:{});
 		if(style.label) {
 		    style.pointRadius=0
@@ -39709,32 +39731,28 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 			points.push(new OpenLayers.Geometry.Point(pt.longitude,pt.latitude));
 		    });
 		    if(mapGlyph.geometryType=="OpenLayers.Geometry.Polygon") {
-			this.map.transformPoints(points);
+			map.transformPoints(points);
 			let linearRing = new OpenLayers.Geometry.LinearRing(points);
 			let geom = new OpenLayers.Geometry.Polygon(linearRing);
 			feature = new OpenLayers.Feature.Vector(geom,null,style);
 		    } else {
-			feature = this.map.createPolygon("","",points,style);
+			feature = map.createPolygon("","",points,style);
 		    }
 		} else {
 		    let point =  MapUtils.createLonLat(mapGlyph.points[0].longitude, mapGlyph.points[0].latitude);
-		    feature = this.map.createPoint("",point,style);
+		    feature = map.createPoint("",point,style);
 		}
 		feature.type=mapGlyph.type;
 		feature.style = style;
 		this.checkImage(feature);
-		this.myLayer.addFeatures([feature]);
+		layer.addFeatures([feature]);
 	    });
-	    if(this.myLayer.features.length>0 && !this.getProperty("zoomLevel")) {
-		let bounds = new OpenLayers.Bounds();
-		this.myLayer.features.forEach(feature=>{
-		    bounds.extend(feature.geometry.getBounds());
-		});
-		this.map.zoomToExtent(bounds);
-	    }
 	},
 	loadMap: function(entryId) {
-	    let url = this.getProperty("fileUrl");
+	    //Pass in true=skipParent
+	    let url = this.getProperty("fileUrl",null,false,true);
+	    if(!url && entryId)
+		url = ramaddaBaseUrl+"/entry/get?entryid=" + entryId;
 	    if(!url) return;
 	    let _this = this;
             $.ajax({
@@ -39743,10 +39761,18 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
                 success: (data) => {
 		    if(data=="") data="[]";
 		    try {
-			_this.loadJson(JSON.parse(data));
+			_this.loadAnnotationJson(JSON.parse(data),_this.map,_this.myLayer,_this.glyphMap);
+			if(!_this.getProperty("embedded") && _this.myLayer.features.length>0 && !_this.getProperty("zoomLevel")) {
+			    let bounds = new OpenLayers.Bounds();
+			    _this.myLayer.features.forEach(feature=>{
+				bounds.extend(feature.geometry.getBounds());
+			    });
+			    _this.map.zoomToExtent(bounds);
+			}
 		    } catch(err) {
 			this.showMessage("failed to load map:" + err);
 			console.log("error:" + err);
+			console.log(err.stack);
 			console.log("map json:" + data);
 		    }
                 }
@@ -39853,17 +39879,30 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 		this.setMessage("");
 	    },3000);
 	},
-        initDisplay: function() {
-            SUPER.initDisplay.call(this)
+        initDisplay: function(embedded) {
+	    if(!embedded) {
+		SUPER.initDisplay.call(this)
+	    }
+	    let _this = this;
+	    this.myLayer = this.map.createFeatureLayer("Annotation Features",false,null,{rendererOptions: {zIndexing: true}});
+	    if(this.getProperty("layerIndex")) {
+		this.myLayer.ramaddaLayerIndex = +this.getProperty("layerIndex");
+	    }
+	    this.icon = "/icons/map/marker-blue.png";
+	    this.glyphs = this.doMakeMapGlyphs();
+	    this.glyphMap = {};
+	    this.glyphs.forEach(g=>{
+		this.glyphMap[g.type]  = g;
+	    });
+	    if(embedded) {
+		return;
+	    }
 
 	    this.map.featureClickHandler = e=>{
 		if(this.command!=null) return;
 		console.log(e.feature);
 	    };
 
-	    this.myLayer = this.map.createFeatureLayer("Features",false,null,{rendererOptions: {zIndexing: true}});
-	    this.icon = "/icons/map/marker-blue.png";
-	    let _this = this;
 	    let control;
 	    if(!this.getDisplayOnly() || !Utils.isAnonymous()) {
 //		this.jq(ID_LEFT).html(HU.div([ID,this.domId(ID_COMMANDS),CLASS,"ramadda-display-editablemap-commands"]));
@@ -40034,8 +40073,6 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 	    }
 
 	    let cmds = "";
-	    this.glyphs = this.doMakeMapGlyphs();
-	    this.glyphMap = {};
 	    this.glyphs.forEach(g=>{
 		this.glyphMap[g.type]  = g;
 		g.createDrawer();
