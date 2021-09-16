@@ -97,6 +97,7 @@ function RamaddaBaseMapDisplay(displayManager, type, id, properties) {
 	{p:'defaultMapLayer',ex:'ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|esri.lightgray|esri.physical|opentopo|usgs.topo|usgs.imagery|usgs.relief|osm.toner|osm.toner.lite|watercolor'},
 	{p:'mapLayers',ex:'ol.openstreetmap,esri.topo,esri.street,esri.worldimagery,esri.lightgray,esri.physical,opentopo,usgs.topo,usgs.imagery,usgs.relief,osm.toner,osm.toner.lite,watercolor'},
 	{p:'extraLayers',tt:'comma separated list of layers to display'},
+	{p:'annotationLayerTop',ex:'true',tt:'If showing the extra annotation layer put it on top'},
 	{p:'showLocationSearch',ex:'true'},
 	{p:'showLatLonPosition',ex:'false'},
 	{p:'showLayerSwitcher',ex:'false'},
@@ -313,7 +314,20 @@ function RamaddaBaseMapDisplay(displayManager, type, id, properties) {
             }
 
 	    
+	    if(this.getProperty("annotationLayer")) {
+		let opts = {theMap:this.map,
+			    embedded:true,
+			    displayOnly:true,
+			   };
+		if(this.getPropertyAnnotationLayerTop()) {
+		    opts.layerIndex = 100;
+		}
 
+		this.editableMap = new  RamaddaEditablemapDisplay(this.getDisplayManager(),HU.getUniqueId(""),opts);
+		this.editableMap.initDisplay(true);
+		this.editableMap.loadMap(this.getProperty("annotationLayer"));
+	    }
+	    
 	    this.getProperty("extraLayers","").split(",").forEach(tuple=>{
 		if(tuple.trim().length==0) return;
 		let toks = tuple.split(":");
@@ -526,7 +540,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:"labelTemplate",ex:"${field}",tt:"Display labels in the map"},
 	{p:"labelKeyField",ex:"field",tt:"Make a key, e.g., A, B, C, ... based on the value of the key field"},	
 	{p:"labelLimit",ex:"1000",tt:"Max number of records to display labels"},
-	{p:"doLabelGrid",ex:"true",tt:"Use a grid to determine if a label should be shown"},		
+  	{p:"doLabelGrid",ex:"true",tt:"Use a grid to determine if a label should be shown"},		
 	{p:"labelFontColor",ex:"#000"},
 	{p:"labelFontSize",ex:"12px"},
 	{p:"labelFontFamily",ex:"'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"},
@@ -3773,7 +3787,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let cellHeight = (bounds.top-bounds.bottom)/numCellsY;	    
 	    let grid = {};
 	    let doLabelGrid = this.getDoLabelGrid();
-	    console.log(cellWidth +" " + cellHeight +" " + numCellsX +" " + numCellsY);
 	    //
             let labelTemplate = this.getLabelTemplate();
 	    let labelKeyField;

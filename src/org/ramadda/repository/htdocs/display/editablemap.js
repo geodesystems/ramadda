@@ -16,33 +16,28 @@ addGlobalDisplayType({
 
 function RamaddaEditablemapDisplay(displayManager, id, properties) {
 
-
-
-OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPolygon, {
-    initialize: function(control, callbacks, options) {
-	OpenLayers.Handler.RegularPolygon.prototype.initialize.apply(this,arguments);
-	this.display = options.display;
-    },
-    finalize: function() {
-	this.theImage = this.image;
-	this.image =null;
-	OpenLayers.Handler.RegularPolygon.prototype.finalize.apply(this,arguments);
-    },
-    move: function(evt) {
-	OpenLayers.Handler.RegularPolygon.prototype.move.apply(this,arguments);
-	let mapBounds = this.feature.geometry.getBounds();
-	if(this.image) {
-	    this.display.map.removeLayer(this.image);
+    OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPolygon, {
+	initialize: function(control, callbacks, options) {
+	    OpenLayers.Handler.RegularPolygon.prototype.initialize.apply(this,arguments);
+	    this.display = options.display;
+	},
+	finalize: function() {
+	    this.theImage = this.image;
+	    this.image =null;
+	    OpenLayers.Handler.RegularPolygon.prototype.finalize.apply(this,arguments);
+	},
+	move: function(evt) {
+	    OpenLayers.Handler.RegularPolygon.prototype.move.apply(this,arguments);
+	    let mapBounds = this.feature.geometry.getBounds();
+	    if(this.image) {
+		this.display.map.removeLayer(this.image);
+	    }
+	    let b = this.display.map.transformProjBounds(mapBounds);
+	    this.image=  this.display.map.addImageLayer("","","",this.style.imageUrl,true,  b.top,b.left,b.bottom,b.right);
+	    this.image.setOpacity(this.style.imageOpacity);
 	}
-	let b = this.display.map.transformProjBounds(mapBounds);
-	this.image=  this.display.map.addImageLayer("","","",this.style.imageUrl,true,  b.top,b.left,b.bottom,b.right);
-	this.image.setOpacity(this.style.imageOpacity);
-    }
-    
-});
-
-
-
+	
+    });
 
 
     const ID_MESSAGE  ="message";
@@ -80,6 +75,8 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     this.defineSizeByProperties();
+    //do this here as this might be used by displaymap for annotation
+    this.map = this.getProperty("theMap");
     let myProps = [
 	{label:'Editable Map Properties'},
 	{p:"displayOnly",d:false},
@@ -642,14 +639,14 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 	addGlyph: function(glyph) {
 	    this.glyphs[glyph.getId()]= glyph;
 	},
-	loadJson: function(map) {
-//	    console.log(JSON.stringify(map,null,2));
-	    map.forEach(mapGlyph=>{
+	loadAnnotationJson: function(mapJson,map,layer, glyphMap) {
+//	    console.log(JSON.stringify(mapJson,null,2));
+	    mapJson.forEach(mapGlyph=>{
 		if(!mapGlyph.points || mapGlyph.points.length==0) {
 		    console.log("No points defined:" + JSON.stringify(mapGlyph));
 		    return;
 		}
-		let glyph = this.glyphMap[mapGlyph.type];
+		let glyph = glyphMap?glyphMap[mapGlyph.type]:null;
 		let style = mapGlyph.style||(glyph?glyph.style:{});
 		if(style.label) {
 		    style.pointRadius=0
@@ -661,32 +658,28 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 			points.push(new OpenLayers.Geometry.Point(pt.longitude,pt.latitude));
 		    });
 		    if(mapGlyph.geometryType=="OpenLayers.Geometry.Polygon") {
-			this.map.transformPoints(points);
+			map.transformPoints(points);
 			let linearRing = new OpenLayers.Geometry.LinearRing(points);
 			let geom = new OpenLayers.Geometry.Polygon(linearRing);
 			feature = new OpenLayers.Feature.Vector(geom,null,style);
 		    } else {
-			feature = this.map.createPolygon("","",points,style);
+			feature = map.createPolygon("","",points,style);
 		    }
 		} else {
 		    let point =  MapUtils.createLonLat(mapGlyph.points[0].longitude, mapGlyph.points[0].latitude);
-		    feature = this.map.createPoint("",point,style);
+		    feature = map.createPoint("",point,style);
 		}
 		feature.type=mapGlyph.type;
 		feature.style = style;
 		this.checkImage(feature);
-		this.myLayer.addFeatures([feature]);
+		layer.addFeatures([feature]);
 	    });
-	    if(this.myLayer.features.length>0 && !this.getProperty("zoomLevel")) {
-		let bounds = new OpenLayers.Bounds();
-		this.myLayer.features.forEach(feature=>{
-		    bounds.extend(feature.geometry.getBounds());
-		});
-		this.map.zoomToExtent(bounds);
-	    }
 	},
 	loadMap: function(entryId) {
-	    let url = this.getProperty("fileUrl");
+	    //Pass in true=skipParent
+	    let url = this.getProperty("fileUrl",null,false,true);
+	    if(!url && entryId)
+		url = ramaddaBaseUrl+"/entry/get?entryid=" + entryId;
 	    if(!url) return;
 	    let _this = this;
             $.ajax({
@@ -695,10 +688,18 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
                 success: (data) => {
 		    if(data=="") data="[]";
 		    try {
-			_this.loadJson(JSON.parse(data));
+			_this.loadAnnotationJson(JSON.parse(data),_this.map,_this.myLayer,_this.glyphMap);
+			if(!_this.getProperty("embedded") && _this.myLayer.features.length>0 && !_this.getProperty("zoomLevel")) {
+			    let bounds = new OpenLayers.Bounds();
+			    _this.myLayer.features.forEach(feature=>{
+				bounds.extend(feature.geometry.getBounds());
+			    });
+			    _this.map.zoomToExtent(bounds);
+			}
 		    } catch(err) {
 			this.showMessage("failed to load map:" + err);
 			console.log("error:" + err);
+			console.log(err.stack);
 			console.log("map json:" + data);
 		    }
                 }
@@ -805,17 +806,30 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 		this.setMessage("");
 	    },3000);
 	},
-        initDisplay: function() {
-            SUPER.initDisplay.call(this)
+        initDisplay: function(embedded) {
+	    if(!embedded) {
+		SUPER.initDisplay.call(this)
+	    }
+	    let _this = this;
+	    this.myLayer = this.map.createFeatureLayer("Annotation Features",false,null,{rendererOptions: {zIndexing: true}});
+	    if(this.getProperty("layerIndex")) {
+		this.myLayer.ramaddaLayerIndex = +this.getProperty("layerIndex");
+	    }
+	    this.icon = "/icons/map/marker-blue.png";
+	    this.glyphs = this.doMakeMapGlyphs();
+	    this.glyphMap = {};
+	    this.glyphs.forEach(g=>{
+		this.glyphMap[g.type]  = g;
+	    });
+	    if(embedded) {
+		return;
+	    }
 
 	    this.map.featureClickHandler = e=>{
 		if(this.command!=null) return;
 		console.log(e.feature);
 	    };
 
-	    this.myLayer = this.map.createFeatureLayer("Features",false,null,{rendererOptions: {zIndexing: true}});
-	    this.icon = "/icons/map/marker-blue.png";
-	    let _this = this;
 	    let control;
 	    if(!this.getDisplayOnly() || !Utils.isAnonymous()) {
 //		this.jq(ID_LEFT).html(HU.div([ID,this.domId(ID_COMMANDS),CLASS,"ramadda-display-editablemap-commands"]));
@@ -986,8 +1000,6 @@ OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPol
 	    }
 
 	    let cmds = "";
-	    this.glyphs = this.doMakeMapGlyphs();
-	    this.glyphMap = {};
 	    this.glyphs.forEach(g=>{
 		this.glyphMap[g.type]  = g;
 		g.createDrawer();
