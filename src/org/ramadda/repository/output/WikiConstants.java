@@ -577,6 +577,8 @@ public interface WikiConstants {
 
     public static final String WIKI_TAG_RESOURCE = "resource";
 
+    public static final String WIKI_TAG_ENTRYLINK = "entrylink";    
+
     /** _more_ */
     public static final String WIKI_TAG_TOOLS = "tools";
 
