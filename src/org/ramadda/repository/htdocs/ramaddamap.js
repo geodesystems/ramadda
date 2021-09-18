@@ -2371,12 +2371,12 @@ RepositoryMap.prototype = {
 
         }
 
-
         this.graticule = new OpenLayers.Control.Graticule({
             layerName: "Lat/Lon Lines",
+	    xautoActivate:false,
             numPoints: 2,
             labelled: true,
-            visible: false
+            visible: this.showLatLonLines===true
         });
         this.getMap().addControl(this.graticule);
     },
