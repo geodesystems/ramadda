@@ -42,6 +42,7 @@ import java.io.*;
 
 import java.sql.*;
 
+import java.util.Iterator;
 import java.util.ArrayList;
 
 import java.util.Arrays;
@@ -622,6 +623,15 @@ public abstract class DataProvider {
 		    System.err.println("error trying to read JSONObject:" + exc);
             }
 
+            if (array == null && root!=null) {
+		array = new JSONArray();
+		Iterator<String> keys = root.keys();
+		while(keys.hasNext()) {
+		    Object o =keys.next();
+		    array.put(root.opt(o.toString()));
+		}
+	    }
+	    
             if (array == null) {
 		try {
 		    array = new JSONArray(s);
