@@ -229,7 +229,8 @@ function RamaddaBaseMapDisplay(displayManager, type, id, properties) {
 		showZoomOnlyControl: this.getShowZoomOnlyControl(true),
 		enableDragPan: this.getEnableDragPan(true),
 		highlightColor: this.getHighlightColor("blue"),
-		highlightStrokeWidth: this.getHighlightStrokeWidth(1)
+		highlightStrokeWidth: this.getHighlightStrokeWidth(1),
+		showLatLonLines:this.getProperty("showLatLonLines")
             };
 	    this.mapParams = params;
             var displayDiv = this.getProperty("displayDiv", null);
@@ -733,7 +734,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	addFeatures:function(features,noSelect) {
 	    if(!this.myFeatureLayer) {
 		this.myFeatureLayerNoSelect = this.map.createFeatureLayer("Features-2",false);		
-		this.myFeatureLayer = this.map.createFeatureLayer("Features",true);
+		this.myFeatureLayer = this.map.createFeatureLayer("Map Features",true);
 		if(this.getProperty("showMarkersToggle") && !this.getProperty("markersVisibility", true)) {
 		    this.applyToFeatureLayers(layer=>{layer.setVisibility(false);});
 		}
