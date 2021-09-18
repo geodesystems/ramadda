@@ -1900,8 +1900,10 @@ public class TypeHandler extends RepositoryManager {
                                         List<String[]> idList) {
 	boolean changed = false;
 
+	//	System.err.println("convert: " + newEntry);
 	if(getTypeProperty("convertidsinfile",false)) {
 	    changed = convertIdsFromImportInFile(newEntry, idList);
+	    //	    System.err.println("converted:" + changed);
 	}
 
         String desc = newEntry.getDescription();
@@ -1929,16 +1931,19 @@ public class TypeHandler extends RepositoryManager {
     public boolean convertIdsFromImportInFile(Entry newEntry,
                                         List<String[]> idList) {
         if (idList.size() == 0) {
+	    //	    System.err.println("no ids");
             return false;
         }
 
         if ( !newEntry.getResource().isFile()) {
+	    //	    System.err.println("no file");
             return false;
         }
         File f = newEntry.getResource().getTheFile();
         //Check that it is a stored file
         File storageDir = new File(getStorageManager().getStorageDir());
         if ( !IOUtil.isADescendent(storageDir, f)) {
+	    //	    System.err.println("not in storage");
             return false;
         }
         try {
@@ -1950,13 +1955,15 @@ public class TypeHandler extends RepositoryManager {
                 }
                 txt = txt.replaceAll(tuple[0].trim(), tuple[1]);
             }
+	    //	    System.err.println("new text:" + txt);
             if ( !orig.equals(txt)) {
+		//		System.err.println("writing");
                 getStorageManager().writeFile(f, txt);
             }
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
-        return false;
+        return true;
     }
 
 

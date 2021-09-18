@@ -167,38 +167,6 @@ mapVar="gpxMap${entryid}" }}
    </type>
 -->
 
-<!--
-  <type name="map_map"  description="Editable Map" handler="org.ramadda.plugins.map.MapTypeHandler" >
-     <property name="icon" value="/icons/map.png"/>
-     <property name="form.show.resource" value="false"/>
-     <property name="form.show.area" value="true"/>
-     <property name="form.show.datatype" value="false"/>
-     <property name="form.show.date" value="false"/>
-     <property name="form.show.altitude" value="false"/>
-     <property name="form.show.altitude.top" value="false"/>
-   </type>
-
-
-  <type name="map_entry"  description="Map Item" handler="org.ramadda.plugins.map.MapEntryTypeHandler" foruser="false" >
-     <column name="properties" type="clob" size="256000" label="" cansearch="false" showinhtml="false"/>
-   </type>
-
-
-  <type name="map_entry_image"  super="map.entry" description="Map Image" handler="org.ramadda.plugins.map.MapEntryTypeHandler" foruser="false" >
-     <property name="icon" value="/icons/map.png"/>
-   </type>
-
-  <type name="map_entry_polygon"  super="map.entry" description="Map Polygon" handler="org.ramadda.plugins.map.MapEntryTypeHandler" foruser="false" >
-     <property name="icon" value="/icons/map.png"/>
-   </type>
-
-
-  <type name="map_entry_marker"  super="map.entry" description="Map Marker" handler="org.ramadda.plugins.map.MapEntryTypeHandler" foruser="false" >
-     <property name="icon" value="/icons/map.png"/>
-   </type>
-
--->
-
   <type name="geo_shapefile_fips"  description="Shapefile with FIPS Code"   super="geo_shapefile"  metadata="shapefile_display,shapefile_color,map_displaymap" handler="org.ramadda.repository.type.GenericTypeHandler">
      <column name="fips" label="FIPS Code" canedit="true" showinhtml="true"/>
 </type>
@@ -239,10 +207,10 @@ mapVar="gpxMap${entryid}" }}
 </wiki>
    </type>
 
-  <type name="geo_editable_json"  description="Editable Map File"  isgroup="true">
-    <property name="defaultFilename" value="map.json"/>
-     <property name="convertidsinfile" value="true"/>
-    <property name="icon" value="/icons/map.png"/>
+<type name="geo_editable_json"  description="Editable Map File"  isgroup="true">
+   <property name="defaultFilename" value="map.json"/>
+   <property name="convertidsinfile" value="true"/>
+   <property name="icon" value="/icons/map.png"/>
 <wiki>
 <![CDATA[
 +section title={{name}}
