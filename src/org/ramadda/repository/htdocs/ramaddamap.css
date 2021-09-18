@@ -1,9 +1,14 @@
 
+/* Add this so when we show a graticule it doesn't pick up the mouse clicks */
+.olLayerDiv canvas {
+    pointer-events:none;
+}
 
 .olLayerGoogleCopyright {
-//jeffmc: use display:none to fix the mouse controls not responding
-//    top:-1000px;
-//    display: none;
+/*jeffmc: use display:none to fix the mouse controls not responding
+    top:-1000px;
+    display: none;
+*/
 }
 
 .olControlAttribution {
