@@ -697,14 +697,15 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			    _this.map.zoomToExtent(bounds);
 			}
 		    } catch(err) {
-			this.showMessage("failed to load map:" + err);
+			this.showMessage("Failed to load map:" + err);
 			console.log("error:" + err);
 			console.log(err.stack);
 			console.log("map json:" + data);
 		    }
                 }
             }).fail(err=>{
-		this.showMessage("failed to load map:" + err);
+		this.showMessage("Failed to load map:" + err);
+		console.log("error:" + JSON.stringify(err));
 	    });
 
 
@@ -831,7 +832,8 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    };
 
 	    let control;
-	    if(!this.getDisplayOnly() || !Utils.isAnonymous()) {
+//	    if(!this.getDisplayOnly() || !Utils.isAnonymous()) {
+	    if(!Utils.isAnonymous()) {
 //		this.jq(ID_LEFT).html(HU.div([ID,this.domId(ID_COMMANDS),CLASS,"ramadda-display-editablemap-commands"]));
 		var keyboardControl = new OpenLayers.Control();
 		control = new OpenLayers.Control();
@@ -1025,7 +1027,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 
 
 	    if(this.getProperty("entryType")=="geo_editable_json") {
-		this.loadMap(this.getProperty("entryId"));
+		this.loadMap();
 		/* not now
 		//Do it in a bit so the layer gets its bounds set
 		setTimeout(()=>{
