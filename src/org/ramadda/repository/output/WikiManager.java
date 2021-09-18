@@ -7139,15 +7139,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 	    }
 	}
 
-	if(entry.isFile()) {
-            String fileUrl = entry.getTypeHandler().getEntryResourceUrl(request,  entry);
-	    topProps.add("fileUrl");
-	    topProps.add(HU.quote(fileUrl));
-	}
-        topProps.add("entryId");
-        topProps.add(HU.quote(entry.getId()));
-        topProps.add("entryType");
-        topProps.add(HU.quote(entry.getTypeHandler().getType()));
 
 
         String mainDivId = getProperty(wikiUtil, props, "divid");
@@ -7226,8 +7217,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         //Only add the default layer to the display if its been specified
         defaultLayer = getProperty(wikiUtil, props, "defaultLayer",
                                    (String) null);
+        boolean isMap = displayType.equals("map") || displayType.equals("editablemap");
+
+
+
         //If its a map then check for the default layer
-        if (displayType.equals("map")) {
+        if (isMap) {
             List<Metadata> layers =
                 getMetadataManager().findMetadata(request, entry,
                     "map_layer", true);
@@ -7316,7 +7311,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 	    Utils.add(propList, key, value);
         }
 
-        boolean isMap = displayType.equals("map");
+
         //Don't do this now
         if (false && isMap) {
             String mapVar = getProperty(wikiUtil, props, ATTR_MAPVAR);
@@ -7337,7 +7332,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 js, "\nvar displayManager = getOrCreateDisplayManager(",
                 HU.quote(groupDivId), ",", Json.map(topProps, false), ");\n");
         }
-        Utils.add(propList, "entryId", HU.quote(entry.getId()));
+        Utils.add(propList, "entryId", HU.quote(entry.getId()),"entryType",HU.quote(entry.getTypeHandler().getType()));
+	if(entry.isFile()) {
+            String fileUrl = entry.getTypeHandler().getEntryResourceUrl(request,  entry);
+	    Utils.add(propList,"fileUrl",HU.quote(fileUrl));
+	}
+
+
         if ((pointDataUrl != null)
                 && getProperty(wikiUtil, props, "includeData", true)) {
             Utils.add(propList, "data",
