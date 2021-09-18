@@ -1900,10 +1900,8 @@ public class TypeHandler extends RepositoryManager {
                                         List<String[]> idList) {
 	boolean changed = false;
 
-	//	System.err.println("convert: " + newEntry);
 	if(getTypeProperty("convertidsinfile",false)) {
 	    changed = convertIdsFromImportInFile(newEntry, idList);
-	    //	    System.err.println("converted:" + changed);
 	}
 
         String desc = newEntry.getDescription();
