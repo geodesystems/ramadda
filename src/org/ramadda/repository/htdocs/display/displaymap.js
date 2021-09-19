@@ -80,8 +80,7 @@ function RamaddaBaseMapDisplay(displayManager, type, id, properties) {
         theMap: null
     });
 
-
-    const SUPER = new RamaddaDisplay(displayManager, type, id,  properties);
+    const SUPER = new RamaddaDisplay(displayManager, id,type,   properties);
     RamaddaUtil.inherit(this,SUPER);
     this.defineSizeByProperties();
     let myProps = [

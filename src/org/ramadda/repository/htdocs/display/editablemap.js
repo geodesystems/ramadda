@@ -68,9 +68,6 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
     const ID_RESIZE = "resize";
     const ID_RESHAPE = "reshape";    
 
-
-
-
     const SUPER = new RamaddaBaseMapDisplay(displayManager,  DISPLAY_EDITABLEMAP, id, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
