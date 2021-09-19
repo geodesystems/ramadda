@@ -21152,6 +21152,7 @@ function RamaddaLegendDisplay(displayManager, id, properties) {
 	{label:'Legend'},
 	{p:'labels',ex:''},
 	{p:'colors',ex:''},
+	{p:'circles',ex:'true'},	
 	{p:'inBox',ex:'true'},
 	{p:'labelColor',ex:'#fff'},
 	{p:'labelColors',ex:'color1,color2,...'},
@@ -21172,13 +21173,13 @@ function RamaddaLegendDisplay(displayManager, id, properties) {
 	    let inBox = this.getProperty("inBox",false);
 	    let orientation = this.getProperty("orientation","horizontal");
 	    let delim = orientation=="horizontal"?" ":"<br>";
+	    let circles = this.getCircles();
 	    for(let i=0;i<labels.length;i++) {
 		let label = labels[i];
 		let color = colors[i]||"#fff";
 		if(i>0) html+=delim;
 		if(!inBox) {
-		    html+=HU.div(["class","display-legend-item"], HU.div(["class","display-legend-color","style","background:" + color+";width:" + colorWidth+";"+
-									  "height:15px;"]) +
+		    html+=HU.div(["class","display-legend-item"], HU.div(["class","display-legend-color " + (circles?"display-colortable-dot":""),"style","background:" + color+";width:" + colorWidth+";"+(circles?"height:" + colorWidth+";":	  "height:15px;")]) +
 				 HU.div(["class","display-legend-label"],label));
 		} else {
 		    let lc = labelColors?labelColors[i]:labelColor || labelColor;
