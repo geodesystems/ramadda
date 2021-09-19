@@ -112,7 +112,7 @@ public class CsvUtil {
     private String comment;
 
     private String dateFormatString = "yyyy-MM-dd HH:mm";
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    private SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatString);
     
     private String timezone="";
     
@@ -3059,8 +3059,8 @@ public class CsvUtil {
 		String sdf2 = args.get(++i);
 		ctx.addProcessor(
 				 new Converter.DateConverter(
-							     col, dateFormat,
-							     new SimpleDateFormat(sdf2)));
+							     col, dateFormatString,
+							     sdf2));
 		return i;
 	    });
 

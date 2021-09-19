@@ -2454,6 +2454,10 @@ public abstract class Converter extends Processor {
 
         /* */
 
+	private String format1;
+	private String format2;	
+
+
         /** _more_ */
         private SimpleDateFormat sdf1;
 
@@ -2472,11 +2476,10 @@ public abstract class Converter extends Processor {
          * @param sdf1 _more_
          * @param sdf2 _more_
          */
-        public DateConverter(String col, SimpleDateFormat sdf1,
-                             SimpleDateFormat sdf2) {
+        public DateConverter(String col, String format1, String format2) {
             super(col);
-            this.sdf1 = sdf1;
-            this.sdf2 = sdf2;
+            this.sdf1 = new SimpleDateFormat(this.format1= format1);
+            this.sdf2 = new SimpleDateFormat(this.format2= format2);	    
         }
 
         /**
@@ -2492,13 +2495,18 @@ public abstract class Converter extends Processor {
             if (rowCnt++ == 0) {
                 return row;
             }
+	    Date d=null;
+	    String s = row.get(col).toString();
             try {
-                String s = row.get(col).toString();
-                Date   d = sdf1.parse(s);
+                d = sdf1.parse(s);
+            } catch (Exception exc) {
+		fatal("Could not parse date:" + s +" with format:" + format1);
+            }
+	    try {
                 //              System.err.println(s + " D:" + d  +" " + sdf2.format(d));
                 row.set(col, sdf2.format(d));
             } catch (Exception exc) {
-                throw new RuntimeException(exc);
+		fatal("Could not format date:" + s +" with format:" + format2);
             }
 
             return row;
