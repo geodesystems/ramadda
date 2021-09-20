@@ -1463,7 +1463,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'animationShowButtons',ex:false},
 	{p:'animationShowLabel',ex:false},
 	{p:'animationShowSlider',ex:false},
-	{p:'animationWidgetShort',ex:true}
+	{p:'animationWidgetShort',ex:true},
+	{p:'selectFirst',ex:true,tt:'Select the first record when animating so other displays will hilight it'},
+	{p:'selectLast',ex:true,tt:'Select the last record when animating so other displays will hilight it'},
     ];
 
     displayDefineMembers(this,myProps, {
@@ -3514,6 +3516,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		console.log("filtered:" + records.length);
 	    this.jq(ID_FILTER_COUNT).html("Count: " + records.length);
 	    this.filteredRecords = records;
+	    if(this.getSelectFirst()) {
+		this.propagateEventRecordSelection({record:records[0]});
+	    } else if(this.getSelectLast()) {
+		this.propagateEventRecordSelection({record:records[records.length-1]});
+	    }
             return this.handleResult("filterData",records);
         },
 	//TODO: this will support a handler pattern that allows for insertion
