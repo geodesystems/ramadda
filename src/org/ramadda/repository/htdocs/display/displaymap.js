@@ -75,12 +75,13 @@ function MapFeature(source, points) {
 
 var ID_MAP = "map";
 
-function RamaddaBaseMapDisplay(displayManager, type, id, properties) {
+function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
     $.extend(this, {
         theMap: null
     });
 
-    const SUPER = new RamaddaDisplay(displayManager, type,id,   properties);
+
+    const SUPER = new RamaddaDisplay(displayManager, id, type,   properties);
     RamaddaUtil.inherit(this,SUPER);
     this.defineSizeByProperties();
     let myProps = [

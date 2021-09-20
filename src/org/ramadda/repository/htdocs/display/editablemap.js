@@ -15,7 +15,6 @@ addGlobalDisplayType({
 
 
 function RamaddaEditablemapDisplay(displayManager, id, properties) {
-
     OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPolygon, {
 	initialize: function(control, callbacks, options) {
 	    OpenLayers.Handler.RegularPolygon.prototype.initialize.apply(this,arguments);
@@ -68,7 +67,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
     const ID_RESIZE = "resize";
     const ID_RESHAPE = "reshape";    
 
-    const SUPER = new RamaddaBaseMapDisplay(displayManager,  DISPLAY_EDITABLEMAP, id, properties);
+    const SUPER = new RamaddaBaseMapDisplay(displayManager,  id, DISPLAY_EDITABLEMAP,  properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     this.defineSizeByProperties();

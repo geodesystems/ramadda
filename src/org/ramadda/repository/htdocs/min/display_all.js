@@ -4254,6 +4254,7 @@ function DisplayThing(argId, argProperties) {
    Base class for all displays 
 */
 function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
+
     const SUPER  = new DisplayThing(argId, argProperties);
     RamaddaUtil.inherit(this, SUPER);
 
@@ -31853,12 +31854,13 @@ function MapFeature(source, points) {
 
 var ID_MAP = "map";
 
-function RamaddaBaseMapDisplay(displayManager, type, id, properties) {
+function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
     $.extend(this, {
         theMap: null
     });
 
-    const SUPER = new RamaddaDisplay(displayManager, type,id,   properties);
+
+    const SUPER = new RamaddaDisplay(displayManager, id, type,   properties);
     RamaddaUtil.inherit(this,SUPER);
     this.defineSizeByProperties();
     let myProps = [
@@ -39095,7 +39097,6 @@ addGlobalDisplayType({
 
 
 function RamaddaEditablemapDisplay(displayManager, id, properties) {
-
     OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPolygon, {
 	initialize: function(control, callbacks, options) {
 	    OpenLayers.Handler.RegularPolygon.prototype.initialize.apply(this,arguments);
@@ -39148,7 +39149,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
     const ID_RESIZE = "resize";
     const ID_RESHAPE = "reshape";    
 
-    const SUPER = new RamaddaBaseMapDisplay(displayManager,  DISPLAY_EDITABLEMAP, id, properties);
+    const SUPER = new RamaddaBaseMapDisplay(displayManager,  id, DISPLAY_EDITABLEMAP,  properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     this.defineSizeByProperties();
