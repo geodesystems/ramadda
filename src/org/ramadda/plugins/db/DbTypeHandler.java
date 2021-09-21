@@ -6549,6 +6549,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             throws Exception {
 
 	boolean isPostgres = getDatabaseManager().isDatabasePostgres();
+	isPostgres  = false;
         String         extra     = "";
         List<Object[]> result    = new ArrayList<Object[]>();
         boolean        doGroupBy = isGroupBy(request);
