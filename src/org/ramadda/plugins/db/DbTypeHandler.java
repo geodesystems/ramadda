@@ -6548,11 +6548,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                       PrintWriter pw)
             throws Exception {
 
+	boolean isPostgres = getDatabaseManager().isDatabasePostgres();
         String         extra     = "";
         List<Object[]> result    = new ArrayList<Object[]>();
         boolean        doGroupBy = isGroupBy(request);
         List<String>   colNames;
         List<Column>   selectedColumns = null;
+	List<Column> uniqueCols = null;
         List<Column>   groupByColumns  = null;
         List<String>   aggColumns      = null;
         List<String>   aggLabels       = null;
@@ -6681,13 +6683,26 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		    if(!selectedColumns.contains(theColumn)) selectedColumns.add(theColumn);
 		}
 	    }
+	    
 	    colNames = Column.getNames(selectedColumns);
+	    List<String> uniqueNames = new ArrayList<String>();
+	    for (Column column : selectedColumns) {
+		if(request.get(ARG_DB_UNIQUE + "_" + column.getName(),false)) {
+		    if(uniqueCols==null)
+			uniqueCols = new ArrayList<Column>();
+		    uniqueCols.add(column);
+		    uniqueNames.add(column.getName());
+		}
+	    }
+	    if(isPostgres && uniqueCols!=null) {
+		colNames.add(0, "distinct(concat(" + Utils.join(uniqueNames,",")+"))");
+	    }
 	}
 
         Statement stmt = null;
         extra += limitString;
         try {
-	    //	    SqlUtil.debug = true;
+	    SqlUtil.debug = true;
             if (SqlUtil.debug) {
                 System.err.println("table:" + tableHandler.getTableName());
                 System.err.println("clause:" + clause);
@@ -6716,17 +6731,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
 	HashSet seenValue = new HashSet();
-	List<Column> uniqueCols = null;
-
-	if(selectedColumns!=null) {
-	    for (Column column : selectedColumns) {
-		if(request.get(ARG_DB_UNIQUE + "_" + column.getName(),false)) {
-		    if(uniqueCols==null)
-			uniqueCols = new ArrayList<Column>();
-		    uniqueCols.add(column);
-		}
-	    }
-	}
 	//	System.err.println("Uniques:" + uniqueCols);
 
         try {
@@ -6766,15 +6770,20 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 } else {
                     //              Object[] values = Column.makeValueArray(selectedColumns);
                     Object[] values = tableHandler.makeEntryValueArray();
+		    if(isPostgres && uniqueCols!=null) {
+			//If we are running on postgres and one or more unique columns was selected
+			//then there is a distinct(concat(...)) column to start so we bump up the valueIdx here
+			valueIdx++;
+		    }
                     for (Column column : selectedColumns) {
                         valueIdx = column.readValues(myEntry, results,
-                                values, valueIdx);
+						     values, valueIdx);
                     }
                     if (pw != null) {
                         pw.println(
                             Utils.encodeBase64(xmlEncoder.toXml(values)));
                     } else {
-			if(uniqueCols!=null) {
+			if(!isPostgres && uniqueCols!=null) {
 			    String key = "";
 			    for(Column c: uniqueCols) {
 				Object o = c.getObject(values);
