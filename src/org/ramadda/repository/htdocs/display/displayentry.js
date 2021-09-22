@@ -140,15 +140,14 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
     }
 
 
-
     RamaddaUtil.defineMembers(this, {
         searchSettings: new EntrySearchSettings({
-            parent: properties.entryParent,
+            parent: properties.searchEntryParent || properties.entryParent,
             provider: properties.provider,
-            text: properties.entryText,
-            entryType: properties.entryType,
+            text: properties.searchEntryText || properties.entryText,
+            entryType: properties.searchEntryType,
             orderBy: properties.orderBy,
-	    ancestor: properties.ancestor,
+	    ancestor: properties.searchAncestor || properties.ancestor ,
         }),
         entryList: properties.entryList,
         entryMap: {},
@@ -391,8 +390,8 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
             return html;
         }
     });
-    if (properties.entryType != null) {
-        this.searchSettings.addType(properties.entryType);
+    if (properties.searchEntryType != null) {
+        this.searchSettings.addType(properties.searchEntryType);
     }
 }
 
@@ -751,6 +750,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		settings.orderBy =  orderBy;
 		settings.ascending = ascending;
 	    }
+
 
             if (this.haveTypes) {
                 settings.entryType = this.getFieldValue(this.getDomId(ID_TYPE_FIELD), settings.entryType);
@@ -1977,7 +1977,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	{p:"autoSearch",ex:true},
 	{p:"showHeader",ex:true},
 	{p:"inputSize",ex:"100%"},
-	{p:"entryType",ex:"",tt:"Constrain search to entries of this type"},		
+	{p:"searchEntryType",ex:"",tt:"Constrain search to entries of this type"},		
     ];
 
     const SUPER   = new RamaddaSearcherDisplay(displayManager, id, DISPLAY_SIMPLESEARCH, properties);
@@ -2115,7 +2115,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    if(callNumber==null) callNumber = this.callNumber;
             this.haveSearched = true;
             let settings  =this.makeSearchSettings();
-	    settings.entryType = this.getProperty("entryType");	    
+	    settings.entryType = this.getSearchEntryType();	    
             let jsonUrl = this.makeSearchUrl(this.getRamadda());
             this.entryList = new EntryList(this.getRamadda(), jsonUrl);
 	    let success= ()=>{
