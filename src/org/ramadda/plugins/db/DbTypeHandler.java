@@ -6548,6 +6548,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                       PrintWriter pw)
             throws Exception {
 
+	//For now don't check for isPostgres which is used below for making unique requests
 	boolean isPostgres = getDatabaseManager().isDatabasePostgres();
 	isPostgres  = false;
         String         extra     = "";
@@ -6703,16 +6704,17 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         Statement stmt = null;
         extra += limitString;
         try {
-	    SqlUtil.debug = true;
+	    //SqlUtil.debug = true;
             if (SqlUtil.debug) {
                 System.err.println("table:" + tableHandler.getTableName());
                 System.err.println("clause:" + clause);
                 System.err.println("cols:" + SqlUtil.comma(colNames));
-                System.err.println("extra:" + extra + " max:" + max
-                                   + " limit:" + limitString);
+                System.err.println("extra:" + extra);
+		//                System.err.println("max:" + max  + " limit:" + limitString);
             }
 	    long t1 = System.currentTimeMillis();
 	    //	    SqlUtil.debug = true;
+	    SqlUtil.debug = false;
             stmt = getDatabaseManager().select(SqlUtil.comma(colNames),
                     Misc.newList(tableHandler.getTableName()), clause, extra,
                     max);
