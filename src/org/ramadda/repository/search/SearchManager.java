@@ -616,12 +616,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    parentType = parentType.getParent();
 	}
 
-	System.err.println("index:" + entry.getName());
+	//	System.err.println("index:" + entry.getName());
 	if(entry.getParentEntryId()!=null) {
 	    doc.add(new StringField(FIELD_PARENT, entry.getParentEntryId(), Field.Store.YES));	
 	    Entry parent = entry;
 	    while(parent!=null) {
-		System.err.println("\tancestor:" + parent.getId());
+		//		System.err.println("\tancestor:" + parent.getId());
 		doc.add(new StringField(FIELD_ANCESTOR, parent.getId(), Field.Store.YES));	
 		parent = parent.getParentEntry();
 	    }
@@ -1018,7 +1018,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	String ancestor = request.getString(ARG_ANCESTOR+"_hidden", request.getString(ARG_ANCESTOR,null));
 	if(Utils.stringDefined(ancestor)) {
-	    System.err.println("query ancestor:" + ancestor);
 	    queries.add(new TermQuery(new Term(FIELD_ANCESTOR, ancestor)));
 	}
         if (request.defined(ARG_GROUP)) {
