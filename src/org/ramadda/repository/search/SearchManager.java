@@ -58,7 +58,6 @@ import ucar.unidata.xml.XmlUtil;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.store.*;
 import org.apache.lucene.index.*;
-import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.IntPoint;
 import org.apache.lucene.document.DoublePoint;
 import org.apache.lucene.document.LongPoint;
@@ -75,15 +74,10 @@ import org.apache.lucene.store.FSDirectory;
 import java.io.*;
 import java.nio.*;
 import java.nio.file.*;
-
 import java.lang.reflect.*;
-
 import java.net.*;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.sql.Statement;
 
 import java.util.ArrayList;
@@ -622,11 +616,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    parentType = parentType.getParent();
 	}
 
-
+	System.err.println("index:" + entry.getName());
 	if(entry.getParentEntryId()!=null) {
 	    doc.add(new StringField(FIELD_PARENT, entry.getParentEntryId(), Field.Store.YES));	
 	    Entry parent = entry;
 	    while(parent!=null) {
+		System.err.println("\tancestor:" + parent.getId());
 		doc.add(new StringField(FIELD_ANCESTOR, parent.getId(), Field.Store.YES));	
 		parent = parent.getParentEntry();
 	    }
@@ -1023,6 +1018,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	String ancestor = request.getString(ARG_ANCESTOR+"_hidden", request.getString(ARG_ANCESTOR,null));
 	if(Utils.stringDefined(ancestor)) {
+	    System.err.println("query ancestor:" + ancestor);
 	    queries.add(new TermQuery(new Term(FIELD_ANCESTOR, ancestor)));
 	}
         if (request.defined(ARG_GROUP)) {
