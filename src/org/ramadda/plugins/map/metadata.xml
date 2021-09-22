@@ -174,10 +174,9 @@ Override how maps are displayed.
          id="maplayer"
          name="Map Layer"
                datatype="enumeration"
-               values="osm:Open Street Map,esri.topo:Esri Topo,esri.street:Esri Streets,usfs.ownership:USFS ,opentopo:Open Topo,usgs.topo:USGS Topo,usgs.imagery:USGS Imagery,usgs.relief:Shaded Relief,osm.toner:Open Street Map Toner"
+	       values="osm:Open Street Map,esri.topo:ESRI Topo,esri.street:ESRI Streets,esri.shaded:ESRI Shaded Relief,esri.lightgray:ESRI Light Gray,esri.darkgray:ESRI Dark Gray,esri.physical:ESRI Physical,esri.terrain:ESRI Terrain,esri.aeronautical:ESRI Aeronautical,opentopo:OpenTopo,usfs:Forest Service,usgs.topo:USGS Topo,usgs.imagery:USGS Imagery,naip:NAIP Imagery,shadedrelief:Shaded Relief,historic:Historic,osm.toner:OSM-Toner,osm.toner.lite:OSM-Toner Lite,watercolor:Watercolor"
                />
         </type>
-
 
 
 

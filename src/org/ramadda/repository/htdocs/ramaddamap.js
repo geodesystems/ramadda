@@ -2237,6 +2237,7 @@ RepositoryMap.prototype = {
 	this.baseLayers = {};
 	this.numberOfBaseLayers = 0;
 
+	let l = "";
         for (let i = 0; i < this.mapLayers.length; i++) {
             let mapLayer = this.mapLayers[i];
             if (mapLayer == null) {
@@ -2361,6 +2362,8 @@ RepositoryMap.prototype = {
                 this.firstLayer = newLayer;
             }
             if (newLayer != null) {
+		if(l!="") l+=",";
+		l+=mapLayer+":" + newLayer.name;
 		this.baseLayers[mapLayer] = newLayer;
                 newLayer.ramaddaId = mapLayer;
                 if (mapLayer == this.defaultMapLayer) {
@@ -2368,8 +2371,8 @@ RepositoryMap.prototype = {
                 }
 		this.addBaseLayer(newLayer);
             }
-
-        }
+	}
+//	console.log(l);
 
         this.graticule = new OpenLayers.Control.Graticule({
             layerName: "Lat/Lon Lines",
