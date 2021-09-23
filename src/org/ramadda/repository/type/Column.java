@@ -2064,8 +2064,9 @@ public class Column implements DataTypes, Constants, Cloneable {
 
         String          searchArg  = getSearchArg();
 	boolean doNegate = false;
-	if(addNot && request.defined(searchArg+"_not"))
+	if(addNot && request.defined(searchArg+"_not")) {
 	    doNegate = request.get(searchArg+"_not",false);
+	}
 
 
         String          columnName = getFullName();
@@ -2197,17 +2198,22 @@ public class Column implements DataTypes, Constants, Cloneable {
                 where.add(Clause.eq(columnName, value));
             }
         } else if (isType(DATATYPE_LIST)) {
-            String value = getSearchValue(request, null);
+	    String value = getSearchValue(request, null);
             if (Utils.stringDefined(value)) {
-                List<Clause> ors = new ArrayList<Clause>();
+                List<Clause> subs = new ArrayList<Clause>();
 		for(String v: Utils.split(value.trim(),"\n",true,true)) {
-		    ors.add(Clause.eq(columnName, v));
-		    ors.add(dbm.makeLikeTextClause(columnName, "%" + v + "%",  false));
+		    if(doNegate) {
+                        subs.add(Clause.neq(columnName,  v));
+		    }  else {
+			subs.add(Clause.eq(columnName, v));
+			subs.add(dbm.makeLikeTextClause(columnName, "%" + v + "%",  false));
+		    }
 		}
-                //                ors.add(Clause.like(columnName, v+",%"));
-                //                ors.add(Clause.like(columnName, "%," + v));
-                //                ors.add(Clause.like(columnName, "%," + v+",%"));
-                where.add(Clause.or(ors));
+		if(doNegate) {
+		    where.add(Clause.and(subs));
+		} else {
+		    where.add(Clause.or(subs));
+		}
             }
         } else if (isEnumeration()) {
             List<String> values = getSearchValues(request);
@@ -2257,6 +2263,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         List<String> values  = Utils.split(text, ",");
 	if(values.size()==0) values.add("");
         List<Clause> clauses = new ArrayList<Clause>();
+	System.err.println("addTextSearch:" + text);
         for (String commaedValue : values) {
 	    //	    System.err.println("V:" + commaedValue +":");
 	    commaedValue = commaedValue.replace("_comma_",",").replace("_space_"," ");
