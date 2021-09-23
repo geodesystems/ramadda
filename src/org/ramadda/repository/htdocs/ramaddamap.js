@@ -956,6 +956,7 @@ RepositoryMap.prototype = {
 	    }
 	}
 
+
         var layer = feature.layer;
         if (!(layer.isMapLayer === true)) {
             if (!skipText && feature.text) {
@@ -964,6 +965,7 @@ RepositoryMap.prototype = {
             return;
         }
 	//            if (layer.canSelect === false || !(layer.isMapLayer === true)) return;
+
 
 	if (layer.canSelect === false) return;
 
@@ -982,6 +984,7 @@ RepositoryMap.prototype = {
 	    if(!Utils.isDefined(highlightStyle.fillOpacity)) {
 		highlightStyle.fillOpacity = 0.3;
 	    }
+//	    console.log(feature.geometry.CLASS_NAME +" draw:" + JSON.stringify(highlightStyle));
             layer.drawFeature(feature, highlightStyle);
             if (this.displayDiv) {
                 this.displayedFeature = feature;
@@ -3785,6 +3788,10 @@ RepositoryMap.prototype = {
     },
 
     createPolygonString:function(s,polygonProps,latlon,text) {
+	return this.createPolygonFromString(s,polygonProps,latlon,text);
+    },
+
+    createPolygonFromString:function(s,polygonProps,latlon,text) {
 	let delimiter;
 	[";",","].forEach(d=>{
 	    if(s.indexOf(d)>=0) delimiter = d;
@@ -3816,10 +3823,8 @@ RepositoryMap.prototype = {
     },
 
     addPolygonString:function(s,polygonProps,latlon,text) {
-	let polys = this.createPolygonString(s,polygonProps,latlon,text);
-	polys.forEach(poly=>{
-	    this.addPolygon(poly);
-	});
+	let polys = this.createPolygonFromString(s,polygonProps,latlon,text);
+        this.getLinesLayer().addFeatures(polys);
 	return polys;
     },
 
@@ -3830,8 +3835,6 @@ RepositoryMap.prototype = {
         }
         this.markers.addFeatures(markers);
     },
-
-
 
     initBoxes:  function(theBoxes) {
         if (!this.getMap()) {
@@ -4124,9 +4127,18 @@ RepositoryMap.prototype = {
             }
         }
 //	points.push(points[0]);
-//        let linearRing = new OpenLayers.Geometry.LinearRing(points);
-//	let geom = new OpenLayers.Geometry.Polygon(linearRing);
-	let geom = new OpenLayers.Geometry.LineString(points);
+
+	//for now create a polygon not a linestring
+	let makeLineString = false;
+	let geom;
+	if(makeLineString) {
+	    geom = new OpenLayers.Geometry.LineString(points);
+	} else {
+            let linearRing = new OpenLayers.Geometry.LinearRing(points);
+	    geom = new OpenLayers.Geometry.Polygon(linearRing);
+	}
+
+
         let line = new OpenLayers.Feature.Vector(geom,null,style);
 	if(!marker) marker = name;
         line.text = marker;
@@ -4143,16 +4155,8 @@ RepositoryMap.prototype = {
     },
     addPolygon:  function(id, name, points, attrs, marker,justCreate) {
 	let polygon  =this.createPolygon(id,name,points,attrs,marker);
-        if (!this.lines) {
-            let base_style = OpenLayers.Util.extend({},
-						    OpenLayers.Feature.Vector.style['default']);
-            this.lines = new OpenLayers.Layer.Vector("Lines", {
-                style: base_style
-            });
-            this.addVectorLayer(this.lines);
-        }
 	if(!justCreate) {
-            this.lines.addFeatures([polygon]);
+            this.getLinesLayer().addFeatures([polygon]);
 	}
         return polygon;
     },
@@ -4165,6 +4169,7 @@ RepositoryMap.prototype = {
                 style: base_style
             });
             this.addVectorLayer(this.lines);
+	    this.lines.isMapLayer = true;
         }	
 	return this.lines;
     },
