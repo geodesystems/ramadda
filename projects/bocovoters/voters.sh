@@ -402,7 +402,7 @@ name.canlist true birth_year.canlist true gender.canlist true  \
 party.canlist true  status.canlist true  address.canlist true  phone.canlist true \
 registration_date.cansearch true  neighborhood.cansearch true  city.cansearch true name.cansearch true  \
 birth_year_range.cansearch true birth_year_range.type enumeration \
-birth_year.cansearch true  yob.cansearch true gender.cansearch true party.cansearch true status.cansearch true status_reason.cansearch true precinct.cansearch true  precinct_turnout_2019.cansearch true address.cansearch true \
+birth_year.cansearch true  yob.cansearch true gender.cansearch true party.cansearch true status.cansearch true status_reason.cansearch true precinct.addnot true precinct.cansearch true  precinct_turnout_2019.cansearch true address.cansearch true \
 party.values {REP:Republican,UAF:Unaffiliated,DEM:Democrat,GRN:Green,LBR:Labor,ACN:American Constitution Party,UNI:Unity,APV:Approval Voting} \
 precinct_turnout_2019.placeholder {0-100} \
 voted_in_2021.type enumeration voted_in_2021.cansearch true  voted_in_2021.group {Voting History} voted_in_2021.suffix {Not working until 3 weeks before the election} \
