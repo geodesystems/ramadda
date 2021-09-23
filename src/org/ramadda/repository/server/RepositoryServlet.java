@@ -298,8 +298,6 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                 repositoryRequest.setOutputStream(response.getOutputStream());
                 repositoryRequest.setFileUploads(handler.fileUploads);
                 repositoryRequest.setHttpHeaderArgs(handler.httpArgs);
-
-
                 // create a org.ramadda.repository.Result object and transpose the relevant info into a HttpServletResponse object
                 repositoryResult =
                     repository.handleRequest(repositoryRequest);
@@ -312,6 +310,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                 logException(e, request);
                 response.sendError(response.SC_INTERNAL_SERVER_ERROR,
                                    e.getMessage());
+		return;
             }
             if (repositoryResult == null) {
                 response.sendError(response.SC_INTERNAL_SERVER_ERROR,
