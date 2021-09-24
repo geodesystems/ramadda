@@ -1758,7 +1758,6 @@ public class WikiUtil {
                             + HU.cssClass("ramadda-accordion-contents")));
                     buff.append("\n");
                     accordionState.segmentId++;
-
                     continue;
                 }
 
@@ -2247,7 +2246,6 @@ public class WikiUtil {
                     HU.close(buff, "div");
                     continue;
                 }
-
 
                 if (tline.startsWith(":wikip")) {
                     List<String> toks  = Utils.splitUpTo(tline, " ", 3);
@@ -4015,7 +4013,7 @@ public class WikiUtil {
         String heightStyle = "content";
 
         /** _more_ */
-        boolean collapsible;
+        boolean collapsible = true;
 
         /** _more_ */
         int animate = 200;
