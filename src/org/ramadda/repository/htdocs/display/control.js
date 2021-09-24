@@ -915,11 +915,9 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 	},
         pointDataLoaded: function(pointData, url, reload) {
 	    SUPER.pointDataLoaded.call(this, pointData,url,reload);
-	    console.log("menu pointDataLoaded");
 	    if(this.haveLoadedData&& this.records) {
 		setTimeout(()=>{
 		    let record = this.records[+this.jq(ID_MENU).val()];
-		    console.log("changing:" + record);
 		    if(record) {
 			this.propagateEventRecordSelection({record: record});
 		    }},100);
