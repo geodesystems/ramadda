@@ -23,7 +23,7 @@ const displayDebug = {
     loadPointJson:false,
     groupBy:false,
     gridPoints:false,
-    setEntry:true
+    setEntry:false
 
 }
 
@@ -2245,6 +2245,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return true;
 	},
 	setDisplayMessage:function(msg) {
+	    if(!Utils.stringDefined(msg)) {
+		this.jq(ID_DISPLAY_MESSAGE).html("").hide();
+		return;
+	    }
 	    let contents =  this.jq(ID_DISPLAY_CONTENTS);
 	    let minHeight = contents.css("min-height");
 	    if(!minHeight || minHeight=="0px") {
