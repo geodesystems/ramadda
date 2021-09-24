@@ -816,10 +816,6 @@ a.ramadda-menubar-button:hover {
     vertical-align:top;
 }
 
-.ramadda-callout-inner {
-    display:inline-block;
-}
-
 
 .ramadda-callout-info {
     border-left-color: cornflowerblue;
@@ -845,6 +841,15 @@ a.ramadda-menubar-button:hover {
 
 .ramadda-callout-question i {
     color: darkolivegreen;
+}
+
+
+.ramadda-callout-inner {
+    display:inline-block;
+}
+
+.ramadda-callout-inner i {
+    color:#000;
 }
 
 
@@ -4627,6 +4632,7 @@ h3.ui-accordion-header a {
 
 .ramadda-accordion-contents {
     display:none;
+    background:none;
 }
 
 .ui-accordion-icons .ui-accordion-header a {
