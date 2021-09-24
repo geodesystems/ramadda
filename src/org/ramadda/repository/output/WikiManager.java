@@ -25,6 +25,7 @@ import org.ramadda.repository.Constants;
 import org.ramadda.repository.DateHandler;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.EntryManager;
+import org.ramadda.repository.EntryUtil;
 import org.ramadda.repository.Link;
 import org.ramadda.repository.PageDecorator;
 import org.ramadda.repository.PageHandler;
@@ -602,18 +603,37 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 tok     = tok.substring("type:".length());
                 request = request.cloneMe();
                 request.put(ARG_TYPE, tok);
-		List<Entry> children = getEntryManager().getChildren(request, entry);
-                if (children.size() > 0) {
-                    return children.get(0);
-                }
-                return null;
-            }
-            List<Entry> children = getEntryManager().getChildren(request, entry);
+	    }
+	    List<Entry> children = getEntryManager().getChildren(request, entry);
+	    children= EntryUtil.sortEntriesOnDate(children,false);	    
             if (children.size() > 0) {
                 return children.get(0);
             }
             return null;
         }
+
+        if (entryId.startsWith("grandchild:")) {
+	    //grandchild:type:<some type>
+	    List<Entry> children = getEntryManager().getChildren(request, entry);
+	    children= EntryUtil.sortEntriesOnDate(children,false);	    
+	    if (children.size() == 0) {
+		return null;
+	    }
+            String tok = entryId.substring("grandchild:".length());
+            if (tok.startsWith("type:")) {
+                tok     = tok.substring("type:".length());
+                request = request.cloneMe();
+                request.put(ARG_TYPE, tok);
+	    }
+	    List<Entry> gchildren = getEntryManager().getChildren(request, children.get(0));
+	    gchildren= EntryUtil.sortEntriesOnDate(gchildren,false);	    
+	    if (gchildren.size() == 0) {
+		return null;
+	    }
+	    return gchildren.get(0);
+        }
+
+
 
         if (entryId.startsWith("ancestor:")) {
             String type      = entryId.substring("ancestor:".length()).trim();
@@ -5040,9 +5060,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 continue;
             }
 
-
-
-
             boolean isRemote = entryid.startsWith(ATTR_SEARCH_URL);
             if ( !isRemote && entryid.startsWith(ID_SEARCH + ".")) {
 
@@ -5785,7 +5802,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 			l.call( "Left-right", "+leftright_nl_+left_nl_-left_nl_+right_nl_-right_nl_", "-leftright"),
 			l.call( "Left-middle-right", "+leftmiddleright_nl_+left_nl_-left_nl_+middle_nl_-middle_nl_+right_nl_-right_nl_", "-leftmiddleright"),
 			l.call( "Tabs", "+tabs_newline_+tab tab title_newline_", "-tab_newline_-tabs_newline_"),
-			l.call( "Accordion", "+accordion decorate=true collapsible=true activeSegment=0 _newline_+segment segment  title_newline_", "-segment_newline_-accordion_newline_"),
+			l.call( "Accordion", "+accordion decorate=false collapsible=true activeSegment=0 _newline_+segment segment  title_newline_", "-segment_newline_-accordion_newline_"),
 			l.call( "Slides", "+slides dots=true slidesToShow=1  bigArrow=true style=_qt__qt__nl_+slide Title_nl_", "-slide_nl_-slides_nl_"),
 			l.call("Grid box", "+grid #decorated=true #columns=_qt_1fr 2fr_qt_ _nl_:filler_nl_+gridbox #flex=1 #style=_qt__qt_ #width=_qt__qt_ #title=_qt_Title 1_qt__nl_-gridbox_nl_+gridbox #title=_qt_Title 2_qt__nl_-gridbox_nl_:filler_nl_", "-grid"),
 			l.call("Scroll panels","+scroll_newline_+panel color=gradient1 name=home style=_quote__quote_ _newline_+center_newline_<div class=scroll-indicator>Scroll Down</div>_newline_-center_newline_-panel_newline_+panel color=gradient2 name=panel1_newline__newline_-panel_newline_+panel color=blue name=panel2_newline__newline_-panel_newline_", "-scroll") 
