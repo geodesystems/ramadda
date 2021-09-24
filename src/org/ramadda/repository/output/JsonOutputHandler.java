@@ -261,6 +261,7 @@ public class JsonOutputHandler extends OutputHandler {
     public void makePointJson(Request request, Entry mainEntry,
                               List<Entry> entries, Appendable sb)
             throws Exception {
+	entries= EntryUtil.sortEntriesOnDate(entries,false);
         List<String> fields = new ArrayList<String>();
 	boolean remote= request.get("remoteRequest",false);
 
