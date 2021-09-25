@@ -11,12 +11,14 @@ do_convert() {
     ${csv} -set Match 0 MatchAmount -set CommitteeNum 0 CommitteeNumber  \
 	   -change filingdate,amendeddate,transactiondate "(....)/(..)/(..).*" "\$1/\$2/\$3" \
 	   -change filingdate,amendeddate,transactiondate "(....)-(..)-(..).*" "\$1/\$2/\$3" \
-	   -case  FromCandidate lower \
+	   -change filingdate,amendeddate,transactiondate "Invalid Date" "" \
+    	   -case  FromCandidate lower \
 	   -case  anonymous lower \
 	   -p source/Election_Contributions.csv > oldtmp.csv
     ${csv} -notcolumns "YTDAmount,AmendsContributionID,ContributionID" \
 	   -change filingdate,amendeddate,transactiondate "(..)/(..)/(....)" "\$3/\$1/\$2" \
 	   -change filingdate,amendeddate,transactiondate "(....)-(..)-(..).*" "\$1/\$2/\$3" \
+	   -change filingdate,amendeddate,transactiondate "Invalid Date" "" \
 	   -case  FromCandidate lower \
 	   -case  anonymous lower \
 	   -p source/new.csv > newtmp.csv
@@ -73,6 +75,7 @@ official_filing.cansearch true   \
 election_year.cansearch true  election_year.canlist true   \
 full_name.cansearch true  full_name.canlist true   \
 contribution.cansearch true  contribution.canlist true   \
+contribution.dostats true \
 contribution_type.cansearch true  contribution_type.canlist true   \
 from_candidate.cansearch true    \
 committee.numberOfSearchWidgets 4 \

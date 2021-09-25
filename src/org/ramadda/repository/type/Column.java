@@ -561,6 +561,8 @@ public class Column implements DataTypes, Constants, Cloneable {
         showEmpty  = getAttributeOrTag(element, "showempty", true);
         addNot     = getAttributeOrTag(element, "addnot", addNot);
         dflt       = getAttributeOrTag(element, ATTR_DEFAULT, "").trim();
+	doStats     = getAttributeOrTag(element, "dostats", doStats);
+					 
         databaseDflt = getAttributeOrTag(element, "databaseDefault",
                                          (String) null);
         alias      = getAttributeOrTag(element, "alias", (String) null);
