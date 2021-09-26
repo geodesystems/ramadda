@@ -3549,7 +3549,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             String  file    = "";
             if (visible) {
                 file +=
-                    "<div class=ramadda-note>Note: You need to specify the file again for subsequent searches</div>";
+                    "<div class=ramadda-note>Note: You need to specify the file again for subsequent searches</div><br>";
             }
             file +=
                 HU.fileInput(searchArg + "_file", "")
