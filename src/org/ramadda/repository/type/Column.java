@@ -2348,8 +2348,9 @@ public class Column implements DataTypes, Constants, Cloneable {
                     if (value.equals("_blank_")) {
                         value = "";
                     }
-                    clauses.add(Clause.upperEquals(getFullName(), value,
-                            doNegate));
+		    //TEST:
+		    //                    clauses.add(Clause.upperEquals(getFullName(), value, doNegate));
+                    clauses.add(Clause.eq(getFullName(), value, doNegate));
                 }
                 if (clauses.size() > 0) {
                     Clause clause;
