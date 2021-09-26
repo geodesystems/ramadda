@@ -2292,6 +2292,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                     } else {
                         subs.add(Clause.eq(columnName, v));
                         if ( !hadFile) {
+			    //Not sure we should do this for enums
                             subs.add(dbm.makeLikeTextClause(columnName,
                                     "%" + v + "%", false));
                         }
@@ -2348,7 +2349,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                     if (value.equals("_blank_")) {
                         value = "";
                     }
-		    //TEST:
+		    //For now just check for straight equality
 		    //                    clauses.add(Clause.upperEquals(getFullName(), value, doNegate));
                     clauses.add(Clause.eq(getFullName(), value, doNegate));
                 }
