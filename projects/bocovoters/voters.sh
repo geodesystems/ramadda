@@ -398,7 +398,9 @@ table.addressTemplate _quote_\${name}<br>\${address}<br>\${city} \${state}<br>\$
 voter_id.type string \
 address_even.cansort true status.canlist true city.canlist true mailing_country.help {Enter &quot;_blank_&quot; to search for empty country} mailing_country.cansearch true mailing_country.addnot true \
 name.canlist true birth_year.canlist true gender.canlist true  \
-party.canlist true  status.canlist true  address.addnot true address.addfiletosearch true address.canlist true  phone.canlist true \
+party.canlist true  status.canlist true  \
+address.addnot true address.addfiletosearch true address.canlist true  phone.canlist true \
+mail_addr1.cansearch true mail_addr1.addnot true mail_addr1.addfiletosearch true \
 registration_date.cansearch true  neighborhood.cansearch true  city.cansearch true name.cansearch true  \
 birth_year_range.cansearch true birth_year_range.type enumeration \
 birth_year.cansearch true  yob.cansearch true gender.cansearch true party.cansearch true status.cansearch true status_reason.cansearch true precinct.addnot true precinct.cansearch true  precinct.addfiletosearch true \
