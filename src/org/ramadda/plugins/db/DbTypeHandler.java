@@ -2061,7 +2061,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         String formUrl       =
             request.makeUrl(getRepository().URL_ENTRY_SHOW);
 	sb.append(HU.comment("search form open"));
-        sb.append(HtmlUtils.formPost(formUrl, HtmlUtils.id(formId)));
+        sb.append(HtmlUtils.uploadForm(formUrl, HtmlUtils.id(formId)));
 	sb.append("\n");
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
 	HU.open(sb,"div",HU.cssClass("ramadda-form-block"));
@@ -2536,6 +2536,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         for (Column column : getColumns()) {
             column.assembleWhereClause(request, where, searchCriteria);
         }
+
+	//	System.err.println("CLAUSES:" + where);
 
 	//candidate = '${value1}' AND full_name   not in (select full_name from db_boulder_campaign_contributions where
 	//candidate = '${value2}')
