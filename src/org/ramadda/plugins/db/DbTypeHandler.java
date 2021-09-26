@@ -2537,7 +2537,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             column.assembleWhereClause(request, where, searchCriteria);
         }
 
-	//	System.err.println("CLAUSES:" + where);
+	System.err.println("CLAUSES:" + where);
 
 	//candidate = '${value1}' AND full_name   not in (select full_name from db_boulder_campaign_contributions where
 	//candidate = '${value2}')
