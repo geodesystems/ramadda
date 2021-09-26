@@ -20,7 +20,6 @@ do_all() {
     do_joins
     do_final
     do_db
-    cp bocovotersdb.xml  ~/.ramadda/plugins
     do_release
 }
 
@@ -94,8 +93,8 @@ exit
 
 }
 
-do_histogram
-exit
+#do_histogram
+#exit
     
 
 do_precincts() {
@@ -399,10 +398,11 @@ table.addressTemplate _quote_\${name}<br>\${address}<br>\${city} \${state}<br>\$
 voter_id.type string \
 address_even.cansort true status.canlist true city.canlist true mailing_country.help {Enter &quot;_blank_&quot; to search for empty country} mailing_country.cansearch true mailing_country.addnot true \
 name.canlist true birth_year.canlist true gender.canlist true  \
-party.canlist true  status.canlist true  address.canlist true  phone.canlist true \
+party.canlist true  status.canlist true  address.addnot true address.addfiletosearch true address.canlist true  phone.canlist true \
 registration_date.cansearch true  neighborhood.cansearch true  city.cansearch true name.cansearch true  \
 birth_year_range.cansearch true birth_year_range.type enumeration \
-birth_year.cansearch true  yob.cansearch true gender.cansearch true party.cansearch true status.cansearch true status_reason.cansearch true precinct.addnot true precinct.cansearch true  precinct_turnout_2019.cansearch true address.cansearch true \
+birth_year.cansearch true  yob.cansearch true gender.cansearch true party.cansearch true status.cansearch true status_reason.cansearch true precinct.addnot true precinct.cansearch true  precinct.addfiletosearch true \
+precinct_turnout_2019.cansearch true address.cansearch true \
 party.values {REP:Republican,UAF:Unaffiliated,DEM:Democrat,GRN:Green,LBR:Labor,ACN:American Constitution Party,UNI:Unity,APV:Approval Voting} \
 precinct_turnout_2019.placeholder {0-100} \
 voted_in_2021.type enumeration voted_in_2021.cansearch true  voted_in_2021.group {Voting History} voted_in_2021.suffix {Not working until 3 weeks before the election} \
@@ -432,14 +432,14 @@ voters_final.csv > bocovotersdb.xml
 
 do_release() {
     echo "Copying to geode"
+    cp bocovotersdb.xml  ~/.ramadda/plugins
     sh /Users/jeffmc/source/ramadda/bin/scpgeode.sh 50.112.99.202 voters_final.csv staging
     sh /Users/jeffmc/source/ramadda/bin/scpgeode.sh 50.112.99.202 bocovotersdb.xml plugins
 }
 
 
-#${foo}
+#do_db
+#do_release
 #exit
-
-
 
 do_all
