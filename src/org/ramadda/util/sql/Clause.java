@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 */
 
 package org.ramadda.util.sql;
+
 
 import org.ramadda.util.Utils;
 
@@ -104,6 +105,7 @@ public class Clause {
     /** expression */
     public static final String EXPR_IN = "IN";
 
+    /** _more_          */
     public static final String EXPR_NOTIN = "NOTIN";
 
     /** expression */
@@ -138,12 +140,18 @@ public class Clause {
     private Clause[] subClauses;
 
 
+    /** _more_          */
     private String freeFormSql;
 
 
+    /**
+     * _more_
+     *
+     * @param freeFormSql _more_
+     */
     public Clause(String freeFormSql) {
-	this.freeFormSql = freeFormSql;
-    }	
+        this.freeFormSql = freeFormSql;
+    }
 
     /**
      * ctor
@@ -174,29 +182,43 @@ public class Clause {
         if (expr.equals("!=")) {
             expr = EXPR_NOTEQUALS;
         }
-        this.expr  = expr;
-	//Sanitize the string 
+        this.expr = expr;
+        //Sanitize the string 
         this.value = value;
     }
 
+    /**
+     * _more_
+     */
     public void sanitizeValues() {
-	//Note: This should? sanitize the value to prevent a sql injection
-	if(value!=null && value instanceof String) {
-	    value =  value.toString().replaceAll("['\"\\\\]", "\\\\$0");
-	}
-	if(subClauses!=null)
-	    for(Clause clause: subClauses)
-		clause.sanitizeValues();
+        //Note: This should? sanitize the value to prevent a sql injection
+        if ((value != null) && (value instanceof String)) {
+            value = value.toString().replaceAll("['\"\\\\]", "\\\\$0");
+        }
+        if (subClauses != null) {
+            for (Clause clause : subClauses) {
+                clause.sanitizeValues();
+            }
+        }
 
     }
 
 
 
+    /**
+     * _more_
+     *
+     * @param columns _more_
+     */
     public void getColumns(List<String> columns) {
-	if(column!=null) columns.add(column);
-	if(subClauses!=null)
-	    for(Clause clause: subClauses)
-		clause.getColumns(columns);
+        if (column != null) {
+            columns.add(column);
+        }
+        if (subClauses != null) {
+            for (Clause clause : subClauses) {
+                clause.getColumns(columns);
+            }
+        }
     }
 
 
@@ -224,6 +246,7 @@ public class Clause {
         if ((clauses == null) || (clauses.length == 0)) {
             return null;
         }
+
         return new Clause(EXPR_OR, clauses);
     }
 
@@ -341,9 +364,21 @@ public class Clause {
         return new Clause(column, EXPR_EQUALS, value);
     }
 
+    /**
+     * _more_
+     *
+     * @param column _more_
+     * @param value _more_
+     * @param not _more_
+     *
+     * @return _more_
+     */
     public static Clause neq(String column, Object value, boolean not) {
-	if(not) return eq(column,value);
-	return neq(column,value);
+        if (not) {
+            return eq(column, value);
+        }
+
+        return neq(column, value);
     }
 
 
@@ -479,6 +514,58 @@ public class Clause {
 
 
     /**
+     * _more_
+     *
+     * @param column _more_
+     * @param value _more_
+     * @param doNegate _more_
+     *
+     * @return _more_
+     */
+    public static Clause upperEquals(String column, Object value,
+                                     boolean doNegate) {
+        if (doNegate) {
+            return upperNotEquals(column, value);
+        }
+
+        return upperEquals(column, value);
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param column _more_
+     * @param value _more_
+     *
+     * @return _more_
+     */
+    public static Clause upperEquals(String column, Object value) {
+        Clause clause = Clause.eq(column, value.toString().toUpperCase());
+        clause.setColumnModifier("UPPER(", ")");
+
+        return clause;
+    }
+
+    /**
+     * _more_
+     *
+     * @param column _more_
+     * @param value _more_
+     *
+     * @return _more_
+     */
+    public static Clause upperNotEquals(String column, Object value) {
+        Clause clause = Clause.neq(column, value.toString().toUpperCase());
+        clause.setColumnModifier("UPPER(", ")");
+
+        return clause;
+    }
+
+
+
+    /**
      * Make a LIKE clause
      *
      * @param column Column name
@@ -560,7 +647,7 @@ public class Clause {
      * @return The new Clause
      */
     public static Clause notin(String column, String what, String from,
-                            Clause inner) {
+                               Clause inner) {
         Clause clause = new Clause(EXPR_NOTIN, new Clause[] { inner });
         clause.column = column;
         clause.extraSelectForInClause = " select " + what + " from " + from
@@ -755,7 +842,7 @@ public class Clause {
         }
         if (expr.equals(EXPR_NOTIN)) {
             return;
-        }	
+        }
         if (subClauses != null) {
 
 
@@ -837,14 +924,15 @@ public class Clause {
      * @return the given sb buffer
      */
     public StringBuffer addClause(StringBuffer sb) {
-	if(freeFormSql!=null) {
-	    sb.append(freeFormSql);
-	    return sb;
-	}
+        if (freeFormSql != null) {
+            sb.append(freeFormSql);
+
+            return sb;
+        }
         if (expr == null) {
             return sb;
         }
-	
+
         String columnName = column;
         if (columnPrefix != null) {
             columnName = columnPrefix + columnName + columnSuffix;
@@ -868,7 +956,7 @@ public class Clause {
                                             + extraSelectForInClause
                                             + " WHERE " + toks.get(0) + ")"));
                 }
-	    } else if (expr.equals(EXPR_NOTIN)) {
+            } else if (expr.equals(EXPR_NOTIN)) {
                 if (toks.size() == 0) {
                     sb.append(SqlUtil.group(columnName + "  NOT IN ( "
                                             + extraSelectForInClause + ")"));
@@ -901,7 +989,7 @@ public class Clause {
         } else if (expr.equals(EXPR_IN)) {
             sb.append(SqlUtil.group(columnName + "  IN (" + value + ")"));
         } else if (expr.equals(EXPR_NOTIN)) {
-            sb.append(SqlUtil.group(columnName + "  NOT IN (" + value + ")"));	    
+            sb.append(SqlUtil.group(columnName + "  NOT IN (" + value + ")"));
         } else if (expr.equals(EXPR_NOTLIKE)) {
             sb.append(SqlUtil.group("NOT " + columnName + "  like ?"));
         } else {
@@ -947,7 +1035,7 @@ public class Clause {
         }
         if (SqlUtil.debug) {
             System.err.println("\tvalue:" + value + " col #:" + col);
-	    //            System.err.println(Utils.getStack(10));
+            //            System.err.println(Utils.getStack(10));
         }
         SqlUtil.setValue(stmt, value, col);
 
@@ -1027,9 +1115,9 @@ public class Clause {
      * @return to string
      */
     public String toString() {
-	if(freeFormSql!=null) {
-	    return freeFormSql;
-	}
+        if (freeFormSql != null) {
+            return freeFormSql;
+        }
 
         if (column != null) {
             String columnName = column;
