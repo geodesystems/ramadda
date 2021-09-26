@@ -1462,7 +1462,7 @@ public abstract class Processor extends CsvOperator {
                 String placeholderMax = getDbProp( colId, "placeholderMax",(String)null);		
 		if(placeholderMax!=null)
 		    attrs.append(XmlUtil.attrs(new String[] { "placeholderMax", placeholderMax }));
-		for(String prop:new String[]{"addnot","unit"}) {
+		for(String prop:new String[]{"addnot","unit","addfiletosearch"}) {
 		    String v = getDbProp( colId, prop,(String)null);		
 		    if(v!=null)
 			attrs.append(XmlUtil.attrs(new String[] { prop,v}));
