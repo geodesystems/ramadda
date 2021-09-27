@@ -194,6 +194,7 @@ function  ConvertForm(inputId, entry) {
 		    let category="";
 		    this.outputCommands = [];
 		    this.commands.forEach(cmd=>{
+
 			let command = cmd.command;
 			if(cmd.isCategory) {
 			    docs+="etlcat {" + cmd.description+"}\n";
@@ -369,9 +370,15 @@ function  ConvertForm(inputId, entry) {
 		    }
 		    tmp++;
 		}
-		if(right<0) return;
-		let command = this.commandsMap[text.substring(left,right)];
-		if(!command) return;
+		if(right<0) {
+		    return;
+		}
+		let substring = text.substring(left,right);
+		let command = this.commandsMap[substring];
+		if(!command) {
+		    console.log("no command:" + substring);
+		    return;
+		}
 		let values = [];
 		let tok = null;
 		let append = (c)=>{
@@ -731,7 +738,13 @@ function  ConvertForm(inputId, entry) {
 
 
 		if(Utils.isDefined(data.result)) {
-		    result = window.atob(data.result).trim();
+		    try {
+			result = window.atob(data.result).trim();
+		    } catch(err) {
+			console.log("Error decoding result:" + err);
+		    }
+		    //Decode utf-8
+		    result = decodeURIComponent(escape(result));
 		    if(isScript) {
 			//		    Utils.makeDownloadFile("script.sh",result);
 			//		    return;
@@ -930,7 +943,6 @@ function  ConvertForm(inputId, entry) {
 		    } else {
 			result = result.trim();
 			let isJson = (result.startsWith("{") && result.endsWith("}")) || (result.startsWith("[") && result.endsWith("]"));
-			console.log("isJson:" + isJson);
 			let isXml = result.startsWith("<") && result.endsWith(">")
 			let out = "";
 			if(isJson) {
@@ -938,13 +950,12 @@ function  ConvertForm(inputId, entry) {
 				result= JSON.parse(result.trim());
 				result = Utils.formatJson(result,5);
 				out=HU.pre(result);
-				return
 			    } catch(err) {
-				console.log("Err:" + err);
+				console.log("Error:" + err);
 				out = "<b>Error processing json:" + err+"</b><br>";
 				out +=HU.pre(result);
-				output.html(out);
 			    }
+			    output.html(out);
 			    return
 			} else if(isXml) {
 			    try {
@@ -1052,7 +1063,8 @@ function  ConvertForm(inputId, entry) {
 		let label = a.label || Utils.makeLabel(a.id);
 		let id = this.domId("csvcommand" + idx);
 		let desc = a.description||"";
-		desc = desc.replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>");
+//		desc = desc.replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>");
+		desc = desc.replace(/\n/g,"<br>");		
 		desc =  HU.div([STYLE,HU.css('max-width','500px','vertical-align','top')],desc);
 
 		if(!this.headerInput && cmd.command=="-addheader" && a.id=="properties") {
