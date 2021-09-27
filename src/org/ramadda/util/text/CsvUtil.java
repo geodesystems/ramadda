@@ -655,7 +655,8 @@ public class CsvUtil {
                 if (iteratePattern != null) {
                     iteratePattern.setPattern(pattern);
                 }
-		boolean newWay = true;
+		//For now do the old way so we handle utf-8 better
+		boolean newWay = false;
 		for(String file: files) {
 		    if(Utils.isUrl(file)) newWay=false;
 		}
@@ -871,14 +872,13 @@ public class CsvUtil {
 	    } catch(FileNotFoundException fnfe) {
 		throw new RuntimeException("Error missing file:" + file);
 	    }
-        }
+	}
         if (inputStream != null) {
 	    ReadableByteChannel in = Channels.newChannel(inputStream);
 	    channels.add(new NamedChannel("input", in));
         }
         if (channel != null) {
             channels.add(new NamedChannel("input", channel));
-	    
         }	
         if (channels.size() == 0) {
 	    FileInputStream stdin = new FileInputStream(FileDescriptor.in);
@@ -968,7 +968,10 @@ public class CsvUtil {
         } else {
             if (new File(file).exists()) {
                 try {
-                    return new BufferedInputStream(new FileInputStream(file));
+		    FileInputStream fis = new FileInputStream(file);
+		    //		    InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
+		    //		    BufferedReader reader = new BufferedReader(isr)
+                    return new BufferedInputStream(fis);
                 } catch (Exception exc) {
                     System.err.println("Error opening file:" + file);
                     throw exc;
@@ -1097,7 +1100,7 @@ public class CsvUtil {
                     if (line == null) {
                         break;
                     }
-		    //                    System.err.println("line:" + line.length());
+		    //		    System.err.println("line:" + line);
                     while (line.length() > LINE_LIMIT) {
                         String tmp = line.substring(0, LINE_LIMIT - 1);
                         line = line.substring(LINE_LIMIT - 1);

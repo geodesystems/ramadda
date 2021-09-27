@@ -847,8 +847,10 @@ public class TextReader implements Cloneable {
 	int c;
 	if(inputChannel!=null) {
 	    c =  readCharNew();
+	    //	    System.err.println("new:" + (char)c);
 	}  else {
 	    c= readCharOld();
+	    //	    System.err.println("old:" + (char)c);
 	}
 	if(c==UNDEF) {
 	    hasInput = false;
@@ -1405,7 +1407,9 @@ public class TextReader implements Cloneable {
     public BufferedReader getReader() {
         if (reader == null) {
 	    NamedInputStream input = getInput();
-            reader = new BufferedReader(new InputStreamReader(input.getInputStream()));
+	    InputStreamReader isr = new InputStreamReader(input.getInputStream(), java.nio.charset.StandardCharsets.UTF_8);
+	    reader = new BufferedReader(isr);
+	    //            reader = new BufferedReader(new InputStreamReader(input.getInputStream()));
         }
         return reader;
     }
