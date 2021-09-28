@@ -201,7 +201,7 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 {{description wikify=true}}
 +inset top=10 left=10 bottom=10 right=10
 +center
-{{360image width="800px" height="400px"}}
+{{360image width="100%" height="400px"}}
 +center
 -inset
 -section

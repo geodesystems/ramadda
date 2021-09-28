@@ -413,7 +413,6 @@ public class ImageOutputHandler extends OutputHandler {
         if (outputType.equals(OUTPUT_LABELER)) {
             List<Entry> entries = new ArrayList<Entry>();
             entries.add(entry);
-
             return makeLabels(request, entry, entries);
         }
 
@@ -444,11 +443,17 @@ public class ImageOutputHandler extends OutputHandler {
                 sb.append(html);
             }
 
-
             return new Result("Video", sb);
         }
 
-        return new Result("", new StringBuilder("NA"));
+	//        if (true || output.equals(OUTPUT_GALLERY)) {
+	    List<Entry> entries = new ArrayList<Entry>();
+	    entries.add(entry);
+	    return makeResult(request, entry, entries);
+	    //	}
+
+
+	    //        return new Result("", new StringBuilder("NA"));
     }
 
 
