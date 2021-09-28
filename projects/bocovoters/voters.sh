@@ -4,7 +4,8 @@ set -e
 export csv=~/bin/csv.sh 
 
 dots=5000
-registered_voters=source/ce-vr011b.txt
+#registered_voters=source/ce-vr011b.txt
+registered_voters=source/ce-vr011d.txt
 voting_report=source/ce-068.txt
 source=voters_boulder.csv
 unique_voter_history=voter_history_unique.csv
@@ -44,7 +45,12 @@ do_prep() {
 
 
     echo "processing registered voters"
-    ${csv}  -delimiter "|"  -dots ${dots}  -notcolumns "regex:(?i)BALLOT_.*"  -pattern res_city BOULDER  -p ${registered_voters} > voters_base.csv    
+
+#    ${csv}  -delimiter "|"  -dots ${dots}  -notcolumns "regex:(?i)BALLOT_.*"  -pattern res_city BOULDER  -p ${registered_voters} > voters_base.csv
+
+    ${csv}  -delimiter "|"  -dots ${dots}  -notcolumns "regex:(?i)BALLOT_.*"  -concat precinct,split "." precinct_split  -ifin  split source/boulder_splits.csv precinct_split -notcolumns precinct_split -p ${registered_voters} > voters_base.csv        
+
+
     ${csv} -if -pattern mail_addr1,mailing_country "^$" -copycolumns res_address mail_addr1  -endif\
 	   -if -pattern mailing_city,mailing_country "^$" -copycolumns res_city mailing_city  -endif \
 	   -if -pattern mailing_state,mailing_country "^$" -copycolumns res_state mailing_state  -endif\
@@ -61,6 +67,7 @@ do_prep() {
 do_histogram() {
     file1=source/ce-068-2019.txt
     file2=source/ce-068-2020.txt
+    file3=source/ce-068-2017.txt
     ${csv} -delimiter "|" \
 	   -ifin voter_id voters_boulder.csv  voter_id  \
 	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" 05-NOV-09 \
@@ -77,7 +84,28 @@ do_histogram() {
 	   -sort voted_date \
 	   -addheader "voted_date.type date voted_date.format yyyy-MM-dd" \
 	   -p ${file1} > boulder_voting_2019_histogram.csv
-exit
+
+
+    ${csv} -delimiter "|" \
+	   -ifin voter_id voters_boulder.csv  voter_id  \
+	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" 05-NOV-09 \
+	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" ".*SEP.*" \
+	   -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "," "voted_date" \
+	   -change voted_date "," "" \
+	   -notpattern voted_date "" \
+	   -change voted_date "-17$" "-2017" \
+	   -change voted_date "OCT" "10" \
+	   -change voted_date "NOV" "11" \
+	   -change voted_date "(..)-(..)-(....)" "\$3-\$2-\$1" \
+	   -change voted_date "(..)/(..)/(....)" "\$3-\$1-\$2" \
+	   -c "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE,voted_date" \
+	   -sum voted_date "" "" \
+	   -sort voted_date \
+	   -notpattern voted_date 2017-11-17 \
+	   -addheader "voted_date.type date voted_date.format yyyy-MM-dd" \
+	   -p ${file3} > boulder_voting_2017_histogram.csv
+
+
 
     ${csv} -delimiter "|" \
 	   -ifin voter_id voters_boulder.csv  voter_id  \
@@ -358,9 +386,9 @@ do_join_demographics() {
 
 do_final() {
     echo "making final"
+##	    -ifin precinct_name source/city_boulder_precincts.csv precinct \
     ${csv}  \
-	    -notcolumns county,preference,uocava,uocava_type,issue_method,split \
-	    -ifin precinct_name source/city_boulder_precincts.csv precinct \
+	    -notcolumns MUNICIPALITY,city_ward,county,preference,uocava,uocava_type,issue_method,split \
 	    -set county_regn_date 0 registration_date  \
 	    -set vr_phone 0 phone -set voter_name 0 name  -set yob 0 birth_year \
 	    -ranges birth_year "Birth year range" 1930 10 \
@@ -379,8 +407,8 @@ do_final() {
 	    -p  voters_joined.csv > voters_final.csv
 }
 
-#do_final
-#exit
+do_final
+exit
 
 
 do_db() {

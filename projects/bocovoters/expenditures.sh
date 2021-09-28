@@ -6,7 +6,7 @@ export csv=~/bin/csv.sh
 source=source/electionExpenditures.csv
 
 
-#wget -O ${source} --post-data="exportType=Expenditure&electionID=20&committeeID=-1&filingDateStart=&filingDateStop=&transactionDateStart=&transactionDateStop=" https://election.bouldercolorado.gov/electionExpenditures.php 
+wget -O ${source} --post-data="exportType=Expenditure&electionID=20&committeeID=-1&filingDateStart=&filingDateStop=&transactionDateStart=&transactionDateStop=" https://election.bouldercolorado.gov/electionExpenditures.php 
 
 
 ${csv} -columns "committee,type,candidate,filingdate,amendeddate,officialfiling,transactiondate,lastname,firstname,street,city,state,zip,expenditure,purpose" \
