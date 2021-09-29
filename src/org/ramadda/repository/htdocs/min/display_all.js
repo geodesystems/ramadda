@@ -3172,6 +3172,7 @@ displayDefineEvent("recordList");
 displayDefineEvent("recordHighlight");
 displayDefineEvent("propertyChanged");
 displayDefineEvent("pointDataLoaded");
+displayDefineEvent("dataSelection");
 displayDefineEvent("fieldsSelected");
 displayDefineEvent("filterFieldsSelected");
 displayDefineEvent("fieldsChanged");
@@ -32505,7 +32506,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	    this.map.closePopup();
 	    setTimeout(()=>{
-		this.getDisplayManager().notifyEvent("dataSelection", this, {data:newData});
+		this.getDisplayManager().notifyEvent(DisplayEvent.dataSelection, this, {data:newData});
 	    },100);
 	},
 	applyToFeatureLayers:function(func) {
