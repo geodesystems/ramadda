@@ -791,6 +791,9 @@ public class JsonOutputHandler extends OutputHandler {
         if (addAttributes) {
             Object[] extraParameters = entry.getValues();
             if ((extraParameters != null) && (columns != null)) {
+		System.err.println("entry:" + entry);
+		System.err.println("extra:" + extraParameters.length);
+		System.err.println("columns:" + columns);
                 for (Column column : columns) {
                     Object v = extraParameters[column.getOffset()];
                     if (v == null) {
