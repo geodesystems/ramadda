@@ -139,6 +139,7 @@ displayDefineEvent("recordList");
 displayDefineEvent("recordHighlight");
 displayDefineEvent("propertyChanged");
 displayDefineEvent("pointDataLoaded");
+displayDefineEvent("dataSelection");
 displayDefineEvent("fieldsSelected");
 displayDefineEvent("filterFieldsSelected");
 displayDefineEvent("fieldsChanged");
