@@ -96,7 +96,7 @@
             failonerror="${javac.failonerror}" 
             nowarn="true"
             srcdir="${src_dir}"
-            fork="true"
+            fork="${javac.fork}"
             memoryMaximumSize="${javac.maxmemory}"
             source="${javac.version}"
             target="${javac.version}"
@@ -206,8 +206,7 @@
             srcdir="${src_dir}"
             source="${javac.version}"
             target="${javac.version}"
-
-	    fork="true"
+            fork="${javac.fork}"
             memoryMaximumSize="${javac.maxmemory}"
         >
         <include name="${ramadda_relpath}/*.java"/>
@@ -445,7 +444,7 @@
             failonerror="${javac.failonerror}" 
             nowarn="true"
             srcdir="${src_dir}"
-	    fork="true"
+            fork="${javac.fork}"
             memoryMaximumSize="${javac.maxmemory}"
             source="${javac.version}"
             target="${javac.version}"
