@@ -14,6 +14,8 @@ amip_1900_rf_2d:AMIP with 1900 Radiative Forcing/2D SSTs
 amip_1900_rf_zonal:AMIP with 1900 Radiative Forcing/Zonal SSTs
 amip_goga:Global AMIP
 amip_toga:Tropical AMIP
+amip_obs_rf_hurrell:AMIP with Observed Radiative Forcing, Hurrell SST
+amip_obs_rf_ersstv5:AMIP with Observed Radiative Forcing, ERSSTv5 SST
 # 
 # old names
 #

@@ -1,0 +1,747 @@
+* {
+	padding: 0;
+	margin: 0;
+}
+
+body    {	
+	font-family: Helvetica, Verdana, sans-serif;
+	color: black; 
+/*	background-color: white; */
+background-color: #eee;
+	margin: 5px; 
+	line-height: 1.5;
+	font-size: 100.1%
+}
+
+/* give the page some size limits via the containing div */
+body>div {
+	max-width: 64em;
+	min-width: 48em;
+}
+
+/* site-wide default style for hypertext links */
+a {
+	text-decoration: none;
+	color: #006699;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+/* site-wide default image style */
+img {
+/* 	display: block;  */
+	border: none;
+}
+
+/* default site-wide settings for heading text */
+h1 { 
+	font-size: 140%; 
+}
+
+h2 { 
+	font-size: 130%; 
+}
+
+h3 { 
+	font-size: 120%; 
+}
+
+h4 { 
+	font-size: 110%; 
+}
+
+
+.clear {
+	clear: both;
+	height: 1px;
+}
+
+/* a class for navigating and presentation on text browsers */
+.textvers {
+	display: none;
+}
+
+/* a class to highlight important text */
+.alert {
+	clear: both;
+	width: 100%;
+	height: 1.5em;
+	text-align: center;
+	color: red;
+	font-size: 120%;
+	font-weight: bold;
+	margin: 0em;
+	padding: 0.5em 0em 0em 0em;
+}
+
+/* system maintenance notice */
+.notice {
+	font-size: 80%;
+}
+
+/* default URL style, using the italic form of the browser's font */
+.url {
+	font-style: italic;
+}
+
+/* A div which contains everything on the page. This was needed when */
+/* developing the site layout. Might be unnecessary in the future.   */
+#container {
+	border: solid 1px #bbb;
+	margin: 5px;
+}	
+
+/* the top horizontal section of content, containing the minor and  */
+/* major headers.                                                   */
+#banner {
+	height: auto;
+	border-bottom: solid 1px #006699;
+}
+
+#minor_header {
+	background-color: #006699;
+	color: white;
+	white-space: nowrap;
+	font-size: 90%;
+	font-weight: bold;
+	padding: 0.4em 0.2em 0.3em 0.5em;
+	height: auto;
+	border-bottom: solid 1px #000066; 
+	text-align: left;
+}
+
+#minor_header a {
+	color: white;
+}
+
+/* This makes up most of the banner content. Includes the NOAA/ESRL */
+/* logos and search elements.                                       */
+#major_header {
+	clear: both;
+	background: #000066 url(/img/gradient.gif) top left repeat-y; 
+	height: auto;
+	min-height: 85px;
+	width: auto;
+}
+
+#major_header img {
+	clear: none;
+	float: left;
+	border: none;
+}
+
+#search {
+	clear: none;
+	float: right;
+	padding: 5px;
+	width: 13em; 
+	font-weight: bold;
+	font-size: 80%;
+	color: white;
+	white-space: nowrap;
+	background-color: #000066; 
+}
+
+#search a {
+	color: white;
+}
+
+#search input {
+	font-size: 80%;
+}
+
+
+/* the major site navigation elements, currently styled in a horizontal bar  */
+#major_nav {
+	clear: both;
+	height: 1.7em;
+	background-color: #ccddff;
+	color: #000066;
+	border-top: solid 1px #000066; 
+}
+
+/* a list styled to show its items in horizontal fashion, with "child" */
+/* lists displayed as pull-down submenus.                              */
+
+/* this sets lists within lists to be menus which are hidden */
+/* until the user mouses over the "parent" list item         */
+/* used by menus - maybe we should associate them with #major_nav,
+#minor_nav
+*/
+#nav li ul {
+    display: none;
+    position: absolute;
+    top: auto;
+    left: auto;
+    font-weight: normal;
+    background: white;
+    border: none;
+    z-index: 100;
+    width: 100%;
+}
+
+/* sets an unordered list which is a child of another list item */
+/* to be positioned at the upper left of the parent list item */
+#nav li>ul {
+    top: auto;
+    left: auto;
+}
+
+/* displays the child list when the user mouses over the parent list item */
+#nav li:hover ul, #nav li.over ul {
+    display: block;
+    background-color: #cecece;
+}
+
+
+ul#nav {
+	list-style: none;
+	font-size: 90%; 
+    padding: 0em 0em 0em 13em;
+	white-space: nowrap;
+}
+
+ul#nav a {
+	display: block;
+	font-weight: bold;
+	color: #000066;
+	text-decoration: none;
+	line-height: 1.0em;
+	padding: 0.5em 0.8em 0.4em 0.8em;
+	height: auto;
+}
+
+ul#nav li {
+	display: block;
+	float: left;
+	text-align: center;
+	background-color: inherit;
+	width: auto;
+	height: auto;
+	border: none;
+	position: relative;
+	z-index: 100;
+}
+
+ul#nav li:hover {
+	background-color: #006699;
+	color: white;
+}
+
+ul#nav a:hover {
+	background-color: #006699;
+	color: white;
+	text-decoration: none;
+}
+
+ul#nav li ul {
+	width: 17em;
+	border: none;
+	top: 1.6em;
+	left: 0px;
+}
+
+ul#nav li li {
+	display: block;
+	border: solid 1px #bbb;
+	background-color: white;
+	text-align: left;
+	height: auto;
+	width: 100%;
+	position: relative;
+	z-index: 100;
+}
+
+ul#nav li li a {
+	display: block;
+	font-weight: normal;
+	width: 90%;
+	height: 100%;
+	padding: 0.4em;
+	border: none;
+}
+
+ul#nav li li a:hover {
+	background-color: #ddd;
+	color: black;
+}
+
+ul#nav li li:hover {
+	background-color: #ddd;
+}
+
+/* this makes the submenus work on IE */
+/* Fix IE. Hide from IE Mac \*/
+* html ul#nav li { float: left; height: 1%; }
+* html ul#nav li a { height: 1%; }
+/* End */
+
+/* this position the submenu slightly below the parent list item */
+ul#nav li.over ul {
+ 	top: 1.5em;
+ 	left: 0em;
+}
+
+/* a containing div for the body and footer of the document */
+/* primarily for page-layout purposes (other divs floated within it) */
+#pbody {
+	float: none;
+	width: inherit;
+	height: auto;
+	border: none;
+}
+
+/* minor navigation elements, currently styled in a left vertical column */
+#minor_nav {
+	background: #ddd url(/img/point.gif) top right repeat-y;
+	float: left;
+	width: 13em; /* column width */
+	height: 100%; 
+	padding: 0em 2px 0em 0em;
+	margin: 0px 0px 5px 0px;
+	color: #000066;
+	border: none;
+}
+
+#minor_nav a {
+	color: #000066;
+}
+
+#minor_nav a:hover {
+	text-decoration: underline;
+	color: #000066;
+}
+
+#minor_nav p {
+	padding: 5px;
+}
+
+#minor_nav dl {
+	font-weight: bold;
+	font-size: 80%; 
+}
+
+#minor_nav dt {
+	display: block;
+	padding: 1px 0px 1px 0px;
+	width: 100%;
+	background: #bbb;
+	border: none;
+	text-align: center;
+}
+
+#minor_nav dt a {
+	display: block;
+	padding: 2px 0px 2px 0px;
+	width: 100%;
+}
+
+#minor_nav dt a:hover {
+	background-color: #ddd;
+	text-decoration: none;
+}
+
+#minor_nav dd {
+	font-weight: normal;
+	margin: 0em 0.5em 1.0em 0.5em;
+	padding: 0.3em;
+	border: none;
+	background: inherit;
+}
+
+#minor_nav ul {
+	list-style: none;
+}
+
+/* an unordered list whose items are displayed vertically */
+/* without bullets. sub-lists are styled as pull-down menus */
+/* which float to the right of the parent list item. */
+#vertnav {
+	clear: both;
+	color: #000066;
+	list-style: none;
+	white-space: nowrap;
+	font-size: 90%; 
+	width: 100%;
+	z-index: 0;
+}
+
+/* this sets lists within lists to be menus which are hidden */
+/* until the user mouses over the "parent" list item         */
+/* used by menus - maybe we should associate them with #major_nav,
+#minor_nav
+*/
+#vertnav li ul {
+    display: none;
+    position: absolute;
+    top: auto;
+    left: auto;
+    font-weight: normal;
+    background: white;
+    border: none;
+    z-index: 100;
+    width: 100%;
+}
+
+/* sets an unordered list which is a child of another list item */
+/* to be positioned at the upper left of the parent list item */
+#vertnav li>ul {
+    top: auto;
+    left: auto;
+}
+
+/* displays the child list when the user mouses over the parent list item */
+#vertnav li:hover ul, #vertnav li.over ul {
+    display: block;
+    background-color: #cecece;
+}
+
+
+#vertnav li {
+	display: block;
+	text-align: center;
+	background-color: inherit;
+	border-top: solid 1px #bbb;
+	border-right: none;
+	border-bottom: solid 1px #bbb;
+	border-left: solid 1px #bbb;
+	width: 100%;
+	margin: 0.5em 0em 0em 0em;
+	height: auto;
+	color: #006699;
+	position: relative;
+	z-index: 100;
+}
+
+#vertnav a {
+	display: block;
+	font-weight: bold;
+	text-decoration: none;
+	padding: 0.2em 0em 0.2em 0em; 
+	color: #000066;
+}
+
+#vertnav a:hover {
+	text-decoration: none;
+	background-color: #bbb;
+	width: 100%;
+}
+
+#vertnav li:hover {
+	background-color: #dfdfdf;
+}
+
+#vertnav li ul {
+	list-style: none;
+	width: 15.5em;
+	top: 0em;
+	left: 12em;
+}
+
+#vertnav li li {
+	display: block;
+	font-size: 90%;
+	text-align: left;
+	background: white;
+	color: black;
+	margin: 0em; /* FF error: inherits background */
+	border: solid 1px black; 
+	height: auto;
+	position: relative;
+	z-index: 100;
+}
+
+#vertnav li li a {
+	padding: 0.3em 0em 0.2em 0.4em; 
+}
+
+#vertnav li li a:hover {
+	width: auto;
+	background-color: #ddd;
+}
+
+#vertnav li li.over {
+	background-color: #ddd;
+}
+
+#vertnav li li:hover {
+	background-color: #ddd;
+}
+
+#vertnav li:hover ul, li.over ul {
+	display: block;
+}
+
+#vertnav li:hover, li.over {
+	background-color: #bbb;
+	z-index: 200;
+}
+
+/* same as for the ul#nav above */
+/* Fix IE. Hide from IE Mac \*/
+* html #vertnav li { float: left; height: 1%; }
+* html #vertnav li a { height: 1%; }
+/* End */
+
+/* a div for the actual page content!                       */
+/* note that the left margin is set to be the same width as */
+/* the minor_nav left column. this allows us to create the  */
+/* column effect.                                           */
+#content {
+	padding: 1em 0em 0em 2em;
+	border-top: solid 1px white;     /* borders force correct height on */
+	border-bottom: solid 1px white;  /* some browsers */
+	border-left: solid 13em #ddd;
+	background: white url(/img/point.gif) top left repeat-y; 
+}
+
+
+/* default styling for paragraphs within the page content div */
+#content p {
+	margin: 0.5em 0em 0.3em 0em;
+	padding: 0.5em 0.5em 0.2em 0.5em;
+}
+
+#content p.indent {
+	margin: 0em 0em 0.3em 0em;
+	padding: 0em 0.5em 0.2em 1.5em;
+}
+
+/* default styling for unordered lists within the page content div */
+#content ul {
+	margin: 0.3em 1.0em 1.0em 2.0em;
+	background-color: transparent;
+}
+
+#content ul li {
+	margin: 0em 0em 0em 1.5em;
+	padding: 0.1em 0.2em 0.2em 0.1em;
+	text-align: left;
+	background-color: transparent;
+}
+
+#content dt {
+    margin-top: 0.5em;
+    font-weight: bold;
+}
+
+#content dd {
+    margin-left:1em;
+    margin-bottom: 0.5em;
+    font-size: 90%;
+}
+
+
+/* an item floated to the upper right of the page content */
+/* use id rather than class, since we only expect one news item per page */
+blockquote#news {
+    float: right;
+	width: 170px; /* width set to accomodate image in this case */
+	height: auto;
+	margin: 10px 10px 2em 2em; 
+    background-color: transparent;
+    font-weight: bold;
+	color: #006699;
+	text-align: left;
+}
+
+blockquote#news div {
+    font-size: 80%;
+	padding: 0px 0px 5px 0px;
+	margin: 0em 0em 2.0em 0em;
+	background-color: #ddd; 
+	border: solid 1px #bbb;
+}
+
+blockquote#news h2 {
+        font-size: 110%;
+	color: #000066;
+	padding: 0.3em 0em 0.2em 0.5em;
+	width: auto;
+	background-color: #bbb;
+	border: none;
+}
+
+blockquote#news ul {
+	list-style: none;
+	margin: 0em;
+}
+
+blockquote#news ul li {
+    font-weight: normal;
+	color: #000066;
+	padding: 0.2em 0.5em 0.5em 15px;
+	margin: 0em;
+}
+
+blockquote#news ul li a {
+	color: #000066;
+}
+
+blockquote#news p {
+	margin: 0px 5px 0px 15px;
+	padding: 0.2em 0em 0em 0em;
+    font-weight: normal;
+	color: #000066;
+}
+
+blockquote#news img {
+	clear: both;
+	padding: 5px 0px 5px 0px;
+	display: block;
+} 
+
+/* an item floated to the upper right of the page content */
+/* div is class rather than id - may need clear=right */
+
+div.right_fig {
+    float: right;
+    width: 250px;
+    margin: 0 2em 1em 2em;
+}
+
+div.right_fig img{
+    clear:both;
+    display:block;
+    padding: 0;
+    margin: 30px 0 0 0;
+}
+
+div.right_fig p {
+    width:240px;
+    line-height: 1.25;
+    font-size: 80%;
+    color:#069;
+}
+
+div.right_fig a {
+    text-decoration: underline;
+}
+
+/* center figure and caption in the center of the content block */
+/* will need to set <div class=inline style="width: 500px" to center */
+
+/* <div class="inline" style="width:xxxpx;"><img><credit><caption></div> */
+.inline {
+    margin: 1.5em auto;
+    background-color:#dddddd;
+    border-color:#bbbbbb;
+    border-style:solid;
+    border-width:1px;
+}
+
+.inline img {
+    margin-left:auto;
+    margin-right:auto;
+    display: block;
+    padding-top: 0.5em;
+}
+
+/* <div class="caption"><p>text</p></div> */
+.inline div.caption {
+    margin-left:auto;
+    margin-right:auto;
+    padding: 0.25em 0.5em;
+    font-size: 80%;
+	line-height: 1.7em;
+}
+
+/* <div class="credit">Credit: NOAA</div> */
+.credit {
+    padding-right: 2em;
+    text-align:right;
+    font-size:70%;
+}
+
+/* right align figure */
+
+/* <div class="rfigure" style="width:xxxpx;"><img><credit><caption></div> */
+.rfigure {
+float:right;
+margin: 1.5em 2em;
+background-color: #dddddd;
+border-color: #bbbbbb;
+border-style: solid;
+border-width: 1px;
+}
+
+.rfigure img {
+    margin-left:auto;
+    margin-right:auto;
+    display:block;
+    padding-top: 0.5em;
+}
+
+/* <div class="caption"><p>text</p></div> */
+.rfigure div.caption {
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0.25em 0.5em;
+    font-size: 80%;
+	line-height: 1.7em;
+}
+
+/* calendar markup */
+ul.vcalendar  {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+li.vevent {
+	list-style-position: outside;
+}
+.vevent h2 {
+	font-family: Arial, Helvetica, sans-serif;
+	color: #00A0C6;
+	margin-top: 0.5em;
+}
+
+.vevent h3   {
+	font-family: Georgia, "Times New Roman", Times, serif;
+	display: block;
+	width: 100%;
+	color: #00A0C6;
+	border-bottom: 1px #00A0c6 solid;
+	margin-top: 1em;
+}
+
+.vevent abbr {
+border:0;
+}
+table.data_table td {
+padding:5px;
+}
+
+/* the page footer */
+#footer {
+	clear: both;
+    font-size: 80%;
+	background: #000066 url(/img/gradient.gif) top left repeat-y;
+	color: white;
+	padding: 1.0em 0.7em 0.6em 0.7em;
+	margin: 0em;
+	line-height: 1.3em;
+	width: auto;
+	height: 4em;
+	border: none;
+}
+
+#footer a {
+	color: white;
+}
+
+/* a div containing links to the organizations shown in the footer. */
+#orgs {
+	float: left;
+	text-align: left;
+	padding: 0em 0.2em 0em 0em;
+}
+
+/* a div containing policy-type links shown in the footer. */
+#policies {
+	clear: none;
+	float: right;
+	text-align: right;
+}

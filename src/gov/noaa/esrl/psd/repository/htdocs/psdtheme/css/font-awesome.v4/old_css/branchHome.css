@@ -1,0 +1,161 @@
+#container {
+	width: 78em;
+	margin: auto;
+	-moz-box-shadow: 0.4em 0.4em 0.4em #666;
+	-webkit-box-shadow: 0.4em 0.4em 0.4em #666;	
+}
+
+#content {
+	font-family: cambria;
+	padding-left: 1.5em;
+	padding-right: 1em;
+	padding-bottom: 2em;
+}
+
+#content div {
+	font-size: 105%;
+}
+
+#content p {
+	font-size: 105%;
+}
+
+#content ul {
+	margin-left: -1em;
+	list-style: none;
+}
+
+#content ul li:before {
+	content: "\00BB \0020";
+	color: purple;	
+}
+
+h1 {
+	font-size: 170%;
+}
+
+h2 {
+	font-size: 140%;
+}
+
+h3 {
+	font-size: 120%;
+}
+
+.mainImgBox {
+	float: left; 
+	width: 41em; 
+}
+
+.branchContent {
+	float: left; 
+	margin: 0 0 0 1em; 
+	width: 16em;
+}
+
+.branchContent2 {
+	float: left; 
+	margin: 1.5em 0 0 1em; 
+	width: 16em;
+}
+
+
+#news {
+	float: left;
+	width: 16em; 
+	margin: 0 1em 0 1.5em;
+}
+
+#news div.h2Box {
+	text-align: center;
+	color: white;
+	margin-bottom: 0.15em;
+	padding: 0.2em;
+	background-color: rgb(67,138,202)/*#999*/;
+	height: 1.5em;
+	border-top-left-radius: .8em; 	
+	border-top-right-radius: .8em; 		
+}
+
+#news div.newsContent {
+	border: 1px solid #999;
+	padding: 0.2em 0.2em .75em 0.6em;
+	margin-bottom: 1em;
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from rgb(235,235,235), to rgb(255,255,255));
+	background: -moz-linear-gradient(top, rgb(235,235,235), rgb(255,255,255));	
+	background: -ms-linear-gradient(top, rgb(235,235,235), rgb(255,255,255));
+	/*-moz-box-shadow: 0.4em 0.4em 0.4em #666;
+	-webkit-box-shadow: 0.4em 0.4em 0.4em #666;	*/
+}
+
+#news div.newsContent img {
+	margin: 0.75em 0 0.5em 0.4em;
+	width: 13.5em;
+	height: 4.7em;
+}
+
+#news div.newsContent a {
+	font-style: italic;
+}
+
+
+/* PSD3 Styles for Highlight Box and Slideshow */
+#news div.newsContent2 {
+	border: 1px solid #999;
+	margin-bottom: 1em;
+	width: 267px;
+}
+
+#news div.newsContent2 img {
+	margin-left; 1em;
+}
+
+/* PSD3-SLIDESHOW */
+#imageContainer { 
+	display: block;
+	position: relative;
+	height: auto;
+	width: 200px;
+}  
+
+#imageContainer img { 
+	position: absolute;
+	width: 200px;
+	height: 142px;
+	left: 0;
+	top: 0;
+	opacity: -0.01;
+	padding: 4px 0 0 4px; 	
+} 	
+
+#highlightBottom {
+	margin-top: 147px;
+	padding-bottom: 4px;
+	height: 90px;
+}
+
+#captionContainer {
+	height: 60px;
+	padding-left: 4px;
+	display: block;
+	width: 200px;
+	font-family: calibri;
+	font-size: 114%;
+	line-height: 1;
+}
+
+#captionContainer a{
+	font-size: 85%;
+	font-style: italic;
+}
+
+#imgCtrl {
+	clear: both;
+	display: block;	
+	margin: 4px 0 0 4px;
+}
+
+#imgCtrl img {
+	width: 1em;
+	height: 1em;
+}

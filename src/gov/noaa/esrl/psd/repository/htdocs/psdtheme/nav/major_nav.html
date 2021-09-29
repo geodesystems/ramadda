@@ -139,6 +139,46 @@
   background: #0f0f0f;
   border: 1px solid #888;
 }
+
+.alert-primary {
+  color: #004085;
+  background-color: #cce5ff;
+  text-align:left;
+  margin-top:-10px;
+  border-radius: 0px;
+}
+
+.alert-danger {
+  color: white;/*#a94442;*/
+  background-color: #eb1a3d;/*#f2dede;*/
+  text-align:center;
+  margin-top:-10px;
+  border-radius: 0px;
+}
+
+.alert {
+  padding: .75rem 1.25rem;
+  margin-bottom: 10px;
+  z-index:100;
+  top:0;
+  width:100%;
+  padding-right:20px;
+}
+
+.alert-primary a:visited, .alert-primary a {
+  color:#0056b3 !important;
+}
+
+
+
+.alert-danger a:visited, .alert-danger a {
+  color:#a94442 !important;
+}
+
+.navbar {
+  padding-left: 0px;
+}
+
 </style>
 
 <script>
@@ -148,18 +188,63 @@ $(function() {
       $(this).focus();
   })
 
+  $('#close_alert_primary').click(function( e ){
+    e.preventDefault();
+
+    $.cookie('alert-primary', 'closed', { expires: 1,  path: '/' });
+    $("body").removeClass("body_alert");
+
+  });
+
+
+  if( $.cookie('alert-primary') === 'closed' ){
+    $('.alert-danger').hide();
+    $("body").removeClass("body_alert");
+  } else {
+   //  $('.alert-danger').show();
+  //  $("body").addClass("body_alert");
+  }
+
 });
 </script>
 
-<nav class="navbar navbar-fixed-top navbar-inverse" role="navigation">
+<nav class="navbar navbar-fixed-top  navbar-inverse" role="navigation" >
+
+  <div class="alert alert-danger alert-dismissible small">
+    <script>
+        $('.alert-danger').hide();
+        $("body").removeClass("body_alert");
+        console.log(window.location.href);
+        //$("body").addClass("body_alert");
+    </script>
+
+
+    <i class="fas fa-exclamation-circle"></i> <strong>OUTAGE NOTICE: The PSL website and data/ftp access will be down/intermittent <u>between April 19th and April 23rd</u> due to planned maintenance.</strong>
+    <button id="close_alert_primary" type="button" class="close" data-dismiss="alert" aria-label="Close" style="padding-right:21px;color:#0056b3;opacity:.8;">
+      <span aria-hidden="true" style="font-size:22px;color:white;">&times;</span>
+    </button>
+
+	<!--
+    <i class="fas fa-exclamation-circle"></i> <strong>PSL Website Outage:</strong> On 1/21/2021 we will be doing power maintenance. Site will be down all day
+    <button id="close_alert_primary" type="button" class="close" data-dismiss="alert" aria-label="Close" style="padding-right:21px;color:#0056b3;opacity:.8;">
+      <span aria-hidden="true" style="font-size:22px;;">&times;</span>
+    </button>
+    -->
+
+  </div>
 
   <div class="container">
+
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
       <div class="navbar-brand">
-        <div style="float: left;">
-          <a href="http://www.noaa.gov" title="Link to NOAA"><img src="/img/logos/noaa-50th-logo.png"
-          width="38" class="header_logo" alt="NOAA 50th Anniversary Logo" /></a>
+        <div class="hidden-xs" style="float: left;">
+          <a href="http://www.noaa.gov" title="Link to NOAA"><img src="/img/logos/noaa-logo.png"
+           class="header_logo" width="50px; alt="NOAA Logo" /></a>
+        </div>
+        <div class="visible-xs" style="float: left;">
+          <a href="http://www.noaa.gov" title="Link to NOAA"><img src="/img/logos//httpd-test/psl/img/logos/noaa_notext.svg"
+           class="header_logo" style="margin-top: 5px; width: 32px;" alt="NOAA Logo" /></a>
         </div>
         <div style="float: left;">
           <div style="margin: 12px 0 0 2px;"><a href="/" title="PSL">Physical Sciences Laboratory</a>
@@ -187,12 +272,10 @@ $(function() {
                 <ul class="dropdown-menu  dropdown-menu-left">
                   <li>
                     <!--#endif -->
-                  <li><a href="/about/">About PSL</a></li>
+                  <li><a href="/about/">About Us</a></li>
                   <li><a href="/about/org.html">Organization At-A-Glance</a></li>
                   <li><a href="/reviews/">Science Reviews</a></li>
-                  <li><a href="http://www.boulder.noaa.gov/">Visiting NOAA
-                      Boulder</a></li>
-
+                  <li><a href="https://esrl.noaa.gov/about/visiting.html">Visiting NOAA Boulder</a></li>
                   <!--#if expr="$REMOTE_ADDR = /^10\.173\./  ||  $REMOTE_ADDR = /^140\.172\./"-->
                 </ul>
             </li>
@@ -222,7 +305,7 @@ $(function() {
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">People</a>
           <ul class="dropdown-menu dropdown-menu-left">
-            <li> <a href="/about/contacts.html">Contacts</a></li>
+            <li> <a href="/about/contacts.html">Contact Us</a></li>
             <li><a href="/staff/index.html">Staff List</a></li>
             <li><a href="/staff/spotlight/">Employee Spotlight</a></li>
           </ul>
@@ -237,8 +320,9 @@ $(function() {
                   <li><a href="/research/">Overview</a></li>
                   <li><a href="/research/teams/">Teams</a></li>
                   <li><a href="/pubs/">Publications</a></li>
+                  <li><a href="/assessments/">Assessments</a></li>
                 </ul>
-              </div>
+        	  </div>
               <div class=" col-xs-12 col-md-3">
                 <ul class="">
                   <li><span class="dropdown-header">Selected Topics</span></li>
@@ -260,6 +344,8 @@ $(function() {
                       data-placement="left" title="El Ni&ntilde;o Rapid Response Field Campaign">ENRR</a></li>
                   <li><a href="/mosaic/" data-toggle="tooltip"
                       data-placement="left" title="Multidisciplinary Drifting Observatory for the Study of Arctic Climate">MOSAiC</a></li>
+                  <li><a href="/splash/" data-toggle="tooltip"
+                      data-placement="left" title="Study of Precipitation, the Lower Atmosphere and Surface for Hydrometeorology">SPLASH</a></li>
                 </ul>
               </div>
               <div class=" col-xs-12 col-md-3">
@@ -298,11 +384,10 @@ $(function() {
             <li><a href="/map/">Map Room</a></li>
             <li><a href="/cgi-bin/data/getpage.pl">Analysis &amp; Plotting
                 Tools</a></li>
-            <li><a href="/forecasts/reforecast2/">GEFS Reforecast V2</a></li>
             <li><a href="/forecasts/clim/">Subseasonal Tropical Forecasts</a></li>
             <li><a href="/ipcc/">Climate Change Web Portal</a></li>
             <li><a href="/repository/facts/" data-toggle="tooltip"
-                data-placement="left" data-html="true" title="<strong>FA</strong>cility for <strong>C</strong>limate Assessmen<strong>TS</strong>">FACTS</a></li>
+                data-placement="left" data-html="true" title="<strong>FAC</strong>ility for Weather and Climate Assessmen<strong>TS</strong>">FACTS</a></li>
           </ul>
         </li>
         <li class="dropdown">
@@ -319,6 +404,7 @@ $(function() {
           <ul class="dropdown-menu dropdown-menu-left">
             <li><a href="/outreach/resources/">Research Handouts</a></li>
             <li><a href="/outreach/education/">Education Resources</a></li>
+            <li><a href="/outreach/funtastic-science-talks">Funtastic Science Talks</a></li>
           </ul>
         </li>
         <li class="dropdown hidden-sm hidden-xs">
@@ -329,7 +415,7 @@ $(function() {
               <div id="custom-search-input" style="padding: 10px;">
                 <div class="input-group">
                   <form action="//search.usa.gov/search">
-                    <input type="hidden" name="affiliate" value="etl.noaa.gov">
+                    <input type="hidden" name="affiliate" value="psl.noaa.gov">
                     <span class="input-group-btn">
                       <input type="text" name="query" id="query-field" size="20"
                         class="search-query form-control" placeholder="Search PSL...">

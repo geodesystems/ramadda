@@ -1,0 +1,156 @@
+/*!
+ * Start Bootstrap - Modern Business (http://startbootstrap.com/)
+ * Copyright 2013-2016 Start Bootstrap
+ * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE)
+ */
+
+/* Global Styles */
+
+html,
+body {
+    height: 100%;
+    color: #444;
+	font-family: 'Roboto', sans-serif;    
+}
+
+body {
+    padding-top: 50px; /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
+}
+
+.breadcrumb {
+	background-color: #336699;
+	color: white;
+}
+
+.breadcrumb a {
+	color: white;
+}
+
+.breadcrumb .active {
+	color: white;
+}
+
+.img-portfolio {
+    margin-bottom: 30px;
+}
+
+.img-hover:hover {
+    opacity: 0.8;
+}
+
+.jumbotron {
+	background-image: url('news/img/csd-news/png');
+}
+
+.hero-spacer {
+    margin-top: 50px;
+}
+
+.hero-feature {
+	text-align: left;
+	margin-bottom: 10px;
+}
+
+.hero-feature .page-header {
+	font-size: 50px;
+	font-weight: 700;
+	color: #336699;
+}
+.jumbotron {
+	height: 400px;
+	margin-bottom: 0;
+}
+
+.psd-nav {
+	background-color: #336699; /*#0093b2#337ab7;*/
+   	border-bottom: 1px solid white;
+   	color: white;
+}
+.psd-nav a {color: white;}
+.psd-nav a:hover {color: white;}
+.navbar-inverse a {color: white;}
+
+
+/* Home Page Carousel */
+
+header.carousel {
+    height: 50%;
+}
+
+header.carousel .item,
+header.carousel .item.active,
+header.carousel .carousel-inner {
+    height: 100%;
+}
+
+header.carousel .fill {
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-size: cover;
+}
+
+header.news {
+	margin-top: 50px;
+}
+
+/* 404 Page Styles */
+
+.error-404 {
+    font-size: 100px;
+}
+
+/* Pricing Page Styles */
+
+.price {
+    display: block;
+    font-size: 50px;
+    line-height: 50px;
+}
+
+.price sup {
+    top: -20px;
+    left: 2px;
+    font-size: 20px;
+}
+
+.period {
+    display: block;
+    font-style: italic;
+}
+
+/* Footer Styles */
+
+footer {
+	color: white;
+    background-color: #555;
+    padding: 20px 0 20px 0;
+   	background-image: url('/psd/img/test/textures/wavecut.png');
+}
+
+footer a {color: #fff;}
+footer a:hover {color: #ccc;}
+
+/* Responsive Styles */
+
+@media(max-width:991px) {
+    .customer-img,
+    .img-related {
+        margin-bottom: 30px;
+    }
+}
+
+@media(max-width:767px) {
+    .img-portfolio {
+        margin-bottom: 15px;
+    }
+
+    header.carousel .carousel {
+        height: 70%;
+    }
+}
+
+.img-center {
+	margin: 0 auto;
+}
+
