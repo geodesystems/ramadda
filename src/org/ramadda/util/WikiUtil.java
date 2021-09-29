@@ -921,12 +921,14 @@ public class WikiUtil {
 		    continue;
 		}
 
-		if(skipping) {
-		    continue;
-		}
 
                 if (tline.equals("-skip")) {
 		    skipping =false;
+		    continue;
+		}
+
+
+		if(skipping) {
 		    continue;
 		}
 
