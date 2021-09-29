@@ -356,7 +356,7 @@ public class JsonOutputHandler extends OutputHandler {
             //Note: if the entry is a different type than the first one then
             //the columns will mismatch
             String array = toPointJson(request, entry, addSnippets, addAttributes,addPointUrl, addThumbnails, addImages,
-                                       columns, showFileUrl,remote);
+                                       typeHandler, columns, showFileUrl,remote);
             entryArray.add("values");
             entryArray.add(array);
             values.add(Json.map(entryArray, false));
@@ -734,7 +734,7 @@ public class JsonOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     private String toPointJson(Request request, Entry entry,boolean addSnippets,
-                               boolean addAttributes, boolean addPointUrl, boolean addThumbnails, boolean addImages, List<Column> columns,
+                               boolean addAttributes, boolean addPointUrl, boolean addThumbnails, boolean addImages, TypeHandler mainTypeHandler, List<Column> columns,
                                boolean showFileUrl,boolean remote)
             throws Exception {
 
@@ -788,12 +788,12 @@ public class JsonOutputHandler extends OutputHandler {
 	    }
 	}
         TypeHandler typeHandler = entry.getTypeHandler();
-        if (addAttributes) {
+        if (addAttributes && columns!=null) {
             Object[] extraParameters = entry.getValues();
-            if ((extraParameters != null) && (columns != null)) {
-		System.err.println("entry:" + entry);
-		System.err.println("extra:" + extraParameters.length);
-		System.err.println("columns:" + columns);
+            if (extraParameters != null && typeHandler.isType(mainTypeHandler.getType())) {
+		//		System.err.println("entry:" + entry);
+		//		System.err.println("extra:" + extraParameters.length);
+		//		System.err.println("columns:" + columns);
                 for (Column column : columns) {
                     Object v = extraParameters[column.getOffset()];
                     if (v == null) {
@@ -808,7 +808,11 @@ public class JsonOutputHandler extends OutputHandler {
                         }
                     }
                 }
-            }
+            } else {
+                for (Column column : columns) {
+		    items.add("null");
+		}
+	    }
         }
         if (showFileUrl) {
 	    url = entry.getTypeHandler().getEntryResourceUrl(request, entry);
