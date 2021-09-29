@@ -157,7 +157,6 @@
             destdir="${src_dir}"
             failonerror="${javac.failonerror}"
             fork="${javac.fork}"
-
             source="${javac.version}"
             target="${javac.version}">
         <include name="${plugin_dir}/**/*.java"/>
