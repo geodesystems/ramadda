@@ -916,6 +916,21 @@ public class WikiUtil {
 
                 String tline = line.trim();
 
+                if (tline.equals("+skip")) {
+		    skipping =true;
+		    continue;
+		}
+
+		if(skipping) {
+		    continue;
+		}
+
+                if (tline.equals("-skip")) {
+		    skipping =false;
+		    continue;
+		}
+
+
 
 
                 if (tline.startsWith("{{")) {
@@ -940,20 +955,6 @@ public class WikiUtil {
                     continue;
                 }
 
-
-                if (tline.equals("+skip")) {
-		    skipping =true;
-		    continue;
-		}
-
-		if(skipping) {
-		    continue;
-		}
-
-                if (tline.equals("-skip")) {
-		    skipping =false;
-		    continue;
-		}
 
 
                 if (tline.startsWith("+splash")) {
