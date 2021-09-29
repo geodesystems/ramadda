@@ -889,7 +889,7 @@ public class WikiUtil {
 
             String text = chunk.buff.toString();
             text = applyPatterns(handler, headings, text);
-
+	    boolean skipping = false;
 
             for (String line : text.split("\n")) {
                 if ((line.indexOf("${") >= 0)
@@ -939,6 +939,21 @@ public class WikiUtil {
                     buff.append("\n");
                     continue;
                 }
+
+
+                if (tline.equals("+skip")) {
+		    skipping =true;
+		    continue;
+		}
+
+		if(skipping) {
+		    continue;
+		}
+
+                if (tline.equals("-skip")) {
+		    skipping =false;
+		    continue;
+		}
 
 
                 if (tline.startsWith("+splash")) {
