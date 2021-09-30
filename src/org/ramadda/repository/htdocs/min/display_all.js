@@ -27017,7 +27017,7 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 		if(!fields) return;
 		this.footers = [];
 		this.headers = [];
-		let numBlocks  = this.getPropertNumBlocks(1000);
+		let numBlocks  = this.getNumBlocks(1000);
 		this.total = 0;
 		fields.forEach(f=>{
 		    this.footers.push("${count} " + f.getLabel());
