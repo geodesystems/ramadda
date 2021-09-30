@@ -262,6 +262,7 @@ function RepositoryMap(mapId, params) {
         haveAddedDefaultLayer: false,
         defaultCanSelect: true,
 	highlightColor:"blue",
+	highlightFillColor:"blue",	
 	highlightStrokeWidth:2,
 	highlightOpacity:0.3,
 	imageOpacity:1.0,
@@ -336,7 +337,6 @@ function RepositoryMap(mapId, params) {
 	fillColor:this.highlightFillColor,
 	fillOpacity:this.highlightOpacity
     }
-
 
     this.defaults = {};
 
@@ -975,7 +975,7 @@ RepositoryMap.prototype = {
             feature.style = null;
 	    //"temporary"
 	    let highlightStyle = $.extend({},this.highlightStyle);
-	    if(feature.originalStyle) {
+	    if(highlightStyle.fillColor!="transparent" && feature.originalStyle) {
 		highlightStyle.fillColor  = Utils.brighterColor(feature.originalStyle.fillColor||highlightStyle.fillColor,0.4);
 	    }
 	    if(!highlightStyle.fillColor) {
