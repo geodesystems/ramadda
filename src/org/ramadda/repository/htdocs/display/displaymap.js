@@ -229,6 +229,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		showZoomOnlyControl: this.getShowZoomOnlyControl(true),
 		enableDragPan: this.getEnableDragPan(true),
 		highlightColor: this.getHighlightColor("blue"),
+		highlightFillColor: this.getHighlightFillColor("transparent"),		
 		highlightStrokeWidth: this.getHighlightStrokeWidth(1),
 		showLatLonLines:this.getProperty("showLatLonLines")
             };
@@ -498,6 +499,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'recordHighlightFillOpacity',ex:'0.5',tt:'Fill opacity to use to show other displays highlighted record'},
 	{p:'recordHighlightVerticalLine',tt:'Draw a vertical line at the location of the selected record'},
 	{p:'highlightColor',ex:'#ccc',tt:''},
+	{p:'highlightFillColor',ex:'#ccc',tt:''},	
 	{p:'highlightStrokeWidth',ex:'2',tt:''},	
 	{p:'unhighlightColor',ex:'#ccc',tt:'Fill color when records are unhighlighted with the filters'},
 	{p:'unhighlightStrokeWidth',ex:'1',tt:'Stroke width for when records are unhighlighted with the filters'},
