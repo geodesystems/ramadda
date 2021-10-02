@@ -1054,14 +1054,14 @@ function DisplayThing(argId, argProperties) {
             //don't do this for now                $( document ).tooltip();
         },
         formatNumber: function(number, propPrefix,debug) {
-	    if(!this.getProperty([propPrefix+".doFormatNumber","doFormatNumber"],true)) {
+	    if(!this.getProperty(propPrefix?[propPrefix+".doFormatNumber","doFormatNumber"]:"doFormatNumber",true)) {
 		return number;
 	    }
 	    if(isNaN(number)) {
-		return "--";
+                return this.getProperty("nanValue", "--");
 	    }
 	    let f = this.formatNumberInner(number, propPrefix,debug);
-	    let fmt = this.getProperty([propPrefix+".numberTemplate","numberTemplate"]);
+	    let fmt = this.getProperty(propPrefix?[propPrefix+".numberTemplate","numberTemplate"]:"numberTemplate");
 	    if(fmt) f = fmt.replace("${number}", f);
 	    f = String(f);
 	    if(f.endsWith(".")) f = f.substring(0,f.length-1);
@@ -1069,16 +1069,15 @@ function DisplayThing(argId, argProperties) {
 	},
         formatNumberInner: function(number,propPrefix,debug) {
 	    number = +number;
-	    let scale = this.getProperty([propPrefix+".formatNumberScale","formatNumberScale"]);
+	    let scale = this.getProperty(propPrefix?[propPrefix+".formatNumberScale","formatNumberScale"]:"formatNumberScale");
             if (Utils.isDefined(scale))
 		number = number*scale;
-	    let decimals = this.getProperty([propPrefix+".formatNumberDecimals","formatNumberDecimals"]);
+	    let decimals = this.getProperty(propPrefix?[propPrefix+".formatNumberDecimals","formatNumberDecimals"]:"formatNumberDecimals");
             if (Utils.isDefined(decimals)) {
 		return number_format(number, decimals);
 	    }
-            if (this.getProperty([propPrefix+".formatNumberComma","formatNumberComma"], false)) {
+            if (this.getProperty(propPrefix?[propPrefix+".formatNumberComma","formatNumberComma"]:"formatNumberComma", false)) {
 		return Utils.formatNumberComma(number);
-
 	    }
             return Utils.formatNumber(number,false,debug);
 
@@ -1114,25 +1113,37 @@ function DisplayThing(argId, argProperties) {
 	    return this.getPropertyFromUrl(PROP_FIELDS,dflt);
 	},
 	transientProperties:{},
-	xxcnt:0,
+	getPropertyCounts:{},
+	priorProps:{},
         getProperty: function(key, dflt, skipThis, skipParent) {
 	    let debug = false;
-//	    if(key=="species.showFilterTags") debug = true;
+	    if(!this.getPropertyCounts[key]) {
+		this.getPropertyCounts[key]=0;
+//		debug = true;
+	    }
+//	    if(key=="gridlines.color") debug = true;
 	    if(typeof this.transientProperties[key]!='undefined') {
-		if(debug)
-		    console.log("transient:" + key);
-		return this.transientProperties[key];
+		if(debug) {
+		    console.log("getProperty:" + key +"  dflt:"+ dflt +" transient:" + this.transientProperties[key]);
+		}
+		let value =  this.transientProperties[key];
+		/*
+		if(this.priorProps[key]) {
+		    if(this.priorProps[key]  !=dflt)	console.log("prior:" + key +"  dflt:"+ dflt +" transient:" + this.transientProperties[key]);
+		} 
+		*/
+		return value;
 	    }
 
-	    if(debug)
-		console.log("getProperty:" + key +" dflt:" + dflt);
-
-	    if(this.debugGetProperty)
-		console.log("\tgetProperty:" + key);
+	    debug|=this.debugGetProperty;
+	    this.getPropertyCount++;
+	    this.getPropertyCounts[key]++;
+//	    debug = this.getPropertyCounts[key]==1;
+//	    if(debug)
+//		console.log("getProperty:" + key +"  dflt:"+ dflt);
 	    let value =  this.getPropertyInner(key,null,skipThis, skipParent);
-
-	    if(this.debugGetProperty)
-		console.log("\tgot:" + value);
+	    if(debug) 
+		console.log("getProperty:" + key +"  dflt:"+ dflt +" got:" + value);
 	    if(this.writePropertyDef!=null) {
 		if(!this.seenWriteProperty) this.seenWriteProperty = {};
 		if(!this.seenWriteProperty[key]) {
@@ -1143,16 +1154,16 @@ function DisplayThing(argId, argProperties) {
 		    this.seenWriteProperty[key] = true;
 		}
 	    }
-	    if(debug)
-		console.log(key +":" + value +" dflt:" + dflt);
 	    if(!Utils.isDefined(value)) {
-		if(this.debugGetProperty)
-		    console.log("\treturning dflt:" + dflt);
-		return dflt;
+//		if(debug)  console.log("\treturning dflt:" + dflt);
+		value= dflt;
 	    }
-	    if(this.debugGetProperty)
-		console.log("\treturning value:" + value);
-	    this.transientProperties[key]  = value;	    
+	    if(this.getPropertyCounts[key]>10) {
+		//If we keep calling getProperty then set the transient property so on the next call we don't take the full hit
+		this.transientProperties[key]  = Utils.isDefined(value)?value:null;
+	    }
+//	    if(debug)console.log("\treturning value:" + value);
+//	    this.priorProps[key] = value;
 	    return value;
 	},
         getPropertyInner: function(keys, dflt,skipThis, skipParent) {	    
@@ -7893,3 +7904,18 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
     })
 }
 
+
+/*
+let foo={bar:{}};
+let key = "";
+let times = [];
+let z=0;
+times.push(new Date());
+for(let i=0;i<100000;i++) {
+    if(typeof foo.bar[key]!='undefined') {
+	z++;
+    }
+}
+times.push(new Date());
+Utils.displayTimes("time",times);
+<*/
