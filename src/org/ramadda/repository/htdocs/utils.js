@@ -1557,20 +1557,25 @@ var Utils =  {
 	}
     },
 
+    numberToString:null,
     roundDecimals: function(value, decimals,debug) {
-	let s = value.toLocaleString('fullwide', { useGrouping: false });
+	//create the NumberFormat for better performance
+	if(this.numberToString==null) {
+	    this.numberToString = new Intl.NumberFormat('fullwide',{ useGrouping: false });
+	}
+//	let s = value.toLocaleString('fullwide', { useGrouping: false });
+	let s = this.numberToString.format(value);
 	let v =  Number(Math.round(s+'e'+decimals)+'e-'+decimals);
 	if(debug)
 	    console.log("decimals:" +s +" " + Math.round(s+'e'+decimals));
 	return v;
     },
     formatNumber: function(number, toFloat,debug) {
-        var s = this.formatNumberInner(number,debug);
+        let s = this.formatNumberInner(number,debug);
         if (toFloat) return parseFloat(s);
 	return s;
     },
     formatNumberInner: function(number,debug) {
-
         var anumber = Math.abs(number);
         if (anumber == Math.floor(anumber)) return String(number);
         if (anumber > 1000) {
@@ -4983,6 +4988,7 @@ function TextMatcher (pattern) {
 function number_format(number, decimals,debug) {
     let negative = number<0;
     let n = Utils.roundDecimals(number,decimals,false && debug);
+
     let i;
     if(negative) {
 	i = Math.ceil(n);
@@ -5167,36 +5173,6 @@ $( document ).ready(function() {
     HU.documentReady = true;
     Utils.checkForResize();
 });
-
-
-/*****
-let v = "foo=bar a=2  \n a=\"x\" bar  car zooo=\"asdsad\nasdsds\"  "
-v = "addPoints=true\n"+
-    "hideFilterWidget=\"true\nfalse\" \n"+    
-    "radius=4\n"+
-    "scaleRadius=true\n"+
-    "fillColor=#800080\n"+
-    "strokeWidth=0\n"
-let attrs = Utils.parseAttributesAsList(v);
-console.log("v:" + v);
-attrs.forEach(l=>{
-    console.log("l:" + l);
-});
-
-****/
-
-
-
-/*
-let dttm  =new Date();
-["yyyymmdd", "yyyy-mm-dd",  "yyyymmddhh","yyyymmddhhmm", "yyyymm", "yearmonth", "monthdayyear", "monthday", "mon_day", "mdy", "hhmm"].forEach(fmt=>{
-    let d1 =  Utils.formatDateWithFormat(dttm,fmt);
-    let d2 =  dttm.format(fmt);
-    console.log("d1:" + d1 +"    d2:" + d2);
-});
-*/
-
-
 
 
 
