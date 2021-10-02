@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,11 +21,11 @@ import org.ramadda.repository.auth.User;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.output.PageStyle;
-import org.ramadda.repository.util.RequestArgument;
 import org.ramadda.repository.type.TypeHandler;
+import org.ramadda.repository.util.RequestArgument;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Utils;
 import org.ramadda.util.SelectionRectangle;
+import org.ramadda.util.Utils;
 
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
@@ -67,7 +67,9 @@ public class Request implements Constants, Cloneable {
 
     /** _more_ */
     public static final RequestArgument[] AREA_NWSE = { REQUESTARG_NORTH,
-            REQUESTARG_WEST, REQUESTARG_SOUTH, REQUESTARG_EAST };
+                                                        REQUESTARG_WEST,
+                                                        REQUESTARG_SOUTH,
+                                                        REQUESTARG_EAST };
 
 
 
@@ -116,7 +118,9 @@ public class Request implements Constants, Cloneable {
     //    private Entry collectionEntry;
 
     private Entry rootEntry;
-    private Entry currentEntry;    
+
+    /** _more_ */
+    private Entry currentEntry;
 
     /** _more_ */
     private HttpServletRequest httpServletRequest;
@@ -313,7 +317,7 @@ public class Request implements Constants, Cloneable {
      */
     public String getSession(String key, String dflt) throws Exception {
         return (String) getRepository().getSessionManager()
-            .getSessionProperty(this, key, dflt);
+        .getSessionProperty(this, key, dflt);
     }
 
     /**
@@ -360,7 +364,8 @@ public class Request implements Constants, Cloneable {
     public void putSessionIfDefined(String key, String prefix) {
         try {
             getRepository().getSessionManager().putSessionProperty(this,
-                    prefix + key, getString(key, ""));
+                    prefix + key, getString(key,
+                                            ""));
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
@@ -455,8 +460,9 @@ public class Request implements Constants, Cloneable {
      */
     public void setReturnFilename(String filename) {
         filename = filename.replaceAll(" ", "_");
-	//httpServletResponse.setHeader("Content-disposition",  "attachment; filename=" + filename);
-	httpServletResponse.setHeader("Content-disposition",  "filename=" + filename);	
+        //httpServletResponse.setHeader("Content-disposition",  "attachment; filename=" + filename);
+        httpServletResponse.setHeader("Content-disposition",
+                                      "filename=" + filename);
     }
 
 
@@ -794,8 +800,8 @@ public class Request implements Constants, Cloneable {
      */
     public String getUrl(HashSet<String> exceptArgs,
                          HashSet<String> exceptValues) {
-        return checkUrl(getRequestPath() + "?"
-                        + getUrlArgs(exceptArgs, exceptValues));
+        return checkUrl(getRequestPath() + "?" + getUrlArgs(exceptArgs,
+                exceptValues));
     }
 
     /**
@@ -942,8 +948,8 @@ public class Request implements Constants, Cloneable {
                              String exceptArgsPattern) {
 
 
-	//	System.err.println("getUrlArgs");
-	if (exceptArgs == null) {
+        //      System.err.println("getUrlArgs");
+        if (exceptArgs == null) {
             exceptArgs = new HashSet<String>();
         }
         //Just in case, never want to let slip the passwords
@@ -978,12 +984,14 @@ public class Request implements Constants, Cloneable {
                 }
                 for (int i = 0; i < l.size(); i++) {
                     String svalue = (String) l.get(i);
-                    if (svalue.length() == 0 || svalue.equals(TypeHandler.ALL)) {
+                    if ((svalue.length() == 0)
+                            || svalue.equals(TypeHandler.ALL)) {
                         continue;
                     }
-		    if ((exceptValues != null) && (exceptValues.contains(svalue))) {
-			continue;
-		    }
+                    if ((exceptValues != null)
+                            && (exceptValues.contains(svalue))) {
+                        continue;
+                    }
 
                     if (cnt++ > 0) {
                         sb.append("&");
@@ -994,13 +1002,13 @@ public class Request implements Constants, Cloneable {
                 continue;
             }
             String svalue = value.toString();
-	    if (svalue.length() == 0 || svalue.equals(TypeHandler.ALL)) {
+            if ((svalue.length() == 0) || svalue.equals(TypeHandler.ALL)) {
                 continue;
             }
-	    if ((exceptValues != null) && (exceptValues.contains(svalue))) {
-		continue;
-	    }
-	    //	    System.err.println("\targ:" + arg+" v:" + svalue);
+            if ((exceptValues != null) && (exceptValues.contains(svalue))) {
+                continue;
+            }
+            //      System.err.println("\targ:" + arg+" v:" + svalue);
             if (cnt++ > 0) {
                 sb.append("&");
             }
@@ -1398,10 +1406,12 @@ public class Request implements Constants, Cloneable {
         }
         List tmp = new ArrayList();
         if (result instanceof List) {
-	    tmp.addAll((List) result);
+            tmp.addAll((List) result);
+
             return tmp;
         }
         tmp.add(result);
+
         return tmp;
     }
 
@@ -1667,7 +1677,7 @@ public class Request implements Constants, Cloneable {
             //checker =  Pattern.compile(repository.getProperty(PROP_REQUEST_PATTERN));
         }
 
-	//	if(key.equals("dbsortdir1")) System.err.println("getString:\n"+ Utils.getStack(5));
+        //      if(key.equals("dbsortdir1")) System.err.println("getString:\n"+ Utils.getStack(5));
         return getCheckedString(key, dflt, checker);
     }
 
@@ -1692,11 +1702,22 @@ public class Request implements Constants, Cloneable {
     }
 
 
+    /**
+     * Get rid of badness in request strings
+     *
+     * @param v   the string
+     *
+     * @return  the cleaned string.
+     */
     public static String cleanupInput(String v) {
-	//The (?i) is a case insensitive directive
-	v = v.replaceAll("(?i)(script)", "_$1_");
-	v = v.replaceAll("(?i)(src)(" + Utils.WHITESPACE_CHARCLASS+"*=)","_$1_$2");
-	return v;
+        //The (?i) is a case insensitive directive
+        v = v.replaceAll("(?i)(script)", "_$1_");
+        v = v.replaceAll("(?i)(src)(" + Utils.WHITESPACE_CHARCLASS + "*=)",
+                         "_$1_$2");
+        v = v.replaceAll("(?i)(onclick)(" + Utils.WHITESPACE_CHARCLASS
+                         + "*=)", "_$1_$2");
+
+        return v;
     }
 
     /**
@@ -1931,7 +1952,8 @@ public class Request implements Constants, Cloneable {
             return dflt;
         }
         String llString = (String) getString(from, "").trim();
-        if ((llString == null) || (llString.length() == 0)
+        if ((llString == null)
+                || (llString.length() == 0)
                 || (llString.startsWith("${"))) {
             return dflt;
         }
@@ -1959,7 +1981,8 @@ public class Request implements Constants, Cloneable {
         }
         String llString = (String) getString(from, "").trim();
         //        System.err.println("\tllstring:" + llString);
-        if ((llString == null) || (llString.length() == 0)
+        if ((llString == null)
+                || (llString.length() == 0)
                 || (llString.startsWith("${"))) {
             return dflt;
         }
@@ -2138,7 +2161,7 @@ public class Request implements Constants, Cloneable {
             dflt = new Date();
         }
         Date[] range = Utils.getDateRange(fromDate, toDate, dflt);
-	//	System.err.println("from:" + fromDate +" to:" + toDate + " fd:" + range[0] +" td:" + range[1]);
+        //      System.err.println("from:" + fromDate +" to:" + toDate + " fd:" + range[0] +" td:" + range[1]);
 
         //        System.err.println("dateRange:" + fromDate + " date:" + range[0]);
         return range;
@@ -2330,27 +2353,39 @@ public class Request implements Constants, Cloneable {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getKeys() {
-        StringBuilder sb      = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         for (Enumeration keys = parameters.keys(); keys.hasMoreElements(); ) {
             sb.append((String) keys.nextElement());
-	    sb.append("\n");
+            sb.append("\n");
         }
-	return sb.toString();
+
+        return sb.toString();
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getDebug() {
-        StringBuilder sb      = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         for (Enumeration keys = parameters.keys(); keys.hasMoreElements(); ) {
-	    Object key = keys.nextElement();
+            Object key = keys.nextElement();
             sb.append((String) key);
-	    sb.append("=");
-	    sb.append(parameters.get(key));
-	    sb.append("\n");
+            sb.append("=");
+            sb.append(parameters.get(key));
+            sb.append("\n");
         }
-	return sb.toString();
+
+        return sb.toString();
     }
-    
+
 
 
 
@@ -2684,15 +2719,23 @@ public class Request implements Constants, Cloneable {
         extraProperties.put(key, value);
     }
 
+    /**
+     * _more_
+     *
+     * @param prefix _more_
+     *
+     * @return _more_
+     */
     public String getUniqueId(String prefix) {
-	Integer base = (Integer) extraProperties.get("uniquebase");
-	if(base==null) {
-	    base = new Integer(0);
-	    extraProperties.put("uniquebase", base);
-	}
-	base = base.intValue()+1;
-	extraProperties.put("uniquebase", base);
-	return prefix+base;
+        Integer base = (Integer) extraProperties.get("uniquebase");
+        if (base == null) {
+            base = new Integer(0);
+            extraProperties.put("uniquebase", base);
+        }
+        base = base.intValue() + 1;
+        extraProperties.put("uniquebase", base);
+
+        return prefix + base;
     }
 
 
@@ -2731,8 +2774,6 @@ public class Request implements Constants, Cloneable {
 
     /**
      * _more_
-     *
-     * @param head _more_
      *
      * @param s _more_
      */
@@ -3074,39 +3115,37 @@ public class Request implements Constants, Cloneable {
 
 
     /**
-       Set the CurrentEntry property.
-
-       @param value The new value for CurrentEntry
-    **/
-    public void setCurrentEntry (Entry value) {
-	currentEntry = value;
+     *  Set the CurrentEntry property.
+     *
+     *  @param value The new value for CurrentEntry
+     */
+    public void setCurrentEntry(Entry value) {
+        currentEntry = value;
     }
 
     /**
-       Get the CurrentEntry property.
-
-       @return The CurrentEntry
-    **/
-    public Entry getCurrentEntry () {
-	return currentEntry;
+     *  Get the CurrentEntry property.
+     *
+     *  @return The CurrentEntry
+     */
+    public Entry getCurrentEntry() {
+        return currentEntry;
     }
 
 
     /**
      * _more_
      *
-     * @param request The request
-     *
      * @return _more_
      */
-    public  SelectionRectangle getSelectionBounds() {
+    public SelectionRectangle getSelectionBounds() {
         String[] argPrefixes = { ARG_AREA, ARG_BBOX };
         double[] bbox = { Double.NaN, Double.NaN, Double.NaN, Double.NaN };
         for (String argPrefix : argPrefixes) {
             if (defined(argPrefix)) {
-                List<String> toks =
-                    Utils.split(getString(argPrefix, ""), ",",
-				true, true);
+                List<String> toks = Utils.split(getString(argPrefix,
+                                                          ""), ",", true,
+                                                              true);
                 //n,w,s,e
                 if (toks.size() == 4) {
                     for (int i = 0; i < 4; i++) {
@@ -3127,20 +3166,18 @@ public class Request implements Constants, Cloneable {
     }
 
 
-    
+
     /**
      * _more_
      *
-     *
-     * @param request _more_
+     * @param arg _more_
      * @return _more_
      */
     public List<String> getArgs(RequestArgument arg) {
-	List<String> args = arg.getArgs();
-	String argsProperty = arg.getProperty();
+        List<String> args         = arg.getArgs();
+        String       argsProperty = arg.getProperty();
         if (args == null) {
-            args = Utils.split(
-			       getRepository().getProperty(argsProperty, ""));
+            args = Utils.split(getRepository().getProperty(argsProperty, ""));
         }
 
         return args;
@@ -3157,14 +3194,13 @@ public class Request implements Constants, Cloneable {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-	if(args.length==0) {
-	    args = new String[]{
-		"script","Script","src=http","src \n=http","src\t\t\n\r=http"
-	    };
-	}
-	for(String s: args) {
-	    System.err.println("value:" + s +" cleaned:" +  cleanupInput(s));
-	}
+        if (args.length == 0) {
+            args = new String[] { "script", "Script", "src=http",
+                                  "src \n=http", "src\t\t\n\r=http" };
+        }
+        for (String s : args) {
+            System.err.println("value:" + s + " cleaned:" + cleanupInput(s));
+        }
     }
 
 
