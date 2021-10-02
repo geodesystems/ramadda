@@ -1553,7 +1553,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	},
 
 	doTags:function() {
-	    if(!this.getProperty(this.getId()+".showFilterTags",true)) return false;
+	    if(this.getProperty(this.getId()+".showFilterTags")===false) return false;
 	    let tags =  this.getProperty(this.getId()+".showFilterTags") || this.getProperty("showFilterTags");
 	    return tags;
 	},

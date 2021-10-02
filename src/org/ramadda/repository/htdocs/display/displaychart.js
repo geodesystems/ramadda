@@ -305,7 +305,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    if(debug)
 		console.log("\tcalling displayData");
 	    if(args.dataFilterChanged) {
-		this.setDisplayMessage("Creating display...");
+		this.setDisplayMessage(this.getLoadingMessage());
 		setTimeout(()=>{
 		    this.displayData(args.reload, debug);
 		},1);
@@ -983,6 +983,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    return trendlinesInfo;
 	},
         makeDataTable: function(dataList, props, selectedFields, chartOptions) {
+	    this.getPropertyCount=0;
+	    this.getPropertyCounts={};
+
 	    let dateType = this.getProperty("dateType","date");
 	    let debug =    false || displayDebug.makeDataTable;
 	    let debugRows = 4;
@@ -1234,7 +1237,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 
 	    let annotationCnt=0;
-
+	    let times = [new Date()];
 	    let records = [];
             for (let i = 1; i < dataList.length; i++) {
 		records.push(dataList[i].record);
@@ -1260,33 +1263,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 }
 
                 row = row.slice(0);
-                let label = "";
-                if (theRecord) {
-                    for (let j = 0; j < tooltipFields.length; j++) {
-                        label += "<b>" + tooltipFields[j].getLabel() + "</b>: " +
-                            theRecord.getValue(tooltipFields[j].getIndex()) + "<br>";
-                    }
-		}
-		let tooltip = "";
-                tooltip += label;
-                for (let j = 0; j < row.length; j++) {
-		    if (j > 0)
-                        tooltip += "<br>";
-		    label = header[j].replace(/ /g, "&nbsp;");
-		    value = row[j];
-		    if (!Utils.isDefined(value)) value = "NA";
-		    if (value && (typeof value) == "object") {
-                        if (value.f) {
-			    value = value.f;
-                        }
-		    }
-		    if (Utils.isNumber(value)) {
-                        value = this.formatNumber(value);
-		    }
-		    value = "" + value;
-		    value = value.replace(/ /g, SPACE);
-		    tooltip += HU.b(label) + ":" + SPACE + value;
-                }
+
 
                 let newRow = [];
 		if(debug && rowIdx<debugRows)
@@ -1346,8 +1323,35 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 
 		if(addTooltip) {
+		    let tooltip = "";
 		    if(tt) {
 			tooltip  = this.getRecordHtml(theRecord,null,tt);
+		    } else {
+			let label = "";
+			if (theRecord) {
+			    for (let j = 0; j < tooltipFields.length; j++) {
+				label += "<b>" + tooltipFields[j].getLabel() + "</b>: " +
+				    theRecord.getValue(tooltipFields[j].getIndex()) + "<br>";
+			    }
+			}
+			tooltip += label;
+			for (let j = 0; j < row.length; j++) {
+			    if (j > 0)
+				tooltip += "<br>";
+			    label = header[j].replace(/ /g, "&nbsp;");
+			    value = row[j];
+			    if (!Utils.isDefined(value)) value = "NA";
+			    if (value && value.f) {
+				value = value.f;
+			    }
+			    
+			    if (Utils.isNumber(value)) {
+				value = this.formatNumber(value);
+			    }
+			    value = "" + value;
+			    value = value.replace(/ /g, SPACE);
+			    tooltip += HU.b(label) + ":" + SPACE + value;
+			}
 		    }
 		    tooltip = HU.div([STYLE,HU.css('padding','8px')],tooltip);
                     newRow.push(tooltip);
@@ -1425,7 +1429,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    if(debug)
 		console.log("#rows:" + justData.length);
 
-
+	    times.push(new Date());
             dataTable.addRows(justData);
             if (didColorBy) {
 		colorBy.displayColorTable();
@@ -1438,6 +1442,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		chartOptions.trendlines = this.makeTrendlinesInfo(dataTable);
 	    }
 
+/*
+	       if(this.type=="table") {
+		   Utils.displayTimes("makeDataTable",times,true);
+//	       console.log(this.type+" records:" + dataList.length);
+//	       for(a in this.getPropertyCounts)if(this.getPropertyCounts[a]>10) console.log("\t"+ a +"=" + this.getPropertyCounts[a]);
+	       }
+*/
             return dataTable;
         },
         makeChartOptions: function(dataList, props, selectedFields) {
@@ -1516,16 +1527,14 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             this.setPropertyOn(chartOptions.chartArea.backgroundColor, "chartArea.stroke", "stroke", null);
             this.setPropertyOn(chartOptions.chartArea.backgroundColor, "chartArea.strokeWidth", "strokeWidth", null);
 
-	    let minorGridLinesColor = this.getProperty("minorGridLines.color",this.getProperty("gridlines.color", lineColor||"transparent"));
-            this.setPropertyOn(chartOptions.hAxis.gridlines, "hAxis.gridlines.color", "color", this.getProperty("gridlines.color", lineColor));
+	    let minorGridLinesColor = this.getProperty("minorGridLines.color",this.getProperty("gridlines.color")||lineColor||"transparent");
+            this.setPropertyOn(chartOptions.hAxis.gridlines, "hAxis.gridlines.color", "color", this.getProperty("gridlines.color")|| lineColor);
 	    this.setPropertyOn(chartOptions.hAxis.minorGridlines, "hAxis.minorGridlines.color", "color", minorGridLinesColor);
 
-	    this.setPropertyOn(chartOptions.hAxis, "hAxis.baselineColor", "baselineColor", this.getProperty("baselineColor", lineColor));	    
-
-            this.setPropertyOn(chartOptions.vAxis.gridlines, "vAxis.gridlines.color", "color", this.getProperty("gridlines.color", lineColor));
+	    this.setPropertyOn(chartOptions.hAxis, "hAxis.baselineColor", "baselineColor", this.getProperty("baselineColor")|| lineColor);	    
+            this.setPropertyOn(chartOptions.vAxis.gridlines, "vAxis.gridlines.color", "color", this.getProperty("gridlines.color")|| lineColor);
 	    this.setPropertyOn(chartOptions.vAxis.minorGridlines, "vAxis.minorGridlines.color", "color",  minorGridLinesColor);
-	    this.setPropertyOn(chartOptions.vAxis, "vAxis.baselineColor", "baselineColor", this.getProperty("baselineColor", lineColor));
-
+	    this.setPropertyOn(chartOptions.vAxis, "vAxis.baselineColor", "baselineColor", this.getProperty("baselineColor")|| lineColor);
 
             let textColor = this.getProperty("textColor", "#000");
 	    let textBold = this.getProperty("textBold", "false");
@@ -1542,12 +1551,16 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             this.setPropertyOn(chartOptions.vAxis.titleTextStyle, "vAxis.text.color", "color", textColor);
             this.setPropertyOn(chartOptions.legend.textStyle, "legend.text.color", "color", textColor);
 
-	    if(this.getProperty("hAxis.ticks") || this.getProperty("hAxis.ticks")=="")  {
+	    let prop;
+	    prop = this.getProperty("hAxis.ticks");
+	    if(prop || prop=="")  {
 		chartOptions.hAxis.ticks  = Utils.split(this.getProperty("hAxis.ticks"),",",true,true);
 	    }
-	    if(this.getProperty("vAxis.ticks") || this.getProperty("vAxis.ticks")=="")  {
+	    prop = this.getProperty("vAxis.ticks");
+	    if(prop || prop=="")  {
 		chartOptions.vAxis.ticks  = Utils.split(this.getProperty("vAxis.ticks"),",",true,true);
 	    }
+//	    console.log("ticks:" + chartOptions.vAxis.ticks);
 
 
             if (this.fontSize > 0) {
@@ -1739,7 +1752,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 return;
             }
             this.chartOptions = this.makeChartOptions(dataList, props, selectedFields);
-
 	    this.chartOptions.bar = {groupWidth:"95%"}
             if (!Utils.isDefined(this.chartOptions.height)) {
                 this.chartOptions.height = "100%";
@@ -1818,7 +1830,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 	},
 	makeGoogleChartInner: function(dataList, chartId, props, selectedFields) {
-//	    chartId="xx"
+
 	    let chartDiv = document.getElementById(chartId);
 	    if(!chartDiv) {
 		console.log(this.type+".makeGoogleChart: no chart div found:" + chartId);
@@ -1870,7 +1882,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			['2030', 28, 19]
 		    ]);
 
-		    
 		    chart.draw(this.useTestData?testData:dataTable, this.chartOptions);
 		} catch(err) {
 		    this.setErrorMessage("Error creating chart: " + err);
@@ -2718,7 +2729,7 @@ function WordtreeDisplay(displayManager, id, properties) {
                             if (bucketLabels && i <= bucketLabels.length)
                                 label = bucketLabels[bucketIdx - 1];
                             else
-                                label = Utils.formatNumber(prevValue, true) + "-" + Utils.formatNumber(v, true);
+                                label =this.formatNumber(prevValue) + "-" + this.formatNumber(v);
                             buckets.push({
                                 min: prevValue,
                                 max: v,
@@ -2735,7 +2746,7 @@ function WordtreeDisplay(displayManager, id, properties) {
                     for (let bucketIdx = 0; bucketIdx < numBuckets; bucketIdx++) {
                         let r1 = column.min + (bucketIdx * step);
                         let r2 = column.min + ((bucketIdx + 1) * step);
-                        let label = Utils.formatNumber(r1, true) + "-" + Utils.formatNumber(r2, true);
+			let label = this.formatNumber(r1) + "-" + this.formatNumber(r2);
                         buckets.push({
                             min: r1,
                             max: r2,
@@ -2957,11 +2968,6 @@ function TableDisplay(displayManager, id, properties) {
 	},
 	getFormatNumbers: function() {
 	    return true;
-	},
-	formatNumber: function(n) {
-	    if(isNaN(n))
-                return this.getProperty("nanValue", "--");
-	    return SUPER.formatNumber.call(this, n);
 	},
         xxxxmakeDataTable: function(dataList, props, selectedFields) {
             let rows = this.makeDataArray(dataList);
