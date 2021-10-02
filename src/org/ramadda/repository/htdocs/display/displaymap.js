@@ -108,6 +108,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'showLayers',d:true,ex:'false'},
 	{p:'locations',ex:'usairports.json,usstates.json'},
 	{p:'highlightColor',ex:'#ccc',tt:''},
+	{p:'highlightFillColor',ex:'#ccc',tt:''},	
 	{p:'highlightStrokeWidth',ex:'2',tt:''},	
 ];
     
