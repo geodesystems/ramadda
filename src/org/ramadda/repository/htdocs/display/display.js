@@ -547,9 +547,6 @@ function DisplayThing(argId, argProperties) {
         getUniqueId: function(base) {
             return HU.getUniqueId(base);
         },
-        handleError: function(code, message) {
-            GuiUtils.handleError("An error has occurred:" + message, true, true);
-        },
         toString: function() {
             return "DisplayThing:" + this.getId();
         },
@@ -3161,8 +3158,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    try {
 		pointData = new CsvUtil().process(this, pointData, this.getProperty("convertData"));
 	    } catch(exc) {
-		this.setErrorMessage(exc);
-		//		console.log(exc.trace);
+		this.handleError("Error:" + exc, exc);
 		return null;
 	    }
 
@@ -5173,9 +5169,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    this.haveCalledUpdateUI = false;
 		this.updateUI(args);
 	    } catch(err) {
-                this.setContents(this.getMessage(err));
-		console.log("Error:" + err);
-		console.log(err.stack);
+		this.handleError("Error:" + err,err);
 	    }
 	},
         updateUI: function(args) {
@@ -5195,8 +5189,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let e1 = this.getProperty("extraFields1","");
 	    let e2 = this.getProperty("extraFields2","");
 	    let list = Utils.mergeLists(e1.split(","),p.split(","),e2.split(","));
-	    if(p!="")
-		console.log("requestFields=" + p);
+//	    if(p!="")console.log("requestFields=" + p);
 	    list.forEach(macro=>{
 		if(macro=="") return;
 		macros.push(new RequestMacro(this, macro));
@@ -6473,6 +6466,23 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.addEntry(entry);
             }
         },
+        handleError: function(message, exc) {
+	    this.setErrorMessage(message);
+            console.error(this.type +" " + message);
+	    if(exc && exc.stack) {
+		let err = "";
+		let limit=15;
+		exc.stack.split("\n").every(line=>{
+		    if(limit--<0) {
+			err+="...\n";
+			return false;
+		    }
+		    err+=line+"\n";
+		    return true;
+		});
+		console.error(err);
+	    }
+        },
 	setErrorMessage: function(msg) {
             this.setContents(this.getMessage(msg));
 	},
@@ -6706,8 +6716,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    this.updateUI({reload:reload});
 		}
 	    } catch(err) {
-                this.displayError("Error creating display:<br>" + err);
-		console.log(err);
+		this.handleError("Error creating display:<br>" + err,err);
 		return;
 	    }
             if (!reload) {
@@ -7702,9 +7711,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
 		try {
                     display.initDisplay();
 		} catch (e) {
-                    display.displayError("Error creating display:<br>" + e);
-                    console.log("error creating display: " + display.type);
-                    console.log(e.stack)
+		    display.handleError("Error creating display:<br>" + e,e);
 		}
             });
 	},

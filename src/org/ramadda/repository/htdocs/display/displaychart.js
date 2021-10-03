@@ -783,7 +783,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		this.clearDisplayMessage();
                 this.makeGoogleChart(dataList, props, selectedFields);
             } catch (e) {
-		console.log(this.type+" Error making chart:\n" + e +"\n" + e.stack);
+		this.handleError("Error making chart:" + e,e);
                 return;
             }
             let container = this.jq(ID_CHART);
@@ -1714,9 +1714,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    try {
 		this.doMakeGoogleChartInner(dataList,props,selectedFields);
 	    } catch(err) {
-		this.setErrorMessage("Error creating chart: " + err);
-		console.log(this.type+ " Error creating chart:" + err);
-		console.log(err.stack);
+		this.handleError("Error creating chart: " + err, err);
 	    }
 	},
 	setAxisRanges: function(chartOptions, selectedFields, records) {
@@ -1884,9 +1882,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 		    chart.draw(this.useTestData?testData:dataTable, this.chartOptions);
 		} catch(err) {
-		    this.setErrorMessage("Error creating chart: " + err);
-		    console.log(this.type+ " Error creating chart:" + err);
-		    console.log(err.stack);
+		    this.handleError("Error creating chart:" + err,err);
 		    return null;
 		}
 	    }

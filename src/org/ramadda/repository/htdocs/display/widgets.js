@@ -1492,14 +1492,14 @@ ColorByInfo.prototype = {
 	let index=0;
 	if(this.steps) {
 	    for(;index<this.steps.length;index++) {
-		if(v<=this.steps[index]) {
+		if(value<=this.steps[index]) {
 		    break;
 		}
 	    }
 	} else {
 	    index = parseInt(percent * this.colors.length);
 	}
-//	console.log("v:" + v +" index:" + index +" colors:" + this.colors);
+//	console.log("v:" + value +" index:" + index +" colors:" + this.colors);
         if (index >= this.colors.length) index = this.colors.length - 1;
         else if (index < 0) index = 0;
 	if(this.stringMap) {

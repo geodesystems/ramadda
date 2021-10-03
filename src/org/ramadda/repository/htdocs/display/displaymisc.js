@@ -437,7 +437,7 @@ function RamaddaTreeDisplay(displayManager, id, properties) {
 	    try {
 		roots = this.makeTree(records);
 	    } catch(error) {
-                this.setDisplayMessage(error.toString());
+                this.handleError("An error has occurred:" + error, error);
 		return;
 	    }
 
@@ -558,7 +558,7 @@ function OrgchartDisplay(displayManager, id, properties) {
 	    try {
 		roots = this.makeTree();
 	    } catch(error) {
-                this.setDisplayMessage(error.toString());
+		this.handleError("An error has occurred:" + error, error);
 		return;
 	    }
 	    if(roots==null) return;
