@@ -1492,14 +1492,14 @@ ColorByInfo.prototype = {
 	let index=0;
 	if(this.steps) {
 	    for(;index<this.steps.length;index++) {
-		if(v<=this.steps[index]) {
+		if(value<=this.steps[index]) {
 		    break;
 		}
 	    }
 	} else {
 	    index = parseInt(percent * this.colors.length);
 	}
-//	console.log("v:" + v +" index:" + index +" colors:" + this.colors);
+//	console.log("v:" + value +" index:" + index +" colors:" + this.colors);
         if (index >= this.colors.length) index = this.colors.length - 1;
         else if (index < 0) index = 0;
 	if(this.stringMap) {
@@ -3579,9 +3579,6 @@ function DisplayThing(argId, argProperties) {
         },
         getUniqueId: function(base) {
             return HU.getUniqueId(base);
-        },
-        handleError: function(code, message) {
-            GuiUtils.handleError("An error has occurred:" + message, true, true);
         },
         toString: function() {
             return "DisplayThing:" + this.getId();
@@ -6194,8 +6191,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    try {
 		pointData = new CsvUtil().process(this, pointData, this.getProperty("convertData"));
 	    } catch(exc) {
-		this.setErrorMessage(exc);
-		//		console.log(exc.trace);
+		this.handleError("Error:" + exc, exc);
 		return null;
 	    }
 
@@ -8206,9 +8202,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    this.haveCalledUpdateUI = false;
 		this.updateUI(args);
 	    } catch(err) {
-                this.setContents(this.getMessage(err));
-		console.log("Error:" + err);
-		console.log(err.stack);
+		this.handleError("Error:" + err,err);
 	    }
 	},
         updateUI: function(args) {
@@ -8228,8 +8222,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let e1 = this.getProperty("extraFields1","");
 	    let e2 = this.getProperty("extraFields2","");
 	    let list = Utils.mergeLists(e1.split(","),p.split(","),e2.split(","));
-	    if(p!="")
-		console.log("requestFields=" + p);
+//	    if(p!="")console.log("requestFields=" + p);
 	    list.forEach(macro=>{
 		if(macro=="") return;
 		macros.push(new RequestMacro(this, macro));
@@ -9506,6 +9499,23 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.addEntry(entry);
             }
         },
+        handleError: function(message, exc) {
+	    this.setErrorMessage(message);
+            console.error(this.type +" " + message);
+	    if(exc && exc.stack) {
+		let err = "";
+		let limit=15;
+		exc.stack.split("\n").every(line=>{
+		    if(limit--<0) {
+			err+="...\n";
+			return false;
+		    }
+		    err+=line+"\n";
+		    return true;
+		});
+		console.error(err);
+	    }
+        },
 	setErrorMessage: function(msg) {
             this.setContents(this.getMessage(msg));
 	},
@@ -9739,8 +9749,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    this.updateUI({reload:reload});
 		}
 	    } catch(err) {
-                this.displayError("Error creating display:<br>" + err);
-		console.log(err);
+		this.handleError("Error creating display:<br>" + err,err);
 		return;
 	    }
             if (!reload) {
@@ -10735,9 +10744,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
 		try {
                     display.initDisplay();
 		} catch (e) {
-                    display.displayError("Error creating display:<br>" + e);
-                    console.log("error creating display: " + display.type);
-                    console.log(e.stack)
+		    display.handleError("Error creating display:<br>" + e,e);
 		}
             });
 	},
@@ -12183,7 +12190,9 @@ function PointData(name, recordFields, records, url, properties) {
 		let root = String(window.location).replace(/\/[^\/]+$/,"");
 		url = root + "/" + url;
 	    }
-	    console.log(display.type+" load point data:" + url);
+	    if(!window.location.hash  || window.location.hash!="#fortest") {
+		console.log(display.type+" load point data:" + url);
+	    }
             Utils.doFetch(url, success,fail,null);	    
 //            var jqxhr = $.getJSON(url, success,{crossDomain:true}).fail(fail);
         }
@@ -16642,7 +16651,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		this.clearDisplayMessage();
                 this.makeGoogleChart(dataList, props, selectedFields);
             } catch (e) {
-		console.log(this.type+" Error making chart:\n" + e +"\n" + e.stack);
+		this.handleError("Error making chart:" + e,e);
                 return;
             }
             let container = this.jq(ID_CHART);
@@ -17573,9 +17582,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    try {
 		this.doMakeGoogleChartInner(dataList,props,selectedFields);
 	    } catch(err) {
-		this.setErrorMessage("Error creating chart: " + err);
-		console.log(this.type+ " Error creating chart:" + err);
-		console.log(err.stack);
+		this.handleError("Error creating chart: " + err, err);
 	    }
 	},
 	setAxisRanges: function(chartOptions, selectedFields, records) {
@@ -17743,9 +17750,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 		    chart.draw(this.useTestData?testData:dataTable, this.chartOptions);
 		} catch(err) {
-		    this.setErrorMessage("Error creating chart: " + err);
-		    console.log(this.type+ " Error creating chart:" + err);
-		    console.log(err.stack);
+		    this.handleError("Error creating chart:" + err,err);
 		    return null;
 		}
 	    }
@@ -40692,7 +40697,7 @@ function RamaddaTreeDisplay(displayManager, id, properties) {
 	    try {
 		roots = this.makeTree(records);
 	    } catch(error) {
-                this.setDisplayMessage(error.toString());
+                this.handleError("An error has occurred:" + error, error);
 		return;
 	    }
 
@@ -40813,7 +40818,7 @@ function OrgchartDisplay(displayManager, id, properties) {
 	    try {
 		roots = this.makeTree();
 	    } catch(error) {
-                this.setDisplayMessage(error.toString());
+		this.handleError("An error has occurred:" + error, error);
 		return;
 	    }
 	    if(roots==null) return;
