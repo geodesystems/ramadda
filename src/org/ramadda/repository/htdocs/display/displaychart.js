@@ -999,6 +999,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
     	    let addStyle= this.getAddStyle();
 	    let annotationTemplate = this.getAnnotationTemplate();
 	    let formatNumbers = this.getFormatNumbers();
+
+
             if (dataList.length == 1) {
 		return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
             }
@@ -1012,7 +1014,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		let cnt =0;
 		let dateToValue =  {};
 		let dates = [];
-		dataList.map(record=>{
+		if(debug)console.log("record[0]:" + dataList[0]);
+
+		dataList.map((record,idx)=>{
 		    if(cnt++==0) return;
 		    let values = this.getDataValues(record);
 		    let value = values[groupField.getIndex()];
@@ -1057,6 +1061,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		});
 
 		let header = Utils.mergeLists(["Date"],groupValues);
+		if(debug)console.log("header:" + header);
 		let dataTable = new google.visualization.DataTable();
 		if(data.length>0) {
 		    //TODO: figure out type of columns with null values
@@ -1064,16 +1069,18 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    tuple.forEach((t,idx)=>{
 			let name = header[idx];
 			let type = t==null?"number":(typeof t);
-			if(type =="number")
+			if(type =="number") {
+			    if(debug)console.log("column:" + name+ " type: number");
 			    dataTable.addColumn("number", name);
-			else if(type =="string")
+			} else if(type =="string") {
+			    if(debug)console.log("column:" + name+ " type: string");
 			    dataTable.addColumn("string", name);
-			else if(t.getTime || (t.v && t.v.getTime))
-			    dataTable.addColumn("date", name);						
-			else {
+			} else if(t.getTime || (t.v && t.v.getTime)) {
+			    if(debug)console.log("column:" + name+ " type: date");
+			    dataTable.addColumn("date", name);
+			} else {
 			    console.log("Unknown type:" + t);
 			    console.log(JSON.stringify(t,null,2));
-			    sdfdsfdf()
 			}
 		    });
 		}
@@ -1098,6 +1105,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let maxHeaderLength = this.getProperty("maxHeaderLength",-1);
 	    let maxHeaderWidth = this.getProperty("maxHeaderWidth",-1);
 	    let headerStyle= this.getProperty("headerStyle");
+
+
+
             for (let j = 0; j < header.length; j++) {
 		let field=null;
 		if(j>0 || !props.includeIndex) {

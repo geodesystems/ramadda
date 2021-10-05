@@ -1094,7 +1094,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	    }
 	    
 	    let fancy  = this.getFancy();
-            let pointData = this.dataCollection.getList()[0];
+            let pointData = this.getPointData();
             let fields = pointData.getRecordFields();
             let selectedFields = this.getSelectedFields();
 	    let urlField = this.getFieldById(null,this.getProperty("urlField"));
@@ -1205,6 +1205,21 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	    fields.forEach(f=>{this.fieldMap[f.getId()] = f;})
  	    let aggId = "";
 	    let aggIds = [];
+	    let handleColumn=((field,record,v,tdAttrs)=>{
+		if(!aggByField)
+		    return HU.td(tdAttrs,v);
+		if(field.getId() != aggByField.getId()) {
+		    return HU.td(tdAttrs,v);
+		}
+		if(!record.isAggregate) {
+		    let spacer = "&nbsp;&nbsp;&nbsp;&nbsp;";
+		    return HU.td(tdAttrs,HU.row([["width","1%","style","padding:2px;"], spacer],[["style","padding:0px;"],v]));
+		}
+		let span = HU.span([ID,aggId+"_toggle","toggleopen","false", CLASS,"ramadda-clickable"],
+				   HU.span([ID,aggId+"_toggleimage"],HU.getIconImage("fas fa-chevron-right"))+"&nbsp;" + v);
+		return HU.td(Utils.mergeLists(tdAttrs,["nowrap","true"]),span);
+	    });
+
 	    records.every((record,recordIdx)=>{
 		if(numRecords>-1 && recordIdx>numRecords) return false;
 		let d = record.getData();
@@ -1213,28 +1228,13 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		    return d;
 		});
 		
+
 		//		if(recordIdx>40) return true;
 		let prefix = "";
 		if(record.isAggregate) {
 		    aggId = HU.getUniqueId("agg_")
 		    aggIds.push(aggId);
 		}
-
-		let handleColumn=((field,v,tdAttrs)=>{
-		    if(!aggByField)
-			return HU.td(tdAttrs,v);
-		    if(field.getId() != aggByField.getId()) {
-			return HU.td(tdAttrs,v);
-		    }
-		    if(!record.isAggregate) {
-			let spacer = "&nbsp;&nbsp;&nbsp;&nbsp;";
-			return HU.td(tdAttrs,HU.row([["width","1%","style","padding:2px;"], spacer],[["style","padding:0px;"],v]));
-		    }
-		    let span = HU.span([ID,aggId+"_toggle","toggleopen","false", CLASS,"ramadda-clickable"],
-				       HU.span([ID,aggId+"_toggleimage"],HU.getIconImage("fas fa-chevron-right"))+"&nbsp;" + v);
-		    return HU.td(Utils.mergeLists(tdAttrs,["nowrap","true"]),span);
-		});
-
 
 		let clazz = (recordIdx%2)?"ramadda-row-odd":"ramadda-row-even";
 		clazz = "display-htmltable-row";
@@ -1342,9 +1342,9 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 			    html+=HU.td([],HU.row([["align","right"],v],outer));
 			}
 		    } else if(f.isFieldNumeric()) {
-			html+=handleColumn(f,this.formatNumber(v,f.getId()), tdAttrs);
+			html+=handleColumn(f,record,this.formatNumber(v,f.getId()), tdAttrs);
 		    } else {
-			html+=handleColumn(f,v,tdAttrs);
+			html+=handleColumn(f,record,v,tdAttrs);
 		    }
 		    prefix="";
 		});

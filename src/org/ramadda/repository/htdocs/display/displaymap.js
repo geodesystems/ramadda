@@ -3104,7 +3104,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     if (colorBy.field.getId() == field.getId()) extra = "selected ";
                     menu += "<option value='" + field.getId() + "' " + extra + ">" + field.getLabel() + "</option>\n";
                 }
-                menu += HU,close(SELECT);
+                menu += HU.close(SELECT);
                 this.writeHtml(ID_TOP_RIGHT, "Color by: " + menu);
                 this.jq("colorByMenu").change(() => {
                     let value = this.jq("colorByMenu").val();
@@ -3845,8 +3845,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		//For now just set the lat/lon
 		let indexX = Math.floor((record.getLongitude()-bounds.left)/cellWidth);
 		let indexY = Math.floor((record.getLatitude()-bounds.bottom)/cellHeight);		
-		if(i<10)
-		    console.log(record.getLongitude() +" " + record.getLatitude() +" " + indexX +" " + indexY);
+//		if(i<10)   console.log(record.getLongitude() +" " + record.getLatitude() +" " + indexX +" " + indexY);
 		if(doLabelGrid) {
 		    let key = indexX +"_"+ indexY;
 		    if(grid[key]) continue;
@@ -6698,7 +6697,7 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 		    if(allRegions[alias]) {
 			ok =true;
 		    }});
-		if(!ok) console.log("Missing data for map region:" + region);
+		if(!ok) this.handleWarning("Missing data for map region:" + region);
 		if(pruneMissing && !ok) return;
 		this.regionNames.push(region);
 		let coords = blob.geometry.coordinates;

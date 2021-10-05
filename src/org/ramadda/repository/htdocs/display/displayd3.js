@@ -925,8 +925,8 @@ function RamaddaVennDisplay(displayManager, id, properties) {
                 })
             d3.selectAll(id + " .venn-circle text")
                 .style("fill", function(d, i) {
-                    return i < textColors.length ? textColors[i] : textColors[i % textColors.length];
-                })
+                    return i < textColors.length ? textColors[i] : textColors[i % textColors.length]; 
+               })
                 .style("font-size", this.getProperty("fontSize", "16px"))
                 .style("font-weight", this.getProperty("fontWeight", "100"));
 
