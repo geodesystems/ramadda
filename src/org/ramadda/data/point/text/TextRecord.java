@@ -490,12 +490,15 @@ public class TextRecord extends DataRecord {
 
                 if (field.isTypeString()) {
                     objectValues[fieldCnt] = tok;
-
                     continue;
                 }
                 if (field.isTypeDate()) {
                     tok                    = tok.replaceAll("\"", "");
-                    objectValues[fieldCnt] = parseDate(field, tok);
+		    Date date = parseDate(field, tok);
+		    if(date==null) 
+			objectValues[fieldCnt] = "";
+		    else
+			objectValues[fieldCnt] = date;
                     continue;
                 }
                 if (tok == null) {

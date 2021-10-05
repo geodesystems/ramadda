@@ -509,7 +509,8 @@ function DisplayThing(argId, argProperties) {
             try {
                 return this.formatDateInner(date, args, useToStringIfNeeded);
             } catch (e) {
-                console.log("Error formatting date:" + date +" error:" +e);
+		console.log(e.stack);
+                console.error("Error formatting date:\"" + date +"\" error:" +e);
                 if (!date.getTime && date.v) date = date.v;
                 return "" + date;
             }
@@ -523,6 +524,7 @@ function DisplayThing(argId, argProperties) {
 	    }
             //Check for date object from charts
             if (!date.getTime && date.v) date = date.v;
+	    if(date.getTime && isNaN(date.getTime())) return "Invalid date";
 	    if(this.dateFormat) {
 		let dttm = Utils.formatDateWithFormat(date,this.dateFormat,true);
 		if(dttm) {

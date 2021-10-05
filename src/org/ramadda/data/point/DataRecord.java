@@ -380,8 +380,8 @@ public class DataRecord extends PointRecord {
             if (obj == null) {
                 return super.getRecordTime();
             }
-
-            return ((Date) obj).getTime();
+	    if(obj instanceof Date)
+		return ((Date) obj).getTime();
         }
 
         return super.getRecordTime();
