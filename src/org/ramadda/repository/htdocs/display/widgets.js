@@ -1979,8 +1979,6 @@ SizeBy.prototype = {
 }
 
 
-
-
 function Annotations(display,records) {
     this.display = display;
     if(!records) records = this.display.filterData();
@@ -2029,6 +2027,7 @@ function Annotations(display,records) {
 		    index2 = index.split(":")[1];
 		    index = index.split(":")[0];
 		}
+		let desc2=null;
 		
 		if(index=="today") {
 		    index = new Date();
@@ -2041,14 +2040,17 @@ function Annotations(display,records) {
 			index2 = Utils.formatDateYYYYMMDD(new Date());
 		    } else {
 			index2 = Utils.parseDate(index2,false);
-
 		    }
+		    desc  = desc||(this.display.formatDate(index)+"-"+ this.display.formatDate(index2));
 		    annotation.index2 = index2.getTime();
+		} else {
+		    desc  = desc||this.display.formatDate(index)
 		}
 		isDate = true;
 	    }
 	    annotation.index = isDate?index.getTime():index;
 	    let legendLabel = desc;
+
 	    if(url!=null) {
 		legendLabel = HU.href(url, legendLabel,["target","_annotation"]);
 	    }
