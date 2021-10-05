@@ -1292,7 +1292,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	if(filterField)
 	    fields = [filterField];
 	else {
-	    console.error("Error: could not find filter field:" + filterFieldId);
+	    console.error(display.type+" Error: could not find filter field:" + filterFieldId);
 	    //Call again with debug=true
 	    display.getFieldById(null, filterFieldId,true);
 	    fields = [];
@@ -3260,7 +3260,7 @@ function CsvUtil() {
 	    newFields.push(new RecordField({
 		id:"count",
 		index:newFields.length,
-		label:"Count",
+		label:args.label||"Count",
 		type:"int",
 		chartable:true,
 	    }));

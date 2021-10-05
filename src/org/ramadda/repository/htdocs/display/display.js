@@ -1423,10 +1423,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'convertData',label:'unfurl',ex:'unfurl(headerField=field to get header from,uniqueField=e.g. date,valueFields=);',tt:'Unfurl'},
 	{p:'convertData',label:'Accumulate data',ex:'accum(fields=);',tt:'Accumulate'},
 	{p:'convertData',label:'Add an average field',ex:'mean(fields=);',tt:'Mean'},
-	{p:'convertData',label:'Count uniques',ex:'count(field=,sort=true);',tt:'Count uniques'},
+	{p:'convertData',label:'Count uniques',ex:'count(field=,sort=true,label=Count);',tt:'Count uniques'},
 	{p:'convertData',label:'rotate data', ex:'rotateData(includeFields=true,includeDate=true,flipColumns=true);',tt:'Rotate data'},
 	{p:'convertData',label:'Prune where fields are all NaN',ex:'prune(fields=);',tt:'Prune'},		
 	{p:'convertData',label:'Scale and offset',ex:'accum(scale=1,offset1=0,offset2=0,unit=,fields=);',tt:'(d + offset1) * scale + offset2'},		
+	{p:'convertDataPost',label:'Same as above but after filtering is done',tt:'Same as above but after filtering is done'},		
 	{label:'Color'},
 	{p:'colors',ex:'color1,...,colorN',tt:'Comma separated array of colors'},
 	{p:'colorBy',ex:'',tt:'Field id to color by'},
@@ -7133,7 +7134,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 //	    Utils.displayTimes("chart.standardData loop:",[t1,t2], true);
             if (nonNullRecords == 0) {
 		//		console.log("Num non null:" + nonNullRecords);
-		console.log("no nonNull records");
+		console.log(this.type+" no nonNull records");
 		return [];
             }
 
