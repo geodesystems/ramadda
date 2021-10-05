@@ -11,7 +11,7 @@
     <target name="plugin">
       <property name="plugin" value="psdramadda"/>
       <property name="plugin_dir" value="gov/noaa/esrl/psd/repository"/>
-      <property name="plugin_group" value="miscplugins"/>
+      <property name="plugin_group" value="projectplugins"/>
       <property name="plugin_jar" value="${plugin}.last.plugin.jar"/>
       <property name="plugin_extra_class" value="gov/noaa/**/*.class"/>
       <property name="plugin_extra_src" value="gov/noaa/**/*.java"/>
