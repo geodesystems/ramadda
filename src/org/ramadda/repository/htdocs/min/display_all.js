@@ -9511,6 +9511,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		console.warning(message);
 	    }
 	},
+        handleLog: function(message) {
+	    if(!window.location.hash  || window.location.hash!="#fortest") {
+		console.log(message);
+	    }
+	},
         handleError: function(message, exc) {
 	    this.setErrorMessage(message);
             console.error(this.type +" " + message);
@@ -29289,7 +29294,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             } else {
                 this.multiSearch = null;
                 let jsonUrl = this.makeSearchUrl(this.getRamadda());
-                console.log(jsonUrl);
+                this.handleLog(jsonUrl);
                 this.entryList = new EntryList(this.getRamadda(), jsonUrl, this, true);
                 this.updateForSearching(jsonUrl);
             }

@@ -850,7 +850,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             } else {
                 this.multiSearch = null;
                 let jsonUrl = this.makeSearchUrl(this.getRamadda());
-                console.log(jsonUrl);
+                this.handleLog(jsonUrl);
                 this.entryList = new EntryList(this.getRamadda(), jsonUrl, this, true);
                 this.updateForSearching(jsonUrl);
             }
