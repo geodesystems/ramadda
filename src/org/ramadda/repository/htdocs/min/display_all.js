@@ -1979,8 +1979,6 @@ SizeBy.prototype = {
 }
 
 
-
-
 function Annotations(display,records) {
     this.display = display;
     if(!records) records = this.display.filterData();
@@ -2029,6 +2027,7 @@ function Annotations(display,records) {
 		    index2 = index.split(":")[1];
 		    index = index.split(":")[0];
 		}
+		let desc2=null;
 		
 		if(index=="today") {
 		    index = new Date();
@@ -2041,14 +2040,17 @@ function Annotations(display,records) {
 			index2 = Utils.formatDateYYYYMMDD(new Date());
 		    } else {
 			index2 = Utils.parseDate(index2,false);
-
 		    }
+		    desc  = desc||(this.display.formatDate(index)+"-"+ this.display.formatDate(index2));
 		    annotation.index2 = index2.getTime();
+		} else {
+		    desc  = desc||this.display.formatDate(index)
 		}
 		isDate = true;
 	    }
 	    annotation.index = isDate?index.getTime():index;
 	    let legendLabel = desc;
+
 	    if(url!=null) {
 		legendLabel = HU.href(url, legendLabel,["target","_annotation"]);
 	    }
@@ -4456,10 +4458,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'convertData',label:'unfurl',ex:'unfurl(headerField=field to get header from,uniqueField=e.g. date,valueFields=);',tt:'Unfurl'},
 	{p:'convertData',label:'Accumulate data',ex:'accum(fields=);',tt:'Accumulate'},
 	{p:'convertData',label:'Add an average field',ex:'mean(fields=);',tt:'Mean'},
-	{p:'convertData',label:'Count uniques',ex:'count(field=,sort=true);',tt:'Count uniques'},
+	{p:'convertData',label:'Count uniques',ex:'count(field=,sort=true,label=Count);',tt:'Count uniques'},
 	{p:'convertData',label:'rotate data', ex:'rotateData(includeFields=true,includeDate=true,flipColumns=true);',tt:'Rotate data'},
 	{p:'convertData',label:'Prune where fields are all NaN',ex:'prune(fields=);',tt:'Prune'},		
 	{p:'convertData',label:'Scale and offset',ex:'accum(scale=1,offset1=0,offset2=0,unit=,fields=);',tt:'(d + offset1) * scale + offset2'},		
+	{p:'convertDataPost',label:'Same as above but after filtering is done',tt:'Same as above but after filtering is done'},		
 	{label:'Color'},
 	{p:'colors',ex:'color1,...,colorN',tt:'Comma separated array of colors'},
 	{p:'colorBy',ex:'',tt:'Field id to color by'},
@@ -10166,7 +10169,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 //	    Utils.displayTimes("chart.standardData loop:",[t1,t2], true);
             if (nonNullRecords == 0) {
 		//		console.log("Num non null:" + nonNullRecords);
-		console.log("no nonNull records");
+		console.log(this.type+" no nonNull records");
 		return [];
             }
 
@@ -12968,7 +12971,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	if(filterField)
 	    fields = [filterField];
 	else {
-	    console.error("Error: could not find filter field:" + filterFieldId);
+	    console.error(display.type+" Error: could not find filter field:" + filterFieldId);
 	    //Call again with debug=true
 	    display.getFieldById(null, filterFieldId,true);
 	    fields = [];
@@ -14936,7 +14939,7 @@ function CsvUtil() {
 	    newFields.push(new RecordField({
 		id:"count",
 		index:newFields.length,
-		label:"Count",
+		label:args.label||"Count",
 		type:"int",
 		chartable:true,
 	    }));
