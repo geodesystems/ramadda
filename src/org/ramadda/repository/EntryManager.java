@@ -4202,8 +4202,10 @@ public class EntryManager extends RepositoryManager {
 
 		//                right.append(select);
 		//                right.append(HU.space(1));
-                right.append(HU.disabledInput(ARG_TO, theParent.getName(), HU.attr("onClick",event) +
-					      HU.clazz("disabledinput ramadda-entry-popup-select") + HU.SIZE_60 + HU.id(ARG_TO)));
+
+                right.append(HU.span(HU.span(getIconImage("fas fa-hand-pointer"),"class=ramadda-clickable") + " " +
+				     HU.disabledInput(ARG_TO, theParent.getName(), HU.clazz("disabledinput ramadda-entry-popup-select") + HU.SIZE_60 + HU.id(ARG_TO)),
+				     HU.attr("onClick",event)));
 
             }
             right.append(HU.close(HU.TAG_DIV));
