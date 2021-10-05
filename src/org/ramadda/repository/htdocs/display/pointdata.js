@@ -688,6 +688,9 @@ function RecordField(props, source) {
         getIndex: function() {
             return this.index;
         },
+        setIndex: function(i) {
+            this.index=i;
+        },	
         getValue: function(record,dflt) {
 	    let v;
 	    if(record.getValue)
@@ -1289,7 +1292,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	if(filterField)
 	    fields = [filterField];
 	else {
-	    console.log("Error: could not find filter field::" + filterFieldId);
+	    console.error("Error: could not find filter field:" + filterFieldId);
 	    fields = [];
 	}
     }
@@ -2563,9 +2566,9 @@ function CsvUtil() {
 		    }
 		});
 	    } catch(e) {
-		console.log("Error applying derived function:" + theCmd.command);
-		console.log(e);
-		console.log(e.stack);
+		console.error("Error applying derived function:" + theCmd.command);
+		throw e;
+//		display.handleError(e,e);
 	    }
 	    return pointData;
 	},
@@ -3239,6 +3242,55 @@ function CsvUtil() {
 	    }
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
+	count: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+            let allFields  = pointData.getRecordFields();
+	    if(!args.field)
+		throw new Error("No field defined:  args:" + JSON.stringify(args));		
+	    let field = this.display.getFieldById(allFields,args.field,false);
+	    if(!field)
+		throw new Error("Could not find field:" + args.field);
+	    let newRecords  =[]
+	    let newFields = [];
+	    let newField=field.clone();
+	    newField.setIndex(0);
+	    newFields.push(newField)
+	    newFields.push(new RecordField({
+		id:"count",
+		index:newFields.length,
+		label:"Count",
+		type:"int",
+		chartable:true,
+	    }));
+
+//	    console.log("new:"+ newFields);
+	    let uniques=[];
+	    let counts={};
+	    let type;
+	    for (let rowIdx=0; rowIdx <records.length; rowIdx++) {
+		let record = records[rowIdx];
+		let value = field.getValue(record);
+		if(rowIdx==0)
+		    type=typeof value;
+		if(!Utils.isDefined(counts[value])) {
+		    uniques.push(value);
+		    counts[value]=0;
+		}
+		counts[value]++;	
+	    }
+	    if(String(args.sort)==="true") {
+		if(type=="number")
+		    uniques=Utils.sortNumbers(uniques);
+		else uniques.sort();
+	    }
+	    uniques.forEach(value=>{
+		let tuple = [value,counts[value]];
+		newRecords.push(new  PointRecord(newFields,NaN,NaN, NaN, null,tuple));
+	    });
+	    
+	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
+	},
+
 
 	prune: function(pointData, args) {
 	    let records = pointData.getRecords(); 
