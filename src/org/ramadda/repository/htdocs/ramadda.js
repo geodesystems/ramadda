@@ -594,6 +594,7 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
             url = this.ramaddaUrl + url;
 	} else {
 	    currentRamaddaBase = null;
+	    url = ramaddaBaseUrl+url;
 	}
         if (this.localeId) {
             url = url + "&localeid=" + this.localeId;
