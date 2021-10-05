@@ -590,12 +590,31 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         if (macros != null) {
             for (Macro macro : macros) {
                 Object prop = requestProperties.get("request." + macro.name);
+//		System.err.println("macro:" + macro.name +" prop:" + prop);
                 if (prop == null) {
                     prop = (macro.dflt != null)
                            ? macro.dflt
                            : "";
-                }
-                String value;
+		    if(macro.dflt!=null && macro.template!=null)  {
+			List<String> dflts = Utils.split(macro.dflt,",",true,true);
+			if(dflts.size()>1) {
+			    List<String> values = new ArrayList<String>();
+			    for(String s: dflts) {
+				s  = macro.template.replace("${value}", s);
+				values.add(s);
+			    }
+			    prop = Utils.join(values,macro.delimiter!=null?macro.delimiter:"");
+			    if(macro.multitemplate!=null)
+				prop = macro.multitemplate.replace("${value}",prop.toString());
+			} else if(dflts.size()==1) {
+			    prop  = macro.template.replace("${value}", prop.toString());
+			}
+		    }
+
+                } else {
+		    //		    System.err.println("value:" + prop);
+		}
+		String value;
                 //Handle lists different?
                 if (prop instanceof List) {
                     value = prop.toString();
@@ -604,6 +623,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
                 }
                 value = value.replaceAll(" ", "%20");
                 path  = path.replace("${" + macro.name + "}", value);
+		//		System.err.println("path:" + path);
             }
         }
         //      System.err.println("Path:" + path);
