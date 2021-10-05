@@ -1293,6 +1293,8 @@ function RecordFilter(display,filterFieldId, properties) {
 	    fields = [filterField];
 	else {
 	    console.error("Error: could not find filter field:" + filterFieldId);
+	    //Call again with debug=true
+	    display.getFieldById(null, filterFieldId,true);
 	    fields = [];
 	}
     }

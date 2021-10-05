@@ -5635,7 +5635,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		});
 		this.lastSelectedFields = fields;
-		console.log("BIN DATE:" + this.lastSelectedFields);
+//		console.log("BIN DATE:" + this.lastSelectedFields);
 	    }
 	    //	    console.log("fields:" + this.lastSelectedFields);
 	    return Utils.cloneList(this.lastSelectedFields);
@@ -12969,6 +12969,8 @@ function RecordFilter(display,filterFieldId, properties) {
 	    fields = [filterField];
 	else {
 	    console.error("Error: could not find filter field:" + filterFieldId);
+	    //Call again with debug=true
+	    display.getFieldById(null, filterFieldId,true);
 	    fields = [];
 	}
     }

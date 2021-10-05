@@ -2602,7 +2602,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		});
 		this.lastSelectedFields = fields;
-		console.log("BIN DATE:" + this.lastSelectedFields);
+//		console.log("BIN DATE:" + this.lastSelectedFields);
 	    }
 	    //	    console.log("fields:" + this.lastSelectedFields);
 	    return Utils.cloneList(this.lastSelectedFields);
