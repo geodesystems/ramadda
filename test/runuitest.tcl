@@ -28,8 +28,8 @@ proc write {html {mode a}} {
 
 proc runit {group id} {
     write "<h2>$group</h2>"
-    set url "https://geodesystems.com/repository/entry/show?ascending=true&orderby=name&entryid=${id}&output=default.csv&fields=name,id&showheader=false&showheader=false#fortest"
-    puts $url
+    set url "https://geodesystems.com/repository/entry/show?ascending=true&orderby=name&entryid=${id}&output=default.csv&fields=name,id&showheader=false&showheader=false"
+    puts "group: $group"
     set csv [getUrl $url]
     set  ::cnt2 0
 #    set ::limit  100
@@ -42,7 +42,7 @@ proc runit {group id} {
 
 	set image image_${clean}.png
 	set thumb thumb_${_group}_${clean}.png
-	set url "https://geodesystems.com/repository/entry/show?entryid=${id}"
+	set url "https://geodesystems.com/repository/entry/show?entryid=${id}#fortest"
 	set sleep 10
 	if {![file exists $thumb]} {
 	    if {$::cnt2>$::limit} break
