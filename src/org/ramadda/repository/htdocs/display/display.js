@@ -761,7 +761,7 @@ function DisplayThing(argId, argProperties) {
 	},
 	getFields: function(fields) {
             if (!fields) {
-                var pointData = this.getData();
+                var pointData = this.pointData || this.getData();
                 if (pointData == null) {
 		    return null;
 		}
@@ -1415,13 +1415,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'aggregateOperator.fieldName',ex:'sum|percent',tt:'Operator to apply on the aggregated rows for the given field'},	
 	{p:'convertData', label:'derived data', ex:'derived(field=new_field_id, function=foo*bar);',tt:'Add derived field'},
 	{p:'convertData',label:'merge rows',ex:'mergeRows(keyFields=f1\\\\,f2, operator=count|sum|average, valueFields=);',tt:'Merge rows together'},
-	{p:'convertData',label:'rotate data', ex:'rotateData(includeFields=true,includeDate=true,flipColumns=true);',tt:'Rotate data'},
 	{p:'convertData',label:'percent increase',ex:'addPercentIncrease(replaceValues=false);',tt:'Add percent increase'},
 	{p:'convertData',label:'doubling rate',ex:'doublingRate(fields=f1\\\\,f2, keyFields=f3);',tt:'Calculate # days to double'},
 	{p:'convertData',label:'add fixed',ex:'addFixed(id=max_pool_elevation\\\\,value=3700,type=double);"',tt:'add fixed value'},	
 	{p:'convertData',label:'unfurl',ex:'unfurl(headerField=field to get header from,uniqueField=e.g. date,valueFields=);',tt:'Unfurl'},
 	{p:'convertData',label:'Accumulate data',ex:'accum(fields=);',tt:'Accumulate'},
 	{p:'convertData',label:'Add an average field',ex:'mean(fields=);',tt:'Mean'},
+	{p:'convertData',label:'Count uniques',ex:'count(field=,sort=true);',tt:'Count uniques'},
+	{p:'convertData',label:'rotate data', ex:'rotateData(includeFields=true,includeDate=true,flipColumns=true);',tt:'Rotate data'},
 	{p:'convertData',label:'Prune where fields are all NaN',ex:'prune(fields=);',tt:'Prune'},		
 	{p:'convertData',label:'Scale and offset',ex:'accum(scale=1,offset1=0,offset2=0,unit=,fields=);',tt:'(d + offset1) * scale + offset2'},		
 	{label:'Color'},
@@ -2647,6 +2648,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
             for (var collectionIdx = 0; collectionIdx < dataList.length; collectionIdx++) {
                 var pointData = dataList[collectionIdx];
+		//A hack in case we already have a pointData set (e.g., in the case of a convertDataPost)
+		if(this.pointData) pointData = this.pointData;
                 var fields = this.getFieldsToSelect(pointData);
                 if (fixedFields != null && fixedFields.length > 0) {
                     if (this.debugSelected)
@@ -2713,14 +2716,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
             }
             if (df.length == 0) {
-                df = this.getDefaultSelectedFields(fieldsToSelect, dfltList);
+                df = this.getDefaultSelectedFields(fieldsToSelect, dfltList,this.debugSelected);
                 if (this.debugSelected)
                     console.log("\tusing default selected:" + df);
             }
             return df;
         },
-        getDefaultSelectedFields: function(fields, dfltList) {
-	    let debug = displayDebug.getDefaultSelectedFields;
+        getDefaultSelectedFields: function(fields, dfltList,debugArg) {
+	    let debug = debugArg||displayDebug.getDefaultSelectedFields;
 	    if(debug)
 		console.log("getDefaultSelectedFields");
             if (this.defaultSelectedToAll()) {
@@ -3515,7 +3518,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.recordToIndex[record.getId()] = i;
 		this.indexToRecord[i] = record;
 	    }
-
 
 
 	    let convertPost = this.getProperty("convertDataPost");
@@ -6466,6 +6468,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.addEntry(entry);
             }
         },
+        handleWarning: function(message) {
+	    if(!window.location.hash  || window.location.hash!="#fortest") {
+		console.warning(message);
+	    }
+	},
         handleError: function(message, exc) {
 	    this.setErrorMessage(message);
             console.error(this.type +" " + message);
@@ -6788,6 +6795,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return true;
         },
         getPointData: function() {
+	    if(this.pointData) return this.pointData;
             if (this.dataCollection.getList().length == 0) return null;
             return this.dataCollection.getList()[0];
         },
@@ -7359,7 +7367,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (type == "month") {
                 this.filters.push(new MonthFilter(toks[1]));
             } else {
-                console.log("unknown filter:" + type);
+                this.handleError("Unknown filter:" + type);
             }
         }
     }
