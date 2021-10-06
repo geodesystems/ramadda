@@ -783,7 +783,9 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
                                              "icon-link");
                     for (int i = 0; i < children2.getLength(); i++) {
                         Element child = (Element) children2.item(i);
-                        times.get(i).icon = XmlUtil.getChildText(child);
+			String icon =  XmlUtil.getChildText(child);
+			icon = icon.replace("http://forecast.weather.gov","https://forecast.weather.gov");
+			times.get(i).icon = icon;
                     }
                 } else if (tag.equals("wordedForecast")) {
                     NodeList children2 = XmlUtil.getElements(node, "text");
@@ -1025,6 +1027,7 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
         String url =
             "https://forecast.weather.gov/MapClick.php?lat=40.0157&lon=-105.2792&unit=0&lg=english&FcstType=dwml";
         String  xml  = Utils.readUrl(url);
+	System.err.println(xml);
         Element root = XmlUtil.getRoot(xml);
         Element forecastNode = XmlUtil.findElement(XmlUtil.getElements(root,
                                    "data"), "type", "forecast");
