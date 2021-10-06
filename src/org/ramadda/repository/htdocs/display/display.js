@@ -7903,14 +7903,16 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
             SUPER.getDialogContents.call(this, tabTitles, tabContents);
         },
         handleEventFieldsSelected: function(source, fields) {
-	    if(fields.length>0 && (typeof fields[0] =="string")) {
-		var tmp = [];
-		fields.forEach(f=>{
-		    f = this.getFieldById(null, f);
-		    if(f) tmp.push(f);
-		});
-		fields=tmp;
-	    }
+	    var tmp = [];
+	    fields.forEach(f=>{
+		let fieldId = f.getId?f.getId():f;
+		f = this.getFieldById(null, fieldId);
+		if(f) tmp.push(f);
+	    });
+	    fields=tmp;
+//	    console.log("fields before:" + this.getSelectedFields());
+//	    console.log("fields after:" + fields);
+
             this.userHasSelectedAField = true;
             this.overrideFields = null;
             this.removeProperty(PROP_FIELDS);
