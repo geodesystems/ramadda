@@ -416,7 +416,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         {p:'showEntries',d: true},
         {p:'showFooter',d: true},	
         {p:'showType',d: true},
-        {p:'types',ex:'comma separated list of types'},
+        {p:'entryTypes',ex:'comma separated list of types'},
 	{p:'ancestor',ex:'this',tt:'Constrain search to this tree'},		
         {p:'doSearch',d: true,tt:'Apply search at initial display'},
 	{p:'searchHeaderLabel',d: 'Search'},
@@ -621,7 +621,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 }
             });
 
-	    this.selectboxit(this.jq(ID_SEARCH_ORDERBY));
+	    //Don't selectbox the orderby
+//	    this.selectboxit(this.jq(ID_SEARCH_ORDERBY));
 	    this.jq(ID_SEARCH_ORDERBY).change(()=>{	    
                 this.submitSearchForm();
 	    });
@@ -937,6 +938,13 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			tag.remove();
 			continue;
 		    }
+		    if(col.getType()=="string") {
+			if(value=="") {
+			    tag.remove();
+			    continue;
+			}
+		    }
+
 		    let label = col.getLabel() +"=" + value;
 		    if(tag.length==0) {
 			tag = $(HU.div([CLASS,"display-search-tag","column",col.getName()],label)).appendTo(searchBar);
@@ -1053,8 +1061,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
 
 	    this.typeList = null;
-            if (this.getTypes()) {
-		this.typeList = this.getTypes().split(",");
+            if (this.getEntryTypes()) {
+		this.typeList = this.getEntryTypes().split(",");
 	    }
             if (this.getShowType()) {
 		if(this.typeList == null || this.typeList.length==0) {
@@ -1365,7 +1373,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             if (newTypes == null) {
                 newTypes = this.getRamadda().getEntryTypes((ramadda, types) =>{
                     this.addTypes(types);
-                },this.getTypes());
+                },this.getEntryTypes());
             }
             if (newTypes == null) {
                 return;
@@ -1373,9 +1381,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
             this.entryTypes = newTypes;
 
-            if (this.getTypes()) {
+            if (this.getEntryTypes()) {
                 let showType = {};
-		let typeList = this.getTypes().split(",");
+		let typeList = this.getEntryTypes().split(",");
                 typeList.forEach(type=>{
                     showType[type] = true;
                 });
@@ -1446,8 +1454,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		this.writeHtml(ID_TYPE_DIV, select);
 	    }
 	    
-            this.selectboxit(this.jq(ID_TYPE_FIELD),
-			     { autoWidth: false,  "max-height":"100px"});
+            this.selectboxit(this.jq(ID_TYPE_FIELD),    { autoWidth: false,  "max-height":"100px"});
             this.addExtraForm();
 	    if(hadSelected) {
 		this.submitSearchForm();
@@ -1930,7 +1937,6 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 		    let tooltip = this.getProperty("tooltip");
 		    let props = {dialogListener: dialogListener,highlightColor:"#436EEE",blockStyle:this.getProperty("blockStyle",""),doPopup:this.getProperty("doPopup",true),tooltip:tooltip, tooltipClick:tooltip,descriptionField:"description",imageWidth:"140px",blockWidth:"150px",numberOfImages:500,showTableOfContents:true,iconField:"iconUrl",iconSize:16,displayEntries:false, imageField:"image",urlField:"url",titleField:"name",labelField:"name",labelFields:"name",showBottomLabel:false,bottomLabelTemplate:"", topLabelTemplate:"${name}", textTemplate:"${description}",displayId:info.id,divid:info.id,showMenu:false,theData:data,displayStyle:""};
 		    info.display =  this.getDisplayManager().createDisplay(info.type,props);
-//		    console.log("d:" + info.display.type);
 		})
 	    }
 
