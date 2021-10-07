@@ -374,7 +374,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    });
 	},
 	doSave: function() {
-	    if(this.getProperty("entryType")!="geo_editable_json") {
+	    if(this.getProperty("thisEntryType")!="geo_editable_json") {
 		this.showMessage("Entry is not the correct type");
 		return;
 	    }
@@ -1022,7 +1022,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    */
 
 
-	    if(this.getProperty("entryType")=="geo_editable_json") {
+	    if(this.getProperty("thisEntryType")=="geo_editable_json") {
 		this.loadMap();
 		/* not now
 		//Do it in a bit so the layer gets its bounds set
