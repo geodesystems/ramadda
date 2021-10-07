@@ -2615,6 +2615,7 @@ pre {
 
 .selectboxit-text {
     float: none !important;
+    text-align:left !important;
 }
 
 
