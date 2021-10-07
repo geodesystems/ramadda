@@ -145,7 +145,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 				      HU.div([CLASS,"ramadda-map-slider",STYLE,this.getProperty("popupSliderStyle", "max-height:400px;overflow-y:auto;max-width:300px;overflow-x:auto;"),ID,this.domId(ID_MAP)+"_slider"]));
 
             this.setContents(mapContainer);
-
+    
             if (!this.map) {
                 this.createMap();
             } else {
@@ -2255,7 +2255,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.map.getHighlightLinesLayer().removeFeatures(this.coordinateFeatures);
 	    }
 	    let textGetter = (f)=>{
-		console.log("getter");
 		if(f.record) {
                     return  this.getRecordHtml(f.record, null, this.getProperty("tooltip"));
 		}
@@ -2367,12 +2366,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let debug = false;
 	    this.lastUpdateTime = null;
             SUPER.updateUI.call(this,args);
+//	    console.log("map.updateUI: " + !this.getDisplayReady() +" " + !this.hasData() +" " +!this.getProperty("showData", true));
             if (this.haveCalledUpdateUI || !this.getDisplayReady() ||!this.hasData() || !this.getProperty("showData", true)) {
 		if(debug) console.log("map.updateUI have called:" + this.haveCalledUI +" ready:" + this.getDisplayReady() +" has data:" + this.hasData() +" showData:" +this.getProperty("showData", true));
                 return;
             }
             let pointData = this.getPointData();
-	    this.lastZoom = this.map.getZoom();
+	    this.lastZoom = this.map?this.map.getZoom():null;
 
 	    //Set the shapes Fields here before filter data so we can accept non georeferenced data
 	    this.shapesField = this.getFieldById(null,this.getProperty("shapesField"));
