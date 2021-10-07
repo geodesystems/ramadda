@@ -1,3 +1,22 @@
 tclsh fetchurls.tcl *.txt
-#or:
-#tclsh fetchurls.tcl -loop <some file with a list of URLs>
+or:
+tclsh fetchurls.tcl -loop <some file with a list of URLs>
+
+
+runuitest.tcl:
+This runs through most of the pages at https://geodesystems.com/repository/a/examples,
+brings up the page in Safari, pauses for some number of seconds to allow the page to render, and captures the image.
+A file is generated: uiimages.html
+
+A way to check for JS errors is to bring up the web console in Safari. This is captured in the image.
+
+To run:
+mkdir results
+cd results
+tclsh ../runuitest.tcl
+
+This will only call up the page if the corresponding image thumb_<page name>.png does not exist. So to do a full test:
+rm thumb_*
+
+
+

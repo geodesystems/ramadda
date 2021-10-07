@@ -47,7 +47,6 @@ proc runit {group id {groupLimit 10000}} {
 	if {![file exists $thumb]} {
 	    if {$::cnt2>$::limit} break
 	    incr ::cnt2
-	    incr ::cnt
 	    puts stderr "\tprocessing $name"
 	    #Bring Firefox to the front and tell it to reload the main page
 	    set cmd "tell application \"Safari\" to set the URL of the front document to \"$url\""    
@@ -65,7 +64,8 @@ proc runit {group id {groupLimit 10000}} {
 		exit
 	    }
 	}
-	set line  "<a href=\"$url\"><div>$name</div>\n<img width=50% border=0 src=${thumb}>\n</a><p>\n"
+	incr ::cnt
+	set line  "<a href=\"$url\"><div>#$::cnt $name</div>\n<img width=50% border=0 src=${thumb}>\n</a>\n"
 	write $line
 	finish
     }
@@ -92,15 +92,16 @@ proc processGroup {root} {
 write "" w
 runit "Charts" 3ebcb4f4-fa4d-4fb3-9ede-d42ec7e0aa9d
 runit "Maps" 1d0fa3f5-407e-4a39-a3da-9a5ed7e1e687
-                    
 runit "Data tables" b36bb6fc-b2c4-4d12-8c31-1f4dcff6881e
 runit "Science Data" 1012d4bb-5e57-460a-95f5-07c997bd04e8
 #runit Covid 52644ac1-f6d6-45ea-88af-b5d2ec75742e
 runit "Text" 23847d93-4bca-4d54-a6db-f96a19be250b
-runit Cards e4b6667d-d640-4048-a756-b06e4c352a62 3
+runit "Boulder and Colorado" 4624f63d-cd71-43e8-a558-83835c6b5541
 runit Dashboards eb4102f8-720f-4ef3-9211-0ce5940da04d
 runit "Media" bca6228e-3f8e-49d4-a20e-b5a0ea8a6441
-runit "Boulder and Colorado" 4624f63d-cd71-43e8-a558-83835c6b5541
+runit Features 26fff0d9-3de7-4bbd-8a6f-a26d8a287f4a
+
+runit Cards e4b6667d-d640-4048-a756-b06e4c352a62 3
 finish
 exit
 
