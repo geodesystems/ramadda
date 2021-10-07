@@ -10938,14 +10938,16 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
             SUPER.getDialogContents.call(this, tabTitles, tabContents);
         },
         handleEventFieldsSelected: function(source, fields) {
-	    if(fields.length>0 && (typeof fields[0] =="string")) {
-		var tmp = [];
-		fields.forEach(f=>{
-		    f = this.getFieldById(null, f);
-		    if(f) tmp.push(f);
-		});
-		fields=tmp;
-	    }
+	    var tmp = [];
+	    fields.forEach(f=>{
+		let fieldId = f.getId?f.getId():f;
+		f = this.getFieldById(null, fieldId);
+		if(f) tmp.push(f);
+	    });
+	    fields=tmp;
+//	    console.log("fields before:" + this.getSelectedFields());
+//	    console.log("fields after:" + fields);
+
             this.userHasSelectedAField = true;
             this.overrideFields = null;
             this.removeProperty(PROP_FIELDS);
@@ -28860,7 +28862,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         {p:'showEntries',d: true},
         {p:'showFooter',d: true},	
         {p:'showType',d: true},
-        {p:'types',ex:'comma separated list of types'},
+        {p:'entryTypes',ex:'comma separated list of types'},
 	{p:'ancestor',ex:'this',tt:'Constrain search to this tree'},		
         {p:'doSearch',d: true,tt:'Apply search at initial display'},
 	{p:'searchHeaderLabel',d: 'Search'},
@@ -29065,7 +29067,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 }
             });
 
-	    this.selectboxit(this.jq(ID_SEARCH_ORDERBY));
+	    //Don't selectbox the orderby
+//	    this.selectboxit(this.jq(ID_SEARCH_ORDERBY));
 	    this.jq(ID_SEARCH_ORDERBY).change(()=>{	    
                 this.submitSearchForm();
 	    });
@@ -29381,6 +29384,13 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			tag.remove();
 			continue;
 		    }
+		    if(col.getType()=="string") {
+			if(value=="") {
+			    tag.remove();
+			    continue;
+			}
+		    }
+
 		    let label = col.getLabel() +"=" + value;
 		    if(tag.length==0) {
 			tag = $(HU.div([CLASS,"display-search-tag","column",col.getName()],label)).appendTo(searchBar);
@@ -29497,8 +29507,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
 
 	    this.typeList = null;
-            if (this.getTypes()) {
-		this.typeList = this.getTypes().split(",");
+            if (this.getEntryTypes()) {
+		this.typeList = this.getEntryTypes().split(",");
 	    }
             if (this.getShowType()) {
 		if(this.typeList == null || this.typeList.length==0) {
@@ -29809,7 +29819,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             if (newTypes == null) {
                 newTypes = this.getRamadda().getEntryTypes((ramadda, types) =>{
                     this.addTypes(types);
-                },this.getTypes());
+                },this.getEntryTypes());
             }
             if (newTypes == null) {
                 return;
@@ -29817,9 +29827,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
             this.entryTypes = newTypes;
 
-            if (this.getTypes()) {
+            if (this.getEntryTypes()) {
                 let showType = {};
-		let typeList = this.getTypes().split(",");
+		let typeList = this.getEntryTypes().split(",");
                 typeList.forEach(type=>{
                     showType[type] = true;
                 });
@@ -29890,8 +29900,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		this.writeHtml(ID_TYPE_DIV, select);
 	    }
 	    
-            this.selectboxit(this.jq(ID_TYPE_FIELD),
-			     { autoWidth: false,  "max-height":"100px"});
+            this.selectboxit(this.jq(ID_TYPE_FIELD),    { autoWidth: false,  "max-height":"100px"});
             this.addExtraForm();
 	    if(hadSelected) {
 		this.submitSearchForm();
@@ -30374,7 +30383,6 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 		    let tooltip = this.getProperty("tooltip");
 		    let props = {dialogListener: dialogListener,highlightColor:"#436EEE",blockStyle:this.getProperty("blockStyle",""),doPopup:this.getProperty("doPopup",true),tooltip:tooltip, tooltipClick:tooltip,descriptionField:"description",imageWidth:"140px",blockWidth:"150px",numberOfImages:500,showTableOfContents:true,iconField:"iconUrl",iconSize:16,displayEntries:false, imageField:"image",urlField:"url",titleField:"name",labelField:"name",labelFields:"name",showBottomLabel:false,bottomLabelTemplate:"", topLabelTemplate:"${name}", textTemplate:"${description}",displayId:info.id,divid:info.id,showMenu:false,theData:data,displayStyle:""};
 		    info.display =  this.getDisplayManager().createDisplay(info.type,props);
-//		    console.log("d:" + info.display.type);
 		})
 	    }
 
@@ -32046,7 +32054,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 				      HU.div([CLASS,"ramadda-map-slider",STYLE,this.getProperty("popupSliderStyle", "max-height:400px;overflow-y:auto;max-width:300px;overflow-x:auto;"),ID,this.domId(ID_MAP)+"_slider"]));
 
             this.setContents(mapContainer);
-
+    
             if (!this.map) {
                 this.createMap();
             } else {
@@ -34156,7 +34164,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.map.getHighlightLinesLayer().removeFeatures(this.coordinateFeatures);
 	    }
 	    let textGetter = (f)=>{
-		console.log("getter");
 		if(f.record) {
                     return  this.getRecordHtml(f.record, null, this.getProperty("tooltip"));
 		}
@@ -34268,12 +34275,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let debug = false;
 	    this.lastUpdateTime = null;
             SUPER.updateUI.call(this,args);
+//	    console.log("map.updateUI: " + !this.getDisplayReady() +" " + !this.hasData() +" " +!this.getProperty("showData", true));
             if (this.haveCalledUpdateUI || !this.getDisplayReady() ||!this.hasData() || !this.getProperty("showData", true)) {
 		if(debug) console.log("map.updateUI have called:" + this.haveCalledUI +" ready:" + this.getDisplayReady() +" has data:" + this.hasData() +" showData:" +this.getProperty("showData", true));
                 return;
             }
             let pointData = this.getPointData();
-	    this.lastZoom = this.map.getZoom();
+	    this.lastZoom = this.map?this.map.getZoom():null;
 
 	    //Set the shapes Fields here before filter data so we can accept non georeferenced data
 	    this.shapesField = this.getFieldById(null,this.getProperty("shapesField"));
@@ -39580,7 +39588,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    });
 	},
 	doSave: function() {
-	    if(this.getProperty("entryType")!="geo_editable_json") {
+	    if(this.getProperty("thisEntryType")!="geo_editable_json") {
 		this.showMessage("Entry is not the correct type");
 		return;
 	    }
@@ -40228,7 +40236,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    */
 
 
-	    if(this.getProperty("entryType")=="geo_editable_json") {
+	    if(this.getProperty("thisEntryType")=="geo_editable_json") {
 		this.loadMap();
 		/* not now
 		//Do it in a bit so the layer gets its bounds set
@@ -41093,7 +41101,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    }
 //	    console.log(JSON.stringify(json,null,2));
 	    if($("#" + timelineId).length==0) {
-		console.log("No timeline div:" + timelineId);
+//		console.info("No timeline div:" + timelineId);
 		return;
 	    }
 
