@@ -1291,6 +1291,8 @@ public class Column implements DataTypes, Constants, Cloneable {
         String delimiter = csv
                            ? "|"
                            : ",";
+	//I think we always want to use ',' as the delimiter
+	delimiter = ",";
         if (isType(DATATYPE_LATLON)) {
             sb.append(toLatLonString(values, offset, raw));
             sb.append(delimiter);
