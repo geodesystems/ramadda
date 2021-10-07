@@ -7349,7 +7349,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 js, "\nvar displayManager = getOrCreateDisplayManager(",
                 HU.quote(groupDivId), ",", Json.map(topProps, false), ");\n");
         }
-        Utils.add(propList, "entryId", HU.quote(entry.getId()),"entryType",HU.quote(entry.getTypeHandler().getType()));
+        Utils.add(propList, "entryId", HU.quote(entry.getId()),"thisEntryType",HU.quote(entry.getTypeHandler().getType()));
 	if(entry.isFile()) {
             String fileUrl = entry.getTypeHandler().getEntryResourceUrl(request,  entry);
 	    Utils.add(propList,"fileUrl",HU.quote(fileUrl));
