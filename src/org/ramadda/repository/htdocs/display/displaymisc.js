@@ -752,7 +752,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    }
 //	    console.log(JSON.stringify(json,null,2));
 	    if($("#" + timelineId).length==0) {
-		console.log("No timeline div:" + timelineId);
+//		console.info("No timeline div:" + timelineId);
 		return;
 	    }
 
