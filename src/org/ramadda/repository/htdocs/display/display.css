@@ -772,6 +772,7 @@ a.display-container {
    font-weight: bold;
    background-color: #efefef;
    border-top: 1px #aaa solid;
+   cursor:help !important;
 }
 
 
@@ -1031,6 +1032,7 @@ svg > g > g:last-child { pointer-events: none }
 
 .display-search-orderby {
     font-size:8pt;
+    border:1px solid #ccc;
 }
 
 .display-cell {
