@@ -35,6 +35,8 @@ import java.text.SimpleDateFormat;
 
 import java.util.function.Consumer;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1877,16 +1879,16 @@ public  class RowCollector extends Processor {
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
             PrintWriter w = ctx.getWriter();
-	    BiConsumer<String,String> layout = (label,value) -> {
-		w.print(HU.tag("table",
-			       HU.attrs("class", "left_right_table",
-					"cellpadding", "0", "cellspacing",
-					"0"), HU.row(HU.col(label)
-						     + HU.col(value,
-							      HU.attrs("align","right","valign","top")))));
+	    BiFunction<String,String,String> layout = (label,value) -> {
+		return HU.tag("table",
+			      HU.attrs("class", "left_right_table",
+				       "cellpadding", "0", "cellspacing",
+				       "0"), HU.row(HU.col(label)
+						    + HU.col(value,
+							     HU.attrs("align","right","valign","top"))));
 	    };
 
-	    Consumer<ColStat> printUniques = (col) -> {
+	    Function<ColStat,String> printUniques = (col) -> {
 		List<Object[]> values = new ArrayList<Object[]>();
 		for (Enumeration keys = col.uniques.keys();
 		     keys.hasMoreElements(); ) {
@@ -1906,18 +1908,18 @@ public  class RowCollector extends Processor {
 		Object[] array = values.toArray();
 		Arrays.sort(array, comp);
 		values = (List<Object[]>) Misc.toList(array); 
-		w.print(Utils.plural(values.size(), "unique value"));
+		String html = Utils.plural(values.size(), "unique value");
 		if(justStats)
-		    w.print("<div style='margin-right:5px;max-height:300px;overflow-y:auto;'>");			
+		    html+="<div style='margin-right:5px;max-height:300px;overflow-y:auto;'>";			
 		else
-		    w.print("<div style='margin-right:5px;max-height:100px;overflow-y:auto;'>");			
-		w.print("<table width=100% border=0 cellpadding=0 cellspacing=0>");
+		    html+="<div style='margin-right:5px;max-height:100px;overflow-y:auto;'>";			
+		html+="<table width=100% border=0 cellpadding=0 cellspacing=0>";
 		int tupleCnt=0;
 		String td = "<td style='border:none;padding:0px;padding-left:0px;padding-right:5px;' ";
 		for (Object[] tuple : values) {
 		    tupleCnt++;
 		    if((justStats && tupleCnt>50) || (!justStats && tupleCnt>20)) {
-			w.print("<tr>" + td+" colspan=2>...</td></tr>");
+			html+="<tr>" + td+" colspan=2>...</td></tr>";
 			break;
 		    }
 		    Object key = tuple[0];
@@ -1925,15 +1927,18 @@ public  class RowCollector extends Processor {
 		    double percent = Math.round(1000.0 * cnt
 						/ (double) (rowCnt-1)) / 10;
 
-		    w.print("<tr valign=bottom title='" + percent+"%'>");
-		    w.print(td+ " width=1%>" + key+"</td>");
-		    w.print(td+" width=1% align=right>" + cnt +"</td>");
-		    w.print("<td style='border:none;padding:0px;' ><div style='margin-top:3px;display:inline-block;background:blue;height:1em;width:" + percent +"%;'></div></td>");
+		    String title = key.toString().replaceAll("'","\\'") +" " + percent+"%";
+		    html+="<tr valign=bottom title='" + title +"'>";
+		    key = HU.div(key.toString(),HU.attrs("style","max-width:100px;overflow-x:auto;"));
+		    html+=td+ " width=1%>" + key+"</td>";
+		    html+=td+" width=1% align=right>" + cnt +"</td>";
+		    html+="<td style='border:none;padding:0px;' ><div style='margin-top:3px;display:inline-block;background:blue;height:1em;width:" + percent +"%;'></div></td>";
 
-		    w.print("</tr>");			    
+		    html+="</tr>";			    
 		}
-		w.print("</table>");
-		w.print("</div>");
+		html+="</table>";
+		html+="</div>";
+		return html;
 
 	    };
 
@@ -1945,7 +1950,8 @@ public  class RowCollector extends Processor {
                 w.println("<table width='100%' class='stripe hover display nowrap ramadda-table ramadda-csv-table' >");
                 w.println("<thead>");
                 w.println("<tr valign=top>");
-                for (ColStat col : cols) {
+		for(int i=0;i<cols.size();i++) {
+		    ColStat col =  cols.get(i);
                     String typeIcon = "";
                     String tt       = "";
                     if (col.type.equals("string")) {
@@ -1965,11 +1971,64 @@ public  class RowCollector extends Processor {
                     String name = col.name;
 		    String label = Utils.makeLabel(name);
 		    String id = Utils.makeID(name);
-                    w.println("<th class=csv-id fieldid='" + id
-                              + "' nowrap>" + type + "&nbsp;" + label
-                              + "</th>");
+		    label = HU.span(type + "&nbsp;" + label,HU.attrs("class","csv-id","fieldid",id));
+		    String extra = "";
+		    if (Utils.equalsOne(col.name.trim().toLowerCase(), "latitude","longitude")) {
+			ColStat next = i<cols.size()-1?cols.get(i+1):null;
+			if(next!=null && Utils.equalsOne(next.name.toLowerCase(),"longitude","latitude")) {
+			    ColStat lat = col.name.equalsIgnoreCase("latitude")?col:next;
+			    ColStat lon = col.name.equalsIgnoreCase("longitude")?col:next;			   
+			    i++;
+			    StringBuilder map = new StringBuilder();
+			    MapProvider mp  = util.getMapProvider();
+			    if(mp!=null) {
+				List<double[]> pts = new ArrayList<double[]>();
+				for(int ptIdx=0;ptIdx<lat.pts.size();ptIdx++)
+				    pts.add(new double[]{lat.pts.get(ptIdx),lon.pts.get(ptIdx)});
+				Hashtable<String,String>props = new Hashtable<String,String>();
+				props.put("simple","true");
+				props.put("radius","3");				
+				mp.makeMap(map,"100%",justStats?"300px":"100px",pts,props);
+				extra = map.toString();
+			    }
+			}
+		    } else {
+			if (col.type.equals("numeric")) {
+			    extra+=layout.apply("min:", "" + col.min);
+			    extra+=layout.apply("max:", "" + col.max);
+			    if (col.numMissing > 0) {
+				extra+=layout.apply("#missing:",
+					      "" + col.numMissing);
+			    }
+			    if (col.numErrors > 0) {
+				extra+=layout.apply("#errors:",   "" + col.numErrors);
+				if (col.sampleError != null) {
+				    extra+=layout.apply("eg:"
+						  + ((col.sampleError.trim().length()
+						      == 0)
+						     ? "<blank>"
+						     : col.sampleError), "");
+				}
+			    }
+			    extra+=printUniques.apply(col);
+			} else if (col.type.equals("date")) {
+			    if (col.minDate != null) {
+				extra+=layout.apply("min:", fmtSdf.format(col.minDate));
+			    }
+			    if (col.maxDate != null) {
+				extra+=layout.apply("max:",fmtSdf.format(col.maxDate));
+			    }
+			} else if (col.type.equals("image")) {
+			} else if (col.type.equals("url")) {			
+			} else {
+			    extra+=printUniques.apply(col);
+			}
+		    }		    
+		    extra = HU.div(extra,HU.attrs("class","csv-summary","style","display:none;"));
+		    w.println("<th nowrap>" +  label  + extra + "</th>");
                 }
                 w.println("</tr>");
+		/*
                 w.println("<tr valign=top class=th2>");
 		for(int i=0;i<cols.size();i++) {
 		    ColStat col =  cols.get(i);
@@ -2030,6 +2089,7 @@ public  class RowCollector extends Processor {
                     w.println("</th>");
 		}
                 w.println("</tr>");
+		*/
                 w.println("</thead>");
                 w.println("<tbody>");
 

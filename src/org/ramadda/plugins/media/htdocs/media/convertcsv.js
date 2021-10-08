@@ -52,6 +52,7 @@ function  ConvertForm(inputId, entry) {
 	    html += ".convert_button {padding:2px;padding-left:5px;padding-right:5px;}\n.ramadda-csv-table  {font-size:10pt;}\n ";
 	    html += ".convert_add {margin-left:10px; cursor:pointer;}\n";
 	    html += ".convert_add:hover {text-decoration:underline;}\n";
+	    html += ".csv-summary {}\n";
 	    html += ".ace_gutter-cell {cursor:pointer;}\n";
 	    html += ".ace_editor {margin-bottom:5px;xheight:200px;}\n";
 	    html += ".ace_editor_disabled {background:rgb(250,250,250);}\n";
@@ -889,6 +890,7 @@ function  ConvertForm(inputId, entry) {
 			}
 			return;
 		    } else if(stats || table) {
+//			console.log(result);
 			output.html(result);
 			let toolbar = HU.span([TITLE,"Insert field names", CLASS,"ramadda-clickable", ID,this.domId("addfields")],"Add field ids") + SPACE3;
 			if(table)
@@ -903,9 +905,9 @@ function  ConvertForm(inputId, entry) {
 			    visible = !visible;
 			    $(this).html(visible?"Hide summary":"Show summary");
 			    if(visible)
-				output.find(".th2").show();
+				output.find(".csv-summary").show();
 			    else
-				output.find(".th2").hide();
+				output.find(".csv-summary").hide();
 			});
 
 			let ids = [];
