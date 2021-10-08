@@ -1727,7 +1727,6 @@ function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
 	.attr('cy', (d,i)=>{return getNum(y(d.y))})
 	.attr('fill', (d,i)=>{return getColor(d,i,circleColor)})
 	.attr(RECORD_ID, (d,i)=>{
-	    return "XX";
 	    recordMap[d.record.getId()] =d.record;
 	    return d.record.getId()})
 	.style("cursor", "pointer");
@@ -1750,7 +1749,7 @@ function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
 	    let ele = $(dom);
 	    ele.attr('r', 20);
 	    console.log("mouse over:" + d3.select(this).attr(RECORD_ID));
-	    return
+	    if(true) return
 	    let record = recordMap[ele.attr(RECORD_ID)];
 	    console.log(ele.attr(RECORD_ID) +" " + record);
 	    let coords = d3.mouse(this);

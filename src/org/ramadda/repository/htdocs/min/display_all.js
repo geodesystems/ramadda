@@ -1727,7 +1727,6 @@ function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
 	.attr('cy', (d,i)=>{return getNum(y(d.y))})
 	.attr('fill', (d,i)=>{return getColor(d,i,circleColor)})
 	.attr(RECORD_ID, (d,i)=>{
-	    return "XX";
 	    recordMap[d.record.getId()] =d.record;
 	    return d.record.getId()})
 	.style("cursor", "pointer");
@@ -1750,7 +1749,7 @@ function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
 	    let ele = $(dom);
 	    ele.attr('r', 20);
 	    console.log("mouse over:" + d3.select(this).attr(RECORD_ID));
-	    return
+	    if(true) return
 	    let record = recordMap[ele.attr(RECORD_ID)];
 	    console.log(ele.attr(RECORD_ID) +" " + record);
 	    let coords = d3.mouse(this);
@@ -8344,10 +8343,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    index+=dir;
 	    if(index>=length) {
 		return;
-		index =0;
+//		index =0;
 	    } else if(index<0) {
 		return;
-		index = length-1;
+//		index = length-1;
 	    }
 	    select[0].selectedIndex = index;
 	    inputFunc(select);
@@ -29133,7 +29132,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         },
 
 	getCloser: function() {
-	    return "";
+	    if(true) return "";
 	    return  HU.jsLink("",HU.getIconImage(icon_close, [ID,this.domId("close"),STYLE,HU.css("cursor","pointer")]));
 	},
 	initCloser: function(what) {

@@ -5309,10 +5309,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    index+=dir;
 	    if(index>=length) {
 		return;
-		index =0;
+//		index =0;
 	    } else if(index<0) {
 		return;
-		index = length-1;
+//		index = length-1;
 	    }
 	    select[0].selectedIndex = index;
 	    inputFunc(select);

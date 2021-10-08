@@ -65,7 +65,7 @@ proc runit {group id {groupLimit 10000}} {
 	    }
 	}
 	incr ::cnt
-	set line  "<a href=\"$url\"><div>#$::cnt $name</div>\n<img width=50% border=0 src=${thumb}>\n</a>\n"
+	set line  "<a href=\"$url\"><div>#$::cnt $name</div>\n<img width=75% border=0 src=${thumb}>\n</a>\n"
 	write $line
 	finish
     }
@@ -99,9 +99,10 @@ runit "Text" 23847d93-4bca-4d54-a6db-f96a19be250b
 runit "Boulder and Colorado" 4624f63d-cd71-43e8-a558-83835c6b5541
 runit Dashboards eb4102f8-720f-4ef3-9211-0ce5940da04d
 runit "Media" bca6228e-3f8e-49d4-a20e-b5a0ea8a6441
-runit Features 26fff0d9-3de7-4bbd-8a6f-a26d8a287f4a
-
 runit Cards e4b6667d-d640-4048-a756-b06e4c352a62 3
+#runit Features 26fff0d9-3de7-4bbd-8a6f-a26d8a287f4a
+runit Misc a7fe0b5c-5c1b-4005-afce-e92b082fa335
+runit Notebooks 38bb6bb4-3f51-4625-9acd-c79c4f445c78
 finish
 exit
 

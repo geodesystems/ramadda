@@ -687,7 +687,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         },
 
 	getCloser: function() {
-	    return "";
+	    if(true) return "";
 	    return  HU.jsLink("",HU.getIconImage(icon_close, [ID,this.domId("close"),STYLE,HU.css("cursor","pointer")]));
 	},
 	initCloser: function(what) {

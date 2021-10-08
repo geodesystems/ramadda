@@ -215,7 +215,7 @@ var Utils =  {
 	if(!t) return null;
 	t = String(t);
 	return t.replace(/_leftbracket_/g,"[").replace(/_rightbracket_/g,"]").replace(/_dq_/g,"\"\"").replace(/&quote;/gi, '\"').replace(/_quote_/gi, '\"').replace(/_qt_/gi, '\"').replace(/_newline_/gi, '\n').replace(/newline/gi, '\n').replace(/_nl_/g,'\n');
-	r    },
+    },
     handleActionResults: function(id,url) {
 	setTimeout(() =>{
 	    let success=json=>{
@@ -996,7 +996,7 @@ var Utils =  {
                 minute: 'numeric'
     },
     formatDate: function(date, options, args) {
-	return this.formatDateWithFormat(date,"yyyy-mm-dd HH:MM");
+	if(true) return this.formatDateWithFormat(date,"yyyy-mm-dd HH:MM");
 	if (!args) args = {};
         if (!options) {
             options = this.dateOptions;
