@@ -853,11 +853,13 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
         height: "400px",
     });
     let SUPER = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_DOTPLOT, properties);
-    RamaddaUtil.inherit(this, SUPER);
+    let myProps = [
+	{label:'Dotplot Display'},
+	{p:'fields',ex:''},
+	{p:'labelField',ex:''},	
+    ];
 
-
-    addRamaddaDisplay(this);
-    RamaddaUtil.defineMembers(this, {
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         getDisplayStyle: function() {
             return "";
             return "border: 1px #ccc solid;";
@@ -869,12 +871,19 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
             var pointData = this.getData();
             if (pointData == null) return;
             let allFields = pointData.getRecordFields();
-            let stringField = this.getFieldByType(allFields, "string");
+            let stringField = this.getFieldById(allFields,this.getLabelField());
+            if (!stringField) {
+		stringField = this.getFieldByType(allFields, "string");
+	    }
+
             if (!stringField) {
                 stringField = allFields[0];
             }
 
-            let fields = this.getFieldsByType(allFields, "numeric");
+	    let fields   = this.getFieldsByIds(null, this.getPropertyFields("",true));
+            if (fields.length == 0) {
+		fields = this.getFieldsByType(allFields, "numeric");
+	    }
             if (fields.length == 0) {
 		fields = this.getFieldsByType(allFields, "date");
 	    }
