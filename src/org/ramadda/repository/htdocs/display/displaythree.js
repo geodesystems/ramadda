@@ -29,7 +29,8 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 	{p:'ambientLight',d:'ffffff',ex:'0000ff'},
 	{p:'initialAltitude',d:250,ex:500},
 	{p:'color',d:'blue',ex:'red'},
-	{p:'radius',d:1,ex:'1'}
+	{p:'radius',d:1,ex:'1'},
+	{p:'selectedDiv',ex:'div id to show selected record'},	
     ];
     const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_THREE_GLOBE, properties);
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -41,11 +42,15 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
         },
         updateUI: async function() {
             if(!ramaddaLoadedThree) {
+                ramaddaLoadedThree = true;
 		await Utils.importJS("//unpkg.com/three");
 		await Utils.importJS("//unpkg.com/three/examples/js/controls/TrackballControls.js");
 		await Utils.importJS("//unpkg.com/three-globe");
-                ramaddaLoadedThree = true;
             }
+	    if(!window["THREE"]) {
+		setTimeout(()=>{this.updateUI()},100);
+		return
+	    }
 	    if(!THREE.TrackballControls) {
 		setTimeout(()=>{this.updateUI()},100);
 		return
@@ -66,16 +71,18 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
             let colorBy = this.getColorByInfo(records);
 	    let dfltColor = this.getColor();
 	    let gData = [];
-	    records.forEach(record=>{
+	    records.forEach((record,idx)=>{
 		let pt = {
 		    lat:record.getLatitude(),
 		    lng:record.getLongitude(),		    
 		    color:colorBy.getColorFromRecord(record, dfltColor),
 		    height:0,
 		    radius:this.getRadius(),
+		    record:record,
 		};
 		gData.push(pt);
 	    });
+
 
 	    let pts = this.globe.pointsData(gData)
 		.pointAltitude('height')
@@ -145,8 +152,42 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 		console.error("Error creating trackball control:" + err);
 		console.log("ctor:");console.log(THREE.TrackballControls);
 		console.error(err.stack);
-		
 	    }
+
+	    let mouse=event=>{
+		event.preventDefault();
+		if(event.which != 3)  return;
+		let r = new THREE.Raycaster();
+		let mouse = {
+		    x: ( event.offsetX / w) * 2 - 1,
+		    y : - ( event.offsetY / h) * 2 + 1
+		};
+		r.setFromCamera( mouse, camera ); 
+		let dataObjects = [];
+		let f= (object,idx)=>{
+		    if(object.__data && object.__data.record) dataObjects.push(object);
+		    if(object.children)
+			object.children.forEach(f);
+		}
+		scene.children.forEach(f);
+		let intersects = r.intersectObjects(dataObjects,true);
+		if(intersects.length==0) {
+		    console.log("nothing found");
+		    return;
+		}
+		if(intersects.length>0) {
+		    let record = intersects[0].object.__data.record;
+		    console.log("record:" + record);
+		    this.propagateEventRecordSelection({record: record})
+		    if(this.getSelectedDiv()) {
+			let html = this.getRecordHtml(record);
+			$("#" + this.getSelectedDiv()).html(html);
+		    }
+		}
+	    };
+	    renderer.domElement.addEventListener( 'mouseup', mouse, false );
+
+
 
 
 	    // Kick-off renderer
