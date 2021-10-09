@@ -1440,6 +1440,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'colorTablePruneRight',ex:'N',tt:'Prune last N colors'},
 	{p:'colorByMin',ex:'value',tt:'Min scale value'},
 	{p:'colorByMax',ex:'value',tt:'Max scale value'},
+	{p:'nullColor',ex:'transparent'},
 	{p:'showColorTable',ex:'false',tt:'Display the color table'},
 	{p:'showColorTableDots',ex:true},
 	{p:'colorTableDotsDecimals',ex:'0'},

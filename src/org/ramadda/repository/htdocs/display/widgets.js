@@ -1030,6 +1030,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	colorThresholdField:display.getFieldById(null, display.getProperty("colorThresholdField")),
 	aboveColor: display.getProperty("colorThresholdAbove","red"),
 	belowColor:display.getProperty("colorThresholdAbove","blue"),
+	nullColor:display.getProperty("nullColor"),	
 	excludeZero:this.getProperty(PROP_EXCLUDE_ZERO, false),
 	overrideRange: this.getProperty("overrideColorRange",false),
 	inverse: this.getProperty("Inverse",false),
@@ -1434,6 +1435,7 @@ ColorByInfo.prototype = {
 //	    if(this.colorHistory[value]) return this.colorHistory[value];
 //	}
 	let c = this.getColorInner(value, pointRecord);
+	if(c==null) c=this.nullColor;
 //	if(checkHistory) {
 //	    this.colorHistory[value] = c;
 //	}
