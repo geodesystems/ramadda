@@ -7525,6 +7525,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 					    "/display/displayd3.js",
 					    "/display/displaytext.js",
 					    "/display/displayext.js",
+					    "/display/displaythree.js",					    
 					    "/repositories.js"}) {
 		    HU.importJS(sb, getPageHandler().getCdnPath(js));
 		    sb.append("\n");
