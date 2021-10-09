@@ -25,7 +25,9 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 	{p:'showAtmosphere',d:true,ex:'false'},
 	{p:'atmosphereColor',d:'#fff',ex:'red'},	    	    
 	{p:'atmosphereAltitude',d:0.25,ex:0.5},
+	{p:'backgroundColor',d:'CAE1FF',ex:'ffffff'},
 	{p:'ambientLight',d:'ffffff',ex:'0000ff'},
+	{p:'initialAltitude',d:250,ex:500},
 	{p:'color',d:'blue',ex:'red'},
 	{p:'radius',d:1,ex:'1'}
     ];
@@ -113,12 +115,17 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 	    scene.add(new THREE.AmbientLight(parseInt(Number(light), 10)));
 	    scene.add(new THREE.DirectionalLight(0xffffff, 0.6));
 
+	    let bg = this.getBackgroundColor();
+	    if(!bg.startsWith("0x")) bg = '0x' + bg;	    
+	    scene.background = new THREE.Color(parseInt(Number(bg), 10));
+
 
 	    // Setup camera
 	    const camera = new THREE.PerspectiveCamera();
 	    camera.aspect = w/h;
 	    camera.updateProjectionMatrix();
-	    camera.position.z = 500;
+	    camera.position.z = +this.getInitialAltitude();
+
 
 	    let controls;
 	    // Add camera controls
