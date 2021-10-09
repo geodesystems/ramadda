@@ -1030,6 +1030,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	colorThresholdField:display.getFieldById(null, display.getProperty("colorThresholdField")),
 	aboveColor: display.getProperty("colorThresholdAbove","red"),
 	belowColor:display.getProperty("colorThresholdAbove","blue"),
+	nullColor:display.getProperty("nullColor"),	
 	excludeZero:this.getProperty(PROP_EXCLUDE_ZERO, false),
 	overrideRange: this.getProperty("overrideColorRange",false),
 	inverse: this.getProperty("Inverse",false),
@@ -1434,6 +1435,7 @@ ColorByInfo.prototype = {
 //	    if(this.colorHistory[value]) return this.colorHistory[value];
 //	}
 	let c = this.getColorInner(value, pointRecord);
+	if(c==null) c=this.nullColor;
 //	if(checkHistory) {
 //	    this.colorHistory[value] = c;
 //	}
@@ -4474,6 +4476,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'colorTablePruneRight',ex:'N',tt:'Prune last N colors'},
 	{p:'colorByMin',ex:'value',tt:'Min scale value'},
 	{p:'colorByMax',ex:'value',tt:'Max scale value'},
+	{p:'nullColor',ex:'transparent'},
 	{p:'showColorTable',ex:'false',tt:'Display the color table'},
 	{p:'showColorTableDots',ex:true},
 	{p:'colorTableDotsDecimals',ex:'0'},
@@ -46468,11 +46471,13 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
         height: "400px",
     });
     let SUPER = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_DOTPLOT, properties);
-    RamaddaUtil.inherit(this, SUPER);
+    let myProps = [
+	{label:'Dotplot Display'},
+	{p:'fields',ex:''},
+	{p:'labelField',ex:''},	
+    ];
 
-
-    addRamaddaDisplay(this);
-    RamaddaUtil.defineMembers(this, {
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         getDisplayStyle: function() {
             return "";
             return "border: 1px #ccc solid;";
@@ -46484,12 +46489,19 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
             var pointData = this.getData();
             if (pointData == null) return;
             let allFields = pointData.getRecordFields();
-            let stringField = this.getFieldByType(allFields, "string");
+            let stringField = this.getFieldById(allFields,this.getLabelField());
+            if (!stringField) {
+		stringField = this.getFieldByType(allFields, "string");
+	    }
+
             if (!stringField) {
                 stringField = allFields[0];
             }
 
-            let fields = this.getFieldsByType(allFields, "numeric");
+	    let fields   = this.getFieldsByIds(null, this.getPropertyFields("",true));
+            if (fields.length == 0) {
+		fields = this.getFieldsByType(allFields, "numeric");
+	    }
             if (fields.length == 0) {
 		fields = this.getFieldsByType(allFields, "date");
 	    }
@@ -47327,5 +47339,163 @@ function RamaddaParcoordsDisplay(displayManager, id, properties) {
 		this.displayColorTable(ct, ID_COLORTABLE,ctMin,ctMax);
 
         },
+    });
+}
+/**
+   Copyright 2008-2021 Geode Systems LLC
+*/
+
+
+const DISPLAY_THREE_GLOBE = "three_globe";
+addGlobalDisplayType({
+    type: DISPLAY_THREE_GLOBE,
+    forUser: true,
+    label: "3D Globe",
+    requiresData: true,
+    category: CATEGORY_MAPS
+});
+
+var ramaddaLoadedThree=false;
+
+function RamaddaThree_globeDisplay(displayManager, id, properties) {
+    const ID_GLOBE = "globe";
+    let myProps = [
+        {label:'3D Globe Attributes'},
+	{p:"globeWidth",d:800},
+	{p:"globeHeight",d:400},
+	{p:"baseImage",d:"earth-blue-marble.jpg",ex:"earth-blue-marble.jpg|earth-day.jpg|earth-dark.jpg|caida.jpg"},
+	{p:'showGraticules'},
+	{p:'showAtmosphere',d:true,ex:'false'},
+	{p:'atmosphereColor',d:'#fff',ex:'red'},	    	    
+	{p:'atmosphereAltitude',d:0.25,ex:0.5},
+	{p:'ambientLight',d:'ffffff',ex:'0000ff'},
+	{p:'color',d:'blue',ex:'red'},
+	{p:'radius',d:1,ex:'1'}
+    ];
+    const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_THREE_GLOBE, properties);
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+        needsData: function() {
+            return true;
+        },
+        initDisplay:  function() {
+            SUPER.initDisplay.call(this);
+        },
+        updateUI: async function() {
+            if(!ramaddaLoadedThree) {
+		await Utils.importJS("//unpkg.com/three");
+		await Utils.importJS("//unpkg.com/three/examples/js/controls/TrackballControls.js");
+		await Utils.importJS("//unpkg.com/three-globe");
+                ramaddaLoadedThree = true;
+            }
+	    if(!THREE.TrackballControls) {
+		setTimeout(()=>{this.updateUI()},100);
+		return
+	    }
+	    if(!window["ThreeGlobe"]) {
+		setTimeout(()=>{this.updateUI()},100);
+		return
+	    }	    
+            SUPER.updateUI.call(this);
+	    let records =this.filterData();
+	    if(!records) return;
+
+
+	    if(!this.globe) {
+		this.createGlobe();
+	    }
+
+            let colorBy = this.getColorByInfo(records);
+	    let dfltColor = this.getColor();
+	    let gData = [];
+	    records.forEach(record=>{
+		let pt = {
+		    lat:record.getLatitude(),
+		    lng:record.getLongitude(),		    
+		    color:colorBy.getColorFromRecord(record, dfltColor),
+		    height:0,
+		    radius:this.getRadius(),
+		};
+		gData.push(pt);
+	    });
+
+	    let pts = this.globe.pointsData(gData)
+		.pointAltitude('height')
+		.pointColor('color')
+		.pointRadius('radius');
+
+	    if(colorBy.isEnabled()) {
+		colorBy.displayColorTable();
+	    }
+
+        },
+	createGlobe:function() {
+	    let html = HU.center(HU.div([ID, this.domId(ID_GLOBE)]));
+	    this.setContents(html);
+	    let image  = this.getBaseImage();
+	    if(!image.startsWith("http") && !image.startsWith("/")) image = ramaddaBaseUrl+"/images/maps/" + image;
+	    //Initial example code from https://github.com/vasturiano/three-globe
+	    this.globe = new ThreeGlobe()
+		  .globeImageUrl(image)	    
+//		  .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
+		  .showGraticules(this.getShowGraticules())
+		  .showAtmosphere(this.getShowAtmosphere())
+		  .atmosphereColor(this.getAtmosphereColor())	    	    
+		  .atmosphereAltitude(this.getAtmosphereAltitude())	    	    
+	    // Setup renderer
+	    let w  = this.getGlobeWidth();
+	    let h = this.getGlobeHeight();
+	    const renderer = new THREE.WebGLRenderer();
+	    renderer.setSize(w,h);
+	    document.getElementById(this.domId(ID_GLOBE)).appendChild(renderer.domElement);
+
+	    // Setup scene
+	    const scene = new THREE.Scene();
+	    scene.add(this.globe);
+	    let light = this.getAmbientLight();
+	    if(!light.startsWith("0x")) light = '0x' + light;
+	    scene.add(new THREE.AmbientLight(parseInt(Number(light), 10)));
+	    scene.add(new THREE.DirectionalLight(0xffffff, 0.6));
+
+
+	    // Setup camera
+	    const camera = new THREE.PerspectiveCamera();
+	    camera.aspect = w/h;
+	    camera.updateProjectionMatrix();
+	    camera.position.z = 500;
+
+	    let controls;
+	    // Add camera controls
+	    try {
+		controls = new THREE.TrackballControls(camera, renderer.domElement);
+		controls.minDistance = 101;
+		controls.rotateSpeed = 5;
+		controls.zoomSpeed = 0.8;
+		let canvas = this.jq(ID_GLOBE).find('canvas');
+		canvas.attr('tabindex','1');
+		renderer.domElement.addEventListener('keydown', (e) => {
+		    if(e.code=="KeyR") {
+			controls.reset();
+		    }
+		});
+	    } catch(err) {
+		console.error("Error creating trackball control:" + err);
+		console.log("ctor:");console.log(THREE.TrackballControls);
+		console.error(err.stack);
+		
+	    }
+
+
+	    // Kick-off renderer
+	    (function animate() { // IIFE
+		// Frame cycle
+		if(controls)
+		    controls.update();
+		renderer.render(scene, camera);
+		setTimeout(()=>{
+		    requestAnimationFrame(animate);
+		},10);
+	    })();
+	}
+	    
     });
 }
