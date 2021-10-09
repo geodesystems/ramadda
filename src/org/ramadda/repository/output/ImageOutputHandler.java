@@ -320,12 +320,11 @@ public class ImageOutputHandler extends OutputHandler {
             return;
         }
 
+	boolean ok = false;
         if (entries.size() > 0) {
-            boolean ok = false;
             for (Entry entry : entries) {
                 if (entry.isImage()) {
                     ok = true;
-
                     break;
                 }
             }
@@ -333,7 +332,7 @@ public class ImageOutputHandler extends OutputHandler {
                 return;
             }
         }
-        if (state.getEntry() != null && state.getEntry().isImage()) {
+        if (ok || (state.getEntry() != null && state.getEntry().isImage())) {
             //            links.add(makeLink(request, state.getEntry(), OUTPUT_SLIDESHOW));
             links.add(makeLink(request, state.getEntry(), OUTPUT_GALLERY));
             links.add(makeLink(request, state.getEntry(), OUTPUT_ZOOM));	    
@@ -1158,7 +1157,7 @@ public class ImageOutputHandler extends OutputHandler {
         if (message != null) {
             sb.append(message);
         }
-        sb.append(request.form(getRepository().URL_ENTRY_SHOW));
+        sb.append(request.formPost(getRepository().URL_ENTRY_SHOW));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_COLLAGE));
         sb.append(HtmlUtils.submit("Make Collage", ARG_SUBMIT));
@@ -1381,10 +1380,8 @@ public class ImageOutputHandler extends OutputHandler {
                                     child.getResource().getPath(), true));
                         if (imageBytes == null) {
                             System.err.println("no image:" + child);
-
                             return;
                         }
-
                         Image image = ImageIO.read(
                                           new ByteArrayInputStream(
                                               imageBytes));
@@ -1397,7 +1394,6 @@ public class ImageOutputHandler extends OutputHandler {
                                     cropArray[0], cropArray[1], cropArray[2],
                                     cropArray[3]);
                             }
-
                             imageArray[idx] = image;
                         }
                     } catch (Exception exc) {
@@ -1409,7 +1405,7 @@ public class ImageOutputHandler extends OutputHandler {
                     }
                 }
             });
-        }
+	}
 
         int tries = 0;
         while (done[0] != selected.size()) {
