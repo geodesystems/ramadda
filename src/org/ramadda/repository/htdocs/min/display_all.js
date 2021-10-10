@@ -1029,7 +1029,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
         field: theField,
 	colorThresholdField:display.getFieldById(null, display.getProperty("colorThresholdField")),
 	aboveColor: display.getProperty("colorThresholdAbove","red"),
-	belowColor:display.getProperty("colorThresholdAbove","blue"),
+	belowColor:display.getProperty("colorThresholdBelow","blue"),
 	nullColor:display.getProperty("nullColor"),	
 	excludeZero:this.getProperty(PROP_EXCLUDE_ZERO, false),
 	overrideRange: this.getProperty("overrideColorRange",false),
