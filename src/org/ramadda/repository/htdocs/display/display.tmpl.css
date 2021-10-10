@@ -550,6 +550,10 @@ a.display-container {
 }
 
 
+.display-record-table-label {
+    font-weight:bold;
+}
+
 .display-records-record {
     margin-bottom:8px;
     border-bottom:1px solid #ccc;
@@ -2777,4 +2781,19 @@ table.dataTable tfoot td {
 .ramadda-display-editablemap-command-active, .ramadda-display-editablemap-command-active:hover {
     border:1px solid #000;
     background:#ccc;
+}
+
+.display-three-globe-popup {
+    @SHADOW-POPUP@
+    background-color:rgba(250,250,250,0.9);    
+    width:300px;
+    max-height:400px;
+    overflow-y:auto;
+    overflow-x:auto;    
+}
+
+
+.display-three-globe-popup .display-record-table-label {
+    max-width:100px;
+    overflow-x:hidden;
 }

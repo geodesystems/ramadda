@@ -967,7 +967,7 @@ function DisplayThing(argId, argProperties) {
 		    } 
 		    label  = HU.div([TITLE,tt],label);
                     let row = HU.open(TR,['valign','top']);
-		    row += HU.td(labelColAttrs,HU.b(label));
+		    row += HU.td(labelColAttrs,HU.div([CLASS,"display-record-table-label"], label));
 		    row += HU.td(["field-id",field.getId(),"field-value",fieldValue, "align","left"], HU.div([STYLE,HU.css('margin-left','5px')], value));
 		    row += HU.close(TR);
 		    rows.push(row);
