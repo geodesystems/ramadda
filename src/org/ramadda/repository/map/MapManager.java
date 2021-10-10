@@ -311,7 +311,7 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
     public Result processWms(Request request) throws Exception {
         String layer = request.getString("layers", "white");
         InputStream inputStream =
-            IOUtil.getInputStream("/org/ramadda/repository/htdocs/images/"
+            IOUtil.getInputStream("/org/ramadda/repository/htdocs/images/maps/"
                                   + layer + ".png", getClass());
 
         return getRepository().makeResult(request, "/wms/white", inputStream,
