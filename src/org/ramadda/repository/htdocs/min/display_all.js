@@ -47360,12 +47360,54 @@ var ramaddaLoadedThree=false;
 function RamaddaThree_globeDisplay(displayManager, id, properties) {
     const ID_CONTAINER = "container";
     const ID_GLOBE = "globe";
-    const ID_POPUP = "popup";    
+    const ID_POPUP = "popup";
+    const ID_POSITION_BUTTON = "positionbutton";        
+    let positions = {
+"Base":{
+position: {x:6.048899205465489e-21,y:1.832130202344028e-20,z:250},
+up: {x:1.546799663044268e-22,y:1,z:-7.328520809376114e-23}
+},
+"North America":{
+position: {x:-185.0051316412852,y:166.36750886777244,z:-24.391663730099083},
+up: {x:0.6540380289233074,y:0.7458336330441189,z:0.12635841302550785}
+},
+"South America":{
+position: {x:-220.53665870332205,y:-71.90185405284046,z:93.24004264123046},
+up: {x:-0.2051500901346411,y:0.9474654144116881,z:0.24540319682399764}
+},
+"Europe":{
+position: {x:76.01040670390248,y:193.37167151814756,z:139.03170403539133},
+up: {x:-0.286288586763548,y:0.6309644429890481,z:-0.7210566668247681}
+},
+"Asia":{
+position: {x:215.9418144948879,y:118.22041784669743,z:-43.50937320632211},
+up: {x:-0.4872587496088534,y:0.8718613869731202,z:-0.04936226124191964}
+},
+"Africa":{
+position: {x:82.50264441171257,y:6.133419606337622,z:235.91459223415376},
+up: {x:-0.005217856566188513,y:0.9996943480371796,z:-0.024165770738191875}
+},
+"Australia":{
+position: {x:166.64046097372514,y:-104.10022198889281,z:-154.57716696953614},
+up: {x:0.32825699830271454,y:0.9086541300046129,z:-0.25806009976525474}
+},
+	"South Pole":{
+	    position: {x:0,y:-249.99925472592855,z:-0.6104395794518828},
+	    up: {x:0.9999999999999998,y:0,z:0}
+	}, 
+	"North Pole":{
+	    position: {x:12.435991378990524,y:249.68975620440986,z:0.6097253513751638},
+	    up: {x:-0.9987620026286266,y:0.049743817204226284,z:0.00012147100820090829}
+	},
+    }
+
+
     let myProps = [
         {label:'3D Globe Attributes'},
 	{p:"globeWidth",d:800},
 	{p:"globeHeight",d:400},
 	{p:"baseImage",d:"earth-blue-marble.jpg",ex:"earth-blue-marble.jpg|earth-day.jpg|earth-dark.jpg|caida.jpg|white.png|lightblue.png|black.png"},
+	{p:"initialPosition",ex:"North America|South America|Europe|Asia|Africa|Australia|South Pole|North Pole"},
 	{p:'showGraticules'},
 	{p:'showAtmosphere',d:true,ex:'false'},
 	{p:'atmosphereColor',d:'#fff',ex:'red'},	    	    
@@ -47392,7 +47434,8 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
             if(!ramaddaLoadedThree) {
                 ramaddaLoadedThree = true;
 		await Utils.importJS("//unpkg.com/three");
-		await Utils.importJS("//unpkg.com/three/examples/js/controls/TrackballControls.js");
+//		await Utils.importJS("//unpkg.com/three/examples/js/controls/TrackballControls.js");
+		await Utils.importJS(ramaddaBaseUrl+"/htdocs_v_" + new Date().getTime()+"/lib/three/TrackballControls.js");
 		await Utils.importJS("//unpkg.com/three-globe");
             }
 	    if(!window["THREE"]) {
@@ -47538,6 +47581,23 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 		colorBy.displayColorTable();
 	    }
         },
+	setPosition:function(pos) {
+	    let scope = this.controls;
+	    if(pos.target)
+		scope.target.copy(pos.target);
+	    if(pos.position)
+		scope.object.position.copy(pos.position);
+	    if(pos.up)
+		scope.object.up.copy(pos.up);
+	    if(pos.zoom)
+		scope.object.zoom = pos.zoom;
+	    scope.object.updateProjectionMatrix();
+//	    _eye.subVectors( scope.object.position, scope.target );
+	    scope.object.lookAt( scope.target );
+//	    scope.dispatchEvent( _changeEvent );
+	    //lastPosition.copy( scope.object.position );
+	    //lastZoom = scope.object.zoom;
+	},
 	getDataObjects: function(recordMap) {
 	    let dataObjects = [];
 	    let f= (object,idx)=>{
@@ -47557,12 +47617,27 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 	},
 
 	createGlobe:function() {
+	    let _this = this;
 	    let popup = HU.div([CLASS,"display-three-globe-popup",ID,this.domId(ID_POPUP),STYLE,HU.css("display","none","position","absolute","left","60%","top","0px")],"");
+	    let pos = HU.div([TITLE,"Select Position", CLASS,"ramadda-clickable", ID,this.domId(ID_POSITION_BUTTON),STYLE,HU.css("position","absolute","left","10px","top","10px")],HU.getIconImage("fa-globe"));
 	    let globe = HU.div([STYLE,HU.css("position","relative")],
+			       pos +
 			       popup +
 			       HU.div([ID, this.domId(ID_GLOBE)]));
 	    let html = HU.center(globe);
 	    this.setContents(html);
+	    this.jq(ID_POSITION_BUTTON).click(()=>{
+		let html = "";
+		for(a in positions) {
+		    html+=HU.div([CLASS,"ramadda-clickable","place",a],a);
+		}
+		html=HU.div([STYLE,HU.css("margin","5px")],html);
+		let dialog = HU.makeDialog({content:html,anchor:this.jq(ID_POSITION_BUTTON)});
+		dialog.find(".ramadda-clickable").click(function() {
+		    _this.setPosition(positions[$(this).attr("place")]);
+		    dialog.remove();
+		});
+	    });
 	    let image  = this.getBaseImage();
 	    if(!image.startsWith("http") && !image.startsWith("/")) image = ramaddaBaseUrl+"/images/maps/" + image;
 	    //Initial example code from https://github.com/vasturiano/three-globe
@@ -47593,7 +47668,7 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 	    this.scene.background = new THREE.Color(parseInt(Number(bg), 10));
 
 	    // Setup camera
-	    let _this = this;
+
 	    this.camera = new THREE.PerspectiveCamera();
 	    this.camera.aspect = w/h;
 	    this.camera.updateProjectionMatrix();
@@ -47610,7 +47685,20 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 		let canvas = this.jq(ID_GLOBE).find('canvas');
 		canvas.attr('tabindex','1');
 		renderer.domElement.addEventListener('keydown', (e) => {
+		    if(e.code=="KeyL") {
+			let name = prompt("Name:");
+			if(!name) return;
+			let attrs = ["x","y","z"];
+			let state = '"'+name+'":'+ "{\nposition: {";
+			attrs.forEach((a,idx)=>state+=(idx>0?",":"") + a+":" + this.controls.object.position[a]);
+			    state+="},\nup: {";
+			    attrs.forEach((a,idx)=>state+=(idx>0?",":"") + a+":" + this.controls.object.up[a]);
+			    state+="}\n},";
+			    console.log(state);
+		    }
+
 		    if(e.code=="KeyR") {
+			//console.log(controls.scope);
 			controls.reset();
 		    }
 		});
@@ -47673,6 +47761,15 @@ function RamaddaThree_globeDisplay(displayManager, id, properties) {
 		}
 	    };
 	    renderer.domElement.addEventListener( 'mouseup', handleMouseEvent, false );
+
+	    if(this.getInitialPosition()) {
+		let pos = positions[this.getInitialPosition()];
+		if(!pos) {
+		    console.error("Unknown initial position:" + this.getInitialPosition());
+		    return;
+		}
+		this.setPosition(positions[this.getInitialPosition()]);
+	    }
 
 	    // Kick-off renderer
 	    (function animate() { // IIFE
