@@ -332,17 +332,20 @@ public class ImageOutputHandler extends OutputHandler {
                 return;
             }
         }
-        if (ok || (state.getEntry() != null && state.getEntry().isImage())) {
-            //            links.add(makeLink(request, state.getEntry(), OUTPUT_SLIDESHOW));
+	boolean ok2 = state.getEntry() != null && state.getEntry().isImage();
+	if(ok || ok2) {
+//            links.add(makeLink(request, state.getEntry(), OUTPUT_SLIDESHOW));
             links.add(makeLink(request, state.getEntry(), OUTPUT_GALLERY));
             links.add(makeLink(request, state.getEntry(), OUTPUT_ZOOM));	    
             links.add(makeLink(request, state.getEntry(), OUTPUT_PLAYER));
             links.add(makeLink(request, state.getEntry(), OUTPUT_COLLAGE));
-            links.add(makeLink(request, state.getEntry(), OUTPUT_LABELER));
             if (repository.getProperty("service.imagemagick") != null) {
                 links.add(makeLink(request, state.getEntry(),
                                    OUTPUT_ANIMATEDGIF));
             }
+	}
+	if(ok2) {
+            links.add(makeLink(request, state.getEntry(), OUTPUT_LABELER));
             links.add(makeLink(request, state.getEntry(), OUTPUT_B64));
         }
     }
