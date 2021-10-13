@@ -591,7 +591,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'hmGroupByDate',ex:'true|day|month|year|decade',tt:'Group heatmap images by date'}, 
 	{p:'hmGroupBy',ex:'field id',tt:'Field to group heatmap images'}, 
 	{p:'hmLabelPrefix'},
-	{p:'hmShowToggle'},
+	{p:'hmShowToggle',ex:true,tt:'Show the toggle checkbox to turn off/on the heatmap'},
 	{p:'hmToggleLabel'},
 	{p:'boundsScale',ex:'0.1',tt:'Scale up the map bounds'},
 	{p:'hmFilter',ex:'average5|average9|average25|gauss9|gauss25',tt:'Apply filter to image'},
@@ -2417,6 +2417,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.clearProgress();
 	    });
 
+
+
 	},
 	filterDataPhase2:function(records) {
 	    records = SUPER.filterDataPhase2.call(this,records);
@@ -2728,6 +2730,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let recordsAtTime = groups.map[value];
 		if(debug)
 		    console.log("group:" + value +" #:" + groups.map[value].length);
+
 		let img = Gfx.gridData(this.getId(),fields, recordsAtTime,args);
 //		$("#testimg").html(HU.image(img,[WIDTH,"100%", STYLE,"border:1px solid blue;"]));
 		let label = value=="none"?"Heatmap": labelPrefix +" " +groups.labels[idx];
@@ -2958,6 +2961,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			this.map.setPointsVisibility(false);
 		    }
 		}
+
 		this.createHeatmap(records, fields, bounds);
 		return;
 	    }
@@ -3487,6 +3491,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			let value = record.getData()[colorBy.index];
 			colorByValue = value;
 			theColor =  colorBy.getColorFromRecord(record, theColor);
+//			if(idx<5) console.log("%cpt:" + value + " " + theColor,"background:" + theColor);
 		    }
                 }
 

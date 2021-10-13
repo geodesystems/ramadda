@@ -3154,13 +3154,15 @@ const VALUE_NONE = "--none--";
 const DisplayEvent = {
 };
 
-function displayDefineEvent(event) {
+function displayDefineEvent(event,dflt) {
+    if(!(dflt===false)) dflt=true;
     DisplayEvent[event] = {
 	name:event,
 	share: event+".share",
 	accept: event+".accept",
 	shareGroup: event+".shareGroup",
 	acceptGroup: event+".acceptGroup",
+	default:dflt,
 	handler:"handleEvent" + event[0].toUpperCase() + event.substring(1),
 	toString:function() {
 	    return this.name;
@@ -3182,7 +3184,7 @@ displayDefineEvent("fieldsChanged");
 displayDefineEvent("fieldValueSelected");
 displayDefineEvent("entrySelection");
 displayDefineEvent("entriesChanged");
-displayDefineEvent("mapBoundsChanged");
+displayDefineEvent("mapBoundsChanged",false);
 displayDefineEvent("animationChanged");
 displayDefineEvent("entryMouseOver");
 displayDefineEvent("entryMouseOut");
@@ -4877,8 +4879,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		cellLabelOffsetsX:Utils.split(this.getProperty("cellLabelOffsetsX")),
 		cellLabelOffsetsY:Utils.split(this.getProperty("cellLabelOffsetsY")),
 		doHeatmap:doHeatmap,
-		operator:this.getProperty("hm.operator","count"),
-		filter:this.getProperty("hm.filter")
+		operator:this.getProperty("hm.operator",this.getProperty("hmOperator","count")),
+		filter:this.getProperty("hm.filter",this.getProperty("hmFilter"))
 	    };
 	    args.cellSizeX = +this.getProperty("cellSizeX",args.cellSize);
 	    args.cellSizeY = +this.getProperty("cellSizeY",args.cellSize);
@@ -10517,7 +10519,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
 			console.log("\t" + display.type+" incoming not in accept group:" + acceptGroup);
 		    continue;
 		}
-		if(!display.acceptEvent(event,  true)) {
+		if(!display.acceptEvent(event,  event.default)) {
 		    if(displayDebug.notifyEvent)
 			console.log("\t" + display.type+" not accepting");
 		    continue;
@@ -16218,6 +16220,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:"trendlineLineWidth",ex:"true"},
 	{p:"trendlineOpacity",ex:"0.3"}		    		    		    
     ];
+    this.debugTimes = false;
 
 
     defineDisplay(this, SUPER, myProps, {
@@ -16236,6 +16239,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             return false;
         },
         updateUI: function(args) {
+
 	    let debug = false;
 	    args = args || {};
             SUPER.updateUI.call(this, args);
@@ -16533,13 +16537,14 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		this.setDisplayMessage("Creating display...");
 	    }
 
-	    if(debug)
-		console.log("\tpointData #records:" +(!pointData?"NULL": pointData.getRecords().length));
-
 
             //            let selectedFields = this.getSelectedFields(this.getFieldsToSelect(pointData));
 	    let records =this.filterData();
             let selectedFields = this.getSelectedFields();
+	    if(debug)
+		console.log("\tpointData #records:" +records.length);
+
+
 	    if(debug)
 		console.log("\tselectedFields:" + selectedFields);
 
@@ -16630,7 +16635,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let t1= new Date();
             let dataList = this.getStandardData(this.getFieldsToDisplay(fieldsToSelect), props);
 	    let t2= new Date();
-//	    Utils.displayTimes("chart.getStandardData",[t1,t2],true);
+	    if(this.debugTimes)
+		Utils.displayTimes("chart.getStandardData",[t1,t2],true);
 	    if(debug)
 		console.log(this.type +" fields:" + fieldsToSelect.length +" dataList:" + dataList.length);
             if (dataList.length == 0 && !this.userHasSelectedAField) {
@@ -16647,7 +16653,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
             if (dataList.length == 0) {
-                this.setDisplayMessage(this.getNoDataMessage());
+		this.setContents(this.getMessage(this.getNoDataMessage()));
+//                this.setDisplayMessage(this.getNoDataMessage());
                 return;
             }
 
@@ -16725,7 +16732,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
             try {
 		this.clearDisplayMessage();
+		let tt1 =new Date();
                 this.makeGoogleChart(dataList, props, selectedFields);
+		let tt2 =new Date();
+		if(this.debugTimes)
+		    Utils.displayTimes("chart.makeGoogleChart",[tt1,tt2],true);
             } catch (e) {
 		this.handleError("Error making chart:" + e,e);
                 return;
@@ -17396,13 +17407,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		chartOptions.trendlines = this.makeTrendlinesInfo(dataTable);
 	    }
 
-/*
-	       if(this.type=="table") {
-		   Utils.displayTimes("makeDataTable",times,true);
-//	       console.log(this.type+" records:" + dataList.length);
-//	       for(a in this.getPropertyCounts)if(this.getPropertyCounts[a]>10) console.log("\t"+ a +"=" + this.getPropertyCounts[a]);
-	       }
-*/
+	    if(this.debugTimes)
+		Utils.displayTimes("makeDataTable",times,true);
             return dataTable;
         },
         makeChartOptions: function(dataList, props, selectedFields) {
@@ -17834,7 +17840,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			['2030', 28, 19]
 		    ]);
 
+		    let t1 = new Date();
 		    chart.draw(this.useTestData?testData:dataTable, this.chartOptions);
+//		    Utils.displayTimes("chart.draw",[t1,new Date()],true);
 		} catch(err) {
 		    this.handleError("Error creating chart:" + err,err);
 		    return null;
@@ -32502,7 +32510,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'hmGroupByDate',ex:'true|day|month|year|decade',tt:'Group heatmap images by date'}, 
 	{p:'hmGroupBy',ex:'field id',tt:'Field to group heatmap images'}, 
 	{p:'hmLabelPrefix'},
-	{p:'hmShowToggle'},
+	{p:'hmShowToggle',ex:true,tt:'Show the toggle checkbox to turn off/on the heatmap'},
 	{p:'hmToggleLabel'},
 	{p:'boundsScale',ex:'0.1',tt:'Scale up the map bounds'},
 	{p:'hmFilter',ex:'average5|average9|average25|gauss9|gauss25',tt:'Apply filter to image'},
@@ -34328,6 +34336,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.clearProgress();
 	    });
 
+
+
 	},
 	filterDataPhase2:function(records) {
 	    records = SUPER.filterDataPhase2.call(this,records);
@@ -34639,6 +34649,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let recordsAtTime = groups.map[value];
 		if(debug)
 		    console.log("group:" + value +" #:" + groups.map[value].length);
+
 		let img = Gfx.gridData(this.getId(),fields, recordsAtTime,args);
 //		$("#testimg").html(HU.image(img,[WIDTH,"100%", STYLE,"border:1px solid blue;"]));
 		let label = value=="none"?"Heatmap": labelPrefix +" " +groups.labels[idx];
@@ -34869,6 +34880,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			this.map.setPointsVisibility(false);
 		    }
 		}
+
 		this.createHeatmap(records, fields, bounds);
 		return;
 	    }
@@ -35398,6 +35410,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			let value = record.getData()[colorBy.index];
 			colorByValue = value;
 			theColor =  colorBy.getColorFromRecord(record, theColor);
+//			if(idx<5) console.log("%cpt:" + value + " " + theColor,"background:" + theColor);
 		    }
                 }
 
@@ -47391,6 +47404,14 @@ up: {x:-0.005217856566188513,y:0.9996943480371796,z:-0.024165770738191875}
 position: {x:166.64046097372514,y:-104.10022198889281,z:-154.57716696953614},
 up: {x:0.32825699830271454,y:0.9086541300046129,z:-0.25806009976525474}
 },
+"Pacific":{
+position: {x:-50.02109926067879,y:70.1629622786457,z:-293.1352563989274},
+up: {x:0.578136747554258,y:0.8103545388010297,z:0.09530699120186392}
+},
+"North Atlantic":{
+position: {x:-137.7219663374266,y:134.93931772927482,z:159.1352899859414},
+up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
+},
 	"South Pole":{
 	    position: {x:0,y:-249.99925472592855,z:-0.6104395794518828},
 	    up: {x:0.9999999999999998,y:0,z:0}
@@ -47408,7 +47429,7 @@ up: {x:0.32825699830271454,y:0.9086541300046129,z:-0.25806009976525474}
 	{p:"globeHeight",d:400},
 	{p:"baseImage",d:"earth-blue-marble.jpg",ex:"earth-blue-marble.jpg|earth-day.jpg|earth-dark.jpg|caida.jpg|white.png|lightblue.png|black.png"},
 	{p:"initialPosition",ex:"North America|South America|Europe|Asia|Africa|Australia|South Pole|North Pole"},
-	{p:'showGraticules'},
+	{p:'showGraticules',ex:true},
 	{p:'showAtmosphere',d:true,ex:'false'},
 	{p:'atmosphereColor',d:'#fff',ex:'red'},	    	    
 	{p:'atmosphereAltitude',d:0.25,ex:0.5},
@@ -47417,8 +47438,13 @@ up: {x:0.32825699830271454,y:0.9086541300046129,z:-0.25806009976525474}
 	{p:'initialAltitude',d:250,ex:500},
 	{p:'color',d:'blue',ex:'red'},
 	{p:'radius',d:1,ex:'1'},
-	{p:'heightMin',d:0},
-	{p:'heightMax',d:0.5},	
+	{p:'heightField',tt:'field to map height to'},
+	{p:'heightMin',d:0,tt:'min height range that heightField value percent is mapped to'},
+	{p:'heightMax',d:0.5},
+	{p:'radiusField',tt:'field to map radius to'},
+	{p:'radiusMin',d:1},
+	{p:'radiusMax',d:5},
+	{p:'showSpheres',ex:true},			
 	{p:'selectedDiv',ex:'div id to show selected record'},
 	{p:'doPopup',d:true,ex:'',tt:''},		
     ];
@@ -47462,7 +47488,8 @@ up: {x:0.32825699830271454,y:0.9086541300046129,z:-0.25806009976525474}
             let colorBy = this.getColorByInfo(records);
 	    let dfltColor = this.getColor();
 	    let pointData = [];
-	    let heightField = this.getFieldById(null, this.getProperty("heightField"));
+
+	    let heightField = this.getFieldById(null, this.getHeightField());
 	    let heights;
 	    if(heightField) {
 		heights = this.getColumnValues(records, heightField);
@@ -47476,6 +47503,24 @@ up: {x:0.32825699830271454,y:0.9086541300046129,z:-0.25806009976525474}
 		let height = heightMin+percent*(heightMax-heightMin);
 		return height;
 	    }
+
+
+	    let radiusField = this.getFieldById(null, this.getProperty("radiusField"));
+	    let radiuss;
+	    if(radiusField) {
+		radiuss = this.getColumnValues(records, radiusField);
+	    }
+	    let radiusMin = this.getRadiusMin();
+	    let radiusMax = this.getRadiusMax();	    
+	    let getRadius=record=>{
+		if(!radiuss || !record) return this.getRadius();
+		let v = radiusField.getValue(record);
+		let percent = (v-radiuss.min)/(radiuss.max-radiuss.min);
+		let radius = radiusMin+percent*(radiusMax-radiusMin);
+		return radius;
+	    }
+
+
 
 	    let polygonField = this.getFieldById(null, this.getProperty("polygonField"));
 	    if(polygonField) {
@@ -47561,7 +47606,7 @@ up: {x:0.32825699830271454,y:0.9086541300046129,z:-0.25806009976525474}
 			lng:record.getLongitude(),		    
 			color:colorBy.getColorFromRecord(record, dfltColor),
 			height:getHeight(record),
-			radius:this.getRadius(),
+			radius:getRadius(record),
 			record:record,
 		    };
 		    pointData.push(pt);
@@ -47570,12 +47615,25 @@ up: {x:0.32825699830271454,y:0.9086541300046129,z:-0.25806009976525474}
 	    }
 
 	    if(pointData.length>0) {
-		this.globe.pointsData(pointData)
-		    .pointAltitude('height')
-		    .pointColor('color')
-		    .pointRadius('radius');
+		if(this.getShowSpheres(true)) {
+		    this.globe.customLayerData(pointData)
+			.customThreeObject(d => new THREE.Mesh(
+			    new THREE.SphereBufferGeometry(d.radius),
+			    new THREE.MeshLambertMaterial({ color: d.color })
+			))
+			.customThreeObjectUpdate((obj, d) => {
+			    Object.assign(obj.position, this.globe.getCoords(d.lat, d.lng, d.height+0.01));
+			});
+		} else {
+		  this.globe.pointsData(pointData)
+			.pointAltitude('height')
+			.pointColor('color')
+			.pointRadius('radius');
+		}
 	    }
-		
+
+
+
 
 	    if(colorBy.isEnabled()) {
 		colorBy.displayColorTable();
@@ -47625,6 +47683,7 @@ up: {x:0.32825699830271454,y:0.9086541300046129,z:-0.25806009976525474}
 			       popup +
 			       HU.div([ID, this.domId(ID_GLOBE)]));
 	    let html = HU.center(globe);
+	    html  = globe;
 	    this.setContents(html);
 	    this.jq(ID_POSITION_BUTTON).click(()=>{
 		let html = "";
@@ -47639,6 +47698,9 @@ up: {x:0.32825699830271454,y:0.9086541300046129,z:-0.25806009976525474}
 		});
 	    });
 	    let image  = this.getBaseImage();
+
+
+
 	    if(!image.startsWith("http") && !image.startsWith("/")) image = ramaddaBaseUrl+"/images/maps/" + image;
 	    //Initial example code from https://github.com/vasturiano/three-globe
 	    this.globe = new ThreeGlobe()
@@ -47648,6 +47710,7 @@ up: {x:0.32825699830271454,y:0.9086541300046129,z:-0.25806009976525474}
 		  .showAtmosphere(this.getShowAtmosphere())
 		  .atmosphereColor(this.getAtmosphereColor())	    	    
 		  .atmosphereAltitude(this.getAtmosphereAltitude())	    	    
+
 	    // Setup renderer
 	    let w  = this.getGlobeWidth();
 	    let h = this.getGlobeHeight();
@@ -47699,6 +47762,13 @@ up: {x:0.32825699830271454,y:0.9086541300046129,z:-0.25806009976525474}
 
 		    if(e.code=="KeyR") {
 			//console.log(controls.scope);
+			if(this.getInitialPosition()) {
+			    let pos = positions[this.getInitialPosition()];
+			    if(pos) {
+				this.setPosition(pos);
+				return;
+			    }
+			}
 			controls.reset();
 		    }
 		});
@@ -47768,8 +47838,27 @@ up: {x:0.32825699830271454,y:0.9086541300046129,z:-0.25806009976525474}
 		    console.error("Unknown initial position:" + this.getInitialPosition());
 		    return;
 		}
-		this.setPosition(positions[this.getInitialPosition()]);
+		this.setPosition(pos);
 	    }
+
+
+
+	    let globeImage = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAABzCAYAAABggmasAAAGnUlEQVR4nO3YoZKUVxSF0XmRuMjISFzkqLxBJBKJiyQKiaIqBomkMAgEjopCIZGRcZGdJ8i9+9Y+0E3NWlXbd89M93++ubvjpry93L2f3F8PbJe/h/d6eC+H92x4b4b3YXifhvdxeNPv9zK76c/bH8Obfr+Xf4c3/Pd367+Paz8PAfhGBIgAESCLCRABcjIBIkAA2BMgAkSALCZABMjJBIgAAWBPgAgQAbKYABEgJxMgAgSAPQEiQATIYgJEgJxMgAgQAPYEiAARIIsJEAFyMgEiQADYEyACRIAsJkAEyMkEiAABYE+ACBABspgAESAnEyACBIA9ASJABMhiAkSAnEyACBAA9gSIABEgiwkQAXIyASJAANgTIAJEgCwmQATIyQSIAAFgT4AIEAGymAARICcTIAIEgD0BIkAEyGICRICcTIAIEAD2BIgAESCLCRABcjIBIkAA2BMgAkSALCZABMjJBIgAAWBPgAgQAbKYABEgJxMgAgSAPQEiQATIYgJEgJxMgAgQAPYEiAARIIsJEAFyMgEiQADYEyACRIAsJkAEyMkEiAABYE+ACBABspgAESAnEyACBIC9Py937yd37SDYBsP0gfDP8D4P78XwHg/vyfDuh/fb8F4NbzpAvgxv+vN268Ew/Q+J6WAdDpprP78A+E4JkHICRIAIEAEiQAAgJ0DKCRABIkAEiAABgJwAKSdABIgAESACBAByAqScABEgAkSACBAAyAmQcgJEgAgQASJAACAnQMoJEAEiQASIAAGAnAApJ0AEiAARIAIEAHICpJwAESACRIAIEADICZByAkSACBABIkAAICdAygkQASJABIgAAYCcACknQASIABEgAgQAcgKknAARIAJEgAgQAMgJkHICRIAIEAEiQAAgJ0DKCRABIkAEiAABgJwAKSdABIgAESACBAByAqScABEgAkSACBAAyAmQcgJEgAgQASJAACAnQMoJEAEiQASIAAGAnAApJ0AEiAARIAIEAK5n/CCffqBPH/jTr286GJ4O7+fh/TK8H4f36/CeD+/N8KYP3unP23QgDR/kl3fDez27az8fAOCrECDlBIgAESACRIAAQE6AlBMgAkSACBABAgA5AVJOgAgQASJABAgA5ARIOQEiQASIABEgAJATIOUEiAARIAJEgABAToCUEyACRIAIEAECADkBUk6ACBABIkAECADkBEg5ASJABIgAESAAkBMg5QSIABEgAkSAAEBOgJQTIAJEgAgQAQIAOQFSToAIEAEiQAQIAOQESDkBIkAEiAARIACQEyDlBIgAESACRIAAQE6AlBMgAkSACBABAgA5AVJOgAgQASJABAgA5ARIOQEiQASIABEgAJATIOUEiAARIAJEgABAToCUEyACRIAIEAECADkBUk6ACBABIkAECADkxg/y6QPh1gPk2fCmD+jpAPlpeD8Mb/r1/T686QD58MD26sYnQABgT4CUEyACRIAIEAECADkBUk6ACBABIkAECADkBEg5ASJABIgAESAAkBMg5QSIABEgAkSAAEBOgJQTIAJEgAgQAQIAOQFSToAIEAEiQAQIAOQESDkBIkAEiAARIACQEyDlBIgAESACRIAAQE6AlBMgAkSACBABAgA5AVJOgAgQASJABAgA5ARIOQEiQASIABEgAJATIOUEiAARIAJEgABAToCUEyACRIAIEAECADkBUk6ACBABIkAECADkBEg5ASJABIgAESAAkBMg5QSIABEgAkSAAEBOgJQTIAJEgAgQAQIAOQFSToAIEAEiQAQIAOQESDkBIkAEiAARIABwPeMBcu2D4hsfHJf74U0f5NNBM71Hw3s+vJfDe/HANv3zm95wYF77+xwAvgsCpJwAESACRIAIEADICZByAkSACBABIkAAICdAygkQASJABIgAAYCcACknQASIABEgAgQAcgKknAARIAJEgAgQAMgJkHICRIAIEAEiQAAgJ0DKCRABIkAEiAABgJwAKSdABIgAESACBAByAqScABEgAkSACBAAyAmQcgJEgAgQASJAACAnQMoJEAEiQASIAAGAnAApJ0AEiAARIAIEAHICpJwAESACRIAIEADICZByAkSACBABIkAAICdAygkQASJABIgAAYCcACknQASIABEgAgQAcgKknAARIAJEgAgQAMgJkHICRIAIEAEiQAAgJ0DKCRABIkAEiAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAID/8x8ldCfh8DwIowAAAABJRU5ErkJggg==";
+//	    globeImage='//unpkg.com/three-globe/example/img/earth-water.png';
+
+/*
+	    const globeMaterial = this.globe.globeMaterial();
+//	    globeMaterial.bumpScale = 10;
+	    new THREE.TextureLoader().load(globeImage, texture => {
+		console.log("loaded");
+		globeMaterial.specularMap = texture;
+//		globeMaterial.specular = new THREE.Color('grey');
+		globeMaterial.shininess = 15;
+	    });
+*/
+
+
+
 
 	    // Kick-off renderer
 	    (function animate() { // IIFE
