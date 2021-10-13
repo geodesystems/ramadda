@@ -118,13 +118,15 @@ const VALUE_NONE = "--none--";
 const DisplayEvent = {
 };
 
-function displayDefineEvent(event) {
+function displayDefineEvent(event,dflt) {
+    if(!(dflt===false)) dflt=true;
     DisplayEvent[event] = {
 	name:event,
 	share: event+".share",
 	accept: event+".accept",
 	shareGroup: event+".shareGroup",
 	acceptGroup: event+".acceptGroup",
+	default:dflt,
 	handler:"handleEvent" + event[0].toUpperCase() + event.substring(1),
 	toString:function() {
 	    return this.name;
@@ -146,7 +148,7 @@ displayDefineEvent("fieldsChanged");
 displayDefineEvent("fieldValueSelected");
 displayDefineEvent("entrySelection");
 displayDefineEvent("entriesChanged");
-displayDefineEvent("mapBoundsChanged");
+displayDefineEvent("mapBoundsChanged",false);
 displayDefineEvent("animationChanged");
 displayDefineEvent("entryMouseOver");
 displayDefineEvent("entryMouseOut");
@@ -1841,8 +1843,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		cellLabelOffsetsX:Utils.split(this.getProperty("cellLabelOffsetsX")),
 		cellLabelOffsetsY:Utils.split(this.getProperty("cellLabelOffsetsY")),
 		doHeatmap:doHeatmap,
-		operator:this.getProperty("hm.operator","count"),
-		filter:this.getProperty("hm.filter")
+		operator:this.getProperty("hm.operator",this.getProperty("hmOperator","count")),
+		filter:this.getProperty("hm.filter",this.getProperty("hmFilter"))
 	    };
 	    args.cellSizeX = +this.getProperty("cellSizeX",args.cellSize);
 	    args.cellSizeY = +this.getProperty("cellSizeY",args.cellSize);
@@ -7481,7 +7483,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
 			console.log("\t" + display.type+" incoming not in accept group:" + acceptGroup);
 		    continue;
 		}
-		if(!display.acceptEvent(event,  true)) {
+		if(!display.acceptEvent(event,  event.default)) {
 		    if(displayDebug.notifyEvent)
 			console.log("\t" + display.type+" not accepting");
 		    continue;
