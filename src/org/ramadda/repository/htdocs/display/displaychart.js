@@ -274,6 +274,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:"trendlineLineWidth",ex:"true"},
 	{p:"trendlineOpacity",ex:"0.3"}		    		    		    
     ];
+    this.debugTimes = false;
 
 
     defineDisplay(this, SUPER, myProps, {
@@ -292,6 +293,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             return false;
         },
         updateUI: function(args) {
+
 	    let debug = false;
 	    args = args || {};
             SUPER.updateUI.call(this, args);
@@ -589,13 +591,14 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		this.setDisplayMessage("Creating display...");
 	    }
 
-	    if(debug)
-		console.log("\tpointData #records:" +(!pointData?"NULL": pointData.getRecords().length));
-
 
             //            let selectedFields = this.getSelectedFields(this.getFieldsToSelect(pointData));
 	    let records =this.filterData();
             let selectedFields = this.getSelectedFields();
+	    if(debug)
+		console.log("\tpointData #records:" +records.length);
+
+
 	    if(debug)
 		console.log("\tselectedFields:" + selectedFields);
 
@@ -686,7 +689,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let t1= new Date();
             let dataList = this.getStandardData(this.getFieldsToDisplay(fieldsToSelect), props);
 	    let t2= new Date();
-//	    Utils.displayTimes("chart.getStandardData",[t1,t2],true);
+	    if(this.debugTimes)
+		Utils.displayTimes("chart.getStandardData",[t1,t2],true);
 	    if(debug)
 		console.log(this.type +" fields:" + fieldsToSelect.length +" dataList:" + dataList.length);
             if (dataList.length == 0 && !this.userHasSelectedAField) {
@@ -703,7 +707,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
             if (dataList.length == 0) {
-                this.setDisplayMessage(this.getNoDataMessage());
+		this.setContents(this.getMessage(this.getNoDataMessage()));
+//                this.setDisplayMessage(this.getNoDataMessage());
                 return;
             }
 
@@ -781,7 +786,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
             try {
 		this.clearDisplayMessage();
+		let tt1 =new Date();
                 this.makeGoogleChart(dataList, props, selectedFields);
+		let tt2 =new Date();
+		if(this.debugTimes)
+		    Utils.displayTimes("chart.makeGoogleChart",[tt1,tt2],true);
             } catch (e) {
 		this.handleError("Error making chart:" + e,e);
                 return;
@@ -1452,13 +1461,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		chartOptions.trendlines = this.makeTrendlinesInfo(dataTable);
 	    }
 
-/*
-	       if(this.type=="table") {
-		   Utils.displayTimes("makeDataTable",times,true);
-//	       console.log(this.type+" records:" + dataList.length);
-//	       for(a in this.getPropertyCounts)if(this.getPropertyCounts[a]>10) console.log("\t"+ a +"=" + this.getPropertyCounts[a]);
-	       }
-*/
+	    if(this.debugTimes)
+		Utils.displayTimes("makeDataTable",times,true);
             return dataTable;
         },
         makeChartOptions: function(dataList, props, selectedFields) {
@@ -1890,7 +1894,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			['2030', 28, 19]
 		    ]);
 
+		    let t1 = new Date();
 		    chart.draw(this.useTestData?testData:dataTable, this.chartOptions);
+//		    Utils.displayTimes("chart.draw",[t1,new Date()],true);
 		} catch(err) {
 		    this.handleError("Error creating chart:" + err,err);
 		    return null;
