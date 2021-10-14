@@ -73,7 +73,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	{p:"globeHeight",d:400},
 	{p:"baseImage",d:"earth-blue-marble.jpg",ex:"earth-blue-marble.jpg|earth-day.jpg|earth-dark.jpg|caida.jpg|white.png|lightblue.png|black.png"},
 	{p:"globeBackgroundImage",ex:"night-sky.png|white.png|lightblue.png|black.png"},
-	{p:'backgroundColor',d:'#CAE1FF',ex:'ffffff'},
+	{p:'backgroundColor',d:'#CAE1FF',ex:'#ffffff'},
 	{p:"initialPosition",ex:"North America|South America|Europe|Asia|Africa|Australia|South Pole|North Pole"},
 	{p:'showGraticules',ex:true},
 	{p:'showAtmosphere',d:true,ex:'false'},
@@ -94,6 +94,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	{p:'showPoints',d:true,ex:'false'},
 	{p:'showSpheres',ex:true},			
 	{p:'pointRadius',d:1,ex:'1'},
+	{p:'pointResolution',d:12},
 	{p:'heightField',tt:'field to map height to'},
 	{p:'heightMin',d:0,tt:'min height range that heightField value percent is mapped to'},
 	{p:'heightMax',d:0.5},
@@ -123,8 +124,10 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    if(!this.filteredRecords) return;
 	    if(this.filteredRecords.length==0) return;
 	    let bounds = RecordUtil.getBounds(this.filteredRecords);
-	    this.globe.pointOfView({lat: bounds.south+(bounds.north-bounds.south)/2,
-				    lng: bounds.west+(bounds.east-bounds.west)/2,
+	    let lat = bounds.south+(bounds.north-bounds.south)/2;
+	    let lng = bounds.west+(bounds.east-bounds.west)/2;
+	    this.globe.pointOfView({lat: lat,
+				    lng: lng,
 				    alt:10000});
 	},
         updateUI: async function() {
@@ -272,8 +275,6 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 			}
 		    }
 		});
-		if(first) {
-		}
 		this.globe.pathsData(pathData)
 		    .pathPoints((d) => {return d.points;})		
 		    .pathColor((d) => {return [d.color,d.color]})		
@@ -309,13 +310,16 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		  this.globe.pointsData(pointData)
 			.pointAltitude('height')
 			.pointColor('color')
-			.pointRadius('radius');
+			.pointRadius('radius')
+			.pointResolution(this.getPointResolution());
 		}
 	    }
 
 	    if(colorBy.isEnabled()) {
 		colorBy.displayColorTable();
 	    }
+	    this.callHook("updateUI");
+
         },
 	getScene() {
 	    return this.globe.scene();
@@ -385,14 +389,13 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    let w  = this.getGlobeWidth();
 	    let h = this.getGlobeHeight();
 
-
 	    this.globe = Globe()(domGlobe);	    	    
 	    this.globe.width(w);
 	    this.globe.height(h);
 	    this.globe.showGraticules(this.getShowGraticules())
 		.showAtmosphere(this.getShowAtmosphere())
 		.atmosphereColor(this.getAtmosphereColor())	    	    
-		.atmosphereAltitude(this.getAtmosphereAltitude())
+		.atmosphereAltitude(this.getAtmosphereAltitude());
 
 	    let baseImage = this.getImageUrl(this.getBaseImage());
 	    if(baseImage) {
@@ -406,6 +409,8 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    if(bg) {
 		this.globe.backgroundColor(bg);
 	    }
+
+
 	    let light = this.getAmbientLight();
 	    if(light && light!="none") {
 		this.getScene().add(new THREE.AmbientLight(this.parseInt(light), this.getAmbientIntensity()));
@@ -482,6 +487,9 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		}
 		this.setPosition(pos);
 	    }
+
+	    this.callHook("createGlobe");
+
 	},
 
 
