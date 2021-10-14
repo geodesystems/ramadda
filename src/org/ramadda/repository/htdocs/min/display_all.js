@@ -47449,7 +47449,8 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
         {label:'3D Globe Attributes'},
 	{p:"globeWidth",d:800},
 	{p:"globeHeight",d:400},
-	{p:"baseImage",d:"earth-blue-marble.jpg",ex:"earth-blue-marble.jpg|earth-day.jpg|earth-dark.jpg|caida.jpg|white.png|lightblue.png|black.png"},
+	{p:"baseImage",d:"earth-blue-marble.jpg",ex:"earth-blue-marble.jpg|earth-day.jpg|earth-dark.jpg|world-boundaries.png|caida.jpg|white.png|lightblue.png|black.png"},
+	{p:'geojson',ex:'/repository/resources/us_states.geojson'},
 	{p:"globeBackgroundImage",ex:"night-sky.png|white.png|lightblue.png|black.png"},
 	{p:'backgroundColor',d:'#CAE1FF',ex:'#ffffff'},
 	{p:"initialPosition",ex:"North America|South America|Europe|Asia|Africa|Australia|South Pole|North Pole"},
@@ -47853,6 +47854,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    }
 
 
+
 	    let light = this.getAmbientLight();
 	    if(light && light!="none") {
 		this.getScene().add(new THREE.AmbientLight(this.parseInt(light), this.getAmbientIntensity()));
@@ -47875,7 +47877,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		let canvas = this.jq(ID_GLOBE).find('canvas');
 		canvas.attr('tabindex','1');
 		domGlobe.addEventListener('keydown', (e) => {
-		    if(e.code=="KeyL") {
+		    if(e.code=="KeyP") {
 			let name = prompt("Name:");
 			if(!name) return;
 			let attrs = ["x","y","z"];
@@ -47921,6 +47923,22 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    this.globe.onPathClick(handleMouseEvent);
 	    this.globe.onLabelClick(handleMouseEvent);
 	    this.globe.onGlobeClick(()=>{this.jq(ID_POPUP).hide();});
+
+
+	    if(this.getProperty("geojson")) {
+		let url = this.getProperty("geojson");
+		$.getJSON(url, json=>{
+		    this.globe.polygonsData(json.features)
+			.polygonStrokeColor(() => 'blue')
+			.polygonCapColor(()=>"transparent")
+			.polygonSideColor(()=>"transparent")		    
+
+		}).fail(err=>{
+		    console.error("failed to load json:" + url);
+		});
+	    }
+
+
 
 	    if(this.getInitialPosition()) {
 		let posArg = this.getInitialPosition();
