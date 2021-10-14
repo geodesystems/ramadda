@@ -2488,17 +2488,19 @@ var RecordUtil = {
 	let errorCnt = 0;
         for (j = 0; j < records.length; j++) {
             var record = records[j];
-            if (!isNaN(record.getLatitude()) && !isNaN(record.getLongitude())) {
+	    let lat = record.getLatitude();
+	    let lon = record.getLongitude();
+            if (!isNaN(record.getLatitude()) && !isNaN(record.getLongitude()) && lat!==null && lon!==null) {
                 if (j == 0) {
-                    north = record.getLatitude();
-                    south = record.getLatitude();
-                    west = record.getLongitude();
-                    east = record.getLongitude();
+                    north = lat;
+                    south = lat;
+                    west = lon;
+                    east = lon;
                 } else {
-                    north = Math.max(north, record.getLatitude());
-                    south = Math.min(south, record.getLatitude());
-                    west = Math.min(west, record.getLongitude());
-                    east = Math.max(east, record.getLongitude());
+                    north = Math.max(north, lat);
+                    south = Math.min(south, lat);
+                    west = Math.min(west, lon);
+                    east = Math.max(east, lon);
                 }
                 if (record.getLongitude() < -180 || record.getLatitude() > 90) {
 		    //		    if(errorCnt++<50)
