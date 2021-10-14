@@ -235,7 +235,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     private static final String[] SEARCH_FIELDS ={FIELD_CORPUS, FIELD_NAME, FIELD_DESCRIPTION, FIELD_CONTENTS,FIELD_ATTACHMENT, FIELD_PATH};
 
-    public static final int LUCENE_MAX_LENGTH = 50000000;
+    public static final int LUCENE_MAX_LENGTH = 25000000;
 
     private IndexWriter luceneWriter;
 
