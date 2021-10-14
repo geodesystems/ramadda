@@ -72,23 +72,41 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	{p:"globeWidth",d:800},
 	{p:"globeHeight",d:400},
 	{p:"baseImage",d:"earth-blue-marble.jpg",ex:"earth-blue-marble.jpg|earth-day.jpg|earth-dark.jpg|caida.jpg|white.png|lightblue.png|black.png"},
+	{p:"globeBackgroundImage",ex:"night-sky.png|white.png|lightblue.png|black.png"},
+	{p:'backgroundColor',d:'#CAE1FF',ex:'ffffff'},
 	{p:"initialPosition",ex:"North America|South America|Europe|Asia|Africa|Australia|South Pole|North Pole"},
 	{p:'showGraticules',ex:true},
 	{p:'showAtmosphere',d:true,ex:'false'},
 	{p:'atmosphereColor',d:'#fff',ex:'red'},	    	    
 	{p:'atmosphereAltitude',d:0.25,ex:0.5},
-	{p:'backgroundColor',d:'CAE1FF',ex:'ffffff'},
-	{p:'ambientLight',d:'ffffff',ex:'0000ff'},
+	{p:'ambientLight',d:'ffffff',ex:'ffffff'},
+	{p:'ambientIntensity',d:0.1,ex:'1'},
+	{p:'directionalIntensity',d:1},		
+	{p:'directionalLight1',ex:'ffffff'},
+	{p:'directionalIntensity1',d:1,ex:'0.5'},
+	{p:'directionalPosition1',ex:'0,1,0'},
+	{p:'directionalLight2',ex:'ffffff'},
+	{p:'directionalIntensity2',d:1,ex:'0.5'},		
+	{p:'directionalPosition2',ex:'0,1,0'},
+
 	{p:'initialAltitude',d:250,ex:500},
 	{p:'color',d:'blue',ex:'red'},
-	{p:'radius',d:1,ex:'1'},
+	{p:'showPoints',d:true,ex:'false'},
+	{p:'showSpheres',ex:true},			
+	{p:'pointRadius',d:1,ex:'1'},
 	{p:'heightField',tt:'field to map height to'},
 	{p:'heightMin',d:0,tt:'min height range that heightField value percent is mapped to'},
 	{p:'heightMax',d:0.5},
 	{p:'radiusField',tt:'field to map radius to'},
 	{p:'radiusMin',d:1},
 	{p:'radiusMax',d:5},
-	{p:'showSpheres',ex:true},			
+	{p:'labelFields',tt:'fields for the label'},
+	{p:'labelColor',d:'red',ex:'red'},
+	{p:'labelSize',d:0.5},
+	{p:'labelDotRadius',d:0.1},
+	{p:'labelResolution',d:3},
+	{p:'labelIncludeDot',d:true},		
+	{p:'polygonField',tt:'field that holds polygons'},
 	{p:'selectedDiv',ex:'div id to show selected record'},
 	{p:'doPopup',d:true,ex:'',tt:''},		
     ];
@@ -100,30 +118,33 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
         initDisplay:  function() {
             SUPER.initDisplay.call(this);
         },
+	dataFilterChanged: function(args) {
+	    SUPER.dataFilterChanged.call(this,args);
+	    if(!this.filteredRecords) return;
+	    if(this.filteredRecords.length==0) return;
+	    let bounds = RecordUtil.getBounds(this.filteredRecords);
+	    this.globe.pointOfView({lat: bounds.south+(bounds.north-bounds.south)/2,
+				    lng: bounds.west+(bounds.east-bounds.west)/2,
+				    alt:10000});
+	},
         updateUI: async function() {
             if(!ramaddaLoadedThree) {
                 ramaddaLoadedThree = true;
+		await Utils.importJS("//unpkg.com/globe.gl");
 		await Utils.importJS("//unpkg.com/three");
-//		await Utils.importJS("//unpkg.com/three/examples/js/controls/TrackballControls.js");
-		await Utils.importJS(ramaddaBaseUrl+"/htdocs_v_" + new Date().getTime()+"/lib/three/TrackballControls.js");
-		await Utils.importJS("//unpkg.com/three-globe");
             }
 	    if(!window["THREE"]) {
 		setTimeout(()=>{this.updateUI()},100);
 		return
-	    }
-	    if(!THREE.TrackballControls) {
-		setTimeout(()=>{this.updateUI()},100);
-		return
-	    }
-	    if(!window["ThreeGlobe"]) {
+	    }	    
+	    if(!window["Globe"]) {
 		setTimeout(()=>{this.updateUI()},100);
 		return
 	    }	    
             SUPER.updateUI.call(this);
 	    let records =this.filterData();
 	    if(!records) return;
-
+	    this.filteredRecords = records;
 
 	    if(!this.globe) {
 		this.createGlobe();
@@ -157,14 +178,41 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    let radiusMin = this.getRadiusMin();
 	    let radiusMax = this.getRadiusMax();	    
 	    let getRadius=record=>{
-		if(!radiuss || !record) return this.getRadius();
+		if(!radiuss || !record) return this.getPointRadius();
 		let v = radiusField.getValue(record);
 		let percent = (v-radiuss.min)/(radiuss.max-radiuss.min);
 		let radius = radiusMin+percent*(radiusMax-radiusMin);
 		return radius;
 	    }
 
-
+	    let labelFields = this.getFieldsByIds(null, this.getProperty("labelFields"));
+	    if(labelFields && labelFields.length) {
+		let labelData = [];
+		let labelColor = this.getLabelColor();
+		records.forEach((record,idx)=>{
+		    let label = "";
+		    labelFields.forEach((f,idx) =>{
+			if(idx>0) label+=" ";
+			label+=f.getValue(record);
+		    });
+		    labelData.push({
+			record:record,
+			label: label,
+			lat:record.getLatitude(),
+			lng:record.getLongitude(),
+			color:labelColor
+		    });
+		});
+		this.globe.labelsData(labelData)
+		    .labelLat(d => d.lat)
+		    .labelLng(d => d.lng)
+		    .labelText(d => d.label)
+		    .labelColor(d => d.color)
+		    .labelDotRadius(this.getLabelDotRadius())
+		    .labelSize(this.getLabelSize())		
+		    .labelResolution(this.getLabelResolution());
+		this.globe.labelIncludeDot(this.getLabelIncludeDot());
+	    }
 
 	    let polygonField = this.getFieldById(null, this.getProperty("polygonField"));
 	    if(polygonField) {
@@ -174,18 +222,9 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		let first = !this.didit;
 		if(!this.didit) {
 		    this.didit = true;
-//		    for(a in this.globe) console.log(a);
 		}
 		let latlon = this.getProperty("latlon",true);
-		let pathData = [[
-		    [ 17.254821446627215, -62.92306995333236, 0 ],
-		    [ 17.091324519936318, -63.58157397058453, 0 ],
-		    [ 17.456562781891563, -63.65027719398423, 0 ],
-		    [ 16.803238429608967, -63.37079745818032, 0 ],
-		    [ 16.99651000078848, -62.93961166380253, 0 ],
-		    [ 16.607371880158045, -62.14284965800188, 0 ],
-		    [ 15.87187644791576, -62.74449210722255, 0 ]]];
-		pathData = [];
+		let pathData = [];
 		let pData = [];
 		let cidx=0;
 		records.forEach((record,idx)=>{
@@ -226,7 +265,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 				lng:lon,
 				color:color,
 				height:getHeight(record),
-				radius:this.getRadius(),
+				radius:this.getPointRadius(),
 				record:record,
 			    };
 			    pointData.push(pt);
@@ -234,8 +273,6 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		    }
 		});
 		if(first) {
-//		    for(a in this.globe) console.log(a);
-//		    console.log(pathData);
 		}
 		this.globe.pathsData(pathData)
 		    .pathPoints((d) => {return d.points;})		
@@ -259,7 +296,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    }
 
 	    if(pointData.length>0) {
-		if(this.getShowSpheres(true)) {
+		if(this.getShowSpheres()) {
 		    this.globe.customLayerData(pointData)
 			.customThreeObject(d => new THREE.Mesh(
 			    new THREE.SphereBufferGeometry(d.radius),
@@ -268,7 +305,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 			.customThreeObjectUpdate((obj, d) => {
 			    Object.assign(obj.position, this.globe.getCoords(d.lat, d.lng, d.height+0.01));
 			});
-		} else {
+		} else if(this.getShowPoints()) {
 		  this.globe.pointsData(pointData)
 			.pointAltitude('height')
 			.pointColor('color')
@@ -276,15 +313,18 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		}
 	    }
 
-
-
-
 	    if(colorBy.isEnabled()) {
 		colorBy.displayColorTable();
 	    }
         },
+	getScene() {
+	    return this.globe.scene();
+	},
+	getControls() {
+	    return this.globe.controls();
+	},
 	setPosition:function(pos) {
-	    let scope = this.controls;
+	    let scope = this.getControls();
 	    if(pos.target)
 		scope.target.copy(pos.target);
 	    if(pos.position)
@@ -296,9 +336,6 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    scope.object.updateProjectionMatrix();
 //	    _eye.subVectors( scope.object.position, scope.target );
 	    scope.object.lookAt( scope.target );
-//	    scope.dispatchEvent( _changeEvent );
-	    //lastPosition.copy( scope.object.position );
-	    //lastZoom = scope.object.zoom;
 	},
 	getDataObjects: function(recordMap) {
 	    let dataObjects = [];
@@ -311,17 +348,18 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		    }
 		    dataObjects.push(object);
 		}
-		if(object.children)
+		if(object.children && object.children.length) {
 		    object.children.forEach(f);
+		}
 	    }
-	    this.scene.children.forEach(f);
+	    this.getScene().children.forEach(f);
 	    return dataObjects;
 	},
 
 	createGlobe:function() {
 	    let _this = this;
 	    let popup = HU.div([CLASS,"display-three-globe-popup",ID,this.domId(ID_POPUP),STYLE,HU.css("display","none","position","absolute","left","60%","top","0px")],"");
-	    let pos = HU.div([TITLE,"Select Position", CLASS,"ramadda-clickable", ID,this.domId(ID_POSITION_BUTTON),STYLE,HU.css("position","absolute","left","10px","top","10px")],HU.getIconImage("fa-globe"));
+	    let pos = HU.div([TITLE,"Select Position", CLASS,"ramadda-clickable", ID,this.domId(ID_POSITION_BUTTON),STYLE,HU.css("position","absolute","left","10px","top","10px","z-index","1000")],HU.getIconImage("fa-globe"));
 	    let globe = HU.div([STYLE,HU.css("position","relative")],
 			       pos +
 			       popup +
@@ -341,79 +379,72 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		    dialog.remove();
 		});
 	    });
-	    let image  = this.getBaseImage();
-
-
-
-	    if(!image.startsWith("http") && !image.startsWith("/")) image = ramaddaBaseUrl+"/images/maps/" + image;
 	    //Initial example code from https://github.com/vasturiano/three-globe
-	    this.globe = new ThreeGlobe()
-		  .globeImageUrl(image)	    
-//		  .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
-		  .showGraticules(this.getShowGraticules())
-		  .showAtmosphere(this.getShowAtmosphere())
-		  .atmosphereColor(this.getAtmosphereColor())	    	    
-		  .atmosphereAltitude(this.getAtmosphereAltitude())	    	    
 
-	    // Setup renderer
+	    let domGlobe = document.getElementById(this.domId(ID_GLOBE));
 	    let w  = this.getGlobeWidth();
 	    let h = this.getGlobeHeight();
-	    const renderer = new THREE.WebGLRenderer();
-	    renderer.setSize(w,h);
-	    document.getElementById(this.domId(ID_GLOBE)).appendChild(renderer.domElement);
 
-	    // Setup scene
-	    this.scene = new THREE.Scene();
-	    this.scene.add(this.globe);
-	    let light = this.getAmbientLight();
-	    if(!light.startsWith("0x")) light = '0x' + light;
-	    this.scene.add(new THREE.AmbientLight(parseInt(Number(light), 10)));
-	    this.scene.add(new THREE.DirectionalLight(0xffffff, 0.6));
 
+	    this.globe = Globe()(domGlobe);	    	    
+	    this.globe.width(w);
+	    this.globe.height(h);
+	    this.globe.showGraticules(this.getShowGraticules())
+		.showAtmosphere(this.getShowAtmosphere())
+		.atmosphereColor(this.getAtmosphereColor())	    	    
+		.atmosphereAltitude(this.getAtmosphereAltitude())
+
+	    let baseImage = this.getImageUrl(this.getBaseImage());
+	    if(baseImage) {
+		this.globe.globeImageUrl(baseImage);
+	    }
+	    let bgImage = this.getImageUrl(this.getGlobeBackgroundImage());
+	    if(bgImage) {
+		this.globe.backgroundImageUrl(bgImage);
+	    }
 	    let bg = this.getBackgroundColor();
-	    if(!bg.startsWith("0x")) bg = '0x' + bg;	    
-	    this.scene.background = new THREE.Color(parseInt(Number(bg), 10));
+	    if(bg) {
+		this.globe.backgroundColor(bg);
+	    }
+	    let light = this.getAmbientLight();
+	    if(light && light!="none") {
+		this.getScene().add(new THREE.AmbientLight(this.parseInt(light), this.getAmbientIntensity()));
+	    }
+	    for(let i=1;i<10;i++) {
+		light = this.getProperty("directionalLight"+ i);
+		if(!Utils.isDefined(light)) {
+		    continue;
+		}
+		let dl = new THREE.DirectionalLight(this.parseInt(light),
+						     this.getProperty("directionalIntensity"+ i,
+								      this.getDirectionalIntensity()));
+		let pos = this.getProperty("directionalPosition" + i,"0,1,0").split(",");
+		dl.position.set(+pos[0],+pos[1],+pos[2]);
+		this.getScene().add(dl);
+	    }
 
-	    // Setup camera
 
-	    this.camera = new THREE.PerspectiveCamera();
-	    this.camera.aspect = w/h;
-	    this.camera.updateProjectionMatrix();
-	    this.camera.position.z = +this.getInitialAltitude();
-
-
-	    let controls;
-	    // Add camera controls
 	    try {
-		this.controls = controls = new THREE.TrackballControls(this.camera, renderer.domElement);
-		controls.minDistance = 101;
-		controls.rotateSpeed = 5;
-		controls.zoomSpeed = 0.8;
 		let canvas = this.jq(ID_GLOBE).find('canvas');
 		canvas.attr('tabindex','1');
-		renderer.domElement.addEventListener('keydown', (e) => {
+		domGlobe.addEventListener('keydown', (e) => {
 		    if(e.code=="KeyL") {
 			let name = prompt("Name:");
 			if(!name) return;
 			let attrs = ["x","y","z"];
 			let state = '"'+name+'":'+ "{\nposition: {";
-			attrs.forEach((a,idx)=>state+=(idx>0?",":"") + a+":" + this.controls.object.position[a]);
+			attrs.forEach((a,idx)=>state+=(idx>0?",":"") + a+":" + this.getControls().object.position[a]);
 			    state+="},\nup: {";
-			    attrs.forEach((a,idx)=>state+=(idx>0?",":"") + a+":" + this.controls.object.up[a]);
-			    state+="}\n},";
-			    console.log(state);
+			attrs.forEach((a,idx)=>state+=(idx>0?",":"") + a+":" + this.getControls().object.up[a]);
+			state+="}\n},";
+			console.log(state);
 		    }
 
 		    if(e.code=="KeyR") {
-			//console.log(controls.scope);
-			if(this.getInitialPosition()) {
-			    let pos = positions[this.getInitialPosition()];
-			    if(pos) {
-				this.setPosition(pos);
-				return;
-			    }
+			let pos = positions[this.getInitialPosition() || "North America"];
+			if(pos) {
+			    this.setPosition(pos);
 			}
-			controls.reset();
 		    }
 		});
 	    } catch(err) {
@@ -422,47 +453,11 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		console.error(err.stack);
 	    }
 
-	    let handleMouseEvent=event=>{
+	    let handleMouseEvent=object=>{
 		this.jq(ID_POPUP).hide();
-		event.preventDefault();
-		if(!event.shiftKey || event.which != 1)  return;
-		let r = new THREE.Raycaster();
-		let mouse = {
-		    x: ( event.offsetX / w) * 2 - 1,
-		    y : - ( event.offsetY / h) * 2 + 1
-		};
-		r.setFromCamera( mouse, this.camera ); 
-		let intersects = r.intersectObjects(this.getDataObjects(),true);
-		if(intersects.length==0) {
-		    console.log("nothing found");
-		    return;
-		}
-		let minDistance = NaN;
-		let minObject = null;
-		intersects.forEach(o=>{
-		    if(minObject==null || minDistance>o.distance) {
-			minObject = o.object;
-			minDistance = o.distance;
-		    }
-		});
-//		console.dir(minObject);
-		let getData = o=>{
-		    if(o.__data) return o.__data;
-		    if(o.parent) return getData(o.parent);
-		    return null;
-		};
-		let data = getData(minObject);
-		if(!data) {
-		    console.log("Could not find data");
-		    return;
-		}
-		let record = data.record;
+		let record = object.record;
+		if(!record) return;
 		this.propagateEventRecordSelection({record: record})
-//		let v3 = new THREE.Vector3(0,1,0);
-//		this.controls.target  =v3;
-//		this.controls.update();
-		
-
 		if(this.getDoPopup()) {
 		    let html = this.getRecordHtml(record);
 		    this.jq(ID_POPUP).html(html);
@@ -474,7 +469,10 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		    $("#" + this.getSelectedDiv()).html(html);
 		}
 	    };
-	    renderer.domElement.addEventListener( 'mouseup', handleMouseEvent, false );
+	    this.globe.onPointClick(handleMouseEvent);
+	    this.globe.onPathClick(handleMouseEvent);
+	    this.globe.onLabelClick(handleMouseEvent);
+	    this.globe.onGlobeClick(()=>{this.jq(ID_POPUP).hide();});
 
 	    if(this.getInitialPosition()) {
 		let pos = positions[this.getInitialPosition()];
@@ -484,43 +482,24 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		}
 		this.setPosition(pos);
 	    }
+	},
 
 
+	parseInt:function(v) {
+	    if(!v.startsWith("0x")) v = '0x' + v;
+	    return parseInt(Number(v), 10);
+	},
 
-	    let globeImage = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAABzCAYAAABggmasAAAGnUlEQVR4nO3YoZKUVxSF0XmRuMjISFzkqLxBJBKJiyQKiaIqBomkMAgEjopCIZGRcZGdJ8i9+9Y+0E3NWlXbd89M93++ubvjpry93L2f3F8PbJe/h/d6eC+H92x4b4b3YXifhvdxeNPv9zK76c/bH8Obfr+Xf4c3/Pd367+Paz8PAfhGBIgAESCLCRABcjIBIkAA2BMgAkSALCZABMjJBIgAAWBPgAgQAbKYABEgJxMgAgSAPQEiQATIYgJEgJxMgAgQAPYEiAARIIsJEAFyMgEiQADYEyACRIAsJkAEyMkEiAABYE+ACBABspgAESAnEyACBIA9ASJABMhiAkSAnEyACBAA9gSIABEgiwkQAXIyASJAANgTIAJEgCwmQATIyQSIAAFgT4AIEAGymAARICcTIAIEgD0BIkAEyGICRICcTIAIEAD2BIgAESCLCRABcjIBIkAA2BMgAkSALCZABMjJBIgAAWBPgAgQAbKYABEgJxMgAgSAPQEiQATIYgJEgJxMgAgQAPYEiAARIIsJEAFyMgEiQADYEyACRIAsJkAEyMkEiAABYE+ACBABspgAESAnEyACBIC9Py937yd37SDYBsP0gfDP8D4P78XwHg/vyfDuh/fb8F4NbzpAvgxv+vN268Ew/Q+J6WAdDpprP78A+E4JkHICRIAIEAEiQAAgJ0DKCRABIkAEiAABgJwAKSdABIgAESACBAByAqScABEgAkSACBAAyAmQcgJEgAgQASJAACAnQMoJEAEiQASIAAGAnAApJ0AEiAARIAIEAHICpJwAESACRIAIEADICZByAkSACBABIkAAICdAygkQASJABIgAAYCcACknQASIABEgAgQAcgKknAARIAJEgAgQAMgJkHICRIAIEAEiQAAgJ0DKCRABIkAEiAABgJwAKSdABIgAESACBAByAqScABEgAkSACBAAyAmQcgJEgAgQASJAACAnQMoJEAEiQASIAAGAnAApJ0AEiAARIAIEAK5n/CCffqBPH/jTr286GJ4O7+fh/TK8H4f36/CeD+/N8KYP3unP23QgDR/kl3fDez27az8fAOCrECDlBIgAESACRIAAQE6AlBMgAkSACBABAgA5AVJOgAgQASJABAgA5ARIOQEiQASIABEgAJATIOUEiAARIAJEgABAToCUEyACRIAIEAECADkBUk6ACBABIkAECADkBEg5ASJABIgAESAAkBMg5QSIABEgAkSAAEBOgJQTIAJEgAgQAQIAOQFSToAIEAEiQAQIAOQESDkBIkAEiAARIACQEyDlBIgAESACRIAAQE6AlBMgAkSACBABAgA5AVJOgAgQASJABAgA5ARIOQEiQASIABEgAJATIOUEiAARIAJEgABAToCUEyACRIAIEAECADkBUk6ACBABIkAECADkxg/y6QPh1gPk2fCmD+jpAPlpeD8Mb/r1/T686QD58MD26sYnQABgT4CUEyACRIAIEAECADkBUk6ACBABIkAECADkBEg5ASJABIgAESAAkBMg5QSIABEgAkSAAEBOgJQTIAJEgAgQAQIAOQFSToAIEAEiQAQIAOQESDkBIkAEiAARIACQEyDlBIgAESACRIAAQE6AlBMgAkSACBABAgA5AVJOgAgQASJABAgA5ARIOQEiQASIABEgAJATIOUEiAARIAJEgABAToCUEyACRIAIEAECADkBUk6ACBABIkAECADkBEg5ASJABIgAESAAkBMg5QSIABEgAkSAAEBOgJQTIAJEgAgQAQIAOQFSToAIEAEiQAQIAOQESDkBIkAEiAARIABwPeMBcu2D4hsfHJf74U0f5NNBM71Hw3s+vJfDe/HANv3zm95wYF77+xwAvgsCpJwAESACRIAIEADICZByAkSACBABIkAAICdAygkQASJABIgAAYCcACknQASIABEgAgQAcgKknAARIAJEgAgQAMgJkHICRIAIEAEiQAAgJ0DKCRABIkAEiAABgJwAKSdABIgAESACBAByAqScABEgAkSACBAAyAmQcgJEgAgQASJAACAnQMoJEAEiQASIAAGAnAApJ0AEiAARIAIEAHICpJwAESACRIAIEADICZByAkSACBABIkAAICdAygkQASJABIgAAYCcACknQASIABEgAgQAcgKknAARIAJEgAgQAMgJkHICRIAIEAEiQAAgJ0DKCRABIkAEiAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAID/8x8ldCfh8DwIowAAAABJRU5ErkJggg==";
-//	    globeImage='//unpkg.com/three-globe/example/img/earth-water.png';
-
-/*
-	    const globeMaterial = this.globe.globeMaterial();
-//	    globeMaterial.bumpScale = 10;
-	    new THREE.TextureLoader().load(globeImage, texture => {
-		console.log("loaded");
-		globeMaterial.specularMap = texture;
-//		globeMaterial.specular = new THREE.Color('grey');
-		globeMaterial.shininess = 15;
-	    });
-*/
-
-
-
-
-	    // Kick-off renderer
-	    (function animate() { // IIFE
-		// Frame cycle
-		if(controls)
-		    controls.update();
-		renderer.render(_this.scene, _this.camera);
-		setTimeout(()=>{
-		    requestAnimationFrame(animate);
-		},10);
-	    })();
+	getImageUrl:function(image) {
+	    if(!image) return null;
+	    if(!image.startsWith("http") && !image.startsWith("/")) image = ramaddaBaseUrl+"/images/maps/" + image;
+	    return image;
 	},
         handleEventRecordSelection: function(source, args) {
 	    SUPER.handleEventRecordSelection.call(this, source, args);
+	    let record = args.record;
+	    this.globe.pointOfView({lat: record.getLatitude(),lng:record.getLongitude(),alt:10000});
 	    let coords = this.globe.getCoords(args.record.getLatitude(),args.record.getLongitude());
-//	    this.controls.target  = new THREE.Vector3(coords.x,coords.y,coords.z);
-//	    this.controls.update();
-
 	    if(this.selectedObjects) {
 		this.selectedObjects.forEach(object=>{
 		    object.material.color.setHex(object.__oldcolor);
