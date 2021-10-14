@@ -1907,9 +1907,11 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
                 this.setDisplayMessage(this.getLoadingMessage());
                 return;
             }
-            let dataList = this.getStandardData(null, {
-                includeIndex: false
-            });
+	    this.idToRecord = {};
+	    records.forEach(record=>{
+		this.idToRecord[record.getId()] = record;
+	    });
+
             let allFields = this.dataCollection.getList()[0].getRecordFields();
             let fields = this.getSelectedFields([]);
             if (fields.length == 0) fields = allFields;
@@ -1961,19 +1963,12 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
             let html = "";
             html += HU.open(DIV, [STYLE, HU.css('max-height','100%','overflow-y','auto')]);
             html += HU.open(TABLE, [ID, this.domId(ID_TABLE)]);
-            let tmp = [];
-            for (let rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
-                let obj = dataList[rowIdx];
-                obj.originalRow = rowIdx;
-                tmp.push(obj);
-            }
-
+            let tmp = records;
 	    let includeNaN = this.getProperty("includeNaN",false);
 	    if(!includeNaN) {
 		let tmp2 = [];
 		tmp.map(r=>{
-		    let t = this.getDataValues(r);
-		    let v = t[sortField.getIndex()];
+		    let v = sortField.getValue(r);
 		    if(!isNaN(v)) tmp2.push(r);
 		});
 		tmp = tmp2;
@@ -1981,8 +1976,8 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
             let cnt = 0;
 	    let highlight = this.getFilterHighlight();
 	    let sorter = (a,b)=>{
-		let r1 = a.record;
-		let r2 = b.record;
+		let r1 = a;
+		let r2 = b;
 		let h1 = r1.isHighlight(this);
 		let h2 = r2.isHighlight(this);
 		if(highlight) {
@@ -2006,22 +2001,21 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
 
 
             for (let rowIdx = 0; rowIdx < tmp.length; rowIdx++) {
-                let obj = tmp[rowIdx];
-                let tuple = this.getDataValues(obj);
+                let record = tmp[rowIdx];
+                let tuple = this.getDataValues(record);
                 let label = "";
                 stringFields.map(f=>{
-		    label += tuple[f.getIndex()]+" ";
+		    label += f.getValue(record)+" ";
 		});
-
                 label = label.trim();
-		value = tuple[sortField.getIndex()];
+		value = sortField.getValue(record);
                 if (isNaN(value) || value === null) {
 		    if(!includeNaN) continue;
 		    value = "NA";
 		} else {
 		    value = this.formatNumber(value);
 		}
-		html += HU.tr([VALIGN,'top',CLASS,'display-ranking-row','what',obj.originalRow],
+		html += HU.tr([VALIGN,'top',CLASS,'display-ranking-row','what',record.getId()],
 			      HU.td([],'#' + (rowIdx + 1)) + HU.td([],SPACE + label) +HU.td([ALIGN,'right'], SPACE +
 											    value));
             }
@@ -2030,9 +2024,8 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
             this.setContents(html);
             let _this = this;
             this.jq(ID_TABLE).find(".display-ranking-row").click(function(e) {
-                _this.getDisplayManager().propagateEventRecordSelection(_this, _this.getPointData(), {
-                    index: parseInt($(this).attr("what")) - 1
-                });
+		let record = _this.idToRecord[$(this).attr("what")];
+		_this.propagateEventRecordSelection({record:record});
             });
 	    HU.initSelect(this.jq("sortfields"));
             this.jq("sortfields").change(function() {
