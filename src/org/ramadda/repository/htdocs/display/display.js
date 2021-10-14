@@ -3235,6 +3235,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(args)
 		$.extend(opts,args);
 	    let debug =  displayDebug.filterData;
+
 	    if(this.getAnimationEnabled()) {
 		if(this.getProperty("animationFilter", true)) {
 		    this.setDateRange(this.getAnimation().begin, this.getAnimation().end);
@@ -3336,7 +3337,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(this.filters.length) {
 		let newData = [];
 		let logic = this.getProperty("filterLogic","and");
-		this.filters.forEach(f=>f.prepareToFilter());
+		this.filters.forEach(f=>f.prepareToFilter(debug));
 		if(debug)
 		    console.log("filter:" + this.filters.length);
 		records.forEach((record,rowIdx)=>{

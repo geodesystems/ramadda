@@ -107,9 +107,17 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	{p:'labelDotRadius',d:0.1},
 	{p:'labelResolution',d:3},
 	{p:'labelIncludeDot',d:true},		
+	{p:'latField1',tt:'Field id for segments'},
+	{p:'lonField1',tt:'Field id for segments'},
+	{p:'latField2',tt:'Field id for segments'},
+	{p:'lonField2',tt:'Field id for segments'},
+	{p:'lineWidth',d:0.1},
+	{p:'lineAltitude',d:0.05},	
+	{p:'showEndPoints',d:true},	
 	{p:'polygonField',tt:'field that holds polygons'},
 	{p:'selectedDiv',ex:'div id to show selected record'},
-	{p:'doPopup',d:true,ex:'',tt:''},		
+	{p:'doPopup',d:true,ex:'',tt:''},
+	{p:'centerOnFilterChange',d:true,ex:false,tt:'Center map when the data filters change'},	
     ];
     const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_THREE_GLOBE, properties);
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -121,15 +129,21 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
         },
 	dataFilterChanged: function(args) {
 	    SUPER.dataFilterChanged.call(this,args);
+	    if(!this.getCenterOnFilterChange()) return;
 	    if(!this.filteredRecords) return;
 	    if(this.filteredRecords.length==0) return;
-	    let bounds = RecordUtil.getBounds(this.filteredRecords);
+	    this.viewRecords(this.filteredRecords);
+	},
+	viewRecords:function(records) {
+	    let bounds = RecordUtil.getBounds(records);
 	    let lat = bounds.south+(bounds.north-bounds.south)/2;
 	    let lng = bounds.west+(bounds.east-bounds.west)/2;
 	    this.globe.pointOfView({lat: lat,
 				    lng: lng,
 				    alt:10000});
+
 	},
+
         updateUI: async function() {
             if(!ramaddaLoadedThree) {
                 ramaddaLoadedThree = true;
@@ -218,7 +232,51 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    }
 
 	    let polygonField = this.getFieldById(null, this.getProperty("polygonField"));
-	    if(polygonField) {
+	    let latField1 = this.getFieldById(null, this.getProperty("latField1"));
+	    let lonField1 = this.getFieldById(null, this.getProperty("lonField1"));
+	    let latField2 = this.getFieldById(null, this.getProperty("latField2"));
+	    let lonField2 = this.getFieldById(null, this.getProperty("lonField2"));	    	    
+	    if(latField1 && lonField1  && latField2 && lonField2) { 
+		let arcsData = [];
+		let showEndPoints = this.getShowEndPoints();
+		records.forEach((record,idx)=>{
+		    let color=colorBy.getColorFromRecord(record, dfltColor);
+		    arcsData.push({
+			startLat:latField1.getValue(record),
+			startLng:lonField1.getValue(record),
+			endLat:latField2.getValue(record),
+			endLng:lonField2.getValue(record),			
+			color:color,
+			record:record
+		    });
+
+		    if(showEndPoints) {
+			pointData.push({
+			    height:0,
+			    lat:latField1.getValue(record),
+			    lng:lonField1.getValue(record),
+			    color:color,
+			    radius:this.getPointRadius(0.5),
+			    record:record,
+			});
+			pointData.push({
+			    height:0,
+			    lat:latField2.getValue(record),
+			    lng:lonField2.getValue(record),
+			    color:color,
+			    radius:this.getPointRadius(0.5),
+			    record:record,
+			});
+		    }
+		});
+
+		this.globe.arcsData(arcsData)
+		    .arcStroke(+this.getLineWidth())
+		    .arcAltitude(this.getLineAltitude())
+		    .arcColor('color')
+//		    .arcDashLength(() => Math.random())
+		    .arcDashGap(0);
+	    } else if(polygonField) {
 		let polygonColorTable = this.getColorTable(true, "polygonColorTable",null);
 		let map = new RepositoryMap();
 		let delimiter;
@@ -296,6 +354,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 
 	    }
 
+
 	    if(pointData.length>0) {
 		if(this.getShowSpheres()) {
 		    this.globe.customLayerData(pointData)
@@ -312,11 +371,16 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 			.pointColor('color')
 			.pointRadius('radius')
 			.pointResolution(this.getPointResolution());
+		} else {
+		    console.log("Not showing spheres or points");
 		}
 	    }
 
 	    if(colorBy.isEnabled()) {
 		colorBy.displayColorTable();
+	    }
+	    if(!this.getInitialPosition()) {
+		this.viewRecords(records);
 	    }
 	    this.callHook("updateUI");
 
@@ -475,12 +539,20 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		}
 	    };
 	    this.globe.onPointClick(handleMouseEvent);
+	    this.globe.onArcClick(handleMouseEvent);
 	    this.globe.onPathClick(handleMouseEvent);
 	    this.globe.onLabelClick(handleMouseEvent);
 	    this.globe.onGlobeClick(()=>{this.jq(ID_POPUP).hide();});
 
 	    if(this.getInitialPosition()) {
-		let pos = positions[this.getInitialPosition()];
+		let posArg = this.getInitialPosition();
+		let pos = positions[posArg];
+		if(!pos && posArg.startsWith("{")) {
+		    //A hack to wrap keys with quotes
+		    posArg = posArg.replace("position","\"position\"").replace("up","\"up\"").replace(/x/g,"\"x\"").replace(/y/g,"\"y\"").replace(/z/g,"\"z\"");
+		    pos = JSON.parse(posArg);
+		}
+
 		if(!pos) {
 		    console.error("Unknown initial position:" + this.getInitialPosition());
 		    return;

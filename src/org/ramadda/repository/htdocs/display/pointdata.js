@@ -1394,12 +1394,14 @@ function RecordFilter(display,filterFieldId, properties) {
 	getPropertyFromUrl: function(key, dflt) {
 	    return this.display.getPropertyFromUrl(key, dflt);
 	},	
-	prepareToFilter: function() {
+	prepareToFilter: function(debug) {
+	    if(debug) console.log(this.getId()+".prepareToFilter " + this.getField() +" " + this.getFieldType());
 	    this.mySearch = null;
 	    if(this.depend) {
 		this.checkDependency();
 	    }
 	    if(!this.isEnabled()) {
+		if(debug) console.log(this.getId()+".prepareToFilter: not enabled");
 		return;
 	    }
 	    //	    if (prefix) pattern = prefix + value;
@@ -1444,9 +1446,15 @@ function RecordFilter(display,filterFieldId, properties) {
 		    value = [date1,date2]; 
 	    }  else {
 		values = this.getFieldValues();
-		if(!values) return;
+		if(!values) {
+		    if(debug) console.log("\t null fieldValues");
+		    return;
+		}
 		if(!Array.isArray(values)) values = [values];
-		if(values.length==0) return;
+		if(values.length==0) {
+		    if(debug) console.log("\t no fieldValues");
+		    return;
+		}		    
 		values = values.map(v=>{
 		    return v.replace(/_comma_/g,",");
 		});
@@ -1456,9 +1464,11 @@ function RecordFilter(display,filterFieldId, properties) {
 			matchers.push(new TextMatcher(v));
 		    } catch(skipIt){}
 		});
+		if(debug) console.log("\tfieldValues:" + values);
 	    }
 	    let anyValues = value!=null;
 	    if(!anyValues && values) {
+		
 		values.forEach(v=>{if(v.length>0 && v!= FILTER_ALL)anyValues = true});
 	    }
 	    if(anyValues) {
