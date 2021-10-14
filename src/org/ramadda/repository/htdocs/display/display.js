@@ -1495,6 +1495,22 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         entries: [],
         wikiAttrs: [TITLE, "showTitle", "showDetails", "minDate", "maxDate"],
 	_properties:[],
+	callHook:function(func,arg1,arg2,arg3,arg4) {
+	    func = "hook_" + func;
+	    func = this.getProperty(func,func);
+	    if(func=="none") return null;
+	    if(!window[func]) {
+		func = this.type+"_"+func;
+	    }
+	    if(window[func]) {
+//		console.log("calling:" + func);
+		return window[func](this,arg1,arg2,arg3,arg4);
+	    } else {
+//		console.log("no hook:" + func);
+	    }
+
+	},
+
 	getWikiEditorTags: function() {
 	    return this._wikiTags;
 	},
