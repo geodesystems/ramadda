@@ -166,6 +166,17 @@
 </type>
 
 
+  <type name="type_zipfile"  description="ZIP File" pattern="(.*\.zip|.*\.jar)" >
+     <property name="icon" value="/icons/zip.png"/>
+     <wiki><![CDATA[
++section title={{name}}
+{{description wikify="true"}}
+{{zipfile}}
+-section
+]]>
+</wiki>
+</type>
+
 
 
 </types>

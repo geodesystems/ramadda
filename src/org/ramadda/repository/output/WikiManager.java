@@ -180,6 +180,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag("caption", null, "label", "","prefix","Image #:"),
                             new WikiTag(WIKI_TAG_CALENDAR, null, ATTR_DAY, "false"),
                             new WikiTag(WIKI_TAG_TIMELINE, null, ATTR_HEIGHT, "150"),
+                            new WikiTag(WIKI_TAG_ZIPFILE, null,"#height",""),
                             new WikiTag(WIKI_TAG_COMMENTS),
                             new WikiTag(WIKI_TAG_TAGCLOUD, null, "#type", "", "threshold","0"), 
                             new WikiTag(WIKI_TAG_PROPERTIES, null, "message","","metadata.types","",ATTR_METADATA_INCLUDE_TITLE,"true","separator","html"),
@@ -2129,6 +2130,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             //                                OutputHandler.OUTPUT_HTML, entry);
 
             return new String(result.getContent());
+        } else if (theTag.equals(WIKI_TAG_ZIPFILE)) {
+	    StringBuilder tmp = new StringBuilder();
+	    getZipFileOutputHandler().outputZipFile(entry,tmp);
+            String height = getProperty(wikiUtil, props, "height",(String)null);
+	    String result =  tmp.toString();
+	    if(height!=null) {
+		result = HU.div(result,HU.attrs("style","max-height:" + HU.makeDim(height,"px")+";overflow-y:auto;"));
+	    }
+	    return result;
         } else if (theTag.equals(WIKI_TAG_CALENDAR)) {
             List<Entry> children = getEntries(request, wikiUtil,
                                        originalEntry, entry, props);
@@ -5552,6 +5562,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         return getRepository().getXmlOutputHandler();
     }    
 
+    
     /**
      * Get the calendar output handler
      *
@@ -5565,6 +5576,17 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             throw new RuntimeException(exc);
         }
     }
+
+    public ZipFileOutputHandler getZipFileOutputHandler() {
+        try {
+            return (ZipFileOutputHandler) getRepository().getOutputHandler(
+                ZipFileOutputHandler.OUTPUT_LIST);
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
+    }
+
+
 
     /**
      * _more_

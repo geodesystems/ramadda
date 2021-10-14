@@ -421,6 +421,9 @@ public interface WikiConstants {
     /** wiki import */
     public static final String WIKI_TAG_GALLERY = "gallery";
 
+    public static final String WIKI_TAG_ZIPFILE = "zipfile";
+
+
     /** the image player property */
     public static final String WIKI_TAG_PLAYER = "imageplayer";
 

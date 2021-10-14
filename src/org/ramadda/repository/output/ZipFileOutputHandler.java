@@ -139,62 +139,133 @@ public class ZipFileOutputHandler extends OutputHandler {
                 entry)) {
             throw new AccessException("Cannot access data", request);
         }
+	String fileToFetch = request.getString(ARG_FILE, null);
+	if(fileToFetch!=null) {
+	    return fetchFile(request, entry, fileToFetch);
+	}
         StringBuffer sb = new StringBuffer();
         getPageHandler().entrySectionOpen(request, entry, sb,
                                           "Zip File Listing");
-
-        InputStream fis = getStorageManager().getFileInputStream(
-                              entry.getResource().getPath());
-        ZipInputStream zin = new ZipInputStream(fis);
-        try {
-            ZipEntry ze = null;
-            sb.append("<ul>");
-            String fileToFetch = request.getString(ARG_FILE, null);
-            while ((ze = zin.getNextEntry()) != null) {
-                if (ze.isDirectory()) {
-                    continue;
-                }
-                String path = ze.getName();
-                if ((fileToFetch != null) && path.equals(fileToFetch)) {
-                    HttpServletResponse response =
-                        request.getHttpServletResponse();
-                    String type = getRepository().getMimeTypeFromSuffix(
-                                      IOUtil.getFileExtension(path));
-                    response.setContentType(type);
-                    OutputStream output = response.getOutputStream();
-                    try {
-                        IOUtil.writeTo(zin, output);
-                    } finally {
-                        IOUtil.close(output);
-                        IOUtil.close(zin);
-                    }
-
-                    return Result.makeNoOpResult();
-                    //                    return new Result("", zin, type);
-                }
-                //            if(path.endsWith("MANIFEST.MF")) continue;
-                sb.append("<li>");
-                String name = IOUtil.getFileTail(path);
-                String url  = getRepository().URL_ENTRY_SHOW + "/" + name;
-
-                url = HtmlUtils.url(url, ARG_ENTRYID, entry.getId(),
-                                    ARG_FILE, path, ARG_OUTPUT,
-                                    OUTPUT_LIST.getId());
-                sb.append(HtmlUtils.href(url, path));
-                long size = ze.getSize();
-                sb.append(formatFileLength(size, true));
-            }
-            sb.append("</ul>");
-        } finally {
-            IOUtil.close(zin);
-            IOUtil.close(fis);
-        }
+	outputZipFile(entry,sb);
         getPageHandler().entrySectionClose(request, entry, sb);
 
         return makeLinksResult(request, msg("Zip File Listing"), sb,
                                new State(entry));
+
+    }
+	    
+
+    public void outputZipFile(Entry entry, Appendable sb)
+            throws Exception {
+        InputStream fis = getStorageManager().getFileInputStream(
+                              entry.getResource().getPath());
+        ZipInputStream zin = new ZipInputStream(fis);
+	Node root=null;
+	Node current = null;
+        try {
+            ZipEntry ze = null;
+            while ((ze = zin.getNextEntry()) != null) {
+                String path = ze.getName();
+		if(root==null) {
+		    root = new Node(path);
+		    current = root;
+		    if (ze.isDirectory()) {
+			continue;
+		    }
+		}
+                long size = ze.getSize();
+		Node node = new Node(path,ze.isDirectory()?-1:size);
+		Node parent = null;
+		while(!path.startsWith(current.path) && current!=root) {
+		    current = current.parent;
+		}
+		current.addChild(node);
+		if (ze.isDirectory()) {
+		    current = node;
+		}
+            }
+	    root.walk(getRepository(),entry,sb,0);
+        } finally {
+            IOUtil.close(zin);
+            IOUtil.close(fis);
+        }
     }
 
+    private static class Node {
+	long size=-1;
+	String path;
+	Node parent;
+	List<Node> children;
+	public Node(String path) {
+	    this.path = path;
+	}
 
+
+	public Node(String path, long size) {
+	    this(path);
+	    this.size = size;
+	}
+	public void addChild(Node node) {
+	    if(children==null) children = new ArrayList<Node>();
+	    children.add(node);
+	    node.parent = this;
+	}
+	public void walk(Repository repository, Entry entry, Appendable sb, int level) throws Exception {
+	    String name = path;
+	    if(name.endsWith("/")) name = name.substring(0,name.length()-1);
+	    name = IOUtil.getFileTail(name);
+	    if(size>-1) {
+                String url  = repository.URL_ENTRY_SHOW + "/" + name;
+                url = HtmlUtils.url(url, ARG_ENTRYID, entry.getId(),
+                                    ARG_FILE, path, ARG_OUTPUT,
+                                    OUTPUT_LIST.getId());
+		sb.append("<div>");
+		sb.append(repository.getIconImage("fa-file"));
+		sb.append(" ");
+                sb.append(HtmlUtils.href(url, name));
+                sb.append(RepositoryManager.formatFileLength(size, true));
+		sb.append("</div>");
+		return;
+	    } 
+	    StringBuilder sb2 = new StringBuilder();
+	    if(children!=null) {
+		for(Node child: children)
+		    child.walk(repository, entry, sb2, level+1);
+	    }
+	    String div = HU.div(sb2.toString(),
+				HU.attrs("style","margin-left:" + ((level+1)*20) +"px"));
+	    sb.append(HU.makeShowHideBlock(name,div, true));
+	}
+    }
+
+    public Result fetchFile(Request request, Entry entry, String fileToFetch) throws Exception {
+        InputStream fis = getStorageManager().getFileInputStream(
+                              entry.getResource().getPath());
+        ZipInputStream zin = new ZipInputStream(fis);
+	ZipEntry ze = null;
+	while ((ze = zin.getNextEntry()) != null) {
+	    String path = ze.getName();
+	    if (ze.isDirectory()) {
+		continue;
+	    }
+	    if (path.equals(fileToFetch)) {
+		HttpServletResponse response =
+		    request.getHttpServletResponse();
+		String type = getRepository().getMimeTypeFromSuffix(
+								    IOUtil.getFileExtension(path));
+		response.setContentType(type);
+		OutputStream output = response.getOutputStream();
+		try {
+		    IOUtil.writeTo(zin, output);
+		} finally {
+		    IOUtil.close(output);
+		    IOUtil.close(zin);
+		}
+		return Result.makeNoOpResult();
+	    }
+	}
+	    
+	throw new IllegalArgumentException("Could not find file:" + fileToFetch);
+    }
 
 }
