@@ -81,13 +81,13 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	{p:'atmosphereColor',d:'#fff',ex:'red'},	    	    
 	{p:'atmosphereAltitude',d:0.25,ex:0.5},
 	{p:'ambientLight',d:'ffffff',ex:'ffffff'},
-	{p:'ambientIntensity',d:0.1,ex:'1'},
+	{p:'ambientIntensity',d:1,ex:'1'},
 	{p:'directionalIntensity',d:1},		
 	{p:'directionalLight1',ex:'ffffff'},
-	{p:'directionalIntensity1',d:1,ex:'0.5'},
+	{p:'directionalIntensity1',ex:'0.5'},
 	{p:'directionalPosition1',ex:'0,1,0'},
 	{p:'directionalLight2',ex:'ffffff'},
-	{p:'directionalIntensity2',d:1,ex:'0.5'},		
+	{p:'directionalIntensity2',ex:'0.5'},		
 	{p:'directionalPosition2',ex:'0,1,0'},
 
 	{p:'initialAltitude',d:250,ex:500},
@@ -425,6 +425,44 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    return dataObjects;
 	},
 
+	listScene: function() {
+	    this.getScene().children.forEach(obj=>{
+		console.log(obj.type);
+		console.dir(obj);
+	    });
+	},
+	addLights:function() {
+	    if(this.addedLight) return;
+	    this.addedLight = true;
+
+	    //turn off any directionallight
+	    this.getScene().children.filter(obj=>{
+		return obj.type=="DirectionalLight" || obj.type=="AmbientLight";
+	    }).forEach(obj=>{
+//		console.log("removing " + obj.type);
+		this.getScene().remove(obj);
+	    });
+
+	    let ambientLight = this.getAmbientLight();
+	    if(ambientLight && ambientLight!="none") {
+//		console.log("adding ambient light:" + ambientLight);
+		this.getScene().add(new THREE.AmbientLight(this.parseInt(ambientLight), this.getAmbientIntensity()));
+	    }
+	    
+	    for(let i=1;i<10;i++) {
+		let light = this.getProperty("directionalLight"+ i);
+		if(!Utils.isDefined(light) || light=="none") {
+		    continue;
+		}
+//		console.log("adding directional light:" + light);
+		let dl = new THREE.DirectionalLight(this.parseInt(light),
+						    this.getProperty("directionalIntensity"+ i,
+								     this.getDirectionalIntensity()));
+		let pos = this.getProperty("directionalPosition" + i,"0,1,0").split(",");
+		dl.position.set(+pos[0],+pos[1],+pos[2]);
+		this.getScene().add(dl);
+	    }
+	},
 	createGlobe:function() {
 	    let _this = this;
 	    let popup = HU.div([CLASS,"display-three-globe-popup",ID,this.domId(ID_POPUP),STYLE,HU.css("display","none","position","absolute","left","60%","top","0px")],"");
@@ -455,6 +493,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    let h = this.getGlobeHeight();
 
 	    this.globe = Globe()(domGlobe);	    	    
+	    this.globe.onGlobeReady(()=>this.addLights());
 	    this.globe.width(w);
 	    this.globe.height(h);
 	    this.globe.showGraticules(this.getShowGraticules())
@@ -477,28 +516,17 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 
 
 
-	    let light = this.getAmbientLight();
-	    if(light && light!="none") {
-		this.getScene().add(new THREE.AmbientLight(this.parseInt(light), this.getAmbientIntensity()));
-	    }
-	    for(let i=1;i<10;i++) {
-		light = this.getProperty("directionalLight"+ i);
-		if(!Utils.isDefined(light)) {
-		    continue;
-		}
-		let dl = new THREE.DirectionalLight(this.parseInt(light),
-						     this.getProperty("directionalIntensity"+ i,
-								      this.getDirectionalIntensity()));
-		let pos = this.getProperty("directionalPosition" + i,"0,1,0").split(",");
-		dl.position.set(+pos[0],+pos[1],+pos[2]);
-		this.getScene().add(dl);
-	    }
-
 
 	    try {
 		let canvas = this.jq(ID_GLOBE).find('canvas');
 		canvas.attr('tabindex','1');
 		domGlobe.addEventListener('keydown', (e) => {
+		    if(e.code=="KeyD") {
+			//debug
+			this.listScene();
+			return
+		    }
+
 		    if(e.code=="KeyP") {
 			let name = prompt("Name:");
 			if(!name) return;
@@ -579,6 +607,8 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    }
 
 	    this.callHook("createGlobe");
+
+
 
 	},
 
