@@ -12,6 +12,10 @@ unique_voter_history=voter_history_unique.csv
 precincts=source/boco_precincts.csv
 geocodio=source/voters_addresses_geocodio.csv
 
+voting_report_url=https://election.boco.solutions/ElectionDataPublicFiles/CE-068_Voters_With_Ballots_List_Public.zip
+ex=bC!Erlction!$
+
+
 do_all() {
     init_files
     do_demographics
@@ -407,8 +411,8 @@ do_final() {
 	    -p  voters_joined.csv > voters_final.csv
 }
 
-do_final
-exit
+#do_final
+#exit
 
 
 do_db() {
