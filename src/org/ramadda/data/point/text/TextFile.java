@@ -534,6 +534,7 @@ public abstract class TextFile extends PointFile {
 	    if(debug)
 		System.err.println("TextFile.prepareToVisit: firstLineFields=true skipLines=" + skipCnt);
             String line     = null;
+	    String fieldsLine=null;
             while (true) {
                 line = visitInfo.getRecordIO().readLine();
                 if ( !haveReadHeader) {
@@ -542,6 +543,7 @@ public abstract class TextFile extends PointFile {
                 skipCnt--;
                 fieldRow--;
                 if (fieldRow <= 0) {
+		    fieldsLine=line;
                     break;
                 }
             }
@@ -555,14 +557,14 @@ public abstract class TextFile extends PointFile {
                 skipCnt--;
             }
 
-            if (line != null) {
+            if (fieldsLine != null) {
 		String delim =  getProperty(PROP_DELIMITER,",");
                 String sampleLine = visitInfo.getRecordIO().readLine();
 		visitInfo.getRecordIO().putBackLine(sampleLine);
-                List<String> toks    = Utils.tokenizeColumns(line, delim);
+                List<String> toks    = Utils.tokenizeColumns(fieldsLine, delim);
+		//		System.err.println("LINE:" + fieldsLine);
                 List<String> sampleToks    = Utils.tokenizeColumns(sampleLine, delim);
                 List<String> cleaned = new ArrayList<String>();
-                //                System.err.println ("\nline:" + line);
                 boolean didDate = false;
                 for (int tokIdx = 0; tokIdx < toks.size(); tokIdx++) {
                     String tok = toks.get(tokIdx);
