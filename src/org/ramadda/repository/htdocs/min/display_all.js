@@ -4311,6 +4311,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{label:'Display'},
 	{p:'fields',doGetter:false,ex:'comma separated list of field ids or indices - e.g. #1,#2,#4-#7,etc or *'},
 	{p:'notFields',ex:'regexp',tt:'regexp to not include fields'},		
+	{p:'fieldsPatterns',ex:'comma separated list of regexp patterns to match on fields to display'},
 	{p:'showMenu',ex:true},	      
 	{p:'showTitle',ex:true},
 	{p:'showEntryIcon',ex:true},
@@ -5614,7 +5615,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		} 
 	    }
 
-
             this.debugSelected = debug;
             this.lastSelectedFields = this.getSelectedFieldsInner(dfltList);
 	    let notFields = this.getProperty("notFields");
@@ -5695,6 +5695,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 		fixedFields = tmpFields;
 	    }
+
 
 	    let aliases= {};
 	    var tmp = this.getProperty("fieldAliases");
@@ -5799,6 +5800,27 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    console.log("\treturning allFields:" + tmp);
                 return tmp;
             }
+	    let patterns = this.getProperty("fieldsPatterns");
+	    if(patterns) {
+		let allFields = this.getFields();
+		if(allFields) {
+		    let matched=[];
+		    allFields= [...allFields];
+		    patterns.split(",").forEach(pattern=>{
+			allFields.forEach(f=>{
+			    let id = f.getId().toLowerCase();
+			    if(id.match(pattern)) {
+				if(!matched.includes(f)) {
+				    //				    console.log("\tmatches:"+ id);
+				    matched.push(f);
+				}
+			    }
+			});
+		    });
+		    if(matched.length)
+			return matched;
+		}
+	    }
             if (dfltList != null) {
 		if(debug)
 		    console.log("\treturning dfltList:" + dfltList);
