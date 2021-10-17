@@ -680,7 +680,7 @@ function RecordField(props, source) {
 	toString: function() {
 	    if(this.group)
 		return this.getId();
-	    return this.getId();
+	    return this.getId()+":"+this.getLabel()+"[" + this.type+"]";
 	},
 	getForDisplay: function() {
 	    return this.forDisplay;

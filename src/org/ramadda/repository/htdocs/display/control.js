@@ -281,6 +281,10 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	needsData: function() {
             return true;
         },
+        setEntry: function(entry) {
+	    this.selectedMap=null;
+	    SUPER.setEntry.call(this, entry);
+	},
 	updateUI: function() {
 	    let records = this.filterData();
 	    if(records == null) return;
@@ -289,7 +293,8 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	    if(this.getFilterSelect()) {
 		selectedFields = this.getFieldsByIds(null,this.getProperty("filterFields", ""));
 	    } else  {
-		selectedFields = this.getFieldsByIds(null,this.getProperty("fields", ""));
+		selectedFields = this.getSelectedFields();
+//		selectedFields = this.getFieldsByIds(null,this.getProperty("fields", ""));
 	    }
 	    if(this.selectedMap ==null)  {
 		this.selectedMap={};

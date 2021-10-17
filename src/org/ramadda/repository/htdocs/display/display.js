@@ -2749,6 +2749,42 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let debug = debugArg||displayDebug.getDefaultSelectedFields;
 	    if(debug)
 		console.log("getDefaultSelectedFields");
+	    let patterns = this.getProperty("fieldsPatterns");
+	    if(patterns) {
+		let allFields = this.getFields();
+		if(allFields) {
+		    let debugPatterns = false;
+		    let matched=[];
+		    if(debugPatterns)
+			console.log("fields:" +allFields);
+		    patterns.split(",").forEach(pattern=>{
+			if(debugPatterns)
+			    console.log("\tpattern:" + pattern);
+			allFields.every(f=>{
+			    if(!f.isFieldNumeric()) return true;
+			    let id = f.getId().toLowerCase();
+			    if(debugPatterns)
+				console.log("\t\tid:" + id);
+			    if(id.match(pattern)) {
+				if(debugPatterns)
+				    console.log("\t\tmatch");
+				if(!matched.includes(f)) {
+				    if(debugPatterns)
+					console.log("\t\tadd to matched");
+				    //				    console.log("\tmatches:"+ id);
+				    matched.push(f);
+				    return false;
+				}
+			    }
+			    return true;
+			});
+		    });
+		    if(debugPatterns)
+			console.log("returning:" + matched);
+		    if(matched.length)
+			return matched;
+		}
+	    }
             if (this.defaultSelectedToAll()) {
 		let allFields = this.getFields();
 		if(allFields) {
@@ -2764,27 +2800,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    console.log("\treturning allFields:" + tmp);
                 return tmp;
             }
-	    let patterns = this.getProperty("fieldsPatterns");
-	    if(patterns) {
-		let allFields = this.getFields();
-		if(allFields) {
-		    let matched=[];
-		    allFields= [...allFields];
-		    patterns.split(",").forEach(pattern=>{
-			allFields.forEach(f=>{
-			    let id = f.getId().toLowerCase();
-			    if(id.match(pattern)) {
-				if(!matched.includes(f)) {
-				    //				    console.log("\tmatches:"+ id);
-				    matched.push(f);
-				}
-			    }
-			});
-		    });
-		    if(matched.length)
-			return matched;
-		}
-	    }
+
             if (dfltList != null) {
 		if(debug)
 		    console.log("\treturning dfltList:" + dfltList);
