@@ -1874,6 +1874,7 @@ RepositoryMap.prototype = {
                 if (value == "0") continue;
                 try {
                     let date = Utils.parseDate(value);
+		    if(date && isNaN(date.getTime())) continue;
                     if (isYear) didYear = true;
                     else didDate = true;
                     if (this.startDate != null && this.endDate != null) {
@@ -1882,6 +1883,7 @@ RepositoryMap.prototype = {
                         }
                     }
                     this.dates.push(date);
+		    
                     this.dateFeatures.push(feature);
                     this.minDate = this.minDate == null ? date : this.minDate.getTime() > date.getTime() ? date : this.minDate;
                     this.maxDate = this.maxDate == null ? date : this.maxDate.getTime() < date.getTime() ? date : this.maxDate;
