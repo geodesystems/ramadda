@@ -302,6 +302,9 @@ public class Feature {
      */
     public Element makeKmlElement(Element parent, String styleUrl,
                                   Rectangle2D.Double bounds) {
+	boolean debug = false;
+	if(debug)
+	    System.out.println("kml:" + getId() +" coords:" + getGeometry().getCoordsString().replaceAll("\n"," "));	
         Element placemark = KmlUtil.placemark(parent, getId(), "");
         Element geom      = placemark;
         if (geometry.getCoordinates().size() > 1) {

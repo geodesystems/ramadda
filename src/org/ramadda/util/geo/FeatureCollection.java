@@ -174,6 +174,7 @@ public class FeatureCollection {
 
     public static FeatureCollection getFeatureCollection(String path, InputStream is) 
             throws Exception {
+	System.err.println("path:" + path +" is:" +is);
 	FeatureCollection fc = cache.get(path);
 	if(fc==null&& is!=null) {
 	    fc =  makeFeatureCollection(is);
@@ -258,9 +259,8 @@ public class FeatureCollection {
                 (EsriShapefile.EsriFeature) features.get(i);
             String type = getGeometryType(gf, gf.getNumParts());
             if (type == null) {
-                System.err.println("Can't handle feature type "
-                                   + gf.getClass().toString());
-
+		if(gf.getNumParts()!=0) 
+		    System.out.println("Can't handle feature type " + gf.getClass().toString());
                 continue;
             }
             List<float[][]> parts =

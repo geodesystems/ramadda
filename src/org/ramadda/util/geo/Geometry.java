@@ -74,7 +74,7 @@ public class Geometry {
      * @param coords the coordinates
      */
     public Geometry(String geometryType, List<float[][]> coords) {
-        this.geometryType = geometryType;
+       this.geometryType = geometryType;
         this.coords       = coords;
     }
 
@@ -184,7 +184,7 @@ public class Geometry {
      *
      * @return _more_
      */
-    public float[] getCenter() {
+    public float[] getCenter(boolean debug) {
         float minLat = Float.NaN;
         float minLon = Float.NaN;
         float maxLat = Float.NaN;
@@ -206,7 +206,6 @@ public class Geometry {
         }
         float cLat = minLat + (maxLat - minLat) / 2.0f;
         float cLon = minLon + (maxLon - minLon) / 2.0f;
-
         return new float[] { cLat, cLon };
     }
 
