@@ -793,7 +793,7 @@ padding:4px;
 }
 
 
-.display-menu {
+.display-searchmenu {
     padding-left:4px;
     padding-right:10px;    
 }
@@ -1138,6 +1138,11 @@ svg > g > g:last-child { pointer-events: none }
 .display-entrydisplay {
    border:0px;
    padding:5px;
+}
+
+.display-entrydisplay-contents {
+    display:inline-block;
+    white-space:nowrap;
 }
 
 .display-area-link {
@@ -2796,4 +2801,9 @@ table.dataTable tfoot td {
 .display-three-globe-popup .display-record-table-label {
     max-width:100px;
     overflow-x:hidden;
+}
+
+.display-menu-contents {
+    display:inline-block;
+    white-space:nowrap;
 }
