@@ -281,7 +281,21 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	needsData: function() {
             return true;
         },
+	fieldsToMap:{},
+	getFieldsKey:function() {
+	    let fields = this.getFields();
+	    let key ='';
+	    fields.forEach(f=>{
+		key+='_'+f.getId();
+	    });
+	    return key;
+	},
         setEntry: function(entry) {
+	    //When we change the data then cache the existing fieldMap
+	    if(this.selectedMap) {
+		let key = this.getFieldsKey();
+		this.fieldsToMap[key] = this.selectedMap;
+	    }
 	    this.selectedMap=null;
 	    SUPER.setEntry.call(this, entry);
 	},
@@ -294,8 +308,10 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 		selectedFields = this.getFieldsByIds(null,this.getProperty("filterFields", ""));
 	    } else  {
 		selectedFields = this.getSelectedFields();
-//		selectedFields = this.getFieldsByIds(null,this.getProperty("fields", ""));
 	    }
+	    //Check if we've displayed a pointdata with the same set of fields
+	    let key = this.getFieldsKey();
+	    this.selectedMap = this.selectedMap || this.fieldsToMap[key];
 	    if(this.selectedMap ==null)  {
 		this.selectedMap={};
 		if(selectedFields && selectedFields.length!=0) {
@@ -945,12 +961,13 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 	    let menu =  HU.select("",[ATTR_ID, this.getDomId(ID_MENU)],options);
 	    if(this.getShowArrows(false)) {
 		let noun = this.getProperty("noun", "Data");
-		let prev = HU.span([CLASS,"display-changeentries-button", TITLE,"Previous " +noun, ID, this.getDomId(ID_PREV), TITLE,"Previous"], HU.getIconImage("fa-chevron-left"));
- 		let next = HU.span([CLASS, "display-changeentries-button", TITLE,"Next " + noun, ID, this.getDomId(ID_NEXT), TITLE,"Next"], HU.getIconImage("fa-chevron-right")); 
-		menu = prev + " " + menu + " " +next;
+		let prev = HU.span([CLASS,"display-changeentries-button ramadda-clickable", TITLE,"Previous " +noun, ID, this.getDomId(ID_PREV), TITLE,"Previous"], HU.getIconImage("fa-chevron-left"));
+ 		let next = HU.span([CLASS, "display-changeentries-button ramadda-clickable", TITLE,"Next " + noun, ID, this.getDomId(ID_NEXT), TITLE,"Next"], HU.getIconImage("fa-chevron-right")); 
+		menu = menu.replace(/\n/g,"");
+		menu = prev + "&nbsp;" + menu +  "&nbsp;" +next;
 	    }
 	    let label = this.getMenuLabel();
-	    if(label) menu = label+" " + menu;
+	    if(label) menu = label+"&nbsp;" + menu;
 	    this.setContents(menu);
 	    if(this.getShowArrows(false)) {
 		this.jq(ID_PREV).click(e=>{
