@@ -1534,7 +1534,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		
                 if (col.isEnumeration()) {
 		    let showLabels = this.getShowSearchLabels();
-                    field = HU.openTag(TAG_SELECT, [ATTR_ID, id, ATTR_CLASS, "display-menu display-metadatalist"]);
+                    field = HU.openTag(TAG_SELECT, [ATTR_ID, id, ATTR_CLASS, "display-searchmenu display-metadatalist"]);
 		    field+="\n";
                     field += HU.tag(TAG_OPTION, [CLASS,"display-metadatalist-item", ATTR_TITLE, "", ATTR_VALUE, VALUE_NONE],
 				    showLabels?"-- Select --":col.getLabel());
@@ -1589,7 +1589,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		else
 		    $("#" + id).hide();
 	    });
-	    let menus = this.jq(ID_TYPEFIELDS).find(".display-menu");
+	    let menus = this.jq(ID_TYPEFIELDS).find(".display-searchmenu");
 	    this.selectboxit(menus);
 	    menus.change(()=>{
 		this.submitSearchForm();
