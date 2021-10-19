@@ -8,6 +8,7 @@
 {{description wikify=true}}
 +center
 {{display_menu 
+entryTypes=type_point
 doEntries=true
 setEntry.acceptGroup=month
 setEntry.shareGroup=file
@@ -16,12 +17,12 @@ menuLabel="Select File:"
 noun=File
 template="${name}"
 }}
-{{display_entrytitle setEntry.acceptGroup=file entry=child:}}
+{{display_entrytitle setEntry.acceptGroup=file entry=child:type:type_point}}
 -center
 <table width=100% border=0 cellpadding=10>
 <tr valign=top>
 <td width=1%>
-{{display_fieldslist setEntry.acceptGroup=file entry=child:
+{{display_fieldslist setEntry.acceptGroup=file entry=child:type:type_point
 width=185px height=65vh
 loadingMessage="" 
 fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
@@ -29,7 +30,7 @@ numericOnly=true asList=true
 showPopup=false decorate=true
 }}
 </td><td>
-{{display_linechart setEntry.acceptGroup=file entry=child:
+{{display_linechart setEntry.acceptGroup=file entry=child:type:type_point
 fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
 height=75vh padRight=true chartLeft="80" chartRight="80"
 addTooltip=false useMultipleAxes=true

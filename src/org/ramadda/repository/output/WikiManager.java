@@ -2159,6 +2159,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             boolean doEntries = getProperty(wikiUtil, props, "doEntries",
                                             false);
             boolean doEntry = getProperty(wikiUtil, props, "doEntry", false);
+
             if (doEntries || doEntry) {
 		if(serverInfo!=null) {
 		    jsonUrl = HtmlUtils.url(serverInfo.getUrl()+  "/entry/show",
@@ -2175,6 +2176,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 if (getProperty(wikiUtil, props, "addAttributes", false)) {
                     jsonUrl += "&addAttributes=true";
                 }
+		String entryTypes = getProperty(wikiUtil, props, "entryTypes",(String)null);
+                if (entryTypes!=null) {
+                    jsonUrl += "&entryTypes=" + entryTypes;
+                }
+		String notentryTypes = getProperty(wikiUtil, props, "notEntryTypes",(String)null);
+                if (notentryTypes!=null) {
+                    jsonUrl += "&notEntryTypes=" + notentryTypes;
+                }		
                 if (getProperty(wikiUtil, props, "addPointUrl", false)) {
                     jsonUrl += "&addPointUrl=true";
                 }		

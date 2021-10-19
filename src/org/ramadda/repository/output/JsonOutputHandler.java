@@ -31,7 +31,7 @@ import org.ramadda.repository.util.ServerInfo;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
-
+import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
 
@@ -261,7 +261,50 @@ public class JsonOutputHandler extends OutputHandler {
     public void makePointJson(Request request, Entry mainEntry,
                               List<Entry> entries, Appendable sb)
             throws Exception {
+
+	String entryTypes =  request.getString("entryTypes", null);	
+	if(entryTypes!=null) {
+	    List<String> types = Utils.split(entryTypes,",",true,true);
+	    List<Entry> tmp = new ArrayList<Entry>();
+	    for(Entry entry: entries) {
+		boolean ok = false;
+		for(String type: types) {
+		    if(entry.getTypeHandler().isType(type)) {
+			ok = true;
+			break;
+		    }
+		}
+		if(ok) tmp.add(entry);
+	    }
+	    entries = tmp;
+	}
+
+	String notentryTypes =  request.getString("notEntryTypes", null);	
+	if(notentryTypes!=null) {
+	    List<String> types = Utils.split(notentryTypes,",",true,true);
+	    List<Entry> tmp = new ArrayList<Entry>();
+	    for(Entry entry: entries) {
+		boolean ok = true;
+		for(String type: types) {
+		    if(entry.getTypeHandler().isType(type)) {
+			ok = false;
+			break;
+		    }
+		}
+		if(ok) {
+		    tmp.add(entry);
+		}
+	    }
+	}
+	    
+
+
+
+
 	entries= EntryUtil.sortEntriesOnDate(entries,false);
+
+
+
         List<String> fields = new ArrayList<String>();
 	boolean remote= request.get("remoteRequest",false);
 
@@ -313,9 +356,10 @@ public class JsonOutputHandler extends OutputHandler {
 	    addPointHeader(fields, "image", "Image", "image", "forDisplay",
 			   "false");	
 
-        TypeHandler  typeHandler   = null;
-        List<Column> columns       = null;
-        if (addAttributes && (entries.size() > 0)) {
+
+       TypeHandler  typeHandler   = null;
+        List<Column> columns       = null; 
+	if (addAttributes && (entries.size() > 0)) {
             Entry    entry           = entries.get(0);
             Object[] extraParameters = entry.getValues();
             if (extraParameters != null) {
