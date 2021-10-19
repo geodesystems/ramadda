@@ -184,7 +184,13 @@ public class Geometry {
      *
      * @return _more_
      */
+    public float[] getCenter() {
+	return getCenter(false);
+    }
+
     public float[] getCenter(boolean debug) {
+
+
         float minLat = Float.NaN;
         float minLon = Float.NaN;
         float maxLat = Float.NaN;
