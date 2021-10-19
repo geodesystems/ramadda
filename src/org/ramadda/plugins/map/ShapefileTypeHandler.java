@@ -515,6 +515,13 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
             }
             if (fieldsWithShapes == null) {
                 getEntryFieldsProperties();
+                fieldsWithShapes =
+                    fieldsNoGeo
+                    + ",shapeType[ type=string],shape[type=string]";
+                fieldsWithPoints =
+                    fieldsNoGeo
+                    + ",latitude[type=double],longitude[type=double]";
+
             }
         }
 
@@ -631,7 +638,6 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
                 if (fieldsNoGeo == null) {
                     getEntryFieldsProperties();
                 }
-
                 if (addShapes) {
                     putProperty(PROP_FIELDS, fieldsWithShapes);
                 } else if (addPoints) {

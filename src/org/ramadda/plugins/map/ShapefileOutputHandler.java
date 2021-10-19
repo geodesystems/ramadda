@@ -510,8 +510,8 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         sb.append(xml);
         IOUtil.writeFile(file, xml);
         long t3 = System.currentTimeMillis();
-        //        Utils.printTimes("OutputKml time:", t1,t2,t3);
-        Result result = new Result("", sb, KmlOutputHandler.MIME_KML);
+        //        Utils.printTimes("OutputKml time:", t1,t2,t3); 
+       Result result = new Result("", sb, KmlOutputHandler.MIME_KML);
         result.setReturnFilename(returnFile);
 
         return result;
@@ -633,6 +633,10 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                                    shapefile);
         List<DbaseDataWrapper> datum    = fc.getDatum();
         List<Feature>          features = (List<Feature>) fc.getFeatures();
+
+	DbaseDataWrapper nameDatum = datum.get(1);
+
+
         if (datum == null) {
             if (addHeader) {
                 sb.println("#fields=");
@@ -680,12 +684,17 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             }
         }
 
+
+
+
         sb.print("\n");
         int cnt = 0;
+	boolean debug = false;
         for (int i = 0; i < features.size(); i++) {
             Feature feature = features.get(i);
             cnt++;
             colCnt = 0;
+	    String line = "";
             for (DbaseDataWrapper dbd : datum) {
                 String value;
                 if (dbd.getType() == DbaseData.TYPE_NUMERIC) {
@@ -697,15 +706,20 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                 if (colCnt++ > 0) {
                     sb.print(",");
                 }
+		line+="," + value;
                 sb.print(CsvUtil.cleanColumnValue(value));
             }
+	    if(debug)System.out.println("line:" + line);
+	    if(debug)   System.out.println("pts:" + feature.getId() +" coords:" + feature.getGeometry().getCoordsString().replaceAll("\n"," "));
             if (addPoints) {
-                float[] center = feature.getGeometry().getCenter();
+                float[] center = feature.getGeometry().getCenter(debug);
                 sb.print(",");
                 sb.print(center[0]);
                 sb.print(",");
                 sb.print(center[1]);
+		line+=","+center[0] +"," + center[1];
             }
+
 
             if (addFeatures) {
                 sb.print(",");
@@ -1100,8 +1114,10 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
 
         Hashtable              properties = fc.getProperties();
         List<Feature>          features   = fc.getFeatures();
-
         List<DbaseDataWrapper> fieldDatum = fc.getDatum();
+
+
+
         Element                root       = KmlUtil.kml(getName());
         Element                doc = KmlUtil.document(root, getName(), true);
         boolean                haveSchema = false;
