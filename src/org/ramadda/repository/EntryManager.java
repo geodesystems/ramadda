@@ -1648,12 +1648,14 @@ public class EntryManager extends RepositoryManager {
             getSessionManager().putSessionProperty(request, SESSION_ENTRIES,
 						   list);
         }
-        list.remove(entry.getId());
-        list.add(0, entry.getId());
-        //Cap the size at 8
-        if (list.size() > 8) {
-            list.remove(list.size() - 1);
-        }
+	synchronized(list) {
+	    list.remove(entry.getId());
+	    list.add(0, entry.getId());
+	    //Cap the size at 8
+	    if (list.size() > 8) {
+		list.remove(list.size() - 1);
+	    }
+	}
     }
 
 
