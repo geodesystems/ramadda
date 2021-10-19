@@ -1,5 +1,4 @@
 <types supercategory="" category="Data">
-
   <type name="type_point_collection"  description="Point Data Collection" handler="org.ramadda.data.services.PointCollectionTypeHandler" >
      <property name="icon" value="/point/sitemap_color.png"/>
      <property name="form.resource.show" value="false"/>
@@ -8,37 +7,48 @@
      <property name="form.date.show" value="false"/>
      <property name="form.altitude.show" value="false"/>
 
-<wiki_inner>
+<wiki>
 <![CDATA[
-+inset
-<table width=100% border=0>
++section title={{name}}
+{{description wikify=true}}
++center
+{{display_menu 
+entryTypes=type_point
+doEntries=true
+setEntry.acceptGroup=month
+setEntry.shareGroup=file
+showArrows=true
+menuLabel="Select File:"
+noun=File
+template="${name}"
+}}
+{{display_entrytitle setEntry.acceptGroup=file entry=child:type:type_point}}
+-center
+<table width=100% border=0 cellpadding=10>
 <tr valign=top>
-<td width=50%>
-<div id=listdiv></div>
-<div id=textdiv></div>
-</td>
-<td width=50%>
-<div id=maindiv></div>
-</td>
-</tr>
-</table>
-
-{{displaygroup  showTitle="true"  showMenu="true"  layoutType="table"  layoutColumns="1" divid="maindiv" }}
-
-{{display  type="entrylist"   layoutHere="true"   showForm="false" divid="listdiv"  entryParent="this" title="Data Files"  }}
-
-{{display     type="text"   layoutHere="true"   divid="textdiv" title="Readout"  }}
-
-{{display    height="200"  fields=""  type="map"   layoutHere="false"  showTitle="true"  }}
-
--inset
-
+<td width=1%>
+{{display_fieldslist setEntry.acceptGroup=file entry=child:type:type_point
+width=185px height=65vh
+loadingMessage="" 
+fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
+numericOnly=true asList=true
+showPopup=false decorate=true
+}}
+</td><td>
+{{display_linechart setEntry.acceptGroup=file entry=child:type:type_point
+fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
+height=75vh padRight=true chartLeft="80" chartRight="80"
+addTooltip=false useMultipleAxes=true
+}}
+</tr></td></table>
+----
+:heading Files
+{{tree}}
+-section
 ]]>
 
-</wiki_inner>
-
-
-   </type>
+</wiki>
+</type>
 
 
 
