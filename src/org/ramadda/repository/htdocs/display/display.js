@@ -5032,7 +5032,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 									"-webkit-transform","translateX(-50%)","transform","translateX(-50%)")],"message");
             let html =  HU.div([ATTR_CLASS, 'ramadda-popup', STYLE,"display:none;", ATTR_ID, this.getDomId(ID_MENU_OUTER)], '');
             let style = this.getProperty('displayStyle', '');
-            html += HU.div([CLASS, 'display-contents', STYLE, HU.css('position','relative') + style],table + message);
+            html += HU.div([CLASS, 'display-contents display-' + this.type +'-contents', STYLE, HU.css('position','relative') + style],table + message);
             return html;
         },
         getWidthForStyle: function(dflt) {
