@@ -170,11 +170,8 @@ public class FeatureCollection {
         return nameField;
     }
 
-
-
     public static FeatureCollection getFeatureCollection(String path, InputStream is) 
             throws Exception {
-	System.err.println("path:" + path +" is:" +is);
 	FeatureCollection fc = cache.get(path);
 	if(fc==null&& is!=null) {
 	    fc =  makeFeatureCollection(is);
@@ -216,7 +213,6 @@ public class FeatureCollection {
         Hashtable<String, Object> collectionProps = new Hashtable<String,
                                                         Object>();
         EsriShapefile shapefile = new EsriShapefile(file,null, 0.0f);
-
         return makeFeatureCollection("", "", shapefile, extraProps,
                                      collectionProps);
     }
@@ -351,6 +347,7 @@ public class FeatureCollection {
         if (dbfile == null) {
             return null;
         }
+
         List<DbaseDataWrapper> fieldDatum  = null;
         List<String>           extraFields = null;
         String                 extraKey    = (properties != null)
