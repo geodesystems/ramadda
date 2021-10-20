@@ -2790,6 +2790,7 @@ table.dataTable tfoot td {
 
 .display-three-globe-popup {
     @SHADOW-POPUP@
+    color:#000;
     background-color:rgba(250,250,250,0.9);    
     width:300px;
     max-height:400px;

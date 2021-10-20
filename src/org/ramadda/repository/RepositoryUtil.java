@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ public class RepositoryUtil {
     private static final double MAJOR_VERSION = 5.0;
 
     /** _more_ */
-    private static final int MINOR_VERSION = 63;
+    private static final int MINOR_VERSION = 64;
 
 
     //When we make any real change to the css or javascript change this version

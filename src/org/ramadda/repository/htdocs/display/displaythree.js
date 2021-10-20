@@ -488,6 +488,11 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    let html = HU.center(globe);
 	    html  = globe;
 	    this.setContents(html);
+	    this.jq(ID_POPUP).click(()=>{
+		this.jq(ID_POPUP).hide();
+	    });
+		
+
 	    this.jq(ID_POSITION_BUTTON).click(()=>{
 		let html = "";
 		for(a in positions) {
@@ -573,16 +578,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		let record = object.record;
 		if(!record) return;
 		this.propagateEventRecordSelection({record: record})
-		if(this.getDoPopup()) {
-		    let html = this.getRecordHtml(record);
-		    this.jq(ID_POPUP).html(html);
-		    this.jq(ID_POPUP).show(1000);
-		    return;
-		}
-		if(this.getSelectedDiv()) {
-		    let html = this.getRecordHtml(record);
-		    $("#" + this.getSelectedDiv()).html(html);
-		}
+		this.showRecord(record);
 	    };
 
 
@@ -621,6 +617,19 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 
 
 
+	},
+
+	showRecord: function(record) {
+	    if(this.getDoPopup()) {
+		let html = this.getRecordHtml(record);
+		this.jq(ID_POPUP).html(html);
+		this.jq(ID_POPUP).show(1000);
+		return;
+	    }
+	    if(this.getSelectedDiv()) {
+		let html = this.getRecordHtml(record);
+		$("#" + this.getSelectedDiv()).html(html);
+	    }
 	},
 
 	addGeojsonLayer:function(records) {
@@ -699,11 +708,33 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		    }
 		});
 
+		let alt = this.getPolygonAltitude();
 		this.globe.polygonsData(json.features)
 		    .polygonStrokeColor(()=>strokeColor)
 		    .polygonCapColor((f)=>f.color || "transparent")
-		    .polygonSideColor(()=>"transparent")		    
-		    .polygonAltitude(this.getPolygonAltitude());
+		    .polygonSideColor((f)=>f.color||"transparent")		    
+		    .polygonAltitude(alt);
+
+
+		if(nameField) {
+		    let tooltip = this.getProperty("tooltip");
+		    if(tooltip) {
+			this.globe.polygonLabel(f=>{
+			    if(!f.record) return null;
+			    let html =  this.getRecordHtml(f.record);
+			    html = HU.div([CLASS,"display-three-globe-popup"], html);
+			    return html;
+			});
+		    }
+
+		    this.globe.onPolygonHover(
+			hoverD => {
+			    this.globe
+				.polygonAltitude(d => d === hoverD ? 0.08 : alt)
+			})
+			    .polygonsTransitionDuration(300);
+		    //				.polygonCapColor(d => d === hoverD ? 'steelblue' : d.color)
+		}
 
 	    }).fail(err=>{
 		console.error("failed to load json:" + url);
