@@ -17,9 +17,11 @@
 package org.ramadda.util.text;
 
 
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.geo.*;
 
+import java.io.*;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -76,8 +78,11 @@ public class ShapefileProvider extends DataProvider.BulkDataProvider {
             return;
         }
         String path = files.get(0);
+	InputStream is  = textReader.getInputStream();
+	if(is==null)  
+            is = IO.getInputStream(path);
         FeatureCollection fc = FeatureCollection.getFeatureCollection(path,
-                                   textReader.getInputStream());
+								      is);
 
         List<DbaseDataWrapper> datum    = fc.getDatum();
         List<Feature>          features = (List<Feature>) fc.getFeatures();
@@ -124,6 +129,7 @@ public class ShapefileProvider extends DataProvider.BulkDataProvider {
                 shape = shape.replaceAll("\n", "").replaceAll(" ", "");
                 row.add(shape);
             }
+	    if(i<3) System.err.println(row);
         }
     }
 
