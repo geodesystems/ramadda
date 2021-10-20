@@ -4261,7 +4261,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                             //                      base = request.getAbsoluteUrl(base);
                         }
                         js = js.replace(
-                            "${ramadda.htdocs}", base + "/htdocs").replace(
+                            "${ramadda.htdocs}", base + "/"+RepositoryUtil.getHtdocsVersion()).replace(
                             "${ramadda.root}", base);
 			js = js.replace("${ramadda.search.tree}",getSearchManager().isLuceneEnabled()+"");
                         js = js.replace("${ramadda.urlroot}", base);
