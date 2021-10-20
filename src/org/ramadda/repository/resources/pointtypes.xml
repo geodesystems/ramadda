@@ -51,6 +51,68 @@ addTooltip=false useMultipleAxes=true
 </type>
 
 
+  <type name="type_point_collection_collection"  description="Point Collection Collection" handler="org.ramadda.data.services.PointCollectionTypeHandler" >
+     <property name="icon" value="/point/sitemap_color.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.area.show" value="true"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+
+<wiki>
+<![CDATA[
++section title={{name}}
+{{description wikify=true}}
++center
+{{display_menu doEntries=true
+setEntry.share=true
+setEntry.shareGroup=collection
+recordSelection.accept=false
+showArrows=true
+menuLabel="Select Collection:"
+noun=Collection
+template="${name}"
+}}
+{{display_menu 
+entryTypes=type_point
+entry=child:
+doEntries=true
+setEntry.acceptGroup=collection
+setEntry.shareGroup=file
+showArrows=true
+menuLabel="Select File:"
+noun=File
+template="${name}"
+}}
+{{display_entrytitle setEntry.acceptGroup=file entry=grandchild:type:type_point}}
+-center
+<table width=100% border=0 cellpadding=10>
+<tr valign=top>
+<td width=1%>
+{{display_fieldslist setEntry.acceptGroup=file entry=grandchild:type:type_point
+width=185px height=65vh
+loadingMessage="" 
+fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
+numericOnly=true asList=true
+showPopup=false decorate=true
+}}
+</td><td>
+{{display_linechart setEntry.acceptGroup=file entry=grandchild:type:type_point
+fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
+height=75vh padRight=true chartLeft="80" chartRight="80"
+addTooltip=false useMultipleAxes=true
+}}
+</tr></td></table>
+----
+:heading Files
+{{tree}}
+-section
+]]>
+
+</wiki>
+</type>
+
+
 
   <type name="type_point"  description="Point Data" includeInSearch="true" handler="org.ramadda.data.services.PointTypeHandler"   foruser="false" priority="1">
      <property name="icon" value="/icons/chart.png"/>
