@@ -72,10 +72,10 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	{p:"globeWidth",d:800},
 	{p:"globeHeight",d:400},
 	{p:"baseImage",d:"earth-blue-marble.jpg",ex:"earth-blue-marble.jpg|earth-day.jpg|earth-dark.jpg|world-boundaries.png|caida.jpg|white.png|lightblue.png|black.png"},
-	{p:'geojson',ex:'/repository/resources/us_states.geojson'},
 	{p:"globeBackgroundImage",ex:"night-sky.png|white.png|lightblue.png|black.png"},
 	{p:'backgroundColor',d:'#CAE1FF',ex:'#ffffff'},
 	{p:"initialPosition",ex:"North America|South America|Europe|Asia|Africa|Australia|South Pole|North Pole"},
+	{p:'mapColor',d:'blue'},	
 	{p:'showGraticules',ex:true},
 	{p:'showAtmosphere',d:true,ex:'false'},
 	{p:'atmosphereColor',d:'#fff',ex:'red'},	    	    
@@ -116,6 +116,11 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	{p:'lineAltitude',d:0.05},	
 	{p:'showEndPoints',d:true},	
 	{p:'polygonField',tt:'field that holds polygons'},
+
+	{p:'geojson',tt:'base layer map or used for chloropleth display',ex:'us_states.geojson|us_counties.geojson|countries.geojson|entryid|url'},
+	{p:'polygonNameField',tt:'Field to match with the name field in the geojson map, e.g., state'},
+	{p:'polygonAltitude',d:0.01},
+
 	{p:'selectedDiv',ex:'div id to show selected record'},
 	{p:'doPopup',d:true,ex:'',tt:''},
 	{p:'centerOnFilterChange',d:true,ex:false,tt:'Center map when the data filters change'},	
@@ -160,6 +165,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		return
 	    }	    
             SUPER.updateUI.call(this);
+	    this.jq(ID_POPUP).hide();
 	    let records =this.filterData();
 	    if(!records) return;
 	    this.filteredRecords = records;
@@ -373,9 +379,17 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 			.pointRadius('radius')
 			.pointResolution(this.getPointResolution());
 		} else {
-		    console.log("Not showing spheres or points");
+//		    console.log("Not showing spheres or points");
 		}
 	    }
+
+	    if(this.getProperty("geojson")) {
+		let nameField = this.getFieldById(null, this.getPolygonNameField());
+		if(nameField) {
+		    this.addGeojsonLayer(records);
+		}
+	    }
+
 
 	    if(colorBy.isEnabled()) {
 		colorBy.displayColorTable();
@@ -531,12 +545,14 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 			let name = prompt("Name:");
 			if(!name) return;
 			let attrs = ["x","y","z"];
-			let state = '"'+name+'":'+ "{\nposition: {";
-			attrs.forEach((a,idx)=>state+=(idx>0?",":"") + a+":" + this.getControls().object.position[a]);
-			    state+="},\nup: {";
-			attrs.forEach((a,idx)=>state+=(idx>0?",":"") + a+":" + this.getControls().object.up[a]);
-			state+="}\n},";
+			let  pos =  "{position: {";
+			attrs.forEach((a,idx)=>pos+=(idx>0?",":"") + a+":" + this.getControls().object.position[a]);
+			    pos+="},\nup: {";
+			attrs.forEach((a,idx)=>pos+=(idx>0?",":"") + a+":" + this.getControls().object.up[a]);
+			pos+="}}";
+			let state = '"'+name+'":' + pos;
 			console.log(state);
+			Utils.copyToClipboard(pos.replace(/\n/g,""));
 		    }
 
 		    if(e.code=="KeyR") {
@@ -552,7 +568,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		console.error(err.stack);
 	    }
 
-	    let handleMouseEvent=object=>{
+	    let handleMouseEvent=this.handleMouseEvent = object=>{
 		this.jq(ID_POPUP).hide();
 		let record = object.record;
 		if(!record) return;
@@ -568,25 +584,20 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		    $("#" + this.getSelectedDiv()).html(html);
 		}
 	    };
+
+
+	    if(this.getProperty("geojson")) {
+		let nameField = this.getFieldById(null, this.getPolygonNameField());
+		if(!nameField) {
+		    this.addGeojsonLayer();
+		}
+	    }
+
 	    this.globe.onPointClick(handleMouseEvent);
 	    this.globe.onArcClick(handleMouseEvent);
 	    this.globe.onPathClick(handleMouseEvent);
 	    this.globe.onLabelClick(handleMouseEvent);
 	    this.globe.onGlobeClick(()=>{this.jq(ID_POPUP).hide();});
-
-
-	    if(this.getProperty("geojson")) {
-		let url = this.getProperty("geojson");
-		$.getJSON(url, json=>{
-		    this.globe.polygonsData(json.features)
-			.polygonStrokeColor(() => 'blue')
-			.polygonCapColor(()=>"transparent")
-			.polygonSideColor(()=>"transparent")		    
-
-		}).fail(err=>{
-		    console.error("failed to load json:" + url);
-		});
-	    }
 
 
 
@@ -612,7 +623,95 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 
 	},
 
+	addGeojsonLayer:function(records) {
+	    let nameField = this.getFieldById(null, this.getPolygonNameField());
+            let colorBy = null;
+	    if(records) colorBy = this.getColorByInfo(records);
+	    let url = this.getMapUrl(this.getProperty("geojson"));
+	    let strokeColor= this.getMapColor();
+	    $.getJSON(url, json=>{
+		//		    console.log(json.features.length);
+		//		    json.features.forEach(f=>{console.log(f.properties.NAME);});
+		let aliases = {
+		    "united states of america":"united states" ,
+		    "czechia":"czech republic",
+		    'swaziland':'eswatini',
+		    'south korea':'korea (rep.)',
+		    'north korea':'korea (dem. people s rep.)',
+		    'eq. guinea':'guinea',
+		    'gambia':'gambia the',
+		    'congo':'congo (rep.)',
+		    'democratic republic of the congo':'congo (dem. rep.)',
+		    'ivory coast':'cote d\'ivoire'
+		}
+		let nameMap = {};
+		if(nameField) {
+		    records.forEach(record=>{
+			let name = nameField.getValue(record);
+//			console.log("name:" +name);
+			nameMap[name] = record;
+			nameMap[name.toLowerCase()] = record;
+			nameMap[name.toUpperCase()] = record;			    			    
+		    });
+		}
+		let logCnt = 0;
+		json.features.forEach(f=>{
+		    if(!f.properties) {
+			if(logCnt++<50)
+			    console.error("No properties in feature");
+			return;
+		    }
+		    let seen = {};
+		    let names = [f.properties.SOVEREIGNT, f.properties.name, f.properties.NAME, f.properties.ADMIN].filter(name=>{
+			if(seen[name])return false;
+			seen[name] = true;
+			return name});
+		    if(names.length==0) {
+			if(logCnt++<50)
+			    console.log("Could not find name in feature:" +JSON.stringify(f.properties));
+			return;
+		    }
+		    let record = null;
+		    names.every(name=>{
+			record=nameMap[name];
+			if(record) return false;
+			return true;
+		    });
 
+		    if(!record) {
+			names.every(name=>{
+			    let alias = aliases[name.toLowerCase()];
+			    if(!alias) return true;
+ 			    record = nameMap[alias];
+			    if(record) return false;
+			    return true;
+			});
+		    }
+
+		    if(!record) {
+//			if(logCnt++<50)
+			    console.log("Could not find record for feature:" +names);
+			return;
+		    }
+		    f.record=record;
+		    if(colorBy && colorBy.isEnabled()) {
+			f.color = colorBy.getColorFromRecord(record, null);
+		    }
+		});
+
+		this.globe.polygonsData(json.features)
+		    .polygonStrokeColor(()=>strokeColor)
+		    .polygonCapColor((f)=>f.color || "transparent")
+		    .polygonSideColor(()=>"transparent")		    
+		    .polygonAltitude(this.getPolygonAltitude());
+
+	    }).fail(err=>{
+		console.error("failed to load json:" + url);
+	    });
+	    if(nameField) {
+		this.globe.onPolygonClick(this.handleMouseEvent);
+	    }
+	},
 	parseInt:function(v) {
 	    if(!v.startsWith("0x")) v = '0x' + v;
 	    return parseInt(Number(v), 10);
@@ -620,9 +719,24 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 
 	getImageUrl:function(image) {
 	    if(!image) return null;
-	    if(!image.startsWith("http") && !image.startsWith("/")) image = ramaddaBaseUrl+"/images/maps/" + image;
+	    if(!image.startsWith("http") && !image.startsWith("/")) image = ramaddaBaseHtdocs+"/images/maps/" + image;
 	    return image;
 	},
+	getMapUrl:function(url) {
+	    if(!url) return null;
+	    if(!url.startsWith("http") && !url.startsWith("/")) {
+		//entry id e.g., 41d9b105-d61b-4fc1-8198-8e75c49b1a24
+		if(url.trim().match(/.*[0-9a-z]+-[0-9a-z]+-[0-9a-z]+-[0-9a-z]+-[0-9a-z]+.*/)) {
+
+		    url = ramaddaBaseUrl +'/entry/get?entryid=' + url;
+		} else {
+		    url = ramaddaBaseHtdocs+"/resources/" + url;
+		}
+	    }
+	    console.log("map url:" + url);
+	    
+	    return url;
+	},	
         handleEventRecordSelection: function(source, args) {
 	    SUPER.handleEventRecordSelection.call(this, source, args);
 	    let record = args.record;
