@@ -6,7 +6,8 @@ export csv=~/bin/csv.sh
 dots=5000
 #registered_voters=source/ce-vr011b.txt
 registered_voters=source/ce-vr011d.txt
-voting_report=source/ce-068.txt
+#voting_report=source/ce-068.txt
+voting_report=source/ce-068-2021.txt
 source=voters_boulder.csv
 unique_voter_history=voter_history_unique.csv
 precincts=source/boco_precincts.csv
@@ -43,11 +44,10 @@ do_prep() {
     ${csv}  -delimiter "|" 	 -dots ${dots}    -pattern RES_CITY BOULDER \
 	    -columns voter_id,MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE \
 	    -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "" voted_in_2021 \
-	    -change voted_in_2021 "^.*$" false \
+	    -trim voted_in_2021 \
+	    -change voted_in_2021 "^$" false \
+	    -change voted_in_2021 ".*[0-9]+.*" true \
 	    -p ${voting_report}  > voted_in_2021.csv
-#	    -change voted_in_2021 ".*[0-9]+.*" true \
-
-
     echo "processing registered voters"
 
 #    ${csv}  -delimiter "|"  -dots ${dots}  -notcolumns "regex:(?i)BALLOT_.*"  -pattern res_city BOULDER  -p ${registered_voters} > voters_base.csv
