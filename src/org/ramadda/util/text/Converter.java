@@ -5716,11 +5716,11 @@ public abstract class Converter extends Processor {
                 if ((index < 0) || (index >= row.size())) {
                     continue;
                 }
-                String s = (String) row.getValues().get(index);
-                if (s == null) {
+                Object o = row.getValues().get(index);
+                if (o == null) {
                     continue;
                 }
-		s = s.trim();
+		String s = o.toString().trim();
 		row.set(index,s);
             }
 
