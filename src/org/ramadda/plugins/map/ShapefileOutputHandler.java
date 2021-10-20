@@ -154,7 +154,6 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
     }
 
 
-
     /**
      * _more_
      *
@@ -184,7 +183,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                 }
                 String      path        = entry.getFile().toString();
                 InputStream inputStream = new FileInputStream(path);
-                shapefile = new EsriShapefile(inputStream, null, 1.0f);
+                shapefile = new EsriShapefile(inputStream, null, 0.0f);
                 cache.put(entry.getId(),
                           new ShapefileWrapper(shapefile, inputStream));
             }
@@ -378,11 +377,11 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             schemaId = schemaName = entry.getId();
         }
 
-        collectionProps.putAll(getRepository().getPluginProperties());
         if (dbfile != null) {
+	    collectionProps.putAll(getRepository().getPluginProperties());
             Hashtable extraProperties = getExtraProperties(request, entry);
             fieldDatum = FeatureCollection.getDatum(dbfile, extraProperties,
-                    (Hashtable<String, Object>) collectionProps);
+						    (Hashtable<String, Object>) collectionProps);
             nameField = FeatureCollection.getNameField(fieldDatum);
             collectionProps.put(FeatureCollection.PROP_SCHEMANAME,
                                 schemaName);
@@ -395,7 +394,6 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         }
 
         Hashtable properties = getExtraProperties(request, entry);
-
         return FeatureCollection.makeFeatureCollection(entry.getName(),
                 entry.getDescription(), shapefile, properties,
                 collectionProps);
@@ -629,14 +627,9 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                              boolean addPoints, boolean addFeatures)
             throws Exception {
         PrintWriter sb = new PrintWriter(os);
-        FeatureCollection fc = makeFeatureCollection(request, entry,
-                                   shapefile);
+	FeatureCollection fc = makeFeatureCollection(request, entry,  shapefile);
         List<DbaseDataWrapper> datum    = fc.getDatum();
         List<Feature>          features = (List<Feature>) fc.getFeatures();
-
-	DbaseDataWrapper nameDatum = datum.get(1);
-
-
         if (datum == null) {
             if (addHeader) {
                 sb.println("#fields=");
