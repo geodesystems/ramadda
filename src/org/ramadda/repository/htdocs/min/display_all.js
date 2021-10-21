@@ -9567,7 +9567,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         handleWarning: function(message) {
 	    if(!window.location.hash  || window.location.hash!="#fortest") {
-		console.warning(message);
+		console.warn(message);
 	    }
 	},
         handleLog: function(message) {
@@ -47441,6 +47441,7 @@ function RamaddaParcoordsDisplay(displayManager, id, properties) {
 */
 
 
+
 const DISPLAY_THREE_GLOBE = "three_globe";
 addGlobalDisplayType({
     type: DISPLAY_THREE_GLOBE,
@@ -47450,7 +47451,40 @@ addGlobalDisplayType({
     category: CATEGORY_MAPS
 });
 
+const DISPLAY_THREE_GRID = "three_grid";
+addGlobalDisplayType({
+    type: DISPLAY_THREE_GRID,
+    forUser: true,
+    label: "3D Grid",
+    requiresData: true,
+    category: CATEGORY_CHARTS,
+});
+
 var ramaddaLoadedThree=false;
+var ramaddaLoadedThreeGlobe=false;
+
+function RamaddaThree_Base(displayManager, id, type,properties) {
+    const SUPER = new RamaddaDisplay(displayManager, id, type, properties);
+    let myProps = [];
+    defineDisplay(this, SUPER, myProps, {
+	parseInt:function(v,dflt) {
+	    if(typeof v == "number") return v;
+	    if(!v) return  dflt;
+	    if(v.match("rgb")) v = Utils.rgbToHex(v);
+	    if(v.startsWith("#")) v = v.substring(1);
+	    if(!v.startsWith("0x")) v = '0x' + v;
+	    return parseInt(Number(v), 10);
+	},
+	getScene() {
+	    return this.scene;
+	},
+	getControls() {
+	    return this.controls;
+	},
+    });
+
+}
+
 
 function RamaddaThree_globeDisplay(displayManager, id, properties) {
     const ID_CONTAINER = "container";
@@ -47563,7 +47597,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	{p:'doPopup',d:true,ex:'',tt:''},
 	{p:'centerOnFilterChange',d:true,ex:false,tt:'Center map when the data filters change'},	
     ];
-    const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_THREE_GLOBE, properties);
+    const SUPER = new RamaddaThree_Base(displayManager, id, DISPLAY_THREE_GLOBE, properties);
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
@@ -47589,10 +47623,15 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	},
 
         updateUI: async function() {
+            if(!ramaddaLoadedThreeGlobe) {
+                ramaddaLoadedThreeGlobe = true;
+		await Utils.importJS("//unpkg.com/globe.gl");
+            }
+
             if(!ramaddaLoadedThree) {
                 ramaddaLoadedThree = true;
-		await Utils.importJS("//unpkg.com/globe.gl");
-		await Utils.importJS("//unpkg.com/three");
+		await Utils.importJS(ramaddaBaseHtdocs+"/lib/three/three.min.js");
+//		await Utils.importJS("//unpkg.com/three");
             }
 	    if(!window["THREE"]) {
 		setTimeout(()=>{this.updateUI()},100);
@@ -48181,11 +48220,6 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		this.globe.onPolygonClick(this.handleMouseEvent);
 	    }
 	},
-	parseInt:function(v) {
-	    if(!v.startsWith("0x")) v = '0x' + v;
-	    return parseInt(Number(v), 10);
-	},
-
 	getImageUrl:function(image) {
 	    if(!image) return null;
 	    if(!image.startsWith("http") && !image.startsWith("/")) image = ramaddaBaseHtdocs+"/images/maps/" + image;
@@ -48227,5 +48261,262 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    });
 
 	}
+    });
+}
+
+
+function RamaddaThree_gridDisplay(displayManager, id, properties) {
+    const ID_CONTAINER = "container";
+    const ID_GRID = "grid";
+    const ID_POPUP = "popup";
+    const ID_POSITION_BUTTON = "positionbutton";        
+    let myProps = [
+        {label:'3D Grid Attributes'},
+	{p:"gridWidth",d:400},
+	{p:"gridHeight",d:400},
+	{p:'doPopup',d:true,ex:'',tt:''},
+    ];
+    const SUPER = new RamaddaThree_Base(displayManager, id, DISPLAY_THREE_GRID, properties);
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+        needsData: function() {
+            return true;
+        },
+        initDisplay:  function() {
+            SUPER.initDisplay.call(this);
+        },
+	dataFilterChanged: function(args) {
+	    SUPER.dataFilterChanged.call(this,args);
+	},
+        updateUI: async function() {
+            if(!ramaddaLoadedThree) {
+                ramaddaLoadedThree = true;
+		await Utils.importJS(ramaddaBaseHtdocs+"/lib/three/three.min.js");
+		await Utils.importJS(ramaddaBaseHtdocs+"/lib/three/controls/OrbitControls.js");
+            }
+	    if(!window["THREE"]) {
+		setTimeout(()=>{this.updateUI()},100);
+		return
+	    }	    
+	    if(!THREE.OrbitControls) {
+		setTimeout(()=>{this.updateUI()},100);
+		return
+	    }
+
+            SUPER.updateUI.call(this);
+	    this.jq(ID_POPUP).hide();
+	    if(!this.shapes) {
+		this.createScene();
+	    }
+
+	    this.shapes.forEach(shape=>{
+		this.scene.remove(shape);
+	    });
+
+	    let records =this.filterData();
+	    if(!records) return;
+	    this.filteredRecords = records;
+
+
+
+	    let cubeWidth = 30;
+	    let cubeSpace = 10;	    
+	    let initX = -250;
+	    let x = initX;
+	    let y= -initX;
+	    let colCnt = 0;
+
+            let colorBy = this.getColorByInfo(records);
+	    let colorBys = [];
+	    if(this.colorByFields) {
+		let fields = this.getFields();
+		this.colorByFields.forEach(field=>{
+//		    function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix, theField, props,lastColorBy) {
+		    let cb = new ColorByInfo(this,fields,records,null,null,null,null,field);
+		    colorBys.push(cb);
+		})
+	    }
+	    if(colorBys.length==0) colorBys=[colorBy];
+	    colorBys=[colorBy];	    
+    
+	    records.forEach((record,idx)=>{	
+		if(x>-initX) {
+		    y-=(cubeWidth+cubeSpace);
+		    x  = initX;
+		}
+		for(let i=0;i<colorBys.length;i++) {
+		    let color = colorBys[i].getColorFromRecord(record, null);
+		    let geometry = new THREE.BoxGeometry(cubeWidth,cubeWidth,cubeWidth);
+		    let material = new THREE.MeshLambertMaterial( { color: this.parseInt(color,0xff0000) } );
+		    let cube = new THREE.Mesh(geometry, material);
+		    cube.position.x = x;
+		    cube.position.y = y;		
+		    cube.position.z = 500+i*(cubeWidth+1);
+		    this.scene.add(cube);
+		    cube.__record = record;
+		    this.shapes.push(cube);
+		}
+		x+=cubeWidth+cubeSpace;
+	    });
+	    /*
+	    var geometry = new THREE.CylinderBufferGeometry( 0, 10, 30, 4, 1 );
+	    var material = new THREE.MeshPhongMaterial( { color: 0xffffff, flatShading: true } );
+	    for ( var i = 0; i < 500; i ++ ) {
+		var mesh = new THREE.Mesh( geometry, material );
+		mesh.position.x = ( Math.random() - 0.5 ) * 1000;
+		mesh.position.y = ( Math.random() - 0.5 ) * 1000;
+		mesh.position.z = ( Math.random() - 0.5 ) * 1000;
+		mesh.updateMatrix();
+		mesh.matrixAutoUpdate = false;
+		this.scene.add( mesh );
+	    }
+	    */
+
+	    if(colorBy.isEnabled()) {
+		colorBy.displayColorTable();
+	    }
+	    this.callHook("updateUI");
+        },
+	createScene: function() {
+	    let popup = HU.div([CLASS,"display-three-globe-popup",ID,this.domId(ID_POPUP),STYLE,HU.css("display","none","position","absolute","left","60%","top","0px")],"");
+	    let grid = HU.div([STYLE,HU.css("position","relative")],
+			      popup +
+			      HU.div([STYLE,HU.css("min-width","200px","min-height","200px"), ID, this.domId(ID_GRID)]));
+	    let html = HU.center(grid);
+	    this.setContents(html);
+	    this.scene = new THREE.Scene();
+	    //fov,aspect ratio, near plane, far plane
+	    let w = this.getGridWidth();
+	    let h  = this.getGridHeight();
+	    const AMOUNT = 6;
+	    const ASPECT_RATIO = w/h;
+	    const WIDTH = ( w / AMOUNT ) * window.devicePixelRatio;
+	    const HEIGHT = ( h / AMOUNT ) * window.devicePixelRatio;
+
+	    this.camera = new THREE.PerspectiveCamera(60,w/h,0.1,1000);
+	    this.camera.position.z = 1000;
+
+	    var axes = new THREE.AxisHelper(1000);
+            this.scene.add(axes);
+
+
+	    this.renderer = new THREE.WebGLRenderer({antialias:true,alpha: true});
+	    this.renderer.setClearColor( 0x000000, 0 );
+//	    this.renderer.setClearColor("rgba(0,0,0,1)");
+	    this.renderer.setSize(w,h);
+	    this.controls = new THREE.OrbitControls( this.camera, this.renderer.domElement );
+	    this.controls.minDistance = 0;
+	    this.controls.maxDistance = 1000;
+	    this.controls.target.set( 0, 1, 0 );
+	    this.controls.update();
+	    this.jq(ID_GRID).append(this.renderer.domElement);
+	    let addLight=(v,i,x,y,z) =>{
+		//var light = new THREE.PointLight(this.parseInt(v),i);
+		let light = new THREE.DirectionalLight(this.parseInt(v));
+		light.position.set(x,y,z);
+		this.getScene().add(light);
+	    }
+	    addLight(0xffffff,10,-1,-1,-1);
+	    addLight(0xffffff,10,1,1,1);	    
+	    addLight(0xffffff,10,0,0,1);	    	    
+//	    addLight(0xffffff,10,0,0,10);
+//	    addLight(0xffffff,10,0,0,-10);	    
+
+//	    var light = new THREE.AmbientLight( 0xffffff,1);
+//	    this.scene.add( light );
+
+	    let _this = this;
+	    let canvas = this.jq(ID_GRID).find('canvas');
+	    canvas.attr('tabindex','1');
+	    this.renderer.domElement.addEventListener('keydown', (e) => {
+		    if(e.code=="KeyP") {
+			let name = prompt("Name:");
+			if(!name) return;
+			let attrs = ["x","y","z"];
+			let  pos =  "{position: {";
+			attrs.forEach((a,idx)=>pos+=(idx>0?",":"") + a+":" + this.getControls().object.position[a]);
+			    pos+="},\nup: {";
+			attrs.forEach((a,idx)=>pos+=(idx>0?",":"") + a+":" + this.getControls().object.up[a]);
+			pos+="}}";
+			let state = '"'+name+'":' + pos;
+			console.log(state);
+			Utils.copyToClipboard(pos.replace(/\n/g,""));
+		    }
+
+		    if(e.code=="KeyR") {
+			_this.controls.reset();
+//			let pos = positions[this.getInitialPosition() || "North America"];
+//			if(pos) {			    this.setPosition(pos);			}
+		    }
+		});
+
+
+
+	    let cnt = 0;
+	    let handleMouseEvent=event=>{
+		this.jq(ID_POPUP).hide();
+		event.preventDefault();
+		if(!event.shiftKey || event.which != 1)  return;
+		let r = new THREE.Raycaster();
+		let mouse = {
+		    x: ( event.offsetX / w) * 2 - 1,
+		    y : - ( event.offsetY / h) * 2 + 1
+		};
+		r.setFromCamera( mouse, this.camera ); 
+		let intersects = r.intersectObjects(this.shapes,true);
+		if(intersects.length==0) {
+		    console.log("nothing found");
+		    return;
+		}
+		let minDistance = NaN;
+		let minObject = null;
+		intersects.forEach(o=>{
+		    if(minObject==null || minDistance>o.distance) {
+			minObject = o.object;
+			minDistance = o.distance;
+		    }
+		});
+//		console.dir(minObject);
+		let getRecord = o=>{
+		    if(o.__record) return o.__record;
+		    if(o.parent) return getRecord(o.parent);
+		    return null;
+		};
+		let record = getRecord(minObject);
+		if(!record) {
+		    console.log("Could not find record");
+		    return;
+		}
+		console.log("record:" + record);
+		this.propagateEventRecordSelection({record: record})
+		if(this.getDoPopup()) {
+		    let html = this.getRecordHtml(record);
+		    this.jq(ID_POPUP).html(html);
+		    this.jq(ID_POPUP).show(1000);
+		    return;
+		}
+		if(this.getSelectedDiv()) {
+		    let html = this.getRecordHtml(record);
+		    $("#" + this.getSelectedDiv()).html(html);
+		}
+	    };
+	    this.renderer.domElement.addEventListener( 'mouseup', handleMouseEvent, false );
+	    _this.renderer.render( _this.scene, _this.camera );
+	    this.shapes = [];
+	    if(!this.animating) {
+		this.animating = true;
+		function animate() {
+		    requestAnimationFrame( animate );
+		    _this.controls.update();
+		    _this.shapes.forEach(shape=>{
+			return
+			shape.rotation.x+=0.01
+//			shape.rotation.y+=0.01
+		    });
+		    _this.renderer.render( _this.scene, _this.camera );
+		}
+		animate();
+	    }
+
+	}	    
     });
 }

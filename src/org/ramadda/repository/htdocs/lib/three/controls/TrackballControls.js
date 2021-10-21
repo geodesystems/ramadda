@@ -366,22 +366,14 @@
 
 				_state = STATE.NONE;
 				_keyState = STATE.NONE;
-//			    console.clear();
-//			    console.dir(scope.target);
-//			    console.log("position:{" + scope.object.position.x);
-//			    console.log(scope.object.up);			    
-			    let pos = { x: -177.04784142087843, y: 174.2447589926086, z: -28.15716270889524 };
-			    let up =  { x: 0.6823001815748028, y: 0.716636871258438, z: 0.1445616027024775 };
-			    pos = { x: -7.652690327125079, y: 248.99237386644867, z: -21.076861415014275 };
-			    pos = { x: 0, y: -250, z: 0}
-			    up = { x: 1, y: 0.0, z: 0.0 }
-			    pos=null;up=null;
 				scope.target.copy( scope.target0 );
-				scope.object.position.copy(pos|| scope.position0 );
-				scope.object.up.copy(up || scope.up0 );
+				scope.object.position.copy( scope.position0 );
+				scope.object.up.copy( scope.up0 );
 				scope.object.zoom = scope.zoom0;
 				scope.object.updateProjectionMatrix();
+
 				_eye.subVectors( scope.object.position, scope.target );
+
 				scope.object.lookAt( scope.target );
 				scope.dispatchEvent( _changeEvent );
 				lastPosition.copy( scope.object.position );
