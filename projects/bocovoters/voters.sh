@@ -24,6 +24,7 @@ do_all() {
     do_history
     do_counts
     do_joins
+    do_histogram
     do_final
     do_db
     do_release
@@ -32,12 +33,21 @@ do_all() {
 
 
 init_files() {
+    echo "fetching voter report"
+    wget  ${voting_report_url}
+    cd tmp
+    jar -xvf ../CE-068_Voters_With_Ballots_List_Public.zip
+    cp ../source/ce-068-2021.txt ../source/bak/ce-068-2021-last.txt 
+    mv *.txt ../source/ce-068-2021.txt
+    cd ..
     echo "initializing files"
     cp source/Master_Voting_History_List_Part1.csv voter_history.csv
     tail -n+2 source/Master_Voting_History_List_Part2.csv >>voter_history.csv
     tail -n+2 source/Master_Voting_History_List_Part3.csv >>voter_history.csv        
 }
 
+#init_files
+#exit
 
 do_prep() {
     echo "processing voting report"
@@ -48,6 +58,15 @@ do_prep() {
 	    -change voted_in_2021 "^$" false \
 	    -change voted_in_2021 ".*[0-9]+.*" true \
 	    -p ${voting_report}  > voted_in_2021.csv
+    ${csv}  -delimiter "|" 	 -dots ${dots}   \
+	    -columns voter_id,MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE \
+	    -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "" voted_in_2021 \
+	    -trim voted_in_2021 \
+	    -change voted_in_2021 "^$" false \
+	    -change voted_in_2021 ".*[0-9]+.*" true \
+	    -p ${voting_report}  > all_voted_in_2021.csv
+
+
     echo "processing registered voters"
 
 #    ${csv}  -delimiter "|"  -dots ${dots}  -notcolumns "regex:(?i)BALLOT_.*"  -pattern res_city BOULDER  -p ${registered_voters} > voters_base.csv
@@ -72,6 +91,26 @@ do_histogram() {
     file1=source/ce-068-2019.txt
     file2=source/ce-068-2020.txt
     file3=source/ce-068-2017.txt
+    file4=source/ce-068-2021.txt    
+    ${csv} -delimiter "|" \
+	   -ifin voter_id voters_boulder.csv  voter_id  \
+	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" 05-NOV-09 \
+	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" ".*SEP.*" \
+	   -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "," "voted_date" \
+	   -change voted_date "," "" \
+	   -notpattern voted_date "" \
+	   -change voted_date "-19" "-2019" \
+	   -change voted_date "OCT" "10" \
+	   -change voted_date "NOV" "11" \
+	   -change voted_date "(..)-(..)-(....)" "\$3-\$2-\$1" \
+	   -change voted_date "(..)/(..)/(....)" "\$3-\$1-\$2" \
+	   -sum voted_date "" "" \
+	   -gt count 20 \
+	   -sort voted_date \
+	   -addheader "voted_date.type date voted_date.format yyyy-MM-dd" \
+	   -p ${file4} > boulder_voting_2021_histogram.csv
+
+
     ${csv} -delimiter "|" \
 	   -ifin voter_id voters_boulder.csv  voter_id  \
 	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" 05-NOV-09 \
@@ -467,6 +506,7 @@ voters_final.csv > bocovotersdb.xml
 do_release() {
     echo "Copying to geode"
     cp bocovotersdb.xml  ~/.ramadda/plugins
+    cp boulder_voting_2021_histogram.csv ~/
     sh /Users/jeffmc/source/ramadda/bin/scpgeode.sh 50.112.99.202 voters_final.csv staging
     sh /Users/jeffmc/source/ramadda/bin/scpgeode.sh 50.112.99.202 bocovotersdb.xml plugins
 }
