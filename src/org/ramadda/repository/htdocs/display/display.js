@@ -6531,7 +6531,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         handleWarning: function(message) {
 	    if(!window.location.hash  || window.location.hash!="#fortest") {
-		console.warning(message);
+		console.warn(message);
 	    }
 	},
         handleLog: function(message) {
