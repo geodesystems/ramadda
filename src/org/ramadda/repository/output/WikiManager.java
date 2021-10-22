@@ -159,9 +159,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag(WIKI_TAG_GALLERY,null,
                                         ATTR_WIDTH, "-100", ATTR_COLUMNS, "3",
 					ATTR_POPUP, "true", ATTR_THUMBNAIL, "false",
+					"decorate","true","#imageStyle","",
 					ATTR_CAPTION, "Figure ${count}: ${name}",
-					ATTR_POPUPCAPTION,
-					"over"), 
+					"#popupCaption",""), 
                             new WikiTag(WIKI_TAG_SLIDESHOW,"Slide Show",
                                         ATTR_TAG, WIKI_TAG_SIMPLE,
 					ATTR_TEXTPOSITION,"top",
@@ -5415,12 +5415,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                            -1);
 
         int     columns = getProperty(wikiUtil, props, ATTR_COLUMNS, 3);
+        boolean decorate  = getProperty(wikiUtil, props, "decorate",true);
         boolean random  = getProperty(wikiUtil, props, ATTR_RANDOM, false);
         boolean popup   = getProperty(wikiUtil, props, ATTR_POPUP, true);
         boolean thumbnail = getProperty(wikiUtil, props, ATTR_THUMBNAIL,
                                         false);
         String caption = getProperty(wikiUtil, props, ATTR_CAPTION,
                                      "${name}");
+        String popupCaption = getProperty(wikiUtil, props, "popupCaption",caption);
+        String imageStyle = getProperty(wikiUtil, props, "imageStyle",null);
         String captionPos = getProperty(wikiUtil, props, ATTR_POPUPCAPTION,
                                         "none");
         boolean showDesc = getProperty(wikiUtil, props, ATTR_SHOWDESCRIPTION,
@@ -5466,13 +5469,16 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 
             if (url == null) {
-                url = child.getTypeHandler().getEntryResourceUrl(request,
-                        child);
+		if(child.getResource().isImage()) {
+		    url = child.getTypeHandler().getEntryResourceUrl(request,
+								     child);
                 /*                url = HU.url(
                                   request.makeUrl(repository.URL_ENTRY_GET) + "/"
                                   + getStorageManager().getFileTail(child), ARG_ENTRYID,
                                   child.getId());*/
+		}
             }
+	    if(url==null) continue;
             if (serverImageWidth > 0) {
                 url = url + "&" + ARG_IMAGEWIDTH + "=" + serverImageWidth;
             }
@@ -5502,31 +5508,46 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             extra = extra + HU.attr("id", idPrefix + "img" + num) +
 		HU.attr("loading","lazy");
             String img = HU.img(url, "", extra);
-
+	    if(imageStyle!=null) {
+		img = HU.div(img,HU.attrs("style",imageStyle));
+	    }
             String entryUrl =
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, child);
-            buff.append("<div class=\"image-outer\">");
-            buff.append("<div class=\"image-inner\">");
+	    if(decorate) {
+		buff.append("<div class=\"image-outer\">");
+		buff.append("<div class=\"image-inner\">");
+	    }
             if (popup) {
+		String thePopupCaption = popupCaption;
+		thePopupCaption = thePopupCaption.replace("${count}", "" + num);
+		thePopupCaption =
+		    thePopupCaption.replace("${date}",
+					    formatDate(request,
+						       new Date(child.getStartDate())));
+		thePopupCaption = thePopupCaption.replace("${name}", child.getLabel());
+		thePopupCaption = thePopupCaption.replace("${description}",
+							  child.getDescription());
                 String popupExtras = HU.cssClass("popup_image")
                                      + HU.attr("width", "100%");
-                if ( !captionPos.equals("none")) {
+		//                if ( !captionPos.equals("none")) {
                     popupExtras += HU.attr("title", theCaption);
-                }
-		String dataCaption = HU.href(entryUrl,theCaption).replace("\"","'");
+		    //                }
+		String dataCaption = HU.href(entryUrl,thePopupCaption).replace("\"","'");
                 popupExtras += HU.attr("data-fancybox", idPrefix)
 		    + HU.attr("data-caption", dataCaption);
+		String popupUrl = child.getResource().isImage()?child.getTypeHandler().getEntryResourceUrl(request, child):url;
                 buff.append(
                     HU.href(
-                        child.getTypeHandler().getEntryResourceUrl(
-                            request, child), HU.div(
+			    popupUrl, HU.div(
                             img,
                             HU.attr(
                                 "id", idPrefix + "div" + num)), popupExtras));
             } else {
                 buff.append(img);
             }
-            buff.append("</div>");
+	    if(decorate) {
+		buff.append("</div>");
+	    }
 
 
             theCaption = HU.href(entryUrl, theCaption,
@@ -5540,8 +5561,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     buff.append("</div>");
                 }
             }
-
-            buff.append("</div>");
+	    if(decorate) {
+		buff.append("</div>");
+	    }
         }
         int    colInt   = 12 / Math.min(12, columns);
         String colClass = "col-md-" + colInt;
@@ -5549,7 +5571,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         for (StringBuilder buff : colsSB) {
             HU.open(sb, "div",
                     HU.cssClass(colClass + " ramadda-col")
-                    + HU.style("padding-left:5px; padding-right:5px;"));
+                    + (decorate?HU.style("padding-left:5px; padding-right:5px;"):HU.style("padding-left:0px; padding-right:0px;")));
             sb.append(buff);
             HU.close(sb, "div");
         }
