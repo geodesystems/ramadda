@@ -2201,10 +2201,21 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    let html = "";
 	    let inner = "";
 	    entries.forEach((entry,idx) =>{
-		inner+=HU.div([CLASS,"display-simplesearch-entry"], HU.href(this.getRamadda().getEntryUrl(entry),HU.image(entry.getIconUrl()) +"  "+ entry.getName()));
+		let thumb = entry.getThumbnail();
+		let attrs = [TITLE,"",CLASS,"display-simplesearch-entry"];
+		if(thumb) attrs.push("thumbnail",thumb);
+		inner+=HU.div(attrs, HU.href(this.getRamadda().getEntryUrl(entry),HU.image(entry.getIconUrl()) +"  "+ entry.getName()));
 	    });
 //	    inner = HU.div([CLASS,"display-simplesearch-entries"],inner);
             this.writeEntries(inner, entries);
+	    this.jq(ID_ENTRIES).find(".display-simplesearch-entry").tooltip({
+		content: function() {
+		    let thumb = $(this).attr("thumbnail");
+		    if(!thumb) return null;
+		    return HU.div([STYLE,HU.css("max-height","100px","overflow-y","hidden")],
+				  HU.image(thumb,["width","200px"]));
+		}});
+
             this.getDisplayManager().handleEventEntriesChanged(this, entries);
         },
 

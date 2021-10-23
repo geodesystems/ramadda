@@ -30746,10 +30746,21 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    let html = "";
 	    let inner = "";
 	    entries.forEach((entry,idx) =>{
-		inner+=HU.div([CLASS,"display-simplesearch-entry"], HU.href(this.getRamadda().getEntryUrl(entry),HU.image(entry.getIconUrl()) +"  "+ entry.getName()));
+		let thumb = entry.getThumbnail();
+		let attrs = [TITLE,"",CLASS,"display-simplesearch-entry"];
+		if(thumb) attrs.push("thumbnail",thumb);
+		inner+=HU.div(attrs, HU.href(this.getRamadda().getEntryUrl(entry),HU.image(entry.getIconUrl()) +"  "+ entry.getName()));
 	    });
 //	    inner = HU.div([CLASS,"display-simplesearch-entries"],inner);
             this.writeEntries(inner, entries);
+	    this.jq(ID_ENTRIES).find(".display-simplesearch-entry").tooltip({
+		content: function() {
+		    let thumb = $(this).attr("thumbnail");
+		    if(!thumb) return null;
+		    return HU.div([STYLE,HU.css("max-height","100px","overflow-y","hidden")],
+				  HU.image(thumb,["width","200px"]));
+		}});
+
             this.getDisplayManager().handleEventEntriesChanged(this, entries);
         },
 
@@ -48275,6 +48286,7 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 	{p:"gridWidth",d:400},
 	{p:"gridHeight",d:400},
 	{p:'doPopup',d:true,ex:'',tt:''},
+	{p:'doImages',ex:true}
     ];
     const SUPER = new RamaddaThree_Base(displayManager, id, DISPLAY_THREE_GRID, properties);
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -48317,9 +48329,8 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 	    this.filteredRecords = records;
 
 
-
-	    let cubeWidth = 30;
-	    let cubeSpace = 10;	    
+	    let cubeWidth = 20;
+	    let cubeSpace = 2;	    
 	    let initX = -250;
 	    let x = initX;
 	    let y= -initX;
@@ -48337,20 +48348,48 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 	    }
 	    if(colorBys.length==0) colorBys=[colorBy];
 	    colorBys=[colorBy];	    
-    
+	    let doImages = this.getDoImages();
+	    let imageFields = this.getFieldsByType(null,"image");
+	    const loader = new THREE.TextureLoader();
 	    records.forEach((record,idx)=>{	
 		if(x>-initX) {
 		    y-=(cubeWidth+cubeSpace);
 		    x  = initX;
 		}
-		for(let i=0;i<colorBys.length;i++) {
-		    let color = colorBys[i].getColorFromRecord(record, null);
+
+		if(doImages) {
 		    let geometry = new THREE.BoxGeometry(cubeWidth,cubeWidth,cubeWidth);
+		    const materials = [];
+		    imageFields.forEach(f=>{
+			let image = f.getValue(record);
+//			image = "https://ramadda.org/repository/metadata/view/Screenshot_2021-10-19_at_13-51-39_Point_Data_Collection.png?element=1&entryid=90e2c8e8-7e24-4f6b-9f0c-134fbd690999&metadata_id=b34d307a-7e7c-4a62-8c1e-1e1cd5637b2b";
+//			image = 'https://localhost:8430/repository/images/logo.png';
+			if(Utils.stringDefined(image)) {
+			    console.log(image);
+			    materials.push(new THREE.MeshBasicMaterial({map: loader.load(image)}));
+			}
+		    });
+		    let cube = new THREE.Mesh(geometry, materials);
+		    cube.position.x = x;
+		    cube.position.y = y;		
+		    this.scene.add(cube);
+		    this.shapes.push(cube); 
+		} else {
+		    let materials = [];
+/*
+		    for(let i=0;i<colorBys.length;i++) {
+			let color = colorBys[i].getColorFromRecord(record, null);
+			let material = new THREE.MeshLambertMaterial( { color: this.parseInt(color,0xff0000) } );
+			materials.push(this.parseInt(color,0xff0000));
+		    }
+*/
+		    let color = colorBy.getColorFromRecord(record, null);
 		    let material = new THREE.MeshLambertMaterial( { color: this.parseInt(color,0xff0000) } );
+		    let geometry = new THREE.BoxGeometry(cubeWidth,cubeWidth,cubeWidth*2);
 		    let cube = new THREE.Mesh(geometry, material);
 		    cube.position.x = x;
 		    cube.position.y = y;		
-		    cube.position.z = 500+i*(cubeWidth+1);
+		    cube.position.z = 500+0*(cubeWidth+1);
 		    this.scene.add(cube);
 		    cube.__record = record;
 		    this.shapes.push(cube);
@@ -48510,7 +48549,7 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 		    _this.shapes.forEach(shape=>{
 			return
 			shape.rotation.x+=0.01
-//			shape.rotation.y+=0.01
+			shape.rotation.y+=0.01
 		    });
 		    _this.renderer.render( _this.scene, _this.camera );
 		}
