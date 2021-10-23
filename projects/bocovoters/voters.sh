@@ -6,7 +6,6 @@ export csv=~/bin/csv.sh
 dots=5000
 #registered_voters=source/ce-vr011b.txt
 registered_voters=source/ce-vr011d.txt
-#voting_report=source/ce-068.txt
 voting_report=source/ce-068-2021.txt
 source=voters_boulder.csv
 unique_voter_history=voter_history_unique.csv
