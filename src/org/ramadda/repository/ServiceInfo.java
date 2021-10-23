@@ -96,6 +96,10 @@ public class ServiceInfo {
     }
 
 
+    public String toString() {
+	return "service:" + name +" url:"+ url;
+    }
+
     /**
      * _more_
      *
@@ -120,8 +124,13 @@ public class ServiceInfo {
             return false;
         }
         ServiceInfo that = (ServiceInfo) object;
-
         return this.url.equals(that.url);
+    }
+
+
+    @Override
+    public int hashCode() {
+	return url.hashCode();
     }
 
 
