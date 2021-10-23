@@ -2371,13 +2371,14 @@ public class PointOutputHandler extends RecordOutputHandler {
         if (OUTPUT_LAS != null) {
             lasProduct = OUTPUT_LAS.toString();
         }
+	String pointsIcon  = getAbsoluteIconUrl(request, "/icons/chart.png");
         String[][] values = {
-            { OUTPUT_JSON.toString(), "Point JSON", ".json", ICON_POINTS,
+            { OUTPUT_JSON.toString(), "Point JSON", ".json", pointsIcon,
               "&max=${numpoints}" },
-            { OUTPUT_LATLONALTCSV.toString(), "Lat/Lon/Alt CSV", ".csv",
-              ICON_POINTS }, { lasProduct, "LAS 1.2", ".las", ICON_POINTS },
-            { OUTPUT_KMZ.toString(), ".kmz", "Google Earth KMZ",
-              getAbsoluteIconUrl(request, ICON_KML) }
+            { OUTPUT_CSV.toString(), "CSV", ".csv", pointsIcon },
+	    { lasProduct, "LAS 1.2", ".las", pointsIcon },
+            { OUTPUT_KMZ.toString(), "Google Earth KMZ",".kmz", 
+              getAbsoluteIconUrl(request, "/icons/kml.png") }
         };
 
 
