@@ -56,6 +56,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 
@@ -621,6 +622,8 @@ public class CatalogOutputHandler extends OutputHandler {
         List<ServiceInfo> services = new ArrayList<ServiceInfo>();
         entry.getTypeHandler().getServiceInfos(request, entry, services);
         boolean didOpendap = false;
+	HashSet seen = new HashSet();
+
 
         if (canDataLoad(request, entry)
                 && !entry.getType().equals(
@@ -658,6 +661,9 @@ public class CatalogOutputHandler extends OutputHandler {
 
 
         for (ServiceInfo service : services) {
+	    if(seen.contains(service)) continue;
+	    seen.add(service);
+
             String type = service.getType();
             String url  = service.getUrl();
             String name = service.getName();
@@ -713,7 +719,7 @@ public class CatalogOutputHandler extends OutputHandler {
                                              subDataset,
                                              new String[] {
                                                  CatalogUtil.ATTR_SERVICENAME,
-                    SERVICE_HTTP, CatalogUtil.ATTR_URLPATH, urlPath });
+						 SERVICE_HTTP, CatalogUtil.ATTR_URLPATH, urlPath });
             XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY,
                            subDataset, new String[] { CatalogUtil.ATTR_NAME,
                     "icon", CatalogUtil.ATTR_VALUE,
