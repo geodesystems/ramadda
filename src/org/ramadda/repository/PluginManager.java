@@ -369,7 +369,7 @@ public class PluginManager extends RepositoryManager {
             } catch (Exception exc) {
                 System.err.println("RAMADDA: Error loading plugin:"
                                    + pluginFile);
-
+                System.err.println("RAMADDA: Error:" + exc);
                 throw exc;
             }
         }
