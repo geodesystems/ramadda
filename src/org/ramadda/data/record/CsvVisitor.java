@@ -59,6 +59,30 @@ public class CsvVisitor extends RecordVisitor {
     /** _more_ */
     private boolean fullHeader = false;
 
+    public interface HeaderPrinter {
+
+        /**
+         * _more_
+         * @return _more_
+         */
+        public void call(CsvVisitor visitor, PrintWriter pw, List<RecordField> fields);
+    }
+
+    public interface LineEnder {
+
+        /**
+         * _more_
+         * @return _more_
+         */
+        public void call(CsvVisitor visitor, PrintWriter pw, List<RecordField> fields, BaseRecord record,int cnt);
+    }
+    
+
+
+    private HeaderPrinter headerPrinter;
+
+    private LineEnder lineEnder;
+
     /**
      * _more_
      *
@@ -66,6 +90,12 @@ public class CsvVisitor extends RecordVisitor {
      * @param fields _more_
      */
     public CsvVisitor(PrintWriter pw, List<RecordField> fields) {
+	this(pw,fields,null,null);
+    }
+
+    public CsvVisitor(PrintWriter pw, List<RecordField> fields, HeaderPrinter headerPrinter, LineEnder lineEnder) {	
+	this.headerPrinter = headerPrinter;
+	this.lineEnder = lineEnder;
         this.pw     = pw;
         this.fields = fields;
     }
@@ -151,6 +181,8 @@ public class CsvVisitor extends RecordVisitor {
                     pw.append(altHeader);
                     pw.append("\n");
                 }
+	    } else if(headerPrinter!=null) {
+		headerPrinter.call(this,pw,fields);
             } else if ( !fullHeader) {
                 for (RecordField field : fields) {
                     //Skip the fake ones
@@ -239,7 +271,13 @@ public class CsvVisitor extends RecordVisitor {
 		}
                 pw.append(svalue);
             }
-        }
+	}
+	if(lineEnder!=null) {
+	    lineEnder.call(this,pw,fields,record,cnt);
+	}
+
+
+
         pw.append("\n");
 
         return true;

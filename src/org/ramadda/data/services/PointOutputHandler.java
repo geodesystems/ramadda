@@ -49,7 +49,7 @@ import org.ramadda.util.Bounds;
 import org.ramadda.util.ColorTable;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
-
+import org.ramadda.util.Utils;
 import org.ramadda.util.KmlUtil;
 import org.ramadda.util.SelectionRectangle;
 import org.ramadda.util.grid.IdwGrid;
@@ -168,6 +168,8 @@ public class PointOutputHandler extends RecordOutputHandler {
     /** output type */
     public final OutputType OUTPUT_CSV;
 
+    public final OutputType OUTPUT_IDVCSV;    
+
     /** _more_ */
     public final OutputType OUTPUT_JSON;
 
@@ -270,6 +272,11 @@ public class PointOutputHandler extends RecordOutputHandler {
                                     OutputType.TYPE_OTHER, "csv", ICON_CSV,
                                     category);
 
+
+        OUTPUT_IDVCSV = new OutputType("CSV for IDV", base + ".idv.csv",
+                                    OutputType.TYPE_OTHER, "csv", ICON_CSV,
+                                    category);
+	
         OUTPUT_JSON = new OutputType("JSON", base + ".json",
                                      OutputType.TYPE_OTHER, "json", ICON_CSV,
                                      category);
@@ -316,6 +323,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         addType(OUTPUT_RESULTS);
         addType(OUTPUT_PRODUCT);
         addType(OUTPUT_CSV);
+        addType(OUTPUT_IDVCSV);	
         addType(OUTPUT_JSON);
         addType(OUTPUT_NC);
         addType(OUTPUT_VIEW);
@@ -1188,8 +1196,69 @@ public class PointOutputHandler extends RecordOutputHandler {
         //Make a RecordVisitor for each point product type
         if (formats.contains(OUTPUT_CSV.getId())) {
             visitors.add(makeCsvVisitor(request, entry, pointEntries,
-                                        jobInfo.getJobId()));
+                                        null,null,jobInfo.getJobId()));
         }
+        if (formats.contains(OUTPUT_IDVCSV.getId())) {
+	    final boolean[] haveLat = {false};
+
+	    CsvVisitor.HeaderPrinter headerPrinter = new CsvVisitor.HeaderPrinter() {
+		    public void call(CsvVisitor visitor, PrintWriter pw, List<RecordField> fields) {
+			StringBuilder sb  = new StringBuilder("(index) -> (");
+			int cnt = 0;
+			for(RecordField field: fields) {
+			    if(field.getName().toLowerCase().equals("latitude")) {
+				haveLat[0] = true;
+				break;
+			    }
+			}
+
+			for (RecordField field : fields) {
+			    if(cnt++>0) sb.append(",");
+			    if(field.isTypeDate()) {
+				sb.append("Time");
+			    } else  if(field.isTypeString()) {
+				sb.append(field.getName()+"(Text)");
+			    } else {
+				sb.append(field.getName());
+			    }
+			}
+			if(!haveLat[0]) sb.append(",latitude,longitude");
+			sb.append(")\n");
+			cnt = 0;
+			for (RecordField field : fields) {
+			    if(cnt++>0) sb.append(",");
+			    if(field.isTypeDate()) {
+				sb.append("Time[fmt=\"yyyy-MM-dd'T'HH:mm:ssZ\" ]");
+			    } else if(field.isTypeString()) {
+				sb.append(field.getName()+"(Text)");
+			    } else {
+				sb.append(field.getName()+"[");
+				if(Utils.stringDefined(field.getUnit())) {
+				    sb.append(" unit=\"" + field.getUnit() +"\" ");
+				}
+				if(field.isTypeDate()) {
+				    sb.append(" fmt=\"yyyy-MM-dd'T'HH:mm:ssZ\" ");
+				}
+				sb.append("]");
+			    }
+			}
+
+			if(!haveLat[0]) sb.append(",latitude[],longitude[]");
+			//			Time[fmt="yyyy-MM-dd HH:mm:ss"],Latitude[unit="deg"],Longitude[unit="degrees west"],T[unit="celsius"],skip,DIR[unit="deg"],SPD[unit="m/s"]
+			sb.append("\n");
+			pw.print(sb);
+		    }
+		};
+	    CsvVisitor.LineEnder lineEnder = new CsvVisitor.LineEnder() {
+		    public void call(CsvVisitor visitor, PrintWriter pw, List<RecordField> fields, BaseRecord record,int cnt) {
+			if(!haveLat[0]) {
+			    pw.print(",NaN,NaN");
+			}
+
+		    }};
+	    visitors.add(makeCsvVisitor(request, entry, pointEntries,
+					headerPrinter,lineEnder,jobInfo.getJobId()));
+        }	
         if (formats.contains(OUTPUT_JSON.getId())) {
             if ( !asynch) {
                 String tail = IOUtil.stripExtension(entry.getName());
@@ -1293,7 +1362,7 @@ public class PointOutputHandler extends RecordOutputHandler {
      */
     public RecordVisitor makeCsvVisitor(
             final Request request, final Entry mainEntry,
-            List<? extends PointEntry> pointEntries, final Object jobId)
+            List<? extends PointEntry> pointEntries, final CsvVisitor.HeaderPrinter headerPrinter, final CsvVisitor.LineEnder lineEnder,final Object jobId)
             throws Exception {
 
         RecordVisitor visitor = new BridgeRecordVisitor(this, request, jobId,
@@ -1315,7 +1384,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                                          ARG_ENTRYID, mainEntry.getId()));
                     visitInfo.putProperty(CsvVisitor.PROP_SOURCE, url);
                     csvVisitor = new CsvVisitor(getThePrintWriter(),
-                            getFields(request, record.getFields()));
+						getFields(request, record.getFields()), headerPrinter, lineEnder);
                     if (request.defined(ARG_HEADER)) {
                         csvVisitor.setAltHeader(request.getString(ARG_HEADER,
                                 ""));
@@ -2375,6 +2444,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         String[][] values = {
             { OUTPUT_JSON.toString(), "Point JSON", ".json", pointsIcon,
               "&max=${numpoints}" },
+            { OUTPUT_IDVCSV.toString(), "IDV CSV", ".csv", pointsIcon },
             { OUTPUT_CSV.toString(), "CSV", ".csv", pointsIcon },
 	    { lasProduct, "LAS 1.2", ".las", pointsIcon },
             { OUTPUT_KMZ.toString(), "Google Earth KMZ",".kmz", 
