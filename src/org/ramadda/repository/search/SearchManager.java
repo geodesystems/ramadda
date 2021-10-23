@@ -880,6 +880,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	//	QueryBuilder builder = new QueryBuilder(analyzer);
 
 	String text = request.getString(ARG_TEXT,"");
+	//	System.err.println("process search:" + text);
 	String searchField = null;
 	for(String field: SEARCH_FIELDS) {
 	    if(text.indexOf(field+":")>=0) {
@@ -2510,12 +2511,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         List<Entry>      groups     = new ArrayList<Entry>();
         List<Entry>      entries    = new ArrayList<Entry>();
 
-        long             t1         = System.currentTimeMillis();
+	//	System.err.println("calling doSearch:" + request.getString(ARG_TEXT,""));
 	List[] pair = doSearch(request, searchInfo);
+	//	System.err.println("done calling doSearch");
 	groups.addAll((List<Entry>) pair[0]);
 	entries.addAll((List<Entry>) pair[1]);
         int   total    = groups.size() + entries.size();
-        long  t2       = System.currentTimeMillis();
         Entry theGroup = null;
 
         if (request.defined(ARG_GROUP)) {
@@ -2541,13 +2542,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             theGroup = getEntryManager().getDummyGroup();
         }
 
-        long t3 = System.currentTimeMillis();
-
         Result result =
             getRepository().getOutputHandler(request).outputGroup(request,
 								  request.getOutput(), theGroup,
 								  groups, entries);
-        long   t4 = System.currentTimeMillis();
+
 
         Result r;
         if (theGroup.isDummy()) {
@@ -2794,10 +2793,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         Runnable      runnable = new Runnable() {
 		public void run() {
 		    try {
-			//                        System.err.println("start search:"+ provider.getName());
 			List<Entry> results = provider.getEntries(request,
 								  searchInfo);
-			//                        System.err.println("end search:"+ provider.getName());
 			synchronized (entries) {
 			    entries.addAll(results);
 			}
