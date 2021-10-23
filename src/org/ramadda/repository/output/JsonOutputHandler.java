@@ -430,7 +430,11 @@ public class JsonOutputHandler extends OutputHandler {
             throws Exception {
         List<String> items = new ArrayList<String>();
         for (Entry entry : entries) {
+	    //	    if(!entry.getId().equals("2eb1ff46-9e33-4917-95ff-950f36802891")) continue;
+	    //	    long t1 = System.currentTimeMillis();
             items.add(toJson(request, entry));
+	    //	    long t2 = System.currentTimeMillis();
+	    //	    Utils.printTimes("\t" + entry.getName()+" " + entry.getId(), t1,t2);
         }
         Json.list(sb, items, false);
         //        System.out.println ("JSON:" + Json.list(items));
@@ -510,16 +514,20 @@ public class JsonOutputHandler extends OutputHandler {
             Json.quoteAttr(items, "displayName", displayName);
         }
 
+
 	String snippet = getWikiManager().getSnippet(request, entry, true,null);
 	if(snippet!=null) {
 	    Json.quoteAttr(items, "snippet", snippet);
 	}
 
+
         Json.quoteAttr(items, "description", entry.getDescription());
         TypeHandler type     = entry.getTypeHandler();
+	/**
+	   Don't get the typeJson as it takes a *long* time for DbTypes
         String      typeJson = type.getJson(request);
-        typeJson = Json.mapAndQuote("id", type.getType(), "name",
-                                    type.getLabel());
+        typeJson = Json.mapAndQuote("id", type.getType(), "name", type.getLabel());
+	*/
         Json.attr(items, "type", Json.quote(type.getType()));
         Json.attr(items, "typeName", Json.quote(type.getLabel()));
         //
@@ -554,6 +562,7 @@ public class JsonOutputHandler extends OutputHandler {
 	    }
         }
 
+
         Json.quoteAttr(items, "startDate", formatDate(entry.getStartDate()));
         Json.quoteAttr(items, "ymd", formatYMD(entry.getStartDate()));
         Json.quoteAttr(items, "endDate", formatDate(entry.getEndDate()));
@@ -568,6 +577,7 @@ public class JsonOutputHandler extends OutputHandler {
                            entry.getTypeHandler().getPathForEntry(request,
                                entry));
         }
+
 
         if (entry.hasAreaDefined()) {
             double[] center = entry.getCenter();
@@ -601,6 +611,7 @@ public class JsonOutputHandler extends OutputHandler {
         } else {
             Json.attr(items, "altitudeBottom", "-9999");
         }
+
 
 
         TypeHandler       typeHandler = entry.getTypeHandler();
@@ -655,6 +666,7 @@ public class JsonOutputHandler extends OutputHandler {
         List<String> attrs = new ArrayList<String>();
         List<String> ids   = new ArrayList<String>();
 
+
         // Add special columns to the entries depending on the type
         if (request.get(ARG_EXTRACOLUMNS, true)) {
             List<String> extraColumns    = new ArrayList<String>();
@@ -693,6 +705,7 @@ public class JsonOutputHandler extends OutputHandler {
 
 
 
+
         if (request.get(ARG_LINKS, false)) {
             List<String> links = new ArrayList<String>();
             for (Link link :
@@ -712,6 +725,7 @@ public class JsonOutputHandler extends OutputHandler {
             }
             Json.attr(items, "links", Json.list(links));
         }
+
 
         if (request.get(ARG_METADATA, true)) {
             List<Metadata> metadataList =
@@ -757,8 +771,10 @@ public class JsonOutputHandler extends OutputHandler {
             }
         }
 
+
         entry.getTypeHandler().addToJson(request, entry, items, attrs);
         Json.attr(items, "properties", Json.list(attrs, false));
+
 
         return Json.map(items);
     }
