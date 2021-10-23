@@ -1095,13 +1095,16 @@ function EntryList(repository, jsonUrl, listener, doSearch) {
                 listener = this.listener;
             }
             let _this = this;
-            //console.log("search url:" + this.url);
+//            console.log("search url:" + this.url);
             await $.getJSON(this.url, function(data, status, jqxhr) {
                 if (GuiUtils.isJsonError(data)) {
                     return;
                 }
                 _this.haveLoaded = true;
+		//console.log("search done. creating entries");
                 _this.createEntries(data, listener, success);
+
+		console.log("done creating entries");
             })
                 .fail(function(jqxhr, textStatus, error) {
                     GuiUtils.handleError("An error occurred doing search: " + error, _this.url, true);
