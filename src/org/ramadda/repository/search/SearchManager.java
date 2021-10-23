@@ -919,14 +919,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    BooleanQuery.Builder multiBuilder = new BooleanQuery.Builder();
 		    for (String word : words) {
 			Query term = new WildcardQuery(new Term(field, word));		
-			if(isName) term = new BoostQuery(term,3);
+			if(isName) term = new BoostQuery(term,6);
 			multiBuilder.add(term, BooleanClause.Occur.MUST);
 		    }
 		    builder.add(multiBuilder.build(),BooleanClause.Occur.SHOULD);
 		} else {
 		    Query term = new WildcardQuery(new Term(field, text));		
 		    if(isName) {
-			term = new BoostQuery(term,3);
+			term = new BoostQuery(term,6);
 		    }
 		    builder.add(term, BooleanClause.Occur.SHOULD);
 		}
@@ -1201,6 +1201,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         if(request.exists(ARG_ORDERBY)) {
 	    boolean desc = true;
             String by = request.getString(ARG_ORDERBY, (String) null);
+	    if(by.endsWith("_descending")) {
+		desc = true;
+		by = by.replace("_descending","");
+	    } else if(by.endsWith("_ascending")) {
+		desc = false;
+		by = by.replace("_ascending","");
+	    }
+
             if (request.get(ARG_ASCENDING, false)) {
                 desc = false;
             }
@@ -1248,6 +1256,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    sort = Sort.RELEVANCE;
 	}
 
+	//	System.err.println("sort:" + sort);
 	//	System.err.println("m:" + (max+skip));
         IndexSearcher searcher = getLuceneSearcher();
 	//	searcher.setDefaultFieldSortScoring(true, false);
