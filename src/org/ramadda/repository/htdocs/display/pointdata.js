@@ -4191,6 +4191,12 @@ function RamaddaBounds(north,west,south,east) {
 	this.east = east;
     }
     $.extend(this,{
+	getWidth: function() {
+	    return this.east-this.west;
+	},
+	getHeight: function() {
+	    return this.north-this.south;
+	},	
 	toString: function() {
 	    return "N:" + this.north +" W:" + this.west +" S:" + this.south +" E:" + this.east;
 	}
