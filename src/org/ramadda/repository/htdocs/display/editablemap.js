@@ -24,14 +24,36 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    this.theImage = this.image;
 	    this.image =null;
 	    OpenLayers.Handler.RegularPolygon.prototype.finalize.apply(this,arguments);
+	    //call deactivate in a bit. If we do this now then there is an error in OL
+	    setTimeout(()=>{
+		this.display.clearCommands();
+		//A bit of a hack but we want to change the style of the newly created image
+		let image = this.display.myLayer.features[this.display.myLayer.features.length-1];
+		image.style.strokeColor = "transparent";
+		this.display.myLayer.redraw(image);
+	    },500);
 	},
 	move: function(evt) {
+	    if(!this.checkingImageSize) {
+		this.checkingImageSize = true;
+		const img = new Image();
+		let _this = this;
+		img.onload = function() {
+		    _this.imageBounds={width:this.width,height:this.height};
+		}
+		img.src = this.style.imageUrl;		
+	    }
 	    OpenLayers.Handler.RegularPolygon.prototype.move.apply(this,arguments);
 	    let mapBounds = this.feature.geometry.getBounds();
 	    if(this.image) {
 		this.display.map.removeLayer(this.image);
 	    }
 	    let b = this.display.map.transformProjBounds(mapBounds);
+	    if(this.imageBounds) {
+		let aspect = this.imageBounds.width/this.imageBounds.height;
+		if(!evt.shiftKey)
+		    b.right = aspect*(b.top-b.bottom) + b.left 
+	    }
 	    this.image=  this.display.map.addImageLayer("","","",this.style.imageUrl,true,  b.top,b.left,b.bottom,b.right);
 	    this.image.setOpacity(this.style.imageOpacity);
 	}
@@ -735,7 +757,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			      labelSelect:true,
 			     }, OpenLayers.Handler.Point),
 		new GlyphType(this,"box", "Box",
-			     {strokeColor:this.getStrokeColor(),
+			      {strokeColor:this.getStrokeColor(),
 			      strokeWidth:this.getStrokeWidth(),
 			      fillColor:"transparent",
 			      fillOpacity:1.0},
@@ -781,7 +803,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			     OpenLayers.Handler.Path,
 			     {freehand:true}),
 		new GlyphType(this,"image", "Image",
-			     {strokeColor:"transparent",
+			     {strokeColor:"blue",
 			      strokeWidth:1,
 			      imageOpacity:this.getImageOpacity(1),
 			      fillColor:"transparent"},
@@ -824,7 +846,6 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 
 	    this.map.featureClickHandler = e=>{
 		if(this.command!=null) return;
-		console.log(e.feature);
 	    };
 
 	    let control;
