@@ -33,7 +33,7 @@ do_all() {
 
 init_files() {
     echo "fetching voter report"
-    wget  ${voting_report_url}
+    wget  -O CE-068_Voters_With_Ballots_List_Public.zip ${voting_report_url}
     cd tmp
     jar -xvf ../CE-068_Voters_With_Ballots_List_Public.zip
     cp ../source/ce-068-2021.txt ../source/bak/ce-068-2021-last.txt 
