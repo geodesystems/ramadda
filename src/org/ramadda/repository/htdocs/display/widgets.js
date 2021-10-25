@@ -1819,16 +1819,13 @@ function drawPieChart(display, dom,width,height,array,min,max,colorBy,attrs) {
 }
 
 
-
-
-
-function SizeBy(display,records) {
+function SizeBy(display,records,fieldProperty) {
     this.display = display;
     if(!records) records = display.filterData();
     let pointData = this.display.getPointData();
     let fields = pointData.getRecordFields();
     $.extend(this, {
-        id: this.display.getProperty("sizeBy"),
+        id: this.display.getProperty(fieldProperty|| "sizeBy"),
         minValue: 0,
         maxValue: 0,
         field: null,
@@ -1939,7 +1936,7 @@ SizeBy.prototype = {
             } else {
                 size = 6 + parseInt(15 * percent);
             }
-	    if(debug) console.log("min:" + this.minValue +" max:" + this.maxValue+ " value:" + value +" v:" + v +" size:" + size);
+	    if(debug) console.log("min:" + this.minValue +" max:" + this.maxValue+ " value:" + value +" percent:" + percent +" v:" + v +" size:" + size);
 	    if(isNaN(size)) size =  this.radiusMin;
 	    if(func) func(percent, size);
 	    return size;
