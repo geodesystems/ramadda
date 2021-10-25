@@ -237,7 +237,9 @@ public class FeatureCollection {
             throws Exception {
 
         DbaseFile dbfile = shapefile.getDbFile();
-        collectionProps.put("dbfile", dbfile);
+	if(dbfile!=null) {
+	    collectionProps.put("dbfile", dbfile);
+	}
         collectionProps.put("shapefile", shapefile);
 
         List<DbaseDataWrapper> fieldDatum =
