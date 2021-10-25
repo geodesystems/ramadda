@@ -832,12 +832,18 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
     const ID_GRID = "grid";
     const ID_POPUP = "popup";
     const ID_POSITION_BUTTON = "positionbutton";        
+    const CAMERA_ANGLE = 45;
     let myProps = [
         {label:'3D Grid Attributes'},
 	{p:"gridWidth",d:400},
 	{p:"gridHeight",d:400},
+	{p:'backgroundColor',d:'#CAE1FF',ex:'#ffffff'},
+	{p:'canvasBorder',d:'1px solid #ccc'},
+	{p:'shape',d:"box",ex:'box|cylinder'},
+	{p:'heightField',tt:'field to scale height by'},
+	{p:'heightScale',d:10,tt:'scale factor'},	
 	{p:'doPopup',d:true,ex:'',tt:''},
-	{p:'doImages',ex:true}
+	{p:'doImages',ex:true},
     ];
     const SUPER = new RamaddaThree_Base(displayManager, id, DISPLAY_THREE_GRID, properties);
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -879,12 +885,28 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 	    if(!records) return;
 	    this.filteredRecords = records;
 
+//	    records = [...records,...records,...records,...records,...records]
+//	    records = [...records,...records,...records,...records,...records]	    
 
-	    let cubeWidth = 20;
-	    let cubeSpace = 2;	    
-	    let initX = -250;
+
+	    let sqrt = Math.ceil(Math.sqrt(records.length));
+	    let cubeWidth = 1;
+	    let cubeSpace = cubeWidth/2;	    
+	    let rectWidth = sqrt*(cubeWidth+cubeSpace);
+	    let topRadius = cubeWidth;
+	    let bottomRadius = cubeWidth;	    
+//	    console.log(records.length + " " +sqrt + " " + cubeWidth);
+
+	    if(!this.initCamera) {
+		this.initCamera = true;
+		let h = (rectWidth/2)/Math.tan(Utils.toRadians(CAMERA_ANGLE/2));
+		this.camera.position.set(0,0,h*2);
+//		this.addChecker(rectWidth);
+	    }
+	    let initX = ((cubeWidth+cubeSpace)*-sqrt/2);
+	    let initY = -initX;
 	    let x = initX;
-	    let y= -initX;
+	    let y= initY;
 	    let colCnt = 0;
 
             let colorBy = this.getColorByInfo(records);
@@ -897,17 +919,36 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 		    colorBys.push(cb);
 		})
 	    }
+	    let bounds = RecordUtil.getBounds(records);
+//	    console.log("bounds:" + bounds)
+
+	    let heightBy;
+	    let heightScale = this.getHeightScale();
+	    if(this.getProperty("heightField")) {
+		heightBy = new SizeBy(this, this.getProperty("sizeByAllRecords",true)?this.getData().getRecords():records,"heightField");
+	    }
+
 	    if(colorBys.length==0) colorBys=[colorBy];
 	    colorBys=[colorBy];	    
 	    let doImages = this.getDoImages();
 	    let imageFields = this.getFieldsByType(null,"image");
 	    const loader = new THREE.TextureLoader();
+	    let shape  = this.getShape();
+	    shapeWidth = 0.5;
+	    let doGeo = false;
 	    records.forEach((record,idx)=>{	
 		if(x>-initX) {
 		    y-=(cubeWidth+cubeSpace);
 		    x  = initX;
 		}
 
+		if(doGeo) {
+		    let percentX = (record.getLongitude()-bounds.west)/bounds.getWidth();
+		    x = initX+percentX*rectWidth;
+		    let percentY = (record.getLatitude()-bounds.south)/bounds.getHeight();
+		    y = (initY+percentY*rectWidth/this.aspectRatio)-rectWidth/this.aspectRatio
+		}
+		
 		if(doImages) {
 		    let geometry = new THREE.BoxGeometry(cubeWidth,cubeWidth,cubeWidth);
 		    const materials = [];
@@ -936,11 +977,30 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 */
 		    let color = colorBy.getColorFromRecord(record, null);
 		    let material = new THREE.MeshLambertMaterial( { color: this.parseInt(color,0xff0000) } );
-		    let geometry = new THREE.BoxGeometry(cubeWidth,cubeWidth,cubeWidth*2);
+		    let height = cubeWidth;
+		    if(heightBy) {
+			let percent;
+			let func = perc =>{percent = perc;}
+			let h = heightBy.getSize(record.getData(),0,func);
+			if(!isNaN(percent))
+			    height = height+percent*height*heightScale;
+		    }
+
+		    let geometry;
+		    if(shape=="box") {
+			geometry = new THREE.BoxGeometry(shapeWidth,shapeWidth,height);
+		    } else {
+			geometry = new THREE.CylinderGeometry(topRadius,bottomRadius,height,32);
+		    }
 		    let cube = new THREE.Mesh(geometry, material);
-		    cube.position.x = x;
+		    if(shape=="box") {
+		    } else {
+			cube.rotation.x = Utils.toRadians(90);
+		    }
+//		    cube.position.set(x,y,0);
+		    cube.position.x=x;
 		    cube.position.y = y;		
-		    cube.position.z = 500+0*(cubeWidth+1);
+		    cube.position.z = height/2;
 		    this.scene.add(cube);
 		    cube.__record = record;
 		    this.shapes.push(cube);
@@ -966,6 +1026,25 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 	    }
 	    this.callHook("updateUI");
         },
+	addChecker:function(width) {
+	    const planeSize = width*1.1;
+	    const loader = new THREE.TextureLoader();
+	    const texture = loader.load('https://threejsfundamentals.org/threejs/resources/images/checker.png');
+	    texture.wrapS = THREE.RepeatWrapping;
+	    texture.wrapT = THREE.RepeatWrapping;
+	    texture.magFilter = THREE.NearestFilter;
+	    const repeats = planeSize / 2;
+	    texture.repeat.set(repeats, repeats);
+	    const planeGeo = new THREE.PlaneGeometry(planeSize, planeSize);
+	    const planeMat = new THREE.MeshPhongMaterial({
+		map: texture,
+		side: THREE.DoubleSide,
+	    });
+	    const mesh = new THREE.Mesh(planeGeo, planeMat);
+//	    mesh.rotation.x = Math.PI * -.5;
+	    this.scene.add(mesh);
+	},
+
 	createScene: function() {
 	    let popup = HU.div([CLASS,"display-three-globe-popup",ID,this.domId(ID_POPUP),STYLE,HU.css("display","none","position","absolute","left","60%","top","0px")],"");
 	    let grid = HU.div([STYLE,HU.css("position","relative")],
@@ -977,46 +1056,49 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 	    //fov,aspect ratio, near plane, far plane
 	    let w = this.getGridWidth();
 	    let h  = this.getGridHeight();
+	    this.aspectRatio = w/h;
 	    const AMOUNT = 6;
-	    const ASPECT_RATIO = w/h;
 	    const WIDTH = ( w / AMOUNT ) * window.devicePixelRatio;
 	    const HEIGHT = ( h / AMOUNT ) * window.devicePixelRatio;
 
-	    this.camera = new THREE.PerspectiveCamera(60,w/h,0.1,1000);
-	    this.camera.position.z = 1000;
+	    this.camera = new THREE.PerspectiveCamera(CAMERA_ANGLE,w/h,0.1,1000);
+	    this.camera = new THREE.OrthographicCamera( -100,100,100,-100, 0.1, 1000 );
+	    this.camera.position.set(0,0,100);
 
-	    var axes = new THREE.AxisHelper(1000);
-            this.scene.add(axes);
-
+	    var axes = new THREE.AxisHelper(1000);            this.scene.add(axes);
 
 	    this.renderer = new THREE.WebGLRenderer({antialias:true,alpha: true});
-	    this.renderer.setClearColor( 0x000000, 0 );
-//	    this.renderer.setClearColor("rgba(0,0,0,1)");
+	    this.renderer.setClearColor(this.getBackgroundColor());
 	    this.renderer.setSize(w,h);
 	    this.controls = new THREE.OrbitControls( this.camera, this.renderer.domElement );
 	    this.controls.minDistance = 0;
 	    this.controls.maxDistance = 1000;
-	    this.controls.target.set( 0, 1, 0 );
+	    this.controls.target.set( 0, 0, 5 );
 	    this.controls.update();
 	    this.jq(ID_GRID).append(this.renderer.domElement);
-	    let addLight=(v,i,x,y,z) =>{
-		//var light = new THREE.PointLight(this.parseInt(v),i);
+	    
+	    let addLight=(v,x,y,z,i) =>{
+		i=0.01;
+		if(!Utils.isDefined(i)) i=1;
+//		var light = new THREE.PointLight(this.parseInt(v),i);
 		let light = new THREE.DirectionalLight(this.parseInt(v));
 		light.position.set(x,y,z);
 		this.getScene().add(light);
 	    }
-	    addLight(0xffffff,10,-1,-1,-1);
-	    addLight(0xffffff,10,1,1,1);	    
-	    addLight(0xffffff,10,0,0,1);	    	    
-//	    addLight(0xffffff,10,0,0,10);
-//	    addLight(0xffffff,10,0,0,-10);	    
+	    addLight(0xffffff,-1,1,1);
+//	    addLight(0xffffff,1,1,1);
+//	    addLight(0xffffff,-1,-1,1);
+//	    addLight(0xffffff,1,-1,1);	    
+	    var light = new THREE.AmbientLight( 0xffffff,0.5);
+	    this.scene.add( light );
+	    light = new THREE.HemisphereLight( 0xffffff,0xffffbb,1.0);
+//	    this.scene.add( light );	    
 
-//	    var light = new THREE.AmbientLight( 0xffffff,1);
-//	    this.scene.add( light );
 
 	    let _this = this;
 	    let canvas = this.jq(ID_GRID).find('canvas');
 	    canvas.attr('tabindex','1');
+	    canvas.css("border",this.getCanvasBorder());
 	    this.renderer.domElement.addEventListener('keydown', (e) => {
 		    if(e.code=="KeyP") {
 			let name = prompt("Name:");
@@ -1097,10 +1179,11 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 		function animate() {
 		    requestAnimationFrame( animate );
 		    _this.controls.update();
-		    _this.shapes.forEach(shape=>{
+		    _this.shapes.forEach((shape,idx)=>{
 			return
 			shape.rotation.x+=0.01
-			shape.rotation.y+=0.01
+//			shape.rotation.y+=0.01
+			if(idx==0) console.log(shape.rotation.x);
 		    });
 		    _this.renderer.render( _this.scene, _this.camera );
 		}
