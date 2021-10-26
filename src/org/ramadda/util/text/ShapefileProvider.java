@@ -117,6 +117,7 @@ public class ShapefileProvider extends DataProvider.BulkDataProvider {
                     row.add("" + dbd.getData(i));
                 }
             }
+
             if (addPoints) {
                 float[] center = feature.getGeometry().getCenter();
                 row.add(center[0]);
@@ -129,7 +130,6 @@ public class ShapefileProvider extends DataProvider.BulkDataProvider {
                 shape = shape.replaceAll("\n", "").replaceAll(" ", "");
                 row.add(shape);
             }
-	    if(i<3) System.err.println(row);
         }
     }
 

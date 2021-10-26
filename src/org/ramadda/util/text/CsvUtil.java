@@ -4195,6 +4195,7 @@ public class CsvUtil {
      * @throws Exception On badness
      */
     public static void main(String[] args) throws Exception {
+	//	IO.debugStderr();
 	GeoUtils.setCacheDir(new File("."));
 	//	String value = StringUtil.findPattern("_2019_boulder_election.csv", "(\\d\\d\\d\\d)");
 	//	System.err.println("v:" + value);
