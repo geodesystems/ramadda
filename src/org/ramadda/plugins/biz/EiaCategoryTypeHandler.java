@@ -315,6 +315,7 @@ public class EiaCategoryTypeHandler extends ExtensibleGroupTypeHandler {
         if ( !isEnabled()) {
             return null;
         }
+	if(name==null) name = "Category";
         Date   dttm  = new Date();
         String id = createSynthId(mainEntry, Eia.PREFIX_CATEGORY, categoryId);
         Entry  entry = getEntryManager().getEntryFromCache(id);
