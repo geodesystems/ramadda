@@ -1161,15 +1161,54 @@ public class IO {
         final PrintStream oldErr = System.err;
         final PrintStream oldOut = System.out;
         System.setErr(new PrintStream(oldOut) {
-            public void println(String x) {
-		oldErr.println("**************   ERROR\n" + Utils.getStack(10)+"\n************");
-		//                new RuntimeException("stderr").printStackTrace();
-                oldErr.println(x);
-            }
+		@Override
+		public void println(Object x) {
+		    oldErr.println("**************   ERROR\n" + Utils.getStack(10)+"\n************");
+		    //                new RuntimeException("stderr").printStackTrace();
+		    oldErr.println(x);
+		}
+		@Override
+		public void print(Object x) {
+		    oldErr.println("**************   ERROR\n" + Utils.getStack(10)+"\n************");
+		    //                new RuntimeException("stderr").printStackTrace();
+		    oldErr.print(x);
+		}
+
         });
     }
 
 
+
+    /** _more_ */
+    private static boolean debuggingStdout = false;
+
+    /**
+     * _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void debugStdout() throws Exception {
+        if (debuggingStdout) {
+            return;
+        }
+        debuggingStdout = true;
+        final PrintStream oldErr = System.err;
+        final PrintStream oldOut = System.out;
+        System.setOut(new PrintStream(oldErr) {
+		@Override
+            public void print(Object x) {
+		oldOut.print("**************   OUT\n" + Utils.getStack(10)+"\n************");
+                oldOut.print(x);
+	    }
+
+		@Override
+            public void println(Object x) {
+		oldOut.println("**************   OUT\n" + Utils.getStack(10)+"\n************");
+                oldOut.println(x);
+            }
+        });
+    }
+    
 
 
 
