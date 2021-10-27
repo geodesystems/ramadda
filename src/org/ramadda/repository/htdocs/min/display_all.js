@@ -8599,7 +8599,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 		let selected = colorBy?colorBy.getId():"";
 		header2 += HU.span([CLASS,filterClass],
-				   this.makeFilterLabel("Color by: ") + HU.select("",[ID,this.getDomId("colorbyselect")],enums,selected))+SPACE;
+				   this.makeFilterLabel(this.getProperty("colorByLabel", "Color by: ")) + HU.select("",[ID,this.getDomId("colorbyselect")],enums,selected))+SPACE;
 	    }
 	    let sortAscending = this.getProperty("sortAscending",true);
 	    if(this.sortByFields.length>0) {
@@ -47582,6 +47582,8 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	{p:"globeBackgroundImage",ex:"night-sky.png|white.png|lightblue.png|black.png"},
 	{p:'backgroundColor',d:'#CAE1FF',ex:'#ffffff'},
 	{p:"initialPosition",ex:"North America|South America|Europe|Asia|Africa|Australia|South Pole|North Pole"},
+	{p:'linked',ex:true,tt:"Link location with other globes"},
+	{p:'linkGroup',ex:'some_name',tt:"Globe groups to link with"},
 	{p:'mapColor',d:'blue'},	
 	{p:'showGraticules',ex:true},
 	{p:'showAtmosphere',d:true,ex:'false'},
@@ -48046,8 +48048,6 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    }
 
 
-
-
 	    try {
 		let canvas = this.jq(ID_GLOBE).find('canvas');
 		canvas.attr('tabindex','1');
@@ -48106,7 +48106,26 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    this.globe.onPathClick(handleMouseEvent);
 	    this.globe.onLabelClick(handleMouseEvent);
 	    this.globe.onGlobeClick(()=>{this.jq(ID_POPUP).hide();});
+	    let linked  = this.getLinked();
+	    let linkGroup  = this.getLinkGroup();
+	    this.globe.onZoom(()=>{
+		if(this.zooming) return;
+		this.zooming = true;
+		Utils.displaysList.forEach(d=>{
+		    if(d.getId() == this.getId()) return;
+		    if(d.type!=DISPLAY_THREE_GLOBE) return;
+		    if(!d.getLinked()) return;
+		    if(!d.globe) return;
+		    if(d.getLinkGroup() && this.getLinkGroup() && d.getLinkGroup()!=this.getLinkGroup()) return;		    
+		    if(d.zooming) return;
+		    let pos =  this.getControls().object.position;
+		    d.zooming = true;
+		    d.getControls().object.position.set(pos.x,pos.y,pos.z);		    
+		    d.zooming = false;
+		});
+		this.zooming = false;
 
+	    });
 
 
 	    if(this.getInitialPosition()) {
@@ -48126,9 +48145,6 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    }
 
 	    this.callHook("createGlobe");
-
-
-
 	},
 
 	showRecord: function(record) {
