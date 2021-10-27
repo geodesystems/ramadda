@@ -521,6 +521,7 @@ public class GeoUtils {
 						    String googleKey, Bounds bounds)
 	throws Exception {
 
+	boolean debug = false;
         if (address == null) {
             return null;
         }
@@ -663,7 +664,6 @@ public class GeoUtils {
         }
 
         if (doCounty) {
-            boolean debug = false;
             resource = Place.getResource("counties");
 
             int index = _address.indexOf(",");
@@ -768,17 +768,18 @@ public class GeoUtils {
             return place;
         }
 
-	System.err.println("address:" + address);
+	if(debug)
+	    System.err.println("address:" + address);
         if (googleKey == null) {
             googleKey = GeoUtils.googleKey;
 	    if(googleKey == null)
 		googleKey = System.getenv("GOOGLE_API_KEY");
         }
-
 	if(geocodeioKey==null)  {
 	    geocodeioKey = System.getenv("GEOCIDEIO_API_KEY");
 	}
-
+	//	geocodeioKey = null;
+	//	googleKey = null;	
         if (addressToLocation == null) {
             addressToLocation = new Hashtable<String, Place>();
             if (cacheDir != null) {
@@ -807,6 +808,10 @@ public class GeoUtils {
 
         place = addressToLocation.get(address);
         if (place != null) {
+            if (debug) {
+                System.out.println("found in cached address list");
+            }
+
             if ((bounds == null)
 		|| bounds.contains(place.getLatitude(),
 				   place.getLongitude())) {
@@ -836,7 +841,8 @@ public class GeoUtils {
 	    url +=HtmlUtils.arg("q",address,true);
 	    url +="&";
 	    url +=HtmlUtils.arg("api_key",geocodeioKey,true);
-	    System.err.println(url);
+	    if(debug)
+		System.err.println("geocodeio url:" + url);
 	    String result = IO.readContents(url, GeoUtils.class);
 	    System.err.println(result);
 	    //"lat":39.988424,"lng":-105.226083
@@ -844,7 +850,7 @@ public class GeoUtils {
 					       "\"lat\"\\s*:\\s*([-\\d\\.]+),");
 	    lonString = StringUtil.findPattern(result,
 					       "\"lng\"\\s*:\\s*([-\\d\\.]+)\\s*");
-	    System.err.println(latString +" " + lonString);
+	    System.err.println("geocodeio:" +latString +" " + lonString);
 	} else    if (googleKey != null) {
 	    String result= null;
             try {
@@ -857,6 +863,8 @@ public class GeoUtils {
 			+ bounds.getWest() + "|" + bounds.getNorth() + ","
 			+ bounds.getEast();
                 }
+		if(debug)
+		    System.err.println("google url:" + url);
                 result = IO.readContents(url, GeoUtils.class);
 
                 name = StringUtil.findPattern(result,
@@ -870,7 +878,24 @@ public class GeoUtils {
             }
 	    if(latString==null)
 		System.err.println("geocode null result:" + result);
-        }
+	    else
+		System.err.println("google:" +latString +" " + lonString);
+        } else {
+	    //fall back to us census
+	    String url = "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?format=json&benchmark=2020&address=" + encodedAddress;
+	    String result = IO.readContents(url, GeoUtils.class);
+	    if(debug)
+		System.err.println("census url:" + url);
+	    latString = StringUtil.findPattern(result,
+						   "\"y\"\\s*:\\s*([-\\d\\.]+)");
+	    lonString = StringUtil.findPattern(result,
+					       "\"x\"\\s*:\\s*([-\\d\\.]+)\\s*");
+	    if(latString==null) {
+		System.err.println("null census result:" + result);		
+	    } else {
+		//		System.err.println("census:" + latString +" " + lonString);
+	    }
+	}
         if ((latString != null) && (lonString != null)) {
             place = new Place((name == null)
                               ? address
@@ -1157,11 +1182,12 @@ public class GeoUtils {
     public static void main(String[] args) throws Exception {
 	setCacheDir(new File("."));
 
+	/*
 	if(true) {
 	    //	    System.err.println(getPreciselyToken(true));
 	    System.err.println(getNeighborhood(39.989094,-105.222402));
 	    return;
-	}
+	    }*/
 		     
 
 
