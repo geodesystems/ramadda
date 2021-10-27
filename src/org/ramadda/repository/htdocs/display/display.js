@@ -5566,7 +5566,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 		let selected = colorBy?colorBy.getId():"";
 		header2 += HU.span([CLASS,filterClass],
-				   this.makeFilterLabel("Color by: ") + HU.select("",[ID,this.getDomId("colorbyselect")],enums,selected))+SPACE;
+				   this.makeFilterLabel(this.getProperty("colorByLabel", "Color by: ")) + HU.select("",[ID,this.getDomId("colorbyselect")],enums,selected))+SPACE;
 	    }
 	    let sortAscending = this.getProperty("sortAscending",true);
 	    if(this.sortByFields.length>0) {
