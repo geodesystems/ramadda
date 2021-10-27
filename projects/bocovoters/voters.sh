@@ -123,6 +123,7 @@ do_histogram() {
 	   -change voted_date "(..)-(..)-(....)" "\$3-\$2-\$1" \
 	   -change voted_date "(..)/(..)/(....)" "\$3-\$1-\$2" \
 	   -sum voted_date "" "" \
+	   -gt count 20 \
 	   -sort voted_date \
 	   -addheader "voted_date.type date voted_date.format yyyy-MM-dd" \
 	   -p ${file1} > boulder_voting_2019_histogram.csv
@@ -142,6 +143,7 @@ do_histogram() {
 	   -change voted_date "(..)/(..)/(....)" "\$3-\$1-\$2" \
 	   -c "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE,voted_date" \
 	   -sum voted_date "" "" \
+	   -gt count 20 \
 	   -sort voted_date \
 	   -notpattern voted_date 2017-11-17 \
 	   -addheader "voted_date.type date voted_date.format yyyy-MM-dd" \
@@ -156,6 +158,7 @@ do_histogram() {
 	   -notpattern voted_date "" \
 	   -change voted_date "(..)/(..)/(....)" "\$3-\$1-\$2" \
 	   -sum voted_date "" "" \
+	   -gt count 20 \
 	   -sort voted_date \
 	   -addheader "voted_date.type date voted_date.format yyyy-MM-dd" \
 	   -p ${file2} > boulder_voting_2020_histogram.csv
