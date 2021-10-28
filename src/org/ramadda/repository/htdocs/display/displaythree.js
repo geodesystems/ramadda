@@ -448,6 +448,9 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    return this.globe.controls();
 	},
 	setPosition:function(pos) {
+	    if((typeof pos=="string") && pos.trim().startsWith("{")) {
+		pos = this.parsePosition(pos);
+	    }
 	    let scope = this.getControls();
 	    if(pos.target)
 		scope.target.copy(pos.target);
@@ -578,6 +581,13 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    try {
 		let canvas = this.jq(ID_GLOBE).find('canvas');
 		canvas.attr('tabindex','1');
+		canvas.mouseover(()=>{
+		    this.mouseOver = true;
+		});
+		canvas.mouseout(()=>{
+		    this.mouseOver = false;
+		});		
+
 		domGlobe.addEventListener('keydown', (e) => {
 		    if(e.code=="KeyD") {
 			//debug
@@ -600,7 +610,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		    }
 
 		    if(e.code=="KeyR") {
-			let pos = positions[this.getInitialPosition() || "North America"];
+			let pos = positions[this.getInitialPosition() || "North America"] || this.getInitialPosition();
 			if(pos) {
 			    this.setPosition(pos);
 			}
@@ -636,22 +646,27 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    let linked  = this.getLinked();
 	    let linkGroup  = this.getLinkGroup();
 	    this.globe.onZoom(()=>{
+		//Only propagate zoom if its from the user
+		if(!this.mouseOver) return;
 		if(this.zooming) return;
+		let globeDisplays = 
+		    Utils.displaysList.filter(d=>{
+			if(d.getId() == this.getId()) return false;
+			if(d.type!=DISPLAY_THREE_GLOBE) return false;
+			if(!d.getLinked()) return false;
+			if(!d.globe) return false;
+			if(d.getLinkGroup() && this.getLinkGroup() && d.getLinkGroup()!=this.getLinkGroup()) return false;
+			if(d.zooming) return false;
+			return true;
+		    });
 		this.zooming = true;
-		Utils.displaysList.forEach(d=>{
-		    if(d.getId() == this.getId()) return;
-		    if(d.type!=DISPLAY_THREE_GLOBE) return;
-		    if(!d.getLinked()) return;
-		    if(!d.globe) return;
-		    if(d.getLinkGroup() && this.getLinkGroup() && d.getLinkGroup()!=this.getLinkGroup()) return;		    
-		    if(d.zooming) return;
+		globeDisplays.forEach(d=>{
 		    let pos =  this.getControls().object.position;
 		    d.zooming = true;
 		    d.getControls().object.position.set(pos.x,pos.y,pos.z);		    
 		    d.zooming = false;
 		});
 		this.zooming = false;
-
 	    });
 
 
@@ -659,9 +674,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		let posArg = this.getInitialPosition();
 		let pos = positions[posArg];
 		if(!pos && posArg.startsWith("{")) {
-		    //A hack to wrap keys with quotes
-		    posArg = posArg.replace("position","\"position\"").replace("up","\"up\"").replace(/x/g,"\"x\"").replace(/y/g,"\"y\"").replace(/z/g,"\"z\"");
-		    pos = JSON.parse(posArg);
+		    pos = this.parsePosition(posArg);
 		}
 
 		if(!pos) {
@@ -674,6 +687,18 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	    this.callHook("createGlobe");
 	},
 
+	parsePosition: function(pos) {
+	    if(pos && (typeof pos=="string") && pos.startsWith("{")) {
+		//A hack to wrap keys with quotes
+		pos = pos.replace("position","\"position\"").replace("up","\"up\"").replace(/x/g,"\"x\"").replace(/y/g,"\"y\"").replace(/z/g,"\"z\"");
+		try {
+		    return JSON.parse(pos);
+		} catch(err) {
+		    console.err("Error parsing position:" + err+"\n" + pos);
+		}
+	    }
+	    return null;
+	},
 	showRecord: function(record) {
 	    if(this.getDoPopup()) {
 		let html = this.getRecordHtml(record);
