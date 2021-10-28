@@ -1,5 +1,5 @@
 /*
-  Copyright 2008-2020 Geode Systems LLC
+  Copyright 2008-2021 Geode Systems LLC
 */
 
 const DISPLAY_WORDCLOUD = "wordcloud";
