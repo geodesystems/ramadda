@@ -3637,6 +3637,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
+	String url = request.toString();
+	if(!url.matches(".*(images|icons|htdocs|/metadata/view).*"))
+	    if(!url.matches(".*(\\.js|\\.png|\\.gif|favicon.ico)$"))	    
+		System.err.println("url:" + request);
         getLogManager().logRequest(request, (result == null)
                                             ? Result.RESPONSE_INTERNALERROR
                                             : result.getResponseCode());
