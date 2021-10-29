@@ -85,8 +85,9 @@ public class EntryUtil extends RepositoryManager {
      * _more_
      */
     public void clearCache() {
+	if(typeCache!=null)
+	    typeCache.finishedWithCache();
         typeCache = new TTLObject<Hashtable<String, Integer>>(60 * 60 * 1000);
-
     }
 
     public static List<Entry> getGroups(List<Entry> entries) {

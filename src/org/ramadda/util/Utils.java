@@ -4891,10 +4891,15 @@ public class Utils extends IO {
      * @return _more_
      */
     public static String getStack(int howMany) {
+	return getStack(howMany,null);
+    }
+
+    public static String getStack(int howMany, String not) {	
         List<String> lines = new ArrayList<String>();
         StringBuffer sb    = new StringBuffer();
         int          cnt   = 0;
         for (String line : split(Misc.getStackTrace(), "\n")) {
+	    if(not!=null && line.indexOf(not)>=0) continue;
             cnt++;
             //skip the first 3 lines so we don't get this method, etc
             if (cnt <= 3) {

@@ -35,7 +35,6 @@ import org.ramadda.util.Json;
 
 import org.ramadda.util.OpenSearchUtil;
 
-import org.ramadda.util.TTLObject;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WadlUtil;
 

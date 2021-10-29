@@ -30748,20 +30748,42 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 
 	    let html = "";
 	    let inner = "";
+	    let map = {};
 	    entries.forEach((entry,idx) =>{
+		map[entry.getId()] = entry;
 		let thumb = entry.getThumbnail();
-		let attrs = [TITLE,"",CLASS,"display-simplesearch-entry"];
+		let attrs = [TITLE,"",CLASS,"display-simplesearch-entry","entryid",entry.getId()];
 		if(thumb) attrs.push("thumbnail",thumb);
 		inner+=HU.div(attrs, HU.href(this.getRamadda().getEntryUrl(entry),HU.image(entry.getIconUrl()) +"  "+ entry.getName()));
 	    });
 //	    inner = HU.div([CLASS,"display-simplesearch-entries"],inner);
             this.writeEntries(inner, entries);
+	    let _this = this;
 	    this.jq(ID_ENTRIES).find(".display-simplesearch-entry").tooltip({
 		content: function() {
 		    let thumb = $(this).attr("thumbnail");
-		    if(!thumb) return null;
-		    return HU.div([STYLE,HU.css("max-height","100px","overflow-y","hidden")],
-				  HU.image(thumb,["width","200px"]));
+		    let entry = map[$(this).attr("entryid")];
+		    let active= true;
+		    let parent;
+		    entry.getParentEntry(p=>{
+			parent = p;
+			if(!active) {
+			    _this.jq("parenttooltip").html(HU.b("Parent: ") +parent.getName());
+			}
+		    });
+		    active = false;
+		    let snippet = entry.getSnippet();
+		    let html = HU.div([ID,_this.domId("parenttooltip")],parent?HU.b("Parent: ") + parent.getName():"")
+		    if(snippet)
+			html+=snippet;
+			
+		    if(thumb) {
+			html+=
+			    HU.div([STYLE,HU.css("max-height","100px","overflow-y","hidden")],
+				   HU.image(thumb,["width","200px"]));
+		    }
+
+		    return html;
 		}});
 
             this.getDisplayManager().handleEventEntriesChanged(this, entries);

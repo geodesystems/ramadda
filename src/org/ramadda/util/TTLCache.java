@@ -102,6 +102,8 @@ public class TTLCache<KEY, VALUE> {
     }
 
 
+    String where;
+
     /**
      * ctor. No time reset.
      *
@@ -112,11 +114,14 @@ public class TTLCache<KEY, VALUE> {
      */
     public TTLCache(long timeThresholdInMilliseconds, int sizeLimit,
                     boolean updateTimeOnGet) {
+	
+	where=Utils.getStack(1,"TTL").replaceAll("\n"," ");
         this.timeThreshold   = timeThresholdInMilliseconds;
         this.sizeLimit       = sizeLimit;
         this.updateTimeOnGet = updateTimeOnGet;
         synchronized (mutex) {
             caches.add(this);
+	    System.err.println("new TTLCache #caches:" + caches.size() +" where:" + where);
             if (ttlRunnable == null) {
                 ttlRunnable = new Runnable() {
                     public void run() {
@@ -132,6 +137,14 @@ public class TTLCache<KEY, VALUE> {
                 Misc.run(ttlRunnable);
             }
         }
+    }
+
+
+    public void finishedWithCache() {
+	//	System.err.println("finished:" + caches.size());
+	caches.remove(this);
+	//	System.err.println("after finished:" + caches.size());
+	clearCache();
     }
 
 
@@ -210,8 +223,6 @@ public class TTLCache<KEY, VALUE> {
      * @param value value
      */
     public synchronized void put(KEY key, VALUE value) {
-	if(true) return;
-
         if ((sizeLimit > 0) && (cache.size() > sizeLimit)) {
             clearCache();
         }
