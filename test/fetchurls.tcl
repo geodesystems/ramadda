@@ -70,7 +70,7 @@ for {set i 0} {$i < $max} {incr i} {
         if {[regexp {fail:(.*)} $url match url]} {
             set expectingFail 1;
         }
-        set failed [catch {exec curl -f -silent -o $::out $url} err]
+        set failed [catch {exec curl --insecure -f -silent -o $::out $url} err]
         if {$failed} {
             if {$expectingFail} {
 #                puts "OK: Was expecting a failure for: $url"
