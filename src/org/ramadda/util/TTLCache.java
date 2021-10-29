@@ -210,6 +210,8 @@ public class TTLCache<KEY, VALUE> {
      * @param value value
      */
     public synchronized void put(KEY key, VALUE value) {
+	if(true) return;
+
         if ((sizeLimit > 0) && (cache.size() > sizeLimit)) {
             clearCache();
         }
