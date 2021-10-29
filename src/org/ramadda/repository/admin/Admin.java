@@ -302,6 +302,14 @@ public class Admin extends RepositoryManager {
             adminUrls.add(idx + 1, URL_ADMIN_LOCAL);
         }
 
+	Misc.run(new Runnable() {
+		public void run() {
+		    while(true) {
+			printMemory();
+			Misc.sleepSeconds(5);
+		    }
+		}
+	    });
     }
 
     /**
@@ -2245,6 +2253,21 @@ public class Admin extends RepositoryManager {
 
     }
 
+    private void printMemory() {
+	try {
+	    Runtime.getRuntime().gc();
+	    DecimalFormat fmt        = new DecimalFormat("#0");
+	    double        maxMemory  = (double) Runtime.getRuntime().maxMemory();
+	    double        freeMemory = (double) Runtime.getRuntime().freeMemory();
+	    double totalMemory       =
+		(double) Runtime.getRuntime().totalMemory();
+	    double        usedMemory = (totalMemory - freeMemory);
+	    System.err.println("Used Memory:" +   fmt.format(usedMemory / 1000000)   + " (MB)");
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
+    }
+    
 
     /**
      * _more_
