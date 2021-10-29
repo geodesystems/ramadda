@@ -484,7 +484,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @return _more_
      */
-    private TTLCache<String, Entry> getEntryCache() {
+    public TTLCache<String, Entry> getEntryCache() {
         //Get a local copy because another thread could clear the cache while we're in the middle of this
         TTLCache<String, Entry> theCache = entryCache;
         if (theCache == null) {

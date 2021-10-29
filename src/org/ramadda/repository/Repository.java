@@ -1383,6 +1383,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         debug    = getProperty(PROP_DEBUG, false);
         readOnly = getProperty(PROP_READ_ONLY, false);
         doCache  = getProperty(PROP_DOCACHE, true);
+
         if (readOnly) {
             println("RAMADDA: running in readonly mode");
         }
