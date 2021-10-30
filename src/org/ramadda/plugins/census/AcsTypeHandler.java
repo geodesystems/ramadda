@@ -28,7 +28,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
-import org.ramadda.util.Place;
+import org.ramadda.util.geo.Place;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
 
