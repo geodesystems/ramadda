@@ -3524,9 +3524,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
             return makeBlockedResult(request);
         }
 
-
-
-	int mem1 = getAdmin().getUsedMemory();
+	Runtime.getRuntime().gc();
+	int mem1 = Utils.getUsedMemory();
 
         if (debug) {
             getLogManager().debug("user:" + request.getUser() + " -- "
@@ -3547,7 +3546,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 result.setResponseCode(Result.RESPONSE_UNAUTHORIZED);
             }
             if (result == null) {
-                result = getResult(request);
+		result = getResult(request);
             }
         } catch (Throwable exc) {  //getResult error
             //In case the session checking didn't set the user
@@ -3635,14 +3634,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
-
-
-	int mem2 = getAdmin().getUsedMemory();
+	int mem2 = Utils.getUsedMemory();
 	String url = request.toString();
 	if(!url.matches(".*(images|icons|htdocs|/metadata/view).*")) {
 	    if(!url.matches(".*(\\.js|\\.png|\\.gif|favicon.ico)$"))  {
-		System.err.println("url:" + request +" memory:" + mem2 +" " + (mem2-mem1)
-				   +  " cache:" + getEntryManager().getEntryCache().size());
+		System.err.println("url:" + request +" memory:" + mem2 +" " + (mem2-mem1));
+		//		System.err.println(" memory:" + (mem2-mem1));
 	    }
 	}
         getLogManager().logRequest(request, (result == null)
@@ -3958,7 +3955,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         Result sslRedirect = checkForSslRedirect(request, apiMethod);
         if (sslRedirect != null) {
             debugSession(request, "redirecting to ssl:" + request.getUrl());
-
             return sslRedirect;
         }
 
@@ -3981,7 +3977,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
         Result result = null;
         try {
-            result = (Result) apiMethod.invoke(request);
+	    result = (Result) apiMethod.invoke(request);
         } catch (Exception exc) {
             Throwable inner = LogUtil.getInnerException(exc);
             if (inner instanceof RepositoryUtil.MissingEntryException) {

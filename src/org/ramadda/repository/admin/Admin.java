@@ -2263,6 +2263,7 @@ public class Admin extends RepositoryManager {
 
     private void printMemory() {
 	try {
+	    if(true) return;
 	    Runtime.getRuntime().gc();
 	    DecimalFormat fmt        = new DecimalFormat("#0");
 	    double        maxMemory  = (double) Runtime.getRuntime().maxMemory();
