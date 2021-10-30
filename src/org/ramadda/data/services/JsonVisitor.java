@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -51,6 +51,9 @@ public class JsonVisitor extends BridgeRecordVisitor {
     /** _more_ */
     private static final String COMMA = ",\n";
 
+    /** _more_          */
+    private static final String QUOTE = "\"";
+
     /** _more_ */
     private int cnt = 0;
 
@@ -65,6 +68,19 @@ public class JsonVisitor extends BridgeRecordVisitor {
 
     /** _more_ */
     int mycnt = _cnt++;
+
+    /** _more_          */
+    private boolean initParams = false;
+
+    /** _more_          */
+    private boolean addElevation;
+
+    /** _more_          */
+    private boolean addGeo;
+
+    /** _more_          */
+    private boolean addTime;
+
 
 
     /**
@@ -109,14 +125,17 @@ public class JsonVisitor extends BridgeRecordVisitor {
         }
         PointRecord pointRecord = (PointRecord) record;
 
-        boolean addElevation = file.getProperty("output.elevation", true)
-                               && pointRecord.isValidAltitude();
+        if ( !initParams) {
+            initParams = true;
+            addElevation = file.getProperty("output.elevation", true)
+                           && pointRecord.isValidAltitude();
 
-        boolean addGeo = file.getProperty("output.latlon", true)
-                         && pointRecord.isValidPosition();
+            addGeo = file.getProperty("output.latlon", true)
+                     && pointRecord.isValidPosition();
 
-        boolean addTime = file.getProperty("output.time", true)
-                          && pointRecord.hasRecordTime();
+            addTime = file.getProperty("output.time", true)
+                      && pointRecord.hasRecordTime();
+        }
         if (fields == null) {
             pw     = getThePrintWriter();
             fields = record.getFields();
@@ -129,10 +148,12 @@ public class JsonVisitor extends BridgeRecordVisitor {
             pw.append(COMMA);
         }
 
-        pw.append(Json.mapOpen());
-
-        pw.append(Json.mapKey(Json.FIELD_VALUES));
-        pw.append(Json.listOpen());
+        pw.append(Json.MAP_OPEN);
+        pw.append(QUOTE);
+        pw.append(Json.FIELD_VALUES);
+        pw.append("\":");
+        pw.append(Json.LIST_OPEN);
+        double d = 0;
         for (RecordField field : fields) {
             if (field.getIsLatitude()) {
                 addGeo = false;
@@ -146,47 +167,73 @@ public class JsonVisitor extends BridgeRecordVisitor {
             if (field.getArity() > 1) {
                 continue;
             }
-            String      svalue;
             ValueGetter getter = field.getValueGetter();
-            double      d      = 0;
-            if (getter == null) {
-                if (field.isTypeString()) {
-                    svalue = record.getStringValue(field.getParamId());
-                    svalue = Json.quote(svalue);
-                } else if (field.isTypeDate()) {
-                    svalue = record.getStringValue(field.getParamId());
-                    svalue = Json.quote(svalue);
-                } else {
-                    d      = record.getValue(field.getParamId());
-                    svalue = Json.formatNumber(d);
-                }
-            } else {
-                if (field.isTypeString() || field.isTypeDate()) {
-                    svalue = getter.getStringValue(record, field, visitInfo);
-                    svalue = Json.quote(svalue);
-                } else {
-                    d      = getter.getValue(record, field, visitInfo);
-                    svalue = Json.formatNumber(d);
-                }
-            }
             if (fieldCnt > 0) {
                 pw.append(COMMA);
             }
-            pw.append(svalue);
+
+            if (getter == null) {
+                if (field.isTypeString()) {
+                    pw.append(QUOTE);
+                    pw.append(record.getStringValue(field.getParamId()));
+                    pw.append(QUOTE);
+                } else if (field.isTypeDate()) {
+                    pw.append(QUOTE);
+                    pw.append(record.getStringValue(field.getParamId()));
+                    pw.append(QUOTE);
+                } else {
+                    d = record.getValue(field.getParamId());
+                    if (Json.isNullNumber(d)) {
+                        pw.append("null");
+                    } else {
+                        pw.append(Double.toString(d));
+                    }
+                }
+            } else {
+                if (field.isTypeString() || field.isTypeDate()) {
+                    pw.append(QUOTE);
+                    pw.append(getter.getStringValue(record, field,
+                            visitInfo));
+                    pw.append(QUOTE);
+                } else {
+                    d = getter.getValue(record, field, visitInfo);
+                    if (Json.isNullNumber(d)) {
+                        pw.append("null");
+                    } else {
+                        pw.append(Double.toString(d));
+                    }
+                }
+            }
             fieldCnt++;
         }
 
-
         if (addGeo) {
             pw.append(COMMA);
-            pw.append(Json.formatNumber(pointRecord.getLatitude()));
+            d = pointRecord.getLatitude();
+            if (Json.isNullNumber(d)) {
+                pw.append("null");
+            } else {
+                pw.append(Double.toString(d));
+            }
             pw.append(COMMA);
-            pw.append(Json.formatNumber(pointRecord.getLongitude()));
+            d = pointRecord.getLongitude();
+            if (Json.isNullNumber(d)) {
+                pw.append("null");
+            } else {
+                pw.append(Double.toString(d));
+            }
         }
+
         if (addElevation) {
             pw.append(COMMA);
-            pw.append(Json.formatNumber(pointRecord.getAltitude()));
+            d = pointRecord.getAltitude();
+            if (Json.isNullNumber(d)) {
+                pw.append("null");
+            } else {
+                pw.append(Double.toString(d));
+            }
         }
+
         if (addTime) {
             pw.append(COMMA);
             //                pw.append(Json.quote(DateUtil.getTimeAsISO8601(pointRecord.getRecordTime())));
@@ -194,10 +241,8 @@ public class JsonVisitor extends BridgeRecordVisitor {
             pw.append(Json.formatNumber(pointRecord.getRecordTime()));
         }
 
-
-
-        pw.append(Json.listClose());
-        pw.append(Json.mapClose());
+        pw.append(Json.LIST_CLOSE);
+        pw.append(Json.MAP_CLOSE);
         cnt++;
 
         if (debug) {
