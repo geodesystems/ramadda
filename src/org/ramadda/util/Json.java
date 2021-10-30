@@ -51,6 +51,11 @@ public class Json {
     public static final String GEOJSON_MIMETYPE = "application/geo+json";
 
 
+    public static final String MAP_OPEN  = "{";
+    public static final String MAP_CLOSE  = "}";
+    public static final String LIST_OPEN  = "[";
+    public static final String LIST_CLOSE  = "]";    
+
 
     /** the null string identifier */
     public static final String NULL = "null";
@@ -254,7 +259,7 @@ public class Json {
      * @return _more_
      */
     public static String mapOpen() {
-        return "{";
+        return MAP_OPEN;
     }
 
     /**
@@ -263,7 +268,7 @@ public class Json {
      * @return _more_
      */
     public static String mapClose() {
-        return "}";
+        return MAP_CLOSE;
     }
 
     /**
@@ -297,7 +302,7 @@ public class Json {
      * @return _more_
      */
     public static String listOpen() {
-        return "[";
+        return LIST_OPEN;
     }
 
     /**
@@ -306,7 +311,7 @@ public class Json {
      * @return _more_
      */
     public static String listClose() {
-        return "]";
+        return LIST_CLOSE;
     }
 
 
@@ -515,6 +520,19 @@ public class Json {
     }
 
 
+    public static boolean isNullNumber(double d) {
+        if (Double.isNaN(d)) {
+            return true;
+        }
+
+        if ((d == Double.NEGATIVE_INFINITY)
+	    || (d == Double.POSITIVE_INFINITY)) {
+            return true;
+        }
+	return false;
+    }
+	
+
     /**
      * _more_
      *
@@ -523,16 +541,9 @@ public class Json {
      * @return _more_
      */
     public static String formatNumber(double d) {
-        if (Double.isNaN(d)) {
+	if(isNullNumber(d)) {
             return "null";
         }
-
-        if ((d == Double.NEGATIVE_INFINITY)
-	    || (d == Double.POSITIVE_INFINITY)) {
-            return "null";
-
-        }
-
         return "" + d;
     }
 
@@ -550,7 +561,6 @@ public class Json {
         }
         StringBuilder sb = new StringBuilder();
         quote(sb, s);
-
         return sb.toString();
     }
 
