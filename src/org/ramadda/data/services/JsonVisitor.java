@@ -174,9 +174,10 @@ public class JsonVisitor extends BridgeRecordVisitor {
 
             if (getter == null) {
                 if (field.isTypeString()) {
-                    pw.append(QUOTE);
-                    pw.append(record.getStringValue(field.getParamId()));
-                    pw.append(QUOTE);
+		    Json.quote(pw,record.getStringValue(field.getParamId()));
+		    //                    pw.append(QUOTE);
+		    //                    pw.append(record.getStringValue(field.getParamId()));
+		    //                    pw.append(QUOTE);
                 } else if (field.isTypeDate()) {
                     pw.append(QUOTE);
                     pw.append(record.getStringValue(field.getParamId()));
@@ -191,10 +192,12 @@ public class JsonVisitor extends BridgeRecordVisitor {
                 }
             } else {
                 if (field.isTypeString() || field.isTypeDate()) {
-                    pw.append(QUOTE);
-                    pw.append(getter.getStringValue(record, field,
-                            visitInfo));
-                    pw.append(QUOTE);
+		    Json.quote(pw,getter.getStringValue(record, field,
+							visitInfo));
+		    //                    pw.append(QUOTE);
+		    //                    pw.append(getter.getStringValue(record, field,
+		    //                            visitInfo));
+		    //                    pw.append(QUOTE);
                 } else {
                     d = getter.getValue(record, field, visitInfo);
                     if (Json.isNullNumber(d)) {
