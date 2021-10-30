@@ -97,37 +97,41 @@ public class Utils extends IO {
     };
 
     //From https://stackoverflow.com/questions/4731055/whitespace-matching-regex-java
-    public static final String WHITESPACE_CHARS =  ""  
-	/* dummy empty string for homogeneity */
-	+ "\\u0009" // CHARACTER TABULATION
-	+ "\\u000A" // LINE FEED (LF)
-	+ "\\u000B" // LINE TABULATION
-	+ "\\u000C" // FORM FEED (FF)
-	+ "\\u000D" // CARRIAGE RETURN (CR)
-	+ "\\u0020" // SPACE
-	+ "\\u0085" // NEXT LINE (NEL) 
-	+ "\\u00A0" // NO-BREAK SPACE
-	+ "\\u1680" // OGHAM SPACE MARK
-	+ "\\u180E" // MONGOLIAN VOWEL SEPARATOR
-	+ "\\u2000" // EN QUAD 
-	+ "\\u2001" // EM QUAD 
-	+ "\\u2002" // EN SPACE
-	+ "\\u2003" // EM SPACE
-	+ "\\u2004" // THREE-PER-EM SPACE
-	+ "\\u2005" // FOUR-PER-EM SPACE
-	+ "\\u2006" // SIX-PER-EM SPACE
-	+ "\\u2007" // FIGURE SPACE
-	+ "\\u2008" // PUNCTUATION SPACE
-	+ "\\u2009" // THIN SPACE
-	+ "\\u200A" // HAIR SPACE
-	+ "\\u2028" // LINE SEPARATOR
-	+ "\\u2029" // PARAGRAPH SEPARATOR
-	+ "\\u202F" // NARROW NO-BREAK SPACE
-	+ "\\u205F" // MEDIUM MATHEMATICAL SPACE
-	+ "\\u3000" // IDEOGRAPHIC SPACE
-	;        
 
-    public static final String     WHITESPACE_CHARCLASS = "["  + WHITESPACE_CHARS + "]"; 
+    /** _more_          */
+    public static final String WHITESPACE_CHARS = ""
+    /* dummy empty string for homogeneity */
+    + "\\u0009"  // CHARACTER TABULATION
+    + "\\u000A"  // LINE FEED (LF)
+    + "\\u000B"  // LINE TABULATION
+    + "\\u000C"  // FORM FEED (FF)
+    + "\\u000D"  // CARRIAGE RETURN (CR)
+    + "\\u0020"  // SPACE
+    + "\\u0085"  // NEXT LINE (NEL) 
+    + "\\u00A0"  // NO-BREAK SPACE
+    + "\\u1680"  // OGHAM SPACE MARK
+    + "\\u180E"  // MONGOLIAN VOWEL SEPARATOR
+    + "\\u2000"  // EN QUAD 
+    + "\\u2001"  // EM QUAD 
+    + "\\u2002"  // EN SPACE
+    + "\\u2003"  // EM SPACE
+    + "\\u2004"  // THREE-PER-EM SPACE
+    + "\\u2005"  // FOUR-PER-EM SPACE
+    + "\\u2006"  // SIX-PER-EM SPACE
+    + "\\u2007"  // FIGURE SPACE
+    + "\\u2008"  // PUNCTUATION SPACE
+    + "\\u2009"  // THIN SPACE
+    + "\\u200A"  // HAIR SPACE
+    + "\\u2028"  // LINE SEPARATOR
+    + "\\u2029"  // PARAGRAPH SEPARATOR
+    + "\\u202F"  // NARROW NO-BREAK SPACE
+    + "\\u205F"  // MEDIUM MATHEMATICAL SPACE
+    + "\\u3000"  // IDEOGRAPHIC SPACE
+        ;
+
+    /** _more_          */
+    public static final String WHITESPACE_CHARCLASS = "[" + WHITESPACE_CHARS
+                                                      + "]";
 
 
     /** _more_ */
@@ -149,7 +153,7 @@ public class Utils extends IO {
     /** _more_ */
     public static final SimpleDateFormat sdf;
 
-    /** _more_          */
+    /** _more_ */
     public static final SimpleDateFormat simpleSdf;
 
     static {
@@ -185,19 +189,38 @@ public class Utils extends IO {
      * @return _more_
      */
     public static String format(double d) {
-	if(d == (int) d) return ""+(int)d;
+        if (d == (int) d) {
+            return "" + (int) d;
+        }
+
         return getFormat(d).format(d);
     }
 
-    public static String getUrlArg(String urlString, String name) throws Exception {
-	URL url = new URL(urlString);
-	String query = url.getQuery();
-	for (String param : query.split("&")) {
-	    String[] pair = param.split("=");
-	    String key = URLDecoder.decode(pair[0], "UTF-8");
-	    if(key.equals(name)) return pair.length>1?URLDecoder.decode(pair[1], "UTF-8"):"";
-	}
-	return null;
+    /**
+     * _more_
+     *
+     * @param urlString _more_
+     * @param name _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static String getUrlArg(String urlString, String name)
+            throws Exception {
+        URL    url   = new URL(urlString);
+        String query = url.getQuery();
+        for (String param : query.split("&")) {
+            String[] pair = param.split("=");
+            String   key  = URLDecoder.decode(pair[0], "UTF-8");
+            if (key.equals(name)) {
+                return (pair.length > 1)
+                       ? URLDecoder.decode(pair[1], "UTF-8")
+                       : "";
+            }
+        }
+
+        return null;
     }
 
 
@@ -270,6 +293,19 @@ public class Utils extends IO {
         return COMMA_FORMATS[4];
     }
 
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public static int getUsedMemory() {
+        double freeMemory  = (double) Runtime.getRuntime().freeMemory();
+        double totalMemory = (double) Runtime.getRuntime().totalMemory();
+        double usedMemory  = (totalMemory - freeMemory);
+
+        return (int) (usedMemory / 1000000);
+    }
 
     /**
      * _more_
@@ -502,6 +538,24 @@ public class Utils extends IO {
     /**
      * _more_
      *
+     * @param columnDelimiter _more_
+     *
+     * @return _more_
+     */
+    public static StrTokenizer getTokenizer(String columnDelimiter) {
+        StrTokenizer tokenizer = StrTokenizer.getCSVInstance();
+        tokenizer.setEmptyTokenAsNull(true);
+        if ( !columnDelimiter.equals(",")) {
+            tokenizer.setDelimiterChar(columnDelimiter.charAt(0));
+        }
+
+        return tokenizer;
+    }
+
+
+    /**
+     * _more_
+     *
      * @param line _more_
      * @param tokenizer _more_
      *
@@ -509,8 +563,23 @@ public class Utils extends IO {
      */
     public static List<String> tokenizeColumns(String line,
             StrTokenizer tokenizer) {
-        tokenizer.reset(line);
         List<String> toks = new ArrayList<String>();
+
+        return tokenizeColumns(line, tokenizer, toks);
+    }
+
+    /**
+     * _more_
+     *
+     * @param line _more_
+     * @param tokenizer _more_
+     * @param toks _more_
+     *
+     * @return _more_
+     */
+    public static List<String> tokenizeColumns(String line,
+            StrTokenizer tokenizer, List<String> toks) {
+        tokenizer.reset(line);
         //        tokenizer.setQuoteChar('"');
         while (tokenizer.hasNext()) {
             String tok = tokenizer.nextToken();
@@ -1000,10 +1069,12 @@ public class Utils extends IO {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-	String s = "hello there hello";
-	System.err.println(s.replace("hello","xxx"));
-	if(true) return;
-	    
+        String s = "hello there hello";
+        System.err.println(s.replace("hello", "xxx"));
+        if (true) {
+            return;
+        }
+
 
 
         for (String dateString : new String[] { "04/01/2021" }) {
@@ -1565,7 +1636,9 @@ public class Utils extends IO {
      */
     public static double decodeLatLon(String latlon) {
         // first check to see if there is a N,S,E,or W on this
-        latlon = latlon.trim();
+        if (latlon.startsWith(" ") || latlon.endsWith(" ")) {
+            latlon = latlon.trim();
+        }
         int    dirIndex    = -1;
         int    southOrWest = 1;
         double value       = Double.NaN;
@@ -1618,7 +1691,7 @@ public class Utils extends IO {
             }
         } else {  //have something like DD.ddd
             try {
-                value = parseNumber(latlon);
+                value = Double.parseDouble(latlon);
             } catch (NumberFormatException nfe) {
                 value = Double.NaN;
             }
@@ -2154,39 +2227,47 @@ public class Utils extends IO {
     public static String upperCaseFirst(String s) {
         StringBuilder sb = new StringBuilder();
         for (String tok : Utils.split(s, " ", true, true)) {
-	    sb.append(tok.substring(0, 1).toUpperCase()
-		      + tok.substring(1).toLowerCase());
+            sb.append(tok.substring(0, 1).toUpperCase()
+                      + tok.substring(1).toLowerCase());
             sb.append(" ");
         }
 
         return sb.toString().trim();
     }
 
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
     public static String nameCase(String s) {
         StringBuilder sb = new StringBuilder();
         for (String tok : Utils.split(s, " ", true, true)) {
-	    List<String> toks2 = Utils.split(tok, "-", true, true);
-	    for (int i=0;i<toks2.size();i++) {
-		String tok2 = toks2.get(i);
-		if(i>0)
-		    sb.append("-");
-		if(tok2.indexOf(".")>=0) {
-		    sb.append(tok2.toUpperCase());
-		} else if(tok2.startsWith("Mc")) {
-		    sb.append(tok2);
-		} else if(tok2.startsWith("Mac")) {
-		    sb.append(tok2);		
-		} else {
-		    sb.append(tok2.substring(0, 1).toUpperCase()
-			      + tok2.substring(1).toLowerCase());
-		}
-	    }
+            List<String> toks2 = Utils.split(tok, "-", true, true);
+            for (int i = 0; i < toks2.size(); i++) {
+                String tok2 = toks2.get(i);
+                if (i > 0) {
+                    sb.append("-");
+                }
+                if (tok2.indexOf(".") >= 0) {
+                    sb.append(tok2.toUpperCase());
+                } else if (tok2.startsWith("Mc")) {
+                    sb.append(tok2);
+                } else if (tok2.startsWith("Mac")) {
+                    sb.append(tok2);
+                } else {
+                    sb.append(tok2.substring(0, 1).toUpperCase()
+                              + tok2.substring(1).toLowerCase());
+                }
+            }
             sb.append(" ");
         }
 
         return sb.toString().trim();
     }
-    
+
 
     /**
      * _more_
@@ -2215,8 +2296,8 @@ public class Utils extends IO {
                                     "_").replaceAll("\\?",
                                         "_").replaceAll("[\"'`]+", "").trim();
         label = label.replaceAll("-", "_");
-	label = label.replaceAll(",", "_");
-        label = label.replaceAll("/", "_");	
+        label = label.replaceAll(",", "_");
+        label = label.replaceAll("/", "_");
         label = label.replaceAll("__+", "_");
         label = label.replaceAll("[\\{\\}=]+", "_");
         label = label.replaceAll("_$", "");
@@ -2228,7 +2309,7 @@ public class Utils extends IO {
     }
 
 
-    /** _more_          */
+    /** _more_ */
     private static final String[] DATE_PATTERNS = { "\\d\\d\\d\\d-\\d\\d-\\d\\d",
             "(january|february|march|april|may|june|july|august|septembe|october|november|december).*" };
 
@@ -3018,7 +3099,7 @@ public class Utils extends IO {
 
     //j--
 
-    /** _more_          */
+    /** _more_ */
     private static DateFormat[] DATE_FORMATS = {
         new DateFormat("yyyy-MM-dd'T'HH:mm:ss Z"),
         new DateFormat("yyyyMMdd'T'HHmmss Z"),
@@ -3057,7 +3138,7 @@ public class Utils extends IO {
     private static int lengthLastDate = 0;
 
 
-    /** _more_          */
+    /** _more_ */
     public static boolean debugDate = false;
 
     /**
@@ -3215,8 +3296,15 @@ public class Utils extends IO {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
     public static boolean isUrl(String s) {
-	return s.startsWith("https:") || s.startsWith("http:");
+        return s.startsWith("https:") || s.startsWith("http:");
     }
 
     /**
@@ -3693,7 +3781,9 @@ public class Utils extends IO {
         }
         try {
             // hack to also accept lower case e for exponent
-            value = value.replace("e", "E");
+            if (value.indexOf("e") >= 0) {
+                value = value.replace("e", "E");
+            }
             synchronized (formatter) {
                 return formatter.parse(value).doubleValue();
             }
@@ -3712,7 +3802,7 @@ public class Utils extends IO {
      * @return _more_
      */
     public static String replaceAll(String s, String pattern, String value) {
-	return s.replace(pattern, value);
+        return s.replace(pattern, value);
     }
 
     /**
@@ -3764,20 +3854,20 @@ public class Utils extends IO {
      *
      *
      * @version        $version$, Tue, Jun 1, '21
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class DateFormat {
 
-        /** _more_          */
+        /** _more_ */
         SimpleDateFormat sdf;
 
-        /** _more_          */
+        /** _more_ */
         String format;
 
-        /** _more_          */
+        /** _more_ */
         Pattern pattern;
 
-        /** _more_          */
+        /** _more_ */
         String spattern;
 
         /**
@@ -4361,18 +4451,37 @@ public class Utils extends IO {
     }
 
     /**
-       return first non-null object
+     *  return first non-null object
+     *
+     * @param args _more_
+     *
+     * @return _more_
      */
-    public static Object get(Object...args) {
-	for(Object obj:args)
-	    if(obj!=null) return obj;
-	return null;
+    public static Object get(Object... args) {
+        for (Object obj : args) {
+            if (obj != null) {
+                return obj;
+            }
+        }
+
+        return null;
     }
 
-    public static String getString(Object...args) {
-	for(Object obj:args)
-	    if(obj!=null) return obj.toString();
-	return null;
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @return _more_
+     */
+    public static String getString(Object... args) {
+        for (Object obj : args) {
+            if (obj != null) {
+                return obj.toString();
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -4692,6 +4801,7 @@ public class Utils extends IO {
      * @param fromDate _more_
      * @param toDate _more_
      * @param dflt _more_
+     * @param base _more_
      *
      * @return _more_
      *
@@ -4701,11 +4811,15 @@ public class Utils extends IO {
                                       Date base)
             throws java.text.ParseException {
 
-        Date fromDttm = Utils.stringDefined(fromDate)?DateUtil.parseRelative(base, fromDate, -1):null;
-        Date toDttm   = Utils.stringDefined(toDate)?DateUtil.parseRelative(base, toDate, +1):null;
-	//	System.err.println ("dflt: " + base);
-	//	System.err.println ("fromDttm:" + fromDate + " date:" + fromDttm);
-	//	System.err.println ("toDttm:" + toDate + " date:" + toDttm);
+        Date fromDttm = Utils.stringDefined(fromDate)
+                        ? DateUtil.parseRelative(base, fromDate, -1)
+                        : null;
+        Date toDttm   = Utils.stringDefined(toDate)
+                        ? DateUtil.parseRelative(base, toDate, +1)
+                        : null;
+        //      System.err.println ("dflt: " + base);
+        //      System.err.println ("fromDttm:" + fromDate + " date:" + fromDttm);
+        //      System.err.println ("toDttm:" + toDate + " date:" + toDttm);
 
 
         if ((Utils.stringDefined(fromDate)) && (fromDttm == null)) {
@@ -4719,7 +4833,8 @@ public class Utils extends IO {
             }
         }
 
-        if ((fromDttm == null) && fromDate!=null && fromDate.startsWith("-")) {
+        if ((fromDttm == null) && (fromDate != null)
+                && fromDate.startsWith("-")) {
             if (toDttm == null) {
                 throw new IllegalArgumentException(
                     "Cannot do relative From Date when To Date is not set");
@@ -4727,7 +4842,7 @@ public class Utils extends IO {
             fromDttm = DateUtil.getRelativeDate(toDttm, fromDate);
         }
 
-        if ((toDttm == null) && toDate!=null && toDate.startsWith("+")) {
+        if ((toDttm == null) && (toDate != null) && toDate.startsWith("+")) {
             if (fromDttm == null) {
                 throw new IllegalArgumentException(
                     "Cannot do relative From Date when To Date is not set");
@@ -4750,7 +4865,7 @@ public class Utils extends IO {
 
 
 
-    /** _more_          */
+    /** _more_ */
     private static SimpleDateFormat doySdf;
 
     /**
@@ -4891,15 +5006,25 @@ public class Utils extends IO {
      * @return _more_
      */
     public static String getStack(int howMany) {
-	return getStack(howMany,null);
+        return getStack(howMany, null);
     }
 
-    public static String getStack(int howMany, String not) {	
+    /**
+     * _more_
+     *
+     * @param howMany _more_
+     * @param not _more_
+     *
+     * @return _more_
+     */
+    public static String getStack(int howMany, String not) {
         List<String> lines = new ArrayList<String>();
         StringBuffer sb    = new StringBuffer();
         int          cnt   = 0;
         for (String line : split(Misc.getStackTrace(), "\n")) {
-	    if(not!=null && line.indexOf(not)>=0) continue;
+            if ((not != null) && (line.indexOf(not) >= 0)) {
+                continue;
+            }
             cnt++;
             //skip the first 3 lines so we don't get this method, etc
             if (cnt <= 3) {
@@ -5068,7 +5193,7 @@ public class Utils extends IO {
      * @param <U>
      * @param <V>
      *
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public interface TriFunction<R, T, U, V> {
 
@@ -5094,7 +5219,7 @@ public class Utils extends IO {
      * @param <V>
      * @param <W>
      *
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public interface QuadFunction<R, T, U, V, W> {
 
@@ -5121,7 +5246,7 @@ public class Utils extends IO {
      * @param <V>
      * @param <W>
      *
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public interface QuadConsumer<T, U, V, W> {
 
