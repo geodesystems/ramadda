@@ -76,12 +76,12 @@ import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.service.Service;
 import org.ramadda.util.Bounds;
 import org.ramadda.util.CategoryBuffer;
-import org.ramadda.util.GeoUtils;
+import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Json;
 import org.ramadda.util.MyTrace;
-import org.ramadda.util.Place;
+import org.ramadda.util.geo.Place;
 
 
 
@@ -167,7 +167,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         null;
 
     /** dummy field 4 */
-    private static final org.ramadda.util.GeoUtils dummyField4ToForceCompile =
+    private static final org.ramadda.util.geo.GeoUtils dummyField4ToForceCompile =
         null;
 
     /** dummy field 5 */
@@ -3638,6 +3638,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
+	if(debugMemory)
+	    Runtime.getRuntime().gc();
 	int mem2 = Utils.getUsedMemory();
 
 	if(debugMemory) {
