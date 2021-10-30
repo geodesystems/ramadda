@@ -998,9 +998,6 @@ public class TextReader implements Cloneable {
                 }
                 if ( !inQuote) {
                     nextChar = readChar();
-		    if (nextChar == UNDEF) {
-			System.err.println("XXX");
-		    }
                     if (debug) {
                         sb.append("\tread next char:" + (char) nextChar);
                     }
@@ -1010,7 +1007,6 @@ public class TextReader implements Cloneable {
                     if (nextChar == NEWLINE) {
                         nextChar = UNDEF;
                     }
-
                     break;
                 }
 
@@ -1409,7 +1405,6 @@ public class TextReader implements Cloneable {
 	    NamedInputStream input = getInput();
 	    InputStreamReader isr = new InputStreamReader(input.getInputStream(), java.nio.charset.StandardCharsets.UTF_8);
 	    reader = new BufferedReader(isr);
-	    //            reader = new BufferedReader(new InputStreamReader(input.getInputStream()));
         }
         return reader;
     }
