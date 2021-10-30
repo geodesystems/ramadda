@@ -41,7 +41,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 
-
+import org.apache.commons.lang3.text.StrTokenizer;
 
 
 /** This is generated code from generate.tcl. Do not edit it! */
@@ -101,7 +101,9 @@ public class TextRecord extends DataRecord {
     /** _more_ */
     private boolean matchUpColumns = false;
 
+    private StrTokenizer tokenizer;
 
+    private List<String> tokenList = new ArrayList<String>();
 
     /** _more_ */
     private int badCnt = 0;
@@ -270,6 +272,8 @@ public class TextRecord extends DataRecord {
 
 
 
+
+
     /**
      * _more_
      *
@@ -291,7 +295,6 @@ public class TextRecord extends DataRecord {
                 firstDataLine = null;
             } else {
                 currentLine = recordIO.getAndClearPutback();
-                //currentLine = recordIO.readLine();
                 if (currentLine == null) {
                     currentLine = textReader.readLine();
                 }
@@ -336,6 +339,7 @@ public class TextRecord extends DataRecord {
 
 
 
+
     /**
      * _more_
      *
@@ -348,6 +352,7 @@ public class TextRecord extends DataRecord {
     @Override
     public ReadStatus read(RecordIO recordIO) throws Exception {
 
+
         String line = null;
 	if(tokens!=null && tokens.length==0) {
 	    System.err.println("TextRecord.read zero length tokens array");
@@ -356,6 +361,7 @@ public class TextRecord extends DataRecord {
 
         try {
             int fieldCnt;
+	    if(tokenizer==null) tokenizer = Utils.getTokenizer(delimiter);
             while (true) {
                 line = readNextLine(recordIO);
                 if (line == null) {
@@ -364,7 +370,7 @@ public class TextRecord extends DataRecord {
                 //                System.err.println("LINE:" + line);
                 if (matchUpColumns && (rawOK == null)) {
                     List<String> toks = Utils.tokenizeColumns(line,
-                                            delimiter);
+							      tokenizer);
                     toks = ((TextFile) getRecordFile()).processTokens(this,
                             toks, true);
                     rawOK = new boolean[toks.size()];
@@ -395,12 +401,14 @@ public class TextRecord extends DataRecord {
                 tokens[i] = "";
             }
 
+
             if (delimiterIsSpace || (fixedWidth != null)) {
                 if ( !split(recordIO, line, fields)) {
                     return ReadStatus.SKIP;
                 }
             } else {
-                List<String> toks = Utils.tokenizeColumns(line, delimiter);
+		tokenList.clear();
+                List<String> toks = Utils.tokenizeColumns(line, tokenizer, tokenList);
                 toks = ((TextFile) getRecordFile()).processTokens(this, toks,
                         false);
 
@@ -449,7 +457,8 @@ public class TextRecord extends DataRecord {
                     }
                     tokens[targetIdx++] = toks.get(i);
                 }
-            }
+	    }
+
 
             TextFile textFile = (TextFile) getRecordFile();
             String   tok      = null;
@@ -479,7 +488,6 @@ public class TextRecord extends DataRecord {
                 }
 
 
-
                 if (indices[tokenCnt] >= 0) {
                     tok = tokens[indices[tokenCnt]];
                 } else {
@@ -488,10 +496,14 @@ public class TextRecord extends DataRecord {
                 tokenCnt++;
 
 
+
                 if (field.isTypeString()) {
                     objectValues[fieldCnt] = tok;
                     continue;
                 }
+
+
+
                 if (field.isTypeDate()) {
                     tok                    = tok.replaceAll("\"", "");
 		    Date date = parseDate(field, tok);
@@ -504,16 +516,20 @@ public class TextRecord extends DataRecord {
                 if (tok == null) {
                     System.err.println("tok null: " + tokenCnt + " " + line);
                 }
+
+
                 //Check for the riscan NaN
                 if (isMissingValue(field, tok)) {
                     values[fieldCnt] = Double.NaN;
                 } else {
                     double dValue;
-                    if ((idxX == fieldCnt) || (idxY == fieldCnt)) {
-                        dValue = Utils.decodeLatLon(tok);
+		    if ((idxX == fieldCnt) || (idxY == fieldCnt)) {
+			dValue = Utils.decodeLatLon(tok);
                     } else {
                         dValue = textFile.parseValue(this, field, tok);
                     }
+
+
                     if (isMissingValue(field, dValue)) {
                         dValue = Double.NaN;
                     } else {
