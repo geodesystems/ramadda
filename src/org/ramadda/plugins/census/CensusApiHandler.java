@@ -24,7 +24,7 @@ import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
-import org.ramadda.util.Place;
+import org.ramadda.util.geo.Place;
 
 import org.ramadda.util.Utils;
 
@@ -172,7 +172,7 @@ public class CensusApiHandler extends RepositoryManager implements RequestHandle
             sb.append(HtmlUtils.sectionOpen("Census Counties List for "
                                             + state.getName()));
             places = new ArrayList<Place>();
-            for (Place county : Place.getPlacesFrom("counties.txt")) {
+            for (Place county : Place.getPlacesForResource("counties")) {
                 if (county.getFips().startsWith(state.getFips())) {
                     places.add(county);
                 }
@@ -180,7 +180,7 @@ public class CensusApiHandler extends RepositoryManager implements RequestHandle
 
         } else {
             sb.append(HtmlUtils.sectionOpen("Census States List"));
-            places = Place.getPlacesFrom("states.txt");
+            places = Place.getPlacesForResource("states");
         }
         sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.row(HtmlUtils.cols("Place", "ID", "FIPS")));
