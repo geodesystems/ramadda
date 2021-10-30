@@ -2295,11 +2295,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public EntryUtil getEntryUtil() {
+    public synchronized EntryUtil getEntryUtil() {
         if (entryUtil == null) {
-            entryUtil = new EntryUtil(getRepository());
+            entryUtil = EntryUtil.newEntryUtil(getRepository());
         }
-
         return entryUtil;
     }
 

@@ -523,12 +523,14 @@ public class EntryManager extends RepositoryManager {
     @Override
     public void clearCache() {
         super.clearCache();
-        entryCache      = null;
-        synthEntryCache = null;
-        rootCache       = null;
+	if(entryCache!=null)
+	    entryCache.clearCache();
+	if(synthEntryCache!=null)
+	    synthEntryCache.clearCache();
+	if(rootCache!=null)
+	    rootCache.clearCache();
         getEntryUtil().clearCache();
     }
-
 
     /**
      * _more_

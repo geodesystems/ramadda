@@ -2265,7 +2265,7 @@ public class Admin extends RepositoryManager {
 	    String cache = " cache:" + getEntryManager().getEntryCache().size();
 	    usedMemory = usedMemory / 1000000;
 	    if(usedMemory>300) {
-		System.err.println("Clearing cache");
+		System.err.println("printMemory: Clearing cache");
 		getEntryManager().clearCache();
 	    }
 	    System.err.println("Used Memory:" +   fmt.format(usedMemory)   + " (MB)" + cache);

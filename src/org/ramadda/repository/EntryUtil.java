@@ -76,9 +76,14 @@ public class EntryUtil extends RepositoryManager {
      *
      * @param repository _more_
      */
-    public EntryUtil(Repository repository) {
+    private EntryUtil(Repository repository) {
         super(repository);
     }
+
+    public static EntryUtil newEntryUtil(Repository repository) {
+	return new EntryUtil(repository);
+    }
+
 
 
     /**
