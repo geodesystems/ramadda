@@ -990,7 +990,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	List<Query> areaQueries = new ArrayList<Query>();
 	for (SelectionRectangle rectangle : rectangles) {
 	    if(!rectangle.anyDefined()) continue;
-	    System.err.println("BBOX:" + rectangle);
+	    //	    System.err.println("BBOX:" + rectangle);
 	    double minLat = rectangle.hasSouth()?rectangle.getSouth():-90;
 	    double maxLat = rectangle.hasNorth()?rectangle.getNorth():90;	    
 	    double minLon = rectangle.hasWest()?rectangle.getWest():-180;
