@@ -268,7 +268,7 @@ public class LgeRecordV1_2 extends LvisRecord {
         recordIO.getDataInputStream().skipBytes(16);
         }
         glon =  readDouble(dis);
-        setLongitude(org.ramadda.util.GeoUtils.normalizeLongitude(glon));
+        setLongitude(org.ramadda.util.geo.GeoUtils.normalizeLongitude(glon));
         glat =  readDouble(dis);
         setLatitude(glat);
         zg =  readFloat(dis);

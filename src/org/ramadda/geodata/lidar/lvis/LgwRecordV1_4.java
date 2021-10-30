@@ -331,7 +331,7 @@ public class LgwRecordV1_4 extends LvisRecord {
         }
         lvisTime =  readDouble(dis);
         lon0 =  readDouble(dis);
-        setLongitude(org.ramadda.util.GeoUtils.normalizeLongitude(lon0));
+        setLongitude(org.ramadda.util.geo.GeoUtils.normalizeLongitude(lon0));
         lat0 =  readDouble(dis);
         setLatitude(lat0);
         z0 =  readFloat(dis);

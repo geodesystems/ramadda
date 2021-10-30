@@ -254,7 +254,7 @@ public class LvisTextRecord extends org.ramadda.geodata.lidar.lvis.LvisRecord {
         return LATITUDE_CENTROID;
     }
     public double getLongitude() {
-        return org.ramadda.util.GeoUtils.normalizeLongitude(LONGITUDE_CENTROID);
+        return org.ramadda.util.geo.GeoUtils.normalizeLongitude(LONGITUDE_CENTROID);
     }
     public double getAltitude() {
         return ELEVATION_CENTROID;

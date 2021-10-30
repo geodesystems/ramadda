@@ -252,7 +252,7 @@ public class LceRecordV1_3 extends LvisRecord {
         }
         lvisTime =  readDouble(dis);
         tlon =  readDouble(dis);
-        setLongitude(org.ramadda.util.GeoUtils.normalizeLongitude(tlon));
+        setLongitude(org.ramadda.util.geo.GeoUtils.normalizeLongitude(tlon));
         tlat =  readDouble(dis);
         setLatitude(tlat);
         zt =  readFloat(dis);

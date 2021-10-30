@@ -22,7 +22,7 @@ import org.ramadda.geodata.lidar.*;
 
 
 import org.ramadda.geodata.lidar.geotiff.*;
-import org.ramadda.util.GeoUtils;
+import org.ramadda.util.geo.GeoUtils;
 
 
 
