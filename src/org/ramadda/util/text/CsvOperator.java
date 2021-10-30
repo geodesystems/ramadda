@@ -17,7 +17,7 @@
 package org.ramadda.util.text;
 
 
-import org.ramadda.util.GeoUtils;
+import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 

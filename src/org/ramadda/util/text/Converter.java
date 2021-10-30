@@ -19,13 +19,13 @@ package org.ramadda.util.text;
 
 import org.json.*;
 
-import org.ramadda.util.GeoUtils;
+import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.HtmlUtils;
 
 
 import org.ramadda.util.IO;
 import org.ramadda.util.Json;
-import org.ramadda.util.Place;
+import org.ramadda.util.geo.Place;
 import org.ramadda.util.Utils;
 
 import ucar.unidata.util.IOUtil;

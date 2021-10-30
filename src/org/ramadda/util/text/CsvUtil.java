@@ -19,7 +19,7 @@ package org.ramadda.util.text;
 import org.json.*;
 
 import org.ramadda.util.IO;
-import org.ramadda.util.GeoUtils;
+import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.Json;
 import org.ramadda.util.NamedInputStream;
 import org.ramadda.util.NamedChannel;
