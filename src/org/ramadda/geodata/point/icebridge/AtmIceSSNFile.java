@@ -252,7 +252,7 @@ public static class AtmIceSSNRecord extends org.ramadda.data.point.text.TextReco
         return centerLatitude;
     }
     public double getLongitude() {
-        return org.ramadda.util.GeoUtils.normalizeLongitude(centerLongitude);
+        return org.ramadda.util.geo.GeoUtils.normalizeLongitude(centerLongitude);
     }
     public double getAltitude() {
         return height;

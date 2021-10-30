@@ -120,7 +120,7 @@ public class QfitRecord extends org.ramadda.data.point.PointRecord {
      */
     @Override
     public double getLongitude() {
-        return org.ramadda.util.GeoUtils.normalizeLongitude(laserLongitude
+        return org.ramadda.util.geo.GeoUtils.normalizeLongitude(laserLongitude
                 / 1000000.0);
     }
 
