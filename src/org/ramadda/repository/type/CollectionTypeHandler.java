@@ -131,8 +131,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
     @Override
     public synchronized void clearCache() {
         super.clearCache();
-	TTLCache.finishedWithCache(cache);
-        cache      = new TTLCache<Object, Object>(60 * 60 * 1000);
+	cache.clearCache();
         labelCache = new Hashtable<String, Properties>();
     }
 

@@ -495,8 +495,7 @@ public class EntryManager extends RepositoryManager {
             entryCache = theCache = new TTLCache<String,
 		Entry>(cacheTimeMinutes * 60 * 1000);
         } else if (theCache.size() > ENTRY_CACHE_LIMIT) {
-	    TTLCache.finishedWithCache(entryCache);
-            entryCache = null;
+	    theCache.clearCache();
         }
         return theCache;
     }
@@ -513,8 +512,7 @@ public class EntryManager extends RepositoryManager {
             synthEntryCache = theCache = new TTLCache<String,
 		Entry>(SYNTHENTRY_CACHE_TTL_MINUTES * 60 * 1000);
         } else if (theCache.size() > SYNTHENTRY_CACHE_LIMIT) {
-	    TTLCache.finishedWithCache(synthEntryCache);
-            synthEntryCache = null;
+	    theCache.clearCache();
         }
         return theCache;
     }

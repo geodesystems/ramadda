@@ -71,7 +71,7 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
      */
     public void clearCache() {
         super.clearCache();
-	cachedIds = new TTLCache<String, List<String>>(5 * 60 * 1000);
+	cachedIds.clearCache();
     }
 
     /**

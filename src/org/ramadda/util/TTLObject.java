@@ -67,8 +67,8 @@ public class TTLObject<VALUE> {
         }
     }
 
-    public void finishedWithCache() {
-	TTLCache.finishedWithCache(cache);
+    public synchronized void clearCache() {
+	cache.clearCache();
     }
 
     /**
