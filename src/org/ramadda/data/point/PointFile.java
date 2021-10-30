@@ -20,7 +20,7 @@ package org.ramadda.data.point;
 
 import org.ramadda.data.record.*;
 import org.ramadda.data.record.filter.*;
-import org.ramadda.util.GeoUtils;
+import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Station;
 import org.ramadda.util.Utils;
