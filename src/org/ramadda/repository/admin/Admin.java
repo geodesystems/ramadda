@@ -2263,7 +2263,13 @@ public class Admin extends RepositoryManager {
 		(double) Runtime.getRuntime().totalMemory();
 	    double        usedMemory = (totalMemory - freeMemory);
 	    String cache = " cache:" + getEntryManager().getEntryCache().size();
-	    System.err.println("Used Memory:" +   fmt.format(usedMemory / 1000000)   + " (MB)" + cache);
+	    usedMemory = usedMemory / 1000000;
+	    if(usedMemory>300) {
+		System.err.println("Clearing cache");
+		getEntryManager().clearCache();
+	    }
+	    System.err.println("Used Memory:" +   fmt.format(usedMemory)   + " (MB)" + cache);
+	    
 
 	} catch(Exception exc) {
 	    throw new RuntimeException(exc);

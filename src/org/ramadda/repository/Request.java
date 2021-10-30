@@ -2346,7 +2346,7 @@ public class Request implements Constants, Cloneable {
     public String toString() {
         String args = getUrlArgs();
         if (args.trim().length() > 0) {
-            return urlPath + " url args:" + args;
+            return urlPath + "?" + args;
         } else {
             return urlPath;
         }

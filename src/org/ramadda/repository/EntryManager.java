@@ -493,9 +493,7 @@ public class EntryManager extends RepositoryManager {
                                             ENTRY_CACHE_TTL_MINUTES);
             //Convert to milliseconds
             entryCache = theCache = new TTLCache<String,
-		Entry>(cacheTimeMinutes * 60 * 1000);
-        } else if (theCache.size() > ENTRY_CACHE_LIMIT) {
-	    theCache.clearCache();
+		Entry>(cacheTimeMinutes * 60 * 1000, ENTRY_CACHE_LIMIT);
         }
         return theCache;
     }

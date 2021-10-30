@@ -105,8 +105,8 @@ public class AccessManager extends RepositoryManager {
     /**
      * _more_
      */
-    public void clearCache() {
-        recentPermissions = new TTLCache<String, Object[]>(5 * 60 * 1000);
+    public synchronized void clearCache() {
+	recentPermissions.clearCache();
     }
 
 
