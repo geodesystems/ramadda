@@ -3526,6 +3526,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
+	int mem1 = getAdmin().getUsedMemory();
 
         if (debug) {
             getLogManager().debug("user:" + request.getUser() + " -- "
@@ -3636,10 +3637,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
+	int mem2 = getAdmin().getUsedMemory();
 	String url = request.toString();
-	if(!url.matches(".*(images|icons|htdocs|/metadata/view).*"))
-	    if(!url.matches(".*(\\.js|\\.png|\\.gif|favicon.ico)$"))	    
-		System.err.println("url:" + request);
+	if(!url.matches(".*(images|icons|htdocs|/metadata/view).*")) {
+	    if(!url.matches(".*(\\.js|\\.png|\\.gif|favicon.ico)$"))  {
+		System.err.println("url:" + request +" memory:" + (mem2-mem1));
+	    }
+	}
         getLogManager().logRequest(request, (result == null)
                                             ? Result.RESPONSE_INTERNALERROR
                                             : result.getResponseCode());

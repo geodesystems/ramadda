@@ -2253,6 +2253,14 @@ public class Admin extends RepositoryManager {
 
     }
 
+    public int getUsedMemory() {
+	double        freeMemory = (double) Runtime.getRuntime().freeMemory();
+	double totalMemory       =
+	    (double) Runtime.getRuntime().totalMemory();
+	double        usedMemory = (totalMemory - freeMemory);
+	return (int)(usedMemory / 1000000);
+    }
+
     private void printMemory() {
 	try {
 	    Runtime.getRuntime().gc();
