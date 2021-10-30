@@ -19,11 +19,11 @@ package org.ramadda.plugins.incident;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
-import org.ramadda.util.GeoUtils;
+import org.ramadda.util.geo.GeoUtils;
 
 
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Place;
+import org.ramadda.util.geo.Place;
 import org.ramadda.util.Utils;
 
 

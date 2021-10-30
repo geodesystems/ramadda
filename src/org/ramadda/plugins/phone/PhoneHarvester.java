@@ -27,7 +27,7 @@ import org.ramadda.repository.search.SearchProvider;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Place;
+import org.ramadda.util.geo.Place;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
 
@@ -1020,7 +1020,7 @@ public class PhoneHarvester extends Harvester {
                                           values);
 
 
-        Place place = org.ramadda.util.GeoUtils.getLocationFromAddress(
+        Place place = org.ramadda.util.geo.GeoUtils.getLocationFromAddress(
                           info.getFromZip());
         if (place != null) {
             entry.setLocation(place.getLatitude(), place.getLongitude(), 0);
@@ -1145,7 +1145,7 @@ public class PhoneHarvester extends Harvester {
                         date.getTime(), values);
 
 
-        Place place = org.ramadda.util.GeoUtils.getLocationFromAddress(
+        Place place = org.ramadda.util.geo.GeoUtils.getLocationFromAddress(
                           info.getFromZip());
         if (place != null) {
             entry.setLocation(place.getLatitude(), place.getLongitude(), 0);
