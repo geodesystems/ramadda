@@ -31,7 +31,7 @@ import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.type.CollectionTypeHandler;
-import org.ramadda.util.GeoUtils;
+import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.TempDir;
 

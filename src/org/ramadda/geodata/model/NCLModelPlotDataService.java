@@ -30,7 +30,7 @@ import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.service.ServiceInput;
 import org.ramadda.service.ServiceOperand;
 import org.ramadda.service.ServiceOutput;
-import org.ramadda.util.GeoUtils;
+import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.HtmlUtils;
 
 import ucar.nc2.dataset.CoordinateAxis1D;
