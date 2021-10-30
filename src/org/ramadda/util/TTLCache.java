@@ -140,11 +140,17 @@ public class TTLCache<KEY, VALUE> {
     }
 
 
-    public void finishedWithCache() {
-	//	System.err.println("finished:" + caches.size());
+    public static void finishedWithCache(TTLCache cache) {
+	if(cache!=null) {
+	    cache.finishedWithCache();
+	}
+    }
+
+    private void finishedWithCache() {
+	int sizeBefore = caches.size();
 	caches.remove(this);
-	//	System.err.println("after finished:" + caches.size());
-	clearCache();
+	cache = null;
+	System.err.println("TTLCache.finished:" + sizeBefore +" " + caches.size());
     }
 
 

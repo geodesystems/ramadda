@@ -68,7 +68,7 @@ public class TTLObject<VALUE> {
     }
 
     public void finishedWithCache() {
-	if(cache!=null) cache.finishedWithCache();
+	TTLCache.finishedWithCache(cache);
     }
 
     /**

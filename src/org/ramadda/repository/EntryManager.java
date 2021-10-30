@@ -484,7 +484,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @return _more_
      */
-    public TTLCache<String, Entry> getEntryCache() {
+    public synchronized TTLCache<String, Entry> getEntryCache() {
         //Get a local copy because another thread could clear the cache while we're in the middle of this
         TTLCache<String, Entry> theCache = entryCache;
         if (theCache == null) {
@@ -495,9 +495,9 @@ public class EntryManager extends RepositoryManager {
             entryCache = theCache = new TTLCache<String,
 		Entry>(cacheTimeMinutes * 60 * 1000);
         } else if (theCache.size() > ENTRY_CACHE_LIMIT) {
+	    TTLCache.finishedWithCache(entryCache);
             entryCache = null;
         }
-
         return theCache;
     }
 
@@ -513,9 +513,9 @@ public class EntryManager extends RepositoryManager {
             synthEntryCache = theCache = new TTLCache<String,
 		Entry>(SYNTHENTRY_CACHE_TTL_MINUTES * 60 * 1000);
         } else if (theCache.size() > SYNTHENTRY_CACHE_LIMIT) {
+	    TTLCache.finishedWithCache(synthEntryCache);
             synthEntryCache = null;
         }
-
         return theCache;
     }
 
