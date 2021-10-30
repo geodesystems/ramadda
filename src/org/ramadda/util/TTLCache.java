@@ -40,7 +40,7 @@ import java.util.List;
 public class TTLCache<KEY, VALUE> {
 
     /** _more_          */
-    private static Object mutex = new Object();
+    private static Object MUTEX = new Object();
 
     /** _more_          */
     private static List<TTLCache> caches = new ArrayList<TTLCache>();
@@ -119,7 +119,7 @@ public class TTLCache<KEY, VALUE> {
         this.timeThreshold   = timeThresholdInMilliseconds;
         this.sizeLimit       = sizeLimit;
         this.updateTimeOnGet = updateTimeOnGet;
-        synchronized (mutex) {
+        synchronized (MUTEX) {
             caches.add(this);
 	    System.err.println("new TTLCache #caches:" + caches.size() +" where:" + where);
             if (ttlRunnable == null) {
@@ -140,6 +140,14 @@ public class TTLCache<KEY, VALUE> {
     }
 
 
+    public static void clearCaches() {
+	synchronized (MUTEX) {
+	    for(TTLCache cache: caches) {
+		cache.clearCache();
+	    }
+	}
+    }
+
     public static void finishedWithCache(TTLCache cache) {
 	if(cache!=null) {
 	    cache.finishedWithCache();
@@ -147,10 +155,12 @@ public class TTLCache<KEY, VALUE> {
     }
 
     private void finishedWithCache() {
-	int sizeBefore = caches.size();
-	caches.remove(this);
-	cache = null;
-	System.err.println("TTLCache.finished:" + sizeBefore +" " + caches.size());
+	synchronized (MUTEX) {
+	    int sizeBefore = caches.size();
+	    caches.remove(this);
+	    cache = null;
+	    System.err.println("TTLCache.finished:" + sizeBefore +" " + caches.size());
+	}
     }
 
 
@@ -171,6 +181,8 @@ public class TTLCache<KEY, VALUE> {
     public void setTimeThreshold(long t) {
         this.timeThreshold = t;
     }
+
+
 
     /**
      * _more_
