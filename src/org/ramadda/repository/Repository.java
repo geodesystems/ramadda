@@ -3641,7 +3641,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	String url = request.toString();
 	if(!url.matches(".*(images|icons|htdocs|/metadata/view).*")) {
 	    if(!url.matches(".*(\\.js|\\.png|\\.gif|favicon.ico)$"))  {
-		System.err.println("url:" + request +" memory:" + (mem2-mem1));
+		System.err.println("url:" + request +" memory:" + mem2 +" " + (mem2-mem1)
+				   +  " cache:" + getEntryManager().getEntryCache().size());
 	    }
 	}
         getLogManager().logRequest(request, (result == null)
