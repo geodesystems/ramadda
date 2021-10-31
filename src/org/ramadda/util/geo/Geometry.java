@@ -17,9 +17,11 @@
 package org.ramadda.util.geo;
 
 
-import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.Json;
 import org.ramadda.util.Utils;
+
+
+import org.ramadda.util.geo.GeoUtils;
 
 import java.awt.geom.*;
 
@@ -74,7 +76,7 @@ public class Geometry {
      * @param coords the coordinates
      */
     public Geometry(String geometryType, List<float[][]> coords) {
-       this.geometryType = geometryType;
+        this.geometryType = geometryType;
         this.coords       = coords;
     }
 
@@ -185,9 +187,16 @@ public class Geometry {
      * @return _more_
      */
     public float[] getCenter() {
-	return getCenter(false);
+        return getCenter(false);
     }
 
+    /**
+     * _more_
+     *
+     * @param debug _more_
+     *
+     * @return _more_
+     */
     public float[] getCenter(boolean debug) {
 
 
@@ -212,6 +221,7 @@ public class Geometry {
         }
         float cLat = minLat + (maxLat - minLat) / 2.0f;
         float cLon = minLon + (maxLon - minLon) / 2.0f;
+
         return new float[] { cLat, cLon };
     }
 

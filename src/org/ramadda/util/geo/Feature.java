@@ -66,8 +66,9 @@ public class Feature {
 
     private Hashtable<String, Object> featureProperties;
 
+    /** _more_          */
     private Hashtable data;
-    
+
     /** _more_ */
     private Hashtable allProperties;
 
@@ -110,26 +111,31 @@ public class Feature {
 
 
     /**
-       Set the Data property.
-
-       @param value The new value for Data
-    **/
-    public void setData (Hashtable value) {
-	data = value;
+     *  Set the Data property.
+     *
+     *  @param value The new value for Data
+     */
+    public void setData(Hashtable value) {
+        data = value;
     }
 
     /**
-       Get the Data property.
-
-       @return The Data
-    **/
-    public Hashtable getData () {
-	return data;
+     *  Get the Data property.
+     *
+     *  @return The Data
+     */
+    public Hashtable getData() {
+        return data;
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String toString() {
-	return "feature:" + data;
+        return "feature:" + data;
     }
 
     /**
@@ -265,7 +271,7 @@ public class Feature {
             }
             dmax = (float) Math.max(dmax,
                                     Utils.getMaxPerpendicularDistance(list,
-								      0, list.size(), null));
+                                        0, list.size(), null));
         }
 
         return dmax;
@@ -302,9 +308,13 @@ public class Feature {
      */
     public Element makeKmlElement(Element parent, String styleUrl,
                                   Rectangle2D.Double bounds) {
-	boolean debug = false;
-	if(debug)
-	    System.out.println("kml:" + getId() +" coords:" + getGeometry().getCoordsString().replaceAll("\n"," "));	
+
+        boolean debug = false;
+        if (debug) {
+            System.out.println(
+                "kml:" + getId() + " coords:"
+                + getGeometry().getCoordsString().replaceAll("\n", " "));
+        }
         Element placemark = KmlUtil.placemark(parent, getId(), "");
         Element geom      = placemark;
         if (geometry.getCoordinates().size() > 1) {
@@ -328,7 +338,7 @@ public class Feature {
                     float x2 = coords[0][i];
                     float y2 = coords[1][i];
                     if (bounds.intersectsLine((double) x1, (double) y1,
-					      (double) x2, (double) y2)) {
+                            (double) x2, (double) y2)) {
                         ok = true;
 
                         break;
@@ -344,7 +354,7 @@ public class Feature {
                                  coords[0][0] + "," + coords[1][0] + ",0 ");
             } else {
                 if (type.equals(Geometry.TYPE_LINESTRING)
-		    || type.equals(Geometry.TYPE_MULTILINESTRING)) {
+                        || type.equals(Geometry.TYPE_MULTILINESTRING)) {
                     KmlUtil.linestring(geom, false, false, coords, true,
                                        stride);
                 } else if (type.equals(Geometry.TYPE_POLYGON)
@@ -354,22 +364,22 @@ public class Feature {
             }
         }
         if ( !featureProperties.isEmpty()
-	     && (featureProperties.get(FeatureCollection.PROP_SCHEMANAME)
-		 != null) && (featureProperties
-			      .get(FeatureCollection
-				   .PROP_SCHEMAID) != null) && (featureProperties
-								.get(FeatureCollection
-								     .PROP_SCHEMADATA) != null)) {
+                && (featureProperties.get(FeatureCollection.PROP_SCHEMANAME)
+                    != null) && (featureProperties
+                        .get(FeatureCollection
+                            .PROP_SCHEMAID) != null) && (featureProperties
+                                .get(FeatureCollection
+                                    .PROP_SCHEMADATA) != null)) {
             String schemaId = featureProperties.get(
-						    FeatureCollection.PROP_SCHEMAID).toString();
+                                  FeatureCollection.PROP_SCHEMAID).toString();
             Hashtable<String, Object> data =
                 (Hashtable<String,
-		 Object>) featureProperties.get(
-						FeatureCollection.PROP_SCHEMADATA);
+                           Object>) featureProperties.get(
+                               FeatureCollection.PROP_SCHEMADATA);
             Element xdata = KmlUtil.makeElement(placemark,
-						KmlUtil.TAG_EXTENDEDDATA);
+                                KmlUtil.TAG_EXTENDEDDATA);
             Element schemaData = KmlUtil.makeElement(xdata,
-						     KmlUtil.TAG_SCHEMADATA);
+                                     KmlUtil.TAG_SCHEMADATA);
             schemaData.setAttribute(KmlUtil.ATTR_SCHEMAURL, "#" + schemaId);
             Iterator<Map.Entry<String, Object>> entries =
                 data.entrySet().iterator();
@@ -388,18 +398,19 @@ public class Feature {
                 }
                 //System.err.println(key+":" + obj.getClass().getName()+":" + value);
                 String fromProps = (String) allProperties.get("map." + key
-							      + "." + value);
+                                       + "." + value);
                 if (fromProps != null) {
                     value = fromProps + " (" + value + ")";
                 }
 
                 Element simple = KmlUtil.makeText(schemaData,
-						  KmlUtil.TAG_SIMPLEDATA, value);
+                                     KmlUtil.TAG_SIMPLEDATA, value);
                 simple.setAttribute(KmlUtil.ATTR_NAME, key);
             }
         }
 
         return placemark;
+
 
     }
 
@@ -421,8 +432,8 @@ public class Feature {
         if ((featureProperties != null) && !featureProperties.isEmpty()) {
             Hashtable<String, Object> data =
                 (Hashtable<String,
-		 Object>) featureProperties.get(
-						FeatureCollection.PROP_SCHEMADATA);
+                           Object>) featureProperties.get(
+                               FeatureCollection.PROP_SCHEMADATA);
             if (data != null) {
                 List<String> schemadata = new ArrayList<String>();
                 Iterator<Map.Entry<String, Object>> entries =

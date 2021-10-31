@@ -473,7 +473,6 @@ public class AcsTypeHandler extends PointTypeHandler {
         String forValue = entry.getValue(IDX_FOR_VALUE, "");
         String forType  = entry.getValue(IDX_FOR_TYPE, "");
 
-
         if (Utils.stringDefined(inValue)) {
             Place place = Place.getPlace(inValue);
             if (place != null) {

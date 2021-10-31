@@ -24,6 +24,7 @@ import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
+import org.ramadda.util.geo.GeoResource;
 import org.ramadda.util.geo.Place;
 
 import org.ramadda.util.Utils;
@@ -166,38 +167,42 @@ public class CensusApiHandler extends RepositoryManager implements RequestHandle
         String        stateId = request.getString("state", (String) null);
         StringBuilder sb      = new StringBuilder();
 
-        List<Place>   places;
-        if (stateId != null) {
-            Place state = Place.getPlace(stateId);
-            sb.append(HtmlUtils.sectionOpen("Census Counties List for "
-                                            + state.getName()));
-            places = new ArrayList<Place>();
-            for (Place county : Place.getPlacesForResource("counties")) {
-                if (county.getFips().startsWith(state.getFips())) {
-                    places.add(county);
-                }
-            }
-
+        List<Place>   places=null;
+	if (stateId != null) {
+            Place state = GeoResource.RESOURCE_STATES.getPlace(stateId);
+	    if(state==null) {
+		sb.append(HtmlUtils.sectionOpen("Census Counties List"));
+		sb.append("Unknown state:" + stateId);
+	    }  else {
+		sb.append(HtmlUtils.sectionOpen("Census Counties List for "
+						+ state.getName()));
+		places = new ArrayList<Place>();
+		for (Place county : GeoResource.RESOURCE_COUNTIES.getPlaces()) {
+		    if (county.getFips().startsWith(state.getFips())) {
+			places.add(county);
+		    }
+		}
+	    }
         } else {
             sb.append(HtmlUtils.sectionOpen("Census States List"));
-            places = Place.getPlacesForResource("states");
+            places = GeoResource.RESOURCE_STATES.getPlaces();
         }
-        sb.append(HtmlUtils.formTable());
-        sb.append(HtmlUtils.row(HtmlUtils.cols("Place", "ID", "FIPS")));
-        for (Place place : places) {
-            String name = place.getName();
-            if (stateId == null) {
-                name = HtmlUtils.href(getRepository().getUrlBase()
-                                      + "/census/states?state="
-                                      + place.getId(), name);
-            }
-            sb.append(HtmlUtils.row(HtmlUtils.cols(name, place.getId(),
-                    place.getFips())));
-        }
-        sb.append(HtmlUtils.formTableClose());
-
+	if(places!=null) {
+	    sb.append(HtmlUtils.formTable());
+	    sb.append(HtmlUtils.row(HtmlUtils.cols("Place", "ID", "FIPS")));
+	    for (Place place : places) {
+		String name = place.getName();
+		if (stateId == null) {
+		    name = HtmlUtils.href(getRepository().getUrlBase()
+					  + "/census/states?state="
+					  + place.getId(), name);
+		}
+		sb.append(HtmlUtils.row(HtmlUtils.cols(name, place.getId(),
+						       place.getFips())));
+	    }
+	    sb.append(HtmlUtils.formTableClose());
+	}
         sb.append(HtmlUtils.sectionClose());
-
         return new Result("", sb);
     }
 

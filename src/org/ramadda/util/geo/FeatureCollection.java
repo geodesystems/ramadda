@@ -20,6 +20,8 @@ package org.ramadda.util.geo;
 
 import org.ramadda.util.Json;
 import org.ramadda.util.KmlUtil;
+
+import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
 
 import org.w3c.dom.CDATASection;
@@ -33,8 +35,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 
 import java.text.DecimalFormat;
-
-import org.ramadda.util.TTLCache;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -93,7 +93,8 @@ public class FeatureCollection {
 
 
     /** _more_ */
-    private static TTLCache<String,  FeatureCollection> cache =  new TTLCache<String, FeatureCollection>(60 * 1000*5);
+    private static TTLCache<String, FeatureCollection> cache =
+        new TTLCache<String, FeatureCollection>(60 * 1000 * 5);
 
 
     /**
@@ -170,14 +171,26 @@ public class FeatureCollection {
         return nameField;
     }
 
-    public static FeatureCollection getFeatureCollection(String path, InputStream is) 
+    /**
+     * _more_
+     *
+     * @param path _more_
+     * @param is _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static FeatureCollection getFeatureCollection(String path,
+            InputStream is)
             throws Exception {
-	FeatureCollection fc = cache.get(path);
-	if(fc==null&& is!=null) {
-	    fc =  makeFeatureCollection(is);
-	    cache.put(path, fc);
-	}
-	return fc;
+        FeatureCollection fc = cache.get(path);
+        if ((fc == null) && (is != null)) {
+            fc = makeFeatureCollection(is);
+            cache.put(path, fc);
+        }
+
+        return fc;
     }
 
 
@@ -212,7 +225,8 @@ public class FeatureCollection {
         Hashtable extraProps = new Hashtable();
         Hashtable<String, Object> collectionProps = new Hashtable<String,
                                                         Object>();
-        EsriShapefile shapefile = new EsriShapefile(file,null, 0.0f);
+        EsriShapefile shapefile = new EsriShapefile(file, null, 0.0f);
+
         return makeFeatureCollection("", "", shapefile, extraProps,
                                      collectionProps);
     }
@@ -237,9 +251,9 @@ public class FeatureCollection {
             throws Exception {
 
         DbaseFile dbfile = shapefile.getDbFile();
-	if(dbfile!=null) {
-	    collectionProps.put("dbfile", dbfile);
-	}
+        if (dbfile != null) {
+            collectionProps.put("dbfile", dbfile);
+        }
         collectionProps.put("shapefile", shapefile);
 
         List<DbaseDataWrapper> fieldDatum =
@@ -257,8 +271,10 @@ public class FeatureCollection {
                 (EsriShapefile.EsriFeature) features.get(i);
             String type = getGeometryType(gf, gf.getNumParts());
             if (type == null) {
-		if(gf.getNumParts()!=0) 
-		    System.out.println("Can't handle feature type " + gf.getClass().toString());
+                if (gf.getNumParts() != 0) {
+                    System.out.println("Can't handle feature type "
+                                       + gf.getClass().toString());
+                }
                 continue;
             }
             List<float[][]> parts =
@@ -318,16 +334,17 @@ public class FeatureCollection {
 
             Feature feature = new Feature(name, geom, featureProps,
                                           collectionProps);
-	    if(fieldDatum!=null) {
-		Hashtable data = new Hashtable();
-		for(DbaseDataWrapper ddw: fieldDatum) {
-		    data.put(ddw.getName(),ddw.getData(i));
-		}
-		feature.setData(data);
-	    }
+            if (fieldDatum != null) {
+                Hashtable data = new Hashtable();
+                for (DbaseDataWrapper ddw : fieldDatum) {
+                    data.put(ddw.getName(), ddw.getData(i));
+                }
+                feature.setData(data);
+            }
             fcfeatures.add(feature);
         }
         fc.setFeatures(fcfeatures);
+
         return fc;
     }
 
@@ -505,6 +522,7 @@ public class FeatureCollection {
                 return feature;
             }
         }
+
         return null;
     }
 

@@ -1,0 +1,382 @@
+/*
+* Copyright (c) 2008-2021 Geode Systems LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+* 
+*     http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+
+package org.ramadda.util.geo;
+
+
+import org.ramadda.util.Bounds;
+import org.ramadda.util.IO;
+import org.ramadda.util.Utils;
+
+import org.w3c.dom.*;
+
+import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.StringUtil;
+import ucar.unidata.xml.XmlUtil;
+
+import java.io.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.List;
+
+
+/**
+ *     Class description
+ *
+ *
+ *     @version        $version$, Tue, Oct 27, '15
+ *     @author         Enter your name here...
+ */
+public class GeoResource {
+
+    /** _more_ */
+    private static final Object MUTEX = new Object();
+
+    /** _more_ */
+    public static final String RESOURCE_ROOT =
+        "/org/ramadda/repository/resources/geo";
+
+
+    //name,id,fips,lat,lon,opt state index,suffix
+
+    /** _more_          */
+    public static final GeoResource RESOURCE_TRACTS =
+        new GeoResource(RESOURCE_ROOT + "/tracts.txt", new int[] { 1,
+            1, 1, 8, 9 }, "");
+
+    /** _more_          */
+    public static final GeoResource RESOURCE_CITIES =
+        new GeoResource(RESOURCE_ROOT + "/cities.txt", new int[] {
+        1, 1, 0, 3, 4, 2, 2
+    }, "");
+
+    /** _more_          */
+    public static final GeoResource RESOURCE_COUNTRIES =
+        new GeoResource(RESOURCE_ROOT + "/countries.txt", new int[] { 3,
+            0, -1, 1, 2, }, "");
+
+    /** _more_          */
+    public static final GeoResource RESOURCE_STATES =
+        new GeoResource(RESOURCE_ROOT + "/states.txt", new int[] { 1,
+            0, 2, 3, 4, }, "", 5);
+
+    /** _more_          */
+    public static final GeoResource RESOURCE_COUNTIES =
+        new GeoResource(RESOURCE_ROOT + "/counties.txt", new int[] {
+        3, 1, 1, 10, 11, -1, 0
+    }, "", 4);
+
+    /** _more_          */
+    public static final GeoResource RESOURCE_SUBDIVISIONS =
+        new GeoResource(RESOURCE_ROOT + "/subdivisions.txt", new int[] {
+        3, 1, 1, 11, 12, -1, 0
+    }, "");
+
+    /** _more_          */
+    public static final GeoResource RESOURCE_PLACES =
+        new GeoResource(RESOURCE_ROOT + "/places.txt", new int[] {
+        3, 1, 1, 12, 13, -1, 0
+    }, "");
+
+    /** _more_          */
+    public static final GeoResource RESOURCE_ZIPCODES =
+        new GeoResource(RESOURCE_ROOT + "/zipcodes.txt", new int[] { 0,
+            0, 0, 3, 4 }, "zip:");
+
+    /** _more_          */
+    public static final GeoResource RESOURCE_ALLLOCATIONS =
+        new GeoResource(RESOURCE_ROOT + "/alllocations.txt", new int[] { 0,
+            0, 0, 1, 2 }, "");
+
+    /** _more_          */
+    public static final GeoResource[] RESOURCES = {
+        RESOURCE_TRACTS, RESOURCE_CITIES, RESOURCE_COUNTRIES, RESOURCE_STATES,
+        RESOURCE_COUNTIES, RESOURCE_SUBDIVISIONS, RESOURCE_PLACES,
+        RESOURCE_ZIPCODES, RESOURCE_ALLLOCATIONS,
+    };
+
+
+    /** _more_ */
+    String id;
+
+    /** _more_ */
+    String base;
+
+    /** _more_ */
+    String file;
+    //name,id,fips,lat,lon,opt state index
+
+    /** _more_ */
+    int[] indices;
+
+    /** _more_ */
+    String prefix;
+
+    /** _more_ */
+    List<Place> places = new ArrayList<Place>();
+
+    /** _more_ */
+    int populationIndex;
+
+    /** _more_ */
+    int population = 0;
+
+    /** _more_ */
+    Hashtable<String, Place> placeMap = new Hashtable<String, Place>();
+
+    /** _more_ */
+    private boolean loaded = false;
+
+    /**
+     * _more_
+     *
+     * @param file _more_
+     * @param indices _more_
+     * @param prefix _more_
+     */
+    public GeoResource(String file, int[] indices, String prefix) {
+        this(file, indices, prefix, -1);
+    }
+
+    /**
+     * _more_
+     *
+     * @param file _more_
+     * @param indices _more_
+     * @param prefix _more_
+     * @param populationIndex _more_
+     */
+    public GeoResource(String file, int[] indices, String prefix,
+                       int populationIndex) {
+        this.base            = new File(file).getName();
+        this.id              = IOUtil.stripExtension(this.base);
+        this.file            = file;
+        this.indices         = indices;
+        this.prefix          = prefix;
+        this.populationIndex = populationIndex;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param id _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static Place getPlaceFromAll(String id) throws Exception {
+        String _id = id.toLowerCase();
+        for (GeoResource resource : RESOURCES) {
+            Place place = resource.getPlace(id);
+            if (place != null) {
+                return place;
+            }
+            place = resource.getPlace(_id);
+            if (place != null) {
+                return place;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * _more_
+     *
+     * @throws Exception _more_
+     */
+    private void init() {
+        if (this.loaded) {
+            return;
+        }
+        try {
+            //      System.err.println("GeoResource:" + id +" loaded");
+            BufferedReader br = new BufferedReader(
+                                    new InputStreamReader(
+                                        IO.getInputStream(
+                                            this.file, GeoResource.class)));
+            int    cnt     = 0;
+            String line    = null;
+            int[]  indices = this.indices;
+            while ((line = br.readLine()) != null) {
+                cnt++;
+                if (line.startsWith("#")) {
+                    continue;
+                }
+                Place place  = new Place();
+                int   suffix = (indices.length >= 7)
+                               ? indices[6]
+                               : -1;
+                place.processLine(StringUtil.split(line, "\t", false, false),
+                                  indices[0], indices[1], indices[2],
+                                  indices[3], indices[4], suffix,
+                                  populationIndex);
+
+                if ((indices.length >= 6) && (indices[5] >= 0)) {
+                    place.setFips(place.getFips().substring(indices[5]));
+                }
+                if (place.getId() != null) {
+                    placeMap.put(place.getId().toLowerCase(), place);
+                }
+                this.places.add(place);
+                if (Utils.stringDefined(place.getFips())) {
+                    placeMap.put(place.getFips(), place);
+                }
+                if (Utils.stringDefined(place.getId())) {
+                    placeMap.put(place.getId().toLowerCase(), place);
+                }
+                if (Utils.stringDefined(place.getName())) {
+                    String _name = place.getName().toLowerCase();
+                    placeMap.put(_name, place);
+                    if (Utils.stringDefined(place.getSuffix())) {
+                        placeMap.put(
+                            _name + "," + place.getSuffix().toLowerCase(),
+                            place);
+                    }
+                }
+                /*
+                if(Utils.stringDefined(this.prefix)) {
+                    String key;
+                    key = this.prefix + place.getFips();
+                    placeMap.put(key.toLowerCase(), place);
+                    key = this.prefix + place.getId();
+                    placeMap.put(key.toLowerCase(), place);
+                    placeMap.put(key, place);
+                    key = this.prefix + place.getName();
+                    placeMap.put(key.toLowerCase(), place);
+                }
+                */
+
+            }
+            this.loaded = true;
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
+    }
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public List<Place> getPlaces() {
+        init();
+
+        return places;
+    }
+
+    /** _more_ */
+    static boolean printKeys = false;
+
+    /**
+     * _more_
+     *
+     * @param key _more_
+     *
+     * @return _more_
+     */
+    public Place getPlace(String key) {
+        init();
+        key = key.toLowerCase();
+        if (printKeys) {
+            for (Enumeration keys =
+                    placeMap.keys(); keys.hasMoreElements(); ) {
+                String k = (String) keys.nextElement();
+                System.out.println("key:" + k + ":");
+            }
+        }
+        printKeys = false;
+
+        //          System.out.println("try:" + key);
+        return placeMap.get(key);
+    }
+
+    /**
+     * _more_
+     */
+    public void debug() {
+        for (Enumeration keys = placeMap.keys(); keys.hasMoreElements(); ) {
+            String k = (String) keys.nextElement();
+            System.out.println("key:" + k + ":");
+        }
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void main(String[] args) throws Exception {
+        for (int i = 0; i < 10; i++) {
+            for (GeoResource resource : RESOURCES) {
+                resource.loaded = false;
+            }
+            Place.cnt = 0;
+            Runtime.getRuntime().gc();
+            Runtime.getRuntime().gc();
+            Runtime.getRuntime().gc();
+            int         mem1   = Utils.getUsedMemory();
+            List<Place> places = new ArrayList<Place>();
+            Place.getPlace("test");
+            Runtime.getRuntime().gc();
+            Runtime.getRuntime().gc();
+            Runtime.getRuntime().gc();
+            int mem2 = Utils.getUsedMemory();
+            System.err.println("#:" + Place.cnt + " mem:" + (mem2 - mem1));
+        }
+        if (true) {
+            return;
+        }
+
+        System.err.println(Place.search("boulder", 50, null, false));
+        if (true) {
+            return;
+        }
+        List<Place> places = null;
+        //        List<Place> places = getPlaces();
+        if (places == null) {
+            System.err.println("no resource:");
+
+
+            return;
+        }
+        System.out.println("#name,lat,lon");
+        for (Place place : places) {
+            if (place.getFips() != null) {
+                String label = place.getName();
+                if (place.getSuffix() != null) {
+                    label += "," + place.getSuffix();
+                }
+                System.out.println(label + "\t" + place.getLatitude() + "\t"
+                                   + place.getLongitude());
+            }
+        }
+    }
+
+
+
+}
