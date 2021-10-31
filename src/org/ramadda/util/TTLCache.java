@@ -121,7 +121,7 @@ public class TTLCache<KEY, VALUE> {
         this.updateTimeOnGet = updateTimeOnGet;
         synchronized (MUTEX) {
             caches.add(this);
-	    System.err.println("new TTLCache #caches:" + caches.size() +" where:" + where);
+	    //	    System.err.println("new TTLCache #caches:" + caches.size() +" where:" + where);
             if (ttlRunnable == null) {
                 ttlRunnable = new Runnable() {
                     public void run() {
