@@ -30,8 +30,6 @@ https://geodesystems.com/repository/entry/show/Home/Explore/Miscellany/Structure
 https://geodesystems.com/repository/entry/show/Home/Explore/Miscellany/Structured+Lists?entryid=70ff94b8-9c97-4d78-ba09-93c4c108df61
 https://geodesystems.com/repository/entry/show/Home/Explore/communityRAMADDA/Boulder+Stuff/Boulder+Data+Wiki?entryid=79f24329-8c98-4d15-9804-821a70bfb606
 https://geodesystems.com/repository/entry/show/Home/Explore/communityRAMADDA/Boulder+Stuff/Southeast+Boulder+Neighborhoods+Association+-+SEBNA?entryid=f5d97663-3e72-459d-b848-c975c9bd8e7c
-https://geodesystems.com/repository/entry/show/Home/Explore/communityRAMADDA/Teaching+Resources/Metadata+Table+Display?entryid=ef57c2e0-3731-46d9-b9c2-21b998bcc7dc
-https://geodesystems.com/repository/entry/show/Home/Explore/communityRAMADDA/Teaching+Resources/Mutliple+Repository+Entry+Listing?entryid=1e894a0a-9e0a-4c87-a8ce-ea89b3f953b5
 https://geodesystems.com/repository/entry/show/Home/Explore/communityRAMADDA?entryid=41766a05-fdfe-4224-8615-59c24c54241c
 https://geodesystems.com/repository/entry/show/Home/Explore/geoRAMADDA/Charts%2C+Maps+and+Search/Animated+Aircraft+Track+Data?output=points.product&entryid=5be1452b-330c-4fba-841a-a5a9bd46b2a6&numpoints=1000&product=points.json
 https://geodesystems.com/repository/entry/show/Home/Explore/geoRAMADDA/Charts%2C+Maps+and+Search/General+purpose+file+viewer?output=wiki.view&entryid=a98aa183-939b-471d-b31d-382e10657f2f
