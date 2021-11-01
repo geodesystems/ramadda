@@ -38,6 +38,7 @@ proc recurse {id {name init}} {
 	if {$line==""} continue;
 	foreach     {name id} [split $line ,] break
 	regsub -all {[/ .'\",]+} $name _ clean
+	if {[regexp {synth:} $id]}  continue;
 	if {$id!="82704951-f788-420c-ba8e-9ac7567ffebe" && $id!="493b2c22-47fb-41a2-bbba-8a758554613b" && $id!="41766a05-fdfe-4224-8615-59c24c54241c" && 	    $id !="59324c53-f8ab-4d38-a027-3aa8d7fc0513"} {
 
 	    recurse $id $name

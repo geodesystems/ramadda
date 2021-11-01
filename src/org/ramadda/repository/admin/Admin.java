@@ -2232,6 +2232,7 @@ public class Admin extends RepositoryManager {
      * @throws Exception _more_
      */
     private void appendMemory(Appendable sb) throws Exception {
+	Runtime.getRuntime().gc();
         DecimalFormat fmt        = new DecimalFormat("#0");
         double        maxMemory  = (double) Runtime.getRuntime().maxMemory();
         double        freeMemory = (double) Runtime.getRuntime().freeMemory();
