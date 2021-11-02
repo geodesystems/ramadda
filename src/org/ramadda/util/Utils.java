@@ -299,12 +299,19 @@ public class Utils extends IO {
      *
      * @return _more_
      */
-    public static int getUsedMemory() {
+    public static double getUsedMemory() {
         double freeMemory  = (double) Runtime.getRuntime().freeMemory();
         double totalMemory = (double) Runtime.getRuntime().totalMemory();
         double usedMemory  = (totalMemory - freeMemory);
+	int i =    (int) (usedMemory / 1000000*10);
+	return (double)(i/10.0);
+    }
 
-        return (int) (usedMemory / 1000000);
+    public static double decimals(double d, int decimals) {
+	if(decimals==0) return (int)d;
+	int i =    (int) (d*Math.pow(10,decimals));
+	return (double)(i/Math.pow(10,decimals));
+
     }
 
     /**
@@ -1334,6 +1341,16 @@ public class Utils extends IO {
 
         return l;
     }
+
+    public static List getValues(Hashtable properties) {
+        List l = new ArrayList();
+        for (Enumeration keys = properties.keys(); keys.hasMoreElements(); ) {
+            Object key = keys.nextElement();
+            l.add(properties.get(key));
+        }
+
+        return l;
+    }    
 
 
     /**
@@ -3244,6 +3261,7 @@ public class Utils extends IO {
 
         return h;
     }
+
 
     /**
      * _more_
