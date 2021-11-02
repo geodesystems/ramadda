@@ -795,7 +795,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
      */
     public static String space(int cnt) {
         if (cnt == 1) {
-            return " ";
+            return "&nbsp;";
         }
         if (cnt == 2) {
             return ENTITY_NBSP2;
@@ -2687,6 +2687,11 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return open(TAG_FORM, attr(ATTR_ACTION, url) + " " + extra);
     }
 
+
+    public static void form(Appendable sb, String url) throws Exception {
+        open(sb,TAG_FORM, attr(ATTR_ACTION, url));
+    }    
+
     /**
      * _more_
      *
@@ -3339,10 +3344,20 @@ public class HtmlUtils implements HtmlUtilsConstants {
      */
     public static String select(String name, List values, List selected,
                                 String extra, int maxLength) {
-        StringBuilder sb = new StringBuilder();
+	try {
+	    StringBuilder sb = new StringBuilder();
+	    select(sb, name, values, selected, extra,maxLength);
+	    return sb.toString();
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
+    }
+    
+
+    public static void select(Appendable sb, String name, List values, List selected,
+				    String extra, int maxLength) throws Exception {
+
         String        attrs;
-
-
         if (extra.indexOf(ATTR_CLASS) >= 0) {
             attrs = attrs(ATTR_NAME, name);
         } else {
@@ -3363,11 +3378,10 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
         HashSet seenSelected = new HashSet();
         for (int i = 0; i < values.size(); i++) {
-            StringBuilder attrSB = new StringBuilder();
             Object        obj    = values.get(i);
             String        value;
             String        label;
-            String        extraAttr = "";
+            String        extraAttr = null;
             if (obj instanceof TwoFacedObject) {
                 TwoFacedObject tfo = (TwoFacedObject) obj;
                 value = tfo.getId().toString();
@@ -3377,7 +3391,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
                 value = selector.id;
                 label = selector.label;
                 if (selector.attr != null) {
-                    attrSB.append(selector.attr);
+		    extraAttr = selector.attr;
                 }
                 if (Utils.stringDefined(selector.icon)) {
                     String style = "";
@@ -3398,35 +3412,37 @@ public class HtmlUtils implements HtmlUtilsConstants {
             } else {
                 value = label = obj.toString();
             }
-
-            String selectedAttr = "";
-            if ((selected != null)
-                    && (selected.contains(value) || selected.contains(obj))) {
-                if ( !seenSelected.contains(value)) {
-                    selectedAttr = attrs(ATTR_SELECTED, VALUE_SELECTED);
-                    seenSelected.add(value);
-                }
-            }
             if (label.length() > maxLength) {
                 label = "..." + label.substring(label.length() - maxLength);
             }
-            if (label.equals("hr")) {
-                sb.append(hr());
 
+            if (label.equals("hr")) {
+		sb.append(hr());
                 continue;
             }
 
-            attrSB.append(selectedAttr);
-            attrSB.append(extraAttr);
-            //attrs(attrSB, ATTR_TITLE, value, ATTR_VALUE, value);
-            attrs(attrSB, ATTR_VALUE, value);
-            sb.append(tag(TAG_OPTION, attrSB.toString(), label));
-            sb.append("\n");
-        }
-        sb.append(close(TAG_SELECT));
-        sb.append("\n");
+	    sb.append("<option ");
+	    if(extraAttr!=null) {
+		sb.append(" ");
+		sb.append(extraAttr);
+		sb.append(" ");
+	    }
 
-        return sb.toString();
+            if ((selected != null)
+                    && (selected.contains(value) || selected.contains(obj))) {
+                if ( !seenSelected.contains(value)) {
+		    sb.append(" selected ");
+                    seenSelected.add(value);
+                }
+            }
+	    if(!value.equals(label))
+		attr(sb,ATTR_VALUE, value);
+	    sb.append(">");
+	    sb.append(label);
+	    sb.append("</option>");
+        }
+        sb.append("</select>");
+        sb.append("\n");
     }
 
 
