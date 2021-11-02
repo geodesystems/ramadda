@@ -95,7 +95,7 @@ public class BlobTypeHandler extends GenericTypeHandler {
      *
      * @throws Exception _more_
      */
-    protected Hashtable getProperties(Entry entry) throws Exception {
+    public Hashtable getProperties(Entry entry) throws Exception {
         if (entry == null) {
             return new Hashtable();
         }

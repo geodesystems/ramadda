@@ -7092,8 +7092,6 @@ public class TypeHandler extends RepositoryManager {
     private HashSet getEnumValuesInner(Request request, Column column,
                                        Entry entry)
             throws Exception {
-
-
         Clause clause = getEnumValuesClause(column, entry);
         if (request != null) {
             List<Clause> ands = new ArrayList<Clause>();
@@ -7128,7 +7126,6 @@ public class TypeHandler extends RepositoryManager {
         if (set != null) {
             return set;
         }
-
 
         long t1 = System.currentTimeMillis();
         Statement stmt = getRepository().getDatabaseManager().select(

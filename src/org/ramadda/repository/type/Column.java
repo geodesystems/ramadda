@@ -3300,7 +3300,6 @@ public class Column implements DataTypes, Constants, Cloneable {
     public void addToSearchForm(Request request, Appendable formBuffer,
                                 List<Clause> where, Entry entry)
             throws Exception {
-
         if ( !getCanSearch()) {
             return;
         }
@@ -3308,7 +3307,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         String       searchArg  = getSearchArg();
         String       columnName = getFullName();
 
-        List<Clause> tmp        = new ArrayList<Clause>(where);
+        List<Clause> tmp        = where!=null?new ArrayList<Clause>(where):null;
         String       widget     = "";
         String       widgetId   = searchArg.replaceAll("\\.", "_");
         if (isType(DATATYPE_LATLON)) {
@@ -3372,10 +3371,6 @@ public class Column implements DataTypes, Constants, Cloneable {
                 Misc.newList(TypeHandler.ALL_OBJECT, "True", "False"),
                 request.getString(searchArg, ""),
                 HtmlUtils.cssClass("search-select"));
-            //        } else if (isType(DATATYPE_ENUMERATION)) {
-            //            List tmpValues = Misc.newList(TypeHandler.ALL_OBJECT);
-            //            tmpValues.addAll(enumValues);
-            //            widget = HtmlUtils.select(searchArg, tmpValues, request.getString(searchArg));
         } else if (isType(DATATYPE_ENUMERATIONPLUS)
                    || isType(DATATYPE_ENUMERATION)) {
             List tmpValues;
@@ -3385,7 +3380,8 @@ public class Column implements DataTypes, Constants, Cloneable {
                 tmpValues = Misc.newList(TypeHandler.ALL_OBJECT);
             }
             List<TwoFacedObject> values = typeHandler.getEnumValues(request,
-                                              this, entry);
+								    this, entry);
+
             for (TwoFacedObject o : values) {
                 TwoFacedObject tfo = null;
                 if (enumValues != null) {
@@ -3407,21 +3403,23 @@ public class Column implements DataTypes, Constants, Cloneable {
                 selectExtra += HtmlUtils.cssClass("search-select");
             }
 
+	    //	    if(true) return;
             //            System.err.println(getName() + " values=" + tmpValues);
-            widget = "";
+	    StringBuilder tmpb = new StringBuilder();
             for (int i = 0; i < numberOfSearchWidgets; i++) {
                 String arg = searchArg + ((i == 0)
                                           ? ""
                                           : "" + i);
-                widget += HtmlUtils.select(
-                    arg, tmpValues,
-                    request.get(arg, new ArrayList<String>()),
-                    selectExtra + ((i == 0)
-                                   ? HU.attr("id", widgetId)
-                                   : ""));
-                widget += " ";
+                HtmlUtils.select(tmpb,
+				 arg, tmpValues,
+				 request.get(arg, new ArrayList<String>()),
+				 selectExtra + ((i == 0)
+						? HU.attr("id", widgetId)
+						: ""),Integer.MAX_VALUE);
+		tmpb.append(" ");
             }
-
+	    widget =tmpb.toString();
+	    //	    System.err.println("widget:" + widget.length() +" " + tmpValues.size());
         } else if (isNumeric()) {
             String toId = Utils.makeID(searchArg + "_to");
             String expr = HtmlUtils.select(
@@ -3477,7 +3475,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                                       getDatabaseManager().getIterator(
                                           statement), 1);
                 long t3 = System.currentTimeMillis();
-                //                System.err.println("TIME:" + (t2-t1) + " " + (t3-t2));
+		System.err.println("TIME:" + (t2-t1) + " " + (t3-t2));
                 List<TwoFacedObject> list = new ArrayList();
                 for (int i = 0; i < values.length; i++) {
                     if (values[i] == null) {
@@ -3559,11 +3557,11 @@ public class Column implements DataTypes, Constants, Cloneable {
             widget += HU.makeShowHideBlock("File...", file, visible);
         }
 
-
-        formBuffer.append(typeHandler.formEntry(request, getLabel() + ":",
-                "<table cellspacing=0 cellpadding=0 border=0>"
-                + HtmlUtils.row(HtmlUtils.cols(widget, suffix))
-                + "</table>"));
+        typeHandler.formEntry(formBuffer, request, getLabel() + ":",
+			      Utils.stringDefined(suffix)?
+			      "<table cellspacing=0 cellpadding=0 border=0>"
+			      + HtmlUtils.row(HtmlUtils.cols(widget, suffix))
+			      + "</table>":widget);
         formBuffer.append("\n");
     }
 
