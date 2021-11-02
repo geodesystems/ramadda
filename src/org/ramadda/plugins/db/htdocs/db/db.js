@@ -98,12 +98,34 @@ var DB =  {
         });
     },
 
-    rowClick:function(event, divId, popupId, url) {
-	row = GuiUtils.getDomObject(divId);
-	if(!row) {
-            return;
-	}
-	GuiUtils.loadXML( url, DB.handleXml,{divId:divId,popupId:popupId});
+    rowClick:function(entryId, dbid) {
+	let url = ramaddaBaseUrl +"/entry/show?entryid=" + entryId+"&dbid=" + dbid +"&db.entry=true&result=xml";
+	GuiUtils.loadXML( url, DB.handleXml,{divId:"div_" + dbid});
+    },
+    initTable:function(id) {
+	let table =$("#" + id);
+	let entryId = table.attr("entryid");
+	let even = true;
+	table.find("input").each(function(){
+	    let id = $(this).attr("id");
+	    $(this).attr("onClick","checkboxClicked(event,'dbid_selected','" + id+"')");
+	});
+
+	table.find("tr").each(function(){
+	    $(this).attr("title","Click to view details");
+	    $(this).attr("valign","top");	    
+	    $(this).addClass(even?"ramadda-row-even" :"ramadda-row-odd");
+	    $(this).addClass("dbrow");
+	    even=!even;
+	    let dbRowId = $(this).attr("dbrowid");
+	    if(!dbRowId) return;
+	    let tds=	$(this).find("td");
+	    tds.click(function() {
+		//Skip the checkbox
+		if($(this).find("input").length>0) return;
+		DB.rowClick(entryId, dbRowId);
+	    });
+	});
     },
     addUrlShowingForm:function(args) {
 	var embed = "{{db entry=\""+ args.entryId +"\" ";
@@ -145,24 +167,11 @@ var DB =  {
 
     handleXml:function(request,args) {
 	var divId = args.divId;
-	var popupId = args.popupId;
 	var src = $("#" + divId);
-	var popup = $("#" +popupId);
 	var xmlDoc=request.responseXML.documentElement;
-	text = getChildText(xmlDoc);
-	var call = "DB.hidePopup(\'" + popupId +"\');";
-	popup.html("<div><table width=100%><tr valign=top><td>" +
-		   HtmlUtils.getIconImage(icon_close,["onmousedown", call,"id","tooltipclose"]) +"</td><td>" + text+"</td></table></div>");
-
-	popup.show();
-	popup.position({
-            of: src,
-            my: "left top",
-            at: "left bottom",
-            collision: "none none"
-        });
-	popup.show();
-
+	let html = HU.div([STYLE,HU.css("max-height","600px","overflow-y","auto","max-width","500px","overflow-x","auto")],
+			  getChildText(xmlDoc));
+	HU.makeDialog({content:html,anchor:src});
     },
 
     stickyDragEnd:function(id, url) {

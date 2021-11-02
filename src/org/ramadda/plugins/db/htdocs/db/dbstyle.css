@@ -113,7 +113,7 @@
    overflow-x: auto;
 }
 
-.dbtablecell {
+.dbcell {
   max-height:200px;
   overflow-y: auto;
 }
