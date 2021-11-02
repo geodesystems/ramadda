@@ -297,7 +297,6 @@ public class AcsTypeHandler extends PointTypeHandler {
                 var.setSkip(skip);
                 if (index >= 0) {
                     var.setDependsIndex(index);
-
                 }
                 vars.add(var);
             }

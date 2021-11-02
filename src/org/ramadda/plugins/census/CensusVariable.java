@@ -36,8 +36,6 @@ import java.util.List;
 
 
 
-/**
- */
 
 /**
  *     Class description
@@ -47,12 +45,6 @@ import java.util.List;
  *     @author         Enter your name here...
  */
 public class CensusVariable implements Comparable, Cloneable {
-
-    /** _more_ */
-    private static HashSet<String> conceptsSeen = new HashSet<String>();
-
-    /** _more_ */
-    private static List<String> concepts = new ArrayList<String>();
 
     /** _more_ */
     public static final String PATTERNS =
@@ -69,8 +61,6 @@ public class CensusVariable implements Comparable, Cloneable {
     private static List<CensusVariable> variables =
         new ArrayList<CensusVariable>();
 
-
-
     /** _more_ */
     private String id;
 
@@ -82,9 +72,6 @@ public class CensusVariable implements Comparable, Cloneable {
 
     /** _more_ */
     private String concept;
-
-    /** _more_ */
-    private String corpus;
 
     /** _more_ */
     private int dependsIndex = -1;
@@ -105,14 +92,12 @@ public class CensusVariable implements Comparable, Cloneable {
         this.concept   = concept.replace(conceptId + ".", "").trim();
         this.id        = id;
         this.label     = label;
-
-        if ( !conceptsSeen.contains(conceptId)) {
-            conceptsSeen.add(conceptId);
-            concepts.add(conceptId);
-        }
-        corpus = Utils.concatString(id, "-", label, "-",
-                                    concept).toLowerCase();
     }
+
+    public String getCorpus() {
+	return Utils.concatString(id, "-", label, "-", concept).toLowerCase();
+    }
+	
 
     /**
      * _more_
@@ -153,6 +138,9 @@ public class CensusVariable implements Comparable, Cloneable {
     private static Hashtable<String, CensusVariable> getVariableMap()
             throws Exception {
         if (variableMap == null) {
+	    //	    Runtime.getRuntime().gc();
+	    double mem1 = Utils.getUsedMemory();
+
             synchronized (MUTEX) {
                 if (variableMap != null) {
                     return variableMap;
@@ -170,6 +158,7 @@ public class CensusVariable implements Comparable, Cloneable {
                         AcsFile.class);
                 long     t2       = System.currentTimeMillis();
                 Element  root     = XmlUtil.getRoot(xml);
+		xml = null;
                 long     t3       = System.currentTimeMillis();
                 Element  vars     = XmlUtil.findChild(root, "vars");
                 NodeList children = XmlUtil.getElements(vars, "var");
@@ -180,9 +169,9 @@ public class CensusVariable implements Comparable, Cloneable {
                     String  label  = XmlUtil.getAttribute(item, "label");
                     String concept = XmlUtil.getAttribute(item, "concept");
                     CensusVariable var = new CensusVariable(id, label,
-                                             concept);
+							    concept);
                     tmp.put(var.id, var);
-                    if (var.corpus.matches(PATTERNS)) {
+                    if (var.getCorpus().matches(PATTERNS)) {
                         lastVars.add(var);
                     } else {
                         firstVars.add(var);
@@ -196,7 +185,11 @@ public class CensusVariable implements Comparable, Cloneable {
                 variableMap = tmp;
                 long t4 = System.currentTimeMillis();
                 //            Utils.printTimes("CensusVariable:", t1,t2,t3,t4);
+		vars = null;children=null;root=null;
             }
+	    //	    Runtime.getRuntime().gc();
+	    double mem2 = Utils.getUsedMemory();
+	    //	    System.err.println("census delta:" + Utils.decimals(mem2-mem1,1));
         }
 
         return variableMap;
@@ -249,6 +242,7 @@ public class CensusVariable implements Comparable, Cloneable {
                     || (concept.indexOf(s) >= 0)) {
                 return true;
             }
+	    String corpus = getCorpus();
             if (corpus.matches(s) || (corpus.indexOf(s) >= 0)) {
                 return true;
             }
@@ -274,17 +268,6 @@ public class CensusVariable implements Comparable, Cloneable {
     public String getLabel() {
         return label;
     }
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public String getCorpus() {
-        return corpus;
-    }
-
 
     /**
      * _more_
