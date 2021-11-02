@@ -190,6 +190,20 @@ public class RepositoryManager implements RepositorySource, Constants,
         }
     }
 
+    public void formEntry(Appendable sb, Request request, String label, String contents) throws Exception {
+        if (request.isMobile()) {
+            sb.append("<tr><td><div class=\"formlabel\">");
+	    sb.append(label);
+	    sb.append("</div>");
+	    sb.append(contents);
+	    sb.append("</td></tr>");
+        } else {
+            HtmlUtils.formEntry(sb, label, contents);
+        }
+    }
+
+
+
     public String formEntry(Request request, String label) {
 	return "<tr><td colspan=2 class=ramadda-form-header><div style='font-weight:bold;margin-left:10px;'>" + label + "</b></td></tr>";
     }
