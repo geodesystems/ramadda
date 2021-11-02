@@ -16,23 +16,17 @@
 
 package org.ramadda.util.geo;
 
-
-import org.ramadda.util.Bounds;
 import org.ramadda.util.IO;
+import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
-
-import org.w3c.dom.*;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -46,13 +40,11 @@ import java.util.List;
  */
 public class GeoResource {
 
-    /** _more_ */
-    private static final Object MUTEX = new Object();
+    private static boolean debugMemory =false;
 
     /** _more_ */
     public static final String RESOURCE_ROOT =
         "/org/ramadda/repository/resources/geo";
-
 
     //name,id,fips,lat,lon,opt state index,suffix
 
@@ -113,6 +105,7 @@ public class GeoResource {
     };
 
 
+
     /** _more_ */
     String id;
 
@@ -129,8 +122,6 @@ public class GeoResource {
     /** _more_ */
     String prefix;
 
-    /** _more_ */
-    List<Place> places = new ArrayList<Place>();
 
     /** _more_ */
     int populationIndex;
@@ -138,11 +129,11 @@ public class GeoResource {
     /** _more_ */
     int population = 0;
 
-    /** _more_ */
-    Hashtable<String, Place> placeMap = new Hashtable<String, Place>();
 
     /** _more_ */
-    private boolean loaded = false;
+    private static TTLCache<String, Hashtable<String, Place>> cache =
+        new TTLCache<String, Hashtable<String, Place>>(1000*60*10);
+
 
     /**
      * _more_
@@ -204,16 +195,21 @@ public class GeoResource {
      *
      * @throws Exception _more_
      */
-    private void init() {
-        if (this.loaded) {
-            return;
+    private synchronized Hashtable<String, Place> init() {
+	Hashtable<String, Place> placeMap = cache.get(this.id);
+        if (placeMap!=null) {
+            return placeMap;
         }
         try {
-            //      System.err.println("GeoResource:" + id +" loaded");
-            BufferedReader br = new BufferedReader(
-                                    new InputStreamReader(
-                                        IO.getInputStream(
-                                            this.file, GeoResource.class)));
+	    double mem1=0;
+	    placeMap = new Hashtable<String, Place>();
+	    if(debugMemory) {
+		Runtime.getRuntime().gc();
+		mem1 = Utils.getUsedMemory();
+	    }
+
+	    InputStream in = IO.getInputStream(this.file, GeoResource.class);
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
             int    cnt     = 0;
             String line    = null;
             int[]  indices = this.indices;
@@ -237,7 +233,7 @@ public class GeoResource {
                 if (place.getId() != null) {
                     placeMap.put(place.getId().toLowerCase(), place);
                 }
-                this.places.add(place);
+		//                this.places.add(place);
                 if (Utils.stringDefined(place.getFips())) {
                     placeMap.put(place.getFips(), place);
                 }
@@ -267,12 +263,24 @@ public class GeoResource {
                 */
 
             }
-            this.loaded = true;
+	    br = null;
+	    in.close();
+	    cache.put(this.id,placeMap);
+	    if(debugMemory) {
+		Runtime.getRuntime().gc();
+		double mem2 = Utils.getUsedMemory();
+		System.err.println("GeoResource:" + id +" #:" + this.getPlaces().size()+" memory: " + Utils.decimals(mem2-mem1,1));
+	    }
+	    return placeMap;
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
     }
 
+
+    public Hashtable<String, Place> getPlaceMap() {
+	return init();
+    }
 
     /**
      * _more_
@@ -280,9 +288,7 @@ public class GeoResource {
      * @return _more_
      */
     public List<Place> getPlaces() {
-        init();
-
-        return places;
+        return (List<Place>)Utils.getValues(getPlaceMap());
     }
 
     /** _more_ */
@@ -296,7 +302,7 @@ public class GeoResource {
      * @return _more_
      */
     public Place getPlace(String key) {
-        init();
+	Hashtable<String, Place> placeMap = getPlaceMap();
         key = key.toLowerCase();
         if (printKeys) {
             for (Enumeration keys =
@@ -315,6 +321,7 @@ public class GeoResource {
      * _more_
      */
     public void debug() {
+	Hashtable<String, Place> placeMap = getPlaceMap();
         for (Enumeration keys = placeMap.keys(); keys.hasMoreElements(); ) {
             String k = (String) keys.nextElement();
             System.out.println("key:" + k + ":");
@@ -331,50 +338,19 @@ public class GeoResource {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        for (int i = 0; i < 10; i++) {
-            for (GeoResource resource : RESOURCES) {
-                resource.loaded = false;
-            }
-            Place.cnt = 0;
-            Runtime.getRuntime().gc();
-            Runtime.getRuntime().gc();
-            Runtime.getRuntime().gc();
-            int         mem1   = Utils.getUsedMemory();
+	debugMemory = true;
+        for (int i = 0; i < 60; i++) {
+            double        mem1   = Utils.getUsedMemory();
             List<Place> places = new ArrayList<Place>();
+	    System.err.println("testing");
             Place.getPlace("test");
             Runtime.getRuntime().gc();
-            Runtime.getRuntime().gc();
-            Runtime.getRuntime().gc();
-            int mem2 = Utils.getUsedMemory();
-            System.err.println("#:" + Place.cnt + " mem:" + (mem2 - mem1));
+            double mem2 = Utils.getUsedMemory();
+	    ucar.unidata.util.Misc.sleepSeconds(1);
+	    //            System.err.println("#:" + Place.cnt + " mem:" + (mem2 - mem1));
         }
-        if (true) {
-            return;
-        }
-
+	System.exit(0);
         System.err.println(Place.search("boulder", 50, null, false));
-        if (true) {
-            return;
-        }
-        List<Place> places = null;
-        //        List<Place> places = getPlaces();
-        if (places == null) {
-            System.err.println("no resource:");
-
-
-            return;
-        }
-        System.out.println("#name,lat,lon");
-        for (Place place : places) {
-            if (place.getFips() != null) {
-                String label = place.getName();
-                if (place.getSuffix() != null) {
-                    label += "," + place.getSuffix();
-                }
-                System.out.println(label + "\t" + place.getLatitude() + "\t"
-                                   + place.getLongitude());
-            }
-        }
     }
 
 
