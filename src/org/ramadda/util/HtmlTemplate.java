@@ -61,6 +61,10 @@ public class HtmlTemplate {
     /** _more_ */
     private String template;
 
+    private HtmlTemplate prefix;
+    private HtmlTemplate suffix;    
+
+    
     /** _more_ */
     private String path;
 
@@ -122,6 +126,26 @@ public class HtmlTemplate {
         }
 
     }
+
+    public HtmlTemplate(HtmlTemplate parent, 
+                        String t) {
+	this.propertyProvider = parent.propertyProvider;
+	this.path             = parent.path;
+	properties = parent.properties;
+	template = t;
+	name = (String) properties.get("name");
+	id   = (String) properties.get("id");
+	wikify  =Utils.getProperty(properties,"wikify",false);
+	String tmp = (String) properties.get(PROP_PROPERTIES);
+	if (tmp != null) {
+	    propertyIds = StringUtil.split(tmp, ",", true, true);
+	}
+	if (name == null) {
+	    name = IOUtil.stripExtension(IOUtil.getFileTail(path));
+	}
+    }
+
+
 
     /**
      * _more_
@@ -262,6 +286,45 @@ public class HtmlTemplate {
 
         return v.equals("true");
     }
+
+/**
+Set the Prefix property.
+
+@param value The new value for Prefix
+**/
+public void setPrefix (HtmlTemplate value) {
+	prefix = value;
+}
+
+/**
+Get the Prefix property.
+
+@return The Prefix
+**/
+public HtmlTemplate getPrefix () {
+	return prefix;
+}
+
+
+
+/**
+Set the Suffix property.
+
+@param value The new value for Suffix
+**/
+public void setSuffix (HtmlTemplate value) {
+	suffix = value;
+}
+
+/**
+Get the Suffix property.
+
+@return The Suffix
+**/
+public HtmlTemplate getSuffix () {
+	return suffix;
+}
+
 
 
 }
