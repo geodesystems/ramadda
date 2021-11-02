@@ -76,11 +76,8 @@ public class Place {
      * _more_
      */
     public Place() {
-        cnt++;
     }
 
-    /** _more_ */
-    public static int cnt = 0;
 
     /**
      * _more_
@@ -96,7 +93,6 @@ public class Place {
         this.latitude  = lat;
         this.longitude = lon;
     }
-
 
 
     /**
@@ -182,7 +178,6 @@ public class Place {
     public String getSuffix() {
         return suffix;
     }
-
 
 
     /**
