@@ -393,25 +393,42 @@ public class PageHandler extends RepositoryManager {
      */
     public void decorateResult(Request request, Result result)
             throws Exception {
+	String html = decorateResult(request, result,true,true);
+	if(html!=null) {
+	    result.setContent(html);
+	}
+    }
+
+
+    public String decorateResult(Request request, Result result, boolean prefix, boolean suffix)
+            throws Exception {	
 
         long t0 = System.currentTimeMillis();
         if ( !request.get(ARG_DECORATE, true)) {
-            return;
+            return null;
         }
         Repository   repository   = getRepository();
         Entry        currentEntry = getSessionManager().getLastEntry(request);
-        String       template     = null;
-        HtmlTemplate htmlTemplate = getTemplate(request, currentEntry);
+        HtmlTemplate parentTemplate = getTemplate(request, currentEntry);
         if (request.isMobile() && !request.defined(ARG_TEMPLATE)) {
-            if ( !htmlTemplate.getTemplateProperty("mobile", false)) {
-                htmlTemplate = getMobileTemplate();
+            if ( !parentTemplate.getTemplateProperty("mobile", false)) {
+                parentTemplate = getMobileTemplate();
             }
         }
-        template = htmlTemplate.getTemplate();
+        HtmlTemplate htmlTemplate = parentTemplate;
+
+	if(prefix && suffix) {
+	} else if(prefix) {
+	    htmlTemplate = htmlTemplate.getPrefix();
+	} else {
+	    htmlTemplate = htmlTemplate.getSuffix();
+	}
+
+	String template = htmlTemplate.getTemplate();
         String       systemMessage =
             getRepository().getSystemMessage(request);
 
-        String       jsContent     = getTemplateJavascriptContent();
+
         String entryHeader = (String) result.getProperty(PROP_ENTRY_HEADER,
                                  "");
         String entryFooter = (String) result.getProperty(PROP_ENTRY_FOOTER,
@@ -422,25 +439,33 @@ public class PageHandler extends RepositoryManager {
 
         StringBuilder contents = new StringBuilder();
 
-        if ((systemMessage != null) && (systemMessage.length() > 0)) {
-            HU.div(contents, systemMessage,
-                          HU.cssClass("ramadda-system-message"));
-        }
+	String registerMessage = "";
+	if(prefix) {
+	    if ((systemMessage != null) && (systemMessage.length() > 0)) {
+		HU.div(contents, systemMessage,
+		       HU.cssClass("ramadda-system-message"));
+	    }
+	    if ( !getAdmin().isRegistered()
+		 && getAdmin().getInstallationComplete()) {
+		if ( !getRepository().getProperty("ramadda.hidepoweredby",
+						  false)) {
+		    if ( !htmlTemplate.hasMacro(MACRO_REGISTER)) {
+			contents.append(REGISTER_MESSAGE);
+		    } else {
+			registerMessage = REGISTER_MESSAGE;
+		    }
+		}
+	    }
+	}
 
-        String registerMessage = "";
-        if ( !getAdmin().isRegistered()
-                && getAdmin().getInstallationComplete()) {
-            if ( !getRepository().getProperty("ramadda.hidepoweredby",
-                    false)) {
-                if ( !htmlTemplate.hasMacro(MACRO_REGISTER)) {
-                    contents.append(REGISTER_MESSAGE);
-                } else {
-                    registerMessage = REGISTER_MESSAGE;
-                }
-            }
-        }
-
-        Utils.append(contents, result.getStringContent(), jsContent);
+        String       jsContent     = getTemplateJavascriptContent();
+	String bottom = result.getBottomHtml();
+	if(suffix && prefix) {
+	    Utils.append(contents, result.getStringContent(), jsContent);
+	} else if(suffix) {
+	    if(bottom==null) bottom = jsContent;
+	    else bottom+=jsContent;
+	}
         String content = contents.toString();
 
 	String head0 = request.getHead0();
@@ -538,7 +563,7 @@ public class PageHandler extends RepositoryManager {
             MACRO_HEADER_IMAGE, getHeaderIcon(), MACRO_HEADER_TITLE,
             pageTitle, MACRO_LINKS, menuHtml, MACRO_REPOSITORY_NAME,
             repository.getRepositoryName(), MACRO_FOOTER, theFooter, MACRO_TITLE,
-            result.getTitle(), MACRO_BOTTOM, result.getBottomHtml(),
+            result.getTitle(), MACRO_BOTTOM, bottom,
             MACRO_SEARCH_URL, getSearchManager().getSearchUrl(request),
             MACRO_CONTENT, content, MACRO_ENTRY_HEADER, entryHeader,
             MACRO_HEADER, header, MACRO_ENTRY_FOOTER, entryFooter,
@@ -571,8 +596,8 @@ public class PageHandler extends RepositoryManager {
 	    templateToks  = htmlTemplate.getToks(template);
 	} else {
 	    templateToks  = htmlTemplate.getToks();
-	}
-        for (int i = 0; i < templateToks.size(); i++) {
+	} 
+	for (int i = 0; i < templateToks.size(); i++) {
             String v = templateToks.get(i);
             //Check if even or odd
             if (2 * (i / 2) == i) {
@@ -580,7 +605,7 @@ public class PageHandler extends RepositoryManager {
             } else {
                 String macroValue = values.get(v);
                 if (macroValue == null) {
-                    System.err.println("Whoa, no macro value:" + v);
+		    //                    System.err.println("Whoa, no macro value:" + v);
                 } else {
                     sb.append(macroValue);
                 }
@@ -588,7 +613,7 @@ public class PageHandler extends RepositoryManager {
         }
         html = sb.toString();
         html = translate(request, html);
-        result.setContent(html);
+	return html;
     }
 
 
@@ -1046,7 +1071,6 @@ public class PageHandler extends RepositoryManager {
      */
     public HtmlTemplate getMobileTemplate() {
         getTemplates();
-
         return mobileTemplate;
     }
 
@@ -1173,6 +1197,13 @@ public class PageHandler extends RepositoryManager {
 		    //                    resource = resource.replace("${imports}", webImports);
                     HtmlTemplate template = new HtmlTemplate(getRepository(),
 							     path, resource);
+		    int idx = template.getTemplate().indexOf("${content}");
+		    if(idx>=0) {
+			template.setPrefix(new HtmlTemplate(template, template.getTemplate().substring(0,idx)));
+			template.setSuffix(new HtmlTemplate(template, template.getTemplate().substring(idx+"${content}".length())));
+		    }
+
+
 		    template.setTemplate(applyBaseMacros(template.getTemplate()));
 		    //		    System.out.println("p: " + path + " " + template.getId()+ " " + template.getName());
                     //Check if we got some other ...template.html file from a plugin
