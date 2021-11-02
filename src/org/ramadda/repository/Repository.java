@@ -3524,18 +3524,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
             return makeBlockedResult(request);
         }
 
-	/*
+
 	String theUrl = request.toString();
 	boolean debugMemory  =!theUrl.matches(".*(images|icons|htdocs|/metadata/view).*") &&
 	    !theUrl.matches(".*(\\.js|\\.png|\\.gif|favicon.ico)$");
-	if(debugMemory)
-	    Runtime.getRuntime().gc();
-	int mem1 = Utils.getUsedMemory();
+	if(debugMemory)   Runtime.getRuntime().gc();
+	double mem1 = Utils.getUsedMemory();
         if (debug) {
             getLogManager().debug("user:" + request.getUser() + " -- "
                                   + request.toString());
         }
-	*/
+
 
         //        logInfo("request:" + request);
 
@@ -3639,14 +3638,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
-	/*
-	if(debugMemory)
-	    Runtime.getRuntime().gc();
-	int mem2 = Utils.getUsedMemory();
 	if(debugMemory) {
-	    System.err.println("url:" + request +" memory:" + mem2 +" " + (mem2-mem1));
+	    Runtime.getRuntime().gc();
+	    double mem2 = Utils.getUsedMemory();
+	    System.err.println("memory:" + mem2 +" delta:" + Utils.decimals(mem2-mem1,1)+" url:" + request);
 	}
-	*/
         getLogManager().logRequest(request, (result == null)
                                             ? Result.RESPONSE_INTERNALERROR
                                             : result.getResponseCode());
