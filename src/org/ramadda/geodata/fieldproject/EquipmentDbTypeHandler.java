@@ -60,7 +60,7 @@ public class EquipmentDbTypeHandler extends DbTypeHandler {
      * @return _more_
      */
     public boolean showInHeader(String view) {
-        if (view.equals(VIEW_CHART) || view.equals(VIEW_STICKYNOTES)
+        if (view.equals(VIEW_STICKYNOTES)
                 || view.equals(VIEW_RSS)) {
             return false;
         }
