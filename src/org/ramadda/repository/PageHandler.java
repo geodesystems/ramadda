@@ -416,7 +416,7 @@ public class PageHandler extends RepositoryManager {
     public String decorateResult(Request request, Result result, boolean prefix, boolean suffix)
             throws Exception {	
 	boolean fullTemplate = prefix && suffix;
-	Runtime.getRuntime().gc();
+	//	Runtime.getRuntime().gc();
 	double mem1 = Utils.getUsedMemory();
 
         long t0 = System.currentTimeMillis();
