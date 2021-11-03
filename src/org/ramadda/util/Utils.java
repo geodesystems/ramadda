@@ -392,12 +392,10 @@ public class Utils extends IO {
         try {
             for (Object s : args) {
                 if (s != null) {
+		    if(sb==null) sb = new StringBuilder();
                     sb.append(s.toString());
-                } else {
-                    sb.append("null");
                 }
             }
-
             return sb;
         } catch (java.io.IOException ioe) {
             throw new RuntimeException(ioe);
@@ -2139,6 +2137,16 @@ public class Utils extends IO {
         }
         System.out.println("  total: " + (args[args.length - 1] - args[0]));
     }
+
+    public static void printMemory(String what, double... args) {
+        System.out.print(what + " ");
+        for (int i = 1; i < args.length; i++) {
+            System.out.print(" " + decimals(args[i] - args[i - 1],1));
+        }
+        System.out.println("");
+    }
+
+
 
     /**
      * _more_
