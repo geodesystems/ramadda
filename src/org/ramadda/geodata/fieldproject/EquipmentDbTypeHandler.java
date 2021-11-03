@@ -52,20 +52,4 @@ public class EquipmentDbTypeHandler extends DbTypeHandler {
         super(repository, tableName, tableNode, desc);
     }
 
-    /**
-     * _more_
-     *
-     * @param view _more_
-     *
-     * @return _more_
-     */
-    public boolean showInHeader(String view) {
-        if (view.equals(VIEW_STICKYNOTES)
-                || view.equals(VIEW_RSS)) {
-            return false;
-        }
-
-        return super.showInHeader(view);
-    }
-
 }
