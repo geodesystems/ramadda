@@ -2982,7 +2982,7 @@
      <string>java.javaDocMethodTop</string>
      <void property="value">
       <string>/**
- * _more_</string>
+</string>
      </void>
     </object>
    </void>
@@ -3638,7 +3638,7 @@
      <string>java.javaDocConstructorTop</string>
      <void property="value">
       <string>/**
- * _more_</string>
+ </string>
      </void>
     </object>
    </void>
@@ -6873,7 +6873,6 @@
       <string>/**
  * Class $objectName$ _more_
  *
- *
  * @author 
  */</string>
      </void>
@@ -6946,7 +6945,6 @@
      <void property="value">
       <string>/**
  * $objectName$ _more_
- *
  *
  * @author RAMADDA Development Team
  */</string>
@@ -8712,7 +8710,7 @@
     <object class="jindent.settings.StringArraySetting">
      <string>java.javaDocField</string>
      <void property="value">
-      <string>/** _more_          */</string>
+      <string>/** _more_   */</string>
      </void>
     </object>
    </void>
