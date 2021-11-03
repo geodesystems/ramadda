@@ -146,6 +146,8 @@ public class DbRecordFile extends CsvFile implements DbConstants {
 	    }
 	    column.assembleWhereClause(request, where, searchCriteria);
 	}
+
+
 	List<Object[]> valueList = typeHandler.readValues(request, entry,
 							  Clause.and(where), null);
 	boolean      doGroupBy = typeHandler.isGroupBy(request);
@@ -298,9 +300,6 @@ public class DbRecordFile extends CsvFile implements DbConstants {
 	if (debug) {
 	    System.err.println("fields:" + fields.toString());
 	}
-
-
-
 	putProperty(PROP_FIELDS, fields.toString());
     }
 }
