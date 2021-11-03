@@ -392,8 +392,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         viewList.add(new TwoFacedObject("CSV", VIEW_CSV));
 
-        //Not for now
-        //        viewList.add(new TwoFacedObject("Sticky Notes", VIEW_STICKYNOTES));
         if (showDateView && dbInfo.getHasDate()) {
             viewList.add(new TwoFacedObject("Calendar", VIEW_CALENDAR));
 	    //            viewList.add(new TwoFacedObject("Timeline", VIEW_TIMELINE));
@@ -827,33 +825,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         List<String> colNames = tableHandler.getColumnNames();
         String       view     = getWhatToShow(request);
 
-        if (request.get(ARG_DB_SETPOS, false)) {
-            if ( !canEdit) {
-                throw new IllegalArgumentException(
-                    "You cannot change the position");
-            }
-            String posx = request.getString("posx", "").replace("px", "");
-            String posy = request.getString("posy", "").replace("px", "");
-            if (request.exists(ARG_DB_STICKYLABEL)) {
-                String label = request.getString(ARG_DB_STICKYLABEL, "");
-                props.put(PROP_STICKY_POSX + "." + label, posx);
-                props.put(PROP_STICKY_POSY + "." + label, posy);
-                setProperties(entry, props);
-                getEntryManager().updateEntry(request, entry);
-            } else {
-                Object[] values = getValues(entry,
-                                            request.getString(ARG_DBID, ""));
-                putProp("posx", values, new Integer(posx));
-                putProp("posy", values, new Integer(posy));
-                doStore(entry, values, false);
-            }
-
-            return new Result("",
-                              new StringBuilder("<contents>ok</contents>"),
-                              "text/xml");
-        }
-
-
         if (request.exists(ARG_DB_EDITFORM)) {
             if ( !canEdit) {
                 throw new AccessException("You cannot edit this database",
@@ -980,46 +951,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     }
 
 
+
     /**
      * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param view _more_
-     * @param numValues _more_
-     * @param fromSearch _more_
-     *
      * @throws Exception _more_
      */
     public void addViewHeader(Request request, Entry entry, Appendable sb,
-                              String view, int numValues, boolean fromSearch)
+                                String view,String extraLinks)
             throws Exception {
-
-        addViewHeader(request, entry, sb, view, numValues, fromSearch, null);
-    }
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param view _more_
-     * @param numValues _more_
-     * @param fromSearch _more_
-     * @param extraLinks _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
-    public String addViewHeader(Request request, Entry entry, Appendable sb,
-                                String view, int numValues,
-                                boolean fromSearch, String extraLinks)
-            throws Exception {
-
-
         boolean forPrint = request.get(ARG_FOR_PRINT, false);
         if (forPrint) {
             String name = request.getString(ARG_DB_SEARCHNAME, (String) null);
@@ -1028,12 +967,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             //      sb.append(getWikiManager().wikifyEntry(request, entry, request.getString(ARG_DB_SEARCHDESC, "")));
             addStyleSheet(sb);
             request.put(ARG_TEMPLATE, "empty");
-
-            return null;
+            return;
         }
 
+
         if ( !request.get(ARG_DB_SHOWHEADER, true)) {
-            return null;
+            return;
         }
 
 
@@ -1043,8 +982,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         if (doAnonForm) {
             if ( !getAccessManager().canEditEntry(request, entry)) {
                 addStyleSheet(sb);
-
-                return null;
+                return;
             }
         }
 
@@ -1052,7 +990,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         addStyleSheet(sb);
         boolean embedded = request.get(ARG_EMBEDDED, false);
         if (embedded) {
-            return null;
+            return;
         }
 
         if ( !request.get(ARG_EMBEDDED, false)) {
@@ -1132,41 +1070,73 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
 
-        String formId = null;
-        if (fromSearch) {
-            formId = HtmlUtils.getUniqueId("form_");
-            double mem1 = Utils.getUsedMemory();
-            String searchForm = getSearchForm(request, entry,
-                                    formId).toString();
-            double mem2 = Utils.getUsedMemory();
-            Utils.printMemory("search form:" + searchForm.length() 
-			      + " memory:",mem1,mem2);
-            sb.append(HtmlUtils.makeShowHideBlock(msg("Search again"),
-                    searchForm, false));
-        }
-
-
-        if (addNext[0]) {
-            if (numValues > 0) {
-                if (isGroupBy(request)) {
-                    numValues--;
-                }
-                int max = getMax(request);
-                if ((numValues == max) || request.defined(ARG_SKIP)) {
-                    getRepository().getHtmlOutputHandler().showNext(request,
-                            numValues, max, sb);
-                } else {
-                    sb.append(numValues + ((numValues == 1)
-                                           ? " result"
-                                           : " results"));
-                }
-            }
-        }
-
-        return formId;
-
     }
 
+
+
+
+    public String addViewHeader(Request request, Entry entry, Appendable sb,
+                                String view, int numValues,
+                                boolean fromSearch, String extraLinks)
+            throws Exception {
+	addViewHeader(request, entry, sb,view,extraLinks);
+        String formId = null;
+        if (fromSearch) {
+	    formId = addSearchAgain(request, entry,sb);
+	}
+	addPrevNext(request, entry,sb,numValues);
+	return formId;
+    }
+
+    
+    public String addSearchAgain(Request request, Entry entry, Appendable sb)
+	throws Exception {
+	String formId = HtmlUtils.getUniqueId("form_");
+	String searchForm = getSearchForm(request, entry,
+					  formId).toString();
+	sb.append(HtmlUtils.makeShowHideBlock(msg("Search again"),
+					      searchForm, false));
+	return formId;
+    }
+
+
+    public void addPrevNext(Request request, Entry entry, Appendable sb, int numValues)
+            throws Exception {
+	if (numValues > 0) {
+	    if (isGroupBy(request)) {
+		numValues--;
+	    }
+	    int max = getMax(request);
+	    if ((numValues == max) || request.defined(ARG_SKIP)) {
+		getRepository().getHtmlOutputHandler().showNext(request,
+								numValues, max, sb);
+	    } else {
+		sb.append(numValues + ((numValues == 1)
+				       ? " result"
+				       : " results"));
+            }
+        }
+    }
+
+    
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result handleSearchForm(Request request, Entry entry)
+            throws Exception {
+        StringBuilder sb = new StringBuilder();
+        addViewHeader(request, entry, sb, VIEW_SEARCH,null);
+        sb.append(getSearchForm(request, entry));
+        addViewFooter(request, entry, sb);
+        return new Result(getTitle(request, entry), sb);
+    }
 
 
 
@@ -1329,7 +1299,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         if (request.defined(ARG_DB_ITERATE)
                 && request.defined(ARG_DB_ITERATE_VALUES)) {
             StringBuilder sb = new StringBuilder();
-            addViewHeader(request, entry, sb, VIEW_TABLE, 0, false);
+            addViewHeader(request, entry, sb, VIEW_TABLE,null);
             if ( !request.get(ARG_EMBEDDED, false)) {
                 sb.append(HtmlUtils.makeShowHideBlock(msg("Search again"),
                         getSearchForm(request, entry).toString(), false));
@@ -1554,16 +1524,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             if (view.equals(VIEW_MAP)) {
                 return handleListMap(request, entry, valueList, fromSearch);
             }
-            if (view.equals(VIEW_STICKYNOTES)) {
-                return handleListStickyNotes(request, entry, valueList,
-                                             fromSearch);
-            }
-
-            if (view.startsWith(VIEW_CATEGORY)) {
-                return handleListCategory(request, entry, valueList,
-                                          fromSearch);
-            }
-
             if (view.equals(VIEW_CALENDAR)) {
                 return handleListCalendar(request, entry, valueList,
                                           fromSearch);
@@ -1625,6 +1585,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    return new ValueIterator.GridIterator(request,this,  entry);
 	}
 
+	if (view.startsWith(VIEW_CATEGORY)) {
+	    return new ValueIterator.CategoryIterator(request,this,  entry);
+	}	
+
 
         if ( !doGroupBy) {
             if (view.equals(VIEW_TABLE) || view.equals("")) {
@@ -1645,17 +1609,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             if (view.equals(VIEW_MAP)) {
                 return handleListMap(request, entry, valueList, fromSearch);
             }
-            if (view.equals(VIEW_STICKYNOTES)) {
-                return handleListStickyNotes(request, entry, valueList,
-                                             fromSearch);
-            }
-
-
-            if (view.startsWith(VIEW_CATEGORY)) {
-                return handleListCategory(request, entry, valueList,
-                                          fromSearch);
-            }
-
             if (view.equals(VIEW_TIMELINE)) {
                 return handleListTimeline(request, entry, valueList,
                                           fromSearch);
@@ -1742,23 +1695,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             addToEditForm(request, entry, formBuffer);
             addEnumerationAttributes(request, entry, formBuffer);
         }
-
-        formBuffer.append(
-            HtmlUtils.row(
-                HtmlUtils.colspan(
-                    HtmlUtils.div(
-                        msg("Sticky Notes"),
-                        " class=\"formgroupheader\" "), 2)));
-
-
-        String stickyLabelString = (String) props.get(PROP_STICKY_LABELS);
-        if (stickyLabelString == null) {
-            stickyLabelString = "";
-        }
-        formBuffer.append(formEntry(request, msg("Labels"),
-                                    HtmlUtils.textArea(PROP_STICKY_LABELS,
-                                        stickyLabelString, 5, 30)));
-
 
     }
 
@@ -1975,12 +1911,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                   request.get(PROP_ANONFORM_ENABLED, false) + "");
         props.put(PROP_ANONFORM_MESSAGE,
                   request.getString(PROP_ANONFORM_MESSAGE, ""));
-
-        String stickyLabelString = request.getString(PROP_STICKY_LABELS, "");
-        props.put(PROP_STICKY_LABELS,
-                  StringUtil.join("\n",
-                                  StringUtil.split(stickyLabelString, "\n",
-                                      true, true)));
 
         for (Column col : getDbInfo().getEnumColumns()) {
             String colorID = PROP_CAT_COLOR + "." + col.getName();
@@ -2489,26 +2419,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public Result handleSearchForm(Request request, Entry entry)
-            throws Exception {
-        StringBuilder sb = new StringBuilder();
-        addViewHeader(request, entry, sb, VIEW_SEARCH, 0, false);
-        sb.append(getSearchForm(request, entry));
-        addViewFooter(request, entry, sb);
-
-        return new Result(getTitle(request, entry), sb);
-    }
-
 
 
 
@@ -2661,11 +2571,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
 
-        Runtime.getRuntime().gc();
-        double mem1   = Utils.getUsedMemory();
+	//        Runtime.getRuntime().gc();
+	//        double mem1   = Utils.getUsedMemory();
         Result result = handleQuery(request, entry, "", mainClause, true);
-        double mem2   = Utils.getUsedMemory();
-	Utils.printMemory("handleQuery:",mem1,mem2);
+	//        double mem2   = Utils.getUsedMemory();
+	//	Utils.printMemory("handleQuery:",mem1,mem2);
         return result;
     }
 
@@ -2797,7 +2707,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             if ( !deleteSelected) {
                 msg = "Are you sure you want to delete the entire database?";
             }
-            addViewHeader(request, entry, sb, "", 0, false);
+            addViewHeader(request, entry, sb, "",null);
             sb.append(getPageHandler().showDialogQuestion(msg(msg),
                     HtmlUtils.submit(msg("Yes"), ARG_DB_DELETECONFIRM)
                     + HtmlUtils.space(2)
@@ -3048,19 +2958,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         tableHandler.clearCache();
 
-        if (valueList.size() < 1000) {
-            return handleListTable(request, entry, valueList, false, false);
-        } else {
-            StringBuilder sb = new StringBuilder();
-            getPageHandler().entrySectionOpen(request, entry, sb, "Upload",
-                    true);
-            sb.append("Added " + scnt[0] + " entries");
-            getPageHandler().entrySectionClose(request, entry, sb);
-
-            return new Result("", sb);
-
-        }
-
+	StringBuilder sb = new StringBuilder();
+	getPageHandler().entrySectionOpen(request, entry, sb, "Upload", true);
+	sb.append("Added " + scnt[0] + " entries");
+	getPageHandler().entrySectionClose(request, entry, sb);
+	return new Result("", sb);
     }
 
     /**
@@ -3536,15 +3438,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                   boolean showHeaderLinks, Appendable sb)
             throws Exception {
         List<String> links = new ArrayList<String>();
-
-        /*
-          if (showHeaderLinks) {
-          if (showInHeader(VIEW_STICKYNOTES)) {
-          //                links.add(getHref(request, entry, VIEW_STICKYNOTES,msg("Sticky Notes")));
-          }
-          }
-        */
-
         boolean embedded = request.get(ARG_EMBEDDED, false);
         //      System.err.println("#values: "+ valueList.size());
         //      for(Object o: valueList.get(0)) {
@@ -3552,8 +3445,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         //      }
         if ( !embedded) {
             addViewHeader(request, entry, sb, VIEW_TABLE, valueList.size(),
-                          fromSearch,
-                          "" /*StringUtil.join("&nbsp;|&nbsp;", links)*/);
+                          fromSearch,null);
         } else {
             addStyleSheet(sb);
         }
@@ -5401,93 +5293,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 entry.getId(), ARG_DB_VIEW, view });
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param valueList _more_
-     * @param fromSearch _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public Result handleListCategory(Request request, Entry entry,
-                                     List<Object[]> valueList,
-                                     boolean fromSearch)
-            throws Exception {
-        DbInfo           dbInfo     = getDbInfo();
-        SimpleDateFormat sdf        = getDateFormat(entry);
-        boolean canEdit = getAccessManager().canEditEntry(request, entry);
-        StringBuilder    sb         = new StringBuilder();
-        String           view       = getWhatToShow(request);
-        Column           gridColumn = null;
-        for (Column column : dbInfo.getCategoryColumns()) {
-            if (Misc.equals(view, VIEW_CATEGORY + column.getName())) {
-                gridColumn = column;
-
-                break;
-            }
-        }
-        if (gridColumn == null) {
-            throw new IllegalStateException("No grid columns defined");
-        }
-        String links = getHref(request, entry,
-                               VIEW_GRID + gridColumn.getName(),
-                               msg("Grid View"));
-        addViewHeader(request, entry, sb,
-                      VIEW_CATEGORY + gridColumn.getName(), valueList.size(),
-                      fromSearch, links);
-
-
-        Hashtable<String, StringBuilder> map = new Hashtable<String,
-                                                   StringBuilder>();
-        List<String> rowValues = new ArrayList<String>();
-        int          cnt       = 0;
-
-
-        for (Object[] valuesArray : valueList) {
-            String url = canEdit
-                         ? getEditUrl(request, entry,
-                                      (String) valuesArray[IDX_DBID])
-                         : getViewUrl(request, entry,
-                                      (String) valuesArray[IDX_DBID]);
-            String label    = getLabel(request, entry, valuesArray, sdf);
-            String href     = HtmlUtils.href(url, label);
-
-            String rowValue = (String) valuesArray[gridColumn.getOffset()];
-            if (rowValue == null) {
-                rowValue = "&lt;blank&gt;";
-            }
-            StringBuilder buffer = map.get(rowValue);
-            if (buffer == null) {
-                map.put(rowValue, buffer = new StringBuilder());
-                rowValues.add(rowValue);
-            }
-            String rowId = "row_" + valuesArray[IDX_DBID];
-            String event = getEventJS(request, entry, valuesArray[IDX_DBID],
-                                      rowId, rowId);
-            buffer.append(HtmlUtils.div(href,
-                                        HtmlUtils.cssClass("dbcategoryrow")
-                                        + HtmlUtils.id(rowId) + event));
-            cnt++;
-        }
-
-        List<String> titles = new ArrayList<String>();
-        List<String> tabs   = new ArrayList<String>();
-
-        for (String rowValue : rowValues) {
-            titles.add(rowValue);
-            tabs.add(HtmlUtils.insetDiv(map.get(rowValue).toString(), 0, 20,
-                                        10, 0));
-        }
-        HtmlUtils.makeAccordion(sb, titles, tabs, false);
-        addViewFooter(request, entry, sb);
-
-        return new Result(getTitle(request, entry), sb);
-    }
-
 
     /**
      * _more_
@@ -5599,212 +5404,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      *
      * @param request _more_
      * @param entry _more_
-     * @param valueList _more_
-     * @param fromSearch _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public Result handleListStickyNotes(Request request, Entry entry,
-                                        List<Object[]> valueList,
-                                        boolean fromSearch)
-            throws Exception {
-
-        Hashtable entryProps     = getProperties(entry);
-        String stickyLabelString =
-            (String) entryProps.get(PROP_STICKY_LABELS);
-
-
-        boolean canEdit  = getAccessManager().canEditEntry(request, entry);
-        StringBuilder sb = new StringBuilder();
-        StringBuilder js = new StringBuilder();
-        addViewHeader(request, entry, sb, VIEW_STICKYNOTES, valueList.size(),
-                      fromSearch);
-
-
-        //        String links = getHref(request, entry,VIEW_TABLE, msg("Table"));
-        //        sb.append(HtmlUtils.center(links));
-
-
-        int cnt    = 0;
-        int poscnt = 0;
-        sb.append(
-            HtmlUtils.importJS(
-                getRepository().getFileUrl("/lib/dom-drag.js")));
-        SimpleDateFormat sdf = getDateFormat(entry);
-        for (Object[] values : valueList) {
-            Hashtable props = getProps(values);
-            String    dbid  = (String) values[IDX_DBID];
-            String    url   = getViewUrl(request, entry, dbid);
-            String    label = getLabel(request, entry, values, sdf).trim();
-            if (label.length() == 0) {
-                label = "NA";
-            }
-            String href = HtmlUtils.href(url, label);
-
-
-            if (false && canEdit) {
-                String editUrl = getEditUrl(request, entry, dbid);
-                href = HtmlUtils.href(
-                    editUrl,
-                    HtmlUtils.img(
-                        getRepository().getUrlBase()
-                        + "/db/database_edit.png", msg("Edit entry"))) + " "
-                            + href;
-            }
-            int top  = Misc.getProperty(props, "posy", 150 + poscnt * 40);
-            int left = Misc.getProperty(props, "posx", 50);
-            if ((props == null) || (props.get("posx") == null)) {
-                poscnt++;
-            }
-            String info = getHtml(request, entry, dbid, getColumns(), values,
-                                  sdf);
-            String contents = href
-                              + HtmlUtils.makeShowHideBlock("...", info,
-                                  false);
-            sb.append(HtmlUtils.div(contents,
-                                    HtmlUtils.cssClass("dbstickynote")
-                                    + HtmlUtils.id(dbid) + " style=\"top:"
-                                    + top + "px;  left:" + left + "px;\""));
-
-            cnt++;
-            String jsid = "id" + cnt;
-            js.append("var " + jsid + " = '" + dbid + "';\n");
-            js.append("var draggableDiv = document.getElementById(" + jsid
-                      + ");\n");
-            js.append("Drag.init(draggableDiv);\n");
-            if (canEdit) {
-                String posUrl =
-                    HtmlUtils.url(
-                        request.makeUrl(getRepository().URL_ENTRY_SHOW),
-                        new String[] {
-                    ARG_ENTRYID, entry.getId(), ARG_DBID, dbid, ARG_DB_SETPOS,
-                    "true"
-                });
-
-                js.append(
-                    "draggableDiv.onDragEnd  = function(x,y){DB.stickyDragEnd("
-                    + jsid + "," + HtmlUtils.squote(posUrl) + ");}\n");
-            }
-        }
-
-        if (stickyLabelString != null) {
-            int labelCnt = 0;
-            for (String label :
-                    StringUtil.split(stickyLabelString, "\n", true, true)) {
-                String id   = "label_" + label;
-                int    top  = 100;
-                int    left = 150 + labelCnt * 30;
-                String posx = (String) entryProps.get(PROP_STICKY_POSX + "."
-                                  + label);
-                String posy = (String) entryProps.get(PROP_STICKY_POSY + "."
-                                  + label);
-                if ((posx != null) && (posy != null)) {
-                    top  = Integer.parseInt(posy);
-                    left = Integer.parseInt(posx);
-                } else {
-                    labelCnt++;
-                }
-                String text = label;
-                sb.append(HtmlUtils.div(text,
-                                        HtmlUtils.cssClass("dbstickylabel")
-                                        + HtmlUtils.id(id) + " style=\"top:"
-                                        + top + "px;  left:" + left
-                                        + "px;\""));
-
-                js.append("var draggableDiv = document.getElementById("
-                          + HtmlUtils.squote(id) + ");\n");
-                js.append("Drag.init(draggableDiv);\n");
-                if (canEdit) {
-                    String posUrl =
-                        HtmlUtils.url(
-                            request.makeUrl(getRepository().URL_ENTRY_SHOW),
-                            new String[] {
-                        ARG_ENTRYID, entry.getId(), ARG_DB_STICKYLABEL, label,
-                        ARG_DB_SETPOS, "true"
-                    });
-
-                    js.append(
-                        "draggableDiv.onDragEnd  = function(x,y){DB.stickyDragEnd("
-                        + HtmlUtils.squote(id) + ","
-                        + HtmlUtils.squote(posUrl) + ");}\n");
-                }
-            }
-        }
-
-        sb.append(HtmlUtils.script(js.toString()));
-
-        addViewFooter(request, entry, sb);
-
-        return new Result(getTitle(request, entry), sb);
-    }
-
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param valueList _more_
-     * @param fromSearch _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public Result handleListIcal(Request request, Entry entry,
-                                 List<Object[]> valueList, boolean fromSearch)
-            throws Exception {
-        DbInfo dbInfo = getDbInfo();
-        SimpleDateFormat sdf =
-            RepositoryUtil.makeDateFormat("yyyyMMdd'T'HHmmss");
-        StringBuilder sb = new StringBuilder();
-        sb.append("BEGIN:VCALENDAR\n");
-        sb.append("PRODID:-//Unidata/UCAR//RAMADDA Calendar//EN\n");
-        sb.append("VERSION:2.0\n");
-        sb.append("CALSCALE:GREGORIAN\n");
-        sb.append("METHOD:PUBLISH\n");
-        for (Object[] values : valueList) {
-            String dbid  = (String) values[IDX_DBID];
-            Date   date1 = (Date) values[dbInfo.getDateColumn().getOffset()];
-            Date   date2 = (Date) values[(dbInfo.getDateColumns().size() > 1)
-                                         ? dbInfo.getDateColumns().get(1).getOffset()
-                                         : dbInfo.getDateColumns().get(0).getOffset()];
-            String dateString1 = sdf.format(date1) + "Z";
-            String dateString2 = sdf.format(date2) + "Z";
-            String url         = getViewUrl(request, entry, dbid);
-            url = request.getAbsoluteUrl(url);
-            String label = getLabel(request, entry, values, null).trim();
-
-            if (label.length() == 0) {
-                label = "NA";
-            }
-
-            sb.append("BEGIN:VEVENT\n");
-            sb.append("UID:" + values[IDX_DBID] + "\n");
-            sb.append("CREATED:" + dateString1 + "\n");
-            sb.append("DTSTAMP:" + dateString1 + "\n");
-            sb.append("DTSTART:" + dateString1 + "\n");
-            sb.append("DTEND:" + dateString2 + "\n");
-            sb.append("SUMMARY:" + label + "\n");
-            sb.append("ATTACH:" + url + "\n");
-            sb.append("END:VEVENT\n");
-        }
-        sb.append("END:VCALENDAR\n");
-
-        return new Result("", sb, "text/calendar");
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
      * @param clause _more_
      * @param iterator _more_
      *
@@ -5883,7 +5482,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      *
      * @return _more_
      */
-    private int getMax(Request request) {
+    protected int getMax(Request request) {
         return request.get(ARG_MAX, DEFAULT_MAX);
     }
 
@@ -6293,7 +5892,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         StringBuilder sb       = new StringBuilder();
         addViewHeader(request, entry, sb, ((dbid == null)
                                            ? VIEW_NEW
-                                           : ""), 0, false);
+                                           : ""),null);
 
         StringBuilder formBuffer = new StringBuilder();
 
@@ -6379,7 +5978,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     public Result handleEdit(Request request, Entry entry) throws Exception {
 
         StringBuilder sb = new StringBuilder();
-        addViewHeader(request, entry, sb, VIEW_EDIT, 0, false);
+        addViewHeader(request, entry, sb, VIEW_EDIT,null);
         List<Column>         columns = dbInfo.getColumnsToUse();
 
 
@@ -6651,7 +6250,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         boolean       asXml = request.getString("result", "").equals("xml");
         StringBuilder sb    = new StringBuilder();
         if ( !asXml) {
-            addViewHeader(request, entry, sb, "", 0, false);
+            addViewHeader(request, entry, sb, "",null);
         }
 
 

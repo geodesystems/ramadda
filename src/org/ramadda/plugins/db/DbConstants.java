@@ -115,9 +115,6 @@ public interface DbConstants extends Constants {
     public static final String VIEW_KML = "kml";
 
     /** _more_ */
-    public static final String VIEW_STICKYNOTES = "stickynotes";
-
-    /** _more_ */
     public static final String VIEW_RSS = "rss";
 
 
@@ -310,10 +307,6 @@ public interface DbConstants extends Constants {
     public static final String ARG_DB_ACTION = "db.action";
 
     /** _more_ */
-    public static final String ARG_DB_STICKYLABEL = "db.stickylabel";
-
-
-    /** _more_ */
     public static final String ARG_DBID = "dbid";
 
     /** _more_ */
@@ -366,16 +359,6 @@ public interface DbConstants extends Constants {
 
     /** _more_ */
     public static String ARG_EMAIL_BCC = "email.bcc";
-
-    /** _more_ */
-    public static final String PROP_STICKY_LABELS = "sticky.labels";
-
-
-    /** _more_ */
-    public static final String PROP_STICKY_POSX = "sticky.posx";
-
-    /** _more_ */
-    public static final String PROP_STICKY_POSY = "sticky.posy";
 
     /** _more_ */
     public static final String PROP_CAT_COLOR = "cat.color";

@@ -130,8 +130,6 @@ public abstract class ValueIterator implements DbConstants {
     /** _more_          */
     boolean canEdit;
 
-
-
     /** _more_          */
     List<String> columnNames = null;
 
@@ -139,7 +137,7 @@ public abstract class ValueIterator implements DbConstants {
     List<Column> columns = null;
 
     /** _more_          */
-    int cnt = 0;
+    int rowCnt = 0;
 
     /** _more_          */
     DbInfo dbInfo;
@@ -147,6 +145,9 @@ public abstract class ValueIterator implements DbConstants {
     /** _more_          */
     SimpleDateFormat sdf;
 
+
+    /** _more_          */
+    boolean fromSearch = true;
 
     /**
      * _more_
@@ -168,6 +169,20 @@ public abstract class ValueIterator implements DbConstants {
 	canEdit = db.getAccessManager().canEditEntry(request, entry);
 
     }
+
+    public void addViewHeader(Request request, Entry entry, String view,  String extraLinks) throws Exception {
+	Appendable sb       = getBuffer();
+	boolean    embedded = request.get(ARG_EMBEDDED, false);
+	if (embedded) {
+	    db.addStyleSheet(sb);
+	} else {
+	    int max = db.getMax(request);
+	    db.addViewHeader(request, entry, sb,view,extraLinks);
+	    db.addSearchAgain(request, entry,sb);
+	    db.addPrevNext(request, entry,sb,max);
+	}
+    }
+
 
     /**
      * _more_
@@ -305,7 +320,7 @@ public abstract class ValueIterator implements DbConstants {
             if ( !doGroupBy) {
                 columns     = db.getColumnsToUse(request, false);
                 columnNames = Column.getNames(columns);
-                StringBuilder sb = new StringBuilder();
+		Appendable sb = getBuffer();
                 for (int i = 0; i < columnNames.size(); i++) {
                     if (i > 0) {
                         sb.append(",");
@@ -313,7 +328,6 @@ public abstract class ValueIterator implements DbConstants {
                     sb.append(columnNames.get(i));
                 }
                 sb.append("\n");
-                getBuffer().append(sb.toString());
             } else {
                 //TODO: use these later for formatting
                 List<Column> groupByColumns = db.getGroupByColumns(request,
@@ -443,7 +457,7 @@ public abstract class ValueIterator implements DbConstants {
         public void processRow(Request request, Object[] values)
                 throws Exception {
             Appendable sb = getBuffer();
-            if (cnt++ > 0) {
+            if (rowCnt++ > 0) {
                 sb.append(",\n");
             }
             StringBuilder cb    = new StringBuilder();
@@ -545,7 +559,7 @@ public abstract class ValueIterator implements DbConstants {
         public void processRow(Request request, Object[] values)
                 throws Exception {
             Appendable sb = getBuffer();
-            if (cnt++ > 0) {}
+            rowCnt++;
             String label = db.getLabel(request, entry, values, null);
             Date   date  = null;
             if (dbInfo.getDateColumns().size() > 0) {
@@ -659,7 +673,7 @@ public abstract class ValueIterator implements DbConstants {
         public void processRow(Request request, Object[] values)
                 throws Exception {
             Appendable sb = getBuffer();
-            if (cnt++ > 0) {}
+	    rowCnt++;
         }
 
 
@@ -702,9 +716,10 @@ public abstract class ValueIterator implements DbConstants {
          *
          * @throws Exception _more_
          */
-        public HtmlIterator(Request request, DbTypeHandler db, Entry entry)
+        public HtmlIterator(Request request, DbTypeHandler db, Entry entry, boolean fromSearch)
                 throws Exception {
             super(request, db, entry);
+	    this.fromSearch = fromSearch;
         }
 
         /**
@@ -743,6 +758,20 @@ public abstract class ValueIterator implements DbConstants {
          */
         public void finish(Request request) throws Exception {
             Appendable    sb = getBuffer();
+	    if(rowCnt==0) {
+                if ( !fromSearch) {
+                    sb.append(HtmlUtils.br());
+                    sb.append(
+                        db.getPageHandler().showDialogNote(
+                            db.msgLabel("No entries in")
+                            + db.getTitle(request, entry)));
+                } else {
+                    sb.append(
+                        db.getPageHandler().showDialogNote(
+                            db.msg("Nothing found")));
+                }
+	    }
+
             boolean embedded = request.get(ARG_EMBEDDED, false);
             if ( !embedded) {
                 db.addViewFooter(request, entry, sb);
@@ -774,8 +803,6 @@ public abstract class ValueIterator implements DbConstants {
         /** _more_          */
         String tableId = Utils.getGuid();
 
-        /** _more_          */
-        boolean fromSearch;
 
         /** _more_          */
         int lineCnt = 0;
@@ -850,8 +877,7 @@ public abstract class ValueIterator implements DbConstants {
         public TableIterator(Request request, DbTypeHandler db, Entry entry,
                              boolean fromSearch)
                 throws Exception {
-            super(request, db, entry);
-            this.fromSearch = fromSearch;
+            super(request, db, entry,fromSearch);
             entryProps      = db.getProperties(entry);
             editImg = HtmlUtils.img(
                 getRepository().getUrlBase() + "/db/database_edit.png",
@@ -877,6 +903,7 @@ public abstract class ValueIterator implements DbConstants {
                                     "\n", true, true);
             columns     = db.getColumnsToUse(request, false);
             columnNames = Column.getNames(columns);
+	    addViewHeader(request, entry, VIEW_TABLE,null);
         }
 
         /**
@@ -889,15 +916,6 @@ public abstract class ValueIterator implements DbConstants {
         private void initializeTable(Request request) throws Exception {
 
             Appendable sb       = getBuffer();
-            boolean    embedded = request.get(ARG_EMBEDDED, false);
-            if ( !embedded) {
-                db.addViewHeader(
-                    request, entry, sb, VIEW_TABLE, /*valueList.size()*/ 100,
-                    fromSearch,
-                    "" /*StringUtil.join("&nbsp;|&nbsp;", links)*/);
-            } else {
-                db.addStyleSheet(sb);
-            }
             if (doForm) {
                 String formUrl =
                     request.makeUrl(db.getRepository().URL_ENTRY_SHOW);
@@ -1068,12 +1086,12 @@ public abstract class ValueIterator implements DbConstants {
                 throws Exception {
 
             Appendable sb = getBuffer();
-            if (cnt++ == 0) {
-                double mem1 = Utils.getUsedMemory();
+            if (rowCnt++ == 0) {
+		//                double mem1 = Utils.getUsedMemory();
                 initializeTable(request);
-                double mem2 = Utils.getUsedMemory();
-                System.err.println("initializeTable Memory:"
-                                   + Utils.decimals(mem2 - mem1, 1));
+		//                double mem2 = Utils.getUsedMemory();
+		//                System.err.println("initializeTable Memory:"
+		//                                   + Utils.decimals(mem2 - mem1, 1));
             }
 
             lineCnt++;
@@ -1085,7 +1103,7 @@ public abstract class ValueIterator implements DbConstants {
             }
 
             String dbid  = (String) values[IDX_DBID];
-            String cbxId = ARG_DBID + (cnt);
+            String cbxId = ARG_DBID + (rowCnt);
             String divId = "div_" + dbid;
             sb.append("\n");
             HU.open(sb, "tr", "dbrowid", dbid);
@@ -1135,10 +1153,10 @@ public abstract class ValueIterator implements DbConstants {
                                     : ((Double) o).doubleValue());
                         if (v == v) {
                             sum[i] += v;
-                            min[i] = (cnt == 0)
+                            min[i] = (rowCnt == 0)
                                      ? v
                                      : Math.min(min[i], v);
-                            max[i] = (cnt == 0)
+                            max[i] = (rowCnt == 0)
                                      ? v
                                      : Math.max(max[i], v);
                         }
@@ -1265,15 +1283,15 @@ public abstract class ValueIterator implements DbConstants {
         public void finish(Request request) throws Exception {
             Appendable    sb = getBuffer();
             StringBuilder hb = new StringBuilder();
-            if ( !forPrint && (cnt > 0)) {
+            if ( !forPrint && (rowCnt > 0)) {
                 HtmlUtils.comment(hb, "summmary");
                 HtmlUtils.open(hb, "tr", "valign", "top");
                 HtmlUtils.tag(hb, "td", HtmlUtils.attrs("align", "right"),
-                              "#" + cnt);
+                              "#" + rowCnt);
                 for (int i = 0; i < columns.size(); i++) {
                     Column column = columns.get(i);
                     if (column.isNumeric() && column.getDoStats()) {
-                        double  avg   = sum[i] / cnt;
+                        double  avg   = sum[i] / rowCnt;
                         boolean round = column.isInteger();
                         HtmlUtils.open(hb, "td", "class", "dbtable-summary");
                         hb.append(HtmlUtils.formTable());
@@ -1295,10 +1313,10 @@ public abstract class ValueIterator implements DbConstants {
                         }
                         HtmlUtils.open(hb, "td", "class", "dbtable-summary");
                         hb.append(HtmlUtils.formTable());
-                        int rowCnt = 0;
+                        int cnt = 0;
                         for (Enumeration keys = numUniques.keys();
                                 keys.hasMoreElements(); ) {
-                            if (rowCnt++ > 10) {
+                            if (cnt++ > 10) {
                                 hb.append(HtmlUtils.formEntry("", "..."));
 
                                 break;
@@ -1322,23 +1340,11 @@ public abstract class ValueIterator implements DbConstants {
                 }
                 HtmlUtils.close(hb, "tr");
                 HtmlUtils.close(hb, "table");
-            } else {
-                if ( !fromSearch) {
-                    hb.append(HtmlUtils.br());
-                    hb.append(
-                        db.getPageHandler().showDialogNote(
-                            db.msgLabel("No entries in")
-                            + db.getTitle(request, entry)));
-                } else {
-                    hb.append(
-                        db.getPageHandler().showDialogNote(
-                            db.msg("Nothing found")));
-                }
-            }
-            hb.append(HtmlUtils.formClose());
+		sb.append(HU.script("DB.initTable('" + tableId + "')"));
+            } 
+		hb.append(HtmlUtils.formClose());
             sb.append(hb.toString());
 
-            sb.append(HU.script("DB.initTable('" + tableId + "')"));
             super.finish(request);
         }
 
@@ -1887,7 +1893,7 @@ public abstract class ValueIterator implements DbConstants {
          */
         public GridIterator(Request request, DbTypeHandler db, Entry entry)
                 throws Exception {
-            super(request, db, entry);
+            super(request, db, entry,true);
         }
 
         /**
@@ -1914,10 +1920,9 @@ public abstract class ValueIterator implements DbConstants {
 
             Appendable sb = getBuffer();
 	    String links = db.getHref(request, entry,
-				   VIEW_CATEGORY + gridColumn.getName(),
-				   "Category View");
-	    db.addViewHeader(request, entry, sb, VIEW_GRID + gridColumn.getName(),
-			     100, true, links);
+				   VIEW_GRID + gridColumn.getName(),
+				   "Grid View");
+	    addViewHeader(request, entry, VIEW_GRID + gridColumn.getName(),links);
 
 	    enumValues = db.getEnumValues(request, entry, gridColumn);
 	    sb.append(
@@ -2001,6 +2006,124 @@ public abstract class ValueIterator implements DbConstants {
         }
     }
 
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Tue, Nov 2, '21
+     * @author         Enter your name here...    
+     */
+    public static class CategoryIterator extends HtmlIterator {
+
+        Column           gridColumn = null;
+	Hashtable<String, StringBuilder> map = new Hashtable<String,
+	    StringBuilder>();
+	List<String> rowValues = new ArrayList<String>();
+
+        /**
+         * _more_
+         *
+         * @param request _more_
+         * @param db _more_
+         * @param entry _more_
+         *
+         * @throws Exception _more_
+         */
+        public CategoryIterator(Request request, DbTypeHandler db, Entry entry)
+                throws Exception {
+            super(request, db, entry, true);
+        }
+
+        /**
+         * _more_
+         *
+         * @param request _more_
+         * @param doGroupBy _more_
+         *
+         * @throws Exception _more_
+         */
+        public void initialize(Request request, boolean doGroupBy)
+                throws Exception {
+            super.initialize(request, doGroupBy);
+	    String           view       = db.getWhatToShow(request);
+	    for (Column column : dbInfo.getCategoryColumns()) {
+		if (Misc.equals(view, VIEW_CATEGORY + column.getName())) {
+		    gridColumn = column;
+		    break;
+		}
+	    }
+	    if (gridColumn == null) {
+		throw new IllegalStateException("No category columns defined");
+	    }
+
+	    String links = db.getHref(request, entry,
+				   VIEW_CATEGORY + gridColumn.getName(),
+				   "Category View");
+	    addViewHeader(request, entry,   VIEW_CATEGORY + gridColumn.getName(),links);
+        }
+
+
+        /**
+         * _more_
+         *
+         * @param request _more_
+         * @param values _more_
+         *
+         * @throws Exception _more_
+         */
+        public void processRow(Request request, Object[] valuesArray)
+                throws Exception {
+            Appendable sb = getBuffer();
+            String url = canEdit
+                         ? db.getEditUrl(request, entry,
+                                      (String) valuesArray[IDX_DBID])
+                         : db.getViewUrl(request, entry,
+                                      (String) valuesArray[IDX_DBID]);
+            String label    = db.getLabel(request, entry, valuesArray, sdf);
+            String href     = HtmlUtils.href(url, label);
+
+            String rowValue = (String) valuesArray[gridColumn.getOffset()];
+            if (rowValue == null) {
+                rowValue = "&lt;blank&gt;";
+            }
+            StringBuilder buffer = map.get(rowValue);
+            if (buffer == null) {
+                map.put(rowValue, buffer = new StringBuilder());
+                rowValues.add(rowValue);
+            }
+            String rowId = "row_" + valuesArray[IDX_DBID];
+            String event = db.getEventJS(request, entry, valuesArray[IDX_DBID],
+                                      rowId, rowId);
+            buffer.append(HtmlUtils.div(href,
+                                        HtmlUtils.cssClass("dbcategoryrow")
+                                        + HtmlUtils.id(rowId) + event));
+        }
+
+
+        /**
+         * _more_
+         *
+         * @param request _more_
+         *
+         * @throws Exception _more_
+         */
+        public void finish(Request request) throws Exception {
+            Appendable sb = getBuffer();
+	    List<String> titles = new ArrayList<String>();
+	    List<String> tabs   = new ArrayList<String>();
+	    
+	    for (String rowValue : rowValues) {
+		titles.add(rowValue);
+		tabs.add(HtmlUtils.insetDiv(map.get(rowValue).toString(), 0, 20,
+					    10, 0));
+	    }
+	    HtmlUtils.makeAccordion(sb, titles, tabs, false);
+            super.finish(request);
+        }
+    }
+    
 
 
 }
