@@ -3526,7 +3526,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 	String theUrl = request.toString();
-	/*
 	boolean debugMemory  =!theUrl.matches(".*(images|icons|htdocs|/metadata/view).*") &&
 	    !theUrl.matches(".*(\\.js|\\.png|\\.gif|favicon.ico)$");
 	if(debugMemory)   Runtime.getRuntime().gc();
@@ -3535,7 +3534,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             getLogManager().debug("user:" + request.getUser() + " -- "
                                   + request.toString());
         }
-	*/
+
 
 
         //        logInfo("request:" + request);
@@ -3638,13 +3637,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
-	/*
 	if(debugMemory) {
 	    Runtime.getRuntime().gc();
 	    double mem2 = Utils.getUsedMemory();
 	    System.err.println("memory:" + mem2 +" delta:" + Utils.decimals(mem2-mem1,1)+" url:" + request);
 	}
-	*/
+
         getLogManager().logRequest(request, (result == null)
                                             ? Result.RESPONSE_INTERNALERROR
                                             : result.getResponseCode());
