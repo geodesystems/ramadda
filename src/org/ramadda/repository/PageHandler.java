@@ -279,6 +279,14 @@ public class PageHandler extends RepositoryManager {
 
 
 
+    String searchImg = HU.faIcon("fa-search", "title",
+				 "Search", "class",
+				 "ramadda-user-menu-image", "id",
+				 "searchlink");
+
+    String popupImage;
+
+
     /**
      * _more_
      *
@@ -286,6 +294,11 @@ public class PageHandler extends RepositoryManager {
      */
     public PageHandler(Repository repository) {
         super(repository);
+        popupImage =
+            HU.faIcon("fa-cog", "title",
+		      "Login, user settings, help", "class",
+		      "ramadda-user-menu-image");
+	popupImage = HtmlUtils.div(popupImage, HtmlUtils.cssClass("ramadda-popup-link"));
     }
 
 
@@ -402,6 +415,9 @@ public class PageHandler extends RepositoryManager {
 
     public String decorateResult(Request request, Result result, boolean prefix, boolean suffix)
             throws Exception {	
+	boolean fullTemplate = prefix && suffix;
+	Runtime.getRuntime().gc();
+	double mem1 = Utils.getUsedMemory();
 
         long t0 = System.currentTimeMillis();
         if ( !request.get(ARG_DECORATE, true)) {
@@ -417,71 +433,59 @@ public class PageHandler extends RepositoryManager {
         }
         HtmlTemplate htmlTemplate = parentTemplate;
 
-	if(prefix && suffix) {
-	} else if(prefix) {
-	    htmlTemplate = htmlTemplate.getPrefix();
-	} else {
-	    htmlTemplate = htmlTemplate.getSuffix();
+	if(!fullTemplate) {
+	    if(prefix) {
+		htmlTemplate = htmlTemplate.getPrefix();
+	    } else {
+		htmlTemplate = htmlTemplate.getSuffix();
+	    }
 	}
 
 	String template = htmlTemplate.getTemplate();
-        String       systemMessage =
-            getRepository().getSystemMessage(request);
-
-
+        String systemMessage =   getRepository().getSystemMessage(request);
         String entryHeader = (String) result.getProperty(PROP_ENTRY_HEADER,
-                                 "");
+							 (String)null);
         String entryFooter = (String) result.getProperty(PROP_ENTRY_FOOTER,
-                                 "");
+							 (String)null);
         String entryBreadcrumbs =
-            (String) result.getProperty(PROP_ENTRY_BREADCRUMBS, "");
+            (String) result.getProperty(PROP_ENTRY_BREADCRUMBS, (String)null);
         String        header   = entryHeader;
 
-        StringBuilder contents = new StringBuilder();
+        Appendable contents = new StringBuilder();
 
-	String registerMessage = "";
 	if(prefix) {
-	    if ((systemMessage != null) && (systemMessage.length() > 0)) {
+	    if (Utils.stringDefined(systemMessage)) {
 		HU.div(contents, systemMessage,
 		       HU.cssClass("ramadda-system-message"));
-	    }
-	    if ( !getAdmin().isRegistered()
-		 && getAdmin().getInstallationComplete()) {
-		if ( !getRepository().getProperty("ramadda.hidepoweredby",
-						  false)) {
-		    if ( !htmlTemplate.hasMacro(MACRO_REGISTER)) {
-			contents.append(REGISTER_MESSAGE);
-		    } else {
-			registerMessage = REGISTER_MESSAGE;
-		    }
-		}
 	    }
 	}
 
         String       jsContent     = getTemplateJavascriptContent();
-	String bottom = result.getBottomHtml();
-	if(suffix && prefix) {
-	    Utils.append(contents, result.getStringContent(), jsContent);
-	} else if(suffix) {
-	    if(bottom==null) bottom = jsContent;
-	    else bottom+=jsContent;
+	String bottom = null;
+	if(fullTemplate || suffix) {
+	    contents = Utils.append(contents, result.getStringContent());
+	    if (htmlTemplate.hasMacro(MACRO_BOTTOM)) {
+		bottom = jsContent;
+	    } else {
+		contents = Utils.append(contents, jsContent);
+	    }
+	} 
+        String content = contents!=null?contents.toString():null;
+
+	StringBuilder head = new StringBuilder();
+	if(request.getHead0()!=null) {
+	    head.append(request.getHead0());
 	}
-        String content = contents.toString();
 
-	String head0 = request.getHead0();
-	String head = (head0==null?"":head0);
 	//make the request to base.js be unique every time so the browser does not cache it
-	head+=HU.importJS(getRepository().getUrlBase()+"/htdocs_v" + (new Date().getTime())+"/base.js");
-	head+=webImports;
+	HU.importJS(head, getRepository().getUrlBase()+"/htdocs_v" + (new Date().getTime())+"/base.js");
+	head.append(webImports);
 	String head2 = request.getHead();
-	if(head2!=null) head+=head2;
+	if(head2!=null) head.append(head2);
         if (request.get("ramadda.showjsonld", true)&& showJsonLd && (currentEntry != null)) {
-            head += getMetadataManager().getJsonLD(request, currentEntry);
+            head.append(getMetadataManager().getJsonLD(request, currentEntry));
         }
-
-	String imports = head;
-	head  = "";
-
+	String imports = head.toString();
 
         String logoImage = getLogoImage(result);
         String logoUrl   = (String) result.getProperty(PROP_LOGO_URL);
@@ -517,44 +521,30 @@ public class PageHandler extends RepositoryManager {
         String userLinkTemplate =
             "<div onClick=\"document.location=\'${url}\'\"  class=\"ramadda-user-link\">${label}</div>";
         List<String> allLinks = new ArrayList<String>();
-        String searchImg = HU.faIcon("fa-search", "title",
-                                            msg("Search"), "class",
-                                            "ramadda-user-menu-image", "id",
-                                            "searchlink");
         List<String> navLinks = getNavLinks(request, userLinkTemplate);
         List<String> userLinks = getUserLinks(request, userLinkTemplate,
-                                     extra, true);
+					      extra, true);
         allLinks.addAll(navLinks);
         allLinks.addAll(userLinks);
 
-        String popupImage =
-            HU.faIcon("fa-cog", "title",
-                             msg("Login, user settings, help"), "class",
-                             "ramadda-user-menu-image");
+
         String menuHtml =
             HU.div(StringUtil.join("", allLinks),
                           HU.cssClass("ramadda-user-menu"));
 
         if (showSearch) {
-            String searchLink =
-                HU.mouseClickHref("Utils.searchPopup('searchlink','popupanchor');",
-				  searchImg, "");
-	    String searchAnchor = HU.span("",HU.attrs("id","popupanchor","style","position:relative;"));
-            extra.append(searchLink);    
-            extra.append(searchAnchor);
+	    HU.mouseClickHref(extra, "Utils.searchPopup('searchlink','popupanchor');",
+			      searchImg, "");
+	    HU.span(extra,"",HU.attrs("id","popupanchor","style","position:relative;"));
             extra.append(HU.SPACE2);
         }
 
 	String theFooter = footer;
         Entry    thisEntry = request.getCurrentEntry();
-
 	if(thisEntry!=null) {
-	    String defScript = "ramaddaThisEntry='" + thisEntry.getId()+"';\n";
-	    theFooter+=HU.script(defScript);
+	    theFooter+=HU.script("ramaddaThisEntry='" + thisEntry.getId()+"';\n");
 	}
 
-
-	popupImage = HtmlUtils.div(popupImage, HtmlUtils.cssClass("ramadda-popup-link"));
 	extra.append(HU.makePopup(null, popupImage, menuHtml, arg("my","right top"),arg("at","left bottom"), arg("animate",false)));
         menuHtml = HU.div(extra.toString(), HU.clazz("ramadda-user-menu"));
 
@@ -567,9 +557,8 @@ public class PageHandler extends RepositoryManager {
             MACRO_SEARCH_URL, getSearchManager().getSearchUrl(request),
             MACRO_CONTENT, content, MACRO_ENTRY_HEADER, entryHeader,
             MACRO_HEADER, header, MACRO_ENTRY_FOOTER, entryFooter,
-            MACRO_ENTRY_BREADCRUMBS, entryBreadcrumbs, MACRO_REGISTER,
-            registerMessage, MACRO_IMPORTS, imports, MACRO_HEADFINAL, head, MACRO_ROOT,
-            repository.getUrlBase(), "", ""
+            MACRO_ENTRY_BREADCRUMBS, entryBreadcrumbs,  MACRO_IMPORTS, imports,
+	    MACRO_HEADFINAL, "", MACRO_ROOT, repository.getUrlBase(), 
         };
 
 
@@ -577,7 +566,9 @@ public class PageHandler extends RepositoryManager {
         String                    html   = template;
         Hashtable<String, String> values = new Hashtable<String, String>();
         for (int i = 0; i < macros.length; i += 2) {
-            values.put(macros[i], macros[i + 1]);
+	    if(macros[i+1]!=null) {
+		values.put(macros[i], macros[i + 1]);
+	    }
         }
         for (String property : htmlTemplate.getPropertyIds()) {
             values.put(Utils.concatString("${", property, "}"),
@@ -597,6 +588,7 @@ public class PageHandler extends RepositoryManager {
 	} else {
 	    templateToks  = htmlTemplate.getToks();
 	} 
+
 	for (int i = 0; i < templateToks.size(); i++) {
             String v = templateToks.get(i);
             //Check if even or odd
@@ -604,15 +596,17 @@ public class PageHandler extends RepositoryManager {
                 sb.append(v);
             } else {
                 String macroValue = values.get(v);
-                if (macroValue == null) {
-		    //                    System.err.println("Whoa, no macro value:" + v);
-                } else {
+                if (macroValue != null) {
                     sb.append(macroValue);
                 }
             }
         }
         html = sb.toString();
         html = translate(request, html);
+
+	//	Runtime.getRuntime().gc();
+	double mem2 = Utils.getUsedMemory();
+	System.err.println("PageDecorator memory:" +  Utils.decimals(mem2-mem1,1) +" length:" + html.length());
 	return html;
     }
 
