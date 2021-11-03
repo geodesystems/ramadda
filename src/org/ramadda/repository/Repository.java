@@ -3537,10 +3537,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
         //        logInfo("request:" + request);
-
         Result  result         = null;
         boolean responseAsData = request.responseAsData();
-
         try {
             try {
                 getSessionManager().checkSession(request);
