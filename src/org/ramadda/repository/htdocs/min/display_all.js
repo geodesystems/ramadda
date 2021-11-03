@@ -32476,6 +32476,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         theMap: null
     });
 
+
     const SUPER = new RamaddaBaseMapDisplay(displayManager, id, DISPLAY_MAP, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
@@ -33145,7 +33146,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (!this.getShowLayers()) return false;
             if (!this.getProperty("displayAsMap", true)) return false;
             if(this.getProperty("kmlLayer") || this.getProperty("geojsonLayer")) {
-		return this.showVectorLayer;
+		if(this.getShowLayers()) {
+		    return this.showVectorLayer;
+		}
 	    }
         },
         cloneLayer: function(layer) {
@@ -35101,7 +35104,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let dfltEndPointSize = endPointSize;
             let segmentWidth = parseInt(this.getProperty("segmentWidth", "1"));
             let dfltSegmentWidth = segmentWidth;
-	    let haveLayer = this.getProperty("geojsonLayer") || this.getProperty("kmlLayer");
+	    let haveLayer = this.getShowLayers() && (this.getProperty("geojsonLayer") || this.getProperty("kmlLayer"));
             let showPoints = this.getProperty("showPoints", !haveLayer);
             let lineColor = this.getProperty("lineColor", "green");
 	    let lineCap = this.getProperty('lineCap', 'round');
