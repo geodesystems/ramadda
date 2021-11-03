@@ -20,11 +20,17 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.data.point.text.*;
 
+
+
+
 import org.ramadda.data.record.*;
 import org.ramadda.data.services.PointOutputHandler;
 import org.ramadda.data.services.PointTypeHandler;
 import org.ramadda.data.services.RecordTypeHandler;
 import org.ramadda.util.sql.*;
+
+import ucar.unidata.util.Misc;
+
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -148,76 +154,31 @@ public class DbRecordFile extends CsvFile implements DbConstants {
 	}
 
 
-	List<Object[]> valueList = typeHandler.readValues(request, entry,
-							  Clause.and(where), null);
 	boolean      doGroupBy = typeHandler.isGroupBy(request);
-	int          rowStart  = doGroupBy
-	    ? 1
-	    : 0;
 	List<Column> columns;
 	if (doGroupBy) {
 	    columns = typeHandler.getGroupByColumns(request, true);
 	} else {
 	    columns = typeHandler.getColumnsToUse(request, false);
 	}
-	if (debug) {
-	    System.err.println("COLUMNS: " + columns);
-	}
-	for (int rowIdx = rowStart; rowIdx < valueList.size(); rowIdx++) {
-	    Object[] list = valueList.get(rowIdx);
-	    if (debug && (rowIdx < 3)) {
-		System.err.println("Row:" + list.length);
-	    }
-	    int cnt = 0;
-	    for (Column c : columns) {
-		//                    for (int colIdx = colStart; colIdx < list.length; colIdx++) {
-		if (debug && (rowIdx < 3)) {
-		    System.err.println("\tcolumn:" + c.getName()
-				       + " offset:" + c.getOffset());
-		}
-		List<String> names = c.getColumnNames();
-		for (int idx = 0; idx < names.size(); idx++) {
-		    if (cnt > 0) {
-			s.append(",");
-		    }
-		    cnt++;
-		    Object o = list[c.getOffset() + idx];
-		    if (debug && (rowIdx < 3)) {
-			System.err.println("\tvalue:" + o);
-		    }
-		    if (o instanceof String) {
-			String  str         = (String) o;
-			boolean needToQuote = false;
-			if (str.indexOf("\n") >= 0) {
-			    needToQuote = true;
-			} else if (str.indexOf(",") >= 0) {
-			    needToQuote = true;
-			}
-			if (str.indexOf("\"") >= 0) {
-			    str         = str.replaceAll("\"", "\"\"");
-			    needToQuote = true;
-			}
-			if (needToQuote) {
-			    s.append('"');
-			    s.append(str);
-			    s.append('"');
-			} else {
-			    s.append(str);
-			}
-		    } else if (o instanceof Date) {
-			Date dttm = (Date) o;
-			s.append(sdf.format(dttm));
-		    } else {
-			s.append(o);
-		    }
-		}
-	    }
-	    s.append("\n");
-	}
-	ByteArrayInputStream bais =
-	    new ByteArrayInputStream(s.toString().getBytes());
 
-	return bais;
+
+	final PipedOutputStream pos = new PipedOutputStream();
+	final PipedInputStream pis = new PipedInputStream(pos);
+	final BridgeIterator bridge = new BridgeIterator(request, typeHandler, entry,pos,columns);
+
+	Misc.run(new Runnable() {
+		public void run() {
+		    try {
+			typeHandler.readValues(request, entry,
+					       Clause.and(where), bridge);
+		    } catch(Exception exc) {
+			System.err.println("db bridge error:" + exc);
+			exc.printStackTrace();
+		    }
+		}});
+
+	return pis;
     }
 
     /**
@@ -302,4 +263,90 @@ public class DbRecordFile extends CsvFile implements DbConstants {
 	}
 	putProperty(PROP_FIELDS, fields.toString());
     }
+
+    public static class BridgeIterator extends ValueIterator {
+
+	List<Column> columns;
+
+	OutputStream os;
+
+	PrintWriter pw;
+
+        /**
+         * _more_
+         *
+         * @param request _more_
+         * @param db _more_
+         * @param entry _more_
+         *
+         * @throws Exception _more_
+         */
+        public BridgeIterator(Request request, DbTypeHandler db, Entry entry, OutputStream os, List<Column> columns)
+                throws Exception {
+            super(request, db, entry);
+	    this.os = os;
+	    pw = new PrintWriter(os);
+	    this.columns = columns;
+        }
+
+        /**
+         * _more_
+         *
+         * @param request _more_
+         * @param values _more_
+         *
+         * @throws Exception _more_
+         */
+        public void processRow(Request request, Object[] values)
+                throws Exception {
+	    int cnt = 0;
+	    for (Column c : columns) {
+		List<String> names = c.getColumnNames();
+		for (int idx = 0; idx < names.size(); idx++) {
+		    if (cnt > 0) {
+			pw.append(",");
+		    }
+		    cnt++;
+		    Object o = values[c.getOffset() + idx];
+		    if (o instanceof String) {
+			String  str         = (String) o;
+			boolean needToQuote = false;
+			if (str.indexOf("\n") >= 0) {
+			    needToQuote = true;
+			} else if (str.indexOf(",") >= 0) {
+			    needToQuote = true;
+			}
+			if (str.indexOf("\"") >= 0) {
+			    str         = str.replaceAll("\"", "\"\"");
+			    needToQuote = true;
+			}
+			if (needToQuote) {
+			    pw.append('"');
+			    pw.append(str);
+			    pw.append('"');
+			} else {
+			    pw.append(str);
+			}
+		    } else if (o instanceof Date) {
+			Date dttm = (Date) o;
+			pw.append(sdf.format(dttm));
+		    } else {
+			pw.append(o.toString());
+		    }
+		}
+	    }
+	    pw.append("\n");
+        }
+
+        public void finish(Request request) throws Exception {
+	    pw.flush();
+	    os.close();
+	}
+
+
+
+    }
+    
+
+
 }
