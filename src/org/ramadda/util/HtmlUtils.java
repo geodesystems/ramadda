@@ -795,7 +795,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
      */
     public static String space(int cnt) {
         if (cnt == 1) {
-            return "&nbsp;";
+            return " ";
         }
         if (cnt == 2) {
             return ENTITY_NBSP2;
@@ -4350,6 +4350,14 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return result;
     }
 
+
+    public static  void mouseClickHref(Appendable sb, String call, String label,
+                                        String extra) throws Exception {
+	tag(sb,TAG_A,
+	    attrs(ATTR_HREF, "javascript:void(0);")
+	    + onMouseClick(call) + extra, label);
+    }
+    
 
 
     /**
