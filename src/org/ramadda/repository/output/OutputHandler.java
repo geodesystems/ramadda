@@ -89,7 +89,7 @@ public class OutputHandler extends RepositoryManager {
     public static final String WIDTH_SIZE = "100";
 
     /** _more_ */
-    public static final String WIDTH_KIND = "100";
+    public static final String WIDTH_KIND = "120";
 
     /** _more_ */
     public static final JQuery JQ = null;
@@ -1825,16 +1825,16 @@ public class OutputHandler extends RepositoryManager {
             HU.div(
                 sb, entry.getTypeHandler().getFileTypeDescription(
                     request, entry), HU.attrs(
-                    "style", "max-width:190px; overflow-x: hidden;"));
+                    "style", "padding-right:4px; max-width:190px; overflow-x: hidden;"));
             HU.close(sb, HU.TAG_TD);
         }
 
 
+	/*
         if (showDetails) {
             HU.open(sb, HU.TAG_TD, "width", "1%", "align",
                            "right", "class", CSS_CLASS_ENTRY_ROW_LABEL);
             sb.append(HU.space(1));
-            sb.append("  ");
             HU.div(sb,
                           getRepository().getIconImage(ICON_BLANK, "width",
                               "10", "id",
@@ -1843,6 +1843,7 @@ public class OutputHandler extends RepositoryManager {
             HU.close(sb, HU.TAG_TD);
         }
 
+	*/
         HU.close(sb, HU.TAG_TR);
         HU.close(sb, HU.TAG_TABLE);
         HU.close(sb, HU.TAG_DIV);
