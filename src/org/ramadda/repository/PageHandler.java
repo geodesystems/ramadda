@@ -604,9 +604,10 @@ public class PageHandler extends RepositoryManager {
         html = sb.toString();
         html = translate(request, html);
 
-	//	Runtime.getRuntime().gc();
+	/*
 	double mem2 = Utils.getUsedMemory();
 	System.err.println("PageDecorator memory:" +  Utils.decimals(mem2-mem1,1) +" length:" + html.length());
+	*/
 	return html;
     }
 
