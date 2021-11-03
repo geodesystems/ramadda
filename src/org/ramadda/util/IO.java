@@ -1130,6 +1130,57 @@ public class IO {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+
+	final PipedOutputStream pos = new PipedOutputStream();
+	final PipedInputStream pis = new PipedInputStream(pos);
+	final boolean running[]={true};
+
+
+	ucar.unidata.util.Misc.run(new Runnable() {
+		public void run() {
+		    try {
+			PrintWriter pw = new PrintWriter(pos);
+			for(int i=0;i<10;i++) {
+			    pw.println("LINE:" + i);
+			    pw.flush();
+			    ucar.unidata.util.Misc.sleep(500);
+			}
+			System.err.println("done writing");
+			pos.close();
+		    } catch(Exception exc) {
+			System.err.println("write err:" + exc);
+			exc.printStackTrace();
+		    }
+		}
+	    });
+
+	ucar.unidata.util.Misc.run(new Runnable() {
+		public void run()  {
+		    try {
+			InputStreamReader isr = new InputStreamReader(pis, java.nio.charset.StandardCharsets.UTF_8);
+			BufferedReader reader = new BufferedReader(isr);
+			String line;
+			while((line=reader.readLine())!=null) {
+			    System.err.println("read:" + line);
+			}
+			running[0] = false;
+			System.err.println("read: done");
+		    } catch(Exception exc) {
+			System.err.println("write err:" + exc);
+			exc.printStackTrace();
+		    }
+		}
+	    });
+
+
+	while(running[0]) {
+	    ucar.unidata.util.Misc.sleepSeconds(10);
+	}
+	System.exit(0);
+
+
+
+
 	if(true) {
 	    String url = "https://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Global_onedeg/Best?var=Temperature_surface&var=Visibility_surface&var=Water_equivalent_of_accumulated_snow_depth_surface&var=Wind_speed_gust_surface&latitude=%24%7Blatitude%7D&longitude=%24%7Blongitude%7D&time_start=2021-03-30&time_end=2021-04-09&vertCoord=&accept=csv";
 	    doMakeInputStream(url,false);
