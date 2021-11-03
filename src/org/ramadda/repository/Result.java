@@ -106,8 +106,6 @@ public class Result {
     /** need to write flag */
     private boolean needToWrite = true;
 
-    /** the footer */
-    public String bottomHtml = "";
 
     /** authorization method */
     private AuthorizationMethod authorizationMethod;
@@ -608,23 +606,6 @@ public class Result {
         addHttpHeader(HtmlUtils.HTTP_SET_COOKIE, name + "=" + value);
     }
 
-    /**
-     * Set the BottomHtml property.
-     *
-     * @param value The new value for BottomHtml
-     */
-    public void setBottomHtml(String value) {
-        bottomHtml = value;
-    }
-
-    /**
-     * Get the BottomHtml property.
-     *
-     * @return The BottomHtml
-     */
-    public String getBottomHtml() {
-        return bottomHtml;
-    }
 
     /**
      * Set the AuthorizationMethod property.
