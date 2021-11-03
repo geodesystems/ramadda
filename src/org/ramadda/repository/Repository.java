@@ -3528,6 +3528,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	String theUrl = request.toString();
 	boolean debugMemory  =!theUrl.matches(".*(images|icons|htdocs|/metadata/view).*") &&
 	    !theUrl.matches(".*(\\.js|\\.png|\\.gif|favicon.ico)$");
+	debugMemory = false;
 	if(debugMemory)   Runtime.getRuntime().gc();
 	double mem1 = Utils.getUsedMemory();
         if (debug) {
