@@ -207,7 +207,7 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler, 
                 (List<Element>) XmlUtil.findChildren(tableNode, TAG_TEMPLATE);
             for (Element element : templates) {
                 typeHandler.addTemplate(
-                    new DbTypeHandler.DbTemplate(element));
+                    new DbTemplate(element));
             }
 
 

@@ -2,7 +2,7 @@
 <tables>
 
   <table id="locations" name="Locations" icon="/icons/map.png"
-	 labelTemplate="${precinct} - ${neighborhood}"	 >
+	 labelTemplate="${name} - ${type}"	 >
    <column name="name" type="string"   label="Name"  cansearch="true" canlist="true" displayProperty="true"/>
    <column name="type" type="enumerationplus"   label="Type"  cansearch="true" canlist="true" displayProperty="true">
        <property name="iscategory" value="true"/>

@@ -16,90 +16,7 @@
 
 package org.ramadda.plugins.db;
 
-
-import org.ramadda.data.point.text.*;
-
-import org.ramadda.data.record.*;
-import org.ramadda.data.services.PointOutputHandler;
-import org.ramadda.data.services.PointTypeHandler;
-import org.ramadda.data.services.RecordTypeHandler;
-
-
-
-import org.ramadda.repository.*;
-import org.ramadda.repository.auth.*;
-import org.ramadda.repository.map.*;
-import org.ramadda.repository.metadata.*;
-
-import org.ramadda.repository.output.CalendarOutputHandler;
-import org.ramadda.repository.output.MapOutputHandler;
-import org.ramadda.repository.output.OutputHandler;
-import org.ramadda.repository.output.OutputType;
-import org.ramadda.repository.output.RssOutputHandler;
-import org.ramadda.repository.output.WikiConstants;
-import org.ramadda.repository.type.*;
-import org.ramadda.util.Bounds;
-import org.ramadda.util.FormInfo;
-import org.ramadda.util.GoogleChart;
-
-import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.JQuery;
-import org.ramadda.util.JQuery;
-import org.ramadda.util.Json;
-
-import org.ramadda.util.KmlUtil;
-import org.ramadda.util.RssUtil;
-import org.ramadda.util.Utils;
-import org.ramadda.util.WikiUtil;
-import org.ramadda.util.XlsUtil;
-import org.ramadda.util.XmlUtils;
-import org.ramadda.util.sql.*;
-
-import org.ramadda.util.text.CsvUtil;
-import org.ramadda.util.text.Filter;
-import org.ramadda.util.text.Processor;
-import org.ramadda.util.text.TextReader;
-
-
-import org.w3c.dom.*;
-import org.w3c.dom.*;
-
-import ucar.unidata.geoloc.LatLonPointImpl;
-import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.Misc;
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlEncoder;
-import ucar.unidata.xml.XmlUtil;
-
-
-
-import java.io.*;
-
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-
-import java.sql.Statement;
-
-import java.text.DecimalFormat;
-
-import java.text.SimpleDateFormat;
-
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-
-import java.util.TimeZone;
+import org.ramadda.repository.Constants;
 
 
 /**
@@ -107,6 +24,23 @@ import java.util.TimeZone;
  */
 
 public interface DbConstants extends Constants {
+
+    /** _more_ */
+    public static final int IDX_DBID = 0;
+
+    /** _more_ */
+    public static final int IDX_DBUSER = 1;
+
+    /** _more_ */
+    public static final int IDX_DBCREATEDATE = 2;
+
+    /** _more_ */
+    public static final int IDX_DBPROPS = 3;
+
+    /** _more_ */
+    public static final int IDX_MAX_INTERNAL = 3;
+
+
 
     /** _more_ */
     public static final String PROP_ANONFORM_ENABLED = "anonform.enabled";
@@ -164,9 +98,6 @@ public interface DbConstants extends Constants {
 
     /** _more_ */
     public static final String VIEW_SEARCH = "search";
-
-    /** _more_ */
-    public static final String VIEW_CHART = "chart";
 
     /** _more_ */
     public static final String VIEW_GRID = "grid";
