@@ -102,6 +102,12 @@ var DB =  {
 	let url = ramaddaBaseUrl +"/entry/show?entryid=" + entryId+"&dbid=" + dbid +"&db.entry=true&result=xml";
 	GuiUtils.loadXML( url, DB.handleXml,{divId:"div_" + dbid});
     },
+    initHeader:function(topId, tmpId) {
+	let html = $("#" + tmpId).html();
+	$("#" + topId).html(html);
+	$("#" + tmpId).remove();
+    },
+
     initTable:function(id) {
 	let table =$("#" + id);
 	let entryId = table.attr("entryid");

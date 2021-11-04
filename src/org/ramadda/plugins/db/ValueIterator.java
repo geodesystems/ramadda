@@ -170,6 +170,7 @@ public abstract class ValueIterator implements DbConstants {
 
     }
 
+    private String viewHeaderId;
     public void addViewHeader(Request request, Entry entry, String view,  String extraLinks) throws Exception {
 	Appendable sb       = getBuffer();
 	boolean    embedded = request.get(ARG_EMBEDDED, false);
@@ -177,9 +178,12 @@ public abstract class ValueIterator implements DbConstants {
 	    db.addStyleSheet(sb);
 	} else {
 	    int max = db.getMax(request);
+
 	    db.addViewHeader(request, entry, sb,view,extraLinks);
 	    db.addSearchAgain(request, entry,sb);
-	    db.addPrevNext(request, entry,sb,max);
+	    viewHeaderId = Utils.getGuid();
+	    HU.div(sb, "",  HtmlUtils.id(viewHeaderId));
+	    //	    db.addPrevNext(request, entry,sb,max);
 	}
     }
 
@@ -277,6 +281,15 @@ public abstract class ValueIterator implements DbConstants {
      * @throws Exception _more_
      */
     public void finish(Request request) throws Exception {
+	if(viewHeaderId!=null) {
+	    StringBuilder tmp = new StringBuilder();
+	    db.addPrevNext(request, entry,tmp,rowCnt);
+	    String tmpId = Utils.getGuid();
+	    Appendable sb       = getBuffer();
+	    HU.div(sb, tmp.toString(),  HtmlUtils.id(tmpId));
+	    sb.append(HU.script("DB.initHeader('" + viewHeaderId + "','" + tmpId +"')"));
+	}
+
         if (printWriter != null) {
             printWriter.flush();
         }
