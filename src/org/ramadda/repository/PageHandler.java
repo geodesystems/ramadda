@@ -3518,7 +3518,7 @@ public class PageHandler extends RepositoryManager {
         s = s.replace(
             "${ramadda.bootstrap.version}",
             getRepository().getProperty(
-                "ramadda.bootstrap.version", "bootstrap-3.3"));
+                "ramadda.bootstrap.version", "bootstrap-5.1.3"));
 
 	String now = htdocsBase + (new Date().getTime());
         return s.replace("${now}",now).replace("${htdocs}", htdocsBase).replace(
