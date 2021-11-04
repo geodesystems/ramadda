@@ -156,11 +156,15 @@ public class Utils extends IO {
     /** _more_ */
     public static final SimpleDateFormat simpleSdf;
 
+    public static final SimpleDateFormat isoSdf;    
+
     static {
         sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         sdf.setTimeZone(TIMEZONE_DEFAULT);
         simpleSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         simpleSdf.setTimeZone(TIMEZONE_DEFAULT);
+	isoSdf = new SimpleDateFormat("yyyy-MM-dd\'T\'HH:mm:ssZ");
+        isoSdf.setTimeZone(TIMEZONE_DEFAULT);
     }
 
 
@@ -178,6 +182,22 @@ public class Utils extends IO {
             return sdf.format(date) + "Z";
         }
     }
+
+
+    /**
+     * _more_
+     *
+     * @param date _more_
+     *
+     * @return _more_
+     */
+    public static String formatIso(Date date) {
+        synchronized (isoSdf) {
+            //The sdf produces a time zone that isn't RFC3399 compatible so we just tack on the "Z"
+            return isoSdf.format(date);
+        }
+    }
+
 
 
 
@@ -1074,6 +1094,14 @@ public class Utils extends IO {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+	Date d  = new Date();
+	System.err.println(formatIso(d));
+
+
+	System.exit(0);
+
+
+
         String s = "hello there hello";
         System.err.println(s.replace("hello", "xxx"));
         if (true) {

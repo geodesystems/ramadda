@@ -569,7 +569,7 @@ public class IsoUtil {
      * @throws Exception _more_
      */
     public static String format(Date date) throws Exception {
-        return ucar.unidata.util.DateUtil.getTimeAsISO8601(date);
+        return Utils.formatIso(date);
     }
 
 
