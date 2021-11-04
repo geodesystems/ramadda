@@ -17,7 +17,7 @@
 package org.ramadda.data.record;
 
 
-import ucar.unidata.util.DateUtil;
+import org.ramadda.util.Utils;
 
 
 import java.io.*;
@@ -35,6 +35,8 @@ import java.util.List;
  * @author   Jeff McWhirter
  */
 public abstract class BaseRecord implements Cloneable {
+
+
 
     /** _more_ */
     public static final boolean CHARTABLE_YES = true;
@@ -307,9 +309,8 @@ public abstract class BaseRecord implements Cloneable {
 
         if (object instanceof Date) {
             Date dttm = (Date) object;
-
-            return DateUtil.getTimeAsISO8601(dttm.getTime());
-            //TODO: format nicely
+	    System.err.println("getting date:" + dttm);
+            return Utils.formatIso(dttm);
         }
 
         return object.toString();

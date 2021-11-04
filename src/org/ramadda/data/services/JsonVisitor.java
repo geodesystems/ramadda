@@ -239,7 +239,6 @@ public class JsonVisitor extends BridgeRecordVisitor {
 
         if (addTime) {
             pw.append(COMMA);
-            //                pw.append(Json.quote(DateUtil.getTimeAsISO8601(pointRecord.getRecordTime())));
             //Just use the milliseconds
             pw.append(Json.formatNumber(pointRecord.getRecordTime()));
         }

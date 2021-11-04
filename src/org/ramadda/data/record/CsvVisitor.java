@@ -59,6 +59,7 @@ public class CsvVisitor extends RecordVisitor {
     /** _more_ */
     private boolean fullHeader = false;
 
+
     public interface HeaderPrinter {
 
         /**
@@ -130,6 +131,8 @@ public class CsvVisitor extends RecordVisitor {
     /** _more_ */
     private static final String MISSING = "NaN";
 
+    private String encodedDelimiter = Utils.hexEncode(COLUMN_DELIMITER);
+
     /**
      * _more_
      *
@@ -155,6 +158,10 @@ public class CsvVisitor extends RecordVisitor {
         pw.append(LINE_DELIMITER);
     }
 
+
+
+    private int recordCnt = 0;
+    
     /**
      * _more_
      *
@@ -169,6 +176,7 @@ public class CsvVisitor extends RecordVisitor {
     public boolean visitRecord(RecordFile file, VisitInfo visitInfo,
                                BaseRecord record)
             throws Exception {
+	recordCnt++;
         if (fields == null) {
             fields = record.getFields();
         }
@@ -229,7 +237,6 @@ public class CsvVisitor extends RecordVisitor {
                 property(PROP_MISSING, MISSING);
             }
         }
-        String encodedDelimiter = Utils.hexEncode(COLUMN_DELIMITER);
         cnt = 0;
         for (RecordField field : fields) {
 
@@ -264,7 +271,7 @@ public class CsvVisitor extends RecordVisitor {
             } else {
                 //                System.err.println("field: "+ field.getName() + " " +getter.getClass().getName());
                 String svalue = getter.getStringValue(record, field,
-                                    visitInfo);
+						      visitInfo);
 		if(svalue.indexOf(COLUMN_DELIMITER)>0) {
 		    //svalue = svalue.replaceAll(COLUMN_DELIMITER, encodedDelimiter);
 		    svalue = "\"" + svalue+"\"";
@@ -275,7 +282,6 @@ public class CsvVisitor extends RecordVisitor {
 	if(lineEnder!=null) {
 	    lineEnder.call(this,pw,fields,record,cnt);
 	}
-
 
 
         pw.append("\n");
