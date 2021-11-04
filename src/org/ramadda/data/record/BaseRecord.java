@@ -293,6 +293,8 @@ public abstract class BaseRecord implements Cloneable {
     }
 
 
+    static int  xcnt = 0;
+    
     /**
      * _more_
      *

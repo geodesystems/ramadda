@@ -264,8 +264,12 @@ public class CsvVisitor extends RecordVisitor {
 			svalue = "\"" + svalue+"\"";
 		    }
                     pw.append(svalue);
+		} else if (field.isTypeDate()) {
+		    Object object = record.getObjectValue(field.getParamId());
+		    if(object!=null)
+			pw.append(Utils.formatIso((Date)object));
                 } else {
-                    double value = record.getValue(field.getParamId());
+		    double value = record.getValue(field.getParamId());
                     pw.append("" + value);
                 }
             } else {

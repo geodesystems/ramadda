@@ -456,6 +456,7 @@ public class DataRecord extends PointRecord {
         objectValues[idx] = value;
     }
 
+    static int xcnt = 0;
 
     /**
      * _more_
@@ -470,6 +471,7 @@ public class DataRecord extends PointRecord {
         //Offset since the  field ids are 1 based not 0 based
         idx = idx - 1;
         if ((idx >= 0) && (idx < values.length)) {
+	    boolean debug = xcnt++<100;
             //Maybe just a number
             if (objectValues[idx] == null) {
                 return "" + values[idx];
