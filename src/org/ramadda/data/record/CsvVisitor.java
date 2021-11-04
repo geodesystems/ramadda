@@ -261,26 +261,29 @@ public class CsvVisitor extends RecordVisitor {
 		    if(svalue.indexOf(COLUMN_DELIMITER)>0) {
 			//			svalue = svalue.replaceAll(COLUMN_DELIMITER,
 			//						   encodedDelimiter);
-			svalue = "\"" + svalue+"\"";
+			pw.append("\"");
+			pw.append(svalue);
+			pw.append("\"");
+		    } else {
+			pw.append(svalue);
 		    }
-                    pw.append(svalue);
 		} else if (field.isTypeDate()) {
 		    Object object = record.getObjectValue(field.getParamId());
 		    if(object!=null)
 			pw.append(Utils.formatIso((Date)object));
                 } else {
 		    double value = record.getValue(field.getParamId());
-                    pw.append("" + value);
+                    pw.append(Double.toString(value));
                 }
             } else {
-                //                System.err.println("field: "+ field.getName() + " " +getter.getClass().getName());
-                String svalue = getter.getStringValue(record, field,
-						      visitInfo);
+                String svalue = getter.getStringValue(record, field, visitInfo);
 		if(svalue.indexOf(COLUMN_DELIMITER)>0) {
-		    //svalue = svalue.replaceAll(COLUMN_DELIMITER, encodedDelimiter);
-		    svalue = "\"" + svalue+"\"";
+		    pw.append("\"");
+		    pw.append(svalue);
+		    pw.append("\"");
+		} else {
+		    pw.append(svalue);
 		}
-                pw.append(svalue);
             }
 	}
 	if(lineEnder!=null) {
