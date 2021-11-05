@@ -293,7 +293,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             return false;
         },
         updateUI: function(args) {
-
 	    let debug = false;
 	    args = args || {};
             SUPER.updateUI.call(this, args);
@@ -840,6 +839,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    });
         },
         setChartSelection: function(index) {
+	    console.log("setChartSelection");
 	    this.mapCharts(chart=>{
                 if (chart.setSelection) {
 		    chart.setSelection([{
@@ -1003,7 +1003,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let maxWidth = this.getProperty("maxFieldLength",this.getProperty("maxFieldWidth",-1));
 	    let tt = this.getProperty("tooltip");
 	    let addTooltip = (tt || this.getProperty("addTooltip",false)) && this.doAddTooltip();
-
 	    
     	    let addStyle= this.getAddStyle();
 	    let annotationTemplate = this.getAnnotationTemplate();
@@ -1835,7 +1834,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    
 
 	    this.mapCharts(chart=>{
-		google.visualization.events.addListener(chart, 'onmouseout',()=>{this.setChartSelection(null)});
+		google.visualization.events.addListener(chart, 'onmouseout',()=>{
+		    //console.log("mouseout");
+		    //this.setChartSelection(null);
+		});
 	    });
 
 
@@ -3446,6 +3448,8 @@ function TimerangechartDisplay(displayManager, id, properties) {
             return new google.visualization.Timeline(chartDiv);
         },
         makeDataTable: function(dataList, props, selectedFields) {
+	    let tt = this.getProperty("tooltip");
+	    let addTooltip = (tt || this.getProperty("addTooltip",false)) && this.doAddTooltip();
 	    let records = this.filterData(null,null,{skipFirst:true});
             let strings = [];
             let stringField = this.getFieldByType(selectedFields, "string");
@@ -3493,6 +3497,15 @@ function TimerangechartDisplay(displayManager, id, properties) {
                 type: 'date',
                 id: dateFields[1].getLabel()
             });
+	    /*
+	    dataTable.addColumn({
+                type: 'string',
+                role: 'tooltip',
+                'p': {
+		    'html': true
+                }});
+	    */
+
             for (let r = 0; r < records.length; r++) {
                 let row = this.getDataValues(records[r]);
                 let tuple = [];
