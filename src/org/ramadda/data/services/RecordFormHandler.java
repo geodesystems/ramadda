@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.data.services;
@@ -329,7 +318,7 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
         }
         StringBuilder forDisplay =
             new StringBuilder("<b>For wiki displays:</b><br>fields=\"");
-	sb.append("<div style=max-height:300px;overflow-y:auto;>\n");
+        sb.append("<div style=max-height:300px;overflow-y:auto;>\n");
         sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.row(HtmlUtils.cols(new Object[] {
             HtmlUtils.b(msg("Field Name")),
@@ -361,7 +350,7 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
                  : typeLabel) })));
         }
         sb.append(HtmlUtils.formTableClose());
-	sb.append("</div>");
+        sb.append("</div>");
         forDisplay.append("\"");
         sb.append("<br>");
         sb.append(forDisplay);
@@ -406,7 +395,8 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
         RecordVisitor visitor = new BridgeRecordVisitor(getOutputHandler()) {
 
             public boolean doVisitRecord(RecordFile file,
-                                         VisitInfo visitInfo, BaseRecord record) {
+                                         VisitInfo visitInfo,
+                                         BaseRecord record) {
 
                 if (cnt[0] == 0) {
                     String style = HtmlUtils.style("background: #c3d9ff;");
@@ -526,15 +516,17 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
         VisitInfo visitInfo = new VisitInfo();
         visitInfo.setStart(start);
         visitInfo.setStop(start + step);
-	try {
-	    getRecordJobManager().visitSequential(request, recordEntry, visitor,
-						  visitInfo);
-	} catch(Throwable thr) {
-	    Throwable inner = LogUtil.getInnerException(thr);
-	    if(inner instanceof Exception)
-		throw (Exception)inner;
-	    throw new RuntimeException(inner);
-	}
+        try {
+            getRecordJobManager().visitSequential(request, recordEntry,
+                    visitor, visitInfo);
+        } catch (Throwable thr) {
+            Throwable inner = LogUtil.getInnerException(thr);
+            if (inner instanceof Exception) {
+                throw (Exception) inner;
+            }
+
+            throw new RuntimeException(inner);
+        }
 
         sb.append("</table>");
         request.getRepository().getPageHandler().entrySectionClose(request,

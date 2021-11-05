@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.data.services;
@@ -65,11 +54,13 @@ public class NoaaPsdMonthlyClimateIndexTypeHandler extends PointTypeHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param fromImport _more_
      *
      * @throws Exception On badness
      */
     @Override
-	public void initializeNewEntry(Request request, Entry entry, boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry,
+                                   boolean fromImport)
             throws Exception {
         super.initializeNewEntry(request, entry, fromImport);
         // override to set the missing value from the file/url
@@ -110,13 +101,16 @@ public class NoaaPsdMonthlyClimateIndexTypeHandler extends PointTypeHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param properties _more_
+     * @param requestProperties _more_
      *
      * @return _more_
      *
      * @throws Exception On badness
      */
     @Override
-    public RecordFile doMakeRecordFile(Request request, Entry entry, Hashtable properties,
+    public RecordFile doMakeRecordFile(Request request, Entry entry,
+                                       Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
         String name        = entry.getName();

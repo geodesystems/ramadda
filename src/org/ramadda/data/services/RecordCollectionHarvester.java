@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.data.services;
@@ -217,19 +206,21 @@ public abstract class RecordCollectionHarvester extends PatternHarvester {
      * @param fileInfo file information
      * @param f the actual file
      * @param matcher pattern matcher
+     * @param entriesMap _more_
      *
      * @return the new entry or null if nothing is harvested
      *
      * @throws Exception on badness
      */
     @Override
-    public Entry harvestFile(HarvesterFile fileInfo, File f, Matcher matcher,Hashtable<String,Entry> entriesMap)
+    public Entry harvestFile(HarvesterFile fileInfo, File f, Matcher matcher,
+                             Hashtable<String, Entry> entriesMap)
             throws Exception {
         if (f.toString().endsWith(".properties")) {
             return null;
         }
 
-        return super.harvestFile(fileInfo, f, matcher,entriesMap);
+        return super.harvestFile(fileInfo, f, matcher, entriesMap);
     }
 
 

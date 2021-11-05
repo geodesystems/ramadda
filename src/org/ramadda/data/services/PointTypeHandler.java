@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.data.services;
@@ -159,9 +148,13 @@ public class PointTypeHandler extends RecordTypeHandler {
             return;
         }
 
-	if(!shouldProcessResource(request, entry)) return;
+        if ( !shouldProcessResource(request, entry)) {
+            return;
+        }
 
-	if(fromImport) return;
+        if (fromImport) {
+            return;
+        }
 
         log("initialize new entry:" + entry.getResource());
         File file = entry.getFile();
@@ -214,24 +207,36 @@ public class PointTypeHandler extends RecordTypeHandler {
     }
 
 
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param tag _more_
+     * @param props _more_
+     * @param topProps _more_
+     *  @return _more_
+     */
     public String getUrlForWiki(Request request, Entry entry, String tag,
                                 Hashtable props, List<String> topProps) {
         if (tag.equals(WikiConstants.WIKI_TAG_CHART)
                 || tag.equals(WikiConstants.WIKI_TAG_DISPLAY)
                 || tag.startsWith("display_")) {
             try {
-		if(props!=null) {
-		    if (props.get("max") == null) {
-			props.put("max",
-				  "" + getDefaultMax(request, entry, tag, props));
-		    }
-		}
+                if (props != null) {
+                    if (props.get("max") == null) {
+                        props.put("max",
+                                  "" + getDefaultMax(request, entry, tag,
+                                      props));
+                    }
+                }
+
                 return ((PointOutputHandler) getRecordOutputHandler())
                     .getJsonUrl(request, entry, props, topProps);
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
         }
+
         return super.getUrlForWiki(request, entry, tag, props, topProps);
     }
 
@@ -288,12 +293,12 @@ public class PointTypeHandler extends RecordTypeHandler {
             sb.append(
                 HtmlUtils.mouseClickHref(
                     HtmlUtils.call(
-                        "selectClick",
-                        HtmlUtils.comma(
-                            HtmlUtils.squote(target),
-                            HtmlUtils.squote(entry.getId()),
-                            HtmlUtils.squote(field.getName()),
-                            HtmlUtils.squote(type))), field.getLabel() +" (" + field.getName()+")"));
+                        "selectClick", HtmlUtils.comma(
+                            HtmlUtils.squote(target), HtmlUtils.squote(
+                                entry.getId()), HtmlUtils.squote(
+                                field.getName()), HtmlUtils.squote(
+                                type))), field.getLabel() + " ("
+                                         + field.getName() + ")"));
             sb.append("<br>");
         }
     }
@@ -319,78 +324,64 @@ public class PointTypeHandler extends RecordTypeHandler {
 
     }
 
+
     /**
-     * Gets called by the slack plugin. create a time series image
+     * @Override
+     * public boolean processCommandView(org.ramadda.repository.harvester
+     *       .CommandHarvester.CommandRequest cmdRequest, Entry entry,
+     *           org.ramadda.repository.harvester.CommandHarvester harvester,
+     *           final List<String> args, final Appendable sb,
+     *           List<FileInfo> files)
+     *       throws Exception {
+     *   Request            request = cmdRequest.getRequest();
+     *   PointOutputHandler poh =
+     *       (PointOutputHandler) getRecordOutputHandler();
+     *   PointEntry pointEntry = (PointEntry) poh.doMakeEntry(request, entry);
+     *   File       processDir = getStorageManager().createProcessDir();
+     *   File imageFile = new File(IOUtil.joinDir(processDir,
+     *                        entry.getName() + "_timeseries.png"));
+     *
+     *   PointFormHandler.PlotInfo plotInfo = new PointFormHandler.PlotInfo();
+     *   //        System.err.println ("calling makeTimeSeriesImage");
+     *   long t1 = System.currentTimeMillis();
+     *   BufferedImage newImage =
+     *       poh.getPointFormHandler().makeTimeseriesImage(request,
+     *           pointEntry, plotInfo);
+     *   //        System.err.println ("Done makeTimeSeriesImage");
+     *   long t2 = System.currentTimeMillis();
+     *   //        System.err.println("File:  " + imageFile);
+     *   ImageUtils.writeImageToFile(newImage, imageFile);
+     *   long t3 = System.currentTimeMillis();
+     *   //        System.err.println ("Done writeImageToFile:" + (t3-t2));
      *
      *
-     * @param cmdRequest _more_
-     * @param entry _more_
-     * @param harvester _more_
-     * @param args _more_
-     * @param sb _more_
-     * @param files _more_
+     *   FileInfo fileInfo = new FileInfo(imageFile);
+     *   if ( !isWikiText(entry.getDescription())) {
+     *       fileInfo.setDescription(entry.getDescription());
+     *   }
+     *   fileInfo.setTitle("Time series - " + entry.getName());
+     *   files.add(fileInfo);
      *
      *
-     * @return _more_
-     * @throws Exception on badness
+     *
+     *   //Now we get the process entry id
+     *   String processId = processDir.getName();
+     *   String processEntryId =
+     *       getStorageManager().getEncodedProcessDirEntryId(processId);
+     *
+     *   String entryUrl =
+     *       HtmlUtils.url(
+     *           request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW),
+     *           ARG_ENTRYID,
+     *   // Use this if you want to return the process directory
+     *   //        processEntryId);
+     *   getStorageManager().getEncodedProcessDirEntryId(processId + "/"
+     *       + imageFile.getName()));
+     *
+     *   //        System.err.println("URL:" + entryUrl);
+     *   return true;
+     * }
      */
-    /****
-    @Override
-    public boolean processCommandView(org.ramadda.repository.harvester
-            .CommandHarvester.CommandRequest cmdRequest, Entry entry,
-                org.ramadda.repository.harvester.CommandHarvester harvester,
-                final List<String> args, final Appendable sb,
-                List<FileInfo> files)
-            throws Exception {
-        Request            request = cmdRequest.getRequest();
-        PointOutputHandler poh =
-            (PointOutputHandler) getRecordOutputHandler();
-        PointEntry pointEntry = (PointEntry) poh.doMakeEntry(request, entry);
-        File       processDir = getStorageManager().createProcessDir();
-        File imageFile = new File(IOUtil.joinDir(processDir,
-                             entry.getName() + "_timeseries.png"));
-
-        PointFormHandler.PlotInfo plotInfo = new PointFormHandler.PlotInfo();
-        //        System.err.println ("calling makeTimeSeriesImage");
-        long t1 = System.currentTimeMillis();
-        BufferedImage newImage =
-            poh.getPointFormHandler().makeTimeseriesImage(request,
-                pointEntry, plotInfo);
-        //        System.err.println ("Done makeTimeSeriesImage");
-        long t2 = System.currentTimeMillis();
-        //        System.err.println("File:  " + imageFile);
-        ImageUtils.writeImageToFile(newImage, imageFile);
-        long t3 = System.currentTimeMillis();
-        //        System.err.println ("Done writeImageToFile:" + (t3-t2));
-
-
-        FileInfo fileInfo = new FileInfo(imageFile);
-        if ( !isWikiText(entry.getDescription())) {
-            fileInfo.setDescription(entry.getDescription());
-        }
-        fileInfo.setTitle("Time series - " + entry.getName());
-        files.add(fileInfo);
-
-
-
-        //Now we get the process entry id
-        String processId = processDir.getName();
-        String processEntryId =
-            getStorageManager().getEncodedProcessDirEntryId(processId);
-
-        String entryUrl =
-            HtmlUtils.url(
-                request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW),
-                ARG_ENTRYID,
-        // Use this if you want to return the process directory
-        //        processEntryId);
-        getStorageManager().getEncodedProcessDirEntryId(processId + "/"
-            + imageFile.getName()));
-
-        //        System.err.println("URL:" + entryUrl);
-        return true;
-    }
-    */
 
 
     /**
@@ -589,9 +580,12 @@ public class PointTypeHandler extends RecordTypeHandler {
     protected void handleHarvestedMetadata(RecordEntry recordEntry,
                                            PointMetadataHarvester metadata)
             throws Exception {
+
         PointEntry pointEntry = (PointEntry) recordEntry;
         Entry      entry      = pointEntry.getEntry();
-	if(!shouldProcessResource(null, entry)) return;
+        if ( !shouldProcessResource(null, entry)) {
+            return;
+        }
 
         //We need to do the polygon thing here so we have the geo bounds to make the grid
 
@@ -680,18 +674,20 @@ public class PointTypeHandler extends RecordTypeHandler {
             }
         }
 
-	List<RecordField> fields = metadata.getFields();
-	if(fields!=null) {
-	    for(RecordField field: fields) {
-		String unit = field.getUnit();
-		Metadata fieldMetadata =
-		    new Metadata(getRepository().getGUID(), entry.getId(),
-				 "thredds.variable",
-				 DFLT_INHERITED, field.getName(),
-				 field.getLabel(),unit!=null?unit:"","", Metadata.DFLT_EXTRA);
-		getMetadataManager().addMetadata(entry, fieldMetadata,          false);
-	    }
-	}
+        List<RecordField> fields = metadata.getFields();
+        if (fields != null) {
+            for (RecordField field : fields) {
+                String unit = field.getUnit();
+                Metadata fieldMetadata =
+                    new Metadata(getRepository().getGUID(), entry.getId(),
+                                 "thredds.variable", DFLT_INHERITED,
+                                 field.getName(), field.getLabel(),
+                                 (unit != null)
+                                 ? unit
+                                 : "", "", Metadata.DFLT_EXTRA);
+                getMetadataManager().addMetadata(entry, fieldMetadata, false);
+            }
+        }
 
 
         entry.setValues(values);
@@ -774,6 +770,7 @@ public class PointTypeHandler extends RecordTypeHandler {
 
             }
         }
+
     }
 
 

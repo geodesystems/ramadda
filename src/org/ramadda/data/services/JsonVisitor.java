@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.data.services;
@@ -51,7 +40,7 @@ public class JsonVisitor extends BridgeRecordVisitor {
     /** _more_ */
     private static final String COMMA = ",\n";
 
-    /** _more_          */
+    /** _more_ */
     private static final String QUOTE = "\"";
 
     /** _more_ */
@@ -69,16 +58,16 @@ public class JsonVisitor extends BridgeRecordVisitor {
     /** _more_ */
     int mycnt = _cnt++;
 
-    /** _more_          */
+    /** _more_ */
     private boolean initParams = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean addElevation;
 
-    /** _more_          */
+    /** _more_ */
     private boolean addGeo;
 
-    /** _more_          */
+    /** _more_ */
     private boolean addTime;
 
 
@@ -174,10 +163,10 @@ public class JsonVisitor extends BridgeRecordVisitor {
 
             if (getter == null) {
                 if (field.isTypeString()) {
-		    Json.quote(pw,record.getStringValue(field.getParamId()));
-		    //                    pw.append(QUOTE);
-		    //                    pw.append(record.getStringValue(field.getParamId()));
-		    //                    pw.append(QUOTE);
+                    Json.quote(pw, record.getStringValue(field.getParamId()));
+                    //                    pw.append(QUOTE);
+                    //                    pw.append(record.getStringValue(field.getParamId()));
+                    //                    pw.append(QUOTE);
                 } else if (field.isTypeDate()) {
                     pw.append(QUOTE);
                     pw.append(record.getStringValue(field.getParamId()));
@@ -192,12 +181,13 @@ public class JsonVisitor extends BridgeRecordVisitor {
                 }
             } else {
                 if (field.isTypeString() || field.isTypeDate()) {
-		    Json.quote(pw,getter.getStringValue(record, field,
-							visitInfo));
-		    //                    pw.append(QUOTE);
-		    //                    pw.append(getter.getStringValue(record, field,
-		    //                            visitInfo));
-		    //                    pw.append(QUOTE);
+                    Json.quote(pw,
+                               getter.getStringValue(record, field,
+                                   visitInfo));
+                    //                    pw.append(QUOTE);
+                    //                    pw.append(getter.getStringValue(record, field,
+                    //                            visitInfo));
+                    //                    pw.append(QUOTE);
                 } else {
                     d = getter.getValue(record, field, visitInfo);
                     if (Json.isNullNumber(d)) {

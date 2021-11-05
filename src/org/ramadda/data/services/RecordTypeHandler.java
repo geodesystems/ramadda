@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.data.services;
@@ -36,9 +25,9 @@ import org.ramadda.util.PropertyProvider;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 
-import ucar.unidata.util.Misc;
-
 import org.w3c.dom.*;
+
+import ucar.unidata.util.Misc;
 
 import java.io.File;
 
@@ -59,9 +48,10 @@ import java.util.List;
 public abstract class RecordTypeHandler extends BlobTypeHandler implements RecordConstants,
         RecordFileContext {
 
+    /**  */
     public static boolean debug = false;
-	
-    /** _more_          */
+
+    /** _more_ */
     private static int IDX = 0;
 
     /** _more_ */
@@ -538,10 +528,14 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
                                         Hashtable requestProperties)
             throws Exception {
         String path = getPathForEntry(null, entry);
-	if(debug)
-	    System.err.println("RecordTypeHandler.getPathForRecordEntry entry:" + entry +" path:" + path +" resource:" + entry.getResource());
+        if (debug) {
+            System.err.println(
+                "RecordTypeHandler.getPathForRecordEntry entry:" + entry
+                + " path:" + path + " resource:" + entry.getResource());
+        }
         path = getPathForRecordEntry(entry, path, requestProperties);
-	return path;
+
+        return path;
     }
 
 
@@ -584,37 +578,47 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     public String getPathForRecordEntry(Entry entry, String path,
                                         Hashtable requestProperties)
             throws Exception {
-	if(debug)
-	    System.err.println("RecordTypeHandler.getPathForRecordEntry entry:" + entry +" path:" + path);
+        if (debug) {
+            System.err.println(
+                "RecordTypeHandler.getPathForRecordEntry entry:" + entry
+                + " path:" + path);
+        }
         List<Macro> macros = getMacros(entry);
         if (macros != null) {
             for (Macro macro : macros) {
                 Object prop = requestProperties.get("request." + macro.name);
-//		System.err.println("macro:" + macro.name +" prop:" + prop);
+                //              System.err.println("macro:" + macro.name +" prop:" + prop);
                 if (prop == null) {
                     prop = (macro.dflt != null)
                            ? macro.dflt
                            : "";
-		    if(macro.dflt!=null && macro.template!=null)  {
-			List<String> dflts = Utils.split(macro.dflt,",",true,true);
-			if(dflts.size()>1) {
-			    List<String> values = new ArrayList<String>();
-			    for(String s: dflts) {
-				s  = macro.template.replace("${value}", s);
-				values.add(s);
-			    }
-			    prop = Utils.join(values,macro.delimiter!=null?macro.delimiter:"");
-			    if(macro.multitemplate!=null)
-				prop = macro.multitemplate.replace("${value}",prop.toString());
-			} else if(dflts.size()==1) {
-			    prop  = macro.template.replace("${value}", prop.toString());
-			}
-		    }
+                    if ((macro.dflt != null) && (macro.template != null)) {
+                        List<String> dflts = Utils.split(macro.dflt, ",",
+                                                 true, true);
+                        if (dflts.size() > 1) {
+                            List<String> values = new ArrayList<String>();
+                            for (String s : dflts) {
+                                s = macro.template.replace("${value}", s);
+                                values.add(s);
+                            }
+                            prop = Utils.join(values,
+                                    (macro.delimiter != null)
+                                    ? macro.delimiter
+                                    : "");
+                            if (macro.multitemplate != null) {
+                                prop = macro.multitemplate.replace(
+                                    "${value}", prop.toString());
+                            }
+                        } else if (dflts.size() == 1) {
+                            prop = macro.template.replace("${value}",
+                                    prop.toString());
+                        }
+                    }
 
                 } else {
-		    //		    System.err.println("value:" + prop);
-		}
-		String value;
+                    //              System.err.println("value:" + prop);
+                }
+                String value;
                 //Handle lists different?
                 if (prop instanceof List) {
                     value = prop.toString();
@@ -623,7 +627,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
                 }
                 value = value.replaceAll(" ", "%20");
                 path  = path.replace("${" + macro.name + "}", value);
-		//		System.err.println("path:" + path);
+                //              System.err.println("path:" + path);
             }
         }
         //      System.err.println("Path:" + path);
@@ -646,14 +650,14 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
             path = path.replace("${longitude}", "-105.2");
         }
         if (path.indexOf("${north}") >= 0) {
-	    path = path.replace("${north}", entry.getNorth() + "");
-	    path = path.replace("${west}", entry.getWest() + "");
-	    path = path.replace("${south}", entry.getSouth() + "");
-	    path = path.replace("${east}", entry.getEast() + "");	    
+            path = path.replace("${north}", entry.getNorth() + "");
+            path = path.replace("${west}", entry.getWest() + "");
+            path = path.replace("${south}", entry.getSouth() + "");
+            path = path.replace("${east}", entry.getEast() + "");
 
         }
 
-	//	System.err.println(path);
+        //      System.err.println(path);
 
         return path;
     }
@@ -713,10 +717,10 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         }
         Class c = Misc.findClass(className);
         Constructor ctor = Misc.findConstructor(c, new Class[] { String.class,
-								 Hashtable.class });
+                Hashtable.class });
         if (ctor != null) {
             return (RecordFile) ctor.newInstance(new Object[] { path,
-								properties });
+                    properties });
         }
         ctor = Misc.findConstructor(c, new Class[] { String.class });
 
@@ -904,32 +908,26 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         /** _more_ */
         String values;
 
-        /** _more_          */
+        /** _more_ */
         boolean multiple = false;
 
-        /** _more_          */
+        /** _more_ */
         String delimiter;
 
-        /** _more_          */
+        /** _more_ */
         String template;
 
-        /** _more_          */
+        /** _more_ */
         String multitemplate;
 
-        /** _more_          */
+        /** _more_ */
         String nonetemplate;
 
-        /** _more_          */
+        /** _more_ */
         String rows;
 
         /**
          * _more_
-         *
-         * @param name _more_
-         * @param type _more_
-         * @param dflt _more_
-         * @param label _more_
-         * @param values _more_
          *
          * @param macro _more_
          * @param props _more_

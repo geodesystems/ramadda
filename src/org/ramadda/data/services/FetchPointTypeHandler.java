@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.data.services;
@@ -96,7 +85,7 @@ public class FetchPointTypeHandler extends PointTypeHandler {
     private void doFetch() {
         int errorCnt = 0;
         while (errorCnt < 5) {
-	    //Check every 30 minutes
+            //Check every 30 minutes
             Misc.sleepSeconds(60 * 30);
             try {
                 doFetchInner();
@@ -122,7 +111,7 @@ public class FetchPointTypeHandler extends PointTypeHandler {
         //System.err.println("doFetch");
         Request request = getRepository().getTmpRequest();
         request.put(ARG_TYPE, "type_point_fetch");
-        List<Entry> entries = 
+        List<Entry> entries =
             request.getRepository().getEntryManager().getEntries(request);
         for (Entry entry : entries) {
             fetchEntry(entry);
@@ -159,16 +148,19 @@ public class FetchPointTypeHandler extends PointTypeHandler {
                 return;
             }
         }
-        boolean          addDate  = (Boolean) entry.getValue(IDX_ADD_DATE);
-        String           contents = readContents(entry);
-	if(contents ==null) return;
-	if(!contents.startsWith("#")) {
-	    if(contents.length()>500)
-		contents = contents.substring(0,499);
-	    System.err.println("Fetch: received error:" + contents); 
-	}
-        SimpleDateFormat sdf      = new SimpleDateFormat(DATE_FORMAT);
-        String           dttm     = "," + sdf.format(new Date());
+        boolean addDate  = (Boolean) entry.getValue(IDX_ADD_DATE);
+        String  contents = readContents(entry);
+        if (contents == null) {
+            return;
+        }
+        if ( !contents.startsWith("#")) {
+            if (contents.length() > 500) {
+                contents = contents.substring(0, 499);
+            }
+            System.err.println("Fetch: received error:" + contents);
+        }
+        SimpleDateFormat sdf  = new SimpleDateFormat(DATE_FORMAT);
+        String           dttm = "," + sdf.format(new Date());
         BufferedWriter writer = new BufferedWriter(
                                     new FileWriter(
                                         entry.getResource().getTheFile(),
@@ -204,7 +196,8 @@ public class FetchPointTypeHandler extends PointTypeHandler {
         String url = (String) entry.getValue(IDX_SOURCE_URL);
         url = url.replace("points.json", "points.csv");
         url += "&fullheader=true";
-	System.err.println("U:" + url);
+        System.err.println("U:" + url);
+
         return IO.readContents(url);
     }
 
@@ -214,16 +207,19 @@ public class FetchPointTypeHandler extends PointTypeHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param fromImport _more_
      *
      * @throws Exception _more_
      */
     @Override
-    public void initializeNewEntry(Request request, Entry entry,boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry,
+                                   boolean fromImport)
             throws Exception {
-	if(fromImport) {
-	    super.initializeNewEntry(request, entry, fromImport);
-	    return;
-	}
+        if (fromImport) {
+            super.initializeNewEntry(request, entry, fromImport);
+
+            return;
+        }
         File tmpFile = getStorageManager().getTmpFile(request, "csv");
         boolean          addDate  = (Boolean) entry.getValue(IDX_ADD_DATE);
         String           contents = readContents(entry);
@@ -253,7 +249,7 @@ public class FetchPointTypeHandler extends PointTypeHandler {
         tmpFile = getStorageManager().moveToStorage(request, tmpFile);
         Resource resource = new Resource(tmpFile, Resource.TYPE_STOREDFILE);
         entry.setResource(resource);
-	super.initializeNewEntry(request, entry, fromImport);
+        super.initializeNewEntry(request, entry, fromImport);
 
     }
 
