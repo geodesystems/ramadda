@@ -839,7 +839,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    });
         },
         setChartSelection: function(index) {
-	    console.log("setChartSelection");
 	    this.mapCharts(chart=>{
                 if (chart.setSelection) {
 		    chart.setSelection([{
