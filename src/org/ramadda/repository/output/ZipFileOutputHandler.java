@@ -1,5 +1,7 @@
-// Copyright (c) 2008-2021 Geode Systems LLC
-// SPDX-License-Identifier: Apache-2.0
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
+*/
 
 package org.ramadda.repository.output;
 
@@ -191,7 +193,7 @@ public class ZipFileOutputHandler extends OutputHandler {
      *
      *
      * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     private static class Node {
 
@@ -208,7 +210,7 @@ public class ZipFileOutputHandler extends OutputHandler {
         List<Node> children;
 
         /**
-         
+         *
          *
          * @param path _more_
          */
@@ -218,7 +220,7 @@ public class ZipFileOutputHandler extends OutputHandler {
 
 
         /**
-         
+         *
          *
          * @param path _more_
          * @param size _more_
@@ -329,3 +331,5 @@ public class ZipFileOutputHandler extends OutputHandler {
     }
 
 }
+
+
