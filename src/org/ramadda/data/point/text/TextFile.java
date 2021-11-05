@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.data.point.text;
@@ -84,6 +73,7 @@ public abstract class TextFile extends PointFile {
     /** _more_ */
     private boolean headerStandard = false;
 
+    /**  */
     private boolean firstLineFields = false;
 
     /** _more_ */
@@ -199,22 +189,21 @@ public abstract class TextFile extends PointFile {
 
 
     /**
-       Set the FirstLineFields property.
-
-       @param value The new value for FirstLineFields
-    **/
-    public void setFirstLineFields (boolean value) {
-	firstLineFields = value;
+     *  Set the FirstLineFields property.
+     *
+     *  @param value The new value for FirstLineFields
+     */
+    public void setFirstLineFields(boolean value) {
+        firstLineFields = value;
     }
 
     /**
-       Get the FirstLineFields property.
-
-       @return The FirstLineFields
-    **/
-    public boolean getFirstLineFields () {
-	return  getProperty("firstLineDefinesFields",
-			    firstLineFields);
+     *  Get the FirstLineFields property.
+     *
+     *  @return The FirstLineFields
+     */
+    public boolean getFirstLineFields() {
+        return getProperty("firstLineDefinesFields", firstLineFields);
 
     }
 
@@ -230,6 +219,7 @@ public abstract class TextFile extends PointFile {
      */
     public int getSkipLines(VisitInfo visitInfo) {
         int skipLines = Integer.parseInt(getProperty(PROP_SKIPLINES, "0"));
+
         return skipLines;
     }
 
@@ -248,7 +238,7 @@ public abstract class TextFile extends PointFile {
      * @return _more_
      */
     public boolean isHeaderStandard() {
-	return  getProperty(PROP_HEADER_STANDARD, headerStandard);
+        return getProperty(PROP_HEADER_STANDARD, headerStandard);
     }
 
     /**
@@ -431,16 +421,19 @@ public abstract class TextFile extends PointFile {
      * @throws Exception _more_
      */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
-	boolean debug = false;
 
-        boolean haveReadHeader  = headerLines.size() > 0;
-        String  headerDelimiter = getHeaderDelimiter();
-        boolean firstLineFields = getFirstLineFields();
-        String sfieldRow         = (String) getProperty("fieldRow", null);
-        String lastHeaderPattern = getProperty("lastHeaderPattern", null);
-	if (headerDelimiter != null) {
-	    if(debug)
-		System.err.println("TextFile.prepareToVisit: headerDelimiter");
+        boolean debug             = false;
+
+        boolean haveReadHeader    = headerLines.size() > 0;
+        String  headerDelimiter   = getHeaderDelimiter();
+        boolean firstLineFields   = getFirstLineFields();
+        String  sfieldRow         = (String) getProperty("fieldRow", null);
+        String  lastHeaderPattern = getProperty("lastHeaderPattern", null);
+        if (headerDelimiter != null) {
+            if (debug) {
+                System.err.println(
+                    "TextFile.prepareToVisit: headerDelimiter");
+            }
             boolean starts = headerDelimiter.startsWith("starts:");
             if (starts) {
                 headerDelimiter =
@@ -467,12 +460,13 @@ public abstract class TextFile extends PointFile {
                 //Don't go crazy if we miss the header delimiter
                 if (headerLines.size() > 500) {
                     throw new IllegalStateException(
-						    "Reading way too many header lines");
+                        "Reading way too many header lines");
                 }
-	    }
+            }
         } else if (isHeaderStandard()) {
-	    if(debug)
-		System.err.println("TextFile.prepareToVisit: isStandard");
+            if (debug) {
+                System.err.println("TextFile.prepareToVisit: isStandard");
+            }
             while (true) {
                 String line = visitInfo.getRecordIO().readLine();
                 if (line == null) {
@@ -492,15 +486,17 @@ public abstract class TextFile extends PointFile {
                     line = line.substring(1);
                     int idx = line.indexOf("=");
                     if (idx >= 0) {
-                        List<String> toks = Utils.splitUpTo(line, "=",
-                                                2);
+                        List<String> toks = Utils.splitUpTo(line, "=", 2);
                         putProperty(toks.get(0), toks.get(1));
                     }
                 }
             }
         } else if (lastHeaderPattern != null) {
-	    if(debug)
-		System.err.println("TextFile.prepareToVisit: lastHeaderPattern:" + lastHeaderPattern);
+            if (debug) {
+                System.err.println(
+                    "TextFile.prepareToVisit: lastHeaderPattern:"
+                    + lastHeaderPattern);
+            }
             boolean starts = lastHeaderPattern.startsWith("starts:");
             if (starts) {
                 lastHeaderPattern =
@@ -528,47 +524,56 @@ public abstract class TextFile extends PointFile {
 
             }
 
-	} else if (firstLineFields || (sfieldRow != null)) {
-            int    skipCnt  = getSkipLines(visitInfo);
-            int    fieldRow =sfieldRow!=null? Integer.parseInt(sfieldRow):0;
-	    if(debug)
-		System.err.println("TextFile.prepareToVisit: firstLineFields=true skipLines=" + skipCnt);
-            String line     = null;
-	    String fieldsLine=null;
+        } else if (firstLineFields || (sfieldRow != null)) {
+            int skipCnt  = getSkipLines(visitInfo);
+            int fieldRow = (sfieldRow != null)
+                           ? Integer.parseInt(sfieldRow)
+                           : 0;
+            if (debug) {
+                System.err.println(
+                    "TextFile.prepareToVisit: firstLineFields=true skipLines="
+                    + skipCnt);
+            }
+            String line       = null;
+            String fieldsLine = null;
             while (true) {
                 line = visitInfo.getRecordIO().readLine();
                 if ( !haveReadHeader) {
                     headerLines.add(line);
-                }				   
+                }
                 skipCnt--;
                 fieldRow--;
                 if (fieldRow <= 0) {
-		    fieldsLine=line;
+                    fieldsLine = line;
+
                     break;
                 }
             }
             //Read the rest of the header lines
             while (skipCnt > 0) {
                 line = visitInfo.getRecordIO().readLine();
-		if(line==null) break;
+                if (line == null) {
+                    break;
+                }
                 if ( !haveReadHeader) {
                     headerLines.add(line);
-                }				   
+                }
                 skipCnt--;
             }
 
             if (fieldsLine != null) {
-		String delim =  getProperty(PROP_DELIMITER,",");
+                String delim      = getProperty(PROP_DELIMITER, ",");
                 String sampleLine = visitInfo.getRecordIO().readLine();
-		visitInfo.getRecordIO().putBackLine(sampleLine);
-                List<String> toks    = Utils.tokenizeColumns(fieldsLine, delim);
-		//		System.err.println("LINE:" + fieldsLine);
-                List<String> sampleToks    = Utils.tokenizeColumns(sampleLine, delim);
+                visitInfo.getRecordIO().putBackLine(sampleLine);
+                List<String> toks = Utils.tokenizeColumns(fieldsLine, delim);
+                //              System.err.println("LINE:" + fieldsLine);
+                List<String> sampleToks = Utils.tokenizeColumns(sampleLine,
+                                              delim);
                 List<String> cleaned = new ArrayList<String>();
-                boolean didDate = false;
+                boolean      didDate = false;
                 for (int tokIdx = 0; tokIdx < toks.size(); tokIdx++) {
-                    String tok = toks.get(tokIdx);
-                    String sample = sampleToks.get(tokIdx).toLowerCase();		    
+                    String tok    = toks.get(tokIdx);
+                    String sample = sampleToks.get(tokIdx).toLowerCase();
                     tok = tok.replaceAll("\"", "");
                     String        name  = tok;
                     String        id    = Utils.makeID(tok);
@@ -579,17 +584,17 @@ public abstract class TextFile extends PointFile {
                         id.matches(
                             "^(timestamp|week_ended|date|month|year|as_of|end_date|per_end_date|obs_date|quarter|time)$");
                     //                    System.err.println("id:" + id +" isDate:" + isDate);
-		    if(!isDate) {
-			isDate = Utils.isDate(sample);
-		    }
-		    
-		    if(!isDate) {
-			if(Utils.isNumber(sample)) {
+                    if ( !isDate) {
+                        isDate = Utils.isDate(sample);
+                    }
+
+                    if ( !isDate) {
+                        if (Utils.isNumber(sample)) {
                             attrs.append(attrType(RecordField.TYPE_DOUBLE));
-			} else {
-			    attrs.append(attrType(RecordField.TYPE_STRING));
-			}
-		    }
+                        } else {
+                            attrs.append(attrType(RecordField.TYPE_STRING));
+                        }
+                    }
 
                     if (isDate) {
                         if ( !didDate) {
@@ -642,14 +647,18 @@ public abstract class TextFile extends PointFile {
                 throw new IllegalArgumentException(
                     "Bad number of header lines:" + headerLines.size());
             }
-	    if(debug)
-		System.err.println("TextFile.prepareToVisit: default header lines=" + headerLines +" skipCnt=" + skipCnt);
+            if (debug) {
+                System.err.println(
+                    "TextFile.prepareToVisit: default header lines="
+                    + headerLines + " skipCnt=" + skipCnt);
+            }
         }
 
 
         initProperties();
 
         return visitInfo;
+
 
     }
 
@@ -691,10 +700,14 @@ public abstract class TextFile extends PointFile {
         putProperty(PROP_FIELDS, f);
     }
 
+    /**
+     *
+     * @param fields _more_
+     */
     public void putFields(List<String> fields) {
         String f = makeFields(fields);
         putProperty(PROP_FIELDS, f);
-    }    
+    }
 
 
     /**

@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.data.record;
@@ -164,10 +153,10 @@ public abstract class RecordFile {
     public RecordFile(String filename, Hashtable properties) {
         this.filename   = filename;
         this.properties = properties;
-	if(debug) {
-	    System.err.println("RecordFile.ctor:" + filename);
-	    //	    System.err.println(Utils.getStack(10));
-	}
+        if (debug) {
+            System.err.println("RecordFile.ctor:" + filename);
+            //      System.err.println(Utils.getStack(10));
+        }
     }
 
     /**
@@ -192,12 +181,15 @@ public abstract class RecordFile {
      */
     public RecordFile(String filename, RecordFileContext context,
                       Hashtable properties) {
-	this(filename, properties);
-        this.context    = context;
+        this(filename, properties);
+        this.context = context;
     }
 
+    /**
+     *  @return _more_
+     */
     public RecordFileContext getRecordFileContext() {
-	return context;
+        return context;
     }
 
     /**
@@ -651,9 +643,10 @@ public abstract class RecordFile {
      */
     public InputStream doMakeInputStream(boolean buffered) throws Exception {
         String path = getNormalizedFilename();
-	//	System.err.println("RecordFile.doMakeInputStream:" + path);
-	if(debug)
-	    System.err.println("RecordFile.doMakeInputStream path:" + path);
+        //      System.err.println("RecordFile.doMakeInputStream:" + path);
+        if (debug) {
+            System.err.println("RecordFile.doMakeInputStream path:" + path);
+        }
 
         if (path.endsWith(".zip") || getProperty("isZip", false)) {
             InputStream    fis = IO.getInputStream(path);
@@ -667,21 +660,23 @@ public abstract class RecordFile {
                 if (p.endsWith(".csv") || p.endsWith(".tsv")) {
                     return zin;
                 }
-		//Apple health
+                //Apple health
                 if (p.equals("export.xml")) {
-		    return zin;
-		}
+                    return zin;
+                }
             }
+
             throw new IllegalArgumentException(
                 "Could not find csv file in source zip file");
         }
 
         try {
-	    //            System.err.println("path:" + path);
+            //            System.err.println("path:" + path);
             //            return Utils.doMakeInputStream(path, buffered);
             return IO.doMakeInputStream(path, buffered);
         } catch (Exception exc) {
             System.err.println("Error reading data:" + path);
+
             throw exc;
         }
     }
@@ -790,7 +785,7 @@ public abstract class RecordFile {
      * @return _more_
      */
     public List<RecordField> doMakeFields(boolean failureOk) {
-        BaseRecord            record = makeRecord(new VisitInfo());
+        BaseRecord        record = makeRecord(new VisitInfo());
         List<RecordField> fields = record.getFields();
 
         return new ArrayList<RecordField>(fields);
@@ -909,7 +904,7 @@ public abstract class RecordFile {
      * @throws Exception _more_
      */
     public BaseRecord.ReadStatus readNextRecord(VisitInfo visitInfo,
-                                            BaseRecord record)
+            BaseRecord record)
             throws Exception {
         visitInfo.addRecordIndex(1);
         BaseRecord.ReadStatus status =
@@ -1009,7 +1004,7 @@ public abstract class RecordFile {
                 try {
                     //This sets the record index
                     BaseRecord.ReadStatus status = readNextRecord(visitInfo,
-                                                   record);
+                                                       record);
                     if (status == BaseRecord.ReadStatus.EOF) {
                         break;
                     }
@@ -1192,9 +1187,9 @@ public abstract class RecordFile {
      */
     public BaseRecord getRecord(int index) throws Exception {
         //TODO: not sure about the visitInfo
-        VisitInfo visitInfo = new VisitInfo();
-        RecordIO  recordIO  = doMakeInputIO(visitInfo, false);
-        BaseRecord    record    = (BaseRecord) makeRecord(new VisitInfo());
+        VisitInfo  visitInfo = new VisitInfo();
+        RecordIO   recordIO  = doMakeInputIO(visitInfo, false);
+        BaseRecord record    = (BaseRecord) makeRecord(new VisitInfo());
         skip(new VisitInfo(recordIO), record, index);
         record.readNextRecord(recordIO);
 
@@ -1278,7 +1273,7 @@ public abstract class RecordFile {
                              VisitInfo visitInfo, RecordFilter filter)
             throws Exception {
         BaseRecord record = makeRecord(visitInfo);
-        int    index  = 0;
+        int        index  = 0;
         if (visitInfo.getStart() > 0) {
             skip(visitInfo, record, visitInfo.getStart());
             index = visitInfo.getStart();
@@ -1289,7 +1284,8 @@ public abstract class RecordFile {
                 break;
             }
             try {
-                BaseRecord.ReadStatus status = record.readNextRecord(recordInput);
+                BaseRecord.ReadStatus status =
+                    record.readNextRecord(recordInput);
                 if (status != BaseRecord.ReadStatus.OK) {
                     break;
                 }
@@ -1349,19 +1345,23 @@ public abstract class RecordFile {
      * @return _more_
      */
     public String getNormalizedFilename() {
-	String path =  Utils.normalizeTemplateUrl(filename);
-	String pathReplace = (String)getProperty("pathReplace");
-	if(pathReplace!=null) {
-	    List<String> toks = StringUtil.splitUpTo(pathReplace,":",2);
-	    if(toks.size()==2) {
-		String from = toks.get(0).replaceAll("_semicolon_",":");
-		String to = toks.get(1).replaceAll("_semicolon_",":");		
-		path = path.replaceAll(from,to);
-		if(debug)
-		    System.err.println("RecordFile.getNormalizedFilename changed path:" + path);
-	    }
-	}
-	return path;
+        String path        = Utils.normalizeTemplateUrl(filename);
+        String pathReplace = (String) getProperty("pathReplace");
+        if (pathReplace != null) {
+            List<String> toks = StringUtil.splitUpTo(pathReplace, ":", 2);
+            if (toks.size() == 2) {
+                String from = toks.get(0).replaceAll("_semicolon_", ":");
+                String to   = toks.get(1).replaceAll("_semicolon_", ":");
+                path = path.replaceAll(from, to);
+                if (debug) {
+                    System.err.println(
+                        "RecordFile.getNormalizedFilename changed path:"
+                        + path);
+                }
+            }
+        }
+
+        return path;
     }
 
 
@@ -1569,7 +1569,8 @@ public abstract class RecordFile {
      *
      * @throws Exception On badness
      */
-    public void setDateFromDateAndTimeIndex(BaseRecord record) throws Exception {
+    public void setDateFromDateAndTimeIndex(BaseRecord record)
+            throws Exception {
         dttm.setLength(0);
         getDateTimeString(record, dttm, dateIndex, timeIndex);
 

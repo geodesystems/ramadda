@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.data.docs;
@@ -22,8 +11,8 @@ import org.ramadda.data.services.PointTypeHandler;
 
 
 import org.ramadda.repository.*;
-import org.ramadda.repository.type.*;
 import org.ramadda.repository.metadata.*;
+import org.ramadda.repository.type.*;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 import org.ramadda.util.text.CsvUtil;
@@ -48,14 +37,14 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
 
 
     /** _more_ */
-    private static int IDX = 0;  
+    private static int IDX = 0;
 
     //Have these here so we can act like a point entry type
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_NUMPOINTS = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_PROPERTIES = IDX++;
 
     /** _more_ */
@@ -81,6 +70,8 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param entry _more_
      * @param properties _more_
      * @param requestProperties _more_
@@ -90,23 +81,24 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public RecordFile doMakeRecordFile(Request request, Entry entry, Hashtable properties,
+    public RecordFile doMakeRecordFile(Request request, Entry entry,
+                                       Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
         String commands =
             (String) entry.getValue(ConvertibleTypeHandler.IDX_COMMANDS);
-	if(!Utils.stringDefined(commands)) {
-	    List<Metadata> metadataList =
-		getMetadataManager().findMetadata(request, entry,
-						  "csv_commands", true);
-	    if ((metadataList != null) && (metadataList.size() > 0)) {
-		commands = metadataList.get(0).getAttr2();
-	    }
-	}
+        if ( !Utils.stringDefined(commands)) {
+            List<Metadata> metadataList =
+                getMetadataManager().findMetadata(request, entry,
+                    "csv_commands", true);
+            if ((metadataList != null) && (metadataList.size() > 0)) {
+                commands = metadataList.get(0).getAttr2();
+            }
+        }
 
 
-        List<StringBuilder> toks    = CsvUtil.tokenizeCommands(commands);
-        List<String>        args    = new ArrayList<String>();
+        List<StringBuilder> toks = CsvUtil.tokenizeCommands(commands);
+        List<String>        args = new ArrayList<String>();
         for (int j = 0; j < toks.size(); j++) {
             String arg = toks.get(j).toString();
             if (arg.equals(Utils.MULTILINE_END)) {
@@ -114,7 +106,7 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
             }
             if (arg.startsWith("entry:")) {
                 Entry fileEntry = getEntryManager().getEntry(request,
-							     arg.substring("entry:".length()));
+                                      arg.substring("entry:".length()));
                 if (fileEntry == null) {
                     throw new IllegalArgumentException("Could not find "
                             + arg);
@@ -130,29 +122,50 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
             args.add(arg);
         }
         commands = Utils.join(args, " ", false);
-	if(debug)
-	    System.err.println("ConvertibleTypeHandler.getPathForRecordEntry entry:" + entry +" commands:" + commands);
-        String path = getPathForRecordEntry(entry, requestProperties);
+        if (debug) {
+            System.err.println(
+                "ConvertibleTypeHandler.getPathForRecordEntry entry:" + entry
+                + " commands:" + commands);
+        }
+        String          path = getPathForRecordEntry(entry,
+                                   requestProperties);
         ConvertibleFile file = new ConvertibleFile(this, entry, args, path);
+
         return file;
     }
 
 
-    
 
 
+
+    /**
+     *
+     * @param wikiUtil _more_
+     * @param request _more_
+     * @param originalEntry _more_
+     * @param entry _more_
+     * @param tag _more_
+     * @param props _more_
+     *  @return _more_
+     *
+     * @throws Exception _more_
+     */
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)
             throws Exception {
-	if(!tag.equals("convertform")) return super.getWikiInclude(wikiUtil, request,originalEntry, entry, tag, props);
-	ConvertibleOutputHandler coh =(ConvertibleOutputHandler) 
-	    (ConvertibleOutputHandler) getRepository().getOutputHandler(
-									ConvertibleOutputHandler.class);
-	StringBuilder sb = new StringBuilder();
-	coh.makeConvertForm(request, entry, sb);
-	return sb.toString();
+        if ( !tag.equals("convertform")) {
+            return super.getWikiInclude(wikiUtil, request, originalEntry,
+                                        entry, tag, props);
+        }
+        ConvertibleOutputHandler coh =
+            (ConvertibleOutputHandler) (ConvertibleOutputHandler) getRepository()
+                .getOutputHandler(ConvertibleOutputHandler.class);
+        StringBuilder sb = new StringBuilder();
+        coh.makeConvertForm(request, entry, sb);
+
+        return sb.toString();
     }
 
 

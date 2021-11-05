@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.data.point;
@@ -20,10 +9,10 @@ package org.ramadda.data.point;
 
 import org.ramadda.data.record.*;
 import org.ramadda.data.record.filter.*;
-import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Station;
 import org.ramadda.util.Utils;
+import org.ramadda.util.geo.GeoUtils;
 
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
@@ -1001,12 +990,12 @@ public abstract class PointFile extends RecordFile implements Cloneable,
             RecordField field = new RecordField(name, name, "", paramId++,
                                     getProperty(properties, ATTR_UNIT, ""));
 
-	    String canEdit= getProperty(properties, "canedit",null);
-	    if(canEdit!=null) {
-		field.setProperty("canedit",canEdit);
-	    }
+            String canEdit = getProperty(properties, "canedit", null);
+            if (canEdit != null) {
+                field.setProperty("canedit", canEdit);
+            }
 
-	    
+
 
             if (getProperty(properties, "isDateOffset",
                             "false").equals("true")) {
@@ -1101,11 +1090,11 @@ public abstract class PointFile extends RecordFile implements Cloneable,
             }
 
 
-            String group = getProperty(field, properties, "group",null);
+            String group = getProperty(field, properties, "group", null);
             if (group != null) {
                 field.setGroup(group);
             }
-	    
+
 
             String fmt = getProperty(field, properties, "fmt", (String) null);
             if (fmt == null) {
@@ -1120,13 +1109,14 @@ public abstract class PointFile extends RecordFile implements Cloneable,
                 field.setType(field.TYPE_DATE);
                 SimpleDateFormat sdf = new SimpleDateFormat();
                 sdf.setTimeZone(TimeZone.getTimeZone(timezone));
-		try {
-		    sdf.applyPattern(fmt);
-		    field.setDateFormat(sdf, fmt);
-		} catch(Exception exc) {
-		    System.err.println("Error making date format:" + fmt);
-		    throw exc;
-		}
+                try {
+                    sdf.applyPattern(fmt);
+                    field.setDateFormat(sdf, fmt);
+                } catch (Exception exc) {
+                    System.err.println("Error making date format:" + fmt);
+
+                    throw exc;
+                }
             }
 
             String type = getProperty(field, properties, ATTR_TYPE,

@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.data.record;
@@ -60,28 +49,54 @@ public class CsvVisitor extends RecordVisitor {
     private boolean fullHeader = false;
 
 
+    /**
+     * Interface description
+     *
+     *
+     * @author         Enter your name here...
+     */
     public interface HeaderPrinter {
 
         /**
          * _more_
-         * @return _more_
+         *
+         *
+         * @param visitor _more_
+         * @param pw _more_
+         * @param fields _more_
          */
-        public void call(CsvVisitor visitor, PrintWriter pw, List<RecordField> fields);
+        public void call(CsvVisitor visitor, PrintWriter pw,
+                         List<RecordField> fields);
     }
 
+    /**
+     * Interface description
+     *
+     *
+     * @author         Enter your name here...
+     */
     public interface LineEnder {
 
         /**
          * _more_
-         * @return _more_
+         *
+         * @param visitor _more_
+         * @param pw _more_
+         * @param fields _more_
+         * @param record _more_
+         * @param cnt _more_
          */
-        public void call(CsvVisitor visitor, PrintWriter pw, List<RecordField> fields, BaseRecord record,int cnt);
+        public void call(CsvVisitor visitor, PrintWriter pw,
+                         List<RecordField> fields, BaseRecord record,
+                         int cnt);
     }
-    
 
 
+
+    /**  */
     private HeaderPrinter headerPrinter;
 
+    /**  */
     private LineEnder lineEnder;
 
     /**
@@ -91,14 +106,23 @@ public class CsvVisitor extends RecordVisitor {
      * @param fields _more_
      */
     public CsvVisitor(PrintWriter pw, List<RecordField> fields) {
-	this(pw,fields,null,null);
+        this(pw, fields, null, null);
     }
 
-    public CsvVisitor(PrintWriter pw, List<RecordField> fields, HeaderPrinter headerPrinter, LineEnder lineEnder) {	
-	this.headerPrinter = headerPrinter;
-	this.lineEnder = lineEnder;
-        this.pw     = pw;
-        this.fields = fields;
+    /**
+     *
+     *
+     * @param pw _more_
+     * @param fields _more_
+     * @param headerPrinter _more_
+     * @param lineEnder _more_
+     */
+    public CsvVisitor(PrintWriter pw, List<RecordField> fields,
+                      HeaderPrinter headerPrinter, LineEnder lineEnder) {
+        this.headerPrinter = headerPrinter;
+        this.lineEnder     = lineEnder;
+        this.pw            = pw;
+        this.fields        = fields;
     }
 
     /** _more_ */
@@ -131,6 +155,7 @@ public class CsvVisitor extends RecordVisitor {
     /** _more_ */
     private static final String MISSING = "NaN";
 
+    /**  */
     private String encodedDelimiter = Utils.hexEncode(COLUMN_DELIMITER);
 
     /**
@@ -160,8 +185,9 @@ public class CsvVisitor extends RecordVisitor {
 
 
 
+    /**  */
     private int recordCnt = 0;
-    
+
     /**
      * _more_
      *
@@ -176,7 +202,8 @@ public class CsvVisitor extends RecordVisitor {
     public boolean visitRecord(RecordFile file, VisitInfo visitInfo,
                                BaseRecord record)
             throws Exception {
-	recordCnt++;
+
+        recordCnt++;
         if (fields == null) {
             fields = record.getFields();
         }
@@ -189,8 +216,8 @@ public class CsvVisitor extends RecordVisitor {
                     pw.append(altHeader);
                     pw.append("\n");
                 }
-	    } else if(headerPrinter!=null) {
-		headerPrinter.call(this,pw,fields);
+            } else if (headerPrinter != null) {
+                headerPrinter.call(this, pw, fields);
             } else if ( !fullHeader) {
                 for (RecordField field : fields) {
                     //Skip the fake ones
@@ -258,42 +285,45 @@ public class CsvVisitor extends RecordVisitor {
             if (getter == null) {
                 if (field.isTypeString()) {
                     String svalue = record.getStringValue(field.getParamId());
-		    if(svalue.indexOf(COLUMN_DELIMITER)>0) {
-			//			svalue = svalue.replaceAll(COLUMN_DELIMITER,
-			//						   encodedDelimiter);
-			pw.append("\"");
-			pw.append(svalue);
-			pw.append("\"");
-		    } else {
-			pw.append(svalue);
-		    }
-		} else if (field.isTypeDate()) {
-		    Object object = record.getObjectValue(field.getParamId());
-		    if(object!=null)
-			pw.append(Utils.formatIso((Date)object));
+                    if (svalue.indexOf(COLUMN_DELIMITER) > 0) {
+                        //                      svalue = svalue.replaceAll(COLUMN_DELIMITER,
+                        //                                                 encodedDelimiter);
+                        pw.append("\"");
+                        pw.append(svalue);
+                        pw.append("\"");
+                    } else {
+                        pw.append(svalue);
+                    }
+                } else if (field.isTypeDate()) {
+                    Object object = record.getObjectValue(field.getParamId());
+                    if (object != null) {
+                        pw.append(Utils.formatIso((Date) object));
+                    }
                 } else {
-		    double value = record.getValue(field.getParamId());
+                    double value = record.getValue(field.getParamId());
                     pw.append(Double.toString(value));
                 }
             } else {
-                String svalue = getter.getStringValue(record, field, visitInfo);
-		if(svalue.indexOf(COLUMN_DELIMITER)>0) {
-		    pw.append("\"");
-		    pw.append(svalue);
-		    pw.append("\"");
-		} else {
-		    pw.append(svalue);
-		}
+                String svalue = getter.getStringValue(record, field,
+                                    visitInfo);
+                if (svalue.indexOf(COLUMN_DELIMITER) > 0) {
+                    pw.append("\"");
+                    pw.append(svalue);
+                    pw.append("\"");
+                } else {
+                    pw.append(svalue);
+                }
             }
-	}
-	if(lineEnder!=null) {
-	    lineEnder.call(this,pw,fields,record,cnt);
-	}
+        }
+        if (lineEnder != null) {
+            lineEnder.call(this, pw, fields, record, cnt);
+        }
 
 
         pw.append("\n");
 
         return true;
+
     }
 
     /**

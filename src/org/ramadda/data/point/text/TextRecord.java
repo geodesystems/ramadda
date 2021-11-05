@@ -1,20 +1,12 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.data.point.text;
+
+
+import org.apache.commons.lang3.text.StrTokenizer;
 
 
 import org.ramadda.data.point.*;
@@ -40,8 +32,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-
-import org.apache.commons.lang3.text.StrTokenizer;
 
 
 /** This is generated code from generate.tcl. Do not edit it! */
@@ -101,8 +91,10 @@ public class TextRecord extends DataRecord {
     /** _more_ */
     private boolean matchUpColumns = false;
 
+    /**  */
     private StrTokenizer tokenizer;
 
+    /**  */
     private List<String> tokenList = new ArrayList<String>();
 
     /** _more_ */
@@ -354,14 +346,17 @@ public class TextRecord extends DataRecord {
 
 
         String line = null;
-	if(tokens!=null && tokens.length==0) {
-	    System.err.println("TextRecord.read zero length tokens array");
-	    return ReadStatus.EOF;
-	}
+        if ((tokens != null) && (tokens.length == 0)) {
+            System.err.println("TextRecord.read zero length tokens array");
+
+            return ReadStatus.EOF;
+        }
 
         try {
             int fieldCnt;
-	    if(tokenizer==null) tokenizer = Utils.getTokenizer(delimiter);
+            if (tokenizer == null) {
+                tokenizer = Utils.getTokenizer(delimiter);
+            }
             while (true) {
                 line = readNextLine(recordIO);
                 if (line == null) {
@@ -370,7 +365,7 @@ public class TextRecord extends DataRecord {
                 //                System.err.println("LINE:" + line);
                 if (matchUpColumns && (rawOK == null)) {
                     List<String> toks = Utils.tokenizeColumns(line,
-							      tokenizer);
+                                            tokenizer);
                     toks = ((TextFile) getRecordFile()).processTokens(this,
                             toks, true);
                     rawOK = new boolean[toks.size()];
@@ -407,8 +402,9 @@ public class TextRecord extends DataRecord {
                     return ReadStatus.SKIP;
                 }
             } else {
-		tokenList.clear();
-                List<String> toks = Utils.tokenizeColumns(line, tokenizer, tokenList);
+                tokenList.clear();
+                List<String> toks = Utils.tokenizeColumns(line, tokenizer,
+                                        tokenList);
                 toks = ((TextFile) getRecordFile()).processTokens(this, toks,
                         false);
 
@@ -457,7 +453,7 @@ public class TextRecord extends DataRecord {
                     }
                     tokens[targetIdx++] = toks.get(i);
                 }
-	    }
+            }
 
 
             TextFile textFile = (TextFile) getRecordFile();
@@ -505,12 +501,13 @@ public class TextRecord extends DataRecord {
 
 
                 if (field.isTypeDate()) {
-                    tok                    = tok.replaceAll("\"", "");
-		    Date date = parseDate(field, tok);
-		    if(date==null) 
-			objectValues[fieldCnt] = "";
-		    else
-			objectValues[fieldCnt] = date;
+                    tok = tok.replaceAll("\"", "");
+                    Date date = parseDate(field, tok);
+                    if (date == null) {
+                        objectValues[fieldCnt] = "";
+                    } else {
+                        objectValues[fieldCnt] = date;
+                    }
                     continue;
                 }
                 if (tok == null) {
@@ -523,8 +520,8 @@ public class TextRecord extends DataRecord {
                     values[fieldCnt] = Double.NaN;
                 } else {
                     double dValue;
-		    if ((idxX == fieldCnt) || (idxY == fieldCnt)) {
-			dValue = Utils.decodeLatLon(tok);
+                    if ((idxX == fieldCnt) || (idxY == fieldCnt)) {
+                        dValue = Utils.decodeLatLon(tok);
                     } else {
                         dValue = textFile.parseValue(this, field, tok);
                     }
@@ -586,15 +583,17 @@ public class TextRecord extends DataRecord {
         String sfmt = field.getSDateFormat();
         if (sfmt != null) {
             if (sfmt.equals("SSS")) {
-		long l = new Long(tok);
-		Date d =  new Date(l);
-		return d;
-	    } else  if (sfmt.equals("sss")) {
-		long l = new Long(tok)*1000;
-		Date d =  new Date(l);
-		return d;
+                long l = new Long(tok);
+                Date d = new Date(l);
+
+                return d;
+            } else if (sfmt.equals("sss")) {
+                long l = new Long(tok) * 1000;
+                Date d = new Date(l);
+
+                return d;
             } else if (sfmt.equals("yyyy")) {
-               //              System.out.println("tok:" + tok + " dttm:" + yearFormat.parse(tok + "-06"));
+                //              System.out.println("tok:" + tok + " dttm:" + yearFormat.parse(tok + "-06"));
                 return yearFormat.parse(tok + "-06");
                 //
             }
@@ -603,27 +602,27 @@ public class TextRecord extends DataRecord {
         Date date   = null;
         int  offset = field.getUtcOffset();
         try {
-	    
 
-	    date = getDateFormat(field).parse(tok);
+
+            date = getDateFormat(field).parse(tok);
         } catch (java.text.ParseException ignore) {
-	    //Try to guess
-	    date = Utils.extractDate(tok);
-	    if(date == null) {
-		//Check for year
-		if (tok.length() == 4) {
-		    date = Utils.parseDate(tok);
-		}
-		if (date == null) {
-		    //Try tacking on UTC
-		    try {
-			date = getDateFormat(field).parse(tok + " UTC");
-		    } catch (java.text.ParseException ignoreThisOne) {
-			throw ignore;
-		    }
-		}
-	    }
-	}
+            //Try to guess
+            date = Utils.extractDate(tok);
+            if (date == null) {
+                //Check for year
+                if (tok.length() == 4) {
+                    date = Utils.parseDate(tok);
+                }
+                if (date == null) {
+                    //Try tacking on UTC
+                    try {
+                        date = getDateFormat(field).parse(tok + " UTC");
+                    } catch (java.text.ParseException ignoreThisOne) {
+                        throw ignore;
+                    }
+                }
+            }
+        }
         if (offset != 0) {
             long millis = date.getTime();
             millis += (-offset * 1000 * 3600);

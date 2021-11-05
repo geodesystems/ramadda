@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.data.point.text;
@@ -45,8 +34,10 @@ public class CsvFile extends TextFile {
     private String delimiter = null;
 
 
+    /**  */
     private boolean hasCsvCommands = false;
 
+    /**  */
     private boolean hasAddHeader = false;
 
     /**
@@ -221,23 +212,31 @@ public class CsvFile extends TextFile {
         boolean      shouldCreate = shouldCreateCsvFile();
         if ( !shouldCreate && (commands.size() == 0)) {
 
-	    if(!getProperty("isRAMADDAPointData","false").equals("true") &&
-	       !isHeaderStandard()) {
-		setFirstLineFields(true);
-		if(debug)
-		    System.err.println("CsvFile.doMakeInputStream: no commands setFirstLineFields: true" );
-	    } else  {
-		if(debug)
-		    System.err.println("CsvFile.doMakeInputStream: no commands setFirstLineFields: false" );
-	    }
+            if ( !getProperty("isRAMADDAPointData", "false").equals("true")
+                    && !isHeaderStandard()) {
+                setFirstLineFields(true);
+                if (debug) {
+                    System.err.println(
+                        "CsvFile.doMakeInputStream: no commands setFirstLineFields: true");
+                }
+            } else {
+                if (debug) {
+                    System.err.println(
+                        "CsvFile.doMakeInputStream: no commands setFirstLineFields: false");
+                }
+            }
+
             return super.doMakeInputStream(buffered);
         }
 
 
-	hasAddHeader = commands.contains("-addheader");
-	if(debug)
-	    System.err.println("CsvFile.doMakeInputStream commands: hasAddHeader:" + hasAddHeader + " commands:" + commands);
-	hasCsvCommands = true;
+        hasAddHeader = commands.contains("-addheader");
+        if (debug) {
+            System.err.println(
+                "CsvFile.doMakeInputStream commands: hasAddHeader:"
+                + hasAddHeader + " commands:" + commands);
+        }
+        hasCsvCommands = true;
         File file = checkCachedFile();
         if ((file == null) || !file.exists()) {
             try {
@@ -372,21 +371,34 @@ public class CsvFile extends TextFile {
         delimiter = null;
     }
 
-    public boolean getFirstLineFields () {
+    /**
+     *  @return _more_
+     */
+    public boolean getFirstLineFields() {
         String fieldString = getProperty(PROP_FIELDS, null);
-	if(fieldString!=null) {
-	    if(debug)
-		System.err.println("CsvFile.getFirstLineFields: has fields property");
-	    return false;
-	}
-	if(hasAddHeader) {
-	    if(debug)
-		System.err.println("CsvFile.getFirstLineFields: has fields property");
-	    return false;
-	}
-	if(debug)
-	    System.err.println("CsvFile.getFirstLineFields: has csv commands:" + hasCsvCommands +" super:" + super.getFirstLineFields());
-	return hasCsvCommands|| super.getFirstLineFields();
+        if (fieldString != null) {
+            if (debug) {
+                System.err.println(
+                    "CsvFile.getFirstLineFields: has fields property");
+            }
+
+            return false;
+        }
+        if (hasAddHeader) {
+            if (debug) {
+                System.err.println(
+                    "CsvFile.getFirstLineFields: has fields property");
+            }
+
+            return false;
+        }
+        if (debug) {
+            System.err.println(
+                "CsvFile.getFirstLineFields: has csv commands:"
+                + hasCsvCommands + " super:" + super.getFirstLineFields());
+        }
+
+        return hasCsvCommands || super.getFirstLineFields();
     }
 
     /**
@@ -400,8 +412,10 @@ public class CsvFile extends TextFile {
     public List<RecordField> doMakeFields(boolean failureOk) {
 
         String fieldString = getProperty(PROP_FIELDS, null);
-	if(debug)
-	    System.err.println("CsvFile.doMakeFields fieldString:" + fieldString);
+        if (debug) {
+            System.err.println("CsvFile.doMakeFields fieldString:"
+                               + fieldString);
+        }
         //      System.err.println("CsvFile.doMakeFields props:" + getProperties());
         if (fieldString == null) {
             doQuickVisit();
@@ -427,11 +441,16 @@ public class CsvFile extends TextFile {
                 if (failureOk) {
                     return new ArrayList<RecordField>();
                 }
-		System.err.println("Error in CsvFile:" +"no " + PROP_FIELDS + " properties found for file: " + getFilename());
-                throw new IllegalArgumentException("No fields defined for file");
+                System.err.println("Error in CsvFile:" + "no " + PROP_FIELDS
+                                   + " properties found for file: "
+                                   + getFilename());
+
+                throw new IllegalArgumentException(
+                    "No fields defined for file");
             }
             fieldString = "";
         }
+
         return doMakeFields(fieldString);
     }
 

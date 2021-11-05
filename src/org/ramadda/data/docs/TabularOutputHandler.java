@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.data.docs;
@@ -728,7 +717,8 @@ public class TabularOutputHandler extends OutputHandler {
                             s = s.replace(operator, "").trim();
                             double value = Double.parseDouble(s);
                             int op = Filter.ValueFilter.getOperator(operator);
-                            textReader.addProcessor(new Filter.ValueFilter(cols, op, value));
+                            textReader.addProcessor(
+                                new Filter.ValueFilter(cols, op, value));
                             continue;
                         }
                         textReader.addProcessor(
@@ -825,8 +815,8 @@ public class TabularOutputHandler extends OutputHandler {
                     if (cell == null) {
                         break;
                     }
-                    Object value = null;
-                    CellType    type  = cell.getCellType();
+                    Object   value = null;
+                    CellType type  = cell.getCellType();
                     if (type == CellType.NUMERIC) {
                         value = new Double(cell.getNumericCellValue());
                     } else if (type == CellType.BOOLEAN) {
@@ -879,8 +869,9 @@ public class TabularOutputHandler extends OutputHandler {
     public String getHtmlDisplay(Request request, Hashtable requestProps,
                                  Entry entry)
             throws Exception {
+
         String wikiTemplate = getWikiText(request, entry);
-        if (wikiTemplate!=null) {
+        if (wikiTemplate != null) {
             return null;
         }
 
@@ -1050,6 +1041,7 @@ public class TabularOutputHandler extends OutputHandler {
         getPageHandler().entrySectionClose(request, entry, sb);
 
         return sb.toString();
+
 
 
     }
@@ -1258,8 +1250,8 @@ public class TabularOutputHandler extends OutputHandler {
                     if (cell == null) {
                         break;
                     }
-                    Object value = null;
-                    CellType    type  = cell.getCellType();
+                    Object   value = null;
+                    CellType type  = cell.getCellType();
                     if (type == CellType.NUMERIC) {
                         value = new Double(cell.getNumericCellValue());
                     } else if (type == CellType.BOOLEAN) {

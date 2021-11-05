@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.data.point;
@@ -316,7 +305,8 @@ public class DataRecord extends PointRecord {
 
                 return dataRecord.getValue(field.getParamId());
             }
-            public String getStringValue(BaseRecord record, RecordField field,
+            public String getStringValue(BaseRecord record,
+                                         RecordField field,
                                          VisitInfo visitInfo) {
                 DataRecord dataRecord = (DataRecord) record;
 
@@ -380,8 +370,9 @@ public class DataRecord extends PointRecord {
             if (obj == null) {
                 return super.getRecordTime();
             }
-	    if(obj instanceof Date)
-		return ((Date) obj).getTime();
+            if (obj instanceof Date) {
+                return ((Date) obj).getTime();
+            }
         }
 
         return super.getRecordTime();
@@ -456,6 +447,7 @@ public class DataRecord extends PointRecord {
         objectValues[idx] = value;
     }
 
+    /**  */
     static int xcnt = 0;
 
     /**
@@ -471,7 +463,7 @@ public class DataRecord extends PointRecord {
         //Offset since the  field ids are 1 based not 0 based
         idx = idx - 1;
         if ((idx >= 0) && (idx < values.length)) {
-	    boolean debug = xcnt++<100;
+            boolean debug = xcnt++ < 100;
             //Maybe just a number
             if (objectValues[idx] == null) {
                 return "" + values[idx];

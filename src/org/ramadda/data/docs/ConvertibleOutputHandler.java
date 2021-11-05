@@ -1,20 +1,10 @@
-/*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.data.docs;
+
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.PluginManager;
@@ -23,8 +13,8 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Json;
 import org.ramadda.util.Utils;
-import org.ramadda.util.text.CsvUtil;
 import org.ramadda.util.text.CsvContext;
+import org.ramadda.util.text.CsvUtil;
 
 import org.w3c.dom.*;
 
@@ -160,13 +150,23 @@ public class ConvertibleOutputHandler extends OutputHandler {
             throws Exception {
         StringBuilder sb = new StringBuilder();
         getPageHandler().entrySectionOpen(request, entry, sb, "");
-	makeConvertForm(request, entry, sb);
+        makeConvertForm(request, entry, sb);
         getPageHandler().entrySectionClose(request, entry, sb);
+
         return new Result("", sb);
     }
 
 
-    public void makeConvertForm(Request request, Entry entry, StringBuilder sb)
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
+    public void makeConvertForm(Request request, Entry entry,
+                                StringBuilder sb)
             throws Exception {
         String lastInput =
             (String) getSessionManager().getSessionProperty(request,
@@ -192,20 +192,24 @@ public class ConvertibleOutputHandler extends OutputHandler {
             lastInput = lastInput.replaceAll("\"", "_escquote_");
             lastInput = lastInput.replaceAll("\\\\", "_escslash_");
         }
-	String id = HtmlUtils.getUniqueId("convert");
-	if(lastInput!=null)
-	    sb.append(HtmlUtils.div(lastInput, "style='display:none;' "+HU.id(id+"_lastinput")));
-        sb.append(HtmlUtils.div("", HtmlUtils.id(id)));	
+        String id = HtmlUtils.getUniqueId("convert");
+        if (lastInput != null) {
+            sb.append(HtmlUtils.div(lastInput,
+                                    "style='display:none;' "
+                                    + HU.id(id + "_lastinput")));
+        }
+        sb.append(HtmlUtils.div("", HtmlUtils.id(id)));
         HtmlUtils.importJS(
             sb, getRepository().getHtdocsUrl("/lib/ace/src-min/ace.js"));
         HtmlUtils.importJS(sb,
                            getRepository().getUrlBase()
                            + "/media/convertcsv.js");
-	HU.script(sb, "new ConvertForm('" + id +"','" + entry.getId()+"');\n");
+        HU.script(sb,
+                  "new ConvertForm('" + id + "','" + entry.getId() + "');\n");
 
 
     }
-    
+
     /**
      * _more_
      *
@@ -382,16 +386,18 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 llines.add(l);
             }
             if (request.defined("csvoutput")) {
-		String output = request.getString("csvoutput");
-		List<String> lastLine  = llines.get(llines.size()-1);
-		if(!lastLine.contains(output)) lastLine.add(output);
+                String       output   = request.getString("csvoutput");
+                List<String> lastLine = llines.get(llines.size() - 1);
+                if ( !lastLine.contains(output)) {
+                    lastLine.add(output);
+                }
             }
             CsvUtil prevCsvUtil = null;
 
             for (int i = 0; i < llines.size(); i++) {
                 List<String> args1        = llines.get(i);
                 String       runDirPrefix = request.getString("rundir",
-							      "run");
+                                                "run");
                 List<String> args         = new ArrayList<String>();
                 for (int j = 0; j < args1.size(); j++) {
                     String arg = args1.get(j);
@@ -401,7 +407,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
                                 arg.substring("entry:".length()));
                         if (fileEntry == null) {
                             throw new IllegalArgumentException(
-							       "Could not find " + arg);
+                                "Could not find " + arg);
                         }
                         if (fileEntry.getFile() == null) {
                             throw new IllegalArgumentException(
@@ -414,37 +420,41 @@ public class ConvertibleOutputHandler extends OutputHandler {
                     }
                     args.add(arg);
                 }
-		boolean hasOutput = args.contains("-tojson")  || args.contains("-toxml")|| args.contains("-db");
-		//		System.err.println("args:" + args);
+                boolean hasOutput = args.contains("-tojson")
+                                    || args.contains("-toxml")
+                                    || args.contains("-db");
+                //              System.err.println("args:" + args);
                 if ( !args.contains("-print") && !args.contains("-p")
-		     && !args.contains("-explode")
-		     && !args.contains("-script")
-		     && !hasOutput
-		     && !args.contains("-printheader")
-		     && !args.contains("-template")
-		     && !args.contains("-raw")
-		     && !args.contains("-stats")
-		     && !args.contains("-record")
-		     && !args.contains("-table")
-		     && !args.contains("-db")) {
-		    //		    System.err.println("adding print");
+                        && !args.contains("-explode")
+                        && !args.contains("-script") && !hasOutput
+                        && !args.contains("-printheader")
+                        && !args.contains("-template")
+                        && !args.contains("-raw") && !args.contains("-stats")
+                        && !args.contains("-record")
+                        && !args.contains("-table")
+                        && !args.contains("-db")) {
+                    //              System.err.println("adding print");
                     args.add("-print");
                 }
-		if(hasOutput) {
-		    //		    System.err.println("removing print");
-		    args.remove("-print");
-		    args.remove("-p");
-		}
+                if (hasOutput) {
+                    //              System.err.println("removing print");
+                    args.remove("-print");
+                    args.remove("-p");
+                }
 
                 currentArgs = args;
-		//		System.err.println("args:" + args);
+                //              System.err.println("args:" + args);
                 //              for(String arg: args)
 
                 //                  System.err.println("arg:" + arg+":");
-		
+
                 File runDir = null;
-		if(runDirPrefix!=null)   runDirPrefix = IO.cleanFileName(runDirPrefix).trim();
-		if(runDirPrefix.length()==0) runDirPrefix = "run";
+                if (runDirPrefix != null) {
+                    runDirPrefix = IO.cleanFileName(runDirPrefix).trim();
+                }
+                if (runDirPrefix.length() == 0) {
+                    runDirPrefix = "run";
+                }
                 for (int j = 0; true; j++) {
                     runDir = new File(IOUtil.joinDir(destDir, ((j == 0)
                             ? runDirPrefix
@@ -468,20 +478,21 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 }
                 newFiles = new ArrayList<String>();
                 csvUtil  = new CsvUtil(args, runDir);
-		csvUtil.setInteractive(true);
+                csvUtil.setInteractive(true);
                 csvUtil.setPropertyProvider(getRepository());
-		csvUtil.setCsvContext(new CsvContext() {
-			public List<Class> getClasses() {
-			    return getRepository().getPluginManager().getCsvClasses();
-			}
-			public String getProperty(String key, String dflt) {
-			    return getRepository().getProperty(key, dflt);
-			}
-			public File getTmpFile(String name) {
-			    return null;
-			}
-		    });
-                csvUtil.setMapProvider(getRepository().getMapManager());		
+                csvUtil.setCsvContext(new CsvContext() {
+                    public List<Class> getClasses() {
+                        return getRepository().getPluginManager()
+                            .getCsvClasses();
+                    }
+                    public String getProperty(String key, String dflt) {
+                        return getRepository().getProperty(key, dflt);
+                    }
+                    public File getTmpFile(String name) {
+                        return null;
+                    }
+                });
+                csvUtil.setMapProvider(getRepository().getMapManager());
                 if (prevCsvUtil != null) {
                     csvUtil.initWith(prevCsvUtil);
                 }
@@ -552,14 +563,15 @@ public class ConvertibleOutputHandler extends OutputHandler {
                                     getRepository().URL_ENTRY_GET) + "/"
                                         + f.getName(), ARG_ENTRYID, id);
                         html.append("  ");
-                        html.append(HtmlUtils.href(getUrl, "Download", HU.attrs("class","ramadda-button")));
+                        html.append(HtmlUtils.href(getUrl, "Download",
+                                HU.attrs("class", "ramadda-button")));
                         if (request.getUser().getAdmin()) {
                             html.append(" File on server: "
-                                        + HtmlUtils.input("", f,"size=80"));
+                                        + HtmlUtils.input("", f, "size=80"));
                         }
-			html.append("<br>");
-			html.append("View temp file: ");
-                        html.append(HtmlUtils.href(url,  f.getName(),
+                        html.append("<br>");
+                        html.append("View temp file: ");
+                        html.append(HtmlUtils.href(url, f.getName(),
                                 "target=_output"));
 
                         //If they are creating point data then add an add entry link
@@ -589,10 +601,11 @@ public class ConvertibleOutputHandler extends OutputHandler {
                     ? ""
                     : lastResult));
             s = Json.mapAndQuote("result", s);
+
             return new Result(s, "application/json");
 
         } catch (Exception exc) {
-	    System.err.println("Error");
+            System.err.println("Error");
             Throwable inner = LogUtil.getInnerException(exc);
             String    s     = inner.getMessage();
             //Better messaging
@@ -619,7 +632,8 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 inner.printStackTrace();
             }
 
-	    System.err.println("Error:" + s);
+            System.err.println("Error:" + s);
+
             return new Result(s, "application/json");
 
         }
@@ -677,14 +691,14 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 request.ensureAdmin();
                 for (String file : csvUtil.getNewFiles()) {
                     if (file.endsWith("db.xml")) {
-			try {
-			    getRepository().getPluginManager().installPlugin(
-									     file,true);
-			    getRepository().clearCache();
-			} catch(Exception exc) {
-			    //Clean up the mess
-			    throw exc;
-			}
+                        try {
+                            getRepository().getPluginManager().installPlugin(
+                                file, true);
+                            getRepository().clearCache();
+                        } catch (Exception exc) {
+                            //Clean up the mess
+                            throw exc;
+                        }
                     }
                 }
             }

@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.data.record;
@@ -88,13 +77,15 @@ public class RecordField {
 
     /** _more_ */
     public static final String TYPE_ENUMERATION = "enumeration";
-    public static final String TYPE_MULTIENUMERATION = "multienumeration";    
+
+    /**  */
+    public static final String TYPE_MULTIENUMERATION = "multienumeration";
 
     /** _more_ */
     public static final String TYPE_IMAGE = "image";
 
     /** _more_ */
-    public static final String TYPE_MOVIE = "movie";    
+    public static final String TYPE_MOVIE = "movie";
 
     /** _more_ */
     public static final String TYPE_DATE = "date";
@@ -103,7 +94,9 @@ public class RecordField {
     /** _more_ */
     public static final String TYPE_DOUBLE = "double";
 
+    /**  */
     public static final String TYPE_BOOLEAN = "boolean";
+
     /** _more_ */
     public static final String TYPE_INT = "int";
 
@@ -135,8 +128,9 @@ public class RecordField {
     /** _more_ */
     private int columnWidth = 0;
 
+    /**  */
     private String group;
-    
+
     /** _more_ */
     private boolean isTime = false;
 
@@ -450,10 +444,10 @@ public class RecordField {
         items.add(HtmlUtils.quote(name));
         items.add("label");
         items.add(Json.quote(label));
-	if(group!=null) {
-	    items.add("group");
-	    items.add(Json.quote(group));
-	}
+        if (group != null) {
+            items.add("group");
+            items.add(Json.quote(group));
+        }
         if (description != null) {
             items.add("description");
             items.add(Json.quote(description.replaceAll("\n", " ")));
@@ -474,7 +468,7 @@ public class RecordField {
             items.add("true");
         }
 
-        if (group!=null) {
+        if (group != null) {
             items.add("group");
             items.add(Json.quote(group));
         }
@@ -487,16 +481,16 @@ public class RecordField {
 
 
 
-	String canEdit = (String) getProperty("canedit",null);
-	if(canEdit!=null) {
-	    items.add("canedit");
-	    items.add(Json.quote(canEdit));
-	}
-	String values = (String) getProperty("values",null);
-	if(values!=null) {
-	    items.add("values");
-	    items.add(Json.quote(values));
-	}	
+        String canEdit = (String) getProperty("canedit", null);
+        if (canEdit != null) {
+            items.add("canedit");
+            items.add(Json.quote(canEdit));
+        }
+        String values = (String) getProperty("values", null);
+        if (values != null) {
+            items.add("values");
+            items.add(Json.quote(values));
+        }
 
         items.add("chartable");
         items.add("" + getChartable());
@@ -534,7 +528,7 @@ public class RecordField {
      * @return _more_
      */
     public String toString() {
-        return  name + "[" + type +"]: " + label;
+        return name + "[" + type + "]: " + label;
     }
 
 
@@ -806,23 +800,23 @@ public class RecordField {
         properties.put(PROP_CHARTABLE, value + "");
     }
 
-/**
-Set the Group property.
+    /**
+     * Set the Group property.
+     *
+     * @param value The new value for Group
+     */
+    public void setGroup(String value) {
+        group = value;
+    }
 
-@param value The new value for Group
-**/
-public void setGroup (String value) {
-	group = value;
-}
-
-/**
-Get the Group property.
-
-@return The Group
-**/
-public String getGroup () {
-	return group;
-}
+    /**
+     * Get the Group property.
+     *
+     * @return The Group
+     */
+    public String getGroup() {
+        return group;
+    }
 
 
 
@@ -1141,7 +1135,7 @@ public String getGroup () {
                        || value.equals(TYPE_BOOLEAN)
                        || value.equals(TYPE_IMAGE)
                        || value.equals(TYPE_MOVIE)
-                       || value.equals(TYPE_MULTIENUMERATION)	    	    
+                       || value.equals(TYPE_MULTIENUMERATION)
                        || value.equals(TYPE_ENUMERATION);
         isTypeDate = value.equals(TYPE_DATE);
         //      System.err.println("set type:" + type + " is:" +isTypeNumeric +" " + isTypeString +" " + isTypeDate);
