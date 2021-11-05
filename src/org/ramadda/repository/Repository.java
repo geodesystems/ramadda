@@ -1,4 +1,4 @@
-/**
+a/**
 Copyright (c) 2008-2021 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
@@ -3523,7 +3523,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         boolean debugMemory =
             !theUrl.matches(".*(images|icons|htdocs|/metadata/view).*")
             && !theUrl.matches(".*(\\.js|\\.png|\\.gif|favicon.ico)$");
-        debugMemory = false;
+	//        debugMemory = false;
         if (debugMemory) {
             Runtime.getRuntime().gc();
         }
