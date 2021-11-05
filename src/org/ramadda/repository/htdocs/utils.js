@@ -1616,6 +1616,7 @@ var Utils =  {
     },
     cleanId: function(id) {
         id = id.replace(/:/g, "_").replace(/\./g, "_").replace(/=/g, "_").replace(/\//g, "_").replace(/[\(\)]/g,"_");
+	id = id.replace(/[^a-zA-Z0-9_]/g,"_");
         return id;
     },
     isMobile: function() {
