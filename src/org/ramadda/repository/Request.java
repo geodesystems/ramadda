@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
@@ -67,9 +54,7 @@ public class Request implements Constants, Cloneable {
 
     /** _more_ */
     public static final RequestArgument[] AREA_NWSE = { REQUESTARG_NORTH,
-                                                        REQUESTARG_WEST,
-                                                        REQUESTARG_SOUTH,
-                                                        REQUESTARG_EAST };
+            REQUESTARG_WEST, REQUESTARG_SOUTH, REQUESTARG_EAST };
 
 
 
@@ -317,7 +302,7 @@ public class Request implements Constants, Cloneable {
      */
     public String getSession(String key, String dflt) throws Exception {
         return (String) getRepository().getSessionManager()
-        .getSessionProperty(this, key, dflt);
+            .getSessionProperty(this, key, dflt);
     }
 
     /**
@@ -364,8 +349,7 @@ public class Request implements Constants, Cloneable {
     public void putSessionIfDefined(String key, String prefix) {
         try {
             getRepository().getSessionManager().putSessionProperty(this,
-                    prefix + key, getString(key,
-                                            ""));
+                    prefix + key, getString(key, ""));
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
@@ -800,8 +784,8 @@ public class Request implements Constants, Cloneable {
      */
     public String getUrl(HashSet<String> exceptArgs,
                          HashSet<String> exceptValues) {
-        return checkUrl(getRequestPath() + "?" + getUrlArgs(exceptArgs,
-                exceptValues));
+        return checkUrl(getRequestPath() + "?"
+                        + getUrlArgs(exceptArgs, exceptValues));
     }
 
     /**
@@ -1952,8 +1936,7 @@ public class Request implements Constants, Cloneable {
             return dflt;
         }
         String llString = (String) getString(from, "").trim();
-        if ((llString == null)
-                || (llString.length() == 0)
+        if ((llString == null) || (llString.length() == 0)
                 || (llString.startsWith("${"))) {
             return dflt;
         }
@@ -1981,8 +1964,7 @@ public class Request implements Constants, Cloneable {
         }
         String llString = (String) getString(from, "").trim();
         //        System.err.println("\tllstring:" + llString);
-        if ((llString == null)
-                || (llString.length() == 0)
+        if ((llString == null) || (llString.length() == 0)
                 || (llString.startsWith("${"))) {
             return dflt;
         }
@@ -3143,9 +3125,8 @@ public class Request implements Constants, Cloneable {
         double[] bbox = { Double.NaN, Double.NaN, Double.NaN, Double.NaN };
         for (String argPrefix : argPrefixes) {
             if (defined(argPrefix)) {
-                List<String> toks = Utils.split(getString(argPrefix,
-                                                          ""), ",", true,
-                                                              true);
+                List<String> toks = Utils.split(getString(argPrefix, ""),
+                                        ",", true, true);
                 //n,w,s,e
                 if (toks.size() == 4) {
                     for (int i = 0; i < 4; i++) {

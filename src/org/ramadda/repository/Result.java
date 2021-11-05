@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
@@ -49,15 +36,16 @@ public class Result {
     /** Internal error response code */
     public static final int RESPONSE_INTERNALERROR = 500;
 
-    /** _more_          */
+    /** _more_ */
     public static final int RESPONSE_BLOCKED = 777;
 
     /** HTML mime type */
-    public static final  String TYPE_HTML = "text/html";
+    public static final String TYPE_HTML = "text/html";
 
     /** the redirect URL */
     private String redirectUrl;
 
+    /**  */
     public static final String TYPE_JS = "application/x-javascript";
 
     /** XML mime type */
@@ -557,8 +545,8 @@ public class Result {
      */
     public void setReturnFilename(String filename) {
         filename = filename.replaceAll(" ", "_");
-	//        addHttpHeader("Content-disposition", "attachment; filename=" + filename);
-	addHttpHeader("Content-disposition", "filename=" + filename);	
+        //        addHttpHeader("Content-disposition", "attachment; filename=" + filename);
+        addHttpHeader("Content-disposition", "filename=" + filename);
     }
 
 

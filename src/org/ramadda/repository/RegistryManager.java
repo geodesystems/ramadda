@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
@@ -77,6 +64,7 @@ public class RegistryManager extends RepositoryManager {
     /** _more_ */
     private Object REMOTE_MUTEX = new Object();
 
+    /**  */
     public static final String ARG_CHANGE = "registry.change";
 
     /** _more_ */
@@ -208,7 +196,7 @@ public class RegistryManager extends RepositoryManager {
             }
             checkApi();
         } else if (request.exists(ARG_CHANGE)) {
-	    System.err.println("change");
+            System.err.println("change");
             for (ServerInfo serverInfo : getRemoteServers()) {
                 String argBase    = serverInfo.getArgBase();
                 String cbx2Id     = ARG_REGISTRY_ENABLED + argBase;
@@ -216,20 +204,20 @@ public class RegistryManager extends RepositoryManager {
                 String urlFldId   = ARG_REGISTRY_URL + argBase;
                 String label = request.getString(labelFldId,
                                    serverInfo.getLabel());
-                String  url = request.getString(urlFldId,
-						serverInfo.getUrl());
+                String url = request.getString(urlFldId, serverInfo.getUrl());
 
-		System.err.println("arg:" + labelFldId +" label:" + label +" " + serverInfo.getId());
+                System.err.println("arg:" + labelFldId + " label:" + label
+                                   + " " + serverInfo.getId());
                 boolean isEnabled = request.get(cbx2Id, false);
                 getDatabaseManager().update(Tables.REMOTESERVERS.NAME,
                                             Tables.REMOTESERVERS.COL_URL,
                                             serverInfo.getId(),
                                             new String[] {
                                                 Tables.REMOTESERVERS.COL_URL,
-						Tables.REMOTESERVERS.COL_TITLE,
-						Tables.REMOTESERVERS.COL_SELECTED }, new Object[] {
-						url,
-						label, new Boolean(isEnabled) });
+                        Tables.REMOTESERVERS.COL_TITLE,
+                        Tables.REMOTESERVERS.COL_SELECTED }, new Object[] {
+                            url,
+                            label, new Boolean(isEnabled) });
             }
             clearRemoteServers();
             checkApi();
@@ -366,8 +354,8 @@ public class RegistryManager extends RepositoryManager {
      */
     public void applyInstallForm(Request request) throws Exception {
         List<String> newList =
-            Utils.split(request.getUnsafeString(PROP_REGISTRY_SERVERS,
-                ""), "\n", true, true);
+            Utils.split(request.getUnsafeString(PROP_REGISTRY_SERVERS, ""),
+                        "\n", true, true);
 
 
         getRepository().writeGlobal(PROP_REGISTRY_SERVERS,
@@ -513,8 +501,8 @@ public class RegistryManager extends RepositoryManager {
     public void applyAdminSettings(Request request) throws Exception {
         List<String> oldList = getServersToRegisterWith();
         List<String> newList =
-            Utils.split(request.getUnsafeString(PROP_REGISTRY_SERVERS,
-                ""), "\n", true, true);
+            Utils.split(request.getUnsafeString(PROP_REGISTRY_SERVERS, ""),
+                        "\n", true, true);
 
 
         getRepository().writeGlobal(PROP_REGISTRY_SERVERS,
@@ -570,8 +558,8 @@ public class RegistryManager extends RepositoryManager {
         List<Comment>    comments = new ArrayList();
         ResultSet        results;
         while ((results = iter.getNext()) != null) {
-	    String id = results.getString(1);
-	    URL     url        = new URL(id);
+            String  id         = results.getString(1);
+            URL     url        = new URL(id);
             String  title      = results.getString(2);
             String  desc       = results.getString(3);
             String  email      = results.getString(4);
@@ -602,7 +590,7 @@ public class RegistryManager extends RepositoryManager {
         enabledRemoteServers = null;
         remoteServers        = null;
         remoteServerMap      = null;
-	getSearchManager().clearSearchProviders();
+        getSearchManager().clearSearchProviders();
     }
 
 
@@ -684,17 +672,17 @@ public class RegistryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     private ServerInfo makeRemoteServer(ResultSet results) throws Exception {
-	String id = results.getString(1);
-	URL     url        = new URL(id);
+        String  id         = results.getString(1);
+        URL     url        = new URL(id);
         String  title      = results.getString(2);
         String  desc       = results.getString(3);
         String  email      = results.getString(4);
         boolean isRegistry = results.getInt(5) != 0;
         boolean isSelected = results.getInt(6) != 0;
 
-        ServerInfo serverInfo = new ServerInfo(id, url.getHost(), url.getPort(),
-                                    -1, url.getPath(), title, desc, email,
-                                    isRegistry, isSelected);
+        ServerInfo serverInfo = new ServerInfo(id, url.getHost(),
+                                    url.getPort(), -1, url.getPath(), title,
+                                    desc, email, isRegistry, isSelected);
 
         return serverInfo;
     }
@@ -747,10 +735,9 @@ public class RegistryManager extends RepositoryManager {
      * @return _more_
      */
     public List<String> getServersToRegisterWith() {
-        List<String> urls = Utils.split(
-                                getRepository().getProperty(
-                                                            PROP_REGISTRY_SERVERS, ""), "\n", true,
-                                        true);
+        List<String> urls =
+            Utils.split(getRepository().getProperty(PROP_REGISTRY_SERVERS,
+                ""), "\n", true, true);
 
         return urls;
     }

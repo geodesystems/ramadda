@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
@@ -68,7 +55,7 @@ public class Entry implements Cloneable {
     /** _more_ */
     public static final int MAX_NAME_LENGTH = 200;
 
-    /** _more_          */
+    /** _more_ */
     public static final int DEFAULT_ORDER = 999;
 
     /** List of comments */
@@ -105,7 +92,8 @@ public class Entry implements Cloneable {
     /** the parent entry id */
     private String parentEntryId;
 
-    private String remoteParentEntryId;    
+    /**  */
+    private String remoteParentEntryId;
 
     /** the tree id */
     private String treeId;
@@ -114,7 +102,7 @@ public class Entry implements Cloneable {
     /** the user (owner) */
     private User user;
 
-    /** _more_          */
+    /** _more_ */
     private int entryOrder = DEFAULT_ORDER;
 
     /** the create date */
@@ -733,21 +721,21 @@ public class Entry implements Cloneable {
     }
 
     /**
-       Set the RemoteParentEntryId property.
-
-       @param value The new value for RemoteParentEntryId
-    **/
-    public void setRemoteParentEntryId (String value) {
-	remoteParentEntryId = value;
+     *  Set the RemoteParentEntryId property.
+     *
+     *  @param value The new value for RemoteParentEntryId
+     */
+    public void setRemoteParentEntryId(String value) {
+        remoteParentEntryId = value;
     }
 
     /**
-       Get the RemoteParentEntryId property.
-
-       @return The RemoteParentEntryId
-    **/
-    public String getRemoteParentEntryId () {
-	return remoteParentEntryId;
+     *  Get the RemoteParentEntryId property.
+     *
+     *  @return The RemoteParentEntryId
+     */
+    public String getRemoteParentEntryId() {
+        return remoteParentEntryId;
     }
 
     /**
@@ -1656,11 +1644,20 @@ public class Entry implements Cloneable {
         return transientProperties.get(key);
     }
 
+    /**
+     *
+     * @param key _more_
+     *
+     * @return _more_
+     */
     public Object getAndRemoveTransientProperty(Object key) {
-        Object o= transientProperties.get(key);
-	if(o!=null) transientProperties.remove(key);
-	return o;
-    }    
+        Object o = transientProperties.get(key);
+        if (o != null) {
+            transientProperties.remove(key);
+        }
+
+        return o;
+    }
 
     /**
      * Add a transient property

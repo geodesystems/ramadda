@@ -1,26 +1,18 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
+
 
 import org.ramadda.repository.output.CalendarOutputHandler;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
+
 import ucar.unidata.util.DateUtil;
+
 import java.text.SimpleDateFormat;
+
+import java.util.ArrayList;
 
 
 import java.util.Date;
@@ -29,7 +21,6 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
-import java.util.ArrayList;
 import java.util.TimeZone;
 
 
@@ -101,11 +92,11 @@ public class DateHandler extends RepositoryManager {
         dateFormats = new Hashtable<String, SimpleDateFormat>();
         shortDateFormat = getRepository().getProperty(PROP_DATE_SHORTFORMAT,
                 DEFAULT_TIME_SHORTFORMAT);
-	//	Repository.propdebug = true;
-	//	System.err.println("getting timezone property");
+        //      Repository.propdebug = true;
+        //      System.err.println("getting timezone property");
         String tz = getRepository().getProperty(PROP_TIMEZONE, "UTC");
-	//	Repository.propdebug = false;
-	//	System.err.println("timezone:" + tz);
+        //      Repository.propdebug = false;
+        //      System.err.println("timezone:" + tz);
         displayTimeZone = TimeZone.getTimeZone(tz);
         displaySdf =
             RepositoryUtil.makeDateFormat(getDefaultDisplayDateFormat(),
@@ -151,52 +142,46 @@ public class DateHandler extends RepositoryManager {
         next.setTime(date);
         next.add(cal.MONTH, 1);
 
-        HU.open(sb, HU.TAG_TABLE, HU.ATTR_BORDER, "1",
-                       HU.ATTR_CELLSPACING, "0",
-                       HU.ATTR_CELLPADDING, "0");
+        HU.open(sb, HU.TAG_TABLE, HU.ATTR_BORDER, "1", HU.ATTR_CELLSPACING,
+                "0", HU.ATTR_CELLPADDING, "0");
         String[] dayNames = {
             "Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"
         };
 
-        String prevUrl = HU.SPACE
-	    + HU.href(url + "&"+ CalendarOutputHandler.getUrlArgs(prev), HU.getIconImage("fas fa-caret-left"));
+        String prevUrl =
+            HU.SPACE
+            + HU.href(url + "&" + CalendarOutputHandler.getUrlArgs(prev),
+                      HU.getIconImage("fas fa-caret-left"));
         String nextUrl =
-            HU.href(
-                url + "&" + CalendarOutputHandler.getUrlArgs(next),
-                HU.getIconImage("fas fa-caret-right")) + HU.SPACE;
-        HU.open(sb, HU.TAG_TR, HU.ATTR_VALIGN,
-                       HU.VALUE_TOP);
-        HU.open(sb, HU.TAG_TD, HU.ATTR_COLSPAN, "7",
-                       HU.ATTR_ALIGN, HU.VALUE_CENTER,
-                       HU.ATTR_CLASS, "calnavmonthheader");
+            HU.href(url + "&" + CalendarOutputHandler.getUrlArgs(next),
+                    HU.getIconImage("fas fa-caret-right")) + HU.SPACE;
+        HU.open(sb, HU.TAG_TR, HU.ATTR_VALIGN, HU.VALUE_TOP);
+        HU.open(sb, HU.TAG_TD, HU.ATTR_COLSPAN, "7", HU.ATTR_ALIGN,
+                HU.VALUE_CENTER, HU.ATTR_CLASS, "calnavmonthheader");
 
         HU.open(sb, HU.TAG_TABLE, "class", "calnavtable",
-                       HU.ATTR_CELLSPACING, "0",
-                       HU.ATTR_CELLPADDING, "0", HU.ATTR_WIDTH,
-                       "100%");
+                HU.ATTR_CELLSPACING, "0", HU.ATTR_CELLPADDING, "0",
+                HU.ATTR_WIDTH, "100%");
         HU.open(sb, HU.TAG_TR);
         HU.col(sb, prevUrl,
-	       HU.attrs("nowrap","true",HU.ATTR_WIDTH, "1",
-                                      HU.ATTR_CLASS,
-                                      "calnavmonthheader"));
-	int month = cal.get(cal.MONTH);
-	String monthHref= HU.href(url+"&month=" + month +"&year=" + theYear,
-				  DateUtil.MONTH_NAMES[month] + HU.SPACE
-				  + theYear);
-	HU.col(sb, monthHref, HU.attr(HU.ATTR_CLASS, "calnavmonthheader"));
+               HU.attrs("nowrap", "true", HU.ATTR_WIDTH, "1", HU.ATTR_CLASS,
+                        "calnavmonthheader"));
+        int month = cal.get(cal.MONTH);
+        String monthHref = HU.href(url + "&month=" + month + "&year="
+                                   + theYear, DateUtil.MONTH_NAMES[month]
+                                       + HU.SPACE + theYear);
+        HU.col(sb, monthHref, HU.attr(HU.ATTR_CLASS, "calnavmonthheader"));
 
         HU.col(sb, nextUrl,
-	       HU.attrs("nowrap","true",HU.ATTR_WIDTH, "1",
-                                      HU.ATTR_CLASS,
-                                      "calnavmonthheader"));
+               HU.attrs("nowrap", "true", HU.ATTR_WIDTH, "1", HU.ATTR_CLASS,
+                        "calnavmonthheader"));
         HU.close(sb, HU.TAG_TABLE);
         HU.close(sb, HU.TAG_TR);
         HU.open(sb, HU.TAG_TR);
         for (int colIdx = 0; colIdx < 7; colIdx++) {
             HU.col(sb, dayNames[colIdx],
-                          HU.attrs(HU.ATTR_WIDTH, "14%",
-                                          HU.ATTR_CLASS,
-                                          "calnavdayheader"));
+                   HU.attrs(HU.ATTR_WIDTH, "14%", HU.ATTR_CLASS,
+                            "calnavdayheader"));
         }
         HU.close(sb, HU.TAG_TR);
         int startDow = cal.get(cal.DAY_OF_WEEK);
@@ -205,8 +190,7 @@ public class DateHandler extends RepositoryManager {
             startDow--;
         }
         for (int rowIdx = 0; rowIdx < 6; rowIdx++) {
-            HU.open(sb, HU.TAG_TR, HU.ATTR_VALIGN,
-                           HU.VALUE_TOP);
+            HU.open(sb, HU.TAG_TR, HU.ATTR_VALIGN, HU.VALUE_TOP);
             for (int colIdx = 0; colIdx < 7; colIdx++) {
                 int     thisDay    = cal.get(cal.DAY_OF_MONTH);
                 int     thisMonth  = cal.get(cal.MONTH);
@@ -224,9 +208,10 @@ public class DateHandler extends RepositoryManager {
                 if (dayLinks != null) {
                     String key = thisYear + "/" + thisMonth + "/" + thisDay;
                     if (dayLinks.get(key) != null) {
-                        content = HU.href(url + "&"
-                                + CalendarOutputHandler.getUrlArgs(cal), ""
-                                    + thisDay);
+                        content = HU.href(
+                            url + "&"
+                            + CalendarOutputHandler.getUrlArgs(cal), ""
+                                + thisDay);
                         if ( !currentDay) {
                             dayClass = "calnavoffday";
                         }
@@ -235,13 +220,13 @@ public class DateHandler extends RepositoryManager {
                         dayClass = "calnavday";
                     }
                 } else {
-                    content = HU.href(
-                        url + "&" + CalendarOutputHandler.getUrlArgs(cal),
-                        "" + thisDay);
+                    content =
+                        HU.href(url + "&"
+                                + CalendarOutputHandler.getUrlArgs(cal), ""
+                                    + thisDay);
                 }
 
-                sb.append(HU.col(content,
-                                        HU.cssClass(dayClass)));
+                sb.append(HU.col(content, HU.cssClass(dayClass)));
                 sb.append("\n");
                 cal.add(cal.DAY_OF_MONTH, 1);
             }
@@ -360,16 +345,16 @@ public class DateHandler extends RepositoryManager {
         String extra = "";
         if (includeTime) {
             extra = " T:"
-		+ HU.input(name + ".time", timeString,
-				  HU.attr("placeholder","hh:mm:ss TZ") + HU.sizeAttr(10)
-                                      + HU.attr(HU.ATTR_TITLE,
-                                          timeHelp));
+                    + HU.input(name + ".time", timeString,
+                               HU.attr("placeholder", "hh:mm:ss TZ")
+                               + HU.sizeAttr(10)
+                               + HU.attr(HU.ATTR_TITLE, timeHelp));
         }
 
         return jsBuf.toString() + "\n"
                + HU.input(name, dateString,
-				 HU.attr("placeholder","yyyy-MM-dd")+ HU.SIZE_10 + HU.id(inputId)
-                                 + HU.title(dateHelp)) + extra;
+                          HU.attr("placeholder", "yyyy-MM-dd") + HU.SIZE_10
+                          + HU.id(inputId) + HU.title(dateHelp)) + extra;
     }
 
 
@@ -720,9 +705,8 @@ public class DateHandler extends RepositoryManager {
         }
 
         return HU.span(result,
-                              HU.cssClass(CSS_CLASS_DATETIME)
-                              + HU.attr(HU.ATTR_TITLE,
-                                  fullDate + extraAlt));
+                       HU.cssClass(CSS_CLASS_DATETIME)
+                       + HU.attr(HU.ATTR_TITLE, fullDate + extraAlt));
     }
 
 
@@ -751,7 +735,7 @@ public class DateHandler extends RepositoryManager {
             parseFormats.add(
                 RepositoryUtil.makeDateFormat("yyyy-MM-dd HH:mm"));
             parseFormats.add(RepositoryUtil.makeDateFormat("yyyy-MM-dd"));
-            parseFormats.add(RepositoryUtil.makeDateFormat("yyyy-MM"));	    
+            parseFormats.add(RepositoryUtil.makeDateFormat("yyyy-MM"));
         }
 
 

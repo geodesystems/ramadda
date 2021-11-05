@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
@@ -76,12 +63,10 @@ import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.service.Service;
 import org.ramadda.util.Bounds;
 import org.ramadda.util.CategoryBuffer;
-import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Json;
 import org.ramadda.util.MyTrace;
-import org.ramadda.util.geo.Place;
 
 
 
@@ -89,6 +74,8 @@ import org.ramadda.util.PropertyProvider;
 import org.ramadda.util.StreamEater;
 import org.ramadda.util.TTLObject;
 import org.ramadda.util.Utils;
+import org.ramadda.util.geo.GeoUtils;
+import org.ramadda.util.geo.Place;
 import org.ramadda.util.sql.Clause;
 import org.ramadda.util.sql.SqlUtil;
 
@@ -400,7 +387,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private String dumpFile;
 
-    /** _more_          */
+    /** _more_ */
     private String startupScript;
 
     /** _more_ */
@@ -544,7 +531,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private String languageDefault = "";
 
 
-    /** _more_          */
+    /** _more_ */
     private int overridePort = -1;
 
     /** _more_ */
@@ -558,8 +545,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @throws Exception _more_
      */
-    public Repository() throws Exception {
-    }
+    public Repository() throws Exception {}
 
     /**
      * _more_
@@ -605,24 +591,26 @@ public class Repository extends RepositoryBase implements RequestHandler,
         trustAllCertificates();
         setPort(port);
         LogUtil.setTestMode(true);
-	//This takes a second or two so do it in a thread
-	Misc.run(new Runnable() {
-		public void run() {
-		    try {
-			//			System.err.println("calling getLocalHost");
-			java.net.InetAddress localMachine =
-			    java.net.InetAddress.getLocalHost();
-			//			System.err.println("after getLocalHost:" +localMachine.getHostName() +" " +
-			//					   localMachine.getHostAddress());			   
-			setHostname(localMachine.getHostName());
-			setIpAddress(localMachine.getHostAddress());
-		    } catch (Exception exc) {
-			System.err.println("Got exception accessing local hostname");
-			//            exc.printStackTrace();
-			setHostname("unknown");
-			setIpAddress("unknown");
-		    }
-		}});
+        //This takes a second or two so do it in a thread
+        Misc.run(new Runnable() {
+            public void run() {
+                try {
+                    //                      System.err.println("calling getLocalHost");
+                    java.net.InetAddress localMachine =
+                        java.net.InetAddress.getLocalHost();
+                    //                      System.err.println("after getLocalHost:" +localMachine.getHostName() +" " +
+                    //                                         localMachine.getHostAddress());                         
+                    setHostname(localMachine.getHostName());
+                    setIpAddress(localMachine.getHostAddress());
+                } catch (Exception exc) {
+                    System.err.println(
+                        "Got exception accessing local hostname");
+                    //            exc.printStackTrace();
+                    setHostname("unknown");
+                    setIpAddress("unknown");
+                }
+            }
+        });
 
         this.args     = args;
 
@@ -1053,7 +1041,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
         CacheManager.setDoCache(false);
-	//	IO.debugStderr();
+        //      IO.debugStderr();
         initProperties(properties);
         //Clear the tmp dir as it gets set by the plugin manager and any tmp dir set in a properties file will be ignored
         getStorageManager().clearTmpDir();
@@ -1149,9 +1137,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
         */
 
-	if(getProperty("ramadda.debug.stderr",false)) {
-	    IO.debugStderr();
-	}
+        if (getProperty("ramadda.debug.stderr", false)) {
+            IO.debugStderr();
+        }
     }
 
     /**
@@ -1621,51 +1609,53 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public void loadTypeHandlers() throws Exception {
         List<String> badFiles = new ArrayList<String>();
-	String theFile=null;
-	try {
-        for (String file : getPluginManager().getTypeDefFiles()) {
-            try {
-                file = getStorageManager().localizePath(file);
-		theFile = file;
-                if (getPluginManager().haveSeen("types:" + file, false)) {
-                    continue;
+        String       theFile  = null;
+        try {
+            for (String file : getPluginManager().getTypeDefFiles()) {
+                try {
+                    file    = getStorageManager().localizePath(file);
+                    theFile = file;
+                    if (getPluginManager().haveSeen("types:" + file, false)) {
+                        continue;
+                    }
+                    Element root = XmlUtil.getRoot(file, getClass());
+                    if (root == null) {
+                        continue;
+                    }
+                    loadTypeHandlers(root, false);
+                    getPluginManager().markSeen("types:" + file);
+                } catch (java.lang.NoClassDefFoundError ncdfe) {
+                    throw new RuntimeException(ncdfe);
+                } catch (Exception exc) {
+                    System.err.println("CATCH:" + exc);
+                    badFiles.add(file);
                 }
-                Element root = XmlUtil.getRoot(file, getClass());
-                if (root == null) {
-                    continue;
-                }
-		loadTypeHandlers(root, false);
-                getPluginManager().markSeen("types:" + file);
-	    } catch(java.lang.NoClassDefFoundError ncdfe) {
-		throw new RuntimeException(ncdfe);
-            } catch (Exception exc) {
-		System.err.println("CATCH:" + exc);
-                badFiles.add(file);
-	    }
-        }
-
-        for (String file : badFiles) {
-            System.err.println("bad file:" + file);
-	    theFile = file;
-            try {
-                Element root = XmlUtil.getRoot(file, getClass());
-                if (root == null) {
-                    continue;
-                }
-                loadTypeHandlers(root, false);
-                getPluginManager().markSeen("types:" + file);
-            } catch (Exception exc) {
-                System.err.println("RAMADDA: Error loading type handler:"
-                                   + " file=" + file);
-                exc.printStackTrace();
-
-                throw exc;
             }
+
+            for (String file : badFiles) {
+                System.err.println("bad file:" + file);
+                theFile = file;
+                try {
+                    Element root = XmlUtil.getRoot(file, getClass());
+                    if (root == null) {
+                        continue;
+                    }
+                    loadTypeHandlers(root, false);
+                    getPluginManager().markSeen("types:" + file);
+                } catch (Exception exc) {
+                    System.err.println("RAMADDA: Error loading type handler:"
+                                       + " file=" + file);
+                    exc.printStackTrace();
+
+                    throw exc;
+                }
+            }
+        } catch (Exception exc) {
+            System.err.println("Error loading typehandler from file:"
+                               + theFile);
+
+            throw exc;
         }
-	} catch(Exception exc) {
-	    System.err.println("Error loading typehandler from file:" + theFile);
-	    throw exc;
-	}
 
 
     }
@@ -1713,7 +1703,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         String classPath = XmlUtil.getAttribute(entryNode,
                                TypeHandler.ATTR_HANDLER, (String) null);
 
-	if (classPath == null) {
+        if (classPath == null) {
             String superType = XmlUtil.getAttribute(entryNode,
                                    TypeHandler.ATTR_SUPER, (String) null);
             if (superType != null) {
@@ -1736,9 +1726,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         try {
             TypeHandler typeHandler =
                 (TypeHandler) ctor.newInstance(new Object[] { this,
-							      entryNode });
+                    entryNode });
 
             addTypeHandler(typeHandler.getType(), typeHandler, overwrite);
+
             return typeHandler;
         } catch (Exception exc) {
             System.err.println("Error creating type handler:"
@@ -2299,6 +2290,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (entryUtil == null) {
             entryUtil = EntryUtil.newEntryUtil(getRepository());
         }
+
         return entryUtil;
     }
 
@@ -3011,7 +3003,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                         }
                     }
                 }
-		/*
+                /*
                 boolean metadataOk = true;
                 for (Entry entry : state.getAllEntries()) {
                     if ( !getAccessManager().canDoAction(request, entry,
@@ -3029,7 +3021,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     links.add(makeLink(request, state.getEntry(),
                                        OUTPUT_METADATA_FULL));
                 }
-		*/
+                */
 
                 boolean deleteOk = true;
                 for (Entry entry : state.getAllEntries()) {
@@ -3077,7 +3069,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         };
         outputHandler.addType(OUTPUT_DELETER);
         outputHandler.addType(OUTPUT_METADATA_SHORT);
-        outputHandler.addType(OUTPUT_METADATA_FULL);		
+        outputHandler.addType(OUTPUT_METADATA_FULL);
         addOutputHandler(outputHandler);
 
         OutputHandler copyHandler = new OutputHandler(getRepository(),
@@ -3525,12 +3517,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
 
-	String theUrl = request.toString();
-	boolean debugMemory  =!theUrl.matches(".*(images|icons|htdocs|/metadata/view).*") &&
-	    !theUrl.matches(".*(\\.js|\\.png|\\.gif|favicon.ico)$");
-	debugMemory = false;
-	if(debugMemory)   Runtime.getRuntime().gc();
-	double mem1 = Utils.getUsedMemory();
+        String theUrl = request.toString();
+        boolean debugMemory =
+            !theUrl.matches(".*(images|icons|htdocs|/metadata/view).*")
+            && !theUrl.matches(".*(\\.js|\\.png|\\.gif|favicon.ico)$");
+        debugMemory = false;
+        if (debugMemory) {
+            Runtime.getRuntime().gc();
+        }
+        double mem1 = Utils.getUsedMemory();
         if (debug) {
             getLogManager().debug("user:" + request.getUser() + " -- "
                                   + request.toString());
@@ -3550,7 +3545,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 result.setResponseCode(Result.RESPONSE_UNAUTHORIZED);
             }
             if (result == null) {
-		result = getResult(request);
+                result = getResult(request);
             }
         } catch (Throwable exc) {  //getResult error
             //In case the session checking didn't set the user
@@ -3638,11 +3633,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
-	if(debugMemory) {
-	    Runtime.getRuntime().gc();
-	    double mem2 = Utils.getUsedMemory();
-	    System.err.println("memory:" + mem2 +" delta:" + Utils.decimals(mem2-mem1,1)+" url:" + request);
-	}
+        if (debugMemory) {
+            Runtime.getRuntime().gc();
+            double mem2 = Utils.getUsedMemory();
+            System.err.println("memory:" + mem2 + " delta:"
+                               + Utils.decimals(mem2 - mem1, 1) + " url:"
+                               + request);
+        }
 
         getLogManager().logRequest(request, (result == null)
                                             ? Result.RESPONSE_INTERNALERROR
@@ -3957,6 +3954,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         Result sslRedirect = checkForSslRedirect(request, apiMethod);
         if (sslRedirect != null) {
             debugSession(request, "redirecting to ssl:" + request.getUrl());
+
             return sslRedirect;
         }
 
@@ -3979,7 +3977,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
         Result result = null;
         try {
-	    result = (Result) apiMethod.invoke(request);
+            result = (Result) apiMethod.invoke(request);
         } catch (Exception exc) {
             Throwable inner = LogUtil.getInnerException(exc);
             if (inner instanceof RepositoryUtil.MissingEntryException) {
@@ -4057,7 +4055,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     private Result checkForSslRedirect(Request request, ApiMethod apiMethod) {
-	boolean debug = false;
+        boolean debug      = false;
 
 
         boolean sslEnabled = isSSLEnabled(request);
@@ -4066,10 +4064,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (apiMethod.getRequest().startsWith("/repos/")) {
             return null;
         }
-	if(debug) System.err.println("checkForSslRedirect allSsl:" + allSsl +" request secrure:" + request.getSecure());
+        if (debug) {
+            System.err.println("checkForSslRedirect allSsl:" + allSsl
+                               + " request secrure:" + request.getSecure());
+        }
         if (sslEnabled) {
             if (allSsl && !request.getSecure()) {
-		if(debug) System.err.println("\tredirecting 1");
+                if (debug) {
+                    System.err.println("\tredirecting 1");
+                }
+
                 return new Result(httpsUrl(request, request.getUrl()));
             }
         }
@@ -4078,7 +4082,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
             if ( !request.get(ARG_NOREDIRECT, false)) {
                 if (apiMethod.getNeedsSsl() && !request.getSecure()) {
                     //redirect them to the https request
-		    if(debug)    System.err.println("\tredirecting 2");
+                    if (debug) {
+                        System.err.println("\tredirecting 2");
+                    }
+
                     return new Result(httpsUrl(request, request.getUrl()));
 
                 } else if ( !allSsl && !apiMethod.getNeedsSsl()
@@ -4268,9 +4275,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
                             //                      base = request.getAbsoluteUrl(base);
                         }
                         js = js.replace(
-                            "${ramadda.htdocs}", base + "/"+RepositoryUtil.getHtdocsVersion()).replace(
-                            "${ramadda.root}", base);
-			js = js.replace("${ramadda.search.tree}",getSearchManager().isLuceneEnabled()+"");
+                            "${ramadda.htdocs}",
+                            base + "/"
+                            + RepositoryUtil.getHtdocsVersion()).replace(
+                                "${ramadda.root}", base);
+                        js = js.replace("${ramadda.search.tree}",
+                                        getSearchManager().isLuceneEnabled()
+                                        + "");
                         js = js.replace("${ramadda.urlroot}", base);
                         js = js.replace(
                             "${ramadda.baseentry}",
@@ -5627,6 +5638,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 if (t1.getPriority() == t2.getPriority()) {
                     return t1.getLabel().compareTo(t2.getLabel());
                 }
+
                 return t1.getPriority() - t2.getPriority();
             }
         };
@@ -5635,7 +5647,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         List<TypeHandler> tmp = new ArrayList<TypeHandler>();
         for (TypeHandler typeHandler :
                 (List<TypeHandler>) Misc.toList(array)) {
-            if (!typeHandler.getIncludeInSearch() &&  !typeHandler.getForUser()) {
+            if ( !typeHandler.getIncludeInSearch()
+                    && !typeHandler.getForUser()) {
                 continue;
             }
             if (typeHandler.isAnyHandler()) {
@@ -5935,10 +5948,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * _more_
      *
      * @return _more_
+     *
+     * @throws Exception _more_
      */
     public ServerInfo getServerInfo() throws Exception {
-        int sslPort = getHttpsPort();
-	String url = getTmpRequest().getAbsoluteUrl("");
+        int    sslPort = getHttpsPort();
+        String url     = getTmpRequest().getAbsoluteUrl("");
+
         return new ServerInfo(url, getHostname(), getPort(), sslPort,
                               getUrlBase(), getRepositoryName(),
                               getRepositoryDescription(),
@@ -6942,19 +6958,27 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @param entries _more_
      */
     public void checkNewEntries(final List<Entry> entries) {
-	Misc.run(new Runnable() {public void run() {
-	    for (EntryChecker entryMonitor : getEntryCheckers()) {
-		entryMonitor.entriesCreated(entries);
-	    }
-	}});
+        Misc.run(new Runnable() {
+            public void run() {
+                for (EntryChecker entryMonitor : getEntryCheckers()) {
+                    entryMonitor.entriesCreated(entries);
+                }
+            }
+        });
     }
 
+    /**
+     *
+     * @param entries _more_
+     */
     public void checkMovedEntries(final List<Entry> entries) {
-	Misc.run(new Runnable() {public void run() {
-	    for (EntryChecker entryMonitor : getEntryCheckers()) {
-		entryMonitor.entriesMoved(entries);
-	    }
-	}});
+        Misc.run(new Runnable() {
+            public void run() {
+                for (EntryChecker entryMonitor : getEntryCheckers()) {
+                    entryMonitor.entriesMoved(entries);
+                }
+            }
+        });
     }
 
     /**
@@ -6963,11 +6987,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @param ids _more_
      */
     public void checkDeletedEntries(final List<String> ids) {
-	Misc.run(new Runnable() {public void run() {
-	    for (EntryChecker entryMonitor : getEntryCheckers()) {
-		entryMonitor.entriesDeleted(ids);
-	    }
-	}});
+        Misc.run(new Runnable() {
+            public void run() {
+                for (EntryChecker entryMonitor : getEntryCheckers()) {
+                    entryMonitor.entriesDeleted(ids);
+                }
+            }
+        });
     }
 
 
@@ -6977,16 +7003,22 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @param entries _more_
      */
     public void checkModifiedEntries(final List<Entry> entries) {
-	Misc.run(new Runnable() {public void run() {
-	    for (EntryChecker entryMonitor : getEntryCheckers()) {
-		entryMonitor.entriesModified(entries);
-	    }
-	}});
+        Misc.run(new Runnable() {
+            public void run() {
+                for (EntryChecker entryMonitor : getEntryCheckers()) {
+                    entryMonitor.entriesModified(entries);
+                }
+            }
+        });
     }
 
 
+    /**
+     *
+     * @return _more_
+     */
     public List<EntryChecker> getEntryCheckers() {
-	return entryMonitors;
+        return entryMonitors;
     }
 
 
@@ -7055,9 +7087,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return  the message
      */
     public String getSystemMessage() {
-	//For now
-	return "";
-	//        return getProperty(PROP_SYSTEM_MESSAGE, (String) null);
+        //For now
+        return "";
+        //        return getProperty(PROP_SYSTEM_MESSAGE, (String) null);
     }
 
     /**

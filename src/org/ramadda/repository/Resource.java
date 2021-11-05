@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
@@ -248,8 +235,12 @@ public class Resource {
         return fileSize;
     }
 
+    /**
+     *
+     * @return _more_
+     */
     public boolean hasResource() {
-	return isFile()||isUrl();
+        return isFile() || isUrl();
     }
 
 
@@ -268,6 +259,7 @@ public class Resource {
                 || type.equals(TYPE_REMOTE_FILE)) {
             return getTheFile().exists();
         }
+
         return false;
     }
 
@@ -357,9 +349,14 @@ public class Resource {
         file = null;
     }
 
+    /**
+     *
+     * @param file _more_
+     * @param type _more_
+     */
     public void setFile(File file, String type) {
-	setPath(file.toString());
-	this.type=type;
+        setPath(file.toString());
+        this.type = type;
     }
 
 

@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
@@ -152,13 +139,30 @@ public class RepositoryManager implements RepositorySource, Constants,
     }
 
 
+    /**
+     *
+     * @param snippet _more_
+     *
+     * @return _more_
+     */
     public String makeSnippet(String snippet) {
-	return makeSnippet(snippet,false);
+        return makeSnippet(snippet, false);
     }
+
+    /**
+     *
+     * @param snippet _more_
+     * @param stripTags _more_
+     *
+     * @return _more_
+     */
     public String makeSnippet(String snippet, boolean stripTags) {
-	if(stripTags) snippet = Utils.stripTags(snippet);
-	return "<snippet>" + snippet +"</snippet>";
-    }    
+        if (stripTags) {
+            snippet = Utils.stripTags(snippet);
+        }
+
+        return "<snippet>" + snippet + "</snippet>";
+    }
 
     /**
      * _more_
@@ -190,13 +194,24 @@ public class RepositoryManager implements RepositorySource, Constants,
         }
     }
 
-    public void formEntry(Appendable sb, Request request, String label, String contents) throws Exception {
+    /**
+     *
+     * @param sb _more_
+     * @param request _more_
+     * @param label _more_
+     * @param contents _more_
+     *
+     * @throws Exception _more_
+     */
+    public void formEntry(Appendable sb, Request request, String label,
+                          String contents)
+            throws Exception {
         if (request.isMobile()) {
             sb.append("<tr><td><div class=\"formlabel\">");
-	    sb.append(label);
-	    sb.append("</div>");
-	    sb.append(contents);
-	    sb.append("</td></tr>");
+            sb.append(label);
+            sb.append("</div>");
+            sb.append(contents);
+            sb.append("</td></tr>");
         } else {
             HtmlUtils.formEntry(sb, label, contents);
         }
@@ -204,8 +219,16 @@ public class RepositoryManager implements RepositorySource, Constants,
 
 
 
+    /**
+     *
+     * @param request _more_
+     * @param label _more_
+     *
+     * @return _more_
+     */
     public String formEntry(Request request, String label) {
-	return "<tr><td colspan=2 class=ramadda-form-header><div style='font-weight:bold;margin-left:10px;'>" + label + "</b></td></tr>";
+        return "<tr><td colspan=2 class=ramadda-form-header><div style='font-weight:bold;margin-left:10px;'>"
+               + label + "</b></td></tr>";
     }
 
 
@@ -231,8 +254,15 @@ public class RepositoryManager implements RepositorySource, Constants,
         }
     }
 
+    /**
+     *
+     * @param name _more_
+     * @param value _more_
+     *
+     * @return _more_
+     */
     public NamedValue arg(String name, Object value) {
-	return new NamedValue(name, value);
+        return new NamedValue(name, value);
     }
 
 
@@ -676,9 +706,13 @@ public class RepositoryManager implements RepositorySource, Constants,
         return repository.getEntryManager();
     }
 
+    /**
+     *
+     * @return _more_
+     */
     public EntryUtil getEntryUtil() {
         return repository.getEntryUtil();
-    }    
+    }
 
 
     /**
@@ -882,10 +916,17 @@ public class RepositoryManager implements RepositorySource, Constants,
      * @return _more_
      */
     public String getEntryDisplayName(Entry entry) {
-	return getEntryDisplayName(entry, null);
+        return getEntryDisplayName(entry, null);
     }
 
-    public String getEntryDisplayName(Entry entry, String template) {	
+    /**
+     *
+     * @param entry _more_
+     * @param template _more_
+     *
+     * @return _more_
+     */
+    public String getEntryDisplayName(Entry entry, String template) {
         String name = entry.getTypeHandler().getEntryName(entry);
         if ( !Utils.stringDefined(name)) {
             name = entry.getBaseLabel();
@@ -895,11 +936,13 @@ public class RepositoryManager implements RepositorySource, Constants,
             }
         }
 
-	if(template!=null) {
-	    name = template.replace("${name}",name);
-	    String date = getDateHandler().formatYYYYMMDD(new Date(entry.getStartDate()));
-	    name = name.replace("${date}",date);
-	}
+        if (template != null) {
+            name = template.replace("${name}", name);
+            String date = getDateHandler().formatYYYYMMDD(
+                              new Date(entry.getStartDate()));
+            name = name.replace("${date}", date);
+        }
+
         return name;
     }
 

@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
@@ -25,6 +12,7 @@ import org.ramadda.repository.auth.*;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
+
 import ucar.unidata.util.IOUtil;
 
 import ucar.unidata.util.LogUtil;
@@ -496,7 +484,7 @@ public class LogManager extends RepositoryManager {
         String       stackTrace = ((thr != null)
                                    ? LogUtil.getStackTrace(thr)
                                    : "");
-        List<String> lines = Utils.split(stackTrace, "\n", true, true);
+        List<String> lines      = Utils.split(stackTrace, "\n", true, true);
         for (int i = 0; (i < lines.size()) && (i < 20); i++) {
             trace.append(lines.get(i));
             trace.append("\n");
@@ -827,8 +815,7 @@ public class LogManager extends RepositoryManager {
             boolean      didOne       = false;
             StringBuffer stackSB      = null;
             boolean      lastOneBlank = false;
-            for (String line :
-                    Utils.split(logString, "\n", false, false)) {
+            for (String line : Utils.split(logString, "\n", false, false)) {
                 if ( !didOne) {
                     didOne = true;
 
@@ -939,7 +926,9 @@ public class LogManager extends RepositoryManager {
 
             String dttm = getDateHandler().formatDate(logEntry.getDate());
             dttm = dttm.replace(" ", "&nbsp;");
-            String user = logEntry.getUser()!=null?logEntry.getUser().getLabel():"anonymous";
+            String user = (logEntry.getUser() != null)
+                          ? logEntry.getUser().getLabel()
+                          : "anonymous";
             user = user.replace(" ", "&nbsp;");
             String cols = HtmlUtils.cols(user, dttm, path, logEntry.getIp(),
                                          userAgent);

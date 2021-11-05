@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
@@ -23,10 +10,10 @@ import org.ramadda.repository.harvester.*;
 import org.ramadda.repository.search.*;
 
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Utils;
 import org.ramadda.util.MultiJarClassLoader;
 import org.ramadda.util.MyTrace;
 import org.ramadda.util.TempDir;
+import org.ramadda.util.Utils;
 
 import org.ramadda.util.text.CsvPlugin;
 
@@ -199,6 +186,7 @@ public class PluginManager extends RepositoryManager {
     /** Keeps track of files we've seen */
     private HashSet seenThings = new HashSet();
 
+    /**  */
     private List<Class> csvClasses = new ArrayList<Class>();
 
     /**
@@ -224,8 +212,12 @@ public class PluginManager extends RepositoryManager {
     }
 
 
+    /**
+     *
+     * @return _more_
+     */
     public List<Class> getCsvClasses() {
-	return csvClasses;
+        return csvClasses;
     }
 
 
@@ -264,6 +256,7 @@ public class PluginManager extends RepositoryManager {
         if ( !contains && andMark) {
             markSeen(object);
         }
+
         return contains;
     }
 
@@ -351,17 +344,18 @@ public class PluginManager extends RepositoryManager {
                 continue;
             }
             String pluginFile = plugin.toString();
-	    if (haveSeen(pluginFile)) {
+            if (haveSeen(pluginFile)) {
                 continue;
             }
-	    //Check for bad ones. Should be in a property list
-	    boolean ok = true;
-	    if(pluginFile.endsWith("gdataplugin.jar")) 
-		ok = false;
-	    if(!ok) {
-		System.err.println("Skipping plugin file:" + pluginFile);
-		continue;
-	    }
+            //Check for bad ones. Should be in a property list
+            boolean ok = true;
+            if (pluginFile.endsWith("gdataplugin.jar")) {
+                ok = false;
+            }
+            if ( !ok) {
+                System.err.println("Skipping plugin file:" + pluginFile);
+                continue;
+            }
 
             try {
                 processPluginFile(pluginFile, pluginFilesList, classLoader,
@@ -370,6 +364,7 @@ public class PluginManager extends RepositoryManager {
                 System.err.println("RAMADDA: Error loading plugin:"
                                    + pluginFile);
                 System.err.println("RAMADDA: Error:" + exc);
+
                 throw exc;
             }
         }
@@ -385,8 +380,8 @@ public class PluginManager extends RepositoryManager {
                     if (classToLoad.startsWith("#")) {
                         continue;
                     }
-                    List<String> toks = Utils.split(classToLoad, ";",
-                                            true, true);
+                    List<String> toks = Utils.split(classToLoad, ";", true,
+                                            true);
                     if (toks.size() > 1) {
                         classToLoad = toks.get(0);
                         toks.remove(0);
@@ -418,15 +413,17 @@ public class PluginManager extends RepositoryManager {
         for (String file : pluginFiles) {
             boolean didIt = false;
             for (AdminHandler adminHandler : getAdmin().getAdminHandlers()) {
-		try {
-		    if (adminHandler.loadPluginFile(file)) {
-			didIt = true;
-			break;
-		    }
-		} catch(Exception exc) {
-		    System.err.println("Error loading plugin file:" + file);
-		    throw exc;
-		}
+                try {
+                    if (adminHandler.loadPluginFile(file)) {
+                        didIt = true;
+
+                        break;
+                    }
+                } catch (Exception exc) {
+                    System.err.println("Error loading plugin file:" + file);
+
+                    throw exc;
+                }
             }
             if ( !didIt) {
                 remainder.add(file);
@@ -434,10 +431,11 @@ public class PluginManager extends RepositoryManager {
         }
         pluginFiles = remainder;
         for (String file : pluginFiles) {
-	    if(file.endsWith("mapextra.js")) {
-		getMapManager().addExtraMapJS(getStorageManager().readSystemResource(file));
-	    }
-	}
+            if (file.endsWith("mapextra.js")) {
+                getMapManager().addExtraMapJS(
+                    getStorageManager().readSystemResource(file));
+            }
+        }
 
 
     }
@@ -600,11 +598,21 @@ public class PluginManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public boolean installPlugin(String pluginPath) throws Exception {
-	return installPlugin(pluginPath,false);
+        return installPlugin(pluginPath, false);
     }
 
-    public boolean installPlugin(String pluginPath, boolean throwError) throws Exception {	
-	String newPluginFile = null;
+    /**
+     *
+     * @param pluginPath _more_
+     * @param throwError _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public boolean installPlugin(String pluginPath, boolean throwError)
+            throws Exception {
+        String newPluginFile = null;
         try {
             newPluginFile = copyPlugin(pluginPath);
             boolean haveLoadedBefore =
@@ -614,13 +622,14 @@ public class PluginManager extends RepositoryManager {
             //            loadPlugins();
             return haveLoadedBefore;
         } catch (Exception exc) {
-	    if(throwError) {
-		new File(newPluginFile).delete();
-		throw new RuntimeException("Error installing plugin:" + pluginPath,
-					   exc);
-	    }
-	    getLogManager().logError("Error installing plugin:" + pluginPath,
-				     exc);
+            if (throwError) {
+                new File(newPluginFile).delete();
+
+                throw new RuntimeException("Error installing plugin:"
+                                           + pluginPath, exc);
+            }
+            getLogManager().logError("Error installing plugin:" + pluginPath,
+                                     exc);
         }
 
         return false;
@@ -661,7 +670,7 @@ public class PluginManager extends RepositoryManager {
      */
     public void addStatusInfo(Request request, StringBuffer sb) {
         StringBuffer formBuffer = new StringBuffer();
-	/*
+        /*
         request.uploadFormWithAuthToken(formBuffer,
                                         getAdmin().URL_ADMIN_PLUGIN_UPLOAD,
                                         "");
@@ -671,7 +680,7 @@ public class PluginManager extends RepositoryManager {
                 HtmlUtils.SIZE_60));
         formBuffer.append(HtmlUtils.submit("Upload new plugin file"));
         formBuffer.append(HtmlUtils.formClose());
-	*/
+        */
         formBuffer.append(HtmlUtils.p());
         formBuffer.append(HtmlUtils.h2(msg("Main plugin files")));
         formBuffer.append(HtmlUtils.table(pluginFilesList.toString()));
@@ -693,8 +702,11 @@ public class PluginManager extends RepositoryManager {
      */
     protected boolean checkFile(String file, boolean fromPlugin)
             throws Exception {
-	String rootName =  new File(file).getName();
-	if(rootName.startsWith(".") || rootName.startsWith("#") || rootName.endsWith("~")) return false;
+        String rootName = new File(file).getName();
+        if (rootName.startsWith(".") || rootName.startsWith("#")
+                || rootName.endsWith("~")) {
+            return false;
+        }
         allFiles.add(file);
         if (file.indexOf("api.xml") >= 0) {
             if (fromPlugin) {
@@ -862,9 +874,10 @@ public class PluginManager extends RepositoryManager {
 
             if (CsvPlugin.class.isAssignableFrom(c)) {
                 pluginStat("CSV Class", c.getName());
-		csvClasses.add(c);
-		return;
-	    }
+                csvClasses.add(c);
+
+                return;
+            }
 
 
             if (ImportHandler.class.isAssignableFrom(c)) {

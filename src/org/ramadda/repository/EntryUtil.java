@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
@@ -36,6 +23,8 @@ import org.ramadda.util.sql.SqlUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
+import java.awt.geom.Rectangle2D;
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,8 +37,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import java.awt.geom.Rectangle2D;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -80,8 +67,14 @@ public class EntryUtil extends RepositoryManager {
         super(repository);
     }
 
+    /**
+     *
+     * @param repository _more_
+     *
+     * @return _more_
+     */
     public static EntryUtil newEntryUtil(Repository repository) {
-	return new EntryUtil(repository);
+        return new EntryUtil(repository);
     }
 
 
@@ -90,22 +83,43 @@ public class EntryUtil extends RepositoryManager {
      * _more_
      */
     public synchronized void clearCache() {
-	if(typeCache!=null)
-	    typeCache.clearCache();
+        if (typeCache != null) {
+            typeCache.clearCache();
+        }
     }
 
+    /**
+     *
+     * @param entries _more_
+     *
+     * @return _more_
+     */
     public static List<Entry> getGroups(List<Entry> entries) {
-	List<Entry> groups = new ArrayList<Entry>();
-	for(Entry entry: entries)
-	    if (entry.isGroup()) groups.add(entry);
-	return groups;
+        List<Entry> groups = new ArrayList<Entry>();
+        for (Entry entry : entries) {
+            if (entry.isGroup()) {
+                groups.add(entry);
+            }
+        }
+
+        return groups;
     }
 
+    /**
+     *
+     * @param entries _more_
+     *
+     * @return _more_
+     */
     public static List<Entry> getNonGroups(List<Entry> entries) {
-	List<Entry> nongroups = new ArrayList<Entry>();
-	for(Entry entry: entries)
-	    if (!entry.isGroup()) nongroups.add(entry);
-	return nongroups;
+        List<Entry> nongroups = new ArrayList<Entry>();
+        for (Entry entry : entries) {
+            if ( !entry.isGroup()) {
+                nongroups.add(entry);
+            }
+        }
+
+        return nongroups;
     }
 
 
@@ -147,92 +161,178 @@ public class EntryUtil extends RepositoryManager {
     }
 
 
+    /**
+     *
+     * @param entry _more_
+     * @param entries _more_
+     *
+     * @return _more_
+     */
     public static Entry getPrev(Entry entry, List<Entry> entries) {
-	//	System.err.println("prev:" + entry+" list:" + entries);
-	for(int i=0;i<entries.size();i++) {
-	    Entry e = entries.get(i);
-	    if(e.getId() == entry.getId()) {
-		//		System.err.println("\tgot:" + i +" " + entries.size());
-		if(i>0) {
-		    //		    System.err.println("\tok");
-		    return entries.get(i-1);
-		}
-		return  null;
-	    }
-	}
-	return null;
+        //      System.err.println("prev:" + entry+" list:" + entries);
+        for (int i = 0; i < entries.size(); i++) {
+            Entry e = entries.get(i);
+            if (e.getId() == entry.getId()) {
+                //              System.err.println("\tgot:" + i +" " + entries.size());
+                if (i > 0) {
+                    //              System.err.println("\tok");
+                    return entries.get(i - 1);
+                }
+
+                return null;
+            }
+        }
+
+        return null;
     }
 
     /*
      */
-    public Entry getNext(Request request, Entry entry,Entry root,  boolean tree, String sort, boolean ascending) throws Exception {
-	if(entry==null) return null;
-	if(tree && entry.equalsEntry(root)) {
-	    List<Entry> first = sortEntriesOn(getEntryManager().getChildren(request,
-									    entry), sort, !ascending);
-	    return first.size()>0?first.get(0):null;
-	}
+
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param root _more_
+     * @param tree _more_
+     * @param sort _more_
+     * @param ascending _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Entry getNext(Request request, Entry entry, Entry root,
+                         boolean tree, String sort, boolean ascending)
+            throws Exception {
+        if (entry == null) {
+            return null;
+        }
+        if (tree && entry.equalsEntry(root)) {
+            List<Entry> first =
+                sortEntriesOn(getEntryManager().getChildren(request, entry),
+                              sort, !ascending);
+
+            return (first.size() > 0)
+                   ? first.get(0)
+                   : null;
+        }
 
 
-	Entry parent = entry.getParentEntry();
-	if(parent==null) return null;
-	List<Entry> children = sortEntriesOn(getEntryManager().getChildren(request,
-									   parent), sort, !ascending);
-	Entry next = getNext(entry, children);
-	if(next!=null || !tree)
-	    return next;
+        Entry parent = entry.getParentEntry();
+        if (parent == null) {
+            return null;
+        }
+        List<Entry> children =
+            sortEntriesOn(getEntryManager().getChildren(request, parent),
+                          sort, !ascending);
+        Entry next = getNext(entry, children);
+        if ((next != null) || !tree) {
+            return next;
+        }
 
-	if(tree)  {
-	    if(root!=null && root.equalsEntry(parent)) return null;
-	    return getNext(request, parent, root, tree, sort, ascending);
-	}
-	return null;
+        if (tree) {
+            if ((root != null) && root.equalsEntry(parent)) {
+                return null;
+            }
+
+            return getNext(request, parent, root, tree, sort, ascending);
+        }
+
+        return null;
     }
 
-    public Entry getPrev(Request request, Entry entry,Entry root,  boolean tree, String sort, boolean ascending) throws Exception {
-	if(entry==null) return null;
-	if(tree && entry.equalsEntry(root)) {
-	    return null;
-	}
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param root _more_
+     * @param tree _more_
+     * @param sort _more_
+     * @param ascending _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Entry getPrev(Request request, Entry entry, Entry root,
+                         boolean tree, String sort, boolean ascending)
+            throws Exception {
+        if (entry == null) {
+            return null;
+        }
+        if (tree && entry.equalsEntry(root)) {
+            return null;
+        }
 
-	Entry parent = entry.getParentEntry();
-	if(parent==null) return null;
-	List<Entry> children = sortEntriesOn(getEntryManager().getChildren(request,
-									   parent), sort, !ascending);
-	Entry prev = getPrev(entry, children);
-	if(prev!=null || !tree)
-	    return prev;
+        Entry parent = entry.getParentEntry();
+        if (parent == null) {
+            return null;
+        }
+        List<Entry> children =
+            sortEntriesOn(getEntryManager().getChildren(request, parent),
+                          sort, !ascending);
+        Entry prev = getPrev(entry, children);
+        if ((prev != null) || !tree) {
+            return prev;
+        }
 
-	if(tree)  {
-	    if(root!=null && root.equalsEntry(parent)) return null;
-	    return getPrev(request, parent, root, tree, sort, ascending);
-	}
-	return null;
+        if (tree) {
+            if ((root != null) && root.equalsEntry(parent)) {
+                return null;
+            }
+
+            return getPrev(request, parent, root, tree, sort, ascending);
+        }
+
+        return null;
     }
 
 
 
+    /**
+     *
+     * @param entry _more_
+     * @param entries _more_
+     *
+     * @return _more_
+     */
     public static Entry getNext(Entry entry, List<Entry> entries) {
-	//	System.err.println("next:" + entry+" list:" + entries);
-	for(int i=0;i<entries.size();i++) {
-	    Entry e = entries.get(i);
-	    if(e.getId() == entry.getId()) {
-		//		System.err.println("\tgot:" + i +" " + entries.size());
-		if(i<=entries.size()-2) {
-		    //		    System.err.println("\tallgood");
-		    return entries.get(i+1);
-		}
-		return  null;
-	    }
-	}
-	return null;
+        //      System.err.println("next:" + entry+" list:" + entries);
+        for (int i = 0; i < entries.size(); i++) {
+            Entry e = entries.get(i);
+            if (e.getId() == entry.getId()) {
+                //              System.err.println("\tgot:" + i +" " + entries.size());
+                if (i <= entries.size() - 2) {
+                    //              System.err.println("\tallgood");
+                    return entries.get(i + 1);
+                }
+
+                return null;
+            }
+        }
+
+        return null;
     }
 
-    public static Entry findEntry( List<Entry> list, String id) {
-	if(id==null) return null;
-	for(Entry e: list)
-	    if(e.getId().equals(id)) return e;
-	return null;
+    /**
+     *
+     * @param list _more_
+     * @param id _more_
+     *
+     * @return _more_
+     */
+    public static Entry findEntry(List<Entry> list, String id) {
+        if (id == null) {
+            return null;
+        }
+        for (Entry e : list) {
+            if (e.getId().equals(id)) {
+                return e;
+            }
+        }
+
+        return null;
     }
 
 
@@ -247,7 +347,7 @@ public class EntryUtil extends RepositoryManager {
      * @return _more_
      */
     public static List<Entry> sortEntriesOnPattern(List<Entry> entries,
-						   final boolean descending, String p) {
+            final boolean descending, String p) {
         p = p.replaceAll("_LEFT_", "[").replaceAll("_RIGHT_", "]");
         final Pattern pattern = Pattern.compile(p);
         //      System.err.println("on pattern:" + pattern+":");
@@ -258,7 +358,7 @@ public class EntryUtil extends RepositoryManager {
                 Matcher m1 = pattern.matcher(e1.getName());
                 Matcher m2 = pattern.matcher(e2.getName());
                 if ( !m1.find() || !m2.find()) {
-		    //                    System.err.println("No match: name1: " + e1.getName() + " name2: " + e2.getName());
+                    //                    System.err.println("No match: name1: " + e1.getName() + " name2: " + e2.getName());
 
                     return 0;
                 }
@@ -525,6 +625,7 @@ public class EntryUtil extends RepositoryManager {
         } else if (l1 > l2) {
             return 1;
         }
+
         return 0;
     }
 
@@ -545,7 +646,7 @@ public class EntryUtil extends RepositoryManager {
         } else if (on.equals(ORDERBY_CHANGEDATE)) {
             return compare(e1.getChangeDate(), e2.getChangeDate());
         } else if (on.equals(ORDERBY_CREATEDATE)) {
-	    return  compare(e1.getCreateDate(), e2.getCreateDate());
+            return compare(e1.getCreateDate(), e2.getCreateDate());
         } else if (on.equals(ORDERBY_NAME)) {
             return e1.getName().compareToIgnoreCase(e2.getName());
         } else if (on.equals(ORDERBY_ENTRYORDER)) {
@@ -613,7 +714,8 @@ public class EntryUtil extends RepositoryManager {
         Object[] array = entries.toArray();
         Arrays.sort(array, comp);
 
-	entries = (List<Entry>) Misc.toList(array);
+        entries = (List<Entry>) Misc.toList(array);
+
         return entries;
     }
 
@@ -635,16 +737,26 @@ public class EntryUtil extends RepositoryManager {
                                         sorts.substring(7));
         }
 
-        return sortEntriesOn(entries,
-                             Utils.split(sorts, ",", true, true),
+        return sortEntriesOn(entries, Utils.split(sorts, ",", true, true),
                              descending);
     }
 
 
+    /**
+     *
+     * @param entry _more_
+     * @param entries _more_
+     *
+     * @return _more_
+     */
     public static int indexOf(Entry entry, List<Entry> entries) {
-	for(int i=0;i<entries.size();i++)
-	    if(entry.getId().equals(entries.get(i).getId())) return i;
-	return -1;
+        for (int i = 0; i < entries.size(); i++) {
+            if (entry.getId().equals(entries.get(i).getId())) {
+                return i;
+            }
+        }
+
+        return -1;
     }
 
     /**
@@ -850,7 +962,14 @@ public class EntryUtil extends RepositoryManager {
 
 
 
-    public static List<SelectionRectangle> getSelectionRectangles(SelectionRectangle bbox) {
+    /**
+     *
+     * @param bbox _more_
+     *
+     * @return _more_
+     */
+    public static List<SelectionRectangle> getSelectionRectangles(
+            SelectionRectangle bbox) {
         bbox.normalizeLongitude();
         List<SelectionRectangle> rectangles =
             new ArrayList<SelectionRectangle>();
@@ -871,7 +990,8 @@ public class EntryUtil extends RepositoryManager {
         } else {
             rectangles.add(bbox);
         }
-	return rectangles;
+
+        return rectangles;
 
     }
 

@@ -1,18 +1,5 @@
-/**
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
@@ -32,14 +19,12 @@ import org.ramadda.repository.output.PageStyle;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.HtmlTemplate;
-import org.ramadda.util.NamedValue;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
 import org.ramadda.util.JQuery;
+import org.ramadda.util.Json;
 import org.ramadda.util.MapRegion;
+import org.ramadda.util.NamedValue;
 import org.ramadda.util.Utils;
-
-import java.util.Comparator;
 
 
 import ucar.unidata.util.DateUtil;
@@ -62,6 +47,8 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
+
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -78,7 +65,10 @@ import java.util.TimeZone;
 public class PageHandler extends RepositoryManager {
 
 
+    /**  */
     public static final String IMPORTS_BEGIN = "<!--imports-->";
+
+    /**  */
     public static final String IMPORTS_END = "<!--end imports-->";
 
 
@@ -171,10 +161,11 @@ public class PageHandler extends RepositoryManager {
     /** html template macro */
     public static final String MACRO_CONTENT = "content";
 
-    public static final String MACRO_IMPORTS= "imports";
+    /**  */
+    public static final String MACRO_IMPORTS = "imports";
 
 
-    /** _more_          */
+    /** _more_ */
     private String webImports;
 
     /** _more_ */
@@ -279,11 +270,12 @@ public class PageHandler extends RepositoryManager {
 
 
 
-    String searchImg = HU.faIcon("fa-search", "title",
-				 "Search", "class",
-				 "ramadda-user-menu-image", "id",
-				 "searchlink");
+    /**  */
+    String searchImg = HU.faIcon("fa-search", "title", "Search", "class",
+                                 "ramadda-user-menu-image", "id",
+                                 "searchlink");
 
+    /**  */
     String popupImage;
 
 
@@ -294,11 +286,11 @@ public class PageHandler extends RepositoryManager {
      */
     public PageHandler(Repository repository) {
         super(repository);
-        popupImage =
-            HU.faIcon("fa-cog", "title",
-		      "Login, user settings, help", "class",
-		      "ramadda-user-menu-image");
-	popupImage = HtmlUtils.div(popupImage, HtmlUtils.cssClass("ramadda-popup-link"));
+        popupImage = HU.faIcon("fa-cog", "title",
+                               "Login, user settings, help", "class",
+                               "ramadda-user-menu-image");
+        popupImage = HtmlUtils.div(popupImage,
+                                   HtmlUtils.cssClass("ramadda-popup-link"));
     }
 
 
@@ -350,20 +342,19 @@ public class PageHandler extends RepositoryManager {
                 if (file.startsWith("#")) {
                     continue;
                 }
-                cssImports += HU.cssLink("${root}" + file).trim()
-                              + "\n";
+                cssImports += HU.cssLink("${root}" + file).trim() + "\n";
             }
             for (String file : jsFiles) {
                 if (file.startsWith("#")) {
                     continue;
                 }
-                jsImports += HU.importJS("${root}" + file).trim()
-                             + "\n";
+                jsImports += HU.importJS("${root}" + file).trim() + "\n";
             }
             webImports = applyBaseMacros(cssImports.trim() + "\n"
                                          + jsImports.trim() + "\n");
-	    webImports = IMPORTS_BEGIN + "\n" + webImports +"\n" + IMPORTS_END+"\n";
-	    
+            webImports = IMPORTS_BEGIN + "\n" + webImports + "\n"
+                         + IMPORTS_END + "\n";
+
 
 
         } catch (Exception exc) {
@@ -406,24 +397,37 @@ public class PageHandler extends RepositoryManager {
      */
     public void decorateResult(Request request, Result result)
             throws Exception {
-	String html = decorateResult(request, result,true,true);
-	if(html!=null) {
-	    result.setContent(html);
-	}
+        String html = decorateResult(request, result, true, true);
+        if (html != null) {
+            result.setContent(html);
+        }
     }
 
 
-    public String decorateResult(Request request, Result result, boolean prefix, boolean suffix)
-            throws Exception {	
-	boolean fullTemplate = prefix && suffix;
-	//	Runtime.getRuntime().gc();
-	double mem1 = Utils.getUsedMemory();
+    /**
+     *
+     * @param request _more_
+     * @param result _more_
+     * @param prefix _more_
+     * @param suffix _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String decorateResult(Request request, Result result,
+                                 boolean prefix, boolean suffix)
+            throws Exception {
 
-        long t0 = System.currentTimeMillis();
+        boolean fullTemplate = prefix && suffix;
+        //      Runtime.getRuntime().gc();
+        double mem1 = Utils.getUsedMemory();
+
+        long   t0   = System.currentTimeMillis();
         if ( !request.get(ARG_DECORATE, true)) {
             return null;
         }
-        Repository   repository   = getRepository();
+        Repository   repository     = getRepository();
         Entry        currentEntry = getSessionManager().getLastEntry(request);
         HtmlTemplate parentTemplate = getTemplate(request, currentEntry);
         if (request.isMobile() && !request.defined(ARG_TEMPLATE)) {
@@ -433,59 +437,68 @@ public class PageHandler extends RepositoryManager {
         }
         HtmlTemplate htmlTemplate = parentTemplate;
 
-	if(!fullTemplate) {
-	    if(prefix) {
-		htmlTemplate = htmlTemplate.getPrefix();
-	    } else {
-		htmlTemplate = htmlTemplate.getSuffix();
-	    }
-	}
+        if ( !fullTemplate) {
+            if (prefix) {
+                htmlTemplate = htmlTemplate.getPrefix();
+            } else {
+                htmlTemplate = htmlTemplate.getSuffix();
+            }
+        }
 
-	String template = htmlTemplate.getTemplate();
-        String systemMessage =   getRepository().getSystemMessage(request);
+        String template      = htmlTemplate.getTemplate();
+        String systemMessage = getRepository().getSystemMessage(request);
         String entryHeader = (String) result.getProperty(PROP_ENTRY_HEADER,
-							 (String)null);
+                                 (String) null);
         String entryFooter = (String) result.getProperty(PROP_ENTRY_FOOTER,
-							 (String)null);
+                                 (String) null);
         String entryBreadcrumbs =
-            (String) result.getProperty(PROP_ENTRY_BREADCRUMBS, (String)null);
-        String        header   = entryHeader;
+            (String) result.getProperty(PROP_ENTRY_BREADCRUMBS,
+                                        (String) null);
+        String     header   = entryHeader;
 
         Appendable contents = new StringBuilder();
 
-	if(prefix) {
-	    if (Utils.stringDefined(systemMessage)) {
-		HU.div(contents, systemMessage,
-		       HU.cssClass("ramadda-system-message"));
-	    }
-	}
-
-        String       jsContent     = getTemplateJavascriptContent();
-	String bottom = null;
-	if(fullTemplate || suffix) {
-	    contents = Utils.append(contents, result.getStringContent());
-	    if (htmlTemplate.hasMacro(MACRO_BOTTOM)) {
-		bottom = jsContent;
-	    } else {
-		contents = Utils.append(contents, jsContent);
-	    }
-	} 
-        String content = contents!=null?contents.toString():null;
-
-	StringBuilder head = new StringBuilder();
-	if(request.getHead0()!=null) {
-	    head.append(request.getHead0());
-	}
-
-	//make the request to base.js be unique every time so the browser does not cache it
-	HU.importJS(head, getRepository().getUrlBase()+"/htdocs_v" + (new Date().getTime())+"/base.js");
-	head.append(webImports);
-	String head2 = request.getHead();
-	if(head2!=null) head.append(head2);
-        if (request.get("ramadda.showjsonld", true)&& showJsonLd && (currentEntry != null)) {
-            head.append(getMetadataManager().getJsonLD(request, currentEntry));
+        if (prefix) {
+            if (Utils.stringDefined(systemMessage)) {
+                HU.div(contents, systemMessage,
+                       HU.cssClass("ramadda-system-message"));
+            }
         }
-	String imports = head.toString();
+
+        String jsContent = getTemplateJavascriptContent();
+        String bottom    = null;
+        if (fullTemplate || suffix) {
+            contents = Utils.append(contents, result.getStringContent());
+            if (htmlTemplate.hasMacro(MACRO_BOTTOM)) {
+                bottom = jsContent;
+            } else {
+                contents = Utils.append(contents, jsContent);
+            }
+        }
+        String        content = (contents != null)
+                                ? contents.toString()
+                                : null;
+
+        StringBuilder head    = new StringBuilder();
+        if (request.getHead0() != null) {
+            head.append(request.getHead0());
+        }
+
+        //make the request to base.js be unique every time so the browser does not cache it
+        HU.importJS(head,
+                    getRepository().getUrlBase() + "/htdocs_v"
+                    + (new Date().getTime()) + "/base.js");
+        head.append(webImports);
+        String head2 = request.getHead();
+        if (head2 != null) {
+            head.append(head2);
+        }
+        if (request.get("ramadda.showjsonld", true) && showJsonLd
+                && (currentEntry != null)) {
+            head.append(getMetadataManager().getJsonLD(request,
+                    currentEntry));
+        }
+        String imports   = head.toString();
 
         String logoImage = getLogoImage(result);
         String logoUrl   = (String) result.getProperty(PROP_LOGO_URL);
@@ -523,42 +536,48 @@ public class PageHandler extends RepositoryManager {
         List<String> allLinks = new ArrayList<String>();
         List<String> navLinks = getNavLinks(request, userLinkTemplate);
         List<String> userLinks = getUserLinks(request, userLinkTemplate,
-					      extra, true);
+                                     extra, true);
         allLinks.addAll(navLinks);
         allLinks.addAll(userLinks);
 
 
-        String menuHtml =
-            HU.div(StringUtil.join("", allLinks),
-                          HU.cssClass("ramadda-user-menu"));
+        String menuHtml = HU.div(StringUtil.join("", allLinks),
+                                 HU.cssClass("ramadda-user-menu"));
 
         if (showSearch) {
-	    HU.mouseClickHref(extra, "Utils.searchPopup('searchlink','popupanchor');",
-			      searchImg, "");
-	    HU.span(extra,"",HU.attrs("id","popupanchor","style","position:relative;"));
+            HU.mouseClickHref(
+                extra, "Utils.searchPopup('searchlink','popupanchor');",
+                searchImg, "");
+            HU.span(extra, "",
+                    HU.attrs("id", "popupanchor", "style",
+                             "position:relative;"));
             extra.append(HU.SPACE2);
         }
 
-	String theFooter = footer;
-        Entry    thisEntry = request.getCurrentEntry();
-	if(thisEntry!=null) {
-	    theFooter+=HU.script("ramaddaThisEntry='" + thisEntry.getId()+"';\n");
-	}
+        String theFooter = footer;
+        Entry  thisEntry = request.getCurrentEntry();
+        if (thisEntry != null) {
+            theFooter += HU.script("ramaddaThisEntry='" + thisEntry.getId()
+                                   + "';\n");
+        }
 
-	extra.append(HU.makePopup(null, popupImage, menuHtml, arg("my","right top"),arg("at","left bottom"), arg("animate",false)));
+        extra.append(HU.makePopup(null, popupImage, menuHtml,
+                                  arg("my", "right top"),
+                                  arg("at", "left bottom"),
+                                  arg("animate", false)));
         menuHtml = HU.div(extra.toString(), HU.clazz("ramadda-user-menu"));
 
         String[] macros = new String[] {
             MACRO_LOGO_URL, logoUrl, MACRO_LOGO_IMAGE, logoImage,
             MACRO_HEADER_IMAGE, getHeaderIcon(), MACRO_HEADER_TITLE,
             pageTitle, MACRO_LINKS, menuHtml, MACRO_REPOSITORY_NAME,
-            repository.getRepositoryName(), MACRO_FOOTER, theFooter, MACRO_TITLE,
-            result.getTitle(), MACRO_BOTTOM, bottom,
+            repository.getRepositoryName(), MACRO_FOOTER, theFooter,
+            MACRO_TITLE, result.getTitle(), MACRO_BOTTOM, bottom,
             MACRO_SEARCH_URL, getSearchManager().getSearchUrl(request),
             MACRO_CONTENT, content, MACRO_ENTRY_HEADER, entryHeader,
             MACRO_HEADER, header, MACRO_ENTRY_FOOTER, entryFooter,
-            MACRO_ENTRY_BREADCRUMBS, entryBreadcrumbs,  MACRO_IMPORTS, imports,
-	    MACRO_HEADFINAL, "", MACRO_ROOT, repository.getUrlBase(), 
+            MACRO_ENTRY_BREADCRUMBS, entryBreadcrumbs, MACRO_IMPORTS, imports,
+            MACRO_HEADFINAL, "", MACRO_ROOT, repository.getUrlBase(),
         };
 
 
@@ -566,9 +585,9 @@ public class PageHandler extends RepositoryManager {
         String                    html   = template;
         Hashtable<String, String> values = new Hashtable<String, String>();
         for (int i = 0; i < macros.length; i += 2) {
-	    if(macros[i+1]!=null) {
-		values.put(macros[i], macros[i + 1]);
-	    }
+            if (macros[i + 1] != null) {
+                values.put(macros[i], macros[i + 1]);
+            }
         }
         for (String property : htmlTemplate.getPropertyIds()) {
             values.put(Utils.concatString("${", property, "}"),
@@ -582,14 +601,15 @@ public class PageHandler extends RepositoryManager {
         StringBuilder sb = new StringBuilder();
         //Toks are [html,macro,html,macro,...,html]
         List<String> templateToks;
-	if(htmlTemplate.getWikify()) {
-	    template = getWikiManager().wikifyEntry(request, getEntryManager().getRootEntry(), template,false);
-	    templateToks  = htmlTemplate.getToks(template);
-	} else {
-	    templateToks  = htmlTemplate.getToks();
-	} 
+        if (htmlTemplate.getWikify()) {
+            template = getWikiManager().wikifyEntry(request,
+                    getEntryManager().getRootEntry(), template, false);
+            templateToks = htmlTemplate.getToks(template);
+        } else {
+            templateToks = htmlTemplate.getToks();
+        }
 
-	for (int i = 0; i < templateToks.size(); i++) {
+        for (int i = 0; i < templateToks.size(); i++) {
             String v = templateToks.get(i);
             //Check if even or odd
             if (2 * (i / 2) == i) {
@@ -604,11 +624,12 @@ public class PageHandler extends RepositoryManager {
         html = sb.toString();
         html = translate(request, html);
 
-	/*
-	double mem2 = Utils.getUsedMemory();
-	System.err.println("PageDecorator memory:" +  Utils.decimals(mem2-mem1,1) +" length:" + html.length());
-	*/
-	return html;
+        /*
+        double mem2 = Utils.getUsedMemory();
+        System.err.println("PageDecorator memory:" +  Utils.decimals(mem2-mem1,1) +" length:" + html.length());
+        */
+        return html;
+
     }
 
 
@@ -650,8 +671,8 @@ public class PageHandler extends RepositoryManager {
 
                 Entry entry = favorite.getEntry();
                 EntryLink entryLink = getEntryManager().getAjaxLink(request,
-								    entry, entry.getLabel(), null,
-								    false, null, false,true);
+                                          entry, entry.getLabel(), null,
+                                          false, null, false, true);
                 if (entryLink != null) {
                     String link = favoritesWrapper.replace("${link}",
                                       entryLink.toString());
@@ -670,8 +691,9 @@ public class PageHandler extends RepositoryManager {
                     "<b>Cart:<b><br>${entries}");
             List cartLinks = new ArrayList();
             for (Entry entry : cartEntries) {
-                EntryLink entryLink = getEntryManager().getAjaxLink(request, entry, entry.getLabel(), null,
-								    false,null, true,true);
+                EntryLink entryLink = getEntryManager().getAjaxLink(request,
+                                          entry, entry.getLabel(), null,
+                                          false, null, true, true);
                 String link = favoritesWrapper.replace("${link}",
                                   entryLink.toString());
                 cartLinks.add("<nobr>" + link + "<nobr>");
@@ -724,19 +746,19 @@ public class PageHandler extends RepositoryManager {
         if (templateJavascriptContent == null) {
             StringBuilder js = new StringBuilder();
             js.append(
-		      "$( document ).ready(function() {Utils.initPage(); });");
+                "$( document ).ready(function() {Utils.initPage(); });");
 
             //j-
             StringBuilder sb = new StringBuilder();
             HU.div(sb, "",
-                          HU.attrs("id", "ramadda-popupdiv", "class",
-                                          "ramadda-popup"));
+                   HU.attrs("id", "ramadda-popupdiv", "class",
+                            "ramadda-popup"));
             HU.div(sb, "",
-                          HU.attrs("id", "ramadda-selectdiv", "class",
-                                          "ramadda-selectdiv"));
+                   HU.attrs("id", "ramadda-selectdiv", "class",
+                            "ramadda-selectdiv"));
             HU.div(sb, "",
-                          HU.attrs("id", "ramadda-floatdiv", "class",
-                                          "ramadda-floatdiv"));
+                   HU.attrs("id", "ramadda-floatdiv", "class",
+                            "ramadda-floatdiv"));
             sb.append(HU.script(js.toString()));
             //j+
             templateJavascriptContent = sb.toString();
@@ -799,8 +821,11 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public String translate(Request request, String s) {
-	//Don't translate for now
-	if(true) return s;
+
+        //Don't translate for now
+        if (true) {
+            return s;
+        }
 
         if (s == null) {
             return "";
@@ -909,6 +934,7 @@ public class PageHandler extends RepositoryManager {
          * }
          * return stripped.toString();
          */
+
 
 
 
@@ -1066,6 +1092,7 @@ public class PageHandler extends RepositoryManager {
      */
     public HtmlTemplate getMobileTemplate() {
         getTemplates();
+
         return mobileTemplate;
     }
 
@@ -1189,23 +1216,27 @@ public class PageHandler extends RepositoryManager {
                         resource = resource.replace("${" + changes[i] + "}",
                                 "${" + changes[i + 1] + "}");
                     }
-		    //                    resource = resource.replace("${imports}", webImports);
+                    //                    resource = resource.replace("${imports}", webImports);
                     HtmlTemplate template = new HtmlTemplate(getRepository(),
-							     path, resource);
-		    int idx = template.getTemplate().indexOf("${content}");
-		    if(idx>=0) {
-			template.setPrefix(new HtmlTemplate(template, template.getTemplate().substring(0,idx)));
-			template.setSuffix(new HtmlTemplate(template, template.getTemplate().substring(idx+"${content}".length())));
-		    }
+                                                path, resource);
+                    int idx = template.getTemplate().indexOf("${content}");
+                    if (idx >= 0) {
+                        template.setPrefix(new HtmlTemplate(template,
+                                template.getTemplate().substring(0, idx)));
+                        template.setSuffix(new HtmlTemplate(template,
+                                template.getTemplate().substring(idx
+                                    + "${content}".length())));
+                    }
 
 
-		    template.setTemplate(applyBaseMacros(template.getTemplate()));
-		    //		    System.out.println("p: " + path + " " + template.getId()+ " " + template.getName());
+                    template.setTemplate(
+                        applyBaseMacros(template.getTemplate()));
+                    //              System.out.println("p: " + path + " " + template.getId()+ " " + template.getName());
                     //Check if we got some other ...template.html file from a plugin
                     if (template.getId() == null) {
                         System.err.println("template: no id in " + path);
 
-                      continue;
+                        continue;
                     }
                     templateMap.put(template.getId(), template);
                     theTemplates.add(template);
@@ -1447,12 +1478,12 @@ public class PageHandler extends RepositoryManager {
             }
         }
 
-	//Have to hard code these 
-	String pre = "/org/ramadda/repository/resources/geo/";
-	mapRegionFiles.addAll(Utils.makeList(pre+"mapregions.csv",
-					     pre+"countrymapregions.csv",
-					     pre+"statesmapregions.csv",
-					     pre+"citiesmapregions.csv"));
+        //Have to hard code these 
+        String pre = "/org/ramadda/repository/resources/geo/";
+        mapRegionFiles.addAll(Utils.makeList(pre + "mapregions.csv",
+                                             pre + "countrymapregions.csv",
+                                             pre + "statesmapregions.csv",
+                                             pre + "citiesmapregions.csv"));
 
         HashSet seen = new HashSet();
         for (String path : mapRegionFiles) {
@@ -1529,12 +1560,14 @@ public class PageHandler extends RepositoryManager {
             tfos.add(new TwoFacedObject(template.getName(),
                                         template.getId()));
         }
-	tfos.sort(new Comparator() {
+        tfos.sort(new Comparator() {
             public int compare(Object o1, Object o2) {
-                String s1 = (String) ((TwoFacedObject)o1).getLabel();
-                String s2 = (String) ((TwoFacedObject)o2).getLabel();		
+                String s1 = (String) ((TwoFacedObject) o1).getLabel();
+                String s2 = (String) ((TwoFacedObject) o2).getLabel();
+
                 return s1.compareToIgnoreCase(s2);
-	    }});
+            }
+        });
 
         return tfos;
 
@@ -1578,6 +1611,7 @@ public class PageHandler extends RepositoryManager {
             if (debugTemplates) {
                 System.err.println("getTemplate-1:" + defaultTemplate);
             }
+
             return defaultTemplate;
         }
         boolean isMobile = request.isMobile();
@@ -1677,8 +1711,10 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public static String msg(String msg) {
-	//for now no translation
-	if(true) return msg;
+        //for now no translation
+        if (true) {
+            return msg;
+        }
 
         if (msg == null) {
             return null;
@@ -1743,9 +1779,8 @@ public class PageHandler extends RepositoryManager {
         fb.append(request.form(url));
         fb.append(extra);
         String okButton     = HU.submit("OK", okArg);
-        String cancelButton = HU.submit("Cancel",
-                                  Constants.ARG_CANCEL);
-        String buttons = HU.buttons(okButton, cancelButton);
+        String cancelButton = HU.submit("Cancel", Constants.ARG_CANCEL);
+        String buttons      = HU.buttons(okButton, cancelButton);
         fb.append(buttons);
         fb.append(HU.formClose());
 
@@ -1800,8 +1835,7 @@ public class PageHandler extends RepositoryManager {
                 }
 
                 urls.add(url);
-                labels.add(HU.faIcon("fa-sign-in-alt") + " "
-                           + msg("Login"));
+                labels.add(HU.faIcon("fa-sign-in-alt") + " " + msg("Login"));
                 tips.add(msg("Login"));
             }
 
@@ -1815,13 +1849,12 @@ public class PageHandler extends RepositoryManager {
         } else {
             extras.add("");
             urls.add(request.makeUrl(getRepositoryBase().URL_USER_LOGOUT));
-            labels.add(HU.faIcon("fa-sign-out-alt") + " "
-                       + msg("Logout"));
+            labels.add(HU.faIcon("fa-sign-out-alt") + " " + msg("Logout"));
             tips.add(msg("Logout"));
             String label = user.getLabel().replace(" ", "&nbsp;");
             String userIcon = HU.faIcon("fa-user", "title",
-                                  "Settings for " + label, "class",
-                                  "ramadda-user-menu-image");
+                                        "Settings for " + label, "class",
+                                        "ramadda-user-menu-image");
 
             String settingsUrl =
                 request.makeUrl(getRepositoryBase().URL_USER_FORM);
@@ -1846,8 +1879,7 @@ public class PageHandler extends RepositoryManager {
                         .getPluginManager().getDocUrls().size() > 0)) {
             urls.add(request.makeUrl(getRepositoryBase().URL_HELP));
             extras.add("");
-            labels.add(HU.faIcon("fa-question-circle") + " "
-                       + msg("Help"));
+            labels.add(HU.faIcon("fa-question-circle") + " " + msg("Help"));
             tips.add(msg("View Help"));
         }
 
@@ -1879,8 +1911,10 @@ public class PageHandler extends RepositoryManager {
      */
     private List<String> getNavLinks(Request request, String template) {
         List<String> links   = new ArrayList<String>();
-        boolean      isAdmin = request==null?false:request.isAdmin();
-        ApiMethod homeApi = getRepository().getApiManager().getHomeApi();
+        boolean      isAdmin = (request == null)
+                               ? false
+                               : request.isAdmin();
+        ApiMethod    homeApi = getRepository().getApiManager().getHomeApi();
         for (ApiMethod apiMethod :
                 getRepository().getApiManager().getTopLevelMethods()) {
             if (apiMethod.getMustBeAdmin() && !isAdmin) {
@@ -1907,6 +1941,7 @@ public class PageHandler extends RepositoryManager {
                                 request.getRootEntry().getName());
             links.add(html);
         }
+
         return links;
     }
 
@@ -1940,20 +1975,17 @@ public class PageHandler extends RepositoryManager {
                 onLabel = label;
                 clazz   = "ramadda-highlightable ramadda-linksheader-on";
             }
-            links.add(HU.span(HU.href(url, label),
-                                     HU.cssClass(clazz)));
+            links.add(HU.span(HU.href(url, label), HU.cssClass(clazz)));
             //            }
         }
         StringBuilder header = new StringBuilder();
-        HU.div(
-            header,
-            StringUtil.join(
-                "<span class=\".ramadda-separator\">|</span>",
-                links), HU.cssClass("ramadda-linksheader-links"));
+        HU.div(header,
+               StringUtil.join(
+                   "<span class=\".ramadda-separator\">|</span>",
+                   links), HU.cssClass("ramadda-linksheader-links"));
         header.append("\n");
-        sb.append(HU.tag(HU.TAG_DIV,
-                                HU.cssClass("ramadda-linksheader"),
-                                header.toString()));
+        sb.append(HU.tag(HU.TAG_DIV, HU.cssClass("ramadda-linksheader"),
+                         header.toString()));
     }
 
 
@@ -1962,10 +1994,11 @@ public class PageHandler extends RepositoryManager {
      * _more_
      *
      * @param h _more_
+     * @param extra _more_
      *
      * @return _more_
      */
-    public String showDialogNote(String h, String...extra) {
+    public String showDialogNote(String h, String... extra) {
         return getDialog(h, extra, ICON_DIALOG_INFO, false);
     }
 
@@ -1973,10 +2006,11 @@ public class PageHandler extends RepositoryManager {
      * _more_
      *
      * @param h _more_
+     * @param extra _more_
      *
      * @return _more_
      */
-    public String showDialogBlank(String h, String...extra) {
+    public String showDialogBlank(String h, String... extra) {
         return getDialog(h, extra, null, false);
     }
 
@@ -1996,10 +2030,11 @@ public class PageHandler extends RepositoryManager {
      * _more_
      *
      * @param h _more_
+     * @param extra _more_
      *
      * @return _more_
      */
-    public String showDialogWarning(String h, String...extra) {
+    public String showDialogWarning(String h, String... extra) {
         return getDialog(h, extra, Constants.ICON_DIALOG_WARNING, false);
     }
 
@@ -2013,18 +2048,19 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public String showDialogQuestion(String h, String buttons) {
-        return getDialog(h, new String[]{buttons}, Constants.ICON_DIALOG_QUESTION,
-			 false);
+        return getDialog(h, new String[] { buttons },
+                         Constants.ICON_DIALOG_QUESTION, false);
     }
 
     /**
      * _more_
      *
      * @param h _more_
+     * @param extra _more_
      *
      * @return _more_
      */
-    public String showDialogError(String h, String...extra) {
+    public String showDialogError(String h, String... extra) {
         return showDialogError(h, true, extra);
     }
 
@@ -2033,10 +2069,12 @@ public class PageHandler extends RepositoryManager {
      *
      * @param h _more_
      * @param cleanString _more_
+     * @param extra _more_
      *
      * @return _more_
      */
-    public String showDialogError(String h, boolean cleanString, String...extra) {
+    public String showDialogError(String h, boolean cleanString,
+                                  String... extra) {
         if (h == null) {
             h = "null error";
         }
@@ -2072,34 +2110,60 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    public String getDialog(String msg, String []extra, String icon, boolean showClose) {
-        msg= msg.replaceAll("\n", "<br>").replaceAll("&#10;", "<br>");
+    /**
+     *
+     * @param msg _more_
+     * @param extra _more_
+     * @param icon _more_
+     * @param showClose _more_
+     *
+     * @return _more_
+     */
+    public String getDialog(String msg, String[] extra, String icon,
+                            boolean showClose) {
+        msg = msg.replaceAll("\n", "<br>").replaceAll("&#10;", "<br>");
 
-	if(extra!=null && extra.length>0) {
-	    String tmp = "";
-	    for(String e:extra) {
-		tmp+=e;
-	    }
-	    msg += "<br><hr style='margin-top:4px;margin-bottom:4px;' class=ramadda-thin-hr>" + tmp;
-	}
+        if ((extra != null) && (extra.length > 0)) {
+            String tmp = "";
+            for (String e : extra) {
+                tmp += e;
+            }
+            msg += "<br><hr style='margin-top:4px;margin-bottom:4px;' class=ramadda-thin-hr>"
+                   + tmp;
+        }
 
 
         String html = showClose
-                      ? HU.jsLink(
-                          HU.onMouseClick("hide('messageblock')"),
-                          getIconImage(Constants.ICON_CLOSE))
+                      ? HU.jsLink(HU.onMouseClick("hide('messageblock')"),
+                                  getIconImage(Constants.ICON_CLOSE))
                       : "&nbsp;";
-	String clazz = Misc.equals(icon,Constants.ICON_DIALOG_INFO)?"ramadda-message":Misc.equals(icon,Constants.ICON_DIALOG_ERROR)?"alert-danger":Misc.equals(icon,Constants.ICON_DIALOG_WARNING)?"alert-warning":"ramadda-message";
-	//For now just use the message class
-	clazz = "ramadda-message";
-	String faClazz = Misc.equals(icon,Constants.ICON_DIALOG_INFO)?"":Misc.equals(icon,Constants.ICON_DIALOG_ERROR)?"text-danger":Misc.equals(icon,Constants.ICON_DIALOG_WARNING)?"text-warning":"";	
-        StringBuilder sb = new StringBuilder();
+        String clazz = Misc.equals(icon, Constants.ICON_DIALOG_INFO)
+                       ? "ramadda-message"
+                       : Misc.equals(icon, Constants.ICON_DIALOG_ERROR)
+                         ? "alert-danger"
+                         : Misc.equals(icon, Constants.ICON_DIALOG_WARNING)
+                           ? "alert-warning"
+                           : "ramadda-message";
+        //For now just use the message class
+        clazz = "ramadda-message";
+        String        faClazz = Misc.equals(icon, Constants.ICON_DIALOG_INFO)
+                                ? ""
+                                : Misc.equals(icon,
+                                    Constants.ICON_DIALOG_ERROR)
+                                  ? "text-danger"
+                                  : Misc.equals(icon,
+                                      Constants.ICON_DIALOG_WARNING)
+                                    ? "text-warning"
+                                    : "";
+        StringBuilder sb      = new StringBuilder();
         sb.append(HU.open(HU.TAG_DIV, "class",
-			  clazz+" ramadda-message-plain ", "id", "messageblock"));
+                          clazz + " ramadda-message-plain ", "id",
+                          "messageblock"));
         sb.append("<table width=100%><tr valign=top>");
         if (icon != null) {
             sb.append("<td width=5%><div class=\"ramadda-message-icon\">");
-            sb.append(getIconImage(icon+" " + faClazz,"style","font-size:32pt;"));	    
+            sb.append(getIconImage(icon + " " + faClazz, "style",
+                                   "font-size:32pt;"));
             sb.append("</div></td>");
         }
         sb.append("<td><div class=\"ramadda-message-inner\">");
@@ -2132,14 +2196,13 @@ public class PageHandler extends RepositoryManager {
         h = h.replaceAll("\n", "<br>");
         h = h.replaceAll("&#10;", "<br>");
         String html = showClose
-                      ? HU.jsLink(
-                          HU.onMouseClick("hide('messageblock')"),
-                          getIconImage(Constants.ICON_CLOSE))
+                      ? HU.jsLink(HU.onMouseClick("hide('messageblock')"),
+                                  getIconImage(Constants.ICON_CLOSE))
                       : "&nbsp;";
 
         StringBuilder sb = new StringBuilder();
-        sb.append(HU.open(HU.TAG_DIV, "class",
-                                 "ramadda-message ", "id", "messageblock"));
+        sb.append(HU.open(HU.TAG_DIV, "class", "ramadda-message ", "id",
+                          "messageblock"));
         sb.append("<table><tr valign=top>");
         if (icon != null) {
             sb.append("<td><div class=\"ramadda-message-link\">");
@@ -2389,8 +2452,8 @@ public class PageHandler extends RepositoryManager {
                 /*request.entryUrl(getRepository().URL_ENTRY_SHOW, ancestor), */
                 name, targetAttr));
             } else {
-                String url = HU.url(requestUrl.toString(),
-                                           ARG_ENTRYID, ancestor.getId());
+                String url = HU.url(requestUrl.toString(), ARG_ENTRYID,
+                                    ancestor.getId());
                 breadcrumbs.add(0, HU.href(url, name));
             }
         }
@@ -2398,16 +2461,16 @@ public class PageHandler extends RepositoryManager {
 
 
         if (target != null) {
-            lastLink = HU.href(getEntryManager().getEntryUrl(request,
-                    entry), entry.getLabel(), targetAttr);
+            lastLink = HU.href(getEntryManager().getEntryUrl(request, entry),
+                               entry.getLabel(), targetAttr);
 
         } else {
             if (requestUrl == null) {
                 lastLink = getEntryManager().getTooltipLink(request, entry,
                         entry.getLabel(), null);
             } else {
-                String url = HU.url(requestUrl.toString(),
-                                           ARG_ENTRYID, entry.getId());
+                String url = HU.url(requestUrl.toString(), ARG_ENTRYID,
+                                    entry.getId());
                 lastLink = HU.href(url, entry.getLabel());
             }
         }
@@ -2454,23 +2517,22 @@ public class PageHandler extends RepositoryManager {
 
         String headerLabel =
             HU.href(getEntryManager().getEntryUrl(request, entry),
-                           HU.img(getIconUrl(request, entry)) + " "
-                           + getEntryDisplayName(entry));
+                    HU.img(getIconUrl(request, entry)) + " "
+                    + getEntryDisplayName(entry));
 
         String links = getEntryManager().getEntryActionsTable(request, entry,
-							      OutputType.TYPE_MENU, 
-							      linkList, false,
-							      null);
+                           OutputType.TYPE_MENU, linkList, false, null);
 
 
-	StringBuilder popup = new StringBuilder();
-        String menuLinkImg = HU.div(
-				    HU.img("fas fa-caret-down"),
-				    HU.attr("title","Entry menu") +
-				    HU.cssClass(
-                                     "ramadda-breadcrumbs-menu-button"));
+        StringBuilder popup = new StringBuilder();
+        String menuLinkImg =
+            HU.div(HU.img("fas fa-caret-down"),
+                   HU.attr("title", "Entry menu")
+                   + HU.cssClass("ramadda-breadcrumbs-menu-button"));
 
-        String menuLink = HU.makePopup(popup, menuLinkImg, links,arg("title", headerLabel), arg("header",true));
+        String menuLink = HU.makePopup(popup, menuLinkImg, links,
+                                       arg("title", headerLabel),
+                                       arg("header", true));
         List<Entry>  parents = getEntryManager().getParents(request, entry);
         List<String> titleList = new ArrayList();
         List<String> breadcrumbs = makeBreadcrumbList(request, parents,
@@ -2501,8 +2563,7 @@ public class PageHandler extends RepositoryManager {
                 if (doTable) {
                     sb.append("<td valign=center width=1%>");
                 }
-                HU.div(sb, menuLink,
-                              HU.cssClass("ramadda-breadcrumbs-menu"));
+                HU.div(sb, menuLink, HU.cssClass("ramadda-breadcrumbs-menu"));
                 if (doTable) {
                     sb.append("</td>");
                 }
@@ -2564,8 +2625,8 @@ public class PageHandler extends RepositoryManager {
         for (Link link : links) {
             if (link.isType(OutputType.TYPE_TOOLBAR)) {
                 String href = HU.href(link.getUrl(),
-                                             getIconImage(link.getIcon(),
-                                                 "title", link.getLabel()));
+                                      getIconImage(link.getIcon(), "title",
+                                          link.getLabel()));
                 sb.append(HU.inset(href, 0, 3, 0, 0));
             }
         }
@@ -2604,20 +2665,21 @@ public class PageHandler extends RepositoryManager {
 
         String       categoryMenu = null;
         List<String> menuItems    = new ArrayList<String>();
-        String sep =
-            HU.div("",
-                          HU.cssClass(CSS_CLASS_MENUBUTTON_SEPARATOR));
+        String sep = HU.div("", HU.cssClass(CSS_CLASS_MENUBUTTON_SEPARATOR));
 
 
-	NamedValue linkAttr = arg("linkAttributes", HU.cssClass(CSS_CLASS_MENUBUTTON));
+        NamedValue linkAttr = arg("linkAttributes",
+                                  HU.cssClass(CSS_CLASS_MENUBUTTON));
         for (Link link : links) {
             if (link.isType(OutputType.TYPE_OTHER)) {
                 categoryMenu =
                     getEntryManager().getEntryActionsTable(request, entry,
                         OutputType.TYPE_OTHER, links);
                 String categoryName = link.getOutputType().getCategory();
-                categoryMenu =
-		    HU.makePopup(null, categoryName, categoryMenu.toString(), linkAttr);
+                categoryMenu = HU.makePopup(null, categoryName,
+                                            categoryMenu.toString(),
+                                            linkAttr);
+
                 break;
             }
         }
@@ -2646,8 +2708,7 @@ public class PageHandler extends RepositoryManager {
                 //                menuName="Folder";
             }
             //HU.span(msg(menuName), menuClass), 
-            menuItems.add(HU.makePopup(null, menuName,
-							 entryMenu, linkAttr));
+            menuItems.add(HU.makePopup(null, menuName, entryMenu, linkAttr));
 
         }
 
@@ -2656,8 +2717,7 @@ public class PageHandler extends RepositoryManager {
             if (menuItems.size() > 0) {
                 menuItems.add(sep);
             }
-            menuItems.add(HU.makePopup(null, "Edit",
-							 editMenu, linkAttr));
+            menuItems.add(HU.makePopup(null, "Edit", editMenu, linkAttr));
         }
 
         if (pageStyle.okToShowMenu(entry, PageStyle.MENU_FEEDS)
@@ -2665,8 +2725,7 @@ public class PageHandler extends RepositoryManager {
             if (menuItems.size() > 0) {
                 menuItems.add(sep);
             }
-            menuItems.add(HU.makePopup(null, "Links",
-							 exportMenu, linkAttr));
+            menuItems.add(HU.makePopup(null, "Links", exportMenu, linkAttr));
         }
 
         if (pageStyle.okToShowMenu(entry, PageStyle.MENU_VIEW)
@@ -2674,8 +2733,7 @@ public class PageHandler extends RepositoryManager {
             if (menuItems.size() > 0) {
                 menuItems.add(sep);
             }
-            menuItems.add(HU.makePopup(null, "View",
-							 viewMenu, linkAttr));
+            menuItems.add(HU.makePopup(null, "View", viewMenu, linkAttr));
         }
 
         if (pageStyle.okToShowMenu(entry, PageStyle.MENU_OTHER)
@@ -2687,10 +2745,9 @@ public class PageHandler extends RepositoryManager {
         }
 
         String leftTable;
-        leftTable = HU.table(
-            HU.row(
-                HU.cols(Misc.listToStringArray(menuItems)),
-                " cellpadding=0 cellspacing=0 border=0 "));
+        leftTable =
+            HU.table(HU.row(HU.cols(Misc.listToStringArray(menuItems)),
+                            " cellpadding=0 cellspacing=0 border=0 "));
 
         return leftTable;
     }
@@ -2848,9 +2905,8 @@ public class PageHandler extends RepositoryManager {
         StringBuilder sb = new StringBuilder();
 
         String entryUrl =
-            HU.url(
-                request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW),
-                ARG_ENTRYID, entry.getId());
+            HU.url(request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW),
+                   ARG_ENTRYID, entry.getId());
 
 
 
@@ -2869,10 +2925,9 @@ public class PageHandler extends RepositoryManager {
                                             OutputType.TYPE_TOOLBAR);
 
                 String href = HU.href(link.getUrl(),
-                                             "Comments:(" + comments.size()
-                                             + ")"
-                                             + getIconImage(link.getIcon(),
-                                                 "title", link.getLabel()));
+                                      "Comments:(" + comments.size() + ")"
+                                      + getIconImage(link.getIcon(), "title",
+                                          link.getLabel()));
 
                 sb.append(href);
                 sb.append("</td><td>");
@@ -2903,27 +2958,20 @@ public class PageHandler extends RepositoryManager {
         if (doRatings) {
             String link = request.makeUrl(getRepository().URL_COMMENTS_SHOW,
                                           ARG_ENTRYID, entry.getId());
-            String ratings = HU.div(
-                                 "",
-                                 HU.cssClass("js-kit-rating")
-                                 + HU.attr(
-                                     HU.ATTR_TITLE,
-                                     entry.getFullName()) + HU.attr(
-                                         "permalink",
-                                         link)) + HU.importJS(
-                                             "http://js-kit.com/ratings.js");
+            String ratings =
+                HU.div("",
+                    HU.cssClass("js-kit-rating")
+                    + HU.attr(HU.ATTR_TITLE, entry.getFullName())
+                    + HU.attr("permalink",
+                        link)) + HU.importJS("http://js-kit.com/ratings.js");
 
             sb.append(
                 HU.table(
-                    HU.row(
-                        HU.col(
-                            ratings,
-                            HU.attr(
-                                HU.ATTR_ALIGN,
-                                HU.VALUE_RIGHT)), HU.attr(
-                                    HU.ATTR_VALIGN,
-                                    HU.VALUE_TOP)), HU.attr(
-                                        HU.ATTR_WIDTH, "100%")));
+                    HU.row(HU.col(
+                        ratings,
+                        HU.attr(HU.ATTR_ALIGN, HU.VALUE_RIGHT)), HU.attr(
+                            HU.ATTR_VALIGN, HU.VALUE_TOP)), HU.attr(
+                                HU.ATTR_WIDTH, "100%")));
         } else {
             sb.append(HU.p());
         }
@@ -2998,30 +3046,28 @@ public class PageHandler extends RepositoryManager {
                 rowNum = 1;
             }
             StringBuilder content = new StringBuilder();
-            String byLine = HU.span(
-                                "Posted by " + comment.getUser().getLabel(),
-                                HU.cssClass(
-                                    CSS_CLASS_COMMENT_COMMENTER)) + " @ "
-                                        + HU.span(
-                                            getDateHandler().formatDate(
-                                                request,
-                                                comment.getDate()), HU.cssClass(
-                                                    CSS_CLASS_COMMENT_DATE)) + HU.space(
-                                                        1) + deleteLink;
-            content.append(
-                HU.open(
-                    HU.TAG_DIV,
-                    HU.cssClass(CSS_CLASS_COMMENT_INNER)));
+            String byLine =
+                HU.span(
+                    "Posted by " + comment.getUser().getLabel(),
+                    HU.cssClass(CSS_CLASS_COMMENT_COMMENTER)) + " @ "
+                        + HU.span(
+                            getDateHandler().formatDate(
+                                request, comment.getDate()), HU.cssClass(
+                                CSS_CLASS_COMMENT_DATE)) + HU.space(1)
+                                    + deleteLink;
+            content.append(HU.open(HU.TAG_DIV,
+                                   HU.cssClass(CSS_CLASS_COMMENT_INNER)));
             content.append(comment.getComment());
             content.append(HU.br());
             content.append(byLine);
             content.append(HU.close(HU.TAG_DIV));
-            sb.append(HU
-                .div(HU
-                    .makeShowHideBlock(HU
-                        .span(comment.getSubject(), HU
-                            .cssClass(CSS_CLASS_COMMENT_SUBJECT)), content
-                                .toString(), true, ""), theClass));
+            sb.append(
+                HU.div(HU.makeShowHideBlock(
+                    HU.span(
+                        comment.getSubject(),
+                        HU.cssClass(
+                            CSS_CLASS_COMMENT_SUBJECT)), content.toString(),
+                                true, ""), theClass));
         }
 
         return sb.toString();
@@ -3193,22 +3239,34 @@ public class PageHandler extends RepositoryManager {
                     sb.append(HU.img(mapLayer.getLegendImage()));
                 }
                 tabs.add(HU.div(sb.toString(),
-                                       HU.cssClass("map-legend-div")));
+                                HU.cssClass("map-legend-div")));
             }
             mapLayer.addToMap(request, mapInfo);
         }
-	titles.add("Some title here");
-	tabs.add("Some content here");
-	titles.add("Some title here");
-	tabs.add("Some content here");
-	titles.add("Some title here");
-	tabs.add("Some content here");
+        titles.add("Some title here");
+        tabs.add("Some content here");
+        titles.add("Some title here");
+        tabs.add("Some content here");
+        titles.add("Some title here");
+        tabs.add("Some content here");
 
         StringBuffer rightSide = new StringBuffer();
         rightSide.append("<b>Legends</b><br>");
         rightSide.append(OutputHandler.makeTabs(titles, tabs, true));
-	String popupLink = HtmlUtils.div(HU.img("fas fa-layer-group"), HtmlUtils.cssClass("ramadda-popup-link"));
-        mapInfo.addRightSide(HU.makePopup(null, popupLink, rightSide.toString(), arg("width","500px"),arg("animate", false),arg("my","right top"), arg("at","left top"),arg("draggable",true),arg("inPlace",true),arg("header",true),arg("fit",true),arg("sticky",true)));
+        String popupLink =
+            HtmlUtils.div(HU.img("fas fa-layer-group"),
+                          HtmlUtils.cssClass("ramadda-popup-link"));
+        mapInfo.addRightSide(HU.makePopup(null, popupLink,
+                                          rightSide.toString(),
+                                          arg("width", "500px"),
+                                          arg("animate", false),
+                                          arg("my", "right top"),
+                                          arg("at", "left top"),
+                                          arg("draggable", true),
+                                          arg("inPlace", true),
+                                          arg("header", true),
+                                          arg("fit", true),
+                                          arg("sticky", true)));
     }
 
 
@@ -3228,14 +3286,15 @@ public class PageHandler extends RepositoryManager {
                                        boolean includeNonFiles)
             throws Exception {
         List<HtmlUtils.Selector> items =
-            getRepository().getExtEditor().getTypeHandlerSelectors(request, true,
-								   includeNonFiles, null);
+            getRepository().getExtEditor().getTypeHandlerSelectors(request,
+                true, includeNonFiles, null);
 
         HtmlUtils.Selector selector = new HtmlUtils.Selector(
-							     HtmlUtils.space(2) +"Find match",
-							     TypeHandler.TYPE_FINDMATCH,
-							     getRepository().getIconUrl("/icons/blank.gif"), 0, 0,
-							     false);
+                                          HtmlUtils.space(2) + "Find match",
+                                          TypeHandler.TYPE_FINDMATCH,
+                                          getRepository().getIconUrl(
+                                              "/icons/blank.gif"), 0, 0,
+                                                  false);
         selector.setAttr(" style=\"padding:6px;\" ");
         items.add(0, selector);
         String selected = (typeHandler != null)
@@ -3265,18 +3324,34 @@ public class PageHandler extends RepositoryManager {
         entrySectionOpen(request, entry, sb, title, false);
     }
 
-    public StringBuilder  makeEntryPage(Request request, Entry entry, String title, String s) throws Exception {
-	StringBuilder sb = new StringBuilder();
-	if(entry!=null)
-	    entrySectionOpen(request, entry, sb, title, false);
-	else
-	    sectionOpen(request, sb, title, false);
-	sb.append(s);
-	if(entry!=null)
-	    entrySectionClose(request, entry, sb);
-	else
-	    sectionClose(request, sb);	
-	return sb;
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param title _more_
+     * @param s _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public StringBuilder makeEntryPage(Request request, Entry entry,
+                                       String title, String s)
+            throws Exception {
+        StringBuilder sb = new StringBuilder();
+        if (entry != null) {
+            entrySectionOpen(request, entry, sb, title, false);
+        } else {
+            sectionOpen(request, sb, title, false);
+        }
+        sb.append(s);
+        if (entry != null) {
+            entrySectionClose(request, entry, sb);
+        } else {
+            sectionClose(request, sb);
+        }
+
+        return sb;
     }
 
 
@@ -3350,28 +3425,42 @@ public class PageHandler extends RepositoryManager {
     public void entrySectionOpen(Request request, Entry entry, Appendable sb,
                                  String title, boolean showLine)
             throws Exception {
-	entrySectionOpen(request, entry,null, sb, title, showLine);
+        entrySectionOpen(request, entry, null, sb, title, showLine);
     }
 
-    public void entrySectionOpen(Request request, Entry entry, String entryLabel, Appendable sb,
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param entryLabel _more_
+     * @param sb _more_
+     * @param title _more_
+     * @param showLine _more_
+     *
+     * @throws Exception _more_
+     */
+    public void entrySectionOpen(Request request, Entry entry,
+                                 String entryLabel, Appendable sb,
                                  String title, boolean showLine)
-	throws Exception {	
+            throws Exception {
 
-	if(request.get(ARG_EMBEDDED,false)) return;
+        if (request.get(ARG_EMBEDDED, false)) {
+            return;
+        }
         sb.append(HU.sectionOpen(null, showLine));
         if (entry != null) {
-            String label = Utils.stringDefined(entryLabel)?entryLabel:entry.getTypeHandler().getEntryName(entry);
-            label = HU.href(getEntryManager().getEntryUrl(request,
-                    entry), label);
+            String label = Utils.stringDefined(entryLabel)
+                           ? entryLabel
+                           : entry.getTypeHandler().getEntryName(entry);
+            label = HU.href(getEntryManager().getEntryUrl(request, entry),
+                            label);
             HU.sectionTitle(sb, label);
             if (Utils.stringDefined(title)) {
                 sb.append(
-                    HU.div(
-                        HU.div(
-                            msg(title),
-                            HU.cssClass(
-                                "ramadda-heading")), HU.cssClass(
-                                    "ramadda-heading-outer")));
+                    HU.div(HU.div(
+                        msg(title),
+                        HU.cssClass("ramadda-heading")), HU.cssClass(
+                            "ramadda-heading-outer")));
 
             }
         } else {
@@ -3390,7 +3479,9 @@ public class PageHandler extends RepositoryManager {
      */
     public void entrySectionClose(Request request, Entry entry, Appendable sb)
             throws Exception {
-	if(request.get(ARG_EMBEDDED,false)) return;
+        if (request.get(ARG_EMBEDDED, false)) {
+            return;
+        }
         sb.append(HU.sectionClose());
     }
 
@@ -3421,8 +3512,7 @@ public class PageHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public static void main(String[] args) throws Exception {
-    }
+    public static void main(String[] args) throws Exception {}
 
     /**
      * _more_
@@ -3520,9 +3610,11 @@ public class PageHandler extends RepositoryManager {
             getRepository().getProperty(
                 "ramadda.bootstrap.version", "bootstrap-5.1.3"));
 
-	String now = htdocsBase + (new Date().getTime());
-        return s.replace("${now}",now).replace("${htdocs}", htdocsBase).replace(
-            "${cdnpath}", path).replace("${root}", root).replace(
+        String now = htdocsBase + (new Date().getTime());
+
+        return s.replace("${now}", now).replace(
+            "${htdocs}", htdocsBase).replace("${cdnpath}", path).replace(
+            "${root}", root).replace(
             "${baseentry}", getEntryManager().getRootEntry().getId()).replace(
             "${min}", mini).replace("${dotmin}", dotmini);
     }
@@ -3564,12 +3656,9 @@ public class PageHandler extends RepositoryManager {
                 ? entry.getId()
                 : ""), HU.id(selectId + "_hidden")));
         sb.append(HU.formEntry(msgLabel(label),
-                                      HU.disabledInput(selectId,
-                                          ((entry != null)
-                                           ? entry.getFullName()
-                                           : ""), HU.id(selectId)
-                                           + HU.SIZE_60
-                                           + ((entry == null)
+                               HU.disabledInput(selectId, ((entry != null)
+                ? entry.getFullName()
+                : ""), HU.id(selectId) + HU.SIZE_60 + ((entry == null)
                 ? HU.cssClass(CSS_CLASS_REQUIRED_DISABLED)
                 : "")) + baseSelect + extra));
     }
@@ -3602,8 +3691,8 @@ public class PageHandler extends RepositoryManager {
         String url = getEntryManager().getEntryUrl(request, entry);
 
         return HU.href(url, (args.length > 0)
-                                   ? args[0]
-                                   : entry.getLabel());
+                            ? args[0]
+                            : entry.getLabel());
     }
 
 }

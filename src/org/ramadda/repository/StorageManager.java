@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
@@ -988,13 +975,14 @@ public class StorageManager extends RepositoryManager implements PointFile
                              "_").replaceAll("\\?", "_").replaceAll("/",
                                              "_").replaceAll("=", "_");
 
-	//	System.err.println("key:" + key );
-	try {
-	    //	    String c = Utils.compress(key);
-	    //	    System.err.println("key:" + key.length() + " c:" + c.length());
-	} catch(Exception exc) {
-	    throw new RuntimeException(exc);
-	}
+        //      System.err.println("key:" + key );
+        try {
+            //      String c = Utils.compress(key);
+            //      System.err.println("key:" + key.length() + " c:" + c.length());
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
+
         return key;
     }
 
@@ -1128,8 +1116,9 @@ public class StorageManager extends RepositoryManager implements PointFile
                     "RAMADDA: Configuring log4j with properties:" + log4JFile
                     + " (this may print out a stack trace)");
                 */
-		
-		org.apache.log4j.PropertyConfigurator.configure(log4JFile.toString());
+
+                org.apache.log4j.PropertyConfigurator.configure(
+                    log4JFile.toString());
             } catch (Exception exc) {
                 System.err.println("RAMADDA: Error configuring log4j:" + exc);
                 exc.printStackTrace();
@@ -1263,6 +1252,7 @@ public class StorageManager extends RepositoryManager implements PointFile
         }
         File f = new File(localizePath(path));
         makeDirRecursive(f);
+
         return f;
     }
 
@@ -2391,6 +2381,7 @@ public class StorageManager extends RepositoryManager implements PointFile
      */
     public String readSystemResource(URL url) throws Exception {
         checkPath(url.toString());
+
         return IOUtil.readContents(url.toString(), getClass());
     }
 
@@ -2434,22 +2425,25 @@ public class StorageManager extends RepositoryManager implements PointFile
      * @throws Exception  problem reading
      */
     public String readSystemResource(String path) throws Exception {
-	try {
-            String localizedPath = localizePath(path);
-	    InputStream stream = getInputStream(localizedPath);
-	    try {
-		return IOUtil.readInputStream(stream);
-	    } finally {
-		IOUtil.close(stream);
-	    }
-	} catch(Exception exc) {
-	    Repository parent = getRepository().getParentRepository();
-	    if(parent!=null) {
-		System.err.println("Error reading system resource:" + path +" trying parent repository");
-		return parent.getStorageManager().readSystemResource(path);
-	    }
-	    throw exc;
-	}
+        try {
+            String      localizedPath = localizePath(path);
+            InputStream stream        = getInputStream(localizedPath);
+            try {
+                return IOUtil.readInputStream(stream);
+            } finally {
+                IOUtil.close(stream);
+            }
+        } catch (Exception exc) {
+            Repository parent = getRepository().getParentRepository();
+            if (parent != null) {
+                System.err.println("Error reading system resource:" + path
+                                   + " trying parent repository");
+
+                return parent.getStorageManager().readSystemResource(path);
+            }
+
+            throw exc;
+        }
     }
 
 

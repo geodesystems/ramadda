@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
@@ -77,8 +64,10 @@ public abstract class EntryVisitor implements Constants {
         return sb;
     }
 
+    /**
+     */
     public void resetMessageBuffer() {
-	sb = new StringBuffer();
+        sb = new StringBuffer();
     }
 
     /**
@@ -158,7 +147,7 @@ public abstract class EntryVisitor implements Constants {
         if (actionId != null) {
             getRepository().getActionManager().setActionMessage(actionId,
                     "# entries:" + totalCnt + "<br># changed entries:"
-                    + processedCnt+"<br>"+ sb);
+                    + processedCnt + "<br>" + sb);
         }
     }
 
@@ -181,17 +170,28 @@ public abstract class EntryVisitor implements Constants {
      * @throws Exception _more_
      */
     public boolean walk(Entry entry) throws Exception {
-	try {
-	    boolean ok = walkInner(entry);
-	    return ok;
-	} finally {
-	    finished();
-	}
+        try {
+            boolean ok = walkInner(entry);
+
+            return ok;
+        } finally {
+            finished();
+        }
     }
 
+    /**
+     */
     public void finished() {}
 
-    private boolean walkInner(Entry entry) throws Exception {	
+    /**
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private boolean walkInner(Entry entry) throws Exception {
 
         //        System.err.println("Walk: " + entry);
         if ( !isRunning()) {
@@ -210,6 +210,7 @@ public abstract class EntryVisitor implements Constants {
             getRepository().getEntryManager().getChildren(request, entry);
         if (children == null) {
             System.err.println("\tNo children");
+
             return true;
         }
         if (recurse) {
