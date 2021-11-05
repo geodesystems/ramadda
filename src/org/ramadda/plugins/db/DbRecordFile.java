@@ -18,6 +18,7 @@ import org.ramadda.data.services.RecordTypeHandler;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.Utils;
 import org.ramadda.util.sql.*;
 
 import ucar.unidata.util.Misc;
@@ -117,8 +118,6 @@ public class DbRecordFile extends CsvFile implements DbConstants {
     public InputStream doMakeInputStream(boolean buffered) throws Exception {
         boolean debug = false;
         makeFields(request);
-        SimpleDateFormat sdf =
-            RepositoryUtil.makeDateFormat("yyyyMMdd'T'HHmmss");
         StringBuilder s     = new StringBuilder("#converted stream\n");
         List<Clause>  where = new ArrayList<Clause>();
         where.add(Clause.eq(DbTypeHandler.COL_ID, entry.getId()));
@@ -287,6 +286,8 @@ public class DbRecordFile extends CsvFile implements DbConstants {
             this.columns = columns;
         }
 
+	int rowCnt = 0;
+
         /**
          * _more_
          *
@@ -298,6 +299,7 @@ public class DbRecordFile extends CsvFile implements DbConstants {
         public void processRow(Request request, Object[] values)
                 throws Exception {
             int cnt = 0;
+	    rowCnt++;
             for (Column c : columns) {
                 List<String> names = c.getColumnNames();
                 for (int idx = 0; idx < names.size(); idx++) {
@@ -326,8 +328,10 @@ public class DbRecordFile extends CsvFile implements DbConstants {
                             pw.append(str);
                         }
                     } else if (o instanceof Date) {
+
                         Date dttm = (Date) o;
-                        pw.append(sdf.format(dttm));
+			//			if(rowCnt<3)  System.err.println("\ttype:date "+ Utils.formatIso(dttm));
+                        pw.append(Utils.formatIso(dttm));
                     } else {
                         pw.append(o.toString());
                     }
