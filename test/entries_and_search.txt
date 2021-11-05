@@ -98,7 +98,6 @@ https://geodesystems.com/repository/entry/show/Home/Explore/geoRAMADDA/Oceanogra
 https://geodesystems.com/repository/entry/show/Home/Explore/geoRAMADDA/Oceanography/Gliders/glider.nc?output=default.html&entryid=2ddfd7a2-f2ac-4328-a528-515251481ca3
 https://geodesystems.com/repository/entry/show/Home/Explore/geoRAMADDA/Oceanography/Gliders/glider.nc?output=points.chart&entryid=2ddfd7a2-f2ac-4328-a528-515251481ca3
 https://geodesystems.com/repository/entry/show/Home/Explore/geoRAMADDA/Oceanography/Gliders/glider.nc?output=points.product&entryid=2ddfd7a2-f2ac-4328-a528-515251481ca3&numpoints=1000&product=points.json
-https://geodesystems.com/repository/entry/show/Home/Explore/geoRAMADDA/Oceanography/Observation+Data/SeaBird+CNV+CTD+Files/cast13pro.cnv?output=points.product&entryid=a9ad2943-0179-4c75-9e03-256394812fa2&numpoints=1000&product=points.json
 https://geodesystems.com/repository/entry/show/Home/Explore/geoRAMADDA/Oceanography?entryid=e69bc750-512e-404e-b919-6eae76513da6
 https://geodesystems.com/repository/entry/show/Home/Explore/geoRAMADDA?entryid=ebbe1ab5-423a-4488-93fb-28bdcc792a17
 https://geodesystems.com/repository/entry/show/Home/Explore/homeRAMADDA/Desert+Trips?entryid=4105f77f-3b04-47c2-be0d-a6f00e2f07c2
