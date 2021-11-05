@@ -110,11 +110,15 @@ public abstract class ValueIterator implements DbConstants {
     /** _more_          */
     Appendable buffer;
 
+    StringBuilder  sb;
+
     /** _more_          */
     boolean doGroupBy;
 
     /** _more_          */
     boolean forPrint;
+
+    boolean embedded;
 
     /** _more_          */
     boolean canEdit;
@@ -156,18 +160,18 @@ public abstract class ValueIterator implements DbConstants {
         sdf          = db.getDateFormat(entry);
         forPrint     = request.get(ARG_FOR_PRINT, false);
 	canEdit = db.getAccessManager().canEditEntry(request, entry);
+	embedded = request.get(ARG_EMBEDDED, false);
 
     }
 
     private String viewHeaderId;
     public void addViewHeader(Request request, Entry entry, String view,  String extraLinks) throws Exception {
 	Appendable sb       = getBuffer();
-	boolean    embedded = request.get(ARG_EMBEDDED, false);
+	System.err.println("addViewHeader:" + embedded);
 	if (embedded) {
 	    db.addStyleSheet(sb);
 	} else {
 	    int max = db.getMax(request);
-
 	    db.addViewHeader(request, entry, sb,view,extraLinks);
 	    db.addSearchAgain(request, entry,sb);
 	    viewHeaderId = Utils.getGuid();
@@ -197,19 +201,22 @@ public abstract class ValueIterator implements DbConstants {
      *
      * @throws Exception _more_
      */
-    protected Result makeResult(String suffix, String mimeType)
+    protected void makeResult(String suffix, String mimeType)
             throws Exception {
         if (result == null) {
-            if (request.defined(ARG_DB_SEARCHNAME)) {
-                result = request.getOutputStreamResult(
-                    request.getString(ARG_DB_SEARCHNAME) + suffix, mimeType);
-            } else {
-                result = request.getOutputStreamResult(entry.getName()
-                        + suffix, mimeType);
+	    if(embedded) {
+		result = new Result("","");
+	    } else {
+		if (request.defined(ARG_DB_SEARCHNAME)) {
+		    result = request.getOutputStreamResult(
+							   request.getString(ARG_DB_SEARCHNAME) + suffix, mimeType);
+		} else {
+		    result = request.getOutputStreamResult(entry.getName()
+							   + suffix, mimeType);
+		}
             }
         }
 
-        return result;
     }
 
     /**
@@ -230,7 +237,11 @@ public abstract class ValueIterator implements DbConstants {
      */
     protected Appendable getBuffer() throws Exception {
         if (buffer == null) {
-            buffer = printWriter = new PrintWriter(request.getOutputStream());
+	    if(embedded) {
+		buffer = sb = new StringBuilder();
+	    } else  {
+		buffer = printWriter = new PrintWriter(request.getOutputStream());
+	    }
         }
 
         return buffer;
@@ -282,6 +293,12 @@ public abstract class ValueIterator implements DbConstants {
         if (printWriter != null) {
             printWriter.flush();
         }
+
+	if(embedded && sb!=null) {
+	    result =  new Result("",sb);
+	}
+
+
     }
 
     /**
@@ -739,15 +756,17 @@ public abstract class ValueIterator implements DbConstants {
                 request.put(ARG_TEMPLATE, "empty");
             }
             makeResult(".html", "text/html");
-            db.getEntryManager().addEntryHeader(request, entry, result);
-            Appendable sb = getBuffer();
-            String header = db.getPageHandler().decorateResult(request,
-                                result, true, false);
-            if (header != null) {
-                sb.append(header);
-            } else {
-                System.err.println("no header");
-            }
+	    if(!embedded) {
+		db.getEntryManager().addEntryHeader(request, entry, result);
+		Appendable sb = getBuffer();
+		String header = db.getPageHandler().decorateResult(request,
+								   result, true, false);
+		if (header != null) {
+		    sb.append(header);
+		} else {
+		    System.err.println("no header");
+		}
+	    }
         }
 
 
@@ -774,15 +793,14 @@ public abstract class ValueIterator implements DbConstants {
                 }
 	    }
 
-            boolean embedded = request.get(ARG_EMBEDDED, false);
             if ( !embedded) {
                 db.addViewFooter(request, entry, sb);
-            }
-            String footer = db.getPageHandler().decorateResult(request,
-                                result, false, true);
-            if (footer != null) {
-                sb.append(footer);
-            } else {}
+		String footer = db.getPageHandler().decorateResult(request,
+								   result, false, true);
+		if (footer != null) {
+		    sb.append(footer);
+		} else {}
+	    }
             super.finish(request);
         }
 
@@ -956,7 +974,7 @@ public abstract class ValueIterator implements DbConstants {
                 actions.add(new TwoFacedObject("Delete entire database",
                         ACTION_DELETEALL));
             }
-            if ( !request.get(ARG_EMBEDDED, false) && (actions.size() > 0)) {
+            if ( !embedded && (actions.size() > 0)) {
                 if (doForm) {
                     sb.append(HtmlUtils.submit(db.msgLabel("Do"), ARG_DB_DO));
                     sb.append(HtmlUtils.select(ARG_DB_ACTION, actions));

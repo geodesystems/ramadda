@@ -16864,7 +16864,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    });
         },
         setChartSelection: function(index) {
-	    console.log("setChartSelection");
 	    this.mapCharts(chart=>{
                 if (chart.setSelection) {
 		    chart.setSelection([{
@@ -39230,6 +39229,7 @@ function RamaddaMapimagesDisplay(displayManager, id, properties) {
 	    this.regionNames.forEach((region,idx)=>{
 		let values= this.findValues(region, valueMap);
 		let recordId = values!=null?values.record.getId():"";
+		let regionClean = Utils.cleanId(region);
 		this.regions[region].polygons.forEach(polygon=>{
 		    let uid = HtmlUtils.getUniqueId();
 		    if(values!=null) {
@@ -39248,7 +39248,7 @@ function RamaddaMapimagesDisplay(displayManager, id, properties) {
 			    .attr("x", "0")
 			    .attr("y", "0");
 		    }
-		    let polys = svg.selectAll(region+"base"+uid)
+		    let polys = svg.selectAll(regionClean+"base"+uid)
 			.data([this.makePoly(polygon)])
 			.enter().append("polygon")
 			.attr("regionName",region)

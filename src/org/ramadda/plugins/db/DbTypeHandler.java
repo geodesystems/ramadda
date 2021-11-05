@@ -5216,8 +5216,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
             }
 
-            Result result = handleSearch(newRequest, entry);
-            sb.append(result.getStringContent());
+
+	    Result result = handleSearch(newRequest, entry);
+	    sb.append(result.getStringContent());
 
             return sb.toString();
         } catch (Exception exc) {
