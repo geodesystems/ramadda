@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.socrata;
@@ -227,9 +216,11 @@ public class SocrataSearchProvider extends SearchProvider {
 
             newEntry.setIcon("/socrata/socrata.png");
             entries.add(newEntry);
-            newEntry.initEntry(name, "<snippet>" + desc.toString()+"</snippet>", parent,
-                               getUserManager().getLocalFileUser(), resource,
-                               "", Entry.DEFAULT_ORDER,dttm.getTime(), dttm.getTime(),
+            newEntry.initEntry(name,
+                               "<snippet>" + desc.toString() + "</snippet>",
+                               parent, getUserManager().getLocalFileUser(),
+                               resource, "", Entry.DEFAULT_ORDER,
+                               dttm.getTime(), dttm.getTime(),
                                fromDate.getTime(), toDate.getTime(), values);
             getEntryManager().cacheSynthEntry(newEntry);
         }
@@ -284,8 +275,8 @@ public class SocrataSearchProvider extends SearchProvider {
                          "q",
                          HtmlUtils.urlEncodeSpace(
                              request.getString(ARG_TEXT, "")), false);
-	url += "&" + HtmlUtils.arg("limit", ""+request.get(ARG_MAX,100));
-	url += "&" + HtmlUtils.arg("offset", ""+request.get(ARG_SKIP,0));	
+        url += "&" + HtmlUtils.arg("limit", "" + request.get(ARG_MAX, 100));
+        url += "&" + HtmlUtils.arg("offset", "" + request.get(ARG_SKIP, 0));
         if (hostname != null) {
             url += "&" + HtmlUtils.arg("domains", hostname);
         }
@@ -334,7 +325,7 @@ public class SocrataSearchProvider extends SearchProvider {
 
 
             Entry newEntry = createEntry(request, domain, id, name,
-                                          desc.toString(), type);
+                                         desc.toString(), type);
             entries.add(newEntry);
         }
 
@@ -401,10 +392,11 @@ public class SocrataSearchProvider extends SearchProvider {
 
         newEntry.setIcon("/socrata/socrata.png");
         Entry parent = getSynthTopLevelEntry();
-        newEntry.initEntry(name, "<snippet>" +desc+"</snippet>", parent,
-                           getUserManager().getLocalFileUser(), resource, "",Entry.DEFAULT_ORDER,
-                           dttm.getTime(), dttm.getTime(),
-                           fromDate.getTime(), toDate.getTime(), values);
+        newEntry.initEntry(name, "<snippet>" + desc + "</snippet>", parent,
+                           getUserManager().getLocalFileUser(), resource, "",
+                           Entry.DEFAULT_ORDER, dttm.getTime(),
+                           dttm.getTime(), fromDate.getTime(),
+                           toDate.getTime(), values);
         getEntryManager().cacheSynthEntry(newEntry);
 
         return newEntry;

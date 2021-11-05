@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.map;
@@ -30,11 +19,11 @@ import org.ramadda.repository.map.MapInfo;
 
 import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.type.GenericTypeHandler;
-
-import org.ramadda.util.geo.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
+
+import org.ramadda.util.geo.*;
 import org.ramadda.util.text.CsvUtil;
 
 import org.w3c.dom.Element;
@@ -61,11 +50,11 @@ public class DbaseTypeHandler extends PointTypeHandler implements WikiConstants 
     /** _more_ */
     public static final String PROP_FIELDS = "fields";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_POINTFIELDS = "pointfields";
 
 
-    /** _more_          */
+    /** _more_ */
     private TTLCache<String, DbaseFile> cache;
 
     /**
@@ -99,13 +88,17 @@ public class DbaseTypeHandler extends PointTypeHandler implements WikiConstants 
      *
      * @param request _more_
      * @param entry _more_
+     * @param properties _more_
+     * @param requestProperties _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
     @Override
-    public RecordFile doMakeRecordFile(Request request, Entry entry, Hashtable properties,  Hashtable requestProperties)
+    public RecordFile doMakeRecordFile(Request request, Entry entry,
+                                       Hashtable properties,
+                                       Hashtable requestProperties)
             throws Exception {
         return new DbaseRecordFile(request, entry,
                                    entry.getResource().getPath(), null);
@@ -214,8 +207,6 @@ public class DbaseTypeHandler extends PointTypeHandler implements WikiConstants 
          * @param entry _more_
          * @param filename _more_
          * @param dbf _more_
-         *
-         * @throws IOException _more_
          *
          * @throws Exception _more_
          */

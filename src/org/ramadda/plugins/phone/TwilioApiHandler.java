@@ -1,20 +1,12 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.phone;
+
+
+import org.json.*;
 
 
 import org.ramadda.repository.*;
@@ -28,7 +20,6 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
 
-import org.json.*;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.IOUtil;
@@ -163,10 +154,13 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
                    ""));
     }
 
+    /**
+     *  @return _more_
+     */
     private String getSid() {
-	return 
-	    getRepository().getProperty(PROP_ACCOUNTSID,
-					getRepository().getProperty("twilio.appid",null));
+        return getRepository().getProperty(
+            PROP_ACCOUNTSID,
+            getRepository().getProperty("twilio.appid", null));
     }
 
     /**
@@ -584,9 +578,11 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
      * @param toPhone _more_
      * @param msg _more_
      *
+     *  @return _more_
      * @throws Exception _more_
      */
-    public boolean sendTextMessage(String fromPhone, String toPhone, String msg)
+    public boolean sendTextMessage(String fromPhone, String toPhone,
+                                   String msg)
             throws Exception {
         return sendTextMessage(fromPhone, toPhone, msg, null);
     }
@@ -599,27 +595,32 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
      * @param msg _more_
      * @param url _more_
      *
+     *  @return _more_
      * @throws Exception _more_
      */
-    public boolean sendTextMessage(String fromPhone, String toPhone, String msg,
-                                String url)
+    public boolean sendTextMessage(String fromPhone, String toPhone,
+                                   String msg, String url)
             throws Exception {
-	if(!isEnabled()) {
-	    System.err.println("Twilio sendTextMessage not enabled - no appid specified");
-	    return false;
-	}
+        if ( !isEnabled()) {
+            System.err.println(
+                "Twilio sendTextMessage not enabled - no appid specified");
+
+            return false;
+        }
         if (fromPhone == null) {
             fromPhone = getRepository().getProperty(PROP_PHONE, "");
         }
         fromPhone = fromPhone.replaceAll("-", "").replaceAll(" ", "");
 
-	if(!Utils.stringDefined(fromPhone)) {
-	    System.err.println("Twilio sendTextMessage not enabled - no from phone specified");
-	    return false;
-	}
+        if ( !Utils.stringDefined(fromPhone)) {
+            System.err.println(
+                "Twilio sendTextMessage not enabled - no from phone specified");
+
+            return false;
+        }
 
 
-        toPhone   = toPhone.replaceAll("-", "").replaceAll(" ", "");
+        toPhone = toPhone.replaceAll("-", "").replaceAll(" ", "");
 
         if ( !fromPhone.startsWith("+1")) {
             fromPhone = "+1" + fromPhone;
@@ -643,8 +644,9 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
                                     + URLEncoder.encode(url, "UTF-8")) + "&"
                                         + "Body="
                                         + URLEncoder.encode(msg, "UTF-8"));
-	//	System.err.println("Twilio result:" + result);
-	return true;
+
+        //      System.err.println("Twilio result:" + result);
+        return true;
     }
 
     /**
@@ -653,8 +655,7 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
      * @return _more_
      */
     private String getApiPrefix() {
-        return "https://api.twilio.com/2010-04-01/Accounts/"
-	    + getSid();
+        return "https://api.twilio.com/2010-04-01/Accounts/" + getSid();
 
     }
 
@@ -733,11 +734,13 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
         try {
             return new String(IOUtil.readBytes(huc.getInputStream(), null));
         } catch (Exception exc) {
-	    String result = 
-                new String(IOUtil.readBytes(huc.getErrorStream(), null));
-            System.err.println("TwilioApiHandler error:" + huc.getResponseMessage());
-	    System.err.println(result);
-	    throw new IllegalArgumentException(result);
+            String result = new String(IOUtil.readBytes(huc.getErrorStream(),
+                                null));
+            System.err.println("TwilioApiHandler error:"
+                               + huc.getResponseMessage());
+            System.err.println(result);
+
+            throw new IllegalArgumentException(result);
         }
     }
 

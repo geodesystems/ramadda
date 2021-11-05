@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.map;
@@ -197,14 +186,14 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
      *
      *
      * @version        $version$, Wed, Sep 8, '21
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     private static class ShapefileWrapper {
 
-        /** _more_          */
+        /** _more_ */
         EsriShapefile shapefile;
 
-        /** _more_          */
+        /** _more_ */
         InputStream inputStream;
 
         /**
@@ -378,10 +367,10 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         }
 
         if (dbfile != null) {
-	    collectionProps.putAll(getRepository().getPluginProperties());
+            collectionProps.putAll(getRepository().getPluginProperties());
             Hashtable extraProperties = getExtraProperties(request, entry);
             fieldDatum = FeatureCollection.getDatum(dbfile, extraProperties,
-						    (Hashtable<String, Object>) collectionProps);
+                    (Hashtable<String, Object>) collectionProps);
             nameField = FeatureCollection.getNameField(fieldDatum);
             collectionProps.put(FeatureCollection.PROP_SCHEMANAME,
                                 schemaName);
@@ -394,6 +383,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         }
 
         Hashtable properties = getExtraProperties(request, entry);
+
         return FeatureCollection.makeFeatureCollection(entry.getName(),
                 entry.getDescription(), shapefile, properties,
                 collectionProps);
@@ -509,7 +499,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         IOUtil.writeFile(file, xml);
         long t3 = System.currentTimeMillis();
         //        Utils.printTimes("OutputKml time:", t1,t2,t3); 
-       Result result = new Result("", sb, KmlOutputHandler.MIME_KML);
+        Result result = new Result("", sb, KmlOutputHandler.MIME_KML);
         result.setReturnFilename(returnFile);
 
         return result;
@@ -573,7 +563,6 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
      *
      * @param request  the request
      * @param entry  the entry
-     * @param output _more_
      *
      * @return the GeoJSON
      *
@@ -618,7 +607,6 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
      * @param addPoints _more_
      * @param addFeatures _more_
      *
-     * @return _more_
      *
      * @throws Exception _more_
      */
@@ -626,8 +614,10 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                              EsriShapefile shapefile, boolean addHeader,
                              boolean addPoints, boolean addFeatures)
             throws Exception {
+
         PrintWriter sb = new PrintWriter(os);
-	FeatureCollection fc = makeFeatureCollection(request, entry,  shapefile);
+        FeatureCollection fc = makeFeatureCollection(request, entry,
+                                   shapefile);
         List<DbaseDataWrapper> datum    = fc.getDatum();
         List<Feature>          features = (List<Feature>) fc.getFeatures();
         if (datum == null) {
@@ -681,13 +671,13 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
 
 
         sb.print("\n");
-        int cnt = 0;
-	boolean debug = false;
+        int     cnt   = 0;
+        boolean debug = false;
         for (int i = 0; i < features.size(); i++) {
             Feature feature = features.get(i);
             cnt++;
             colCnt = 0;
-	    String line = "";
+            String line = "";
             for (DbaseDataWrapper dbd : datum) {
                 String value;
                 if (dbd.getType() == DbaseData.TYPE_NUMERIC) {
@@ -699,18 +689,25 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                 if (colCnt++ > 0) {
                     sb.print(",");
                 }
-		line+="," + value;
+                line += "," + value;
                 sb.print(CsvUtil.cleanColumnValue(value));
             }
-	    if(debug)System.out.println("line:" + line);
-	    if(debug)   System.out.println("pts:" + feature.getId() +" coords:" + feature.getGeometry().getCoordsString().replaceAll("\n"," "));
+            if (debug) {
+                System.out.println("line:" + line);
+            }
+            if (debug) {
+                System.out.println(
+                    "pts:" + feature.getId() + " coords:"
+                    + feature.getGeometry().getCoordsString().replaceAll(
+                        "\n", " "));
+            }
             if (addPoints) {
                 float[] center = feature.getGeometry().getCenter(debug);
                 sb.print(",");
                 sb.print(center[0]);
                 sb.print(",");
                 sb.print(center[1]);
-		line+=","+center[0] +"," + center[1];
+                line += "," + center[0] + "," + center[1];
             }
 
 
@@ -727,6 +724,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             sb.print("\n");
         }
         sb.flush();
+
     }
 
 

@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.search;
@@ -168,14 +157,15 @@ public class PlosSearchProvider extends SearchProvider {
         //    http://api.plos.org/search?q=title:%22Ten%20Simple%20Rules%22&api_key=2ifY1fYfC9xz33odffyX
         String      searchText = request.getString(ARG_TEXT, "");
         List<Entry> entries    = new ArrayList<Entry>();
-	String max = request.getString("max","100");
-        String searchUrl = HtmlUtils.url(URL, "rows",max,"wt","xml",ARG_API_KEY, getApiKey(),
-                                         ARG_Q, searchText);
-	if(request.get("skip",0)>0) {
-	    searchUrl+="&start=" + request.get("skip",0);
-	}
+        String      max        = request.getString("max", "100");
+        String searchUrl = HtmlUtils.url(URL, "rows", max, "wt", "xml",
+                                         ARG_API_KEY, getApiKey(), ARG_Q,
+                                         searchText);
+        if (request.get("skip", 0) > 0) {
+            searchUrl += "&start=" + request.get("skip", 0);
+        }
 
-	System.err.println(getName() + " search url:" + searchUrl);
+        System.err.println(getName() + " search url:" + searchUrl);
         InputStream is  = getInputStream(searchUrl);
         String      xml = IOUtil.readContents(is);
         //        System.out.println(xml);
@@ -296,8 +286,9 @@ public class PlosSearchProvider extends SearchProvider {
                                 : new Resource("");
             newEntry.initEntry(name, makeSnippet(desc.toString()), parent,
                                getUserManager().getLocalFileUser(), resource,
-                               "", Entry.DEFAULT_ORDER,dttm.getTime(), dttm.getTime(),
-                               fromDate.getTime(), toDate.getTime(), null);
+                               "", Entry.DEFAULT_ORDER, dttm.getTime(),
+                               dttm.getTime(), fromDate.getTime(),
+                               toDate.getTime(), null);
             getEntryManager().cacheSynthEntry(newEntry);
         }
 

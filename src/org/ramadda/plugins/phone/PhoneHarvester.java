@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.phone;
@@ -27,9 +16,9 @@ import org.ramadda.repository.search.SearchProvider;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.geo.Place;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
+import org.ramadda.util.geo.Place;
 
 
 
@@ -1015,7 +1004,8 @@ public class PhoneHarvester extends Harvester {
         entry.initEntry(name, cleanedInputText, currentEntry, getUser(),
                         (resource != null)
                         ? new Resource(resource)
-                        : new Resource(), "", Entry.DEFAULT_ORDER,date.getTime(), date.getTime(),
+                        : new Resource(), "", Entry.DEFAULT_ORDER,
+                                          date.getTime(), date.getTime(),
                                           date.getTime(), date.getTime(),
                                           values);
 
@@ -1141,8 +1131,9 @@ public class PhoneHarvester extends Harvester {
         Resource resource = new Resource(voiceFile.toString(),
                                          Resource.TYPE_STOREDFILE);
         entry.initEntry(name, cleanedInputText, parent, getUser(), resource,
-                        "", Entry.DEFAULT_ORDER,date.getTime(), date.getTime(), date.getTime(),
-                        date.getTime(), values);
+                        "", Entry.DEFAULT_ORDER, date.getTime(),
+                        date.getTime(), date.getTime(), date.getTime(),
+                        values);
 
 
         Place place = org.ramadda.util.geo.GeoUtils.getLocationFromAddress(

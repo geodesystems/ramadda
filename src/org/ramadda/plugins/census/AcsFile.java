@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.census;
@@ -30,8 +19,8 @@ import org.ramadda.repository.RepositoryUtil;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
-import org.ramadda.util.geo.Place;
 import org.ramadda.util.Utils;
+import org.ramadda.util.geo.Place;
 import org.ramadda.util.text.*;
 
 import org.w3c.dom.*;
@@ -74,6 +63,7 @@ public class AcsFile extends CsvFile {
     /** _more_ */
     private boolean includeSpecial = true;
 
+    /**  */
     private String namePattern;
 
     /**
@@ -93,6 +83,7 @@ public class AcsFile extends CsvFile {
      * @param filename _more_
      * @param labels _more_
      * @param includeSpecial _more_
+     * @param pattern _more_
      *
      * @throws IOException _more_
      */
@@ -102,8 +93,10 @@ public class AcsFile extends CsvFile {
         super(filename);
         this.labels         = labels;
         this.includeSpecial = includeSpecial;
-	if(pattern!=null && pattern.equals("")) pattern = null;
-	this.namePattern = pattern;
+        if ((pattern != null) && pattern.equals("")) {
+            pattern = null;
+        }
+        this.namePattern = pattern;
 
     }
 
@@ -224,7 +217,7 @@ public class AcsFile extends CsvFile {
                     String         type  = RecordField.TYPE_DOUBLE;
                     numeric[i] = true;
                     depends[i] = -1;
-		    name[i] = false;
+                    name[i]    = false;
                     special[i] = isNameSpecial(value);
                     //                System.err.println("n:" + value +" special:"+ isSpecial);
 
@@ -245,7 +238,7 @@ public class AcsFile extends CsvFile {
                         header.append(", ");
                     }
                     skip[i] = false;
-		    name[i] = value.equals("NAME");
+                    name[i] = value.equals("NAME");
                     if (special[i] || value.equals("NAME")) {
                         type       = "string";
                         numeric[i] = false;
@@ -297,13 +290,13 @@ public class AcsFile extends CsvFile {
                 String lon = "NaN";
                 long   tt1 = System.currentTimeMillis();
                 for (int i = 1; i < obj.length(); i++) {
-                    JSONArray    row         = obj.getJSONArray(i);
-                    int          colIdx      = 0;
-                    int          len         = row.length();
-                    List<String> specialOnes = new ArrayList<String>();
+                    JSONArray     row         = obj.getJSONArray(i);
+                    int           colIdx      = 0;
+                    int           len         = row.length();
+                    List<String>  specialOnes = new ArrayList<String>();
 
-		    boolean rowOk = true;
-		    StringBuilder rowBuff = new StringBuilder();
+                    boolean       rowOk       = true;
+                    StringBuilder rowBuff     = new StringBuilder();
                     for (int allColIdx = 0; allColIdx < len; allColIdx++) {
                         String value = row.optString(allColIdx, null);
 
@@ -311,12 +304,12 @@ public class AcsFile extends CsvFile {
                             specialOnes.add(value);
                         }
 
-			if (name[allColIdx] && namePattern!=null) {
-			    if(!value.matches(namePattern)) {
-				rowOk = false;
-				continue;
-			    }
-			}
+                        if (name[allColIdx] && (namePattern != null)) {
+                            if ( !value.matches(namePattern)) {
+                                rowOk = false;
+                                continue;
+                            }
+                        }
 
                         if (value == null) {
                             if (numeric[allColIdx]) {
@@ -324,12 +317,13 @@ public class AcsFile extends CsvFile {
                             } else {
                                 value = "";
                             }
-                        } else  if (numeric[allColIdx]) {
-			    double tmp = Double.parseDouble(value);
-			    //A hack to catch -666,000,000 values I've seen
-			    if(tmp<-10000)
-				value = "NaN";
-			}
+                        } else if (numeric[allColIdx]) {
+                            double tmp = Double.parseDouble(value);
+                            //A hack to catch -666,000,000 values I've seen
+                            if (tmp < -10000) {
+                                value = "NaN";
+                            }
+                        }
 
                         if (depends[allColIdx] >= 0) {
                             double v1 = Double.parseDouble(value);
@@ -346,7 +340,7 @@ public class AcsFile extends CsvFile {
                         }
 
                         if (colIdx > 0) {
-			    rowBuff.append(",");
+                            rowBuff.append(",");
                         }
                         boolean quote = value.indexOf(",") >= 0;
                         if (quote) {
@@ -354,13 +348,14 @@ public class AcsFile extends CsvFile {
                         }
                         rowBuff.append(value);
                         if (quote) {
-			    rowBuff.append("\"");
+                            rowBuff.append("\"");
                         }
                         colIdx++;
                     }
-		    if(!rowOk)
-			continue;
-		    writer.print(rowBuff.toString());
+                    if ( !rowOk) {
+                        continue;
+                    }
+                    writer.print(rowBuff.toString());
 
                     Place place = null;
                     //TODO: maybe a bit inefficient
@@ -397,6 +392,7 @@ public class AcsFile extends CsvFile {
             } catch (Exception exc) {
                 System.err.println("Error reading census data:" + json);
                 exc.printStackTrace();
+
                 throw exc;
             }
         }

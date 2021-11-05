@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.media;
@@ -51,14 +40,14 @@ public class HtmlImportHandler extends ImportHandler {
     /** _more_ */
     public static final String ARG_IMPORT_PATTERN = "import.pattern";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_IMPORT_RECURSE = "import.recurse";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_IMPORT_RECURSE_PATTERN =
         "import.recurse.pattern";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_IMPORT_RECURSE_DEPTH =
         "import.recurse.depth";
 
@@ -157,14 +146,14 @@ public class HtmlImportHandler extends ImportHandler {
                 if ( !getActionManager().getActionOk(actionId)) {
                     return false;
                 }
-		String name = link.getLabel().trim();
-		name  = name.replaceAll("/$","").replaceAll("^/","");
+                String name = link.getLabel().trim();
+                name = name.replaceAll("/$", "").replaceAll("^/", "");
                 Entry child = getEntryManager().findEntryWithName(request,
                                   parentEntry, name);
                 if (child == null) {
                     child = getEntryManager().makeEntry(
-                        request, new Resource(), parentEntry,
-                        name, "", request.getUser(),
+                        request, new Resource(), parentEntry, name, "",
+                        request.getUser(),
                         getRepository().getTypeHandler(
                             TypeHandler.TYPE_GROUP), null);
                     getEntryManager().addNewEntry(request, child);
@@ -196,9 +185,10 @@ public class HtmlImportHandler extends ImportHandler {
             TypeHandler typeHandler = getRepository().getTypeHandler(request);
             String      name        = link.getLabel();
             if (request.get("useurl", false) || (name.length() < 4)) {
-                name = IOUtil.stripExtension(IOUtil.getFileTail(link.getUrl().toString()));
-		name = Utils.makeLabel(name);
-		name = name.replaceAll("^[0-9]+","").trim();
+                name = IOUtil.stripExtension(
+                    IOUtil.getFileTail(link.getUrl().toString()));
+                name = Utils.makeLabel(name);
+                name = name.replaceAll("^[0-9]+", "").trim();
             }
 
             //TODO: check if we have a entry already
@@ -330,7 +320,6 @@ public class HtmlImportHandler extends ImportHandler {
      * @param repository _more_
      * @param url _more_
      * @param parentEntry _more_
-     * @param links _more_
      * @param recursePattern _more_
      * @param pattern _more_
      *
@@ -371,7 +360,6 @@ public class HtmlImportHandler extends ImportHandler {
      *
      * @param request _more_
      * @param repository _more_
-     * @param uploadedFile _more_
      * @param url _more_
      * @param parentEntry _more_
      *

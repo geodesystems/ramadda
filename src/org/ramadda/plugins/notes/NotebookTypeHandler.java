@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.notes;
@@ -38,8 +27,8 @@ import ucar.unidata.util.StringUtil;
 
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 
 
@@ -126,9 +115,8 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
      * @param group _more_
      * @param entries _more_
      * @param subGroups _more_
-     * @param where _more_
-     * @param select _more_
      *
+     *  @return _more_
      * @throws Exception _more_
      */
     /*
@@ -160,13 +148,15 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
     public Result getHtmlDisplay(Request request, Entry group,
                                  List<Entry> subGroups, List<Entry> entries)
             throws Exception {
+
         if ( !isDefaultHtmlOutput(request)) {
             return null;
         }
 
         StringBuffer sb = new StringBuffer();
         getPageHandler().entrySectionOpen(request, group, sb, "");
-        sb.append(getWikiManager().wikifyEntry(request, group, group.getDescription()));
+        sb.append(getWikiManager().wikifyEntry(request, group,
+                group.getDescription()));
         boolean canAdd = getAccessManager().canDoAction(request, group,
                              Permission.ACTION_NEW);
         if (canAdd) {
@@ -189,22 +179,25 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
         sb.append("<center>");
         List<String> header    = new ArrayList<String>();
         String       theLetter = request.getString(ARG_LETTER, "");
-        HashSet seen = new HashSet();
+        HashSet      seen      = new HashSet();
         seen.add("all");
-        for(Entry e: subGroups) {
-            if(e.getName().length()>0)
-                seen.add(e.getName().substring(0,1).toUpperCase());
+        for (Entry e : subGroups) {
+            if (e.getName().length() > 0) {
+                seen.add(e.getName().substring(0, 1).toUpperCase());
+            }
         }
         System.err.println("seen:" + seen);
 
-        String[]     ltrs      = {
+        String[] ltrs = {
             "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
             "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
             "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "all"
         };
         String url = request.getUrl(ARG_LETTER);
         for (String letter : ltrs) {
-            if(!seen.contains(letter)) continue;
+            if ( !seen.contains(letter)) {
+                continue;
+            }
             if (letter.equals(theLetter)) {
                 header.add(HtmlUtils.b(letter));
             } else {
@@ -227,7 +220,10 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
             if (name.length() > 0) {
                 letter = name.substring(0, 1).toUpperCase();
             }
-            if(theLetter.length()>0 && !theLetter.equals("all") && !theLetter.equals(letter)) continue;
+            if ((theLetter.length() > 0) && !theLetter.equals("all")
+                    && !theLetter.equals(letter)) {
+                continue;
+            }
 
             StringBuffer letterBuffer = letterToBuffer.get(letter);
             if (letterBuffer == null) {
@@ -237,8 +233,9 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
             }
             String href = getEntryManager().getAjaxLink(request, entry,
                               name).toString();
-            String h = getPageHandler().getEntryHref(request, entry)+"<br>" + entry.getDescription();
-            letterBuffer.append(HtmlUtils.li(h,""));
+            String h = getPageHandler().getEntryHref(request, entry) + "<br>"
+                       + entry.getDescription();
+            letterBuffer.append(HtmlUtils.li(h, ""));
         }
 
         letters = (List<String>) Misc.sort(letters);
@@ -252,7 +249,9 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
         getPageHandler().entrySectionClose(request, group, sb);
+
         return new Result(msg("Notebook"), sb);
+
     }
 
 

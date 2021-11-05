@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.census;
@@ -94,10 +83,13 @@ public class CensusVariable implements Comparable, Cloneable {
         this.label     = label;
     }
 
+    /**
+     *  @return _more_
+     */
     public String getCorpus() {
-	return Utils.concatString(id, "-", label, "-", concept).toLowerCase();
+        return Utils.concatString(id, "-", label, "-", concept).toLowerCase();
     }
-	
+
 
     /**
      * _more_
@@ -138,8 +130,8 @@ public class CensusVariable implements Comparable, Cloneable {
     private static Hashtable<String, CensusVariable> getVariableMap()
             throws Exception {
         if (variableMap == null) {
-	    //	    Runtime.getRuntime().gc();
-	    double mem1 = Utils.getUsedMemory();
+            //      Runtime.getRuntime().gc();
+            double mem1 = Utils.getUsedMemory();
 
             synchronized (MUTEX) {
                 if (variableMap != null) {
@@ -156,9 +148,9 @@ public class CensusVariable implements Comparable, Cloneable {
                     IOUtil.readContents(
                         "/org/ramadda/plugins/census/resources/variables.xml",
                         AcsFile.class);
-                long     t2       = System.currentTimeMillis();
-                Element  root     = XmlUtil.getRoot(xml);
-		xml = null;
+                long    t2   = System.currentTimeMillis();
+                Element root = XmlUtil.getRoot(xml);
+                xml = null;
                 long     t3       = System.currentTimeMillis();
                 Element  vars     = XmlUtil.findChild(root, "vars");
                 NodeList children = XmlUtil.getElements(vars, "var");
@@ -169,7 +161,7 @@ public class CensusVariable implements Comparable, Cloneable {
                     String  label  = XmlUtil.getAttribute(item, "label");
                     String concept = XmlUtil.getAttribute(item, "concept");
                     CensusVariable var = new CensusVariable(id, label,
-							    concept);
+                                             concept);
                     tmp.put(var.id, var);
                     if (var.getCorpus().matches(PATTERNS)) {
                         lastVars.add(var);
@@ -185,11 +177,13 @@ public class CensusVariable implements Comparable, Cloneable {
                 variableMap = tmp;
                 long t4 = System.currentTimeMillis();
                 //            Utils.printTimes("CensusVariable:", t1,t2,t3,t4);
-		vars = null;children=null;root=null;
+                vars     = null;
+                children = null;
+                root     = null;
             }
-	    //	    Runtime.getRuntime().gc();
-	    double mem2 = Utils.getUsedMemory();
-	    //	    System.err.println("census delta:" + Utils.decimals(mem2-mem1,1));
+            //      Runtime.getRuntime().gc();
+            double mem2 = Utils.getUsedMemory();
+            //      System.err.println("census delta:" + Utils.decimals(mem2-mem1,1));
         }
 
         return variableMap;
@@ -242,7 +236,7 @@ public class CensusVariable implements Comparable, Cloneable {
                     || (concept.indexOf(s) >= 0)) {
                 return true;
             }
-	    String corpus = getCorpus();
+            String corpus = getCorpus();
             if (corpus.matches(s) || (corpus.indexOf(s) >= 0)) {
                 return true;
             }

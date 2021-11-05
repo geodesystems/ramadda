@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.gtfs;
@@ -1611,9 +1600,12 @@ public class Gtfs implements Constants {
                                   "type_gtfs_stop");
                 searchRequest.put("search.type_gtfs_stop.stop_id",
                                   "=" + stopId);
-		List<Entry> entries = 
-                    request.getRepository().getEntryManager().getEntries(searchRequest, tmp);
-                stopEntry = entries.size()>0?entries.get(0):null;
+                List<Entry> entries =
+                    request.getRepository().getEntryManager().getEntries(
+                        searchRequest, tmp);
+                stopEntry = (entries.size() > 0)
+                            ? entries.get(0)
+                            : null;
 
             }
             if (stopEntry != null) {
@@ -1654,8 +1646,13 @@ public class Gtfs implements Constants {
         searchRequest.put("search.type_gtfs_stop.agency_id",
                           "=" + agency.getId());
         StringBuilder tmp = new StringBuilder();
-        List<Entry> entries= request.getRepository().getEntryManager().getEntries(searchRequest, tmp);
-	return   entries.size()>0?entries.get(0):null;
+        List<Entry> entries =
+            request.getRepository().getEntryManager().getEntries(
+                searchRequest, tmp);
+
+        return (entries.size() > 0)
+               ? entries.get(0)
+               : null;
     }
 
 
@@ -1683,8 +1680,13 @@ public class Gtfs implements Constants {
         searchRequest.put("search.type_gtfs_route.agency_id",
                           "=" + agency.getId());
         StringBuilder tmp = new StringBuilder();
-        List<Entry> entries =  request.getRepository().getEntryManager().getEntries(searchRequest, tmp);
-	return entries.size()>0?entries.get(0):null;
+        List<Entry> entries =
+            request.getRepository().getEntryManager().getEntries(
+                searchRequest, tmp);
+
+        return (entries.size() > 0)
+               ? entries.get(0)
+               : null;
     }
 
 
@@ -1712,8 +1714,13 @@ public class Gtfs implements Constants {
         searchRequest.put("search.type_gtfs_trip.agency_id",
                           "=" + agency.getId());
         StringBuilder tmp = new StringBuilder();
-        List<Entry> entries = request.getRepository().getEntryManager().getEntries(searchRequest, tmp);
-	return entries.size()>0?entries.get(0):null;
+        List<Entry> entries =
+            request.getRepository().getEntryManager().getEntries(
+                searchRequest, tmp);
+
+        return (entries.size() > 0)
+               ? entries.get(0)
+               : null;
     }
 
 
@@ -1920,9 +1927,8 @@ public class Gtfs implements Constants {
             urlConnection = url.openConnection();
             if (Utils.stringDefined(rtId)
                     && Utils.stringDefined(rtPassword)) {
-                String authString = rtId.trim() + ":" + rtPassword.trim();
-                String authStringEnc =
-                    Utils.encodeBase64(authString);
+                String authString    = rtId.trim() + ":" + rtPassword.trim();
+                String authStringEnc = Utils.encodeBase64(authString);
                 urlConnection.setRequestProperty("Authorization",
                         "Basic " + authStringEnc);
             }
@@ -1983,8 +1989,9 @@ public class Gtfs implements Constants {
                     newEntry.initEntry(
                         name, "", agencyEntry,
                         repository.getUserManager().getLocalFileUser(),
-                        new Resource(), "", Entry.DEFAULT_ORDER,vdttm.getTime(), vdttm.getTime(),
-                        vdttm.getTime(), vdttm.getTime(), values);
+                        new Resource(), "", Entry.DEFAULT_ORDER,
+                        vdttm.getTime(), vdttm.getTime(), vdttm.getTime(),
+                        vdttm.getTime(), values);
                     repository.getEntryManager().cacheSynthEntry(newEntry);
                     vehicles.add(newEntry);
                     newEntry.setLatitude(pos.getLatitude());
@@ -2056,8 +2063,10 @@ public class Gtfs implements Constants {
         q.append("]");
         searchRequest.put("search.type_gtfs_trip.stop_ids", q);
         StringBuilder tmp = new StringBuilder();
-	trips = request.getRepository().getEntryManager().getEntries(searchRequest, tmp);
+        trips = request.getRepository().getEntryManager().getEntries(
+            searchRequest, tmp);
         agency.putTransientProperty(entry.getId() + ".trips", trips);
+
         return trips;
     }
 

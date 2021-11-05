@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.map;
@@ -30,10 +19,10 @@ import org.ramadda.repository.map.MapInfo;
 
 import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.type.GenericTypeHandler;
-
-import org.ramadda.util.geo.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
+
+import org.ramadda.util.geo.*;
 
 
 
@@ -62,14 +51,14 @@ import java.util.List;
  */
 public class ShapefileTypeHandler extends PointTypeHandler implements WikiConstants {
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_ADD_SHAPES = "addShapes";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_ADD_POINTS = "addPoints";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_FIELDS = "fields";
 
     /** _more_ */
@@ -469,14 +458,14 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
         /** _more_ */
         String fieldsWithShapes;
 
-        /** _more_          */
+        /** _more_ */
         String fieldsWithPoints;
 
 
-        /** _more_          */
+        /** _more_ */
         boolean addShapes;
 
-        /** _more_          */
+        /** _more_ */
         boolean addPoints;
 
         /**
@@ -488,9 +477,6 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
          * @param entryProperties _more_
          * @param filename _more_
          * @param shapefile _more_
-         *
-         * @throws IOException _more_
-         *
          * @throws Exception _more_
          */
         public ShapefileRecordFile(Request request, Entry entry,

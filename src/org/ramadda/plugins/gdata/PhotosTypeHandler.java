@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.gdata;
@@ -174,9 +163,9 @@ public class PhotosTypeHandler extends GdataTypeHandler {
             //            System.err.println ("Desc:" + desc);
             newEntry.initEntry(title, desc.toString(), entry,
                                getUserManager().getLocalFileUser(),
-                               new Resource(), "", Entry.DEFAULT_ORDER,dttm.getTime(),
+                               new Resource(), "", Entry.DEFAULT_ORDER,
                                dttm.getTime(), dttm.getTime(),
-                               dttm.getTime(), null);
+                               dttm.getTime(), dttm.getTime(), null);
             getEntryManager().cacheSynthEntry(newEntry);
         }
 
@@ -283,9 +272,9 @@ public class PhotosTypeHandler extends GdataTypeHandler {
 
             newEntry.initEntry(name, desc.toString(), parentEntry,
                                getUserManager().getLocalFileUser(), resource,
-                               "", Entry.DEFAULT_ORDER,dttm.getTime(), dttm.getTime(),
-                               timestamp.getTime(), timestamp.getTime(),
-                               null);
+                               "", Entry.DEFAULT_ORDER, dttm.getTime(),
+                               dttm.getTime(), timestamp.getTime(),
+                               timestamp.getTime(), null);
             com.google.gdata.data.geo.Point point = photo.getGeoLocation();
             if (point != null) {
                 newEntry.setNorth(point.getLatitude().doubleValue());

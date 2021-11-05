@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.search;
@@ -108,7 +97,7 @@ public class RedditSearchProvider extends SearchProvider {
             url = "https://www.reddit.com" + q + ".json";
         } else {
             url = HtmlUtils.url(URL, "q", q);
-	    url +="&limit=" + request.get(ARG_MAX,100);
+            url += "&limit=" + request.get(ARG_MAX, 100);
         }
 
 
@@ -142,7 +131,8 @@ public class RedditSearchProvider extends SearchProvider {
             String     desc    = data.optString("selftext_html", "");
             desc = desc.replaceAll("\\&lt;", "<").replaceAll("\\&gt;",
                                    ">").replaceAll("\\&#39;", "'");
-	    desc = HU.href("https://www.reddit.com/r/" + sub,"/r/" +sub,"target=_news") +"<br>" + desc;
+            desc = HU.href("https://www.reddit.com/r/" + sub, "/r/" + sub,
+                           "target=_news") + "<br>" + desc;
             String id = data.getString("id");
             String resultUrl = "https://www.reddit.com"
                                + data.getString("permalink");
@@ -153,19 +143,19 @@ public class RedditSearchProvider extends SearchProvider {
             newEntry.setIcon("/search/reddit.png");
             newEntry.initEntry(name, makeSnippet(desc), parent,
                                getUserManager().getLocalFileUser(),
-                               new Resource(new URL(resultUrl)), "",Entry.DEFAULT_ORDER,
+                               new Resource(new URL(resultUrl)), "",
+                               Entry.DEFAULT_ORDER, dttm.getTime(),
                                dttm.getTime(), dttm.getTime(),
-                               dttm.getTime(), dttm.getTime(), null);
-	    String thumbnail = data.optString("thumbnail");
-	    if(Utils.stringDefined(thumbnail) && thumbnail.startsWith("https:")) {
-		Metadata metadata =
-		    new Metadata(getRepository().getGUID(),
-				 newEntry.getId(),
-				 ContentMetadataHandler.TYPE_THUMBNAIL,
-				 false, thumbnail, "image", null, null,
-				 null);
-		getMetadataManager().addMetadata(newEntry, metadata);
-	    }		
+                               dttm.getTime(), null);
+            String thumbnail = data.optString("thumbnail");
+            if (Utils.stringDefined(thumbnail)
+                    && thumbnail.startsWith("https:")) {
+                Metadata metadata =
+                    new Metadata(getRepository().getGUID(), newEntry.getId(),
+                                 ContentMetadataHandler.TYPE_THUMBNAIL,
+                                 false, thumbnail, "image", null, null, null);
+                getMetadataManager().addMetadata(newEntry, metadata);
+            }
 
             getEntryManager().cacheSynthEntry(newEntry);
         }

@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.chat;
@@ -55,16 +44,16 @@ import java.util.List;
  */
 public class ChatApiHandler extends RepositoryManager implements RequestHandler {
 
-    /** _more_          */
+    /** _more_ */
     private static final long WAIT_DELAY = 1000 * 60;
 
-    /** _more_          */
+    /** _more_ */
     private static final int MESSAGE_HISTORY = 50;
 
-    /** _more_          */
+    /** _more_ */
     private static final int SAVE_SIZE = 10;
 
-    /** _more_          */
+    /** _more_ */
     private Hashtable<String, ChatRoom> rooms = new Hashtable<String,
                                                     ChatRoom>();
 
@@ -267,18 +256,19 @@ public class ChatApiHandler extends RepositoryManager implements RequestHandler 
 
 
         if (command.equals("clearall")) {
-            boolean canEdit = getAccessManager().canEditEntry(request,entry);
-            if(!canEdit) {
+            boolean canEdit = getAccessManager().canEditEntry(request, entry);
+            if ( !canEdit) {
                 sb.append(Json.mapAndQuote("code", "notok", "message",
                                            "no permissions to clear all"));
+
                 return returnJson(request, sb);
             }
 
             ChatRoom room = getRoom(entry);
             room.clearAll();
             saveRoom(room);
-            sb.append(Json.mapAndQuote("code", "ok", "message",
-                                       "cleared"));
+            sb.append(Json.mapAndQuote("code", "ok", "message", "cleared"));
+
             return returnJson(request, sb);
         }
 
@@ -352,23 +342,23 @@ public class ChatApiHandler extends RepositoryManager implements RequestHandler 
      *
      *
      * @version        $version$, Thu, Feb 28, '19
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     static class ChatRoom {
 
-        /** _more_          */
+        /** _more_ */
         Entry entry;
 
-        /** _more_          */
+        /** _more_ */
         String latestInput;
 
-        /** _more_          */
+        /** _more_ */
         String latestUser;
 
-        /** _more_          */
+        /** _more_ */
         List<ChatMessage> messages = new ArrayList<ChatMessage>();
 
-        /** _more_          */
+        /** _more_ */
         int saveCnt = 0;
 
         /**
@@ -380,11 +370,13 @@ public class ChatApiHandler extends RepositoryManager implements RequestHandler 
             this.entry = entry;
         }
 
+        /**
+         */
         public void clearAll() {
-            messages = new ArrayList<ChatMessage>();
-            saveCnt =0;
+            messages    = new ArrayList<ChatMessage>();
+            saveCnt     = 0;
             latestInput = null;
-            latestUser = null;
+            latestUser  = null;
         }
 
         /**
@@ -419,17 +411,17 @@ public class ChatApiHandler extends RepositoryManager implements RequestHandler 
      *
      *
      * @version        $version$, Thu, Feb 28, '19
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     static class ChatMessage {
 
-        /** _more_          */
+        /** _more_ */
         String message;
 
-        /** _more_          */
+        /** _more_ */
         String user;
 
-        /** _more_          */
+        /** _more_ */
         Date date;
 
         /**

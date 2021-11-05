@@ -1,20 +1,10 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.beforeafter;
+
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
@@ -26,12 +16,13 @@ import org.ramadda.util.JQuery;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 
-import ucar.unidata.util.Misc;
-
 import org.w3c.dom.*;
+
+import ucar.unidata.util.Misc;
 
 import java.awt.Dimension;
 import java.awt.Image;
+
 import java.io.FileInputStream;
 
 import java.util.ArrayList;
@@ -42,17 +33,27 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+
 /**
  *
  *
  */
 public class BeforeAfterBase extends GenericTypeHandler {
 
+    /**  */
     public static final String ARG_IMAGELAYOUT = "imagelayout";
+
+    /**  */
     public static final String TAG_IMAGEPAIR_DEFAULT = "imagepair_default";
+
+    /**  */
     public static final String TAG_IMAGEOVERLAY = "imageoverlay";
+
+    /**  */
     public static final String TAG_BEFOREAFTER = "beforeafter";
-    public static final String TAG_LEFTRIGHT = "leftright";        
+
+    /**  */
+    public static final String TAG_LEFTRIGHT = "leftright";
 
 
     /** _more_ */
@@ -60,7 +61,7 @@ public class BeforeAfterBase extends GenericTypeHandler {
                                                           Dimension>();
 
 
-    /** _more_          */
+    /** _more_ */
     private static int cnt = 0;
 
     /**
@@ -103,40 +104,57 @@ public class BeforeAfterBase extends GenericTypeHandler {
             if ((dim.width > 0) && (dim.height > 0)) {
                 dimensions.put(entry.getId(), dim);
             }
-        }  
+        }
 
         return dim;
     }
 
 
-    public void getLinks(Appendable sb, Request request, Hashtable props, Entry entry, String tag) throws Exception {
+    /**
+     *
+     * @param sb _more_
+     * @param request _more_
+     * @param props _more_
+     * @param entry _more_
+     * @param tag _more_
+     *
+     * @throws Exception _more_
+     */
+    public void getLinks(Appendable sb, Request request, Hashtable props,
+                         Entry entry, String tag)
+            throws Exception {
 
-	if(!Utils.getProperty(props,"showLinks",false))  return;
-	if(request.get("embedded", false)) return;
+        if ( !Utils.getProperty(props, "showLinks", false)) {
+            return;
+        }
+        if (request.get("embedded", false)) {
+            return;
+        }
 
-	HashSet<String> except = (HashSet<String>)Utils.makeHashSet(ARG_IMAGELAYOUT);
-	String url;
-	if(!tag.equals(TAG_BEFOREAFTER)) {
-	    url = request.getUrl(except,null);
-	    url+="&" + ARG_IMAGELAYOUT+ "=" + TAG_BEFOREAFTER;
-	    sb.append(HtmlUtils.href(url,"Switch to Before/After"));
-	    sb.append(HtmlUtils.space(2));
-	}
+        HashSet<String> except =
+            (HashSet<String>) Utils.makeHashSet(ARG_IMAGELAYOUT);
+        String url;
+        if ( !tag.equals(TAG_BEFOREAFTER)) {
+            url = request.getUrl(except, null);
+            url += "&" + ARG_IMAGELAYOUT + "=" + TAG_BEFOREAFTER;
+            sb.append(HtmlUtils.href(url, "Switch to Before/After"));
+            sb.append(HtmlUtils.space(2));
+        }
 
-	if(!tag.equals(TAG_IMAGEOVERLAY)) {
-	    url = request.getUrl(except,null);
-	    url+="&" + ARG_IMAGELAYOUT+ "=" + TAG_IMAGEOVERLAY;
-	    sb.append(HtmlUtils.href(url,"Switch to Overlay"));
-	    sb.append(HtmlUtils.space(2));
-	}
+        if ( !tag.equals(TAG_IMAGEOVERLAY)) {
+            url = request.getUrl(except, null);
+            url += "&" + ARG_IMAGELAYOUT + "=" + TAG_IMAGEOVERLAY;
+            sb.append(HtmlUtils.href(url, "Switch to Overlay"));
+            sb.append(HtmlUtils.space(2));
+        }
 
-	if(!tag.equals(TAG_LEFTRIGHT)) {
-	    url = request.getUrl(except,null);
-	    url+="&" + ARG_IMAGELAYOUT+ "=" + TAG_LEFTRIGHT;
-	    sb.append(HtmlUtils.href(url,"Switch to Side by Side"));
-	    sb.append(HtmlUtils.space(2));
-	}
-	
+        if ( !tag.equals(TAG_LEFTRIGHT)) {
+            url = request.getUrl(except, null);
+            url += "&" + ARG_IMAGELAYOUT + "=" + TAG_LEFTRIGHT;
+            sb.append(HtmlUtils.href(url, "Switch to Side by Side"));
+            sb.append(HtmlUtils.space(2));
+        }
+
     }
 
 
@@ -160,16 +178,16 @@ public class BeforeAfterBase extends GenericTypeHandler {
                                  String tag, Hashtable props)
             throws Exception {
 
-	String beforeAfterTag =  request.getString(ARG_IMAGELAYOUT,null);
-	if(!Utils.stringDefined(beforeAfterTag)) {
-	    beforeAfterTag = tag;
-	}
-	if(beforeAfterTag.equals(TAG_IMAGEPAIR_DEFAULT)) {
-	    beforeAfterTag = entry.getValue(0,TAG_BEFOREAFTER);
-	}
-	if(!Utils.stringDefined(beforeAfterTag)) {
-	    beforeAfterTag = TAG_IMAGEOVERLAY;
-	}
+        String beforeAfterTag = request.getString(ARG_IMAGELAYOUT, null);
+        if ( !Utils.stringDefined(beforeAfterTag)) {
+            beforeAfterTag = tag;
+        }
+        if (beforeAfterTag.equals(TAG_IMAGEPAIR_DEFAULT)) {
+            beforeAfterTag = entry.getValue(0, TAG_BEFOREAFTER);
+        }
+        if ( !Utils.stringDefined(beforeAfterTag)) {
+            beforeAfterTag = TAG_IMAGEOVERLAY;
+        }
 
 
         if (beforeAfterTag.equals(TAG_IMAGEOVERLAY)) {
@@ -181,9 +199,10 @@ public class BeforeAfterBase extends GenericTypeHandler {
                                   tag, props);
         }
         if (beforeAfterTag.equals(TAG_LEFTRIGHT)) {
-            return getLeftRight(wikiUtil, request, originalEntry, entry,
-                                   tag, props);
+            return getLeftRight(wikiUtil, request, originalEntry, entry, tag,
+                                props);
         }
+
         return super.getWikiInclude(wikiUtil, request, originalEntry, entry,
                                     tag, props);
     }
@@ -280,10 +299,8 @@ public class BeforeAfterBase extends GenericTypeHandler {
             HtmlUtils.open(sb, "div", "style",
                            "position:relative;width:" + width
                            + ";min-height:" + h + "px;");
-            HtmlUtils.center(sb,
-                             HtmlUtils.div("",
-                                           " id='slider_" + baseId
-                                           + "' style='margin-bottom:2px;width:200px;' "));
+            HtmlUtils.center(sb, HtmlUtils.div("", " id='slider_" + baseId
+                    + "' style='margin-bottom:2px;width:200px;' "));
             sb.append(HtmlUtils.img(url1, "",
                                     "id='before_" + baseId + "' width="
                                     + width + " style='position:absolute;'"));
@@ -297,7 +314,8 @@ public class BeforeAfterBase extends GenericTypeHandler {
             HtmlUtils.script(sb, script);
         }
 
-	getLinks(sb,request, props, entry,TAG_IMAGEOVERLAY);
+        getLinks(sb, request, props, entry, TAG_IMAGEOVERLAY);
+
         return sb.toString();
     }
 
@@ -386,9 +404,9 @@ public class BeforeAfterBase extends GenericTypeHandler {
             divs.append("</div>\n");
             String path = getRepository().getUrlBase() + "/beforeafter/";
             String args = "{";
-	    //	    args+="showFullLinks:" + (!request.get("embedded",false))+",\n";
-	    args+="showFullLinks:false,\n";
-	    args+="imagePath:'" + path + "'}";
+            //      args+="showFullLinks:" + (!request.get("embedded",false))+",\n";
+            args += "showFullLinks:false,\n";
+            args += "imagePath:'" + path + "'}";
             sb.append("\n");
             jq.append(HtmlUtils.script(JQuery.ready("\n$(function(){$('#"
                     + id + "').beforeAfter(" + args + ");});\n")));
@@ -399,7 +417,8 @@ public class BeforeAfterBase extends GenericTypeHandler {
         sb.append(jq);
         sb.append("\n");
 
-	getLinks(sb, request, props, entry,TAG_BEFOREAFTER);
+        getLinks(sb, request, props, entry, TAG_BEFOREAFTER);
+
         return sb.toString();
     }
 
@@ -420,10 +439,10 @@ public class BeforeAfterBase extends GenericTypeHandler {
      * @throws Exception _more_
      */
     public String getLeftRight(WikiUtil wikiUtil, Request request,
-                                 Entry originalEntry, Entry entry,
-                                 String tag, Hashtable props)
+                               Entry originalEntry, Entry entry, String tag,
+                               Hashtable props)
             throws Exception {
-        StringBuffer sb   = new StringBuffer();
+        StringBuffer sb      = new StringBuffer();
         List<Entry>  entries = getEntries(request, entry);
         for (int i = 0; i < entries.size(); i += 2) {
             if (i >= entries.size() - 1) {
@@ -431,7 +450,7 @@ public class BeforeAfterBase extends GenericTypeHandler {
             }
             Entry  entry1 = entries.get(i);
             Entry  entry2 = entries.get(i + 1);
-            String width = "50%";
+            String width  = "50%";
             String url1 = HtmlUtils.url(
                               request.makeUrl(repository.URL_ENTRY_GET) + "/"
                               + getStorageManager().getFileTail(
@@ -444,20 +463,19 @@ public class BeforeAfterBase extends GenericTypeHandler {
 
             sb.append("<table width=100%><tr valign=top>\n");
             sb.append("<td width=50%>");
-	    sb.append("<img src=\"" + url1 + "\""
-		      + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "100%")
-                        + ">\n");
-	    sb.append("</td>");
+            sb.append("<img src=\"" + url1 + "\""
+                      + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "100%") + ">\n");
+            sb.append("</td>");
             sb.append("<td width=50%>");
-	    sb.append("<img src=\"" + url2 + "\""
-		      + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "100%")
-                        + ">\n");
-	    sb.append("</td>");
+            sb.append("<img src=\"" + url2 + "\""
+                      + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "100%") + ">\n");
+            sb.append("</td>");
             sb.append("</tr></table>\n");
         }
-	getLinks(sb, request, props, entry,TAG_LEFTRIGHT);
+        getLinks(sb, request, props, entry, TAG_LEFTRIGHT);
+
         return sb.toString();
     }
-    
+
 
 }

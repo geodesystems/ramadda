@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.mail;
@@ -473,8 +462,9 @@ public class MailHarvester extends Harvester {
                     typeHandler.createEntry(getRepository().getGUID());
                 entry.initEntry(entryInfo.name, entryInfo.text.toString(),
                                 entryInfo.parentEntry, getUser(), resource,
-                                "", Entry.DEFAULT_ORDER,now.getTime(), now.getTime(),
-                                now.getTime(), now.getTime(), null);
+                                "", Entry.DEFAULT_ORDER, now.getTime(),
+                                now.getTime(), now.getTime(), now.getTime(),
+                                null);
 
                 entryInfo.newEntry = entry;
                 newEntries.add(entry);
@@ -653,9 +643,10 @@ public class MailHarvester extends Harvester {
                         entry.initEntry(entryInfo.name,
                                         entryInfo.text.toString(),
                                         entryInfo.parentEntry, getUser(),
-                                        resource, "", Entry.DEFAULT_ORDER,now.getTime(),
-                                        now.getTime(), date.getTime(),
-                                        date.getTime(), values);
+                                        resource, "", Entry.DEFAULT_ORDER,
+                                        now.getTime(), now.getTime(),
+                                        date.getTime(), date.getTime(),
+                                        values);
 
                         List<Entry> entries =
                             (List<Entry>) Misc.newList(entry);
@@ -767,9 +758,9 @@ public class MailHarvester extends Harvester {
         Date     date   = new Date();
         Entry    entry  = typeHandler.createEntry(getRepository().getGUID());
         Object[] values = typeHandler.makeEntryValues(new Hashtable());
-        entry.initEntry(name, "", parentEntry, getUser(), resource, "",Entry.DEFAULT_ORDER,
-                        date.getTime(), date.getTime(), date.getTime(),
-                        date.getTime(), values);
+        entry.initEntry(name, "", parentEntry, getUser(), resource, "",
+                        Entry.DEFAULT_ORDER, date.getTime(), date.getTime(),
+                        date.getTime(), date.getTime(), values);
         typeHandler.initializeEntryFromForm(getRequest(), entry, parentEntry,
                                             true);
         entries.add(entry);

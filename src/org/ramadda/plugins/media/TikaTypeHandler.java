@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.media;
@@ -51,8 +40,8 @@ import java.io.OutputStream;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 
@@ -116,53 +105,50 @@ public class TikaTypeHandler extends GenericTypeHandler {
             entry.setEndDate(dttm.getTime());
         }
 
-        String saved =
-            (String) entry.getAndRemoveTransientProperty(Office.SAVE_DATE.getName());
+        String saved = (String) entry.getAndRemoveTransientProperty(
+                           Office.SAVE_DATE.getName());
         if (saved != null) {
             Date dttm = Utils.parseDate(saved);
             entry.setEndDate(dttm.getTime());
         }
 
-	HashSet seen = new HashSet();
-        String slideCount =
-            (String) entry.getAndRemoveTransientProperty(Office.SLIDE_COUNT.getName());
+        HashSet seen = new HashSet();
+        String slideCount = (String) entry.getAndRemoveTransientProperty(
+                                Office.SLIDE_COUNT.getName());
         if (Utils.stringDefined(slideCount)) {
             getMetadataManager().addMetadata(
                 entry,
                 new Metadata(
-                    getRepository().getGUID(), entry.getId(),
-                    "property", false, "slide_count", slideCount, null, null,
-                    null));
+                    getRepository().getGUID(), entry.getId(), "property",
+                    false, "slide_count", slideCount, null, null, null));
         }
 
-        String wordCount =
-            (String) entry.getAndRemoveTransientProperty(Office.WORD_COUNT.getName());
+        String wordCount = (String) entry.getAndRemoveTransientProperty(
+                               Office.WORD_COUNT.getName());
         if (Utils.stringDefined(wordCount)) {
             getMetadataManager().addMetadata(
                 entry,
                 new Metadata(
-                    getRepository().getGUID(), entry.getId(),
-                    "property", false, "word_count", wordCount, null, null,
-                    null));
+                    getRepository().getGUID(), entry.getId(), "property",
+                    false, "word_count", wordCount, null, null, null));
         }
 
-	String pageCount =
-            (String) entry.getAndRemoveTransientProperty(Office.PAGE_COUNT.getName());
+        String pageCount = (String) entry.getAndRemoveTransientProperty(
+                               Office.PAGE_COUNT.getName());
         if (Utils.stringDefined(pageCount)) {
             getMetadataManager().addMetadata(
                 entry,
                 new Metadata(
-                    getRepository().getGUID(), entry.getId(),
-                    "property", false, "page_count", pageCount, null, null,
-                    null));
+                    getRepository().getGUID(), entry.getId(), "property",
+                    false, "page_count", pageCount, null, null, null));
         }
 
 
 
-        String author =
-            (String) entry.getAndRemoveTransientProperty(Office.AUTHOR.getName());
+        String author = (String) entry.getAndRemoveTransientProperty(
+                            Office.AUTHOR.getName());
         if (Utils.stringDefined(author)) {
-	    seen.add(author);
+            seen.add(author);
             getMetadataManager().addMetadata(
                 entry,
                 new Metadata(
@@ -171,11 +157,10 @@ public class TikaTypeHandler extends GenericTypeHandler {
                     null));
         }
 
-        String lastAuthor =
-            (String) entry.getAndRemoveTransientProperty(Office.LAST_AUTHOR.getName());
-        if (Utils.stringDefined(lastAuthor)
-	    && !seen.contains(lastAuthor)) {
-	    seen.add(lastAuthor);
+        String lastAuthor = (String) entry.getAndRemoveTransientProperty(
+                                Office.LAST_AUTHOR.getName());
+        if (Utils.stringDefined(lastAuthor) && !seen.contains(lastAuthor)) {
+            seen.add(lastAuthor);
             getMetadataManager().addMetadata(
                 entry,
                 new Metadata(

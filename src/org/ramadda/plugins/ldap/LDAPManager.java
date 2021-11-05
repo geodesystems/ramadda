@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 //jeffmc: change the package name to a ramadda package
 package org.ramadda.plugins.ldap;
@@ -316,10 +305,7 @@ public class LDAPManager {
      *
      * @param username _more_
      * @param groupMemberAttribute _more_
-     *
-     * @return _more_
-     *
-     * @throws NamingException _more_
+     *  @return _more_
      *
      * @throws Exception _more_
      */
@@ -488,17 +474,11 @@ public class LDAPManager {
     }
 
     /**
-     * _more_
-     *
-     * @param hostname _more_
-     * @param port _more_
      *
      * @param ldapUrl _more_
      * @param username _more_
      * @param password _more_
-     *
-     * @return _more_
-     *
+     *  @return _more_
      * @throws NamingException _more_
      */
     private static DirContext getInitialContext(String ldapUrl,

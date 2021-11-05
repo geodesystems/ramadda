@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.search;
@@ -128,9 +117,9 @@ public class NationalArchivesSearchProvider extends SearchProvider {
         InputStream is   = getInputStream(url);
         String      json = IOUtil.readContents(is);
         IOUtil.close(is);
-	//	System.out.println(json);
+        //      System.out.println(json);
         JSONObject obj = new JSONObject(new JSONTokener(json));
-	/*
+        /*
         if ( !obj.has("items")) {
             System.out.println(
                 "NationalArchives SearchProvider: no items field in json:"
@@ -138,53 +127,54 @@ public class NationalArchivesSearchProvider extends SearchProvider {
 
             return entries;
         }
-	*/
+        */
 
 
-        JSONArray searchResults = Json.readArray(obj, "opaResponse.results.result");
-        Entry     parent        = getSynthTopLevelEntry();
-        TypeHandler typeHandler =
-            getRepository().getTypeHandler("file");
+        JSONArray searchResults = Json.readArray(obj,
+                                      "opaResponse.results.result");
+        Entry       parent      = getSynthTopLevelEntry();
+        TypeHandler typeHandler = getRepository().getTypeHandler("file");
 
         for (int i = 0; i < searchResults.length(); i++) {
-	    //	    if(i>1) continue;
-            JSONObject item    = searchResults.getJSONObject(i);
-            String     type    = Json.readValue(item, "type", "");
-            String     name   = Json.readValue(item, "title", "");
-            String     itemUrl   = Json.readValue(item, "url", "");
-            String     desc   = Json.readValue(item, "teaser", "");	    	    	    
-            JSONObject descObject    = Json.readObject(item,"description");
-	    if(descObject!=null) {
-		if(name.length()==0) {
-		    name = Json.readValue(descObject, "series.title", "");
-		}
-		//		System.err.println("haveDesc:" + name);
-		JSONArray names = descObject.names();
-		for(int j=0;j<names.length();j++) {
-		    //		    System.err.println("\t" + names.get(j));
-		    //		    Object value = descObject.get(name);
+            //      if(i>1) continue;
+            JSONObject item       = searchResults.getJSONObject(i);
+            String     type       = Json.readValue(item, "type", "");
+            String     name       = Json.readValue(item, "title", "");
+            String     itemUrl    = Json.readValue(item, "url", "");
+            String     desc       = Json.readValue(item, "teaser", "");
+            JSONObject descObject = Json.readObject(item, "description");
+            if (descObject != null) {
+                if (name.length() == 0) {
+                    name = Json.readValue(descObject, "series.title", "");
+                }
+                //              System.err.println("haveDesc:" + name);
+                JSONArray names = descObject.names();
+                for (int j = 0; j < names.length(); j++) {
+                    //              System.err.println("\t" + names.get(j));
+                    //              Object value = descObject.get(name);
 
-		}
-		//		System.err.println("obj:" + descObject);
-		if(name.length()==0) {
-		    name = Json.readValue(descObject, "fileUnit.title", "");
-		}
-		if(desc.length()==0) {
-		    desc = Json.readValue(descObject, "series.scopeAndContentNote", "");
-		}
+                }
+                //              System.err.println("obj:" + descObject);
+                if (name.length() == 0) {
+                    name = Json.readValue(descObject, "fileUnit.title", "");
+                }
+                if (desc.length() == 0) {
+                    desc = Json.readValue(descObject,
+                                          "series.scopeAndContentNote", "");
+                }
 
-	    }
-	    if(name.length()==0) {
-		//		System.out.println("****** no name \n" + item.toString(10));
-		continue;
-	    }
+            }
+            if (name.length() == 0) {
+                //              System.out.println("****** no name \n" + item.toString(10));
+                continue;
+            }
             Date   dttm = new Date();
-	    String id = Utils.getGuid();
+            String id   = Utils.getGuid();
             Entry newEntry = new Entry(Repository.ID_PREFIX_SYNTH + getId()
                                        + TypeHandler.ID_DELIMITER
                                        + id, typeHandler);
             entries.add(newEntry);
-	    /*
+            /*
 
             String thumb = Json.readValue(snippet, "thumbnails.default.url",
                                           null);
@@ -196,17 +186,18 @@ public class NationalArchivesSearchProvider extends SearchProvider {
                                  false, thumb, null, null, null, null);
                 getMetadataManager().addMetadata(newEntry, thumbnailMetadata);
             }
-	    */
+            */
 
-	    Resource resource;
-	    if(itemUrl.length()>0)
-		resource = new Resource(new URL(itemUrl));
-	    else
-		resource = new Resource();
-	    newEntry.setIcon("/search/nationalarchives.png");
-            newEntry.initEntry(name, "<snippet>" + desc+"</snippet>", parent,
-                               getUserManager().getLocalFileUser(),
-                               resource, "",Entry.DEFAULT_ORDER,
+            Resource resource;
+            if (itemUrl.length() > 0) {
+                resource = new Resource(new URL(itemUrl));
+            } else {
+                resource = new Resource();
+            }
+            newEntry.setIcon("/search/nationalarchives.png");
+            newEntry.initEntry(name, "<snippet>" + desc + "</snippet>",
+                               parent, getUserManager().getLocalFileUser(),
+                               resource, "", Entry.DEFAULT_ORDER,
                                dttm.getTime(), dttm.getTime(),
                                dttm.getTime(), dttm.getTime(), null);
             getEntryManager().cacheSynthEntry(newEntry);

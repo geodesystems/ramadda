@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.faq;
@@ -84,19 +73,22 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
 
         if (canAdd) {
             sb.append(
-                HU.href(HU.url(request.entryUrlWithArg(getRepository().URL_ENTRY_FORM, group, ARG_GROUP), ARG_TYPE,
-                                        FaqEntryTypeHandler
-                                            .TYPE_FAQENTRY), HU
-                                                .img(getRepository()
-                                                    .getIconUrl(
-                                                        ICON_NEW), msg(
-                                                            "New FAQ Question"))));
-	    sb.append(HU.SPACE);
+                HU.href(
+                    HU.url(request
+                        .entryUrlWithArg(
+                            getRepository().URL_ENTRY_FORM, group,
+                            ARG_GROUP), ARG_TYPE,
+                                        FaqEntryTypeHandler.TYPE_FAQENTRY), HU
+                                            .img(getRepository()
+                                                .getIconUrl(ICON_NEW), msg(
+                                                    "New FAQ Question"))));
+            sb.append(HU.SPACE);
         }
 
 
 
-	sb.append( getWikiManager().wikifyEntry(request, group, group.getDescription()));
+        sb.append(getWikiManager().wikifyEntry(request, group,
+                group.getDescription()));
         Hashtable<String, StringBuffer> catQuestionMap =
             new Hashtable<String, StringBuffer>();
         Hashtable<String, StringBuffer> catAnswerMap = new Hashtable<String,
@@ -127,17 +119,18 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
             catQuestionSB.append("<li class=\"faq_question\">");
             boolean includeLink = group.getValue(0, true);
             if (canAdd || includeLink) {
-                String link = HU.href(
-                                  getEntryManager().getEntryURL(
-                                      request, entry), HU.img(
-                                      getRepository().getIconUrl(ICON_ENTRY),
-                                      msg("View entry details")));
+                String link =
+                    HU.href(getEntryManager().getEntryURL(request, entry),
+                            HU.img(getRepository().getIconUrl(ICON_ENTRY),
+                                   msg("View entry details")));
                 //            catQuestionSB.append(" ");
                 catQuestionSB.append(link);
                 catQuestionSB.append(" ");
             }
-            catQuestionSB.append(HU.mouseClickHref("HtmlUtils.scrollToAnchor('" + entry.getId()+"')",
-						   entry.getName(),""));
+            catQuestionSB.append(
+                HU.mouseClickHref(
+                    "HtmlUtils.scrollToAnchor('" + entry.getId() + "')",
+                    entry.getName(), ""));
 
             catAnswerSB.append("<a name=" + entry.getId() + "></a>");
             catAnswerSB.append("<li class=\"faq_question\">");

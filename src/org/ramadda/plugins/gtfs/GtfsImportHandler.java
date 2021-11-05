@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.gtfs;
@@ -20,9 +9,6 @@ package org.ramadda.plugins.gtfs;
 import org.json.*;
 
 import org.ramadda.data.services.*;
-import org.ramadda.util.NamedInputStream;
-import org.ramadda.util.text.CsvUtil;
-import org.ramadda.util.text.DataProvider;
 
 
 import org.ramadda.repository.*;
@@ -31,8 +17,11 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
+import org.ramadda.util.NamedInputStream;
 import org.ramadda.util.Utils;
 import org.ramadda.util.text.*;
+import org.ramadda.util.text.CsvUtil;
+import org.ramadda.util.text.DataProvider;
 
 import org.w3c.dom.*;
 
@@ -347,7 +336,8 @@ public class GtfsImportHandler extends ImportHandler {
         for (Entry entry : entries) {
             entry.setUser(request.getUser());
             sb.append("<li> ");
-            sb.append(getEntryManager().getEntryLink(request, entry, true,""));
+            sb.append(getEntryManager().getEntryLink(request, entry, true,
+                    ""));
             sb.append("\n");
             if (cnt++ > 100) {
                 sb.append("<p>...<br>");
@@ -452,8 +442,9 @@ public class GtfsImportHandler extends ImportHandler {
                         (Entry) agencyEntry.getProperty("stopsEntry");
 
                     entry.initEntry(name, desc, stopsEntry, user, resource,
-                                    "", Entry.DEFAULT_ORDER,now.getTime(), now.getTime(),
-                                    now.getTime(), now.getTime(), values);
+                                    "", Entry.DEFAULT_ORDER, now.getTime(),
+                                    now.getTime(), now.getTime(),
+                                    now.getTime(), values);
                     entry.setLocation(lat, lon, 0);
                     String agencyId =
                         agencyEntry.getValue(
@@ -843,8 +834,9 @@ public class GtfsImportHandler extends ImportHandler {
                             GtfsAgencyTypeHandler.IDX_AGENCY_ID, "");
 
                     entry.initEntry(name, "", routesEntry, user, resource,
-                                    "", Entry.DEFAULT_ORDER,now.getTime(), now.getTime(),
-                                    now.getTime(), now.getTime(), values);
+                                    "", Entry.DEFAULT_ORDER, now.getTime(),
+                                    now.getTime(), now.getTime(),
+                                    now.getTime(), values);
                     routesEntry.getChildren().add(entry);
                     entry.putProperty("seen_stops", new HashSet());
                     entry.putProperty("stop_names", new StringBuilder());
@@ -979,8 +971,9 @@ public class GtfsImportHandler extends ImportHandler {
                                         : new Resource();
 
                     entry.initEntry(name, "", parentEntry, user, resource,
-                                    "", Entry.DEFAULT_ORDER,now.getTime(), now.getTime(),
-                                    now.getTime(), now.getTime(), values);
+                                    "", Entry.DEFAULT_ORDER, now.getTime(),
+                                    now.getTime(), now.getTime(),
+                                    now.getTime(), values);
                     entry.setChildren(new ArrayList<Entry>());
                     entries.add(entry);
                     agencyMap.put(rawAgencyId, entry);
@@ -996,7 +989,8 @@ public class GtfsImportHandler extends ImportHandler {
 
                     entry.getChildren().add(routesEntry);
                     routesEntry.initEntry("Routes", "", entry, user,
-                                          new Resource(), "", Entry.DEFAULT_ORDER,now.getTime(),
+                                          new Resource(), "",
+                                          Entry.DEFAULT_ORDER, now.getTime(),
                                           now.getTime(), now.getTime(),
                                           now.getTime(), null);
                     entries.add(routesEntry);
@@ -1010,7 +1004,8 @@ public class GtfsImportHandler extends ImportHandler {
                     String stopsDesc = "";
                     //                    getRepository().getResource("/org/ramadda/plugins/gtfs/stops.txt");
                     stopsEntry.initEntry("Stops", stopsDesc, entry, user,
-                                         new Resource(), "", Entry.DEFAULT_ORDER,now.getTime(),
+                                         new Resource(), "",
+                                         Entry.DEFAULT_ORDER, now.getTime(),
                                          now.getTime(), now.getTime(),
                                          now.getTime(), null);
                     entries.add(stopsEntry);
@@ -1403,12 +1398,13 @@ public class GtfsImportHandler extends ImportHandler {
                     name.append(endTime.replaceAll(":[^:]+$", ""));
                     Resource resource = new Resource();
                     entry.initEntry(name.toString(), desc.toString(), route,
-                                    user, resource, "", Entry.DEFAULT_ORDER,now.getTime(),
-                                    now.getTime(), (serviceInfo.start != null)
-                            ? serviceInfo.start.getTime()
-                            : now.getTime(), (serviceInfo.end != null)
-                                             ? serviceInfo.end.getTime()
-                                             : now.getTime(), values);
+                                    user, resource, "", Entry.DEFAULT_ORDER,
+                                    now.getTime(), now.getTime(),
+                                    (serviceInfo.start != null)
+                                    ? serviceInfo.start.getTime()
+                                    : now.getTime(), (serviceInfo.end != null)
+                            ? serviceInfo.end.getTime()
+                            : now.getTime(), values);
                     route.getChildren().add(entry);
 
                     entries.add(entry);

@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.biz;
@@ -378,8 +367,9 @@ public class FredCategoryTypeHandler extends ExtensibleGroupTypeHandler {
         Object[] values   = this.makeEntryValues(null);
         values[IDX_CATEGORY_ID] = categoryId;
         entry.initEntry(name, desc, categoryEntry, categoryEntry.getUser(),
-                        resource, "", Entry.DEFAULT_ORDER,dttm.getTime(), dttm.getTime(),
-                        dttm.getTime(), dttm.getTime(), values);
+                        resource, "", Entry.DEFAULT_ORDER, dttm.getTime(),
+                        dttm.getTime(), dttm.getTime(), dttm.getTime(),
+                        values);
 
         getEntryManager().cacheSynthEntry(entry);
 
@@ -423,8 +413,9 @@ public class FredCategoryTypeHandler extends ExtensibleGroupTypeHandler {
         values[FredSeriesTypeHandler.IDX_SERIES_ID] = seriesId;
 
         entry.initEntry(name, desc, parentEntry, parentEntry.getUser(),
-                        new Resource(), "", Entry.DEFAULT_ORDER,dttm.getTime(), dttm.getTime(),
-                        dttm.getTime(), dttm.getTime(), values);
+                        new Resource(), "", Entry.DEFAULT_ORDER,
+                        dttm.getTime(), dttm.getTime(), dttm.getTime(),
+                        dttm.getTime(), values);
         seriesTypeHandler.initializeSeries(entry);
         getEntryManager().cacheSynthEntry(entry);
 

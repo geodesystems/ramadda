@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.map;
@@ -25,9 +14,9 @@ import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.GenericTypeHandler;
 import org.ramadda.util.Bounds;
-import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
+import org.ramadda.util.geo.GeoUtils;
 
 import org.w3c.dom.Element;
 
@@ -65,18 +54,21 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param fromImport _more_
      *
      * @throws Exception _more_
      */
-    public void initializeNewEntry(Request request, Entry entry, boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry,
+                                   boolean fromImport)
             throws Exception {
 
-        super.initializeNewEntry(request, entry,fromImport);
+        super.initializeNewEntry(request, entry, fromImport);
         String  path  = entry.getResource().getPath();
         String  _path = path.toLowerCase();
         boolean isKmz = _path.endsWith(".kmz");
         if ( !(isKmz || _path.endsWith(".tif") || _path.endsWith(".tiff")
-               || _path.endsWith(".grd")|| _path.endsWith(".asc") ||_path.endsWith(".adf"))) {
+                || _path.endsWith(".grd") || _path.endsWith(".asc")
+                || _path.endsWith(".adf"))) {
 
             return;
         }
@@ -221,8 +213,8 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
                 int width  = (int) entry.getValue(0, -1);
                 int height = (int) entry.getValue(1, -1);
                 if ((width > 0) && (height > 0)) {
-                    map.setWidth(""+width);
-                    map.setHeight(""+height);
+                    map.setWidth("" + width);
+                    map.setHeight("" + height);
                 }
             }
 

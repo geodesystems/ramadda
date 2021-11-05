@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.map;
@@ -34,6 +23,9 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 
 import org.ramadda.util.KmlUtil;
+
+
+import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 
@@ -50,8 +42,6 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
-
-import org.ramadda.util.TTLCache;
 import java.io.*;
 
 
@@ -88,7 +78,9 @@ public class GpxTypeHandler extends PointTypeHandler {
     /** _more_ */
     private static int IDX_LOSS = IDX++;
 
-    private static TTLCache<String, List<String>> extraTagsCache = new TTLCache<String,List<String>>(60 * 60 * 1000);
+    /**  */
+    private static TTLCache<String, List<String>> extraTagsCache =
+        new TTLCache<String, List<String>>(60 * 60 * 1000);
 
 
     /**
@@ -139,19 +131,33 @@ public class GpxTypeHandler extends PointTypeHandler {
             getStorageManager().readSystemResource(entry.getFile()));
     }
 
+    /**
+     *
+     * @param t _more_
+     *  @return _more_
+     */
     private String digit(int t) {
-	if(t<10) return "0" + t;
-	return ""+t;
+        if (t < 10) {
+            return "0" + t;
+        }
+
+        return "" + t;
     }
 
+    /**
+     *
+     * @param t _more_
+     *  @return _more_
+     */
     private String formatTime(double t) {
-	String fmt = "";
-	fmt+=digit((int)t);
-	double minutes = 60*(t-(int)t);
-	fmt+=":"+digit((int)(minutes));
-	double seconds = 60*(minutes-(int)minutes);
-	fmt+=":"+digit((int)(seconds));
-	return fmt;
+        String fmt = "";
+        fmt += digit((int) t);
+        double minutes = 60 * (t - (int) t);
+        fmt += ":" + digit((int) (minutes));
+        double seconds = 60 * (minutes - (int) minutes);
+        fmt += ":" + digit((int) (seconds));
+
+        return fmt;
     }
 
     /**
@@ -189,7 +195,7 @@ public class GpxTypeHandler extends PointTypeHandler {
             //            System.err.println("distance:" + distance +" totalTime:" + totalTime );
             if (Double.isNaN(distance) || (distance == -1)
                     || (totalTime == -1)) {
-                initializeNewEntry(request, entry,false);
+                initializeNewEntry(request, entry, false);
                 distance = (Double) entry.getValue(IDX_DISTANCE,
                         new Double(0));
                 totalTime = (Double) entry.getValue(IDX_TOTAL_TIME,
@@ -210,14 +216,15 @@ public class GpxTypeHandler extends PointTypeHandler {
                 return "";
             }
 
-	    
-	    String totalFmt = formatTime(totalTime);
-            String movingFmt = formatTime(movingTime);
-            StringBuilder sb = new StringBuilder();
+
+            String        totalFmt  = formatTime(totalTime);
+            String        movingFmt = formatTime(movingTime);
+            StringBuilder sb        = new StringBuilder();
             sb.append(
                 HtmlUtils.importCss(
                     ".gpx-stats td {padding-left:10px; padding-right:10px;}\n.gpx-stats .gpx-stats-data {font-size:150%;    font-weight: bold;}\n.gpx-stats .gpx-stats-labels td {color: gray;}"));
-            sb.append("<table cellpadding=0 cellspacing=0 class=\"gpx-stats\">");
+            sb.append(
+                "<table cellpadding=0 cellspacing=0 class=\"gpx-stats\">");
             sb.append(HtmlUtils.row(HtmlUtils.cols(distance + " miles",
                     gain + " ft", speed + " mph", totalFmt,
                     movingFmt), "class=gpx-stats-data"));
@@ -243,11 +250,13 @@ public class GpxTypeHandler extends PointTypeHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param fromImport _more_
      *
      * @throws Exception _more_
      */
     @Override
-    public void initializeNewEntry(Request request, Entry entry, boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry,
+                                   boolean fromImport)
             throws Exception {
         extractInfo(request, entry, true);
     }
@@ -915,13 +924,17 @@ public class GpxTypeHandler extends PointTypeHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param properties _more_
+     * @param requestProperties _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
     @Override
-    public RecordFile doMakeRecordFile(Request request, Entry entry, Hashtable properties,  Hashtable requestProperties)
+    public RecordFile doMakeRecordFile(Request request, Entry entry,
+                                       Hashtable properties,
+                                       Hashtable requestProperties)
             throws Exception {
         return new GpxRecordFile(this, entry, entry.getResource().getPath());
     }
@@ -937,21 +950,28 @@ public class GpxTypeHandler extends PointTypeHandler {
     public static class GpxRecordFile extends CsvFile {
 
 
-	GpxTypeHandler typeHandler;
+        /**  */
+        GpxTypeHandler typeHandler;
 
-	Entry entry;
+        /**  */
+        Entry entry;
 
         /**
          * _more_
          *
+         *
+         * @param typeHandler _more_
+         * @param entry _more_
          * @param filename _more_
          *
          * @throws IOException _more_
          */
-        public GpxRecordFile(GpxTypeHandler typeHandler, Entry entry, String filename) throws IOException {
+        public GpxRecordFile(GpxTypeHandler typeHandler, Entry entry,
+                             String filename)
+                throws IOException {
             super(filename);
-	    this.typeHandler = typeHandler;
-	    this.entry = entry;
+            this.typeHandler = typeHandler;
+            this.entry       = entry;
         }
 
         /**
@@ -973,10 +993,10 @@ public class GpxTypeHandler extends PointTypeHandler {
             boolean       didTrack = false;
             SimpleDateFormat sdf =
                 new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-	    List<String> extraTags=getExtraTags(this.entry);
-	    List<String> extra = new ArrayList<String>();
+            List<String> extraTags = getExtraTags(this.entry);
+            List<String> extra     = new ArrayList<String>();
 
-	    /*
+            /*
         <extensions>
           <ns3:TrackPointExtension>
             <ns3:atemp>14.0</ns3:atemp>
@@ -984,7 +1004,7 @@ public class GpxTypeHandler extends PointTypeHandler {
             <ns3:cad>0</ns3:cad>
           </ns3:TrackPointExtension>
         </extensions>
-	    */
+            */
 
             for (Element track :
                     ((List<Element>) XmlUtil.findChildren(root,
@@ -998,30 +1018,40 @@ public class GpxTypeHandler extends PointTypeHandler {
                     for (Element pt :
                             ((List<Element>) XmlUtil.findChildren(trackSeg,
                                 GpxUtil.TAG_TRKPT))) {
-			if(extraTags.size()>0) {
-			    extra.clear();
-			    Element extensions = XmlUtil.findChild(pt,"extensions");
-			    if(extensions!=null) {
-				NodeList grandchildren = XmlUtil.getGrandChildren(extensions);
-				for(String tag: extraTags) {
-				    boolean gotIt = false;
-				    for (int i = 0; i < grandchildren.getLength(); i++) {
-					Element ele =(Element) grandchildren.item(i);
-					if(tag.equals(ele.getTagName())) {
-					    extra.add(XmlUtil.getChildText(ele));
-					    gotIt=true;
-					    break;
-					}
-				    }
-				    if(!gotIt) extra.add("NaN");
-				}
-			    }
-			    if(extra.size()==0) {
-				for(String dummy:extraTags)
-				    extra.add("NaN");
-			    }
-			    //			    System.err.println("extra:" + extra);
-			}
+                        if (extraTags.size() > 0) {
+                            extra.clear();
+                            Element extensions = XmlUtil.findChild(pt,
+                                                     "extensions");
+                            if (extensions != null) {
+                                NodeList grandchildren =
+                                    XmlUtil.getGrandChildren(extensions);
+                                for (String tag : extraTags) {
+                                    boolean gotIt = false;
+                                    for (int i = 0;
+                                            i < grandchildren.getLength();
+                                            i++) {
+                                        Element ele =
+                                            (Element) grandchildren.item(i);
+                                        if (tag.equals(ele.getTagName())) {
+                                            extra.add(XmlUtil.getChildText(
+                                                    ele));
+                                            gotIt = true;
+
+                                            break;
+                                        }
+                                    }
+                                    if ( !gotIt) {
+                                        extra.add("NaN");
+                                    }
+                                }
+                            }
+                            if (extra.size() == 0) {
+                                for (String dummy : extraTags) {
+                                    extra.add("NaN");
+                                }
+                            }
+                            //                      System.err.println("extra:" + extra);
+                        }
                         double lat = XmlUtil.getAttribute(pt,
                                          GpxUtil.ATTR_LAT, 0.0);
                         double lon = XmlUtil.getAttribute(pt,
@@ -1034,9 +1064,9 @@ public class GpxTypeHandler extends PointTypeHandler {
                         Date dttm = ((time == null)
                                      ? null
                                      : sdf.parse(time));
-			
-                        trackInfo.setPoint(lat, lon, elevation, dttm, time,extra,
-                                           s);
+
+                        trackInfo.setPoint(lat, lon, elevation, dttm, time,
+                                           extra, s);
                     }
                 }
             }
@@ -1060,36 +1090,36 @@ public class GpxTypeHandler extends PointTypeHandler {
                         Date dttm = ((time == null)
                                      ? null
                                      : sdf.parse(time));
-                        trackInfo.setPoint(lat, lon, elevation, dttm, time,null,
-                                           s);
+                        trackInfo.setPoint(lat, lon, elevation, dttm, time,
+                                           null, s);
                     }
                 } else {
-		    TrackInfo trackInfo = new TrackInfo();
-		    for (Element child :
-			     ((List<Element>) XmlUtil.findChildren(root,
-								   GpxUtil.TAG_WPT))) {
-			String name = XmlUtil.getGrandChildText(child,
-								GpxUtil.TAG_NAME, "");
-			String desc = XmlUtil.getGrandChildText(child,
-								GpxUtil.TAG_DESC, "");
-			String time = XmlUtil.getGrandChildText(child,
-								GpxUtil.TAG_TIME, "");			
-			double lat = XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,
-							  0.0);
-			double lon = XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,
-							  0.0);
+                    TrackInfo trackInfo = new TrackInfo();
+                    for (Element child :
+                            ((List<Element>) XmlUtil.findChildren(root,
+                                GpxUtil.TAG_WPT))) {
+                        String name = XmlUtil.getGrandChildText(child,
+                                          GpxUtil.TAG_NAME, "");
+                        String desc = XmlUtil.getGrandChildText(child,
+                                          GpxUtil.TAG_DESC, "");
+                        String time = XmlUtil.getGrandChildText(child,
+                                          GpxUtil.TAG_TIME, "");
+                        double lat = XmlUtil.getAttribute(child,
+                                         GpxUtil.ATTR_LAT, 0.0);
+                        double lon = XmlUtil.getAttribute(child,
+                                         GpxUtil.ATTR_LON, 0.0);
 
-                        double elevation =
-                            Double.parseDouble(XmlUtil.getGrandChildText(child,
-                                "ele", "0"));
+                        double elevation = Double.parseDouble(
+                                               XmlUtil.getGrandChildText(
+                                                   child, "ele", "0"));
                         Date dttm = ((time == null)
                                      ? null
                                      : sdf.parse(time));
-                        trackInfo.setPoint(lat, lon, elevation, dttm, time,null,
-                                           s);
-		    }
-		}
-	    }
+                        trackInfo.setPoint(lat, lon, elevation, dttm, time,
+                                           null, s);
+                    }
+                }
+            }
 
             //                System.err.println(s);
             ByteArrayInputStream bais =
@@ -1099,40 +1129,55 @@ public class GpxTypeHandler extends PointTypeHandler {
 
         }
 
-	private List<String> getExtraTags(Entry entry) throws Exception {
-	    List<String> tags = extraTagsCache.get(entry.getId());
-	    if(tags ==null) {
-		tags=new ArrayList<String>();				
-		extraTagsCache.put(entry.getId(), tags);
-		Element root = typeHandler.readXml(entry);
-		for (Element track :
-			 ((List<Element>) XmlUtil.findChildren(root,
-							       GpxUtil.TAG_TRK))) {
-		    for (Element trackSeg :
-			     ((List<Element>) XmlUtil.findChildren(track,
-								   GpxUtil.TAG_TRKSEG))) {
-			for (Element pt :
-				 ((List<Element>) XmlUtil.findChildren(trackSeg,
-								       GpxUtil.TAG_TRKPT))) {
-			    Element extensions = XmlUtil.findChild(pt,"extensions");
-			    if(extensions!=null) {
-				NodeList grandchildren = XmlUtil.getGrandChildren(extensions);
-				for (int i = 0; i < grandchildren.getLength(); i++) {
-				    Element ele =(Element) grandchildren.item(i);
-				    String tag = ele.getTagName();
-				    String name = tag;
-				    tags.add(tag);
-				}
-			    }
-			    break;
-			}
-			break;
-		    }
-		    break;
-		}
-	    }
-	    return tags;
-	}
+        /**
+         *
+         * @param entry _more_
+         *  @return _more_
+         *
+         * @throws Exception _more_
+         */
+        private List<String> getExtraTags(Entry entry) throws Exception {
+            List<String> tags = extraTagsCache.get(entry.getId());
+            if (tags == null) {
+                tags = new ArrayList<String>();
+                extraTagsCache.put(entry.getId(), tags);
+                Element root = typeHandler.readXml(entry);
+                for (Element track :
+                        ((List<Element>) XmlUtil.findChildren(root,
+                            GpxUtil.TAG_TRK))) {
+                    for (Element trackSeg :
+                            ((List<Element>) XmlUtil.findChildren(track,
+                                GpxUtil.TAG_TRKSEG))) {
+                        for (Element pt :
+                                ((List<Element>) XmlUtil.findChildren(
+                                    trackSeg, GpxUtil.TAG_TRKPT))) {
+                            Element extensions = XmlUtil.findChild(pt,
+                                                     "extensions");
+                            if (extensions != null) {
+                                NodeList grandchildren =
+                                    XmlUtil.getGrandChildren(extensions);
+                                for (int i = 0; i < grandchildren.getLength();
+                                        i++) {
+                                    Element ele =
+                                        (Element) grandchildren.item(i);
+                                    String tag  = ele.getTagName();
+                                    String name = tag;
+                                    tags.add(tag);
+                                }
+                            }
+
+                            break;
+                        }
+
+                        break;
+                    }
+
+                    break;
+                }
+            }
+
+            return tags;
+        }
 
 
         /**
@@ -1147,10 +1192,10 @@ public class GpxTypeHandler extends PointTypeHandler {
         public VisitInfo prepareToVisit(VisitInfo visitInfo)
                 throws Exception {
             super.prepareToVisit(visitInfo);
-	    List<String> tags=getExtraTags(this.entry);
-	    List<String> fields = new ArrayList<String>();
+            List<String> tags   = getExtraTags(this.entry);
+            List<String> fields = new ArrayList<String>();
 
-            for(String s:new String[] {
+            for (String s : new String[] {
                 makeField(FIELD_DATE, attrType("date"),
                           attrFormat("yyyy-MM-dd'T'HH:mm:ss")),
                 makeField("point_altitude", attrType("double"),
@@ -1172,22 +1217,31 @@ public class GpxTypeHandler extends PointTypeHandler {
                 makeField("latitude", attrType("double"),
                           attrLabel("Latitude")),
                 makeField("longitude", attrType("double"),
-                          attrLabel("Longitude"))}) {
-		fields.add(s);
-	    }
-	    for(String tag: tags) {
-		int index = tag.indexOf(":");
-		if(index>=0) tag = tag.substring(index+1);
-		String label = Utils.makeLabel(tag);
-		//A hack for garmin
-		if(tag.equals("atemp")) label = "Temperature";
-		else if(tag.equals("wtemp")) label = "Temperature";
-		else if(tag.equals("hr")) label = "Heart Rate";
-		else if(tag.equals("cad")) label = "Cadence";				
+                          attrLabel("Longitude"))
+            }) {
+                fields.add(s);
+            }
+            for (String tag : tags) {
+                int index = tag.indexOf(":");
+                if (index >= 0) {
+                    tag = tag.substring(index + 1);
+                }
+                String label = Utils.makeLabel(tag);
+                //A hack for garmin
+                if (tag.equals("atemp")) {
+                    label = "Temperature";
+                } else if (tag.equals("wtemp")) {
+                    label = "Temperature";
+                } else if (tag.equals("hr")) {
+                    label = "Heart Rate";
+                } else if (tag.equals("cad")) {
+                    label = "Cadence";
+                }
                 fields.add(makeField(tag, attrType("double"),
-				     attrLabel(label)));
-	    }
-	    putFields(fields);
+                                     attrLabel(label)));
+            }
+            putFields(fields);
+
             return visitInfo;
         }
     }
@@ -1203,7 +1257,7 @@ public class GpxTypeHandler extends PointTypeHandler {
         return "'" + s + "'";
     }
 
-    
+
 
     /**
      * Class description
@@ -1269,6 +1323,7 @@ public class GpxTypeHandler extends PointTypeHandler {
          * @param elevation _more_
          * @param dttm _more_
          * @param time _more_
+         * @param extra _more_
          * @param s _more_
          *
          * @throws Exception _more_
@@ -1335,13 +1390,13 @@ public class GpxTypeHandler extends PointTypeHandler {
             s.append(lat);
             s.append(",");
             s.append(lon);
-	    if(extra!=null) {
-		for(String v:extra) {
-		    s.append(",");
-		    s.append(v);
-		}
-	    }
-	    s.append("\n");
+            if (extra != null) {
+                for (String v : extra) {
+                    s.append(",");
+                    s.append(v);
+                }
+            }
+            s.append("\n");
         }
 
 

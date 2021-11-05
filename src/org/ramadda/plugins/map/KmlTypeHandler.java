@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.map;
@@ -146,33 +135,6 @@ public class KmlTypeHandler extends GenericTypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-
-    /*
-    @Override
-    public Result getHtmlDisplay(Request request, Entry entry)
-            throws Exception {
-        if ( !Misc.equals(entry.getValue(0, "false"), "true")) {
-            return null;
-        }
-        StringBuffer sb = new StringBuffer();
-        String wiki =
-            "+section title={{name}}\n{{description wikify=\"true\"}}\n+row\n+col-md-8\n{{map width=\"100%\" height=\"450\" viewBounds=\"<bounds>\" details=\"true\" displayDiv=\"mapDisplay\" showSearch=\"true\" }}\n-col\n+col-md-4\n<div style=\"padding-top:20px;\"></div>\n<div id=\"mapDisplay\" style=\"max-height:450px; overflow-y:auto;\"></div>\n-col\n-row\n-section\n";
-        sb.append(getRepository().getWikiManager().wikifyEntry(request,
-                entry, wiki));
-
-        return new Result("", sb);
-    }
-    */
 
     /**
      * _more_

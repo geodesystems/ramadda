@@ -1,28 +1,20 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.gadgets;
 
 
+import org.json.*;
+
+
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 
 import org.ramadda.util.Json;
-import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.WikiUtil;
 
 import org.w3c.dom.*;
@@ -30,11 +22,10 @@ import org.w3c.dom.*;
 import ucar.unidata.util.StringUtil;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Date;
+import java.util.Hashtable;
 
 import java.util.List;
-import org.json.*;
 
 
 /**
@@ -43,7 +34,9 @@ import org.json.*;
  */
 public class TwitterTypeHandler extends GenericTypeHandler {
 
-    private static final String URL = "https://publish.twitter.com/oembed?url=";
+    /**  */
+    private static final String URL =
+        "https://publish.twitter.com/oembed?url=";
 
 
     /**
@@ -61,19 +54,44 @@ public class TwitterTypeHandler extends GenericTypeHandler {
 
 
 
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param fromImport _more_
+     *
+     * @throws Exception _more_
+     */
     @Override
-    public void initializeNewEntry(Request request, Entry entry, boolean fromImport) throws Exception {
-        JSONObject obj = Json.readUrl(URL+entry.getResource().getPath());
-        String html = obj.optString("html","");
-        String name =  StringUtil.findPattern(html,"(Tweets\\s+by\\s+[^<]+)<");
-        if(name!=null) {
+    public void initializeNewEntry(Request request, Entry entry,
+                                   boolean fromImport)
+            throws Exception {
+        JSONObject obj  = Json.readUrl(URL + entry.getResource().getPath());
+        String     html = obj.optString("html", "");
+        String name = StringUtil.findPattern(html,
+                                             "(Tweets\\s+by\\s+[^<]+)<");
+        if (name != null) {
             entry.setName(name);
+
             return;
         }
-        entry.setName("Tweet: " + obj.optString("author_name",entry.getName()));
+        entry.setName("Tweet: "
+                      + obj.optString("author_name", entry.getName()));
     }
 
 
+    /**
+     *
+     * @param wikiUtil _more_
+     * @param request _more_
+     * @param originalEntry _more_
+     * @param entry _more_
+     * @param tag _more_
+     * @param props _more_
+     *  @return _more_
+     *
+     * @throws Exception _more_
+     */
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)
@@ -83,10 +101,13 @@ public class TwitterTypeHandler extends GenericTypeHandler {
                                         entry, tag, props);
         }
         StringBuilder sb = new StringBuilder();
-        sb.append(HtmlUtils.importCss(".timeline-Tweet-text {font-size:16pt !important;}"));
-        JSONObject obj = Json.readUrl(URL+entry.getResource().getPath());
+        sb.append(
+            HtmlUtils.importCss(
+                ".timeline-Tweet-text {font-size:16pt !important;}"));
+        JSONObject obj = Json.readUrl(URL + entry.getResource().getPath());
         System.err.println(obj);
         sb.append(obj.optString("html", ""));
+
         return sb.toString();
     }
 

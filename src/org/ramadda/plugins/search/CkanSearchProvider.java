@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.search;
@@ -155,9 +144,9 @@ public class CkanSearchProvider extends SearchProvider {
         List<Entry> entries = new ArrayList<Entry>();
         String url = HtmlUtils.url(baseUrl + URL_ROOT, "q",
                                    request.getString(ARG_TEXT, ""));
-	url += "&" + HtmlUtils.arg("rows", ""+request.get(ARG_MAX,100));
-	url += "&" + HtmlUtils.arg("start", ""+request.get(ARG_SKIP,0));	
-	System.err.println("ckan url:" + url);
+        url += "&" + HtmlUtils.arg("rows", "" + request.get(ARG_MAX, 100));
+        url += "&" + HtmlUtils.arg("start", "" + request.get(ARG_SKIP, 0));
+        System.err.println("ckan url:" + url);
 
         JSONObject obj  = null;
         String     json = null;
@@ -263,9 +252,10 @@ public class CkanSearchProvider extends SearchProvider {
 
             newEntry.initEntry(title, makeSnippet(desc), parent,
                                getUserManager().getLocalFileUser(),
-                               new Resource(new URL(itemUrl)), "",Entry.DEFAULT_ORDER,
-                               dttm.getTime(), dttm.getTime(),
-                               fromDate.getTime(), toDate.getTime(), null);
+                               new Resource(new URL(itemUrl)), "",
+                               Entry.DEFAULT_ORDER, dttm.getTime(),
+                               dttm.getTime(), fromDate.getTime(),
+                               toDate.getTime(), null);
 
 
             List<String> ids      = new ArrayList<String>();
@@ -290,12 +280,13 @@ public class CkanSearchProvider extends SearchProvider {
             if (resources != null) {
                 for (int resourceIdx = 0; resourceIdx < resources.length();
                         resourceIdx++) {
-                    JSONObject  rObj = resources.getJSONObject(resourceIdx);
-                    String      resourceName = Json.readValue(rObj, "name", "");
-                    String      format = Json.readValue(rObj, "format", "");
-		    if(resourceName.length()==0) {
-			resourceName = "Format: "+ format;
-		    }
+                    JSONObject rObj = resources.getJSONObject(resourceIdx);
+                    String     resourceName = Json.readValue(rObj, "name",
+                                                  "");
+                    String     format = Json.readValue(rObj, "format", "");
+                    if (resourceName.length() == 0) {
+                        resourceName = "Format: " + format;
+                    }
 
                     String      rid = Json.readValue(rObj, "id", "");
                     String rdesc = Json.readValue(rObj, "description", "");
@@ -316,12 +307,13 @@ public class CkanSearchProvider extends SearchProvider {
                                              + TypeHandler.ID_DELIMITER
                                              + rid, typeHandlerToUse);
                     rEntry.setIcon("/search/ckan.png");
-                    rEntry.initEntry(resourceName, makeSnippet(rdesc), newEntry,
+                    rEntry.initEntry(resourceName, makeSnippet(rdesc),
+                                     newEntry,
                                      getUserManager().getLocalFileUser(),
-                                     new Resource(new URL(rUrl)), "",Entry.DEFAULT_ORDER,
-                                     dttm.getTime(), dttm.getTime(),
-                                     fromDate.getTime(), toDate.getTime(),
-                                     null);
+                                     new Resource(new URL(rUrl)), "",
+                                     Entry.DEFAULT_ORDER, dttm.getTime(),
+                                     dttm.getTime(), fromDate.getTime(),
+                                     toDate.getTime(), null);
 
                     ids.add(rEntry.getId());
                     children.add(rEntry);

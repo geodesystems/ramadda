@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.biz;
@@ -50,7 +39,9 @@ public class FredSearchProvider extends SearchProvider {
     /** _more_ */
     private static final String ID = "fred";
 
-    private static final String[] TAGS = {"frequency","units","seasonal_adjustment"};
+    /**  */
+    private static final String[] TAGS = { "frequency", "units",
+                                           "seasonal_adjustment" };
 
 
     /** _more_ */
@@ -137,7 +128,7 @@ public class FredSearchProvider extends SearchProvider {
         int    skip = request.get(ARG_SKIP, 0);
         url = HtmlUtils.url(url, ARG_API_KEY, getApiKey(), ARG_SEARCH_TEXT,
                             text, ARG_LIMIT, "" + max, ARG_OFFSET, "" + skip);
-	System.err.println(getName() + " search url:" + url);
+        System.err.println(getName() + " search url:" + url);
         URLConnection connection = new URL(url).openConnection();
         connection.setRequestProperty("User-Agent", "ramadda");
         InputStream is  = connection.getInputStream();
@@ -152,22 +143,29 @@ public class FredSearchProvider extends SearchProvider {
             getRepository().getTypeHandler("type_fred_series");
 
         for (int childIdx = 0; childIdx < children.getLength(); childIdx++) {
-            Element item     = (Element) children.item(childIdx);
-            String  name     = XmlUtil.getAttribute(item, "title", "");
-            String  desc     = XmlUtil.getAttribute(item, "notes", "");
-            String  id       = XmlUtil.getAttribute(item, "id", "");
-            Date    dttm     =  null;
+            Element item = (Element) children.item(childIdx);
+            String  name = XmlUtil.getAttribute(item, "title", "");
+            String  desc = XmlUtil.getAttribute(item, "notes", "");
+            String  id   = XmlUtil.getAttribute(item, "id", "");
+            Date    dttm = null;
 
 
-	    if(dttm==null)
-		dttm = new Date();
+            if (dttm == null) {
+                dttm = new Date();
+            }
 
-            Date    fromDate = dttm,
-                    toDate   = dttm;
-	    String start = XmlUtil.getAttribute(item, "observation_start",(String)null);
-	    String end = XmlUtil.getAttribute(item, "observation_end",(String)null);	    
-	    if(start!=null) fromDate = Utils.parseDate(start);
-	    if(end!=null) toDate = Utils.parseDate(end);	    
+            Date fromDate = dttm,
+                 toDate   = dttm;
+            String start = XmlUtil.getAttribute(item, "observation_start",
+                               (String) null);
+            String end = XmlUtil.getAttribute(item, "observation_end",
+                             (String) null);
+            if (start != null) {
+                fromDate = Utils.parseDate(start);
+            }
+            if (end != null) {
+                toDate = Utils.parseDate(end);
+            }
             String entryUrl = "https://research.stlouisfed.org/fred2/series/"
                               + id;
             Entry newEntry = new Entry(Repository.ID_PREFIX_SYNTH + getId()
@@ -177,20 +175,21 @@ public class FredSearchProvider extends SearchProvider {
             entries.add(newEntry);
             newEntry.initEntry(name, makeSnippet(desc), parent,
                                getUserManager().getLocalFileUser(),
-                               new Resource(new URL(entryUrl)), "",Entry.DEFAULT_ORDER,
-                               dttm.getTime(), dttm.getTime(),
-                               fromDate.getTime(), toDate.getTime(), values);
-	    for(String attr:TAGS) {
-		String v = XmlUtil.getAttribute(item,attr,(String)null);
-		if(v!=null) {
-		    Metadata metadata =
+                               new Resource(new URL(entryUrl)), "",
+                               Entry.DEFAULT_ORDER, dttm.getTime(),
+                               dttm.getTime(), fromDate.getTime(),
+                               toDate.getTime(), values);
+            for (String attr : TAGS) {
+                String v = XmlUtil.getAttribute(item, attr, (String) null);
+                if (v != null) {
+                    Metadata metadata =
                         new Metadata(getRepository().getGUID(),
-                                     newEntry.getId(), "property",
-                                     false, attr,v, null, null, null);
+                                     newEntry.getId(), "property", false,
+                                     attr, v, null, null, null);
                     getMetadataManager().addMetadata(newEntry, metadata);
-		}
+                }
 
-	    }
+            }
 
 
 

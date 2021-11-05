@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.aws;
@@ -244,9 +233,10 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
                 results.add(new BucketInfo(dirName));
             } else {
                 List<String> toks = StringUtil.splitUpTo(line.trim(), " ", 4);
-                Date dttm = Utils.parseDate(toks.get(0) + "'T'" + toks.get(1));
-                String       size = toks.get(2);
-                String       file = toks.get(3);
+                Date dttm = Utils.parseDate(toks.get(0) + "'T'"
+                                            + toks.get(1));
+                String size = toks.get(2);
+                String file = toks.get(3);
                 results.add(new BucketInfo(file, dttm,
                                            (long) Double.parseDouble(size)));
             }

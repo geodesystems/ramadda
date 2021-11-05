@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.plugins.wiki;
@@ -95,10 +84,17 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
+    /**
+     *
+     * @param entry _more_
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
     public void getTextCorpus(Entry entry, Appendable sb) throws Exception {
-	super.getTextCorpus(entry, sb);
-	sb.append(getEntryText(entry));
-	sb.append("\n");
+        super.getTextCorpus(entry, sb);
+        sb.append(getEntryText(entry));
+        sb.append("\n");
     }
 
 
@@ -273,20 +269,22 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
         super.initializeEntryFromForm(request, entry, parent, newEntry);
         String newText = (String) entry.getValues()[0];
         if ((originalText == null) || !Misc.equals(originalText, newText)) {
-	    /** For now don't keep around the history as problably no human has ever viewed or used it 
-		String desc = "";
-		if (wasNew) {
-                desc = "Created";
-		} else {
-                desc = request.getString(
-		WikiPageOutputHandler.ARG_WIKI_CHANGEDESCRIPTION, "");
-		}
-		
-		getDatabaseManager().executeInsert(Tables.WIKIPAGEHISTORY.INSERT,
-		new Object[] { entry.getId(),
-		request.getUser().getId(), new Date(),
-		desc, newText });
-	    **/
+
+            /**
+             * For now don't keep around the history as problably no human has ever viewed or used it
+             *   String desc = "";
+             *   if (wasNew) {
+             *   desc = "Created";
+             *   } else {
+             *   desc = request.getString(
+             *   WikiPageOutputHandler.ARG_WIKI_CHANGEDESCRIPTION, "");
+             *   }
+             *
+             *   getDatabaseManager().executeInsert(Tables.WIKIPAGEHISTORY.INSERT,
+             *   new Object[] { entry.getId(),
+             *   request.getUser().getId(), new Date(),
+             *   desc, newText });
+             */
             WikiUtil wikiUtil =
                 getWikiManager().initWikiUtil(request,
                     new WikiUtil(Misc.newHashtable(new Object[] {
@@ -295,7 +293,7 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
 
 
             getRepository().getWikiManager().wikifyEntry(request, entry,
-							 wikiUtil, newText, true, null, null, null,true);
+                    wikiUtil, newText, true, null, null, null, true);
 
 
             Hashtable<Entry, Entry> links =
@@ -336,7 +334,7 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
                 }
             }
 
-	}
+        }
 
 
 
@@ -426,17 +424,18 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
         sb.append(HU.formEntry(msgLabel("Title"),
-                                      HU.input(ARG_NAME, name, size)));
+                               HU.input(ARG_NAME, name, size)));
 
         if (entry != null) {
-	    /**
-            sb.append(
-                HU.formEntry(
-                    msgLabel("Edit&nbsp;Summary"),
-                    HU.input(
-                        WikiPageOutputHandler.ARG_WIKI_CHANGEDESCRIPTION, "",
-                        size)));
-	    */
+
+            /**
+             * sb.append(
+             *   HU.formEntry(
+             *       msgLabel("Edit&nbsp;Summary"),
+             *       HU.input(
+             *           WikiPageOutputHandler.ARG_WIKI_CHANGEDESCRIPTION, "",
+             *           size)));
+             */
         }
 
 
@@ -444,19 +443,19 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
 
 
 
-	StringBuilder tmpSB  = new StringBuilder();
-        addWikiEditor(request, entry, tmpSB, formInfo,  ARG_WIKI_TEXTAREA,
+        StringBuilder tmpSB = new StringBuilder();
+        addWikiEditor(request, entry, tmpSB, formInfo, ARG_WIKI_TEXTAREA,
                       wikiText, null, false, 256000, true);
-	sb.append(formEntryTop(request,
-			       getFormLabel(entry, ARG_WIKI_TEXTAREA,
-					    "Wiki Text"), tmpSB.toString()));
+        sb.append(formEntryTop(request,
+                               getFormLabel(entry, ARG_WIKI_TEXTAREA,
+                                            "Wiki Text"), tmpSB.toString()));
 
         addDateToEntryForm(request, sb, entry);
         addAreaWidget(request, entry, sb, formInfo);
-	sb.append(formEntry(request, msgLabel("Order"),
-			    HU.input(ARG_ENTRYORDER,
-					    ((entry != null)
-					     ? entry.getEntryOrder():999),HU.SIZE_5)+" 1-N"));
+        sb.append(formEntry(request, msgLabel("Order"),
+                            HU.input(ARG_ENTRYORDER, ((entry != null)
+                ? entry.getEntryOrder()
+                : 999), HU.SIZE_5) + " 1-N"));
         //super.addToEntryForm(request, sb, parentEntry, entry, formInfo);
     }
 
