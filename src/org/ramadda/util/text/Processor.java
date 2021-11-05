@@ -1,25 +1,20 @@
 /**
- * Copyright (c) 2008-2021 Geode Systems LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *     http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
+*/
 
 package org.ramadda.util.text;
 
 
+import org.apache.commons.codec.language.Soundex;
+import org.apache.commons.text.similarity.JaroWinklerDistance;
+import org.apache.commons.text.similarity.LevenshteinDistance;
+
+import org.ramadda.util.HtmlUtils;
+
+
 
 import org.ramadda.util.IO;
-import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
 import org.ramadda.util.MapProvider;
 import org.ramadda.util.Utils;
@@ -30,14 +25,12 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
+
 import java.net.URL;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-
-import java.util.function.Consumer;
-import java.util.function.BiConsumer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,10 +41,11 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.function.BiConsumer;
+
+import java.util.function.Consumer;
 import java.util.regex.*;
-import org.apache.commons.text.similarity.JaroWinklerDistance;
-import org.apache.commons.codec.language.Soundex;
-import org.apache.commons.text.similarity.LevenshteinDistance;
+
 
 /**
  *
@@ -86,7 +80,7 @@ public abstract class Processor extends CsvOperator {
 
 
 
-    /** the processor chain*/
+    /** the processor chain */
     private Processor nextProcessor;
 
 
@@ -117,21 +111,21 @@ public abstract class Processor extends CsvOperator {
 
 
     /**
-       Set the NextProcessor property.
-
-       @param value The new value for NextProcessor
-    **/
-    public void setNextProcessor (Processor value) {
-	nextProcessor = value;
+     *  Set the NextProcessor property.
+     *
+     *  @param value The new value for NextProcessor
+     */
+    public void setNextProcessor(Processor value) {
+        nextProcessor = value;
     }
 
     /**
-       Get the NextProcessor property.
-
-       @return The NextProcessor
-    **/
-    public Processor getNextProcessor () {
-	return nextProcessor;
+     *  Get the NextProcessor property.
+     *
+     *  @return The NextProcessor
+     */
+    public Processor getNextProcessor() {
+        return nextProcessor;
     }
 
 
@@ -153,7 +147,7 @@ public abstract class Processor extends CsvOperator {
      */
     public static String cleanName(String name) {
         name = name.toLowerCase().replaceAll("\\s+", "_").replaceAll(",",
-								     "_");
+                                             "_");
         name = name.replaceAll("__+", "_");
 
         return name;
@@ -174,7 +168,7 @@ public abstract class Processor extends CsvOperator {
     public static void addFieldDescriptor(String name, Appendable sb,
                                           int index, HashSet<String> seen,
                                           List<Row> rows)
-	throws Exception {
+            throws Exception {
 
         List<String>  toks   = Utils.split(name, ":unit:", true, true);
         String        id     = cleanName(toks.get(0));
@@ -183,7 +177,7 @@ public abstract class Processor extends CsvOperator {
         if (toks.size() > 1) {
             String unit = toks.get(1);
             unit = unit.replaceAll(" / ", "/").replaceAll(",",
-							  "_").replaceAll("\"", "_");
+                                   "_").replaceAll("\"", "_");
             suffix = cleanName(unit);
             extra.append(" unit=\"");
             extra.append(unit);
@@ -258,21 +252,38 @@ public abstract class Processor extends CsvOperator {
         sb.append("  ]");
     }
 
+    /**  */
     private Row extraRow;
+
+    /**  */
     private boolean consumeColumns = false;
 
+    /**
+     *
+     * @param ctx _more_
+     * @param row _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Row handleRow(TextReader ctx, Row row) throws Exception {
-	setHeaderIfNeeded(row);
-	row = processRow(ctx, row);
-	if(row!=null && nextProcessor!=null) {
-	    row = nextProcessor.handleRow(ctx,row);
-	}
-	return row;
+        setHeaderIfNeeded(row);
+        row = processRow(ctx, row);
+        if ((row != null) && (nextProcessor != null)) {
+            row = nextProcessor.handleRow(ctx, row);
+        }
+
+        return row;
     }
 
 
+    /**
+     *
+     * @param b _more_
+     */
     public void setConsumeColumns(boolean b) {
-	consumeColumns = b;
+        consumeColumns = b;
     }
 
     /**
@@ -300,7 +311,7 @@ public abstract class Processor extends CsvOperator {
      * @throws Exception _more_
      */
     public List<Row> processRowReturnList(TextReader ctx, Row row)
-	throws Exception {
+            throws Exception {
         List<Row> l = new ArrayList<Row>();
         Row       r = processRow(ctx, row);
         if (r != null) {
@@ -310,8 +321,16 @@ public abstract class Processor extends CsvOperator {
         return l;
     }
 
+    /**
+     *
+     * @param ctx _more_
+     *
+     * @throws Exception _more_
+     */
     public void finish(TextReader ctx) throws Exception {
-	if(nextProcessor!=null) nextProcessor.finish(ctx);
+        if (nextProcessor != null) {
+            nextProcessor.finish(ctx);
+        }
     }
 
 
@@ -319,7 +338,9 @@ public abstract class Processor extends CsvOperator {
      * _more_
      */
     public void reset() {
-	if(nextProcessor!=null) nextProcessor.reset();
+        if (nextProcessor != null) {
+            nextProcessor.reset();
+        }
     }
 
 
@@ -355,8 +376,8 @@ public abstract class Processor extends CsvOperator {
          */
         public Propper(String flag, String value) {
             this.flag = flag.equals("position")
-		? FLAG_POSITION
-		: FLAG_NONE;
+                        ? FLAG_POSITION
+                        : FLAG_NONE;
             if (this.flag == FLAG_POSITION) {
                 this.value = value.equals("start");
             }
@@ -388,18 +409,36 @@ public abstract class Processor extends CsvOperator {
 
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class Dissector extends Processor {
-	Pattern pattern;
-	List<String> patternNames;
-	int index;
 
-	public Dissector(String col, String pattern) {
-	    super(col);
-	    patternNames = new ArrayList<String>();
-            pattern = Utils.extractPatternNames(pattern,
-						patternNames);
-	    this.pattern = Pattern.compile(pattern);
-	}
+        /**  */
+        Pattern pattern;
+
+        /**  */
+        List<String> patternNames;
+
+        /**  */
+        int index;
+
+        /**
+         *
+         *
+         * @param col _more_
+         * @param pattern _more_
+         */
+        public Dissector(String col, String pattern) {
+            super(col);
+            patternNames = new ArrayList<String>();
+            pattern      = Utils.extractPatternNames(pattern, patternNames);
+            this.pattern = Pattern.compile(pattern);
+        }
 
 
         /**
@@ -411,38 +450,64 @@ public abstract class Processor extends CsvOperator {
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
-		index = getIndex(ctx);
-		for(String name: patternNames)
-		    row.add(name);
-		return row;
+                index = getIndex(ctx);
+                for (String name : patternNames) {
+                    row.add(name);
+                }
+
+                return row;
             }
-	    String v = row.getString(index);
-	    Matcher matcher = pattern.matcher(v);
+            String  v       = row.getString(index);
+            Matcher matcher = pattern.matcher(v);
             if ( !matcher.find()) {
-		for(String name: patternNames)
-		    row.add("");
-	    } else {
-		for(int i=0;i<patternNames.size();i++) {
-		    Object value = matcher.group(i+ 1);
-		    if(value==null) value="";
-		    row.add(value);
-		}
-	    }
+                for (String name : patternNames) {
+                    row.add("");
+                }
+            } else {
+                for (int i = 0; i < patternNames.size(); i++) {
+                    Object value = matcher.group(i + 1);
+                    if (value == null) {
+                        value = "";
+                    }
+                    row.add(value);
+                }
+            }
 
             return row;
         }
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class Downloader extends Processor {
-	private CsvUtil csvUtil;
-	private String suffix;
-	private int index;
-	public Downloader(CsvUtil csvUtil, String col, String suffix) {
-	    super(col);
-	    this.csvUtil = csvUtil;
-	    this.suffix = suffix;
-	}
+
+        /**  */
+        private CsvUtil csvUtil;
+
+        /**  */
+        private String suffix;
+
+        /**  */
+        private int index;
+
+        /**
+         *
+         *
+         * @param csvUtil _more_
+         * @param col _more_
+         * @param suffix _more_
+         */
+        public Downloader(CsvUtil csvUtil, String col, String suffix) {
+            super(col);
+            this.csvUtil = csvUtil;
+            this.suffix  = suffix;
+        }
 
 
         /**
@@ -454,46 +519,72 @@ public abstract class Processor extends CsvOperator {
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
-		index = getIndex(ctx);
-		row.add("File");
-		return row;
-	    }
-	    String value = row.getString(index);
-	    if(suffix.length()==0) suffix = IOUtil.getFileTail(value);
-	    File tmpFile = csvUtil.getTmpFile(suffix);
-	    if(tmpFile==null) {
-		row.add("");
-		return row;
-	    }
-	    if(value.length()==0) {
-		row.add("");
-		return row;
-	    }	    
-	    try {
-		URL url = new URL(value);
-		InputStream input = IO.getInputStream(url);
-		FileOutputStream fos = new FileOutputStream(tmpFile);
-		IOUtil.writeTo(input, fos);
-		IOUtil.close(input);
-		IOUtil.close(fos);
-		row.add(tmpFile.getName());
-	    } catch(Exception exc) {
-		System.err.println("Error downloading URL:" + value +" error:" + exc);
-		row.add("");
-	    }
-	    return row;
+                index = getIndex(ctx);
+                row.add("File");
 
-	}
+                return row;
+            }
+            String value = row.getString(index);
+            if (suffix.length() == 0) {
+                suffix = IOUtil.getFileTail(value);
+            }
+            File tmpFile = csvUtil.getTmpFile(suffix);
+            if (tmpFile == null) {
+                row.add("");
+
+                return row;
+            }
+            if (value.length() == 0) {
+                row.add("");
+
+                return row;
+            }
+            try {
+                URL              url   = new URL(value);
+                InputStream      input = IO.getInputStream(url);
+                FileOutputStream fos   = new FileOutputStream(tmpFile);
+                IOUtil.writeTo(input, fos);
+                IOUtil.close(input);
+                IOUtil.close(fos);
+                row.add(tmpFile.getName());
+            } catch (Exception exc) {
+                System.err.println("Error downloading URL:" + value
+                                   + " error:" + exc);
+                row.add("");
+            }
+
+            return row;
+
+        }
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class KeyValue extends Processor {
-	private List<String> keys;
-	private int index =-1;
-	private String extraId;
-	public KeyValue(String col) {
-	    super(col);
-	}
+
+        /**  */
+        private List<String> keys;
+
+        /**  */
+        private int index = -1;
+
+        /**  */
+        private String extraId;
+
+        /**
+         *
+         *
+         * @param col _more_
+         */
+        public KeyValue(String col) {
+            super(col);
+        }
 
 
         /**
@@ -501,55 +592,88 @@ public abstract class Processor extends CsvOperator {
          * @param row _more_
          *
          * @return _more_
+         *
+         * @throws Exception _more_
          */
         @Override
-	public Row processRow(TextReader ctx, Row row)
-            throws Exception {
-	    if(Misc.equals(row.getId(), extraId)) return row;
-	    rowCnt++;
-	    if(index==-1) index = getIndex(ctx);
-	    if(rowCnt==1) return null;
-	    String v = row.getString(index);
-	    Hashtable<String,String> props = Utils.parseKeyValue(v);
-	    Row header = null;
-	    if(keys==null) {
-		keys = new ArrayList<String>();
-		for (Enumeration k = props.keys(); k.hasMoreElements(); ) {
-		    String key = (String) k.nextElement();
-		    keys.add(key);
-		}
-		header =  new Row();
-		Collections.sort(keys);
-		for(String key: keys)
-		    header.add(key);
-	    }
+        public Row processRow(TextReader ctx, Row row) throws Exception {
+            if (Misc.equals(row.getId(), extraId)) {
+                return row;
+            }
+            rowCnt++;
+            if (index == -1) {
+                index = getIndex(ctx);
+            }
+            if (rowCnt == 1) {
+                return null;
+            }
+            String                    v      = row.getString(index);
+            Hashtable<String, String> props  = Utils.parseKeyValue(v);
+            Row                       header = null;
+            if (keys == null) {
+                keys = new ArrayList<String>();
+                for (Enumeration k = props.keys(); k.hasMoreElements(); ) {
+                    String key = (String) k.nextElement();
+                    keys.add(key);
+                }
+                header = new Row();
+                Collections.sort(keys);
+                for (String key : keys) {
+                    header.add(key);
+                }
+            }
 
-	    Row newRow = new Row();
-	    for(String key: keys) {
-		String value = props.get(key);
-		if(value==null) value = "";
-		newRow.add(value);
-	    }
-	    if(header!=null) {
-		extraId = newRow.getId();
-		ctx.setExtraRow(newRow);
-		Row tmp = header;
-		header = null;
-		return tmp;
-	    }
-	    return newRow;
+            Row newRow = new Row();
+            for (String key : keys) {
+                String value = props.get(key);
+                if (value == null) {
+                    value = "";
+                }
+                newRow.add(value);
+            }
+            if (header != null) {
+                extraId = newRow.getId();
+                ctx.setExtraRow(newRow);
+                Row tmp = header;
+                header = null;
+
+                return tmp;
+            }
+
+            return newRow;
         }
     }
-    
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class First extends Processor {
-	private int index = -1;
-	private String name;
-	private int number;
-	public First(String col,String name, String num) {
-	    super(col);
-	    this.name = name;
-	    number = Integer.parseInt(num);
-	}
+
+        /**  */
+        private int index = -1;
+
+        /**  */
+        private String name;
+
+        /**  */
+        private int number;
+
+        /**
+         *
+         *
+         * @param col _more_
+         * @param name _more_
+         * @param num _more_
+         */
+        public First(String col, String name, String num) {
+            super(col);
+            this.name = name;
+            number    = Integer.parseInt(num);
+        }
 
 
         /**
@@ -557,31 +681,60 @@ public abstract class Processor extends CsvOperator {
          * @param row _more_
          *
          * @return _more_
+         *
+         * @throws Exception _more_
          */
         @Override
-	public Row processRow(TextReader ctx, Row row)
-            throws Exception {
-	    if(rowCnt++==0) {
-		row.add(name);
-		return row;
-	    }
-	    if(index==-1) index =  getIndex(ctx);
-	    String v = row.getString(index);
-	    if(v.length()<number) row.add(v);
-	    else row.add(v.substring(0,number));
-	    return row;
+        public Row processRow(TextReader ctx, Row row) throws Exception {
+            if (rowCnt++ == 0) {
+                row.add(name);
+
+                return row;
+            }
+            if (index == -1) {
+                index = getIndex(ctx);
+            }
+            String v = row.getString(index);
+            if (v.length() < number) {
+                row.add(v);
+            } else {
+                row.add(v.substring(0, number));
+            }
+
+            return row;
         }
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class Last extends Processor {
-	private int index = -1;
-	private String name;
-	private int number;
-	public Last(String col,String name, String num) {
-	    super(col);
-	    this.name = name;
-	    number = Integer.parseInt(num);
-	}
+
+        /**  */
+        private int index = -1;
+
+        /**  */
+        private String name;
+
+        /**  */
+        private int number;
+
+        /**
+         *
+         *
+         * @param col _more_
+         * @param name _more_
+         * @param num _more_
+         */
+        public Last(String col, String name, String num) {
+            super(col);
+            this.name = name;
+            number    = Integer.parseInt(num);
+        }
 
 
         /**
@@ -589,38 +742,67 @@ public abstract class Processor extends CsvOperator {
          * @param row _more_
          *
          * @return _more_
+         *
+         * @throws Exception _more_
          */
         @Override
-	public Row processRow(TextReader ctx, Row row)
-            throws Exception {
-	    if(rowCnt++==0) {
-		row.add(name);
-		return row;
-	    }
-	    if(index==-1) index =  getIndex(ctx);
-	    String v = row.getString(index);
-	    int idx = v.length()-number;
-	    if(idx<0) row.add(v);
-	    else {
-		row.add(v.substring(idx));
-	    }
-	    return row;
+        public Row processRow(TextReader ctx, Row row) throws Exception {
+            if (rowCnt++ == 0) {
+                row.add(name);
+
+                return row;
+            }
+            if (index == -1) {
+                index = getIndex(ctx);
+            }
+            String v   = row.getString(index);
+            int    idx = v.length() - number;
+            if (idx < 0) {
+                row.add(v);
+            } else {
+                row.add(v.substring(idx));
+            }
+
+            return row;
         }
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class Between extends Processor {
-	private int index = -1;
-	private String name;
-	private int start;
-	private int end;    
 
-	public Between(String col,String name, String start, String end) {
-	    super(col);
-	    this.name = name;
-	    this.start = Integer.parseInt(start);
-	    this.end = Integer.parseInt(end);	    
-	}
+        /**  */
+        private int index = -1;
+
+        /**  */
+        private String name;
+
+        /**  */
+        private int start;
+
+        /**  */
+        private int end;
+
+        /**
+         *
+         *
+         * @param col _more_
+         * @param name _more_
+         * @param start _more_
+         * @param end _more_
+         */
+        public Between(String col, String name, String start, String end) {
+            super(col);
+            this.name  = name;
+            this.start = Integer.parseInt(start);
+            this.end   = Integer.parseInt(end);
+        }
 
 
         /**
@@ -628,29 +810,34 @@ public abstract class Processor extends CsvOperator {
          * @param row _more_
          *
          * @return _more_
+         *
+         * @throws Exception _more_
          */
         @Override
-	public Row processRow(TextReader ctx, Row row)
-            throws Exception {
-	    if(rowCnt++==0) {
-		row.add(name);
-		return row;
-	    }
-	    if(index==-1) index =  getIndex(ctx);
-	    String v = row.getString(index);
-	    if(start>=v.length()) {
-		row.add("");
-	    } else {
-		if(end>=v.length()) {
-		    row.add(v.substring(start));
-		} else {
-		    row.add(v.substring(start,end+1));
-		}
-	    }
-	    return row;
+        public Row processRow(TextReader ctx, Row row) throws Exception {
+            if (rowCnt++ == 0) {
+                row.add(name);
+
+                return row;
+            }
+            if (index == -1) {
+                index = getIndex(ctx);
+            }
+            String v = row.getString(index);
+            if (start >= v.length()) {
+                row.add("");
+            } else {
+                if (end >= v.length()) {
+                    row.add(v.substring(start));
+                } else {
+                    row.add(v.substring(start, end + 1));
+                }
+            }
+
+            return row;
         }
     }
-    
+
 
 
 
@@ -683,6 +870,7 @@ public abstract class Processor extends CsvOperator {
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             System.err.println("#" + (rowCnt++) + " row:" + row);
+
             return row;
         }
     }
@@ -696,21 +884,30 @@ public abstract class Processor extends CsvOperator {
      * @author         Enter your name here...
      */
     public static class Dots extends Processor {
-	int every;
+
+        /**  */
+        int every;
 
         /**
          * _more_
+         *
+         * @param every _more_
          */
         public Dots(int every) {
-	    this.every = every;
-	}
+            this.every = every;
+        }
 
-	@Override
-        public void finish(TextReader ctx) 
-	    throws Exception {
-	    super.finish(ctx);
-	    System.err.print("\n");
-	}
+        /**
+         *
+         * @param ctx _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public void finish(TextReader ctx) throws Exception {
+            super.finish(ctx);
+            System.err.print("\n");
+        }
 
         /**
          * _more_
@@ -725,12 +922,13 @@ public abstract class Processor extends CsvOperator {
          */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
-	    rowCnt++;
-	    if(every==0) {
-		System.err.println(rowCnt);
-	    } else  if((rowCnt)%every == 0) {
-		System.err.print("."); 
-	    }
+            rowCnt++;
+            if (every == 0) {
+                System.err.println(rowCnt);
+            } else if ((rowCnt) % every == 0) {
+                System.err.print(".");
+            }
+
             return row;
         }
     }
@@ -743,24 +941,39 @@ public abstract class Processor extends CsvOperator {
      * @author         Enter your name here...
      */
     public static class If extends Processor {
-	CsvUtil csvUtil;
-	TextReader predicate;
-	TextReader ctx;
+
+        /**  */
+        CsvUtil csvUtil;
+
+        /**  */
+        TextReader predicate;
+
+        /**  */
+        TextReader ctx;
 
         /**
          * _more_
+         *
+         * @param csvUtil _more_
+         * @param predicate _more_
+         * @param ctx _more_
          */
         public If(CsvUtil csvUtil, TextReader predicate, TextReader ctx) {
-	    this.csvUtil = csvUtil;
-	    this.predicate = predicate;
-	    this.ctx = ctx;
-	}
+            this.csvUtil   = csvUtil;
+            this.predicate = predicate;
+            this.ctx       = ctx;
+        }
 
-	@Override
-        public void finish(TextReader ctx) 
-	    throws Exception {
-	    super.finish(ctx);
-	}
+        /**
+         *
+         * @param ctx _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public void finish(TextReader ctx) throws Exception {
+            super.finish(ctx);
+        }
 
         /**
          * _more_
@@ -775,17 +988,22 @@ public abstract class Processor extends CsvOperator {
          */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
-	    Row tmp =  predicate.processRow(csvUtil,row);
-	    if(tmp==null) return row;
-	    row=tmp;
-	    boolean debug = false;
-	    debug = rowCnt>1;
-	    if(debug)
-		System.err.println("IF:" + row);
-	    row =  this.ctx.processRow(csvUtil,row);
-	    if(debug)
-		System.err.println("After:" + row);
-	    return row;
+            Row tmp = predicate.processRow(csvUtil, row);
+            if (tmp == null) {
+                return row;
+            }
+            row = tmp;
+            boolean debug = false;
+            debug = rowCnt > 1;
+            if (debug) {
+                System.err.println("IF:" + row);
+            }
+            row = this.ctx.processRow(csvUtil, row);
+            if (debug) {
+                System.err.println("After:" + row);
+            }
+
+            return row;
         }
     }
 
@@ -827,7 +1045,7 @@ public abstract class Processor extends CsvOperator {
             }
             if (row.size() != cnt) {
                 throw new IllegalArgumentException("Bad column count:"
-						   + row.size() + " row:" + row);
+                        + row.size() + " row:" + row);
             }
 
             return row;
@@ -952,7 +1170,7 @@ public abstract class Processor extends CsvOperator {
          */
         private void handleHeaderRow(PrintWriter writer, Row header,
                                      List exValues)
-	    throws Exception {
+                throws Exception {
             StringBuilder   sb     = new StringBuilder();
             HashSet<String> seen   = new HashSet<String>();
             List            values = header.getValues();
@@ -964,8 +1182,8 @@ public abstract class Processor extends CsvOperator {
                     sb.append("#fields=");
                 }
                 String name = (headerValue == null)
-		    ? "field"
-		    : headerValue.toString();
+                              ? "field"
+                              : headerValue.toString();
                 addFieldDescriptor(name, sb, i, seen, null /*rows*/);
             }
             writer.println(sb.toString());
@@ -975,17 +1193,13 @@ public abstract class Processor extends CsvOperator {
         /**
          * _more_
          *
+         *
          * @param ctx _more_
-         * @param rows _more_
-         *
-         * @return _more_
-         *
          * @throws Exception _more_
          */
         @Override
-        public void finish(TextReader ctx)
-	    throws Exception {
-	    super.finish(ctx);
+        public void finish(TextReader ctx) throws Exception {
+            super.finish(ctx);
             debug("finish");
             if (suffix != null) {
                 ctx.getWriter().print(suffix);
@@ -1005,7 +1219,7 @@ public abstract class Processor extends CsvOperator {
          * @throws Exception _more_
          */
         private void handleRow(TextReader ctx, PrintWriter writer, Row row)
-	    throws Exception {
+                throws Exception {
             boolean first = rowCnt++ == 0;
             if (first && (prefix != null)) {
                 writer.print(prefix);
@@ -1028,16 +1242,15 @@ public abstract class Processor extends CsvOperator {
                             sv = sv.trim();
                         }
                         if ((first && sv.startsWith("#"))
-			    || ((colIdx == 0)
-				&& (ctx.getCommentChar() != null)
-				&& sv.startsWith(
-						 ctx.getCommentChar()))) {
+                                || ((colIdx == 0)
+                                    && (ctx.getCommentChar() != null)
+                                    && sv.startsWith(ctx.getCommentChar()))) {
                             escapeColumns = false;
                         }
                         boolean addQuote = false;
                         if (escapeColumns) {
                             addQuote = (sv.indexOf(",") >= 0)
-				|| (sv.indexOf("\n") >= 0);
+                                       || (sv.indexOf("\n") >= 0);
                             if (sv.indexOf("\"") >= 0) {
                                 addQuote = true;
                                 sv       = sv.replaceAll("\"", "\"\"");
@@ -1055,7 +1268,7 @@ public abstract class Processor extends CsvOperator {
                     }
                 } else {
                     theTemplate = theTemplate.replace("${" + colIdx + "}",
-						      v.toString());
+                            v.toString());
                 }
             }
             if (theTemplate == null) {
@@ -1080,7 +1293,7 @@ public abstract class Processor extends CsvOperator {
          */
         public void writeCsv(TextReader ctx, PrintWriter writer,
                              List<Row> rows)
-	    throws Exception {
+                throws Exception {
             if (prefix != null) {
                 writer.print(prefix);
             }
@@ -1117,11 +1330,11 @@ public abstract class Processor extends CsvOperator {
      *
      *
      * @version        $version$, Sat, Apr 3, '21
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class ToJson extends Processor {
 
-        /** _more_          */
+        /** _more_ */
         private Row headerRow;
 
         /**
@@ -1144,9 +1357,11 @@ public abstract class Processor extends CsvOperator {
             if (headerRow == null) {
                 headerRow = row;
                 ctx.getWriter().println("[");
+
                 return row;
             }
-	    handleRow(ctx, ctx.getWriter(), row);
+            handleRow(ctx, ctx.getWriter(), row);
+
             return row;
         }
 
@@ -1155,17 +1370,13 @@ public abstract class Processor extends CsvOperator {
         /**
          * _more_
          *
+         *
          * @param ctx _more_
-         * @param rows _more_
-         *
-         * @return _more_
-         *
          * @throws Exception _more_
          */
         @Override
-        public void finish(TextReader ctx) 
-	    throws Exception {
-	    super.finish(ctx);
+        public void finish(TextReader ctx) throws Exception {
+            super.finish(ctx);
             ctx.getWriter().println("]");
         }
 
@@ -1181,7 +1392,7 @@ public abstract class Processor extends CsvOperator {
          * @throws Exception _more_
          */
         private void handleRow(TextReader ctx, PrintWriter writer, Row row)
-	    throws Exception {
+                throws Exception {
             rowCnt++;
             if (rowCnt > 1) {
                 writer.println(",");
@@ -1218,7 +1429,8 @@ public abstract class Processor extends CsvOperator {
         /** _more_ */
         private Hashtable<String, String> props;
 
-	private List<String[]> patternProps = new ArrayList<String[]>();
+        /**  */
+        private List<String[]> patternProps = new ArrayList<String[]>();
 
         /** _more_ */
         private Row row1;
@@ -1234,24 +1446,31 @@ public abstract class Processor extends CsvOperator {
          */
         public DbXml(Hashtable<String, String> props) {
             this.props = props;
-	    for (Enumeration k = props.keys(); k.hasMoreElements(); ) {
-		String key = (String) k.nextElement();
-		if(containsRegExp(key)) 
-		    patternProps.add(new String[]{key, props.get(key)});
-	    }
+            for (Enumeration k = props.keys(); k.hasMoreElements(); ) {
+                String key = (String) k.nextElement();
+                if (containsRegExp(key)) {
+                    patternProps.add(new String[] { key, props.get(key) });
+                }
+            }
         }
 
-	private  static boolean containsRegExp(String patternString) {
-	    return ((patternString.indexOf('^') >= 0)
-		    || (patternString.indexOf('*') >= 0)
-		    || (patternString.indexOf('|') >= 0)
-		    || (patternString.indexOf('(') >= 0)
-		    || (patternString.indexOf('$') >= 0)
-		    || (patternString.indexOf('?') >= 0)
-		    || ((patternString.indexOf('[') >= 0)
-			&& (patternString.indexOf(']')
-			    >= 0)) || (patternString.indexOf('+') >= 0));
-	}
+        /**
+         *
+         * @param patternString _more_
+         *
+         * @return _more_
+         */
+        private static boolean containsRegExp(String patternString) {
+            return ((patternString.indexOf('^') >= 0)
+                    || (patternString.indexOf('*') >= 0)
+                    || (patternString.indexOf('|') >= 0)
+                    || (patternString.indexOf('(') >= 0)
+                    || (patternString.indexOf('$') >= 0)
+                    || (patternString.indexOf('?') >= 0)
+                    || ((patternString.indexOf('[') >= 0)
+                        && (patternString.indexOf(']')
+                            >= 0)) || (patternString.indexOf('+') >= 0));
+        }
 
 
         /**
@@ -1263,17 +1482,30 @@ public abstract class Processor extends CsvOperator {
             return tableId;
         }
 
-	public  String getDbProp(String colId, String prop, String dflt) {
-	    String v =  CsvUtil.getDbProp(props, colId,prop,(String) null);
-	    if(v!=null) return v;
-	    String key   = (colId == null)
-		? prop
-		: colId + "." + prop;
-	    for(String[]tuple:patternProps) {
-		if(key.matches(tuple[0])) return tuple[1];
-	    }
-	    return dflt;
-	}
+        /**
+         *
+         * @param colId _more_
+         * @param prop _more_
+         * @param dflt _more_
+         *
+         * @return _more_
+         */
+        public String getDbProp(String colId, String prop, String dflt) {
+            String v = CsvUtil.getDbProp(props, colId, prop, (String) null);
+            if (v != null) {
+                return v;
+            }
+            String key = (colId == null)
+                         ? prop
+                         : colId + "." + prop;
+            for (String[] tuple : patternProps) {
+                if (key.matches(tuple[0])) {
+                    return tuple[1];
+                }
+            }
+
+            return dflt;
+        }
 
 
         /**
@@ -1303,25 +1535,24 @@ public abstract class Processor extends CsvOperator {
             String      file   = reader.getInputFile();
             PrintWriter writer = null;
             String      name = IOUtil.stripExtension(Utils.getFileTail(file));
-            name = getDbProp( "table", "name", name);
+            name = getDbProp("table", "name", name);
 
             String label = Utils.makeLabel(name);
-            label   = getDbProp( "table", "label", label);
+            label   = getDbProp("table", "label", label);
             label   = label.replaceAll("\n", " ").replaceAll("\r", " ");
             tableId = Utils.makeLabel(name).toLowerCase().replaceAll(" ",
-								     "_");
+                                      "_");
 
-            tableId = getDbProp( "table", "id", tableId);
+            tableId = getDbProp("table", "id", tableId);
 
-            String labels = getDbProp( "table", "labelColumns",
-					      "");
+            String labels = getDbProp("table", "labelColumns", "");
 
-            File output = reader.getOutputFile();
+            File   output = reader.getOutputFile();
             if (output != null) {
                 reader.setOutputFile(
-				     new File(
-					      IOUtil.joinDir(
-							     output.getParentFile(), tableId + "db.xml")));
+                    new File(
+                        IOUtil.joinDir(
+                            output.getParentFile(), tableId + "db.xml")));
             }
 
             if (writer == null) {
@@ -1330,57 +1561,66 @@ public abstract class Processor extends CsvOperator {
             }
 
 
-	    String tableAttrs = XmlUtil.attrs("id", tableId, "name", label);
-	    if(labels.length()>0) tableAttrs+=XmlUtil.attrs("labelColumns", labels);
+            String tableAttrs = XmlUtil.attrs("id", tableId, "name", label);
+            if (labels.length() > 0) {
+                tableAttrs += XmlUtil.attrs("labelColumns", labels);
+            }
 
-	    for(String prop: new String[]{"defaultView", "defaultOrder","icon","showEntryCreate","showFeedView","showDateView","showChartView"}) {
-		String v   = getDbProp( "table", prop, (String)null);
-		if(v!=null)
-		    tableAttrs+=XmlUtil.attr(prop,v);
-	    }
+            for (String prop : new String[] {
+                "defaultView", "defaultOrder", "icon", "showEntryCreate",
+                "showFeedView", "showDateView", "showChartView"
+            }) {
+                String v = getDbProp("table", prop, (String) null);
+                if (v != null) {
+                    tableAttrs += XmlUtil.attr(prop, v);
+                }
+            }
 
 
 
 
 
-            writer.println(
-			   XmlUtil.openTag(
-					   "table", tableAttrs));
+            writer.println(XmlUtil.openTag("table", tableAttrs));
 
-	    for(String prop: new String[]{"searchForLabel", "addressTemplate","mapLabelTemplate","mapLabelTemplatePrint"}) {
-		String v= getDbProp( "table", prop, (String)null);
-		if(v!=null) {
-		    writer.println("<" + prop +"><![CDATA[" + v +"]]></"+ prop+">");
-		}
-	    }
+            for (String prop : new String[] { "searchForLabel",
+                    "addressTemplate", "mapLabelTemplate",
+                    "mapLabelTemplatePrint" }) {
+                String v = getDbProp("table", prop, (String) null);
+                if (v != null) {
+                    writer.println("<" + prop + "><![CDATA[" + v + "]]></"
+                                   + prop + ">");
+                }
+            }
 
-	    String formjs = (String)props.get("table.formjs");
-	    if(formjs!=null) {
-		writer.println("<formjs><![CDATA[");
-		if(formjs.startsWith("file:")) {
-		    String jsfile = formjs.substring("file:".length());
-		    if(!IO.okToReadFrom(jsfile)) {
-			throw new RuntimeException("Cannot read file:" + jsfile);
-		    }
-		    formjs = IO.readContents(jsfile);
-		}
-		writer.println(formjs);
-		writer.println("]]></formjs>");
+            String formjs = (String) props.get("table.formjs");
+            if (formjs != null) {
+                writer.println("<formjs><![CDATA[");
+                if (formjs.startsWith("file:")) {
+                    String jsfile = formjs.substring("file:".length());
+                    if ( !IO.okToReadFrom(jsfile)) {
+                        throw new RuntimeException("Cannot read file:"
+                                + jsfile);
+                    }
+                    formjs = IO.readContents(jsfile);
+                }
+                writer.println(formjs);
+                writer.println("]]></formjs>");
 
-	    }
+            }
 
-	    String include = (String)props.get("table.include");
-	    if(include!=null) {
-		if(include.startsWith("file:")) {
-		    String jsfile = include.substring("file:".length());
-		    if(!IO.okToReadFrom(jsfile)) {
-			throw new RuntimeException("Cannot read file:" + jsfile);
-		    }
-		    include = IO.readContents(jsfile);
-		}
-		writer.println(include);
-	    }
-	    
+            String include = (String) props.get("table.include");
+            if (include != null) {
+                if (include.startsWith("file:")) {
+                    String jsfile = include.substring("file:".length());
+                    if ( !IO.okToReadFrom(jsfile)) {
+                        throw new RuntimeException("Cannot read file:"
+                                + jsfile);
+                    }
+                    include = IO.readContents(jsfile);
+                }
+                writer.println(include);
+            }
+
 
 
             List<Row> samples = new ArrayList<Row>();
@@ -1393,7 +1633,7 @@ public abstract class Processor extends CsvOperator {
             for (Row sample : samples) {
                 //                System.err.println("sample:" + sample);
                 for (int colIdx = 0; colIdx < sample.getValues().size();
-		     colIdx++) {
+                        colIdx++) {
                     Object value = sample.getValues().get(colIdx);
                     try {
                         Double.parseDouble(value.toString());
@@ -1403,44 +1643,42 @@ public abstract class Processor extends CsvOperator {
                 }
             }
 
-            boolean dfltDoStats = getDbProp( "table",
-						    "dostats", "false").equals("true");
-            boolean dfltCanSearch = getDbProp( "table",
-						      "cansearch", "true").equals("true");
-            boolean dfltCanSort = getDbProp( "table",
-						      "cansort", "false").equals("true");	    
-            boolean dfltCanList = getDbProp( "table",
-						    "canlist", "true").equals("true");
-            String dfltChangeType = getDbProp( "table",
-						      "changetype", "false");
+            boolean dfltDoStats = getDbProp("table", "dostats",
+                                            "false").equals("true");
+            boolean dfltCanSearch = getDbProp("table", "cansearch",
+                                        "true").equals("true");
+            boolean dfltCanSort = getDbProp("table", "cansort",
+                                            "false").equals("true");
+            boolean dfltCanList = getDbProp("table", "canlist",
+                                            "true").equals("true");
+            String dfltChangeType = getDbProp("table", "changetype", "false");
 
-            String format = getDbProp( "table", "format",
-					      "yyyy-MM-dd HH:mm");
+            String format = getDbProp("table", "format", "yyyy-MM-dd HH:mm");
             for (int colIdx = 0; colIdx < row1.getValues().size(); colIdx++) {
                 Object col   = row1.getValues().get(colIdx);
                 String colId = makeID(col);
-		if(colId.length()==0) continue;
-                colId = getDbProp( colId, "id", colId);
+                if (colId.length() == 0) {
+                    continue;
+                }
+                colId = getDbProp(colId, "id", colId);
                 label = Utils.makeLabel(colId);
 
 
-                String suffix = getDbProp( colId, "suffix",(String)null);
-                String help = getDbProp( colId, "help",(String)null);		
-		
+                String suffix = getDbProp(colId, "suffix", (String) null);
+                String help   = getDbProp(colId, "help", (String) null);
 
-                label = getDbProp( colId, "label", label);
+
+                label = getDbProp(colId, "label", label);
                 label = label.replaceAll("\n", " ").replaceAll("\r", " ");
 
-                if (getDbProp( colId, "skip",
-                                      "false").equals("true")) {
+                if (getDbProp(colId, "skip", "false").equals("true")) {
                     continue;
                 }
 
 
 
                 boolean isNumber = isNumeric[colIdx];
-                String type = getDbProp( "table", "type",
-						"string");
+                String  type     = getDbProp("table", "type", "string");
                 if (isNumber) {
                     type = "double";
                 }
@@ -1448,48 +1686,68 @@ public abstract class Processor extends CsvOperator {
                 StringBuilder attrs     = new StringBuilder();
                 boolean       canList   = dfltCanList;
                 boolean       canSearch = dfltCanSearch;
-                boolean       canSort = dfltCanSort;		
+                boolean       canSort   = dfltCanSort;
 
                 attrs.append(XmlUtil.attrs(new String[] { "name", colId }));
-		if(suffix!=null)
-		    attrs.append(XmlUtil.attrs(new String[] { "suffix", suffix }));
-		if(help!=null)
-		    attrs.append(XmlUtil.attrs(new String[] { "help", help }));		
-
-                String placeholderMin = getDbProp( colId, "placeholderMin",(String)null);		
-		if(placeholderMin!=null)
-		    attrs.append(XmlUtil.attrs(new String[] { "placeholderMin", placeholderMin }));
-                String placeholderMax = getDbProp( colId, "placeholderMax",(String)null);		
-		if(placeholderMax!=null)
-		    attrs.append(XmlUtil.attrs(new String[] { "placeholderMax", placeholderMax }));
-		for(String prop:new String[]{"addnot","unit","addfiletosearch"}) {
-		    String v = getDbProp( colId, prop,(String)null);		
-		    if(v!=null)
-			attrs.append(XmlUtil.attrs(new String[] { prop,v}));
-		}
-
-                String placeholder = getDbProp( colId, "placeholder",(String)null);		
-		if(placeholder!=null)
-		    attrs.append(XmlUtil.attrs(new String[] { "placeholder", placeholder }));						
-                String numberOfSearchWidgets = getDbProp( colId, "numberOfSearchWidgets", (String)null);
-		if(numberOfSearchWidgets!=null) {
-                    attrs.append(XmlUtil.attrs(new String[] { "numberOfSearchWidgets",
-							      numberOfSearchWidgets }));
-
-		}
-                if (getDbProp( colId, "changetype",
-                                      dfltChangeType).equals("true")) {
-                    attrs.append(XmlUtil.attrs(new String[] { "changetype",
-							      "true" }));
+                if (suffix != null) {
+                    attrs.append(XmlUtil.attrs(new String[] { "suffix",
+                            suffix }));
                 }
-                String size = getDbProp( colId, "size", null);
+                if (help != null) {
+                    attrs.append(XmlUtil.attrs(new String[] { "help",
+                            help }));
+                }
+
+                String placeholderMin = getDbProp(colId, "placeholderMin",
+                                            (String) null);
+                if (placeholderMin != null) {
+                    attrs.append(XmlUtil.attrs(new String[] {
+                        "placeholderMin",
+                        placeholderMin }));
+                }
+                String placeholderMax = getDbProp(colId, "placeholderMax",
+                                            (String) null);
+                if (placeholderMax != null) {
+                    attrs.append(XmlUtil.attrs(new String[] {
+                        "placeholderMax",
+                        placeholderMax }));
+                }
+                for (String prop : new String[] { "addnot", "unit",
+                        "addfiletosearch" }) {
+                    String v = getDbProp(colId, prop, (String) null);
+                    if (v != null) {
+                        attrs.append(XmlUtil.attrs(new String[] { prop, v }));
+                    }
+                }
+
+                String placeholder = getDbProp(colId, "placeholder",
+                                         (String) null);
+                if (placeholder != null) {
+                    attrs.append(XmlUtil.attrs(new String[] { "placeholder",
+                            placeholder }));
+                }
+                String numberOfSearchWidgets = getDbProp(colId,
+                                                   "numberOfSearchWidgets",
+                                                   (String) null);
+                if (numberOfSearchWidgets != null) {
+                    attrs.append(XmlUtil.attrs(new String[] {
+                        "numberOfSearchWidgets",
+                        numberOfSearchWidgets }));
+
+                }
+                if (getDbProp(colId, "changetype",
+                              dfltChangeType).equals("true")) {
+                    attrs.append(XmlUtil.attrs(new String[] { "changetype",
+                            "true" }));
+                }
+                String size = getDbProp(colId, "size", null);
                 if (size != null) {
                     attrs.append(XmlUtil.attrs(new String[] { "size",
-							      size }));
+                            size }));
                 }
 
                 if ((colId.indexOf("type") >= 0)
-		    || (colId.indexOf("category") >= 0)) {
+                        || (colId.indexOf("category") >= 0)) {
                     type = "enumerationplus";
                 } else if (colId.equals("date")) {
                     type = "date";
@@ -1498,101 +1756,99 @@ public abstract class Processor extends CsvOperator {
                     }
                 }
 
-		String tmp = getDbProp( colId, "type", type);
-		if(tmp.length()==0) tmp = type;
-		type=tmp;
-                String values = getDbProp( colId, "values",
-						  null);
-                String searchRows = getDbProp( colId,
-						      "searchrows", "");
-                String defaultsort = getDbProp( colId,
-						       "defaultsort", (String) null);
+                String tmp = getDbProp(colId, "type", type);
+                if (tmp.length() == 0) {
+                    tmp = type;
+                }
+                type = tmp;
+                String values     = getDbProp(colId, "values", null);
+                String searchRows = getDbProp(colId, "searchrows", "");
+                String defaultsort = getDbProp(colId, "defaultsort",
+                                         (String) null);
                 if ((defaultsort != null) && defaultsort.equals("true")) {
                     attrs.append(XmlUtil.attrs(new String[] { "defaultsort",
-							      "true" }));
-                    String asc = getDbProp( colId, "ascending",
-						   (String) null);
+                            "true" }));
+                    String asc = getDbProp(colId, "ascending", (String) null);
                     if (asc != null) {
                         attrs.append(XmlUtil.attrs(new String[] { "ascending",
-								  asc }));
+                                asc }));
                     }
                 }
 
 
 
-                canSearch = "true".equals(getDbProp( colId,
-							    "cansearch", canSearch + ""));
-                canSort = "true".equals(getDbProp( colId,
-							    "cansort", canSort + ""));		
-                canList = "true".equals(getDbProp( colId,
-							  "canlist", canList + ""));
+                canSearch = "true".equals(getDbProp(colId, "cansearch",
+                        canSearch + ""));
+                canSort = "true".equals(getDbProp(colId, "cansort",
+                        canSort + ""));
+                canList = "true".equals(getDbProp(colId, "canlist",
+                        canList + ""));
                 attrs.append(XmlUtil.attrs(new String[] {
-			    "type", type, "label", label, "cansearch", "" + canSearch,
-			    "canlist", "" + canList
-			}));
-                String group = getDbProp( colId, "group", (String) null);
-		if(group!=null)
+                    "type", type, "label", label, "cansearch", "" + canSearch,
+                    "canlist", "" + canList
+                }));
+                String group = getDbProp(colId, "group", (String) null);
+                if (group != null) {
                     attrs.append(XmlUtil.attrs(new String[] { "group",
-							      group}));
+                            group }));
+                }
 
-		if(canSort) {
+                if (canSort) {
                     attrs.append(XmlUtil.attrs(new String[] { "cansort",
-							      "true"}));
-		}
+                            "true" }));
+                }
                 if (values != null) {
                     attrs.append(XmlUtil.attrs(new String[] { "values",
-							      values }));
+                            values }));
                 }
-                String lookupDB = getDbProp( colId,
-						    "lookupdb", (String)null);
+                String lookupDB = getDbProp(colId, "lookupdb", (String) null);
 
-		if(lookupDB!=null) {
+                if (lookupDB != null) {
                     attrs.append(XmlUtil.attrs(new String[] { "lookupdb",
-							      lookupDB}));
-		}
+                            lookupDB }));
+                }
                 if (searchRows.length() > 0) {
                     attrs.append(XmlUtil.attrs(new String[] { "searchrows",
-							      searchRows }));
+                            searchRows }));
                 }
                 if (type.equals("date")) {
                     attrs.append(XmlUtil.attrs(new String[] { "format",
-							      getDbProp( colId, "format",
-										format) }));
+                            getDbProp(colId, "format", format) }));
                 }
 
                 StringBuffer inner = new StringBuffer();
-                boolean doStats = "true".equals(getDbProp(
-								  colId, "dostats", dfltDoStats + ""));
+                boolean doStats = "true".equals(getDbProp(colId, "dostats",
+                                      dfltDoStats + ""));
 
                 if (doStats) {
                     inner.append(XmlUtil.tag("property",
                                              XmlUtil.attrs(new String[] {
-						     "name",
-						     "dostats", "value", "true" })));
+                                                 "name",
+                            "dostats", "value", "true" })));
                 }
                 if (CsvUtil.getDbProp(props, colId, "iscategory", false)) {
                     inner.append(XmlUtil.tag("property",
                                              XmlUtil.attrs(new String[] {
-						     "name",
-						     "iscategory", "value", "true" })));
+                                                 "name",
+                            "iscategory", "value", "true" })));
                 }
                 if (CsvUtil.getDbProp(props, colId, "formap", false)) {
                     inner.append(XmlUtil.tag("property",
                                              XmlUtil.attrs(new String[] {
-						     "name",
-						     "formap", "value", "true" })));
+                                                 "name",
+                            "formap", "value", "true" })));
                 }
 
                 if (CsvUtil.getDbProp(props, colId, "islabel", false)) {
                     inner.append(XmlUtil.tag("property",
                                              XmlUtil.attrs(new String[] {
-						     "name",
-						     "islabel", "value", "true" })));
+                                                 "name",
+                            "islabel", "value", "true" })));
                 }
 
                 if (inner.length() > 0) {
                     writer.println(XmlUtil.tag("column", attrs.toString(),
-					       inner.toString()));
+                            inner.toString()));
                 } else {
                     writer.println(XmlUtil.tag("column", attrs.toString()));
                 }
@@ -1608,35 +1864,63 @@ public abstract class Processor extends CsvOperator {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class DbProps extends Processor {
 
-	String idPattern;
-	String suffixPattern;	
+        /**  */
+        String idPattern;
+
+        /**  */
+        String suffixPattern;
 
         /**
          * _more_
          *
-         * @param props _more_
+         * @param idPattern _more_
+         * @param suffixPattern _more_
          */
-        public DbProps(String idPattern,String suffixPattern) {
-	    this.idPattern = idPattern;
-	    if(this.idPattern.length()>0) this.idPattern = ".*" + this.idPattern +".*";
-	    this.suffixPattern = suffixPattern;
-	    if(this.suffixPattern.length()>0) this.suffixPattern = ".*" + this.suffixPattern +".*";	    
+        public DbProps(String idPattern, String suffixPattern) {
+            this.idPattern = idPattern;
+            if (this.idPattern.length() > 0) {
+                this.idPattern = ".*" + this.idPattern + ".*";
+            }
+            this.suffixPattern = suffixPattern;
+            if (this.suffixPattern.length() > 0) {
+                this.suffixPattern = ".*" + this.suffixPattern + ".*";
+            }
         }
 
-	
 
-	private boolean print(String id, String suffix, String  value) {
-	    if(Utils.stringDefined(idPattern)) {
-		if(!id.matches(idPattern)) return false;
-	    }
-	    if(Utils.stringDefined(suffixPattern)) {
-		if(!suffix.matches(suffixPattern)) return false;
-	    }	    
-	    System.out.print(id+"." + suffix +" " + value +"  ");
-	    return true;
-	}
+
+        /**
+         *
+         * @param id _more_
+         * @param suffix _more_
+         * @param value _more_
+         *
+         * @return _more_
+         */
+        private boolean print(String id, String suffix, String value) {
+            if (Utils.stringDefined(idPattern)) {
+                if ( !id.matches(idPattern)) {
+                    return false;
+                }
+            }
+            if (Utils.stringDefined(suffixPattern)) {
+                if ( !suffix.matches(suffixPattern)) {
+                    return false;
+                }
+            }
+            System.out.print(id + "." + suffix + " " + value + "  ");
+
+            return true;
+        }
 
         /**
          * _more_
@@ -1650,80 +1934,93 @@ public abstract class Processor extends CsvOperator {
          */
         @Override
         public Row processRow(TextReader reader, Row row) throws Exception {
-	    if(rowCnt++>0) return null;
-	    boolean didone = false;
-	    for(Object o: row.getValues()) {
-		boolean p = false;
-		String colId = makeID(o.toString());
-		if(colId.length()==0) continue;
-		String type = "{}";
+            if (rowCnt++ > 0) {
+                return null;
+            }
+            boolean didone = false;
+            for (Object o : row.getValues()) {
+                boolean p     = false;
+                String  colId = makeID(o.toString());
+                if (colId.length() == 0) {
+                    continue;
+                }
+                String type = "{}";
                 if ((colId.indexOf("type") >= 0)
-		    || (colId.indexOf("category") >= 0)) {
+                        || (colId.indexOf("category") >= 0)) {
                     type = "enumerationplus";
-                } else if (colId.indexOf("date")>=0) {
-		    type="date";
-		}
-		p|= print(colId,"type",type);
-		p|= 		print(colId,"cansearch","true");
-		p|= 		print(colId,"canlist","true" );
-		p|= 		print(colId,"cansort","true");
-		didone|=p;
-		if(p)
-		    System.out.print(" \\\n");
-	    }
-	    if(!didone) {
-		for(Object o: row.getValues()) {
-		    String id = Utils.makeID(o.toString());
-		    if(Utils.stringDefined(idPattern)) {
-			if(!id.matches(idPattern)) continue;
-		    }
-		    System.out.println(id);
-		}
-	    }
-	    return row;
-	}
+                } else if (colId.indexOf("date") >= 0) {
+                    type = "date";
+                }
+                p      |= print(colId, "type", type);
+                p      |= print(colId, "cansearch", "true");
+                p      |= print(colId, "canlist", "true");
+                p      |= print(colId, "cansort", "true");
+                didone |= p;
+                if (p) {
+                    System.out.print(" \\\n");
+                }
+            }
+            if ( !didone) {
+                for (Object o : row.getValues()) {
+                    String id = Utils.makeID(o.toString());
+                    if (Utils.stringDefined(idPattern)) {
+                        if ( !id.matches(idPattern)) {
+                            continue;
+                        }
+                    }
+                    System.out.println(id);
+                }
+            }
+
+            return row;
+        }
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class Fields extends Processor {
 
 
         /**
          * _more_
-         *
-         * @param props _more_
          */
-        public Fields() {
-        }
+        public Fields() {}
 
 
         /**
-         * _more_
+         *
          *
          * @param reader _more_
          * @param row _more_
-         *
-         * @return _more_
-         *
+         *  @return _more_
          * @throws Exception _more_
          */
         @Override
         public Row processRow(TextReader reader, Row row) throws Exception {
-	    if(rowCnt++==0) {
-		int cnt=0;
-		for(Object id: row.getValues()) {
-		    String sid = Utils.makeID(id.toString());
-		    if(sid.length()>0) {
-			if(cnt++>0)  System.out.print(",");
-			System.out.print(sid);
-		    }
-		}
-		System.out.print("\n");
+            if (rowCnt++ == 0) {
+                int cnt = 0;
+                for (Object id : row.getValues()) {
+                    String sid = Utils.makeID(id.toString());
+                    if (sid.length() > 0) {
+                        if (cnt++ > 0) {
+                            System.out.print(",");
+                        }
+                        System.out.print(sid);
+                    }
+                }
+                System.out.print("\n");
 
-	    }
-	    return row;
-	}
+            }
+
+            return row;
+        }
     }
-    
+
     /**
      * Class description
      *
@@ -1787,19 +2084,13 @@ public abstract class Processor extends CsvOperator {
         }
 
         /**
-         *   _more_
          *
-         *   @param ctx _more_
-         * @param rows _more_
-         *
-         *
-         * @return _more_
+         * @param ctx _more_
          *   @throws Exception On badness
          */
         @Override
-        public void finish(TextReader ctx) 
-	    throws Exception {
-	    super.finish(ctx);
+        public void finish(TextReader ctx) throws Exception {
+            super.finish(ctx);
             if (contains == null) {
                 ctx.getWriter().print("-0");
             } else {
@@ -1931,17 +2222,12 @@ public abstract class Processor extends CsvOperator {
         /**
          *   _more_
          *
-         *   @param ctx _more_
-         * @param rows _more_
-         *
-         *
-         * @return _more_
-         *   @throws Exception On badness
+         * @param ctx _more_
+         * @throws Exception On badness
          */
         @Override
-        public void finish(TextReader ctx)
-	    throws Exception {
-	    super.finish(ctx);
+        public void finish(TextReader ctx) throws Exception {
+            super.finish(ctx);
             if (strict) {
                 return;
             }
@@ -2053,17 +2339,18 @@ public abstract class Processor extends CsvOperator {
         public Row processRow(TextReader ctx, Row row) throws Exception {
             if (headerValues == null) {
 
-		headerValues = new ArrayList();
-                for(Object obj: row.getValues()) {
-		    String name = obj.toString();
-		    if (name.startsWith("#fields=")) {
-			name = name.substring("#fields=".length());
-		    }
-		    String args = StringUtil.findPattern(name, "\\[(.*)\\]");
-		    name = name.replaceAll("\\[.*\\]", "");
-		    headerValues.add(name);
-		}
-		return row;
+                headerValues = new ArrayList();
+                for (Object obj : row.getValues()) {
+                    String name = obj.toString();
+                    if (name.startsWith("#fields=")) {
+                        name = name.substring("#fields=".length());
+                    }
+                    String args = StringUtil.findPattern(name, "\\[(.*)\\]");
+                    name = name.replaceAll("\\[.*\\]", "");
+                    headerValues.add(name);
+                }
+
+                return row;
             }
             printRow(ctx, row);
 
@@ -2090,8 +2377,8 @@ public abstract class Processor extends CsvOperator {
             ctx.getWriter().println("#" + cnt);
             for (int i = 0; i < values.size(); i++) {
                 String label = (i < headerValues.size())
-		    ? headerValues.get(i).toString()
-		    : "NA";
+                               ? headerValues.get(i).toString()
+                               : "NA";
                 label = StringUtil.padLeft(label, 20);
                 ctx.getWriter().println(label + ":" + values.get(i));
             }
@@ -2161,8 +2448,9 @@ public abstract class Processor extends CsvOperator {
         /** _more_ */
         private Row headerRow2;
 
-	private String dflt;
-	
+        /**  */
+        private String dflt;
+
         /**
          * _more_
          *
@@ -2171,6 +2459,7 @@ public abstract class Processor extends CsvOperator {
          * @param values1 _more_
          * @param file _more_
          * @param keys2 _more_
+         * @param dflt _more_
          */
         public Joiner(List<String> keys1, List<String> values1, String file,
                       List<String> keys2, String dflt) {
@@ -2178,7 +2467,7 @@ public abstract class Processor extends CsvOperator {
             this.values1 = values1;
             this.keys2   = keys2;
             this.file    = file;
-	    this.dflt = dflt;
+            this.dflt    = dflt;
             try {
                 init();
             } catch (Exception exc) {
@@ -2193,16 +2482,16 @@ public abstract class Processor extends CsvOperator {
          * @throws Exception _more_
          */
         private void init() throws Exception {
-	    if(!IO.okToReadFrom(file)) {
-		throw new RuntimeException("Cannot read file:" + file);
-	    }
+            if ( !IO.okToReadFrom(file)) {
+                throw new RuntimeException("Cannot read file:" + file);
+            }
             List<Integer> keys1Indices = null;
-	    //	    System.err.println("key:" + keys1 +" " + keys1Indices);
+            //      System.err.println("key:" + keys1 +" " + keys1Indices);
             BufferedReader br = new BufferedReader(
-						   new InputStreamReader(
-									 getInputStream(file)));
-	    CsvOperator operator = null;
-            TextReader reader = new TextReader(br);
+                                    new InputStreamReader(
+                                        getInputStream(file)));
+            CsvOperator operator = null;
+            TextReader  reader   = new TextReader(br);
             map        = new Hashtable<String, Row>();
             headerRow1 = null;
             String delimiter = null;
@@ -2211,8 +2500,10 @@ public abstract class Processor extends CsvOperator {
                 if (line == null) {
                     break;
                 }
-		line = line.trim();
-		if(line.length()==0) continue;
+                line = line.trim();
+                if (line.length() == 0) {
+                    continue;
+                }
                 if (delimiter == null) {
                     if (line.indexOf("\t") >= 0) {
                         delimiter = "\t";
@@ -2221,33 +2512,36 @@ public abstract class Processor extends CsvOperator {
                     }
                 }
                 List<String> cols = Utils.tokenizeColumns(line, delimiter);
-		if(operator==null) {
-		    operator = new CsvOperator();
-		    operator.setHeader(cols);
-		    keys1Indices = operator.getIndices(reader, keys1);	    
-		    values1Indices = operator.getIndices(reader, values1);
-		}
+                if (operator == null) {
+                    operator = new CsvOperator();
+                    operator.setHeader(cols);
+                    keys1Indices   = operator.getIndices(reader, keys1);
+                    values1Indices = operator.getIndices(reader, values1);
+                }
 
-                String       key  = "";
+                String key = "";
                 for (int i : keys1Indices) {
-		    if(i<0 || i>=cols.size()) {
-			fatal("Mismatch between columns and keys. Columns:" + cols +" key index:" + i);
-		    }
+                    if ((i < 0) || (i >= cols.size())) {
+                        fatal("Mismatch between columns and keys. Columns:"
+                              + cols + " key index:" + i);
+                    }
                     key += cols.get(i) + "_";
                 }
                 Row row = new Row(cols);
                 if (headerRow1 == null) {
                     headerRow1 = row;
                 }
-		//		System.err.println("key:" + key +" row:" + row);
+                //              System.err.println("key:" + key +" row:" + row);
                 map.put(key, row);
             }
-	    if(operator==null)
-		fatal("Unable to read any data from:" + file);
+            if (operator == null) {
+                fatal("Unable to read any data from:" + file);
+            }
         }
 
 
-	List<Integer> keys2Indices;
+        /**  */
+        List<Integer> keys2Indices;
 
         /**
          * _more_
@@ -2262,15 +2556,17 @@ public abstract class Processor extends CsvOperator {
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
 
-	    if(keys2Indices==null)
-		keys2Indices = getIndices(ctx, keys2);
+            if (keys2Indices == null) {
+                keys2Indices = getIndices(ctx, keys2);
+            }
             if (headerRow2 == null) {
                 headerRow2 = row;
-		//                System.err.println("ROW:" + headerRow1);
+                //                System.err.println("ROW:" + headerRow1);
                 for (int j : values1Indices) {
-		    //                    System.err.println("idx:" + j);
+                    //                    System.err.println("idx:" + j);
                     row.add(headerRow1.get(j));
                 }
+
                 return row;
             }
             String key = "";
@@ -2282,6 +2578,7 @@ public abstract class Processor extends CsvOperator {
                 for (int j : values1Indices) {
                     row.add(dflt);
                 }
+
                 return row;
             }
             for (int j : values1Indices) {
@@ -2304,16 +2601,20 @@ public abstract class Processor extends CsvOperator {
      */
     public static class FuzzyJoiner extends Processor {
 
-	private JaroWinklerDistance distance = new JaroWinklerDistance();
+        /**  */
+        private JaroWinklerDistance distance = new JaroWinklerDistance();
 
-	private int threshold = 85;
+        /**  */
+        private int threshold = 85;
 
-	private String dflt;
+        /**  */
+        private String dflt;
 
         /** _more_ */
         private List<String> keys1;
 
-	private List<Integer> keys2Indices;
+        /**  */
+        private List<Integer> keys2Indices;
 
         /** _more_ */
         private List<String> values1;
@@ -2322,7 +2623,7 @@ public abstract class Processor extends CsvOperator {
         private List<String> keys2;
 
         /** _more_ */
-	private List<KeyRow> rows;
+        private List<KeyRow> rows;
 
         /** _more_ */
         private Row headerRow1;
@@ -2334,54 +2635,78 @@ public abstract class Processor extends CsvOperator {
         private Row headerRow2;
 
 
-	
+
         /**
          * _more_
          *
          *
+         *
+         * @param threshold _more_
          * @param keys1 _more_
          * @param values1 _more_
          * @param file _more_
          * @param keys2 _more_
+         * @param dflt _more_
          */
-        public FuzzyJoiner(int threshold, List<String> keys1, List<String> values1, String file,
-			   List<String> keys2, String dflt) {
-	    this.threshold = threshold;
-            this.keys1   = keys1;
-            this.values1 = values1;
-            this.keys2   = keys2;
-	    this.dflt = dflt;
+        public FuzzyJoiner(int threshold, List<String> keys1,
+                           List<String> values1, String file,
+                           List<String> keys2, String dflt) {
+            this.threshold = threshold;
+            this.keys1     = keys1;
+            this.values1   = values1;
+            this.keys2     = keys2;
+            this.dflt      = dflt;
             try {
                 init(file);
             } catch (Exception exc) {
-		fatal("Error opening file:" + file,exc);
+                fatal("Error opening file:" + file, exc);
             }
         }
 
 
-	static class KeyRow {
-	    String key;
-	    Row row;
-	    KeyRow(String key, Row row) {
-		this.key = key;
-		this.row = row;
-	    }
-	}
+        /**
+         * Class description
+         *
+         *
+         * @version        $version$, Thu, Nov 4, '21
+         * @author         Enter your name here...
+         */
+        static class KeyRow {
+
+            /**  */
+            String key;
+
+            /**  */
+            Row row;
+
+            /**
+             *
+             *
+             * @param key _more_
+             * @param row _more_
+             */
+            KeyRow(String key, Row row) {
+                this.key = key;
+                this.row = row;
+            }
+        }
 
 
         /**
          * _more_
          *
+         *
+         * @param file _more_
          * @throws Exception _more_
          */
         private void init(String file) throws Exception {
             List<Integer> keys1Indices = null;
             BufferedReader br = new BufferedReader(
-						   new InputStreamReader(
-									 getInputStream(file)));
-	    CsvOperator operator = null;
-            TextReader reader = new TextReader(br);
-	    rows = new ArrayList<KeyRow>();
+                                    new InputStreamReader(
+                                        getInputStream(file)));
+            CsvOperator operator = null;
+            TextReader  reader   = new TextReader(br);
+            rows       = new ArrayList<KeyRow>();
             headerRow1 = null;
             String delimiter = null;
             while (true) {
@@ -2389,8 +2714,10 @@ public abstract class Processor extends CsvOperator {
                 if (line == null) {
                     break;
                 }
-		line = line.trim();
-		if(line.length()==0) continue;
+                line = line.trim();
+                if (line.length() == 0) {
+                    continue;
+                }
                 if (delimiter == null) {
                     if (line.indexOf("\t") >= 0) {
                         delimiter = "\t";
@@ -2399,30 +2726,34 @@ public abstract class Processor extends CsvOperator {
                     }
                 }
                 List<String> cols = Utils.tokenizeColumns(line, delimiter);
-		if(operator==null) {
-		    operator = new CsvOperator();
-		    operator.setHeader(cols);
-		    keys1Indices = operator.getIndices(reader, keys1);	    
-		    values1Indices = operator.getIndices(reader, values1);
-		}
+                if (operator == null) {
+                    operator = new CsvOperator();
+                    operator.setHeader(cols);
+                    keys1Indices   = operator.getIndices(reader, keys1);
+                    values1Indices = operator.getIndices(reader, values1);
+                }
 
-                String       key  = "";
-		for (int i=0;i<keys1Indices.size();i++) {
-		    if(i>0) key+="_";
-		    int index = keys1Indices.get(i);
-		    if(index<0 || index>=cols.size()) {
-			fatal("Mismatch between columns and keys. Columns:" + cols +" key index:" + index);
-		    }
+                String key = "";
+                for (int i = 0; i < keys1Indices.size(); i++) {
+                    if (i > 0) {
+                        key += "_";
+                    }
+                    int index = keys1Indices.get(i);
+                    if ((index < 0) || (index >= cols.size())) {
+                        fatal("Mismatch between columns and keys. Columns:"
+                              + cols + " key index:" + index);
+                    }
                     key += cols.get(index);
                 }
                 Row row = new Row(cols);
                 if (headerRow1 == null) {
                     headerRow1 = row;
                 }
-		rows.add(new KeyRow(key,row));
+                rows.add(new KeyRow(key, row));
             }
-	    if(operator==null)
-		fatal("Unable to read any data from:" + file);
+            if (operator == null) {
+                fatal("Unable to read any data from:" + file);
+            }
         }
 
 
@@ -2437,56 +2768,79 @@ public abstract class Processor extends CsvOperator {
          */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
-	    if(keys2Indices==null)
-		keys2Indices = getIndices(ctx, keys2);
+            if (keys2Indices == null) {
+                keys2Indices = getIndices(ctx, keys2);
+            }
             if (headerRow2 == null) {
                 headerRow2 = row;
                 for (int j : values1Indices) {
                     row.add(headerRow1.get(j));
                 }
+
                 return row;
             }
             String key = "";
-            for (int i=0;i<keys2Indices.size();i++) {
-		if(i>0) key+="_";
+            for (int i = 0; i < keys2Indices.size(); i++) {
+                if (i > 0) {
+                    key += "_";
+                }
                 key += row.getString(keys2Indices.get(i));
             }
-	    int bestScore = -1;
-	    Row bestMatch = null;
-	    //	    System.err.println("key:" + key);
-	    for(KeyRow keyRow: rows) {
-		//		int score = me.xdrop.fuzzywuzzy.FuzzySearch.ratio(key,keyRow.key);
-		int score = ((int)(100*distance.apply(key, keyRow.key)));
-		if(score<threshold) continue;
-		if(bestMatch==null || score>bestScore) {
-		    bestScore = score;
-		    bestMatch=keyRow.row;
-		}
-	    }
+            int bestScore = -1;
+            Row bestMatch = null;
+            //      System.err.println("key:" + key);
+            for (KeyRow keyRow : rows) {
+                //              int score = me.xdrop.fuzzywuzzy.FuzzySearch.ratio(key,keyRow.key);
+                int score = ((int) (100 * distance.apply(key, keyRow.key)));
+                if (score < threshold) {
+                    continue;
+                }
+                if ((bestMatch == null) || (score > bestScore)) {
+                    bestScore = score;
+                    bestMatch = keyRow.row;
+                }
+            }
 
             Row other = bestMatch;
             if (other == null) {
                 for (int j : values1Indices) {
                     row.add(dflt);
                 }
+
                 return row;
             }
             for (int j : values1Indices) {
                 row.add(other.get(j));
             }
+
             return row;
         }
     }
 
-    
-    
-    public static class Doit extends Processor {
-	private HashSet genres = new HashSet();
-	private SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
-	private SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");	
 
-	public Doit() {
-	}
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
+    public static class Doit extends Processor {
+
+        /**  */
+        private HashSet genres = new HashSet();
+
+        /**  */
+        private SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
+
+        /**  */
+        private SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
+
+        /**
+         *
+         */
+        public Doit() {}
 
         /**
          * @param ctx _more_
@@ -2496,118 +2850,179 @@ public abstract class Processor extends CsvOperator {
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
-	    try {
-		return processRowInner(ctx,row);
-	    } catch(Exception exc) {
-		throw new RuntimeException(exc);
-	    }
-	}
-
-	private String makeTags(Object v,String tag) {
-	    List<String> toks = Utils.split(v.toString(),",");
-	    StringBuilder sb = new StringBuilder();
-	    for(String value: toks) {
-		value = value.trim();
-		if(value.length()==0) continue;
-		String contents  = XmlUtil.tag("attr",XmlUtil.attr("encoded","false")+XmlUtil.attr("index","1"),
-					       XmlUtil.getCdata(value));
-		sb.append(XmlUtil.tag("metadata",XmlUtil.attr("type","netflix_" + tag),contents));
-		sb.append("\n");
-	    }
-	    return sb.toString();
-	}
-
-
-	private String makeTag(String tag, Object v) {
-	    return XmlUtil.tag(tag,"",XmlUtil.getCdata(v.toString().trim()));
-	}
-
-        public Row processRowInner(TextReader ctx, Row row) throws Exception {	    
-
-	    PrintWriter pw = ctx.getWriter();
-            if (rowCnt++ == 0) {
-		pw.println("<entries>");
-		return row;
+            try {
+                return processRowInner(ctx, row);
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
             }
-	    if(rowCnt>50) return null;
-	    String dttm = ((String)row.get(18)).trim();
-	    List<String> genreToks = Utils.split((String)row.get(1),",");
-	    String genre  = genreToks.size()>0?genreToks.get(0):"Film";
-	    genre = genre.trim();
-	    if(genre.length()==0) genre="Miscellaneous";
-	    if(!genres.contains(genre)) {
-		pw.print(XmlUtil.tag("entry",XmlUtil.attr("type","group")+XmlUtil.attr("id",genre)+XmlUtil.attr("name",genre),""));
-		genres.add(genre);
-	    }
+        }
 
-	    pw.print("<entry " + XmlUtil.attr("type","type_netflix_movie") + XmlUtil.attr("parent",genre));
-	    if(dttm.length()>0) {
-		Date date = sdf.parse(dttm);
-		pw.print(XmlUtil.attr("fromdate",sdf2.format(date)));
-	    }
-	    pw.println(">");
-	    pw.print(makeTag("name",row.get(0)));
-	    pw.print(makeTag("description","<snippet>" + row.get(23)+"</snippet>"));
-	    pw.print(makeTag("series_or_movie",row.get(4)));
-	    pw.print(makeTag("hidden_gem_score",row.get(5))); 
-	    pw.print(makeTag("runtime",row.get(7))); 
-	    pw.print(makeTag("view_rating",row.get(11))); 
-	    pw.print(makeTag("imdb_score",row.get(12))); 
-	    pw.print(makeTag("rotten_tomatoes_score",row.get(13))); 
-	    pw.print(makeTag("metacritic_score",row.get(14))); 
-	    pw.print(makeTag("awards_received",row.get(15))); 
-	    pw.print(makeTag("awards_nominated_for",row.get(16))); 
-	    pw.print(makeTag("boxoffice",row.get(17))); 
-	    pw.print(makeTag("release_date",row.get(18))); 
-	    pw.print(makeTag("netflix_release_date",row.get(19))); 
-	    pw.print(makeTag("netflix_link",row.get(21))); 
-	    pw.print(makeTag("imdb_link",row.get(22))); 
-	    pw.print(makeTag("imdb_votes",row.get(24)));
-	    String thumb = row.getString(25);
-	    if(thumb.trim().length()>0) {
-		pw.print("<metadata type=\"content.thumbnail\"><attr index=\"1\" encoded=\"false\">" +thumb +"</attr></metadata>");
-	    }
-	    pw.print(makeTag("poster",row.get(26)));
-	    pw.print(makeTag("tmdb_trailer",row.get(27)));
-	    pw.print(makeTag("trailer_site",row.get(28))); 
-	    pw.print(makeTags(row.get(1),"genre"));
-	    pw.print(makeTags(row.get(2),"tag"));
-	    pw.print(makeTags(row.get(3),"language"));
-	    pw.print(makeTags(row.get(6),"country_availability"));
-	    pw.print(makeTags(row.get(10),"actor"));
-	    pw.print(makeTags(row.get(20),"production_house"));
-	    pw.print(makeTags(row.get(8),"director"));
-	    pw.print(makeTags(row.get(9),"writer"));
-	    pw.println("</entry>");
+        /**
+         *
+         * @param v _more_
+         * @param tag _more_
+         *
+         * @return _more_
+         */
+        private String makeTags(Object v, String tag) {
+            List<String>  toks = Utils.split(v.toString(), ",");
+            StringBuilder sb   = new StringBuilder();
+            for (String value : toks) {
+                value = value.trim();
+                if (value.length() == 0) {
+                    continue;
+                }
+                String contents = XmlUtil.tag("attr",
+                                      XmlUtil.attr("encoded", "false")
+                                      + XmlUtil.attr("index",
+                                          "1"), XmlUtil.getCdata(value));
+                sb.append(XmlUtil.tag("metadata",
+                                      XmlUtil.attr("type", "netflix_" + tag),
+                                      contents));
+                sb.append("\n");
+            }
+
+            return sb.toString();
+        }
+
+
+        /**
+         *
+         * @param tag _more_
+         * @param v _more_
+         *
+         * @return _more_
+         */
+        private String makeTag(String tag, Object v) {
+            return XmlUtil.tag(tag, "",
+                               XmlUtil.getCdata(v.toString().trim()));
+        }
+
+        /**
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        public Row processRowInner(TextReader ctx, Row row) throws Exception {
+
+            PrintWriter pw = ctx.getWriter();
+            if (rowCnt++ == 0) {
+                pw.println("<entries>");
+
+                return row;
+            }
+            if (rowCnt > 50) {
+                return null;
+            }
+            String       dttm      = ((String) row.get(18)).trim();
+            List<String> genreToks = Utils.split((String) row.get(1), ",");
+            String       genre     = (genreToks.size() > 0)
+                                     ? genreToks.get(0)
+                                     : "Film";
+            genre = genre.trim();
+            if (genre.length() == 0) {
+                genre = "Miscellaneous";
+            }
+            if ( !genres.contains(genre)) {
+                pw.print(XmlUtil.tag("entry",
+                                     XmlUtil.attr("type", "group")
+                                     + XmlUtil.attr("id", genre)
+                                     + XmlUtil.attr("name", genre), ""));
+                genres.add(genre);
+            }
+
+            pw.print("<entry " + XmlUtil.attr("type", "type_netflix_movie")
+                     + XmlUtil.attr("parent", genre));
+            if (dttm.length() > 0) {
+                Date date = sdf.parse(dttm);
+                pw.print(XmlUtil.attr("fromdate", sdf2.format(date)));
+            }
+            pw.println(">");
+            pw.print(makeTag("name", row.get(0)));
+            pw.print(makeTag("description",
+                             "<snippet>" + row.get(23) + "</snippet>"));
+            pw.print(makeTag("series_or_movie", row.get(4)));
+            pw.print(makeTag("hidden_gem_score", row.get(5)));
+            pw.print(makeTag("runtime", row.get(7)));
+            pw.print(makeTag("view_rating", row.get(11)));
+            pw.print(makeTag("imdb_score", row.get(12)));
+            pw.print(makeTag("rotten_tomatoes_score", row.get(13)));
+            pw.print(makeTag("metacritic_score", row.get(14)));
+            pw.print(makeTag("awards_received", row.get(15)));
+            pw.print(makeTag("awards_nominated_for", row.get(16)));
+            pw.print(makeTag("boxoffice", row.get(17)));
+            pw.print(makeTag("release_date", row.get(18)));
+            pw.print(makeTag("netflix_release_date", row.get(19)));
+            pw.print(makeTag("netflix_link", row.get(21)));
+            pw.print(makeTag("imdb_link", row.get(22)));
+            pw.print(makeTag("imdb_votes", row.get(24)));
+            String thumb = row.getString(25);
+            if (thumb.trim().length() > 0) {
+                pw.print(
+                    "<metadata type=\"content.thumbnail\"><attr index=\"1\" encoded=\"false\">"
+                    + thumb + "</attr></metadata>");
+            }
+            pw.print(makeTag("poster", row.get(26)));
+            pw.print(makeTag("tmdb_trailer", row.get(27)));
+            pw.print(makeTag("trailer_site", row.get(28)));
+            pw.print(makeTags(row.get(1), "genre"));
+            pw.print(makeTags(row.get(2), "tag"));
+            pw.print(makeTags(row.get(3), "language"));
+            pw.print(makeTags(row.get(6), "country_availability"));
+            pw.print(makeTags(row.get(10), "actor"));
+            pw.print(makeTags(row.get(20), "production_house"));
+            pw.print(makeTags(row.get(8), "director"));
+            pw.print(makeTags(row.get(9), "writer"));
+            pw.println("</entry>");
+
             return row;
         }
 
-        public void finish(TextReader ctx) 
-	    throws Exception {
-	    super.finish(ctx);
-	    ctx.getWriter().println("</entries>");
-	}
+        /**
+         *
+         * @param ctx _more_
+         *
+         * @throws Exception _more_
+         */
+        public void finish(TextReader ctx) throws Exception {
+            super.finish(ctx);
+            ctx.getWriter().println("</entries>");
+        }
 
     }
 
 
 
 
+    /**
+     *
+     * @param args _more_
+     *
+     * @throws Exception _more_
+     */
     public static void main(String[] args) throws Exception {
-	String s = args[0];
-	org.apache.commons.text.similarity.JaroWinklerDistance distance = new org.apache.commons.text.similarity.JaroWinklerDistance();
-	org.apache.commons.text.similarity.FuzzyScore fuzzy =  new org.apache.commons.text.similarity.FuzzyScore(java.util.Locale.getDefault());
-	LevenshteinDistance lev = new LevenshteinDistance(10);
-	Soundex soundex = new Soundex();
-	for(int i=1;i<args.length;i++) {
-	    int fuzzyScore = fuzzy.fuzzyScore(s,args[i]).intValue();
-	    int levenshteinScore = me.xdrop.fuzzywuzzy.FuzzySearch.ratio(s,args[i]);
-	    //	    int fuzzy = me.xdrop.fuzzywuzzy.FuzzySearch.ratio(s,args[i]);
-	    int sound = 25*soundex.difference(s,args[i]);
-	    double jaro = distance.apply(s,args[i]);
-	    System.err.println("lev:" + lev.apply(s, args[i]));
-	    //	    System.err.println("lev:" + levenshteinScore +" fuzzy:" + fuzzyScore +" sound:" + sound +" jaro:" + ((int)(100*jaro)) +" " + args[i]);
-	}
+        String s = args[0];
+        org.apache.commons.text.similarity.JaroWinklerDistance distance =
+            new org.apache.commons.text.similarity.JaroWinklerDistance();
+        org.apache.commons.text.similarity.FuzzyScore fuzzy =
+            new org.apache.commons.text.similarity.FuzzyScore(
+                java.util.Locale.getDefault());
+        LevenshteinDistance lev     = new LevenshteinDistance(10);
+        Soundex             soundex = new Soundex();
+        for (int i = 1; i < args.length; i++) {
+            int fuzzyScore = fuzzy.fuzzyScore(s, args[i]).intValue();
+            int levenshteinScore = me.xdrop.fuzzywuzzy.FuzzySearch.ratio(s,
+                                       args[i]);
+            //      int fuzzy = me.xdrop.fuzzywuzzy.FuzzySearch.ratio(s,args[i]);
+            int    sound = 25 * soundex.difference(s, args[i]);
+            double jaro  = distance.apply(s, args[i]);
+            System.err.println("lev:" + lev.apply(s, args[i]));
+            //      System.err.println("lev:" + levenshteinScore +" fuzzy:" + fuzzyScore +" sound:" + sound +" jaro:" + ((int)(100*jaro)) +" " + args[i]);
+        }
     }
 
 }

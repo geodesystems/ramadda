@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util;
@@ -41,8 +30,9 @@ import java.util.regex.*;
  */
 public class Oembed {
 
+    /**  */
     private Response fixed;
-    
+
     /** _more_ */
     private static List<Oembed> oembeds;
 
@@ -55,8 +45,13 @@ public class Oembed {
     /** _more_ */
     String url;
 
+    /**
+     *
+     *
+     * @param fixed _more_
+     */
     public Oembed(Response fixed) {
-	this.fixed = fixed;
+        this.fixed = fixed;
     }
 
 
@@ -116,23 +111,38 @@ public class Oembed {
         return name + " " + url + " " + schemes;
     }
 
+    /**
+     *
+     * @param url _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public static String findHtml(String url) throws Exception {
-	String id;
-	id  = StringUtil.findPattern(url,"https://gitlab.com/.*/snippets/(.*)");
-	if(id!=null) {
-	    return "\n<script src='https://gitlab.com/-/snippets/" + id +".js'></script>\n";
-	}
+        String id;
+        id = StringUtil.findPattern(url,
+                                    "https://gitlab.com/.*/snippets/(.*)");
+        if (id != null) {
+            return "\n<script src='https://gitlab.com/-/snippets/" + id
+                   + ".js'></script>\n";
+        }
 
-	id  = StringUtil.findPattern(url,"https://gist.github.com/(.*/\\d+$)");
-	if(id!=null) {
-	    return "\n<script src='https://gist.github.com/" + id +".js'></script>\n";
-	}
+        id = StringUtil.findPattern(url,
+                                    "https://gist.github.com/(.*/\\d+$)");
+        if (id != null) {
+            return "\n<script src='https://gist.github.com/" + id
+                   + ".js'></script>\n";
+        }
 
-	id = StringUtil.findPattern(url,"https://jsfiddle.net/(.*macloo/bvwvd0ao)/?");
-	if(id!=null) {
-	    return "\n<script async src='https://jsfiddle.net/" + id +"/embed/js,html,css,result/dark'></script>\n";
-	}	
-	return null;
+        id = StringUtil.findPattern(
+            url, "https://jsfiddle.net/(.*macloo/bvwvd0ao)/?");
+        if (id != null) {
+            return "\n<script async src='https://jsfiddle.net/" + id
+                   + "/embed/js,html,css,result/dark'></script>\n";
+        }
+
+        return null;
 
     }
 
@@ -147,9 +157,10 @@ public class Oembed {
      * @throws Exception _more_
      */
     public static Oembed find(String url) throws Exception {
-	String fixed = findHtml(url);
-	if(fixed!=null)
-	    return new Oembed(new Response(fixed));
+        String fixed = findHtml(url);
+        if (fixed != null) {
+            return new Oembed(new Response(fixed));
+        }
 
         for (Oembed oembed : getOembeds()) {
             if (oembed.match(url)) {
@@ -177,13 +188,17 @@ public class Oembed {
         if (oembed == null) {
             return null;
         }
-	Response fixed = oembed.fixed;
-	if(fixed!=null) return fixed;
+        Response fixed = oembed.fixed;
+        if (fixed != null) {
+            return fixed;
+        }
         try {
-	    
+
             String eurl = HtmlUtils.urlEncode(url);
-            String rurl = HtmlUtils.url(oembed.url,new String[]{ "url", eurl, "format","json", "maxwidth",
-								 width, "maxheight", height}, false);
+            String rurl = HtmlUtils.url(oembed.url, new String[] {
+                "url", eurl, "format", "json", "maxwidth", width, "maxheight",
+                height
+            }, false);
             URL    req  = new URL(rurl);
             String json = IO.readUrl(req);
             if (json.startsWith("<")) {
@@ -193,6 +208,7 @@ public class Oembed {
             }
         } catch (Exception exc) {
             System.err.println("Error fetching embed for:" + url + " " + exc);
+
             return null;
         }
     }
@@ -283,8 +299,9 @@ public class Oembed {
      */
     public static class Response {
 
-	String fixedHtml;
-	
+        /**  */
+        String fixedHtml;
+
         /** _more_ */
         public String originalUrl;
 
@@ -309,9 +326,14 @@ public class Oembed {
         /** _more_ */
         public String html;
 
+        /**
+         *
+         *
+         * @param fixedHtml _more_
+         */
         public Response(String fixedHtml) {
-	    this.fixedHtml = fixedHtml;
-	}
+            this.fixedHtml = fixedHtml;
+        }
 
 
         /**
@@ -350,7 +372,7 @@ public class Oembed {
         }
 
 
-	//<script src="https://gist.github.com/dustinmartin/364172.js"></script>
+        //<script src="https://gist.github.com/dustinmartin/364172.js"></script>
 
         /**
          * _more_
@@ -358,7 +380,9 @@ public class Oembed {
          * @return _more_
          */
         public String getHtml() {
-	    if(fixedHtml!=null) return fixedHtml;
+            if (fixedHtml != null) {
+                return fixedHtml;
+            }
             if (type.equals("photo")) {
                 return HtmlUtils.href(originalUrl, HtmlUtils.image(url));
             }
@@ -387,13 +411,10 @@ public class Oembed {
      */
     public static void main(String[] args) throws Exception {
         String[] urls = new String[] {
-	    "https://jsfiddle.net/macloo/bvwvd0ao/",
-	    null,
-	    "https://gist.github.com/dustinmartin/364172",
-	    null,
-	    "https://gitlab.com/-/snippets/2085394",
-	    null,
-	    "https://codepen.io/Coderesting/pen/yLyaJMz",
+            "https://jsfiddle.net/macloo/bvwvd0ao/", null,
+            "https://gist.github.com/dustinmartin/364172", null,
+            "https://gitlab.com/-/snippets/2085394", null,
+            "https://codepen.io/Coderesting/pen/yLyaJMz",
             "https://vimeo.com/515404225",
             "https://www.youtube.com/watch?v=EL2Y1XHd70c",
             "http://www.flickr.com/photos/bees/2341623661/",
@@ -402,13 +423,15 @@ public class Oembed {
             "https://www.reddit.com/r/bees/comments/lsyykm/save_the_bees_themed_botanical_bread_floral/"
         };
         for (String url : urls) {
-	    if(url==null) break;
-	    Response response = Oembed.get(url, "500", "300");
-	    if(response==null) {
-		System.err.println("ERROR:" + url);
-	    } else {
-		System.err.println("OK:" + url +" " + response);
-	    }
+            if (url == null) {
+                break;
+            }
+            Response response = Oembed.get(url, "500", "300");
+            if (response == null) {
+                System.err.println("ERROR:" + url);
+            } else {
+                System.err.println("OK:" + url + " " + response);
+            }
         }
 
 

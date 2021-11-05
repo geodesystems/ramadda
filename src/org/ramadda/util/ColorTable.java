@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util;
@@ -177,7 +166,6 @@ public class ColorTable {
     /**
      * get the Color by finding the index of the percent along the table
      *
-     * @param table color table
      * @param percent percent into color table (0-1)
      *
      * @return the color
@@ -197,18 +185,24 @@ public class ColorTable {
     }
 
 
+    /**
+     *
+     * @param index _more_
+     *
+     * @return _more_
+     */
     public Color getColorByIndex(int index) {
         colors = getColors();
-        if(index>=colors.size()) {
-            index = index%colors.size();
+        if (index >= colors.size()) {
+            index = index % colors.size();
         }
+
         return colors.get(index);
     }
 
     /**
      * get the pixel value in the table from the percent
      *
-     * @param table the table
      * @param percent the percent
      *
      * @return the pixel value

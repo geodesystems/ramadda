@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util;
@@ -39,13 +28,13 @@ import java.util.List;
  */
 public class TTLCache<KEY, VALUE> {
 
-    /** _more_          */
+    /** _more_ */
     private static Object MUTEX = new Object();
 
-    /** _more_          */
+    /** _more_ */
     private static List<TTLCache> caches = new ArrayList<TTLCache>();
 
-    /** _more_          */
+    /** _more_ */
     private static Runnable ttlRunnable;
 
     /** helper for ttl */
@@ -70,7 +59,7 @@ public class TTLCache<KEY, VALUE> {
     /** how big should the cache become until its cleared */
     private int sizeLimit = -1;
 
-    /** _more_          */
+    /** _more_ */
     public boolean debug = false;
 
     /**
@@ -102,6 +91,7 @@ public class TTLCache<KEY, VALUE> {
     }
 
 
+    /**  */
     String where;
 
     /**
@@ -114,14 +104,14 @@ public class TTLCache<KEY, VALUE> {
      */
     public TTLCache(long timeThresholdInMilliseconds, int sizeLimit,
                     boolean updateTimeOnGet) {
-	
-	where=Utils.getStack(1,"TTL").replaceAll("\n"," ");
+
+        where                = Utils.getStack(1, "TTL").replaceAll("\n", " ");
         this.timeThreshold   = timeThresholdInMilliseconds;
         this.sizeLimit       = sizeLimit;
         this.updateTimeOnGet = updateTimeOnGet;
         synchronized (MUTEX) {
             caches.add(this);
-	    //	    System.err.println("new TTLCache #caches:" + caches.size() +" where:" + where);
+            //      System.err.println("new TTLCache #caches:" + caches.size() +" where:" + where);
             if (ttlRunnable == null) {
                 ttlRunnable = new Runnable() {
                     public void run() {
@@ -140,27 +130,36 @@ public class TTLCache<KEY, VALUE> {
     }
 
 
+    /**
+     */
     public static void clearCaches() {
-	synchronized (MUTEX) {
-	    for(TTLCache cache: caches) {
-		cache.clearCache();
-	    }
-	}
+        synchronized (MUTEX) {
+            for (TTLCache cache : caches) {
+                cache.clearCache();
+            }
+        }
     }
 
+    /**
+     *
+     * @param cache _more_
+     */
     public static void finishedWithCache(TTLCache cache) {
-	if(cache!=null) {
-	    cache.finishedWithCache();
-	}
+        if (cache != null) {
+            cache.finishedWithCache();
+        }
     }
 
+    /**
+     */
     private void finishedWithCache() {
-	synchronized (MUTEX) {
-	    int sizeBefore = caches.size();
-	    caches.remove(this);
-	    cache = null;
-	    System.err.println("TTLCache.finished:" + sizeBefore +" " + caches.size());
-	}
+        synchronized (MUTEX) {
+            int sizeBefore = caches.size();
+            caches.remove(this);
+            cache = null;
+            System.err.println("TTLCache.finished:" + sizeBefore + " "
+                               + caches.size());
+        }
     }
 
 

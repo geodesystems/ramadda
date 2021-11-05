@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util.text;
@@ -22,6 +11,7 @@ import org.ramadda.util.Utils;
 import org.ramadda.util.geo.*;
 
 import java.io.*;
+
 import java.util.Hashtable;
 import java.util.List;
 
@@ -77,12 +67,13 @@ public class ShapefileProvider extends DataProvider.BulkDataProvider {
         if (files.size() == 0) {
             return;
         }
-        String path = files.get(0);
-	InputStream is  = textReader.getInputStream();
-	if(is==null)  
+        String      path = files.get(0);
+        InputStream is   = textReader.getInputStream();
+        if (is == null) {
             is = IO.getInputStream(path);
+        }
         FeatureCollection fc = FeatureCollection.getFeatureCollection(path,
-								      is);
+                                   is);
 
         List<DbaseDataWrapper> datum    = fc.getDatum();
         List<Feature>          features = (List<Feature>) fc.getFeatures();

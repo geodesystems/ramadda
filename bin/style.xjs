@@ -141,8 +141,7 @@
     <object class="jindent.settings.StringArraySetting">
      <string>java.javaDocMethodReturn</string>
      <void property="value">
-      <string> *
- * @return _more_</string>
+      <string>  * @return _more_</string>
      </void>
     </object>
    </void>
@@ -1136,8 +1135,10 @@
     <object class="jindent.settings.StringArraySetting">
      <string>java.headerTemplate</string>
      <void property="value">
-      <string>// Copyright (c) 2008-2021 Geode Systems LLC
-// SPDX-License-Identifier: Apache-2.0
+       <string>/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
+*/
 </string>
      </void>
     </object>

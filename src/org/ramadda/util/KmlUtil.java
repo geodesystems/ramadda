@@ -1,22 +1,9 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
-
-/*
- * Parts of this code were originally part of the Intergrated Data Viewer.
- */
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
@@ -37,6 +24,7 @@ import ucar.unidata.xml.XmlUtil;
 
 
 import java.awt.Color;
+
 import java.io.*;
 
 import java.text.SimpleDateFormat;
@@ -46,6 +34,7 @@ import java.util.Date;
 import java.util.List;
 
 import java.util.zip.*;
+
 
 /**
  * DataSource for Web Map Servers
@@ -176,13 +165,19 @@ public class KmlUtil {
     public static final String XMLNS_KML2_2 =
         "http://www.opengis.net/kml/2.2";
 
-    public static Element readKml(String path)
-            throws Exception {
+    /**
+     *
+     * @param path _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static Element readKml(String path) throws Exception {
         Element kmlRoot = null;
         if (path.toLowerCase().endsWith(".kmz")) {
-            ZipInputStream zin =
-                new ZipInputStream(IO.getInputStream(path));
-            ZipEntry ze = null;
+            ZipInputStream zin = new ZipInputStream(IO.getInputStream(path));
+            ZipEntry       ze  = null;
             while ((ze = zin.getNextEntry()) != null) {
                 String name = ze.getName().toLowerCase();
                 if (name.toLowerCase().endsWith(".kml")) {
@@ -200,13 +195,21 @@ public class KmlUtil {
         return kmlRoot;
     }
 
-    public static Element readKml(String path,InputStream inputStream)
+    /**
+     *
+     * @param path _more_
+     * @param inputStream _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static Element readKml(String path, InputStream inputStream)
             throws Exception {
         Element kmlRoot = null;
         if (path.toLowerCase().endsWith(".kmz")) {
-            ZipInputStream zin =
-                new ZipInputStream(inputStream);
-            ZipEntry ze = null;
+            ZipInputStream zin = new ZipInputStream(inputStream);
+            ZipEntry       ze  = null;
             while ((ze = zin.getNextEntry()) != null) {
                 String name = ze.getName().toLowerCase();
                 if (name.toLowerCase().endsWith(".kml")) {
@@ -223,7 +226,7 @@ public class KmlUtil {
 
         return kmlRoot;
     }
-    
+
 
 
     /**
@@ -1164,17 +1167,26 @@ public class KmlUtil {
      * @return  the parsed coordinates
      */
     public static double[][] parseCoordinates(String coords) {
-	return parseCoordinates(coords,Integer.MAX_VALUE);
+        return parseCoordinates(coords, Integer.MAX_VALUE);
     }
 
-    public static double[][] parseCoordinates(String coords, int max) {	
+    /**
+     *
+     * @param coords _more_
+     * @param max _more_
+     *
+     * @return _more_
+     */
+    public static double[][] parseCoordinates(String coords, int max) {
         coords = StringUtil.replace(coords, "\n", " ");
-	coords = coords.replaceAll(" ,", ",");
-	coords = coords.replaceAll( ", ", ",");
-	List<String>  tokens =  Utils.split(coords, " ",true,true);
-        double[][] result = null;
+        coords = coords.replaceAll(" ,", ",");
+        coords = coords.replaceAll(", ", ",");
+        List<String> tokens = Utils.split(coords, " ", true, true);
+        double[][]   result = null;
         for (int pointIdx = 0; pointIdx < tokens.size(); pointIdx++) {
-	    if(pointIdx>=max) break;
+            if (pointIdx >= max) {
+                break;
+            }
             String tok     = tokens.get(pointIdx);
             List   numbers = StringUtil.split(tok, ",");
             if ((numbers.size() != 2) && (numbers.size() != 3)) {
@@ -1184,7 +1196,9 @@ public class KmlUtil {
                     result = new double[3][numbers.size() / 3];
                     int cnt = 0;
                     for (int i = 0; i < numbers.size(); i += 3) {
-			if(i/3>=max) break;
+                        if (i / 3 >= max) {
+                            break;
+                        }
                         result[0][cnt] = new Double(
                             numbers.get(i).toString()).doubleValue();
                         result[1][cnt] = new Double(numbers.get(i
@@ -1200,15 +1214,18 @@ public class KmlUtil {
                 throw new IllegalStateException(
                     "Bad number of coordinate values:" + numbers);
             }
-            if (result == null) {  
-              result = new double[numbers.size()][Math.min(max,tokens.size())];
+            if (result == null) {
+                result =
+                    new double[numbers.size()][Math.min(max, tokens.size())];
             }
             for (int coordIdx = 0; (coordIdx < numbers.size()); coordIdx++) {
-		if(coordIdx>=max) break;
+                if (coordIdx >= max) {
+                    break;
+                }
                 result[coordIdx][pointIdx] = new Double(
-							numbers.get(coordIdx).toString()).doubleValue();
+                    numbers.get(coordIdx).toString()).doubleValue();
             }
-	}
+        }
 
         return result;
     }
@@ -1349,29 +1366,50 @@ public class KmlUtil {
 
 
 
-    public static List<Element> findPlacemarks(Element root) throws Exception {
+    /**
+     *
+     * @param root _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static List<Element> findPlacemarks(Element root)
+            throws Exception {
         return (List<Element>) XmlUtil.findDescendants(root, TAG_PLACEMARK);
     }
 
 
-    public static List<double[]> getCoordinates(List<Element> coords) throws Exception {
-	List<double[]> d = new ArrayList<double[]>();
-	for (Element coord : (List<Element>) coords) {
-	    String c = XmlUtil.getChildText(coord);
-	    for (String triple : StringUtil.split(c, " ")) {
-		List<String> toks = StringUtil.split(triple, ",");
-		if (toks.size() < 2) {
-		    continue;
-		}
-		double lon = Double.parseDouble(toks.get(0));
-		double lat = Double.parseDouble(toks.get(1));
-		double elev = (toks.size()>2?Double.parseDouble(toks.get(2)):Double.NaN);
-		d.add(new double[]{lat,lon,elev});
-	    }
-	}
-	return d;
+    /**
+     *
+     * @param coords _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static List<double[]> getCoordinates(List<Element> coords)
+            throws Exception {
+        List<double[]> d = new ArrayList<double[]>();
+        for (Element coord : (List<Element>) coords) {
+            String c = XmlUtil.getChildText(coord);
+            for (String triple : StringUtil.split(c, " ")) {
+                List<String> toks = StringUtil.split(triple, ",");
+                if (toks.size() < 2) {
+                    continue;
+                }
+                double lon  = Double.parseDouble(toks.get(0));
+                double lat  = Double.parseDouble(toks.get(1));
+                double elev = ((toks.size() > 2)
+                               ? Double.parseDouble(toks.get(2))
+                               : Double.NaN);
+                d.add(new double[] { lat, lon, elev });
+            }
+        }
+
+        return d;
     }
-				  
+
     /**
      * _more_
      *

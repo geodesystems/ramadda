@@ -1,20 +1,10 @@
-/*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util.geo;
+
 
 import org.ramadda.util.IO;
 import org.ramadda.util.TTLCache;
@@ -40,7 +30,8 @@ import java.util.List;
  */
 public class GeoResource {
 
-    private static boolean debugMemory =false;
+    /**  */
+    private static boolean debugMemory = false;
 
     /** _more_ */
     public static final String RESOURCE_ROOT =
@@ -48,56 +39,56 @@ public class GeoResource {
 
     //name,id,fips,lat,lon,opt state index,suffix
 
-    /** _more_          */
+    /** _more_ */
     public static final GeoResource RESOURCE_TRACTS =
         new GeoResource(RESOURCE_ROOT + "/tracts.txt", new int[] { 1,
             1, 1, 8, 9 }, "");
 
-    /** _more_          */
+    /** _more_ */
     public static final GeoResource RESOURCE_CITIES =
         new GeoResource(RESOURCE_ROOT + "/cities.txt", new int[] {
         1, 1, 0, 3, 4, 2, 2
     }, "");
 
-    /** _more_          */
+    /** _more_ */
     public static final GeoResource RESOURCE_COUNTRIES =
         new GeoResource(RESOURCE_ROOT + "/countries.txt", new int[] { 3,
             0, -1, 1, 2, }, "");
 
-    /** _more_          */
+    /** _more_ */
     public static final GeoResource RESOURCE_STATES =
         new GeoResource(RESOURCE_ROOT + "/states.txt", new int[] { 1,
             0, 2, 3, 4, }, "", 5);
 
-    /** _more_          */
+    /** _more_ */
     public static final GeoResource RESOURCE_COUNTIES =
         new GeoResource(RESOURCE_ROOT + "/counties.txt", new int[] {
         3, 1, 1, 10, 11, -1, 0
     }, "", 4);
 
-    /** _more_          */
+    /** _more_ */
     public static final GeoResource RESOURCE_SUBDIVISIONS =
         new GeoResource(RESOURCE_ROOT + "/subdivisions.txt", new int[] {
         3, 1, 1, 11, 12, -1, 0
     }, "");
 
-    /** _more_          */
+    /** _more_ */
     public static final GeoResource RESOURCE_PLACES =
         new GeoResource(RESOURCE_ROOT + "/places.txt", new int[] {
         3, 1, 1, 12, 13, -1, 0
     }, "");
 
-    /** _more_          */
+    /** _more_ */
     public static final GeoResource RESOURCE_ZIPCODES =
         new GeoResource(RESOURCE_ROOT + "/zipcodes.txt", new int[] { 0,
             0, 0, 3, 4 }, "zip:");
 
-    /** _more_          */
+    /** _more_ */
     public static final GeoResource RESOURCE_ALLLOCATIONS =
         new GeoResource(RESOURCE_ROOT + "/alllocations.txt", new int[] { 0,
             0, 0, 1, 2 }, "");
 
-    /** _more_          */
+    /** _more_ */
     public static final GeoResource[] RESOURCES = {
         RESOURCE_TRACTS, RESOURCE_CITIES, RESOURCE_COUNTRIES, RESOURCE_STATES,
         RESOURCE_COUNTIES, RESOURCE_SUBDIVISIONS, RESOURCE_PLACES,
@@ -132,7 +123,7 @@ public class GeoResource {
 
     /** _more_ */
     private static TTLCache<String, Hashtable<String, Place>> cache =
-        new TTLCache<String, Hashtable<String, Place>>(1000*60*10);
+        new TTLCache<String, Hashtable<String, Place>>(1000 * 60 * 10);
 
 
     /**
@@ -193,26 +184,28 @@ public class GeoResource {
     /**
      * _more_
      *
+     *
+     * @return _more_
      * @throws Exception _more_
      */
     private synchronized Hashtable<String, Place> init() {
-	Hashtable<String, Place> placeMap = cache.get(this.id);
-        if (placeMap!=null) {
+        Hashtable<String, Place> placeMap = cache.get(this.id);
+        if (placeMap != null) {
             return placeMap;
         }
         try {
-	    double mem1=0;
-	    placeMap = new Hashtable<String, Place>();
-	    if(debugMemory) {
-		Runtime.getRuntime().gc();
-		mem1 = Utils.getUsedMemory();
-	    }
+            double mem1 = 0;
+            placeMap = new Hashtable<String, Place>();
+            if (debugMemory) {
+                Runtime.getRuntime().gc();
+                mem1 = Utils.getUsedMemory();
+            }
 
-	    InputStream in = IO.getInputStream(this.file, GeoResource.class);
+            InputStream in = IO.getInputStream(this.file, GeoResource.class);
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
-            int    cnt     = 0;
-            String line    = null;
-            int[]  indices = this.indices;
+            int            cnt     = 0;
+            String         line    = null;
+            int[]          indices = this.indices;
             while ((line = br.readLine()) != null) {
                 cnt++;
                 if (line.startsWith("#")) {
@@ -233,7 +226,7 @@ public class GeoResource {
                 if (place.getId() != null) {
                     placeMap.put(place.getId().toLowerCase(), place);
                 }
-		//                this.places.add(place);
+                //                this.places.add(place);
                 if (Utils.stringDefined(place.getFips())) {
                     placeMap.put(place.getFips(), place);
                 }
@@ -263,23 +256,30 @@ public class GeoResource {
                 */
 
             }
-	    br = null;
-	    in.close();
-	    cache.put(this.id,placeMap);
-	    if(debugMemory) {
-		Runtime.getRuntime().gc();
-		double mem2 = Utils.getUsedMemory();
-		System.err.println("GeoResource:" + id +" #:" + this.getPlaces().size()+" memory: " + Utils.decimals(mem2-mem1,1));
-	    }
-	    return placeMap;
+            br = null;
+            in.close();
+            cache.put(this.id, placeMap);
+            if (debugMemory) {
+                Runtime.getRuntime().gc();
+                double mem2 = Utils.getUsedMemory();
+                System.err.println("GeoResource:" + id + " #:"
+                                   + this.getPlaces().size() + " memory: "
+                                   + Utils.decimals(mem2 - mem1, 1));
+            }
+
+            return placeMap;
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
     }
 
 
+    /**
+     *
+     * @return _more_
+     */
     public Hashtable<String, Place> getPlaceMap() {
-	return init();
+        return init();
     }
 
     /**
@@ -288,7 +288,7 @@ public class GeoResource {
      * @return _more_
      */
     public List<Place> getPlaces() {
-        return (List<Place>)Utils.getValues(getPlaceMap());
+        return (List<Place>) Utils.getValues(getPlaceMap());
     }
 
     /** _more_ */
@@ -302,7 +302,7 @@ public class GeoResource {
      * @return _more_
      */
     public Place getPlace(String key) {
-	Hashtable<String, Place> placeMap = getPlaceMap();
+        Hashtable<String, Place> placeMap = getPlaceMap();
         key = key.toLowerCase();
         if (printKeys) {
             for (Enumeration keys =
@@ -321,7 +321,7 @@ public class GeoResource {
      * _more_
      */
     public void debug() {
-	Hashtable<String, Place> placeMap = getPlaceMap();
+        Hashtable<String, Place> placeMap = getPlaceMap();
         for (Enumeration keys = placeMap.keys(); keys.hasMoreElements(); ) {
             String k = (String) keys.nextElement();
             System.out.println("key:" + k + ":");
@@ -338,18 +338,18 @@ public class GeoResource {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-	debugMemory = true;
+        debugMemory = true;
         for (int i = 0; i < 60; i++) {
-            double        mem1   = Utils.getUsedMemory();
+            double      mem1   = Utils.getUsedMemory();
             List<Place> places = new ArrayList<Place>();
-	    System.err.println("testing");
+            System.err.println("testing");
             Place.getPlace("test");
             Runtime.getRuntime().gc();
             double mem2 = Utils.getUsedMemory();
-	    ucar.unidata.util.Misc.sleepSeconds(1);
-	    //            System.err.println("#:" + Place.cnt + " mem:" + (mem2 - mem1));
+            ucar.unidata.util.Misc.sleepSeconds(1);
+            //            System.err.println("#:" + Place.cnt + " mem:" + (mem2 - mem1));
         }
-	System.exit(0);
+        System.exit(0);
         System.err.println(Place.search("boulder", 50, null, false));
     }
 

@@ -1,27 +1,23 @@
 /**
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util.text;
 
 
-import org.ramadda.util.geo.GeoUtils;
+import org.apache.commons.codec.language.Soundex;
+import org.apache.commons.text.similarity.FuzzyScore;
+
+import org.apache.commons.text.similarity.JaroWinklerDistance;
+
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 
 import org.ramadda.util.Utils;
+
+
+import org.ramadda.util.geo.GeoUtils;
 
 import ucar.unidata.util.StringUtil;
 
@@ -40,9 +36,6 @@ import java.util.List;
 
 import java.util.regex.*;
 
-import org.apache.commons.text.similarity.JaroWinklerDistance;
-import org.apache.commons.codec.language.Soundex;
-import org.apache.commons.text.similarity.FuzzyScore;
 
 /**
  * Class description
@@ -53,6 +46,7 @@ import org.apache.commons.text.similarity.FuzzyScore;
  */
 public class CsvOperator {
 
+    /**  */
     public static final HtmlUtils HU = null;
 
     /** _more_ */
@@ -128,9 +122,9 @@ public class CsvOperator {
      */
     public CsvOperator(String col) {
         sindices = new ArrayList<String>();
-	if(Utils.stringDefined(col)) {
-	    sindices.add(col);
-	}
+        if (Utils.stringDefined(col)) {
+            sindices.add(col);
+        }
     }
 
     /**
@@ -143,45 +137,78 @@ public class CsvOperator {
     }
 
 
+    /**
+     *
+     * @param obj _more_
+     *
+     * @return _more_
+     */
     public String makeID(Object obj) {
-	String colId = Utils.makeLabel(obj.toString());
-	colId = colId.toLowerCase().replaceAll(" ",
-					       "_").replaceAll("[^a-z0-9]", "_");
-	colId = colId.replaceAll("_+_", "_");
-	colId = colId.replaceAll("_$", "");
-	return colId;
+        String colId = Utils.makeLabel(obj.toString());
+        colId = colId.toLowerCase().replaceAll(" ",
+                "_").replaceAll("[^a-z0-9]", "_");
+        colId = colId.replaceAll("_+_", "_");
+        colId = colId.replaceAll("_$", "");
+
+        return colId;
     }
-	
 
 
+
+    /**  */
     private JaroWinklerDistance jaro;
+
+    /**  */
     private Soundex soundex;
+
+    /**  */
     private FuzzyScore fuzzy;
+
+    /**
+     *
+     * @param s1 _more_
+     * @param s2 _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public int similarScore(String s1, String s2) throws Exception {
-	int levenshteinScore = me.xdrop.fuzzywuzzy.FuzzySearch.ratio(s1,s2);
-	if(true) return levenshteinScore;
-	if(soundex==null) {
-	    soundex = new Soundex();
-	    jaro = new JaroWinklerDistance();
-	    //	    fuzzy = new FuzzyScore(java.util.Locale.getDefault());
-	}
-	//	int fuzzyScore = fuzzy.fuzzyScore(s1,s2).intValue();
-	//	int soundexScore = 25*soundex.difference(s1,s2);
-	int jaroScore = (int)(100*jaro.apply(s1,s2));
-	int max =  Math.max(levenshteinScore,   jaroScore);
-	//	if(max>90)
-	//	    System.err.println(levenshteinScore +" " + jaroScore);
-	return max;
-    }
-	
+        int levenshteinScore = me.xdrop.fuzzywuzzy.FuzzySearch.ratio(s1, s2);
+        if (true) {
+            return levenshteinScore;
+        }
+        if (soundex == null) {
+            soundex = new Soundex();
+            jaro    = new JaroWinklerDistance();
+            //      fuzzy = new FuzzyScore(java.util.Locale.getDefault());
+        }
+        //      int fuzzyScore = fuzzy.fuzzyScore(s1,s2).intValue();
+        //      int soundexScore = 25*soundex.difference(s1,s2);
+        int jaroScore = (int) (100 * jaro.apply(s1, s2));
+        int max       = Math.max(levenshteinScore, jaroScore);
 
+        //      if(max>90)
+        //          System.err.println(levenshteinScore +" " + jaroScore);
+        return max;
+    }
+
+
+    /**
+     *
+     * @param i _more_
+     */
     public void setIndices(List<Integer> i) {
-	indices=i;
+        indices = i;
     }
 
 
+    /**
+     *
+     * @return _more_
+     */
     public boolean hasColumns() {
-	return sindices!=null && sindices.size()>0;
+        return (sindices != null) && (sindices.size() > 0);
     }
 
     /** _more_ */
@@ -205,7 +232,7 @@ public class CsvOperator {
      */
     public void debug(String msg, Object extra) {
         if (true) {
-	    return;
+            return;
         }
         Integer cnt = debugCounts.get(msg);
         if (cnt == null) {
@@ -307,8 +334,8 @@ public class CsvOperator {
      * @param header _more_
      */
     public void setHeader(List header) {
-	List tmp = new ArrayList();
-	tmp.addAll(header);
+        List tmp = new ArrayList();
+        tmp.addAll(header);
         this.header = tmp;
     }
 
@@ -323,12 +350,27 @@ public class CsvOperator {
     }
 
 
+    /**
+     *
+     * @param msg _more_
+     *
+     * @throws RuntimeException _more_
+     */
     public void fatal(String msg) throws RuntimeException {
-	throw new RuntimeException(msg +" function: " + getClass().getSimpleName());
+        throw new RuntimeException(msg + " function: "
+                                   + getClass().getSimpleName());
     }
 
-    public void fatal(String msg,Exception exc) throws RuntimeException {
-	throw new RuntimeException( msg +" function: " + getClass().getSimpleName(),exc);
+    /**
+     *
+     * @param msg _more_
+     * @param exc _more_
+     *
+     * @throws RuntimeException _more_
+     */
+    public void fatal(String msg, Exception exc) throws RuntimeException {
+        throw new RuntimeException(msg + " function: "
+                                   + getClass().getSimpleName(), exc);
     }
 
 
@@ -343,25 +385,42 @@ public class CsvOperator {
         if (index != UNDEFINED_INDEX) {
             return index;
         }
-	List<Integer>  indices = getIndices(ctx);
-	if(indices.size()==0) fatal("No indices specified");
-	index = indices.get(0);
+        List<Integer> indices = getIndices(ctx);
+        if (indices.size() == 0) {
+            fatal("No indices specified");
+        }
+        index = indices.get(0);
 
         return index;
     }
 
 
+    /**
+     *
+     * @param v _more_
+     *
+     * @return _more_
+     */
     public boolean getBoolean(String v) {
-	if(v==null) return false;
-	if(v.equals("true")) return true;
-	if(v.equals("false") || !Utils.stringDefined(v)) return false;
-	try {
-	    double d = Double.parseDouble(v);
-	    if(d==0) return false;
-	    return true;
-	} catch(Exception exc) {
-	}
-	return false;
+        if (v == null) {
+            return false;
+        }
+        if (v.equals("true")) {
+            return true;
+        }
+        if (v.equals("false") || !Utils.stringDefined(v)) {
+            return false;
+        }
+        try {
+            double d = Double.parseDouble(v);
+            if (d == 0) {
+                return false;
+            }
+
+            return true;
+        } catch (Exception exc) {}
+
+        return false;
     }
 
 
@@ -445,60 +504,86 @@ public class CsvOperator {
      */
     public int xgetColumnIndex(String s) {
         List<Integer> indices = new ArrayList<Integer>();
-        getColumnIndex(null, indices, s,null);
+        getColumnIndex(null, indices, s, null);
+
         return indices.get(0);
     }
 
+    /**
+     *
+     * @param tok _more_
+     *
+     * @return _more_
+     */
     private boolean isLastIndex(String tok) {
-	return tok.startsWith("_last") && tok.endsWith("_");
+        return tok.startsWith("_last") && tok.endsWith("_");
     }
 
+    /**
+     *
+     * @param tok _more_
+     * @param last _more_
+     *
+     * @return _more_
+     */
     private int getLastIndex(String tok, int last) {
-	if (tok.equals("_last_")) {
-	    return last;
-	}
-	return -1;
+        if (tok.equals("_last_")) {
+            return last;
+        }
+
+        return -1;
     }
 
+    /**
+     *
+     * @param ctx _more_
+     * @param tok _more_
+     *
+     * @return _more_
+     */
     public Integer getColumnIndex(TextReader ctx, String tok) {
-	checkColumns();
-	//	System.err.println("\tgetColumnIndex:" + tok);
-	Integer iv = columnMap.get(tok);
-	//	System.err.println("\t\tiv-a:" + iv);
-	if(iv==null) {
-	    String tmp = ctx.getFieldAlias(tok);
-	    if(tmp!=null) {
-		iv = columnMap.get(tmp);
-	    }
-	}
-	if(iv==null) {
-	    String colId = Utils.makeID(tok,false);
-	    iv = columnMap.get(colId);
-	}
-	return iv;
+        checkColumns();
+        //      System.err.println("\tgetColumnIndex:" + tok);
+        Integer iv = columnMap.get(tok);
+        //      System.err.println("\t\tiv-a:" + iv);
+        if (iv == null) {
+            String tmp = ctx.getFieldAlias(tok);
+            if (tmp != null) {
+                iv = columnMap.get(tmp);
+            }
+        }
+        if (iv == null) {
+            String colId = Utils.makeID(tok, false);
+            iv = columnMap.get(colId);
+        }
+
+        return iv;
     }
 
 
+    /**
+     */
     private void checkColumns() {
-	if (columnNames == null) {
-	    columnNames = new ArrayList<String>();
-	    columnMap = new Hashtable<String, Integer>();
-	    if (header == null) {
-		debug("no names or header");
-		return;
-	    }
+        if (columnNames == null) {
+            columnNames = new ArrayList<String>();
+            columnMap   = new Hashtable<String, Integer>();
+            if (header == null) {
+                debug("no names or header");
 
-	    for (int i = 0; i < header.size(); i++) {
-		String colName = (String) header.get(i);
-		String colId = Utils.makeID(colName,false);
-		columnNames.add(colName);
-		colName = colName.trim();
-		columnMap.put(colName, i);
-		columnMap.put(colId, i);
-		columnMap.put(colName.toLowerCase(), i);
-		columnMap.put(i+"", i);
-	    }
-	}
+                return;
+            }
+
+            for (int i = 0; i < header.size(); i++) {
+                String colName = (String) header.get(i);
+                String colId   = Utils.makeID(colName, false);
+                columnNames.add(colName);
+                colName = colName.trim();
+                columnMap.put(colName, i);
+                columnMap.put(colId, i);
+                columnMap.put(colName.toLowerCase(), i);
+                columnMap.put(i + "", i);
+            }
+        }
     }
 
 
@@ -510,44 +595,50 @@ public class CsvOperator {
      * @param ctx _more_
      * @param indices _more_
      * @param s _more_
+     * @param seen _more_
      *
      */
     public void getColumnIndex(TextReader ctx, List<Integer> indices,
-                               String s,HashSet seen) {
-	if(seen==null) seen = new HashSet();
-	checkColumns();
-	if(s.startsWith("regex:")) {
-	    s = s.substring("regex:".length());
-	    //	    System.err.println("pattern:" + s+":");
-	    Pattern      p      = Pattern.compile(s);
-	    for (int i = 0; i < header.size(); i++) {
-		String name =  columnNames.get(i);
-		String id =  makeID(header.get(i));
-		boolean matches = p.matcher(name).matches();
-		if(!matches)
-		    matches = p.matcher(id).matches();
-		if(matches) {
-		    //		    System.err.println("\tmatch:" + name);
-		    indices.add(columnMap.get(name));
-		} else {
-		    //		    System.err.println("\tno match:" + name +" " + id);
-		}
-	    }
-	    //	    System.err.println("Indices:" + indices);
-	    return;
-	}
+                               String s, HashSet seen) {
 
-	//	System.err.println("getColumnIndex:" + s);
-        List<String> toks  = Utils.splitUpTo(s, "-", 2);
-	//	System.err.println("\ttoks:" + toks);
-        int          start = -1;
-        int          end   = -1;
+        if (seen == null) {
+            seen = new HashSet();
+        }
+        checkColumns();
+        if (s.startsWith("regex:")) {
+            s = s.substring("regex:".length());
+            //      System.err.println("pattern:" + s+":");
+            Pattern p = Pattern.compile(s);
+            for (int i = 0; i < header.size(); i++) {
+                String  name    = columnNames.get(i);
+                String  id      = makeID(header.get(i));
+                boolean matches = p.matcher(name).matches();
+                if ( !matches) {
+                    matches = p.matcher(id).matches();
+                }
+                if (matches) {
+                    //              System.err.println("\tmatch:" + name);
+                    indices.add(columnMap.get(name));
+                } else {
+                    //              System.err.println("\tno match:" + name +" " + id);
+                }
+            }
+
+            //      System.err.println("Indices:" + indices);
+            return;
+        }
+
+        //      System.err.println("getColumnIndex:" + s);
+        List<String> toks = Utils.splitUpTo(s, "-", 2);
+        //      System.err.println("\ttoks:" + toks);
+        int start = -1;
+        int end   = -1;
 
         s = s.toLowerCase().trim();
 
         try {
             if (toks.size() == 1) {
-		//not now		if(Utils.testAndSet(seen,s)) return;
+                //not now               if(Utils.testAndSet(seen,s)) return;
                 start = end = Integer.parseInt(s);
             } else {
                 start = Integer.parseInt(toks.get(0));
@@ -557,9 +648,10 @@ public class CsvOperator {
             if (toks.size() == 1) {
                 String tok = toks.get(0);
                 if (isLastIndex(tok)) {
-		    indices.add(getLastIndex(tok,header.size()-1));
-		    return;
-		}
+                    indices.add(getLastIndex(tok, header.size() - 1));
+
+                    return;
+                }
 
                 if (tok.equals("*")) {
                     for (int i = 0; i < header.size(); i++) {
@@ -576,53 +668,63 @@ public class CsvOperator {
                     start = end = iv;
                 } else {
                     //Not sure whether we should throw an error
-		    for(String colName:columnNames) {
-			//			System.err.println(colName);
-		    }			
-		    //		    System.out.println("TOK:" + tok);
-		    for (Enumeration keys = columnMap.keys(); keys.hasMoreElements(); ) {
-			String key =(String) keys.nextElement(); 
-			if(key.length()==0) continue;
-			if(key.matches("^[0-9]+$")) continue;
-			//			System.out.println("KEY:" + key);
-		    }
-		    //		    System.err.println(columnMap);
+                    for (String colName : columnNames) {
+                        //                      System.err.println(colName);
+                    }
+                    //              System.out.println("TOK:" + tok);
+                    for (Enumeration keys = columnMap.keys();
+                            keys.hasMoreElements(); ) {
+                        String key = (String) keys.nextElement();
+                        if (key.length() == 0) {
+                            continue;
+                        }
+                        if (key.matches("^[0-9]+$")) {
+                            continue;
+                        }
+                        //                      System.out.println("KEY:" + key);
+                    }
+                    //              System.err.println(columnMap);
                     fatal("Could not find index:" + tok);
                 }
             } else {
-		String tok1 = toks.get(0);
-		String tok2 = toks.get(1);
+                String tok1 = toks.get(0);
+                String tok2 = toks.get(1);
                 if (isLastIndex(tok1)) {
-		    start = getLastIndex(tok1,header.size()-1);
-		} else {
-		    Integer iv = getColumnIndex(ctx, tok1);
-		    if(iv!=null) start=iv;
-		}
+                    start = getLastIndex(tok1, header.size() - 1);
+                } else {
+                    Integer iv = getColumnIndex(ctx, tok1);
+                    if (iv != null) {
+                        start = iv;
+                    }
+                }
                 if (isLastIndex(tok2)) {
-		    end = getLastIndex(tok2,header.size()-1);
-		} else {
-		    Integer iv = getColumnIndex(ctx, tok2);
-		    if(iv!=null) end=iv;
-		}
-		if(start==-1 || end==-1) {
-		    for (Enumeration keys = columnMap.keys(); keys.hasMoreElements(); ) {
-			String key =(String) keys.nextElement(); 
-			System.err.println("key:" + key);
-		    }
-		    fatal("Could not find indices:" + toks);
-		}
-		/*
-		  Integer iv2 = getColumnIndex(ctx, tok2);
+                    end = getLastIndex(tok2, header.size() - 1);
+                } else {
+                    Integer iv = getColumnIndex(ctx, tok2);
+                    if (iv != null) {
+                        end = iv;
+                    }
+                }
+                if ((start == -1) || (end == -1)) {
+                    for (Enumeration keys = columnMap.keys();
+                            keys.hasMoreElements(); ) {
+                        String key = (String) keys.nextElement();
+                        System.err.println("key:" + key);
+                    }
+                    fatal("Could not find indices:" + toks);
+                }
+                /*
+                  Integer iv2 = getColumnIndex(ctx, tok2);
                 if ((iv1 != null) && (iv2 != null)) {
                     start = iv1;
                     end   = iv2;
                 }
-		*/
+                */
             }
         }
         if (start >= 0) {
             for (int i = start; i <= end; i++) {
-		//not now		if(Utils.testAndSet(seen,i)) continue;
+                //not now               if(Utils.testAndSet(seen,i)) continue;
                 colsSeen.add(i);
                 indices.add(i);
             }
@@ -637,6 +739,7 @@ public class CsvOperator {
                 return;
             }
             }*/
+
     }
 
 
@@ -670,10 +773,11 @@ public class CsvOperator {
             return null;
         }
         List<Integer> indices = new ArrayList<Integer>();
-	HashSet seen = new HashSet();
+        HashSet       seen    = new HashSet();
         for (String s : cols) {
             getColumnIndex(ctx, indices, s, seen);
         }
+
         return indices;
     }
 
@@ -689,7 +793,7 @@ public class CsvOperator {
      */
     public int getIndex(TextReader ctx, String idx) {
         List<Integer> indices = new ArrayList<Integer>();
-        getColumnIndex(ctx, indices, idx,new HashSet());
+        getColumnIndex(ctx, indices, idx, new HashSet());
         if (indices.size() == 0) {
             throw new IllegalArgumentException("Could not find column index:"
                     + idx);
@@ -701,18 +805,27 @@ public class CsvOperator {
 
 
 
-    public Row removeColumns(List<Integer> indices, Row row)  {
-	if (indices.size() == 0) {
-	    debug("processRow- no indices");
-	    return row;
-	}
-	List<String> result = new ArrayList<String>();
-	for (int i = 0; i < row.size(); i++) {
-	    if ( !indices.contains(i)) {
-		result.add(row.getString(i));
-	    }
-	}
-	return new Row(result);
+    /**
+     *
+     * @param indices _more_
+     * @param row _more_
+     *
+     * @return _more_
+     */
+    public Row removeColumns(List<Integer> indices, Row row) {
+        if (indices.size() == 0) {
+            debug("processRow- no indices");
+
+            return row;
+        }
+        List<String> result = new ArrayList<String>();
+        for (int i = 0; i < row.size(); i++) {
+            if ( !indices.contains(i)) {
+                result.add(row.getString(i));
+            }
+        }
+
+        return new Row(result);
     }
 
 

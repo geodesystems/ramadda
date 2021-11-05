@@ -1,25 +1,16 @@
-/*
- * Copyright (c) 2008-2019 Geode Systems LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *     http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
+*/
 
 package org.ramadda.util.text;
 
 
-import org.ramadda.util.NamedInputStream;
-import org.ramadda.util.NamedChannel;
 import org.ramadda.util.IO;
+import org.ramadda.util.NamedChannel;
+
+
+import org.ramadda.util.NamedInputStream;
 import org.ramadda.util.Utils;
 
 import ucar.unidata.util.IOUtil;
@@ -28,6 +19,7 @@ import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 import java.io.File;
+
 import java.nio.*;
 import java.nio.channels.*;
 
@@ -66,7 +58,9 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private List<String> files = new ArrayList<String>();
 
-    private Hashtable<String,String> fieldAliases = new Hashtable<String,String>();
+    /**  */
+    private Hashtable<String, String> fieldAliases = new Hashtable<String,
+                                                         String>();
 
     /** _more_ */
     private PrintWriter writer;
@@ -77,7 +71,8 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private NamedInputStream input;
 
-    private NamedChannel inputChannel;    
+    /**  */
+    private NamedChannel inputChannel;
 
     /** _more_ */
     private String inputFile;
@@ -85,7 +80,10 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private BufferedReader prependReader;
 
+    /**  */
     private ReadableByteChannel channel;
+
+    /**  */
     private ByteBuffer buff;
 
 
@@ -109,12 +107,14 @@ public class TextReader implements Cloneable {
     private int nextChar = UNDEF;
 
 
+    /**  */
     private boolean hasInput = true;
 
     /** _more_ */
     private String delimiter = ",";
 
-    private boolean quotesNotSpecial =false;
+    /**  */
+    private boolean quotesNotSpecial = false;
 
     /** _more_ */
     private boolean splitOnSpaces = false;
@@ -131,7 +131,9 @@ public class TextReader implements Cloneable {
 
     /** _more_ */
     private int skip = 0;
-    private int skipLines = 0;    
+
+    /**  */
+    private int skipLines = 0;
 
     /** _more_ */
     private int visitedRows = 0;
@@ -158,8 +160,11 @@ public class TextReader implements Cloneable {
     private List<String> changeStrings;
 
 
+    /**  */
     private Processor firstProcessor;
-    private Processor lastProcessor;    
+
+    /**  */
+    private Processor lastProcessor;
 
     /** _more_ */
     private DecimalFormat format;
@@ -277,63 +282,96 @@ public class TextReader implements Cloneable {
     }
 
 
+    /**
+     *
+     * @param tok _more_
+     *
+     * @return _more_
+     */
     public String getFieldAlias(String tok) {
-	return fieldAliases.get(tok);
+        return fieldAliases.get(tok);
     }
 
-    public void putFieldAlias(String name,String alias) {
-	fieldAliases.put(name,alias);
-	fieldAliases.put(alias,name);	
-    }    
+    /**
+     *
+     * @param name _more_
+     * @param alias _more_
+     */
+    public void putFieldAlias(String name, String alias) {
+        fieldAliases.put(name, alias);
+        fieldAliases.put(alias, name);
+    }
 
 
-    public Row processRow(CsvUtil csvUtil,Row row) throws Exception {
-	if(firstProcessor!=null) {
-	    row  = firstProcessor.handleRow(this, row);
-	} else {
+    /**
+     *
+     * @param csvUtil _more_
+     * @param row _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Row processRow(CsvUtil csvUtil, Row row) throws Exception {
+        if (firstProcessor != null) {
+            row = firstProcessor.handleRow(this, row);
+        } else {
             getWriter().println(csvUtil.columnsToString(row.getValues(),
-						getOutputDelimiter()));
+                    getOutputDelimiter()));
             getWriter().flush();
-	}
-	return row;
+        }
+
+        return row;
     }
 
+    /**
+     *
+     * @throws Exception _more_
+     */
     public void finishProcessing() throws Exception {
-	if(firstProcessor!=null) {
-	    firstProcessor.finish(this);
-	}
+        if (firstProcessor != null) {
+            firstProcessor.finish(this);
+        }
     }
 
+    /**
+     */
     public void resetProcessors() {
-	if(firstProcessor!=null) firstProcessor.reset();
+        if (firstProcessor != null) {
+            firstProcessor.reset();
+        }
     }
 
+    /**
+     *
+     * @param processor _more_
+     */
     public void addProcessor(Processor processor) {
-	if(firstProcessor==null)
-	    lastProcessor = firstProcessor = processor;
-	else {
-	    lastProcessor.setNextProcessor(processor);
-	    lastProcessor = processor;
-	}
+        if (firstProcessor == null) {
+            lastProcessor = firstProcessor = processor;
+        } else {
+            lastProcessor.setNextProcessor(processor);
+            lastProcessor = processor;
+        }
     }
 
 
     /**
-       Set the Verbose property.
-
-       @param value The new value for Verbose
-    **/
-    public void setVerbose (boolean value) {
-	verbose = value;
+     *  Set the Verbose property.
+     *
+     *  @param value The new value for Verbose
+     */
+    public void setVerbose(boolean value) {
+        verbose = value;
     }
 
     /**
-       Get the Verbose property.
-
-       @return The Verbose
-    **/
-    public boolean getVerbose () {
-	return verbose;
+     *  Get the Verbose property.
+     *
+     *  @return The Verbose
+     */
+    public boolean getVerbose() {
+        return verbose;
     }
 
 
@@ -468,11 +506,18 @@ public class TextReader implements Cloneable {
         return s;
     }
 
+    /**
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public String readContents() throws Exception {
-	if(input!=null) {
-	    return IO.readInputStream(input.getInputStream());
-	}
-	return IO.readChannel(inputChannel.getChannel());
+        if (input != null) {
+            return IO.readInputStream(input.getInputStream());
+        }
+
+        return IO.readChannel(inputChannel.getChannel());
     }
 
     /**
@@ -664,7 +709,6 @@ public class TextReader implements Cloneable {
      * _more_
      *
      * @param input _more_
-     * @param inputFile _more_
      * @param outputFile _more_
      * @param output _more_
      *
@@ -674,7 +718,7 @@ public class TextReader implements Cloneable {
      */
     public TextReader cloneMe(NamedInputStream input, File outputFile,
                               OutputStream output)
-	throws CloneNotSupportedException {
+            throws CloneNotSupportedException {
         TextReader that = (TextReader) super.clone();
         that.debug      = this.debug;
         that.input      = input;
@@ -685,7 +729,7 @@ public class TextReader implements Cloneable {
         if (debug) {
             that.debugSB = this.debugSB;
             if ((that.output != null) && (that.debugSB != null)
-		&& (that.debugSB.length() > 0)) {
+                    && (that.debugSB.length() > 0)) {
                 that.getWriter().print(that.debugSB);
                 that.debugSB = new StringBuilder();
             }
@@ -702,20 +746,30 @@ public class TextReader implements Cloneable {
     }
 
 
+    /**
+     *
+     * @param inputChannel _more_
+     * @param outputFile _more_
+     * @param output _more_
+     *
+     * @return _more_
+     *
+     * @throws CloneNotSupportedException _more_
+     */
     public TextReader cloneMe(NamedChannel inputChannel, File outputFile,
                               OutputStream output)
-	throws CloneNotSupportedException {
+            throws CloneNotSupportedException {
         TextReader that = (TextReader) super.clone();
-        that.debug      = this.debug;
-        that.inputChannel      = inputChannel;
-        that.output     = output;
-        that.outputFile = outputFile;
-        that.writer     = null;
+        that.debug        = this.debug;
+        that.inputChannel = inputChannel;
+        that.output       = output;
+        that.outputFile   = outputFile;
+        that.writer       = null;
 
         if (debug) {
             that.debugSB = this.debugSB;
             if ((that.output != null) && (that.debugSB != null)
-		&& (that.debugSB.length() > 0)) {
+                    && (that.debugSB.length() > 0)) {
                 that.getWriter().print(that.debugSB);
                 that.debugSB = new StringBuilder();
             }
@@ -730,20 +784,24 @@ public class TextReader implements Cloneable {
 
         return that;
     }
-    
+
     /**
      * _more_
      *
      * @return _more_
      */
     public String getInputFile() {
-	if(inputFile!=null)
-	    return inputFile;
-	if(input!=null)
-	    return input.getName();
-	if(inputChannel!=null)
-	    return inputChannel.getName();	
-	return null;
+        if (inputFile != null) {
+            return inputFile;
+        }
+        if (input != null) {
+            return input.getName();
+        }
+        if (inputChannel != null) {
+            return inputChannel.getName();
+        }
+
+        return null;
     }
 
     /**
@@ -794,7 +852,7 @@ public class TextReader implements Cloneable {
     }
 
 
-   
+
 
     /**
      * _more_
@@ -804,33 +862,47 @@ public class TextReader implements Cloneable {
      * @throws Exception _more_
      */
     private int readCharNew() throws Exception {
-	ByteBuffer buff  = getBuffer();
-	if(buff==null) return UNDEF;
+        ByteBuffer buff = getBuffer();
+        if (buff == null) {
+            return UNDEF;
+        }
         while (true) {
-	    if(!buff.hasRemaining()) return UNDEF;
-            int c  = UNDEF;
+            if ( !buff.hasRemaining()) {
+                return UNDEF;
+            }
+            int c = UNDEF;
             if (prependReader != null) {
                 c = prependReader.read();
                 if (c == -1) {
                     prependReader = null;
                 }
             }
-	    if(c==UNDEF) {
-		while(pruneBytes>0) {
-		    if(!buff.hasRemaining()) buff= getBuffer();
-		    if(buff==null) return UNDEF;
-		    buff.get();
-		    pruneBytes--;
-		}
-		if(!buff.hasRemaining()) buff= getBuffer();
-		if(buff==null) return UNDEF;
-		if(!buff.hasRemaining()) return UNDEF;
-		c = buff.get();
-	    }
-	    if (c != 0x00) {
-		return c;
-	    }
-	}
+            if (c == UNDEF) {
+                while (pruneBytes > 0) {
+                    if ( !buff.hasRemaining()) {
+                        buff = getBuffer();
+                    }
+                    if (buff == null) {
+                        return UNDEF;
+                    }
+                    buff.get();
+                    pruneBytes--;
+                }
+                if ( !buff.hasRemaining()) {
+                    buff = getBuffer();
+                }
+                if (buff == null) {
+                    return UNDEF;
+                }
+                if ( !buff.hasRemaining()) {
+                    return UNDEF;
+                }
+                c = buff.get();
+            }
+            if (c != 0x00) {
+                return c;
+            }
+        }
     }
 
 
@@ -844,25 +916,32 @@ public class TextReader implements Cloneable {
      * @throws Exception _more_
      */
     private int readChar() throws Exception {
-	int c;
-	if(inputChannel!=null) {
-	    c =  readCharNew();
-	    //	    System.err.println("new:" + (char)c);
-	}  else {
-	    c= readCharOld();
-	    //	    System.err.println("old:" + (char)c);
-	}
-	if(c==UNDEF) {
-	    hasInput = false;
-	}
-	return c;
+        int c;
+        if (inputChannel != null) {
+            c = readCharNew();
+            //      System.err.println("new:" + (char)c);
+        } else {
+            c = readCharOld();
+            //      System.err.println("old:" + (char)c);
+        }
+        if (c == UNDEF) {
+            hasInput = false;
+        }
+
+        return c;
     }
 
 
-    private int readCharOld() throws Exception {	
+    /**
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private int readCharOld() throws Exception {
         int cnt = 0;
         while (true) {
-            int c=-1;
+            int c = -1;
             if (prependReader != null) {
                 c = prependReader.read();
                 if (c == -1) {
@@ -896,7 +975,6 @@ public class TextReader implements Cloneable {
     /**
      * _more_
      *
-     * @param ctx _more_
      * @param line _more_
      *
      * @return _more_
@@ -921,14 +999,19 @@ public class TextReader implements Cloneable {
      * @throws Exception _more_
      */
     public String readLine() throws Exception {
-	if(!hasInput) return null;
+
+        if ( !hasInput) {
+            return null;
+        }
         lb.setLength(0);
         int           c;
         boolean       inQuote = false;
         StringBuilder sb      = null;
         boolean       debug   = false;
-	boolean debug2 = false;
-        if(debug || debug2) sb      = new StringBuilder();
+        boolean       debug2  = false;
+        if (debug || debug2) {
+            sb = new StringBuilder();
+        }
         while (true) {
             if (debug2 && (lb.length() > 750)) {
                 System.err.println("***** Whoa:" + lb);
@@ -951,13 +1034,14 @@ public class TextReader implements Cloneable {
                 if (result.length() == 0) {
                     return null;
                 }
+
                 return result;
-            } 
+            }
 
             if (c == NEWLINE) {
                 if (debug2) {
                     sb.append("\tnew line:" + inQuote + "\n");
-                    System.err.print("new line:" + inQuote + "\n");		    
+                    System.err.print("new line:" + inQuote + "\n");
                 }
                 if (changeStrings != null) {
                     String line  = lb.toString();
@@ -982,6 +1066,7 @@ public class TextReader implements Cloneable {
                             inQuote  = false;
                             nextChar = UNDEF;
                             ok       = false;
+
                             break;
                         }
                     }
@@ -1007,6 +1092,7 @@ public class TextReader implements Cloneable {
                     if (nextChar == NEWLINE) {
                         nextChar = UNDEF;
                     }
+
                     break;
                 }
 
@@ -1016,7 +1102,7 @@ public class TextReader implements Cloneable {
             if (debug) {
                 sb.append("\tchar:" + (char) c + "  inQuote: " + inQuote);
             }
-            if (!quotesNotSpecial && c == QUOTE_DOUBLE) {
+            if ( !quotesNotSpecial && (c == QUOTE_DOUBLE)) {
                 if (debug2) {
                     sb.append("\tquote: " + inQuote + "\n");
                 }
@@ -1027,9 +1113,9 @@ public class TextReader implements Cloneable {
                     inQuote = true;
                 } else {
                     nextChar = readChar();
-		    if (nextChar == UNDEF) {
-			System.err.println("YYY");
-		    }
+                    if (nextChar == UNDEF) {
+                        System.err.println("YYY");
+                    }
                     if (nextChar == UNDEF) {
                         break;
                     }
@@ -1046,6 +1132,7 @@ public class TextReader implements Cloneable {
                             if (debug) {
                                 sb.append("\tnew line:" + inQuote + "\n");
                             }
+
                             break;
                         }
                         if (nextChar == CARRIAGE_RETURN) {
@@ -1073,13 +1160,15 @@ public class TextReader implements Cloneable {
                     nextChar = UNDEF;
                 }
             }
-	}
+        }
         if (debug) {
             System.out.println(sb);
         }
 
         String line = lb.toString();
+
         return line;
+
     }
 
 
@@ -1386,14 +1475,21 @@ public class TextReader implements Cloneable {
         return input;
     }
 
+    /**
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public InputStream getInputStream() throws Exception {
-	if(input!=null) 
-	    return input.getInputStream();
-	else if(inputChannel!=null)
-	    return Channels.newInputStream(getChannel());
-	else
-	    return null;
-    }    
+        if (input != null) {
+            return input.getInputStream();
+        } else if (inputChannel != null) {
+            return Channels.newInputStream(getChannel());
+        } else {
+            return null;
+        }
+    }
 
     /**
      * _more_
@@ -1402,43 +1498,66 @@ public class TextReader implements Cloneable {
      */
     public BufferedReader getReader() {
         if (reader == null) {
-	    NamedInputStream input = getInput();
-	    InputStreamReader isr = new InputStreamReader(input.getInputStream(), java.nio.charset.StandardCharsets.UTF_8);
-	    reader = new BufferedReader(isr);
+            NamedInputStream input = getInput();
+            InputStreamReader isr =
+                new InputStreamReader(
+                    input.getInputStream(),
+                    java.nio.charset.StandardCharsets.UTF_8);
+            reader = new BufferedReader(isr);
         }
+
         return reader;
     }
 
+    /**
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public ByteBuffer getBuffer() throws Exception {
-	if(buff==null) {
-	    channel = getChannel();
-	    buff = ByteBuffer.allocate(32000);
-	    int bytesRead = channel.read(buff);
-	    if(bytesRead<0) return null;
-	    buff.flip();
-	    if(!buff.hasRemaining()) {
-		return null;
-	    }
-	    return buff;
-	} 
-	if(!buff.hasRemaining()) {
-	    buff.clear(); 
-	    int bytesRead = channel.read(buff);
-	    if(bytesRead<0) return null;
-	    buff.flip();
-	}
-	return buff;
+        if (buff == null) {
+            channel = getChannel();
+            buff    = ByteBuffer.allocate(32000);
+            int bytesRead = channel.read(buff);
+            if (bytesRead < 0) {
+                return null;
+            }
+            buff.flip();
+            if ( !buff.hasRemaining()) {
+                return null;
+            }
+
+            return buff;
+        }
+        if ( !buff.hasRemaining()) {
+            buff.clear();
+            int bytesRead = channel.read(buff);
+            if (bytesRead < 0) {
+                return null;
+            }
+            buff.flip();
+        }
+
+        return buff;
     }
 
 
+    /**
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     private ReadableByteChannel getChannel() throws Exception {
-	if(channel==null) {
-	    channel=  inputChannel.getChannel();
-	    buff = ByteBuffer.allocate(32000);
-	}
-	return channel;
+        if (channel == null) {
+            channel = inputChannel.getChannel();
+            buff    = ByteBuffer.allocate(32000);
+        }
+
+        return channel;
     }
-	
+
 
 
     /**
@@ -1450,8 +1569,8 @@ public class TextReader implements Cloneable {
         this.prepend = text;
         if (text != null) {
             this.prependReader = new BufferedReader(
-						    new InputStreamReader(
-									  new ByteArrayInputStream(text.getBytes())));
+                new InputStreamReader(
+                    new ByteArrayInputStream(text.getBytes())));
         } else {
             this.prependReader = null;
         }
@@ -1604,23 +1723,23 @@ public class TextReader implements Cloneable {
     }
 
 
-/**
-Set the SkipLines property.
+    /**
+     * Set the SkipLines property.
+     *
+     * @param value The new value for SkipLines
+     */
+    public void setSkipLines(int value) {
+        skipLines = value;
+    }
 
-@param value The new value for SkipLines
-**/
-public void setSkipLines (int value) {
-	skipLines = value;
-}
-
-/**
-Get the SkipLines property.
-
-@return The SkipLines
-**/
-public int getSkipLines () {
-	return skipLines;
-}
+    /**
+     * Get the SkipLines property.
+     *
+     * @return The SkipLines
+     */
+    public int getSkipLines() {
+        return skipLines;
+    }
 
 
 
@@ -1665,8 +1784,12 @@ public int getSkipLines () {
         }
     }
 
+    /**
+     *
+     * @param v _more_
+     */
     public void setQuotesNotSpecial(boolean v) {
-	quotesNotSpecial = v;
+        quotesNotSpecial = v;
     }
 
 

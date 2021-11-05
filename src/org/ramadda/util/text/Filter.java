@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util.text;
@@ -149,10 +138,16 @@ public class Filter extends Processor {
             super(cols);
         }
 
+        /**
+         *
+         *
+         * @param cols _more_
+         * @param negate _more_
+         */
         public ColumnFilter(List<String> cols, boolean negate) {
             super(cols);
-	    this.negate= negate;
-        }	
+            this.negate = negate;
+        }
 
 
         /**
@@ -166,9 +161,14 @@ public class Filter extends Processor {
             this.negate = negate;
         }
 
+        /**
+         *
+         *
+         * @param negate _more_
+         */
         public ColumnFilter(boolean negate) {
             this.negate = negate;
-        }	
+        }
 
         /**
          * _more_
@@ -200,7 +200,7 @@ public class Filter extends Processor {
                 return -11;
             }
             ArrayList<Integer> tmp = new ArrayList<Integer>();
-            getColumnIndex(ctx,tmp, scol,new HashSet());
+            getColumnIndex(ctx, tmp, scol, new HashSet());
             col = tmp.get(0);
 
             return col;
@@ -294,48 +294,66 @@ public class Filter extends Processor {
      */
     public static class IfIn extends Filter {
 
-	private boolean in;
-	private HashSet seen;
-	
-	private int idx1;
-	private int idx2;	
-	private String column2;
-	
+        /**  */
+        private boolean in;
+
+        /**  */
+        private HashSet seen;
+
+        /**  */
+        private int idx1;
+
+        /**  */
+        private int idx2;
+
+        /**  */
+        private String column2;
+
         /**
          * _more_
          *
-         * @param col _more_
-         * @param pattern _more_
-         * @param negate _more_
+         * @param in _more_
+         * @param column1 _more_
+         * @param file _more_
+         * @param column2 _more_
          */
         public IfIn(boolean in, String column1, String file, String column2) {
-	    this.in = in;
-	    if(!IO.okToReadFrom(file)) {
-		fatal("Cannot read file:" + file);
-	    }
-	    this.column2 = column2;
+            this.in = in;
+            if ( !IO.okToReadFrom(file)) {
+                fatal("Cannot read file:" + file);
+            }
+            this.column2 = column2;
             try {
                 init(file, column1);
             } catch (Exception exc) {
                 fatal("Reading file:" + file, exc);
-	    }
+            }
         }
 
-	private void init(String file, String col1) throws Exception {
+        /**
+         *
+         * @param file _more_
+         * @param col1 _more_
+         *
+         * @throws Exception _more_
+         */
+        private void init(String file, String col1) throws Exception {
             BufferedReader br = new BufferedReader(
-						   new InputStreamReader(
-									 getInputStream(file)));
-	    CsvOperator operator = null;
-            TextReader reader = new TextReader(br);
-	    seen = new HashSet();
+                                    new InputStreamReader(
+                                        getInputStream(file)));
+            CsvOperator operator = null;
+            TextReader  reader   = new TextReader(br);
+            seen = new HashSet();
             String delimiter = null;
             while (true) {
                 String line = reader.readLine();
                 if (line == null) {
                     break;
                 }
-		line = line.trim();
-		if(line.length()==0) continue;
+                line = line.trim();
+                if (line.length() == 0) {
+                    continue;
+                }
                 if (delimiter == null) {
                     if (line.indexOf("\t") >= 0) {
                         delimiter = "\t";
@@ -344,15 +362,15 @@ public class Filter extends Processor {
                     }
                 }
                 List<String> cols = Utils.tokenizeColumns(line, delimiter);
-		if(operator==null) {
-		    operator = new CsvOperator();
-		    operator.setHeader(cols);
-		    idx1=operator.getColumnIndex(reader,col1);
-		}
-		String v = cols.get(idx1);
-		seen.add(v);
-	    }
-	}
+                if (operator == null) {
+                    operator = new CsvOperator();
+                    operator.setHeader(cols);
+                    idx1 = operator.getColumnIndex(reader, col1);
+                }
+                String v = cols.get(idx1);
+                seen.add(v);
+            }
+        }
 
 
         /**
@@ -367,16 +385,18 @@ public class Filter extends Processor {
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
             if (cnt++ == 0) {
-		idx2 = getColumnIndex(ctx, column2);
+                idx2 = getColumnIndex(ctx, column2);
+
                 return true;
             }
-	    
-	    Object v = row.get(idx2);
-	    if(seen.contains(v))
-		return in;
-	    else
-		return !in;
-	}
+
+            Object v = row.get(idx2);
+            if (seen.contains(v)) {
+                return in;
+            } else {
+                return !in;
+            }
+        }
 
     }
 
@@ -413,45 +433,56 @@ public class Filter extends Processor {
         /**
          * _more_
          *
-         * @param col _more_
+         * @param cols _more_
          * @param pattern _more_
          * @param negate _more_
          */
-        public PatternFilter(List<String> cols, String pattern, boolean negate) {
+        public PatternFilter(List<String> cols, String pattern,
+                             boolean negate) {
             super(cols, negate);
             setPattern(pattern);
-	    if(cols.size()==1 && cols.get(0).equals("-1")) {
-		setIndex(-1);
-	    }
+            if ((cols.size() == 1) && cols.get(0).equals("-1")) {
+                setIndex(-1);
+            }
         }
 
 
         /**
          * _more_
          *
-         * @param col _more_
+         * @param cols _more_
          * @param pattern _more_
          */
         public PatternFilter(List<String> cols, String pattern) {
             super(cols);
             setPattern(pattern);
-	    if(cols.size()==1 && cols.get(0).equals("-1")) {
-		setIndex(-1);
-	    }
+            if ((cols.size() == 1) && cols.get(0).equals("-1")) {
+                setIndex(-1);
+            }
         }
 
 
+        /**
+         *
+         *
+         * @param idx _more_
+         * @param pattern _more_
+         */
         public PatternFilter(int idx, String pattern) {
-	    super(idx);
+            super(idx);
             setPattern(pattern);
-	    setIndex(idx);
-	}
+            setIndex(idx);
+        }
 
-	private void setIndex(int idx) {
-	    List<Integer> indices = new ArrayList<Integer>();
-	    indices.add(idx);
-	    setIndices(indices);
-	}
+        /**
+         *
+         * @param idx _more_
+         */
+        private void setIndex(int idx) {
+            List<Integer> indices = new ArrayList<Integer>();
+            indices.add(idx);
+            setIndices(indices);
+        }
 
 
         /**
@@ -490,68 +521,96 @@ public class Filter extends Processor {
             if (cnt++ == 0) {
                 return true;
             }
-	    boolean ok = true;
-	    boolean debug = false;//cnt<3;
-	    if(debug) System.err.println("rowOk");
-	    for(int idx: getIndices(ctx)) {
-		if(debug) System.err.println("\tidx:"+ idx);
-		if(!ok) {
-		    if(debug) System.err.println("\tbreak1:"+ ok);
-		    break;
-		}
-		if (idx >= row.size()) {
-		    ok = doNegate(false);
-		    if(!ok) {
-			if(debug) System.err.println("\tbreak2:"+ ok);
-			break;
-		    }
-		}
-		Pattern pattern = this.pattern;
-		if (isTemplate) {
-		    String tmp = spattern;
-		    for (int i = 0; i < row.size(); i++) {
-			tmp = tmp.replace("${" + i + "}", (String) row.get(i));
-		    }
-		    pattern = Pattern.compile(tmp);
-		}
-		if (idx < 0) {
-		    ok = false;
-		    for (int i = 0; i < row.size(); i++) {
-			String v = row.getString(i);
-			if (blank) {
-			    ok= doNegate(v.equals(""));
-			} else 	if (pattern.matcher(v).find()) {
-			    ok= doNegate(true);
-			} 
-			if(ok) break;
-		    }
-		    return ok;
-		}
-		String v = row.getString(idx);
-		if (blank) {
-		    ok= doNegate(v.equals(""));
-		    if(debug) System.err.println("\tcontinue2:"+ ok);
-		    continue;
-		}
-		if (pattern.matcher(v).find()) {
-		    if (debug) {
-			System.out.println("\tR3:" + doNegate(true) + " " + row);
-		    }
-		    ok= doNegate(true);
-		} else {
-		    ok= doNegate(false);
-		}
-	    }
-	    if(debug) System.err.println("\tfinal:"+ ok);
-	    return ok;
-	}
+            boolean ok    = true;
+            boolean debug = false;  //cnt<3;
+            if (debug) {
+                System.err.println("rowOk");
+            }
+            for (int idx : getIndices(ctx)) {
+                if (debug) {
+                    System.err.println("\tidx:" + idx);
+                }
+                if ( !ok) {
+                    if (debug) {
+                        System.err.println("\tbreak1:" + ok);
+                    }
+
+                    break;
+                }
+                if (idx >= row.size()) {
+                    ok = doNegate(false);
+                    if ( !ok) {
+                        if (debug) {
+                            System.err.println("\tbreak2:" + ok);
+                        }
+
+                        break;
+                    }
+                }
+                Pattern pattern = this.pattern;
+                if (isTemplate) {
+                    String tmp = spattern;
+                    for (int i = 0; i < row.size(); i++) {
+                        tmp = tmp.replace("${" + i + "}",
+                                          (String) row.get(i));
+                    }
+                    pattern = Pattern.compile(tmp);
+                }
+                if (idx < 0) {
+                    ok = false;
+                    for (int i = 0; i < row.size(); i++) {
+                        String v = row.getString(i);
+                        if (blank) {
+                            ok = doNegate(v.equals(""));
+                        } else if (pattern.matcher(v).find()) {
+                            ok = doNegate(true);
+                        }
+                        if (ok) {
+                            break;
+                        }
+                    }
+
+                    return ok;
+                }
+                String v = row.getString(idx);
+                if (blank) {
+                    ok = doNegate(v.equals(""));
+                    if (debug) {
+                        System.err.println("\tcontinue2:" + ok);
+                    }
+                    continue;
+                }
+                if (pattern.matcher(v).find()) {
+                    if (debug) {
+                        System.out.println("\tR3:" + doNegate(true) + " "
+                                           + row);
+                    }
+                    ok = doNegate(true);
+                } else {
+                    ok = doNegate(false);
+                }
+            }
+            if (debug) {
+                System.err.println("\tfinal:" + ok);
+            }
+
+            return ok;
+        }
 
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class FuzzyFilter extends ColumnFilter {
 
-	int threshold;
+        /**  */
+        int threshold;
 
         /** _more_ */
         String spattern;
@@ -565,31 +624,46 @@ public class Filter extends Processor {
         /**
          * _more_
          *
-         * @param col _more_
+         * @param threshold _more_
+         * @param cols _more_
          * @param pattern _more_
          * @param negate _more_
          */
-        public FuzzyFilter(int threshold,List<String> cols, String pattern, boolean negate) {
+        public FuzzyFilter(int threshold, List<String> cols, String pattern,
+                           boolean negate) {
             super(cols, negate);
-	    this.threshold = threshold;
-	    spattern = pattern;
-	    if(cols.size()==1 && cols.get(0).equals("-1")) {
-		setIndex(-1);
-	    }
+            this.threshold = threshold;
+            spattern       = pattern;
+            if ((cols.size() == 1) && cols.get(0).equals("-1")) {
+                setIndex(-1);
+            }
         }
 
 
-	private boolean matches(String s) {
-	    int score = me.xdrop.fuzzywuzzy.FuzzySearch.ratio(spattern,s);
-	    if(score>threshold) return true;
-	    return false;
-	}
+        /**
+         *
+         * @param s _more_
+         *
+         * @return _more_
+         */
+        private boolean matches(String s) {
+            int score = me.xdrop.fuzzywuzzy.FuzzySearch.ratio(spattern, s);
+            if (score > threshold) {
+                return true;
+            }
 
-	private void setIndex(int idx) {
-	    List<Integer> indices = new ArrayList<Integer>();
-	    indices.add(idx);
-	    setIndices(indices);
-	}
+            return false;
+        }
+
+        /**
+         *
+         * @param idx _more_
+         */
+        private void setIndex(int idx) {
+            List<Integer> indices = new ArrayList<Integer>();
+            indices.add(idx);
+            setIndices(indices);
+        }
 
 
 
@@ -607,64 +681,98 @@ public class Filter extends Processor {
             if (cnt++ == 0) {
                 return true;
             }
-	    boolean ok = true;
-	    boolean debug = false;//cnt<3;
-	    if(debug) System.err.println("rowOk");
-	    for(int idx: getIndices(ctx)) {
-		if(debug) System.err.println("\tidx:"+ idx);
-		if(!ok) {
-		    if(debug) System.err.println("\tbreak1:"+ ok);
-		    break;
-		}
-		if (idx >= row.size()) {
-		    ok = doNegate(false);
-		    if(!ok) {
-			if(debug) System.err.println("\tbreak2:"+ ok);
-			break;
-		    }
-		}
-		if (idx < 0) {
-		    ok = false;
-		    for (int i = 0; i < row.size(); i++) {
-			String v = row.getString(i);
-		     	if (matches(v)) {
-			    ok= doNegate(true);
-			} 
-			if(ok) break;
-		    }
-		    return ok;
-		}
-		String v = row.getString(idx);
-		if (matches(v)) {
-		    if (debug) {
-			System.out.println("\tR3:" + doNegate(true) + " " + row);
-		    }
-		    ok= doNegate(true);
-		} else {
-		    ok= doNegate(false);
-		}
-	    }
-	    if(debug) System.err.println("\tfinal:"+ ok);
-	    return ok;
-	}
+            boolean ok    = true;
+            boolean debug = false;  //cnt<3;
+            if (debug) {
+                System.err.println("rowOk");
+            }
+            for (int idx : getIndices(ctx)) {
+                if (debug) {
+                    System.err.println("\tidx:" + idx);
+                }
+                if ( !ok) {
+                    if (debug) {
+                        System.err.println("\tbreak1:" + ok);
+                    }
+
+                    break;
+                }
+                if (idx >= row.size()) {
+                    ok = doNegate(false);
+                    if ( !ok) {
+                        if (debug) {
+                            System.err.println("\tbreak2:" + ok);
+                        }
+
+                        break;
+                    }
+                }
+                if (idx < 0) {
+                    ok = false;
+                    for (int i = 0; i < row.size(); i++) {
+                        String v = row.getString(i);
+                        if (matches(v)) {
+                            ok = doNegate(true);
+                        }
+                        if (ok) {
+                            break;
+                        }
+                    }
+
+                    return ok;
+                }
+                String v = row.getString(idx);
+                if (matches(v)) {
+                    if (debug) {
+                        System.out.println("\tR3:" + doNegate(true) + " "
+                                           + row);
+                    }
+                    ok = doNegate(true);
+                } else {
+                    ok = doNegate(false);
+                }
+            }
+            if (debug) {
+                System.err.println("\tfinal:" + ok);
+            }
+
+            return ok;
+        }
 
     }
-    
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class Same extends ColumnFilter {
 
         /** _more_ */
         String scol1;
-        String scol2;	
-	int col1 = -1;
-	int col2 = -1;
+
+        /**  */
+        String scol2;
+
+        /**  */
+        int col1 = -1;
+
+        /**  */
+        int col2 = -1;
 
         /**
          * _more_
+         *
+         * @param col1 _more_
+         * @param col2 _more_
+         * @param negate _more_
          */
         public Same(String col1, String col2, boolean negate) {
             super(negate);
-	    scol1 =col1;
-	    scol2 =col2;	    
+            scol1 = col1;
+            scol2 = col2;
         }
 
         /**
@@ -679,17 +787,19 @@ public class Filter extends Processor {
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
             if (cnt++ == 0) {
-		col1 = getIndex(ctx,scol1);
-		col2 = getIndex(ctx,scol2);		
+                col1 = getIndex(ctx, scol1);
+                col2 = getIndex(ctx, scol2);
+
                 return true;
             }
-	    String s1 = row.getString(col1);
-	    String s2 = row.getString(col2);	    
-	    return doNegate(s1.equals(s2));
+            String s1 = row.getString(col1);
+            String s2 = row.getString(col2);
+
+            return doNegate(s1.equals(s2));
         }
 
     }
-    
+
 
     /**
      * Class description
@@ -1054,10 +1164,14 @@ public class Filter extends Processor {
                     continue;
                 }
                 try {
-                    String v     = row.getString(idx).trim();
-		    if(v.length()==0) return false;
+                    String v = row.getString(idx).trim();
+                    if (v.length() == 0) {
+                        return false;
+                    }
                     double value = Double.parseDouble(v);
-		    if(Double.isNaN(value)) return false;
+                    if (Double.isNaN(value)) {
+                        return false;
+                    }
                     if (op == OP_LT) {
                         if ( !(value < this.value)) {
                             return false;
@@ -1088,8 +1202,8 @@ public class Filter extends Processor {
                         }
                     }
                 } catch (Exception exc) {
-		    return false;
-		}		    
+                    return false;
+                }
             }
 
             return true;
@@ -1106,11 +1220,14 @@ public class Filter extends Processor {
      */
     public static class RangeFilter extends ColumnFilter {
 
-	private boolean between;
+        /**  */
+        private boolean between;
 
         /** _more_ */
         private double min;
-        private double max;	
+
+        /**  */
+        private double max;
 
 
 
@@ -1118,15 +1235,18 @@ public class Filter extends Processor {
         /**
          * _more_
          *
+         *
+         * @param between _more_
          * @param cols _more_
-         * @param op _more_
-         * @param value _more_
+         * @param min _more_
+         * @param max _more_
          */
-        public RangeFilter(boolean between, List<String> cols, double min, double max) {
+        public RangeFilter(boolean between, List<String> cols, double min,
+                           double max) {
             super(cols);
-	    this.between = between;
-            this.min = min;
-            this.max = max;	    
+            this.between = between;
+            this.min     = min;
+            this.max     = max;
         }
 
 
@@ -1146,33 +1266,41 @@ public class Filter extends Processor {
             if (rowCnt++ == 0) {
                 return true;
             }
-	    boolean debug = rowCnt<50;
-	    boolean ok = true;
+            boolean debug = rowCnt < 50;
+            boolean ok    = true;
             for (int idx : getIndices(ctx)) {
                 if (idx >= row.size()) {
                     continue;
                 }
                 try {
-                    String v     = row.getString(idx).trim();
-		    if(v.length()==0) return false;
+                    String v = row.getString(idx).trim();
+                    if (v.length() == 0) {
+                        return false;
+                    }
                     double value = Double.parseDouble(v);
-		    if(Double.isNaN(value)) return false;
-		    boolean inRange = (value>=min && value<=max);
-		    if(inRange && !between)
-			ok = false;
-		    else if(!inRange && between)
-			ok = false;
-		    //		    if(debug) System.out.println(min +" " + value  +" " +max  +" " + inRange +" " + ok);
+                    if (Double.isNaN(value)) {
+                        return false;
+                    }
+                    boolean inRange = ((value >= min) && (value <= max));
+                    if (inRange && !between) {
+                        ok = false;
+                    } else if ( !inRange && between) {
+                        ok = false;
+                    }
+                    //              if(debug) System.out.println(min +" " + value  +" " +max  +" " + inRange +" " + ok);
 
-		    if(!ok) break;
+                    if ( !ok) {
+                        break;
+                    }
                 } catch (Exception exc) {
-		    return false;
-		}		    
-	    }
+                    return false;
+                }
+            }
+
             return ok;
         }
     }
-    
+
     /**
      * Class description
      *
@@ -1270,7 +1398,7 @@ public class Filter extends Processor {
          * @param toks _more_
          */
         public Unique(List<String> toks) {
-	    super(toks);
+            super(toks);
         }
 
 
@@ -1301,37 +1429,48 @@ public class Filter extends Processor {
         }
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class Sample extends Filter {
 
 
-	private double prob;
+        /**  */
+        private double prob;
 
         /**
          * _more_
          *
-         * @param toks _more_
+         * @param prob _more_
          */
         public Sample(double prob) {
-	    this.prob = prob;
+            this.prob = prob;
         }
 
 
         /**
          * _more_
          *
+         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
         public boolean rowOk(TextReader ctx, Row row) {
-	    if(rowCnt++==0) return true;
-	    double r = Math.random();
-	    return r<=prob;
+            if (rowCnt++ == 0) {
+                return true;
+            }
+            double r = Math.random();
+
+            return r <= prob;
         }
     }
-    
+
 
 
 }

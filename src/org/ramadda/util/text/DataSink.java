@@ -1,45 +1,58 @@
-/*
- * Copyright (c) 2008-2021 Geode Systems LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *     http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
+*/
 
 package org.ramadda.util.text;
 
+
 import java.util.List;
+
 
 /**
  *
  * @author Jeff McWhirter
  */
 
-public abstract class DataSink extends Processor implements Cloneable, CsvPlugin  {
+public abstract class DataSink extends Processor implements Cloneable,
+        CsvPlugin {
 
     /**
      * _more_
      */
     public DataSink() {}
 
+    /**
+     *
+     * @param csvUtil _more_
+     * @param arg _more_
+     *
+     * @return _more_
+     */
     public abstract boolean canHandle(CsvUtil csvUtil, String arg);
 
 
+    /**
+     *
+     * @param csvUtil _more_
+     * @param args _more_
+     * @param index _more_
+     *
+     * @return _more_
+     */
     public int processArgs(CsvUtil csvUtil, List<String> args, int index) {
-	return index;
+        return index;
     }
 
 
+    /**
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public DataSink cloneMe() throws Exception {
-	return (DataSink)this.clone();
+        return (DataSink) this.clone();
     }
 
     /**
@@ -67,8 +80,7 @@ public abstract class DataSink extends Processor implements Cloneable, CsvPlugin
      * @return _more_
      * @throws Exception On badness
      */
-    public List<Row> finish(TextReader ctx, List<Row> rows)
-	throws Exception {
+    public List<Row> finish(TextReader ctx, List<Row> rows) throws Exception {
         return rows;
     }
 

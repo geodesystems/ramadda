@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util;
@@ -70,13 +59,13 @@ public class IO {
      * @param files _more_
      */
     public static void addOkToWriteToDirs(List<File> files) {
-	synchronized(okToWriteToDirs) {
-	    for(File f: files) {
-		if(!okToWriteToDirs.contains(f)) {
-		    okToWriteToDirs.add(f);
-		}
-	    }
-	}
+        synchronized (okToWriteToDirs) {
+            for (File f : files) {
+                if ( !okToWriteToDirs.contains(f)) {
+                    okToWriteToDirs.add(f);
+                }
+            }
+        }
     }
 
     /**
@@ -85,13 +74,13 @@ public class IO {
      * @param files _more_
      */
     public static void addOkToReadFromDirs(List<File> files) {
-	synchronized(okToReadFromDirs) {
-	    for(File f: files) {
-		if(!okToReadFromDirs.contains(f)) {
-		    okToReadFromDirs.add(f);
-		}
-	    }
-	}
+        synchronized (okToReadFromDirs) {
+            for (File f : files) {
+                if ( !okToReadFromDirs.contains(f)) {
+                    okToReadFromDirs.add(f);
+                }
+            }
+        }
     }
 
 
@@ -110,11 +99,13 @@ public class IO {
         if (okToWriteToDirs.size() > 0) {
             for (File dir : okToWriteToDirs) {
                 if (IOUtil.isADescendent(dir, f)) {
-		    return true;
+                    return true;
                 }
             }
-	    return false;
+
+            return false;
         }
+
         return true;
     }
 
@@ -226,10 +217,19 @@ public class IO {
     }
 
 
+    /**
+     *
+     * @param f _more_
+     *
+     * @return _more_
+     */
     public static final String cleanFileName(String f) {
-	if(f==null) return null;
-	f = f.replaceAll("[^a-zA-Z_0-9 ]+","_").trim();
-	return f;
+        if (f == null) {
+            return null;
+        }
+        f = f.replaceAll("[^a-zA-Z_0-9 ]+", "_").trim();
+
+        return f;
     }
 
 
@@ -297,6 +297,7 @@ public class IO {
     private static InputStream doMakeInputStream(String filename,
             boolean buffered, int tries)
             throws IOException {
+
         checkFile(filename);
         int         size = 8000;
         InputStream is   = null;
@@ -307,9 +308,9 @@ public class IO {
             if (filename.startsWith("//")) {
                 filename = "https:" + filename;
             }
-            URL           url        = new URL(filename);
-            URLConnection connection = null;
-	    boolean handlingRedirect = false;
+            URL           url              = new URL(filename);
+            URLConnection connection       = null;
+            boolean       handlingRedirect = false;
 
             try {
                 //              System.err.println ("URL: " + url);
@@ -326,38 +327,42 @@ public class IO {
                             .HTTP_MOVED_PERM) || (response == HttpURLConnection
                             .HTTP_SEE_OTHER)) {
                         String newUrl = connection.getHeaderField("Location");
-			System.err.println("redirect from:" + url);
-			System.err.println("redirect to:" + newUrl);
+                        System.err.println("redirect from:" + url);
+                        System.err.println("redirect to:" + newUrl);
                         //Don't follow too many redirects
                         if (tries > 10) {
                             throw new IllegalArgumentException(
                                 "Too many nested URL fetches:" + filename);
                         }
                         //call this method recursively with the new URL
-			handlingRedirect= true;
+                        handlingRedirect = true;
+
                         return doMakeInputStream(newUrl, buffered, tries + 1);
                     }
                 }
                 //              System.err.println ("OK: " + url);
                 is = connection.getInputStream();
             } catch (IOException exc) {
-		if(handlingRedirect) throw exc;
+                if (handlingRedirect) {
+                    throw exc;
+                }
                 System.err.println("Error URL: " + filename);
                 String msg = "An error has occurred";
                 if ((connection != null)
                         && (connection instanceof HttpURLConnection)) {
-                    HttpURLConnection huc = (HttpURLConnection) connection;
-		    int code = huc.getResponseCode();
-		    if(code==403)
-			msg = "Access forbidden";
-		    else {
-			msg = "Response code: " + code + " ";
-			try {
-			    InputStream err = huc.getErrorStream();
-			    String response = new String(readBytes(err, 10000));
-			    msg += " Message: " +response;
-			} catch (Exception ignoreIt) {}
-		    }
+                    HttpURLConnection huc  = (HttpURLConnection) connection;
+                    int               code = huc.getResponseCode();
+                    if (code == 403) {
+                        msg = "Access forbidden";
+                    } else {
+                        msg = "Response code: " + code + " ";
+                        try {
+                            InputStream err = huc.getErrorStream();
+                            String response = new String(readBytes(err,
+                                                  10000));
+                            msg += " Message: " + response;
+                        } catch (Exception ignoreIt) {}
+                    }
                 }
 
                 throw new IOException(msg);
@@ -400,6 +405,7 @@ public class IO {
 
         //        System.err.println("buffer size:" + size);
         return new BufferedInputStream(is, size);
+
     }
 
 
@@ -761,7 +767,7 @@ public class IO {
         connection.setRequestMethod(action);
         connection.setRequestProperty("charset", "utf-8");
         for (int i = 0; i < args.length; i += 2) {
-	    //	    System.err.println(args[i]+":" + args[i+1]);
+            //      System.err.println(args[i]+":" + args[i+1]);
             connection.setRequestProperty(args[i], args[i + 1]);
         }
         if (body != null) {
@@ -849,9 +855,9 @@ public class IO {
         //        connection.setInstanceFollowRedirects(false);
         connection.setRequestMethod("GET");
         //        connection.setRequestProperty("charset", "utf-8");
-	//	System.err.println("header:");
+        //      System.err.println("header:");
         for (int i = 0; i < args.length; i += 2) {
-	    //            System.err.println(args[i]+":" + args[i+1]);
+            //            System.err.println(args[i]+":" + args[i+1]);
             connection.setRequestProperty(args[i], args[i + 1]);
         }
         try {
@@ -869,9 +875,11 @@ public class IO {
 
             return sb.toString();
         } catch (Exception exc) {
-            System.err.println("Error reading URL:" + url +" code:" + connection.getResponseCode());
+            System.err.println("Error reading URL:" + url + " code:"
+                               + connection.getResponseCode());
             System.err.println(readError(connection));
             System.err.println("Fields:" + connection.getHeaderFields());
+
             throw exc;
             //            System.err.println(connection.getContent());
         }
@@ -1131,61 +1139,65 @@ public class IO {
      */
     public static void main(String[] args) throws Exception {
 
-	final PipedOutputStream pos = new PipedOutputStream();
-	final PipedInputStream pis = new PipedInputStream(pos);
-	final boolean running[]={true};
+        final PipedOutputStream pos       = new PipedOutputStream();
+        final PipedInputStream  pis       = new PipedInputStream(pos);
+        final boolean           running[] = { true };
 
 
-	ucar.unidata.util.Misc.run(new Runnable() {
-		public void run() {
-		    try {
-			PrintWriter pw = new PrintWriter(pos);
-			for(int i=0;i<10;i++) {
-			    pw.println("LINE:" + i);
-			    pw.flush();
-			    ucar.unidata.util.Misc.sleep(500);
-			}
-			System.err.println("done writing");
-			pos.close();
-		    } catch(Exception exc) {
-			System.err.println("write err:" + exc);
-			exc.printStackTrace();
-		    }
-		}
-	    });
+        ucar.unidata.util.Misc.run(new Runnable() {
+            public void run() {
+                try {
+                    PrintWriter pw = new PrintWriter(pos);
+                    for (int i = 0; i < 10; i++) {
+                        pw.println("LINE:" + i);
+                        pw.flush();
+                        ucar.unidata.util.Misc.sleep(500);
+                    }
+                    System.err.println("done writing");
+                    pos.close();
+                } catch (Exception exc) {
+                    System.err.println("write err:" + exc);
+                    exc.printStackTrace();
+                }
+            }
+        });
 
-	ucar.unidata.util.Misc.run(new Runnable() {
-		public void run()  {
-		    try {
-			InputStreamReader isr = new InputStreamReader(pis, java.nio.charset.StandardCharsets.UTF_8);
-			BufferedReader reader = new BufferedReader(isr);
-			String line;
-			while((line=reader.readLine())!=null) {
-			    System.err.println("read:" + line);
-			}
-			running[0] = false;
-			System.err.println("read: done");
-		    } catch(Exception exc) {
-			System.err.println("write err:" + exc);
-			exc.printStackTrace();
-		    }
-		}
-	    });
-
-
-	while(running[0]) {
-	    ucar.unidata.util.Misc.sleepSeconds(10);
-	}
-	System.exit(0);
+        ucar.unidata.util.Misc.run(new Runnable() {
+            public void run() {
+                try {
+                    InputStreamReader isr =
+                        new InputStreamReader(pis,
+                            java.nio.charset.StandardCharsets.UTF_8);
+                    BufferedReader reader = new BufferedReader(isr);
+                    String         line;
+                    while ((line = reader.readLine()) != null) {
+                        System.err.println("read:" + line);
+                    }
+                    running[0] = false;
+                    System.err.println("read: done");
+                } catch (Exception exc) {
+                    System.err.println("write err:" + exc);
+                    exc.printStackTrace();
+                }
+            }
+        });
 
 
+        while (running[0]) {
+            ucar.unidata.util.Misc.sleepSeconds(10);
+        }
+        System.exit(0);
 
 
-	if(true) {
-	    String url = "https://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Global_onedeg/Best?var=Temperature_surface&var=Visibility_surface&var=Water_equivalent_of_accumulated_snow_depth_surface&var=Wind_speed_gust_surface&latitude=%24%7Blatitude%7D&longitude=%24%7Blongitude%7D&time_start=2021-03-30&time_end=2021-04-09&vertCoord=&accept=csv";
-	    doMakeInputStream(url,false);
-	    return;
-	}
+
+
+        if (true) {
+            String url =
+                "https://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Global_onedeg/Best?var=Temperature_surface&var=Visibility_surface&var=Water_equivalent_of_accumulated_snow_depth_surface&var=Wind_speed_gust_surface&latitude=%24%7Blatitude%7D&longitude=%24%7Blongitude%7D&time_start=2021-03-30&time_end=2021-04-09&vertCoord=&accept=csv";
+            doMakeInputStream(url, false);
+
+            return;
+        }
 
 
 
@@ -1212,18 +1224,20 @@ public class IO {
         final PrintStream oldErr = System.err;
         final PrintStream oldOut = System.out;
         System.setErr(new PrintStream(oldOut) {
-		@Override
-		public void println(Object x) {
-		    oldErr.println("**************   ERROR\n" + Utils.getStack(10)+"\n************");
-		    //                new RuntimeException("stderr").printStackTrace();
-		    oldErr.println(x);
-		}
-		@Override
-		public void print(Object x) {
-		    oldErr.println("**************   ERROR\n" + Utils.getStack(10)+"\n************");
-		    //                new RuntimeException("stderr").printStackTrace();
-		    oldErr.print(x);
-		}
+            @Override
+            public void println(Object x) {
+                oldErr.println("**************   ERROR\n"
+                               + Utils.getStack(10) + "\n************");
+                //                new RuntimeException("stderr").printStackTrace();
+                oldErr.println(x);
+            }
+            @Override
+            public void print(Object x) {
+                oldErr.println("**************   ERROR\n"
+                               + Utils.getStack(10) + "\n************");
+                //                new RuntimeException("stderr").printStackTrace();
+                oldErr.print(x);
+            }
 
         });
     }
@@ -1246,20 +1260,22 @@ public class IO {
         final PrintStream oldErr = System.err;
         final PrintStream oldOut = System.out;
         System.setOut(new PrintStream(oldErr) {
-		@Override
+            @Override
             public void print(Object x) {
-		oldOut.print("**************   OUT\n" + Utils.getStack(10)+"\n************");
+                oldOut.print("**************   OUT\n" + Utils.getStack(10)
+                             + "\n************");
                 oldOut.print(x);
-	    }
+            }
 
-		@Override
+            @Override
             public void println(Object x) {
-		oldOut.println("**************   OUT\n" + Utils.getStack(10)+"\n************");
+                oldOut.println("**************   OUT\n" + Utils.getStack(10)
+                               + "\n************");
                 oldOut.println(x);
             }
         });
     }
-    
+
 
 
 

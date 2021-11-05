@@ -1,23 +1,13 @@
-/*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util.sql;
 
 
 import org.ramadda.util.Utils;
+
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -71,7 +61,10 @@ public class SqlUtil {
     public static final String DB_ORACLE = "oracle";
 
 
+    /**  */
     public static final String ORDER_ASC = "asc";
+
+    /**  */
     public static final String ORDER_DESC = "desc";
 
     /** _more_ */
@@ -1305,14 +1298,15 @@ public class SqlUtil {
                 }
             } catch (Exception exc) {
                 errors.add(new SqlError(command, exc));
-                String msg = exc.toString().toLowerCase() +" " + command.toLowerCase();
+                String msg = exc.toString().toLowerCase() + " "
+                             + command.toLowerCase();
                 if ((msg.indexOf("duplicate") < 0)
-		    && (msg.indexOf("already exists") < 0)
-		    && (msg.indexOf("can't drop") < 0)
-		    && (msg.indexOf("doesn't exist") < 0)
-		    && (msg.indexOf("drop table") < 0)
-		    && (msg.indexOf("drop index") < 0)
-		    && (msg.indexOf("is not a column in table") < 0)) {
+                        && (msg.indexOf("already exists") < 0)
+                        && (msg.indexOf("can't drop") < 0)
+                        && (msg.indexOf("doesn't exist") < 0)
+                        && (msg.indexOf("drop table") < 0)
+                        && (msg.indexOf("drop index") < 0)
+                        && (msg.indexOf("is not a column in table") < 0)) {
                     System.err.println(
                         "\n*********************************************");
                     System.err.println("Bad sql:" + command);
@@ -1336,7 +1330,7 @@ public class SqlUtil {
      * @return _more_
      */
     public static List<String> parseSql(String sql, HashSet flags) {
-	boolean debug = false;
+        boolean      debug  = false;
         List<String> result = new ArrayList<String>();
         List<String> lines  = (List<String>) StringUtil.split(sql, "\n");
         StringBuffer sb     = new StringBuffer();
@@ -1368,15 +1362,19 @@ public class SqlUtil {
                                 break;
                             }
                         }
-                        if(debug)
-			    System.out.println("\tskip flag:" +flag +" ok:" + contains);
+                        if (debug) {
+                            System.out.println("\tskip flag:" + flag + " ok:"
+                                    + contains);
+                        }
                         if (contains) {
                             ok = true;
                         }
                     }
                     skip = !ok;
-                    if(debug)
-			System.out.println("SqlUtil: skip flag:" +trimLine +" skip:" + skip);
+                    if (debug) {
+                        System.out.println("SqlUtil: skip flag:" + trimLine
+                                           + " skip:" + skip);
+                    }
                 }
                 continue;
             }
@@ -1387,8 +1385,9 @@ public class SqlUtil {
             }
 
             if (skip) {
-		if(debug)
-		    System.out.println("SqlUtil: skipping:" + line);
+                if (debug) {
+                    System.out.println("SqlUtil: skipping:" + line);
+                }
                 continue;
             }
 
@@ -2204,6 +2203,7 @@ public class SqlUtil {
         String s =
             value.toString().replaceAll("[^\\s\\*\\.,\\(\\)a-zA-Z0-9_]",
                                         "_X_");
+
         return s;
     }
 

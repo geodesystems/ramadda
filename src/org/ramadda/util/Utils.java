@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util;
@@ -98,7 +87,7 @@ public class Utils extends IO {
 
     //From https://stackoverflow.com/questions/4731055/whitespace-matching-regex-java
 
-    /** _more_          */
+    /** _more_ */
     public static final String WHITESPACE_CHARS = ""
     /* dummy empty string for homogeneity */
     + "\\u0009"  // CHARACTER TABULATION
@@ -129,7 +118,7 @@ public class Utils extends IO {
     + "\\u3000"  // IDEOGRAPHIC SPACE
         ;
 
-    /** _more_          */
+    /** _more_ */
     public static final String WHITESPACE_CHARCLASS = "[" + WHITESPACE_CHARS
                                                       + "]";
 
@@ -156,14 +145,15 @@ public class Utils extends IO {
     /** _more_ */
     public static final SimpleDateFormat simpleSdf;
 
-    public static final SimpleDateFormat isoSdf;    
+    /**  */
+    public static final SimpleDateFormat isoSdf;
 
     static {
         sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         sdf.setTimeZone(TIMEZONE_DEFAULT);
         simpleSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         simpleSdf.setTimeZone(TIMEZONE_DEFAULT);
-	isoSdf = new SimpleDateFormat("yyyy-MM-dd\'T\'HH:mm:ssZ");
+        isoSdf = new SimpleDateFormat("yyyy-MM-dd\'T\'HH:mm:ssZ");
         isoSdf.setTimeZone(TIMEZONE_DEFAULT);
     }
 
@@ -323,14 +313,25 @@ public class Utils extends IO {
         double freeMemory  = (double) Runtime.getRuntime().freeMemory();
         double totalMemory = (double) Runtime.getRuntime().totalMemory();
         double usedMemory  = (totalMemory - freeMemory);
-	int i =    (int) (usedMemory / 1000000*10);
-	return (double)(i/10.0);
+        int    i           = (int) (usedMemory / 1000000 * 10);
+
+        return (double) (i / 10.0);
     }
 
+    /**
+     *
+     * @param d _more_
+     * @param decimals _more_
+     *
+     * @return _more_
+     */
     public static double decimals(double d, int decimals) {
-	if(decimals==0) return (int)d;
-	int i =    (int) (d*Math.pow(10,decimals));
-	return (double)(i/Math.pow(10,decimals));
+        if (decimals == 0) {
+            return (int) d;
+        }
+        int i = (int) (d * Math.pow(10, decimals));
+
+        return (double) (i / Math.pow(10, decimals));
 
     }
 
@@ -412,10 +413,13 @@ public class Utils extends IO {
         try {
             for (Object s : args) {
                 if (s != null) {
-		    if(sb==null) sb = new StringBuilder();
+                    if (sb == null) {
+                        sb = new StringBuilder();
+                    }
                     sb.append(s.toString());
                 }
             }
+
             return sb;
         } catch (java.io.IOException ioe) {
             throw new RuntimeException(ioe);
@@ -1094,11 +1098,11 @@ public class Utils extends IO {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-	Date d  = new Date();
-	System.err.println(formatIso(d));
+        Date d = new Date();
+        System.err.println(formatIso(d));
 
 
-	System.exit(0);
+        System.exit(0);
 
 
 
@@ -1368,6 +1372,12 @@ public class Utils extends IO {
         return l;
     }
 
+    /**
+     *
+     * @param properties _more_
+     *
+     * @return _more_
+     */
     public static List getValues(Hashtable properties) {
         List l = new ArrayList();
         for (Enumeration keys = properties.keys(); keys.hasMoreElements(); ) {
@@ -1376,7 +1386,7 @@ public class Utils extends IO {
         }
 
         return l;
-    }    
+    }
 
 
     /**
@@ -2166,10 +2176,15 @@ public class Utils extends IO {
         System.out.println("  total: " + (args[args.length - 1] - args[0]));
     }
 
+    /**
+     *
+     * @param what _more_
+     * @param args _more_
+     */
     public static void printMemory(String what, double... args) {
         System.out.print(what + " ");
         for (int i = 1; i < args.length; i++) {
-            System.out.print(" " + decimals(args[i] - args[i - 1],1));
+            System.out.print(" " + decimals(args[i] - args[i - 1], 1));
         }
         System.out.println("");
     }
@@ -4854,7 +4869,6 @@ public class Utils extends IO {
      *
      * @param fromDate _more_
      * @param toDate _more_
-     * @param dflt _more_
      * @param base _more_
      *
      * @return _more_

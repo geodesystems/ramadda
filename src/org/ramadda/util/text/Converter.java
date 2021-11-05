@@ -1,32 +1,25 @@
-/*
- * Copyright (c) 2008-2021 Geode Systems LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *     http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
+*/
 
 package org.ramadda.util.text;
 
 
+import org.apache.commons.codec.language.Soundex;
+
+
 import org.json.*;
 
-import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.HtmlUtils;
 
 
 import org.ramadda.util.IO;
 import org.ramadda.util.Json;
-import org.ramadda.util.geo.Place;
 import org.ramadda.util.Utils;
+
+import org.ramadda.util.geo.GeoUtils;
+import org.ramadda.util.geo.Place;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -61,9 +54,6 @@ import java.util.regex.Pattern;
 import javax.script.*;
 
 
-import org.apache.commons.codec.language.Soundex;
-
-
 /**
  * Class description
  *
@@ -80,9 +70,6 @@ public abstract class Converter extends Processor {
     public Converter() {}
 
     /**
-     *
-     *
-     *
      * @param col _more_
      */
     public Converter(String col) {
@@ -90,9 +77,6 @@ public abstract class Converter extends Processor {
     }
 
     /**
-     *
-     *
-     *
      *
      * @param cols _more_
      */
@@ -105,7 +89,6 @@ public abstract class Converter extends Processor {
     /**
      * Class description
      *
-     *
      * @version        $version$, Fri, Jan 16, '15
      * @author         Enter your name here...
      */
@@ -113,7 +96,6 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
          */
         public ConverterGroup() {}
 
@@ -122,7 +104,6 @@ public abstract class Converter extends Processor {
 
     /**
      * Class description
-     *
      *
      * @version        $version$, Fri, Jan 9, '15
      * @author         Jeff McWhirter
@@ -139,7 +120,6 @@ public abstract class Converter extends Processor {
         /**
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -151,7 +131,7 @@ public abstract class Converter extends Processor {
                     ctx.printDebug("-columns", "No indices");
                 }
 
-		//                return row;
+                //                return row;
             }
             List<String> result = new ArrayList<String>();
             for (Integer idx : indices) {
@@ -170,9 +150,16 @@ public abstract class Converter extends Processor {
     }
 
 
+    /**
+     * Class description
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class ColumnFirst extends Converter {
 
-	private HashSet<Integer> firstSeen;
+        /**  */
+        private HashSet<Integer> firstSeen;
 
 
         /**
@@ -185,7 +172,6 @@ public abstract class Converter extends Processor {
         /**
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -195,135 +181,170 @@ public abstract class Converter extends Processor {
                 return row;
             }
             List<String> result = new ArrayList<String>();
-	    if(firstSeen==null) {
-		firstSeen = new HashSet<Integer>();
-		for (Integer idx : indices) {
-		    firstSeen.add(idx);
-		}
-	    }
+            if (firstSeen == null) {
+                firstSeen = new HashSet<Integer>();
+                for (Integer idx : indices) {
+                    firstSeen.add(idx);
+                }
+            }
             for (Integer idx : indices) {
-		String s = row.getString(idx);
-		result.add(s);
-	    } 
-	    for(int i=0;i<row.size();i++) {
-		if(!firstSeen.contains(i))
-		    result.add(row.getString(i));
-	    }
+                String s = row.getString(idx);
+                result.add(s);
+            }
+            for (int i = 0; i < row.size(); i++) {
+                if ( !firstSeen.contains(i)) {
+                    result.add(row.getString(i));
+                }
+            }
 
             return new Row(result);
-	}
+        }
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class ColumnsBefore extends Converter {
 
-	private HashSet<Integer> set;
+        /**  */
+        private HashSet<Integer> set;
 
-	private String col;
-	private int colIdx=-1;
+        /**  */
+        private String col;
+
+        /**  */
+        private int colIdx = -1;
 
         /**
+         * @param col _more_
          * @param cols _more_
          */
-        public ColumnsBefore(String col,List<String> cols) {
+        public ColumnsBefore(String col, List<String> cols) {
             super(cols);
-	    this.col = col;
+            this.col = col;
         }
 
         /**
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
-	    if(colIdx==-1) colIdx= getColumnIndex(ctx, col);
+            if (colIdx == -1) {
+                colIdx = getColumnIndex(ctx, col);
+            }
             List<Integer> indices = getIndices(ctx);
-	    if(set==null) {
-		set = new HashSet<Integer>();
-		for(int i: indices) {
-		    set.add(i);
-		}
-	    }
+            if (set == null) {
+                set = new HashSet<Integer>();
+                for (int i : indices) {
+                    set.add(i);
+                }
+            }
             if (indices.size() == 0) {
                 return row;
             }
 
-	    List values = row.getValues();
-	    List newList =new ArrayList();
-	    for(int i=0;i<colIdx;i++) {
-		if(!set.contains(i))
-		    newList.add(values.get(i));
-	    }
-	    for(int i: indices) {
-		newList.add(values.get(i));
-	    }
-	    for(int i=colIdx;i<values.size();i++) {
-		if(set.contains(i)) continue;
-		newList.add(values.get(i));
-	    }
-            return new Row(newList);
-	}
-    }
-    
+            List values  = row.getValues();
+            List newList = new ArrayList();
+            for (int i = 0; i < colIdx; i++) {
+                if ( !set.contains(i)) {
+                    newList.add(values.get(i));
+                }
+            }
+            for (int i : indices) {
+                newList.add(values.get(i));
+            }
+            for (int i = colIdx; i < values.size(); i++) {
+                if (set.contains(i)) {
+                    continue;
+                }
+                newList.add(values.get(i));
+            }
 
+            return new Row(newList);
+        }
+    }
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class ColumnsAfter extends Converter {
 
-	private HashSet<Integer> set;
+        /**  */
+        private HashSet<Integer> set;
 
-	private String col;
-	private int colIdx=-1;
+        /**  */
+        private String col;
+
+        /**  */
+        private int colIdx = -1;
 
         /**
+         * @param col _more_
          * @param cols _more_
          */
-        public ColumnsAfter(String col,List<String> cols) {
+        public ColumnsAfter(String col, List<String> cols) {
             super(cols);
-	    this.col = col;
+            this.col = col;
         }
 
         /**
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
-	    if(colIdx==-1) {
-		Integer i =  getColumnIndex(ctx,col);
-		if(i==null) fatal("Could not find index:" + col);
-		colIdx=i;
-	    }
+            if (colIdx == -1) {
+                Integer i = getColumnIndex(ctx, col);
+                if (i == null) {
+                    fatal("Could not find index:" + col);
+                }
+                colIdx = i;
+            }
 
             List<Integer> indices = getIndices(ctx);
-	    if(set==null) {
-		set = new HashSet<Integer>();
-		for(int i: indices) {
-		    set.add(i);
-		}
-	    }
+            if (set == null) {
+                set = new HashSet<Integer>();
+                for (int i : indices) {
+                    set.add(i);
+                }
+            }
             if (indices.size() == 0) {
                 return row;
             }
 
-	    List values = row.getValues();
-	    List newList =new ArrayList();
-	    for(int i=colIdx+1;i<values.size();i++) {
-		if(!set.contains(i))
-		    newList.add(values.get(i));
-	    }
-	    newList.add(0,values.get(colIdx));
-	    for(int i=indices.size()-1;i>=0;i--) {
-		newList.add(1,values.get(indices.get(i)));
-	    }
-	    for(int i=colIdx-1;i>=0;i--) {
-		if(set.contains(i)) continue;
-		newList.add(0,values.get(i));
-	    }
+            List values  = row.getValues();
+            List newList = new ArrayList();
+            for (int i = colIdx + 1; i < values.size(); i++) {
+                if ( !set.contains(i)) {
+                    newList.add(values.get(i));
+                }
+            }
+            newList.add(0, values.get(colIdx));
+            for (int i = indices.size() - 1; i >= 0; i--) {
+                newList.add(1, values.get(indices.get(i)));
+            }
+            for (int i = colIdx - 1; i >= 0; i--) {
+                if (set.contains(i)) {
+                    continue;
+                }
+                newList.add(0, values.get(i));
+            }
+
             return new Row(newList);
-	}
+        }
     }
 
 
@@ -336,7 +357,6 @@ public abstract class Converter extends Processor {
     public static class ColumnNotSelector extends Converter {
 
         /**
-         *
          * @param cols _more_
          */
         public ColumnNotSelector(List<String> cols) {
@@ -345,16 +365,16 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
          * @param ctx _more_
          * @param row _more_
          * @return _more_
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
-	    //	    System.err.println("row:" + row);
+            //      System.err.println("row:" + row);
             List<Integer> indices = getIndices(ctx);
-	    return removeColumns(indices, row);
+
+            return removeColumns(indices, row);
         }
 
     }
@@ -366,7 +386,7 @@ public abstract class Converter extends Processor {
 
     /** _more_ */
     private static Hashtable<String, String> imageMap = new Hashtable<String,
-	String>();
+                                                            String>();
 
     /**
      * Class description
@@ -411,7 +431,6 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
          * @param ctx _more_
          * @param row _more_
          * @return _more_
@@ -425,6 +444,7 @@ public abstract class Converter extends Processor {
                 if (imageColumnIndex == -1) {
                     add(ctx, row, "image");
                 }
+
                 return row;
             }
 
@@ -450,8 +470,8 @@ public abstract class Converter extends Processor {
                     String image = imageMap.get(s);
                     if (image == null) {
                         Process p = Runtime.getRuntime().exec(new String[] {
-				"sh",
-				script, s });
+                                        "sh",
+                                        script, s });
                         result =
                             IO.readInputStream(p.getInputStream()).trim();
                         JSONObject obj    = new JSONObject(result);
@@ -470,11 +490,11 @@ public abstract class Converter extends Processor {
                         System.err.println("found image:" + s + " image:"
                                            + image);
                         ctx.printDebug("-image",
-				       "value:" + s + " found:" + image);
+                                       "value:" + s + " found:" + image);
                         imageMap.put(s, image);
                     } else {
                         ctx.printDebug("-image",
-				       "value:" + s + " in cache:" + image);
+                                       "value:" + s + " in cache:" + image);
                     }
                     if (imageColumnIndex >= 0) {
                         row.set(imageColumnIndex, image);
@@ -498,7 +518,15 @@ public abstract class Converter extends Processor {
 
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class Embed extends Converter {
+
         /** _more_ */
         private String imageColumn;
 
@@ -506,19 +534,17 @@ public abstract class Converter extends Processor {
         private int imageColumnIndex = -1;
 
         /**
-         * @param cols _more_
-         * @param suffix _more_
+         * @param col _more_
          */
         public Embed(String col) {
             super();
-	    imageColumn = col;
+            imageColumn = col;
         }
 
 
 
 
         /**
-         *
          * @param ctx _more_
          * @param row _more_
          * @return _more_
@@ -527,42 +553,56 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
                 imageColumnIndex = getIndex(ctx, imageColumn);
-		row.add("Image Data");
+                row.add("Image Data");
+
                 return row;
             }
 
-	    String url = row.getString(imageColumnIndex);
-	    if(!Utils.stringDefined(url)) {
-		row.add("");
-		return row;
-	    }
-	    url = url.trim();
-	    if(url.toLowerCase().startsWith("file")) {
-		fatal("Bad url:" + url);
-	    }
-	    String type = Misc.getFileExtension(url);
-	    if(!Utils.stringDefined(type)) type  = "png";
-	    try {
-		URL _url = new URL(url);
-		InputStream is = IO.getInputStream(_url);
-		byte[] bytes = IOUtil.readBytes(is);
-		String b  = "data:image/" + type +";base64, " + Utils.encodeBase64Bytes(bytes);
-		row.add(b);
-	    } catch(Exception exc) {
-		System.err.println("Error reading url:" + url);
-		exc.printStackTrace();
-		row.add("");
-		//		fatal("Reading url:" + url, exc);
-	    }
+            String url = row.getString(imageColumnIndex);
+            if ( !Utils.stringDefined(url)) {
+                row.add("");
+
+                return row;
+            }
+            url = url.trim();
+            if (url.toLowerCase().startsWith("file")) {
+                fatal("Bad url:" + url);
+            }
+            String type = Misc.getFileExtension(url);
+            if ( !Utils.stringDefined(type)) {
+                type = "png";
+            }
+            try {
+                URL         _url  = new URL(url);
+                InputStream is    = IO.getInputStream(_url);
+                byte[]      bytes = IOUtil.readBytes(is);
+                String b = "data:image/" + type + ";base64, "
+                           + Utils.encodeBase64Bytes(bytes);
+                row.add(b);
+            } catch (Exception exc) {
+                System.err.println("Error reading url:" + url);
+                exc.printStackTrace();
+                row.add("");
+                //              fatal("Reading url:" + url, exc);
+            }
+
             return row;
         }
 
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class Fetch extends Converter {
 
-	private Row headerRow;
+        /**  */
+        private Row headerRow;
 
         /** _more_ */
         private String name;
@@ -571,18 +611,17 @@ public abstract class Converter extends Processor {
         private String urlTemplate;
 
         /**
-         * @param cols _more_
-         * @param suffix _more_
+         * @param name _more_
+         * @param urlTemplate _more_
          */
         public Fetch(String name, String urlTemplate) {
             super();
-	    this.name = name;
-	    this.urlTemplate = urlTemplate;
+            this.name        = name;
+            this.urlTemplate = urlTemplate;
         }
 
 
         /**
-         *
          * @param ctx _more_
          * @param row _more_
          * @return _more_
@@ -590,45 +629,45 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
-		headerRow = row;
-		row.add(name);
+                headerRow = row;
+                row.add(name);
+
                 return row;
             }
-	    if(rowCnt>5) {
-		//		row.add("FILLER");
-		//		return row;
-	    }
-		
-	    String url = urlTemplate;
-	    //Offset by -1 because we added the name to the end
-	    for(int i=0;i<headerRow.size()-1;i++) {
-		String id = Utils.makeID(headerRow.getString(i));
-		url = url.replace("${" + id +"}",row.getString(i));
-	    }
+            if (rowCnt > 5) {
+                //              row.add("FILLER");
+                //              return row;
+            }
 
-	    System.err.println("URL:" + url);
-	    if(url.toLowerCase().startsWith("file")) {
-		fatal("Bad url:" + url);
-	    }
-	    try {
-		URL _url = new URL(url);
-		InputStream is = IO.getInputStream(_url);
-		String contents = IO.readInputStream(is);
-		is.close();
-		row.add(contents);
-	    } catch(Exception exc) {
-		fatal("Reading url:" + url, exc);
-	    }
+            String url = urlTemplate;
+            //Offset by -1 because we added the name to the end
+            for (int i = 0; i < headerRow.size() - 1; i++) {
+                String id = Utils.makeID(headerRow.getString(i));
+                url = url.replace("${" + id + "}", row.getString(i));
+            }
+
+            System.err.println("URL:" + url);
+            if (url.toLowerCase().startsWith("file")) {
+                fatal("Bad url:" + url);
+            }
+            try {
+                URL         _url     = new URL(url);
+                InputStream is       = IO.getInputStream(_url);
+                String      contents = IO.readInputStream(is);
+                is.close();
+                row.add(contents);
+            } catch (Exception exc) {
+                fatal("Reading url:" + url, exc);
+            }
+
             return row;
         }
 
     }
-    
+
 
     /**
      * Class description
-     *
-     *
      * @version        $version$, Fri, Jan 9, '15
      * @author         Jeff McWhirter
      */
@@ -640,10 +679,6 @@ public abstract class Converter extends Processor {
         private String suffix;
 
         /**
-         *
-         *
-         *
-         *
          * @param cols _more_
          * @param suffix _more_
          */
@@ -693,16 +728,16 @@ public abstract class Converter extends Processor {
                 String     title   = value.optString("title", "");
                 title = title.replaceAll(" ", "%20");
                 url = baseUrl + "?action=parse&prop=text&page=" + title
-		    + "&format=json";
+                      + "&format=json";
                 result = IO.readUrl(url);
                 obj    = new JSONObject(result);
                 obj    = Json.readObject(obj, "parse.text");
                 String contents = obj.optString("*", "");
                 String p = StringUtil.findPattern(contents,
-						  "(?s)/table>(.*?)<div id=\"toc\"");
+                               "(?s)/table>(.*?)<div id=\"toc\"");
                 if (p != null) {
                     String p2 = StringUtil.findPattern(contents,
-						       "(?s).*?<p>(.*?)</p>");
+                                    "(?s).*?<p>(.*?)</p>");
                     if (p2 != null) {
                         p = p2;
                     } else {
@@ -740,8 +775,6 @@ public abstract class Converter extends Processor {
         /**
          *
          *
-         *
-         *
          * @param cols _more_
          * @param size _more_
          */
@@ -753,14 +786,8 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -799,9 +826,6 @@ public abstract class Converter extends Processor {
 
         /**
          *
-         *
-         *
-         *
          * @param cols _more_
          * @param fmt _more_
          */
@@ -813,14 +837,8 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -860,10 +878,6 @@ public abstract class Converter extends Processor {
         private String pad;
 
         /**
-         *
-         *
-         *
-         *
          * @param count _more_
          * @param s _more_
          */
@@ -874,14 +888,8 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -916,12 +924,6 @@ public abstract class Converter extends Processor {
         private String pad;
 
         /**
-         *
-         *
-         *
-         *
-         *
-         *
          * @param cols _more_
          * @param s _more_
          */
@@ -932,14 +934,8 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -974,12 +970,6 @@ public abstract class Converter extends Processor {
         private String pad;
 
         /**
-         *
-         *
-         *
-         *
-         *
-         *
          * @param cols _more_
          * @param s _more_
          */
@@ -990,14 +980,8 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -1033,15 +1017,10 @@ public abstract class Converter extends Processor {
         private boolean asPoint = false;
 
         /**
-         *
-         *
          */
         public PrintHeader() {}
 
         /**
-         *
-         *
-         *
          * @param asPoint _more_
          */
         public PrintHeader(boolean asPoint) {
@@ -1050,14 +1029,8 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -1087,7 +1060,7 @@ public abstract class Converter extends Processor {
                     String label =
                         Utils.makeLabel(col.replaceAll("\\([^\\)]+\\)", ""));
                     String unit = StringUtil.findPattern(col,
-							 ".*?\\(([^\\)]+)\\).*");
+                                      ".*?\\(([^\\)]+)\\).*");
                     StringBuffer attrs = new StringBuffer();
                     attrs.append("label=\"" + label + "\" ");
                     if (unit != null) {
@@ -1095,9 +1068,9 @@ public abstract class Converter extends Processor {
 
                     }
                     String id = label.replaceAll(
-						 "\\([^\\)]+\\)", "").replaceAll(
-										 "-", "_").trim().toLowerCase().replaceAll(
-															   " ", "_").replaceAll(":", "_");
+                                    "\\([^\\)]+\\)", "").replaceAll(
+                                    "-", "_").trim().toLowerCase().replaceAll(
+                                    " ", "_").replaceAll(":", "_");
                     id = id.replaceAll("/+", "_");
                     id = id.replaceAll("\\.", "_");
                     id = id.replaceAll("_+_", "_");
@@ -1125,44 +1098,48 @@ public abstract class Converter extends Processor {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class HeaderNames extends Converter {
 
         /**
-         *
-         * @param props _more_
          */
-        public HeaderNames() {
-        }
+        public HeaderNames() {}
 
         /**
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
-            if(rowCnt++>0) return row;
-	    for(int i=0;i<row.size();i++) {
-		String s = row.getString(i);
-		s = s.replaceAll("([A-Z])","xdelimiter$1");
-		s = Utils.makeID(s);
-		s = s.replace("_","xdelimiter");
-		List<String> toks = Utils.split(s,"xdelimiter",true,true);
-		String tmp = "";
-		for(String tok: toks) {
-		    if(tmp.length()>0) {
-			tmp += " ";
-		    } 
-		    tok = Utils.upperCaseFirst(tok);
-		    tmp+=tok;
-		}
-		row.set(i,tmp);
-	    }
+            if (rowCnt++ > 0) {
+                return row;
+            }
+            for (int i = 0; i < row.size(); i++) {
+                String s = row.getString(i);
+                s = s.replaceAll("([A-Z])", "xdelimiter$1");
+                s = Utils.makeID(s);
+                s = s.replace("_", "xdelimiter");
+                List<String> toks = Utils.split(s, "xdelimiter", true, true);
+                String       tmp  = "";
+                for (String tok : toks) {
+                    if (tmp.length() > 0) {
+                        tmp += " ";
+                    }
+                    tok = Utils.upperCaseFirst(tok);
+                    tmp += tok;
+                }
+                row.set(i, tmp);
+            }
 
-	    return row;
-	}
+            return row;
+        }
 
     }
 
@@ -1205,7 +1182,6 @@ public abstract class Converter extends Processor {
         Row firstRow;
 
         /**
-         *
          * @param props _more_
          */
         public HeaderMaker(Hashtable<String, String> props) {
@@ -1213,21 +1189,20 @@ public abstract class Converter extends Processor {
             defaultType = CsvUtil.getDbProp(props, "default", "type",
                                             defaultType);
             defaultChartable = CsvUtil.getDbProp(props, "default",
-						 "chartable", true);
+                    "chartable", true);
             makeLabel = CsvUtil.getDbProp(props, null, "makeLabel", true);
             toStdOut  = CsvUtil.getDbProp(props, null, "stdout", false);
         }
 
 
         /**
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
+
             rowCnt++;
             if (rowCnt > 2) {
                 //              System.err.println("hdr rest:" + row);
@@ -1235,10 +1210,11 @@ public abstract class Converter extends Processor {
             }
             if (firstRow == null) {
                 firstRow = row;
+
                 return null;
             }
             boolean justFields  = Misc.equals(props.get("justFields"),
-					      "true");
+                                      "true");
             boolean      debug  = Misc.equals(props.get("debug"), "true");
             PrintWriter  writer = ctx.getWriter();
             StringBuffer sb     = new StringBuffer();
@@ -1249,9 +1225,9 @@ public abstract class Converter extends Processor {
             }
             List values = new ArrayList<String>();
             String dfltFormat = CsvUtil.getDbProp(props, "default", "format",
-						  null);
+                                    null);
             String dfltUnit = CsvUtil.getDbProp(props, "default", "unit",
-						null);
+                                  null);
             for (int i = 0; i < firstRow.getValues().size(); i++) {
                 String   col = (String) firstRow.getValues().get(i);
                 String[] toks;
@@ -1264,7 +1240,7 @@ public abstract class Converter extends Processor {
                         desc = toks[0];
                         desc = desc.replaceAll(",", "_comma_");
                         desc = desc.replaceAll("\"", "").replaceAll("\n",
-								    " ");
+                                " ");
                         col = col.replaceAll("<desc>.*</desc>", "");
                     }
                     toks = Utils.findPatterns(col, "<label>(.*)</label>");
@@ -1284,46 +1260,46 @@ public abstract class Converter extends Processor {
                 String sample  = (String) osample.toString();
                 String _sample = sample.toLowerCase();
                 col = col.replaceAll("\u00B5", "u").replaceAll("\u00B3",
-							       "^3").replaceAll("\n", " ");
+                                     "^3").replaceAll("\n", " ");
                 String id = col.replaceAll("\\([^\\)]+\\)", "").replaceAll(
-									   "\\?", "").replaceAll("\\$", "").replaceAll(
-														       ",", "_").replaceAll(
-																	    "-", "_").trim().toLowerCase().replaceAll(
-																						      " ", "_").replaceAll(":", "_");
+                                "\\?", "").replaceAll("\\$", "").replaceAll(
+                                ",", "_").replaceAll(
+                                "-", "_").trim().toLowerCase().replaceAll(
+                                " ", "_").replaceAll(":", "_");
 
                 id = id.replaceAll("<", "_").replaceAll(">", "_");
                 id = id.replaceAll("\\+", "_").replaceAll(
-							  "\"", "_").replaceAll("%", "_").replaceAll(
-												     "\'", "_").replaceAll("/+", "_").replaceAll(
-																		 "\\.", "_").replaceAll("_+_", "_").replaceAll(
-																							       "_+$", "").replaceAll("^_+", "").replaceAll("\\^", "_");
+                    "\"", "_").replaceAll("%", "_").replaceAll(
+                    "\'", "_").replaceAll("/+", "_").replaceAll(
+                    "\\.", "_").replaceAll("_+_", "_").replaceAll(
+                    "_+$", "").replaceAll("^_+", "").replaceAll("\\^", "_");
 
                 id = CsvUtil.getDbProp(props, id, i, "id", id);
 
 
                 StringBuffer attrs = new StringBuffer();
-		String group  =CsvUtil.getDbProp(props, id, i, "group",
-						 (String) null);
-		if(group!=null) {
-		    attrs.append(" group=\"" + group + "\" ");
+                String group = CsvUtil.getDbProp(props, id, i, "group",
+                                   (String) null);
+                if (group != null) {
+                    attrs.append(" group=\"" + group + "\" ");
 
-		}
-		
+                }
+
                 if (label == null) {
                     label = CsvUtil.getDbProp(props, id, i, "label",
-					      (String) null);
+                            (String) null);
                 }
                 if (makeLabel && (label == null)) {
                     label = Utils.makeLabel(col.replaceAll("\\([^\\)]+\\)",
-							   ""));
+                            ""));
                 }
                 String unit = StringUtil.findPattern(col,
-						     ".*?\\(([^\\)]+)\\).*");
+                                  ".*?\\(([^\\)]+)\\).*");
                 if (label != null) {
                     label = label.replaceAll(",", "%2C").replaceAll("<br>",
-								    " ").replaceAll("<p>", " ");
+                                             " ").replaceAll("<p>", " ");
                     label = label.replaceAll("  +", " ").replace("_space_",
-								 " ");
+                                             " ");
                     attrs.append("label=\"" + label + "\" ");
                 }
                 if (desc != null) {
@@ -1341,7 +1317,7 @@ public abstract class Converter extends Processor {
                 boolean isGeo  = false;
 
                 boolean chartable = CsvUtil.getDbProp(props, id, "chartable",
-						      defaultChartable);
+                                        defaultChartable);
                 if (id.equals("date")) {
                     type = "date";
                 } else if (id.equals("year")) {
@@ -1373,24 +1349,24 @@ public abstract class Converter extends Processor {
                 } else {
                     try {
                         if (_sample.equals("true")
-			    || _sample.equals("false")) {
+                                || _sample.equals("false")) {
                             type = "enumeration";
                         } else if (_sample.equals("nan")
                                    || _sample.equals("na")) {
                             type = "double";
                         } else if (sample.startsWith("http")) {
-			    if(Utils.isImage(sample)) {
-				type = "image";
-			    } else {
-				type = "url";
-			    }
+                            if (Utils.isImage(sample)) {
+                                type = "image";
+                            } else {
+                                type = "url";
+                            }
                         } else if (sample.matches("^(\\+|-)?\\d+$")) {
                             type = "integer";
                         } else if (sample.matches(
-						  "^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?$")) {
+                                "^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?$")) {
                             type = "double";
                         } else if (sample.matches(
-						  "\\d\\d\\d\\d-\\d\\d-\\d\\d")) {
+                                "\\d\\d\\d\\d-\\d\\d-\\d\\d")) {
                             type   = "date";
                             format = "yyyy-MM-dd";
                         } else {}
@@ -1409,7 +1385,7 @@ public abstract class Converter extends Processor {
 
                 attrs.append(" type=\"" + type + "\"");
                 String enumeratedValues = CsvUtil.getDbProp(props, id, i,
-							    "enumeratedValues", null);
+                                              "enumeratedValues", null);
                 if (enumeratedValues != null) {
                     attrs.append(" enumeratedValues=\"" + enumeratedValues
                                  + "\"");
@@ -1448,17 +1424,19 @@ public abstract class Converter extends Processor {
                 values.add(field);
             }
 
-	    Processor nextProcessor = getNextProcessor();
+            Processor nextProcessor = getNextProcessor();
             firstRow.setValues(values);
-	    if(nextProcessor!=null) {
-		try {
-		    nextProcessor.handleRow(ctx,firstRow);
-		} catch(Exception exc) {
-		    throw new RuntimeException(exc);
-		}
-	    }
+            if (nextProcessor != null) {
+                try {
+                    nextProcessor.handleRow(ctx, firstRow);
+                } catch (Exception exc) {
+                    throw new RuntimeException(exc);
+                }
+            }
             firstRow = null;
-	    return row;
+
+            return row;
+
         }
     }
 
@@ -1476,11 +1454,6 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param cols _more_
          */
         public ColumnPercenter(List<String> cols) {
@@ -1490,13 +1463,8 @@ public abstract class Converter extends Processor {
 
         /**
          *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -1508,16 +1476,16 @@ public abstract class Converter extends Processor {
             for (Integer idx : indices) {
                 String s = values.get(idx).toString().trim();
                 double v = (s.length() == 0)
-		    ? 0
-		    : Double.parseDouble(s);
+                           ? 0
+                           : Double.parseDouble(s);
                 total += v;
                 cnt++;
             }
             for (Integer idx : indices) {
                 String s = values.get(idx).toString().trim();
                 double v = (s.length() == 0)
-		    ? 0
-		    : Double.parseDouble(s);
+                           ? 0
+                           : Double.parseDouble(s);
                 if (total != 0) {
                     values.set(idx, v / total);
                 } else {
@@ -1534,7 +1502,6 @@ public abstract class Converter extends Processor {
 
     /**
      * Class description
-     *
      *
      * @version        $version$, Tue, Nov 19, '19
      * @author         Enter your name here...
@@ -1553,11 +1520,6 @@ public abstract class Converter extends Processor {
         List<Double> values = new ArrayList<Double>();
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param col _more_
          * @param step _more_
          */
@@ -1568,14 +1530,8 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -1621,31 +1577,30 @@ public abstract class Converter extends Processor {
     public static class Ranges extends Converter {
 
         /** _more_ */
-	String name;
-	double start;
-	double size;
+        String name;
+
+        /**  */
+        double start;
+
+        /**  */
+        double size;
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param col _more_
-         * @param step _more_
+         * @param name _more_
+         * @param start _more_
+         * @param size _more_
          */
-        public Ranges(String col, String name,double start, double size) {
+        public Ranges(String col, String name, double start, double size) {
             super(col);
-	    this.name = name;
-	    this.start = start;
-	    this.size = size;
+            this.name  = name;
+            this.start = start;
+            this.size  = size;
         }
 
         /**
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -1653,22 +1608,27 @@ public abstract class Converter extends Processor {
             int col = getIndex(ctx);
             if (rowCnt++ == 0) {
                 add(ctx, row, name);
+
                 return row;
             }
             double v = Double.parseDouble(row.get(col).toString());
-	    if(Double.isNaN(v)) {
-		add(ctx, row, "");
-	    } else if(v<start) {
-		add(ctx, row, "<" + start);
-	    } else {
-		double offset =  v-start;
-		int buckets = (int)(offset/size);
-		double s= start+buckets*size;
-		double e = s+size;
-		String ss = ""+(((int)s)==s?(int)s:s);
-		String se = ""+(((int)e)==e?(int)e:e);		
-		add(ctx, row, Utils.format(s)+"-"+Utils.format(e));
-	    }
+            if (Double.isNaN(v)) {
+                add(ctx, row, "");
+            } else if (v < start) {
+                add(ctx, row, "<" + start);
+            } else {
+                double offset  = v - start;
+                int    buckets = (int) (offset / size);
+                double s       = start + buckets * size;
+                double e       = s + size;
+                String ss      = "" + (((int) s) == s
+                                       ? (int) s
+                                       : s);
+                String se      = "" + (((int) e) == e
+                                       ? (int) e
+                                       : e);
+                add(ctx, row, Utils.format(s) + "-" + Utils.format(e));
+            }
 
             return row;
         }
@@ -1679,57 +1639,54 @@ public abstract class Converter extends Processor {
     /**
      * Class description
      *
-     *
      * @version        $version$, Tue, Nov 19, '19
      * @author         Enter your name here...
      */
     public static class And extends Converter {
 
-	private String name;
+        /**  */
+        private String name;
 
         /**
-         * @param col _more_
-         * @param step _more_
+         * @param name _more_
+         * @param cols _more_
          */
         public And(String name, List<String> cols) {
             super(cols);
-	    this.name = name;
+            this.name = name;
         }
 
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
-		row.add(name);
+                row.add(name);
+
                 return row;
             }
             List<Integer> indices = getIndices(ctx);
-	    boolean r=true;
-            for (int index: indices) {
+            boolean       r       = true;
+            for (int index : indices) {
                 if ((index >= 0) && (index < row.size())) {
-		    if(!getBoolean(row.getString(index))) {
-			r = false;
-			break;
-		    }
-		}
-	    }
-	    row.add(""+r);
+                    if ( !getBoolean(row.getString(index))) {
+                        r = false;
+
+                        break;
+                    }
+                }
+            }
+            row.add("" + r);
+
             return row;
         }
 
     }
-    
+
 
 
     /**
@@ -1741,53 +1698,53 @@ public abstract class Converter extends Processor {
      */
     public static class Or extends Converter {
 
-	private String name;
+        /**  */
+        private String name;
 
         /**
-         * @param col _more_
-         * @param step _more_
+         * @param name _more_
+         * @param cols _more_
          */
         public Or(String name, List<String> cols) {
             super(cols);
-	    this.name = name;
+            this.name = name;
         }
 
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
-		row.add(name);
+                row.add(name);
+
                 return row;
             }
             List<Integer> indices = getIndices(ctx);
-	    boolean r=false;
-            for (int index: indices) {
+            boolean       r       = false;
+            for (int index : indices) {
                 if ((index >= 0) && (index < row.size())) {
-		    String v = row.getString(index);
-		    if(v==null) v = "false";
-		    if(getBoolean(row.getString(index))) {
-			r = true;
-			break;
-		    }
-		}
-	    }
-	    row.add(""+r);
+                    String v = row.getString(index);
+                    if (v == null) {
+                        v = "false";
+                    }
+                    if (getBoolean(row.getString(index))) {
+                        r = true;
+
+                        break;
+                    }
+                }
+            }
+            row.add("" + r);
+
             return row;
         }
 
     }
-    
+
 
 
     /**
@@ -1799,43 +1756,40 @@ public abstract class Converter extends Processor {
      */
     public static class Not extends Converter {
 
-	private String name;
+        /**  */
+        private String name;
 
         /**
+         * @param name _more_
          * @param col _more_
-         * @param step _more_
          */
         public Not(String name, String col) {
             super(col);
-	    this.name = name;
+            this.name = name;
         }
 
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
-		row.add(name);
+                row.add(name);
+
                 return row;
             }
-	    boolean b = getBoolean(row.getString(getIndex(ctx)));
-	    row.add(""+!b);
+            boolean b = getBoolean(row.getString(getIndex(ctx)));
+            row.add("" + !b);
+
             return row;
         }
 
     }
-    
-    
+
+
 
     /**
      * Class description
@@ -1872,11 +1826,6 @@ public abstract class Converter extends Processor {
         String label;
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param what _more_
          * @param cols _more_
          * @param period _more_
@@ -1891,14 +1840,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -1909,6 +1852,7 @@ public abstract class Converter extends Processor {
                     values.add(new ArrayList<Double>());
                     add(ctx, row, row.get(indices.get(i)) + " " + label);
                 }
+
                 return row;
             }
 
@@ -1930,8 +1874,8 @@ public abstract class Converter extends Processor {
                     }
                 }
                 double average = (cnt == 0)
-		    ? Double.NaN
-		    : total / cnt;
+                                 ? Double.NaN
+                                 : total / cnt;
                 add(ctx, row, average);
             }
 
@@ -1980,9 +1924,6 @@ public abstract class Converter extends Processor {
         org.mozilla.javascript.Script script;
 
         /**
-         *
-         *
-         *
          * @param js _more_
          * @param names _more_
          * @param code _more_
@@ -2013,11 +1954,8 @@ public abstract class Converter extends Processor {
 
         /**
          * _more_
-         *
          * @param s _more_
-         *
          * @return _more_
-         *
          * @throws Exception _more_
          */
         private Object eval(String s) throws Exception {
@@ -2030,10 +1968,8 @@ public abstract class Converter extends Processor {
 
         /**
          * _more_
-         *
          * @param name _more_
          * @param value _more_
-         *
          * @throws Exception _more_
          */
         private void put(String name, Object value) throws Exception {
@@ -2042,10 +1978,8 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -2115,18 +2049,12 @@ public abstract class Converter extends Processor {
     public static class ColumnOperator extends Converter {
 
         /**
-         *
          */
         public ColumnOperator() {}
 
         /**
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -2185,13 +2113,10 @@ public abstract class Converter extends Processor {
         /** _more_ */
         private boolean isRegex;
 
-	private List<String[]> patterns  = new ArrayList<String[]>();
+        /**  */
+        private List<String[]> patterns = new ArrayList<String[]>();
 
         /**
-         *
-         *
-         *
-         *
          * @param cols _more_
          * @param pattern _more_
          * @param value _more_
@@ -2199,43 +2124,46 @@ public abstract class Converter extends Processor {
         public ColumnChanger(List<String> cols, String pattern,
                              String value) {
             super(cols);
-	    if(pattern.startsWith("file:")) {
-		String file = pattern.substring("file:".length());
-		if(!IO.okToReadFrom(file)) {
-		    fatal("Cannot read file:" + file);
-		}
-		try {
-		    init(file);
-		} catch(Exception exc) {
-		    fatal("Reading file:" + file, exc);
-		}
-		this.isRegex = true;
-	    } else {
-		this.isRegex = StringUtil.containsRegExp(pattern);		
-		patterns.add(new String[]{pattern, value});
-	    }
+            if (pattern.startsWith("file:")) {
+                String file = pattern.substring("file:".length());
+                if ( !IO.okToReadFrom(file)) {
+                    fatal("Cannot read file:" + file);
+                }
+                try {
+                    init(file);
+                } catch (Exception exc) {
+                    fatal("Reading file:" + file, exc);
+                }
+                this.isRegex = true;
+            } else {
+                this.isRegex = StringUtil.containsRegExp(pattern);
+                patterns.add(new String[] { pattern, value });
+            }
         }
 
-	private void init(String file) throws Exception {
-	    String contents = IO.readContents(file);
-	    List<String> lines = Utils.split(contents,"\n");
-	    for(int i=0;i<lines.size();i++) {
-		String line = lines.get(i).trim();
-		if(line.length()==0) continue;
-		List<String> toks = Utils.split(line,"::");
-		patterns.add(new String[]{toks.get(0),toks.size()>1?toks.get(1):""});
-	    }
-	}
+        /**
+         * @param file _more_
+         * @throws Exception _more_
+         */
+        private void init(String file) throws Exception {
+            String       contents = IO.readContents(file);
+            List<String> lines    = Utils.split(contents, "\n");
+            for (int i = 0; i < lines.size(); i++) {
+                String line = lines.get(i).trim();
+                if (line.length() == 0) {
+                    continue;
+                }
+                List<String> toks = Utils.split(line, "::");
+                patterns.add(new String[] { toks.get(0),
+                                            (toks.size() > 1)
+                                            ? toks.get(1)
+                                            : "" });
+            }
+        }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -2248,22 +2176,22 @@ public abstract class Converter extends Processor {
             }
             List<Integer> indices = getIndices(ctx);
             for (Integer idx : indices) {
-		for(String[]tuple: patterns) {
-		    String pattern = tuple[0];
-		    String value = tuple[1];
-		    int index = idx.intValue();
-		    if ((index >= 0) && (index < row.size())) {
-			String s  = row.getString(index).trim();
-			String os = s;
-			if (isRegex) {
-			    s = s.replaceAll(pattern, value);
-			    //			System.err.println(value);
-			} else {
-			    s = s.replaceAll(pattern, value);
-			}
-			//		    System.err.println("\tP:"  + pattern +" os:" + os +" s:" + s);
-			row.set(index, s);
-		    }
+                for (String[] tuple : patterns) {
+                    String pattern = tuple[0];
+                    String value   = tuple[1];
+                    int    index   = idx.intValue();
+                    if ((index >= 0) && (index < row.size())) {
+                        String s  = row.getString(index).trim();
+                        String os = s;
+                        if (isRegex) {
+                            s = s.replaceAll(pattern, value);
+                            //                  System.err.println(value);
+                        } else {
+                            s = s.replaceAll(pattern, value);
+                        }
+                        //                  System.err.println("\tP:"  + pattern +" os:" + os +" s:" + s);
+                        row.set(index, s);
+                    }
                 }
             }
 
@@ -2288,21 +2216,17 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
          * @param cols _more_
          * @param value _more_
          */
-        public Ascii(List<String> cols, 
-		     String value) {
+        public Ascii(List<String> cols, String value) {
             super(cols);
             this.value = value;
         }
 
         /**
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -2311,17 +2235,18 @@ public abstract class Converter extends Processor {
             for (Integer idx : indices) {
                 int index = idx.intValue();
                 if ((index >= 0) && (index < row.size())) {
-                    String s  = row.getString(index).trim();
-		    s = s.replaceAll("[^\\x00-\\x7F]", value);
+                    String s = row.getString(index).trim();
+                    s = s.replaceAll("[^\\x00-\\x7F]", value);
                     row.set(index, s);
                 }
             }
+
             return row;
         }
 
     }
 
-    
+
     /**
      * Class description
      *
@@ -2335,7 +2260,6 @@ public abstract class Converter extends Processor {
         private List<String> patterns;
 
         /**
-         *
          * @param cols _more_
          * @param patterns _more_
          */
@@ -2350,7 +2274,6 @@ public abstract class Converter extends Processor {
         /**
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -2405,14 +2328,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -2454,8 +2371,11 @@ public abstract class Converter extends Processor {
 
         /* */
 
-	private String format1;
-	private String format2;	
+        /**  */
+        private String format1;
+
+        /**  */
+        private String format2;
 
 
         /** _more_ */
@@ -2468,24 +2388,19 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
-         *
-         *
-         *
          * @param col _more_
-         * @param sdf1 _more_
-         * @param sdf2 _more_
+         * @param format1 _more_
+         * @param format2 _more_
          */
         public DateConverter(String col, String format1, String format2) {
             super(col);
-            this.sdf1 = new SimpleDateFormat(this.format1= format1);
-            this.sdf2 = new SimpleDateFormat(this.format2= format2);	    
+            this.sdf1 = new SimpleDateFormat(this.format1 = format1);
+            this.sdf2 = new SimpleDateFormat(this.format2 = format2);
         }
 
         /**
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -2495,18 +2410,20 @@ public abstract class Converter extends Processor {
             if (rowCnt++ == 0) {
                 return row;
             }
-	    Date d=null;
-	    String s = row.get(col).toString();
+            Date   d = null;
+            String s = row.get(col).toString();
             try {
                 d = sdf1.parse(s);
             } catch (Exception exc) {
-		fatal("Could not parse date:" + s +" with format:" + format1);
+                fatal("Could not parse date:" + s + " with format:"
+                      + format1);
             }
-	    try {
+            try {
                 //              System.err.println(s + " D:" + d  +" " + sdf2.format(d));
                 row.set(col, sdf2.format(d));
             } catch (Exception exc) {
-		fatal("Could not format date:" + s +" with format:" + format2);
+                fatal("Could not format date:" + s + " with format:"
+                      + format2);
             }
 
             return row;
@@ -2549,8 +2466,6 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
-         *
          * @param col _more_
          * @param sdf _more_
          * @param tz _more_
@@ -2603,13 +2518,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         public Row processRow(TextReader ctx, Row row) {
@@ -2623,8 +2533,8 @@ public abstract class Converter extends Processor {
             try {
                 String            s   = row.get(col).toString();
                 Date              d   = (sdf == null)
-		    ? Utils.parseDate(s)
-		    : sdf.parse(s);
+                                        ? Utils.parseDate(s)
+                                        : sdf.parse(s);
                 GregorianCalendar cal = new GregorianCalendar();
                 cal.setTimeZone(TimeZone.getTimeZone("GMT"));
                 cal.setTime(d);
@@ -2669,10 +2579,6 @@ public abstract class Converter extends Processor {
         private SimpleDateFormat sdf1;
 
         /**
-         *
-         *
-         *
-         *
          * @param col _more_
          * @param sdf1 _more_
          * @param date _more_
@@ -2684,14 +2590,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -2746,10 +2646,6 @@ public abstract class Converter extends Processor {
         private SimpleDateFormat sdf1;
 
         /**
-         *
-         *
-         *
-         *
          * @param col _more_
          * @param sdf1 _more_
          * @param date _more_
@@ -2761,14 +2657,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -2811,9 +2701,10 @@ public abstract class Converter extends Processor {
         /* */
 
         /** _more_ */
-        private int col=-1;
+        private int col = -1;
 
-	private String scol;
+        /**  */
+        private String scol;
 
         /* */
 
@@ -2831,10 +2722,6 @@ public abstract class Converter extends Processor {
         private String name;
 
         /**
-         *
-         *
-         *
-         *
          * @param col _more_
          * @param pattern _more_
          * @param replace _more_
@@ -2842,28 +2729,22 @@ public abstract class Converter extends Processor {
          */
         public ColumnExtracter(String col, String pattern, String replace,
                                String name) {
-	    this.scol = col;
+            this.scol    = col;
             this.pattern = pattern;
             this.replace = replace;
             this.name    = name;
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             //Don't process the first row
             if (rowCnt++ == 0) {
-		this.col     = getColumnIndex(ctx,scol);
+                this.col = getColumnIndex(ctx, scol);
                 add(ctx, row, name);
 
                 return row;
@@ -2887,53 +2768,61 @@ public abstract class Converter extends Processor {
 
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class UrlArg extends Converter {
 
         /** _more_ */
         private String name;
 
-	private int index = -1;
+        /**  */
+        private int index = -1;
 
         /**
          * @param col _more_
          * @param name _more_
          */
-        public UrlArg(String col,  String name) {
+        public UrlArg(String col, String name) {
             super(col);
-            this.name    = name;
+            this.name = name;
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             //Don't process the first row
             if (rowCnt++ == 0) {
-		row.add(name);
+                row.add(name);
+
                 return row;
             }
-	    if(index==-1) index = getIndex(ctx);
-	    try {
-		String arg = Utils.getUrlArg(row.getString(index),name);
-		if(arg==null) arg ="";
-		row.add(arg);
-	    } catch(Exception exc) {
-		row.add("");		
-	    }
+            if (index == -1) {
+                index = getIndex(ctx);
+            }
+            try {
+                String arg = Utils.getUrlArg(row.getString(index), name);
+                if (arg == null) {
+                    arg = "";
+                }
+                row.add(arg);
+            } catch (Exception exc) {
+                row.add("");
+            }
+
             return row;
         }
 
     }
-    
+
 
 
 
@@ -2958,7 +2847,6 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
          * @param col _more_
          * @param length _more_
          * @param suffix _more_
@@ -2971,10 +2859,8 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -3020,11 +2906,6 @@ public abstract class Converter extends Processor {
         private HashSet<Integer> rows;
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param rowList _more_
          * @param cols _more_
          * @param pattern _more_
@@ -3042,14 +2923,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -3095,7 +2970,6 @@ public abstract class Converter extends Processor {
         private int count;
 
         /**
-         *
          * @param rowList _more_
          * @param column _more_
          * @param count _more_
@@ -3112,7 +2986,6 @@ public abstract class Converter extends Processor {
         /**
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -3170,7 +3043,6 @@ public abstract class Converter extends Processor {
         private Row firstRow;
 
         /**
-         *
          * @param rows _more_
          * @param delimiter _more_
          * @param close _more_
@@ -3184,10 +3056,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -3207,11 +3077,11 @@ public abstract class Converter extends Processor {
             }
             for (int i = 0; i < row.size(); i++) {
                 String s  = (i < row.size())
-		    ? row.getString(i)
-		    : "";
+                            ? row.getString(i)
+                            : "";
                 String ss = (i < firstRow.size())
-		    ? firstRow.getString(i)
-		    : "";
+                            ? firstRow.getString(i)
+                            : "";
                 ss = ss + delimiter + s;
                 firstRow.set(i, ss);
             }
@@ -3248,10 +3118,6 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
-         *
-         *
-         *
          * @param cols _more_
          * @param pattern _more_
          */
@@ -3261,14 +3127,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -3318,16 +3178,12 @@ public abstract class Converter extends Processor {
         private SimpleDateFormat to;
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param cols _more_
          * @param from _more_
          * @param to _more_
          */
-        public DateFormatter(List<String> cols, SimpleDateFormat from, String to) {
+        public DateFormatter(List<String> cols, SimpleDateFormat from,
+                             String to) {
             super(cols);
             try {
                 this.from = from;
@@ -3341,14 +3197,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -3369,7 +3219,7 @@ public abstract class Converter extends Processor {
                     dttm = from.parse(value);
                 } catch (java.text.ParseException exc) {
                     throw new IllegalArgumentException(
-						       "Bad parse date format:" + value);
+                        "Bad parse date format:" + value);
                 }
                 String toDate = to.format(dttm);
                 row.set(index, toDate);
@@ -3381,61 +3231,65 @@ public abstract class Converter extends Processor {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class Elapsed extends Converter {
 
         /** _more_ */
         private SimpleDateFormat from;
 
-	private Date lastDate;
+        /**  */
+        private Date lastDate;
 
-	private int index;
-	
+        /**  */
+        private int index;
+
         /**
-         *
-         * @param cols _more_
+         * @param col _more_
          * @param from _more_
-         * @param to _more_
          */
         public Elapsed(String col, SimpleDateFormat from) {
             super(col);
-	    this.from = from;
+            this.from = from;
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             //Don't process the first row
             if (rowCnt++ == 0) {
-		index = getIndex(ctx);
-		row.add("elapsed");
-		return row;
+                index = getIndex(ctx);
+                row.add("elapsed");
+
+                return row;
             }
 
-	    try {
-		Date date = from.parse(row.get(index).toString());
-		if(lastDate!=null) 
-		    row.add(date.getTime()-lastDate.getTime());
-		else
-		    row.add(0);
-		lastDate = date;
-	    } catch(Exception exc) {
-		throw new RuntimeException(exc);
-	    }
-	    return row;
+            try {
+                Date date = from.parse(row.get(index).toString());
+                if (lastDate != null) {
+                    row.add(date.getTime() - lastDate.getTime());
+                } else {
+                    row.add(0);
+                }
+                lastDate = date;
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
+
+            return row;
         }
 
     }
-    
+
 
 
 
@@ -3460,10 +3314,6 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
-         *
-         *
-         *
          * @param cols _more_
          * @param name _more_
          * @param toks _more_
@@ -3479,14 +3329,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -3552,10 +3396,6 @@ public abstract class Converter extends Processor {
         private List<String> names;
 
         /**
-         *
-         *
-         *
-         *
          * @param col _more_
          * @param delimiter _more_
          * @param names _more_
@@ -3568,14 +3408,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -3635,11 +3469,6 @@ public abstract class Converter extends Processor {
         private boolean inPlace;
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param indices _more_
          * @param delimiter _more_
          * @param name _more_
@@ -3654,14 +3483,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -3790,11 +3613,6 @@ public abstract class Converter extends Processor {
         private String lonLabel = "Longitude";
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param col _more_
          * @param mapFile _more_
          * @param nameIndex _more_
@@ -3820,7 +3638,6 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
          * @param cols _more_
          * @param prefix _more_
          * @param suffix _more_
@@ -3835,7 +3652,6 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
          * @param cols _more_
          * @param prefix _more_
          * @param suffix _more_
@@ -3852,19 +3668,18 @@ public abstract class Converter extends Processor {
 
         /**
          * @param filename _more_
-         *
          * @return _more_
          * @throws Exception _more_
          */
         private Hashtable<String, double[]> makeMap(String filename)
-	    throws Exception {
+                throws Exception {
             Hashtable<String, double[]> map = new Hashtable<String,
-		double[]>();
+                                                  double[]>();
             long t1 = System.currentTimeMillis();
             //            System.err.println("Reading file:" + filename);
             BufferedReader br = new BufferedReader(
-						   new InputStreamReader(
-									 getInputStream(filename)));
+                                    new InputStreamReader(
+                                        getInputStream(filename)));
             //            System.err.println("Done Reading file:" + filename);
             String line;
             while ((line = br.readLine()) != null) {
@@ -3894,14 +3709,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -3955,20 +3764,22 @@ public abstract class Converter extends Processor {
                     }
                     if (bounds == null) {
                         List<String> toks = Utils.splitUpTo(tok, ",", 2);
-			if(toks.size()>0)
-			    bounds = map.get(toks.get(0));
+                        if (toks.size() > 0) {
+                            bounds = map.get(toks.get(0));
+                        }
                     }
                     if (bounds == null) {
                         List<String> toks = Utils.splitUpTo(tok, " ", 2);
-			if(toks.size()>0)
-			    bounds = map.get(toks.get(0));
+                        if (toks.size() > 0) {
+                            bounds = map.get(toks.get(0));
+                        }
                     }
                     if (bounds == null) {
                         if (key.toString().length() > 0) {
                             badCnt++;
                             if ( !seen.contains(key)) {
                                 System.err.println("No bounds:" + key + " "
-						   + badCnt);
+                                        + badCnt);
                                 seen.add(key);
                             }
                         }
@@ -4010,7 +3821,6 @@ public abstract class Converter extends Processor {
         private int col = -1;
 
         /**
-         *
          * @param col _more_
          */
         public StateNamer(String col) {
@@ -4018,14 +3828,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -4066,27 +3870,24 @@ public abstract class Converter extends Processor {
     public static class Elevation extends Converter {
 
 
-        /** _more_          */
+        /** _more_ */
         private int rowIdx = 0;
 
-        /** _more_          */
+        /** _more_ */
         private String lat;
 
-        /** _more_          */
+        /** _more_ */
         private String lon;
 
 
         /** _more_ */
         private int latColumn = -1;
 
-        /** _more_          */
+        /** _more_ */
         private int lonColumn = -1;
 
 
         /**
-         *
-         * @param col _more_
-         *
          * @param lat _more_
          * @param lon _more_
          */
@@ -4097,14 +3898,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -4123,12 +3918,12 @@ public abstract class Converter extends Processor {
                     Double.parseDouble(row.getString(lonColumn));
                 String result =
                     IO.readUrl(
-			       new URL(
-				       "https://nationalmap.gov/epqs/pqs.php?x="
-				       + lonValue + "&y=" + latValue
-				       + "&units=feet&output=xml"));
+                        new URL(
+                            "https://nationalmap.gov/epqs/pqs.php?x="
+                            + lonValue + "&y=" + latValue
+                            + "&units=feet&output=xml"));
                 String elev = StringUtil.findPattern(result,
-						     "<Elevation>([^<]+)</Elevation>");
+                                  "<Elevation>([^<]+)</Elevation>");
                 if (elev != null) {
                     row.add(elev);
                 } else {
@@ -4144,30 +3939,34 @@ public abstract class Converter extends Processor {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class Neighborhood extends Converter {
 
 
-        /** _more_          */
+        /** _more_ */
         private int rowIdx = 0;
 
-        /** _more_          */
+        /** _more_ */
         private String lat;
 
-        /** _more_          */
+        /** _more_ */
         private String lon;
 
 
         /** _more_ */
         private int latColumn = -1;
 
-        /** _more_          */
+        /** _more_ */
         private int lonColumn = -1;
 
 
         /**
-         *
-         * @param col _more_
-         *
          * @param lat _more_
          * @param lon _more_
          */
@@ -4178,14 +3977,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -4194,6 +3987,7 @@ public abstract class Converter extends Processor {
                 latColumn = getIndex(ctx, lat);
                 lonColumn = getIndex(ctx, lon);
                 row.add("Neighborhood");
+
                 return row;
             }
             try {
@@ -4201,9 +3995,12 @@ public abstract class Converter extends Processor {
                     Double.parseDouble(row.getString(latColumn));
                 double lonValue =
                     Double.parseDouble(row.getString(lonColumn));
-                String result =GeoUtils.getNeighborhood(latValue, lonValue);
-		if(result==null) result="";
-		row.add(result);
+                String result = GeoUtils.getNeighborhood(latValue, lonValue);
+                if (result == null) {
+                    result = "";
+                }
+                row.add(result);
+
                 return row;
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
@@ -4211,7 +4008,7 @@ public abstract class Converter extends Processor {
         }
 
     }
-    
+
 
     /**
      * Class description
@@ -4223,30 +4020,27 @@ public abstract class Converter extends Processor {
     public static class GeoNamer extends Converter {
 
 
-        /** _more_          */
+        /** _more_ */
         private int rowIdx = 0;
 
-        /** _more_          */
+        /** _more_ */
         private String where;
 
-        /** _more_          */
+        /** _more_ */
         private String lat;
 
-        /** _more_          */
+        /** _more_ */
         private String lon;
 
 
         /** _more_ */
         private int latColumn = -1;
 
-        /** _more_          */
+        /** _more_ */
         private int lonColumn = -1;
 
 
         /**
-         *
-         * @param col _more_
-         *
          * @param where _more_
          * @param lat _more_
          * @param lon _more_
@@ -4259,14 +4053,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -4275,12 +4063,12 @@ public abstract class Converter extends Processor {
                 latColumn = getIndex(ctx, lat);
                 lonColumn = getIndex(ctx, lon);
                 String label = where.equals("counties")
-		    ? "County"
-		    : where.equals("states")
-		    ? "State"
-		    : where.equals("timezones")
-		    ? "Timezone"
-		    : where;
+                               ? "County"
+                               : where.equals("states")
+                                 ? "State"
+                                 : where.equals("timezones")
+                                   ? "Timezone"
+                                   : where;
                 row.add(label);
 
                 return row;
@@ -4291,9 +4079,10 @@ public abstract class Converter extends Processor {
                 double lonValue =
                     Double.parseDouble(row.getString(lonColumn));
                 String name = GeoUtils.findFeatureName(where, latValue,
-						       lonValue, "");
+                                  lonValue, "");
                 name = name.trim();
                 row.add(name);
+
                 return row;
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
@@ -4355,7 +4144,6 @@ public abstract class Converter extends Processor {
 
         /**
          * _more_
-         *
          * @param cols _more_
          * @param prefix _more_
          * @param suffix _more_
@@ -4369,14 +4157,8 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -4405,7 +4187,7 @@ public abstract class Converter extends Processor {
                 didOne = true;
                 //A hack for US
                 if (value.equals("US")
-		    || value.toString().startsWith("United States")) {
+                        || value.toString().startsWith("United States")) {
                     add(ctx, row, new Integer(327000000));
 
                     return row;
@@ -4453,8 +4235,6 @@ public abstract class Converter extends Processor {
 
         /**
          * _more_
-         *
-         *
          * @param cols _more_
          */
         public Regionator(List<String> cols) {
@@ -4463,8 +4243,8 @@ public abstract class Converter extends Processor {
             try {
                 InputStream inputStream =
                     Utils.getInputStream(
-					 "/org/ramadda/util/text/state_regions.properties",
-					 getClass());
+                        "/org/ramadda/util/text/state_regions.properties",
+                        getClass());
                 props.load(inputStream);
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
@@ -4473,14 +4253,8 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -4546,9 +4320,6 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
-         *
-         *
          * @param col _more_
          */
         public Genderizer(String col) {
@@ -4556,14 +4327,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -4590,8 +4355,8 @@ public abstract class Converter extends Processor {
                 try {
                     InputStream inputStream =
                         Utils.getInputStream(
-					     "/org/ramadda/util/text/gender.properties",
-					     getClass());
+                            "/org/ramadda/util/text/gender.properties",
+                            getClass());
                     genderProperties.load(inputStream);
                 } catch (Exception exc) {
                     throw new RuntimeException(exc);
@@ -4647,11 +4412,6 @@ public abstract class Converter extends Processor {
         boolean doDelete;
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param mapFile _more_
          * @param col1 _more_
          * @param col2 _more_
@@ -4674,21 +4434,16 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
-         *
-         *
-         *
          * @param filename _more_
          * @param col1 _more_
          * @param col2 _more_
-         *
          * @throws Exception _more_
          */
         private void makeMap(String filename, int col1, int col2)
-	    throws Exception {
+                throws Exception {
             BufferedReader br = new BufferedReader(
-						   new InputStreamReader(
-									 getInputStream(filename)));
+                                    new InputStreamReader(
+                                        getInputStream(filename)));
 
             String line;
             while ((line = br.readLine()) != null) {
@@ -4705,14 +4460,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -4764,10 +4513,6 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
-         *
-         *
-         *
          * @param indices _more_
          */
         public ColumnDeleter(List<String> indices) {
@@ -4775,14 +4520,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -4821,7 +4560,6 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
          * @param cols _more_
          * @param delta1 _more_
          * @param scale _more_
@@ -4836,14 +4574,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -4883,10 +4615,6 @@ public abstract class Converter extends Processor {
         private int tens;
 
         /**
-         *
-         *
-         *
-         *
          * @param cols _more_
          * @param decimals _more_
          */
@@ -4896,14 +4624,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -4927,33 +4649,39 @@ public abstract class Converter extends Processor {
 
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class Ceil extends Converter {
 
         /** _more_ */
         private double value;
 
         /**
-         *
          * @param cols _more_
-         * @param decimals _more_
+         * @param value _more_
          */
         public Ceil(List<String> cols, double value) {
             super(cols);
-            this.value= value;
+            this.value = value;
         }
 
         /**
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
-	    if(rowCnt++==0) return row;
+            if (rowCnt++ == 0) {
+                return row;
+            }
             List<Integer> indices = getIndices(ctx);
-            for (int index:indices) {
+            for (int index : indices) {
                 try {
                     if ((index < 0) || (index >= row.size())) {
                         continue;
@@ -4964,38 +4692,45 @@ public abstract class Converter extends Processor {
                     row.set(index, new Double(value));
                 } catch (NumberFormatException nfe) {}
             }
+
             return row;
         }
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class Floor extends Converter {
 
         /** _more_ */
         private double value;
 
         /**
-         *
          * @param cols _more_
-         * @param decimals _more_
+         * @param value _more_
          */
         public Floor(List<String> cols, double value) {
             super(cols);
-            this.value= value;
+            this.value = value;
         }
 
         /**
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
-	    if(rowCnt++==0) return row;
+            if (rowCnt++ == 0) {
+                return row;
+            }
             List<Integer> indices = getIndices(ctx);
-            for (int index:indices) {
+            for (int index : indices) {
                 try {
                     if ((index < 0) || (index >= row.size())) {
                         continue;
@@ -5006,10 +4741,11 @@ public abstract class Converter extends Processor {
                     row.set(index, new Double(value));
                 } catch (NumberFormatException nfe) {}
             }
+
             return row;
         }
     }
-    
+
 
     /**
      * Class description
@@ -5028,8 +4764,6 @@ public abstract class Converter extends Processor {
 
         /**
          *
-         *
-         *
          * @param col _more_
          * @param name _more_
          */
@@ -5039,14 +4773,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -5083,39 +4811,33 @@ public abstract class Converter extends Processor {
         /** _more_ */
         private String delimiter;
 
-	private String name;
+        /**  */
+        private String name;
 
         /**
-
-         *
-         *
-         *
          * @param indices _more_
          * @param delimiter _more_
+         * @param name _more_
          */
-        public ColumnNewer(List<String> indices, String delimiter, String name) {
+        public ColumnNewer(List<String> indices, String delimiter,
+                           String name) {
             super(indices);
             this.delimiter = delimiter;
-	    this.name =name;
+            this.name      = name;
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
-	    if(rowCnt++==0) {
-		row.add(name);
-		return row;
-	    }
+            if (rowCnt++ == 0) {
+                row.add(name);
+
+                return row;
+            }
             List<Integer> indices = getIndices(ctx);
             StringBuilder sb      = new StringBuilder();
             int           cnt     = 0;
@@ -5158,9 +4880,10 @@ public abstract class Converter extends Processor {
         private String op;
 
 
-	String foo;
+        /**  */
+        String foo;
+
         /**
-         *
          * @param indices _more_
          * @param name _more_
          * @param op _more_
@@ -5169,7 +4892,7 @@ public abstract class Converter extends Processor {
         public ColumnMathOperator(List<String> indices, String name,
                                   String op) {
             super(indices);
-	    foo=""+indices;
+            foo       = "" + indices;
             this.name = name;
             this.op   = op;
         }
@@ -5178,7 +4901,6 @@ public abstract class Converter extends Processor {
         /**
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -5186,22 +4908,25 @@ public abstract class Converter extends Processor {
             List<Integer> indices = getIndices(ctx);
             if (rowCnt++ == 0) {
                 row.getValues().add(name);
-		return row;
+
+                return row;
             }
-            double        value   = 0;
-            int           cnt     = 0;
-	    double total = 0;
-	    //	    System.err.println("op:" + op +" " + foo +" indices:" + indices);
+            double value = 0;
+            int    cnt   = 0;
+            double total = 0;
+            //      System.err.println("op:" + op +" " + foo +" indices:" + indices);
             for (Integer idx : indices) {
                 int index = idx.intValue();
                 if ((index < 0) || (index >= row.size())) {
-		    //		    System.err.println("\tSkipping:" + index);
+                    //              System.err.println("\tSkipping:" + index);
                     continue;
                 }
                 String s = row.getValues().get(index).toString();
                 double v = parse(s);
-		//		System.err.println("\tindex::" + index +" value:" + value);
-		if(!Double.isNaN(v)) total+=v;
+                //              System.err.println("\tindex::" + index +" value:" + value);
+                if ( !Double.isNaN(v)) {
+                    total += v;
+                }
                 if (op.equals("+")) {
                     value += v;
                 } else {
@@ -5216,15 +4941,19 @@ public abstract class Converter extends Processor {
                             value = value / v;
                         }
                     }
-		}
+                }
                 cnt++;
-	    }
-	    if (op.equals("average")) {
-		if(cnt==0) value=Double.NaN;
-		else value = total/cnt;
-	    }
-	    //	    System.err.println("\tfinal value:" + value);
+            }
+            if (op.equals("average")) {
+                if (cnt == 0) {
+                    value = Double.NaN;
+                } else {
+                    value = total / cnt;
+                }
+            }
+            //      System.err.println("\tfinal value:" + value);
             row.getValues().add(value + "");
+
             return row;
         }
 
@@ -5248,7 +4977,7 @@ public abstract class Converter extends Processor {
 
         /** _more_ */
         private Hashtable<String, Row> prevRows = new Hashtable<String,
-	    Row>();
+                                                      Row>();
 
         /** _more_ */
         List<Integer> indices;
@@ -5259,8 +4988,6 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
-         *
          * @param keys _more_
          * @param indices _more_
          */
@@ -5273,7 +5000,6 @@ public abstract class Converter extends Processor {
         /**
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -5335,10 +5061,6 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
-         *
-         *
-         *
          * @param indices _more_
          */
         public Mercator(List<String> indices) {
@@ -5347,14 +5069,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -5375,8 +5091,8 @@ public abstract class Converter extends Processor {
             double lon    = x / shift * 180.0;
             double lat    = y / shift * 180.0;
             lat = 180 / Math.PI
-		* (2 * Math.atan(Math.exp(lat * Math.PI / 180.0))
-		   - Math.PI / 2.0);
+                  * (2 * Math.atan(Math.exp(lat * Math.PI / 180.0))
+                     - Math.PI / 2.0);
 
             row.getValues().add(lat);
             row.getValues().add(lon);
@@ -5401,9 +5117,6 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
-         *
-         *
          * @param indices _more_
          */
         public ColumnRounder(List<String> indices) {
@@ -5411,14 +5124,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -5434,10 +5141,10 @@ public abstract class Converter extends Processor {
                 if ((index < 0) || (index >= row.size())) {
                     continue;
                 }
-                String s =  row.getString(index);
+                String s = row.getString(index);
                 double v = (s.length() == 0)
-		    ? 0
-		    : Double.parseDouble(s.replaceAll(",", ""));
+                           ? 0
+                           : Double.parseDouble(s.replaceAll(",", ""));
                 row.set(index, "" + ((int) Math.round(v)));
             }
 
@@ -5446,46 +5153,55 @@ public abstract class Converter extends Processor {
 
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class Bytes extends Converter {
-	private String unit;
+
+        /**  */
+        private String unit;
 
         /**
-         *
+         * @param unit _more_
          * @param indices _more_
          */
-        public Bytes(String unit,List<String> indices) {
+        public Bytes(String unit, List<String> indices) {
             super(indices);
-	    this.unit = unit;
+            this.unit = unit;
         }
 
         /**
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             List<Integer> indices = getIndices(ctx);
             if (rowCnt++ == 0) {
-		for(int i: indices)
-		    row.add("Size " + row.get(i));
-		return row;
+                for (int i : indices) {
+                    row.add("Size " + row.get(i));
+                }
+
+                return row;
             }
             for (Integer idx : indices) {
-                int index = idx.intValue();
-                String s = (String) row.getValues().get(index);
-		double v = 0;
+                int    index = idx.intValue();
+                String s     = (String) row.getValues().get(index);
+                double v     = 0;
 
-		s  = s.replaceAll(" ","").toLowerCase();
-		String u = StringUtil.findPattern(s,"([^0-9\\.\\-]+)");
-		if(u==null) {
-		    v = Double.parseDouble(s);
-		} else {
-		    v = Double.parseDouble(s.replaceAll(u,""));
-		    v = v*getMultiplier(u);
-		}
+                s = s.replaceAll(" ", "").toLowerCase();
+                String u = StringUtil.findPattern(s, "([^0-9\\.\\-]+)");
+                if (u == null) {
+                    v = Double.parseDouble(s);
+                } else {
+                    v = Double.parseDouble(s.replaceAll(u, ""));
+                    v = v * getMultiplier(u);
+                }
                 row.add(v);
 
             }
@@ -5493,20 +5209,43 @@ public abstract class Converter extends Processor {
             return row;
         }
 
-	private double getMultiplier(String u) {
-	    if(unit.equals("binary")) return getMultiplier(u,1024);
-	    return getMultiplier(u,1000);
-	}
+        /**
+         * @param u _more_
+         *  @return _more_
+         */
+        private double getMultiplier(String u) {
+            if (unit.equals("binary")) {
+                return getMultiplier(u, 1024);
+            }
 
-	private double getMultiplier(String u, double base) {
-	    if(u.equals("kb")) return base;
-	    if(u.equals("mb")) return base*base;
-	    if(u.equals("gb")) return base*base*base;
-	    if(u.equals("tb")) return base*base*base*base;
-	    if(u.equals("pb")) return base*base*base*base*base;	    	    	    
-	    return 1;
-	}
-	
+            return getMultiplier(u, 1000);
+        }
+
+        /**
+         * @param u _more_
+         * @param base _more_
+         *  @return _more_
+         */
+        private double getMultiplier(String u, double base) {
+            if (u.equals("kb")) {
+                return base;
+            }
+            if (u.equals("mb")) {
+                return base * base;
+            }
+            if (u.equals("gb")) {
+                return base * base * base;
+            }
+            if (u.equals("tb")) {
+                return base * base * base * base;
+            }
+            if (u.equals("pb")) {
+                return base * base * base * base * base;
+            }
+
+            return 1;
+        }
+
 
     }
 
@@ -5521,7 +5260,6 @@ public abstract class Converter extends Processor {
     public static class ColumnAbs extends Converter {
 
         /**
-         *
          * @param indices _more_
          */
         public ColumnAbs(List<String> indices) {
@@ -5529,16 +5267,14 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
-		return row;
+                return row;
             }
             List<Integer> indices = getIndices(ctx);
             for (Integer idx : indices) {
@@ -5548,52 +5284,68 @@ public abstract class Converter extends Processor {
                 }
                 String s = (String) row.getValues().get(index);
                 double v = (s.length() == 0)
-		    ? 0
-		    : Double.parseDouble(s.replaceAll(",", ""));
-                row.set(index, "" +Math.abs(v));
+                           ? 0
+                           : Double.parseDouble(s.replaceAll(",", ""));
+                row.set(index, "" + Math.abs(v));
             }
+
             return row;
         }
 
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class ColumnRand extends Converter {
-	String name;
-	double min;
-	double max;		
+
+        /**  */
+        String name;
+
+        /**  */
+        double min;
+
+        /**  */
+        double max;
 
         /**
          *
-         * @param indices _more_
+         * @param name _more_
+         * @param min _more_
+         * @param max _more_
          */
         public ColumnRand(String name, double min, double max) {
-	    this.name = name;
-	    this.min  = min;
-	    this.max = max;
+            this.name = name;
+            this.min  = min;
+            this.max  = max;
         }
 
         /**
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
-		row.add(name);
-		return row;
+                row.add(name);
+
+                return row;
             }
-	    double r = Math.random();
-	    r = r*(max-min) + min;
-	    row.add(""+r);
+            double r = Math.random();
+            r = r * (max - min) + min;
+            row.add("" + r);
+
             return row;
         }
 
     }
-    
-    
+
+
 
 
 
@@ -5612,10 +5364,6 @@ public abstract class Converter extends Processor {
         String action;
 
         /**
-         *
-         *
-         *
-         *
          * @param indices _more_
          * @param action _more_
          */
@@ -5625,27 +5373,23 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
-	    if(rowCnt++==0) return row;
+            if (rowCnt++ == 0) {
+                return row;
+            }
             List<Integer> indices = getIndices(ctx);
             for (Integer idx : indices) {
                 int index = idx.intValue();
                 if ((index < 0) || (index >= row.size())) {
                     continue;
                 }
-                String s = (String) row.getValues().get(index);
-		String os=s;
+                String s  = (String) row.getValues().get(index);
+                String os = s;
                 if (s == null) {
                     return row;
                 }
@@ -5655,7 +5399,7 @@ public abstract class Converter extends Processor {
                     s = s.toUpperCase();
                 } else if (action.equals("proper")) {
                     s = Utils.nameCase(s);
-                } else if (action.equals("camel")) {		    
+                } else if (action.equals("camel")) {
                     s = Utils.upperCaseFirst(s);
                 } else if (action.equals("capitalize")) {
                     if (s.length() == 1) {
@@ -5666,12 +5410,12 @@ public abstract class Converter extends Processor {
                     }
                 } else {
                     throw new IllegalArgumentException(
-						       "Unknown case:" + action
-						       + ". Needs to be one of lower, upper, camel, capitalize");
+                        "Unknown case:" + action
+                        + ". Needs to be one of lower, upper, camel, capitalize");
                 }
-		//		s = s.replaceAll("  +"," ");
-		//		os = os.replaceAll("  +"," ");
-		//		if(!s.trim().equals(os.trim())) System.out.println(os +":" + s+":");
+                //              s = s.replaceAll("  +"," ");
+                //              os = os.replaceAll("  +"," ");
+                //              if(!s.trim().equals(os.trim())) System.out.println(os +":" + s+":");
                 row.getValues().set(index, s);
             }
 
@@ -5690,7 +5434,6 @@ public abstract class Converter extends Processor {
     public static class Trim extends Converter {
 
         /**
-         *
          * @param indices _more_
          */
         public Trim(List<String> indices) {
@@ -5698,14 +5441,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -5720,8 +5457,8 @@ public abstract class Converter extends Processor {
                 if (o == null) {
                     continue;
                 }
-		String s = o.toString().trim();
-		row.set(index,s);
+                String s = o.toString().trim();
+                row.set(index, s);
             }
 
             return row;
@@ -5729,33 +5466,48 @@ public abstract class Converter extends Processor {
 
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class PadLeftRight extends Converter {
 
-	private int length;
-	private String c;
-	private boolean left;
+        /**  */
+        private int length;
+
+        /**  */
+        private String c;
+
+        /**  */
+        private boolean left;
 
         /**
-         *
+         * @param left _more_
          * @param indices _more_
+         * @param c _more_
+         * @param length _more_
          */
-        public PadLeftRight(boolean left, List<String> indices,String c,int length) {
+        public PadLeftRight(boolean left, List<String> indices, String c,
+                            int length) {
             super(indices);
-	    this.left = left;
-	    this.c = c;
-	    this.length = length;
+            this.left   = left;
+            this.c      = c;
+            this.length = length;
         }
 
         /**
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
-	    if(rowCnt++==0) return row;
+            if (rowCnt++ == 0) {
+                return row;
+            }
             List<Integer> indices = getIndices(ctx);
             for (Integer idx : indices) {
                 int index = idx.intValue();
@@ -5766,11 +5518,14 @@ public abstract class Converter extends Processor {
                 if (s == null) {
                     continue;
                 }
-		while(s.length()<length) {
-		    if(left) s = c+s;
-		    else s = s +c;
-		}
-		row.set(index,s);
+                while (s.length() < length) {
+                    if (left) {
+                        s = c + s;
+                    } else {
+                        s = s + c;
+                    }
+                }
+                row.set(index, s);
             }
 
             return row;
@@ -5790,7 +5545,6 @@ public abstract class Converter extends Processor {
     public static class TrimQuotes extends Converter {
 
         /**
-         *
          * @param indices _more_
          */
         public TrimQuotes(List<String> indices) {
@@ -5798,20 +5552,14 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             List<Integer> indices = getIndices(ctx);
-	    System.err.println("process:" + row);
+            System.err.println("process:" + row);
             for (Integer idx : indices) {
                 int index = idx.intValue();
                 if ((index < 0) || (index >= row.size())) {
@@ -5821,9 +5569,13 @@ public abstract class Converter extends Processor {
                 if (s == null) {
                     continue;
                 }
-		if(s.startsWith("\"")) s = s.substring(1);
-		if(s.endsWith("\"")) s = s.substring(0,s.length()-2);		
-		row.set(index,s);
+                if (s.startsWith("\"")) {
+                    s = s.substring(1);
+                }
+                if (s.endsWith("\"")) {
+                    s = s.substring(0, s.length() - 2);
+                }
+                row.set(index, s);
             }
 
             return row;
@@ -5839,23 +5591,20 @@ public abstract class Converter extends Processor {
      *
      *
      * @version        $version$, Wed, Mar 24, '21
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class StripTags extends Converter {
 
         /**
          * @param indices _more_
-         * @param action _more_
          */
         public StripTags(List<String> indices) {
             super(indices);
         }
 
         /**
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -5885,23 +5634,20 @@ public abstract class Converter extends Processor {
      *
      *
      * @version        $version$, Wed, Mar 24, '21
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class Decoder extends Converter {
 
         /**
          * @param indices _more_
-         * @param action _more_
          */
         public Decoder(List<String> indices) {
             super(indices);
         }
 
         /**
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -5950,16 +5696,14 @@ public abstract class Converter extends Processor {
                 }
                 md = MessageDigest.getInstance(type);
             } catch (Exception exc) {
-                fatal("Creating message digest:" + type,exc);
+                fatal("Creating message digest:" + type, exc);
             }
         }
 
 
         /**
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -5984,7 +5728,7 @@ public abstract class Converter extends Processor {
             try {
                 row.add(Utils.encodeMD(md.digest()));
             } catch (Exception exc) {
-                fatal("Error making message digest",  exc);
+                fatal("Error making message digest", exc);
             }
 
             return row;
@@ -6002,29 +5746,28 @@ public abstract class Converter extends Processor {
      */
     public static class SoundexMaker extends Converter {
 
-	private Soundex soundex;
+        /**  */
+        private Soundex soundex;
 
         /**
          * @param indices _more_
-         * @param type _more_
          */
         public SoundexMaker(List<String> indices) {
             super(indices);
-	    soundex= new Soundex();
+            soundex = new Soundex();
         }
 
 
         /**
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
                 row.add("Soundex");
+
                 return row;
             }
             List<Integer> indices = getIndices(ctx);
@@ -6037,8 +5780,9 @@ public abstract class Converter extends Processor {
                 if (s == null) {
                     s = "";
                 }
-		row.add(soundex.soundex(s));
+                row.add(soundex.soundex(s));
             }
+
             return row;
         }
 
@@ -6066,19 +5810,18 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
                 row.add("Even");
+
                 return row;
             }
-	    String v ="";
+            String        v       = "";
             List<Integer> indices = getIndices(ctx);
             for (Integer idx : indices) {
                 int index = idx.intValue();
@@ -6089,21 +5832,24 @@ public abstract class Converter extends Processor {
                 if (s == null) {
                     s = "";
                 }
-		v+=s;
+                v += s;
             }
-	    
-	    String snum  = StringUtil.findPattern(v,"^(\\d+)");
-	    boolean even = true;
-	    if(snum!=null) {
-		int num = (int)Double.parseDouble(snum);
-		even = ((num%2)==0);
-	    }
-	    row.add(even?"even":"odd");
+
+            String  snum = StringUtil.findPattern(v, "^(\\d+)");
+            boolean even = true;
+            if (snum != null) {
+                int num = (int) Double.parseDouble(snum);
+                even = ((num % 2) == 0);
+            }
+            row.add(even
+                    ? "even"
+                    : "odd");
+
             return row;
         }
 
     }
-    
+
     /**
      * Class description
      *
@@ -6113,38 +5859,37 @@ public abstract class Converter extends Processor {
      */
     public static class ColumnInserter extends Converter {
 
-	private String name;
+        /**  */
+        private String name;
 
         /** _more_ */
         private List<String> values;
 
         /**
-         *
-         *
-         *
-         *
          * @param col _more_
+         * @param name _more_
          * @param value _more_
          */
         public ColumnInserter(String col, String name, String value) {
             super(col);
             this.values = Utils.split(value, ",", false, false);
-	    this.name =name;
+            this.name   = name;
         }
 
         /**
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
-            int    col = hasColumns()?getIndex(ctx):-1;
+            int    col = hasColumns()
+                         ? getIndex(ctx)
+                         : -1;
             String v   = "";
-	    if(rowCnt==0) {
-		v = name;
-	    } else if (rowCnt < values.size()) {
+            if (rowCnt == 0) {
+                v = name;
+            } else if (rowCnt < values.size()) {
                 v = values.get(rowCnt);
             } else {
                 v = values.get(values.size() - 1);
@@ -6185,7 +5930,6 @@ public abstract class Converter extends Processor {
         private double value;
 
         /**
-         *
          * @param label _more_
          * @param start _more_
          * @param step _more_
@@ -6198,14 +5942,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -6259,10 +5997,6 @@ public abstract class Converter extends Processor {
         private String value;
 
         /**
-         *
-         *
-         *
-         *
          * @param pattern _more_
          * @param template _more_
          * @param label _more_
@@ -6275,14 +6009,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -6327,94 +6055,118 @@ public abstract class Converter extends Processor {
      */
     public static class CopyIf extends Converter {
 
-	String pattern;
+        /**  */
+        String pattern;
 
         /** _more_ */
         String scol1;
+
+        /**  */
         String scol2;
-	int col1 = -1;
-	int col2 = -1;
+
+        /**  */
+        int col1 = -1;
+
+        /**  */
+        int col2 = -1;
 
         /**
          * _more_
+         * @param cols _more_
+         * @param pattern _more_
+         * @param col1 _more_
+         * @param col2 _more_
          */
-        public CopyIf(List<String> cols, String pattern, String col1, String col2 ) {
-	    super(cols);
-	    this.pattern = pattern;
-	    scol1 =col1;
-	    scol2 =col2;
+        public CopyIf(List<String> cols, String pattern, String col1,
+                      String col2) {
+            super(cols);
+            this.pattern = pattern;
+            scol1        = col1;
+            scol2        = col2;
         }
 
         /**
-
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
-	    if(rowCnt++==0) {
-		col1 = getIndex(ctx,scol1);
-		col2 = getIndex(ctx,scol2);
-		return row;
-	    }
-	    
-	    //	    System.err.println("Row:");
-	    for(int i:getIndices(ctx)) {
-		String v  = row.getString(i);
-		//		System.err.println("\ti:" + i +" v:" + v +" p:" + pattern);
-		if(!v.matches(pattern)) {
-		    //		    System.err.println("\tno match:" +row);
-		    return row;
-		}
-	    }
+            if (rowCnt++ == 0) {
+                col1 = getIndex(ctx, scol1);
+                col2 = getIndex(ctx, scol2);
 
-	    row.set(col2, row.getString(col1));
-	    return row;
+                return row;
+            }
+
+            //      System.err.println("Row:");
+            for (int i : getIndices(ctx)) {
+                String v = row.getString(i);
+                //              System.err.println("\ti:" + i +" v:" + v +" p:" + pattern);
+                if ( !v.matches(pattern)) {
+                    //              System.err.println("\tno match:" +row);
+                    return row;
+                }
+            }
+
+            row.set(col2, row.getString(col1));
+
+            return row;
         }
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class CopyColumns extends Converter {
 
-	List<String> toCols;
-	List<Integer> toIndices;
+        /**  */
+        List<String> toCols;
+
+        /**  */
+        List<Integer> toIndices;
 
         /**
          * _more_
+         * @param cols _more_
+         * @param cols2 _more_
          */
         public CopyColumns(List<String> cols, List<String> cols2) {
-	    super(cols);
-	    if(cols.size()!=cols2.size()) {
-		throw new IllegalArgumentException("Mismatched columns in -copycolumns:"+ cols +" " +cols2);
-	    }
-	    this.toCols = cols2;
+            super(cols);
+            if (cols.size() != cols2.size()) {
+                throw new IllegalArgumentException(
+                    "Mismatched columns in -copycolumns:" + cols + " "
+                    + cols2);
+            }
+            this.toCols = cols2;
         }
 
         /**
-
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
-	    if(rowCnt++==0) {
-		toIndices = getIndices(ctx, toCols);
-		return row;
-	    }
-	    
-	    List<Integer> from = getIndices(ctx);
-	    //	    System.err.println("copy");
-	    for(int i=0;i<from.size();i++) {
-		String v  = row.getString(from.get(i));
-		//		System.err.println("\tsetting:" + toIndices.get(i) +" to:" + v);
-		row.set(toIndices.get(i),v);
-	    }
-	    return row;
+            if (rowCnt++ == 0) {
+                toIndices = getIndices(ctx, toCols);
+
+                return row;
+            }
+
+            List<Integer> from = getIndices(ctx);
+            //      System.err.println("copy");
+            for (int i = 0; i < from.size(); i++) {
+                String v = row.getString(from.get(i));
+                //              System.err.println("\tsetting:" + toIndices.get(i) +" to:" + v);
+                row.set(toIndices.get(i), v);
+            }
+
+            return row;
         }
     }
 
@@ -6447,11 +6199,6 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param row _more_
          * @param col _more_
          * @param value _more_
@@ -6463,14 +6210,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -6513,10 +6254,6 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
-         *
-         *
-         *
          * @param row _more_
          * @param cols _more_
          */
@@ -6526,14 +6263,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -6584,36 +6315,27 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param cols _more_
          * @param rows _more_
          * @param value _more_
          */
         public ColumnSetter(List<String> cols, List<String> rows,
                             String value) {
-	    super(cols);
+            super(cols);
             this.rows  = Utils.toInt(rows);
             this.value = value;
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
-	    if(cols==null) cols =  getIndices(ctx);
+            if (cols == null) {
+                cols = getIndices(ctx);
+            }
 
             boolean gotRow = false;
             for (int rowIdx : rows) {
@@ -6627,7 +6349,7 @@ public abstract class Converter extends Processor {
             if ( !gotRow) {
                 return row;
             }
-	    
+
             List values = row.getValues();
             for (int col : cols) {
                 if (col < values.size()) {
@@ -6640,67 +6362,73 @@ public abstract class Converter extends Processor {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class FillDown extends Converter {
-	private Hashtable<Integer,String> lastValue = new Hashtable<Integer,String>();
+
+        /**  */
+        private Hashtable<Integer, String> lastValue = new Hashtable<Integer,
+                                                           String>();
 
 
         /**
-         *
          * @param cols _more_
          */
         public FillDown(List<String> cols) {
-	    super(cols);
+            super(cols);
         }
 
         /**
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
-		return row;
-	    }
+                return row;
+            }
             List<Integer> indices = getIndices(ctx);
             for (int col : indices) {
-		String v = row.getString(col);
-		v = v.trim();
-		if(v.length()==0) {
-		    v = lastValue.get(col);
-		    if(v!=null)
-			row.set(col,v);
-		} else  {
-		    lastValue.put(col, v);
-		}
+                String v = row.getString(col);
+                v = v.trim();
+                if (v.length() == 0) {
+                    v = lastValue.get(col);
+                    if (v != null) {
+                        row.set(col, v);
+                    }
+                } else {
+                    lastValue.put(col, v);
+                }
             }
+
             return row;
         }
     }
-    
+
 
     /**
      * Class description
      *
      *
      * @version        $version$, Wed, Mar 24, '21
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class MakeIds extends Converter {
 
 
         /**
-         *
          */
         public MakeIds() {}
 
         /**
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -6741,7 +6469,6 @@ public abstract class Converter extends Processor {
         private String prefix;
 
         /**
-         *
          * @param col _more_
          * @param pattern _more_
          * @param delim _more_
@@ -6763,15 +6490,14 @@ public abstract class Converter extends Processor {
         /**
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             String val = row.get(col).toString();
             if ((prefix != null)
-		&& (val.matches(pattern)
-		    || (val.indexOf(pattern) >= 0))) {
+                    && (val.matches(pattern)
+                        || (val.indexOf(pattern) >= 0))) {
                 row.set(col, prefix + delim + val);
             } else {
                 prefix = val;
@@ -6798,21 +6524,12 @@ public abstract class Converter extends Processor {
         int cnt = 0;
 
         /**
-         *
-         *
-         *
          */
         public Letter() {}
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -6831,12 +6548,7 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
          * @param n _more_
-         *
          * @return _more_
          */
         private String getLabel(int n) {
@@ -6866,17 +6578,12 @@ public abstract class Converter extends Processor {
         int cnt = 0;
 
         /**
-         *
-         *
-         *
          */
         public Number() {}
 
         /**
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -6894,12 +6601,7 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
-         *
-         *
-         *
          * @param n _more_
-         *
          * @return _more_
          */
         private String getLabel(int n) {
@@ -6926,21 +6628,12 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
-         *
-         *
          */
         public UUID() {}
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -6990,11 +6683,6 @@ public abstract class Converter extends Processor {
 
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param col1 _more_
          * @param pattern _more_
          * @param col2 _more_
@@ -7009,14 +6697,8 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param ctx _more_
          * @param row _more_
-         *
          * @return _more_
          */
         @Override
@@ -7048,13 +6730,15 @@ public abstract class Converter extends Processor {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-	List l= new ArrayList();
-	l.add("a");
-	l.add("b");
-	l.add("c");
-	l.add(0,"x");
-	System.err.println(l);
-	if(true) return;
+        List l = new ArrayList();
+        l.add("a");
+        l.add("b");
+        l.add("c");
+        l.add(0, "x");
+        System.err.println(l);
+        if (true) {
+            return;
+        }
 
 
 
@@ -7067,7 +6751,7 @@ public abstract class Converter extends Processor {
             scope.put("x", scope, "33");
             Object result = cx.evaluateString(scope, s, "<cmd>", 1, null);
             System.err.println(
-			       org.mozilla.javascript.Context.toString(result));
+                org.mozilla.javascript.Context.toString(result));
         } finally {
             org.mozilla.javascript.Context.exit();
         }

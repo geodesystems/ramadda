@@ -1,25 +1,16 @@
-/*
- * Copyright (c) 2008-2021 Geode Systems LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *     http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+/**
+   Copyright (c) 2008-2021 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
+*/
 
 package org.ramadda.util.text;
 
 
+import org.ramadda.util.HtmlUtils;
+
+
 
 import org.ramadda.util.IO;
-import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
 import org.ramadda.util.MapProvider;
 import org.ramadda.util.Utils;
@@ -33,11 +24,6 @@ import java.io.*;
 
 import java.text.SimpleDateFormat;
 
-import java.util.function.Consumer;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -47,6 +33,11 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.regex.*;
 
 
@@ -57,7 +48,7 @@ import java.util.regex.*;
  * @version        $version$, Fri, Jan 9, '15
  * @author         Jeff McWhirter
  */
-public  class RowCollector extends Processor {
+public class RowCollector extends Processor {
 
     /** _more_ */
     private List<Row> rows = new ArrayList<Row>();
@@ -75,7 +66,7 @@ public  class RowCollector extends Processor {
      * @param col _more_
      */
     public RowCollector(String col) {
-	super(col);
+        super(col);
     }
 
     /**
@@ -84,26 +75,41 @@ public  class RowCollector extends Processor {
      * @param cols _more_
      */
     public RowCollector(List<String> cols) {
-	super(cols);
+        super(cols);
     }
 
 
+    /**
+     *
+     * @param ctx _more_
+     *
+     * @throws Exception _more_
+     */
     public void finish(TextReader ctx) throws Exception {
-	Processor nextProcessor = getNextProcessor();
-	//	System.err.println("RowCollector.finish:" + rows.size() +" next:" + nextProcessor.getClass().getSimpleName());
-	List<Row>rows =  finish(ctx, this.rows);
-	//	System.err.println("RowCollector.finish finished rows:" + rows.size());
-	if(nextProcessor!=null) {
-	    for(Row row: rows) {
-		row  = nextProcessor.handleRow(ctx, row);
-	    }
-	    nextProcessor.finish(ctx);
-	}
+        Processor nextProcessor = getNextProcessor();
+        //      System.err.println("RowCollector.finish:" + rows.size() +" next:" + nextProcessor.getClass().getSimpleName());
+        List<Row> rows = finish(ctx, this.rows);
+        //      System.err.println("RowCollector.finish finished rows:" + rows.size());
+        if (nextProcessor != null) {
+            for (Row row : rows) {
+                row = nextProcessor.handleRow(ctx, row);
+            }
+            nextProcessor.finish(ctx);
+        }
     }
-	    
 
+
+    /**
+     *
+     * @param ctx _more_
+     * @param rows _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public List<Row> finish(TextReader ctx, List<Row> rows) throws Exception {
-	return rows;
+        return rows;
     }
 
     /**
@@ -113,7 +119,7 @@ public  class RowCollector extends Processor {
      */
     @Override
     public boolean buffersRows() {
-	return true;
+        return true;
     }
 
     /**
@@ -121,15 +127,25 @@ public  class RowCollector extends Processor {
      */
     @Override
     public void reset() {
-	super.reset();
-	rows = new ArrayList<Row>();
+        super.reset();
+        rows = new ArrayList<Row>();
     }
 
+    /**
+     *
+     * @param ctx _more_
+     * @param row _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Row handleRow(TextReader ctx, Row row) throws Exception {
-	//Here we don't call nextProcessor.handleRow
-	setHeaderIfNeeded(row);
-	row = processRow(ctx, row);
-	return row;
+        //Here we don't call nextProcessor.handleRow
+        setHeaderIfNeeded(row);
+        row = processRow(ctx, row);
+
+        return row;
     }
 
 
@@ -146,13 +162,18 @@ public  class RowCollector extends Processor {
      */
     @Override
     public Row processRow(TextReader ctx, Row row) throws Exception {
-	rows.add(row);
-	return row;
+        rows.add(row);
+
+        return row;
     }
 
 
+    /**
+     *
+     * @param row _more_
+     */
     public void addRow(Row row) {
-	rows.add(row);
+        rows.add(row);
     }
 
     /**
@@ -161,7 +182,7 @@ public  class RowCollector extends Processor {
      *  @param value The new value for Rows
      */
     public void setRows(List<Row> value) {
-	rows = value;
+        rows = value;
     }
 
     /**
@@ -170,7 +191,7 @@ public  class RowCollector extends Processor {
      *  @return The Rows
      */
     public List<Row> getRows() {
-	return rows;
+        return rows;
     }
 
     /**
@@ -181,11 +202,11 @@ public  class RowCollector extends Processor {
      * @return _more_
      */
     public List<Row> getRows(List<Row> incoming) {
-	if (incoming != null) {
-	    return incoming;
-	}
+        if (incoming != null) {
+            return incoming;
+        }
 
-	return rows;
+        return rows;
     }
 
     /**
@@ -246,20 +267,41 @@ public  class RowCollector extends Processor {
             } else if (op.equals("count")) {
                 this.op = OP_COUNT;
             } else {
-		throw new RuntimeException("unknown operator:" + op);
-	    }
+                throw new RuntimeException("unknown operator:" + op);
+            }
             this.valueCols = values;
         }
 
-	private static class Tuple {
-	    int count = 0;
-	    double min = 0;
-	    double max = 0;
-	    double sum = 0;
-	    public String toString() {
-		return "cnt:" + count +" min:" + min +" max:" + max +" sum:" + sum;
-	    }
-	}
+        /**
+         * Class description
+         *
+         *
+         * @version        $version$, Thu, Nov 4, '21
+         * @author         Enter your name here...    
+         */
+        private static class Tuple {
+
+            /**  */
+            int count = 0;
+
+            /**  */
+            double min = 0;
+
+            /**  */
+            double max = 0;
+
+            /**  */
+            double sum = 0;
+
+            /**
+             *
+             * @return _more_
+             */
+            public String toString() {
+                return "cnt:" + count + " min:" + min + " max:" + max
+		    + " sum:" + sum;
+            }
+        }
 
 
         /**
@@ -316,7 +358,7 @@ public  class RowCollector extends Processor {
                         if (Double.isNaN(v)) {
                             continue;
                         }
-                        Tuple  tuple = tuples.get(i);
+                        Tuple tuple = tuples.get(i);
                         tuple.count++;
                         tuple.min = first
 			    ? v
@@ -324,7 +366,7 @@ public  class RowCollector extends Processor {
                         tuple.max = first
 			    ? v
 			    : Math.max(v, tuple.max);
-                        tuple.sum+= v;
+                        tuple.sum += v;
                     }
                 }
                 for (int i = 0; i < valueIndices.size(); i++) {
@@ -347,8 +389,7 @@ public  class RowCollector extends Processor {
                         } else {
                             aggRow.set(idx, tuple.sum / tuple.count);
                         }
-                    }  else {
-		    }
+                    } else {}
 
                 }
             }
@@ -413,18 +454,26 @@ public  class RowCollector extends Processor {
      */
     public static class RowShuffler extends RowCollector {
 
-	boolean atStart;
-	String pattern;
+        /**  */
+        boolean atStart;
+
+        /**  */
+        String pattern;
 
         /**
          * _more_
          *
+         *
+         * @param atStart _more_
+         * @param cols _more_
+         * @param pattern _more_
          */
-        public RowShuffler(boolean atStart, List<String> cols,String pattern) {
-	    super(cols);
-	    this.atStart = atStart;
-	    this.pattern  = pattern;
-	}
+        public RowShuffler(boolean atStart, List<String> cols,
+                           String pattern) {
+            super(cols);
+            this.atStart = atStart;
+            this.pattern = pattern;
+        }
 
         /**
          * _more_
@@ -439,34 +488,38 @@ public  class RowCollector extends Processor {
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
-            List<Row> newRows = new ArrayList<Row>();
-            List<Row> matchedRows = new ArrayList<Row>();
-            List<Row> unmatchedRows = new ArrayList<Row>();	    	    
-	    List<Integer>indices     = getIndices(ctx);
-	    Row header = null;
+            List<Row>     newRows       = new ArrayList<Row>();
+            List<Row>     matchedRows   = new ArrayList<Row>();
+            List<Row>     unmatchedRows = new ArrayList<Row>();
+            List<Integer> indices       = getIndices(ctx);
+            Row           header        = null;
             for (Row row : getRows()) {
-		if(header==null) {
-		    header= row;
-		    newRows.add(row);
-		    continue;
-		}
-		boolean matches = false;
-		for(int col:indices) {
-		    if(row.getString(col).matches(pattern)) {
-			matches = true;
-			break;
-		    }
-		}
-		if(matches) matchedRows.add(row);
-		else unmatchedRows.add(row);		
+                if (header == null) {
+                    header = row;
+                    newRows.add(row);
+                    continue;
+                }
+                boolean matches = false;
+                for (int col : indices) {
+                    if (row.getString(col).matches(pattern)) {
+                        matches = true;
+
+                        break;
+                    }
+                }
+                if (matches) {
+                    matchedRows.add(row);
+                } else {
+                    unmatchedRows.add(row);
+                }
             }
-	    if(atStart) {
-		newRows.addAll(matchedRows);
-		newRows.addAll(unmatchedRows);		
-	    } else {
-		newRows.addAll(unmatchedRows);		
-		newRows.addAll(matchedRows);
-	    }
+            if (atStart) {
+                newRows.addAll(matchedRows);
+                newRows.addAll(unmatchedRows);
+            } else {
+                newRows.addAll(unmatchedRows);
+                newRows.addAll(matchedRows);
+            }
 
             return newRows;
         }
@@ -515,8 +568,8 @@ public  class RowCollector extends Processor {
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
             Hashtable<String, Row> map      = new Hashtable<String, Row>();
-            int                    keyIdx   = getIndex(ctx,this.key);
-            int                    valueIdx = getIndex(ctx,this.value);
+            int                    keyIdx   = getIndex(ctx, this.key);
+            int                    valueIdx = getIndex(ctx, this.value);
             List<Row>              newRows  = new ArrayList<Row>();
             int                    cnt      = 0;
             for (Row row : getRows()) {
@@ -660,19 +713,25 @@ public  class RowCollector extends Processor {
         /** _more_ */
         String tag;
 
-	String tag2;
+        /**  */
+        String tag2;
 
         /**
          * _more_
          *
          * @param tag _more_
+         * @param tag2 _more_
          */
         public ToXml(String tag, String tag2) {
             super();
-	    if(tag==null || tag.trim().length()==0) tag = "rows";
-	    if(tag2==null || tag2.trim().length()==0) tag2 = "row";
-            this.tag = tag;
-	    this.tag2 = tag2;
+            if ((tag == null) || (tag.trim().length() == 0)) {
+                tag = "rows";
+            }
+            if ((tag2 == null) || (tag2.trim().length() == 0)) {
+                tag2 = "row";
+            }
+            this.tag  = tag;
+            this.tag2 = tag2;
         }
 
 
@@ -691,6 +750,7 @@ public  class RowCollector extends Processor {
 	    throws Exception {
             PrintWriter writer = ctx.getWriter();
             writer.println("</" + tag + ">");
+
             return rows;
         }
 
@@ -713,7 +773,7 @@ public  class RowCollector extends Processor {
 
                 return row;
             }
-            writer.println("<" + tag2+">");
+            writer.println("<" + tag2 + ">");
             List values = row.getValues();
             for (int i = 0; i < values.size(); i++) {
                 Object v = values.get(i);
@@ -729,7 +789,7 @@ public  class RowCollector extends Processor {
                 writer.print("]]>");
                 writer.println("</" + h + ">");
             }
-            writer.println("</" + tag2+">");
+            writer.println("</" + tag2 + ">");
 
             return row;
         }
@@ -865,8 +925,9 @@ public  class RowCollector extends Processor {
          */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
-	    System.err.println("Html.processRow");
+            System.err.println("Html.processRow");
             printRow(ctx, row, true);
+
             return row;
         }
 
@@ -940,20 +1001,19 @@ public  class RowCollector extends Processor {
 									       "&nbsp;");
                     ctx.getWriter().print(HU.span(label,
 						  HU.attr("title",
-							  label.replaceAll("\"",
-									   "&quot;"))));
+							  label.replaceAll("\"", "&quot;"))));
                 } else {
                     Object value = values.get(i);
                     String label = ((value == null)
                                     ? ""
                                     : value.toString());
-		    //Check for images, hrefs, etc
-		    if(label.indexOf("<")>=0) {
-			ctx.getWriter().print(label);
-		    } else {
-			ctx.getWriter().print(HU.span(label,
+                    //Check for images, hrefs, etc
+                    if (label.indexOf("<") >= 0) {
+                        ctx.getWriter().print(label);
+                    } else {
+                        ctx.getWriter().print(HU.span(label,
 						      HU.attr("title", label)));
-		    }
+                    }
                 }
                 ctx.getWriter().print("</div>");
                 ctx.getWriter().print(close);
@@ -987,10 +1047,12 @@ public  class RowCollector extends Processor {
 	    throws Exception {
             if (ctx.getDebug()) {
                 ctx.getWriter().print("");
+
                 return rows;
             }
             ctx.getWriter().println("</tbody>");
             ctx.getWriter().print("</table>");
+
             return rows;
         }
 
@@ -1081,8 +1143,8 @@ public  class RowCollector extends Processor {
 
             if (valueIndices == null) {
                 valueIndices     = getIndices(ctx, valueCols);
-                this.unfurlIndex = getIndex(ctx,unfurlCol);
-                this.uniqueIndex = getIndex(ctx,uniqueCol);
+                this.unfurlIndex = getIndex(ctx, unfurlCol);
+                this.uniqueIndex = getIndex(ctx, uniqueCol);
             }
 
             List<Integer>   includes     = getIndices(ctx);
@@ -1204,43 +1266,69 @@ public  class RowCollector extends Processor {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...    
+     */
     public static class CountUnique extends RowCollector {
 
-	private Row header;
+        /**  */
+        private Row header;
 
-	private List<String> keys = new ArrayList<String>();
+        /**  */
+        private List<String> keys = new ArrayList<String>();
 
-	private Hashtable<String,Row> rowMap = new Hashtable<String,Row>();
-	private Hashtable<String,Integer> countMap = new Hashtable<String,Integer>();	
+        /**  */
+        private Hashtable<String, Row> rowMap = new Hashtable<String, Row>();
+
+        /**  */
+        private Hashtable<String, Integer> countMap = new Hashtable<String,
+	    Integer>();
 
         /**
+         *
+         * @param cols _more_
          */
         public CountUnique(List<String> cols) {
             super(cols);
         }
 
-	public Row processRow(TextReader ctx, Row row) throws Exception {
-            if(rowCnt++==0) {
-		header = row;
-		return null;
-	    }
-	    List<Integer> indices = getIndices(ctx);
-	    String key = "";
-	    for(int idx: indices) {
-		key +="_" + row.getString(idx);
-	    }
-	    Row sample = rowMap.get(key);
-	    Integer cnt = countMap.get(key);
-	    if(sample==null) {
-		keys.add(key);
-		rowMap.put(key,row);
-		countMap.put(key,0);
-		cnt = 0;
-	    }
-	    cnt++;
-	    countMap.put(key,cnt);
-	    return null;
-	}
+        /**
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        public Row processRow(TextReader ctx, Row row) throws Exception {
+            if (rowCnt++ == 0) {
+                header = row;
+
+                return null;
+            }
+            List<Integer> indices = getIndices(ctx);
+            String        key     = "";
+            for (int idx : indices) {
+                key += "_" + row.getString(idx);
+            }
+            Row     sample = rowMap.get(key);
+            Integer cnt    = countMap.get(key);
+            if (sample == null) {
+                keys.add(key);
+                rowMap.put(key, row);
+                countMap.put(key, 0);
+                cnt = 0;
+            }
+            cnt++;
+            countMap.put(key, cnt);
+
+            return null;
+        }
 
 
 
@@ -1257,23 +1345,33 @@ public  class RowCollector extends Processor {
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
-	    rows= new ArrayList<Row>();
-	    header.add("Count");
-	    rows.add(header);
-	    for(String key: keys) {
-		Row sample = rowMap.get(key);
-		int cnt = countMap.get(key);
-		sample.add(cnt);
-		rows.add(sample);
-	    }
-	    return rows;
+            rows = new ArrayList<Row>();
+            header.add("Count");
+            rows.add(header);
+            for (String key : keys) {
+                Row sample = rowMap.get(key);
+                int cnt    = countMap.get(key);
+                sample.add(cnt);
+                rows.add(sample);
+            }
+
+            return rows;
         }
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...    
+     */
     public static class Normal extends RowCollector {
 
         /**
+         *
+         * @param cols _more_
          */
         public Normal(List<String> cols) {
             super(cols);
@@ -1292,112 +1390,133 @@ public  class RowCollector extends Processor {
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
-            rows =  getRows();
-	    for(int i: getIndices(ctx)) {
-		List<KeyValue> values= new ArrayList<KeyValue>();
-		for(int rowIdx=0;rowIdx<rows.size();rowIdx++) {
-		    Row row = rows.get(rowIdx);
-		    String v = row.getString(i);
-		    String key = cleanName(v);
-		    //v.toLowerCase().replace(";"," ").replace("."," ");
-		    //key = key.replaceAll(" ","");
-		    //		    System.out.println("key:" + key);
-		    values.add(new KeyValue(rowIdx,key,v));
-		}
-		for(int rowIdx1=1;rowIdx1<rows.size();rowIdx1++) {
-		    Row row = rows.get(rowIdx1);
-		    KeyValue kv1 = values.get(rowIdx1);
-		    if(kv1.matched) {
-			continue;
-		    }
-		    boolean matched = false;
-		    for(int rowIdx2=1;rowIdx2<rows.size();rowIdx2++) {
-			if(rowIdx1 == rowIdx2) continue;
-			KeyValue kv2 = values.get(rowIdx2);			
-			if(kv2.key.equals(kv1.key)) {
-			    matched = true;
-			} else if(kv2.key.startsWith(kv1.key)) {
-			    matched = true;
-			} else {
-			    if(kv1.key.length()<=kv2.key.length()) {
-				int score = similarScore(kv1.key,kv2.key);
-				if(score>90) {
-				    //  System.err.println("score:" + score +" " + kv1.key +" " + kv2.key);
-				    matched = true;
-				}
-			    }
-			}
-			if(matched) {
-			    row.set(i,kv2.value);
-			    if(!kv1.value.equals(kv2.value)) 
-				System.err.println("match:k1:" + kv1.key +" k2:" + kv2.key+" v:" + kv1.value +" v2:" + kv2.value);
-			    kv1.value =  kv2.value;
-			    kv1.key =  cleanName(kv1.value);
-			    kv2.matched = true;
-			    break;
-			}
-		    }
-		    if(!matched) {
-			//			System.err.println("not match:" + kv1.value);
-		    }
-		}
+            rows = getRows();
+            for (int i : getIndices(ctx)) {
+                List<KeyValue> values = new ArrayList<KeyValue>();
+                for (int rowIdx = 0; rowIdx < rows.size(); rowIdx++) {
+                    Row    row = rows.get(rowIdx);
+                    String v   = row.getString(i);
+                    String key = cleanName(v);
+                    //v.toLowerCase().replace(";"," ").replace("."," ");
+                    //key = key.replaceAll(" ","");
+                    //              System.out.println("key:" + key);
+                    values.add(new KeyValue(rowIdx, key, v));
+                }
+                for (int rowIdx1 = 1; rowIdx1 < rows.size(); rowIdx1++) {
+                    Row      row = rows.get(rowIdx1);
+                    KeyValue kv1 = values.get(rowIdx1);
+                    if (kv1.matched) {
+                        continue;
+                    }
+                    boolean matched = false;
+                    for (int rowIdx2 = 1; rowIdx2 < rows.size(); rowIdx2++) {
+                        if (rowIdx1 == rowIdx2) {
+                            continue;
+                        }
+                        KeyValue kv2 = values.get(rowIdx2);
+                        if (kv2.key.equals(kv1.key)) {
+                            matched = true;
+                        } else if (kv2.key.startsWith(kv1.key)) {
+                            matched = true;
+                        } else {
+                            if (kv1.key.length() <= kv2.key.length()) {
+                                int score = similarScore(kv1.key, kv2.key);
+                                if (score > 90) {
+                                    //  System.err.println("score:" + score +" " + kv1.key +" " + kv2.key);
+                                    matched = true;
+                                }
+                            }
+                        }
+                        if (matched) {
+                            row.set(i, kv2.value);
+                            if ( !kv1.value.equals(kv2.value)) {
+                                System.err.println("match:k1:" + kv1.key
+						   + " k2:" + kv2.key + " v:"
+						   + kv1.value + " v2:" + kv2.value);
+                            }
+                            kv1.value   = kv2.value;
+                            kv1.key     = cleanName(kv1.value);
+                            kv2.matched = true;
 
-	    }
-	    return rows;
+                            break;
+                        }
+                    }
+                    if ( !matched) {
+                        //                      System.err.println("not match:" + kv1.value);
+                    }
+                }
+
+            }
+
+            return rows;
         }
-	private static class KeyValue {
-	    int index;
-	    String key;
-	    String value;
-	    boolean matched = false;
-	    KeyValue(int index,String key, String value) {
-		this.index = index;
-		this.key = key;
-		this.value = value;
-	    }
-	}
 
-	private static String[] replace = new String[]{
-	    "ÁĂẮẶẰẲẴǍÂẤẬẦẨẪÄǞȦǠẠȀÀẢȂĀĄÅǺḀÃǼǢ",       "A",
-	    "ḂḄḆ",                                   "B",
-	    "ĆČÇḈĈĊ",                                "C",
-	    "ĎḐḒḊḌḎ",                                "D",
-	    "ÉĔĚȨḜÊẾỆỀỂỄḘËĖẸȄÈẺȆĒḖḔĘẼḚÉ",            "E",
-	    "Ḟ",                                     "F",
-	    "ǴĞǦĢĜĠḠ",                               "G",
-	    "ḪȞḨĤḦḢḤẖ",                              "H",
-	    "ÍĬǏÎÏḮİỊȈÌỈȊĪĮĨḬ",                      "I",
-	    "ǰĴ",                                    "J",
-	    "ḰǨĶḲḴ",                                 "K",
-	    "ĹĽĻḼḶḸḺ",                               "L",
-	    "ḾṀṂ",                                   "M",
-	    "ŃŇŅṊṄṆǸṈÑ",                             "N",
-	    "ÓŎǑÔỐỘỒỔỖÖȪȮȰỌŐȌÒỎƠỚỢỜỞỠȎŌṒṐǪǬÕṌṎȬǾØ",  "O",
-	    "ṔṖ",                                    "P",
-	    "ŔŘŖṘṚṜȐȒṞ",                             "R",
-	    "ŚṤŠṦŞŜȘṠẛṢṨ",                           "S",
-	    "ŤŢṰȚẗṪṬṮ",                              "T",
-	    "ÚŬǓÛṶÜǗǙǛǕṲỤŰȔÙỦƯỨỰỪỬỮȖŪṺŲŮŨṸṴ",        "U",
-	    "ṾṼ",                                    "V",
-	    "ẂŴẄẆẈẀẘ",                               "W",
-	    "ẌẊ",                                    "X",
-	    "ÝŶŸẎỴỲỶȲẙỸ",                            "Y",
-	    "ŹŽẐŻẒẔ",                                "Z",
-	    "(\\bTHE\\b|\\bAND\\b)","",
-	    "(\\W|\\d)","",
-	    //	    "  +"," "
-	};
+        /**
+         * Class description
+         *
+         *
+         * @version        $version$, Thu, Nov 4, '21
+         * @author         Enter your name here...    
+         */
+        private static class KeyValue {
 
-	public static String cleanName(String s) {
-	    s=s.toUpperCase();
-	    for(int i=0;i<replace.length;i+=2) {
-		s = s.replaceAll(replace[i],replace[i+1]);
-	    }
-	    return s;
-	}
+            /**  */
+            int index;
+
+            /**  */
+            String key;
+
+            /**  */
+            String value;
+
+            /**  */
+            boolean matched = false;
+
+            /**
+             
+             *
+             * @param index _more_
+             * @param key _more_
+             * @param value _more_
+             */
+            KeyValue(int index, String key, String value) {
+                this.index = index;
+                this.key   = key;
+                this.value = value;
+            }
+        }
+
+        /**  */
+        private static String[] replace = new String[] {
+            "ÁĂẮẶẰẲẴǍÂẤẬẦẨẪÄǞȦǠẠȀÀẢȂĀĄÅǺḀÃǼǢ", "A", "ḂḄḆ", "B", "ĆČÇḈĈĊ", "C",
+            "ĎḐḒḊḌḎ", "D", "ÉĔĚȨḜÊẾỆỀỂỄḘËĖẸȄÈẺȆĒḖḔĘẼḚÉ", "E", "Ḟ", "F",
+            "ǴĞǦĢĜĠḠ", "G", "ḪȞḨĤḦḢḤẖ", "H", "ÍĬǏÎÏḮİỊȈÌỈȊĪĮĨḬ", "I", "ǰĴ",
+            "J", "ḰǨĶḲḴ", "K", "ĹĽĻḼḶḸḺ", "L", "ḾṀṂ", "M", "ŃŇŅṊṄṆǸṈÑ", "N",
+            "ÓŎǑÔỐỘỒỔỖÖȪȮȰỌŐȌÒỎƠỚỢỜỞỠȎŌṒṐǪǬÕṌṎȬǾØ", "O", "ṔṖ", "P",
+            "ŔŘŖṘṚṜȐȒṞ", "R", "ŚṤŠṦŞŜȘṠẛṢṨ", "S", "ŤŢṰȚẗṪṬṮ", "T",
+            "ÚŬǓÛṶÜǗǙǛǕṲỤŰȔÙỦƯỨỰỪỬỮȖŪṺŲŮŨṸṴ", "U", "ṾṼ", "V", "ẂŴẄẆẈẀẘ", "W",
+            "ẌẊ", "X", "ÝŶŸẎỴỲỶȲẙỸ", "Y", "ŹŽẐŻẒẔ", "Z",
+            "(\\bTHE\\b|\\bAND\\b)", "", "(\\W|\\d)", "",
+            //      "  +"," "
+        };
+
+        /**
+         *
+         * @param s _more_
+         *
+         * @return _more_
+         */
+        public static String cleanName(String s) {
+            s = s.toUpperCase();
+            for (int i = 0; i < replace.length; i += 2) {
+                s = s.replaceAll(replace[i], replace[i + 1]);
+            }
+
+            return s;
+        }
 
     }
-    
+
 
 
     /**
@@ -1801,41 +1920,45 @@ public  class RowCollector extends Processor {
      */
     public static class Stats extends Html {
 
-        /** _more_          */
+        /** _more_ */
         private static SimpleDateFormat fmtSdf =
             new SimpleDateFormat("yyyy-MM-dd hh:mm");
 
-        /** _more_          */
+        /** _more_ */
         private CsvUtil util;
 
-	private boolean justStats;
+        /**  */
+        private boolean justStats;
 
-        /** _more_          */
+        /** _more_ */
         private List<ColStat> cols;
 
-        /** _more_          */
+        /** _more_ */
         private Row headerRow;
 
-        /** _more_          */
+        /** _more_ */
         int rowCnt = 0;
 
-        /** _more_          */
+        /** _more_ */
         private boolean interactive;
 
         /**
          * ctor
          *
          * @param util _more_
+         * @param justStats _more_
          */
-        public Stats(CsvUtil util,boolean justStats) {
-            this.util   = util;
-	    this.justStats = justStats;
-            interactive = util.getInteractive();
+        public Stats(CsvUtil util, boolean justStats) {
+            this.util      = util;
+            this.justStats = justStats;
+            interactive    = util.getInteractive();
         }
 
 
         /**
          * _more_
+         *
+         * @param ctx _more_
          * @param row _more_
          *
          * @return _more_
@@ -1847,21 +1970,26 @@ public  class RowCollector extends Processor {
             rowCnt++;
             if (headerRow == null) {
                 headerRow = row;
+
                 return row;
             }
             if (cols == null) {
                 cols = new ArrayList<ColStat>();
                 for (int i = 0; i < row.size(); i++) {
-                    cols.add(new ColStat(util, interactive,i<headerRow.size()?headerRow.getString(i):"",
-                                         row.getString(i)));
+                    cols.add(new ColStat(util, interactive,
+                                         (i < headerRow.size())
+                                         ? headerRow.getString(i)
+                                         : "", row.getString(i)));
                 }
             }
             for (int i = 0; i < row.size(); i++) {
-		if(i<cols.size())
-		    cols.get(i).addValue(row.getString(i));
+                if (i < cols.size()) {
+                    cols.get(i).addValue(row.getString(i));
+                }
             }
-	    addRow(row);
-	    return row;
+            addRow(row);
+
+            return row;
         }
 
 
@@ -1878,80 +2006,82 @@ public  class RowCollector extends Processor {
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
+
             PrintWriter w = ctx.getWriter();
-	    BiFunction<String,String,String> layout = (label,value) -> {
-		return HU.tag("table",
-			      HU.attrs("class", "left_right_table",
-				       "cellpadding", "0", "cellspacing",
-				       "0"), HU.row(HU.col(label)
-						    + HU.col(value,
-							     HU.attrs("align","right","valign","top"))));
-	    };
+	    //J-
+            BiFunction<String,String,String> layout = (label,value) -> {
+                return HU.tag("table",
+                              HU.attrs("class", "left_right_table",
+                                       "cellpadding", "0", "cellspacing",
+                                       "0"), HU.row(HU.col(label)
+                                                    + HU.col(value,
+                                                             HU.attrs("align","right","valign","top"))));
+            };
 
-	    Function<ColStat,String> printUniques = (col) -> {
-		List<Object[]> values = new ArrayList<Object[]>();
-		for (Enumeration keys = col.uniques.keys();
-		     keys.hasMoreElements(); ) {
-		    Object  key = keys.nextElement();
-		    Integer cnt = col.uniques.get(key);
-		    values.add(new Object[] { key, cnt });
-		}
-		Comparator comp = new Comparator() {
-			public int compare(Object o1, Object o2) {
-			    Object[] t1 = (Object[]) o1;
-			    Object[] t2 = (Object[]) o2;
+            Function<ColStat,String> printUniques = (col) -> {
+                List<Object[]> values = new ArrayList<Object[]>();
+                for (Enumeration keys = col.uniques.keys();
+                     keys.hasMoreElements(); ) {
+                    Object  key = keys.nextElement();
+                    Integer cnt = col.uniques.get(key);
+                    values.add(new Object[] { key, cnt });
+                }
+                Comparator comp = new Comparator() {
+                        public int compare(Object o1, Object o2) {
+                            Object[] t1 = (Object[]) o1;
+                            Object[] t2 = (Object[]) o2;
 
-			    return ((int) t2[1]) - ((int) t1[1]);
-			}
-		    };
+                            return ((int) t2[1]) - ((int) t1[1]);
+                        }
+                    };
 
-		Object[] array = values.toArray();
-		Arrays.sort(array, comp);
-		values = (List<Object[]>) Misc.toList(array); 
-		String html = Utils.plural(values.size(), "unique value");
-		if(justStats)
-		    html+="<div style='margin-right:5px;max-height:300px;overflow-y:auto;'>";			
-		else
-		    html+="<div style='margin-right:5px;max-height:100px;overflow-y:auto;'>";			
-		html+="<table width=100% border=0 cellpadding=0 cellspacing=0>";
-		int tupleCnt=0;
-		String td = "<td style='border:none;padding:0px;padding-left:0px;padding-right:5px;' ";
-		for (Object[] tuple : values) {
-		    tupleCnt++;
-		    if((justStats && tupleCnt>50) || (!justStats && tupleCnt>20)) {
-			html+="<tr>" + td+" colspan=2>...</td></tr>";
-			break;
-		    }
-		    Object key = tuple[0];
-		    int    cnt = (Integer) tuple[1];
-		    double percent = Math.round(1000.0 * cnt
-						/ (double) (rowCnt-1)) / 10;
+                Object[] array = values.toArray();
+                Arrays.sort(array, comp);
+                values = (List<Object[]>) Misc.toList(array);
+                String html = Utils.plural(values.size(), "unique value");
+                if(justStats)
+                    html+="<div style='margin-right:5px;max-height:300px;overflow-y:auto;'>";
+                else
+                    html+="<div style='margin-right:5px;max-height:100px;overflow-y:auto;'>";
+                html+="<table width=100% border=0 cellpadding=0 cellspacing=0>";
+                int tupleCnt=0;
+                String td = "<td style='border:none;padding:0px;padding-left:0px;padding-right:5px;' ";
+                for (Object[] tuple : values) {
+                    tupleCnt++;
+                    if((justStats && tupleCnt>50) || (!justStats && tupleCnt>20)) {
+                        html+="<tr>" + td+" colspan=2>...</td></tr>";
+                        break;
+                    }
+                    Object key = tuple[0];
+                    int    cnt = (Integer) tuple[1];
+                    double percent = Math.round(1000.0 * cnt
+                                                / (double) (rowCnt-1)) / 10;
 
-		    String title = key.toString().replaceAll("'","\\'") +" " + percent+"%";
-		    html+="<tr valign=bottom title='" + title +"'>";
-		    key = HU.div(key.toString(),HU.attrs("style","max-width:100px;overflow-x:auto;"));
-		    html+=td+ " width=1%>" + key+"</td>";
-		    html+=td+" width=1% align=right>" + cnt +"</td>";
-		    html+="<td style='border:none;padding:0px;' ><div style='margin-top:3px;display:inline-block;background:blue;height:1em;width:" + percent +"%;'></div></td>";
+                    String title = key.toString().replaceAll("'","\\'") +" " + percent+"%";
+                    html+="<tr valign=bottom title='" + title +"'>";
+                    key = HU.div(key.toString(),HU.attrs("style","max-width:100px;overflow-x:auto;"));
+                    html+=td+ " width=1%>" + key+"</td>";
+                    html+=td+" width=1% align=right>" + cnt +"</td>";
+                    html+="<td style='border:none;padding:0px;' ><div style='margin-top:3px;display:inline-block;background:blue;height:1em;width:" + percent +"%;'></div></td>";
 
-		    html+="</tr>";			    
-		}
-		html+="</table>";
-		html+="</div>";
-		return html;
+                    html+="</tr>";
+                }
+                html+="</table>";
+                html+="</div>";
+                return html;
 
-	    };
+            };
 
-	    w.println("#rows:" + rowCnt);
-	    if(cols ==null) cols = new ArrayList<ColStat>();
+            w.println("#rows:" + rowCnt);
+            if(cols ==null) cols = new ArrayList<ColStat>();
             if (interactive) {
-		w.println(HU.SPACE2);
-		w.println("<span id=header></span>");
+                w.println(HU.SPACE2);
+                w.println("<span id=header></span>");
                 w.println("<table width='100%' class='stripe hover display nowrap ramadda-table ramadda-csv-table' >");
                 w.println("<thead>");
                 w.println("<tr valign=top>");
-		for(int i=0;i<cols.size();i++) {
-		    ColStat col =  cols.get(i);
+                for(int i=0;i<cols.size();i++) {
+                    ColStat col =  cols.get(i);
                     String typeIcon = "";
                     String tt       = "";
                     if (col.type.equals("string")) {
@@ -1963,137 +2093,138 @@ public  class RowCollector extends Processor {
                     } else if (col.type.equals("image")) {
                         typeIcon = "fas fa-image";
                     } else if (col.type.equals("url")) {
-                        typeIcon = "fas fa-link";						
+                        typeIcon = "fas fa-link";
                     } else {
                         typeIcon = "fas fa-hashtag";
                     }
                     String type = HU.faIcon(typeIcon, "title", "type: " + col.type, "style", "font-size:10pt;");
                     String name = col.name;
-		    String label = Utils.makeLabel(name);
-		    String id = Utils.makeID(name);
-		    label = HU.span(type + "&nbsp;" + label,HU.attrs("class","csv-id","fieldid",id));
-		    String extra = "";
-		    if (Utils.equalsOne(col.name.trim().toLowerCase(), "latitude","longitude")) {
-			ColStat next = i<cols.size()-1?cols.get(i+1):null;
-			if(next!=null && Utils.equalsOne(next.name.toLowerCase(),"longitude","latitude")) {
-			    ColStat lat = col.name.equalsIgnoreCase("latitude")?col:next;
-			    ColStat lon = col.name.equalsIgnoreCase("longitude")?col:next;			   
-			    i++;
-			    StringBuilder map = new StringBuilder();
-			    MapProvider mp  = util.getMapProvider();
-			    if(mp!=null) {
-				List<double[]> pts = new ArrayList<double[]>();
-				for(int ptIdx=0;ptIdx<lat.pts.size();ptIdx++)
-				    pts.add(new double[]{lat.pts.get(ptIdx),lon.pts.get(ptIdx)});
-				Hashtable<String,String>props = new Hashtable<String,String>();
-				props.put("simple","true");
-				props.put("radius","3");				
-				mp.makeMap(map,"100%",justStats?"300px":"100px",pts,props);
-				extra = map.toString();
-			    }
-			}
-		    } else {
-			if (col.type.equals("numeric")) {
-			    extra+=layout.apply("min:", "" + col.min);
-			    extra+=layout.apply("max:", "" + col.max);
-			    if (col.numMissing > 0) {
-				extra+=layout.apply("#missing:",
-					      "" + col.numMissing);
-			    }
-			    if (col.numErrors > 0) {
-				extra+=layout.apply("#errors:",   "" + col.numErrors);
-				if (col.sampleError != null) {
-				    extra+=layout.apply("eg:"
-						  + ((col.sampleError.trim().length()
-						      == 0)
-						     ? "<blank>"
-						     : col.sampleError), "");
-				}
-			    }
-			    extra+=printUniques.apply(col);
-			} else if (col.type.equals("date")) {
-			    if (col.minDate != null) {
-				extra+=layout.apply("min:", fmtSdf.format(col.minDate));
-			    }
-			    if (col.maxDate != null) {
-				extra+=layout.apply("max:",fmtSdf.format(col.maxDate));
-			    }
-			} else if (col.type.equals("image")) {
-			} else if (col.type.equals("url")) {			
-			} else {
-			    extra+=printUniques.apply(col);
-			}
-		    }		    
-		    extra = HU.div(extra,HU.attrs("class","csv-summary","style","display:none;"));
-		    w.println("<th nowrap>" +  label  + extra + "</th>");
-                }
-                w.println("</tr>");
-		/*
-                w.println("<tr valign=top class=th2>");
-		for(int i=0;i<cols.size();i++) {
-		    ColStat col =  cols.get(i);
-		    if (Utils.equalsOne(col.name.trim().toLowerCase(), "latitude","longitude")) {
-			ColStat next = i<cols.size()-1?cols.get(i+1):null;
-			if(next!=null && Utils.equalsOne(next.name.toLowerCase(),"longitude","latitude")) {
-			    ColStat lat = col.name.equalsIgnoreCase("latitude")?col:next;
-			    ColStat lon = col.name.equalsIgnoreCase("longitude")?col:next;			   
-			    i++;
-			    w.println("<th colspan=2>");
-			    StringBuilder map = new StringBuilder();
-			    MapProvider mp  = util.getMapProvider();
-			    if(mp!=null) {
-				List<double[]> pts = new ArrayList<double[]>();
-				for(int ptIdx=0;ptIdx<lat.pts.size();ptIdx++)
-				    pts.add(new double[]{lat.pts.get(ptIdx),lon.pts.get(ptIdx)});
-				Hashtable<String,String>props = new Hashtable<String,String>();
-				props.put("simple","true");
-				props.put("radius","3");				
-				mp.makeMap(map,"100%",justStats?"300px":"100px",pts,props);
-				w.print(map.toString());
-			    }
-			    w.println("</th>");
-			    continue;
-			}
-		    }
-		    w.println("<th>");
-		    if (col.type.equals("numeric")) {
-                        layout.accept("min:", "" + col.min);
-			layout.accept("max:", "" + col.max);
-                        if (col.numMissing > 0) {
-                            layout.accept("#missing:",
-					  "" + col.numMissing);
-                        }
-                        if (col.numErrors > 0) {
-                            layout.accept("#errors:",   "" + col.numErrors);
-                            if (col.sampleError != null) {
-                                layout.accept("eg:"
-					      + ((col.sampleError.trim().length()
-						  == 0)
-						 ? "<blank>"
-						 : col.sampleError), "");
+                    String label = Utils.makeLabel(name);
+                    String id = Utils.makeID(name);
+                    label = HU.span(type + "&nbsp;" + label,HU.attrs("class","csv-id","fieldid",id));
+                    String extra = "";
+                    if (Utils.equalsOne(col.name.trim().toLowerCase(), "latitude","longitude")) {
+                        ColStat next = i<cols.size()-1?cols.get(i+1):null;
+                        if(next!=null && Utils.equalsOne(next.name.toLowerCase(),"longitude","latitude")) {
+                            ColStat lat = col.name.equalsIgnoreCase("latitude")?col:next;
+                            ColStat lon = col.name.equalsIgnoreCase("longitude")?col:next;
+                            i++;
+                            StringBuilder map = new StringBuilder();
+                            MapProvider mp  = util.getMapProvider();
+                            if(mp!=null) {
+                                List<double[]> pts = new ArrayList<double[]>();
+                                for(int ptIdx=0;ptIdx<lat.pts.size();ptIdx++)
+                                    pts.add(new double[]{lat.pts.get(ptIdx),lon.pts.get(ptIdx)});
+                                Hashtable<String,String>props = new Hashtable<String,String>();
+                                props.put("simple","true");
+                                props.put("radius","3");
+                                mp.makeMap(map,"100%",justStats?"300px":"100px",pts,props);
+                                extra = map.toString();
                             }
                         }
-			printUniques.accept(col);
-                    } else if (col.type.equals("date")) {
-                        if (col.minDate != null) {
-			    layout.accept("min:", fmtSdf.format(col.minDate));
-                        }
-                        if (col.maxDate != null) {
-                            layout.accept("max:",fmtSdf.format(col.maxDate));
-                        }
-                    } else if (col.type.equals("image")) {
-                    } else if (col.type.equals("url")) {			
                     } else {
-			printUniques.accept(col);
+                        if (col.type.equals("numeric")) {
+                            extra+=layout.apply("min:", "" + col.min);
+                            extra+=layout.apply("max:", "" + col.max);
+                            if (col.numMissing > 0) {
+                                extra+=layout.apply("#missing:",
+						    "" + col.numMissing);
+                            }
+                            if (col.numErrors > 0) {
+                                extra+=layout.apply("#errors:",   "" + col.numErrors);
+                                if (col.sampleError != null) {
+                                    extra+=layout.apply("eg:"
+							+ ((col.sampleError.trim().length()
+							    == 0)
+							   ? "<blank>"
+							   : col.sampleError), "");
+                                }
+                            }
+                            extra+=printUniques.apply(col);
+                        } else if (col.type.equals("date")) {
+                            if (col.minDate != null) {
+                                extra+=layout.apply("min:", fmtSdf.format(col.minDate));
+                            }
+                            if (col.maxDate != null) {
+                                extra+=layout.apply("max:",fmtSdf.format(col.maxDate));
+                            }
+                        } else if (col.type.equals("image")) {
+                        } else if (col.type.equals("url")) {
+                        } else {
+                            extra+=printUniques.apply(col);
+                        }
                     }
-                    w.println("</th>");
-		}
+                    extra = HU.div(extra,HU.attrs("class","csv-summary","style","display:none;"));
+                    w.println("<th nowrap>" +  label  + extra + "</th>");
+                }
                 w.println("</tr>");
-		*/
-                w.println("</thead>");
-                w.println("<tbody>");
 
-                for (Row row : rows) {
+		/*
+		  w.println("<tr valign=top class=th2>");
+		  for(int i=0;i<cols.size();i++) {
+		  ColStat col =  cols.get(i);
+		  if (Utils.equalsOne(col.name.trim().toLowerCase(), "latitude","longitude")) {
+		  ColStat next = i<cols.size()-1?cols.get(i+1):null;
+		  if(next!=null && Utils.equalsOne(next.name.toLowerCase(),"longitude","latitude")) {
+		  ColStat lat = col.name.equalsIgnoreCase("latitude")?col:next;
+		  ColStat lon = col.name.equalsIgnoreCase("longitude")?col:next;
+		  i++;
+		  w.println("<th colspan=2>");
+		  StringBuilder map = new StringBuilder();
+		  MapProvider mp  = util.getMapProvider();
+		  if(mp!=null) {
+		  List<double[]> pts = new ArrayList<double[]>();
+		  for(int ptIdx=0;ptIdx<lat.pts.size();ptIdx++)
+		  pts.add(new double[]{lat.pts.get(ptIdx),lon.pts.get(ptIdx)});
+		  Hashtable<String,String>props = new Hashtable<String,String>();
+		  props.put("simple","true");
+		  props.put("radius","3");
+		  mp.makeMap(map,"100%",justStats?"300px":"100px",pts,props);
+		  w.print(map.toString());
+		  }
+		  w.println("</th>");
+		  continue;
+		  }
+		  }
+		  w.println("<th>");
+		  if (col.type.equals("numeric")) {
+		  layout.accept("min:", "" + col.min);
+		  layout.accept("max:", "" + col.max);
+		  if (col.numMissing > 0) {
+		  layout.accept("#missing:",
+		  "" + col.numMissing);
+		  }
+		  if (col.numErrors > 0) {
+		  layout.accept("#errors:",   "" + col.numErrors);
+		  if (col.sampleError != null) {
+		  layout.accept("eg:"
+		  + ((col.sampleError.trim().length()
+		  == 0)
+		  ? "<blank>"
+		  : col.sampleError), "");
+		  }
+		  }
+		  printUniques.accept(col);
+		  } else if (col.type.equals("date")) {
+		  if (col.minDate != null) {
+		  layout.accept("min:", fmtSdf.format(col.minDate));
+		  }
+		  if (col.maxDate != null) {
+		  layout.accept("max:",fmtSdf.format(col.maxDate));
+		  }
+		  } else if (col.type.equals("image")) {
+		  } else if (col.type.equals("url")) {
+		  } else {
+		  printUniques.accept(col);
+		  }
+		  w.println("</th>");
+		  }
+		  w.println("</tr>");
+		*/
+		w.println("</thead>");
+		w.println("<tbody>");
+
+		for (Row row : rows) {
 		    if(!justStats) {
 			if (cnt++ > 200) {
 			    w.println("<tr><td colspan=" + row.size()
@@ -2101,27 +2232,29 @@ public  class RowCollector extends Processor {
 			    break;
 			}
 		    }
-                    Row r = new Row();
-                    for (int i = 0; i < cols.size(); i++) {
-                        ColStat col = cols.get(i);
-			if(i<row.size()) 
+		    Row r = new Row();
+		    for (int i = 0; i < cols.size(); i++) {
+			ColStat col = cols.get(i);
+			if(i<row.size())
 			    r.add(col.format(row.get(i)));
-                    }
+		    }
 		    if(!justStats) {
 			printRow(ctx, r, false);
 		    }
-                }
-                w.println("</tbody>");
-                w.println("</table>");
-            } else {
-                for (ColStat col : cols) {
-                    cnt++;
+		}
+		w.println("</tbody>");
+		w.println("</table>");
+	    } else {
+		for (ColStat col : cols) {
+		    cnt++;
 		    ctx.getWriter().print("#" + cnt + " ");
-                    col.finish(ctx.getWriter());
-                }
-            }
+		    col.finish(ctx.getWriter());
+		}
+	    }
 
+	    //J+
             return rows;
+
 
         }
 
@@ -2131,93 +2264,100 @@ public  class RowCollector extends Processor {
          *
          *
          * @version        $version$, Sat, Apr 3, '21
-         * @author         Enter your name here...    
+         * @author         Enter your name here...
          */
         private static class ColStat {
 
-            /** _more_          */
+            /** _more_ */
             String name;
 
-            /** _more_          */
+            /** _more_ */
             String label;
 
-            /** _more_          */
+            /** _more_ */
             String type;
 
-            /** _more_          */
+            /** _more_ */
             String sample;
 
-            /** _more_          */
+            /** _more_ */
             SimpleDateFormat sdf;
 
-            /** _more_          */
+            /** _more_ */
             String format;
 
-            /** _more_          */
+            /** _more_ */
             String sampleError;
 
-            /** _more_          */
+            /** _more_ */
             double min = Double.NaN;
 
-            /** _more_          */
+            /** _more_ */
             double max = Double.NaN;
 
-            /** _more_          */
+            /** _more_ */
             int numErrors = 0;
 
-            /** _more_          */
+            /** _more_ */
             int numMissing = 0;
 
-	    boolean interactive;
-	    
-            /** _more_          */
+            /**  */
+            boolean interactive;
+
+            /** _more_ */
             Hashtable<Object, Integer> uniques = new Hashtable<Object,
 		Integer>();
 
-	    List<Double> pts = new ArrayList<Double>();
+            /**  */
+            List<Double> pts = new ArrayList<Double>();
 
 
-            /** _more_          */
+            /** _more_ */
             Date minDate;
 
-            /** _more_          */
+            /** _more_ */
             Date maxDate;
 
             /**
              * _more_
              *
              * @param util _more_
+             * @param interactive _more_
              * @param n _more_
              * @param sample _more_
              */
-            public ColStat(CsvUtil util, boolean interactive, String n, String sample) {
-		this.interactive = interactive;
-                label = name;
-		name = n;
+            public ColStat(CsvUtil util, boolean interactive, String n,
+                           String sample) {
+                this.interactive = interactive;
+                label            = name;
+                name             = n;
                 if (name.startsWith("#fields=")) {
                     name = name.substring("#fields=".length());
                 }
                 String args = StringUtil.findPattern(name, "\\[(.*)\\]");
                 name = name.replaceAll("\\[.*\\]", "");
-                name  = name.toLowerCase().trim();
+                name = name.toLowerCase().trim();
                 try {
                     Double.parseDouble(sample);
                     this.type = "numeric";
                 } catch (Exception ignore) {
-		    if(sample.startsWith("http")) {
-			if(name.equals("image")) this.type = "image";
-			else this.type = "url";
-		    } else {
-			this.type = "string";
-		    }
+                    if (sample.startsWith("http")) {
+                        if (name.equals("image")) {
+                            this.type = "image";
+                        } else {
+                            this.type = "url";
+                        }
+                    } else {
+                        this.type = "string";
+                    }
                 }
                 if (args != null) {
                     Hashtable props = Utils.parseKeyValue(args);
                     this.type  = Utils.getProperty(props, "type", this.type);
                     this.label = Utils.getProperty(props, "label",
 						   this.label);
-                    this.format = Utils.getProperty(props, name +".format",Utils.getProperty(props, "format",
-											     this.format));
+                    this.format = Utils.getProperty(props, name + ".format",
+						    Utils.getProperty(props, "format", this.format));
                     if (this.format != null) {
                         sdf = new SimpleDateFormat(this.format);
 
@@ -2260,11 +2400,13 @@ public  class RowCollector extends Processor {
 
                     return "bad date:" + v;
                 } else if (type.equals("image")) {
-		    String url = v.toString().trim();
-		    if(url.length()!=0) {
-			return HU.href(url, HU.image(url,"width","100"), "target=_image");
-		    }
-		}
+                    String url = v.toString().trim();
+                    if (url.length() != 0) {
+                        return HU.href(url, HU.image(url, "width", "100"),
+                                       "target=_image");
+                    }
+                }
+
                 return v;
             }
 
@@ -2277,16 +2419,16 @@ public  class RowCollector extends Processor {
                 if (sample == null) {
                     sample = v;
                 }
-		if(name.equals("latitude") || name.equals("longitude")) {
-		    try {
-			pts.add(Double.parseDouble(v));
-		    } catch (Exception exc) {
+                if (name.equals("latitude") || name.equals("longitude")) {
+                    try {
+                        pts.add(Double.parseDouble(v));
+                    } catch (Exception exc) {
                         numErrors++;
                         if (sampleError == null) {
                             sampleError = v;
                         }
                     }
-		}
+                }
                 if (type.equals("numeric")) {
                     try {
                         double d = Double.parseDouble(v);
@@ -2307,13 +2449,13 @@ public  class RowCollector extends Processor {
                         minDate = Utils.min(minDate, date);
                         maxDate = Utils.max(maxDate, date);
                     }
-                } 
-		Integer cnt = uniques.get(v);
-		if (cnt == null) {
-		    cnt = new Integer(0);
-		}
-		cnt = new Integer(cnt + 1);
-		uniques.put(v, cnt);
+                }
+                Integer cnt = uniques.get(v);
+                if (cnt == null) {
+                    cnt = new Integer(0);
+                }
+                cnt = new Integer(cnt + 1);
+                uniques.put(v, cnt);
             }
 
             /**
@@ -2322,9 +2464,9 @@ public  class RowCollector extends Processor {
              * @param writer _more_
              */
             public void finish(PrintWriter writer) {
-		if (interactive) {
-		    writer.print("<pre>");
-		}
+                if (interactive) {
+                    writer.print("<pre>");
+                }
                 writer.print(name + " [" + type + "]  ");
                 writer.print("sample:" + sample + "  ");
                 if (type.equals("numeric")) {
@@ -2341,13 +2483,13 @@ public  class RowCollector extends Processor {
                     writer.print("#uniques:" + uniques.size());
                 }
                 writer.print("\n");
-		if (interactive) {
-		    writer.print("</pre>");
-		}
+                if (interactive) {
+                    writer.print("</pre>");
+                }
             }
 
         }
-	
+
 
 
     }
@@ -2664,11 +2806,23 @@ public  class RowCollector extends Processor {
 
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...    
+     */
     public static class Slicer extends RowCollector {
 
-	String sdest;
-	int dest;
-	List<String> fill;
+        /**  */
+        String sdest;
+
+        /**  */
+        int dest;
+
+        /**  */
+        List<String> fill;
 
 
 
@@ -2678,11 +2832,13 @@ public  class RowCollector extends Processor {
          * @param cols _more_
          * @param colName _more_
          * @param sdf _more_
+         * @param sdest _more_
+         * @param fill _more_
          */
-        public Slicer(List<String> cols, String sdest,List<String> fill) {
-	    super(cols);
+        public Slicer(List<String> cols, String sdest, List<String> fill) {
+            super(cols);
             this.sdest = sdest;
-	    this.fill = fill;
+            this.fill  = fill;
         }
 
         /**
@@ -2692,13 +2848,18 @@ public  class RowCollector extends Processor {
          * @param row _more_
          *
          * @return _more_
+         *
+         * @throws Exception _more_
          */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
-	    super.processRow(ctx, row);
-	    if(sdest!=null) dest = getColumnIndex(ctx,sdest);
-	    sdest = null;
-	    return null;
+            super.processRow(ctx, row);
+            if (sdest != null) {
+                dest = getColumnIndex(ctx, sdest);
+            }
+            sdest = null;
+
+            return null;
         }
 
 
@@ -2715,26 +2876,31 @@ public  class RowCollector extends Processor {
         @Override
         public List<Row> finish(TextReader ctx, List<Row> tmp)
 	    throws Exception {
-	    tmp = getRows(tmp);
-	    List<Row> result = new ArrayList<Row>();
-	    for(Row row: tmp) {
-		result.add(row);
-	    }
-	    Row sample = tmp.get(1);
-	    for(int index: getIndices(ctx)) {
-		for(Row row: tmp) {
-		    Object v = row.get(index);
-		    row.set(index,"");
-		    Row newRow =new Row();
-		    for(int i=0;i<dest;i++) newRow.add("");
-		    //		    for(Object o : sample.getValue()) newRow.add(o);
-		    newRow.add(v);
-		    for(String f: fill) newRow.add(f);
-		    result.add(newRow);
-		}
-	    }
-	    System.err.println("DONE:" + result.size());
-	    return result;
+            tmp = getRows(tmp);
+            List<Row> result = new ArrayList<Row>();
+            for (Row row : tmp) {
+                result.add(row);
+            }
+            Row sample = tmp.get(1);
+            for (int index : getIndices(ctx)) {
+                for (Row row : tmp) {
+                    Object v = row.get(index);
+                    row.set(index, "");
+                    Row newRow = new Row();
+                    for (int i = 0; i < dest; i++) {
+                        newRow.add("");
+                    }
+                    //              for(Object o : sample.getValue()) newRow.add(o);
+                    newRow.add(v);
+                    for (String f : fill) {
+                        newRow.add(f);
+                    }
+                    result.add(newRow);
+                }
+            }
+            System.err.println("DONE:" + result.size());
+
+            return result;
         }
 
     }
@@ -2804,6 +2970,7 @@ public  class RowCollector extends Processor {
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
                 header = row;
+
                 return null;
             }
             if (keyindices == null) {
@@ -2828,7 +2995,7 @@ public  class RowCollector extends Processor {
             }
             try {
                 if (col == -1) {
-                    col = getColumnIndex(ctx,colName);
+                    col = getColumnIndex(ctx, colName);
                 }
                 Date d1 = sdf.parse(prevRow.get(col).toString());
                 Date d2 = sdf.parse(row.get(col).toString());
@@ -2872,9 +3039,4 @@ public  class RowCollector extends Processor {
 
     }
 
-
-
-
 }
-
-

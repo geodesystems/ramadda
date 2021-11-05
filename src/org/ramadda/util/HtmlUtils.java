@@ -1,28 +1,17 @@
-/*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
-
-// $Id: StringUtil.java,v 1.53 2007/06/01 17:02:44 jeffmc Exp $
-
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
 
-import org.apache.commons.net.ftp.*;
-
 import org.apache.commons.lang.StringEscapeUtils;
+
+
+import org.apache.commons.net.ftp.*;
 
 
 import ucar.unidata.util.IOUtil;
@@ -62,20 +51,24 @@ import java.util.regex.*;
 
 public class HtmlUtils implements HtmlUtilsConstants {
 
-    /** _more_          */
+    /** _more_ */
     public static final String SPACE = "&nbsp;";
 
-    /** _more_          */
+    /** _more_ */
     public static final String SPACE2 = "&nbsp;&nbsp;";
 
-    /** _more_          */
+    /** _more_ */
     public static final String SPACE3 = "&nbsp;&nbsp;&nbsp;";
 
     /** _more_ */
     public static final String ICON_CLOSE = "fas fa-window-close";
 
-    public static final String CSS_CLASS_POPUP_CONTENTS = "ramadda-popup-contents";
-    public static final String CSS_CLASS_POPUP = "ramadda-popup";    
+    /**  */
+    public static final String CSS_CLASS_POPUP_CONTENTS =
+        "ramadda-popup-contents";
+
+    /**  */
+    public static final String CSS_CLASS_POPUP = "ramadda-popup";
 
 
     /**
@@ -721,9 +714,18 @@ public class HtmlUtils implements HtmlUtilsConstants {
     }
 
 
+    /**
+     *
+     * @param label _more_
+     *
+     * @return _more_
+     */
     public static String backButton(String label) {
-	String link =  href("javascript:history.back()",label!=null?label:"Back");
-	return button(link);
+        String link = href("javascript:history.back()", (label != null)
+                ? label
+                : "Back");
+
+        return button(link);
     }
 
 
@@ -877,8 +879,9 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static Appendable squote(Appendable sb, String s) {
         try {
             sb.append("'");
-	    if(s.indexOf("\\'")<=0)
-	       s = s.replace("'","\\'");
+            if (s.indexOf("\\'") <= 0) {
+                s = s.replace("'", "\\'");
+            }
             sb.append(s);
             sb.append("'");
         } catch (IOException ioe) {
@@ -953,8 +956,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
                                String inner) {
         if (Utils.stringDefined(title)) {
             if (isFontAwesome(path)) {
-                return faIcon(path,
-                                      attrs(ATTR_TITLE, title) + " " + extra);
+                return faIcon(path, attrs(ATTR_TITLE, title) + " " + extra);
             }
 
             return tag(TAG_IMG,
@@ -979,7 +981,10 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @return _more_
      */
     public static boolean isFontAwesome(String icon) {
-	if(icon==null) return false;
+        if (icon == null) {
+            return false;
+        }
+
         return icon.startsWith("fa-") || icon.startsWith("fas ")
                || icon.startsWith("fab ");
     }
@@ -995,15 +1000,33 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @return _more_
      */
     public static String faIcon(String icon, String... args) {
-	String clazz = icon.trim().indexOf(" ") >= 0?icon:"fas " + icon;
-	return span(tag("i"," class='" + clazz + "' " + attrs(args),""),"");
+        String clazz = (icon.trim().indexOf(" ") >= 0)
+                       ? icon
+                       : "fas " + icon;
+
+        return span(tag("i", " class='" + clazz + "' " + attrs(args), ""),
+                    "");
     }
 
-    public static String faIconClass(String icon, String extraClass, String... args) {
-	String clazz = icon.trim().indexOf(" ") >= 0?icon:"fas " + icon;
-	return span(tag("i"," class='" + clazz + " " + extraClass+"' " + attrs(args),""),"");
+    /**
+     *
+     * @param icon _more_
+     * @param extraClass _more_
+     * @param args _more_
+     *
+     * @return _more_
+     */
+    public static String faIconClass(String icon, String extraClass,
+                                     String... args) {
+        String clazz = (icon.trim().indexOf(" ") >= 0)
+                       ? icon
+                       : "fas " + icon;
+
+        return span(tag("i",
+                        " class='" + clazz + " " + extraClass + "' "
+                        + attrs(args), ""), "");
     }
-    
+
 
 
     /**
@@ -1109,15 +1132,16 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
     /**
      * _more_
-     *
-     * @param c _more_
+     * @param args _more_
      *
      * @return _more_
      */
-    public static String style(String ...args) {
-	if(args.length==1) 
-	    return attr(ATTR_STYLE, args[0]);
-	return attr(ATTR_STYLE,css(args));
+    public static String style(String... args) {
+        if (args.length == 1) {
+            return attr(ATTR_STYLE, args[0]);
+        }
+
+        return attr(ATTR_STYLE, css(args));
     }
 
     /**
@@ -2336,7 +2360,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
      */
     public static String makeLatLonInput(String id, String arg,
                                          String value) {
-        return makeLatLonInput(id, arg, value, null,"");
+        return makeLatLonInput(id, arg, value, null, "");
     }
 
 
@@ -2348,6 +2372,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @param arg _more_
      * @param value _more_
      * @param tip _more_
+     * @param extra _more_
      *
      * @return _more_
      */
@@ -2356,8 +2381,8 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return input(arg, value,
                      id(id) + style("margin:0px;") + attrs(ATTR_SIZE, "5")
                      + id(arg) + extra + ((tip != null)
-                                  ? title(tip)
-                                  : ""));
+                                          ? title(tip)
+                                          : ""));
     }
 
 
@@ -2407,21 +2432,17 @@ public class HtmlUtils implements HtmlUtilsConstants {
                                        String northValue, String eastValue,
                                        String westValue) {
         return "<table border=0 cellspacing=0 cellpadding=0><tr><td colspan=\"2\" align=\"center\">"
-               + makeLatLonInput(
-                   baseId + SUFFIX_NORTH, northArg, northValue,
-                   "North"," data-dir=north ") + "</td></tr>" + "<tr><td>"
-                            + makeLatLonInput(
-                                baseId + SUFFIX_WEST, westArg, westValue,
-                                "West", " data-dir=west ") + "</td><td>"
-                                        + makeLatLonInput(
-                                            baseId + SUFFIX_EAST, eastArg,
-                                            eastValue, "East", " data-dir=east ") + "</tr>"
-                                                + "<tr><td colspan=\"2\" align=\"center\">"
-                                                    + makeLatLonInput(
-                                                        baseId + SUFFIX_SOUTH,
-                                                            southArg,
-                                                                southValue,
-							"South", " data-dir=south ") + "</table>";
+               + makeLatLonInput(baseId + SUFFIX_NORTH, northArg, northValue,
+                   "North", " data-dir=north ") + "</td></tr>" + "<tr><td>"
+                       + makeLatLonInput(baseId + SUFFIX_WEST, westArg,
+                           westValue, "West",
+                               " data-dir=west ") + "</td><td>"
+                                   + makeLatLonInput(baseId + SUFFIX_EAST,
+                                       eastArg, eastValue, "East",
+                                           " data-dir=east ") + "</tr>"
+                                               + "<tr><td colspan=\"2\" align=\"center\">"
+                                                   + makeLatLonInput(baseId
+                                                       + SUFFIX_SOUTH, southArg, southValue, "South", " data-dir=south ") + "</table>";
     }
 
     /**
@@ -2601,18 +2622,26 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static String labeledCheckbox(String name, String value,
                                          boolean checked, String attrs,
                                          String label) {
-	String id = null;
-	if(attrs==null) { attrs = "";}
-	for(String pattern: new String[]{"id *= *\"([^\"]+)\"","id *= *'([^']+)'"}) {
-	    id = StringUtil.findPattern(attrs,"(?i)"+pattern);
-	    if(id!=null) break;
-	}
-	if(id==null)  {
-	    id = getUniqueId("cbx");
-	    attrs+=" " + HtmlUtils.id(id);
-	}
-	
-        return checkbox(name, value, checked, attrs) + /*space(1) +*/ tag("label", cssClass("ramadda-clickable") +attr("for",id),label);
+        String id = null;
+        if (attrs == null) {
+            attrs = "";
+        }
+        for (String pattern : new String[] { "id *= *\"([^\"]+)\"",
+                                             "id *= *'([^']+)'" }) {
+            id = StringUtil.findPattern(attrs, "(?i)" + pattern);
+            if (id != null) {
+                break;
+            }
+        }
+        if (id == null) {
+            id    = getUniqueId("cbx");
+            attrs += " " + HtmlUtils.id(id);
+        }
+
+        return checkbox(name, value, checked, attrs)
+               + /*space(1) +*/ tag("label",
+                                    cssClass("ramadda-clickable")
+                                    + attr("for", id), label);
     }
 
     /**
@@ -2647,7 +2676,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
                                 boolean checked, String extra) {
         try {
             dangleOpen(sb, TAG_INPUT);
-	    sb.append(" ");
+            sb.append(" ");
             if (extra.length() > 0) {
                 sb.append(extra);
             }
@@ -2688,9 +2717,16 @@ public class HtmlUtils implements HtmlUtilsConstants {
     }
 
 
+    /**
+     *
+     * @param sb _more_
+     * @param url _more_
+     *
+     * @throws Exception _more_
+     */
     public static void form(Appendable sb, String url) throws Exception {
-        open(sb,TAG_FORM, attr(ATTR_ACTION, url));
-    }    
+        open(sb, TAG_FORM, attr(ATTR_ACTION, url));
+    }
 
     /**
      * _more_
@@ -3344,20 +3380,33 @@ public class HtmlUtils implements HtmlUtilsConstants {
      */
     public static String select(String name, List values, List selected,
                                 String extra, int maxLength) {
-	try {
-	    StringBuilder sb = new StringBuilder();
-	    select(sb, name, values, selected, extra,maxLength);
-	    return sb.toString();
-	} catch(Exception exc) {
-	    throw new RuntimeException(exc);
-	}
+        try {
+            StringBuilder sb = new StringBuilder();
+            select(sb, name, values, selected, extra, maxLength);
+
+            return sb.toString();
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
     }
-    
 
-    public static void select(Appendable sb, String name, List values, List selected,
-				    String extra, int maxLength) throws Exception {
 
-        String        attrs;
+    /**
+     *
+     * @param sb _more_
+     * @param name _more_
+     * @param values _more_
+     * @param selected _more_
+     * @param extra _more_
+     * @param maxLength _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void select(Appendable sb, String name, List values,
+                              List selected, String extra, int maxLength)
+            throws Exception {
+
+        String attrs;
         if (extra.indexOf(ATTR_CLASS) >= 0) {
             attrs = attrs(ATTR_NAME, name);
         } else {
@@ -3378,10 +3427,10 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
         HashSet seenSelected = new HashSet();
         for (int i = 0; i < values.size(); i++) {
-            Object        obj    = values.get(i);
-            String        value;
-            String        label;
-            String        extraAttr = null;
+            Object obj = values.get(i);
+            String value;
+            String label;
+            String extraAttr = null;
             if (obj instanceof TwoFacedObject) {
                 TwoFacedObject tfo = (TwoFacedObject) obj;
                 value = tfo.getId().toString();
@@ -3391,7 +3440,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
                 value = selector.id;
                 label = selector.label;
                 if (selector.attr != null) {
-		    extraAttr = selector.attr;
+                    extraAttr = selector.attr;
                 }
                 if (Utils.stringDefined(selector.icon)) {
                     String style = "";
@@ -3417,29 +3466,30 @@ public class HtmlUtils implements HtmlUtilsConstants {
             }
 
             if (label.equals("hr")) {
-		sb.append(hr());
+                sb.append(hr());
                 continue;
             }
 
-	    sb.append("<option ");
-	    if(extraAttr!=null) {
-		sb.append(" ");
-		sb.append(extraAttr);
-		sb.append(" ");
-	    }
+            sb.append("<option ");
+            if (extraAttr != null) {
+                sb.append(" ");
+                sb.append(extraAttr);
+                sb.append(" ");
+            }
 
             if ((selected != null)
                     && (selected.contains(value) || selected.contains(obj))) {
                 if ( !seenSelected.contains(value)) {
-		    sb.append(" selected ");
+                    sb.append(" selected ");
                     seenSelected.add(value);
                 }
             }
-	    if(!value.equals(label))
-		attr(sb,ATTR_VALUE, value);
-	    sb.append(">");
-	    sb.append(label);
-	    sb.append("</option>");
+            if ( !value.equals(label)) {
+                attr(sb, ATTR_VALUE, value);
+            }
+            sb.append(">");
+            sb.append(label);
+            sb.append("</option>");
         }
         sb.append("</select>");
         sb.append("\n");
@@ -3888,9 +3938,15 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return formTable((String) null);
     }
 
+    /**
+     *
+     * @param fullWidth _more_
+     *
+     * @return _more_
+     */
     public static String formTable(boolean fullWidth) {
         return formTable((String) null, fullWidth);
-    }    
+    }
 
     /**
      * _more_
@@ -3900,12 +3956,26 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @return _more_
      */
     public static String formTable(String clazz) {
-	return formTable(clazz, false);
+        return formTable(clazz, false);
     }
 
-    public static String formTable(String clazz,boolean fullWidth) {	
-        return open(TAG_TABLE, (fullWidth?attr("width","100%"):"") +
-		    cssClass(" formtable " + (clazz != null? clazz: "") + (fullWidth?" formtable-fullwidth ":"")) + attrs(ATTR_CELLPADDING, "0", ATTR_CELLSPACING, "0"));
+    /**
+     *
+     * @param clazz _more_
+     * @param fullWidth _more_
+     *
+     * @return _more_
+     */
+    public static String formTable(String clazz, boolean fullWidth) {
+        return open(TAG_TABLE, (fullWidth
+                                ? attr("width", "100%")
+                                : "") + cssClass(" formtable "
+                                + ((clazz != null)
+                                   ? clazz
+                                   : "") + (fullWidth
+                                            ? " formtable-fullwidth "
+                                            : "")) + attrs(ATTR_CELLPADDING,
+                                            "0", ATTR_CELLSPACING, "0"));
     }
 
 
@@ -4161,6 +4231,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static String attrs(String... args) {
         StringBuilder sb = new StringBuilder();
         attrs(sb, args);
+
         return sb.toString();
     }
 
@@ -4171,14 +4242,15 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @param args _more_
      */
     public static void attrs(Appendable sb, String... args) {
-	if(args.length==1) {
-	    try {
-		sb.append(args[0]);
-	    } catch(Exception exc) {
-		throw new RuntimeException(exc);
-	    }
-	    return;
-	}
+        if (args.length == 1) {
+            try {
+                sb.append(args[0]);
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
+
+            return;
+        }
         for (int i = 0; i < args.length; i += 2) {
             if (args[i].length() > 0) {
                 attr(sb, args[i], args[i + 1]);
@@ -4296,7 +4368,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
      */
     public static void onMouseClick(Appendable sb, String call) {
         try {
-	    call = call.replaceAll("\"","&quot;").replaceAll("\n"," ");
+            call = call.replaceAll("\"", "&quot;").replaceAll("\n", " ");
             attrs(sb, ATTR_ONCLICK, call);
         } catch (Exception exc) {
             throw new RuntimeException(exc);
@@ -4312,7 +4384,8 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @return _more_
      */
     public static String onMouseClick(String call) {
-	call = call.replaceAll("\"","&quot;").replaceAll("\n"," ");
+        call = call.replaceAll("\"", "&quot;").replaceAll("\n", " ");
+
         return attrs(ATTR_ONCLICK, call);
     }
 
@@ -4351,13 +4424,23 @@ public class HtmlUtils implements HtmlUtilsConstants {
     }
 
 
-    public static  void mouseClickHref(Appendable sb, String call, String label,
-                                        String extra) throws Exception {
-	tag(sb,TAG_A,
-	    attrs(ATTR_HREF, "javascript:void(0);")
-	    + onMouseClick(call) + extra, label);
+    /**
+     *
+     * @param sb _more_
+     * @param call _more_
+     * @param label _more_
+     * @param extra _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void mouseClickHref(Appendable sb, String call,
+                                      String label, String extra)
+            throws Exception {
+        tag(sb, TAG_A,
+            attrs(ATTR_HREF, "javascript:void(0);") + onMouseClick(call)
+            + extra, label);
     }
-    
+
 
 
     /**
@@ -4429,7 +4512,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
         try {
             js.append("\n");
             js.append(tag(TAG_SCRIPT, attrs(ATTR_TYPE, "text/JavaScript"),
-                          "\n" + s+"\n"));
+                          "\n" + s + "\n"));
             js.append("\n");
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
@@ -4546,6 +4629,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static String importJS(String jsUrl) {
         StringBuilder sb = new StringBuilder("\n");
         importJS(sb, jsUrl);
+
         return sb.toString();
     }
 
@@ -4673,8 +4757,9 @@ public class HtmlUtils implements HtmlUtilsConstants {
      */
     public static String makeShowHideBlock(String label, String content,
                                            boolean visible) {
-        return makeShowHideBlock(label, content, visible,
-                                 cssClass("toggleblocklabel ramadda-clickable"));
+        return makeShowHideBlock(
+            label, content, visible,
+            cssClass("toggleblocklabel ramadda-clickable"));
     }
 
     /**
@@ -4766,9 +4851,10 @@ public class HtmlUtils implements HtmlUtilsConstants {
         //        System.err.println ("show image:" + showImg);
         if ((showImg != null) && (showImg.length() > 0)) {
             img = span(HtmlUtils.img(visible
-                                ? hideImg
-                                : showImg, "",
-				     " align=bottom"),HtmlUtils.id(id+ "img"));
+                                     ? hideImg
+                                     : showImg, "",
+                                     " align=bottom"), HtmlUtils.id(id
+                                     + "img"));
         }
         String mouseEvent = HtmlUtils.onMouseClick("toggleBlockVisibility('"
                                 + id + "','" + id + "img','" + hideImg
@@ -5121,8 +5207,14 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
+    /**
+     *
+     * @param input _more_
+     *
+     * @return _more_
+     */
     public static String entityDecode(String input) {
-	return StringEscapeUtils.unescapeHtml(input);
+        return StringEscapeUtils.unescapeHtml(input);
 
     }
 
@@ -5160,23 +5252,39 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-	System.err.println(labeledCheckbox("name","value", false,null,"label"));
-	System.err.println(labeledCheckbox("name","value", false,"","label"));
-	System.err.println(labeledCheckbox("name","value", false,"foo=bar","label"));
-	System.err.println(labeledCheckbox("name","value", false,"foo=bar","label"));
-	System.err.println(labeledCheckbox("name","value", false,"id='ID'","label"));
-	System.err.println(labeledCheckbox("name","value", false,"id  ='ID'","label"));
-	System.err.println(labeledCheckbox("name","value", false,"id  =   'ID'","label"));
-	System.err.println(labeledCheckbox("name","value", false,"id=   'ID'","label"));		
-	System.err.println(labeledCheckbox("name","value", false,"id=\"ID\"","label"));				
-	System.err.println(labeledCheckbox("name","value", false,"id=\"ID\"","label"));
-	System.err.println(labeledCheckbox("name","value", false,"id  =\"ID\"","label"));
-	System.err.println(labeledCheckbox("name","value", false,"id  =   \"ID\"","label"));
-	System.err.println(labeledCheckbox("name","value", false,"id=   \"ID\"","label"));		
-	System.err.println(labeledCheckbox("name","value", false,"id=\"ID\"","label"));				
+        System.err.println(labeledCheckbox("name", "value", false, null,
+                                           "label"));
+        System.err.println(labeledCheckbox("name", "value", false, "",
+                                           "label"));
+        System.err.println(labeledCheckbox("name", "value", false, "foo=bar",
+                                           "label"));
+        System.err.println(labeledCheckbox("name", "value", false, "foo=bar",
+                                           "label"));
+        System.err.println(labeledCheckbox("name", "value", false, "id='ID'",
+                                           "label"));
+        System.err.println(labeledCheckbox("name", "value", false,
+                                           "id  ='ID'", "label"));
+        System.err.println(labeledCheckbox("name", "value", false,
+                                           "id  =   'ID'", "label"));
+        System.err.println(labeledCheckbox("name", "value", false,
+                                           "id=   'ID'", "label"));
+        System.err.println(labeledCheckbox("name", "value", false,
+                                           "id=\"ID\"", "label"));
+        System.err.println(labeledCheckbox("name", "value", false,
+                                           "id=\"ID\"", "label"));
+        System.err.println(labeledCheckbox("name", "value", false,
+                                           "id  =\"ID\"", "label"));
+        System.err.println(labeledCheckbox("name", "value", false,
+                                           "id  =   \"ID\"", "label"));
+        System.err.println(labeledCheckbox("name", "value", false,
+                                           "id=   \"ID\"", "label"));
+        System.err.println(labeledCheckbox("name", "value", false,
+                                           "id=\"ID\"", "label"));
 
 
-	if(true) return;
+        if (true) {
+            return;
+        }
 
 
 
@@ -5394,7 +5502,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @throws Exception _more_
      */
     public static void tooltip(Appendable sb, String icon, String msg)
-	throws Exception {
+            throws Exception {
         String id     = getUniqueId("tooltipblock_");
         String opener = getUniqueId("tooltipopener_");
         sb.append(img(icon, "Help",
@@ -5419,6 +5527,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static String comment(String s) {
         Appendable sb = Utils.makeAppendable();
         comment(sb, s);
+
         return sb.toString();
     }
 
@@ -5531,19 +5640,30 @@ public class HtmlUtils implements HtmlUtilsConstants {
      */
     public static List<Link> extractLinks(URL url, String html,
                                           String linkPattern)
-	throws Exception {
-	return extractLinks(url,html,linkPattern, false);
+            throws Exception {
+        return extractLinks(url, html, linkPattern, false);
     }
 
 
+    /**
+     *
+     * @param url _more_
+     * @param html _more_
+     * @param linkPattern _more_
+     * @param images _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public static List<Link> extractLinks(URL url, String html,
                                           String linkPattern, boolean images)
-	throws Exception {	
-	HashSet seen = new HashSet();
-        List<Link> links = new ArrayList<Link>();
-        String pattern = images?
-	    "(?s)(?i)<\\s*img [^>]*?src\\s*=\\s*(\"|')([^\"'>]+)(\"|')[^>]*?>":
-	    "(?s)(?i)<\\s*a[^>]*?\\s*href\\s*=\\s*(\"|')([^\"'>]+)(\"|')[^>]*?>(.*?)</a";
+            throws Exception {
+        HashSet    seen    = new HashSet();
+        List<Link> links   = new ArrayList<Link>();
+        String     pattern = images
+                             ? "(?s)(?i)<\\s*img [^>]*?src\\s*=\\s*(\"|')([^\"'>]+)(\"|')[^>]*?>"
+                             : "(?s)(?i)<\\s*a[^>]*?\\s*href\\s*=\\s*(\"|')([^\"'>]+)(\"|')[^>]*?>(.*?)</a";
 
         html = html.replaceAll("\t", " ");
         //<a target="_blank" title="/gov/data/GISDLData/Footprints.kmz" href="/gov/data/GISDLData/Footprints.kmz">KMZ</a>
@@ -5552,30 +5672,36 @@ public class HtmlUtils implements HtmlUtilsConstants {
         while (matcher.find()) {
             String href = matcher.group(2);
             href = href.replaceAll(" ", "");
-            String label = images?"":matcher.group(4);
+            String label = images
+                           ? ""
+                           : matcher.group(4);
             label = StringUtil.stripTags(label).trim();
-	    label = label.replace("&nbsp;"," ");
+            label = label.replace("&nbsp;", " ");
             try {
-		String tmp = href.replace("\\","/").replaceAll("#.*","");
-		if(tmp.toLowerCase().startsWith("javascript")) continue;
-		URL newUrl = new URL(url, tmp);
-		if(seen.contains(newUrl)) continue;
-		seen.add(newUrl);
+                String tmp = href.replace("\\", "/").replaceAll("#.*", "");
+                if (tmp.toLowerCase().startsWith("javascript")) {
+                    continue;
+                }
+                URL newUrl = new URL(url, tmp);
+                if (seen.contains(newUrl)) {
+                    continue;
+                }
+                seen.add(newUrl);
 
-		label = label.replaceAll("\\s+"," ");
-		Link link = new Link(href, newUrl, label);
-		if (!link.matches(linkPattern)) {
-		    //			System.err.println("\tHREF:" + newUrl +" " + label +" not match");
-		    continue;
-		}
-		if (href.toLowerCase().startsWith("javascript:")) {
-		    continue;
-		}
-		links.add(link);
+                label = label.replaceAll("\\s+", " ");
+                Link link = new Link(href, newUrl, label);
+                if ( !link.matches(linkPattern)) {
+                    //                  System.err.println("\tHREF:" + newUrl +" " + label +" not match");
+                    continue;
+                }
+                if (href.toLowerCase().startsWith("javascript:")) {
+                    continue;
+                }
+                links.add(link);
             } catch (Exception exc) {
-		System.err.println("Error:" + exc);
-		exc.printStackTrace();
-	    }
+                System.err.println("Error:" + exc);
+                exc.printStackTrace();
+            }
         }
 
         return links;
@@ -5615,7 +5741,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
                     }
                 }
                 URL newUrl = new URL(url, href);
-                links.add(new Link(href,newUrl, label, files[i].getSize()));
+                links.add(new Link(href, newUrl, label, files[i].getSize()));
             }
 
             return links;
@@ -5637,7 +5763,8 @@ public class HtmlUtils implements HtmlUtilsConstants {
      */
     public static class Link {
 
-	private String link; 
+        /**  */
+        private String link;
 
         /** _more_ */
         private URL url;
@@ -5651,34 +5778,48 @@ public class HtmlUtils implements HtmlUtilsConstants {
         /**
          * _more_
          *
+         *
+         * @param link _more_
          * @param url _more_
          * @param label _more_
          * @param size _more_
          */
         public Link(String link, URL url, String label, long size) {
-            this(link,url, label);
+            this(link, url, label);
             this.size = size;
         }
 
         /**
          * _more_
          *
+         *
+         * @param link _more_
          * @param url _more_
          * @param label _more_
          */
         public Link(String link, URL url, String label) {
-	    this.link = link;
+            this.link  = link;
             this.url   = url;
             this.label = label;
         }
 
-	public boolean matches(String pattern) {
-	    if(!Utils.stringDefined(pattern)) return true;
-	    if (link.matches(pattern)
-		|| label.matches(pattern)
-		|| url.toString().matches(pattern)) return true;
-	    return false;
-	}
+        /**
+         *
+         * @param pattern _more_
+         *
+         * @return _more_
+         */
+        public boolean matches(String pattern) {
+            if ( !Utils.stringDefined(pattern)) {
+                return true;
+            }
+            if (link.matches(pattern) || label.matches(pattern)
+                    || url.toString().matches(pattern)) {
+                return true;
+            }
+
+            return false;
+        }
 
         /**
          *  Set the Url property.
@@ -5689,9 +5830,13 @@ public class HtmlUtils implements HtmlUtilsConstants {
             url = value;
         }
 
-        public String  getLink() {
-	    return link;
-	}
+        /**
+         *
+         * @return _more_
+         */
+        public String getLink() {
+            return link;
+        }
 
 
         /**
@@ -6008,78 +6153,109 @@ public class HtmlUtils implements HtmlUtilsConstants {
     }
 
 
-    public static String[] makePopupLink(String link, 
-					 NamedValue ...args) {
-	String compId = "menu_" + HtmlUtils.blockCnt++;
-	String linkId = "menulink_" + HtmlUtils.blockCnt++;
-	String linkAttributes="";
-	List<String> attrs = (List<String>) Utils.makeList("contentId",HtmlUtils.squote(compId),"anchor",HtmlUtils.squote(linkId));
-	boolean seenAnimate = false;
-	String extraCode = "";
-	for(NamedValue v:args) {
-	    if(v.getValue()==null) continue;
-	    if(v.getName().equals("linkAttributes")) {
-		linkAttributes = v.getValue().toString();
-		continue;
-	    }
-	    if(v.getName().equals("extraCode")) {
-		extraCode = v.getValue().toString();
-		continue;
-	    }		
-	    Object o = v.getValue();
-	    if(o==null) continue;
-	    if(v.getName().equals("animate")) seenAnimate = true;
-	    attrs.add(v.getName());
-	    if(o instanceof String) {
-		if(!o.equals("true") && !o.equals("false")) {
-		    //Escape and single quotes
-		    String s = o.toString();
-		    s = s.replaceAll("'","\\\\'");
-		    o  = HtmlUtils.squote(s);
-		}
-	    }
-	    attrs.add(o.toString());
-	}
+    /**
+     *
+     * @param link _more_
+     * @param args _more_
+     *
+     * @return _more_
+     */
+    public static String[] makePopupLink(String link, NamedValue... args) {
+        String compId         = "menu_" + HtmlUtils.blockCnt++;
+        String linkId         = "menulink_" + HtmlUtils.blockCnt++;
+        String linkAttributes = "";
+        List<String> attrs = (List<String>) Utils.makeList("contentId",
+                                 HtmlUtils.squote(compId), "anchor",
+                                 HtmlUtils.squote(linkId));
+        boolean seenAnimate = false;
+        String  extraCode   = "";
+        for (NamedValue v : args) {
+            if (v.getValue() == null) {
+                continue;
+            }
+            if (v.getName().equals("linkAttributes")) {
+                linkAttributes = v.getValue().toString();
+                continue;
+            }
+            if (v.getName().equals("extraCode")) {
+                extraCode = v.getValue().toString();
+                continue;
+            }
+            Object o = v.getValue();
+            if (o == null) {
+                continue;
+            }
+            if (v.getName().equals("animate")) {
+                seenAnimate = true;
+            }
+            attrs.add(v.getName());
+            if (o instanceof String) {
+                if ( !o.equals("true") && !o.equals("false")) {
+                    //Escape and single quotes
+                    String s = o.toString();
+                    s = s.replaceAll("'", "\\\\'");
+                    o = HtmlUtils.squote(s);
+                }
+            }
+            attrs.add(o.toString());
+        }
 
-	if(!seenAnimate) {
-	    attrs.add("animate");
-	    attrs.add("true");
-	}
+        if ( !seenAnimate) {
+            attrs.add("animate");
+            attrs.add("true");
+        }
 
-	String callArgs = Json.map(attrs);
-	String call = "HtmlUtils.makeDialog(" + callArgs+");";
-	String onClick = HtmlUtils.onMouseClick(call+extraCode);
-	String href = HtmlUtils.div(link,HtmlUtils.cssClass("ramadda-popup-link") +linkAttributes + onClick + HtmlUtils.id(linkId));
-	return new String[]{compId, href};
+        String callArgs = Json.map(attrs);
+        String call     = "HtmlUtils.makeDialog(" + callArgs + ");";
+        String onClick  = HtmlUtils.onMouseClick(call + extraCode);
+        String href = HtmlUtils.div(link,
+                                    HtmlUtils.cssClass("ramadda-popup-link")
+                                    + linkAttributes + onClick
+                                    + HtmlUtils.id(linkId));
+
+        return new String[] { compId, href };
     }
 
 
-    public static String makePopup(Appendable popup, String link, String menuContents,
-				   NamedValue ...args) {
-	try {
-	    String []tuple=makePopupLink(link, args);
-            String compId = tuple[0];
-	    String href=tuple[1];
-	    boolean inPlace = Misc.equals(NamedValue.getValue("inPlace",args)+"","true");
-	    String contents;
-	    if(inPlace) {
-		contents = HtmlUtils.div(menuContents,
-                                  HtmlUtils.id(compId)
-                                  + HtmlUtils.attr("style", "display:none;"));
-	    } else {
-		contents= makePopupDiv(menuContents, compId, false,  null);
-	    }
-	    if(popup!=null) {
-		popup.append(contents);
-		return href;
-	    }
-            return href+contents;
+    /**
+     *
+     * @param popup _more_
+     * @param link _more_
+     * @param menuContents _more_
+     * @param args _more_
+     *
+     * @return _more_
+     */
+    public static String makePopup(Appendable popup, String link,
+                                   String menuContents, NamedValue... args) {
+        try {
+            String[] tuple  = makePopupLink(link, args);
+            String   compId = tuple[0];
+            String   href   = tuple[1];
+            boolean inPlace = Misc.equals(NamedValue.getValue("inPlace",
+                                  args) + "", "true");
+            String contents;
+            if (inPlace) {
+                contents = HtmlUtils.div(menuContents,
+                                         HtmlUtils.id(compId)
+                                         + HtmlUtils.attr("style",
+                                             "display:none;"));
+            } else {
+                contents = makePopupDiv(menuContents, compId, false, null);
+            }
+            if (popup != null) {
+                popup.append(contents);
+
+                return href;
+            }
+
+            return href + contents;
         } catch (java.io.IOException ioe) {
             throw new RuntimeException(ioe);
         }
     }
 
-    
+
 
     /**
      * _more_
@@ -6092,26 +6268,29 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @return _more_
      */
     public static String makePopupDiv(String contents, String compId,
-                               boolean makeClose, String header) {
+                                      boolean makeClose, String header) {
         StringBuilder menu = new StringBuilder();
         if (makeClose) {
-            String cLink = HtmlUtils.jsLink(
-                               HtmlUtils.onMouseClick("HtmlUtils.hidePopupObject(event);"),
-                               getIconImage(
-                                   ICON_CLOSE, "title", "Close", "class",
-                                   "ramadda-popup-close"), "");
+            String cLink =
+                HtmlUtils.jsLink(
+                    HtmlUtils.onMouseClick(
+                        "HtmlUtils.hidePopupObject(event);"), getIconImage(
+                        ICON_CLOSE, "title", "Close", "class",
+                        "ramadda-popup-close"), "");
             if (header != null) {
                 contents = HtmlUtils.table(HtmlUtils.row("<td width=5%>"
                         + cLink + "</td><td>" + header + "</td>")) + contents;
             } else {
-		//                contents =HtmlUtils.div(cLink,"class=ramadda-popup-header") + contents;
+                //                contents =HtmlUtils.div(cLink,"class=ramadda-popup-header") + contents;
             }
         }
 
-        menu.append(HtmlUtils.div(contents,
-                                  HtmlUtils.id(compId)
-                                  + HtmlUtils.attr("style", "display:none;")
-                                  + HtmlUtils.cssClass(CSS_CLASS_POPUP_CONTENTS)));
+        menu.append(
+            HtmlUtils.div(
+                contents,
+                HtmlUtils.id(compId)
+                + HtmlUtils.attr("style", "display:none;")
+                + HtmlUtils.cssClass(CSS_CLASS_POPUP_CONTENTS)));
 
 
         return menu.toString();

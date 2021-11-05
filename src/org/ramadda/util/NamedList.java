@@ -1,19 +1,7 @@
-/*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
-
 
 package org.ramadda.util;
 
@@ -31,14 +19,14 @@ import java.util.List;
  * @param <T>
  *
  * @version        $version$, Wed, Mar 10, '21
- * @author         Enter your name here...    
+ * @author         Enter your name here...
  */
 public class NamedList<T> {
 
-    /** _more_          */
+    /** _more_ */
     private String name;
 
-    /** _more_          */
+    /** _more_ */
     List<T> list = new ArrayList<T>();
 
     /**
@@ -50,10 +38,16 @@ public class NamedList<T> {
         this.name = name;
     }
 
-    public NamedList(String name,List<T> list) {
+    /**
+     *
+     *
+     * @param name _more_
+     * @param list _more_
+     */
+    public NamedList(String name, List<T> list) {
         this.name = name;
-	this.list = list;
-    }    
+        this.list = list;
+    }
 
     /**
      * _more_

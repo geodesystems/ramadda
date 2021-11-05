@@ -1,30 +1,26 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util;
 
+
 import org.ramadda.util.HtmlUtils;
+
 import org.w3c.dom.*;
+
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
+
 import java.io.*;
 import java.io.File;
 import java.io.InputStream;
+
 import java.lang.reflect.*;
+
 import java.net.*;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -61,13 +57,17 @@ public class HtmlTemplate {
     /** _more_ */
     private String template;
 
+    /**  */
     private HtmlTemplate prefix;
-    private HtmlTemplate suffix;    
 
-    
+    /**  */
+    private HtmlTemplate suffix;
+
+
     /** _more_ */
     private String path;
 
+    /**  */
     boolean wikify;
 
     /** _more_ */
@@ -110,9 +110,9 @@ public class HtmlTemplate {
             } else {
                 template = t;
             }
-            name = (String) properties.get("name");
-            id   = (String) properties.get("id");
-	    wikify  =Utils.getProperty(properties,"wikify",false);
+            name   = (String) properties.get("name");
+            id     = (String) properties.get("id");
+            wikify = Utils.getProperty(properties, "wikify", false);
             String tmp = (String) properties.get(PROP_PROPERTIES);
             if (tmp != null) {
                 propertyIds = StringUtil.split(tmp, ",", true, true);
@@ -127,22 +127,28 @@ public class HtmlTemplate {
 
     }
 
-    public HtmlTemplate(HtmlTemplate parent, 
-                        String t) {
-	this.propertyProvider = parent.propertyProvider;
-	this.path             = parent.path;
-	properties = parent.properties;
-	template = t;
-	name = (String) properties.get("name");
-	id   = (String) properties.get("id");
-	wikify  =Utils.getProperty(properties,"wikify",false);
-	String tmp = (String) properties.get(PROP_PROPERTIES);
-	if (tmp != null) {
-	    propertyIds = StringUtil.split(tmp, ",", true, true);
-	}
-	if (name == null) {
-	    name = IOUtil.stripExtension(IOUtil.getFileTail(path));
-	}
+    /**
+     *
+     *
+     * @param parent _more_
+     * @param t _more_
+     */
+    public HtmlTemplate(HtmlTemplate parent, String t) {
+        this.propertyProvider = parent.propertyProvider;
+        this.path             = parent.path;
+        properties            = parent.properties;
+        template              = t;
+        name                  = (String) properties.get("name");
+        id                    = (String) properties.get("id");
+        wikify                = Utils.getProperty(properties, "wikify",
+                false);
+        String tmp = (String) properties.get(PROP_PROPERTIES);
+        if (tmp != null) {
+            propertyIds = StringUtil.split(tmp, ",", true, true);
+        }
+        if (name == null) {
+            name = IOUtil.stripExtension(IOUtil.getFileTail(path));
+        }
     }
 
 
@@ -166,9 +172,13 @@ public class HtmlTemplate {
         return template;
     }
 
+    /**
+     *
+     * @param t _more_
+     */
     public void setTemplate(String t) {
-         template = t;
-    }    
+        template = t;
+    }
 
     /**
      * _more_
@@ -177,18 +187,26 @@ public class HtmlTemplate {
      */
     public List<String> getToks() {
         if (toks == null) {
-	    toks = getToks(template);
-	}
-	return toks;
+            toks = getToks(template);
+        }
+
+        return toks;
     }
 
-    public List<String> getToks(String what) {	
-	List<String> toks = StringUtil.splitMacros(what);
-	for (int i = 0; i < toks.size(); i++) {
-	    if (2 * (i / 2) != i) {
-		hasMacro.add(toks.get(i));
-	    }
+    /**
+     *
+     * @param what _more_
+     *
+     * @return _more_
+     */
+    public List<String> getToks(String what) {
+        List<String> toks = StringUtil.splitMacros(what);
+        for (int i = 0; i < toks.size(); i++) {
+            if (2 * (i / 2) != i) {
+                hasMacro.add(toks.get(i));
+            }
         }
+
         return toks;
     }
 
@@ -216,21 +234,21 @@ public class HtmlTemplate {
 
 
     /**
-       Set the Wikify property.
-
-       @param value The new value for Wikify
-    **/
-    public void setWikify (boolean value) {
-	wikify = value;
+     *  Set the Wikify property.
+     *
+     *  @param value The new value for Wikify
+     */
+    public void setWikify(boolean value) {
+        wikify = value;
     }
 
     /**
-       Get the Wikify property.
-
-       @return The Wikify
-    **/
-    public boolean getWikify () {
-	return wikify;
+     *  Get the Wikify property.
+     *
+     *  @return The Wikify
+     */
+    public boolean getWikify() {
+        return wikify;
     }
 
 
@@ -287,43 +305,43 @@ public class HtmlTemplate {
         return v.equals("true");
     }
 
-/**
-Set the Prefix property.
+    /**
+     * Set the Prefix property.
+     *
+     * @param value The new value for Prefix
+     */
+    public void setPrefix(HtmlTemplate value) {
+        prefix = value;
+    }
 
-@param value The new value for Prefix
-**/
-public void setPrefix (HtmlTemplate value) {
-	prefix = value;
-}
-
-/**
-Get the Prefix property.
-
-@return The Prefix
-**/
-public HtmlTemplate getPrefix () {
-	return prefix;
-}
+    /**
+     * Get the Prefix property.
+     *
+     * @return The Prefix
+     */
+    public HtmlTemplate getPrefix() {
+        return prefix;
+    }
 
 
 
-/**
-Set the Suffix property.
+    /**
+     * Set the Suffix property.
+     *
+     * @param value The new value for Suffix
+     */
+    public void setSuffix(HtmlTemplate value) {
+        suffix = value;
+    }
 
-@param value The new value for Suffix
-**/
-public void setSuffix (HtmlTemplate value) {
-	suffix = value;
-}
-
-/**
-Get the Suffix property.
-
-@return The Suffix
-**/
-public HtmlTemplate getSuffix () {
-	return suffix;
-}
+    /**
+     * Get the Suffix property.
+     *
+     * @return The Suffix
+     */
+    public HtmlTemplate getSuffix() {
+        return suffix;
+    }
 
 
 

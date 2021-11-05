@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util.text;
@@ -23,8 +12,8 @@ import org.json.*;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
-import org.ramadda.util.KmlUtil;
 import org.ramadda.util.Json;
+import org.ramadda.util.KmlUtil;
 import org.ramadda.util.NamedInputStream;
 import org.ramadda.util.Utils;
 
@@ -37,17 +26,19 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
-import java.net.URL;
 import java.io.*;
+
+import java.net.URL;
 
 import java.sql.*;
 
-import java.util.Iterator;
 import java.util.ArrayList;
 
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
+
+import java.util.Iterator;
 import java.util.List;
 
 import java.util.regex.*;
@@ -65,8 +56,6 @@ public abstract class DataProvider {
 
     /**
      * _more_
-     *
-     * @param csvUtil _more_
      */
     public DataProvider() {}
 
@@ -77,12 +66,11 @@ public abstract class DataProvider {
      *
      * @param csvUtil _more_
      * @param ctx _more_
-     * @param stream _more_
      *
      * @throws Exception _more_
      */
     public void initialize(CsvUtil csvUtil, TextReader ctx)
-	throws Exception {}
+            throws Exception {}
 
 
     /**
@@ -167,14 +155,13 @@ public abstract class DataProvider {
          *
          * @param csvUtil _more_
          * @param textReader _more_
-         * @param stream _more_
          *
          * @throws Exception _more_
          */
         public void initialize(CsvUtil csvUtil, TextReader textReader)
                 throws Exception {
-	    String s = textReader.convertContents(textReader.readContents());
-	    tokenize(textReader, s);
+            String s = textReader.convertContents(textReader.readContents());
+            tokenize(textReader, s);
         }
 
         /**
@@ -230,16 +217,37 @@ public abstract class DataProvider {
 
         }
 
-	private static class ColInfo {
-	    int index;
-	    boolean extractUrls;
-	    boolean stripTags;
-	    ColInfo(int index,  boolean extractUrls,   boolean stripTags) {
-		this.index=index;
-		this.extractUrls  = extractUrls;
-		this.stripTags = stripTags;
-	    }
-	}
+        /**
+         * Class description
+         *
+         *
+         * @version        $version$, Thu, Nov 4, '21
+         * @author         Enter your name here...
+         */
+        private static class ColInfo {
+
+            /**  */
+            int index;
+
+            /**  */
+            boolean extractUrls;
+
+            /**  */
+            boolean stripTags;
+
+            /**
+             *
+             *
+             * @param index _more_
+             * @param extractUrls _more_
+             * @param stripTags _more_
+             */
+            ColInfo(int index, boolean extractUrls, boolean stripTags) {
+                this.index       = index;
+                this.extractUrls = extractUrls;
+                this.stripTags   = stripTags;
+            }
+        }
 
         /**
          * _more_
@@ -258,17 +266,20 @@ public abstract class DataProvider {
             String skipAttr = props.get("skipAttr");
             boolean removeEntity = Utils.equals(props.get("removeEntity"),
                                        "true");
-            boolean extractUrls = Utils.getProperty(props,"extractUrls",false);
-            boolean stripTags = Utils.getProperty(props,"stripTags",true);	    
-	    List<ColInfo> cols = new ArrayList<ColInfo>();
-	    Hashtable<Integer,Object> extractUrlsColumns =new Hashtable<Integer,Object>();
-	    
-	    for(int i=0;i<50;i++) {
-		String prefix = "column" + (i+1)+".";
-		cols.add(new ColInfo(i,
-				     Utils.getProperty(props,prefix +"extractUrls",extractUrls),
-				     Utils.getProperty(props,prefix +"stripTags",stripTags)));				     
-	    }
+            boolean extractUrls = Utils.getProperty(props, "extractUrls",
+                                      false);
+            boolean stripTags = Utils.getProperty(props, "stripTags", true);
+            List<ColInfo> cols = new ArrayList<ColInfo>();
+            Hashtable<Integer, Object> extractUrlsColumns =
+                new Hashtable<Integer, Object>();
+
+            for (int i = 0; i < 50; i++) {
+                String prefix = "column" + (i + 1) + ".";
+                cols.add(new ColInfo(i, Utils.getProperty(props,
+                        prefix + "extractUrls",
+                        extractUrls), Utils.getProperty(props,
+                            prefix + "stripTags", stripTags)));
+            }
 
 
 
@@ -321,10 +332,12 @@ public abstract class DataProvider {
                     }
                     Row     row         = new Row();
                     boolean checkHeader = true;
-		    int colCnt=0;
+                    int     colCnt      = 0;
                     while (true) {
-			ColInfo info = colCnt<cols.size()?cols.get(colCnt):cols.get(cols.size()-1);
-			colCnt++;
+                        ColInfo info = (colCnt < cols.size())
+                                       ? cols.get(colCnt)
+                                       : cols.get(cols.size() - 1);
+                        colCnt++;
                         toks = Utils.tokenizePattern(tr, "(<td|<th)",
                                 "(</td|</th)");
                         if (toks == null) {
@@ -353,15 +366,20 @@ public abstract class DataProvider {
                         //              System.err.println("td:" + td);
                         td = td.substring(idx + 1);
                         //              System.err.println("after TD:" + td);
-			if(info.extractUrls) {
-			    String url = StringUtil.findPattern(td,"href *= *\"([^\"]+)\"");
-			    if(url==null)
-				url = StringUtil.findPattern(td,"href *= *\'([^\"]+)\'");
-			    if(url!=null) td = url;
-			}
-			if(info.stripTags) {
-			    td = Utils.stripTags(td);
-			} 
+                        if (info.extractUrls) {
+                            String url = StringUtil.findPattern(td,
+                                             "href *= *\"([^\"]+)\"");
+                            if (url == null) {
+                                url = StringUtil.findPattern(td,
+                                        "href *= *\'([^\"]+)\'");
+                            }
+                            if (url != null) {
+                                td = url;
+                            }
+                        }
+                        if (info.stripTags) {
+                            td = Utils.stripTags(td);
+                        }
 
                         //              System.err.println("after Strip:" + td);
                         td = td.replaceAll("\n", " ").replaceAll("  +", "");
@@ -394,7 +412,7 @@ public abstract class DataProvider {
                     if (row.size() > 0) {
                         addRow(row);
                     }
-		}
+                }
                 if (--count <= 0) {
                     break;
                 }
@@ -409,6 +427,13 @@ public abstract class DataProvider {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class Harvester extends BulkDataProvider {
 
 
@@ -419,9 +444,7 @@ public abstract class DataProvider {
         /**
          * _more_
          *
-         * @param sSkip _more_
-         * @param htmlPattern _more_
-         * @param props _more_
+         * @param pattern _more_
          */
         public Harvester(String pattern) {
             this.pattern = pattern;
@@ -436,25 +459,26 @@ public abstract class DataProvider {
          * @throws Exception _more_
          */
         public void tokenize(TextReader ctx, String s) throws Exception {
-	    URL url = new URL(ctx.getInputFile());
-	    List<HtmlUtils.Link> links = HtmlUtils.extractLinks(url, s, pattern);
-	    Row row  = new Row();
-	    row.add("Label");
-	    row.add("URL");
-	    addRow(row);
-	    for(HtmlUtils.Link link: links) {
-		row  = new Row();
-		row.add(link.getLabel());
-		row.add(link.getUrl().toString());
-		addRow(row);
-	    }
+            URL url = new URL(ctx.getInputFile());
+            List<HtmlUtils.Link> links = HtmlUtils.extractLinks(url, s,
+                                             pattern);
+            Row row = new Row();
+            row.add("Label");
+            row.add("URL");
+            addRow(row);
+            for (HtmlUtils.Link link : links) {
+                row = new Row();
+                row.add(link.getLabel());
+                row.add(link.getUrl().toString());
+                addRow(row);
+            }
         }
 
 
 
     }
 
-    
+
 
     /**
      * Class description
@@ -537,8 +561,8 @@ public abstract class DataProvider {
             Pattern p   = Pattern.compile(pattern);
             int     cnt = 0;
             while (true) {
-                long    t1 = System.currentTimeMillis();
-                Matcher matcher  = p.matcher(s);
+                long    t1      = System.currentTimeMillis();
+                Matcher matcher = p.matcher(s);
                 if ( !matcher.find()) {
                     break;
                 }
@@ -605,62 +629,74 @@ public abstract class DataProvider {
          * @throws Exception _more_
          */
         public void tokenize(TextReader ctx, String s) throws Exception {
-	    boolean debug = false;
+
+            boolean    debug = false;
 
             int        xcnt  = 0;
             JSONArray  array = null;
             JSONObject root  = null;
-	    if(debug) System.err.println("JSON:" + s);
+            if (debug) {
+                System.err.println("JSON:" + s);
+            }
             try {
                 root = new JSONObject(s);
                 if (arrayPath != null) {
                     array = Json.readArray(root, arrayPath);
                 }
-		if(debug) 
-		    System.err.println("array path:" + arrayPath+" a:" + array);
+                if (debug) {
+                    System.err.println("array path:" + arrayPath + " a:"
+                                       + array);
+                }
             } catch (Exception exc) {
-		if(debug) 
-		    System.err.println("error trying to read JSONObject:" + exc);
+                if (debug) {
+                    System.err.println("error trying to read JSONObject:"
+                                       + exc);
+                }
             }
 
-            if (array == null && root!=null) {
-		array = new JSONArray();
-		Iterator<String> keys = root.keys();
-		while(keys.hasNext()) {
-		    Object o =keys.next();
-		    array.put(root.opt(o.toString()));
-		}
-	    }
-	    
+            if ((array == null) && (root != null)) {
+                array = new JSONArray();
+                Iterator<String> keys = root.keys();
+                while (keys.hasNext()) {
+                    Object o = keys.next();
+                    array.put(root.opt(o.toString()));
+                }
+            }
+
             if (array == null) {
-		try {
-		    array = new JSONArray(s);
-		} catch(Exception exc) {
-		    System.err.println("Error reading array");
-		    if(s.length()>1000) s = s.substring(0,999);
-		    System.err.println("JSON:" + s);
-		    String msg = "Could not read JSON data";
-		    if(!Utils.stringDefined(arrayPath)) msg +=" No array path specified";
-		    msg += "\nError:" + exc;
-		    throw new IllegalArgumentException(msg);
-		}		    
+                try {
+                    array = new JSONArray(s);
+                } catch (Exception exc) {
+                    System.err.println("Error reading array");
+                    if (s.length() > 1000) {
+                        s = s.substring(0, 999);
+                    }
+                    System.err.println("JSON:" + s);
+                    String msg = "Could not read JSON data";
+                    if ( !Utils.stringDefined(arrayPath)) {
+                        msg += " No array path specified";
+                    }
+                    msg += "\nError:" + exc;
+
+                    throw new IllegalArgumentException(msg);
+                }
             }
 
             List<String> objectPathList = null;
             if (Utils.stringDefined(objectPath)) {
-                objectPathList = Utils.split(objectPath, ",", true,
-                        true);
+                objectPathList = Utils.split(objectPath, ",", true, true);
             }
             List<String> names = null;
             for (int arrayIdx = 0; arrayIdx < array.length(); arrayIdx++) {
                 Hashtable       primary   = new Hashtable();
                 List<Hashtable> secondary = new ArrayList<Hashtable>();
-		List<String> arrayKeys = new ArrayList<String>();
+                List<String>    arrayKeys = new ArrayList<String>();
                 if (objectPathList != null) {
                     JSONObject jrow = array.getJSONObject(arrayIdx);
                     for (String tok : objectPathList) {
                         if (tok.equals("*")) {
-                            primary.putAll(Json.getHashtable(jrow, true,arrayKeys));
+                            primary.putAll(Json.getHashtable(jrow, true,
+                                    arrayKeys));
                         } else if (tok.endsWith("[]")) {
                             JSONArray a = Json.readArray(jrow,
                                               tok.substring(0,
@@ -668,20 +704,20 @@ public abstract class DataProvider {
                             for (int j = 0; j < a.length(); j++) {
                                 secondary.add(
                                     Json.getHashtable(
-						      a.getJSONObject(j), true,arrayKeys));
+                                        a.getJSONObject(j), true, arrayKeys));
                             }
                         } else {
                             try {
                                 Object o = Json.readObject(jrow, tok);
                                 if (o != null) {
                                     primary.putAll(Json.getHashtable(o,
-								     false,arrayKeys));
+                                            false, arrayKeys));
                                 }
                             } catch (Exception exc) {
                                 Object o = Json.readArray(jrow, tok);
                                 if (o != null) {
-                                    primary.putAll(Json.getHashtable(o,
-								     true,arrayKeys));
+                                    primary.putAll(Json.getHashtable(o, true,
+                                            arrayKeys));
                                 }
                             }
                         }
@@ -690,34 +726,36 @@ public abstract class DataProvider {
                     try {
                         primary.putAll(
                             Json.getHashtable(
-                                array.getJSONArray(arrayIdx), true,arrayKeys));
+                                array.getJSONArray(arrayIdx), true,
+                                arrayKeys));
                     } catch (Exception exc) {
                         primary.putAll(
                             Json.getHashtable(
-                                array.getJSONObject(arrayIdx), true,arrayKeys));
+                                array.getJSONObject(arrayIdx), true,
+                                arrayKeys));
                     }
                 }
 
-		if (secondary.size() == 0) {
-		    secondary.add(primary);
-		} else {
-		    for (Hashtable h : secondary) {
-			h.putAll(primary);
-		    }
-		}
+                if (secondary.size() == 0) {
+                    secondary.add(primary);
+                } else {
+                    for (Hashtable h : secondary) {
+                        h.putAll(primary);
+                    }
+                }
                 if (names == null) {
                     names = new ArrayList<String>();
                     Row row = new Row();
                     addRow(row);
-		    if(arrayKeys.size()>0) {
-			names.addAll(arrayKeys);
-		    } else {
-			for (Enumeration keys = secondary.get(0).keys();
-			     keys.hasMoreElements(); ) {
-			    names.add((String) keys.nextElement());
-			}
-		    }
-		    //		    names = (List<String>) Utils.sort(names);
+                    if (arrayKeys.size() > 0) {
+                        names.addAll(arrayKeys);
+                    } else {
+                        for (Enumeration keys = secondary.get(0).keys();
+                                keys.hasMoreElements(); ) {
+                            names.add((String) keys.nextElement());
+                        }
+                    }
+                    //              names = (List<String>) Utils.sort(names);
                     for (String name : names) {
                         row.add(name);
                     }
@@ -746,22 +784,30 @@ public abstract class DataProvider {
                 }
             }
 
+
         }
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class GeoJsonDataProvider extends BulkDataProvider {
 
-	boolean addPolygon;
+        /**  */
+        boolean addPolygon;
 
         /**
          * _more_
          *
-         * @param arrayPath _more_
-         * @param objectPath _more_
+         * @param addPolygon _more_
          */
         public GeoJsonDataProvider(boolean addPolygon) {
             super();
-	    this.addPolygon = addPolygon;
+            this.addPolygon = addPolygon;
         }
 
 
@@ -774,78 +820,82 @@ public abstract class DataProvider {
          * @throws Exception _more_
          */
         public void tokenize(TextReader ctx, String s) throws Exception {
-	    StringBuilder sb = new StringBuilder();
-	    Json.geojsonToCsv(s,sb,null,addPolygon);
-	    StrTokenizer tokenizer = StrTokenizer.getCSVInstance();
-	    tokenizer.setEmptyTokenAsNull(true);
-	    for(String line: Utils.split(sb.toString(),"\n",true,true)) {
-		System.err.println("line:" + line);
-		List<String> toks = Utils.tokenizeColumns(line,tokenizer);
-		Row row = new Row(toks);
-		addRow(row);
-	    }
+            StringBuilder sb = new StringBuilder();
+            Json.geojsonToCsv(s, sb, null, addPolygon);
+            StrTokenizer tokenizer = StrTokenizer.getCSVInstance();
+            tokenizer.setEmptyTokenAsNull(true);
+            for (String line : Utils.split(sb.toString(), "\n", true, true)) {
+                System.err.println("line:" + line);
+                List<String> toks = Utils.tokenizeColumns(line, tokenizer);
+                Row          row  = new Row(toks);
+                addRow(row);
+            }
         }
     }
-    
+
     /**
      * Class description
      *
      *
      * @version        $version$, Sun, Feb 21, '21
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class SqlDataProvider extends DataProvider {
 
-        /** _more_          */
+        /** _more_ */
         private String db;
 
-        /** _more_          */
+        /** _more_ */
         private String table;
 
+        /**  */
         private String columns;
-        private String where;	
 
-        /** _more_          */
+        /**  */
+        private String where;
+
+        /** _more_ */
         private Hashtable<String, String> props;
 
-        /** _more_          */
+        /** _more_ */
         private Connection connection;
 
-        /** _more_          */
+        /** _more_ */
         private Statement statement;
 
-        /** _more_          */
+        /** _more_ */
         private SqlUtil.Iterator iter;
 
-        /** _more_          */
+        /** _more_ */
         private int columnCount;
 
-        /** _more_          */
+        /** _more_ */
         private Row headerRow;
 
-        /** _more_          */
+        /** _more_ */
         private int rowCnt = 0;
 
-        /** _more_          */
+        /** _more_ */
         private int maxRows;
 
         /**
          * _more_
          *
-         * @param arrayPath _more_
-         * @param objectPath _more_
+         * @param columns _more_
+         * @param where _more_
          *
          * @param db _more_
          * @param table _more_
          * @param props _more_
          */
-        public SqlDataProvider(String db, String table, String columns, String where,
+        public SqlDataProvider(String db, String table, String columns,
+                               String where,
                                Hashtable<String, String> props) {
-            this.db    = db.trim();
-            this.table = SqlUtil.sanitize(table.trim());
-            this.columns = SqlUtil.sanitize(columns.trim());	    
-            this.where = where.trim();
-            this.props = props;
+            this.db      = db.trim();
+            this.table   = SqlUtil.sanitize(table.trim());
+            this.columns = SqlUtil.sanitize(columns.trim());
+            this.where   = where.trim();
+            this.props   = props;
         }
 
         /**
@@ -853,7 +903,6 @@ public abstract class DataProvider {
          *
          * @param csvUtil _more_
          * @param ctx _more_
-         * @param stream _more_
          *
          * @throws Exception _more_
          */
@@ -862,6 +911,7 @@ public abstract class DataProvider {
             String jdbcUrl = csvUtil.getProperty("csv_" + db + "_url");
             if (jdbcUrl == null) {
                 String dbs = csvUtil.getProperty("csv_dbs");
+
                 throw new IllegalArgumentException("Unknown database:" + db
                         + " " + ((dbs == null)
                                  ? ""
@@ -874,28 +924,28 @@ public abstract class DataProvider {
 
             //Check tables whitelist
             String tables   = csvUtil.getProperty("csv_" + db + "_tables",
-						  "");
-            List   okTables = Utils.split(tables,",",true,true);
+                                  "");
+            List   okTables = Utils.split(tables, ",", true, true);
             if ((okTables.size() == 1) && okTables.get(0).equals("*")) {
                 okTables = SqlUtil.getTableNames(this.connection);
             }
 
-	    List<String> tableList = Utils.split(table,",",true,true);
-	    if(tableList.size()==0) {
-		throw new IllegalArgumentException("No table specified"
-						   + "\nAvailable tables:\n"
-						   + Utils.wrap(okTables, "\t", "\n"));
-	    }
-		
+            List<String> tableList = Utils.split(table, ",", true, true);
+            if (tableList.size() == 0) {
+                throw new IllegalArgumentException("No table specified"
+                        + "\nAvailable tables:\n"
+                        + Utils.wrap(okTables, "\t", "\n"));
+            }
 
 
-	    for(String t: tableList) {
-		if ( !Utils.containsIgnoreCase(okTables, t)) {
-		    throw new IllegalArgumentException("Unknown table:" + t
-						       + "\nAvailable tables:\n"
-						       + Utils.wrap(okTables, "\t", "\n"));
-		}
-	    }
+
+            for (String t : tableList) {
+                if ( !Utils.containsIgnoreCase(okTables, t)) {
+                    throw new IllegalArgumentException("Unknown table:" + t
+                            + "\nAvailable tables:\n"
+                            + Utils.wrap(okTables, "\t", "\n"));
+                }
+            }
 
             if (Misc.equals(props.get("help"), "true")) {
                 throw new CsvUtil.MessageException("table:" + table
@@ -908,26 +958,26 @@ public abstract class DataProvider {
             List<Clause> clauses = new ArrayList<Clause>();
 
 
-	    String join  = (String) props.get("join");
-	    if(join!=null) {
-		List<String> toks = Utils.split(join,",");
-		if(toks.size()!=2) {
-		    throw new IllegalArgumentException("Bad join:" + join);
-		}
-		clauses.add(Clause.join(toks.get(0),toks.get(1)));
-	    }
+            String       join    = (String) props.get("join");
+            if (join != null) {
+                List<String> toks = Utils.split(join, ",");
+                if (toks.size() != 2) {
+                    throw new IllegalArgumentException("Bad join:" + join);
+                }
+                clauses.add(Clause.join(toks.get(0), toks.get(1)));
+            }
             String what = columns;
-            if (what == null || what.length()==0) {
+            if ((what == null) || (what.length() == 0)) {
                 what = "*";
             }
-	    if (where != null && where.length()>0) {
+            if ((where != null) && (where.length() > 0)) {
                 for (String tok : where.split(";")) {
-                    List<String> toks = StringUtil.splitUpTo(tok, " ",3);
+                    List<String> toks = StringUtil.splitUpTo(tok, " ", 3);
                     if (toks.size() != 3) {
                         throw new IllegalArgumentException("Bad where value:"
                                 + tok);
                     }
-                    String col  = toks.get(0);
+                    String col   = toks.get(0);
                     String expr  = toks.get(1).toLowerCase().trim();
                     String value = toks.get(2);
                     if (expr.equals("like")
@@ -950,9 +1000,9 @@ public abstract class DataProvider {
             ResultSet         results = this.statement.getResultSet();
             ResultSetMetaData rsmd    = results.getMetaData();
             this.columnCount = rsmd.getColumnCount();
-	    //	    System.err.println("header cnt:" + this.columnCount);
+            //      System.err.println("header cnt:" + this.columnCount);
             for (int i = 0; i < this.columnCount; i++) {
-                values.add(rsmd.getColumnName(i+1).toLowerCase());
+                values.add(rsmd.getColumnName(i + 1).toLowerCase());
             }
             headerRow = new Row(values);
             maxRows   = ctx.getMaxRows();
@@ -961,10 +1011,6 @@ public abstract class DataProvider {
 
         /**
          * _more_
-         *
-         * @param ctx _more_
-         * @param s _more_
-         *
          *
          * @return _more_
          * @throws Exception _more_
@@ -981,15 +1027,17 @@ public abstract class DataProvider {
             if (results == null) {
                 return null;
             }
-	    //            ResultSetMetaData rsmd    = results.getMetaData();
+            //            ResultSetMetaData rsmd    = results.getMetaData();
             List values = new ArrayList();
-	    //	    System.err.println("row:" + rowCnt);
+            //      System.err.println("row:" + rowCnt);
             for (int i = 0; i < this.columnCount; i++) {
-		String v = results.getString(i + 1);
-		if(v==null) v = "";
-		//		System.err.println("\tcol:" + i +" v:" +v);
+                String v = results.getString(i + 1);
+                if (v == null) {
+                    v = "";
+                }
+                //              System.err.println("\tcol:" + i +" v:" +v);
                 values.add(v);
-		//                values.add(results.getString(i + 1) +" name:" + rsmd.getColumnName(i+1));
+                //                values.add(results.getString(i + 1) +" name:" + rsmd.getColumnName(i+1));
             }
 
             return new Row(values);
@@ -1153,153 +1201,213 @@ public abstract class DataProvider {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class KmlDataProvider extends BulkDataProvider {
 
 
         /**
          * _more_
          *
-         * @param arrayPath _more_
          */
         public KmlDataProvider() {
             super();
         }
 
 
-	@Override
+        /**
+         *
+         * @param csvUtil _more_
+         * @param textReader _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
         public void initialize(CsvUtil csvUtil, TextReader textReader)
                 throws Exception {
-	    List<String> files = csvUtil.getInputFiles();
-	    if(files.size()==0) return;
-	    String path = files.get(0);
-	    Element root = KmlUtil.readKml(path,textReader.getInputStream());
-	    read(root);
+            List<String> files = csvUtil.getInputFiles();
+            if (files.size() == 0) {
+                return;
+            }
+            String  path = files.get(0);
+            Element root = KmlUtil.readKml(path, textReader.getInputStream());
+            read(root);
         }
 
 
-        public void tokenize(TextReader ctx, String s)
-	    throws Exception {
-	}
-
-
         /**
-         * _more_
          *
          * @param ctx _more_
          * @param s _more_
          *
          * @throws Exception _more_
          */
+        public void tokenize(TextReader ctx, String s) throws Exception {}
+
+
+        /**
+         * _more_
+         * @param root _more_
+         *
+         * @throws Exception _more_
+         */
         private void read(Element root) throws Exception {
             List<Element> placemarks = KmlUtil.findPlacemarks(root);
-	    List<Element> lookAts = (List<Element>) XmlUtil.findDescendants(root, KmlUtil.TAG_LOOKAT);
-	    if(lookAts.size()>placemarks.size()) {
-		readLookAts(lookAts);
-	    } else  if(placemarks.size()>0) {
-		readPlacemarks(placemarks);
-	    } else {
-		List<Element> nodes = (List<Element>) XmlUtil.findDescendants(root, KmlUtil.TAG_GROUNDOVERLAY);
-		if(nodes.size()>0) {
-		    readGroundOverlays(nodes);
-		}
-	    }
-	}
-		
-	private  void readLookAts(List<Element> lookAts) throws Exception  {
-/*
-  <LookAt>
-  <longitude>-125.3755150766427</longitude>
-  <latitude>45.14857104780791</latitude>
-  <altitude>0</altitude>
-  <heading>11.0763894632395</heading>
-  <tilt>82.24426129889574</tilt>
-  <range>7143.488623627887</range>
-  <altitudeMode>relativeToGround</altitudeMode>
-  <gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
-  </LookAt>	    */
-            Row     header = new Row();
-	    header.add("Latitude","Longitude","Elevation","Heading","Tilt","Range");
+            List<Element> lookAts =
+                (List<Element>) XmlUtil.findDescendants(root,
+                    KmlUtil.TAG_LOOKAT);
+            if (lookAts.size() > placemarks.size()) {
+                readLookAts(lookAts);
+            } else if (placemarks.size() > 0) {
+                readPlacemarks(placemarks);
+            } else {
+                List<Element> nodes =
+                    (List<Element>) XmlUtil.findDescendants(root,
+                        KmlUtil.TAG_GROUNDOVERLAY);
+                if (nodes.size() > 0) {
+                    readGroundOverlays(nodes);
+                }
+            }
+        }
+
+        /**
+         *
+         * @param lookAts _more_
+         *
+         * @throws Exception _more_
+         */
+        private void readLookAts(List<Element> lookAts) throws Exception {
+            /*
+              <LookAt>
+              <longitude>-125.3755150766427</longitude>
+              <latitude>45.14857104780791</latitude>
+              <altitude>0</altitude>
+              <heading>11.0763894632395</heading>
+              <tilt>82.24426129889574</tilt>
+              <range>7143.488623627887</range>
+              <altitudeMode>relativeToGround</altitudeMode>
+              <gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+              </LookAt>         */
+            Row header = new Row();
+            header.add("Latitude", "Longitude", "Elevation", "Heading",
+                       "Tilt", "Range");
             addRow(header);
             for (Element lookAt : lookAts) {
-		Row row = new Row();
-		addRow(row);
-		row.add(XmlUtil.getGrandChildText(lookAt,"latitude","NaN"));
-		row.add(XmlUtil.getGrandChildText(lookAt,"longitude","NaN"));		
-		row.add(XmlUtil.getGrandChildText(lookAt,"altitude","NaN"));
-		row.add(XmlUtil.getGrandChildText(lookAt,"heading","NaN"));
-		row.add(XmlUtil.getGrandChildText(lookAt,"tilt","NaN"));
+                Row row = new Row();
+                addRow(row);
+                row.add(XmlUtil.getGrandChildText(lookAt, "latitude", "NaN"));
+                row.add(XmlUtil.getGrandChildText(lookAt, "longitude",
+                        "NaN"));
+                row.add(XmlUtil.getGrandChildText(lookAt, "altitude", "NaN"));
+                row.add(XmlUtil.getGrandChildText(lookAt, "heading", "NaN"));
+                row.add(XmlUtil.getGrandChildText(lookAt, "tilt", "NaN"));
             }
-	}
+        }
 
 
-	private  void readGroundOverlays(List<Element> nodes) throws Exception  {
-/*
-<GroundOverlay>
-<name>colorado</name>
-<Icon>
-<href>colorado.png</href>
-</Icon><LatLonBox>
-<north>41.406131744384766</north>
-<south>36.645328521728516</south>
-<east>-102.614990234375</east>
-<west>-108.80926513671875</west>
-</LatLonBox>
-</GroundOverlay>
+        /**
+         *
+         * @param nodes _more_
+         *
+         * @throws Exception _more_
+         */
+        private void readGroundOverlays(List<Element> nodes)
+                throws Exception {
+            /*
+            <GroundOverlay>
+            <name>colorado</name>
+            <Icon>
+            <href>colorado.png</href>
+            </Icon><LatLonBox>
+            <north>41.406131744384766</north>
+            <south>36.645328521728516</south>
+            <east>-102.614990234375</east>
+            <west>-108.80926513671875</west>
+            </LatLonBox>
+            </GroundOverlay>
 
 
- */
-            Row     header = new Row();
-	    header.add("Name","Image","Latitude","Longitude","North","South","East","West");
+             */
+            Row header = new Row();
+            header.add("Name", "Image", "Latitude", "Longitude", "North",
+                       "South", "East", "West");
             addRow(header);
             for (Element node : nodes) {
-		Row row = new Row();
-		addRow(row);
-		row.add(XmlUtil.getGrandChildText(node,"name",""));
-		Element icon = XmlUtil.findChild(node,"Icon");
-		if(icon!=null) row.add(XmlUtil.getGrandChildText(icon,"href",""));
-		else row.add("");
-		Element llbox = XmlUtil.findChild(node,"LatLonBox");
-		if(llbox==null) {
-		    row.add("NaN","NaN","NaN","NaN","NaN","NaN");
-		    continue;
-		}
-		double north = Double.parseDouble(XmlUtil.getGrandChildText(llbox,"north","NaN"));
-		double south = Double.parseDouble(XmlUtil.getGrandChildText(llbox,"south","NaN"));		
-		double east = Double.parseDouble(XmlUtil.getGrandChildText(llbox,"east","NaN"));
-		double west = Double.parseDouble(XmlUtil.getGrandChildText(llbox,"west","NaN"));
-		double lat = south+(north-south)/2;
-		double lon = west+(east-west)/2;		
-		row.add(""+lat);
-		row.add(""+lon);
-		row.add(""+north);
-		row.add(""+south);
-		row.add(""+east);
-		row.add(""+west);
+                Row row = new Row();
+                addRow(row);
+                row.add(XmlUtil.getGrandChildText(node, "name", ""));
+                Element icon = XmlUtil.findChild(node, "Icon");
+                if (icon != null) {
+                    row.add(XmlUtil.getGrandChildText(icon, "href", ""));
+                } else {
+                    row.add("");
+                }
+                Element llbox = XmlUtil.findChild(node, "LatLonBox");
+                if (llbox == null) {
+                    row.add("NaN", "NaN", "NaN", "NaN", "NaN", "NaN");
+                    continue;
+                }
+                double north =
+                    Double.parseDouble(XmlUtil.getGrandChildText(llbox,
+                        "north", "NaN"));
+                double south =
+                    Double.parseDouble(XmlUtil.getGrandChildText(llbox,
+                        "south", "NaN"));
+                double east =
+                    Double.parseDouble(XmlUtil.getGrandChildText(llbox,
+                        "east", "NaN"));
+                double west =
+                    Double.parseDouble(XmlUtil.getGrandChildText(llbox,
+                        "west", "NaN"));
+                double lat = south + (north - south) / 2;
+                double lon = west + (east - west) / 2;
+                row.add("" + lat);
+                row.add("" + lon);
+                row.add("" + north);
+                row.add("" + south);
+                row.add("" + east);
+                row.add("" + west);
             }
-	}
+        }
 
 
 
-	private void readPlacemarks(List<Element> placemarks) throws Exception {
-            Row     header = new Row();
-	    header.add("Name","Description","Latitude","Longitude","Elevation");
+        /**
+         *
+         * @param placemarks _more_
+         *
+         * @throws Exception _more_
+         */
+        private void readPlacemarks(List<Element> placemarks)
+                throws Exception {
+            Row header = new Row();
+            header.add("Name", "Description", "Latitude", "Longitude",
+                       "Elevation");
             addRow(header);
             for (Element placemark : placemarks) {
-		Row row = new Row();
-		addRow(row);
-		row.add(XmlUtil.getGrandChildText(placemark,"name",""));
-		row.add(XmlUtil.getGrandChildText(placemark,"description",""));		
-		List<Element> coords = (List<Element>) XmlUtil.findDescendants(placemark, "coordinates");
-		if(coords.size()==0) {
-		    row.add("NaN","NaN","NaN");
-		} else {
-		    String coordsText = XmlUtil.getChildText(coords.get(0));
-		    double[][] pts = KmlUtil.parseCoordinates(coordsText, 1);
-		    row.add(pts[0][0]+"",pts[1][0]+"",pts[2][0]+"");
-		}
+                Row row = new Row();
+                addRow(row);
+                row.add(XmlUtil.getGrandChildText(placemark, "name", ""));
+                row.add(XmlUtil.getGrandChildText(placemark, "description",
+                        ""));
+                List<Element> coords =
+                    (List<Element>) XmlUtil.findDescendants(placemark,
+                        "coordinates");
+                if (coords.size() == 0) {
+                    row.add("NaN", "NaN", "NaN");
+                } else {
+                    String coordsText = XmlUtil.getChildText(coords.get(0));
+                    double[][] pts = KmlUtil.parseCoordinates(coordsText, 1);
+                    row.add(pts[0][0] + "", pts[1][0] + "", pts[2][0] + "");
+                }
             }
-	}
-    }    
+        }
+    }
 
     /**
      * Class description
@@ -1359,8 +1467,10 @@ public abstract class DataProvider {
                     row.add(matcher.group(i));
                 }
                 String s2 = s.substring(matcher.end());
-		if(s.length()==s2.length()) break;
-		s = s2;
+                if (s.length() == s2.length()) {
+                    break;
+                }
+                s = s2;
             }
         }
     }
@@ -1425,8 +1535,10 @@ public abstract class DataProvider {
                     break;
                 }
                 String s2 = s.substring(m1.end());
-		if(s.length() == s2.length()) break;
-		s =s2;
+                if (s.length() == s2.length()) {
+                    break;
+                }
+                s = s2;
                 //              System.err.println("REMAINDER:" + s);
                 for (int i1 = 1; i1 <= m1.groupCount(); i1++) {
                     String chunk = m1.group(i1).trim();
@@ -1452,9 +1564,11 @@ public abstract class DataProvider {
                             //                      System.err.println("\ttok:" + tok);
                             row.add(tok);
                         }
-			String c2= chunk.substring(m2.end());
-			if(chunk.length() == c2.length()) break;
-			chunk = c2;
+                        String c2 = chunk.substring(m2.end());
+                        if (chunk.length() == c2.length()) {
+                            break;
+                        }
+                        chunk = c2;
                     }
                 }
             }
@@ -1484,10 +1598,10 @@ public abstract class DataProvider {
          * _more_
          *
          * @param header _more_
-         * @param chunkPattern _more_
          * @param tokenPattern _more_
          */
-        public PatternExtractDataProvider(String header, String tokenPattern) {
+        public PatternExtractDataProvider(String header,
+                                          String tokenPattern) {
             super();
             this.header       = header;
             this.tokenPattern = Utils.convertPattern(tokenPattern);
@@ -1510,31 +1624,38 @@ public abstract class DataProvider {
             }
             if (ctx.getDebug()) {
                 ctx.printDebug("-text3",
-                                "Parsing text input\n\tpattern:"
-                                + tokenPattern);
+                               "Parsing text input\n\tpattern:"
+                               + tokenPattern);
             }
             Pattern p1 = Pattern.compile(tokenPattern);
-	    //	    System.err.println("pattern:" + tokenPattern);
-	    int remLength = -1;
+            //      System.err.println("pattern:" + tokenPattern);
+            int remLength = -1;
             while (true) {
                 Matcher m1 = p1.matcher(s);
-                if (!m1.find()) {
+                if ( !m1.find()) {
                     ctx.printDebug("-text3", "no match");
+
                     break;
                 }
                 //              System.err.println("match");
                 String s2 = s.substring(m1.end());
-		if(s.length()==s2.length()) break;
-		s = s2;
+                if (s.length() == s2.length()) {
+                    break;
+                }
+                s = s2;
                 if (ctx.getDebug()) {
                     ctx.printDebug("-text3",
-                                    "match group count:" + m1.groupCount());
+                                   "match group count:" + m1.groupCount());
                 }
-		//		System.err.println("REMAINDER:" + s.length());
-		if(remLength>0 && remLength==s.length()) {
-		    throw new IllegalArgumentException("Bad pattern:" + tokenPattern+" groupCount:" + m1.groupCount() + " " + (m1.groupCount()>1?("group:" + m1.group(1)):"") + " remainder is the same as before");
-		}
-		remLength = s.length();
+                //              System.err.println("REMAINDER:" + s.length());
+                if ((remLength > 0) && (remLength == s.length())) {
+                    throw new IllegalArgumentException("Bad pattern:"
+                            + tokenPattern + " groupCount:" + m1.groupCount()
+                            + " " + ((m1.groupCount() > 1)
+                                     ? ("group:" + m1.group(1))
+                                     : "") + " remainder is the same as before");
+                }
+                remLength = s.length();
                 Row row = new Row();
                 addRow(row);
                 for (int i = 1; i <= m1.groupCount(); i++) {
@@ -1544,7 +1665,7 @@ public abstract class DataProvider {
             }
             if (ctx.getDebug()) {
                 ctx.printDebug("\tdone parsing input #rows:"
-                                + getRows().size());
+                               + getRows().size());
             }
         }
 
@@ -1610,8 +1731,10 @@ public abstract class DataProvider {
                         break;
                     }
                     String s2 = s.substring(m1.end());
-		    if(s.length() == s2.length()) break;
-		    s  =s2;
+                    if (s.length() == s2.length()) {
+                        break;
+                    }
+                    s = s2;
                     if (m1.groupCount() > 2) {
                         throw new IllegalArgumentException(
                             "There should only be one sub-pattern in the chunk");
@@ -1666,10 +1789,11 @@ public abstract class DataProvider {
         /** _more_ */
         int rowCnt = 0;
 
-        /** _more_          */
+        /** _more_ */
         boolean deHeader = false;
 
-	private StrTokenizer   tokenizer;
+        /**  */
+        private StrTokenizer tokenizer;
 
 
 
@@ -1716,7 +1840,6 @@ public abstract class DataProvider {
          *
          * @param csvUtil _more_
          * @param ctx _more_
-         * @param stream _more_
          *
          * @throws Exception _more_
          */
@@ -1735,11 +1858,11 @@ public abstract class DataProvider {
         public Row readRow() throws Exception {
             while (true) {
                 String line = ctx.readLine();
-		if (line == null) {
-		    //		    System.err.println("Done reading CSV file");
-		   return null;
+                if (line == null) {
+                    //              System.err.println("Done reading CSV file");
+                    return null;
                 }
-		cnt++;
+                cnt++;
                 if (rawLines > 0) {
                     ctx.getWriter().println(line);
                     rawLines--;
@@ -1747,7 +1870,7 @@ public abstract class DataProvider {
                 }
                 if (ctx.getVerbose()) {
                     if (((cnt) % 10000) == 0) {
-			System.err.println("lines: " + cnt +" LINE:" + line);
+                        System.err.println("lines: " + cnt + " LINE:" + line);
                     }
                 }
                 if (deHeader) {
@@ -1759,13 +1882,13 @@ public abstract class DataProvider {
                 }
 
                 if ( !ctx.lineOk(line)) {
-		    System.err.println("LINE not OK:" + line);
+                    System.err.println("LINE not OK:" + line);
                     continue;
                 }
 
                 rowCnt++;
                 if (rowCnt <= ctx.getSkipLines()) {
-		    //		    System.err.println("skipping");
+                    //              System.err.println("skipping");
                     ctx.addHeaderLine(line);
                     continue;
                 }
@@ -1778,11 +1901,11 @@ public abstract class DataProvider {
                     if ((i2 >= 0) && ((i1 < 0) || (i2 < i1))) {
                         delimiter = "|";
                     }
-		    //		    System.err.println("CsvUtil.delimiter is null new one is:" + delimiter);
+                    //              System.err.println("CsvUtil.delimiter is null new one is:" + delimiter);
                     ctx.setDelimiter(delimiter);
                 }
                 if (line.length() == 0) {
-		    System.err.println("empty line");
+                    System.err.println("empty line");
                     continue;
                 }
                 Row row = null;
@@ -1791,16 +1914,18 @@ public abstract class DataProvider {
                 } else if (ctx.getSplitOnSpaces()) {
                     row = new Row(Utils.split(line, " ", true, true));
                 } else {
-		    if(tokenizer==null) {
-			tokenizer = StrTokenizer.getCSVInstance();
-			tokenizer.setEmptyTokenAsNull(true);
-			if ( !ctx.getDelimiter().equals(",")) {
-			    tokenizer.setDelimiterChar(ctx.getDelimiter().charAt(0));
-			}
-		    }
-		    List<String> toks = Utils.tokenizeColumns(line,tokenizer);
-		    row = new Row(toks);
-		}
+                    if (tokenizer == null) {
+                        tokenizer = StrTokenizer.getCSVInstance();
+                        tokenizer.setEmptyTokenAsNull(true);
+                        if ( !ctx.getDelimiter().equals(",")) {
+                            tokenizer.setDelimiterChar(
+                                ctx.getDelimiter().charAt(0));
+                        }
+                    }
+                    List<String> toks = Utils.tokenizeColumns(line,
+                                            tokenizer);
+                    row = new Row(toks);
+                }
 
                 return row;
             }
@@ -1809,29 +1934,33 @@ public abstract class DataProvider {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class Lines extends DataProvider {
 
+        /**  */
         TextReader ctx;
 
-	boolean didFirst  = false;
+        /**  */
+        boolean didFirst = false;
 
         /**
          * _more_
-         *
-         * @param ctx _more_
          */
-        public Lines() {
-        }
+        public Lines() {}
 
 
 
         /**
          * _more_
-         *
          *
          * @param csvUtil _more_
          * @param ctx _more_
-         * @param stream _more_
          *
          * @throws Exception _more_
          */
@@ -1848,41 +1977,60 @@ public abstract class DataProvider {
          * @throws Exception _more_
          */
         public Row readRow() throws Exception {
-	    Row row = new Row();
-	    if(!didFirst) {
-		didFirst = true;
-		row.add("line");
-		return row;
-	    }
-	    String line = ctx.readLine();
-	    if(line==null) return null;
+            Row row = new Row();
+            if ( !didFirst) {
+                didFirst = true;
+                row.add("line");
 
-	    row.add(line);
-	    return row;
+                return row;
+            }
+            String line = ctx.readLine();
+            if (line == null) {
+                return null;
+            }
+
+            row.add(line);
+
+            return row;
         }
 
     }
-    
 
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class Pdf extends DataProvider {
-	StrTokenizer tokenizer;
-	boolean didFirst  = false;
-	BufferedReader stdInput;
 
+        /**  */
+        StrTokenizer tokenizer;
+
+        /**  */
+        boolean didFirst = false;
+
+        /**  */
+        BufferedReader stdInput;
+
+        /**  */
         TextReader ctx;
-	String tabula;
+
+        /**  */
+        String tabula;
 
 
         /**
          * _more_
-         *
-         * @param ctx _more_
+         * @param csvUtil _more_
          */
         public Pdf(CsvUtil csvUtil) {
-	    
-	    tokenizer = StrTokenizer.getCSVInstance();
-	    tokenizer.setEmptyTokenAsNull(true);
-	    tabula = csvUtil.getProperty("ramadda_tabula");
+
+            tokenizer = StrTokenizer.getCSVInstance();
+            tokenizer.setEmptyTokenAsNull(true);
+            tabula = csvUtil.getProperty("ramadda_tabula");
         }
 
 
@@ -1893,29 +2041,31 @@ public abstract class DataProvider {
          *
          * @param csvUtil _more_
          * @param ctx _more_
-         * @param stream _more_
          *
          * @throws Exception _more_
          */
         public void initialize(CsvUtil csvUtil, TextReader ctx)
                 throws Exception {
-	    Runtime rt = Runtime.getRuntime();
-	    if(tabula==null) {
-		throw new IllegalArgumentException("No ramadda_tabula environment variable set");
-	    }
-	    String[] commands = {tabula, ctx.getInputFile()};
-	    Process proc = rt.exec(commands);
-	    stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            Runtime rt = Runtime.getRuntime();
+            if (tabula == null) {
+                throw new IllegalArgumentException(
+                    "No ramadda_tabula environment variable set");
+            }
+            String[] commands = { tabula, ctx.getInputFile() };
+            Process  proc     = rt.exec(commands);
+            stdInput = new BufferedReader(
+                new InputStreamReader(proc.getInputStream()));
 
-	    BufferedReader stdError = new BufferedReader(new 
-							 InputStreamReader(proc.getErrorStream()));
+            BufferedReader stdError = new BufferedReader(
+                                          new InputStreamReader(
+                                              proc.getErrorStream()));
 
 
-	    /*
-	      while ((s = stdError.readLine()) != null) {
-	      System.out.println(s);
-	      }
-	    */
+            /*
+              while ((s = stdError.readLine()) != null) {
+              System.out.println(s);
+              }
+            */
         }
 
         /**
@@ -1926,10 +2076,13 @@ public abstract class DataProvider {
          * @throws Exception _more_
          */
         public Row readRow() throws Exception {
-	    String line =  stdInput.readLine();
-	    if(line==null) return null;
-	    List<String> toks = Utils.tokenizeColumns(line,tokenizer);
-	    return  new Row(toks);
+            String line = stdInput.readLine();
+            if (line == null) {
+                return null;
+            }
+            List<String> toks = Utils.tokenizeColumns(line, tokenizer);
+
+            return new Row(toks);
         }
 
     }

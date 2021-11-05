@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util;
@@ -61,20 +50,15 @@ public class XlsUtil {
     /**
      * Convert excel to csv
      *
-     * @param filename excel file
-     * @param skipToFirstNumeric _more_
      * @param sdf If non null then use this to format any date cells
      *
      * @return csv
-     *
-     * @throws Exception On badness
      */
     public static String xlsToCsv(String filename) {
         try {
 
-            StringBuffer sb   = new StringBuffer();
-            InputStream myxls = IO.getInputStream(filename,
-                                    XlsUtil.class);
+            StringBuffer sb         = new StringBuffer();
+            InputStream  myxls = IO.getInputStream(filename, XlsUtil.class);
             HSSFWorkbook wb         = new HSSFWorkbook(myxls);
             HSSFSheet    sheet      = wb.getSheetAt(0);
             boolean      seenNumber = false;
@@ -119,9 +103,8 @@ public class XlsUtil {
     public static String xlsxToCsv(String filename) {
         try {
 
-            StringBuffer sb   = new StringBuffer();
-            InputStream myxls = IO.getInputStream(filename,
-                                    XlsUtil.class);
+            StringBuffer sb         = new StringBuffer();
+            InputStream  myxls = IO.getInputStream(filename, XlsUtil.class);
             XSSFWorkbook wb         = new XSSFWorkbook(myxls);
             XSSFSheet    sheet      = wb.getSheetAt(0);
             boolean      seenNumber = false;

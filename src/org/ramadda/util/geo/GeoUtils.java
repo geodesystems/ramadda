@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util.geo;
@@ -98,7 +87,7 @@ public class GeoUtils {
     /** _more_ */
     private static String googleKey;
 
-    /** _more_          */
+    /** _more_ */
     private static String geocodeioKey;
 
 
@@ -313,10 +302,10 @@ public class GeoUtils {
     /** _more_ */
     private static Hashtable<String, Place> addressToLocation = null;
 
-    /** _more_          */
+    /** _more_ */
     private static Hashtable<String, String> hoods = null;
 
-    /** _more_          */
+    /** _more_ */
     private static PrintWriter hoodsWriter;
 
 
@@ -484,11 +473,6 @@ public class GeoUtils {
 
     /**
      * _more_
-     *
-     * @param address _more_
-     * @param googleKey _more_
-     * @param bounds _more_
-     *
      * @return _more_
      *
      * @throws Exception _more_
@@ -661,7 +645,8 @@ public class GeoUtils {
                 }
 
                 if (state != null) {
-                    place    = GeoResource.RESOURCE_CITIES.getPlace(city + "," + state);
+                    place = GeoResource.RESOURCE_CITIES.getPlace(city + ","
+                            + state);
                     if (place != null) {
                         return place;
                     }
@@ -934,7 +919,7 @@ public class GeoUtils {
 
 
 
-    /** _more_          */
+    /** _more_ */
     private static String preciselyToken;
 
     /**
