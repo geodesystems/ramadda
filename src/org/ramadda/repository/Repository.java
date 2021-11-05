@@ -3523,7 +3523,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         boolean debugMemory =
             !theUrl.matches(".*(images|icons|htdocs|/metadata/view).*")
             && !theUrl.matches(".*(\\.js|\\.png|\\.gif|favicon.ico)$");
-	debugMemory = false;
+	//debugMemory = false;
         if (debugMemory) {
             Runtime.getRuntime().gc();
         }

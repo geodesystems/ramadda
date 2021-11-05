@@ -138,7 +138,6 @@ public class CsvOutputHandler extends OutputHandler {
     protected Result listEntries(Request request, List<Entry> entries)
             throws Exception {
 	int mycnt = cnt++;
-	System.err.println(mycnt+" list entries:" + entries.size());
 
         String  delimiter      = request.getString(ARG_DELIMITER, ",");
         boolean fixedWidth     = request.get(ARG_FIXEDWIDTH, false);
@@ -248,7 +247,6 @@ public class CsvOutputHandler extends OutputHandler {
         Hashtable<String, Column> columnMap = null;
 
         for (Entry entry : entries) {
-	    System.err.println("\t" + mycnt+" entry:" + entry.getName());
             if (sb.length() == 0) {
                 String headerString = header.toString();
                 if (fieldNames.contains("fields")) {
@@ -298,7 +296,6 @@ public class CsvOutputHandler extends OutputHandler {
                 }
                 colCnt++;
                 if (field.equals("name")) {
-		    System.err.println("\t" + mycnt+" append name:" + entry.getName());
                     sb.append(sanitize(escapeCommas, entry.getName()));
                 } else if (field.equals("fullname")) {
                     sb.append(sanitize(escapeCommas, entry.getFullName()));
@@ -409,7 +406,6 @@ public class CsvOutputHandler extends OutputHandler {
             sb.append("\n");
         }
 
-	System.err.println("\t" + mycnt+" returning:" + sb.toString().trim().length());
 
         return new Result("", sb, getMimeType(OUTPUT_CSV));
     }
