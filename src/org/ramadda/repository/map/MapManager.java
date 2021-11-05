@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.map;
 
@@ -37,8 +24,8 @@ import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.Json;
-import org.ramadda.util.MapRegion;
 import org.ramadda.util.MapProvider;
+import org.ramadda.util.MapRegion;
 import org.ramadda.util.Utils;
 
 import ucar.unidata.geoloc.Bearing;
@@ -65,7 +52,8 @@ import java.util.List;
  *
  * @author Jeff McWhirter
  */
-public class MapManager extends RepositoryManager implements WikiConstants, MapProvider {
+public class MapManager extends RepositoryManager implements WikiConstants,
+        MapProvider {
 
     /** _more_ */
     public static final String ADDED_IMPORTS = "initmap";
@@ -95,6 +83,7 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
     /** GoogleEarth keys */
     private List<List<String>> geKeys;
 
+    /**  */
     private StringBuilder extraJS = new StringBuilder();
 
     /**
@@ -108,24 +97,41 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
 
 
 
+    /**
+     *
+     * @param s _more_
+     */
     public void addExtraMapJS(String s) {
-    	extraJS.append(s);
-	extraJS.append("\n");
+        extraJS.append(s);
+        extraJS.append("\n");
     }
 
 
-    public void makeMap(StringBuilder sb, String width, String height,List<double[]> pts, Hashtable<String,String>props) {
-	try {
-	    Request tmp = getRepository().getTmpRequest();
-	    MapInfo mapInfo= createMap(tmp, null, width, height, false,props);
-	    int radius  = props==null?4:Utils.getProperty(props,"radius",4);
-	    for(double[]pt: pts)
-		mapInfo.addCircle("",pt[0],pt[1],radius);
-	    mapInfo.center();
-	    sb.append(mapInfo.getHtml());
-	} catch(Exception exc) {
-	    throw new RuntimeException(exc);
-	}
+    /**
+     *
+     * @param sb _more_
+     * @param width _more_
+     * @param height _more_
+     * @param pts _more_
+     * @param props _more_
+     */
+    public void makeMap(StringBuilder sb, String width, String height,
+                        List<double[]> pts, Hashtable<String, String> props) {
+        try {
+            Request tmp = getRepository().getTmpRequest();
+            MapInfo mapInfo = createMap(tmp, null, width, height, false,
+                                        props);
+            int radius = (props == null)
+                         ? 4
+                         : Utils.getProperty(props, "radius", 4);
+            for (double[] pt : pts) {
+                mapInfo.addCircle("", pt[0], pt[1], radius);
+            }
+            mapInfo.center();
+            sb.append(mapInfo.getHtml());
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
     }
 
 
@@ -290,12 +296,21 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
                          props);
     }
 
+    /**
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result processExtraJS(Request request) throws Exception {
-	String extra = extraJS.toString();
-	if(extra.length()>0)  {
-	    extra =  "function initExtraMap(map) {\n" +	extra +"\n}\n";
-	}
-	return new Result(extra, Result.TYPE_JS);
+        String extra = extraJS.toString();
+        if (extra.length() > 0) {
+            extra = "function initExtraMap(map) {\n" + extra + "\n}\n";
+        }
+
+        return new Result(extra, Result.TYPE_JS);
     }
 
 
@@ -311,8 +326,9 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
     public Result processWms(Request request) throws Exception {
         String layer = request.getString("layers", "white");
         InputStream inputStream =
-            IOUtil.getInputStream("/org/ramadda/repository/htdocs/images/maps/"
-                                  + layer + ".png", getClass());
+            IOUtil.getInputStream(
+                "/org/ramadda/repository/htdocs/images/maps/" + layer
+                + ".png", getClass());
 
         return getRepository().makeResult(request, "/wms/white", inputStream,
                                           "image", true);
@@ -389,7 +405,7 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
         String showOpacitySlider = (String) props.get("showOpacitySlider");
         if (showOpacitySlider != null) {
             mapInfo.addProperty("showOpacitySlider", showOpacitySlider);
-        }	
+        }
         String showSearch = (String) props.get("showSearch");
         if (showSearch != null) {
             mapInfo.addProperty("showSearch", "" + showSearch.equals("true"));
@@ -397,7 +413,7 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
         String simple = (String) props.get("simple");
         if (simple != null) {
             mapInfo.addProperty("simple", "" + simple.equals("true"));
-        }	
+        }
         if (mapLayers != null) {
             mapInfo.addProperty("mapLayers",
                                 Utils.split(mapLayers, ";", true, true));
@@ -451,8 +467,8 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
             throws Exception {
         String key = ADDED_IMPORTS;
         if (request.getExtraProperty(key) == null) {
-	    request.appendHead(getHtmlImports(request));
-	    //            sb.append(getHtmlImports(request));
+            request.appendHead(getHtmlImports(request));
+            //            sb.append(getHtmlImports(request));
             request.putExtraProperty(key, "added");
         }
 
@@ -486,9 +502,9 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
      * @throws Exception _more_
      */
     private String getHtmlImports(Request request) throws Exception {
-        StringBuilder sb       = new StringBuilder();
-	sb.append("\n");
-        boolean       minified = getRepository().getMinifiedOk();
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n");
+        boolean minified = getRepository().getMinifiedOk();
         if (OPENLAYERS_VERSION == OPENLAYERS_V2) {
             if (minified) {
                 HtmlUtils.cssLink(
@@ -496,23 +512,23 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
                     getRepository().getHtdocsUrl(
                         OPENLAYERS_BASE_V2
                         + "/theme/default/style.mini.css"));
-		sb.append("\n");
+                sb.append("\n");
                 HtmlUtils.importJS(
                     sb,
                     getRepository().getHtdocsUrl(
                         OPENLAYERS_BASE_V2 + "/OpenLayers.mini.js"));
-		sb.append("\n");
+                sb.append("\n");
             } else {
                 HtmlUtils.cssLink(
                     sb,
                     getRepository().getHtdocsUrl(
                         OPENLAYERS_BASE_V2 + "/theme/default/style.css"));
-		sb.append("\n");
+                sb.append("\n");
                 HtmlUtils.importJS(
                     sb,
                     getRepository().getHtdocsUrl(
                         OPENLAYERS_BASE_V2 + "/OpenLayers.debug.js"));
-		sb.append("\n");
+                sb.append("\n");
             }
         } else {
             /*
@@ -539,28 +555,28 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
                 HtmlUtils.importJS(
                     sb,
                     getPageHandler().getCdnPath("/min/ramaddamap.min.js"));
-		sb.append("\n");
+                sb.append("\n");
             } else {
                 HtmlUtils.importJS(
                     sb, getPageHandler().getCdnPath("/ramaddamap.js"));
-		sb.append("\n");
+                sb.append("\n");
             }
         } else {
             HtmlUtils.importJS(
                 sb, getPageHandler().getCdnPath("/ramaddamap3.js"));
-	    sb.append("\n");
+            sb.append("\n");
         }
-	HtmlUtils.importJS(
-			   sb, getRepository().getUrlBase()+"/map/extra.js");
+        HtmlUtils.importJS(sb,
+                           getRepository().getUrlBase() + "/map/extra.js");
 
         if (minified) {
             HtmlUtils.cssLink(
                 sb, getPageHandler().getCdnPath("/min/ramaddamap.min.css"));
-	    sb.append("\n");
+            sb.append("\n");
         } else {
             HtmlUtils.cssLink(sb,
                               getPageHandler().getCdnPath("/ramaddamap.css"));
-	    sb.append("\n");
+            sb.append("\n");
         }
 
         return sb.toString();
@@ -644,8 +660,7 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
                 return null;
             }
             List<List<String>> tmpKeys = new ArrayList<List<String>>();
-            for (String line :
-                    Utils.split(geAPIKeys, "\n", true, true)) {
+            for (String line : Utils.split(geAPIKeys, "\n", true, true)) {
                 List<String> toks = Utils.split(line, ";", true, false);
                 if (toks.size() > 1) {
                     tmpKeys.add(toks);
@@ -910,8 +925,7 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
                     String         s        = metadata.getAttr1();
                     StringBuilder  pointsSB = new StringBuilder();
                     for (String pair : Utils.split(s, ";", true, true)) {
-                        List<String> toks = Utils.splitUpTo(pair, ",",
-                                                2);
+                        List<String> toks = Utils.splitUpTo(pair, ",", 2);
                         if (toks.size() != 2) {
                             continue;
                         }
@@ -951,7 +965,8 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
             name = name.replace("'", "\\'");
 
             String desc = HtmlUtils.img(getIconUrl)
-		+ getEntryManager().getEntryLink(request, entry,"");
+                          + getEntryManager().getEntryLink(request, entry,
+                              "");
             desc = desc.replace("\r", " ");
             desc = desc.replace("\n", " ");
             desc = desc.replace("\"", "\\\"");
@@ -1362,11 +1377,13 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
             return null;
         }
 
-	for(String prop: new String[]{"iconSize","popupWidth","popupHeight","doPopupSlider","popupSliderRight"}) {
-	    String v= (String) props.get(prop);
-	    if (v != null) {
-		map.addProperty(prop, v);
-	    }
+        for (String prop : new String[] { "iconSize", "popupWidth",
+                                          "popupHeight", "doPopupSlider",
+                                          "popupSliderRight" }) {
+            String v = (String) props.get(prop);
+            if (v != null) {
+                map.addProperty(prop, v);
+            }
         }
 
 
@@ -1386,11 +1403,11 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
         }
         String showOpacitySlider = (String) props.get("showOpacitySlider");
         if (showOpacitySlider != null) {
-	    map.getMapProps().put("showOpacitySlider", showOpacitySlider);
-        }	
+            map.getMapProps().put("showOpacitySlider", showOpacitySlider);
+        }
         String imageOpacity = (String) props.get("imageOpacity");
         if (imageOpacity != null) {
-	    map.getMapProps().put("imageOpacity", imageOpacity);
+            map.getMapProps().put("imageOpacity", imageOpacity);
         }
 
         map.getMapProps().put("showSearch", "" + search);
@@ -1414,9 +1431,10 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
         map.getMapProps().put("showLocationSearch", "" + showLocationSearch);
 
 
-	if(entriesToUse.size()==1 && !entriesToUse.get(0).hasAreaDefined()) {
-	    map.getMapProps().put("zoomLevel","12");
-	}
+        if ((entriesToUse.size() == 1)
+                && !entriesToUse.get(0).hasAreaDefined()) {
+            map.getMapProps().put("zoomLevel", "12");
+        }
 
         Hashtable theProps = Utils.makeMap(PROP_DETAILED, "" + details,
                                            PROP_SCREENBIGRECTS, "true");
@@ -1451,9 +1469,8 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
 
         if (request.defined("map_bounds")) {
             haveLocation = true;
-            List<String> toks =
-                Utils.split(request.getString("map_bounds", ""), ",",
-                                 true, true);
+            List<String> toks = Utils.split(request.getString("map_bounds",
+                                    ""), ",", true, true);
             if (toks.size() == 4) {
                 map.addProperty(MapManager.PROP_INITIAL_BOUNDS,
                                 Json.list(toks.get(0), toks.get(1),
@@ -1461,9 +1478,8 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
             }
         } else if (request.defined("map_location")) {
             haveLocation = true;
-            List<String> toks =
-                Utils.split(request.getString("map_location", ""), ",",
-                                 true, true);
+            List<String> toks = Utils.split(request.getString("map_location",
+                                    ""), ",", true, true);
             if (toks.size() == 2) {
                 map.addProperty(MapManager.PROP_INITIAL_LOCATION,
                                 Json.list(toks.get(0), toks.get(1)));
@@ -1471,8 +1487,11 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
         }
 
 
-	if(!haveLocation && props!=null && (props.get("mapCenter")!=null ||props.get("mapBounds")!=null))
-	    haveLocation  = true;
+        if ( !haveLocation && (props != null)
+                && ((props.get("mapCenter") != null)
+                    || (props.get("mapBounds") != null))) {
+            haveLocation = true;
+        }
 
 
 
@@ -1560,7 +1579,7 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
             map.addProperty("defaultMapLayer",
                             Json.quote(request.getString("map_layer", "")));
         }
-	String mapHtml = map.getHtml();
+        String mapHtml = map.getHtml();
         if ((mapHtml.length() == 0) && (catMap.size() == 0)) {
             listentries = false;
         }
@@ -1604,11 +1623,12 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
         boolean screenBigRects = Misc.getProperty(props, PROP_SCREENBIGRECTS,
                                      false);
 
-        boolean  showCameraDirection =  Misc.getProperty(props, "showCameraDirection",true);
-        boolean  useThumbnail =  Misc.getProperty(props, "useThumbnail",false);	
+        boolean showCameraDirection = Misc.getProperty(props,
+                                          "showCameraDirection", true);
+        boolean useThumbnail = Misc.getProperty(props, "useThumbnail", false);
 
 
-        boolean showLines = Utils.getProperty(props, "showLines", false);
+        boolean showLines    = Utils.getProperty(props, "showLines", false);
         //            map.addLines(entry, "", polyLine, null);
 
         if ((entriesToUse.size() == 1) && detailed) {
@@ -1715,33 +1735,35 @@ public class MapManager extends RepositoryManager implements WikiConstants, MapP
                     location = entry.getCenter();
                 }
 
-		if(showCameraDirection) {
-		    for (Metadata metadata : metadataList) {
-			if (metadata.getType().equals(
-						      JpegMetadataHandler.TYPE_CAMERA_DIRECTION)) {
-			    double dir = Double.parseDouble(metadata.getAttr1());
-			    double km  = 1.0;
-			    String kms = metadata.getAttr2();
-			    if (Utils.stringDefined(kms)) {
-				km = Double.parseDouble(kms);
-			    }
-			    LatLonPointImpl fromPt =
-				new LatLonPointImpl(location[0], location[1]);
-			    LatLonPointImpl pt = Bearing.findPoint(fromPt, dir,
-								   km, null);
-			    map.addLine(entry, entry.getId(), fromPt, pt, null);
+                if (showCameraDirection) {
+                    for (Metadata metadata : metadataList) {
+                        if (metadata.getType().equals(
+                                JpegMetadataHandler.TYPE_CAMERA_DIRECTION)) {
+                            double dir =
+                                Double.parseDouble(metadata.getAttr1());
+                            double km  = 1.0;
+                            String kms = metadata.getAttr2();
+                            if (Utils.stringDefined(kms)) {
+                                km = Double.parseDouble(kms);
+                            }
+                            LatLonPointImpl fromPt =
+                                new LatLonPointImpl(location[0], location[1]);
+                            LatLonPointImpl pt = Bearing.findPoint(fromPt,
+                                                     dir, km, null);
+                            map.addLine(entry, entry.getId(), fromPt, pt,
+                                        null);
 
-			    break;
-			}
-		    }
-		}
+                            break;
+                        }
+                    }
+                }
 
                 if (addMarker && showMarkers) {
                     if (entry.getTypeHandler().getTypeProperty("map.circle",
                             false)) {
                         map.addCircle(request, entry);
                     } else {
-                        map.addMarker(request, entry,useThumbnail);
+                        map.addMarker(request, entry, useThumbnail);
                     }
                 }
             }

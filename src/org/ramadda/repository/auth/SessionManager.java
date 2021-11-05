@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.auth;
 
@@ -300,11 +287,12 @@ public class SessionManager extends RepositoryManager {
     public void setArea(Request request, double north, double west,
                         double south, double east)
             throws Exception {
-	if(!Double.isNaN(north) && !Double.isNaN(west)&& !Double.isNaN(south) && !Double.isNaN(east)) {
-	    putSessionProperty(request, ARG_AREA,
-			       north + ";" + west + ";" + south + ";" + east
-			       + ";");
-	}
+        if ( !Double.isNaN(north) && !Double.isNaN(west)
+                && !Double.isNaN(south) && !Double.isNaN(east)) {
+            putSessionProperty(request, ARG_AREA,
+                               north + ";" + west + ";" + south + ";" + east
+                               + ";");
+        }
     }
 
 
@@ -479,19 +467,26 @@ public class SessionManager extends RepositoryManager {
             throws Exception {
         UserSession session = sessionMap.get(sessionId);
         if (session != null) {
-	    debugSession(request, "getSession: got session from session map:" + session);
+            debugSession(request,
+                         "getSession: got session from session map:"
+                         + session);
+
             return session;
         }
         session = anonymousSessionMap.get(sessionId);
         if (session != null) {
-            debugSession(request, "getSession: got session from anonymous session map: "  + session);
+            debugSession(
+                request,
+                "getSession: got session from anonymous session map: "
+                + session);
+
             return session;
         }
 
         Statement stmt = getDatabaseManager().select(Tables.SESSIONS.COLUMNS,
-						     Tables.SESSIONS.NAME,
-						     Clause.eq(Tables.SESSIONS.COL_SESSION_ID,
-							       sessionId));
+                             Tables.SESSIONS.NAME,
+                             Clause.eq(Tables.SESSIONS.COL_SESSION_ID,
+                                       sessionId));
         try {
             SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
             ResultSet        results;
@@ -499,18 +494,22 @@ public class SessionManager extends RepositoryManager {
                 session = makeSession(results);
                 session.setLastActivity(new Date());
                 //Remove it from the DB and then re-add it so we update the lastActivity
-                debugSession(request, "getSession: got session from database:"+ session);
+                debugSession(request,
+                             "getSession: got session from database:"
+                             + session);
                 removeSession(request, session.getId());
                 addSession(session);
+
                 break;
             }
         } finally {
             getDatabaseManager().closeAndReleaseConnection(stmt);
         }
 
-	if(session == null) {
-	    debugSession(request, "getSession: could not find session");
-	}
+        if (session == null) {
+            debugSession(request, "getSession: could not find session");
+        }
+
         return session;
     }
 
@@ -570,13 +569,13 @@ public class SessionManager extends RepositoryManager {
      * @throws Exception _more_
      */
     private void addSession(UserSession session) throws Exception {
-	debugSession(null,"addSession:" + session);
+        debugSession(null, "addSession:" + session);
         sessionMap.put(session.getId(), session);
         getDatabaseManager().executeInsert(Tables.SESSIONS.INSERT,
                                            new Object[] { session.getId(),
-							  session.getUserId(), session.getCreateDate(),
-							  session.getLastActivity(),
-							  "" });
+                session.getUserId(), session.getCreateDate(),
+                session.getLastActivity(),
+                "" });
     }
 
 
@@ -611,27 +610,29 @@ public class SessionManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public void checkSession(Request request) throws Exception {
-	//        debugSession(request, "RAMADDA: checkSession");
+
+        //        debugSession(request, "RAMADDA: checkSession");
         User         user    = request.getUser();
         List<String> cookies = getCookies(request);
-	if (Repository.debugSession) {
-	    debugSession(request,"checkSession cookies:" + cookies);
-	}
+        if (Repository.debugSession) {
+            debugSession(request, "checkSession cookies:" + cookies);
+        }
         for (String cookieValue : cookies) {
             if (user == null) {
-		if (Repository.debugSession) {
-		    //		    getRepository().debugSession(request, "checkSession: cookie:"+ cookieValue);
-		}
+                if (Repository.debugSession) {
+                    //              getRepository().debugSession(request, "checkSession: cookie:"+ cookieValue);
+                }
                 UserSession session = getSession(request, cookieValue, false);
                 if (session != null) {
                     session.setLastActivity(new Date());
                     user = getUserManager().getCurrentUser(session.getUser());
                     session.setUser(user);
                     request.setSessionId(cookieValue);
-		    if (Repository.debugSession) {
-			getRepository().debugSession(request,
-						     "checkSession: got session from cookie:" + session);
-		    }
+                    if (Repository.debugSession) {
+                        getRepository().debugSession(request,
+                                "checkSession: got session from cookie:"
+                                + session);
+                    }
 
                     break;
                 }
@@ -765,6 +766,7 @@ public class SessionManager extends RepositoryManager {
 
 
         request.setUser(user);
+
 
 
 

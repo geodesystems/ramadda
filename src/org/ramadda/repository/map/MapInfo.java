@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.map;
 
@@ -52,6 +39,7 @@ import java.util.List;
  */
 public class MapInfo {
 
+    /**  */
     private static final HtmlUtils HU = null;
 
     /** default box color */
@@ -167,7 +155,7 @@ public class MapInfo {
         this.request      = request;
         this.repository   = repository;
 
-        this.mapDivId       = this.mapVarName = makeMapVar();
+        this.mapDivId     = this.mapVarName = makeMapVar();
         this.width        = width;
         this.height       = height;
         this.forSelection = forSelection;
@@ -216,7 +204,7 @@ public class MapInfo {
      * @param mapVar _more_
      */
     public void setMapVar(String mapVar) {
-        this.mapDivId     = mapVar;
+        this.mapDivId   = mapVar;
         this.mapVarName = mapVar.replaceAll("-", "_");
     }
 
@@ -339,9 +327,16 @@ public class MapInfo {
 
 
 
+    /**
+     *
+     * @param entry _more_
+     * @param metadataList _more_
+     *
+     * @return _more_
+     */
     public boolean addSpatialMetadata(Entry entry,
                                       List<Metadata> metadataList) {
-	return addSpatialMetadata(entry, metadataList, false);
+        return addSpatialMetadata(entry, metadataList, false);
     }
 
 
@@ -351,11 +346,13 @@ public class MapInfo {
      *
      * @param entry  the entry
      * @param metadataList  the list of metatdata
+     * @param force _more_
      *
      * @return true if we added some metadata
      */
     public boolean addSpatialMetadata(Entry entry,
-                                      List<Metadata> metadataList, boolean force) {
+                                      List<Metadata> metadataList,
+                                      boolean force) {
         boolean didone = false;
         if (force || entry.getTypeHandler().shouldShowPolygonInMap()) {
             for (Metadata metadata : metadataList) {
@@ -367,7 +364,7 @@ public class MapInfo {
                     Utils.parsePointString(metadata.getAttr3(), points);
                     Utils.parsePointString(metadata.getAttr4(), points);
                     Utils.parsePointString(metadata.getAttr(5), points);
-                    Utils.parsePointString(metadata.getAttr(6), points);		    		    
+                    Utils.parsePointString(metadata.getAttr(6), points);
                     this.addLines(entry, entry.getId() /* + "_polygon"*/,
                                   points, null);
                     didone = true;
@@ -392,15 +389,15 @@ public class MapInfo {
             result.append(headerMessage);
         }
         String swidth;
-	    
-	if(!Utils.stringDefined(width)) {
-	    swidth = "";
-	} else if(width.startsWith("-")) {
-	    swidth =  HU.css("width",width.substring(1) + "%");
-	} else {
-	    swidth =  HU.css("width",HU.makeDim(width,"px"));
-	}
-	
+
+        if ( !Utils.stringDefined(width)) {
+            swidth = "";
+        } else if (width.startsWith("-")) {
+            swidth = HU.css("width", width.substring(1) + "%");
+        } else {
+            swidth = HU.css("width", HU.makeDim(width, "px"));
+        }
+
         String styles;
         if (mapHidden) {
             styles = "display:none;";
@@ -408,42 +405,44 @@ public class MapInfo {
             styles = mapStyle;
             if (styles == null) {
                 styles = HU.css("height", HU.makeDim(height, "px")) + swidth;
-            } else  {
-		styles += HU.css("height", HU.makeDim(height,"px"))  + swidth;
-	    }
+            } else {
+                styles += HU.css("height", HU.makeDim(height, "px")) + swidth;
+            }
         }
 
-        String footer2 =
-            HU.div("",
-                          HU.cssClass("ramadda-map-footer")
-                          + HU.id(mapDivId + "_footer2"));
-        String popup = HU.div("", HU.cssClass("ramadda-popup")
-			      + HU.id(mapDivId + "_loc_popup"));
+        String footer2 = HU.div("",
+                                HU.cssClass("ramadda-map-footer")
+                                + HU.id(mapDivId + "_footer2"));
+        String popup = HU.div("",
+                              HU.cssClass("ramadda-popup")
+                              + HU.id(mapDivId + "_loc_popup"));
 
-        String readout =
-            HU.div("&nbsp;",
-                          HU.cssClass("ramadda-map-latlonreadout")
-                          + HU.id(mapDivId + "_latlonreadout")
-                          + HU.style(swidth));
-	if(!Misc.equals("true", getMapProps().get("showLatLonReadout"))) readout = "";
-        String footer =
-            HU.div("",
-                          HU.cssClass("ramadda-map-footer")
-                          + HU.id(mapDivId + "_footer"));
+        String readout = HU.div("&nbsp;",
+                                HU.cssClass("ramadda-map-latlonreadout")
+                                + HU.id(mapDivId + "_latlonreadout")
+                                + HU.style(swidth));
+        if ( !Misc.equals("true", getMapProps().get("showLatLonReadout"))) {
+            readout = "";
+        }
+        String footer = HU.div("",
+                               HU.cssClass("ramadda-map-footer")
+                               + HU.id(mapDivId + "_footer"));
         HU.div(result, "",
-                      HU.cssClass("ramadda-map-search")
-                      + HU.id(mapDivId + "_search"));
-	String mapDiv =   HU.div(contents,
-				 HU.cssClass("ramadda-map")
-				 + HU.style(styles) + " " + HU.id(mapDivId));
-	String mapHeader =   HU.div("",
-				    HU.cssClass("ramadda-map-header") +HU.id(mapDivId+"_header"));
-	String mapSlider =   HU.div("",
-				    HU.cssClass("ramadda-map-slider") +HU.id(mapDivId+"_slider"));
-	
+               HU.cssClass("ramadda-map-search")
+               + HU.id(mapDivId + "_search"));
+        String mapDiv = HU.div(contents,
+                               HU.cssClass("ramadda-map") + HU.style(styles)
+                               + " " + HU.id(mapDivId));
+        String mapHeader = HU.div("",
+                                  HU.cssClass("ramadda-map-header")
+                                  + HU.id(mapDivId + "_header"));
+        String mapSlider = HU.div("",
+                                  HU.cssClass("ramadda-map-slider")
+                                  + HU.id(mapDivId + "_slider"));
 
-        HU.div(result, mapHeader+mapDiv+mapSlider,
-	       HU.cssClass("ramadda-map-container"));
+
+        HU.div(result, mapHeader + mapDiv + mapSlider,
+               HU.cssClass("ramadda-map-container"));
 
 
         String url = request.getUrl();
@@ -491,12 +490,12 @@ public class MapInfo {
         StringBuilder sb = new StringBuilder();
         sb.append(html);
 
-	/*
-	  For now don't decorate with the WMS legend popup
-	  if (rightSide.length() > 0) {
-	  sb.append("<table width=\"100%\"><tr valign=top><td>");
-	  }
-	*/
+        /*
+          For now don't decorate with the WMS legend popup
+          if (rightSide.length() > 0) {
+          sb.append("<table width=\"100%\"><tr valign=top><td>");
+          }
+        */
 
         sb.append(getMapDiv(""));
 
@@ -506,17 +505,18 @@ public class MapInfo {
             HU.close(sb, HU.TAG_DIV);
             }*/
 
-	/*
+        /*
         For now don't decorate with the WMS legend popup
         if (rightSide.length() > 0) {
-	sb.append("</td><td width=10%>");
-	sb.append(rightSide);
-	sb.append("</td></tr></table>");
+        sb.append("</td><td width=10%>");
+        sb.append(rightSide);
+        sb.append("</td></tr></table>");
         }
-	*/
+        */
 
         HU.script(sb, getFinalJS());
         sb.append("\n");
+
         return sb.toString();
     }
 
@@ -570,7 +570,8 @@ public class MapInfo {
                 Utils.append(js, "theMap.initMap(", forSelection, ");\n");
             }
             js.append(getJS());
-	    return js.toString();
+
+            return js.toString();
         } catch (Exception exc) {
             throw new IllegalArgumentException(exc);
         }
@@ -631,8 +632,7 @@ public class MapInfo {
                     props.append("[ \n");
                     List vals = (List) value;
                     for (int i = 0; i < vals.size(); i++) {
-                        props.append(
-                            HU.squote(vals.get(i).toString()));
+                        props.append(HU.squote(vals.get(i).toString()));
                         if (i < vals.size() - 1) {
                             props.append(",");
                         }
@@ -712,6 +712,7 @@ public class MapInfo {
                                String[] nwseValues, String[] nwseView,
                                String extraLeft, String extraTop)
             throws Exception {
+
         boolean doRegion = true;
         if (nwseValues == null) {
             nwseValues = new String[] { "", "", "", "" };
@@ -732,17 +733,14 @@ public class MapInfo {
         StringBuilder sb        = new StringBuilder();
         String        clearLink = getSelectorClearLink(msg("Clear"));
         if (doRegion) {
-            String msg1 =
-                HU.italics(msg("Shift-drag to select region"));
-            String msg2 =
-                HU.italics(msg("Command-drag to move region"));
-            sb.append(HU.leftRight(HU.SPACE+msg1+HU.SPACE+msg2, clearLink+HU.SPACE));
-	    //            sb.append(HU.leftRight(msg2, clearLink));
+            String msg1 = HU.italics(msg("Shift-drag to select region"));
+            String msg2 = HU.italics(msg("Command-drag to move region"));
+            sb.append(HU.leftRight(HU.SPACE + msg1 + HU.SPACE + msg2,
+                                   clearLink + HU.SPACE));
+            //            sb.append(HU.leftRight(msg2, clearLink));
         } else {
-            sb.append(
-                HU.leftRight(
-                    HU.italics(msg("Click to select point")),
-                    clearLink));
+            sb.append(HU.leftRight(HU.italics(msg("Click to select point")),
+                                   clearLink));
         }
 
         sb.append(getMapDiv(""));
@@ -751,10 +749,9 @@ public class MapInfo {
         }
 
         String rightSide = null;
-        String initParams = HU.squote(arg) + "," + doRegion + ","
-                            + (popup
-                               ? "1"
-                               : "0");
+        String initParams = HU.squote(arg) + "," + doRegion + "," + (popup
+                ? "1"
+                : "0");
 
         Hashtable<String, String> sessionProps =
             repository.getMapManager().getMapProps(request, null, null);
@@ -775,13 +772,20 @@ public class MapInfo {
 
         if (popup) {
             String popupLabel = (selectionLabel != null)
-		? selectionLabel
-		: HU.img("fas fa-globe",
-			 //			 repository.getIconUrl("/icons/map.png"),
-                                    msg("Show Map"));
-	    PageHandler ph = repository.getPageHandler();
-	    String initCall =  getVariableName() + ".selectionPopupInit();";
-	    String mapPopup =  HtmlUtils.makePopup(null, popupLabel,sb.toString(), ph.arg("my","left top"),ph.arg("at","right top-50px"),ph.arg("animate",false),ph.arg("inPlace",true),ph.arg("header",true),ph.arg("sticky",true),ph.arg("initCall",initCall));
+                                ? selectionLabel
+                                : HU.img("fas fa-globe",
+            //                      repository.getIconUrl("/icons/map.png"),
+            msg("Show Map"));
+            PageHandler ph  = repository.getPageHandler();
+            String initCall = getVariableName() + ".selectionPopupInit();";
+            String mapPopup = HtmlUtils.makePopup(null, popupLabel,
+                                  sb.toString(), ph.arg("my", "left top"),
+                                  ph.arg("at", "right top-50px"),
+                                  ph.arg("animate", false),
+                                  ph.arg("inPlace", true),
+                                  ph.arg("header", true),
+                                  ph.arg("sticky", true),
+                                  ph.arg("initCall", initCall));
 
             rightSide = HU.SPACE2 + mapPopup + HU.SPACE2 + extraTop;
         } else {
@@ -791,11 +795,12 @@ public class MapInfo {
         addJS(getVariableName() + ".setSelection(" + initParams + ");\n");
 
         String mapStuff = HU.table(new Object[] { widget.toString(),
-						  rightSide });
+                rightSide });
         StringBuilder retBuf = new StringBuilder();
         if (Utils.stringDefined(regions)) {
             retBuf.append(regions);
-            HU.open(retBuf,"div",HU.attrs("id",getVariableName() + "_mapToggle"));
+            HU.open(retBuf, "div",
+                    HU.attrs("id", getVariableName() + "_mapToggle"));
             retBuf.append(mapStuff);
             retBuf.append("</div>");
             // Hack to hide the maps if they haven't selected a custom region.
@@ -816,7 +821,9 @@ public class MapInfo {
         }
         retBuf.append(html);
         retBuf.append(HU.script(getFinalJS().toString()));
+
         return retBuf.toString();
+
     }
 
 
@@ -828,8 +835,8 @@ public class MapInfo {
      * @return  the link
      */
     public String getSelectorClearLink(String msg) {
-        return HU.mouseClickHref(getVariableName()
-				 + ".selectionClear();", msg,HU.cssClass("ramadda-highlightable"));
+        return HU.mouseClickHref(getVariableName() + ".selectionClear();",
+                                 msg, HU.cssClass("ramadda-highlightable"));
     }
 
     /**
@@ -841,7 +848,7 @@ public class MapInfo {
      */
     public String getRegionSelectorWidget(String arg) {
         StringBuilder widget = new StringBuilder();
-	//	if(mapRegions==null) mapRegions = repository.getPageHandler().getMapRegions();
+        //      if(mapRegions==null) mapRegions = repository.getPageHandler().getMapRegions();
         if ((mapRegions != null) && (mapRegions.size() > 0)) {
             List values = new ArrayList<String>();
             //values.add(new TwoFacedObject("Select Region", ""));
@@ -854,18 +861,14 @@ public class MapInfo {
             values.add(new TwoFacedObject("Custom", "CUSTOM"));
             String regionSelectId = getVariableName() + "_regions";
             widget.append(HU.hidden(arg + "_regionid", "",
-                                           HU.id(getVariableName()
-                                               + "_regionid")));
-            widget.append(
-                HU.select(
-                    "mapregion", values, getDefaultMapRegion(),
-                    HU.id(regionSelectId)
-                    + HU.attr(
-                        HU.ATTR_ONCHANGE,
-                        HU.call(
-                            "MapUtils.mapRegionSelected",
-                            HU.squote(regionSelectId),
-                            HU.squote(mapDivId)))));
+                                    HU.id(getVariableName() + "_regionid")));
+            widget.append(HU.select("mapregion", values,
+                                    getDefaultMapRegion(),
+                                    HU.id(regionSelectId)
+                                    + HU.attr(HU.ATTR_ONCHANGE,
+                                        HU.call("MapUtils.mapRegionSelected",
+                                            HU.squote(regionSelectId),
+                                            HU.squote(mapDivId)))));
         }
 
         return widget.toString();
@@ -891,23 +894,22 @@ public class MapInfo {
         }
 
         if (doRegion) {
-            widget.append(HU.makeLatLonBox(mapDivId, arg, nwse[2],
-                    nwse[0], nwse[3], nwse[1]));
+            widget.append(HU.makeLatLonBox(mapDivId, arg, nwse[2], nwse[0],
+                                           nwse[3], nwse[1]));
 
         } else {
             widget.append(" ");
             widget.append(msgLabel("Latitude"));
             widget.append(" ");
-            widget.append(
-                HU.input(
-                    arg + ".latitude", nwse[0],
-                    HU.SIZE_5 + " "
-                    + HU.id(arg + ".latitude")) + " "
-                        + msgLabel("Longitude") + " "
-                        + HU.input(
-                            arg + ".longitude", nwse[1],
-                            HU.SIZE_5 + " "
-                            + HU.id(arg + ".longitude")) + " ");
+            widget.append(HU.input(arg + ".latitude", nwse[0],
+                                   HU.SIZE_5 + " "
+                                   + HU.id(arg + ".latitude")) + " "
+                                       + msgLabel("Longitude") + " "
+                                       + HU.input(arg + ".longitude",
+                                           nwse[1],
+                                           HU.SIZE_5 + " "
+                                           + HU.id(arg
+                                               + ".longitude")) + " ");
 
         }
 
@@ -971,13 +973,13 @@ public class MapInfo {
                                              "" + properties
                                                  .getZoomToExtent());
         getJS().append("var mapBoxAttributes = " + attrs + ";\n");
-        getJS().append(
-            mapVarName + ".createBox("
-            + HU.comma(
-                HU.squote(id),
-                HU.squote(boxName.replaceAll("'", "\\\\'")),
-                "" + north, "" + west, "" + south, "" + east,
-                HU.squote(text), "mapBoxAttributes") + ");\n");
+        getJS().append(mapVarName + ".createBox("
+                       + HU.comma(HU.squote(id),
+                                  HU.squote(boxName.replaceAll("'",
+                                      "\\\\'")), "" + north, "" + west,
+                                          "" + south, "" + east,
+                                          HU.squote(text),
+                                          "mapBoxAttributes") + ");\n");
     }
 
 
@@ -1071,10 +1073,9 @@ public class MapInfo {
             sb.append("]");
             String name = entry.getName().replaceAll("'", "\\\\'");
             getJS().append(mapVarName + ".addLines("
-                           + HU.comma(HU.squote(id),
-                                             HU.squote(name),
-                                             attrs.toString(),
-                                             sb.toString()) + ");\n");
+                           + HU.comma(HU.squote(id), HU.squote(name),
+                                      attrs.toString(),
+                                      sb.toString()) + ");\n");
         }
 
 
@@ -1101,11 +1102,9 @@ public class MapInfo {
         attrs.append("}");
         String name = entry.getName().replaceAll("'", "\\\\'");
         getJS().append(mapVarName + ".addLine("
-                       + HU.comma(HU.squote(id),
-                                         HU.squote(name),
-                                         "" + fromLat, "" + fromLon,
-                                         "" + toLat, "" + toLon,
-                                         attrs.toString()) + ");\n");
+                       + HU.comma(HU.squote(id), HU.squote(name),
+                                  "" + fromLat, "" + fromLon, "" + toLat,
+                                  "" + toLon, attrs.toString()) + ");\n");
     }
 
     /**
@@ -1151,30 +1150,48 @@ public class MapInfo {
      */
     public void addMarker(String id, double lat, double lon, String icon,
                           String markerName, String info, String parentId) {
-	addMarker(id,lat,lon,null,icon,markerName,info,parentId);
+        addMarker(id, lat, lon, null, icon, markerName, info, parentId);
     }
 
-    public void addMarker(String id, double lat, double lon, String polygon, String icon,
-                          String markerName, String info, String parentId) {
+    /**
+     *
+     * @param id _more_
+     * @param lat _more_
+     * @param lon _more_
+     * @param polygon _more_
+     * @param icon _more_
+     * @param markerName _more_
+     * @param info _more_
+     * @param parentId _more_
+     */
+    public void addMarker(String id, double lat, double lon, String polygon,
+                          String icon, String markerName, String info,
+                          String parentId) {
 
-        getJS().append(mapVarName + ".addMarker(" + HU.squote(id)
-                       + "," + llp(lat, lon) + "," + ((icon == null)
+        getJS().append(mapVarName + ".addMarker(" + HU.squote(id) + ","
+                       + llp(lat, lon) + "," + ((icon == null)
                 ? "null"
                 : HU.squote(icon)) + ","
-                                          + HU.squote(
-                                              markerName.replaceAll(
-                                                  "'", "\\\\'")) + ","
-                                                      + HU.squote(
-                                                          info) + ","
-                                                              + ((parentId
-                                                                  == null)
+                                   + HU.squote(markerName.replaceAll("'",
+                                       "\\\\'")) + "," + HU.squote(info)
+                                           + "," + ((parentId == null)
                 ? "null"
-								 : HU.squote(parentId)) + ",null,null,null,null," + (polygon!=null?HU.squote(polygon):"null") + ");\n");
+                : HU.squote(parentId)) + ",null,null,null,null,"
+                                       + ((polygon != null)
+                                          ? HU.squote(polygon)
+                                          : "null") + ");\n");
     }
 
 
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @throws Exception _more_
+     */
     public void addMarker(Request request, Entry entry) throws Exception {
-	addMarker(request, entry, false);
+        addMarker(request, entry, false);
     }
 
     /**
@@ -1182,19 +1199,23 @@ public class MapInfo {
      *
      * @param request _more_
      * @param entry _more_
+     * @param useThumbnail _more_
      *
      * @throws Exception _more_
      */
-    public void addMarker(Request request, Entry entry, boolean useThumbnail) throws Exception {
-        String   icon = repository.getPageHandler().getIconUrl(request,
-                            entry);
+    public void addMarker(Request request, Entry entry, boolean useThumbnail)
+            throws Exception {
+        String icon = repository.getPageHandler().getIconUrl(request, entry);
 
 
-	if(useThumbnail) {
+        if (useThumbnail) {
             List<String> urls = new ArrayList<String>();
-            repository.getMetadataManager().getThumbnailUrls(request, entry, urls);
-	    if(urls.size()>0) icon = urls.get(0);
-	}
+            repository.getMetadataManager().getThumbnailUrls(request, entry,
+                    urls);
+            if (urls.size() > 0) {
+                icon = urls.get(0);
+            }
+        }
 
         double[] location = entry.getCenter();
         String   id       = entry.getId();
@@ -1203,20 +1224,19 @@ public class MapInfo {
         String props = "null";
 
         String fillColor = entry.getTypeHandler().getDisplayAttribute(entry,
-								      "mapFillColor");
+                               "mapFillColor");
         if (fillColor != null) {
             props = "{fillColor:'" + fillColor + "'";
             props += "}";
         }
 
-        getJS().append(
-            mapVarName + ".addEntryMarker(" + HU.squote(id) + ","
-            + llp(location[0], location[1]) + "," + HU.squote(icon)
-            + ","
-            + HU.squote(entry.getName().replaceAll("'", "\\\\'"))
-            + "," + HU.squote(info) + ","
-            + HU.squote(entry.getTypeHandler().getType()) + ","
-            + props + ");\n");
+        getJS().append(mapVarName + ".addEntryMarker(" + HU.squote(id) + ","
+                       + llp(location[0], location[1]) + ","
+                       + HU.squote(icon) + ","
+                       + HU.squote(entry.getName().replaceAll("'", "\\\\'"))
+                       + "," + HU.squote(info) + ","
+                       + HU.squote(entry.getTypeHandler().getType()) + ","
+                       + props + ");\n");
     }
 
 
@@ -1279,8 +1299,15 @@ public class MapInfo {
     }
 
 
+    /**
+     *
+     * @param id _more_
+     * @param lat _more_
+     * @param lon _more_
+     * @param radius _more_
+     */
     public void addCircle(String id, double lat, double lon, int radius) {
-	addCircle(id,lat,lon,radius,1,"#000","blue","");
+        addCircle(id, lat, lon, radius, 1, "#000", "blue", "");
     }
 
 
@@ -1305,9 +1332,8 @@ public class MapInfo {
                                 Json.quote(fillColor), "strokeColor",
                                 Json.quote(strokeColor));
         getJS().append(mapVarName + ".addPoint("
-                       + HU.comma(HU.squote(id), llp(lat, lon),
-                                         attrs,
-                                         HU.squote(info)) + ");\n");
+                       + HU.comma(HU.squote(id), llp(lat, lon), attrs,
+                                  HU.squote(info)) + ");\n");
     }
 
 
@@ -1325,9 +1351,9 @@ public class MapInfo {
     public void addKmlUrl(String name, String url, boolean canSelect,
                           String args) {
         name = name.replaceAll("'", " ");
-        getJS().append(mapVarName + ".addKMLLayer(" + HU.squote(name)
-                       + "," + HU.squote(url) + "," + canSelect
-                       + ",null,null," + args + ");\n");
+        getJS().append(mapVarName + ".addKMLLayer(" + HU.squote(name) + ","
+                       + HU.squote(url) + "," + canSelect + ",null,null,"
+                       + args + ");\n");
 
     }
 
@@ -1342,9 +1368,9 @@ public class MapInfo {
      */
     public void addGeoJsonUrl(String name, String url, boolean canSelect,
                               String args) {
-        getJS().append(mapVarName + ".addGeoJsonLayer("
-                       + HU.squote(name) + "," + HU.squote(url)
-                       + "," + canSelect + ",null,null," + args + ");\n");
+        getJS().append(mapVarName + ".addGeoJsonLayer(" + HU.squote(name)
+                       + "," + HU.squote(url) + "," + canSelect
+                       + ",null,null," + args + ");\n");
     }
 
 
@@ -1358,7 +1384,7 @@ public class MapInfo {
      */
     public void centerOn(Rectangle2D.Double bounds, boolean force) {
         if (bounds != null) {
-	    //	    System.err.println("Center on A:" +Utils.getStack(5));
+            //      System.err.println("Center on A:" +Utils.getStack(5));
             Utils.append(getJS(), "var bounds = new OpenLayers.Bounds(",
                          bounds.getX(), ",", bounds.getY(), ",",
                          (bounds.getX() + bounds.getWidth()), ",",
@@ -1387,6 +1413,7 @@ public class MapInfo {
     public void centerOn(Entry entry) {
         if (entry == null) {
             center();
+
             return;
         }
         if (entry.hasAreaDefined()) {
@@ -1410,7 +1437,7 @@ public class MapInfo {
                          double east) {
         Utils.append(getJS(), "var bounds = new OpenLayers.Bounds(", west,
                      ",", south, ",", east, ",", north, ");\n");
-	//	System.err.println("Center on B:" +Utils.getStack(5));
+        //      System.err.println("Center on B:" +Utils.getStack(5));
         Utils.append(getJS(), mapVarName, ".centerOnMarkers(bounds);\n");
     }
 

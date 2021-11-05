@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.services;
 
@@ -836,9 +823,9 @@ public class OaiManager extends RepositoryManager {
      * @throws Exception _more_
      */
     private EntryList getEntries(Request request) throws Exception {
-        int         max     = request.get(ARG_MAX, 5);
-        int         skip    = request.get(ARG_RESUMPTIONTOKEN, 0);
-        Request newRequest  = new Request(getRepository(), request.getUser());
+        int     max        = request.get(ARG_MAX, 5);
+        int     skip       = request.get(ARG_RESUMPTIONTOKEN, 0);
+        Request newRequest = new Request(getRepository(), request.getUser());
         newRequest.put(ARG_SKIP, "" + skip);
         newRequest.put(ARG_MAX, "" + max);
 
@@ -850,8 +837,8 @@ public class OaiManager extends RepositoryManager {
             newRequest.put(ARG_UNTIL, request.getString(ARG_UNTIL, ""));
         }
 
-        List<Entry> entries =  getEntryManager().getEntries(newRequest);
-        String token = null;
+        List<Entry> entries = getEntryManager().getEntries(newRequest);
+        String      token   = null;
         if (entries.size() > 0) {
             if (entries.size() >= max) {
                 token = "" + (skip + max);

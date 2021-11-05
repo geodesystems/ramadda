@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.type;
 
@@ -131,7 +118,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
     @Override
     public synchronized void clearCache() {
         super.clearCache();
-	cache.clearCache();
+        cache.clearCache();
         labelCache = new Hashtable<String, Properties>();
     }
 
@@ -365,7 +352,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
     public List<Clause> getClauses(Request request, Entry entry,
                                    Appendable key)
             throws Exception {
-	System.err.println(Utils.getStack(10));
+        System.err.println(Utils.getStack(10));
         List<Clause> clauses = new ArrayList<Clause>();
         for (int selectIdx = 0; selectIdx < granuleColumns.size();
                 selectIdx++) {
@@ -872,9 +859,10 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         }
         List<Clause> clauses = new ArrayList<Clause>();
         addClauses(request, group, clauses);
-	//Pass in false to say not to do lucene search if its enabled
-        return  getEntryManager().getEntries(request, clauses,
-					     getGranuleTypeHandler(),false);
+
+        //Pass in false to say not to do lucene search if its enabled
+        return getEntryManager().getEntries(request, clauses,
+                                            getGranuleTypeHandler(), false);
     }
 
     /**
@@ -899,7 +887,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
                 HtmlUtils.id(formId)));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
-	sb.append(HtmlUtils.hidden(ARG_REQUEST, ""));
+        sb.append(HtmlUtils.hidden(ARG_REQUEST, ""));
         js.append("var " + formId + " =  "
                   + HtmlUtils.call("new  SelectForm",
                                    HtmlUtils.jsMakeArgs(true, formId,

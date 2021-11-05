@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.type;
 
@@ -146,8 +133,8 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
             //            System.err.println("returning baseFile");
             return baseFile;
         }
-	    //System.err.println("id:"+ id);
-		
+        //System.err.println("id:"+ id);
+
         String subPath = new String(Utils.decodeBase64(id));
         //        System.err.println("subpath:" + subPath);
         File file = new File(IOUtil.joinDir(baseFile, subPath));
@@ -227,7 +214,9 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         Metadata sortMetadata = null;
         if (mainEntry != null) {
             try {
-		sortMetadata = getMetadataManager().getSortOrderMetadata(request, mainEntry);
+                sortMetadata =
+                    getMetadataManager().getSortOrderMetadata(request,
+                        mainEntry);
             } catch (Exception ignore) {}
         }
 
@@ -520,8 +509,9 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
                                    TypeHandler.TYPE_GROUP)
                                : getRepository().getTypeHandler(
                                    TypeHandler.TYPE_FILE));
-        Entry templateEntry = getEntryManager().getTemplateEntry(targetFile,null);
-        Entry entry         = null;
+        Entry templateEntry = getEntryManager().getTemplateEntry(targetFile,
+                                  null);
+        Entry entry = null;
 
 
         if (templateEntry != null) {
@@ -602,9 +592,8 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
                         new Resource(targetFile, (targetFile.isDirectory()
                 ? Resource.TYPE_LOCAL_DIRECTORY
                 : Resource.TYPE_LOCAL_FILE)), "", Entry.DEFAULT_ORDER,
-			targetFile.lastModified(),
                 targetFile.lastModified(), targetFile.lastModified(),
-                targetFile.lastModified(), values);
+                targetFile.lastModified(), targetFile.lastModified(), values);
         //        System.err.println ("Done:" + entry);
         /*
         if ( !getRepository().getAccessManager().canDoAction(request, entry,

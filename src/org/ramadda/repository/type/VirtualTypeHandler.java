@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.type;
 
@@ -22,9 +9,9 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Utils;
 
 import org.ramadda.util.TTLCache;
+import org.ramadda.util.Utils;
 
 
 import org.w3c.dom.*;
@@ -50,7 +37,8 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
 
     /** 5 minute cache */
     private TTLCache<String, List<String>> cachedIds = new TTLCache<String,
-	List<String>>(5 * 60   * 1000);
+                                                           List<String>>(5
+                                                               * 60 * 1000);
 
     /**
      * _more_
@@ -71,7 +59,7 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
      */
     public void clearCache() {
         super.clearCache();
-	cachedIds.clearCache();
+        cachedIds.clearCache();
     }
 
     /**
@@ -161,9 +149,9 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
 
         String idString = (String) mainEntry.getValue(0, "").replace(",",
                               "_COMMA_");
-	String by = request.getString(ARG_ORDERBY, (String) null);
-	boolean descending = !request.get(ARG_ASCENDING, false);
-	idString +="by:" + by +" desc:" + descending;
+        String  by         = request.getString(ARG_ORDERBY, (String) null);
+        boolean descending = !request.get(ARG_ASCENDING, false);
+        idString += "by:" + by + " desc:" + descending;
         List<String> fromCache = cachedIds.get(idString);
         if (fromCache == null) {
             fromCache = new ArrayList<String>();
@@ -199,12 +187,12 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
             }
 
 
-	    //	    System.err.println("by:" + by + " desc:" + descending);
+            //      System.err.println("by:" + by + " desc:" + descending);
             if (by.equals(ORDERBY_NAME)) {
                 entries = getEntryManager().getEntryUtil().sortEntriesOnName(
                     entries, descending);
                 //        } else if (by.equals(ORDERBY_SIZE)) {
-		//		System.err.println("by name:" + entries);
+                //              System.err.println("by name:" + entries);
             } else {
                 entries = getEntryManager().getEntryUtil().sortEntriesOnDate(
                     entries, descending);
@@ -216,6 +204,7 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
         }
         ids.addAll(fromCache);
         mainEntry.setChildIds(ids);
+
         return ids;
     }
 

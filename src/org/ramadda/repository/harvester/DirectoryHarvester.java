@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.harvester;
 
@@ -190,7 +177,7 @@ public class DirectoryHarvester extends Harvester {
         if (baseGroup == null) {
             baseGroup = getEntryManager().getRootEntry();
         }
-	Hashtable<String,Entry> entriesMap = new Hashtable<String,Entry>();
+        Hashtable<String, Entry> entriesMap = new Hashtable<String, Entry>();
         for (File rootDir : getRootDirs()) {
             walkTree(rootDir, baseGroup, entriesMap);
         }
@@ -202,14 +189,18 @@ public class DirectoryHarvester extends Harvester {
      *
      * @param dir _more_
      * @param parentGroup _more_
+     * @param entriesMap _more_
      *
      * @throws Exception _more_
      */
-    protected void walkTree(File dir, Entry parentGroup,Hashtable<String,Entry> entriesMap) throws Exception {
+    protected void walkTree(File dir, Entry parentGroup,
+                            Hashtable<String, Entry> entriesMap)
+            throws Exception {
         String name = dir.getName();
         File xmlFile = new File(IOUtil.joinDir(dir.getParentFile(),
                            "." + name + ".ramadda"));
-        Entry fileInfoEntry = getEntryManager().getTemplateEntry(dir,entriesMap);
+        Entry fileInfoEntry = getEntryManager().getTemplateEntry(dir,
+                                  entriesMap);
         Entry group = getEntryManager().findGroupFromName(getRequest(),
                           parentGroup.getFullName() + "/" + name, getUser(),
                           false);

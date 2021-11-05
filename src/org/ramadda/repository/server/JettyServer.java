@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.server;
 
@@ -87,13 +74,13 @@ public class JettyServer implements Constants {
     public JettyServer(String[] args) throws Throwable {
         this.args = args;
 
-	boolean hadPort = false;
-        port      = 8080;
+        boolean hadPort = false;
+        port = 8080;
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-port")) {
-		hadPort = true;
-                port = new Integer(args[i + 1]).intValue();
-		//		System.err.println("port args:" + port);
+                hadPort = true;
+                port    = new Integer(args[i + 1]).intValue();
+                //              System.err.println("port args:" + port);
                 //Keep looping so we get the last -port in the arg list
             }
         }
@@ -104,19 +91,19 @@ public class JettyServer implements Constants {
         //        gzipHandler.addIncludedMimeTypes("application/vnd.google-earth.kml+xml","application/vnd.google-earth.kmz");
         gzipHandler.addIncludedMethods("GET", "POST");
         context.setGzipHandler(gzipHandler);
-        baseServlet = addServlet();
+        baseServlet    = addServlet();
         baseRepository = baseServlet.getRepository();
 
 
-	if(!hadPort) {
-	    //	    Repository.propdebug = true;
-	    port = baseRepository.getProperty("ramadda.port", port);
-	    //	    Repository.propdebug = false;
-	    //	    System.err.println("port from properties:" + port);
-	}
+        if ( !hadPort) {
+            //      Repository.propdebug = true;
+            port = baseRepository.getProperty("ramadda.port", port);
+            //      Repository.propdebug = false;
+            //      System.err.println("port from properties:" + port);
+        }
 
-	baseRepository.setPort(port);
-        server  = new Server(port);
+        baseRepository.setPort(port);
+        server = new Server(port);
         server.setHandler(context);
 
 
@@ -151,6 +138,7 @@ public class JettyServer implements Constants {
     public RepositoryServlet addServlet() throws Exception {
         Properties properties  = new Properties();
         String[]   cmdLineArgs = args;
+
         return addServlet(new RepositoryServlet(this, cmdLineArgs, port,
                 properties));
     }

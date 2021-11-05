@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.auth;
 
@@ -456,7 +443,8 @@ public class UserManager extends RepositoryManager {
         StringBuilder headerSB = new StringBuilder();
         addUserHeader(request, headerSB);
         headerSB.append(sb);
-	getPageHandler().sectionClose(request, headerSB);
+        getPageHandler().sectionClose(request, headerSB);
+
         return addHeader(request, new Result(title, headerSB));
     }
 
@@ -480,7 +468,8 @@ public class UserManager extends RepositoryManager {
         } else if ( !user.getIsLocal()) {
             links = remoteUserUrls;
         }
-	getPageHandler().sectionOpen(request, sb, "User: " + user.getId(),false);
+        getPageHandler().sectionOpen(request, sb, "User: " + user.getId(),
+                                     false);
         getPageHandler().makeLinksHeader(request, sb, links, "");
     }
 
@@ -498,9 +487,9 @@ public class UserManager extends RepositoryManager {
         salt = getRepository().getProperty(PROP_PASSWORD_SALT, "");
         salt1 = getRepository().getProperty(PROP_PASSWORD_SALT1, "");
         salt2 = getRepository().getProperty(PROP_PASSWORD_SALT2, "");
-        allowedIpsForLogin = Utils.split(
-            getRepository().getProperty(PROP_LOGIN_ALLOWEDIPS, ""), ",",
-            true, true);
+        allowedIpsForLogin =
+            Utils.split(getRepository().getProperty(PROP_LOGIN_ALLOWEDIPS,
+                ""), ",", true, true);
 
         userAgree = getRepository().getProperty(PROP_USER_AGREE,
                 (String) null);
@@ -541,7 +530,7 @@ public class UserManager extends RepositoryManager {
                 System.err.println("Creating new admin user:" + user);
                 makeOrUpdateUser(user, true);
             } else {
-		//                System.err.println("Updating password for admin user:" + user);
+                //                System.err.println("Updating password for admin user:" + user);
                 changePassword(user);
                 //And set the admin flag to true
                 getDatabaseManager().update(
@@ -1212,9 +1201,8 @@ public class UserManager extends RepositoryManager {
         }
         user.setIsGuest(request.get(ARG_USER_ISGUEST, false));
 
-        List<String> roles =
-            Utils.split(request.getString(ARG_USER_ROLES, ""), "\n",
-                             true, true);
+        List<String> roles = Utils.split(request.getString(ARG_USER_ROLES,
+                                 ""), "\n", true, true);
 
         user.setRoles(roles);
         setRoles(request, user);
@@ -1494,8 +1482,8 @@ public class UserManager extends RepositoryManager {
                 if (line.startsWith("#")) {
                     continue;
                 }
-                List<String> toks = (List<String>) Utils.split(line,
-                                        ",", true, true);
+                List<String> toks = (List<String>) Utils.split(line, ",",
+                                        true, true);
                 if (toks.size() == 0) {
                     continue;
                 }
@@ -1592,8 +1580,8 @@ public class UserManager extends RepositoryManager {
 
         }
         List<String> newUserRoles =
-            Utils.split(request.getString(ARG_USER_ROLES, ""), "\n",
-                             true, true);
+            Utils.split(request.getString(ARG_USER_ROLES, ""), "\n", true,
+                        true);
 
         String homeGroupId = request.getString(ARG_USER_HOME + "_hidden", "");
 
@@ -2010,8 +1998,8 @@ public class UserManager extends RepositoryManager {
                     request.makeUrl(
                         getRepositoryBase().URL_USER_ACTIVITY, ARG_USER_ID,
                         user.getId()), HtmlUtils.getIconImage(
-							      getRepository().getIconUrl(ICON_LOG),
-							      "title","View user log"));
+                            getRepository().getIconUrl(ICON_LOG), "title",
+                            "View user log"));
 
             String userCbx = HtmlUtils.checkbox("user_" + user.getId(),
                                  "true", false, "");
@@ -3687,18 +3675,19 @@ public class UserManager extends RepositoryManager {
                         List<Entry> cart = getCart(request);
                         boolean entryIsInCart =
                             cart.contains(state.getEntry());
-			/**
-			 //Don't show this for now. less is more. 
-                        if ( !entryIsInCart) {
-			link = makeLink(request, state.getEntry(),  OUTPUT_CART_ADD);
-			link.setLinkType(OutputType.TYPE_FILE| OutputType.TYPE_TOOLBAR);
-			links.add(link);
-                        } else {
-                            link = makeLink(request, state.getEntry(),   OUTPUT_CART_REMOVE);
-                            link.setLinkType(OutputType.TYPE_FILE | OutputType.TYPE_ACTION);
-                            links.add(link);
-                        }
-			**/
+
+                        /**
+                         * //Don't show this for now. less is more.
+                         * if ( !entryIsInCart) {
+                         * link = makeLink(request, state.getEntry(),  OUTPUT_CART_ADD);
+                         * link.setLinkType(OutputType.TYPE_FILE| OutputType.TYPE_TOOLBAR);
+                         * links.add(link);
+                         * } else {
+                         *   link = makeLink(request, state.getEntry(),   OUTPUT_CART_REMOVE);
+                         *   link.setLinkType(OutputType.TYPE_FILE | OutputType.TYPE_ACTION);
+                         *   links.add(link);
+                         * }
+                         */
                     }
 
 
@@ -3923,9 +3912,11 @@ public class UserManager extends RepositoryManager {
                         HtmlUtils.href(
                             request.makeUrl(
                                 getRepositoryBase().URL_USER_ACTIVITY,
-                                ARG_USER_ID, user.getId()), HtmlUtils.getIconImage(getRepository().getIconUrl(ICON_LOG),
-										   "title","View user log") + HU.SPACE
-			    + user.getLabel());
+                                ARG_USER_ID,
+                                user.getId()), HtmlUtils.getIconImage(
+                                    getRepository().getIconUrl(ICON_LOG),
+                                    "title", "View user log") + HU.SPACE
+                                        + user.getLabel());
                 }
 
             }

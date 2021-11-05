@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.type;
 
@@ -1003,7 +990,8 @@ public class GenericTypeHandler extends TypeHandler {
                                       Column column, Appendable tmpSb,
                                       Object[] values)
             throws Exception {
-        column.formatValue(request, entry, tmpSb, Column.OUTPUT_HTML, values, false);
+        column.formatValue(request, entry, tmpSb, Column.OUTPUT_HTML, values,
+                           false);
     }
 
 
@@ -1019,18 +1007,19 @@ public class GenericTypeHandler extends TypeHandler {
     public void getTextCorpus(Entry entry, Appendable sb) throws Exception {
         super.getTextCorpus(entry, sb);
         Object[] values = entry.getValues();
-        if (values == null) { return;}
-	Request request=getRepository().getTmpRequest();
-        for (Column column :  getMyColumns()) {
-            if (!column.getCanShow() || column.isPrivate()) {
+        if (values == null) {
+            return;
+        }
+        Request request = getRepository().getTmpRequest();
+        for (Column column : getMyColumns()) {
+            if ( !column.getCanShow() || column.isPrivate()) {
                 continue;
             }
-	    StringBuilder tmpSB = new StringBuilder();
-	    formatColumnHtmlValue(request, entry, column, tmpSB,
-				  values);
+            StringBuilder tmpSB = new StringBuilder();
+            formatColumnHtmlValue(request, entry, column, tmpSB, values);
 
-	    sb.append(tmpSB);
-	    sb.append("\n");
+            sb.append(tmpSB);
+            sb.append("\n");
         }
     }
 
@@ -1057,13 +1046,15 @@ public class GenericTypeHandler extends TypeHandler {
      * @param request _more_
      * @param entry _more_
      * @param name _more_
+     * @param raw _more_
      *
      * @return _more_
      *
      * @throws Exception on badness
      */
     @Override
-    public String getFieldHtml(Request request, Entry entry, String name,boolean raw)
+    public String getFieldHtml(Request request, Entry entry, String name,
+                               boolean raw)
             throws Exception {
         Object[] values = getEntryValues(entry);
         if (values != null) {
@@ -1072,11 +1063,14 @@ public class GenericTypeHandler extends TypeHandler {
                     if (column.isPrivate()) {
                         return null;
                     }
-		    if(raw) {
-			Object o = column.getObject(values);
-			if(o!=null) return o.toString();
-			return null;
-		    }
+                    if (raw) {
+                        Object o = column.getObject(values);
+                        if (o != null) {
+                            return o.toString();
+                        }
+
+                        return null;
+                    }
                     StringBuilder tmpSB = new StringBuilder();
                     formatColumnHtmlValue(request, entry, column, tmpSB,
                                           values);
@@ -1086,7 +1080,7 @@ public class GenericTypeHandler extends TypeHandler {
             }
         }
 
-        return super.getFieldHtml(request, entry, name,raw);
+        return super.getFieldHtml(request, entry, name, raw);
     }
 
     /**
@@ -1198,8 +1192,8 @@ public class GenericTypeHandler extends TypeHandler {
         if (values != null) {
             for (Column column : getMyColumns()) {
                 StringBuilder tmpSb = new StringBuilder();
-                column.formatValue(request, entry, tmpSb, Column.OUTPUT_HTML, values,
-                                   false);
+                column.formatValue(request, entry, tmpSb, Column.OUTPUT_HTML,
+                                   values, false);
                 html = html.replace("${" + column.getName() + ".content}",
                                     tmpSb.toString());
                 html = html.replace("${" + column.getName() + ".label}",
@@ -1393,8 +1387,8 @@ public class GenericTypeHandler extends TypeHandler {
         if ((entry != null) && hasValue && !canEdit) {
             if (canDisplay) {
                 StringBuilder tmpSb = new StringBuilder();
-                column.formatValue(request, entry, tmpSb, Column.OUTPUT_HTML, values,
-                                   false);
+                column.formatValue(request, entry, tmpSb, Column.OUTPUT_HTML,
+                                   values, false);
                 formBuffer.append(HtmlUtils.formEntry(column.getLabel()
                         + ":", tmpSb.toString()));
             }

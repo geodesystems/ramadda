@@ -1,22 +1,8 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.server;
 
-import org.ramadda.util.Utils;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -27,13 +13,17 @@ import org.apache.commons.io.IOUtils;
 
 import org.ramadda.repository.*;
 
+import org.ramadda.util.Utils;
+
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 
 import ucar.unidata.util.Misc;
 
 import java.io.*;
+
 import java.net.*;
+
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
@@ -58,9 +48,11 @@ import javax.servlet.http.*;
 public class RepositoryServlet extends HttpServlet implements Constants {
 
 
+    /**  */
     public static boolean debugRequests = false;
 
-    public static boolean debugMultiPart = false;    
+    /**  */
+    public static boolean debugMultiPart = false;
 
 
     /** _more_ */
@@ -310,7 +302,8 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                 logException(e, request);
                 response.sendError(response.SC_INTERNAL_SERVER_ERROR,
                                    e.getMessage());
-		return;
+
+                return;
             }
             if (repositoryResult == null) {
                 response.sendError(response.SC_INTERNAL_SERVER_ERROR,
@@ -480,7 +473,10 @@ public class RepositoryServlet extends HttpServlet implements Constants {
 
 
             if (ServletFileUpload.isMultipartContent(request)) {
-		if(debugMultiPart || debugRequests) System.err.println("RepositoryServlet:multipart:" + request.getRequestURI());
+                if (debugMultiPart || debugRequests) {
+                    System.err.println("RepositoryServlet:multipart:"
+                                       + request.getRequestURI());
+                }
                 ServletFileUpload upload =
                     new ServletFileUpload(new DiskFileItemFactory());
                 try {
@@ -501,7 +497,10 @@ public class RepositoryServlet extends HttpServlet implements Constants {
             } else {
                 // Map containing parameter names as keys and parameter values as map values. 
                 // The keys in the parameter map are of type String. The values in the parameter map are of type String array. 
-		if(debugRequests) System.err.println("RepositoryServlet:request:" + request.getRequestURI());
+                if (debugRequests) {
+                    System.err.println("RepositoryServlet:request:"
+                                       + request.getRequestURI());
+                }
                 Map      p  = request.getParameterMap();
                 Iterator it = p.entrySet().iterator();
                 // Convert Map values into type String. 
@@ -510,7 +509,12 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                     Map.Entry pairs = (Map.Entry) it.next();
                     String    key   = (String) pairs.getKey();
                     String[]  vals  = (String[]) pairs.getValue();
-		    if(debugRequests) System.err.println("\t" + key +"=" + (vals.length>0?vals[0]:"no value"));
+                    if (debugRequests) {
+                        System.err.println("\t" + key + "="
+                                           + ((vals.length > 0)
+                                ? vals[0]
+                                : "no value"));
+                    }
                     if (vals.length == 1) {
                         formArgs.put(key, vals[0]);
                     } else if (vals.length > 1) {
@@ -550,7 +554,10 @@ public class RepositoryServlet extends HttpServlet implements Constants {
 
                 return;
             }
-	    if(debugRequests || debugMultiPart) System.err.println("\tfield:" + item.getFieldName() +"=" + value);
+            if (debugRequests || debugMultiPart) {
+                System.err.println("\tfield:" + item.getFieldName() + "="
+                                   + value);
+            }
             formArgs.put(name, value);
         }
 
@@ -569,8 +576,10 @@ public class RepositoryServlet extends HttpServlet implements Constants {
             String fieldName = item.getFieldName();
             String fileName  = item.getName();
             if ((fileName == null) || (fileName.trim().length() == 0)) {
-		if(debugMultiPart || debugRequests) System.err.println("\tfile: no file");
-		    
+                if (debugMultiPart || debugRequests) {
+                    System.err.println("\tfile: no file");
+                }
+
                 return;
             }
 
@@ -590,7 +599,9 @@ public class RepositoryServlet extends HttpServlet implements Constants {
             //            fileName = HtmlUtils.encode(fileName);
 
 
-	    if(debugMultiPart || debugRequests) System.err.println("\tfile:"+ fileName);
+            if (debugMultiPart || debugRequests) {
+                System.err.println("\tfile:" + fileName);
+            }
 
             String contentType = item.getContentType();
             File uploadedFile =

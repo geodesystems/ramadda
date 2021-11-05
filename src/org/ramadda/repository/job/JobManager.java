@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.job;
 
@@ -531,6 +518,8 @@ public class JobManager extends RepositoryManager {
      * @param callable callable object
      *
      * @throws Exception On badness
+     *
+     * @throws Throwable _more_
      */
     public void invokeAndWait(Request request, Callable<Boolean> callable)
             throws Throwable {
@@ -576,6 +565,8 @@ public class JobManager extends RepositoryManager {
      * @param callables callables to execute
      *
      * @throws Exception On badness
+     *
+     * @throws Throwable _more_
      */
     public void invokeAndWait(Request request,
                               List<Callable<Boolean>> callables)
@@ -608,16 +599,24 @@ public class JobManager extends RepositoryManager {
     }
 
 
-    public void invokeAllAndWait(List<Callable<Boolean>> callables) throws Throwable {
-	ExecutorService executor = Executors.newFixedThreadPool(callables.size());
-	List<Future<Boolean>> results = executor.invokeAll(callables);
-	for (Future future : results) {
-	    try {
-		future.get();
-	    } catch (ExecutionException ex) {
-		throw ex.getCause();
-	    }
-	}
+    /**
+     *
+     * @param callables _more_
+     *
+     * @throws Throwable _more_
+     */
+    public void invokeAllAndWait(List<Callable<Boolean>> callables)
+            throws Throwable {
+        ExecutorService executor =
+            Executors.newFixedThreadPool(callables.size());
+        List<Future<Boolean>> results = executor.invokeAll(callables);
+        for (Future future : results) {
+            try {
+                future.get();
+            } catch (ExecutionException ex) {
+                throw ex.getCause();
+            }
+        }
     }
 
 
@@ -805,10 +804,11 @@ public class JobManager extends RepositoryManager {
                                        service);
         String extra = HtmlUtils.hidden(ARG_SERVICEID, service.getId());
         if ( !soh.doExecute(request)) {
-	    getPageHandler().sectionOpen(request,  sb, "Services", false);
+            getPageHandler().sectionOpen(request, sb, "Services", false);
             soh.makeForm(request, service, null, null, URL_SERVICES_VIEW,
                          null, sb, extra);
-	    getPageHandler().sectionClose(request,  sb);
+            getPageHandler().sectionClose(request, sb);
+
             return new Result("", sb);
         }
 

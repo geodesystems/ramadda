@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.harvester;
 
@@ -471,8 +458,8 @@ public abstract class Harvester extends RepositoryManager {
     protected void init(Element element) throws Exception {
         rootDirs = new ArrayList<File>();
         for (String dir :
-                Utils.split(XmlUtil.getAttribute(element, ATTR_ROOTDIR,
-                    ""), ROOTDIR_DELIM, true, true)) {
+                Utils.split(XmlUtil.getAttribute(element, ATTR_ROOTDIR, ""),
+                            ROOTDIR_DELIM, true, true)) {
             rootDirs.add(new File(dir));
         }
 
@@ -575,8 +562,8 @@ public abstract class Harvester extends RepositoryManager {
         getEntryManager().clearSeenResources();
         rootDirs = new ArrayList<File>();
         for (String dir :
-                Utils.split(request.getUnsafeString(ATTR_ROOTDIR, ""),
-                                 "\n", true, true)) {
+                Utils.split(request.getUnsafeString(ATTR_ROOTDIR, ""), "\n",
+                            true, true)) {
             rootDirs.add(new File(dir));
         }
 
@@ -965,7 +952,7 @@ public abstract class Harvester extends RepositoryManager {
      */
     public void logHarvesterError(String message, Throwable exc) {
         System.err.println("ERROR:" + getName() + " " + message);
-	exc.printStackTrace();
+        exc.printStackTrace();
         getRepository().getLogManager().logError(LOGID,
                 getName() + " " + message, exc);
         appendError(message);
@@ -1272,8 +1259,8 @@ public abstract class Harvester extends RepositoryManager {
             return new ArrayList<String>();
         }
 
-        return Utils.split(XmlUtil.getAttribute(element, attr), ",",
-                                true, true);
+        return Utils.split(XmlUtil.getAttribute(element, attr), ",", true,
+                           true);
     }
 
 

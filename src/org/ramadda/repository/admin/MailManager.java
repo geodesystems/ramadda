@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.admin;
 
@@ -59,6 +46,7 @@ import javax.activation.FileDataSource;
 
 import javax.mail.*;
 import javax.mail.internet.*;
+
 
 /**
  * Class Admin
@@ -377,34 +365,58 @@ public class MailManager extends RepositoryManager {
 
 
     /**
-       Do all this reflection so we don't have a dependency into the plugins
+     *  Do all this reflection so we don't have a dependency into the plugins
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
      */
     public boolean isSmsEnabled() throws Exception {
-	Object twilio = getRepository().getApiManager().getApiHandler("twilio");
-	if (twilio == null) {
-	    return false;
-	}
-	java.lang.reflect.Method send= Misc.findMethod(twilio.getClass(), "isEnabled",
-						       new Class[]{});
-	if(send==null) return false;
-	return  (boolean) send.invoke(twilio);
+        Object twilio =
+            getRepository().getApiManager().getApiHandler("twilio");
+        if (twilio == null) {
+            return false;
+        }
+        java.lang.reflect.Method send = Misc.findMethod(twilio.getClass(),
+                                            "isEnabled", new Class[] {});
+        if (send == null) {
+            return false;
+        }
+
+        return (boolean) send.invoke(twilio);
     }
 
     /**
-       Do all this reflection so we don't have a dependency into the plugins
+     *  Do all this reflection so we don't have a dependency into the plugins
+     *
+     * @param fromPhone _more_
+     * @param toPhone _more_
+     * @param message _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
      */
 
-    public boolean sendTextMessage(String fromPhone,  String toPhone, String message) throws Exception {
-	Object twilio = getRepository().getApiManager().getApiHandler("twilio");
-	if (twilio == null) {
-	    return false;
-	}
-        Class[]  paramTypes = new Class[]{String.class,String.class,String.class};
-	java.lang.reflect.Method send= Misc.findMethod(twilio.getClass(), "sendTextMessage",
-                                            paramTypes);
-	if(send==null) return false;
-	boolean result = (boolean) send.invoke(twilio,fromPhone,toPhone, message);
-	return result;
+    public boolean sendTextMessage(String fromPhone, String toPhone,
+                                   String message)
+            throws Exception {
+        Object twilio =
+            getRepository().getApiManager().getApiHandler("twilio");
+        if (twilio == null) {
+            return false;
+        }
+        Class[] paramTypes = new Class[] { String.class, String.class,
+                                           String.class };
+        java.lang.reflect.Method send = Misc.findMethod(twilio.getClass(),
+                                            "sendTextMessage", paramTypes);
+        if (send == null) {
+            return false;
+        }
+        boolean result = (boolean) send.invoke(twilio, fromPhone, toPhone,
+                             message);
+
+        return result;
     }
 
 

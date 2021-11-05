@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.metadata;
 
@@ -21,8 +8,8 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
 import org.ramadda.repository.util.FileWriter;
-import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.FormInfo;
+import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.Json;
 import org.ramadda.util.Utils;
@@ -57,8 +44,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
-import java.util.Hashtable;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 import java.util.TimeZone;
@@ -602,9 +589,9 @@ public class MetadataManager extends RepositoryManager {
      *
      * @param msg _more_
      */
-    public  void debug(String msg) {
+    public void debug(String msg) {
         if (debug) {
-	    logInfo(msg);
+            logInfo(msg);
         }
     }
 
@@ -1098,28 +1085,31 @@ public class MetadataManager extends RepositoryManager {
      */
     public void loadMetadataHandlers(PluginManager pluginManager)
             throws Exception {
-	HashSet seen = new HashSet();
+        HashSet seen = new HashSet();
         List<String> metadataDefFiles =
             getRepository().getPluginManager().getMetadataDefFiles();
         for (String file : metadataDefFiles) {
             try {
                 file = getStorageManager().localizePath(file);
                 if (seen.contains(file)) {
-		    //		    System.out.println("pluginManager seen:" + file);
+                    //              System.out.println("pluginManager seen:" + file);
                     continue;
                 }
-		seen.add(file);
+                seen.add(file);
                 Element root = XmlUtil.getRoot(file, getClass());
                 if (root == null) {
-		    System.out.println("MetadataManager: no root element found in:" + file); 
+                    System.out.println(
+                        "MetadataManager: no root element found in:" + file);
                     continue;
                 }
-		//		System.out.println("MetadataManager: processing:" + file); 
+                //              System.out.println("MetadataManager: processing:" + file); 
                 MetadataType.parse(root, this);
-		debug = false;
-	    } catch (Exception exc) {
-		System.out.println("MetadataManager: error:" + file+" " + exc); 
+                debug = false;
+            } catch (Exception exc) {
+                System.out.println("MetadataManager: error:" + file + " "
+                                   + exc);
                 logError("Error loading metadata handler file:" + file, exc);
+
                 throw exc;
             }
 
@@ -1251,12 +1241,13 @@ public class MetadataManager extends RepositoryManager {
      */
     public Appendable addToBrowseSearchForm(Request request, Appendable sb)
             throws Exception {
-        StringBuilder tmp      = new StringBuilder();
-        List<String>  titles   = new ArrayList<String>();
-        List<String>  contents = new ArrayList<String>();
-	List rows = new ArrayList();
-	List<MetadataType> sorted = new ArrayList<MetadataType>(metadataTypes);
-	Collections.sort(sorted);
+        StringBuilder      tmp      = new StringBuilder();
+        List<String>       titles   = new ArrayList<String>();
+        List<String>       contents = new ArrayList<String>();
+        List               rows     = new ArrayList();
+        List<MetadataType> sorted =
+            new ArrayList<MetadataType>(metadataTypes);
+        Collections.sort(sorted);
         for (MetadataType type : sorted) {
             if ( !type.getBrowsable()) {
                 continue;
@@ -1268,15 +1259,16 @@ public class MetadataManager extends RepositoryManager {
                             .URL_METADATA_LIST, ARG_METADATA_TYPE,
                                 type.toString()), type.getLabel());
 
-	    rows.add("<li>"+link);
+            rows.add("<li>" + link);
             //            type.getHandler().addToBrowseSearchForm(request, tmp, type, titles, contents);
         }
-	List<List> lists = Utils.splitList(rows,8);
-	List cols = new ArrayList();
-	for(List list: lists) {
-	    cols.add("<ul>" + Utils.join(list,"") +"</ul>");
-	}
-	HU.centerBlock(sb,HU.hrow(cols));
+        List<List> lists = Utils.splitList(rows, 8);
+        List       cols  = new ArrayList();
+        for (List list : lists) {
+            cols.add("<ul>" + Utils.join(list, "") + "</ul>");
+        }
+        HU.centerBlock(sb, HU.hrow(cols));
+
         //        HtmlUtils.makeAccordion(sb, titles, contents);
         return sb;
     }
@@ -1455,8 +1447,8 @@ public class MetadataManager extends RepositoryManager {
                              CSS_CLASS_SEPARATOR)) + HtmlUtils.href(
                                  request.getUrl(), msg("Cloud"));
         }
-	//Don't do cloud
-	header = "";
+        //Don't do cloud
+        header = "";
         String metadataType     = request.getString(ARG_METADATA_TYPE, "");
         MetadataHandler handler = findMetadataHandler(metadataType);
         MetadataType    type    = handler.findType(metadataType);
@@ -1569,32 +1561,38 @@ public class MetadataManager extends RepositoryManager {
                 sb.append(Json.list(maps));
             } else {
 
-		List rows = new ArrayList();
+                List rows = new ArrayList();
                 for (int i = 0; i < tuples.size(); i++) {
                     Object[] tuple = (Object[]) tuples.get(i);
-                    String value = (String) tuple[1];
-		    String label = value;
-		    if(value.trim().length()==0) {
-			label  ="----";
-		    }
-		    StringBuilder row =new StringBuilder();
+                    String   value = (String) tuple[1];
+                    String   label = value;
+                    if (value.trim().length() == 0) {
+                        label = "----";
+                    }
+                    StringBuilder row = new StringBuilder();
                     row.append("<tr><td>");
                     row.append(tuple[0].toString());
                     row.append("</td><td>");
                     row.append(HtmlUtils.href(handler.getSearchUrl(request,
                             type, value), label));
                     row.append("</td></tr>");
-		    rows.add(row);
+                    rows.add(row);
                 }
-		List cols = new ArrayList();
-		List<List> lists = Utils.splitList(rows,15);
-		for(List row: lists)  {		
-		    cols.add(HU.formTable() +
-			     HU.row(HU.cols(HU.b("# entries"), HU.b(type.getLabel())),"class=ramadda-table-header") +
-			     Utils.join(row,"") +
-			     HU.formTableClose());
-		}
-		sb.append(Utils.wrap(cols,"<div style='vertical-align:top;display:inline-block;margin:15px;'>","</div>"));
+                List       cols  = new ArrayList();
+                List<List> lists = Utils.splitList(rows, 15);
+                for (List row : lists) {
+                    cols.add(HU.formTable()
+                            + HU
+                            .row(HU.cols(HU.b("# entries"),
+                                HU.b(type
+                                    .getLabel())), "class=ramadda-table-header") + Utils
+                                        .join(row, "") + HU.formTableClose());
+                }
+                sb.append(
+                    Utils.wrap(
+                        cols,
+                        "<div style='vertical-align:top;display:inline-block;margin:15px;'>",
+                        "</div>"));
             }
 
         } else {
@@ -1636,13 +1634,15 @@ public class MetadataManager extends RepositoryManager {
      * @throws Exception On badness
      */
     public Result processMetadataView(Request request) throws Exception {
-        long           t1           = System.currentTimeMillis();
-        Entry          entry        = getEntryManager().getEntry(request);
-	if(entry==null) {
-	    Result result = getRepository().makeErrorResult(request, "No entry");
-	    result.setResponseCode(Result.RESPONSE_NOTFOUND);
-	    return result;
-	}
+        long  t1    = System.currentTimeMillis();
+        Entry entry = getEntryManager().getEntry(request);
+        if (entry == null) {
+            Result result = getRepository().makeErrorResult(request,
+                                "No entry");
+            result.setResponseCode(Result.RESPONSE_NOTFOUND);
+
+            return result;
+        }
         List<Metadata> metadataList = getMetadata(entry);
         Metadata metadata = findMetadata(request, entry,
                                          request.getString(ARG_METADATA_ID,
@@ -1731,10 +1731,11 @@ public class MetadataManager extends RepositoryManager {
             makeAddList(request, entry, sb);
         } else {
             sb.append("\n");
-	    String formId = HU.getUniqueId("metadata_");
+            String   formId   = HU.getUniqueId("metadata_");
             FormInfo formInfo = new FormInfo(formId);
             request.uploadFormWithAuthToken(sb, URL_METADATA_CHANGE,
-					    HU.attr("name", "metadataform") + HU.id(formId));
+                                            HU.attr("name", "metadataform")
+                                            + HU.id(formId));
 
             sb.append("\n");
             sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
@@ -1757,8 +1758,8 @@ public class MetadataManager extends RepositoryManager {
                 if (metadataHandler == null) {
                     continue;
                 }
-                String[] html = metadataHandler.getForm(request, formInfo, entry,
-							metadata, true);
+                String[] html = metadataHandler.getForm(request, formInfo,
+                                    entry, metadata, true);
                 if (html == null) {
                     continue;
                 }

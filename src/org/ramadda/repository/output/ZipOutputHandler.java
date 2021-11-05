@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
@@ -77,7 +64,8 @@ public class ZipOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_ZIPTREE =
         new OutputType("Zip and Download Tree", "zip.tree",
-                       OutputType.TYPE_ACTION | OutputType.TYPE_OTHER, "", ICON_ZIP);
+                       OutputType.TYPE_ACTION | OutputType.TYPE_OTHER, "",
+                       ICON_ZIP);
 
 
     /** _more_ */
@@ -87,8 +75,9 @@ public class ZipOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final OutputType OUTPUT_EXPORT =
-        new OutputType("Export Entries", "zip.export", OutputType.TYPE_FILE | OutputType.TYPE_ACTION,
-                       "", "fa-file-export");
+        new OutputType("Export Entries", "zip.export",
+                       OutputType.TYPE_FILE | OutputType.TYPE_ACTION, "",
+                       "fa-file-export");
 
 
     /**
@@ -140,23 +129,25 @@ public class ZipOutputHandler extends OutputHandler {
                         state.entry)) {
                 links.add(makeLink(request, state.entry, OUTPUT_ZIP));
             }
-	    //	    if (getAccessManager().canExportEntry(request, state.entry)) {
-	    //		links.add(makeLink(request, state.entry, OUTPUT_EXPORT));
-	    //	    }
+
+            //      if (getAccessManager().canExportEntry(request, state.entry)) {
+            //          links.add(makeLink(request, state.entry, OUTPUT_EXPORT));
+            //      }
             return;
         }
 
-	if(state.group!=null && state.group.isDummy()) {
-	    if(!request.isAnonymous()) {
-		links.add(makeLink(request, state.entry, OUTPUT_EXPORT));
-	    }
-	}
+        if ((state.group != null) && state.group.isDummy()) {
+            if ( !request.isAnonymous()) {
+                links.add(makeLink(request, state.entry, OUTPUT_EXPORT));
+            }
+        }
 
         boolean hasFile  = false;
         boolean hasGroup = false;
         for (Entry child : state.getAllEntries()) {
             if (getAccessManager().canDownload(request, child)) {
                 hasFile = true;
+
                 break;
             }
             if (child.isGroup()) {
@@ -174,7 +165,7 @@ public class ZipOutputHandler extends OutputHandler {
         }
 
         if ((state.group != null) && (hasGroup || hasFile)
-	    && ( !state.group.isTopEntry() || state.group.isDummy())) {
+                && ( !state.group.isTopEntry() || state.group.isDummy())) {
             links.add(makeLink(request, state.group, OUTPUT_ZIPTREE));
         }
 
@@ -199,6 +190,7 @@ public class ZipOutputHandler extends OutputHandler {
             throws Exception {
         List<Entry> entries = new ArrayList<Entry>();
         entries.add(entry);
+
         return toZip(request, entry.getName(), entries, false, false);
     }
 
@@ -278,6 +270,7 @@ public class ZipOutputHandler extends OutputHandler {
     public Result toZip(Request request, String prefix, List<Entry> entries,
                         boolean recurse, boolean forExport)
             throws Exception {
+
         OutputStream os        = null;
         boolean      doingFile = false;
         File         tmpFile   = null;
@@ -378,6 +371,7 @@ public class ZipOutputHandler extends OutputHandler {
 
         return result;
 
+
     }
 
 
@@ -440,13 +434,13 @@ public class ZipOutputHandler extends OutputHandler {
                 }
             }
 
-	    Request tmpRequest = getRepository().getTmpRequest();
-            Element entryNode = null;
+            Request tmpRequest = getRepository().getTmpRequest();
+            Element entryNode  = null;
             if (forExport && (entriesRoot != null)) {
-                entryNode =
-                    getRepository().getXmlOutputHandler().getEntryTag(tmpRequest,
-                        entry, fileWriter, entriesRoot.getOwnerDocument(),
-                        entriesRoot, true, level != 0);
+                entryNode = getRepository().getXmlOutputHandler().getEntryTag(
+                    tmpRequest, entry, fileWriter,
+                    entriesRoot.getOwnerDocument(), entriesRoot, true,
+                    level != 0);
                 //                System.err.println ("exporting:" + XmlUtil.toString(entryNode));
             }
 

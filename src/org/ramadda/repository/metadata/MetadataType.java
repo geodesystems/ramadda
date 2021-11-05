@@ -1,27 +1,14 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.metadata;
 
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
-import org.ramadda.util.FormInfo;
 import org.ramadda.util.sql.SqlUtil;
 
 
@@ -179,12 +166,21 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         this.id = id;
     }
 
-    public int 	compareTo(Object o) {
-	boolean ok = o instanceof MetadataType;
-	if(!ok) return -1;
-	return this.getName().compareTo(((MetadataType)o).getName());
+    /**
+     *
+     * @param o _more_
+     *
+     * @return _more_
+     */
+    public int compareTo(Object o) {
+        boolean ok = o instanceof MetadataType;
+        if ( !ok) {
+            return -1;
+        }
+
+        return this.getName().compareTo(((MetadataType) o).getName());
     }
-	
+
 
     /**
      * _more_
@@ -338,28 +334,45 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
         makeDatabaseTable = XmlUtil.getAttributeFromTree(node,
                 ATTR_MAKEDATABASE, false);
-	/*
+        /*
         if makeDatabaseTable) {
             initDatabase();
         }
-	*/
+        */
     }
 
 
+    /**  */
     public static final String TABLE_NAME_PREFIX = "metadata_";
+
+    /**
+     *
+     * @return _more_
+     */
     public String getDbTableName() {
-	String id = SqlUtil.cleanName(this.id);
-	return TABLE_NAME_PREFIX  + id;
+        String id = SqlUtil.cleanName(this.id);
+
+        return TABLE_NAME_PREFIX + id;
     }
 
 
+    /**
+     *
+     * @param name _more_
+     *
+     * @return _more_
+     */
     public String getDbColumnName(String name) {
-	name =  SqlUtil.cleanName(name);
-	if(name.equals("type")) name = "column_type";
-	else if(name.equals("output")) name = "column_output";	
-	return name;
+        name = SqlUtil.cleanName(name);
+        if (name.equals("type")) {
+            name = "column_type";
+        } else if (name.equals("output")) {
+            name = "column_output";
+        }
+
+        return name;
     }
-				   
+
 
     /**
      * _more_
@@ -373,17 +386,17 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         final String tableName = getDbTableName();
         System.err.println("Making db:" + tableName);
         TypeHandler typeHandler = new TypeHandler(getRepository()) {
-		@Override
-		public String getTableName() {
-		    return tableName;
-		}
-	    };
+            @Override
+            public String getTableName() {
+                return tableName;
+            }
+        };
         String dropTable = "DROP TABLE " + tableName;
         try {
             getDatabaseManager().executeAndClose(dropTable);
         } catch (Throwable exc) {
-	    //	    System.err.println("Error dropping table:" + exc+"\n"+  dropTable);
-	    //	    throw new RuntimeException(exc);
+            //      System.err.println("Error dropping table:" + exc+"\n"+  dropTable);
+            //      throw new RuntimeException(exc);
         }
 
 
@@ -391,22 +404,23 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                                     + " (\n");
         tableDef.append(
             "id varchar(200), entry_id varchar(200), type varchar(200), inherited int)");
-	System.out.println("Creating metadata table:" + tableName);
+        System.out.println("Creating metadata table:" + tableName);
         try {
             getDatabaseManager().executeAndClose(tableDef.toString());
         } catch (Throwable exc) {
             if (exc.toString().indexOf("already exists") < 0) {
-		System.err.println("Error creating metadata db table:" + exc+"\n"+  tableDef);
-		throw new RuntimeException(exc);
+                System.err.println("Error creating metadata db table:" + exc
+                                   + "\n" + tableDef);
+
+                throw new RuntimeException(exc);
             }
         }
 
         StringBuffer indexDef = new StringBuffer();
         indexDef.append("CREATE INDEX " + tableName + "_INDEX_" + "id"
                         + "  ON " + tableName + " (" + "id" + ");\n");
-        indexDef.append("CREATE INDEX " + tableName + "_INDEX_"
-                        + "entry_id" + "  ON " + tableName + " ("
-                        + "entry_id" + ");\n");
+        indexDef.append("CREATE INDEX " + tableName + "_INDEX_" + "entry_id"
+                        + "  ON " + tableName + " (" + "entry_id" + ");\n");
         indexDef.append("CREATE INDEX " + tableName + "_INDEX_" + "type"
                         + "  ON " + tableName + " (" + "type" + ");\n");
 
@@ -414,37 +428,42 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
             getDatabaseManager().loadSql(indexDef.toString(), true, false);
         } catch (Throwable exc) {
             //TODO:
-	    System.err.println("Error creating metadata index:" + exc+"\n"+  indexDef);
-	    throw new RuntimeException(exc);
+            System.err.println("Error creating metadata index:" + exc + "\n"
+                               + indexDef);
+
+            throw new RuntimeException(exc);
         }
 
         for (MetadataElement element : getChildren()) {
-	    String dataType = element.getDataType();
-	    String columnName = element.getId();
-	    if(columnName == null) {
-		columnName = element.getName();
-	    }
-	    if(columnName == null) {
-		throw new RuntimeException("No name defined for metadata element:" + element);
-	    }
-	    columnName = getDbColumnName(columnName);
-	    System.out.println("\tcolumn:" + columnName +" type:" + dataType);
-	    int size = XmlUtil.getAttribute(element.getXmlNode(),
-					    Column.ATTR_SIZE, 1000);
-	    if(dataType==null) {
-		dataType = DataTypes.DATATYPE_STRING;
-	    }
+            String dataType   = element.getDataType();
+            String columnName = element.getId();
+            if (columnName == null) {
+                columnName = element.getName();
+            }
+            if (columnName == null) {
+                throw new RuntimeException(
+                    "No name defined for metadata element:" + element);
+            }
+            columnName = getDbColumnName(columnName);
+            System.out.println("\tcolumn:" + columnName + " type:"
+                               + dataType);
+            int size = XmlUtil.getAttribute(element.getXmlNode(),
+                                            Column.ATTR_SIZE, 1000);
+            if (dataType == null) {
+                dataType = DataTypes.DATATYPE_STRING;
+            }
 
-            Column column = new Column(typeHandler, columnName,
-                                       dataType, cnt);
+            Column column = new Column(typeHandler, columnName, dataType,
+                                       cnt);
             column.setSize(size);
-	    //false-> don't ignore errors
-	    try {
-		column.createTable(statement, false);
-	    } catch (Throwable exc) {
-		System.err.println("Error:" + exc);
-		return;
-	    }
+            //false-> don't ignore errors
+            try {
+                column.createTable(statement, false);
+            } catch (Throwable exc) {
+                System.err.println("Error:" + exc);
+
+                return;
+            }
             databaseColumns.add(column);
             cnt++;
         }
@@ -509,12 +528,12 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                                       boolean internal)
             throws Exception {
 
-	//don't check internal as I forgot what its intent was and it is keeping us from processing attachments
-	//	if(!internal || entry.getIsRemoteEntry()) {
-	if(entry.getIsRemoteEntry()) {
-	    //	    System.err.println("\tinternal: " + internal  +" "  + entry.getIsRemoteEntry());
-	    return true;
-	}
+        //don't check internal as I forgot what its intent was and it is keeping us from processing attachments
+        //      if(!internal || entry.getIsRemoteEntry()) {
+        if (entry.getIsRemoteEntry()) {
+            //      System.err.println("\tinternal: " + internal  +" "  + entry.getIsRemoteEntry());
+            return true;
+        }
         NodeList elements = XmlUtil.getElements(node);
 
         for (MetadataElement element : getChildren()) {
@@ -1103,7 +1122,8 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                                    "").equals(DISPLAY_SMALL);
         String searchLink = "";
         if ( !smallDisplay && getSearchable()) {
-            searchLink = handler.getSearchLink(request, metadata)+HtmlUtils.space(1);
+            searchLink = handler.getSearchLink(request, metadata)
+                         + HtmlUtils.space(1);
         }
 
 
@@ -1210,6 +1230,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
      *
      * @param handler _more_
      * @param request _more_
+     * @param formInfo _more_
      * @param entry _more_
      * @param metadata _more_
      * @param suffix _more_
@@ -1219,9 +1240,9 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
      *
      * @throws Exception _more_
      */
-    public String[] getForm(MetadataHandler handler, Request request, FormInfo formInfo,
-                            Entry entry, Metadata metadata, String suffix,
-                            boolean forEdit)
+    public String[] getForm(MetadataHandler handler, Request request,
+                            FormInfo formInfo, Entry entry,
+                            Metadata metadata, String suffix, boolean forEdit)
             throws Exception {
 
         String lbl = (String) request.getExtraProperty(PROP_METADATA_LABEL);
@@ -1261,7 +1282,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
             }
             String elementLbl = msgLabel(element.getLabel());
             String widget =
-                element.getForm(request, entry, formInfo,metadata, suffix,
+                element.getForm(request, entry, formInfo, metadata, suffix,
                                 metadata.getAttr(element.getIndex()),
                                 forEdit);
             if ((widget == null) || (widget.length() == 0)) {}

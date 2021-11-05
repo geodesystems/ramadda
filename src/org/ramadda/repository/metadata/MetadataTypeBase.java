@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.metadata;
 
@@ -615,10 +602,11 @@ public class MetadataTypeBase extends RepositoryManager {
         }
 
         String extra = (forLink
-                        ? HtmlUtils.cssClass("ramadda-thumbnail-image img-thumbnail")
+                        ? HtmlUtils.cssClass(
+                            "ramadda-thumbnail-image img-thumbnail")
                         : "");
-	extra+=HU.attr("style","max-width:100%;");
-        String tail  = getStorageManager().getFileTail(f.toString());
+        extra += HU.attr("style", "max-width:100%;");
+        String tail = getStorageManager().getFileTail(f.toString());
         String path =
             Utils.concatString(handler.getRepository().getMetadataManager()
                 .URL_METADATA_VIEW.toString(), "/", tail);
@@ -628,7 +616,7 @@ public class MetadataTypeBase extends RepositoryManager {
             String img = HtmlUtils.img(HtmlUtils.url(path, ARG_ELEMENT,
                              element.getIndex() + "", ARG_ENTRYID,
                              metadata.getEntryId(), ARG_METADATA_ID,
-						     metadata.getId()), (forLink
+                             metadata.getId()), (forLink
                     ? msg("Click to enlarge")
                     : ""), extra);
 
@@ -638,10 +626,15 @@ public class MetadataTypeBase extends RepositoryManager {
                                     ARG_ENTRYID, metadata.getEntryId(),
                                     ARG_METADATA_ID,
                                     metadata.getId()), "thumbnail", "");
-		StringBuilder tmp = new StringBuilder();
-                img = HtmlUtils.div(img, HtmlUtils.cssClass("ramadda-thumbnail"));
-                img = HtmlUtils.makePopup(tmp, img, bigimg,new NamedValue("at","right top"),new NamedValue("header",true));
-                img = HtmlUtils.div(img, HtmlUtils.cssClass("ramadda-thumbnail")) + "\n" + tmp;
+                StringBuilder tmp = new StringBuilder();
+                img = HtmlUtils.div(img,
+                                    HtmlUtils.cssClass("ramadda-thumbnail"));
+                img = HtmlUtils.makePopup(tmp, img, bigimg,
+                                          new NamedValue("at", "right top"),
+                                          new NamedValue("header", true));
+                img = HtmlUtils.div(
+                    img, HtmlUtils.cssClass("ramadda-thumbnail")) + "\n"
+                        + tmp;
             } else {
                 img = Utils.concatString(img, "\n<br>\n<b>", tail, "</b>\n");
             }
@@ -826,6 +819,7 @@ public class MetadataTypeBase extends RepositoryManager {
         if (label != null) {
             return label;
         }
+
         return getName();
     }
 

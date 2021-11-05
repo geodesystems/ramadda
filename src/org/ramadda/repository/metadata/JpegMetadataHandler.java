@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.metadata;
 
@@ -67,68 +54,82 @@ public class JpegMetadataHandler extends MetadataHandler {
     }
 
 
-    public Metadata getThumbnail(Request request, Entry entry) throws Exception {
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Metadata getThumbnail(Request request, Entry entry)
+            throws Exception {
         if ( !entry.getResource().isImage()) {
             return null;
         }
 
-        String path = entry.getResource().getPath();
-	Image image = Utils.readImage(path);
-	if (image == null) {
-	    System.err.print("JpegMetadataHandler: image is null:"
-			     + entry.getResource());
-	    
-	    return null;
-	}
-	
+        String path  = entry.getResource().getPath();
+        Image  image = Utils.readImage(path);
+        if (image == null) {
+            System.err.print("JpegMetadataHandler: image is null:"
+                             + entry.getResource());
+
+            return null;
+        }
+
 
         if (path.toLowerCase().endsWith(".jpg")
-	    || path.toLowerCase().endsWith(".jpeg")) {
+                || path.toLowerCase().endsWith(".jpeg")) {
             File jpegFile = new File(path);
-	    com.drew.metadata.Metadata metadata =
+            com.drew.metadata.Metadata metadata =
                 JpegMetadataReader.readMetadata(jpegFile);
-	    if(metadata!=null) {
-		ExifIFD0Directory exifIFD0 = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
-		if(exifIFD0!=null) {
-		    int orientation = exifIFD0.getInt(ExifIFD0Directory.TAG_ORIENTATION);
-		    int rotation = 0;
-		    if(orientation== 6)
-			image = ImageUtils.rotate90(ImageUtils.toBufferedImage(image,
-									       BufferedImage.TYPE_INT_RGB), false);
-		    
-		    else if(orientation== 3)
-			//todo
-			rotation = 180;
-		    else if(orientation== 8)
-			image = ImageUtils.rotate90(ImageUtils.toBufferedImage(image,
-									       BufferedImage.TYPE_INT_RGB), true);
-		}
-	    }
-	}
+            if (metadata != null) {
+                ExifIFD0Directory exifIFD0 =
+                    metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
+                if (exifIFD0 != null) {
+                    int orientation =
+                        exifIFD0.getInt(ExifIFD0Directory.TAG_ORIENTATION);
+                    int rotation = 0;
+                    if (orientation == 6) {
+                        image = ImageUtils.rotate90(
+                            ImageUtils.toBufferedImage(
+                                image, BufferedImage.TYPE_INT_RGB), false);
 
-	Image newImage = image.getScaledInstance(300, -1,
-						 Image.SCALE_FAST);
-	ImageUtils.waitOnImage(newImage);
-	newImage = ImageUtils.toBufferedImage(newImage,
-					      BufferedImage.TYPE_INT_RGB);
-	
-	String thumbFile = IOUtil.stripExtension(entry.getName())
-	    + "_thumb.";
-	if (path.toLowerCase().endsWith("gif")) {
-	    thumbFile += "gif";
-	} else {
-	    thumbFile += "jpg";
-	}
-	
+                    } else if (orientation == 3) {
+                        //todo
+                        rotation = 180;
+                    } else if (orientation == 8) {
+                        image = ImageUtils.rotate90(
+                            ImageUtils.toBufferedImage(
+                                image, BufferedImage.TYPE_INT_RGB), true);
+                    }
+                }
+            }
+        }
 
-	File f = getStorageManager().getTmpFile(request, thumbFile);
-	ImageUtils.writeImageToFile(newImage, f);
-	String fileName = getStorageManager().copyToEntryDir(entry,f).getName();
-	return
-	    new Metadata(getRepository().getGUID(), entry.getId(),
-			 ContentMetadataHandler.TYPE_THUMBNAIL, false,
-			 fileName, null, null, null, null);
-	}
+        Image newImage = image.getScaledInstance(300, -1, Image.SCALE_FAST);
+        ImageUtils.waitOnImage(newImage);
+        newImage = ImageUtils.toBufferedImage(newImage,
+                BufferedImage.TYPE_INT_RGB);
+
+        String thumbFile = IOUtil.stripExtension(entry.getName()) + "_thumb.";
+        if (path.toLowerCase().endsWith("gif")) {
+            thumbFile += "gif";
+        } else {
+            thumbFile += "jpg";
+        }
+
+
+        File f = getStorageManager().getTmpFile(request, thumbFile);
+        ImageUtils.writeImageToFile(newImage, f);
+        String fileName = getStorageManager().copyToEntryDir(entry,
+                              f).getName();
+
+        return new Metadata(getRepository().getGUID(), entry.getId(),
+                            ContentMetadataHandler.TYPE_THUMBNAIL, false,
+                            fileName, null, null, null, null);
+    }
 
 
     /**
@@ -144,7 +145,7 @@ public class JpegMetadataHandler extends MetadataHandler {
                                    List<Metadata> metadataList,
                                    Hashtable extra, boolean shortForm) {
 
-	//	System.err.println("JpegMetadataHandler.getInitialMetadata shortForm:"  + shortForm +" isImage:" +entry.getResource().isImage());
+        //      System.err.println("JpegMetadataHandler.getInitialMetadata shortForm:"  + shortForm +" isImage:" +entry.getResource().isImage());
         if (shortForm) {
             return;
         }
@@ -157,10 +158,10 @@ public class JpegMetadataHandler extends MetadataHandler {
 
         String path = entry.getResource().getPath();
         try {
-	    Metadata thumbnailMetadata = getThumbnail(request, entry);
-	    if(thumbnailMetadata!=null) {
-		metadataList.add(thumbnailMetadata);
-	    }
+            Metadata thumbnailMetadata = getThumbnail(request, entry);
+            if (thumbnailMetadata != null) {
+                metadataList.add(thumbnailMetadata);
+            }
         } catch (Exception exc) {
             getLogManager().logError("JpgeMetadataHandler", exc);
 

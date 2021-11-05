@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
@@ -126,7 +113,7 @@ public class CalendarOutputHandler extends OutputHandler {
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_CALENDAR);
 
-    
+
 
     /** _more_ */
     public static final OutputType OUTPUT_TIMELINE =
@@ -346,7 +333,7 @@ public class CalendarOutputHandler extends OutputHandler {
                              List<Entry> entries, Appendable sb,
                              String style, Hashtable props)
             throws Exception {
-	
+
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d yyyy HH:mm:ss Z");
         long             minDate = 0;
         long             maxDate = 0;
@@ -359,10 +346,10 @@ public class CalendarOutputHandler extends OutputHandler {
             }
         }
         long diffDays = (maxDate - minDate) / 1000 / 3600 / 24;
-	//	System.err.println("HOURS:" + diffDays +" " + new Date(minDate) + " " + new Date(maxDate));
+        //      System.err.println("HOURS:" + diffDays +" " + new Date(minDate) + " " + new Date(maxDate));
 
         String interval = "Timeline.DateTime.MONTH";
-	
+
         if (diffDays < 3) {
             interval = "Timeline.DateTime.HOUR";
         } else if (diffDays < 21) {
@@ -395,34 +382,39 @@ public class CalendarOutputHandler extends OutputHandler {
         if (mapVar == null) {
             mapVar = "null";
         }
-	StringBuilder json = new StringBuilder("timelineJson = {'dateTimeFormat': 'iso8601','events' : [");
-	SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-	for(int i=0;i<entries.size();i++) {
-	    Entry entry = entries.get(i);
-	    List<String> jprops = new ArrayList<String>();
-	    jprops.add("id");
-	    jprops.add(entry.getId());
-	    jprops.add("start");
-	    jprops.add(sdf2.format(new Date(entry.getStartDate())));
+        StringBuilder json =
+            new StringBuilder(
+                "timelineJson = {'dateTimeFormat': 'iso8601','events' : [");
+        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        for (int i = 0; i < entries.size(); i++) {
+            Entry        entry  = entries.get(i);
+            List<String> jprops = new ArrayList<String>();
+            jprops.add("id");
+            jprops.add(entry.getId());
+            jprops.add("start");
+            jprops.add(sdf2.format(new Date(entry.getStartDate())));
             if (entry.getStartDate() != entry.getEndDate()) {
-		jprops.add("end");
-		jprops.add(sdf2.format(new Date(entry.getEndDate())));
+                jprops.add("end");
+                jprops.add(sdf2.format(new Date(entry.getEndDate())));
             }
-	    jprops.add("title");
-	    jprops.add(entry.getName());
-	    jprops.add("description");
-	    jprops.add("");
-	    jprops.add("link");
-	    jprops.add(request.entryUrl(getRepository().URL_ENTRY_SHOW, entry));
-	    if(i>0)
-		json.append(",");
+            jprops.add("title");
+            jprops.add(entry.getName());
+            jprops.add("description");
+            jprops.add("");
+            jprops.add("link");
+            jprops.add(request.entryUrl(getRepository().URL_ENTRY_SHOW,
+                                        entry));
+            if (i > 0) {
+                json.append(",");
+            }
 
-	    json.append(Json.mapAndQuote(jprops));
+            json.append(Json.mapAndQuote(jprops));
 
-	}
-	json.append("]};");
-	    
-        timelineTemplate = timelineTemplate.replace("${timelinejson}", json.toString());
+        }
+        json.append("]};");
+
+        timelineTemplate = timelineTemplate.replace("${timelinejson}",
+                json.toString());
 
         timelineTemplate = timelineTemplate.replace("${mapvar}", mapVar);
         timelineTemplate = timelineTemplate.replace("${basedate}",
@@ -431,11 +423,11 @@ public class CalendarOutputHandler extends OutputHandler {
                 interval);
         timelineTemplate = timelineTemplate.replace("${style}", style);
 
-	String extra = "";
-	if(Misc.equals(props.get("shareSelected"),"true")) {
-	    extra = "  timelineShareSelected = true;\n";
-	}
-	timelineTemplate = timelineTemplate.replace("${extra}", extra);
+        String extra = "";
+        if (Misc.equals(props.get("shareSelected"), "true")) {
+            extra = "  timelineShareSelected = true;\n";
+        }
+        timelineTemplate = timelineTemplate.replace("${extra}", extra);
         sb.append(timelineTemplate);
     }
 
@@ -663,6 +655,7 @@ public class CalendarOutputHandler extends OutputHandler {
         outputCalendar(request, makeCalendarEntries(request, entries), sb,
                        request.defined(ARG_DAY));
         getPageHandler().entrySectionClose(request, group, sb);
+
         return new Result(msg("Calendar"), sb);
     }
 
@@ -689,8 +682,8 @@ public class CalendarOutputHandler extends OutputHandler {
             }
             String url =
                 HtmlUtils.nobr(getEntryManager().getAjaxLink(request, entry,
-							     label, null, true, null, false, true).toString());
-	    url = getEntryManager().getPopupLink(request, entry, label);
+                    label, null, true, null, false, true).toString());
+            url = getEntryManager().getPopupLink(request, entry, label);
             calEntries.add(new CalendarEntry(entryDate, url, entry));
         }
 
@@ -862,12 +855,12 @@ public class CalendarOutputHandler extends OutputHandler {
 
 
         String[] navIconolds = { "/icons/prevprev.gif", "/icons/prev.gif",
-                              "/icons/today.gif", "/icons/next.gif",
-                              "/icons/nextnext.gif" };
+                                 "/icons/today.gif", "/icons/next.gif",
+                                 "/icons/nextnext.gif" };
 
         String[] navIcons = { "fas fa-backward", "fas fa-step-backward",
                               "fas fa-stop", "fas fa-step-forward",
-                              "fas fa-forward" };	
+                              "fas fa-forward" };
 
 
         String[]          navLabels;
@@ -972,10 +965,10 @@ public class CalendarOutputHandler extends OutputHandler {
             request.put(ARG_DAY, selected[IDX_DAY]);
             //            sb.append(HtmlUtils.b(StringUtil.join(HtmlUtils.space(1),
             //                    navList)));
-	    //            sb.append(
-	    //                HtmlUtils.href(
-	    //                    monthUrl, HtmlUtils.b(headerSdf.format(cal.getTime()))));
-	    sb.append(HtmlUtils.b(headerSdf.format(cal.getTime())));
+            //            sb.append(
+            //                HtmlUtils.href(
+            //                    monthUrl, HtmlUtils.b(headerSdf.format(cal.getTime()))));
+            sb.append(HtmlUtils.b(headerSdf.format(cal.getTime())));
             if (dayItems.size() == 0) {
                 sb.append("<p>No Entries");
             } else {

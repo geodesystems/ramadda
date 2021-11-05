@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.auth;
 
@@ -21,8 +8,8 @@ import org.ramadda.repository.*;
 
 import org.ramadda.repository.database.*;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Utils;
 import org.ramadda.util.TTLCache;
+import org.ramadda.util.Utils;
 
 
 import org.ramadda.util.sql.Clause;
@@ -40,7 +27,9 @@ import java.io.File;
 import java.io.InputStream;
 
 import java.lang.reflect.*;
+
 import java.net.*;
+
 import java.sql.ResultSet;
 
 import java.util.ArrayList;
@@ -106,7 +95,7 @@ public class AccessManager extends RepositoryManager {
      * _more_
      */
     public synchronized void clearCache() {
-	recentPermissions.clearCache();
+        recentPermissions.clearCache();
     }
 
 
@@ -183,8 +172,8 @@ public class AccessManager extends RepositoryManager {
 
         if (request.exists(ARG_ENTRYIDS)) {
             for (String id :
-                    Utils.split(request.getString(ARG_ENTRYIDS, ""),
-                                     ",", true, true)) {
+                    Utils.split(request.getString(ARG_ENTRYIDS, ""), ",",
+                                true, true)) {
                 Entry entry = getEntryManager().getEntry(request, id, false);
                 if (entry == null) {
                     throw new RepositoryUtil.MissingEntryException(

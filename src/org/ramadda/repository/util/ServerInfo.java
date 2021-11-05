@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.util;
 
@@ -28,11 +15,12 @@ import org.w3c.dom.Element;
 import ucar.unidata.util.Misc;
 import ucar.unidata.xml.XmlUtil;
 
+import java.net.URL;
+
 
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-import java.net.URL;
 
 
 /**
@@ -74,6 +62,7 @@ public class ServerInfo implements Constants {
     /** _more_ */
     public static final String ID_THIS = "this";
 
+    /**  */
     private String url;
 
     /** _more_ */
@@ -111,7 +100,7 @@ public class ServerInfo implements Constants {
      * @param description _more_
      */
     public ServerInfo(URL url, String title, String description) {
-	this.url = url.toString();
+        this.url         = url.toString();
         this.hostname    = url.getHost();
         this.port        = url.getPort();
         this.basePath    = url.getPath();
@@ -122,6 +111,8 @@ public class ServerInfo implements Constants {
     /**
      * _more_
      *
+     *
+     * @param url _more_
      * @param hostname _more_
      * @param port _more_
      * @param title _more_
@@ -129,7 +120,7 @@ public class ServerInfo implements Constants {
      */
     public ServerInfo(String url, String hostname, int port, String title,
                       String description) {
-        this(url,hostname, port, -1, "/repository", title, description, "",
+        this(url, hostname, port, -1, "/repository", title, description, "",
              false, false);
     }
 
@@ -169,6 +160,8 @@ public class ServerInfo implements Constants {
     /**
      * _more_
      *
+     *
+     * @param url _more_
      * @param hostname _more_
      * @param port _more_
      * @param sslPort _more_
@@ -179,10 +172,10 @@ public class ServerInfo implements Constants {
      * @param isRegistry _more_
      * @param enabled _more_
      */
-    public ServerInfo(String url,String hostname, int port, int sslPort,
+    public ServerInfo(String url, String hostname, int port, int sslPort,
                       String basePath, String title, String description,
                       String email, boolean isRegistry, boolean enabled) {
-	this.url = url;
+        this.url         = url;
         this.hostname    = hostname;
         this.port        = port;
         this.sslPort     = sslPort;
@@ -304,7 +297,9 @@ public class ServerInfo implements Constants {
      * @return _more_
      */
     public String getUrl() {
-	if(url!=null) return url;
+        if (url != null) {
+            return url;
+        }
         if ((port == -1) || (port == 80)) {
             return "http://" + hostname + basePath;
         }

@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
@@ -151,10 +138,11 @@ public class CsvOutputHandler extends OutputHandler {
         String  delimiter      = request.getString(ARG_DELIMITER, ",");
         boolean fixedWidth     = request.get(ARG_FIXEDWIDTH, false);
         boolean showFullHeader = request.get(ARG_FULLHEADER, false);
-	boolean showHeader = request.get("showheader", true);
-        boolean escapeCommas  = request.get("escapecommas", true)||showFullHeader;
-	
-        String  filler         = request.getString("filler", " ");
+        boolean showHeader     = request.get("showheader", true);
+        boolean escapeCommas = request.get("escapecommas", true)
+                               || showFullHeader;
+
+        String filler = request.getString("filler", " ");
 
         String fieldsArg =
             request.getString(
@@ -163,16 +151,16 @@ public class CsvOutputHandler extends OutputHandler {
 
         StringBuffer sb          = new StringBuffer();
         StringBuffer header      = new StringBuffer();
-        List<String> toks = Utils.split(fieldsArg, ",", true, true);
+        List<String> toks        = Utils.split(fieldsArg, ",", true, true);
         List<String> fieldNames  = new ArrayList<String>();
         List<String> fieldLabels = new ArrayList<String>();
         for (int i = 0; i < toks.size(); i++) {
             String       tok   = toks.get(i);
-            String       field  = tok;
+            String       field = tok;
             String       label = tok;
             List<String> pair  = Utils.splitUpTo(tok, ";", 2);
             if (pair.size() > 1) {
-                field  = pair.get(0);
+                field = pair.get(0);
                 label = pair.get(1);
             }
             fieldNames.add(field);
@@ -180,41 +168,44 @@ public class CsvOutputHandler extends OutputHandler {
             if (header.length() > 0) {
                 header.append(",");
             }
-	    String type = "string";
-	    if (field.equals("type")) {
-		type ="enumeration";
-	    } else if (field.equals("icon")) {
-		type ="image";
-	    } else if (field.equals("entry_url")) {
-		type = "url";
-	    } else if (field.equals("url")) {
-		type = "url";
-	    } else if (field.equals("latitude")) {
-		type = "double";
-	    } else if (field.equals("longitude")) {
-		type = "double";
-	    } else if (field.equals("north")) {
-		type = "double";
-                } else if (field.equals("south")) {
-type = "double";
-                } else if (field.equals("east")) {
-type = "double";
+            String type = "string";
+            if (field.equals("type")) {
+                type = "enumeration";
+            } else if (field.equals("icon")) {
+                type = "image";
+            } else if (field.equals("entry_url")) {
+                type = "url";
+            } else if (field.equals("url")) {
+                type = "url";
+            } else if (field.equals("latitude")) {
+                type = "double";
+            } else if (field.equals("longitude")) {
+                type = "double";
+            } else if (field.equals("north")) {
+                type = "double";
+            } else if (field.equals("south")) {
+                type = "double";
+            } else if (field.equals("east")) {
+                type = "double";
 
-                } else if (field.equals("west")) {
-type = "double";
-                } else if (field.equals("description")) {
-                } else if (field.equals("size")) {
-type = "integer";
-	    }
+            } else if (field.equals("west")) {
+                type = "double";
+            } else if (field.equals("description")) {}
+            else if (field.equals("size")) {
+                type = "integer";
+            }
 
-	    if(sb.length()>0)
-		sb.append(",");
-	    if(showHeader)
-		addHeader(sb,field,label,type,escapeCommas, showFullHeader);
+            if (sb.length() > 0) {
+                sb.append(",");
+            }
+            if (showHeader) {
+                addHeader(sb, field, label, type, escapeCommas,
+                          showFullHeader);
+            }
         }
-	sb.append("\n");
+        sb.append("\n");
 
-        int[]   maxStringSize = null;
+        int[] maxStringSize = null;
         //        String[] paddingmaxStringSize = null;
         for (Entry entry : entries) {
             List<Column> columns = entry.getTypeHandler().getColumns();
@@ -414,16 +405,31 @@ type = "integer";
         return new Result("", sb, getMimeType(OUTPUT_CSV));
     }
 
-    private void addHeader(Appendable sb, String s, String label, String type, boolean escapeCommas, boolean full) throws Exception {
-	sb.append(sanitize(escapeCommas, s));
-	if(full) {
-	    sb.append("[");
-	    sb.append(" type=\"" + (type!=null?type:"string") +"\" ");
-	    if(label!=null) {
-		sb.append(" label=\"" + sanitize(true, label) +"\" ");
-	    }
-	    sb.append("]");
-	}
+    /**
+     *
+     * @param sb _more_
+     * @param s _more_
+     * @param label _more_
+     * @param type _more_
+     * @param escapeCommas _more_
+     * @param full _more_
+     *
+     * @throws Exception _more_
+     */
+    private void addHeader(Appendable sb, String s, String label,
+                           String type, boolean escapeCommas, boolean full)
+            throws Exception {
+        sb.append(sanitize(escapeCommas, s));
+        if (full) {
+            sb.append("[");
+            sb.append(" type=\"" + ((type != null)
+                                    ? type
+                                    : "string") + "\" ");
+            if (label != null) {
+                sb.append(" label=\"" + sanitize(true, label) + "\" ");
+            }
+            sb.append("]");
+        }
     }
 
     /**

@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
@@ -139,133 +126,206 @@ public class ZipFileOutputHandler extends OutputHandler {
                 entry)) {
             throw new AccessException("Cannot access data", request);
         }
-	String fileToFetch = request.getString(ARG_FILE, null);
-	if(fileToFetch!=null) {
-	    return fetchFile(request, entry, fileToFetch);
-	}
+        String fileToFetch = request.getString(ARG_FILE, null);
+        if (fileToFetch != null) {
+            return fetchFile(request, entry, fileToFetch);
+        }
         StringBuffer sb = new StringBuffer();
         getPageHandler().entrySectionOpen(request, entry, sb,
                                           "Zip File Listing");
-	outputZipFile(entry,sb);
+        outputZipFile(entry, sb);
         getPageHandler().entrySectionClose(request, entry, sb);
 
         return makeLinksResult(request, msg("Zip File Listing"), sb,
                                new State(entry));
 
     }
-	    
 
-    public void outputZipFile(Entry entry, Appendable sb)
-            throws Exception {
+
+    /**
+     *
+     * @param entry _more_
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
+    public void outputZipFile(Entry entry, Appendable sb) throws Exception {
         InputStream fis = getStorageManager().getFileInputStream(
                               entry.getResource().getPath());
-        ZipInputStream zin = new ZipInputStream(fis);
-	Node root=null;
-	Node current = null;
+        ZipInputStream zin     = new ZipInputStream(fis);
+        Node           root    = null;
+        Node           current = null;
         try {
             ZipEntry ze = null;
             while ((ze = zin.getNextEntry()) != null) {
                 String path = ze.getName();
-		if(root==null) {
-		    root = new Node(path);
-		    current = root;
-		    if (ze.isDirectory()) {
-			continue;
-		    }
-		}
-                long size = ze.getSize();
-		Node node = new Node(path,ze.isDirectory()?-1:size);
-		Node parent = null;
-		while(!path.startsWith(current.path) && current!=root) {
-		    current = current.parent;
-		}
-		current.addChild(node);
-		if (ze.isDirectory()) {
-		    current = node;
-		}
+                if (root == null) {
+                    root    = new Node(path);
+                    current = root;
+                    if (ze.isDirectory()) {
+                        continue;
+                    }
+                }
+                long size   = ze.getSize();
+                Node node   = new Node(path, ze.isDirectory()
+                                             ? -1
+                                             : size);
+                Node parent = null;
+                while ( !path.startsWith(current.path) && (current != root)) {
+                    current = current.parent;
+                }
+                current.addChild(node);
+                if (ze.isDirectory()) {
+                    current = node;
+                }
             }
-	    root.walk(getRepository(),entry,sb,0);
+            root.walk(getRepository(), entry, sb, 0);
         } finally {
             IOUtil.close(zin);
             IOUtil.close(fis);
         }
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...    
+     */
     private static class Node {
-	long size=-1;
-	String path;
-	Node parent;
-	List<Node> children;
-	public Node(String path) {
-	    this.path = path;
-	}
+
+        /**  */
+        long size = -1;
+
+        /**  */
+        String path;
+
+        /**  */
+        Node parent;
+
+        /**  */
+        List<Node> children;
+
+        /**
+         
+         *
+         * @param path _more_
+         */
+        public Node(String path) {
+            this.path = path;
+        }
 
 
-	public Node(String path, long size) {
-	    this(path);
-	    this.size = size;
-	}
-	public void addChild(Node node) {
-	    if(children==null) children = new ArrayList<Node>();
-	    children.add(node);
-	    node.parent = this;
-	}
-	public void walk(Repository repository, Entry entry, Appendable sb, int level) throws Exception {
-	    String name = path;
-	    if(name.endsWith("/")) name = name.substring(0,name.length()-1);
-	    name = IOUtil.getFileTail(name);
-	    if(size>-1) {
-                String url  = repository.URL_ENTRY_SHOW + "/" + name;
+        /**
+         
+         *
+         * @param path _more_
+         * @param size _more_
+         */
+        public Node(String path, long size) {
+            this(path);
+            this.size = size;
+        }
+
+        /**
+         *
+         * @param node _more_
+         */
+        public void addChild(Node node) {
+            if (children == null) {
+                children = new ArrayList<Node>();
+            }
+            children.add(node);
+            node.parent = this;
+        }
+
+        /**
+         *
+         * @param repository _more_
+         * @param entry _more_
+         * @param sb _more_
+         * @param level _more_
+         *
+         * @throws Exception _more_
+         */
+        public void walk(Repository repository, Entry entry, Appendable sb,
+                         int level)
+                throws Exception {
+            String name = path;
+            if (name.endsWith("/")) {
+                name = name.substring(0, name.length() - 1);
+            }
+            name = IOUtil.getFileTail(name);
+            if (size > -1) {
+                String url = repository.URL_ENTRY_SHOW + "/" + name;
                 url = HtmlUtils.url(url, ARG_ENTRYID, entry.getId(),
                                     ARG_FILE, path, ARG_OUTPUT,
                                     OUTPUT_LIST.getId());
-		sb.append("<div>");
-		sb.append(repository.getIconImage("fa-file"));
-		sb.append(" ");
+                sb.append("<div>");
+                sb.append(repository.getIconImage("fa-file"));
+                sb.append(" ");
                 sb.append(HtmlUtils.href(url, name));
                 sb.append(RepositoryManager.formatFileLength(size, true));
-		sb.append("</div>");
-		return;
-	    } 
-	    StringBuilder sb2 = new StringBuilder();
-	    if(children!=null) {
-		for(Node child: children)
-		    child.walk(repository, entry, sb2, level+1);
-	    }
-	    String div = HU.div(sb2.toString(),
-				HU.attrs("style","margin-left:" + ((level+1)*20) +"px"));
-	    sb.append(HU.makeShowHideBlock(name,div, true));
-	}
+                sb.append("</div>");
+
+                return;
+            }
+            StringBuilder sb2 = new StringBuilder();
+            if (children != null) {
+                for (Node child : children) {
+                    child.walk(repository, entry, sb2, level + 1);
+                }
+            }
+            String div = HU.div(sb2.toString(),
+                                HU.attrs("style",
+                                         "margin-left:" + ((level + 1) * 20)
+                                         + "px"));
+            sb.append(HU.makeShowHideBlock(name, div, true));
+        }
     }
 
-    public Result fetchFile(Request request, Entry entry, String fileToFetch) throws Exception {
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param fileToFetch _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result fetchFile(Request request, Entry entry, String fileToFetch)
+            throws Exception {
         InputStream fis = getStorageManager().getFileInputStream(
                               entry.getResource().getPath());
         ZipInputStream zin = new ZipInputStream(fis);
-	ZipEntry ze = null;
-	while ((ze = zin.getNextEntry()) != null) {
-	    String path = ze.getName();
-	    if (ze.isDirectory()) {
-		continue;
-	    }
-	    if (path.equals(fileToFetch)) {
-		HttpServletResponse response =
-		    request.getHttpServletResponse();
-		String type = getRepository().getMimeTypeFromSuffix(
-								    IOUtil.getFileExtension(path));
-		response.setContentType(type);
-		OutputStream output = response.getOutputStream();
-		try {
-		    IOUtil.writeTo(zin, output);
-		} finally {
-		    IOUtil.close(output);
-		    IOUtil.close(zin);
-		}
-		return Result.makeNoOpResult();
-	    }
-	}
-	    
-	throw new IllegalArgumentException("Could not find file:" + fileToFetch);
+        ZipEntry       ze  = null;
+        while ((ze = zin.getNextEntry()) != null) {
+            String path = ze.getName();
+            if (ze.isDirectory()) {
+                continue;
+            }
+            if (path.equals(fileToFetch)) {
+                HttpServletResponse response =
+                    request.getHttpServletResponse();
+                String type = getRepository().getMimeTypeFromSuffix(
+                                  IOUtil.getFileExtension(path));
+                response.setContentType(type);
+                OutputStream output = response.getOutputStream();
+                try {
+                    IOUtil.writeTo(zin, output);
+                } finally {
+                    IOUtil.close(output);
+                    IOUtil.close(zin);
+                }
+
+                return Result.makeNoOpResult();
+            }
+        }
+
+        throw new IllegalArgumentException("Could not find file:"
+                                           + fileToFetch);
     }
 
 }

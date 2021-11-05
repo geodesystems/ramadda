@@ -1,27 +1,14 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.metadata;
 
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.util.FileWriter;
+import org.ramadda.util.FormInfo;
 
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.FormInfo;
 import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
@@ -189,10 +176,11 @@ public class MetadataHandler extends RepositoryManager {
         //TODO: Handle the extra attributes
         String extra = XmlUtil.getGrandChildText(node, Metadata.TAG_EXTRA,
                            "");
-	String id = getRepository().getGUID();
-	if(!internal) id = XmlUtil.getAttribute(node,"id",id);
-        Metadata metadata = new Metadata(id,
-                                         entry.getId(), type,
+        String id = getRepository().getGUID();
+        if ( !internal) {
+            id = XmlUtil.getAttribute(node, "id", id);
+        }
+        Metadata metadata = new Metadata(id, entry.getId(), type,
                                          XmlUtil.getAttribute(node,
                                              ATTR_INHERITED, DFLT_INHERITED));
         int attrIndex = Metadata.INDEX_BASE - 1;
@@ -203,7 +191,8 @@ public class MetadataHandler extends RepositoryManager {
             }
 
             metadata.setAttr(attrIndex,
-                             XmlUtil.getAttribute(node, ATTR_ATTR + attrIndex, ""));
+                             XmlUtil.getAttribute(node,
+                                 ATTR_ATTR + attrIndex, ""));
         }
         metadata.setExtra(extra);
 
@@ -219,7 +208,7 @@ public class MetadataHandler extends RepositoryManager {
             if (XmlUtil.getAttribute(childNode, "encoded", true)) {
                 text = new String(Utils.decodeBase64(text));
             }
-	    text = metadata.trimToMaxLength(text);
+            text = metadata.trimToMaxLength(text);
             metadata.setAttr(index, text);
         }
 
@@ -521,9 +510,10 @@ public class MetadataHandler extends RepositoryManager {
 
         Document doc = node.getOwnerDocument();
         Element metadataNode = XmlUtil.create(doc, TAG_METADATA, node,
-					      new String[] { "id",metadata.getId(), ATTR_TYPE,
-                metadata.getType(), ATTR_INHERITED,
-                "" + metadata.getInherited() });
+                                   new String[] {
+            "id", metadata.getId(), ATTR_TYPE, metadata.getType(),
+            ATTR_INHERITED, "" + metadata.getInherited()
+        });
         for (MetadataElement element : type.getChildren()) {
             int    index = element.getIndex();
             String value = metadata.getAttr(index);
@@ -645,6 +635,7 @@ public class MetadataHandler extends RepositoryManager {
      *
      *
      * @param request _more_
+     * @param formInfo _more_
      * @param entry _more_
      * @param metadata _more_
      * @param forEdit _more_
@@ -653,8 +644,8 @@ public class MetadataHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public String[] getForm(Request request, FormInfo formInfo, Entry entry, Metadata metadata,
-                            boolean forEdit)
+    public String[] getForm(Request request, FormInfo formInfo, Entry entry,
+                            Metadata metadata, boolean forEdit)
             throws Exception {
         MetadataType type = getType(metadata.getType());
         if ((type == null) || !type.hasElements()) {
@@ -665,7 +656,8 @@ public class MetadataHandler extends RepositoryManager {
             suffix = "_" + metadata.getId();
         }
 
-        return type.getForm(this, request, formInfo,entry, metadata, suffix, forEdit);
+        return type.getForm(this, request, formInfo, entry, metadata, suffix,
+                            forEdit);
     }
 
 
@@ -842,8 +834,8 @@ public class MetadataHandler extends RepositoryManager {
         content.append(cloudLink);
         content.append(HtmlUtils.p());
         content.append(HtmlUtils.h3(msg("Search")));
-        int rowNum = 1;
-	List<String> rows = new ArrayList<String>();
+        int          rowNum = 1;
+        List<String> rows   = new ArrayList<String>();
         for (int i = 0; i < values.length; i++) {
             String browseUrl = HtmlUtils.url(url,
                                              ARG_METADATA_TYPE + "_"
@@ -854,21 +846,20 @@ public class MetadataHandler extends RepositoryManager {
             if (value.length() == 0) {
                 value = "-blank-";
             }
-	    rows.add(HtmlUtils.div(HtmlUtils.href(browseUrl, value),
-				   HtmlUtils.cssClass("listrow"
-						      + rowNum)));
+            rows.add(HtmlUtils.div(HtmlUtils.href(browseUrl, value),
+                                   HtmlUtils.cssClass("listrow" + rowNum)));
             rowNum++;
             if (rowNum > 2) {
                 rowNum = 1;
             }
         }
 
-	List<List> lists = Utils.splitList(rows,5);
-	for(List row: lists)  {
-	    content.append("<div class=\"browseblock\">");
-	    content.append(Utils.join(row,""));
-	    content.append("</div>");
-	}
+        List<List> lists = Utils.splitList(rows, 5);
+        for (List row : lists) {
+            content.append("<div class=\"browseblock\">");
+            content.append(Utils.join(row, ""));
+            content.append("</div>");
+        }
         titles.add(type.getLabel());
         contents.add(content.toString());
         sb.append(HtmlUtils.makeShowHideBlock(type.getLabel(),
@@ -917,16 +908,17 @@ public class MetadataHandler extends RepositoryManager {
         }
         Metadata metadata = new Metadata(type);
         metadata.setEntry(entry);
-	String formId = HU.getUniqueId("metadata_");
-	FormInfo formInfo = new FormInfo(formId);
-        String[] html = getForm(request,formInfo, entry, metadata, false);
+        String   formId   = HU.getUniqueId("metadata_");
+        FormInfo formInfo = new FormInfo(formId);
+        String[] html     = getForm(request, formInfo, entry, metadata,
+                                    false);
         if (html == null) {
             return;
         }
         if (entry != null) {
             request.uploadFormWithAuthToken(
-					    sb, getMetadataManager().URL_METADATA_ADD,
-					    HU.attr("name", "metadataform") + HU.id(formId));
+                sb, getMetadataManager().URL_METADATA_ADD,
+                HU.attr("name", "metadataform") + HU.id(formId));
             sb.append("\n");
             sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
             sb.append("\n");

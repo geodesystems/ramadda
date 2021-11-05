@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
@@ -122,7 +109,9 @@ public class BulkDownloadOutputHandler extends OutputHandler {
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
-	if(!request.getUser().getAdmin()) return;
+        if ( !request.getUser().getAdmin()) {
+            return;
+        }
 
         if (state.entry != null) {
             if (state.entry.getResource().isUrl()
@@ -178,8 +167,11 @@ public class BulkDownloadOutputHandler extends OutputHandler {
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
-	if(!request.getUser().getAdmin()) return new Result("",new StringBuilder("Only admin"));
+        if ( !request.getUser().getAdmin()) {
+            return new Result("", new StringBuilder("Only admin"));
+        }
         request.setReturnFilename("download.sh");
+
         return outputGroup(request, outputType, null, new ArrayList<Entry>(),
                            (List<Entry>) Misc.newList(entry));
     }
@@ -203,8 +195,9 @@ public class BulkDownloadOutputHandler extends OutputHandler {
                               List<Entry> entries)
             throws Exception {
 
-	if(!request.getUser().getAdmin()) return new Result("",new StringBuilder
-("Only admin"));
+        if ( !request.getUser().getAdmin()) {
+            return new Result("", new StringBuilder("Only admin"));
+        }
         //For the download get all children entries
         if ( !request.defined(ARG_MAX)) {
             request.put(ARG_MAX, "20000");
@@ -247,8 +240,8 @@ public class BulkDownloadOutputHandler extends OutputHandler {
             new ArrayList<List<String>>();
         boolean            includeGroupOutputs = false;
         for (String pair :
-                Utils.split(request.getString(ARG_OUTPUTS, "xml.xmlentry"), ",",
-                                 true, true)) {
+                Utils.split(request.getString(ARG_OUTPUTS, "xml.xmlentry"),
+                            ",", true, true)) {
             outputPairs.add(Utils.splitUpTo(pair, ":", 2));
             String outputId = outputPairs.get(outputPairs.size()
                                   - 1).get(0).toString();
@@ -347,7 +340,10 @@ public class BulkDownloadOutputHandler extends OutputHandler {
                     destFile = "v" + (cnt++) + "_" + tail;
                 }
                 seenFiles.add(destFile);
-                String path = "${ROOT}" + getEntryManager().getEntryResourceUrl(request, entry,false);
+                String path =
+                    "${ROOT}"
+                    + getEntryManager().getEntryResourceUrl(request, entry,
+                        false);
 
                 path = HtmlUtils.urlEncodeSpace(path);
                 if ( !overwrite) {
@@ -356,8 +352,8 @@ public class BulkDownloadOutputHandler extends OutputHandler {
 
                 long size = entry.getResource().getFileSize();
 
-		String msg = "downloading " + destFile + " ("
-		    + formatFileLength(size) + ")";
+                String msg = "downloading " + destFile + " ("
+                             + formatFileLength(size) + ")";
                 command.download(sb, msg, destFile, path);
                 if ( !overwrite) {
                     sb.append("else\n");
@@ -374,11 +370,11 @@ public class BulkDownloadOutputHandler extends OutputHandler {
                 if (pair.size() > 1) {
                     suffix = pair.get(1);
                 }
-		String  entryShowUrl =
-		    request.makeUrl(getRepository().URL_ENTRY_SHOW);
-                String extraUrl = "${ROOT}" + HtmlUtils.url(entryShowUrl, ARG_ENTRYID,
-							    entry.getId(), ARG_OUTPUT,
-							    output);
+                String entryShowUrl =
+                    request.makeUrl(getRepository().URL_ENTRY_SHOW);
+                String extraUrl = "${ROOT}"
+                                  + HtmlUtils.url(entryShowUrl, ARG_ENTRYID,
+                                      entry.getId(), ARG_OUTPUT, output);
                 String destOutputFile = destFile + "." + suffix;
 
                 if (output.equals(XmlOutputHandler.OUTPUT_XMLENTRY.getId())) {
@@ -388,7 +384,8 @@ public class BulkDownloadOutputHandler extends OutputHandler {
                     destOutputFile = "." + destFile + ".ramadda.xml";
                     appendDownloadMetadata(request, entry, sb, command);
                 }
-                command.download(sb, "downloading " + destOutputFile, destOutputFile, extraUrl);
+                command.download(sb, "downloading " + destOutputFile,
+                                 destOutputFile, extraUrl);
             }
 
 
@@ -419,13 +416,13 @@ public class BulkDownloadOutputHandler extends OutputHandler {
             dirName = entry.getId();
         }
         sb.append(mkdir(dirName));
-	sb.append(line());
+        sb.append(line());
         sb.append(cmd("cd " + qt(dirName)));
         if (includeGroupOutputs) {
             //Make a .placeholder file so we force the harvest of the directory
-	    //            if ( !wget) {
-	    sb.append(cmd("touch " + qt(Harvester.FILE_PLACEHOLDER)));
-		//            }
+            //            if ( !wget) {
+            sb.append(cmd("touch " + qt(Harvester.FILE_PLACEHOLDER)));
+            //            }
             for (List<String> pair : outputPairs) {
                 String output = pair.get(0);
                 String suffix = output;
@@ -433,11 +430,11 @@ public class BulkDownloadOutputHandler extends OutputHandler {
                     suffix = pair.get(1);
                 }
                 String destFile = "." + dirName;
-		String  entryShowUrl =
-		    request.makeUrl(getRepository().URL_ENTRY_SHOW);
-                String extraUrl = "${ROOT}" + HtmlUtils.url(entryShowUrl, ARG_ENTRYID,
-							    entry.getId(), ARG_OUTPUT,
-							    output);
+                String entryShowUrl =
+                    request.makeUrl(getRepository().URL_ENTRY_SHOW);
+                String extraUrl = "${ROOT}"
+                                  + HtmlUtils.url(entryShowUrl, ARG_ENTRYID,
+                                      entry.getId(), ARG_OUTPUT, output);
                 String destOutputFile = destFile + "." + suffix;
 
                 String message        = "downloading " + destOutputFile;
@@ -467,8 +464,8 @@ public class BulkDownloadOutputHandler extends OutputHandler {
             throws Exception {
         for (String[] pair :
                 getMetadataManager().getFilelUrls(request, entry)) {
-            command.download(sb, "downloading metadata " + pair[0], "." + pair[0],
-                           "${ROOT}" +pair[1]);
+            command.download(sb, "downloading metadata " + pair[0],
+                             "." + pair[0], "${ROOT}" + pair[1]);
         }
     }
 
@@ -483,14 +480,25 @@ public class BulkDownloadOutputHandler extends OutputHandler {
         return s + ";\n";
     }
 
+    /**
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
     private static String comment(String s) {
-        return "#" + s +"\n";
-    }    
+        return "#" + s + "\n";
+    }
 
+    /**
+     *
+     * @return _more_
+     */
     private static String line() {
-        return comment("--------------------------------------------------------------------");
-    }    
-    
+        return comment(
+            "--------------------------------------------------------------------");
+    }
+
     /**
      * _more_
      *
@@ -502,10 +510,16 @@ public class BulkDownloadOutputHandler extends OutputHandler {
         return "\"" + s + "\"";
     }
 
+    /**
+     *
+     * @param dir _more_
+     *
+     * @return _more_
+     */
     private static String mkdir(String dir) {
-	return cmd("makedir " + qt(dir));
+        return cmd("makedir " + qt(dir));
     }
-	   
+
 
     /**
      * Get the MIME type for this output handler
@@ -549,42 +563,53 @@ public class BulkDownloadOutputHandler extends OutputHandler {
             args      = command.equals(COMMAND_WGET)
                         ? " -q "
                         : " --progress-bar -k ";
-	    outputArg = command.equals(COMMAND_WGET)
+            outputArg = command.equals(COMMAND_WGET)
                         ? " -O "
                         : command.equals(COMMAND_CURL)
                           ? "-o "
                           : "";
-	    if(command.equals(COMMAND_WGET)) command = "\"" + command  + "  --no-check-certificate \"";
+            if (command.equals(COMMAND_WGET)) {
+                command = "\"" + command + "  --no-check-certificate \"";
+            }
         }
 
         /**
          * _more_
          *
+         *
+         * @param request _more_
          * @param sb _more_
          */
         public void init(Request request, StringBuilder sb) {
             sb.append(cmd("export DOWNLOAD_COMMAND=" + command));
-            sb.append(cmd("export ROOT=\"" + request.getAbsoluteUrl("")+"\""));
-	    sb.append("makedir() {\nif ! test -e $1 ; then\n\tmkdir $1;\nfi\n}\n");
-	    String test = "if [[ $? != 0 ]] ; then\n\techo \"download failed url:$3\"\n\texit $?\nfi\n";
-	    sb.append("download() {\necho \"$1\";\n");
-	    sb.append("touch \"$2.tmp\"\n");
-	    sb.append("${DOWNLOAD_COMMAND} " + args + " " + outputArg + " \"$2.tmp\" \"$3\" \n");
-	    sb.append(test);
-	    sb.append("mv \"$2.tmp\" \"$2\" \n");
+            sb.append(cmd("export ROOT=\"" + request.getAbsoluteUrl("")
+                          + "\""));
+            sb.append(
+                "makedir() {\nif ! test -e $1 ; then\n\tmkdir $1;\nfi\n}\n");
+            String test =
+                "if [[ $? != 0 ]] ; then\n\techo \"download failed url:$3\"\n\texit $?\nfi\n";
+            sb.append("download() {\necho \"$1\";\n");
+            sb.append("touch \"$2.tmp\"\n");
+            sb.append("${DOWNLOAD_COMMAND} " + args + " " + outputArg
+                      + " \"$2.tmp\" \"$3\" \n");
+            sb.append(test);
+            sb.append("mv \"$2.tmp\" \"$2\" \n");
 
-	    sb.append("}\n");
+            sb.append("}\n");
         }
 
         /**
          * _more_
          *
          * @param sb _more_
+         * @param msg _more_
          * @param filename _more_
          * @param url _more_
          */
-        public void download(StringBuilder sb, String msg, String filename, String url) {
-            sb.append(cmd("download "+ qt(msg) +" " + qt(filename) + " " + qt(url)));
+        public void download(StringBuilder sb, String msg, String filename,
+                             String url) {
+            sb.append(cmd("download " + qt(msg) + " " + qt(filename) + " "
+                          + qt(url)));
         }
 
 

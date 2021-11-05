@@ -1,29 +1,16 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.metadata;
 
 
 import org.ramadda.repository.*;
-import org.ramadda.repository.type.DataTypes;
-import org.ramadda.repository.map.MapManager;
 import org.ramadda.repository.map.MapInfo;
+import org.ramadda.repository.map.MapManager;
+import org.ramadda.repository.type.DataTypes;
 import org.ramadda.util.ColorTable;
-import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.FormInfo;
+import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
@@ -238,11 +225,11 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 }
                 String tagValues = getStorageManager().readSystemResource(
                                        values.substring(5));
-                tmpValues = (List<String>) Utils.split(tagValues, "\n",
-                        true, true);
+                tmpValues = (List<String>) Utils.split(tagValues, "\n", true,
+                        true);
             } else {
-                tmpValues = (List<String>) Utils.split(values, ",",
-                        true, true);
+                tmpValues = (List<String>) Utils.split(values, ",", true,
+                        true);
             }
 
             List<TwoFacedObject> enumValues = new ArrayList<TwoFacedObject>();
@@ -663,8 +650,9 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         String arg = ARG_METADATA_ATTR + getIndex() + suffix;
 
         if (getDataType().equals(DATATYPE_LATLON)) {
-	    return request.getString(arg+".latitude","")+"," +request.getString(arg+".longitude","");
-	}
+            return request.getString(arg + ".latitude", "") + ","
+                   + request.getString(arg + ".longitude", "");
+        }
 
 
         if (getDataType().equals(DATATYPE_BOOLEAN)) {
@@ -830,6 +818,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
      *
      * @param request _more_
      * @param entry _more_
+     * @param formInfo _more_
      * @param metadata _more_
      * @param suffix _more_
      * @param value _more_
@@ -839,8 +828,9 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
      *
      * @throws Exception _more_
      */
-    public String getForm(Request request, Entry entry, FormInfo formInfo, Metadata metadata,
-                          String suffix, String value, boolean forEdit)
+    public String getForm(Request request, Entry entry, FormInfo formInfo,
+                          Metadata metadata, String suffix, String value,
+                          boolean forEdit)
             throws Exception {
 
 
@@ -856,19 +846,21 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
         if (isString(dataType)) {
             if (dataType.equals(DATATYPE_WIKI)) {
-		/*
+                /*
                 String buttons =
                     getRepository().getWikiManager().makeWikiEditBar(request,
                         entry, arg) + HtmlUtils.br();
                 return buttons
                        + HtmlUtils.textArea(arg, value, rows, columns,
                                             HtmlUtils.id(arg));
-		*/
-		StringBuilder sb = new StringBuilder();
+                */
+                StringBuilder sb = new StringBuilder();
 
-		entry.getTypeHandler().addWikiEditor(request, entry, sb, formInfo,arg,value,null,false,25000,true);
-		return sb.toString();
-		//                      wikiText, null, false, 256000);
+                entry.getTypeHandler().addWikiEditor(request, entry, sb,
+                        formInfo, arg, value, null, false, 25000, true);
+
+                return sb.toString();
+                //                      wikiText, null, false, 256000);
             } else {
                 if (rows > 1) {
                     return HtmlUtils.textArea(arg, value, rows, columns);
@@ -878,13 +870,18 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                                        HtmlUtils.attr(HtmlUtils.ATTR_SIZE,
                                            "" + columns));
             }
-	} else if (dataType.equals(DATATYPE_LATLON)) {
-	    List<String> toks = Utils.splitUpTo(value,",",2);
-            MapInfo map = getMapManager().createMap(request, entry, true,null);
-            String mapSelector = map.makeSelector(arg, true, new String[]{toks.size()>0?toks.get(0):"40",toks.size()>1?toks.get(1):"-107"},
-						  "", "");
+        } else if (dataType.equals(DATATYPE_LATLON)) {
+            List<String> toks = Utils.splitUpTo(value, ",", 2);
+            MapInfo map = getMapManager().createMap(request, entry, true,
+                              null);
+            String mapSelector = map.makeSelector(arg, true,
+                                     new String[] { (toks.size() > 0)
+                    ? toks.get(0)
+                    : "40", (toks.size() > 1)
+                            ? toks.get(1)
+                            : "-107" }, "", "");
 
-	    return mapSelector;
+            return mapSelector;
         } else if (dataType.equals(DATATYPE_COLORTABLE)) {
             List names =
                 Utils.split(
@@ -895,7 +892,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
             return HtmlUtils.select(arg, names, value) + " "
                    + HtmlUtils.href(getRepository().getUrlBase()
-				    + "/colortables", "View",
+                                    + "/colortables", "View",
                                         "target=_colortables");
         } else if (dataType.equals(DATATYPE_BOOLEAN)) {
             return HtmlUtils.checkbox(arg, "true",
@@ -1006,8 +1003,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                     if (subValue == null) {
                         subValue = "";
                     }
-                    String widget = element.getForm(request, entry, formInfo,metadata,
-						    subArg, subValue, forEdit);
+                    String widget = element.getForm(request, entry, formInfo,
+                                        metadata, subArg, subValue, forEdit);
                     if ((widget == null) || (widget.length() == 0)) {
                         continue;
                     }
@@ -1052,7 +1049,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             return sb.toString();
         } else {
             System.err.println("Unknown data type:" + dataType);
-	    return "Unknown data type:" + dataType;
+
+            return "Unknown data type:" + dataType;
         }
 
     }

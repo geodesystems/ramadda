@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
@@ -155,7 +142,8 @@ public interface WikiConstants {
 
 
 
-    public static final String ATTR_SHOWICON = "showIcon";    
+    /**  */
+    public static final String ATTR_SHOWICON = "showIcon";
 
     /** _more_ */
     public static final String ATTR_SHOWDESCRIPTION = "showdescription";
@@ -198,7 +186,7 @@ public interface WikiConstants {
     public static final String ATTR_SORT_BY = "sortby";
 
     /** sort order attribute */
-    public static final String ATTR_SORT_DIR = "sortdir";    
+    public static final String ATTR_SORT_DIR = "sortdir";
 
 
     /** the message attribute */
@@ -325,6 +313,7 @@ public interface WikiConstants {
     /** _more_ */
     public static final String WIKI_TAG_GROUP = "group";
 
+    /**  */
     public static final String WIKI_TAG_TEMPLATE = "template";
 
     /** _more_ */
@@ -334,7 +323,7 @@ public interface WikiConstants {
     /** _more_ */
     public static final String WIKI_TAG_EMBED = "embed";
 
-    /** _more_          */
+    /** _more_ */
     public static final String WIKI_TAG_ODOMETER = "odometer";
 
     /** _more_ */
@@ -383,7 +372,8 @@ public interface WikiConstants {
     public static final String WIKI_TAG_MENU = "menu";
 
 
-    public static final String WIKI_TAG_MENUTREE = "menutree";    
+    /**  */
+    public static final String WIKI_TAG_MENUTREE = "menutree";
 
 
     /** _more_ */
@@ -392,7 +382,7 @@ public interface WikiConstants {
     /** wiki import */
     public static final String WIKI_TAG_TREE = "tree";
 
-    /** _more_          */
+    /** _more_ */
     public static final String WIKI_TAG_FULLTREE = "fulltree";
 
     /** _more_ */
@@ -402,6 +392,7 @@ public interface WikiConstants {
     public static final String WIKI_TAG_FRAMES = "frames";
 
 
+    /**  */
     public static final String WIKI_TAG_CAPTION = "caption";
 
 
@@ -421,6 +412,7 @@ public interface WikiConstants {
     /** wiki import */
     public static final String WIKI_TAG_GALLERY = "gallery";
 
+    /**  */
     public static final String WIKI_TAG_ZIPFILE = "zipfile";
 
 
@@ -442,19 +434,19 @@ public interface WikiConstants {
     /** _more_ */
     public static final String WIKI_TAG_APPLY = "apply";
 
-    /** _more_          */
+    /** _more_ */
     public static final String WIKI_TAG_ATTRS = "attrs";
 
     /** _more_ */
     public static final String WIKI_TAG_DISPLAYPROPERTY = "displayProperty";
 
-    /** _more_          */
+    /** _more_ */
     public static final String WIKI_TAG_DISPLAYPROPERTIES =
         "displayProperties";
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String WIKI_TAG_MULTI = "multi";
 
     /** _more_ */
@@ -499,10 +491,17 @@ public interface WikiConstants {
     /** wiki import */
     public static final String WIKI_TAG_INFORMATION = "information";
 
+    /**  */
     public static final String WIKI_TAG_PREV = "prev";
-    public static final String WIKI_TAG_UP = "up";    
+
+    /**  */
+    public static final String WIKI_TAG_UP = "up";
+
+    /**  */
     public static final String WIKI_TAG_NEXT = "next";
-    public static final String WIKI_TAG_PREVNEXT = "prevnext";        
+
+    /**  */
+    public static final String WIKI_TAG_PREVNEXT = "prevnext";
 
 
     /** _more_ */
@@ -511,7 +510,8 @@ public interface WikiConstants {
     /** wiki import */
     public static final String WIKI_TAG_IMAGE = "image";
 
-    public static final String WIKI_TAG_IMAGE2 = "image2";    
+    /**  */
+    public static final String WIKI_TAG_IMAGE2 = "image2";
 
 
     /** _more_ */
@@ -580,7 +580,8 @@ public interface WikiConstants {
 
     public static final String WIKI_TAG_RESOURCE = "resource";
 
-    public static final String WIKI_TAG_ENTRYLINK = "entrylink";    
+    /**  */
+    public static final String WIKI_TAG_ENTRYLINK = "entrylink";
 
     /** _more_ */
     public static final String WIKI_TAG_TOOLS = "tools";
@@ -616,7 +617,7 @@ public interface WikiConstants {
     /** property delimiter */
     public static final String PROP_DELIM = ":";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_ADDED_GROUP = "added group";
 
     /** the id for this */

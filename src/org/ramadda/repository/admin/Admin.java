@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.admin;
 
@@ -105,8 +92,12 @@ public class Admin extends RepositoryManager {
 
     /** _more_ */
     public static final String ACTION_DUMPDB = "action.dumpb";
+
+    /**  */
     public static final String ACTION_FULLINDEX = "action.fullindex";
-    public static final String ACTION_PARTIALINDEX = "action.partialindex";        
+
+    /**  */
+    public static final String ACTION_PARTIALINDEX = "action.partialindex";
 
     /** _more_ */
     public static final String ACTION_CHANGEPATHS = "action.changepaths";
@@ -167,8 +158,8 @@ public class Admin extends RepositoryManager {
 
     /** _more_ */
     public RequestUrl URL_ADMIN_SNAPSHOTS = new RequestUrl(this,
-                                              "/admin/snapshots",
-                                              "Snapshots");
+                                                "/admin/snapshots",
+                                                "Snapshots");
 
 
 
@@ -229,7 +220,7 @@ public class Admin extends RepositoryManager {
         getRegistryManager().URL_REGISTRY_REMOTESERVERS,
         /*URL_ADMIN_STARTSTOP,*/
         /*URL_ADMIN_TABLES, */
-        URL_ADMIN_LOG, URL_ADMIN_STACK, URL_ADMIN_SNAPSHOTS,URL_ADMIN_CLEANUP
+        URL_ADMIN_LOG, URL_ADMIN_STACK, URL_ADMIN_SNAPSHOTS, URL_ADMIN_CLEANUP
     });
 
 
@@ -302,14 +293,14 @@ public class Admin extends RepositoryManager {
             adminUrls.add(idx + 1, URL_ADMIN_LOCAL);
         }
 
-	Misc.run(new Runnable() {
-		public void run() {
-		    while(true) {
-			printMemory();
-			Misc.sleepSeconds(5);
-		    }
-		}
-	    });
+        Misc.run(new Runnable() {
+            public void run() {
+                while (true) {
+                    printMemory();
+                    Misc.sleepSeconds(5);
+                }
+            }
+        });
     }
 
     /**
@@ -541,7 +532,11 @@ public class Admin extends RepositoryManager {
                 "Install Error",
                 new StringBuffer(
                     getPageHandler().showDialogError(
-						     "Error: No installation password has been specified.<br>You need to add a some_name.properties file to your RAMADDA home directory (" + getStorageManager().getRepositoryDir() +") with the following set and then restart your server<br>&nbsp;<br><pre>\n" + PROP_INSTALL_PASSWORD + "=some password\n\n</pre>")));
+                        "Error: No installation password has been specified.<br>You need to add a some_name.properties file to your RAMADDA home directory ("
+                        + getStorageManager().getRepositoryDir()
+                        + ") with the following set and then restart your server<br>&nbsp;<br><pre>\n"
+                        + PROP_INSTALL_PASSWORD
+                        + "=some password\n\n</pre>")));
         }
 
         String givenPassword = request.getString(PROP_INSTALL_PASSWORD,
@@ -724,9 +719,11 @@ public class Admin extends RepositoryManager {
                     }
 
                     StringBuilder html = new StringBuilder();
-		    getPageHandler().sectionOpen(request,html,"RAMADDA Install",false);
+                    getPageHandler().sectionOpen(request, html,
+                            "RAMADDA Install", false);
                     html.append(sb);
-      		    getPageHandler().sectionClose(request,html);
+                    getPageHandler().sectionClose(request, html);
+
                     return new Result("Repository Initialization", html);
                 }
             }
@@ -735,8 +732,8 @@ public class Admin extends RepositoryManager {
                 sb.append(getPageHandler().showDialogError(msg("Error")
                         + "<br>" + errorBuffer));
             }
-            sb.append(note(
-			   "Please enter the following information. This information is used to configure your RAMADDA server and is not sent anywhere."));
+            sb.append(
+                note("Please enter the following information. This information is used to configure your RAMADDA server and is not sent anywhere."));
             String required1 =
                 " <span class=\"ramadda-required-field\">* required</span>";
             String required2 =
@@ -813,12 +810,12 @@ public class Admin extends RepositoryManager {
             sb.append(HtmlUtils.submit(msg("Initialize Server")));
         }
 
- 
+
         StringBuffer finalSB = new StringBuffer();
         finalSB.append(request.formPost(getRepository().URL_INSTALL));
-	getPageHandler().sectionOpen(request,finalSB,title,false);
+        getPageHandler().sectionOpen(request, finalSB, title, false);
         finalSB.append(sb);
-	getPageHandler().sectionClose(request,finalSB);
+        getPageHandler().sectionClose(request, finalSB);
         finalSB.append(HtmlUtils.sectionClose());
         finalSB.append(HtmlUtils.formClose());
 
@@ -999,7 +996,9 @@ public class Admin extends RepositoryManager {
 
     /** _more_ */
     private boolean amDumpingDb = false;
-    private boolean amReindexing = false;    
+
+    /**  */
+    private boolean amReindexing = false;
 
     /**
      * _more_
@@ -1035,12 +1034,22 @@ public class Admin extends RepositoryManager {
         return result;
     }
 
-    public Result adminReindex(Request request, boolean all) throws Exception {
+    /**
+     *
+     * @param request _more_
+     * @param all _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result adminReindex(Request request, boolean all)
+            throws Exception {
         //Only do one at a time
         if (amReindexing) {
             StringBuffer sb = new StringBuffer(
                                   getPageHandler().showDialogWarning(
-								     "Currently reindexing"));
+                                      "Currently reindexing"));
 
             return makeResult(request, msg("Reindex"), sb);
         }
@@ -1048,14 +1057,15 @@ public class Admin extends RepositoryManager {
 
         ActionManager.Action action = new ActionManager.Action() {
             public void run(Object actionId) throws Exception {
-		try {
-		    getSearchManager().reindexLucene(actionId,all);
-		} catch(Exception exc) {
-		    System.err.println("Error reindexing:" + exc);
-		    throw exc;
-		} finally {		    
-		    amReindexing = false;
-		}
+                try {
+                    getSearchManager().reindexLucene(actionId, all);
+                } catch (Exception exc) {
+                    System.err.println("Error reindexing:" + exc);
+
+                    throw exc;
+                } finally {
+                    amReindexing = false;
+                }
             }
         };
         String href = HtmlUtils.href(request.makeUrl(URL_ADMIN_CLEANUP),
@@ -1119,10 +1129,11 @@ public class Admin extends RepositoryManager {
     public Result makeResult(Request request, String title, Appendable sb)
             throws Exception {
         StringBuilder headerSB = new StringBuilder();
-	getPageHandler().sectionOpen(request, headerSB, "Admin",false);
+        getPageHandler().sectionOpen(request, headerSB, "Admin", false);
         getPageHandler().makeLinksHeader(request, headerSB, adminUrls, "");
         headerSB.append(sb);
-	getPageHandler().sectionClose(request, headerSB);
+        getPageHandler().sectionClose(request, headerSB);
+
         return new Result(title, headerSB);
     }
 
@@ -1499,9 +1510,10 @@ public class Admin extends RepositoryManager {
                     outputSB.append(HtmlUtils.p());
                 }
                 lastCategoryName = type.getGroupName();
-		if(lastCategoryName!=null)
-		    HtmlUtils.div(outputSB,
-				  lastCategoryName, HtmlUtils.cssClass(CSS_CLASS_HEADING_2));
+                if (lastCategoryName != null) {
+                    HtmlUtils.div(outputSB, lastCategoryName,
+                                  HtmlUtils.cssClass(CSS_CLASS_HEADING_2));
+                }
                 outputSB.append("\n<div style=\"margin-left:20px\">");
             }
             outputSB.append(HtmlUtils.checkbox("outputtype." + type.getId(),
@@ -1996,17 +2008,32 @@ public class Admin extends RepositoryManager {
     }
 
 
+    /**
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result adminSnapshots(Request request) throws Exception {
         StringBuffer sb = new StringBuffer("");
         sb.append(HtmlUtils.sectionOpen(null, false));
-	File dir = new File(getStorageManager().getHtdocsDir() +"/snapshots/pages");
-	File []files = dir.listFiles();
-	if(files.length==0) sb.append("No snapshot files");
-	sb.append("<ul>");
-	for(File f: files) {
-	    sb.append("<li> " + HU.href(getRepository().getUrlBase()+"/snapshots/pages/" + f.getName(),f.getName()));
-	}
-	sb.append("</ul>");
+        File dir = new File(getStorageManager().getHtdocsDir()
+                            + "/snapshots/pages");
+        File[] files = dir.listFiles();
+        if (files.length == 0) {
+            sb.append("No snapshot files");
+        }
+        sb.append("<ul>");
+        for (File f : files) {
+            sb.append("<li> "
+                      + HU.href(getRepository().getUrlBase()
+                                + "/snapshots/pages/"
+                                + f.getName(), f.getName()));
+        }
+        sb.append("</ul>");
+
         return makeResult(request, msg("Snapshots"), sb);
     }
 
@@ -2081,7 +2108,7 @@ public class Admin extends RepositoryManager {
         long t1 = System.currentTimeMillis();
 
         request.ensureAuthToken();
-        if (query.indexOf(";")>0 || bulkLoad) {
+        if ((query.indexOf(";") > 0) || bulkLoad) {
             getDatabaseManager().loadSql(query, false, true);
 
             return makeResult(request, msg("SQL"),
@@ -2105,8 +2132,8 @@ public class Admin extends RepositoryManager {
             Hashtable         map    = new Hashtable();
             int               unique = 0;
             ResultSetMetaData rsmd   = null;
-	    StringBuilder raw = null;
-	    StringBuilder table = new StringBuilder();
+            StringBuilder     raw    = null;
+            StringBuilder     table  = new StringBuilder();
             while ((results = iter.getNext()) != null) {
                 if (rsmd == null) {
                     rsmd = results.getMetaData();
@@ -2119,11 +2146,11 @@ public class Admin extends RepositoryManager {
                 if (cnt == 1) {
                     table.append("<table><tr>");
                     for (int i = 0; i < rsmd.getColumnCount(); i++) {
-			String col =rsmd.getColumnLabel(i + 1);
-			if(col.equals("QUERY PLAN")) raw = new StringBuilder();
-                        table.append(
-                            HtmlUtils.col(
-					  HtmlUtils.bold(col)));
+                        String col = rsmd.getColumnLabel(i + 1);
+                        if (col.equals("QUERY PLAN")) {
+                            raw = new StringBuilder();
+                        }
+                        table.append(HtmlUtils.col(HtmlUtils.bold(col)));
                     }
                     table.append("</tr>");
                 }
@@ -2134,18 +2161,19 @@ public class Admin extends RepositoryManager {
                             == java.sql.Types.TIMESTAMP) {
                         Date dttm = results.getTimestamp(colcnt,
                                         Repository.calendar);
-                        table.append(HtmlUtils.col(formatDate(request, dttm)));
+                        table.append(HtmlUtils.col(formatDate(request,
+                                dttm)));
                     } else {
                         String s = results.getString(colcnt);
                         if (s == null) {
                             s = "_null_";
                         }
                         s = HtmlUtils.entityEncode(s);
-			if(raw!=null) {
-			    raw.append(s);
-			    raw.append("\n");
-			}
-				       
+                        if (raw != null) {
+                            raw.append(s);
+                            raw.append("\n");
+                        }
+
                         if (s.length() > 100) {
                             table.append(
                                 HtmlUtils.col(
@@ -2162,10 +2190,11 @@ public class Admin extends RepositoryManager {
                 //                }
             }
             table.append("</table>");
-	    if(raw!=null)
-		sb.append(HtmlUtils.pre(raw.toString()));
-	    else
-		sb.append(table);
+            if (raw != null) {
+                sb.append(HtmlUtils.pre(raw.toString()));
+            } else {
+                sb.append(table);
+            }
             long t2 = System.currentTimeMillis();
             getRepository().clearCache();
             getRepository().readDatabaseProperties();
@@ -2232,7 +2261,7 @@ public class Admin extends RepositoryManager {
      * @throws Exception _more_
      */
     private void appendMemory(Appendable sb) throws Exception {
-	Runtime.getRuntime().gc();
+        Runtime.getRuntime().gc();
         DecimalFormat fmt        = new DecimalFormat("#0");
         double        maxMemory  = (double) Runtime.getRuntime().maxMemory();
         double        freeMemory = (double) Runtime.getRuntime().freeMemory();
@@ -2254,38 +2283,47 @@ public class Admin extends RepositoryManager {
 
     }
 
+    /**
+     *
+     * @return _more_
+     */
     public int getUsedMemory() {
-	double        freeMemory = (double) Runtime.getRuntime().freeMemory();
-	double totalMemory       =
-	    (double) Runtime.getRuntime().totalMemory();
-	double        usedMemory = (totalMemory - freeMemory);
-	return (int)(usedMemory / 1000000);
+        double freeMemory  = (double) Runtime.getRuntime().freeMemory();
+        double totalMemory = (double) Runtime.getRuntime().totalMemory();
+        double usedMemory  = (totalMemory - freeMemory);
+
+        return (int) (usedMemory / 1000000);
     }
 
+    /**
+     */
     private void printMemory() {
-	try {
-	    if(true) return;
-	    Runtime.getRuntime().gc();
-	    DecimalFormat fmt        = new DecimalFormat("#0");
-	    double        maxMemory  = (double) Runtime.getRuntime().maxMemory();
-	    double        freeMemory = (double) Runtime.getRuntime().freeMemory();
-	    double totalMemory       =
-		(double) Runtime.getRuntime().totalMemory();
-	    double        usedMemory = (totalMemory - freeMemory);
-	    String cache = " cache:" + getEntryManager().getEntryCache().size();
-	    usedMemory = usedMemory / 1000000;
-	    if(usedMemory>300) {
-		//		System.err.println("printMemory: Clearing cache");
-		//		getEntryManager().clearCache();
-	    }
-	    System.err.println("Used Memory:" +   fmt.format(usedMemory)   + " (MB)" + cache);
-	    
+        try {
+            if (true) {
+                return;
+            }
+            Runtime.getRuntime().gc();
+            DecimalFormat fmt        = new DecimalFormat("#0");
+            double maxMemory = (double) Runtime.getRuntime().maxMemory();
+            double freeMemory = (double) Runtime.getRuntime().freeMemory();
+            double totalMemory = (double) Runtime.getRuntime().totalMemory();
+            double        usedMemory = (totalMemory - freeMemory);
+            String cache = " cache:"
+                           + getEntryManager().getEntryCache().size();
+            usedMemory = usedMemory / 1000000;
+            if (usedMemory > 300) {
+                //              System.err.println("printMemory: Clearing cache");
+                //              getEntryManager().clearCache();
+            }
+            System.err.println("Used Memory:" + fmt.format(usedMemory)
+                               + " (MB)" + cache);
 
-	} catch(Exception exc) {
-	    throw new RuntimeException(exc);
-	}
+
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
     }
-    
+
 
     /**
      * _more_
@@ -2415,9 +2453,9 @@ public class Admin extends RepositoryManager {
         } else if (request.defined(ACTION_DUMPDB)) {
             return adminDbDump(request);
         } else if (request.defined(ACTION_FULLINDEX)) {
-            return adminReindex(request,true);
+            return adminReindex(request, true);
         } else if (request.defined(ACTION_PARTIALINDEX)) {
-            return adminReindex(request,false);	    	    
+            return adminReindex(request, false);
         } else if (request.defined(ACTION_NEWDB)) {
             getDatabaseManager().reInitialize();
 
@@ -2522,12 +2560,13 @@ public class Admin extends RepositoryManager {
             request.formPostWithAuthToken(sb, URL_ADMIN_CLEANUP, "");
             sb.append(
                 HtmlUtils.section(
-                    HtmlUtils.h3(msg("Reindex Lucene Index")) 
-		    + "Reindex all deletes entire index. Reindex partial only in indexes entries not already indexed" 
+                    HtmlUtils.h3(msg("Reindex Lucene Index"))
+                    + "Reindex all deletes entire index. Reindex partial only in indexes entries not already indexed"
                     + "<br>"
                     + HtmlUtils.submit(msg("Reindex all"), ACTION_FULLINDEX)
-		    + HU.space(2) 
-		    + HtmlUtils.submit(msg("Reindex partial"), ACTION_PARTIALINDEX)));
+                    + HU.space(2)
+                    + HtmlUtils.submit(
+                        msg("Reindex partial"), ACTION_PARTIALINDEX)));
             sb.append(HtmlUtils.formClose());
 
 

@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
@@ -180,10 +167,10 @@ public class ImageOutputHandler extends OutputHandler {
                        ICON_IMAGES);
 
     /** _more_ */
-    public static final OutputType OUTPUT_ZOOM =
-        new OutputType("Image Zoom", "image.zoom",
-                       OutputType.TYPE_VIEW, "",
-                       ICON_IMAGES);    
+    public static final OutputType OUTPUT_ZOOM = new OutputType("Image Zoom",
+                                                     "image.zoom",
+                                                     OutputType.TYPE_VIEW,
+                                                     "", ICON_IMAGES);
 
     /** _more_ */
     public static final OutputType OUTPUT_COLLAGE =
@@ -320,11 +307,12 @@ public class ImageOutputHandler extends OutputHandler {
             return;
         }
 
-	boolean ok = false;
+        boolean ok = false;
         if (entries.size() > 0) {
             for (Entry entry : entries) {
                 if (entry.isImage()) {
                     ok = true;
+
                     break;
                 }
             }
@@ -332,19 +320,20 @@ public class ImageOutputHandler extends OutputHandler {
                 return;
             }
         }
-	boolean ok2 = state.getEntry() != null && state.getEntry().isImage();
-	if(ok || ok2) {
-//            links.add(makeLink(request, state.getEntry(), OUTPUT_SLIDESHOW));
+        boolean ok2 = (state.getEntry() != null)
+                      && state.getEntry().isImage();
+        if (ok || ok2) {
+            //            links.add(makeLink(request, state.getEntry(), OUTPUT_SLIDESHOW));
             links.add(makeLink(request, state.getEntry(), OUTPUT_GALLERY));
-            links.add(makeLink(request, state.getEntry(), OUTPUT_ZOOM));	    
+            links.add(makeLink(request, state.getEntry(), OUTPUT_ZOOM));
             links.add(makeLink(request, state.getEntry(), OUTPUT_PLAYER));
             links.add(makeLink(request, state.getEntry(), OUTPUT_COLLAGE));
             if (repository.getProperty("service.imagemagick") != null) {
                 links.add(makeLink(request, state.getEntry(),
                                    OUTPUT_ANIMATEDGIF));
             }
-	}
-	if(ok2) {
+        }
+        if (ok2) {
             links.add(makeLink(request, state.getEntry(), OUTPUT_LABELER));
             links.add(makeLink(request, state.getEntry(), OUTPUT_B64));
         }
@@ -415,6 +404,7 @@ public class ImageOutputHandler extends OutputHandler {
         if (outputType.equals(OUTPUT_LABELER)) {
             List<Entry> entries = new ArrayList<Entry>();
             entries.add(entry);
+
             return makeLabels(request, entry, entries);
         }
 
@@ -448,14 +438,15 @@ public class ImageOutputHandler extends OutputHandler {
             return new Result("Video", sb);
         }
 
-	//        if (true || output.equals(OUTPUT_GALLERY)) {
-	    List<Entry> entries = new ArrayList<Entry>();
-	    entries.add(entry);
-	    return makeResult(request, entry, entries);
-	    //	}
+        //        if (true || output.equals(OUTPUT_GALLERY)) {
+        List<Entry> entries = new ArrayList<Entry>();
+        entries.add(entry);
+
+        return makeResult(request, entry, entries);
+        //  }
 
 
-	    //        return new Result("", new StringBuilder("NA"));
+        //        return new Result("", new StringBuilder("NA"));
     }
 
 
@@ -981,7 +972,8 @@ public class ImageOutputHandler extends OutputHandler {
      * @return _more_
      */
     public String getMimeType(OutputType output) {
-        if (output.equals(OUTPUT_GALLERY) || output.equals(OUTPUT_ZOOM) || output.equals(OUTPUT_PLAYER)
+        if (output.equals(OUTPUT_GALLERY) || output.equals(OUTPUT_ZOOM)
+                || output.equals(OUTPUT_PLAYER)
                 || output.equals(OUTPUT_SLIDESHOW)) {
             return repository.getMimeTypeFromSuffix(".html");
         }
@@ -1017,11 +1009,14 @@ public class ImageOutputHandler extends OutputHandler {
         }
 
         if (output.equals(OUTPUT_ZOOM)) {
-            getPageHandler().entrySectionOpen(request, group, sb, "Image Zoom");
-	    String zoomTemplate = "{{display_imagezoom height=\"300\" doEntries=\"true\" addThumbnails=\"true\" addImages=\"true\" \npopupImageWidth=2000 \nlabelFields=\"name\" \n thumbField=\"thumbnail\" \n imageField=\"image\"  urlField=\"entry_url\" \n}}";
-	    sb.append(getWikiManager().wikifyEntry(request, group,zoomTemplate));
+            getPageHandler().entrySectionOpen(request, group, sb,
+                    "Image Zoom");
+            String zoomTemplate =
+                "{{display_imagezoom height=\"300\" doEntries=\"true\" addThumbnails=\"true\" addImages=\"true\" \npopupImageWidth=2000 \nlabelFields=\"name\" \n thumbField=\"thumbnail\" \n imageField=\"image\"  urlField=\"entry_url\" \n}}";
+            sb.append(getWikiManager().wikifyEntry(request, group,
+                    zoomTemplate));
             getPageHandler().entrySectionClose(request, group, sb);
-	}
+        }
 
 
         if (output.equals(OUTPUT_GALLERY)) {
@@ -1314,8 +1309,8 @@ public class ImageOutputHandler extends OutputHandler {
         int cropLeft   = 0;
         int cropBottom = 0;
         int cropRight  = 0;
-        List<String> crops = Utils.split(request.getString("crop", ""),
-                                 ",", true, true);
+        List<String> crops = Utils.split(request.getString("crop", ""), ",",
+                                         true, true);
         if (crops.size() > 0) {
             cropTop = Integer.parseInt(crops.get(0));
         }
@@ -1383,6 +1378,7 @@ public class ImageOutputHandler extends OutputHandler {
                                     child.getResource().getPath(), true));
                         if (imageBytes == null) {
                             System.err.println("no image:" + child);
+
                             return;
                         }
                         Image image = ImageIO.read(
@@ -1408,7 +1404,7 @@ public class ImageOutputHandler extends OutputHandler {
                     }
                 }
             });
-	}
+        }
 
         int tries = 0;
         while (done[0] != selected.size()) {

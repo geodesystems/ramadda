@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.search;
 
@@ -51,6 +38,7 @@ public abstract class SearchProvider extends GenericTypeHandler {
     /** _more_ */
     public static final String CATEGORY_SCIENCE = "Science & Academic";
 
+    /**  */
     public static final String CAPABILITY_AREA = "area";
 
     /** _more_ */
@@ -103,8 +91,12 @@ public abstract class SearchProvider extends GenericTypeHandler {
     }
 
 
+    /**
+     *
+     * @return _more_
+     */
     public String getCapabilities() {
-	return "";
+        return "";
     }
 
 
@@ -222,8 +214,12 @@ public abstract class SearchProvider extends GenericTypeHandler {
         return "External Search Providers";
     }
 
+    /**
+     *
+     * @return _more_
+     */
     public String getType() {
-	return getClass().getSimpleName();
+        return getClass().getSimpleName();
     }
 
     /**
@@ -316,10 +312,14 @@ public abstract class SearchProvider extends GenericTypeHandler {
             return "";
         }
 
-	@Override
-	public String getType() {
-	    return "ramadda";
-	}
+        /**
+         *
+         * @return _more_
+         */
+        @Override
+        public String getType() {
+            return "ramadda";
+        }
 
 
 
@@ -345,9 +345,10 @@ public abstract class SearchProvider extends GenericTypeHandler {
          */
         public List<Entry> getEntries(Request request, SearchInfo searchInfo)
                 throws Exception {
-            StringBuilder sb = new StringBuilder();
-            List<Entry> results = getEntryManager().getEntries(request, sb);
+            StringBuilder sb      = new StringBuilder();
+            List<Entry>   results = getEntryManager().getEntries(request, sb);
             searchInfo.addMessage(this, sb.toString());
+
             return results;
         }
 
@@ -408,10 +409,14 @@ public abstract class SearchProvider extends GenericTypeHandler {
         }
 
 
-	@Override
-	public String getType() {
-	    return "ramadda";
-	}
+        /**
+         *
+         * @return _more_
+         */
+        @Override
+        public String getType() {
+            return "ramadda";
+        }
 
 
         /**
@@ -465,7 +470,7 @@ public abstract class SearchProvider extends GenericTypeHandler {
          * @throws Exception _more_
          */
         public List<Entry> getEntries(Request request, SearchInfo searchInfo)
-	    throws Exception {
+                throws Exception {
             String serverUrl = serverInfo.getUrl();
             request = request.cloneMe();
             request.remove(SearchManager.ARG_PROVIDER);
@@ -474,11 +479,12 @@ public abstract class SearchProvider extends GenericTypeHandler {
             String remoteSearchUrl =
                 serverUrl + getSearchManager().URL_ENTRY_SEARCH.getPath()
                 + "?" + linkUrl;
-	    String entriesXml = getStorageManager().readSystemResource(
-								       new URL(remoteSearchUrl));
+            String entriesXml = getStorageManager().readSystemResource(
+                                    new URL(remoteSearchUrl));
 
-	    return getEntryManager().createRemoteEntries(request, serverInfo, entriesXml);
-	}
+            return getEntryManager().createRemoteEntries(request, serverInfo,
+                    entriesXml);
+        }
     }
 
 

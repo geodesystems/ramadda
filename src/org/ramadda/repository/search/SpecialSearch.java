@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.search;
 
@@ -175,8 +162,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             (String) typeHandler.getTypeProperty("search.synthetic.fields",
                 null);
         if (syntheticIds != null) {
-            for (String id :
-                    Utils.split(syntheticIds, ",", true, true)) {
+            for (String id : Utils.split(syntheticIds, ",", true, true)) {
                 String label =
                     (String) typeHandler.getTypeProperty("search.synthetic."
                         + id + ".label", id);
@@ -375,7 +361,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                             Column column = typeHandler.getColumn(columnName);
                             if (column != null) {
                                 column.addTextSearch(request.getString(id),
-						     extra,false);
+                                        extra, false);
                             }
                         }
                     }
@@ -387,8 +373,9 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                 }
             }
 
-            allEntries =  getRepository().getEntryManager().getEntries(request,
-									criteriaSB, extra);
+            allEntries =
+                getRepository().getEntryManager().getEntries(request,
+                    criteriaSB, extra);
 
         }
 
@@ -396,8 +383,9 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         if (request.isOutputDefined()) {
             OutputHandler outputHandler =
                 getRepository().getOutputHandler(request);
-	    List<Entry> groups    = getEntryUtil().getGroups(allEntries);
-	    List<Entry> entries    = getEntryUtil().getNonGroups(allEntries);	    
+            List<Entry> groups  = getEntryUtil().getGroups(allEntries);
+            List<Entry> entries = getEntryUtil().getNonGroups(allEntries);
+
             return outputHandler.outputGroup(
                 request, null, getEntryManager().getDummyGroup(), groups,
                 entries);
@@ -426,7 +414,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
 
         MapInfo map = getRepository().getMapManager().createMap(request,
-                          null, ""+contentsWidth, ""+contentsHeight, true, null);
+                          null, "" + contentsWidth, "" + contentsHeight,
+                          true, null);
 
 
         getMapManager().addToMap(request, map, allEntries,
@@ -543,9 +532,10 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                                    request)) {
                         StringBuffer earthSB = new StringBuffer();
                         getMapManager().getGoogleEarth(
-                            request, allEntries, earthSB,
-                            ""+(contentsWidth - MapManager.EARTH_ENTRIES_WIDTH),
-                            ""+contentsHeight, true, false);
+                            request, allEntries, earthSB, ""
+                            + (contentsWidth
+                               - MapManager.EARTH_ENTRIES_WIDTH), ""
+                                   + contentsHeight, true, false);
                         tabContents.add(HtmlUtils.div(earthSB.toString(),
                                 HtmlUtils.style("min-width:" + minWidth
                                     + "px")));
@@ -614,12 +604,12 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         List<String> metadataTypesToUse = metadataTypes;
         if (request.defined(ARG_METADATA)) {
             metadataTypesToUse =
-                Utils.split(request.getSanitizedString(ARG_METADATA,
-                    ""), ",", true, true);
+                Utils.split(request.getSanitizedString(ARG_METADATA, ""),
+                            ",", true, true);
         }
         List<String> fieldsList =
             Utils.split(request.getSanitizedString(ARG_FIELDS, ""), ",",
-                             true, true);
+                        true, true);
 
         HashSet<String> fieldsToShow = null;
 
@@ -634,22 +624,30 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                                    HtmlUtils.attr(HtmlUtils.ATTR_NAME,
                                        "apisearchform")));
         formSB.append(HtmlUtils.br());
-	if(getSearchManager().isLuceneEnabled()) {
-	    String ancestor = request.getString(ARG_ANCESTOR+"_hidden", request.getString(ARG_ANCESTOR,null));
+        if (getSearchManager().isLuceneEnabled()) {
+            String ancestor = request.getString(ARG_ANCESTOR + "_hidden",
+                                  request.getString(ARG_ANCESTOR, null));
 
-	    Entry ancestorEntry = ancestor==null?null:getEntryManager().getEntry(request, ancestor);
-	    String select =
-		getRepository().getHtmlOutputHandler().getSelect(request, ARG_ANCESTOR,
-								 "Search under", 
-								 true, "", ancestorEntry, true);
+            Entry ancestorEntry = (ancestor == null)
+                                  ? null
+                                  : getEntryManager().getEntry(request,
+                                      ancestor);
+            String select =
+                getRepository().getHtmlOutputHandler().getSelect(request,
+                    ARG_ANCESTOR, "Search under", true, "", ancestorEntry,
+                    true);
 
-	    formSB.append(HU.hidden(ARG_ANCESTOR + "_hidden",
-				ancestor!=null?ancestor:"",
-				HU.id(ARG_ANCESTOR + "_hidden")));
-	    formSB.append(select + "<br>" +
-			  HU.disabledInput(ARG_ANCESTOR, ancestorEntry!=null?ancestorEntry.getName():"",
-					   HU.SIZE_30 + HU.id(ARG_ANCESTOR)));
-	}
+            formSB.append(HU.hidden(ARG_ANCESTOR + "_hidden",
+                                    (ancestor != null)
+                                    ? ancestor
+                                    : "", HU.id(ARG_ANCESTOR + "_hidden")));
+            formSB.append(select + "<br>"
+                          + HU.disabledInput(ARG_ANCESTOR,
+                                             (ancestorEntry != null)
+                                             ? ancestorEntry.getName()
+                                             : "", HU.SIZE_30
+                                             + HU.id(ARG_ANCESTOR)));
+        }
 
 
 
@@ -661,15 +659,15 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                                     HtmlUtils.id("searchinput")
                                     + HtmlUtils.SIZE_15
                                     + " autocomplete='off'   autofocus ")));
-	    formSB.append("<div id=searchpopup xclass=ramadda-popup></div>");
-	    /*
+            formSB.append("<div id=searchpopup xclass=ramadda-popup></div>");
+            /*
             formSB.append(
                 HtmlUtils.script(
                     "Utils.searchSuggestInit('searchinput',"
                     + ((theType == null)
                        ? "null"
                        : "'" + theType + "'") + ");"));
-	    */
+            */
 
         }
 
@@ -811,7 +809,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                               List<Entry> entries)
             throws Exception {
         getRepository().getHtmlOutputHandler().makeTable(request, entries,
-							 sb,null);
+                sb, null);
     }
 
     /**

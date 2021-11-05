@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.harvester;
 
@@ -722,8 +709,8 @@ public class CommandHarvester extends Harvester {
                            + cmdRequest.getRequest());
         Request request         = cmdRequest.getRequest();
         String  textFromRequest = getText(cmdRequest);
-        List<String> commandToks = Utils.split(textFromRequest, ";",
-                                       false, false);
+        List<String> commandToks = Utils.split(textFromRequest, ";", false,
+                                       false);
         if (commandToks.size() == 0) {
             commandToks.add("");
         }
@@ -997,7 +984,7 @@ public class CommandHarvester extends Harvester {
     public CommandHarvester.Args parseArgs(CommandRequest request,
                                            String text)
             throws Exception {
-        List<String>          toks = Utils.split(text, " ", true, true);
+        List<String>          toks    = Utils.split(text, " ", true, true);
         CommandHarvester.Args args    = new CommandHarvester.Args(toks, null);
         String                entryId = null;
         StringBuilder         textSB  = new StringBuilder();
@@ -1612,9 +1599,9 @@ public class CommandHarvester extends Harvester {
             values[0] = desc;
             desc      = "";
         }
-        entry.initEntry(name, desc, parent, getUser(), new Resource(""), "",Entry.DEFAULT_ORDER,
-                        date.getTime(), date.getTime(), date.getTime(),
-                        date.getTime(), values);
+        entry.initEntry(name, desc, parent, getUser(), new Resource(""), "",
+                        Entry.DEFAULT_ORDER, date.getTime(), date.getTime(),
+                        date.getTime(), date.getTime(), values);
         List<Entry> entries = (List<Entry>) Misc.newList(entry);
         getEntryManager().addNewEntries(getRequest(), entries);
 

@@ -1,18 +1,5 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
@@ -165,19 +152,19 @@ public class JsonOutputHandler extends OutputHandler {
         List<Entry> allEntries = new ArrayList<Entry>();
         if (request.get("ancestors", false)) {
             allEntries.add(group);
-	    Entry parent  =group.getParentEntry();
-	    while(parent!=null) {
-		allEntries.add(parent);
-		parent  =parent.getParentEntry();
-	    }
-	} else if (request.get(ARG_ONLYENTRY, false)) {
+            Entry parent = group.getParentEntry();
+            while (parent != null) {
+                allEntries.add(parent);
+                parent = parent.getParentEntry();
+            }
+        } else if (request.get(ARG_ONLYENTRY, false)) {
             allEntries.add(group);
         } else {
             allEntries.addAll(subGroups);
             allEntries.addAll(entries);
         }
         StringBuilder sb = new StringBuilder();
-        if (outputType!=null && outputType.equals(OUTPUT_JSON_POINT)) {
+        if ((outputType != null) && outputType.equals(OUTPUT_JSON_POINT)) {
             makePointJson(request, group, allEntries, sb);
         } else {
             makeJson(request, allEntries, sb);
@@ -207,15 +194,16 @@ public class JsonOutputHandler extends OutputHandler {
         List<Entry> allEntries = new ArrayList<Entry>();
         allEntries.add(entry);
         if (request.get("ancestors", false)) {
-	    Entry parent  =entry.getParentEntry();
-	    while(parent!=null) {
-		allEntries.add(parent);
-		parent  =parent.getParentEntry();
-	    }
-	}
+            Entry parent = entry.getParentEntry();
+            while (parent != null) {
+                allEntries.add(parent);
+                parent = parent.getParentEntry();
+            }
+        }
         StringBuilder sb = new StringBuilder();
-	makeJson(request, allEntries, sb);
+        makeJson(request, allEntries, sb);
         request.setCORSHeaderOnResponse();
+
         return new Result("", sb, Json.MIMETYPE);
     }
 
@@ -262,51 +250,55 @@ public class JsonOutputHandler extends OutputHandler {
                               List<Entry> entries, Appendable sb)
             throws Exception {
 
-	String entryTypes =  request.getString("entryTypes", null);	
-	if(entryTypes!=null) {
-	    List<String> types = Utils.split(entryTypes,",",true,true);
-	    List<Entry> tmp = new ArrayList<Entry>();
-	    for(Entry entry: entries) {
-		boolean ok = false;
-		for(String type: types) {
-		    if(entry.getTypeHandler().isType(type)) {
-			ok = true;
-			break;
-		    }
-		}
-		if(ok) tmp.add(entry);
-	    }
-	    entries = tmp;
-	}
+        String entryTypes = request.getString("entryTypes", null);
+        if (entryTypes != null) {
+            List<String> types = Utils.split(entryTypes, ",", true, true);
+            List<Entry>  tmp   = new ArrayList<Entry>();
+            for (Entry entry : entries) {
+                boolean ok = false;
+                for (String type : types) {
+                    if (entry.getTypeHandler().isType(type)) {
+                        ok = true;
 
-	String notentryTypes =  request.getString("notEntryTypes", null);	
-	if(notentryTypes!=null) {
-	    List<String> types = Utils.split(notentryTypes,",",true,true);
-	    List<Entry> tmp = new ArrayList<Entry>();
-	    for(Entry entry: entries) {
-		boolean ok = true;
-		for(String type: types) {
-		    if(entry.getTypeHandler().isType(type)) {
-			ok = false;
-			break;
-		    }
-		}
-		if(ok) {
-		    tmp.add(entry);
-		}
-	    }
-	}
-	    
+                        break;
+                    }
+                }
+                if (ok) {
+                    tmp.add(entry);
+                }
+            }
+            entries = tmp;
+        }
+
+        String notentryTypes = request.getString("notEntryTypes", null);
+        if (notentryTypes != null) {
+            List<String> types = Utils.split(notentryTypes, ",", true, true);
+            List<Entry>  tmp   = new ArrayList<Entry>();
+            for (Entry entry : entries) {
+                boolean ok = true;
+                for (String type : types) {
+                    if (entry.getTypeHandler().isType(type)) {
+                        ok = false;
+
+                        break;
+                    }
+                }
+                if (ok) {
+                    tmp.add(entry);
+                }
+            }
+        }
 
 
 
 
-	entries= EntryUtil.sortEntriesOnDate(entries,false);
+
+        entries = EntryUtil.sortEntriesOnDate(entries, false);
 
 
 
         List<String> fields = new ArrayList<String>();
-	boolean remote= request.get("remoteRequest",false);
+        boolean      remote = request.get("remoteRequest", false);
 
 
         /*      items.add(Json.quote(entry.getName()));
@@ -322,13 +314,14 @@ public class JsonOutputHandler extends OutputHandler {
         */
 
 
-        boolean      addSnippets = request.get("addSnippets", false);		
+        boolean addSnippets = request.get("addSnippets", false);
 
         addPointHeader(fields, "name", "Name", "string");
         addPointHeader(fields, "description", "Description", "string");
-	if(addSnippets)
-	    addPointHeader(fields, "snippet", "Snippet", "string", "forDisplay",
-			   "false");
+        if (addSnippets) {
+            addPointHeader(fields, "snippet", "Snippet", "string",
+                           "forDisplay", "false");
+        }
         addPointHeader(fields, "id", "Id", "string", "forDisplay", "false");
         addPointHeader(fields, "typeid", "Type ID", "enumeration");
         addPointHeader(fields, "type", "Type", "enumeration");
@@ -341,25 +334,28 @@ public class JsonOutputHandler extends OutputHandler {
         addPointHeader(fields, "entry_url", "Entry Url", "url", "forDisplay",
                        "false");
 
-        boolean      addAttributes = request.get("addAttributes", false);
-        boolean      addPointUrl = request.get("addPointUrl", false);	
-        boolean      addThumbnails = request.get("addThumbnails", false);
-        boolean      addImages = request.get("addImages", false);	
-	if(addPointUrl)
-	    addPointHeader(fields, "pointurl", "Point URL", "url", "forDisplay",
-			   "true");
+        boolean addAttributes = request.get("addAttributes", false);
+        boolean addPointUrl   = request.get("addPointUrl", false);
+        boolean addThumbnails = request.get("addThumbnails", false);
+        boolean addImages     = request.get("addImages", false);
+        if (addPointUrl) {
+            addPointHeader(fields, "pointurl", "Point URL", "url",
+                           "forDisplay", "true");
+        }
 
-	if(addThumbnails)
-	    addPointHeader(fields, "thumbnail", "Thumbnail", "image", "forDisplay",
-			   "false");
-	if(addImages)
-	    addPointHeader(fields, "image", "Image", "image", "forDisplay",
-			   "false");	
+        if (addThumbnails) {
+            addPointHeader(fields, "thumbnail", "Thumbnail", "image",
+                           "forDisplay", "false");
+        }
+        if (addImages) {
+            addPointHeader(fields, "image", "Image", "image", "forDisplay",
+                           "false");
+        }
 
 
-       TypeHandler  typeHandler   = null;
-        List<Column> columns       = null; 
-	if (addAttributes && (entries.size() > 0)) {
+        TypeHandler  typeHandler = null;
+        List<Column> columns     = null;
+        if (addAttributes && (entries.size() > 0)) {
             Entry    entry           = entries.get(0);
             Object[] extraParameters = entry.getValues();
             if (extraParameters != null) {
@@ -399,8 +395,10 @@ public class JsonOutputHandler extends OutputHandler {
             List<String> entryArray = new ArrayList<String>();
             //Note: if the entry is a different type than the first one then
             //the columns will mismatch
-            String array = toPointJson(request, entry, addSnippets, addAttributes,addPointUrl, addThumbnails, addImages,
-                                       typeHandler, columns, showFileUrl,remote);
+            String array = toPointJson(request, entry, addSnippets,
+                                       addAttributes, addPointUrl,
+                                       addThumbnails, addImages, typeHandler,
+                                       columns, showFileUrl, remote);
             entryArray.add("values");
             entryArray.add(array);
             values.add(Json.map(entryArray, false));
@@ -430,11 +428,11 @@ public class JsonOutputHandler extends OutputHandler {
             throws Exception {
         List<String> items = new ArrayList<String>();
         for (Entry entry : entries) {
-	    //	    if(!entry.getId().equals("2eb1ff46-9e33-4917-95ff-950f36802891")) continue;
-	    //	    long t1 = System.currentTimeMillis();
+            //      if(!entry.getId().equals("2eb1ff46-9e33-4917-95ff-950f36802891")) continue;
+            //      long t1 = System.currentTimeMillis();
             items.add(toJson(request, entry));
-	    //	    long t2 = System.currentTimeMillis();
-	    //	    Utils.printTimes("\t" + entry.getName()+" " + entry.getId(), t1,t2);
+            //      long t2 = System.currentTimeMillis();
+            //      Utils.printTimes("\t" + entry.getName()+" " + entry.getId(), t1,t2);
         }
         Json.list(sb, items, false);
         //        System.out.println ("JSON:" + Json.list(items));
@@ -515,19 +513,21 @@ public class JsonOutputHandler extends OutputHandler {
         }
 
 
-	String snippet = getWikiManager().getSnippet(request, entry, true,null);
-	if(snippet!=null) {
-	    Json.quoteAttr(items, "snippet", snippet);
-	}
+        String snippet = getWikiManager().getSnippet(request, entry, true,
+                             null);
+        if (snippet != null) {
+            Json.quoteAttr(items, "snippet", snippet);
+        }
 
 
         Json.quoteAttr(items, "description", entry.getDescription());
-        TypeHandler type     = entry.getTypeHandler();
-	/**
-	   Don't get the typeJson as it takes a *long* time for DbTypes
-        String      typeJson = type.getJson(request);
-        typeJson = Json.mapAndQuote("id", type.getType(), "name", type.getLabel());
-	*/
+        TypeHandler type = entry.getTypeHandler();
+
+        /**
+         *  Don't get the typeJson as it takes a *long* time for DbTypes
+         * String      typeJson = type.getJson(request);
+         * typeJson = Json.mapAndQuote("id", type.getType(), "name", type.getLabel());
+         */
         Json.attr(items, "type", Json.quote(type.getType()));
         Json.attr(items, "typeName", Json.quote(type.getLabel()));
         //
@@ -556,10 +556,10 @@ public class JsonOutputHandler extends OutputHandler {
                       Json.map("url", Json.quote(server.getUrl()), "name",
                                Json.quote(server.getLabel())));
             Json.quoteAttr(items, "remoteUrl", entry.getRemoteUrl());
-	    String remoteParent = entry.getRemoteParentEntryId();
-	    if(remoteParent!=null) {
-		Json.quoteAttr(items, "remoteParent", remoteParent);
-	    }
+            String remoteParent = entry.getRemoteParentEntryId();
+            if (remoteParent != null) {
+                Json.quoteAttr(items, "remoteParent", remoteParent);
+            }
         }
 
 
@@ -785,26 +785,39 @@ public class JsonOutputHandler extends OutputHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param addSnippets _more_
      * @param addAttributes _more_
+     * @param addPointUrl _more_
+     * @param addThumbnails _more_
+     * @param addImages _more_
+     * @param mainTypeHandler _more_
      * @param columns _more_
      * @param showFileUrl _more_
+     * @param remote _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    private String toPointJson(Request request, Entry entry,boolean addSnippets,
-                               boolean addAttributes, boolean addPointUrl, boolean addThumbnails, boolean addImages, TypeHandler mainTypeHandler, List<Column> columns,
-                               boolean showFileUrl,boolean remote)
+    private String toPointJson(Request request, Entry entry,
+                               boolean addSnippets, boolean addAttributes,
+                               boolean addPointUrl, boolean addThumbnails,
+                               boolean addImages,
+                               TypeHandler mainTypeHandler,
+                               List<Column> columns, boolean showFileUrl,
+                               boolean remote)
             throws Exception {
 
         List<String> items = new ArrayList<String>();
         items.add(Json.quote(entry.getName()));
         items.add(Json.quote(entry.getDescription()));
-	if(addSnippets) {
-	    String snippet= getWikiManager().getRawSnippet(request, entry,true);
-	    items.add(Json.quote(snippet!=null?snippet:""));
-	}
+        if (addSnippets) {
+            String snippet = getWikiManager().getRawSnippet(request, entry,
+                                 true);
+            items.add(Json.quote((snippet != null)
+                                 ? snippet
+                                 : ""));
+        }
         items.add(Json.quote(entry.getId()));
         items.add(Json.quote(entry.getTypeHandler().getType()));
         items.add(Json.quote(entry.getTypeHandler().getLabel()));
@@ -815,45 +828,62 @@ public class JsonOutputHandler extends OutputHandler {
             Json.quote(
                 request.getAbsoluteUrl(
                     getPageHandler().getIconUrl(request, entry))));
-	String url;
-	url = getEntryManager().getEntryUrl(request, entry);
-        items.add(Json.quote(remote?request.getAbsoluteUrl(url):url));
+        String url;
+        url = getEntryManager().getEntryUrl(request, entry);
+        items.add(Json.quote(remote
+                             ? request.getAbsoluteUrl(url)
+                             : url));
 
-	if(addPointUrl) {
-	    url = entry.getTypeHandler().getUrlForWiki(request,
-								  entry, WikiConstants.WIKI_TAG_DISPLAY, new Hashtable(), new ArrayList<String>());
-	    
-	    items.add(Json.quote(url==null?"":remote?request.getAbsoluteUrl(url):url));
-	}
+        if (addPointUrl) {
+            url = entry.getTypeHandler().getUrlForWiki(request, entry,
+                    WikiConstants.WIKI_TAG_DISPLAY, new Hashtable(),
+                    new ArrayList<String>());
+
+            items.add(Json.quote((url == null)
+                                 ? ""
+                                 : remote
+                                   ? request.getAbsoluteUrl(url)
+                                   : url));
+        }
 
 
-	if(addThumbnails) {
+        if (addThumbnails) {
             List<String> urls = new ArrayList<String>();
             getMetadataManager().getThumbnailUrls(request, entry, urls);
-	    if(urls.size()>0) {
-		url = urls.get(0);
-		items.add(Json.quote(url==null?"":remote?request.getAbsoluteUrl(url):url));
-	    }    else {
-		items.add("null");
-	    }
-	}
+            if (urls.size() > 0) {
+                url = urls.get(0);
+                items.add(Json.quote((url == null)
+                                     ? ""
+                                     : remote
+                                       ? request.getAbsoluteUrl(url)
+                                       : url));
+            } else {
+                items.add("null");
+            }
+        }
 
 
-	if(addImages) {
-	    if(entry.isImage()) {
-		url = entry.getTypeHandler().getEntryResourceUrl(request, entry);
-		items.add(Json.quote(url==null?"":remote?request.getAbsoluteUrl(url):url));
-	    } else {
-		items.add(Json.quote(""));
-	    }
-	}
+        if (addImages) {
+            if (entry.isImage()) {
+                url = entry.getTypeHandler().getEntryResourceUrl(request,
+                        entry);
+                items.add(Json.quote((url == null)
+                                     ? ""
+                                     : remote
+                                       ? request.getAbsoluteUrl(url)
+                                       : url));
+            } else {
+                items.add(Json.quote(""));
+            }
+        }
         TypeHandler typeHandler = entry.getTypeHandler();
-        if (addAttributes && columns!=null) {
+        if (addAttributes && (columns != null)) {
             Object[] extraParameters = entry.getValues();
-            if (extraParameters != null && typeHandler.isType(mainTypeHandler.getType())) {
-		//		System.err.println("entry:" + entry);
-		//		System.err.println("extra:" + extraParameters.length);
-		//		System.err.println("columns:" + columns);
+            if ((extraParameters != null)
+                    && typeHandler.isType(mainTypeHandler.getType())) {
+                //              System.err.println("entry:" + entry);
+                //              System.err.println("extra:" + extraParameters.length);
+                //              System.err.println("columns:" + columns);
                 for (Column column : columns) {
                     Object v = extraParameters[column.getOffset()];
                     if (v == null) {
@@ -870,13 +900,17 @@ public class JsonOutputHandler extends OutputHandler {
                 }
             } else {
                 for (Column column : columns) {
-		    items.add("null");
-		}
-	    }
+                    items.add("null");
+                }
+            }
         }
         if (showFileUrl) {
-	    url = entry.getTypeHandler().getEntryResourceUrl(request, entry);
-	    items.add(Json.quote(url==null?"":remote?request.getAbsoluteUrl(url):url));
+            url = entry.getTypeHandler().getEntryResourceUrl(request, entry);
+            items.add(Json.quote((url == null)
+                                 ? ""
+                                 : remote
+                                   ? request.getAbsoluteUrl(url)
+                                   : url));
         }
         items.add("" + ((entry.getLatitude() == Entry.NONGEO)
                         ? "null"
@@ -898,8 +932,7 @@ public class JsonOutputHandler extends OutputHandler {
      *
      * @param args _more_
      */
-    public static void main(String[] args) {
-    }
+    public static void main(String[] args) {}
 
 
 }
