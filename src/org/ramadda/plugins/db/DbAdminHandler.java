@@ -1,18 +1,7 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.db;
 
@@ -45,7 +34,8 @@ import java.util.List;
  *
  */
 
-public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler, DbConstants {
+public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
+        DbConstants {
 
     /** _more_ */
     public static final String TAG_TABLES = "tables";
@@ -162,9 +152,10 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler, 
                     XmlUtil.getAttribute(tableNode, ATTR_NAME) });
 
 
-	    TypeHandler baseTypeHandler = getRepository().getTypeHandler("type_db_base");
-	    typeHandler.setParentTypeHandler(baseTypeHandler);
-	    baseTypeHandler.addChildTypeHandler(typeHandler);
+            TypeHandler baseTypeHandler =
+                getRepository().getTypeHandler("type_db_base");
+            typeHandler.setParentTypeHandler(baseTypeHandler);
+            baseTypeHandler.addChildTypeHandler(typeHandler);
 
             List<Element> columnNodes =
                 (List<Element>) XmlUtil.findChildren(tableNode, TAG_COLUMN);
@@ -206,8 +197,7 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler, 
             List<Element> templates =
                 (List<Element>) XmlUtil.findChildren(tableNode, TAG_TEMPLATE);
             for (Element element : templates) {
-                typeHandler.addTemplate(
-                    new DbTemplate(element));
+                typeHandler.addTemplate(new DbTemplate(element));
             }
 
 
@@ -222,36 +212,50 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler, 
     }
 
 
+    /**
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result processList(Request request) throws Exception {
-	StringBuilder sb = new StringBuilder();
-	getPageHandler().sectionOpen(request, sb,"Select Database",false);
-	//	let url = HtmlUtils.getUrl("/db/search/list",["type", otherTable,"widgetId",widgetId,"column",column,"otherColumn",otherColumn]);
-	List<Entry> entries = getEntryManager().getEntries(request);
-	if(entries.size()==0) {
-	    sb.append("No databases found");
-	}
-	String searchFrom = request.getString("sourceName","")+";"+request.getString("column","") +";" + request.getString("widgetId","") +";" + request.getString("otherColumn","");
+        StringBuilder sb = new StringBuilder();
+        getPageHandler().sectionOpen(request, sb, "Select Database", false);
+        //      let url = HtmlUtils.getUrl("/db/search/list",["type", otherTable,"widgetId",widgetId,"column",column,"otherColumn",otherColumn]);
+        List<Entry> entries = getEntryManager().getEntries(request);
+        if (entries.size() == 0) {
+            sb.append("No databases found");
+        }
+        String searchFrom = request.getString("sourceName", "") + ";"
+                            + request.getString("column", "") + ";"
+                            + request.getString("widgetId", "") + ";"
+                            + request.getString("otherColumn", "");
 
-	if(entries.size()==1) {
-	    return new Result(HtmlUtils.url(
-					    request.makeUrl(getRepository().URL_ENTRY_SHOW),
-					    new String[] { ARG_ENTRYID,
-							   entries.get(0).getId(),
-							   ARG_SEARCH_FROM, searchFrom}));
-	}
-	sb.append(HtmlUtils.formTable());
-	List<TwoFacedObject> items= new ArrayList<TwoFacedObject>();
-	sb.append(request.form(getRepository().URL_ENTRY_SHOW));
-	sb.append(HtmlUtils.hidden(ARG_SEARCH_FROM,searchFrom));
-	for(Entry entry: entries) {
-	    items.add(new TwoFacedObject(entry.getName(),entry.getId()));
-	}
-	HU.formEntry(sb, msgLabel("Database Entry"), HU.select(ARG_ENTRYID, items));
+        if (entries.size() == 1) {
+            return new Result(
+                HtmlUtils.url(
+                    request.makeUrl(getRepository().URL_ENTRY_SHOW),
+                    new String[] { ARG_ENTRYID,
+                                   entries.get(0).getId(), ARG_SEARCH_FROM,
+                                   searchFrom }));
+        }
+        sb.append(HtmlUtils.formTable());
+        List<TwoFacedObject> items = new ArrayList<TwoFacedObject>();
+        sb.append(request.form(getRepository().URL_ENTRY_SHOW));
+        sb.append(HtmlUtils.hidden(ARG_SEARCH_FROM, searchFrom));
+        for (Entry entry : entries) {
+            items.add(new TwoFacedObject(entry.getName(), entry.getId()));
+        }
+        HU.formEntry(sb, msgLabel("Database Entry"),
+                     HU.select(ARG_ENTRYID, items));
         sb.append(HtmlUtils.formTableClose());
-	sb.append(HU.submit(msg("Search"), ARG_OK));
+        sb.append(HU.submit(msg("Search"), ARG_OK));
         sb.append(HtmlUtils.formClose());
-	getPageHandler().sectionClose(request, sb);
-	return new Result("",sb);
+        getPageHandler().sectionClose(request, sb);
+
+        return new Result("", sb);
     }
 
 

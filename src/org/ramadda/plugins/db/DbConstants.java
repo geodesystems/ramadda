@@ -1,20 +1,10 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.db;
+
 
 import org.ramadda.repository.Constants;
 
@@ -71,7 +61,7 @@ public interface DbConstants extends Constants {
     public static final String OUTPUT_JSON = "json";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String VIEW_EDIT = "edit";
 
 
@@ -93,7 +83,8 @@ public interface DbConstants extends Constants {
     /** _more_ */
     public static final String VIEW_MAP = "map";
 
-    public static final String VIEW_ADDRESSLABELS = "addresslabels";    
+    /** _more_ */
+    public static final String VIEW_ADDRESSLABELS = "addresslabels";
 
 
     /** _more_ */
@@ -128,13 +119,17 @@ public interface DbConstants extends Constants {
     public static final String CSS_DB_TABLEHEADER_INNER =
         "dbtableheader_inner";
 
+    /** _more_ */
     public static final String ARG_SEARCH_FROM = "searchfrom";
 
+    /** _more_ */
     public static final String ARG_EXTRA_COLUMNS = "extracolumns";
 
 
+    /** _more_ */
     public static final String ARG_FOR_PRINT = "forprint";
 
+    /** _more_ */
     public static final String ARG_ENTRIES_PER_PAGE = "entriesperpage";
 
     /** _more_ */
@@ -163,7 +158,8 @@ public interface DbConstants extends Constants {
     /** _more_ */
     public static final String ARG_DB_SHOW = "show";
 
-    public static final String ARG_DB_UNIQUE = "db_view";    
+    /** _more_ */
+    public static final String ARG_DB_UNIQUE = "db_view";
 
     /** _more_ */
     public static final String ARG_ENUM_ICON = "db.icon";
@@ -187,7 +183,8 @@ public interface DbConstants extends Constants {
     /** _more_ */
     public static final String ARG_DB_BULK_DELIMITER = "db.bulk.delimiter";
 
-    public static final String ARG_DB_BULK_NUKEIT = "db.bulk.nukeit";    
+    /** _more_ */
+    public static final String ARG_DB_BULK_NUKEIT = "db.bulk.nukeit";
 
     /** _more_ */
     public static final String ARG_DB_BULK_SKIP = "db.bulk.skip";
@@ -200,11 +197,14 @@ public interface DbConstants extends Constants {
 
     /** _more_ */
     public static final String ARG_DB_SEARCHNAME = "searchname";
+
+    /** _more_ */
     public static final String ARG_DB_SEARCHDESC = "searchdesc";
 
     /** _more_ */
     public static final String ARG_DB_SEARCHID = "searchid";
 
+    /** _more_ */
     public static final String ARG_DB_MACRO = "macro";
 
     /** _more_ */
@@ -213,11 +213,14 @@ public interface DbConstants extends Constants {
     /** _more_ */
     public static final String ARG_DB_DOSAVESEARCH = "dosavesearch";
 
+    /** _more_ */
     public static final String ARG_DB_GROUP_SORTDIR = "groupsortdir";
 
-    public static final String ARG_DB_GROUP_SORTBY = "groupsortby";    
+    /** _more_ */
+    public static final String ARG_DB_GROUP_SORTBY = "groupsortby";
 
 
+    /** _more_ */
     public static final String ARG_DB_SORTBY = "dbsortby";
 
     /** _more_ */
@@ -237,7 +240,7 @@ public interface DbConstants extends Constants {
     /** _more_ */
     public static final String ARG_DB_NEWFORM = "db.newform";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_EDITFORM = "db.editform";
 
     /** _more_ */
@@ -274,25 +277,25 @@ public interface DbConstants extends Constants {
     public static final String ARG_DB_COLUMN = "db.column";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_SETVALUE = "db.setvalue";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_TEST = "db.test";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_WHERECOLUMN = "db.wherecolumn";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_WHEREVALUE = "db.wherevalue";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_WHEREOP = "db.whereop";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_CONFIRM = "db.confirm";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_APPLY = "db.apply";
 
 

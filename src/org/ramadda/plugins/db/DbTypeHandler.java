@@ -1,20 +1,8 @@
-/*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.db;
+
 
 import org.ramadda.data.point.text.*;
 
@@ -394,7 +382,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         if (showDateView && dbInfo.getHasDate()) {
             viewList.add(new TwoFacedObject("Calendar", VIEW_CALENDAR));
-	    //            viewList.add(new TwoFacedObject("Timeline", VIEW_TIMELINE));
+            //            viewList.add(new TwoFacedObject("Timeline", VIEW_TIMELINE));
             viewList.add(new TwoFacedObject("ICAL", VIEW_ICAL));
         }
 
@@ -404,7 +392,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                                 + gridColumn.getName()));
             viewList.add(new TwoFacedObject(gridColumn.getLabel() + " "
                                             + "Grid", VIEW_GRID
-                                                + gridColumn.getName()));	    
+                                                + gridColumn.getName()));
         }
         if (showFeedView) {
             viewList.add(new TwoFacedObject("RSS", VIEW_RSS));
@@ -918,7 +906,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         if (request.defined(ARG_DB_VIEW)) {
             return handleQuery(request, entry, action,
-                                  Clause.eq(COL_ID, entry.getId()), false);
+                               Clause.eq(COL_ID, entry.getId()), false);
         }
 
         return handleSearchForm(request, entry);
@@ -954,11 +942,18 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
     /**
      * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param sb _more_
+     * @param view _more_
+     * @param extraLinks _more_
      * @throws Exception _more_
      */
     public void addViewHeader(Request request, Entry entry, Appendable sb,
-                                String view,String extraLinks)
+                              String view, String extraLinks)
             throws Exception {
+
         boolean forPrint = request.get(ARG_FOR_PRINT, false);
         if (forPrint) {
             String name = request.getString(ARG_DB_SEARCHNAME, (String) null);
@@ -967,6 +962,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             //      sb.append(getWikiManager().wikifyEntry(request, entry, request.getString(ARG_DB_SEARCHDESC, "")));
             addStyleSheet(sb);
             request.put(ARG_TEMPLATE, "empty");
+
             return;
         }
 
@@ -982,6 +978,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         if (doAnonForm) {
             if ( !getAccessManager().canEditEntry(request, entry)) {
                 addStyleSheet(sb);
+
                 return;
             }
         }
@@ -1070,55 +1067,91 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
 
+
     }
 
 
 
 
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param sb _more_
+     * @param view _more_
+     * @param numValues _more_
+     * @param fromSearch _more_
+     * @param extraLinks _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public String addViewHeader(Request request, Entry entry, Appendable sb,
                                 String view, int numValues,
                                 boolean fromSearch, String extraLinks)
             throws Exception {
-	addViewHeader(request, entry, sb,view,extraLinks);
+        addViewHeader(request, entry, sb, view, extraLinks);
         String formId = null;
         if (fromSearch) {
-	    formId = addSearchAgain(request, entry,sb);
-	}
-	addPrevNext(request, entry,sb,numValues);
-	return formId;
+            formId = addSearchAgain(request, entry, sb);
+        }
+        addPrevNext(request, entry, sb, numValues);
+
+        return formId;
     }
 
-    
+
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param sb _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public String addSearchAgain(Request request, Entry entry, Appendable sb)
-	throws Exception {
-	String formId = HtmlUtils.getUniqueId("form_");
-	String searchForm = getSearchForm(request, entry,
-					  formId).toString();
-	sb.append(HtmlUtils.makeShowHideBlock(msg("Search again"),
-					      searchForm, false));
-	return formId;
+            throws Exception {
+        String formId     = HtmlUtils.getUniqueId("form_");
+        String searchForm = getSearchForm(request, entry, formId).toString();
+        sb.append(HtmlUtils.makeShowHideBlock(msg("Search again"),
+                searchForm, false));
+
+        return formId;
     }
 
 
-    public void addPrevNext(Request request, Entry entry, Appendable sb, int numValues)
+    /**
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param sb _more_
+     * @param numValues _more_
+     *
+     * @throws Exception _more_
+     */
+    public void addPrevNext(Request request, Entry entry, Appendable sb,
+                            int numValues)
             throws Exception {
-	if (numValues > 0) {
-	    if (isGroupBy(request)) {
-		numValues--;
-	    }
-	    int max = getMax(request);
-	    if ((numValues == max) || request.defined(ARG_SKIP)) {
-		getRepository().getHtmlOutputHandler().showNext(request,
-								numValues, max, sb);
-	    } else {
-		sb.append(numValues + ((numValues == 1)
-				       ? " result"
-				       : " results"));
+        if (numValues > 0) {
+            if (isGroupBy(request)) {
+                numValues--;
+            }
+            int max = getMax(request);
+            if ((numValues == max) || request.defined(ARG_SKIP)) {
+                getRepository().getHtmlOutputHandler().showNext(request,
+                        numValues, max, sb);
+            } else {
+                sb.append(numValues + ((numValues == 1)
+                                       ? " result"
+                                       : " results"));
             }
         }
     }
 
-    
+
     /**
      * _more_
      *
@@ -1132,9 +1165,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     public Result handleSearchForm(Request request, Entry entry)
             throws Exception {
         StringBuilder sb = new StringBuilder();
-        addViewHeader(request, entry, sb, VIEW_SEARCH,null);
+        addViewHeader(request, entry, sb, VIEW_SEARCH, null);
         sb.append(getSearchForm(request, entry));
         addViewFooter(request, entry, sb);
+
         return new Result(getTitle(request, entry), sb);
     }
 
@@ -1288,9 +1322,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      *
      * @throws Exception _more_
      */
-    private Result handleQuery(Request request, Entry entry,
-                                  String action, Clause clause,
-                                  boolean fromSearch)
+    private Result handleQuery(Request request, Entry entry, String action,
+                               Clause clause, boolean fromSearch)
             throws Exception {
 
         DbInfo         dbInfo    = getDbInfo();
@@ -1299,7 +1332,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         if (request.defined(ARG_DB_ITERATE)
                 && request.defined(ARG_DB_ITERATE_VALUES)) {
             StringBuilder sb = new StringBuilder();
-            addViewHeader(request, entry, sb, VIEW_TABLE,null);
+            addViewHeader(request, entry, sb, VIEW_TABLE, null);
             if ( !request.get(ARG_EMBEDDED, false)) {
                 sb.append(HtmlUtils.makeShowHideBlock(msg("Search again"),
                         getSearchForm(request, entry).toString(), false));
@@ -1577,17 +1610,17 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
 
-	if (view.equals(VIEW_ADDRESSLABELS)) {
-	    return new ValueIterator.LabelsIterator(request,this,  entry);
-	}
+        if (view.equals(VIEW_ADDRESSLABELS)) {
+            return new ValueIterator.LabelsIterator(request, this, entry);
+        }
 
-	if (view.startsWith(VIEW_GRID)) {
-	    return new ValueIterator.GridIterator(request,this,  entry);
-	}
+        if (view.startsWith(VIEW_GRID)) {
+            return new ValueIterator.GridIterator(request, this, entry);
+        }
 
-	if (view.startsWith(VIEW_CATEGORY)) {
-	    return new ValueIterator.CategoryIterator(request,this,  entry);
-	}	
+        if (view.startsWith(VIEW_CATEGORY)) {
+            return new ValueIterator.CategoryIterator(request, this, entry);
+        }
 
 
         if ( !doGroupBy) {
@@ -2571,11 +2604,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
 
-	//        Runtime.getRuntime().gc();
-	//        double mem1   = Utils.getUsedMemory();
+        //        Runtime.getRuntime().gc();
+        //        double mem1   = Utils.getUsedMemory();
         Result result = handleQuery(request, entry, "", mainClause, true);
-	//        double mem2   = Utils.getUsedMemory();
-	//	Utils.printMemory("handleQuery:",mem1,mem2);
+
+        //        double mem2   = Utils.getUsedMemory();
+        //      Utils.printMemory("handleQuery:",mem1,mem2);
         return result;
     }
 
@@ -2707,7 +2741,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             if ( !deleteSelected) {
                 msg = "Are you sure you want to delete the entire database?";
             }
-            addViewHeader(request, entry, sb, "",null);
+            addViewHeader(request, entry, sb, "", null);
             sb.append(getPageHandler().showDialogQuestion(msg(msg),
                     HtmlUtils.submit(msg("Yes"), ARG_DB_DELETECONFIRM)
                     + HtmlUtils.space(2)
@@ -2958,11 +2992,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         tableHandler.clearCache();
 
-	StringBuilder sb = new StringBuilder();
-	getPageHandler().entrySectionOpen(request, entry, sb, "Upload", true);
-	sb.append("Added " + scnt[0] + " entries");
-	getPageHandler().entrySectionClose(request, entry, sb);
-	return new Result("", sb);
+        StringBuilder sb = new StringBuilder();
+        getPageHandler().entrySectionOpen(request, entry, sb, "Upload", true);
+        sb.append("Added " + scnt[0] + " entries");
+        getPageHandler().entrySectionClose(request, entry, sb);
+
+        return new Result("", sb);
     }
 
     /**
@@ -3437,15 +3472,15 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                   boolean fromSearch,
                                   boolean showHeaderLinks, Appendable sb)
             throws Exception {
-        List<String> links = new ArrayList<String>();
-        boolean embedded = request.get(ARG_EMBEDDED, false);
+        List<String> links    = new ArrayList<String>();
+        boolean      embedded = request.get(ARG_EMBEDDED, false);
         //      System.err.println("#values: "+ valueList.size());
         //      for(Object o: valueList.get(0)) {
         //          System.err.println("\tvalue: "+ o);
         //      }
         if ( !embedded) {
             addViewHeader(request, entry, sb, VIEW_TABLE, valueList.size(),
-                          fromSearch,null);
+                          fromSearch, null);
         } else {
             addStyleSheet(sb);
         }
@@ -5211,8 +5246,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      *
      * @return _more_
      */
-    protected List<TwoFacedObject> getEnumValues(Request request, Entry entry,
-            Column column) {
+    protected List<TwoFacedObject> getEnumValues(Request request,
+            Entry entry, Column column) {
         try {
             if (column.getType().equals(Column.DATATYPE_ENUMERATION)) {
                 List<TwoFacedObject> enums = column.getValues();
@@ -5334,7 +5369,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         boolean canEdit      = getAccessManager().canEditEntry(request,
                                    entry);
         StringBuilder sb     = new StringBuilder();
-        String links =  getHref(request, entry, VIEW_ICAL, msg("ICAL"));
+        String        links  = getHref(request, entry, VIEW_ICAL,
+                                       msg("ICAL"));
         addViewHeader(request, entry, sb, VIEW_CALENDAR, valueList.size(),
                       fromSearch, links);
 
@@ -5892,7 +5928,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         StringBuilder sb       = new StringBuilder();
         addViewHeader(request, entry, sb, ((dbid == null)
                                            ? VIEW_NEW
-                                           : ""),null);
+                                           : ""), null);
 
         StringBuilder formBuffer = new StringBuilder();
 
@@ -5978,7 +6014,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     public Result handleEdit(Request request, Entry entry) throws Exception {
 
         StringBuilder sb = new StringBuilder();
-        addViewHeader(request, entry, sb, VIEW_EDIT,null);
+        addViewHeader(request, entry, sb, VIEW_EDIT, null);
         List<Column>         columns = dbInfo.getColumnsToUse();
 
 
@@ -6250,7 +6286,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         boolean       asXml = request.getString("result", "").equals("xml");
         StringBuilder sb    = new StringBuilder();
         if ( !asXml) {
-            addViewHeader(request, entry, sb, "",null);
+            addViewHeader(request, entry, sb, "", null);
         }
 
 

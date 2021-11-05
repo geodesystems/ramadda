@@ -1,18 +1,7 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.db;
 
@@ -78,7 +67,7 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
     public static final int IDX_JOIN1 = IDX++;
 
     /** _more_ */
-    public static final int IDX_JOIN2 = IDX++;            
+    public static final int IDX_JOIN2 = IDX++;
 
 
     /** _more_ */
@@ -99,28 +88,40 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
     }
 
 
+    /**
+     *
+     * @param entry _more_
+     * @param name _more_
+     *
+     * @return _more_
+     */
     private List<String> getEnums(Entry entry, String name) {
-	try {
-	    List<String> enums = (List<String>) entry.getTransientProperty("db.enums." + name);
-	    if(enums == null) {
-		try(Connection connection =  getConnection(entry)) {
-		    String table = entry.getValue(IDX_TABLE, (String) null);
-		    Statement stmt = SqlUtil.select(connection, SqlUtil.distinct(name),
-						    Utils.makeList(table),null,null,1000,0);
+        try {
+            List<String> enums =
+                (List<String>) entry.getTransientProperty("db.enums." + name);
+            if (enums == null) {
+                try (Connection connection = getConnection(entry)) {
+                    String table = entry.getValue(IDX_TABLE, (String) null);
+                    Statement stmt = SqlUtil.select(connection,
+                                         SqlUtil.distinct(name),
+                                         Utils.makeList(table), null, null,
+                                         1000, 0);
 
-		    String[] values =
-			SqlUtil.readString(
-					   getRepository().getDatabaseManager().getIterator(stmt), 1);
+                    String[] values =
+                        SqlUtil.readString(
+                            getRepository().getDatabaseManager().getIterator(
+                                stmt), 1);
 
-		    stmt.close();
-		    enums = (List<String>)Misc.toList(values);
-		} 
-		entry.putTransientProperty("db.enums." + name, enums);
-	    }
-	    return enums;
-	} catch(Exception exc) {
-	    throw new RuntimeException(exc);
-	}
+                    stmt.close();
+                    enums = (List<String>) Misc.toList(values);
+                }
+                entry.putTransientProperty("db.enums." + name, enums);
+            }
+
+            return enums;
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
     }
 
 
@@ -140,11 +141,13 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param fromImport _more_
      *
      * @throws Exception _more_
      */
     @Override
-    public void initializeNewEntry(Request request, Entry entry, boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry,
+                                   boolean fromImport)
             throws Exception {
         //Don't do this since we don't have the table set yet
     }
@@ -220,6 +223,7 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
             List<String[]> fieldList = getFieldList(entry);
             if (fieldList == null) {
                 System.err.println("DbTable: Could not find field list");
+
                 return null;
             }
 
@@ -228,8 +232,9 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
                 Utils.getProperties(entry.getValue(IDX_PROPERTIES,
                     (String) ""));
             recordProps.putAll(Utils.makeHashtable(displayProps));
-	    boolean displayAll  = Misc.equals(recordProps.get("request.*.display"),"true");
-			      
+            boolean displayAll =
+                Misc.equals(recordProps.get("request.*.display"), "true");
+
             for (String[] tuple : fieldList) {
                 String name = tuple[0];
                 String type = tuple[1];
@@ -237,8 +242,9 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
                     type = ((String) recordProps.get("request." + name
                             + ".type")).trim();
                 }
-                if (!displayAll && !Misc.equals(recordProps.get("request." + name
-                        + ".display"), "true")) {
+                if ( !displayAll
+                        && !Misc.equals(recordProps.get("request." + name
+                            + ".display"), "true")) {
                     continue;
                 }
                 if (all != null) {
@@ -260,9 +266,9 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
                     String enums = (String) recordProps.get("request." + name
                                        + ".values");
                     if (enums == null) {
-			List<String> tmp= getEnums(entry,name);
-			enums = Utils.join(tmp,",");
-		    }
+                        List<String> tmp = getEnums(entry, name);
+                        enums = Utils.join(tmp, ",");
+                    }
                     if (enums != null) {
                         displayProps.add("request." + name + ".values");
                         displayProps.add(Json.quote(enums));
@@ -277,48 +283,69 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
     }
 
 
+    /**
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     private String getWhat(Entry entry) {
-	Hashtable recordProps =
-	    Utils.getProperties(entry.getValue(IDX_PROPERTIES,
-					       (String) ""));
-	return Utils.getProperty(recordProps,"what","*");
+        Hashtable recordProps =
+            Utils.getProperties(entry.getValue(IDX_PROPERTIES, (String) ""));
+
+        return Utils.getProperty(recordProps, "what", "*");
     }
 
+    /**
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     private List getTableList(Entry entry) {
-	String table = entry.getValue(IDX_TABLE, (String) null);
-	if ( !Utils.stringDefined(table)) {
-	    System.err.println(
-			       "DbTableTypeHadler.visit: no table defined");
-	    return null;
-	}
-	List tableList = Utils.makeList(table);
-	Hashtable recordProps =
-	    Utils.getProperties(entry.getValue(IDX_PROPERTIES,
-					       (String) ""));
-	String join = Utils.getProperty(recordProps,"jointables",(String) null);
-	if(join!=null) 
-	    tableList.addAll(Utils.split(join,","));
-	return tableList;
+        String table = entry.getValue(IDX_TABLE, (String) null);
+        if ( !Utils.stringDefined(table)) {
+            System.err.println("DbTableTypeHadler.visit: no table defined");
+
+            return null;
+        }
+        List tableList = Utils.makeList(table);
+        Hashtable recordProps =
+            Utils.getProperties(entry.getValue(IDX_PROPERTIES, (String) ""));
+        String join = Utils.getProperty(recordProps, "jointables",
+                                        (String) null);
+        if (join != null) {
+            tableList.addAll(Utils.split(join, ","));
+        }
+
+        return tableList;
     }
 
 
+    /**
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     private List<Clause> getInitialClauses(Entry entry) {
-	List<Clause>   andClauses = new ArrayList<Clause>();
+        List<Clause> andClauses = new ArrayList<Clause>();
 
-	Hashtable recordProps =
-	    Utils.getProperties(entry.getValue(IDX_PROPERTIES,
-					       (String) ""));
-	String joinFields = Utils.getProperty(recordProps,"joinfields",(String) null);
-	//"salaries.emp_no","employees.emp_no";
-	if(joinFields!=null) {
-	    for(String tuple: Utils.split(joinFields,",")) {
-		List<String> pair = Utils.split(tuple,":");
-		if(pair.size()==2) {
-		    andClauses.add(Clause.join(pair.get(0),pair.get(1)));
-		}
-	    }
-	}
-	return andClauses;
+        Hashtable recordProps =
+            Utils.getProperties(entry.getValue(IDX_PROPERTIES, (String) ""));
+        String joinFields = Utils.getProperty(recordProps, "joinfields",
+                                (String) null);
+        //"salaries.emp_no","employees.emp_no";
+        if (joinFields != null) {
+            for (String tuple : Utils.split(joinFields, ",")) {
+                List<String> pair = Utils.split(tuple, ":");
+                if (pair.size() == 2) {
+                    andClauses.add(Clause.join(pair.get(0), pair.get(1)));
+                }
+            }
+        }
+
+        return andClauses;
     }
 
 
@@ -342,13 +369,14 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
                     return null;
                 }
 
-		List tableList = getTableList(entry);
-		if(tableList==null) return fieldList;
-		List<Clause> clauses= getInitialClauses(entry);
+                List tableList = getTableList(entry);
+                if (tableList == null) {
+                    return fieldList;
+                }
+                List<Clause> clauses = getInitialClauses(entry);
                 Statement stmt = SqlUtil.select(connection, getWhat(entry),
-						tableList,
-						Clause.and(clauses), "",
-						1, 0);
+                                     tableList, Clause.and(clauses), "", 1,
+                                     0);
                 SqlUtil.Iterator iter = new SqlUtil.Iterator(stmt);
                 DbRecordFile.MyRecord record =
                     new DbRecordFile(null, entry).doMakeRecord(connection,
@@ -370,13 +398,17 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param properties _more_
+     * @param equestProperties _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
     @Override
-   public RecordFile doMakeRecordFile(Request request, Entry entry, Hashtable properties,  Hashtable equestProperties)
+    public RecordFile doMakeRecordFile(Request request, Entry entry,
+                                       Hashtable properties,
+                                       Hashtable equestProperties)
             throws Exception {
         return new DbRecordFile(request, entry);
     }
@@ -492,10 +524,12 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
          * @return _more_
          */
         public List<RecordField> doMakeFields(boolean failureOk) {
-	    if(fields==null) {
-		getFieldList(entry);
-		fields = (List<RecordField>)entry.getTransientProperty("db.fields");
-	    }
+            if (fields == null) {
+                getFieldList(entry);
+                fields = (List<RecordField>) entry.getTransientProperty(
+                    "db.fields");
+            }
+
             return fields;
         }
 
@@ -524,10 +558,10 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
                 Utils.getProperties(entry.getValue(IDX_PROPERTIES,
                     (String) ""));
 
-	    List tableList = getTableList(entry);
-	    if(tableList ==null) {
-		return null;
-	    }
+            List tableList = getTableList(entry);
+            if (tableList == null) {
+                return null;
+            }
 
             String what   = getWhat(entry);
 
@@ -543,17 +577,22 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
                 max = 1;
             }
 
-	    List<Clause> andClauses= getInitialClauses(entry);
+            List<Clause>   andClauses = getInitialClauses(entry);
             List<String[]> fieldList  = getFieldList(entry);
             if (fieldList != null) {
                 for (String[] tuple : fieldList) {
                     String name = tuple[0];
                     String type = tuple[1];
-		    type = Utils.getProperty(recordProps,"request." + name + ".type",type);
-		    String tablePrefix = Utils.getProperty(recordProps,name +".tableprefix",(String)null);
-		    String fieldName = name;
-		    if(tablePrefix!=null)
-			fieldName = tablePrefix+"." + fieldName;
+                    type = Utils.getProperty(recordProps,
+                                             "request." + name + ".type",
+                                             type);
+                    String tablePrefix = Utils.getProperty(recordProps,
+                                             name + ".tableprefix",
+                                             (String) null);
+                    String fieldName = name;
+                    if (tablePrefix != null) {
+                        fieldName = tablePrefix + "." + fieldName;
+                    }
                     if (type.equals("date")) {
                         String from = request.getString("search." + name
                                           + "_fromdate", null);
@@ -564,14 +603,15 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
                         }
                         if (to != null) {
                             andClauses.add(Clause.le(fieldName, to));
-			}
+                        }
 
                     } else {
                         String s = request.getString("search." + name, null);
                         if (s != null) {
                             if (type.equals("string")) {
                                 String sqlString = SqlUtil.wildCardBoth(s);
-                                andClauses.add(Clause.like(fieldName, sqlString));
+                                andClauses.add(Clause.like(fieldName,
+                                        sqlString));
                             } else {
                                 andClauses.add(Clause.eq(fieldName, s));
                             }
@@ -617,13 +657,12 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
                                             request.getString("descending",
                                                 "true").equals("true"));
             }
-            extraSql      += SqlUtil.limit(max, offset);
-	    //            SqlUtil.debug = true;
-            Statement stmt = SqlUtil.select(connection, what,
-                                            tableList,
+            extraSql += SqlUtil.limit(max, offset);
+            //            SqlUtil.debug = true;
+            Statement stmt = SqlUtil.select(connection, what, tableList,
                                             Clause.and(andClauses), extraSql,
                                             -1, 0);
-	    //            SqlUtil.debug = false;
+            //            SqlUtil.debug = false;
 
             return new SqlUtil.Iterator(stmt);
 
@@ -642,7 +681,8 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
          * @throws Exception _more_
          */
         @Override
-        public boolean skip(VisitInfo visitInfo, BaseRecord record, int howMany)
+        public boolean skip(VisitInfo visitInfo, BaseRecord record,
+                            int howMany)
                 throws Exception {
             //noop as the DB call does this
             return true;
@@ -706,9 +746,9 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
              * @throws Exception _more_
              */
             private void makeFields() throws Exception {
-		Hashtable recordProps =
-		    Utils.getProperties(entry.getValue(IDX_PROPERTIES,
-						       (String) ""));
+                Hashtable recordProps =
+                    Utils.getProperties(entry.getValue(IDX_PROPERTIES,
+                        (String) ""));
                 List<RecordField> fields = recordFile.fields =
                                                new ArrayList<RecordField>();
                 results = iter.getNext();
@@ -717,6 +757,7 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
                             "string", 1, ""));
                     closeConnection(connection);
                     initFields(fields);
+
                     return;
                 }
                 rsmd = results.getMetaData();
@@ -765,7 +806,7 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
                 }
                 //              System.err.println("DbTable fields:" + fields);
                 initFields(fields);
-		entry.putTransientProperty("db.fields", fields);
+                entry.putTransientProperty("db.fields", fields);
             }
 
             /**

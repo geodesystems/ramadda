@@ -1,23 +1,11 @@
-/*
- * Copyright (c) 2008-2021 Geode Systems LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *     http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2008-2021 Geode Systems LLC
+// SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.db;
 
-import org.ramadda.repository.*;
-import org.ramadda.repository.type.*;
+
 import org.ramadda.data.point.text.*;
 
 
@@ -27,12 +15,16 @@ import org.ramadda.data.record.*;
 import org.ramadda.data.services.PointOutputHandler;
 import org.ramadda.data.services.PointTypeHandler;
 import org.ramadda.data.services.RecordTypeHandler;
+
+import org.ramadda.repository.*;
+import org.ramadda.repository.type.*;
 import org.ramadda.util.sql.*;
 
 import ucar.unidata.util.Misc;
 
 
 import java.io.*;
+
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
@@ -73,11 +65,11 @@ public class DbRecordFile extends CsvFile implements DbConstants {
      * @throws IOException _more_
      */
     public DbRecordFile(Request request, DbTypeHandler typeHandler,
-			Entry entry)
-	throws IOException {
-	this.request     = request;
-	this.typeHandler = typeHandler;
-	this.entry       = entry;
+                        Entry entry)
+            throws IOException {
+        this.request     = request;
+        this.typeHandler = typeHandler;
+        this.entry       = entry;
     }
 
     /**
@@ -92,11 +84,10 @@ public class DbRecordFile extends CsvFile implements DbConstants {
      * @throws Exception _more_
      */
     @Override
-    public boolean skip(VisitInfo visitInfo, BaseRecord record,
-			int howMany)
-	throws Exception {
-	//noop as the DB call does this
-	return true;
+    public boolean skip(VisitInfo visitInfo, BaseRecord record, int howMany)
+            throws Exception {
+        //noop as the DB call does this
+        return true;
     }
 
 
@@ -123,62 +114,63 @@ public class DbRecordFile extends CsvFile implements DbConstants {
      * @throws Exception _more_
      */
     @Override
-    public InputStream doMakeInputStream(boolean buffered)
-	throws Exception {
-	boolean debug = false;
-	makeFields(request);
-	SimpleDateFormat sdf =
-	    RepositoryUtil.makeDateFormat("yyyyMMdd'T'HHmmss");
-	StringBuilder s     = new StringBuilder("#converted stream\n");
-	List<Clause>  where = new ArrayList<Clause>();
-	where.add(Clause.eq(DbTypeHandler.COL_ID, entry.getId()));
-	StringBuilder searchCriteria = new StringBuilder();
-	Hashtable     recordProps    = null;
-	try {
-	    recordProps = typeHandler.getRecordProperties(entry);
-	} catch (Exception exc) {
-	    throw new RuntimeException(exc);
-	}
-	for (Column column : typeHandler.getColumns()) {
-	    String dflt = (String) ((recordProps == null)
-				    ? null
-				    : recordProps.get(column.getName()
-						      + ".default"));
-	    if (dflt != null) {
-		String arg = column.getSearchArg();
-		if ( !request.exists(arg)) {
-		    request.put(arg, dflt);
-		}
-	    }
-	    column.assembleWhereClause(request, where, searchCriteria);
-	}
+    public InputStream doMakeInputStream(boolean buffered) throws Exception {
+        boolean debug = false;
+        makeFields(request);
+        SimpleDateFormat sdf =
+            RepositoryUtil.makeDateFormat("yyyyMMdd'T'HHmmss");
+        StringBuilder s     = new StringBuilder("#converted stream\n");
+        List<Clause>  where = new ArrayList<Clause>();
+        where.add(Clause.eq(DbTypeHandler.COL_ID, entry.getId()));
+        StringBuilder searchCriteria = new StringBuilder();
+        Hashtable     recordProps    = null;
+        try {
+            recordProps = typeHandler.getRecordProperties(entry);
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
+        for (Column column : typeHandler.getColumns()) {
+            String dflt = (String) ((recordProps == null)
+                                    ? null
+                                    : recordProps.get(column.getName()
+                                        + ".default"));
+            if (dflt != null) {
+                String arg = column.getSearchArg();
+                if ( !request.exists(arg)) {
+                    request.put(arg, dflt);
+                }
+            }
+            column.assembleWhereClause(request, where, searchCriteria);
+        }
 
 
-	boolean      doGroupBy = typeHandler.isGroupBy(request);
-	List<Column> columns;
-	if (doGroupBy) {
-	    columns = typeHandler.getGroupByColumns(request, true);
-	} else {
-	    columns = typeHandler.getColumnsToUse(request, false);
-	}
+        boolean      doGroupBy = typeHandler.isGroupBy(request);
+        List<Column> columns;
+        if (doGroupBy) {
+            columns = typeHandler.getGroupByColumns(request, true);
+        } else {
+            columns = typeHandler.getColumnsToUse(request, false);
+        }
 
 
-	final PipedOutputStream pos = new PipedOutputStream();
-	final PipedInputStream pis = new PipedInputStream(pos);
-	final BridgeIterator bridge = new BridgeIterator(request, typeHandler, entry,pos,columns);
+        final PipedOutputStream pos = new PipedOutputStream();
+        final PipedInputStream  pis = new PipedInputStream(pos);
+        final BridgeIterator bridge = new BridgeIterator(request,
+                                          typeHandler, entry, pos, columns);
 
-	Misc.run(new Runnable() {
-		public void run() {
-		    try {
-			typeHandler.readValues(request, entry,
-					       Clause.and(where), bridge);
-		    } catch(Exception exc) {
-			System.err.println("db bridge error:" + exc);
-			exc.printStackTrace();
-		    }
-		}});
+        Misc.run(new Runnable() {
+            public void run() {
+                try {
+                    typeHandler.readValues(request, entry, Clause.and(where),
+                                           bridge);
+                } catch (Exception exc) {
+                    System.err.println("db bridge error:" + exc);
+                    exc.printStackTrace();
+                }
+            }
+        });
 
-	return pis;
+        return pis;
     }
 
     /**
@@ -189,88 +181,91 @@ public class DbRecordFile extends CsvFile implements DbConstants {
      * @throws Exception _more_
      */
     private void makeFields(Request request) throws Exception {
-	boolean      debug     = false;
-	boolean      doGroupBy = typeHandler.isGroupBy(request);
-	List<Column> columns;
-	if (doGroupBy) {
-	    columns = typeHandler.getGroupByColumns(request, true);
-	} else {
-	    columns = typeHandler.getColumnsToUse(request, false);
-	}
-	StringBuilder fields = new StringBuilder();
-	for (int i = 0; i < columns.size(); i++) {
-	    if (i > 0) {
-		fields.append(",");
-	    }
-	    Column column  = columns.get(i);
-	    String colType = column.getType();
-	    String type    = colType.equals(Column.DATATYPE_INT)
-		? RecordField.TYPE_INT
-		: column.isNumeric()
-		? RecordField.TYPE_DOUBLE
-		: colType.equals(Column.DATATYPE_DATE)
-		? RecordField.TYPE_DATE
-		: RecordField.TYPE_STRING;
-	    String extra   = "";
-	    if (column.isNumeric()) {
-		extra += attrChartable();
-	    } else if (type.equals(RecordField.TYPE_DATE)) {
-		extra += " " + attrFormat("yyyyMMdd'T'HHmmss");
-	    } else if (column.getName().equals("latitude")) {
-		type = RecordField.TYPE_DOUBLE;
-	    } else if (column.getName().equals("longitude")) {
-		type = RecordField.TYPE_DOUBLE;
-	    }
-	    if (colType.equals(Column.DATATYPE_LATLON)) {
-		fields.append(
-			      makeField(
-					"latitude", attrType(RecordField.TYPE_DOUBLE),
-					attrLabel("Latitude")));
-		fields.append(",");
-		fields.append(
-			      makeField(
-					"longitude", attrType(RecordField.TYPE_DOUBLE),
-					attrLabel("Longitude")));
-	    } else if (colType.equals(Column.DATATYPE_LATLONBBOX)) {
-		fields.append(
-			      makeField(
-					"north", attrType(RecordField.TYPE_DOUBLE),
-					attrLabel("North")));
-		fields.append(",");
-		fields.append(
-			      makeField(
-					"west", attrType(RecordField.TYPE_DOUBLE),
-					attrLabel("West")));
-		fields.append(",");
-		fields.append(
-			      makeField(
-					"south", attrType(RecordField.TYPE_DOUBLE),
-					attrLabel("South")));
-		fields.append(",");
-		fields.append(
-			      makeField(
-					"east", attrType(RecordField.TYPE_DOUBLE),
-					attrLabel("East")));
+        boolean      debug     = false;
+        boolean      doGroupBy = typeHandler.isGroupBy(request);
+        List<Column> columns;
+        if (doGroupBy) {
+            columns = typeHandler.getGroupByColumns(request, true);
+        } else {
+            columns = typeHandler.getColumnsToUse(request, false);
+        }
+        StringBuilder fields = new StringBuilder();
+        for (int i = 0; i < columns.size(); i++) {
+            if (i > 0) {
+                fields.append(",");
+            }
+            Column column  = columns.get(i);
+            String colType = column.getType();
+            String type    = colType.equals(Column.DATATYPE_INT)
+                             ? RecordField.TYPE_INT
+                             : column.isNumeric()
+                               ? RecordField.TYPE_DOUBLE
+                               : colType.equals(Column.DATATYPE_DATE)
+                                 ? RecordField.TYPE_DATE
+                                 : RecordField.TYPE_STRING;
+            String extra   = "";
+            if (column.isNumeric()) {
+                extra += attrChartable();
+            } else if (type.equals(RecordField.TYPE_DATE)) {
+                extra += " " + attrFormat("yyyyMMdd'T'HHmmss");
+            } else if (column.getName().equals("latitude")) {
+                type = RecordField.TYPE_DOUBLE;
+            } else if (column.getName().equals("longitude")) {
+                type = RecordField.TYPE_DOUBLE;
+            }
+            if (colType.equals(Column.DATATYPE_LATLON)) {
+                fields.append(makeField("latitude",
+                                        attrType(RecordField.TYPE_DOUBLE),
+                                        attrLabel("Latitude")));
+                fields.append(",");
+                fields.append(makeField("longitude",
+                                        attrType(RecordField.TYPE_DOUBLE),
+                                        attrLabel("Longitude")));
+            } else if (colType.equals(Column.DATATYPE_LATLONBBOX)) {
+                fields.append(makeField("north",
+                                        attrType(RecordField.TYPE_DOUBLE),
+                                        attrLabel("North")));
+                fields.append(",");
+                fields.append(makeField("west",
+                                        attrType(RecordField.TYPE_DOUBLE),
+                                        attrLabel("West")));
+                fields.append(",");
+                fields.append(makeField("south",
+                                        attrType(RecordField.TYPE_DOUBLE),
+                                        attrLabel("South")));
+                fields.append(",");
+                fields.append(makeField("east",
+                                        attrType(RecordField.TYPE_DOUBLE),
+                                        attrLabel("East")));
 
-	    } else {
-		fields.append(makeField(column.getName(), attrType(type),
-					attrLabel(column.getLabel()),
-					extra));
-	    }
-	}
-	if (debug) {
-	    System.err.println("fields:" + fields.toString());
-	}
-	putProperty(PROP_FIELDS, fields.toString());
+            } else {
+                fields.append(makeField(column.getName(), attrType(type),
+                                        attrLabel(column.getLabel()), extra));
+            }
+        }
+        if (debug) {
+            System.err.println("fields:" + fields.toString());
+        }
+        putProperty(PROP_FIELDS, fields.toString());
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class BridgeIterator extends ValueIterator {
 
-	List<Column> columns;
+        /** _more_ */
+        List<Column> columns;
 
-	OutputStream os;
+        /** _more_ */
+        OutputStream os;
 
-	PrintWriter pw;
+        /** _more_ */
+        PrintWriter pw;
 
         /**
          * _more_
@@ -278,15 +273,18 @@ public class DbRecordFile extends CsvFile implements DbConstants {
          * @param request _more_
          * @param db _more_
          * @param entry _more_
+         * @param os _more_
+         * @param columns _more_
          *
          * @throws Exception _more_
          */
-        public BridgeIterator(Request request, DbTypeHandler db, Entry entry, OutputStream os, List<Column> columns)
+        public BridgeIterator(Request request, DbTypeHandler db, Entry entry,
+                              OutputStream os, List<Column> columns)
                 throws Exception {
             super(request, db, entry);
-	    this.os = os;
-	    pw = new PrintWriter(os);
-	    this.columns = columns;
+            this.os      = os;
+            pw           = new PrintWriter(os);
+            this.columns = columns;
         }
 
         /**
@@ -299,54 +297,60 @@ public class DbRecordFile extends CsvFile implements DbConstants {
          */
         public void processRow(Request request, Object[] values)
                 throws Exception {
-	    int cnt = 0;
-	    for (Column c : columns) {
-		List<String> names = c.getColumnNames();
-		for (int idx = 0; idx < names.size(); idx++) {
-		    if (cnt > 0) {
-			pw.append(",");
-		    }
-		    cnt++;
-		    Object o = values[c.getOffset() + idx];
-		    if (o instanceof String) {
-			String  str         = (String) o;
-			boolean needToQuote = false;
-			if (str.indexOf("\n") >= 0) {
-			    needToQuote = true;
-			} else if (str.indexOf(",") >= 0) {
-			    needToQuote = true;
-			}
-			if (str.indexOf("\"") >= 0) {
-			    str         = str.replaceAll("\"", "\"\"");
-			    needToQuote = true;
-			}
-			if (needToQuote) {
-			    pw.append('"');
-			    pw.append(str);
-			    pw.append('"');
-			} else {
-			    pw.append(str);
-			}
-		    } else if (o instanceof Date) {
-			Date dttm = (Date) o;
-			pw.append(sdf.format(dttm));
-		    } else {
-			pw.append(o.toString());
-		    }
-		}
-	    }
-	    pw.append("\n");
+            int cnt = 0;
+            for (Column c : columns) {
+                List<String> names = c.getColumnNames();
+                for (int idx = 0; idx < names.size(); idx++) {
+                    if (cnt > 0) {
+                        pw.append(",");
+                    }
+                    cnt++;
+                    Object o = values[c.getOffset() + idx];
+                    if (o instanceof String) {
+                        String  str         = (String) o;
+                        boolean needToQuote = false;
+                        if (str.indexOf("\n") >= 0) {
+                            needToQuote = true;
+                        } else if (str.indexOf(",") >= 0) {
+                            needToQuote = true;
+                        }
+                        if (str.indexOf("\"") >= 0) {
+                            str         = str.replaceAll("\"", "\"\"");
+                            needToQuote = true;
+                        }
+                        if (needToQuote) {
+                            pw.append('"');
+                            pw.append(str);
+                            pw.append('"');
+                        } else {
+                            pw.append(str);
+                        }
+                    } else if (o instanceof Date) {
+                        Date dttm = (Date) o;
+                        pw.append(sdf.format(dttm));
+                    } else {
+                        pw.append(o.toString());
+                    }
+                }
+            }
+            pw.append("\n");
         }
 
+        /**
+         *
+         * @param request _more_
+         *
+         * @throws Exception _more_
+         */
         public void finish(Request request) throws Exception {
-	    pw.flush();
-	    os.close();
-	}
+            pw.flush();
+            os.close();
+        }
 
 
 
     }
-    
+
 
 
 }
