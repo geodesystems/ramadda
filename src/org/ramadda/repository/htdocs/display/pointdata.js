@@ -1059,6 +1059,7 @@ function makePointData(json, derived, source,url) {
 		}
 		if(dateIsString) {
 		    date = new Date(values[dateIdx]);
+		    console.dir("making date:" +values[dateIdx] +" dttm:" + date);
 		} else {
 		    date = new Date(0);
 		    date.setUTCMilliseconds(values[dateIdx]);
@@ -1070,6 +1071,7 @@ function makePointData(json, derived, source,url) {
 		date.setUTCMilliseconds(tuple.date);
             }
         }
+
         if (isArray || (typeof tuple.latitude === 'undefined')) {
             if (latitudeIdx >= 0)
                 tuple.latitude = values[latitudeIdx];
@@ -1083,7 +1085,14 @@ function makePointData(json, derived, source,url) {
                 tuple.longitude = NaN;
         }
         for (var j = 0; j < dateIndexes.length; j++) {
-            values[dateIndexes[j]] = new Date(values[dateIndexes[j]]);
+	    let dateString = values[dateIndexes[j]];
+	    //safari doesn't handle timezone offset
+	    if((typeof dateString == "string") && dateString.endsWith("+0000")) {
+		dateString  =dateString.replace("\+0000","");
+		
+	    }
+	    values[dateIndexes[j]] = new Date(dateString);
+//	    console.log("date string:" + dateString +" dttm:" + values[dateIndexes[j]]);
         }
         for (var col = 0; col < values.length; col++) {
             if(values[col]==null) {
