@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.geodata.point;
@@ -107,13 +96,17 @@ public class OpenAQTypeHandler extends PointTypeHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param properties _more_
+     * @param requestProperties _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
     @Override
-    public RecordFile doMakeRecordFile(Request request, Entry entry, Hashtable properties,  Hashtable requestProperties)
+    public RecordFile doMakeRecordFile(Request request, Entry entry,
+                                       Hashtable properties,
+                                       Hashtable requestProperties)
             throws Exception {
         return new OpenAQRecordFile(getPathForEntry(request, entry));
     }
@@ -153,7 +146,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
                      + HtmlUtils.arg("date_from", startDate) + "&"
                      + HtmlUtils.arg("location", location);
 
-	//	System.err.println(url);
+        //      System.err.println(url);
         return url;
     }
 
@@ -162,11 +155,13 @@ public class OpenAQTypeHandler extends PointTypeHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param fromImport _more_
      *
      * @throws Exception _more_
      */
     @Override
-    public void initializeNewEntry(Request request, Entry entry, boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry,
+                                   boolean fromImport)
             throws Exception {}
 
     /**
@@ -208,9 +203,11 @@ public class OpenAQTypeHandler extends PointTypeHandler {
             PipedOutputStream     out  = new PipedOutputStream(in);
             ByteArrayOutputStream bos  = new ByteArrayOutputStream();
             String[]              args = new String[] {
-		"-columns","location,utc,parameter,value,latitude,longitude",
-		"-unfurl","parameter","value","utc","location,latitude,longitude",
-		"-addheader","utc.id date date.type date date.format yyyy-MM-dd'T'HH:mm:ss.SSS date.label \"Date\" ","-print" 
+                "-columns", "location,utc,parameter,value,latitude,longitude",
+                "-unfurl", "parameter", "value", "utc",
+                "location,latitude,longitude", "-addheader",
+                "utc.id date date.type date date.format yyyy-MM-dd'T'HH:mm:ss.SSS date.label \"Date\" ",
+                "-print"
             };
             CsvUtil csvUtil = new CsvUtil(args,
                                           new BufferedOutputStream(bos),

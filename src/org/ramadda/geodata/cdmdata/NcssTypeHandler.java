@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.geodata.cdmdata;
@@ -169,25 +158,25 @@ public class NcssTypeHandler extends PointTypeHandler {
         //${date:now}time_start=${format:yyyy-MM-dd}&${date:+10 days}time_end=${format:yyyy-MM-dd}
 
         String timeStartPattern = "time_start=([^&]+)&";
-        String timeEndPattern = "time_end=([^&]+)&";
+        String timeEndPattern   = "time_end=([^&]+)&";
         toks = Utils.findPatterns(url, timeStartPattern);
         if (toks != null) {
             //            throw new IllegalArgumentException("Could not find time_start:"  + url);
             String timeStart = toks[0];
             url = url.replaceAll(
-                                 timeStartPattern,
-                                 "\\${date:now}time_start=\\${format:yyyy-MM-dd}&");
+                timeStartPattern,
+                "\\${date:now}time_start=\\${format:yyyy-MM-dd}&");
 
             toks = Utils.findPatterns(url, timeEndPattern);
             if (toks == null) {
                 throw new IllegalArgumentException("Could not find time_end:"
-                                                   + url);
+                        + url);
             }
             String timeEnd = toks[0];
             url = url.replaceAll(
-                                 timeEndPattern,
-                                 "\\${date:+\\${endTimeOffset}}time_end=\\${format:yyyy-MM-dd}&");
-            
+                timeEndPattern,
+                "\\${date:+\\${endTimeOffset}}time_end=\\${format:yyyy-MM-dd}&");
+
             timeStart = timeStart.replace("%3A", ":");
             timeEnd   = timeEnd.replace("%3A", ":");
         }
@@ -226,14 +215,18 @@ public class NcssTypeHandler extends PointTypeHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param fromImport _more_
      *
      * @throws Exception _more_
      */
-    public void initializeNewEntry(Request request, Entry entry, boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry,
+                                   boolean fromImport)
             throws Exception {
 
-	super.initializeNewEntry(request,entry,fromImport);
-	if(fromImport) return;
+        super.initializeNewEntry(request, entry, fromImport);
+        if (fromImport) {
+            return;
+        }
         String url = entry.getResource().getPath();
         if ( !Utils.stringDefined(entry.getName())) {
             String[] toks = Utils.findPatterns(url, "/(.*)/(.*)/[^/]+\\?");
@@ -366,7 +359,8 @@ public class NcssTypeHandler extends PointTypeHandler {
         url = Utils.normalizeTemplateUrl(url);
         //subst the location
         url = super.getPathForRecordEntry(entry, url, requestProperties);
-	//	System.err.println("URL" + url);
+
+        //      System.err.println("URL" + url);
         return url;
     }
 
@@ -390,6 +384,8 @@ public class NcssTypeHandler extends PointTypeHandler {
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param entry _more_
      * @param pointProps _more_
      * @param requestProperties _more_
@@ -399,7 +395,8 @@ public class NcssTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public RecordFile doMakeRecordFile(Request request, Entry entry, Hashtable pointProps,
+    public RecordFile doMakeRecordFile(Request request, Entry entry,
+                                       Hashtable pointProps,
                                        Hashtable requestProperties)
             throws Exception {
         Hashtable props = getRecordProperties(entry);

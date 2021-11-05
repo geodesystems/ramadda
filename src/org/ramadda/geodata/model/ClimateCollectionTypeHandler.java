@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.geodata.model;
@@ -141,9 +130,8 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
         String wiki =
             "+section title={{name}}\n{{description wikify=true}}\n{{collection.form}}\n-section";
         StringBuilder sb =
-            new StringBuilder(getWikiManager().wikifyEntry(request,
-                                                           entry,
-                                                           wiki));
+            new StringBuilder(getWikiManager().wikifyEntry(request, entry,
+                wiki));
 
         return new Result(msg(getLabel()), sb);
     }
@@ -221,21 +209,19 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
         addSelectorsToForm(request, entry, selectorSB, formId, js);
         String searchButton = JQ.button("Search", formId + "_search", js,
                                         HtmlUtils.call(formId + ".search",
-                                                "event"));
+                                            "event"));
         String downloadButton = JQ.button("Download Data",
                                           formId + "_do_download", js,
-                                          HtmlUtils.call(formId + ".download",
-                                                  "event"));
+                                          HtmlUtils.call(formId
+                                              + ".download", "event"));
         String bdownloadButton = JQ.button("Get Download Script",
                                            formId + "_do_bulkdownload", js,
                                            HtmlUtils.call(formId
-                                               + ".bulkdownload",
-                                                   "event"));
+                                               + ".bulkdownload", "event"));
         String catalogButton = JQ.button("Get THREDDS Catalog",
                                          formId + "_do_threddscatalog", js,
                                          HtmlUtils.call(formId
-                                             + ".threddscatalog",
-                                                 "event"));
+                                             + ".threddscatalog", "event"));
 
         selectorSB.append(HtmlUtils.formTableClose());
         sb.append(
@@ -373,20 +359,16 @@ JQ.button(
     HtmlUtils.call(formId + ".download", "event")) + " "
         +
         */
-        JQ.button("Plot Map", formId + "_do_image", js,
-                  HtmlUtils.call(formId + ".makeImage",
-                                 "event")) + " "
-                                           + JQ.button("Google Earth",
-                                               formId + "_do_kmz", js,
-                                               HtmlUtils.call(formId
-                                                   + ".makeKMZ",
-                                                       "event")) + " "
-                                                           + JQ.button(
-                                                               "Time Series", formId
-                                                               + "_do_timeseries", js, HtmlUtils.call(
-                                                                   formId
-                                                                   + ".makeTimeSeries",
-                                                                           "event"));
+        JQ.button(
+            "Plot Map", formId + "_do_image", js,
+            HtmlUtils.call(formId + ".makeImage", "event")) + " "
+                + JQ.button(
+                    "Google Earth", formId + "_do_kmz", js,
+                    HtmlUtils.call(formId + ".makeKMZ", "event")) + " "
+                        + JQ.button(
+                            "Time Series", formId + "_do_timeseries", js,
+                            HtmlUtils.call(
+                                formId + ".makeTimeSeries", "event"));
         List<String>  processTabs   = new ArrayList<String>();
         List<String>  processTitles = new ArrayList<String>();
 
@@ -403,17 +385,16 @@ JQ.button(
             //TODO: add radio buttons
             StringBuilder tmpSB = new StringBuilder();
             tmpSB.append(HtmlUtils.radio(ARG_DATA_PROCESS_ID,
-                                         process.getId(),
-                                         false));
+                                         process.getId(), false));
             tmpSB.append(HtmlUtils.space(1));
             tmpSB.append(msg("Select"));
             tmpSB.append(HtmlUtils.br());
             ServiceOperand op = new ServiceOperand(entry);
             process.addToForm(request, new ServiceInput(op), tmpSB, null,
                               null);
-            processTabs.add(HtmlUtils.div(tmpSB.toString(),
-                                          HtmlUtils.style(
-                                          "min-height:200px;")));
+            processTabs.add(
+                HtmlUtils.div(
+                    tmpSB.toString(), HtmlUtils.style("min-height:200px;")));
             processTitles.add(process.getLabel());
         }
 
@@ -450,8 +431,7 @@ JQ.button(
         if (what == null) {
             return null;
         }
-        if (what.equals(REQUEST_IMAGE)
-                || what.equals(REQUEST_KMZ)
+        if (what.equals(REQUEST_IMAGE) || what.equals(REQUEST_KMZ)
                 || what.equals(REQUEST_TIMESERIES)
                 || what.equals(REQUEST_THREDDSCATALOG)) {
             return processDataRequest(request, entry, what);
@@ -615,9 +595,7 @@ JQ.button(
 
         return coh.outputGroup(request, CatalogOutputHandler.OUTPUT_CATALOG,
                                entry, new ArrayList<Entry>(),
-                               processSearch(request,
-                                             entry,
-                                             true));
+                               processSearch(request, entry, true));
 
     }
 

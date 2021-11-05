@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2020 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.geodata.model;
@@ -187,38 +176,31 @@ public class NCLTimeSeriesPlotDataService extends NCLDataService {
         StringBuilder plotTypes = new StringBuilder();
         if ( !onlyHaveOneEntry) {
             plotTypes.append(
-                HtmlUtils.radio(NCLOutputHandler.ARG_NCL_PLOTTYPE,
-                                "shaded",
-                                RepositoryManager.getShouldButtonBeSelected(
-                                    request,
-                                    NCLOutputHandler.ARG_NCL_PLOTTYPE,
-                                    "shaded",
-                                    true)));
+                HtmlUtils.radio(
+                    NCLOutputHandler.ARG_NCL_PLOTTYPE, "shaded",
+                    RepositoryManager.getShouldButtonBeSelected(
+                        request, NCLOutputHandler.ARG_NCL_PLOTTYPE, "shaded",
+                        true)));
             plotTypes.append(space1);
             plotTypes.append(Repository.msg("Shaded Area"));
             plotTypes.append(space2);
         }
-        plotTypes.append(HtmlUtils.radio(NCLOutputHandler.ARG_NCL_PLOTTYPE,
-                                         "lines",
-                                         (RepositoryManager.getShouldButtonBeSelected(
-                                             request,
-                                             NCLOutputHandler
-                                             .ARG_NCL_PLOTTYPE,
-                                             "lines",
-                                             onlyHaveOneEntry)
-                                          || onlyHaveOneEntry)));
+        plotTypes.append(
+            HtmlUtils.radio(
+                NCLOutputHandler.ARG_NCL_PLOTTYPE, "lines",
+                (RepositoryManager.getShouldButtonBeSelected(
+                    request, NCLOutputHandler.ARG_NCL_PLOTTYPE, "lines",
+                    onlyHaveOneEntry) || onlyHaveOneEntry)));
         plotTypes.append(space1);
         plotTypes.append(Repository.msg("Lines"));
         if ( !onlyHaveOneEntry) {
             plotTypes.append(space2);
             plotTypes.append(
-                HtmlUtils.radio(NCLOutputHandler.ARG_NCL_PLOTTYPE,
-                                "both",
-                                RepositoryManager.getShouldButtonBeSelected(
-                                    request,
-                                    NCLOutputHandler.ARG_NCL_PLOTTYPE,
-                                    "both",
-                                    false)));
+                HtmlUtils.radio(
+                    NCLOutputHandler.ARG_NCL_PLOTTYPE, "both",
+                    RepositoryManager.getShouldButtonBeSelected(
+                        request, NCLOutputHandler.ARG_NCL_PLOTTYPE, "both",
+                        false)));
             plotTypes.append(space1);
             plotTypes.append(Repository.msg("Both"));
         }
@@ -230,25 +212,21 @@ public class NCLTimeSeriesPlotDataService extends NCLDataService {
 
         StringBuilder shadeData = new StringBuilder();
         shadeData.append(Repository.msgLabel("Area"));
-        shadeData.append(HtmlUtils.radio(NCLOutputHandler.ARG_NCL_DATATYPE,
-                                         "sigma",
-                                         RepositoryManager.getShouldButtonBeSelected(
-                                             request,
-                                             NCLOutputHandler
-                                             .ARG_NCL_DATATYPE,
-                                             "sigma",
-                                             true)));
+        shadeData.append(
+            HtmlUtils.radio(
+                NCLOutputHandler.ARG_NCL_DATATYPE, "sigma",
+                RepositoryManager.getShouldButtonBeSelected(
+                    request, NCLOutputHandler.ARG_NCL_DATATYPE, "sigma",
+                    true)));
         shadeData.append(space1);
         shadeData.append(Repository.msg("Standard Deviation"));
         shadeData.append(space2);
-        shadeData.append(HtmlUtils.radio(NCLOutputHandler.ARG_NCL_DATATYPE,
-                                         "maxmin",
-                                         RepositoryManager.getShouldButtonBeSelected(
-                                             request,
-                                             NCLOutputHandler
-                                             .ARG_NCL_DATATYPE,
-                                             "maxmin",
-                                             false)));
+        shadeData.append(
+            HtmlUtils.radio(
+                NCLOutputHandler.ARG_NCL_DATATYPE, "maxmin",
+                RepositoryManager.getShouldButtonBeSelected(
+                    request, NCLOutputHandler.ARG_NCL_DATATYPE, "maxmin",
+                    false)));
         shadeData.append(space1);
         shadeData.append(Repository.msg("Max/Min"));
         if ( !onlyHaveOneEntry) {
@@ -270,13 +248,13 @@ public class NCLTimeSeriesPlotDataService extends NCLDataService {
 
 
 
-        sb.append(HtmlUtils.formEntry(Repository.msgLabel("Color"),
-                                      HtmlUtils.select(ARG_NCL_LINECOLOR,
-                                              lineColors,
-                                              request.getSanitizedString(
-                                              ARG_NCL_LINECOLOR,
-                                                      "Gray"),
-                                              Integer.MAX_VALUE)));
+        sb.append(
+            HtmlUtils.formEntry(
+                Repository.msgLabel("Color"),
+                HtmlUtils.select(
+                    ARG_NCL_LINECOLOR, lineColors,
+                    request.getSanitizedString(ARG_NCL_LINECOLOR, "Gray"),
+                    Integer.MAX_VALUE)));
         addUnitsWidget(request, units, sb);
 
 
@@ -287,24 +265,20 @@ public class NCLTimeSeriesPlotDataService extends NCLDataService {
         StringBuilder yaxisOpts = new StringBuilder();
         yaxisOpts.append(Repository.msg("Min"));
         yaxisOpts.append(HtmlUtils.makeLatLonInput(ARG_NCL_YMIN,
-                ARG_NCL_YMIN,
-                ""));
+                ARG_NCL_YMIN, ""));
         yaxisOpts.append(HtmlUtils.space(2));
         yaxisOpts.append(Repository.msg("Max"));
         yaxisOpts.append(HtmlUtils.makeLatLonInput(ARG_NCL_YMAX,
-                ARG_NCL_YMAX,
-                ""));
+                ARG_NCL_YMAX, ""));
         sb.append(HtmlUtils.formEntry(Repository.msgLabel("Y-Axis<br>Range"),
                                       yaxisOpts.toString()));
         sb.append(
-            HtmlUtils.formEntry(Repository.msgLabel("Running<br>Average"),
-                                HtmlUtils.select(ARG_NCL_NAVE,
-                                        periods,
-                                        request.getSanitizedString(
-                                            ARG_NCL_NAVE,
-                                            "5"),
-                                        Integer.MAX_VALUE) + HtmlUtils.space(1)
-                                        + "years"));
+            HtmlUtils.formEntry(
+                Repository.msgLabel("Running<br>Average"),
+                HtmlUtils.select(
+                    ARG_NCL_NAVE, periods,
+                    request.getSanitizedString(ARG_NCL_NAVE, "5"),
+                    Integer.MAX_VALUE) + HtmlUtils.space(1) + "years"));
 
         sb.append(HtmlUtils.formTableClose());
 
@@ -384,9 +358,9 @@ public class NCLTimeSeriesPlotDataService extends NCLDataService {
         String outputType  = request.getString(ARG_NCL_OUTPUT, "comp");
         String maskType    = request.getString(ARG_NCL_MASKTYPE, "none");
         File outFile = new File(IOUtil.joinDir(input.getProcessDir(),
-                                               wksName) + "." + suffix);
+                           wksName) + "." + suffix);
         File displayFile = new File(IOUtil.joinDir(input.getProcessDir(),
-                                                   wksName) + ".gif");
+                               wksName) + ".gif");
         CdmDataOutputHandler dataOutputHandler =
             nclOutputHandler.getDataOutputHandler();
         GridDataset dataset =
@@ -405,8 +379,7 @@ public class NCLTimeSeriesPlotDataService extends NCLDataService {
             IOUtil.joinDir(
                 IOUtil.joinDir(
                     nclOutputHandler.getStorageManager().getResourceDir(),
-                    "ncl"),
-                NCLOutputHandler.SCRIPT_TSPLOT));
+                    "ncl"), NCLOutputHandler.SCRIPT_TSPLOT));
         Map<String, String> envMap = new HashMap<String, String>();
         nclOutputHandler.addGlobalEnvVars(envMap);
         envMap.put("wks_name", wksName);
@@ -520,8 +493,7 @@ public class NCLTimeSeriesPlotDataService extends NCLDataService {
                 ClimateModelApiHandler.DEFAULT_CLIMATE_END_YEAR);
         envMap.put("climyears",
                    ModelUtil.buildClimateYearsString(climstartYear,
-                           climendYear,
-                           "-"));
+                       climendYear, "-"));
 
         String anomType = "anom";
         if (fileList.toString().indexOf("pctanom") >= 0) {
@@ -541,8 +513,7 @@ public class NCLTimeSeriesPlotDataService extends NCLDataService {
 
         envMap.put("anom", Boolean.toString(haveAnom));
         envMap.put("annotation",
-                   getRepository().getProperty("ramadda.model.sitename",
-                           ""));
+                   getRepository().getProperty("ramadda.model.sitename", ""));
         String logo = getRepository().getProperty(Constants.PROP_LOGO_IMAGE,
                           "");
         if ( !logo.isEmpty()) {
@@ -582,8 +553,7 @@ public class NCLTimeSeriesPlotDataService extends NCLDataService {
             //outputEntries.add(displayEntry);
         }
         ServiceOutput dpo = new ServiceOutput(new ServiceOperand("Plot of "
-                                + nameList,
-                                                                 outputEntries));
+                                + nameList, outputEntries));
 
         return dpo;
 

@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.geodata.cdmdata;
@@ -157,8 +146,8 @@ public class GridTypeHandler extends GenericTypeHandler {
                     args.add("timeStride");
                     args.add(Utils.getProperty(props, "timeStride", "1"));
                 }
-		args.add("gridTime");
-		args.add(Utils.getProperty(props, "gridTime", "0"));
+                args.add("gridTime");
+                args.add(Utils.getProperty(props, "gridTime", "0"));
                 jsonbuf.append(getRepository().getUrlBase()
                                + "/grid/gridjson?"
                                + HtmlUtils.args(args, false));
@@ -181,7 +170,7 @@ public class GridTypeHandler extends GenericTypeHandler {
 
             jsonbuf.append(getRepository().getUrlBase() + "/grid/pointjson?"
                            + HtmlUtils.args(new String[] { ARG_ENTRYID,
-							   entry.getId() }, false));
+                    entry.getId() }, false));
             // get the lat/lon from the request if there
             String latArg = "${latitude}";
             String lonArg = "${longitude}";

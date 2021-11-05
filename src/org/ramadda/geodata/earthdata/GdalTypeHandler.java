@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.geodata.earthdata;
@@ -88,7 +77,7 @@ public class GdalTypeHandler extends GenericTypeHandler {
             return;
         }
         String results = output.getResults();
-	//	System.err.println("results:" + results);
+        //      System.err.println("results:" + results);
         /*
 Upper Left  (  -28493.167, 4255884.544) (117d38'27.05"W, 33d56'37.74"N)
 Lower Left  (  -28493.167, 4224973.143) (117d38'27.05"W, 33d39'53.81"N)

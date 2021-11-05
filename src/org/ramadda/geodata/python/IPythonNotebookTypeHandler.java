@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.geodata.python;
@@ -75,6 +64,18 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
 
 
 
+    /**
+     *
+     * @param wikiUtil _more_
+     * @param request _more_
+     * @param originalEntry _more_
+     * @param entry _more_
+     * @param tag _more_
+     * @param props _more_
+     *  @return _more_
+     *
+     * @throws Exception _more_
+     */
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)
@@ -411,7 +412,7 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
      *
      * @throws Exception _more_
      */
-    public static  void readLines(JSONObject obj, String name, Appendable sb)
+    public static void readLines(JSONObject obj, String name, Appendable sb)
             throws Exception {
         try {
             readLines(obj.getJSONArray(name), sb);
@@ -429,7 +430,8 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
      *
      * @throws Exception _more_
      */
-    public static void readLines(JSONArray lines, Appendable sb) throws Exception {
+    public static void readLines(JSONArray lines, Appendable sb)
+            throws Exception {
         for (int lineIdx = 0; lineIdx < lines.length(); lineIdx++) {
             String line = lines.getString(lineIdx);
             sb.append(line);
@@ -466,7 +468,6 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
      * _more_
      *
      * @param request _more_
-     * @param text _more_
      * @param obj _more_
      * @param sb _more_
      * @param i _more_

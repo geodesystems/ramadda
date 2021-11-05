@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.geodata.thredds;
@@ -27,6 +16,7 @@ import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.metadata.MetadataHandler;
 import org.ramadda.repository.metadata.MetadataTypeBase;
 import org.ramadda.util.Utils;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -257,9 +247,9 @@ public class ThreddsMetadataHandler extends MetadataHandler {
 
             try {
                 String realUnitName = MetUnits.makeSymbol(unitIdentifier);
-		//A hack to fix errors with oscar files
-		realUnitName = realUnitName.replace("degrees-","degrees_");
-                u = visad.data.units.Parser.parse(realUnitName);
+                //A hack to fix errors with oscar files
+                realUnitName = realUnitName.replace("degrees-", "degrees_");
+                u            = visad.data.units.Parser.parse(realUnitName);
             } catch (NoSuchUnitException nsu) {
                 if (unitIdentifier.indexOf("_") >= 0) {
                     unitIdentifier = unitIdentifier.replace('_', ' ');
@@ -270,7 +260,8 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                 }
             }
         } catch (Exception exc) {
-	    exc.printStackTrace();
+            exc.printStackTrace();
+
             throw new IllegalArgumentException("Error parsing unit:\""
                     + unitIdentifier + "\"   " + exc);
         }
@@ -548,10 +539,9 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                         (List<String>) StringUtil.split(value, ";", true,
                             true);
                     if (keywords.size() == 1) {
-                        keywords.addAll((List<String>) StringUtil.split(value,
-                                ",",
-                                true,
-                                true));
+                        keywords.addAll(
+                            (List<String>) StringUtil.split(
+                                value, ",", true, true));
                     }
                     for (String keyword : keywords) {
                         try {
@@ -816,7 +806,8 @@ public class ThreddsMetadataHandler extends MetadataHandler {
             //We do this here after because I've seen some point files that have an incorrect 360 bbox
             if ( !haveBounds) {
                 for (CoordinateSystem coordSys :
-                        (List<CoordinateSystem>) dataset.getCoordinateSystems()) {
+                        (List<CoordinateSystem>) dataset
+                            .getCoordinateSystems()) {
                     ProjectionImpl proj = coordSys.getProjection();
                     if (proj == null) {
                         continue;
@@ -901,11 +892,8 @@ public class ThreddsMetadataHandler extends MetadataHandler {
             HashSet tmp = new HashSet();
             for (String attr :
                     StringUtil.split(
-                        getRepository().getProperty(PROP_ENDTIME_ATTRIBUTES,
-                                ""),
-                        ",",
-                        true,
-                        true)) {
+                        getRepository().getProperty(
+                            PROP_ENDTIME_ATTRIBUTES, ""), ",", true, true)) {
                 tmp.add(attr);
 
             }
@@ -928,11 +916,9 @@ public class ThreddsMetadataHandler extends MetadataHandler {
             HashSet tmp = new HashSet();
             for (String attr :
                     StringUtil.split(
-                        getRepository().getProperty(PROP_STARTTIME_ATTRIBUTES,
-                                ""),
-                        ",",
-                        true,
-                        true)) {
+                        getRepository().getProperty(
+                            PROP_STARTTIME_ATTRIBUTES, ""), ",", true,
+                                true)) {
                 tmp.add(attr);
             }
             startTimeAttrs = tmp;
@@ -990,8 +976,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
             }
             XmlUtil.create(doc, getTag(TYPE_VARIABLE), variablesNode,
                            metadata.getAttr2(), new String[] { ATTR_NAME,
-                                   metadata.getAttr1(), ATTR_UNITS,
-                                   metadata.getAttr3() });
+                    metadata.getAttr1(), ATTR_UNITS, metadata.getAttr3() });
 
             return true;
         } else {
@@ -1032,8 +1017,8 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                 return new Metadata(getRepository().getGUID(), "", TYPE_LINK,
                                     DFLT_INHERITED,
                                     XmlUtil.getAttribute(child,
-                                            "xlink:title",
-                                            url), url, Metadata.DFLT_ATTR,
+                                        "xlink:title", url), url,
+                                            Metadata.DFLT_ATTR,
                                             Metadata.DFLT_ATTR,
                                             Metadata.DFLT_EXTRA);
             } else {
@@ -1050,21 +1035,18 @@ public class ThreddsMetadataHandler extends MetadataHandler {
 
             return new Metadata(getRepository().getGUID(), "", TYPE_PROJECT,
                                 DFLT_INHERITED, text,
-                                XmlUtil.getAttribute(child,
-                                        ATTR_VOCABULARY,
-                                        ""), Metadata.DFLT_ATTR,
-                                             Metadata.DFLT_ATTR,
-                                             Metadata.DFLT_EXTRA);
+                                XmlUtil.getAttribute(child, ATTR_VOCABULARY,
+                                    ""), Metadata.DFLT_ATTR,
+                                         Metadata.DFLT_ATTR,
+                                         Metadata.DFLT_EXTRA);
         } else if (isTag(tag, TYPE_CONTRIBUTOR)) {
             String text = XmlUtil.getChildText(child).trim();
 
             return new Metadata(getRepository().getGUID(), "",
                                 TYPE_CONTRIBUTOR, DFLT_INHERITED, text,
-                                XmlUtil.getAttribute(child,
-                                        ATTR_ROLE,
-                                        ""), Metadata.DFLT_ATTR,
-                                             Metadata.DFLT_ATTR,
-                                             Metadata.DFLT_EXTRA);
+                                XmlUtil.getAttribute(child, ATTR_ROLE, ""),
+                                Metadata.DFLT_ATTR, Metadata.DFLT_ATTR,
+                                Metadata.DFLT_EXTRA);
         } else if (isTag(tag, TYPE_PUBLISHER) || isTag(tag, TYPE_CREATOR)) {
             Element nameNode = XmlUtil.findChild(child, CatalogUtil.TAG_NAME);
             String  name     = XmlUtil.getChildText(nameNode).trim();
@@ -1091,14 +1073,12 @@ public class ThreddsMetadataHandler extends MetadataHandler {
 
             return new Metadata(getRepository().getGUID(), "", TYPE_KEYWORD,
                                 DFLT_INHERITED, text,
-                                XmlUtil.getAttribute(child,
-                                        ATTR_VOCABULARY,
-                                        ""), Metadata.DFLT_ATTR,
-                                             Metadata.DFLT_ATTR,
-                                             Metadata.DFLT_EXTRA);
+                                XmlUtil.getAttribute(child, ATTR_VOCABULARY,
+                                    ""), Metadata.DFLT_ATTR,
+                                         Metadata.DFLT_ATTR,
+                                         Metadata.DFLT_EXTRA);
 
-        } else if (isTag(tag, TYPE_AUTHORITY)
-                   || isTag(tag, TYPE_DATATYPE)
+        } else if (isTag(tag, TYPE_AUTHORITY) || isTag(tag, TYPE_DATATYPE)
                    || isTag(tag, TYPE_DATAFORMAT)) {
             String text = XmlUtil.getChildText(child).trim();
             text = text.replace("\n", "");
@@ -1110,12 +1090,10 @@ public class ThreddsMetadataHandler extends MetadataHandler {
         } else if (isTag(tag, TYPE_PROPERTY)) {
             return new Metadata(getRepository().getGUID(), "",
                                 getType("thredds." + tag), DFLT_INHERITED,
-                                XmlUtil.getAttribute(child,
-                                        ATTR_NAME), XmlUtil.getAttribute(
-                                            child,
-                                            ATTR_VALUE), Metadata.DFLT_ATTR,
-                                            Metadata.DFLT_ATTR,
-                                            Metadata.DFLT_EXTRA);
+                                XmlUtil.getAttribute(child, ATTR_NAME),
+                                XmlUtil.getAttribute(child, ATTR_VALUE),
+                                Metadata.DFLT_ATTR, Metadata.DFLT_ATTR,
+                                Metadata.DFLT_EXTRA);
         }
 
         return null;

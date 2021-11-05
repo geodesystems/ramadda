@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2020 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.geodata.model;
@@ -131,8 +120,7 @@ public class CDOTimeSeriesComparison extends CDODataService {
                         getOutputHandler().getDataOutputHandler();
                     dataset =
                         dataOutputHandler.getCdmManager().getGridDataset(e,
-                            getPath(request,
-                                    e));
+                            getPath(request, e));
 
                     if (dataset != null) {
                         getOutputHandler().addVarLevelWidget(request, sb,
@@ -157,7 +145,7 @@ public class CDOTimeSeriesComparison extends CDODataService {
         addTimeWidget(request, sb, input);
 
         addMapWidget(request, sb, dataset);
-        
+
         if (dataset != null) {
             dataset.close();
         }
@@ -208,33 +196,30 @@ public class CDOTimeSeriesComparison extends CDODataService {
         StringBuilder leadlagOpts = new StringBuilder();
         leadlagOpts.append(msg("Time Series:"));
         leadlagOpts.append(HtmlUtils.space(1));
-        leadlagOpts.append(HtmlUtils.radio(CDOOutputHandler.ARG_CDO_LEADLAG,
-                                           "none",
-                                           RepositoryManager.getShouldButtonBeSelected(
-                                           request,
-                                           CDOOutputHandler.ARG_CDO_LEADLAG,
-                                           "none",
-                                           true)));
+        leadlagOpts.append(
+            HtmlUtils.radio(
+                CDOOutputHandler.ARG_CDO_LEADLAG, "none",
+                RepositoryManager.getShouldButtonBeSelected(
+                    request, CDOOutputHandler.ARG_CDO_LEADLAG, "none",
+                    true)));
         leadlagOpts.append(HtmlUtils.space(1));
         leadlagOpts.append(msg("None"));
         leadlagOpts.append(HtmlUtils.space(2));
-        leadlagOpts.append(HtmlUtils.radio(CDOOutputHandler.ARG_CDO_LEADLAG,
-                                           "lead",
-                                           RepositoryManager.getShouldButtonBeSelected(
-                                           request,
-                                           CDOOutputHandler.ARG_CDO_LEADLAG,
-                                           "lead",
-                                           false)));
+        leadlagOpts.append(
+            HtmlUtils.radio(
+                CDOOutputHandler.ARG_CDO_LEADLAG, "lead",
+                RepositoryManager.getShouldButtonBeSelected(
+                    request, CDOOutputHandler.ARG_CDO_LEADLAG, "lead",
+                    false)));
         leadlagOpts.append(HtmlUtils.space(1));
         leadlagOpts.append(msg("Lead"));
         leadlagOpts.append(HtmlUtils.space(2));
-        leadlagOpts.append(HtmlUtils.radio(CDOOutputHandler.ARG_CDO_LEADLAG,
-                                           "lag",
-                                           RepositoryManager.getShouldButtonBeSelected(
-                                           request,
-                                           CDOOutputHandler.ARG_CDO_LEADLAG,
-                                           "lag",
-                                           false)));
+        leadlagOpts.append(
+            HtmlUtils.radio(
+                CDOOutputHandler.ARG_CDO_LEADLAG, "lag",
+                RepositoryManager.getShouldButtonBeSelected(
+                    request, CDOOutputHandler.ARG_CDO_LEADLAG, "lag",
+                    false)));
         leadlagOpts.append(HtmlUtils.space(1));
         leadlagOpts.append(msg("Lag"));
         leadlagOpts.append(HtmlUtils.br());
@@ -244,27 +229,21 @@ public class CDOTimeSeriesComparison extends CDODataService {
             new ArrayList<TwoFacedObject>(CDOOutputHandler.MONTHS);
         String opStr = getOpArgString(1);
         TSMONTHS.add(0, new TwoFacedObject("", ""));
-        leadlagOpts.append(
-            msgLabel("Start")
-            + HtmlUtils.select(CDOOutputHandler.ARG_CDO_STARTMONTH + opStr,
-                               TSMONTHS,
-                               request.getSanitizedString(
-                                   CDOOutputHandler.ARG_CDO_STARTMONTH
-                                   + opStr,
-                                   null),
-                               HtmlUtils.title(
-                               "Select the starting timeseries month")) + HtmlUtils.space(
-                                   2) + msgLabel("End")
-                                       + HtmlUtils.select(
-                                           CDOOutputHandler.ARG_CDO_ENDMONTH
-                                               + opStr,
-                                           TSMONTHS,
-                                           request.getSanitizedString(
-                                           CDOOutputHandler.ARG_CDO_ENDMONTH
-                                           + opStr,
-                                           null),
-                                           HtmlUtils.title(
-                                           "Select the ending timeseries month")));
+        leadlagOpts
+            .append(msgLabel("Start")
+                + HtmlUtils
+                    .select(CDOOutputHandler.ARG_CDO_STARTMONTH
+                        + opStr, TSMONTHS, request
+                            .getSanitizedString(CDOOutputHandler
+                                .ARG_CDO_STARTMONTH + opStr, null), HtmlUtils
+                                    .title("Select the starting timeseries month")) + HtmlUtils
+                                        .space(2) + msgLabel("End")
+                                            + HtmlUtils
+                                                .select(CDOOutputHandler
+                                                    .ARG_CDO_ENDMONTH + opStr, TSMONTHS, request
+                                                        .getSanitizedString(CDOOutputHandler
+                                                            .ARG_CDO_ENDMONTH + opStr, null), HtmlUtils
+                                                                .title("Select the ending timeseries month")));
         sb.append(HtmlUtils.formEntry(msgLabel("Lead/Lag"),
                                       leadlagOpts.toString()));
     }
@@ -293,14 +272,12 @@ public class CDOTimeSeriesComparison extends CDODataService {
                         getOutputHandler().getDataOutputHandler();
                     GridDataset dataset =
                         dataOutputHandler.getCdmManager().getGridDataset(e,
-                            getPath(request,
-                                    e));
+                            getPath(request, e));
                     if (dataset != null) {
                         List<CalendarDate> dates =
                             CdmDataOutputHandler.getGridDates(dataset);
                         dataOutputHandler.getCdmManager().returnGridDataset(
-                            getPath(request,
-                                    e), dataset);
+                            getPath(request, e), dataset);
                         if ((dates != null) && !dates.isEmpty()) {
                             if (calString == null) {
                                 CalendarDate cd  = dates.get(0);
@@ -311,18 +288,17 @@ public class CDOTimeSeriesComparison extends CDODataService {
                                         HtmlUtils.hidden(
                                             CdmDataOutputHandler.ARG_CALENDAR,
                                             request.getSanitizedString(
-                                            CdmDataOutputHandler.ARG_CALENDAR,
-                                            calString)));
+                                                CdmDataOutputHandler.ARG_CALENDAR,
+                                                    calString)));
                                 }
                             }
                             for (CalendarDate d : dates) {
                                 try {  // shouldn't get an exception
                                     String year =
-                                        new CalendarDateTime(
-                                            d).formattedString(
-                                            "yyyy",
-                                            CalendarDateTime
-                                                .DEFAULT_TIMEZONE);
+                                        new CalendarDateTime(d)
+                                            .formattedString("yyyy",
+                                                CalendarDateTime
+                                                    .DEFAULT_TIMEZONE);
                                     uniqueYears.add(year);
                                 } catch (Exception excp) {}
                             }
@@ -373,35 +349,30 @@ public class CDOTimeSeriesComparison extends CDODataService {
         String yearNum  = "";
         String yrLabel  = Repository.msgLabel("Start");
         int    endIndex = commonYears.size() - 1;
-        sb.append(HtmlUtils.formEntry(Repository.msgLabel("Years"),
-                                      yrLabel
-                                      + HtmlUtils.select(
-                                          CDOOutputHandler.ARG_CDO_STARTYEAR
-                                          + yearNum,
-                                          commonYears,
-                                          request.getSanitizedString(
-                                          CDOOutputHandler.ARG_CDO_STARTYEAR
-                                          + yearNum,
-                                          request.getSanitizedString(
-                                          CDOOutputHandler.ARG_CDO_STARTYEAR,
-                                          commonYears.get(0))),
-                                          HtmlUtils.title(
-                                          "Select the starting year")) + HtmlUtils.space(
-                                              3) + Repository.msgLabel("End")
-                                                  + HtmlUtils.select(
-                                                      CDOOutputHandler.ARG_CDO_ENDYEAR
-                                                          + yearNum,
-                                                              commonYears,
-                                                              request.getSanitizedString(
-                                                              CDOOutputHandler
-                                                                  .ARG_CDO_ENDYEAR + yearNum,
-                                                                      request.getSanitizedString(
-                                                                      CDOOutputHandler
-                                                                          .ARG_CDO_ENDYEAR,
-                                                                              commonYears.get(
-                                                                              endIndex))),
-                                                              HtmlUtils.title(
-                                                              "Select the ending year"))));
+        sb.append(
+            HtmlUtils.formEntry(
+                Repository.msgLabel("Years"),
+                yrLabel
+                + HtmlUtils.select(
+                    CDOOutputHandler.ARG_CDO_STARTYEAR + yearNum,
+                    commonYears,
+                    request.getSanitizedString(
+                        CDOOutputHandler.ARG_CDO_STARTYEAR + yearNum,
+                        request.getSanitizedString(
+                            CDOOutputHandler.ARG_CDO_STARTYEAR,
+                            commonYears.get(0))), HtmlUtils.title(
+                                "Select the starting year")) + HtmlUtils.space(
+                                    3) + Repository.msgLabel("End")
+                                       + HtmlUtils.select(
+                                           CDOOutputHandler.ARG_CDO_ENDYEAR
+                                           + yearNum, commonYears,
+                                               request.getSanitizedString(
+                                                   CDOOutputHandler.ARG_CDO_ENDYEAR
+                                                       + yearNum, request.getSanitizedString(
+                                                           CDOOutputHandler.ARG_CDO_ENDYEAR,
+                                                               commonYears.get(
+                                                                   endIndex))), HtmlUtils.title(
+                                                                       "Select the ending year"))));
 
 
     }
@@ -424,14 +395,12 @@ public class CDOTimeSeriesComparison extends CDODataService {
                     getOutputHandler().getDataOutputHandler();
                 GridDataset dataset =
                     dataOutputHandler.getCdmManager().getGridDataset(e,
-                        getPath(request,
-                                e));
+                        getPath(request, e));
                 if (dataset != null) {
                     grids.add(dataset);
                 }
                 dataOutputHandler.getCdmManager().returnGridDataset(
-                    getPath(request,
-                            e), dataset);
+                    getPath(request, e), dataset);
             } else if (e.getTypeHandler()
                        instanceof NoaaPsdMonthlyClimateIndexTypeHandler) {
                 tsEntry = e;
@@ -458,7 +427,7 @@ public class CDOTimeSeriesComparison extends CDODataService {
         }
         // Get the years from the time series
         Date[] tsRange = getTimeSeriesDateRange(getTimeSeriesData(request,
-                                                                  tsEntry));
+                             tsEntry));
         if (tsRange[0].compareTo(commonDateRange[0]) > 0) {
             commonDateRange[0] = tsRange[0];
         }
@@ -557,8 +526,7 @@ public class CDOTimeSeriesComparison extends CDODataService {
         for (Entry entry : entries) {
             TypeHandler th = entry.getTypeHandler();
             if ( !(isClimateModelType(entry)
-                    || (th
-                    instanceof NoaaPsdMonthlyClimateIndexTypeHandler))) {
+                    || (th instanceof NoaaPsdMonthlyClimateIndexTypeHandler))) {
                 return false;
             }
             if (isClimateModelType(entry)) {
@@ -626,8 +594,7 @@ public class CDOTimeSeriesComparison extends CDODataService {
         }
         Request tsrequest = adjustRequestDates(request, localInput, 1);
         for (Entry tsEntry : tsEntries) {
-            outputOperands.add(processTimeSeriesData(tsrequest,
-                    localInput,
+            outputOperands.add(processTimeSeriesData(tsrequest, localInput,
                     tsEntry));
         }
 
@@ -646,29 +613,26 @@ public class CDOTimeSeriesComparison extends CDODataService {
             //            outputOperands.add(processModelData(request, input, gridEntry, 0));
             //        }
             if ( !useThreads) {
-                outputOperands.add(processModelData(request,
-                        localInput,
-                        gridEntry,
-                        0));
+                outputOperands.add(processModelData(request, localInput,
+                        gridEntry, 0));
             } else {
                 final int myOp = opNum;
                 //System.out.println("making thread " + opNum);
                 threadManager.addRunnable(new ThreadManager.MyRunnable() {
-                            public void run() throws Exception {
-                                try {
-                                    ServiceOperand so =
-                                        processModelData(myRequest, myInput,
-                                            gridEntry, 0);
-                                    if (so != null) {
-                                        synchronized (outputOperands) {
-                                            outputOperands.add(so);
-                                        }
-                                    }
-                                } catch (Exception ve) {
-                                    ve.printStackTrace();
+                    public void run() throws Exception {
+                        try {
+                            ServiceOperand so = processModelData(myRequest,
+                                                    myInput, gridEntry, 0);
+                            if (so != null) {
+                                synchronized (outputOperands) {
+                                    outputOperands.add(so);
                                 }
                             }
-                        });
+                        } catch (Exception ve) {
+                            ve.printStackTrace();
+                        }
+                    }
+                });
             }
         }
 
@@ -755,8 +719,7 @@ public class CDOTimeSeriesComparison extends CDODataService {
             getOutputHandler().getDataOutputHandler();
         GridDataset dataset =
             dataOutputHandler.getCdmManager().getGridDataset(sample,
-                getPath(request,
-                        sample));
+                getPath(request, sample));
         CalendarDateRange dateRange = dataset.getCalendarDateRange();
         int firstDataYearMM = Integer.parseInt(
                                   new CalendarDateTime(
@@ -987,10 +950,8 @@ public class CDOTimeSeriesComparison extends CDODataService {
         outputEntry.setValues(avalues);
         // Add in lineage and associations
         outputEntry.addAssociation(new Association(getRepository().getGUID(),
-                "generated product",
-                "product generated from",
-                sample.getId(),
-                outputEntry.getId()));
+                "generated product", "product generated from",
+                sample.getId(), outputEntry.getId()));
         getOutputHandler().getEntryManager().writeEntryXmlFile(request,
                 outputEntry);
 
@@ -1030,13 +991,11 @@ public class CDOTimeSeriesComparison extends CDODataService {
         int tsStartMonth =
             request.get(CDOOutputHandler.ARG_CDO_STARTMONTH + tsOpStr,
                         request.get(CDOOutputHandler.ARG_CDO_STARTMONTH
-                                    + gridOpStr,
-                                    modelStartMonth));
+                                    + gridOpStr, modelStartMonth));
         int tsEndMonth =
             request.get(CDOOutputHandler.ARG_CDO_ENDMONTH + tsOpStr,
                         request.get(CDOOutputHandler.ARG_CDO_ENDMONTH
-                                    + gridOpStr,
-                                    modelEndMonth));
+                                    + gridOpStr, modelEndMonth));
 
         String leadlag = request.getString(CDOOutputHandler.ARG_CDO_LEADLAG,
                                            "none");
@@ -1122,8 +1081,8 @@ public class CDOTimeSeriesComparison extends CDODataService {
             }
         } else if (leadlag.equals("lead")) {
             if (((tsStartMonth == modelStartMonth)
-                    && (tsEndMonth == modelEndMonth))
-                    && (tsEndYear == modelEndYear)) {
+                    && (tsEndMonth == modelEndMonth)) && (tsEndYear
+                       == modelEndYear)) {
                 tsEndYear      = modelEndYear - leadlagYears;
                 modelStartYear = tsStartYear + leadlagYears;
             } else if (modelSpanYear) {                     // e.g., DJF
@@ -1157,8 +1116,8 @@ public class CDOTimeSeriesComparison extends CDODataService {
             }
         } else if (leadlag.equals("lag")) {
             if (((tsStartMonth == modelStartMonth)
-                    && (tsEndMonth == modelEndMonth))
-                    && (tsEndYear == modelEndYear)) {
+                    && (tsEndMonth == modelEndMonth)) && (tsEndYear
+                       == modelEndYear)) {
                 modelEndYear = tsEndYear - leadlagYears;
                 tsStartYear  = modelStartYear + leadlagYears;
             } else if (modelSpanYear) {                     // e.g., DJF
@@ -1233,18 +1192,18 @@ public class CDOTimeSeriesComparison extends CDODataService {
         if (opNum == 0) {
             newDates[0] =
                 Utils.parseDate(modelStartYear + "-"
-                                + StringUtil.padZero(modelStartMonth,
-                                        2) + "-01T00:00:00Z");
+                                + StringUtil.padZero(modelStartMonth, 2)
+                                + "-01T00:00:00Z");
             newDates[1] = Utils.parseDate(modelEndYear + "-"
                                           + StringUtil.padZero(modelEndMonth,
-                                                  2) + "-28T00:00:00Z");
+                                              2) + "-28T00:00:00Z");
         } else {
             newDates[0] = Utils.parseDate(tsStartYear + "-"
                                           + StringUtil.padZero(tsStartMonth,
-                                                  2) + "-01T00:00:00Z");
+                                              2) + "-01T00:00:00Z");
             newDates[1] = Utils.parseDate(tsEndYear + "-"
-                                          + StringUtil.padZero(tsEndMonth,
-                                                  2) + "-28T00:00:00Z");
+                                          + StringUtil.padZero(tsEndMonth, 2)
+                                          + "-28T00:00:00Z");
         }
 
         return newDates;
@@ -1376,17 +1335,14 @@ public class CDOTimeSeriesComparison extends CDODataService {
         //Date[] dateRange = getDateRange(request, input, 1);
         int firstDataYear =
             Integer.parseInt(new DateTime(range[0]).formattedString("yyyy",
-                                                                    CalendarDateTime
-                                                                        .DEFAULT_TIMEZONE));
+                                          CalendarDateTime.DEFAULT_TIMEZONE));
         // find the start & end month of the request
         int requestStartMonth =
             request.get(CDOOutputHandler.ARG_CDO_STARTMONTH + opStr,
-                        request.get(CDOOutputHandler.ARG_CDO_STARTMONTH,
-                                    1));
+                        request.get(CDOOutputHandler.ARG_CDO_STARTMONTH, 1));
         int requestEndMonth =
             request.get(CDOOutputHandler.ARG_CDO_ENDMONTH + opStr,
-                        request.get(CDOOutputHandler.ARG_CDO_ENDMONTH,
-                                    1));
+                        request.get(CDOOutputHandler.ARG_CDO_ENDMONTH, 1));
 
         int startYear =
             request.get(CDOOutputHandler.ARG_CDO_STARTYEAR + opStr,
@@ -1574,7 +1530,7 @@ public class CDOTimeSeriesComparison extends CDODataService {
         String id      = getRepository().getGUID();
         String newName = tsEntry.getName() + "_" + id + ".csv";
         File outFile = new File(IOUtil.joinDir(input.getProcessDir(),
-                                               newName));
+                           newName));
         OutputStream os =
             getStorageManager().getUncheckedFileOutputStream(outFile);
         os.write(csv.getBytes());
@@ -1587,10 +1543,8 @@ public class CDOTimeSeriesComparison extends CDODataService {
         outputEntry.setResource(resource);
         // Add in lineage and associations
         outputEntry.addAssociation(new Association(getRepository().getGUID(),
-                "generated product",
-                "product generated from",
-                tsEntry.getId(),
-                outputEntry.getId()));
+                "generated product", "product generated from",
+                tsEntry.getId(), outputEntry.getId()));
         getOutputHandler().getEntryManager().writeEntryXmlFile(request,
                 outputEntry);
 
@@ -1675,11 +1629,10 @@ public class CDOTimeSeriesComparison extends CDODataService {
                                     */
         int startYear = Integer.parseInt(
                             new DateTime(fixedRange[0]).formattedString(
-                                "yyyy",
-                                CalendarDateTime.DEFAULT_TIMEZONE));
+                                "yyyy", CalendarDateTime.DEFAULT_TIMEZONE));
         int endYear = Integer.parseInt(
-                          new DateTime(fixedRange[1]).formattedString("yyyy",
-                                  CalendarDateTime.DEFAULT_TIMEZONE));
+                          new DateTime(fixedRange[1]).formattedString(
+                              "yyyy", CalendarDateTime.DEFAULT_TIMEZONE));
         /*
         boolean       spanYears = doMonthsSpanYearEnd(request, null, opNum);
         List<Integer> years         = new ArrayList<Integer>();

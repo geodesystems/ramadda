@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.geodata.idv;
@@ -1697,8 +1686,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         } else if (product.equals(PRODUCT_GEPLUGIN)) {
             url = url.replace(PRODUCT_GEPLUGIN, PRODUCT_KMZ);
             String id = getMapManager().getGoogleEarthPlugin(request, sb,
-                            ""+request.get(ARG_IMAGE_WIDTH, 500),
-                            ""+request.get(ARG_IMAGE_HEIGHT, 500), url);
+                            "" + request.get(ARG_IMAGE_WIDTH, 500),
+                            "" + request.get(ARG_IMAGE_HEIGHT, 500), url);
             //sb.append(HtmlUtils.href(url,
             //                        "Click here to retrieve the KMZ file"));
         }
@@ -2322,10 +2311,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 IdvWebstartOutputHandler.getJnlpTemplate(getRepository());
             StringBuffer args = new StringBuffer();
             args.append("<argument>-b64isl</argument>");
-            args.append(
-                "<argument>"
-                + Utils.encodeBase64(isl.toString())
-                + "</argument>");
+            args.append("<argument>" + Utils.encodeBase64(isl.toString())
+                        + "</argument>");
             jnlp = jnlp.replace("${args}", args.toString());
 
             return new Result("data.jnlp", new StringBuffer(jnlp),
@@ -2643,10 +2630,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                         "/org/ramadda/repository/idv/template.jnlp");
                 StringBuffer args = new StringBuffer();
                 args.append("<argument>-b64isl</argument>");
-                args.append(
-                    "<argument>"
-                    + Utils.encodeBase64(isl.toString())
-                    + "</argument>");
+                args.append("<argument>" + Utils.encodeBase64(isl.toString())
+                            + "</argument>");
                 jnlp = jnlp.replace("${args}", args.toString());
 
                 return new Result("data.jnlp", new StringBuffer(jnlp),

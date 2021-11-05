@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.geodata.model;
@@ -232,33 +221,27 @@ public class NCLDataService extends Service {
             throws Exception {
         // Mask buttons
         StringBuilder mbuttons = new StringBuilder();
-        mbuttons.append(HtmlUtils.radio(ARG_NCL_MASKTYPE,
-                                        "none",
-                                        RepositoryManager.getShouldButtonBeSelected(
-                                            request,
-                                            ARG_NCL_MASKTYPE,
-                                            "none",
-                                            true)));
+        mbuttons.append(
+            HtmlUtils.radio(
+                ARG_NCL_MASKTYPE, "none",
+                RepositoryManager.getShouldButtonBeSelected(
+                    request, ARG_NCL_MASKTYPE, "none", true)));
         mbuttons.append(space1);
         mbuttons.append(Repository.msg("All"));
         mbuttons.append(space2);
-        mbuttons.append(HtmlUtils.radio(ARG_NCL_MASKTYPE,
-                                        "ocean",
-                                        RepositoryManager.getShouldButtonBeSelected(
-                                            request,
-                                            ARG_NCL_MASKTYPE,
-                                            "ocean",
-                                            false)));
+        mbuttons.append(
+            HtmlUtils.radio(
+                ARG_NCL_MASKTYPE, "ocean",
+                RepositoryManager.getShouldButtonBeSelected(
+                    request, ARG_NCL_MASKTYPE, "ocean", false)));
         mbuttons.append(space1);
         mbuttons.append(Repository.msg("Land only"));
         mbuttons.append(space2);
-        mbuttons.append(HtmlUtils.radio(ARG_NCL_MASKTYPE,
-                                        "land",
-                                        RepositoryManager.getShouldButtonBeSelected(
-                                            request,
-                                            ARG_NCL_MASKTYPE,
-                                            "land",
-                                            false)));
+        mbuttons.append(
+            HtmlUtils.radio(
+                ARG_NCL_MASKTYPE, "land",
+                RepositoryManager.getShouldButtonBeSelected(
+                    request, ARG_NCL_MASKTYPE, "land", false)));
         mbuttons.append(space1);
         mbuttons.append(Repository.msg("Ocean only"));
 
@@ -286,23 +269,19 @@ public class NCLDataService extends Service {
                 uRequest.remove(ARG_NCL_UNITS);
             }
             StringBuilder unitsSB = new StringBuilder();
-            unitsSB.append(HtmlUtils.radio(ARG_NCL_UNITS,
-                                           "degC",
-                                           RepositoryManager.getShouldButtonBeSelected(
-                                           uRequest,
-                                           ARG_NCL_UNITS,
-                                           "degC",
-                                           true)));
+            unitsSB.append(
+                HtmlUtils.radio(
+                    ARG_NCL_UNITS, "degC",
+                    RepositoryManager.getShouldButtonBeSelected(
+                        uRequest, ARG_NCL_UNITS, "degC", true)));
             unitsSB.append(space1);
             unitsSB.append(Repository.msg("Celsius"));
             unitsSB.append(space2);
-            unitsSB.append(HtmlUtils.radio(ARG_NCL_UNITS,
-                                           "K",
-                                           RepositoryManager.getShouldButtonBeSelected(
-                                           uRequest,
-                                           ARG_NCL_UNITS,
-                                           "K",
-                                           false)));
+            unitsSB.append(
+                HtmlUtils.radio(
+                    ARG_NCL_UNITS, "K",
+                    RepositoryManager.getShouldButtonBeSelected(
+                        uRequest, ARG_NCL_UNITS, "K", false)));
             unitsSB.append(space1);
             unitsSB.append(Repository.msg("Kelvin"));
 
@@ -318,7 +297,7 @@ public class NCLDataService extends Service {
         } else if (units.equals("Kg/m^2/s") || units.equals("mm/s")
         //                   || units.equals("mm")
         || units.equals("kg m**-2 s**-1") || units.equals("mm/day")  // in case it's a comparison
-                   || units.equals("m/day")) {
+                                          || units.equals("m/day")) {
             sb.append(HtmlUtils.hidden(ARG_NCL_UNITS, "mm/day"));
         } else if (SimpleUnit.isCompatible(units, "kg m-1 s-2")
                    || SimpleUnit.isCompatible(units, "hPa")
@@ -343,33 +322,27 @@ public class NCLDataService extends Service {
         //sb.append(HtmlUtils.hidden(ARG_NCL_IMAGEFORMAT, "gif"));
         //TODO: handle multiple output types
         StringBuilder obuttons = new StringBuilder();
-        obuttons.append(HtmlUtils.radio(ARG_NCL_IMAGEFORMAT,
-                                        "gif",
-                                        RepositoryManager.getShouldButtonBeSelected(
-                                            request,
-                                            ARG_NCL_IMAGEFORMAT,
-                                            "gif",
-                                            true)));
+        obuttons.append(
+            HtmlUtils.radio(
+                ARG_NCL_IMAGEFORMAT, "gif",
+                RepositoryManager.getShouldButtonBeSelected(
+                    request, ARG_NCL_IMAGEFORMAT, "gif", true)));
         obuttons.append(space1);
         obuttons.append(Repository.msg("GIF"));
         obuttons.append(space2);
-        obuttons.append(HtmlUtils.radio(ARG_NCL_IMAGEFORMAT,
-                                        "png",
-                                        RepositoryManager.getShouldButtonBeSelected(
-                                            request,
-                                            ARG_NCL_IMAGEFORMAT,
-                                            "png",
-                                            false)));
+        obuttons.append(
+            HtmlUtils.radio(
+                ARG_NCL_IMAGEFORMAT, "png",
+                RepositoryManager.getShouldButtonBeSelected(
+                    request, ARG_NCL_IMAGEFORMAT, "png", false)));
         obuttons.append(space1);
         obuttons.append(Repository.msg("PNG"));
         obuttons.append(space2);
-        obuttons.append(HtmlUtils.radio(ARG_NCL_IMAGEFORMAT,
-                                        "pdf",
-                                        RepositoryManager.getShouldButtonBeSelected(
-                                            request,
-                                            ARG_NCL_IMAGEFORMAT,
-                                            "pdf",
-                                            false)));
+        obuttons.append(
+            HtmlUtils.radio(
+                ARG_NCL_IMAGEFORMAT, "pdf",
+                RepositoryManager.getShouldButtonBeSelected(
+                    request, ARG_NCL_IMAGEFORMAT, "pdf", false)));
         obuttons.append(space1);
         obuttons.append(Repository.msg("PDF"));
         /*  For now, Postscript always means EPS
@@ -385,13 +358,11 @@ public class NCLDataService extends Service {
         obuttons.append(Repository.msg("PostScript"));
         */
         obuttons.append(space2);
-        obuttons.append(HtmlUtils.radio(ARG_NCL_IMAGEFORMAT,
-                                        "eps",
-                                        RepositoryManager.getShouldButtonBeSelected(
-                                            request,
-                                            ARG_NCL_IMAGEFORMAT,
-                                            "eps",
-                                            false)));
+        obuttons.append(
+            HtmlUtils.radio(
+                ARG_NCL_IMAGEFORMAT, "eps",
+                RepositoryManager.getShouldButtonBeSelected(
+                    request, ARG_NCL_IMAGEFORMAT, "eps", false)));
         obuttons.append(space1);
         obuttons.append(Repository.msg("Postscript"));
         /*  Doesn't work so well right now:  11/22/2019

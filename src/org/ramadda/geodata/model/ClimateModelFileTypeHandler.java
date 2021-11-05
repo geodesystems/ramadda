@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.geodata.model;
@@ -102,13 +91,15 @@ public class ClimateModelFileTypeHandler extends GranuleTypeHandler {
      *
      * @param request   the request
      * @param entry the Entry to initialize
+     * @param fromImport _more_
      *
      * @throws Exception  problems during initialization
      */
     @Override
-    public void initializeNewEntry(Request request, Entry entry, boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry,
+                                   boolean fromImport)
             throws Exception {
-        super.initializeNewEntry(request, entry,fromImport);
+        super.initializeNewEntry(request, entry, fromImport);
         Object[] values = getEntryValues(entry);
         if ((values[1] != null) && !values[1].toString().isEmpty()) {
             //System.err.println("already have  values set");
@@ -165,22 +156,24 @@ public class ClimateModelFileTypeHandler extends GranuleTypeHandler {
      * @param entry The entry
      * @param tag The wiki tag being used
      * @param props _more_
+     * @param topProps _more_
      *
      * @return The point time series url
      */
     @Override
     public String getUrlForWiki(Request request, Entry entry, String tag,
-                                Hashtable props,List<String> topProps) {
+                                Hashtable props, List<String> topProps) {
         try {
             TypeHandler gridType = getRepository().getTypeHandler("cdm_grid");
             if (gridType != null) {
-                return gridType.getUrlForWiki(request, entry, tag, props,topProps);
+                return gridType.getUrlForWiki(request, entry, tag, props,
+                        topProps);
             }
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
 
-        return super.getUrlForWiki(request, entry, tag, props,topProps);
+        return super.getUrlForWiki(request, entry, tag, props, topProps);
 
     }
 

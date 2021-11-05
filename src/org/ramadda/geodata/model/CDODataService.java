@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2021 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.geodata.model;
@@ -174,8 +163,9 @@ public abstract class CDODataService extends Service {
             String dbTableName = column.getTableName();
             if ( !seenTable.contains(dbTableName)) {
                 clauses.add(
-                    Clause.eq(ctypeHandler.getCollectionIdColumn(column),
-                              collection.getId()));
+                    Clause.eq(
+                        ctypeHandler.getCollectionIdColumn(column),
+                        collection.getId()));
                 clauses.add(Clause.join(Tables.ENTRIES.COL_ID,
                                         dbTableName + ".id"));
                 seenTable.add(dbTableName);
@@ -263,7 +253,7 @@ public abstract class CDODataService extends Service {
                           + stat + "_" + startYear + "-" + endYear + ".nc";
         statName = cleanName(statName);
         File statFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
-                                                statName));
+                            statName));
         boolean isMonthly = ModelUtil.getFrequency(request, mean).equals(
                                 CDOOutputHandler.FREQUENCY_MONTHLY);
         if ( !statFile.exists()) {  // make the file
@@ -324,9 +314,7 @@ public abstract class CDODataService extends Service {
         statEntry.setResource(resource);
         statEntry.setValues(newValues);
         statEntry.addAssociation(new Association(getRepository().getGUID(),
-                "generated product",
-                "product generated from",
-                mean.getId(),
+                "generated product", "product generated from", mean.getId(),
                 statEntry.getId()));
 
         return statEntry;
@@ -363,8 +351,7 @@ public abstract class CDODataService extends Service {
             getOutputHandler().getDataOutputHandler();
         GridDataset dataset =
             dataOutputHandler.getCdmManager().getGridDataset(sample,
-                getPath(request,
-                        sample));
+                getPath(request, sample));
         CalendarDateRange dateRange = dataset.getCalendarDateRange();
         dataOutputHandler.getCdmManager().returnGridDataset(getPath(request,
                 sample), dataset);
@@ -518,13 +505,12 @@ public abstract class CDODataService extends Service {
                                ServiceInput si)
             throws Exception {
         StringBuilder mysb = new StringBuilder();
-        mysb.append(HtmlUtils.radio(CDOOutputHandler.ARG_CDO_STAT,
-                                    CDOOutputHandler.STAT_MEAN,
-                                    RepositoryManager.getShouldButtonBeSelected(
-                                        request,
-                                        CDOOutputHandler.ARG_CDO_STAT,
-                                        CDOOutputHandler.STAT_MEAN,
-                                        true)));
+        mysb.append(
+            HtmlUtils.radio(
+                CDOOutputHandler.ARG_CDO_STAT, CDOOutputHandler.STAT_MEAN,
+                RepositoryManager.getShouldButtonBeSelected(
+                    request, CDOOutputHandler.ARG_CDO_STAT,
+                    CDOOutputHandler.STAT_MEAN, true)));
         mysb.append(HtmlUtils.space(1));
         mysb.append(Repository.msg("Average"));
         mysb.append(HtmlUtils.space(2));
@@ -549,38 +535,29 @@ public abstract class CDODataService extends Service {
                     && (si.getOperands().size() == 2))) {
             climyearsSB.append(Repository.msgLabel("Relative to"));
             climyearsSB.append(
-                HtmlUtils.radio(CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER,
-                                "1",
-                                RepositoryManager.getShouldButtonBeSelected(
-                                    request,
-                                    CDOOutputHandler
-                                        .ARG_CLIMATE_DATASET_NUMBER,
-                                    "1",
-                                    false)));
+                HtmlUtils.radio(
+                    CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER, "1",
+                    RepositoryManager.getShouldButtonBeSelected(
+                        request, CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER,
+                        "1", false)));
             climyearsSB.append(HtmlUtils.space(1));
             climyearsSB.append(Repository.msg("Dataset 1"));
             climyearsSB.append(HtmlUtils.space(2));
             climyearsSB.append(
-                HtmlUtils.radio(CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER,
-                                "2",
-                                RepositoryManager.getShouldButtonBeSelected(
-                                    request,
-                                    CDOOutputHandler
-                                        .ARG_CLIMATE_DATASET_NUMBER,
-                                    "2",
-                                    false)));
+                HtmlUtils.radio(
+                    CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER, "2",
+                    RepositoryManager.getShouldButtonBeSelected(
+                        request, CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER,
+                        "2", false)));
             climyearsSB.append(HtmlUtils.space(1));
             climyearsSB.append(Repository.msg("Dataset 2"));
             climyearsSB.append(HtmlUtils.space(2));
             climyearsSB.append(
-                HtmlUtils.radio(CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER,
-                                "0",
-                                RepositoryManager.getShouldButtonBeSelected(
-                                    request,
-                                    CDOOutputHandler
-                                        .ARG_CLIMATE_DATASET_NUMBER,
-                                    "0",
-                                    true)));
+                HtmlUtils.radio(
+                    CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER, "0",
+                    RepositoryManager.getShouldButtonBeSelected(
+                        request, CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER,
+                        "0", true)));
             climyearsSB.append(HtmlUtils.space(1));
             climyearsSB.append(Repository.msg("Own Dataset"));
             climyearsSB.append(HtmlUtils.br());
@@ -676,19 +653,16 @@ public abstract class CDODataService extends Service {
 
         StringBuilder yearsWidget = new StringBuilder();
         yearsWidget.append(
-            HtmlUtils.select(CDOOutputHandler.ARG_CDO_CLIM_STARTYEAR,
-                             commonYears,
-                             ClimateModelApiHandler
-                                 .DEFAULT_CLIMATE_START_YEAR,
-                             HtmlUtils.title(
-                                 "Select the starting reference year")));
+            HtmlUtils.select(
+                CDOOutputHandler.ARG_CDO_CLIM_STARTYEAR, commonYears,
+                ClimateModelApiHandler.DEFAULT_CLIMATE_START_YEAR,
+                HtmlUtils.title("Select the starting reference year")));
         yearsWidget.append(Repository.msg(" to "));
         yearsWidget.append(
-            HtmlUtils.select(CDOOutputHandler.ARG_CDO_CLIM_ENDYEAR,
-                             commonYears,
-                             ClimateModelApiHandler.DEFAULT_CLIMATE_END_YEAR,
-                             HtmlUtils.title(
-                                 "Select the ending reference year")));
+            HtmlUtils.select(
+                CDOOutputHandler.ARG_CDO_CLIM_ENDYEAR, commonYears,
+                ClimateModelApiHandler.DEFAULT_CLIMATE_END_YEAR,
+                HtmlUtils.title("Select the ending reference year")));
         sb.append(yearsWidget.toString());
 
     }
@@ -762,70 +736,65 @@ public abstract class CDODataService extends Service {
                     stats.add(new TwoFacedObject("Percent of Normal",
                             CDOOutputHandler.STAT_PCTANOM));
                 }
-                if ( !type.equals(
-                        ClimateModelApiHandler.ARG_ACTION_MULTI_TIMESERIES)
-                        && isMonthly) {
+                if ( !type.equals(ClimateModelApiHandler
+                        .ARG_ACTION_MULTI_TIMESERIES) && isMonthly) {
                     stats.add(new TwoFacedObject("Standard Deviation",
                             CDOOutputHandler.STAT_STD));
                 }
             }
 
             StringBuilder statForm = new StringBuilder();
-            statForm.append(HtmlUtils.select(CDOOutputHandler.ARG_CDO_STAT,
-                                             stats,
-                                             request.getString(
-                                             CDOOutputHandler.ARG_CDO_STAT,
-                                             CDOOutputHandler.STAT_MEAN)));
+            statForm.append(
+                HtmlUtils.select(
+                    CDOOutputHandler.ARG_CDO_STAT, stats,
+                    request.getString(
+                        CDOOutputHandler.ARG_CDO_STAT,
+                        CDOOutputHandler.STAT_MEAN)));
 
-            if ((si != null)
-                    && (type.equals(
-                    ClimateModelApiHandler
-                        .ARG_ACTION_ENS_COMPARE) || type.equals(
-                            ClimateModelApiHandler
-                                .ARG_ACTION_MULTI_TIMESERIES) || (type.equals(
-                                    ClimateModelApiHandler
-                                        .ARG_ACTION_COMPARE) && (si.getOperands()
+            if ((si != null) && (type
+                    .equals(ClimateModelApiHandler
+                        .ARG_ACTION_ENS_COMPARE) || type
+                            .equals(ClimateModelApiHandler
+                                .ARG_ACTION_MULTI_TIMESERIES) || (type
+                                    .equals(ClimateModelApiHandler
+                                        .ARG_ACTION_COMPARE) && (si
+                                            .getOperands()
                                             .size() <= 2) && isMonthly))) {
                 StringBuilder climyearsSB = new StringBuilder();
                 statForm.append(HtmlUtils.br());
-                if (type.equals(ClimateModelApiHandler.ARG_ACTION_ENS_COMPARE)
-                        || (type.equals(ClimateModelApiHandler
-                            .ARG_ACTION_COMPARE) && (si.getOperands().size()
-                                == 2))) {
+                if (type.equals(ClimateModelApiHandler
+                        .ARG_ACTION_ENS_COMPARE) || (type
+                            .equals(ClimateModelApiHandler
+                                .ARG_ACTION_COMPARE) && (si.getOperands()
+                                    .size() == 2))) {
                     climyearsSB.append(Repository.msgLabel("Relative to"));
                     climyearsSB.append(
                         HtmlUtils.radio(
-                            CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER,
-                            "1",
+                            CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER, "1",
                             RepositoryManager.getShouldButtonBeSelected(
                                 request,
                                 CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER,
-                                "1",
-                                false)));
+                                "1", false)));
                     climyearsSB.append(HtmlUtils.space(1));
                     climyearsSB.append(Repository.msg("Dataset 1"));
                     climyearsSB.append(HtmlUtils.space(2));
                     climyearsSB.append(
                         HtmlUtils.radio(
-                            CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER,
-                            "2",
+                            CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER, "2",
                             RepositoryManager.getShouldButtonBeSelected(
                                 request,
                                 CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER,
-                                "2",
-                                false)));
+                                "2", false)));
                     climyearsSB.append(HtmlUtils.space(1));
                     climyearsSB.append(Repository.msg("Dataset 2"));
                     climyearsSB.append(HtmlUtils.space(2));
                     climyearsSB.append(
                         HtmlUtils.radio(
-                            CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER,
-                            "0",
+                            CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER, "0",
                             RepositoryManager.getShouldButtonBeSelected(
                                 request,
                                 CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER,
-                                "0",
-                                true)));
+                                "0", true)));
                     climyearsSB.append(HtmlUtils.space(1));
                     climyearsSB.append(Repository.msg("Own Dataset"));
                     climyearsSB.append(HtmlUtils.br());
@@ -946,12 +915,12 @@ public abstract class CDODataService extends Service {
         //        || request.defined(CDOOutputHandler.ARG_CDO_YEARS + "1")) {
         //    return false;
         //}
-        if (request.defined(CDOOutputHandler.ARG_CDO_STARTMONTH)
-                || request.defined(CDOOutputHandler.ARG_CDO_ENDMONTH)
-                || request.defined(CDOOutputHandler.ARG_CDO_STARTMONTH
-                                   + opStr)
-                || request.defined(CDOOutputHandler.ARG_CDO_ENDMONTH
-                                   + opStr)) {
+        if (request.defined(
+                CDOOutputHandler.ARG_CDO_STARTMONTH) || request.defined(
+                CDOOutputHandler.ARG_CDO_ENDMONTH) || request.defined(
+                CDOOutputHandler.ARG_CDO_STARTMONTH
+                + opStr) || request.defined(
+                    CDOOutputHandler.ARG_CDO_ENDMONTH + opStr)) {
             int startMonth =
                 request.get(CDOOutputHandler.ARG_CDO_STARTMONTH + opStr,
                             request.get(CDOOutputHandler.ARG_CDO_STARTMONTH,
@@ -989,7 +958,7 @@ public abstract class CDODataService extends Service {
             // Handle ncml files through OPeNDAP so programs like CDO can use it
             OpendapApiHandler oah =
                 (OpendapApiHandler) getRepository().getApiManager()
-                .getApiHandler(OpendapApiHandler.API_ID);
+                    .getApiHandler(OpendapApiHandler.API_ID);
             if (oah != null) {
                 String odapUrl = oah.getOpendapUrl(e);
                 //path = r.getAbsoluteUrl(odapUrl);
@@ -1081,9 +1050,8 @@ public abstract class CDODataService extends Service {
                     id += "-" + collectionNum;
                     List<Entry> aggEntries = opEntries;
                     // reduce the daily files to just the years requested
-                    if (ModelUtil.getFrequency(request,
-                            oneOfThem).equals(
-                                CDOOutputHandler.FREQUENCY_DAILY)) {
+                    if (ModelUtil.getFrequency(request, oneOfThem).equals(
+                            CDOOutputHandler.FREQUENCY_DAILY)) {
                         if (adjustDaily) {
                             aggEntries = extractDailyEntries(request,
                                     opEntries, collectionNum);
@@ -1142,17 +1110,18 @@ public abstract class CDODataService extends Service {
             throws Exception {
 
         // for makeInputForm
-        if ( !(request.defined(ClimateModelApiHandler.ARG_ACTION_COMPARE)
-                || request.defined(
-                    ClimateModelApiHandler.ARG_ACTION_ENS_COMPARE)
-                || request.defined(
-                    ClimateModelApiHandler.ARG_ACTION_MULTI_COMPARE)
-                || request.defined(
-                    ClimateModelApiHandler.ARG_ACTION_CORRELATION)
-                || request.defined(
-                    ClimateModelApiHandler.ARG_ACTION_MULTI_TIMESERIES)
-                || request.defined(
-                    ClimateModelApiHandler.ARG_ACTION_TIMESERIES))) {
+        if ( !(request
+                .defined(ClimateModelApiHandler.ARG_ACTION_COMPARE) || request
+                .defined(ClimateModelApiHandler
+                    .ARG_ACTION_ENS_COMPARE) || request
+                        .defined(ClimateModelApiHandler
+                            .ARG_ACTION_MULTI_COMPARE) || request
+                                .defined(ClimateModelApiHandler
+                                    .ARG_ACTION_CORRELATION) || request
+                                        .defined(ClimateModelApiHandler
+                                            .ARG_ACTION_MULTI_TIMESERIES) || request
+                                                .defined(ClimateModelApiHandler
+                                                    .ARG_ACTION_TIMESERIES))) {
             return opEntries;
         }
         List<Integer> years       = new ArrayList<Integer>();
@@ -1170,10 +1139,9 @@ public abstract class CDODataService extends Service {
                 haveYears =
                     timeRequest.defined(CDOOutputHandler.ARG_CDO_YEARS);
             } else {
-                haveYears =
-                    timeRequest.defined(CDOOutputHandler.ARG_CDO_YEARS
-                                        + opStr)
-                    || ( !timeRequest.defined(
+                haveYears = timeRequest.defined(
+                    CDOOutputHandler.ARG_CDO_YEARS
+                    + opStr) || ( !timeRequest.defined(
                         CDOOutputHandler.ARG_CDO_STARTYEAR
                         + opStr) && (timeRequest.getString(
                             CDOOutputHandler.ARG_CDO_YEARS + opStr,
@@ -1217,8 +1185,7 @@ public abstract class CDODataService extends Service {
             int endYear = timeRequest.get(
                               CDOOutputHandler.ARG_CDO_ENDYEAR + opStr,
                               timeRequest.get(
-                                  CDOOutputHandler.ARG_CDO_ENDYEAR,
-                                  1979));
+                                  CDOOutputHandler.ARG_CDO_ENDYEAR, 1979));
             if (spanYear) {
                 years.add(startYear - 1);
             }
@@ -1328,11 +1295,9 @@ public abstract class CDODataService extends Service {
                                 request, freqSample).equals(
                                 CDOOutputHandler.FREQUENCY_MONTHLY);
         Entry[] climSamples = new Entry[sortedOps.size()];
-        if (needAnom
-                && (type.equals(
-                    ClimateModelApiHandler
-                        .ARG_ACTION_ENS_COMPARE) || type.equals(
-                            ClimateModelApiHandler.ARG_ACTION_COMPARE))) {
+        if (needAnom && (type.equals(
+                ClimateModelApiHandler.ARG_ACTION_ENS_COMPARE) || type.equals(
+                ClimateModelApiHandler.ARG_ACTION_COMPARE))) {
             Entry climSample = null;
             int climDatasetNumber =
                 request.get(CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER, 0);
@@ -1340,8 +1305,7 @@ public abstract class CDODataService extends Service {
             //        myInput.getOperands());
             //sortedOps = sortOperandsByCollection(request,
             //        myInput.getOperands());
-            if ((sortedOps.size() > 1)
-                    && (climDatasetNumber > 0)
+            if ((sortedOps.size() > 1) && (climDatasetNumber > 0)
                     && isMonthly) {
                 String climKey = ModelUtil.getModelExperimentString(request,
                                      climDatasetNumber);
@@ -1403,17 +1367,11 @@ public abstract class CDODataService extends Service {
                 if ( !useThreads || ((threadNum == 0) && needAnom)) {
                     if (isMonthly) {
                         outputEntries.add(evaluateMonthlyRequest(request,
-                                myInput,
-                                op,
-                                opNum,
-                                myType,
+                                myInput, op, opNum, myType,
                                 climSamples[opNum]));
                     } else {
                         outputEntries.add(evaluateDailyRequest(request,
-                                myInput,
-                                op,
-                                opNum,
-                                myType,
+                                myInput, op, opNum, myType,
                                 climSamples[opNum]));
                     }
                 } else {
@@ -1422,30 +1380,28 @@ public abstract class CDODataService extends Service {
                     final Entry   myClimSample = climSamples[opNum];
                     //System.out.println("making thread " + opNum);
                     threadManager.addRunnable(new ThreadManager.MyRunnable() {
-                                public void run() throws Exception {
-                                    try {
-                                        ServiceOperand so;
-                                        if (myIsMonthly) {
-                                            so =
-                                            evaluateMonthlyRequest(myRequest,
-                                                myInput, op, myOp, myType,
-                                                    myClimSample);
-                                        } else {
-                                            so =
-                                            evaluateDailyRequest(myRequest,
-                                                myInput, op, myOp, myType,
-                                                    myClimSample);
-                                        }
-                                        if (so != null) {
-                                            synchronized (outputEntries) {
-                                                outputEntries.add(so);
-                                            }
-                                        }
-                                    } catch (Exception ve) {
-                                        ve.printStackTrace();
+                        public void run() throws Exception {
+                            try {
+                                ServiceOperand so;
+                                if (myIsMonthly) {
+                                    so = evaluateMonthlyRequest(myRequest,
+                                            myInput, op, myOp, myType,
+                                            myClimSample);
+                                } else {
+                                    so = evaluateDailyRequest(myRequest,
+                                            myInput, op, myOp, myType,
+                                            myClimSample);
+                                }
+                                if (so != null) {
+                                    synchronized (outputEntries) {
+                                        outputEntries.add(so);
                                     }
                                 }
-                            });
+                            } catch (Exception ve) {
+                                ve.printStackTrace();
+                            }
+                        }
+                    });
                 }
                 //if (myInput.getOperands().size() <= 2) {
                 //    opNum++;
@@ -1507,8 +1463,7 @@ public abstract class CDODataService extends Service {
         }
         for (int i = 0; i < numcollections; i++) {
             List<ServiceOperand> ops =
-                opMap.get(ModelUtil.getModelExperimentString(request,
-                                                             i + 1));
+                opMap.get(ModelUtil.getModelExperimentString(request, i + 1));
             if (ops != null) {
                 sortedList.add(ops);
             }
@@ -1578,10 +1533,11 @@ public abstract class CDODataService extends Service {
             throws Exception {
         Entry  climEntry     = null;
         String climFileToUse = null;
-        if ( !(climstartYear.equals(
-                ClimateModelApiHandler.DEFAULT_CLIMATE_START_YEAR)
-                && climendYear.equals(
-                    ClimateModelApiHandler.DEFAULT_CLIMATE_END_YEAR))) {
+        if ( !(climstartYear
+                .equals(ClimateModelApiHandler
+                    .DEFAULT_CLIMATE_START_YEAR) && climendYear
+                        .equals(ClimateModelApiHandler
+                            .DEFAULT_CLIMATE_END_YEAR))) {
             if (climFileToUse == null) {
                 Entry meanEntry = null;
                 List<Entry> mean = findStatisticEntry(request, oneOfThem,
@@ -1647,7 +1603,7 @@ public abstract class CDODataService extends Service {
                     if (climEntry != null) {
                         climFileToUse =
                             getOutputHandler().getStorageManager()
-                            .getFileTail(climEntry);
+                                .getFileTail(climEntry);
                     }
                 }
                 System.err.println(
@@ -1813,7 +1769,7 @@ public abstract class CDODataService extends Service {
         LatLonRect llr = null;
         if (request.defined("mapregion")
                 && request.getSanitizedString("mapregion",
-                        null).equals("CUSTOM")) {
+                    null).equals("CUSTOM")) {
             double maxlon = request.get(CDOOutputHandler.ARG_AREA_EAST,
                                         Double.NaN);
             double minlon = request.get(CDOOutputHandler.ARG_AREA_WEST,
@@ -1822,19 +1778,17 @@ public abstract class CDODataService extends Service {
                                         Double.NaN);
             double minlat = request.get(CDOOutputHandler.ARG_AREA_SOUTH,
                                         Double.NaN);
-            if ( !(Double.isNaN(maxlat)
-                    || Double.isNaN(minlat)
-                    || Double.isNaN(maxlon)
-                    || Double.isNaN(minlon))) {
-                llr = new LatLonRect(new LatLonPointImpl(maxlat,
-                        minlon), new LatLonPointImpl(minlat, maxlon));
+            if ( !(Double.isNaN(maxlat) || Double.isNaN(minlat)
+                    || Double.isNaN(maxlon) || Double.isNaN(minlon))) {
+                llr = new LatLonRect(new LatLonPointImpl(maxlat, minlon),
+                                     new LatLonPointImpl(minlat, maxlon));
             }
         } else {
             if (dataset != null) {
                 llr = dataset.getBoundingBox();
             } else {
-                llr = new LatLonRect(new LatLonPointImpl(90.0,
-                        -180.0), new LatLonPointImpl(-90.0, 180.0));
+                llr = new LatLonRect(new LatLonPointImpl(90.0, -180.0),
+                                     new LatLonPointImpl(-90.0, 180.0));
             }
         }
         getOutputHandler().addMapWidget(request, sb, llr, false);

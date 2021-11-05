@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.geodata.thredds;
@@ -700,12 +689,13 @@ public class CatalogHarvester extends Harvester {
         Entry entry      = typeHandler.createEntry(repository.getGUID());
         long  createDate = new Date().getTime();
 
-        entry.initEntry(name, "", parent, getUser(), resource, "",Entry.DEFAULT_ORDER,
-                        createDate, createDate, createDate, createDate, null);
+        entry.initEntry(name, "", parent, getUser(), resource, "",
+                        Entry.DEFAULT_ORDER, createDate, createDate,
+                        createDate, createDate, null);
 
         entries.add(entry);
         typeHandler.initializeNewEntry(getRepository().getTmpRequest(),
-                                       entry,false);
+                                       entry, false);
         List<Metadata> metadataList = new ArrayList<Metadata>();
         CatalogOutputHandler.collectMetadata(repository, metadataList, node);
         metadataList.add(makeImportMetadata(entry.getId(), catalogUrlPath));

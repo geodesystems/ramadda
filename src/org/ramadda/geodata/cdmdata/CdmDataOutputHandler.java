@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.geodata.cdmdata;
@@ -136,6 +125,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
     /** _more_ */
     private static final boolean debug = false;
 
+    /**  */
     public static final boolean debugOpendap = false;
 
 
@@ -510,15 +500,15 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 sb.append(HtmlUtils.p());
                 List<Entry> entries = (List<Entry>) Misc.newList(entry);
                 getEntryManager().addInitialMetadata(request, entries, false,
-						     request.get(ARG_SHORT, false));
+                        request.get(ARG_SHORT, false));
                 getEntryManager().updateEntries(request, entries);
-		getPageHandler().entrySectionOpen(request, entry, sb, "");
+                getPageHandler().entrySectionOpen(request, entry, sb, "");
                 sb.append(
                     getPageHandler().showDialogNote("Properties added"));
                 sb.append(
                     getRepository().getHtmlOutputHandler().getInformationTabs(
                         request, entry, false));
-		getPageHandler().entrySectionClose(request, entry, sb);		
+                getPageHandler().entrySectionClose(request, entry, sb);
 
             } else {
                 sb.append("You cannot add properties");
@@ -563,32 +553,32 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         sb.append("</center>");
 
         sb.append("\n<p>\n");
-	GridDataset gds = getCdmManager().getGridDataset(entry, path);
-	if(gds!=null) {
-	    List<GridDatatype>     grids     = sortGrids(gds);
-	    sb.append(
-		      "<table class='ramadda-table stripe'><thead><tr><th>Variable</th><th>Unit</th><th>Dimensions</th><th>#Times</th></tr></thead><tbody>");
-	    List<VariableSimpleIF> variables = gds.getDataVariables();
-	    for (GridDatatype gdt : grids) {
-		Dimension tdim = gdt.getTimeDimension();
-		Dimension xdim = gdt.getXDimension();
-		Dimension ydim = gdt.getYDimension();
-		Dimension zdim = gdt.getZDimension();
-		sb.append("<tr>");
-		sb.append(HtmlUtils.td(gdt.getShortName()));
-		sb.append(HtmlUtils.td(gdt.getUnitsString()));
-		sb.append("<td>");
-		sb.append(xdim.getLength() + "x" + ydim.getLength()
-			  + ((zdim != null)
-			     ? "x" + zdim.getLength()
-			     : ""));
-		sb.append("</td>");
-		sb.append(HtmlUtils.td("" + tdim.getLength()));
-		sb.append("</tr>");
-	    }
-	    sb.append("</tbody></table>");
-	    sb.append("\n");
-	}
+        GridDataset gds = getCdmManager().getGridDataset(entry, path);
+        if (gds != null) {
+            List<GridDatatype> grids = sortGrids(gds);
+            sb.append(
+                "<table class='ramadda-table stripe'><thead><tr><th>Variable</th><th>Unit</th><th>Dimensions</th><th>#Times</th></tr></thead><tbody>");
+            List<VariableSimpleIF> variables = gds.getDataVariables();
+            for (GridDatatype gdt : grids) {
+                Dimension tdim = gdt.getTimeDimension();
+                Dimension xdim = gdt.getXDimension();
+                Dimension ydim = gdt.getYDimension();
+                Dimension zdim = gdt.getZDimension();
+                sb.append("<tr>");
+                sb.append(HtmlUtils.td(gdt.getShortName()));
+                sb.append(HtmlUtils.td(gdt.getUnitsString()));
+                sb.append("<td>");
+                sb.append(xdim.getLength() + "x" + ydim.getLength()
+                          + ((zdim != null)
+                             ? "x" + zdim.getLength()
+                             : ""));
+                sb.append("</td>");
+                sb.append(HtmlUtils.td("" + tdim.getLength()));
+                sb.append("</tr>");
+            }
+            sb.append("</tbody></table>");
+            sb.append("\n");
+        }
 
         sb.append("<p><center><h2>CDL</h2></center>");
         NetcdfDataset dataset = getCdmManager().createNetcdfDataset(path);
@@ -691,7 +681,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             displayProps.add("request.gridTime.values");
             String v = "-1" + ":" + "All";
             for (int i = 0; i < dates.size(); i++) {
-		v += ",";
+                v += ",";
                 v += i + ":" + dates.get(i);
             }
             displayProps.add(Json.quote(v));
@@ -1215,54 +1205,55 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         } else {
             File f = getRepository().getStorageManager().getTmpFile(request,
                          "subset" + ncVersion.getSuffix());
-	    /**
-            System.err.println(f.getPath());
-            List grids = gds.getGrids();
-            for (int i = 0; i < grids.size(); i++) {
-                System.err.println(grids.get(i));
-            }
-            GeoGrid grid = (GeoGrid) gds.findGridByName("Pressure_surface");
-            //      System.err.println(grid.getTimes());
-            grid = grid.subset(new Range(0, 0), null, null, 1, 2, 2);
 
-            GridCoordSystem gcs   = grid.getCoordinateSystem();
-            CoordinateAxis  xaxis = gcs.getXHorizAxis();
-            CoordinateAxis  yaxis = gcs.getYHorizAxis();
-            int[] idx1 = gcs.findXYindexFromLatLon(yaxis.getMinValue(),
-                             xaxis.getMinValue(), null);
-            int[] idx2 = gcs.findXYindexFromLatLon(yaxis.getMaxValue(),
-                             xaxis.getMaxValue(), null);
-            List<LatLonPoint> points = new ArrayList<LatLonPoint>();
-            int               lats   = 0,
-                              lons   = 0;
-            for (Dimension d : gcs.getDomain()) {
-                if (d.getShortName().equals("lat")) {
-                    lats = d.getLength();
-                } else if (d.getShortName().equals("lon")) {
-                    lons = d.getLength();
-                }
-            }
-            System.err.println("ll:" + lats + " " + lons);
-            for (int lat = 0; lat < lats; lat++) {
-                for (int lon = 0; lon < lons; lon++) {
-                    points.add(gcs.getLatLon(lon, lat));
-                }
-            }
-            Array a = grid.readYXData(0, 0);
-            System.err.println("points:" + points.size() + " a:"
-                               + a.getSize());
-            FileOutputStream fos    = new FileOutputStream(f);
-            PrintWriter      writer = new PrintWriter(fos);
-            writer.println("#fields="
-                           + "Pressure_surface,latitude,longitude");
-            for (int i = 0; i < a.getSize(); i++) {
-                LatLonPoint llp = points.get(i);
-                float       v   = a.getFloat(i);
-                writer.println(v + "," + llp.getLatitude() + ","
-                               + llp.getLongitude());
-            }
-            writer.close();
-	    **/
+            /**
+             * System.err.println(f.getPath());
+             * List grids = gds.getGrids();
+             * for (int i = 0; i < grids.size(); i++) {
+             *   System.err.println(grids.get(i));
+             * }
+             * GeoGrid grid = (GeoGrid) gds.findGridByName("Pressure_surface");
+             * //      System.err.println(grid.getTimes());
+             * grid = grid.subset(new Range(0, 0), null, null, 1, 2, 2);
+             *
+             * GridCoordSystem gcs   = grid.getCoordinateSystem();
+             * CoordinateAxis  xaxis = gcs.getXHorizAxis();
+             * CoordinateAxis  yaxis = gcs.getYHorizAxis();
+             * int[] idx1 = gcs.findXYindexFromLatLon(yaxis.getMinValue(),
+             *                xaxis.getMinValue(), null);
+             * int[] idx2 = gcs.findXYindexFromLatLon(yaxis.getMaxValue(),
+             *                xaxis.getMaxValue(), null);
+             * List<LatLonPoint> points = new ArrayList<LatLonPoint>();
+             * int               lats   = 0,
+             *                 lons   = 0;
+             * for (Dimension d : gcs.getDomain()) {
+             *   if (d.getShortName().equals("lat")) {
+             *       lats = d.getLength();
+             *   } else if (d.getShortName().equals("lon")) {
+             *       lons = d.getLength();
+             *   }
+             * }
+             * System.err.println("ll:" + lats + " " + lons);
+             * for (int lat = 0; lat < lats; lat++) {
+             *   for (int lon = 0; lon < lons; lon++) {
+             *       points.add(gcs.getLatLon(lon, lat));
+             *   }
+             * }
+             * Array a = grid.readYXData(0, 0);
+             * System.err.println("points:" + points.size() + " a:"
+             *                  + a.getSize());
+             * FileOutputStream fos    = new FileOutputStream(f);
+             * PrintWriter      writer = new PrintWriter(fos);
+             * writer.println("#fields="
+             *              + "Pressure_surface,latitude,longitude");
+             * for (int i = 0; i < a.getSize(); i++) {
+             *   LatLonPoint llp = points.get(i);
+             *   float       v   = a.getFloat(i);
+             *   writer.println(v + "," + llp.getLatitude() + ","
+             *                  + llp.getLongitude());
+             * }
+             * writer.close();
+             */
 
 
             NetcdfFileWriter ncFileWriter = null;
@@ -1407,19 +1398,21 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         double[]         zVals = null;
         if (zAxis != null) {
             zVals = zAxis.getCoordValues();
-	    if(debug && zVals!=null) {
-		System.err.println("# Z levels:" + zVals.length +" v:" + java.util.Arrays.toString(zVals));
-	    }
+            if (debug && (zVals != null)) {
+                System.err.println("# Z levels:" + zVals.length + " v:"
+                                   + java.util.Arrays.toString(zVals));
+            }
         }
         Range zRange = null;
         if (request.defined("gridLevel")) {
             String gridLevel = request.getString("gridLevel", (String) null);
             if (gridLevel != null) {
-		if (gridLevel.equals("last")) {
-		    if (zVals != null) {
-			zRange = new Range(zVals.length - 1, zVals.length - 1);
-		    }
-		} else if (gridLevel.equals("all") && (zVals != null)) {
+                if (gridLevel.equals("last")) {
+                    if (zVals != null) {
+                        zRange = new Range(zVals.length - 1,
+                                           zVals.length - 1);
+                    }
+                } else if (gridLevel.equals("all") && (zVals != null)) {
                     zRange = new Range(0, zVals.length - 1);
                 } else {
                     int index = new Integer(gridLevel).intValue();
@@ -1492,15 +1485,15 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 Dimension xDimension = grid.getXDimension();
                 Dimension yDimension = grid.getYDimension();
                 int numPoints = xDimension.getLength()
-		    * yDimension.getLength() * zRange.length()* numTimes
-                                / timeStride;
+                                * yDimension.getLength() * zRange.length()
+                                * numTimes / timeStride;
                 if (debug) {
                     System.err.println(
                         "\tnum points:" + numPoints + " per layer:"
                         + (xDimension.getLength() * yDimension.getLength())
                         + " grid stride:" + gridStrideX);
                 }
-		if (numPoints < max) {
+                if (numPoints < max) {
                     break;
                 }
                 if (doX) {
@@ -1530,11 +1523,11 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             System.err.println("\t# lat/lons:" + points.size() + " #dates:"
                                + dates.size());
         }
-        PipedInputStream         in       = new PipedInputStream();
-	final Range finalZRange  =zRange;
-        final PipedOutputStream  out      = new PipedOutputStream(in);
-        final List<CalendarDate> theDates = dates;
-        final GeoGrid            theGrid  = grid;
+        PipedInputStream         in          = new PipedInputStream();
+        final Range              finalZRange = zRange;
+        final PipedOutputStream  out         = new PipedOutputStream(in);
+        final List<CalendarDate> theDates    = dates;
+        final GeoGrid            theGrid     = grid;
         Misc.run(new Runnable() {
             public void run() {
                 PrintWriter writer = new PrintWriter(out);
@@ -1563,12 +1556,12 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                                     Json.quote("Date"), "index",
                                     "" + (index++), "type",
                                     Json.quote("date")));
-		if(finalZRange.length()>1)  {
-		    fields.add(Json.map("id", Json.quote("level"), "label",
-					Json.quote("Level"), "index",
-					"" + (index++), "type",
-					Json.quote("double")));
-		}
+                if (finalZRange.length() > 1) {
+                    fields.add(Json.map("id", Json.quote("level"), "label",
+                                        Json.quote("Level"), "index",
+                                        "" + (index++), "type",
+                                        Json.quote("double")));
+                }
                 fields.add(Json.map("id", Json.quote("latitude"), "label",
                                     Json.quote("Latitude"), "index",
                                     "" + (index++), "type",
@@ -1614,17 +1607,20 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 long                  t1     = System.currentTimeMillis();
                 for (int tIdx = 0; (tIdx < theDates.size()) && (cnt < max);
                         tIdx += timeStride) {
-		    Array a;
-		    if(finalZRange.length()==1) {
-			a = theGrid.readYXData(tIdx, 0);
-		    } else {
-			a = theGrid.readVolumeData(tIdx);
-		    }
-                    if (debug) {
-			System.err.println("\treading time index:" + tIdx + " size:" + a.getSize());
+                    Array a;
+                    if (finalZRange.length() == 1) {
+                        a = theGrid.readYXData(tIdx, 0);
+                    } else {
+                        a = theGrid.readVolumeData(tIdx);
                     }
-                    cnt += writeJson(writer, cnt, max, a, Json.quote(theDates.get(tIdx).toString()), points, finalZRange,
-                                     scaler);
+                    if (debug) {
+                        System.err.println("\treading time index:" + tIdx
+                                           + " size:" + a.getSize());
+                    }
+                    cnt += writeJson(
+                        writer, cnt, max, a,
+                        Json.quote(theDates.get(tIdx).toString()), points,
+                        finalZRange, scaler);
                 }
                 writer.println("]}");
                 writer.close();
@@ -1652,6 +1648,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
      * @param a _more_
      * @param dateString _more_
      * @param points _more_
+     * @param zRange _more_
      * @param scaler _more_
      *
      * @return _more_
@@ -1660,38 +1657,38 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
      */
     private int writeJson(PrintWriter writer, int cnt, int max, Array a,
                           String dateString, List<LatLonPoint> points,
-			  Range zRange,
-                          DoubleFunction<Float> scaler)
+                          Range zRange, DoubleFunction<Float> scaler)
             throws Exception {
         synchronized (writer) {
-            int written = 0;
-	    int numPointsPerLevel = (int)(a.getSize()/zRange.length());
-	    System.err.println("a:" +a.getSize() +" per level:" + (numPointsPerLevel) +" #points:" + points.size());
- 	    for(int z=zRange.first();z<=zRange.last();z++) {
-		for (int i = 0; (i < numPointsPerLevel) && (cnt < max); i++) {
-		    written++;
-		    LatLonPoint llp = points.get(i);
-		    float       v   =
-			(float) scaler.apply((double) a.getFloat(i));
-		    if (cnt++ > 0) {
-			writer.print(",");
-		    }
-		    writer.print("[");
-		    writer.print((Double.isNaN(v)
-				  ? null
-				  : v));
-		    writer.print(",");
-		    writer.print(dateString);
-		    if(zRange.length()>1) {
-			writer.print(",");
-			writer.print(z);
-		    }
-		    writer.print(",");
-		    writer.print(llp.getLatitude());
-		    writer.print(",");
-		    writer.print(llp.getLongitude());
-		    writer.print("]");
-		}
+            int written           = 0;
+            int numPointsPerLevel = (int) (a.getSize() / zRange.length());
+            System.err.println("a:" + a.getSize() + " per level:"
+                               + (numPointsPerLevel) + " #points:"
+                               + points.size());
+            for (int z = zRange.first(); z <= zRange.last(); z++) {
+                for (int i = 0; (i < numPointsPerLevel) && (cnt < max); i++) {
+                    written++;
+                    LatLonPoint llp = points.get(i);
+                    float v = (float) scaler.apply((double) a.getFloat(i));
+                    if (cnt++ > 0) {
+                        writer.print(",");
+                    }
+                    writer.print("[");
+                    writer.print((Double.isNaN(v)
+                                  ? null
+                                  : v));
+                    writer.print(",");
+                    writer.print(dateString);
+                    if (zRange.length() > 1) {
+                        writer.print(",");
+                        writer.print(z);
+                    }
+                    writer.print(",");
+                    writer.print(llp.getLatitude());
+                    writer.print(",");
+                    writer.print(llp.getLongitude());
+                    writer.print("]");
+                }
             }
 
             return written;
@@ -1769,7 +1766,9 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
     public List<GridDatatype> sortGrids(GridDataset dataset) {
         List tuples = new ArrayList();
         for (GridDatatype grid : dataset.getGrids()) {
-	    if(grid==null) continue;
+            if (grid == null) {
+                continue;
+            }
             VariableEnhanced var = grid.getVariable();
 
             tuples.add(new Object[] { var.getShortName().toLowerCase(),
@@ -2569,25 +2568,35 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
         //Get the ncFile from the pool
 
-	if(debugOpendap)
-	    System.err.println("OpenDap.outputOpendap location:" + location);
+        if (debugOpendap) {
+            System.err.println("OpenDap.outputOpendap location:" + location);
+        }
         NetcdfFile ncFile = getCdmManager().createNetcdfFile(location);
-	if(debugOpendap)
-	    System.err.println("OpenDap.outputOpendap ncfile:" + ncFile);
+        if (debugOpendap) {
+            System.err.println("OpenDap.outputOpendap ncfile:" + ncFile);
+        }
         opendapCounter.incr();
 
         //Bridge the ramadda servlet to the opendap servlet
-	if(debugOpendap)
-	    System.err.println("OpenDap.outputOpendap creating the servlet bridge");
+        if (debugOpendap) {
+            System.err.println(
+                "OpenDap.outputOpendap creating the servlet bridge");
+        }
         NcDODSServlet servlet = new NcDODSServlet(request, entry, ncFile) {
             @Override
             public ServletConfig getServletConfig() {
-		if(debugOpendap)
-		    System.err.println("NcDODSServlet.getServletConfig");
-                ServletConfig config= request.getHttpServlet().getServletConfig();
-		if(debugOpendap)
-		    System.err.println("NcDODSServlet.getServletConfig got config:" + config);
-		return config;
+                if (debugOpendap) {
+                    System.err.println("NcDODSServlet.getServletConfig");
+                }
+                ServletConfig config =
+                    request.getHttpServlet().getServletConfig();
+                if (debugOpendap) {
+                    System.err.println(
+                        "NcDODSServlet.getServletConfig got config:"
+                        + config);
+                }
+
+                return config;
             }
             @Override
             public ServletContext getServletContext() {
@@ -2601,60 +2610,81 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                                  .getRealPath("/"));
                 */
 
-		if(debugOpendap)
-		    System.err.println("NcDODSServlet.getServletContext");
-		ServletContext ctx = request.getHttpServlet().getServletContext();
-		if(debugOpendap)
-		    System.err.println("NcDODSServlet.getServletContext got context:" + ctx);
+                if (debugOpendap) {
+                    System.err.println("NcDODSServlet.getServletContext");
+                }
+                ServletContext ctx =
+                    request.getHttpServlet().getServletContext();
+                if (debugOpendap) {
+                    System.err.println(
+                        "NcDODSServlet.getServletContext got context:" + ctx);
+                }
+
                 return ctx;
             }
             @Override
             public String getServletInfo() {
-		if(debugOpendap)
-		    System.err.println("NcDODSServlet.getServletInfo");
-                String info =  request.getHttpServlet().getServletInfo();
-		if(debugOpendap)
-		    System.err.println("NcDODSServlet.getServletInfo info:" + info);
-		return info;
+                if (debugOpendap) {
+                    System.err.println("NcDODSServlet.getServletInfo");
+                }
+                String info = request.getHttpServlet().getServletInfo();
+                if (debugOpendap) {
+                    System.err.println("NcDODSServlet.getServletInfo info:"
+                                       + info);
+                }
+
+                return info;
             }
             @Override
             public Enumeration getInitParameterNames() {
-		if(debugOpendap)
-		    System.err.println("NcDODSServlet.getInitParameterNames");
-                Enumeration names =  request.getHttpServlet().getInitParameterNames();
-		if(debugOpendap)
-		    System.err.println("NcDODSServlet.getInitParameterNames names:" + names);
-		return names;
+                if (debugOpendap) {
+                    System.err.println("NcDODSServlet.getInitParameterNames");
+                }
+                Enumeration names =
+                    request.getHttpServlet().getInitParameterNames();
+                if (debugOpendap) {
+                    System.err.println(
+                        "NcDODSServlet.getInitParameterNames names:" + names);
+                }
+
+                return names;
             }
         };
 
         //If we are running as a normal servlet then init the ncdods servlet with the servlet config info
         if ((request.getHttpServlet() != null)
                 && (request.getHttpServlet().getServletConfig() != null)) {
-	    if(debugOpendap)
-		System.err.println("OpenDap calling servlet.init");
+            if (debugOpendap) {
+                System.err.println("OpenDap calling servlet.init");
+            }
             servlet.init(request.getHttpServlet().getServletConfig());
         } else {
-	    if(debugOpendap)
-		System.err.println("OpenDap calling no servlet.init to call");
-	}
+            if (debugOpendap) {
+                System.err.println("OpenDap calling no servlet.init to call");
+            }
+        }
 
         //Do the work
-	if(debugOpendap)
-	    System.err.println("OpenDap calling servlet.doGet");
+        if (debugOpendap) {
+            System.err.println("OpenDap calling servlet.doGet");
+        }
         servlet.doGet(request.getHttpServletRequest(),
                       request.getHttpServletResponse());
-	if(debugOpendap)
-	    System.err.println("OpenDap called servlet.doGet");
+        if (debugOpendap) {
+            System.err.println("OpenDap called servlet.doGet");
+        }
         //We have to pass back a result though we set needtowrite to false because the opendap servlet handles the writing
         Result result = new Result("");
         result.setNeedToWrite(false);
         opendapCounter.decr();
-	if(debugOpendap)
-	    System.err.println("OpenDap returning netcdfile to cache");
+        if (debugOpendap) {
+            System.err.println("OpenDap returning netcdfile to cache");
+        }
         getCdmManager().returnNetcdfFile(location, ncFile);
-	if(debugOpendap)
-	    System.err.println("OpenDap done");
+        if (debugOpendap) {
+            System.err.println("OpenDap done");
+        }
+
         return result;
     }
 

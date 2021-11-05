@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2020 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.geodata.model;
@@ -204,7 +193,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
 
     /** statistic none */
     public static final String STAT_NONE = "none";
-    
+
     /** statistic mean */
     public static final String STAT_MEAN = "mean";
 
@@ -268,12 +257,8 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
     private List<TwoFacedObject> INFO_TYPES = Misc.toList(new Object[] {
                                                   new TwoFacedObject("Info",
                                                       OP_INFO),
-                                                          new TwoFacedObject(
-                                                              "Short Info",
-                                                              OP_SINFO),
-                                                          new TwoFacedObject(
-                                                              "Number of Years",
-                                                              OP_NYEAR), });
+            new TwoFacedObject("Short Info", OP_SINFO),
+            new TwoFacedObject("Number of Years", OP_NYEAR), });
 
     /** stat types */
     @SuppressWarnings("unchecked")
@@ -338,9 +323,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
     /** spatial arguments */
     private static final String[] SPATIALARGS = new String[] {
                                                     ARG_CDO_AREA_NORTH,
-                                                            ARG_CDO_AREA_WEST,
-                                                            ARG_CDO_AREA_SOUTH,
-                                                            ARG_CDO_AREA_EAST, };
+            ARG_CDO_AREA_WEST, ARG_CDO_AREA_SOUTH, ARG_CDO_AREA_EAST, };
 
 
     /** the product directory */
@@ -447,8 +430,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
             return;
         }
         Entry stateEntry = state.getEntry();
-        if ((stateEntry != null)
-                && stateEntry.isFile()
+        if ((stateEntry != null) && stateEntry.isFile()
                 && (stateEntry.getTypeHandler()
                     instanceof ClimateModelFileTypeHandler)) {
             links.add(makeLink(request, state.entry, OUTPUT_CDO));
@@ -597,8 +579,8 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
         if (dataset != null) {
             llr = dataset.getBoundingBox();
         } else {
-            llr = new LatLonRect(new LatLonPointImpl(90.0,
-                    -180.0), new LatLonPointImpl(-90.0, 180.0));
+            llr = new LatLonRect(new LatLonPointImpl(90.0, -180.0),
+                                 new LatLonPointImpl(-90.0, 180.0));
         }
         addMapWidget(request, sb, llr);
         addPublishWidget(
@@ -618,20 +600,19 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
      */
     public void addStatsWidget(Request request, Appendable sb)
             throws Exception {
-        sb.append(HtmlUtils.formEntry(msgLabel("Statistic"),
-                                      msgLabel("Period")
-                                      + HtmlUtils.select(ARG_CDO_PERIOD,
-                                              PERIOD_TYPES,
-                                              request.getSanitizedString(
-                                              ARG_CDO_PERIOD,
-                                                      null)) + HtmlUtils.space(
-                                                      3) + msgLabel("Type")
-                                                          + HtmlUtils.select(
-                                                              ARG_CDO_STAT,
-                                                                      STAT_TYPES,
-                                                                      request.getSanitizedString(
-                                                                      ARG_CDO_STAT,
-                                                                              null))));
+        sb.append(
+            HtmlUtils.formEntry(
+                msgLabel("Statistic"),
+                msgLabel("Period")
+                + HtmlUtils.select(
+                    ARG_CDO_PERIOD, PERIOD_TYPES,
+                    request.getSanitizedString(
+                        ARG_CDO_PERIOD, null)) + HtmlUtils.space(3)
+                            + msgLabel("Type")
+                            + HtmlUtils.select(
+                                ARG_CDO_STAT, STAT_TYPES,
+                                request.getSanitizedString(
+                                    ARG_CDO_STAT, null))));
     }
 
     /**
@@ -719,8 +700,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
                     levels.add(new TwoFacedObject(label,
                             String.valueOf(lev)));
                 }
-                varsb.append(HtmlUtils.select(levelArg,
-                        levels,
+                varsb.append(HtmlUtils.select(levelArg, levels,
                         request.getSanitizedString(levelArg, null)));
                 varsb.append(HtmlUtils.space(2));
             } else {
@@ -748,12 +728,12 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
      */
     private void addInfoWidget(Request request, Appendable sb)
             throws Exception {
-        sb.append(HtmlUtils.formEntry(msgLabel("Months"),
-                                      HtmlUtils.select(ARG_CDO_OPERATION,
-                                              INFO_TYPES,
-                                              request.getSanitizedString(
-                                              ARG_CDO_OPERATION,
-                                                      null))));
+        sb.append(
+            HtmlUtils.formEntry(
+                msgLabel("Months"),
+                HtmlUtils.select(
+                    ARG_CDO_OPERATION, INFO_TYPES,
+                    request.getSanitizedString(ARG_CDO_OPERATION, null))));
     }
 
     /**
@@ -792,10 +772,12 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
             CalendarDate cd  = dates.get(0);
             Calendar     cal = cd.getCalendar();
             if (cal != null) {
-                sb.append(HtmlUtils.hidden(CdmDataOutputHandler.ARG_CALENDAR,
-                                           request.getSanitizedString(
-                                           CdmDataOutputHandler.ARG_CALENDAR,
-                                           cal.toString())));
+                sb.append(
+                    HtmlUtils.hidden(
+                        CdmDataOutputHandler.ARG_CALENDAR,
+                        request.getSanitizedString(
+                            CdmDataOutputHandler.ARG_CALENDAR,
+                            cal.toString())));
             }
         }
         //if ((dates != null) && (!dates.size() > 0)) {
@@ -862,15 +844,12 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
         */
         String fromDate = request.getUnsafeString(ARG_CDO_FROMDATE, "");
         String toDate   = request.getUnsafeString(ARG_CDO_TODATE, "");
-        sb.append(HtmlUtils.formEntry(msgLabel("Time Range"),
-                                      HtmlUtils.select(ARG_CDO_FROMDATE,
-                                              formattedDates,
-                                              fromDate) + HtmlUtils.img(
-                                              getIconUrl(
-                                                  ICON_ARROW)) + HtmlUtils.select(
-                                                      ARG_CDO_TODATE,
-                                                              formattedDates,
-                                                              toDate)));
+        sb.append(
+            HtmlUtils.formEntry(
+                msgLabel("Time Range"),
+                HtmlUtils.select(ARG_CDO_FROMDATE, formattedDates, fromDate)
+                + HtmlUtils.img(getIconUrl(ICON_ARROW))
+                + HtmlUtils.select(ARG_CDO_TODATE, formattedDates, toDate)));
     }
 
     /**
@@ -894,29 +873,25 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
         StringBuilder monthsSB = new StringBuilder();
         monthsSB.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
                                        HtmlUtils.cssClass("row")));
-        monthsSB.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
-                                       HtmlUtils.cssClass(
-                                           "col-md-6 text-left")));
+        monthsSB.append(
+            HtmlUtils.open(
+                HtmlUtils.TAG_DIV, HtmlUtils.cssClass("col-md-6 text-left")));
         monthsSB.append(msgLabel("Start"));
-        monthsSB.append(HtmlUtils.select(ARG_CDO_STARTMONTH,
-                                         MONTHS,
-                                         request.getSanitizedString(
-                                             ARG_CDO_STARTMONTH,
-                                             null),
-                                         HtmlUtils.title(
-                                             "Select the starting month")));
+        monthsSB.append(
+            HtmlUtils.select(
+                ARG_CDO_STARTMONTH, MONTHS,
+                request.getSanitizedString(ARG_CDO_STARTMONTH, null),
+                HtmlUtils.title("Select the starting month")));
         monthsSB.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
-        monthsSB.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
-                                       HtmlUtils.cssClass(
-                                           "col-md-6 text-left")));
+        monthsSB.append(
+            HtmlUtils.open(
+                HtmlUtils.TAG_DIV, HtmlUtils.cssClass("col-md-6 text-left")));
         monthsSB.append(msgLabel("End"));
-        monthsSB.append(HtmlUtils.select(ARG_CDO_ENDMONTH,
-                                         MONTHS,
-                                         request.getSanitizedString(
-                                             ARG_CDO_ENDMONTH,
-                                             null),
-                                         HtmlUtils.title(
-                                             "Select the ending month")));
+        monthsSB.append(
+            HtmlUtils.select(
+                ARG_CDO_ENDMONTH, MONTHS,
+                request.getSanitizedString(ARG_CDO_ENDMONTH, null),
+                HtmlUtils.title("Select the ending month")));
         monthsSB.append(HtmlUtils.close(HtmlUtils.TAG_DIV));  // col
         monthsSB.append(HtmlUtils.close(HtmlUtils.TAG_DIV));  // row
         sb.append(HtmlUtils.formEntry(msgLabel("Months"),
@@ -941,23 +916,20 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
         HtmlUtils.radio(ARG_CDO_MONTHS, "", request.get(ARG_CDO_MONTHS, false))+msg("Season")+
         HtmlUtils.space(2)+
         */
-        sb.append(HtmlUtils.formEntry(msgLabel("Months"),
-                                      msgLabel("Start")
-                                      + HtmlUtils.select(ARG_CDO_STARTMONTH,
-                                              MONTHS,
-                                              request.getSanitizedString(
-                                              ARG_CDO_STARTMONTH,
-                                                      null),
-                                              HtmlUtils.title(
-                                              "Select the starting month")) + HtmlUtils.space(
-                                                  2) + msgLabel("End")
-                                                      + HtmlUtils.select(
-                                                          ARG_CDO_ENDMONTH,
-                                                                  MONTHS,
-                                                                  request.getSanitizedString(
-                                                                  ARG_CDO_ENDMONTH,
-                                                                          null),
-                                                                  HtmlUtils.title(
+        sb.append(
+            HtmlUtils.formEntry(
+                msgLabel("Months"),
+                msgLabel("Start")
+                + HtmlUtils.select(
+                    ARG_CDO_STARTMONTH, MONTHS,
+                    request.getSanitizedString(ARG_CDO_STARTMONTH, null),
+                    HtmlUtils.title(
+                        "Select the starting month")) + HtmlUtils.space(2)
+                            + msgLabel("End")
+                            + HtmlUtils.select(
+                                ARG_CDO_ENDMONTH, MONTHS,
+                                request.getSanitizedString(
+                                    ARG_CDO_ENDMONTH, null), HtmlUtils.title(
         //MONTHS.get(
         //    MONTHS.size()
         //    - 1).getId().toString()), HtmlUtils.title(
@@ -976,38 +948,31 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
     public static void makeMonthDaysWidget(Request request, Appendable sb,
                                            List<CalendarDate> dates)
             throws Exception {
-        sb.append(HtmlUtils.formEntry(msgLabel("Days"),
-                                      msgLabel("Start")
-                                      + HtmlUtils.select(ARG_CDO_STARTMONTH,
-                                              SHORT_MONTHS,
-                                              request.getSanitizedString(
-                                              ARG_CDO_STARTMONTH,
-                                                      null),
-                                              HtmlUtils.title(
-                                              "Select the starting month")) + HtmlUtils.select(
-                                                  ARG_CDO_STARTDAY,
-                                                          DAYS,
-                                                          request.getSanitizedString(
-                                                          ARG_CDO_STARTDAY,
-                                                                  null),
-                                                          HtmlUtils.title(
-                                                          "Select the starting day")) + HtmlUtil.space(
-                                                              2) + msgLabel(
-                                                                  "End") + HtmlUtils.select(
-                                                                      ARG_CDO_ENDMONTH,
-                                                                              SHORT_MONTHS,
-                                                                              request.getSanitizedString(
-                                                                              ARG_CDO_ENDMONTH,
-                                                                                      null),
-                                                                              HtmlUtils.title(
-                                                                              "Select the ending month")) + HtmlUtils.select(
-                                                                                  ARG_CDO_ENDDAY,
-                                                                                          DAYS,
-                                                                                          request.getSanitizedString(
-                                                                                          ARG_CDO_ENDDAY,
-                                                                                                  null),
-                                                                                          HtmlUtils.title(
-                                                                                          "Select the ending day"))));
+        sb.append(
+            HtmlUtils.formEntry(
+                msgLabel("Days"),
+                msgLabel("Start")
+                + HtmlUtils.select(
+                    ARG_CDO_STARTMONTH, SHORT_MONTHS,
+                    request.getSanitizedString(ARG_CDO_STARTMONTH, null),
+                    HtmlUtils.title(
+                        "Select the starting month")) + HtmlUtils.select(
+                            ARG_CDO_STARTDAY, DAYS,
+                            request.getSanitizedString(
+                                ARG_CDO_STARTDAY, null), HtmlUtils.title(
+                                "Select the starting day")) + HtmlUtil.space(
+                                    2) + msgLabel("End")
+                                       + HtmlUtils.select(
+                                           ARG_CDO_ENDMONTH, SHORT_MONTHS,
+                                           request.getSanitizedString(
+                                               ARG_CDO_ENDMONTH,
+                                                   null), HtmlUtils.title(
+                                                       "Select the ending month")) + HtmlUtils.select(
+                                                           ARG_CDO_ENDDAY,
+                                                               DAYS, request.getSanitizedString(
+                                                                   ARG_CDO_ENDDAY,
+                                                                       null), HtmlUtils.title(
+                                                                           "Select the ending day"))));
     }
 
     /**
@@ -1048,25 +1013,23 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
             endYearSelect = years.size() - 1;
         }
 
-        sb.append(HtmlUtils.formEntry(msgLabel("Years"),
-                                      msgLabel("Start")
-                                      + HtmlUtils.select(ARG_CDO_STARTYEAR,
-                                              years,
-                                              request.getSanitizedString(
-                                              ARG_CDO_STARTYEAR,
-                                                      years.get(0)),
-                                              HtmlUtils.title(
-                                              "Select the starting year")) + HtmlUtils.space(
-                                                  3) + msgLabel("End")
-                                                      + HtmlUtils.select(
-                                                          ARG_CDO_ENDYEAR,
-                                                                  years,
-                                                                  request.getSanitizedString(
-                                                                  ARG_CDO_ENDYEAR,
-                                                                          years.get(
-                                                                          endYearSelect)),
-                                                                  HtmlUtils.title(
-                                                                  "Select the ending year"))));
+        sb.append(
+            HtmlUtils.formEntry(
+                msgLabel("Years"),
+                msgLabel("Start")
+                + HtmlUtils.select(
+                    ARG_CDO_STARTYEAR, years,
+                    request.getSanitizedString(
+                        ARG_CDO_STARTYEAR, years.get(0)), HtmlUtils.title(
+                        "Select the starting year")) + HtmlUtils.space(3)
+                            + msgLabel("End")
+                            + HtmlUtils.select(
+                                ARG_CDO_ENDYEAR, years,
+                                request.getSanitizedString(
+                                    ARG_CDO_ENDYEAR,
+                                    years.get(
+                                        endYearSelect)), HtmlUtils.title(
+                                            "Select the ending year"))));
     }
 
     /**
@@ -1106,7 +1069,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
         MapInfo map;
         if ( !usePopup) {
             map = getRepository().getMapManager().createMap(request, null,
-							    "250", "150", true, null);
+                    "250", "150", true, null);
             String maplayers = getRepository().getProperty(PROP_MAP_LAYERS,
                                    null);
             String defaultMap =
@@ -1145,8 +1108,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
         StringBuilder mapDiv = new StringBuilder();
         String        llb = map.makeSelector(ARG_CDO_AREA, usePopup, points);
         mapDiv.append(HtmlUtils.div(llb));
-        sb.append(HtmlUtils.formEntry(msgLabel("Region"),
-                                      mapDiv.toString(),
+        sb.append(HtmlUtils.formEntry(msgLabel("Region"), mapDiv.toString(),
                                       4));
     }
 
@@ -1299,7 +1261,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
         for (String spatialArg : SPATIALARGS) {
             if ( !Misc.equals(request.getString(spatialArg, ""),
                               request.getString(spatialArg + ".original",
-                                      ""))) {
+                                  ""))) {
                 anySpatialDifferent = true;
 
                 break;
@@ -1319,18 +1281,16 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
             // Normalize longitude bounds to the data
             double origLonMin =
                 Double.parseDouble(request.getString(ARG_CDO_AREA_WEST
-                    + ".original",
-                                                     "-180"));
+                    + ".original", "-180"));
             double origLonMax =
                 Double.parseDouble(request.getString(ARG_CDO_AREA_EAST
-                    + ".original",
-                                                     "180"));
+                    + ".original", "180"));
             double lonMin =
                 Double.parseDouble(request.getString(ARG_CDO_AREA_WEST,
-                                                     "-180"));
+                    "-180"));
             double lonMax =
                 Double.parseDouble(request.getString(ARG_CDO_AREA_EAST,
-                                                     "180"));
+                    "180"));
             // TODO: do we need to do this?  CDO seems to handle 
             // the -180 to 180 vs 0 to 360 subsetting okay.
             //            if (origLonMin < 0) {  // -180 to 180
@@ -1406,8 +1366,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
                         SimpleUnit have = SimpleUnit.factory(levelUnit);
                         SimpleUnit want = SimpleUnit.factory(dataUnit);
                         level = String.valueOf(
-                            have.convertTo(Misc.parseDouble(level),
-                                           want));
+                            have.convertTo(Misc.parseDouble(level), want));
                     }
                     dataOutputHandler.getCdmManager().returnGridDataset(
                         entry.getResource().getPath(), dataset);
@@ -1592,8 +1551,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
                                ? request.getString(ARG_CDO_YEARS
                                    + dateCounterString)
                                : null;
-                if ((years == null)
-                        && request.defined(ARG_CDO_YEARS)
+                if ((years == null) && request.defined(ARG_CDO_YEARS)
                         && !(request.defined(
                             ARG_CDO_STARTYEAR
                             + dateCounterString) || request.defined(
@@ -1702,7 +1660,8 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
                 && request.defined(ARG_CDO_STAT)) {
             String period = request.getString(ARG_CDO_PERIOD);
             String stat   = request.getString(ARG_CDO_STAT);
-            if ((period == null) || (stat == null) || stat.equals(STAT_NONE)) {
+            if ((period == null) || (stat == null)
+                    || stat.equals(STAT_NONE)) {
                 return;
             }
             // TODO:  Handle anomaly
@@ -1802,8 +1761,8 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
             if (dataset != null) {
                 llr = dataset.getBoundingBox();
             } else {
-                llr = new LatLonRect(new LatLonPointImpl(90.0,
-                        -180.0), new LatLonPointImpl(-90.0, 180.0));
+                llr = new LatLonRect(new LatLonPointImpl(90.0, -180.0),
+                                     new LatLonPointImpl(-90.0, 180.0));
             }
             addMapWidget(request, sb, llr);
             sb.append(HtmlUtils.formTableClose());
@@ -1833,7 +1792,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
             String newName   = IOUtil.stripExtension(tail) + "_" + id + ".nc";
             tail = getStorageManager().getStorageFileName(tail);
             File outFile = new File(IOUtil.joinDir(input.getProcessDir(),
-                                                   newName));
+                               newName));
             List<String> commands = new ArrayList<String>();
             commands.add(cdoPath);
             commands.add("-L");
@@ -1928,11 +1887,9 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
                 "type", ClimateModelApiHandler.ARG_ACTION_COMPARE).toString();
 
         boolean needAnom = requestIsAnom(request);
-        if (needAnom
-                && (type.equals(
-                    ClimateModelApiHandler
-                        .ARG_ACTION_ENS_COMPARE) || type.equals(
-                            ClimateModelApiHandler.ARG_ACTION_COMPARE))) {
+        if (needAnom && (type.equals(
+                ClimateModelApiHandler.ARG_ACTION_ENS_COMPARE) || type.equals(
+                ClimateModelApiHandler.ARG_ACTION_COMPARE))) {
             int climDatasetNumber = request.get(ARG_CLIMATE_DATASET_NUMBER,
                                         0);
             // TODO: If the models/resolutions were the same, we don't really need to
@@ -1958,5 +1915,5 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
         return needAnom;
     }
 
-    
+
 }

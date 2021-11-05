@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+Copyright (c) 2008-2021 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.geodata.cdmdata;
@@ -19,9 +8,10 @@ package org.ramadda.geodata.cdmdata;
 
 import org.ramadda.repository.*;
 
+import org.ramadda.util.HtmlUtils;
+
 import org.w3c.dom.*;
 
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 
 
@@ -133,8 +123,9 @@ public class OpendapApiHandler extends RepositoryManager implements RequestHandl
             //entry.getFullName?
             //            url = getRepository().getUrlBase() + "/" + PATH_OPENDAP + "/"
             //                  + entry.getId() + "/" + OPENDAP_SUFFIX;
-            url = "/" + HtmlUtils.urlEncode(entry.getId()) + "/" + OPENDAP_SUFFIX;
-	    //System.err.println("OpendapApuHandler.getOpendapSuffix: encoded path:" + url);
+            url = "/" + HtmlUtils.urlEncode(entry.getId()) + "/"
+                  + OPENDAP_SUFFIX;
+            //System.err.println("OpendapApuHandler.getOpendapSuffix: encoded path:" + url);
         } else {
             url = "/" + ARG_OUTPUT + ":"
                   + Request.encodeEmbedded(
@@ -145,7 +136,7 @@ public class OpendapApiHandler extends RepositoryManager implements RequestHandl
                           + OPENDAP_SUFFIX;
         }
 
-	//System.err.println("OPENDAP URL:" + url);
+        //System.err.println("OPENDAP URL:" + url);
         url = url.replaceAll(" ", "+");
 
         return url;
@@ -197,18 +188,19 @@ public class OpendapApiHandler extends RepositoryManager implements RequestHandl
      * @throws Exception on badness
      */
     public Result processOpendapRequest(Request request) throws Exception {
-	try {
-	    String prefix = getRepository().getUrlBase() + "/" + PATH_OPENDAP;
-	    Entry entry =
-		getDataOutputHandler().getCdmManager().findEntryFromPath(request,
-									 prefix);
+        try {
+            String prefix = getRepository().getUrlBase() + "/" + PATH_OPENDAP;
+            Entry entry =
+                getDataOutputHandler().getCdmManager().findEntryFromPath(
+                    request, prefix);
 
-	    return getDataOutputHandler().outputOpendap(request, entry);
-	} catch(Exception exc) {
-	    System.err.println("OpenDap an error has occurred:" + exc);
-	    exc.printStackTrace();
-	    throw exc;
-	}
+            return getDataOutputHandler().outputOpendap(request, entry);
+        } catch (Exception exc) {
+            System.err.println("OpenDap an error has occurred:" + exc);
+            exc.printStackTrace();
+
+            throw exc;
+        }
     }
 
 
