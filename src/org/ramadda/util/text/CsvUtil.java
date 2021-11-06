@@ -2022,8 +2022,14 @@ public class CsvUtil {
 		new Arg("columns", "", "type", "columns")),
         new Cmd(
 		"-sum",
-		"Sum values keying on name column value. If no value columns specified then do a count",
+		"Sum values keying on key column value. If no value columns specified then do a count",
 		"key columns", "value columns", "carry over columns"),
+        new Cmd(
+		"-summary",
+		"count/sum/avg/min/max values keying on key column value. If no value columns specified then do a count",
+		new Arg("ops","any of count,sum,avg,min,max"),
+		"key columns", "value columns", "carry over columns"),	
+
         new Cmd("-percent", "", "columns to add"),
         new Cmd("-increase", "Calculate percent increase",
                 new Arg("column", "", "type", "columns"), "how far back"),
@@ -2684,9 +2690,19 @@ public class CsvUtil {
 		List<String> keys   = getCols(args.get(++i));
 		List<String> values = getCols(args.get(++i));
 		List<String> extra  = getCols(args.get(++i));
-		ctx.addProcessor(new RowCollector.Summer(keys, values, extra));
+		List<String> what = new ArrayList<String>();
+		what.add("sum");
+		ctx.addProcessor(new RowCollector.Summary(what,keys, values, extra));
 		return i;
 	    });
+	defineFunction("-summary",4,(ctx,args,i) -> {
+		List<String> what   = Utils.split(args.get(++i),",",true,true);
+		List<String> keys   = getCols(args.get(++i));
+		List<String> values = getCols(args.get(++i));
+		List<String> extra  = getCols(args.get(++i));
+		ctx.addProcessor(new RowCollector.Summary(what,keys, values, extra));
+		return i;
+	    });	
 
 	defineFunction(new String[]{"-u","-unique"},1,(ctx,args,i) -> {
 		List<String> toks = getCols(args.get(++i));

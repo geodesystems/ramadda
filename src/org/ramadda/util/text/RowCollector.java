@@ -2503,8 +2503,10 @@ public class RowCollector extends Processor {
      * @version        $version$, Fri, Jan 9, '15
      * @author         Jeff McWhirter
      */
-    public static class Summer extends RowCollector {
+    public static class Summary extends RowCollector {
 
+	private List<String> what;
+	
         /** _more_ */
         private List<Integer> uniqueIndices;
 
@@ -2523,6 +2525,7 @@ public class RowCollector extends Processor {
         /** _more_ */
         private List<String> extra;
 
+
         /**
          * _more_
          *
@@ -2532,8 +2535,14 @@ public class RowCollector extends Processor {
          * @param values _more_
          * @param extra _more_
          */
-        public Summer(List<String> keys, List<String> values,
+        public Summary(List<String> what,List<String> keys, List<String> values,
                       List<String> extra) {
+	    
+	    if(what.size()==0) {
+		what =new ArrayList<String>();
+		what.add("count");
+	    }
+	    this.what = what;
             this.keys   = keys;
             this.values = values;
             this.extra  = extra;
@@ -2558,11 +2567,6 @@ public class RowCollector extends Processor {
             valueIndices  = getIndices(ctx, values);
             valueIndices  = getIndices(ctx, values);
             extraIndices  = getIndices(ctx, extra);
-            List<Integer> allIndices = new ArrayList<Integer>();
-            allIndices.addAll(uniqueIndices);
-            allIndices.addAll(valueIndices);
-            HashSet<Integer> allIndicesMap =
-                (HashSet<Integer>) Utils.makeHashSet(allIndices);
 
             int          rowIndex = 0;
             List<String> keys     = new ArrayList<String>();
@@ -2600,11 +2604,17 @@ public class RowCollector extends Processor {
 
             List<Row> newRows   = new ArrayList<Row>();
             Row       newHeader = new Row();
-            for (int i = 0; i < headerRow.size(); i++) {
-                if (allIndicesMap.contains(new Integer(i))) {
-                    newHeader.add(headerRow.get(i));
-                }
-            }
+	    for(int i:uniqueIndices) {
+		newHeader.add(headerRow.get(i));
+	    }
+	    for(int i:valueIndices) {
+		for(String w: what) {
+		    if(w.equals("count"))
+		       newHeader.add("Count");
+		    else
+			newHeader.add(headerRow.get(i)+" " + w);
+		}
+	    }	    
 
             if (valueIndices.size() == 0) {
                 newHeader.add("Count");
@@ -2612,6 +2622,7 @@ public class RowCollector extends Processor {
             for (int j : extraIndices) {
                 newHeader.add(firstRow.get(j));
             }
+	    //	    System.err.println("\nheader:" + newHeader);
             newRows.add(newHeader);
             for (String key : keys) {
                 Row orig = origMap.get(key);
@@ -2638,7 +2649,10 @@ public class RowCollector extends Processor {
                 for (int i = 0; i < valueIndices.size(); i++) {
                     int    valueIdx = valueIndices.get(i);
                     double sum      = 0;
-                    for (Row row : rowMap.get(key)) {
+                    double min      = Double.NaN;
+                    double max      = Double.NaN;		    		    
+                    List<Row> rowGroup = rowMap.get(key);
+                    for (Row row : rowGroup) {
                         if (newRow == null) {
                             newRow = new Row();
                             for (int u = 0; u < uniqueIndices.size(); u++) {
@@ -2650,13 +2664,31 @@ public class RowCollector extends Processor {
                         if (value == null) {
                             continue;
                         }
-                        sum += Double.parseDouble(value.toString());
+			double v = Double.parseDouble(value.toString());
+			if(Double.isNaN(min)) min = v;
+			else min = Math.min(v,min);
+			if(Double.isNaN(max)) max = v;
+			else max = Math.max(v,max);						
+                        sum += v;
                     }
-                    newRow.add(new Double(sum));
+		    for(String w: what) {
+			if(w.equals("sum")) {
+			    newRow.add(new Double(sum));
+ 			} else if(w.equals("min")) {
+			    newRow.add(new Double(min));
+ 			} else if(w.equals("max")) {
+			    newRow.add(new Double(max));
+ 			} else if(w.equals("avg")) {
+			    newRow.add(new Double(sum/rowGroup.size()));
+ 			} else if(w.equals("count")) {
+			    newRow.add(new Integer(rowGroup.size()));
+			}
+		    }
                 }
                 for (int j : extraIndices) {
                     newRow.add(orig.get(j));
                 }
+		//		System.err.println("row:" + newRow);
             }
 
             return newRows;
