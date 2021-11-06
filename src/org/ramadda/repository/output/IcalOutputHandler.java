@@ -106,7 +106,7 @@ public class IcalOutputHandler extends OutputHandler {
         if (state.getEntry() != null) {
             links.add(
                 makeLink(
-                    request, state.entry, OUTPUT_ICAL,
+			 request, state.getEntry(), OUTPUT_ICAL,
                     "/" + IOUtil.stripExtension(state.getEntry().getName())
                     + ".ics"));
         }
