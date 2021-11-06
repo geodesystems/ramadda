@@ -91,45 +91,10 @@ do_histogram() {
     file2=source/ce-068-2020.txt
     file3=source/ce-068-2017.txt
     file4=source/ce-068-2021.txt    
+    
+    echo "doing 2017 histogram"
     ${csv} -delimiter "|" \
-	   -ifin voter_id voters_boulder.csv  voter_id  \
-	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" 05-NOV-09 \
-	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" ".*SEP.*" \
-	   -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "," "voted_date" \
-	   -change voted_date "," "" \
-	   -notpattern voted_date "" \
-	   -change voted_date "-19" "-2019" \
-	   -change voted_date "OCT" "10" \
-	   -change voted_date "NOV" "11" \
-	   -change voted_date "(..)-(..)-(....)" "\$3-\$2-\$1" \
-	   -change voted_date "(..)/(..)/(....)" "\$3-\$1-\$2" \
-	   -sum voted_date "" "" \
-	   -gt count 20 \
-	   -sort voted_date \
-	   -addheader "voted_date.type date voted_date.format yyyy-MM-dd" \
-	   -p ${file4} > boulder_voting_2021_histogram.csv
-
-
-    ${csv} -delimiter "|" \
-	   -ifin voter_id voters_boulder.csv  voter_id  \
-	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" 05-NOV-09 \
-	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" ".*SEP.*" \
-	   -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "," "voted_date" \
-	   -change voted_date "," "" \
-	   -notpattern voted_date "" \
-	   -change voted_date "-19" "-2019" \
-	   -change voted_date "OCT" "10" \
-	   -change voted_date "NOV" "11" \
-	   -change voted_date "(..)-(..)-(....)" "\$3-\$2-\$1" \
-	   -change voted_date "(..)/(..)/(....)" "\$3-\$1-\$2" \
-	   -sum voted_date "" "" \
-	   -gt count 20 \
-	   -sort voted_date \
-	   -addheader "voted_date.type date voted_date.format yyyy-MM-dd" \
-	   -p ${file1} > boulder_voting_2019_histogram.csv
-
-
-    ${csv} -delimiter "|" \
+	   -dots ${dots} \
 	   -ifin voter_id voters_boulder.csv  voter_id  \
 	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" 05-NOV-09 \
 	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" ".*SEP.*" \
@@ -141,8 +106,8 @@ do_histogram() {
 	   -change voted_date "NOV" "11" \
 	   -change voted_date "(..)-(..)-(....)" "\$3-\$2-\$1" \
 	   -change voted_date "(..)/(..)/(....)" "\$3-\$1-\$2" \
-	   -c "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE,voted_date" \
-	   -sum voted_date "" "" \
+	   -func age "2017-_yob" \
+	   -summary "count,avg" voted_date age "" \
 	   -gt count 20 \
 	   -sort voted_date \
 	   -notpattern voted_date 2017-11-17 \
@@ -151,23 +116,76 @@ do_histogram() {
 
 
 
+    echo "doing 2021 histogram"
     ${csv} -delimiter "|" \
+	   -dots ${dots} \
+	   -ifin voter_id voters_boulder.csv  voter_id  \
+	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" 05-NOV-09 \
+	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" ".*SEP.*" \
+	   -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "," "voted_date" \
+	   -change voted_date "," "" \
+	   -notpattern voted_date "" \
+	   -change voted_date "-19" "-2019" \
+	   -change voted_date "OCT" "10" \
+	   -change voted_date "NOV" "11" \
+	   -change voted_date "(..)-(..)-(....)" "\$3-\$2-\$1" \
+	   -change voted_date "(..)/(..)/(....)" "\$3-\$1-\$2" \
+	   -func age "2021-_yob" \
+	   -summary "count,avg" voted_date age "" \
+	   -decimals age_avg 1\
+	   -gt count 20 \
+	   -sort voted_date \
+	   -addheader "voted_date.type date voted_date.format yyyy-MM-dd" \
+	   -p ${file4} > boulder_voting_2021_histogram.csv
+    
+
+    echo "doing 2019 histogram"
+    ${csv} -delimiter "|" \
+	   -dots ${dots} \
+	   -ifin voter_id voters_boulder.csv  voter_id  \
+	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" 05-NOV-09 \
+	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" ".*SEP.*" \
+	   -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "," "voted_date" \
+	   -change voted_date "," "" \
+	   -notpattern voted_date "" \
+	   -change voted_date "-19" "-2019" \
+	   -change voted_date "OCT" "10" \
+	   -change voted_date "NOV" "11" \
+	   -change voted_date "(..)-(..)-(....)" "\$3-\$2-\$1" \
+	   -change voted_date "(..)/(..)/(....)" "\$3-\$1-\$2" \
+	   -func age "2019-_yob" \
+	   -summary "count,avg" voted_date age "" \
+	   -decimals age_avg 1\
+	   -gt count 20 \
+	   -sort voted_date \
+	   -addheader "voted_date.type date voted_date.format yyyy-MM-dd" \
+	   -p ${file1} > boulder_voting_2019_histogram.csv
+
+
+
+
+
+    echo "doing 2020 histogram"
+    ${csv} -delimiter "|" \
+	   -dots ${dots} \
 	   -ifin voter_id voters_boulder.csv  voter_id  \
 	   -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "," "voted_date" \
 	   -change voted_date "," "" \
 	   -notpattern voted_date "" \
 	   -change voted_date "(..)/(..)/(....)" "\$3-\$1-\$2" \
-	   -sum voted_date "" "" \
+	   -func age "2020-_yob" \
+	   -summary "count,avg" voted_date age "" \
 	   -gt count 20 \
 	   -sort voted_date \
 	   -addheader "voted_date.type date voted_date.format yyyy-MM-dd" \
 	   -p ${file2} > boulder_voting_2020_histogram.csv
 
+    cp *histogram.csv ~/
 
 }
 
-#do_histogram
-#exit
+do_histogram
+exit
     
 
 do_precincts() {
@@ -508,7 +526,6 @@ voters_final.csv > bocovotersdb.xml
 do_release() {
     echo "Copying to geode"
     cp bocovotersdb.xml  ~/.ramadda/plugins
-    cp boulder_voting_2021_histogram.csv ~/
     sh /Users/jeffmc/source/ramadda/bin/scpgeode.sh 50.112.99.202 voters_final.csv staging
     sh /Users/jeffmc/source/ramadda/bin/scpgeode.sh 50.112.99.202 bocovotersdb.xml plugins
 }
