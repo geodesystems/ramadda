@@ -3587,12 +3587,9 @@ public class WikiUtil {
         }
         if (addResources) {
             sb.append("\n");
-            sb.append(
-                "<script src='https://cdn.jsdelivr.net/npm/vega@5'></script>\n");
-            sb.append(
-                "<script src='https://cdn.jsdelivr.net/npm/vega-lite@4'></script>\n");
-            sb.append(
-                "<script src='https://cdn.jsdelivr.net/npm/vega-embed@6'></script>\n");
+	    sb.append("<script src='https://cdn.jsdelivr.net/npm/vega@5'></script>\n");
+	    sb.append("<script src='https://cdn.jsdelivr.net/npm/vega-lite@5'></script>\n");
+	    sb.append("<script src='https://cdn.jsdelivr.net/npm/vega-embed@6'></script>\n");
         }
         String id     = "vegablock_" + HU.blockCnt++;
         String jsonId = "vegaJson" + HU.blockCnt++;

@@ -523,7 +523,12 @@ public class TextRecord extends DataRecord {
                     if ((idxX == fieldCnt) || (idxY == fieldCnt)) {
                         dValue = Utils.decodeLatLon(tok);
                     } else {
-                        dValue = textFile.parseValue(this, field, tok);
+			try {
+			    dValue = textFile.parseValue(this, field, tok);
+			} catch(Exception exc) {
+			    System.err.println("Error:" + tok +" line:" + line);
+			    throw exc;
+			}
                     }
 
 

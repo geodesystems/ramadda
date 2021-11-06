@@ -1104,7 +1104,6 @@ function EntryList(repository, jsonUrl, listener, doSearch) {
 		//console.log("search done. creating entries");
                 _this.createEntries(data, listener, success);
 
-		console.log("done creating entries");
             })
                 .fail(function(jqxhr, textStatus, error) {
                     GuiUtils.handleError("An error occurred doing search: " + error, _this.url, true);

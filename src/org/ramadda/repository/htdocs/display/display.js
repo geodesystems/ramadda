@@ -2922,8 +2922,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let hasRegexp = fieldId.indexOf("*")>=0;
 		for (let i = 0; i < fields.length; i++) {
                     let field = fields[i];
-		    if(debug)
-			console.log("\tField:" + field.getId());
+		    if(debug)	console.log("\tField:" + field.getId());
                     if (field.getId() == fieldId || fieldId == ("#" + (i+1)) || field.getId()==alias) {
 			theField =  field;
 			if(debug)

@@ -1374,6 +1374,7 @@ public abstract class Converter extends Processor {
                 }
 
 
+
                 type = CsvUtil.getDbProp(props, id, i, "type", type);
                 if (Misc.equals(type, "enum")) {
                     type = "enumeration";

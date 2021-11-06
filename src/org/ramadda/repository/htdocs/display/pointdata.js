@@ -967,6 +967,7 @@ function makePointData(json, derived, source,url) {
 
     var offsetFields = [];
     var lastField = null;
+    console.dir(json.fields);
     for (var i = 0; i < json.fields.length; i++) {
         var field = json.fields[i];
         var recordField = new RecordField(field,source);
@@ -1059,7 +1060,6 @@ function makePointData(json, derived, source,url) {
 		}
 		if(dateIsString) {
 		    date = new Date(values[dateIdx]);
-		    console.dir("making date:" +values[dateIdx] +" dttm:" + date);
 		} else {
 		    date = new Date(0);
 		    date.setUTCMilliseconds(values[dateIdx]);
@@ -1298,9 +1298,9 @@ function RecordFilter(display,filterFieldId, properties) {
 	fields = display.getFieldsByType(null, "string");
     } else {
 	let filterField = display.getFieldById(null, filterFieldId);
-	if(filterField)
+	if(filterField) {
 	    fields = [filterField];
-	else {
+	} else {
 	    console.error(display.type+" Error: could not find filter field:" + filterFieldId);
 	    //Call again with debug=true
 	    display.getFieldById(null, filterFieldId,true);
@@ -1768,7 +1768,8 @@ function RecordFilter(display,filterFieldId, properties) {
 	getWidget: function(fieldMap, bottom,records, vertical) {
 	    this.records = records;
 	    let debug = false;
-	    if(debug) console.log(this.id +".getWidget");
+	    debug = true;
+	    if(debug) console.log(this.id +".getWidget field:" + this.getField());
 	    if(!this.isEnabled()) {
 		if(debug) console.log("\tnot enabled");
 		return "";
@@ -1787,6 +1788,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    let suffix =   this.getProperty(this.getId()+".filterSuffix","");
 
             if(this.ops) {
+		if(debug) console.log("\tops");
 		let labels =[];
 		this.ops.forEach((op,idx)=>{
 		    labels.push([String(idx),op.label]);

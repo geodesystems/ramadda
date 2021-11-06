@@ -209,6 +209,7 @@ public class CsvFile extends TextFile {
      */
     public InputStream doMakeInputStream(boolean buffered) throws Exception {
         List<String> commands     = getCsvCommands();
+	System.err.println("csv commands:" + commands);
         boolean      shouldCreate = shouldCreateCsvFile();
         if ( !shouldCreate && (commands.size() == 0)) {
 

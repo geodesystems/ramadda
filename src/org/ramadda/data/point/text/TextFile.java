@@ -341,6 +341,8 @@ public abstract class TextFile extends PointFile {
                 tok = tok.substring(1);
             }
             tok = tok.replaceAll(",", "");
+	    if(tok.endsWith("+"))
+		tok = tok.replaceAll("\\+", "");	    
             try {
                 return Double.parseDouble(tok);
             } catch (NumberFormatException nfe2) {

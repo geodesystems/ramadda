@@ -634,11 +634,7 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
                 }
             }
 
-
-
-            console.log("url:" + url);
             this.lastUrl = url;
-
             var jqxhr = $.getJSON(url, function(data) {
                     if (GuiUtils.isJsonError(data)) {
                         _this.displayMessage("Error: " + data.error);
