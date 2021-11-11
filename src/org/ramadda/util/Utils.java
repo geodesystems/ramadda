@@ -42,6 +42,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -51,6 +52,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -188,6 +190,20 @@ public class Utils extends IO {
         }
     }
 
+
+
+
+    public static String generatePassword(int length) throws Exception {
+	String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	chars = chars.toLowerCase()+chars +"0123456789";
+	Random r = new Random();
+	String password = "";
+	for(int i=0;i<length;i++) {
+	    char c = chars.charAt(r.nextInt(chars.length()));
+	    password+=c;
+	}
+	return password;
+    }
 
 
 
@@ -1874,16 +1890,16 @@ public class Utils extends IO {
 
 
     /** _more_ */
-    private static final java.util.Base64.Encoder base64Encoder =
-        java.util.Base64.getEncoder();
+    private static final Base64.Encoder base64Encoder =
+        Base64.getEncoder();
 
     /** _more_ */
-    private static final java.util.Base64.Decoder base64Decoder =
-        java.util.Base64.getDecoder();
+    private static final Base64.Decoder base64Decoder =
+        Base64.getDecoder();
 
     /** _more_ */
-    private static final java.util.Base64.Decoder base64MimeDecoder =
-        java.util.Base64.getMimeDecoder();
+    private static final Base64.Decoder base64MimeDecoder =
+        Base64.getMimeDecoder();
 
 
     /**
