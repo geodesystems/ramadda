@@ -61,6 +61,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
+
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.Transport;
@@ -79,13 +80,7 @@ import javax.mail.internet.MimeMessage;
 public class Admin extends RepositoryManager {
 
     /** _more_ */
-    public static final String PROP_INSTALL_PASSWORD =
-        "ramadda.install.password";
-
-
-    /** _more_ */
     public static final String ACTION_SHUTDOWN = "action.shutdown";
-
 
     /** _more_ */
     public static final String ACTION_CLEARCACHE = "action.clearcache";
@@ -285,7 +280,11 @@ public class Admin extends RepositoryManager {
     /**
      * _more_
      */
-    public void doFinalInitialization() {
+    public void doFinalInitialization() throws Exception {
+	//create the install password
+        String installPassword = getInstallPassword();
+
+
         if (getRepository().getProperty(PROP_ADMIN_INCLUDESQL, false)) {
             adminUrls.add(URL_ADMIN_SQL);
         }
@@ -496,10 +495,8 @@ public class Admin extends RepositoryManager {
 
         sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
                                  HtmlUtils.cssClass("registration-agree")));
-        sb.append(HtmlUtils.checkbox(ARG_AGREE, "true", false));
-        sb.append(HtmlUtils.space(2));
-        sb.append(
-            "I agree to the above license and conditions of use for the RAMADDA software");
+        sb.append(HtmlUtils.labeledCheckbox(ARG_AGREE, "true", false,
+					    "I agree to the above license and conditions of use for the RAMADDA software"));
         sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
 
         return sb.toString();
@@ -514,8 +511,34 @@ public class Admin extends RepositoryManager {
      * @return _more_
      */
     private String note(String s) {
-        return "<div class=\"ramadda-note\">" + s + "</div>\n";
+	return "<div class='ramadda-box-outer'><div class='ramadda-block ramadda-box ramadda-box-yellow  '>" + s +"</div></div>";
+	//        return "<div class=\"ramadda-box-yellow\">" + s + "</div>\n";
     }
+
+    private String  installPassword;
+
+    private String getInstallPassword() throws Exception {
+	if(!Utils.stringDefined(installPassword)) {
+	    installPassword = getRepository().getProperty(PROP_INSTALL_PASSWORD, (String)null);
+	}
+	if(!Utils.stringDefined(installPassword)) {
+	    //Generate an install password
+	    File install = new File(IOUtil.joinDir(getStorageManager().getRepositoryDir(),"install.properties"));
+	    //	    sb.append(ramadda.admin=admin:xxx
+	    if(!install.exists()) {
+		installPassword = Utils.generatePassword(8);
+		StringBuilder sb = new StringBuilder();
+		sb.append("#This is a generated password used in the install process\n");
+		sb.append(PROP_INSTALL_PASSWORD+"=" + installPassword+"\n\n");
+		try(FileOutputStream fos = new FileOutputStream(install)) {
+		    IOUtil.write(fos,sb.toString());
+		} 
+	    }
+	}
+	return installPassword;
+    }
+	
+
 
     /**
      * _more_
@@ -527,10 +550,8 @@ public class Admin extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result doInitialization(Request request) throws Exception {
-
-        String installPassword =
-            getRepository().getProperty(PROP_INSTALL_PASSWORD, "").trim();
-        if (installPassword.length() == 0) {
+        String installPassword = getInstallPassword();
+        if (!Utils.stringDefined(installPassword)) {
             return new Result(
                 "Install Error",
                 new StringBuffer(
@@ -573,16 +594,24 @@ public class Admin extends RepositoryManager {
 
         if ( !haveDoneInstallStep(ARG_ADMIN_INSTALLNOTICESHOWN)) {
             title = "Installation";
-            sb.append(
-                note("Thank you for trying out the Geode Systems RAMADDA Repository. Listed below is the RAMADDA home directory and database information. If you want to change these settings please consult the <a target=\"other\" href=\"" + HELP_ROOT + "/userguide/installing.html#home\">documentation</a> before continuing with the installation process."));
+	    String msg = "Thank you for trying RAMADDA. Listed below is the home directory and database information.";
+	    msg += " Consult the documentation to:<ul style='margin-bottom:0px;'>";
+	    msg += "<li> Set the <a target=\"_help\" href=\"https://geodesystems.com/repository/userguide/installing.html#home\">home directory</a> ";
+	    msg += "<li> Specify the <a target=_help href='https://geodesystems.com/repository/userguide/database.html'>database</a> ";
+	    msg += "<li> Configure <a target=_help href='https://geodesystems.com/repository/userguide/installing.html#ssl'>SSL</a> ";	    
+	    msg += "</ul>";
+	    msg+="If you change any of these settings be sure to restart your RAMADDA";
+	    sb.append(note(msg));
             sb.append(HtmlUtils.formTable());
 
-            getStorageManager().addInfo(sb);
+	    sb.append(HtmlUtils.formEntry("Home Directory:",
+					  getStorageManager().getRepositoryDir().toString()));
             getDatabaseManager().addInfo(sb);
+	    sb.append(HtmlUtils.formEntry(""," Since this configuration is web-based we use the install password to verify your identity."));
             sb.append(
                 HtmlUtils.formEntry(
                     msgLabel("Install Password"),
-                    HtmlUtils.input(PROP_INSTALL_PASSWORD, "")));
+                    HtmlUtils.input(PROP_INSTALL_PASSWORD, "")+" " + "Specified in " + getStorageManager().getRepositoryDir().toString()+"/install.propertes"));
             sb.append(HtmlUtils.formTableClose());
             sb.append(HtmlUtils.submit(msg("Next"),
                                        ARG_ADMIN_INSTALLNOTICESHOWN));
@@ -803,10 +832,12 @@ public class Admin extends RepositoryManager {
             //TODO: read the plugins.xml file and offer more plugins
             //than the hard coded all plugin
             for (String plugin : PluginManager.PLUGINS) {
+		String pluginName =IOUtil.stripExtension(IOUtil.getFileTail(plugin));
+		boolean dflt = !pluginName.equals("bioplugins");
                 sb.append(HtmlUtils.formEntry("",
-                        HtmlUtils.checkbox("plugin." + plugin, "true", true)
+                        HtmlUtils.checkbox("plugin." + plugin, "true", dflt)
                         + " " + "Install plugin: "
-                        + IOUtil.stripExtension(IOUtil.getFileTail(plugin))));
+                        + pluginName));
             }
             sb.append(HtmlUtils.formTableClose());
             sb.append(HtmlUtils.br());

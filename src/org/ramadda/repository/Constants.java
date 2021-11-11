@@ -365,6 +365,11 @@ public interface Constants {
 
 
     /** _more_ */
+    public static final String PROP_INSTALL_PASSWORD =
+        "ramadda.install.password";
+
+
+    /** _more_ */
     public static final String PROP_MAKESNAPSHOT = "makesnapshot";
 
     /** _more_ */
