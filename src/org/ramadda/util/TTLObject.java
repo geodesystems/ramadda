@@ -25,13 +25,18 @@ public class TTLObject<VALUE> {
     private TTLCache<String, VALUE> cache;
 
 
+    public TTLObject(long timeThresholdInMilliseconds) {
+        this(null, timeThresholdInMilliseconds,null);
+    }
+
+
     /**
      * ctor
      *
      * @param timeThresholdInMilliseconds time to live
      */
-    public TTLObject(long timeThresholdInMilliseconds) {
-        this(null, timeThresholdInMilliseconds);
+    public TTLObject(long timeThresholdInMilliseconds, String name) {
+        this(null, timeThresholdInMilliseconds,name);
     }
 
     /**
@@ -43,6 +48,10 @@ public class TTLObject<VALUE> {
         this(object, 1000 * 60 * 60);
     }
 
+    public TTLObject(VALUE object, String name) {
+        this(object, 1000 * 60 * 60,name);
+    }    
+
     /**
      * ctor.
      *
@@ -50,7 +59,11 @@ public class TTLObject<VALUE> {
      * @param timeThresholdInMilliseconds time in cache
      */
     public TTLObject(VALUE object, long timeThresholdInMilliseconds) {
-        cache = new TTLCache<String, VALUE>(timeThresholdInMilliseconds);
+	this(object, timeThresholdInMilliseconds,null);
+    }
+
+    public TTLObject(VALUE object, long timeThresholdInMilliseconds, String name) {	
+        cache = new TTLCache<String, VALUE>(timeThresholdInMilliseconds,-1,name);
         if (object != null) {
             put(object);
         }

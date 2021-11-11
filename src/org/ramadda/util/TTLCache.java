@@ -62,6 +62,10 @@ public class TTLCache<KEY, VALUE> {
     /** _more_ */
     public boolean debug = false;
 
+    /**  */
+    private String name;
+
+
     /**
      * default ctor. 1 hour in cache. No time reset. No size limit
      */
@@ -79,6 +83,10 @@ public class TTLCache<KEY, VALUE> {
         this(timeThresholdInMilliseconds, -1, false);
     }
 
+    public TTLCache(long timeThresholdInMilliseconds,String name) {
+        this(timeThresholdInMilliseconds, -1, false,name);
+    }
+
     /**
      * ctor. No time reset.
      *
@@ -90,9 +98,11 @@ public class TTLCache<KEY, VALUE> {
         this(timeThresholdInMilliseconds, sizeLimit, false);
     }
 
+    public TTLCache(long timeThresholdInMilliseconds, int sizeLimit,String name) {
+        this(timeThresholdInMilliseconds, sizeLimit, false,name);
+    }    
 
-    /**  */
-    String where;
+
 
     /**
      * ctor. No time reset.
@@ -104,14 +114,22 @@ public class TTLCache<KEY, VALUE> {
      */
     public TTLCache(long timeThresholdInMilliseconds, int sizeLimit,
                     boolean updateTimeOnGet) {
+        this(timeThresholdInMilliseconds, sizeLimit, updateTimeOnGet,null);
 
-        where                = Utils.getStack(1, "TTL").replaceAll("\n", " ");
+    }
+
+    public TTLCache(long timeThresholdInMilliseconds, int sizeLimit,
+                    boolean updateTimeOnGet, String name) {	
+	if(name==null)
+	    name = Utils.getStack(1, "TTL").replaceAll("\n", " ").replaceAll(".*\\((.*)\\.java.*","$1");
+	this.name = name;
+	System.err.println(name);
         this.timeThreshold   = timeThresholdInMilliseconds;
         this.sizeLimit       = sizeLimit;
         this.updateTimeOnGet = updateTimeOnGet;
         synchronized (MUTEX) {
             caches.add(this);
-            //      System.err.println("new TTLCache #caches:" + caches.size() +" where:" + where);
+            //      System.err.println("new TTLCache #caches:" + caches.size() +" cache:" + name);
             if (ttlRunnable == null) {
                 ttlRunnable = new Runnable() {
                     public void run() {
@@ -139,6 +157,16 @@ public class TTLCache<KEY, VALUE> {
             }
         }
     }
+
+    public static void getInfo(Appendable sb) throws Exception {
+        synchronized (MUTEX) {
+            for (TTLCache cache : caches) {
+		sb.append(cache.name +" size:" + cache.size() +"<br>");
+            }
+        }
+    }
+
+
 
     /**
      *
