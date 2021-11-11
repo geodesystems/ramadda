@@ -17,6 +17,7 @@ import org.ramadda.repository.output.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.Utils;
+import org.ramadda.util.TTLCache;
 
 import org.ramadda.util.sql.Clause;
 
@@ -1917,7 +1918,10 @@ public class Admin extends RepositoryManager {
                                             + ""));
 
 
-        getEntryManager().addStatusInfo(statusSB);
+	StringBuilder tmp = new StringBuilder();
+	TTLCache.getInfo(tmp);
+        HU.formEntry(statusSB,msgLabel("Caches"), tmp.toString());
+	//        getEntryManager().addStatusInfo(statusSB);
 
         statusSB.append(HtmlUtils.formTableClose());
 

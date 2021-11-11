@@ -74,7 +74,7 @@ public class AccessManager extends RepositoryManager {
 
     /** _more_ */
     private TTLCache<String, Object[]> recentPermissions =
-        new TTLCache<String, Object[]>(5 * 60 * 1000);
+        new TTLCache<String, Object[]>(5 * 60 * 1000,"Access Manager Permissions");
 
 
     /** _more_ */

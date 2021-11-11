@@ -281,7 +281,7 @@ public class EntryManager extends RepositoryManager {
         }
 
         if (rootCache == null) {
-            rootCache = new TTLObject<Entry>(60 * 60 * 1000);
+            rootCache = new TTLObject<Entry>(60 * 60 * 1000,"Entry Root" );
         }
         rootCache.put(topEntry);
 
@@ -482,7 +482,7 @@ public class EntryManager extends RepositoryManager {
                                             ENTRY_CACHE_TTL_MINUTES);
             //Convert to milliseconds
             entryCache = theCache = new TTLCache<String,
-		Entry>(cacheTimeMinutes * 60 * 1000, ENTRY_CACHE_LIMIT);
+		Entry>(cacheTimeMinutes * 60 * 1000, ENTRY_CACHE_LIMIT,"Entry Cache");
         }
         return theCache;
     }
@@ -497,7 +497,7 @@ public class EntryManager extends RepositoryManager {
         TTLCache<String, Entry> theCache = synthEntryCache;
         if (theCache == null) {
             synthEntryCache = theCache = new TTLCache<String,
-		Entry>(SYNTHENTRY_CACHE_TTL_MINUTES * 60 * 1000);
+		Entry>(SYNTHENTRY_CACHE_TTL_MINUTES * 60 * 1000,SYNTHENTRY_CACHE_LIMIT,"Synthetic Entry Cache");
         } else if (theCache.size() > SYNTHENTRY_CACHE_LIMIT) {
 	    theCache.clearCache();
         }

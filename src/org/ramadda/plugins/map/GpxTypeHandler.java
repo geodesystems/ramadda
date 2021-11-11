@@ -80,7 +80,7 @@ public class GpxTypeHandler extends PointTypeHandler {
 
     /**  */
     private static TTLCache<String, List<String>> extraTagsCache =
-        new TTLCache<String, List<String>>(60 * 60 * 1000);
+        new TTLCache<String, List<String>>(60 * 60 * 1000,"Gpx extra tags");
 
 
     /**

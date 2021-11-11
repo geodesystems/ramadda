@@ -68,7 +68,7 @@ public class DbaseTypeHandler extends PointTypeHandler implements WikiConstants 
             throws Exception {
         super(repository, node);
         //Create the cache with a 1 minute TTL
-        cache = new TTLCache<String, DbaseFile>(60 * 1000);
+        cache = new TTLCache<String, DbaseFile>(60 * 1000,"Dbase File Cache");
     }
 
     /**

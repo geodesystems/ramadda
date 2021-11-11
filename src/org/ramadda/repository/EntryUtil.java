@@ -56,7 +56,7 @@ public class EntryUtil extends RepositoryManager {
 
     /** _more_ */
     private TTLObject<Hashtable<String, Integer>> typeCache =
-        new TTLObject<Hashtable<String, Integer>>(60 * 60 * 1000);
+        new TTLObject<Hashtable<String, Integer>>(60 * 60 * 1000,"Entry Type Count Cache");
 
 
 

@@ -69,7 +69,7 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Json;
 import org.ramadda.util.MyTrace;
-
+import org.ramadda.util.TTLCache;
 
 
 import org.ramadda.util.PropertyProvider;
@@ -2761,7 +2761,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             getDatabaseManager().closeAndReleaseConnection(statement);
 
             if (dbProperties == null) {
-                dbProperties = new TTLObject<Properties>(5 * 60 * 1000);
+                dbProperties = new TTLObject<Properties>(5 * 60 * 1000,"Repository DB Properties");
             }
             dbProperties.put(tmp);
 
@@ -2801,6 +2801,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         } catch (Exception exc) {
             getLogManager().logError("Error reading globals", exc);
         }
+
+	TTLCache.clearCaches();
+
     }
 
 

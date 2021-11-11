@@ -134,7 +134,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         addType(OUTPUT_FIELDS_TABLE);
         addType(OUTPUT_FIELDS_LIST);
         //Create the cache with a 1 minute TTL
-        cache = new TTLCache<String, ShapefileWrapper>(60 * 1000) {
+        cache = new TTLCache<String, ShapefileWrapper>(60 * 1000,"Shapefile Cache") {
             @Override
             public void cacheRemove(ShapefileWrapper wrapper) {
                 IOUtil.close(wrapper.inputStream);

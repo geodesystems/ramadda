@@ -1334,7 +1334,7 @@ public class HtmlOutputHandler extends OutputHandler {
     /** _more_ */
     private TTLCache<String, StringBuffer> testCache = new TTLCache<String,
                                                            StringBuffer>(60
-                                                               * 60 * 1000);
+									 * 60 * 1000,-1,"HTML Test");
 
 
     /**
