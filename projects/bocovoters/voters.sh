@@ -70,8 +70,8 @@ do_prep() {
 
 #    ${csv}  -delimiter "|"  -dots ${dots}  -notcolumns "regex:(?i)BALLOT_.*"  -pattern res_city BOULDER  -p ${registered_voters} > voters_base.csv
 
-    ${csv}  -delimiter "|"  -dots ${dots}  -notcolumns "regex:(?i)BALLOT_.*"  -concat precinct,split "." precinct_split  -ifin  split source/boulder_splits.csv precinct_split -notcolumns precinct_split -p ${registered_voters} > voters_base.csv        
-
+    ${csv}  -delimiter "|"  -dots ${dots}  -notcolumns "regex:(?i)BALLOT_.*"  -concat precinct,split "." precinct_split  \
+	    -ifin  split source/boulder_splits.csv precinct_split -notcolumns precinct_split -p ${registered_voters} > voters_base.csv        
 
     ${csv} -if -pattern mail_addr1,mailing_country "^$" -copycolumns res_address mail_addr1  -endif\
 	   -if -pattern mailing_city,mailing_country "^$" -copycolumns res_city mailing_city  -endif \
@@ -80,7 +80,7 @@ do_prep() {
 	   -p voters_base.csv > ${source}
     ${csv} -columns res_address,res_city -change res_address " APT .*" "" -change res_address " UNIT .*" "" -trim res_address -unique res_address -insert "" state Colorado  -set 0 0 address -set 1 0 city -dots ${dots} -p ${source} > voters_addresses.csv
     ${csv} -sample 0.01  -p voters_addresses.csv > voters_addresses_short.csv        
-    rm voters_base.csv
+#    rm voters_base.csv
 }
 
 #do_prep
@@ -92,6 +92,59 @@ do_histogram() {
     file3=source/ce-068-2017.txt
     file4=source/ce-068-2021.txt    
     
+    echo "doing 2021 histogram"
+    ${csv} -delimiter "|" \
+	   -dots ${dots} \
+	   -ifin voter_id voters_boulder.csv  voter_id  \
+	   -p ${file4} > tmp.csv
+    exit
+
+    ${csv} -delimiter "|" \
+	   -dots ${dots} \
+	   -ifin voter_id voters_boulder.csv  voter_id  \	   
+	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" 05-NOV-09 \
+	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" ".*SEP.*" \
+	   -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "," "voted_date" \
+	   -change voted_date "," "" \
+	   -notpattern voted_date "" \
+	   -change voted_date "-19" "-2019" \
+	   -change voted_date "OCT" "10" \
+	   -change voted_date "NOV" "11" \
+	   -change voted_date "(..)-(..)-(....)" "\$3-\$2-\$1" \
+	   -change voted_date "(..)/(..)/(....)" "\$3-\$1-\$2" \
+	   -summary "count" precinct "" "voted_date" \
+	   -join precinct latitude,longitude source/boco_precincts.csv  precinct NaN \
+	   -sort voted_date \
+	   -addheader "voted_date.type date voted_date.format yyyy-MM-dd" \
+	   -p ${file4} > boulder_voting_2021_map.csv
+
+#    exit
+
+
+    ${csv} -delimiter "|" \
+	   -dots ${dots} \
+	   -ifin voter_id voters_boulder.csv  voter_id  \
+	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" 05-NOV-09 \
+	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" ".*SEP.*" \
+	   -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "," "voted_date" \
+	   -change voted_date "," "" \
+	   -notpattern voted_date "" \
+	   -change voted_date "-19" "-2019" \
+	   -change voted_date "OCT" "10" \
+	   -change voted_date "NOV" "11" \
+	   -change voted_date "(..)-(..)-(....)" "\$3-\$2-\$1" \
+	   -change voted_date "(..)/(..)/(....)" "\$3-\$1-\$2" \
+	   -func age "2021-_yob" \
+	   -summary "count,avg" voted_date age "" \
+	   -decimals age_avg 1\
+	   -gt count 20 \
+	   -sort voted_date \
+	   -addheader "voted_date.type date voted_date.format yyyy-MM-dd" \
+	   -p ${file4} > boulder_voting_2021_histogram.csv
+
+
+
+
     echo "doing 2017 histogram"
     ${csv} -delimiter "|" \
 	   -dots ${dots} \
@@ -114,29 +167,6 @@ do_histogram() {
 	   -addheader "voted_date.type date voted_date.format yyyy-MM-dd" \
 	   -p ${file3} > boulder_voting_2017_histogram.csv
 
-
-
-    echo "doing 2021 histogram"
-    ${csv} -delimiter "|" \
-	   -dots ${dots} \
-	   -ifin voter_id voters_boulder.csv  voter_id  \
-	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" 05-NOV-09 \
-	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" ".*SEP.*" \
-	   -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "," "voted_date" \
-	   -change voted_date "," "" \
-	   -notpattern voted_date "" \
-	   -change voted_date "-19" "-2019" \
-	   -change voted_date "OCT" "10" \
-	   -change voted_date "NOV" "11" \
-	   -change voted_date "(..)-(..)-(....)" "\$3-\$2-\$1" \
-	   -change voted_date "(..)/(..)/(....)" "\$3-\$1-\$2" \
-	   -func age "2021-_yob" \
-	   -summary "count,avg" voted_date age "" \
-	   -decimals age_avg 1\
-	   -gt count 20 \
-	   -sort voted_date \
-	   -addheader "voted_date.type date voted_date.format yyyy-MM-dd" \
-	   -p ${file4} > boulder_voting_2021_histogram.csv
     
 
     echo "doing 2019 histogram"
@@ -184,8 +214,8 @@ do_histogram() {
 
 }
 
-do_histogram
-exit
+#do_histogram
+#exit
     
 
 do_precincts() {
