@@ -123,7 +123,6 @@ public class TTLCache<KEY, VALUE> {
 	if(name==null)
 	    name = Utils.getStack(1, "TTL").replaceAll("\n", " ").replaceAll(".*\\((.*)\\.java.*","$1");
 	this.name = name;
-	System.err.println(name);
         this.timeThreshold   = timeThresholdInMilliseconds;
         this.sizeLimit       = sizeLimit;
         this.updateTimeOnGet = updateTimeOnGet;
