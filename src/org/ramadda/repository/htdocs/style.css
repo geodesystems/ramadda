@@ -3197,9 +3197,10 @@ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;
 }
 
 .ramadda-user-field, .ramadda-user-field:focus  {
-    padding-left: 18px;
+
     border : 1px #888888 solid;
-    background: URL(icons/user.png) no-repeat;
+/*        padding-left: 18px;
+	  background: URL(icons/user.png) no-repeat;*/
     background-position: 1px 1px;
 }
 
