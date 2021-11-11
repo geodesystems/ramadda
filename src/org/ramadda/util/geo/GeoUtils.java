@@ -39,8 +39,6 @@ import java.util.TimeZone;
 
 /**
  * A set of utility methods for dealing with geographic things
- * Note: this was originally in the  the NLAS SF SVN repository AND the
- * Unavco GSAC SVN repository.
  *
  * @author  Jeff McWhirter
  */
