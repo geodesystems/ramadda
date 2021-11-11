@@ -7,4 +7,4 @@ sh csv.sh -columns "0,1,2" -print input.csv
 
 
 Help:
-https://geodesystems.com/repository/userguide/etl.html
+csvhelp.html

@@ -2030,7 +2030,7 @@ public abstract class DataProvider {
 
             tokenizer = StrTokenizer.getCSVInstance();
             tokenizer.setEmptyTokenAsNull(true);
-            tabula = csvUtil.getProperty("ramadda_tabula");
+            tabula = csvUtil.getProperty("RAMADDA_TABULA");
         }
 
 

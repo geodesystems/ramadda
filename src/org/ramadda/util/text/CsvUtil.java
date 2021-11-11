@@ -1336,10 +1336,10 @@ public class CsvUtil {
          */
         public Arg(String id, String desc, String... props) {
             if ((desc.length() == 0) && id.equals("columns")) {
-                desc = "Column indices, one per line.<br>Can include ranges, e.g. 0-5";
+                desc = "Column indices.<br>Can include ranges, e.g. 0-5";
             }
             if ((desc.length() == 0) && id.equals("rows")) {
-                desc = "Row indices, one per line.<br>Can include ranges, e.g. 0-5";
+                desc = "Row indices.<br>Can include ranges, e.g. 0-5";
             }
             this.id    = id;
             this.desc  = desc;
@@ -1348,27 +1348,6 @@ public class CsvUtil {
     }
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sun, Apr 5, '20
-     * @author         Enter your name here...
-     */
-    public static class Label {
-
-        /** _more_ */
-        String label;
-
-        /**
-         * _more_
-         *
-         * @param l _more_
-         */
-        public Label(String l) {
-            this.label = l;
-        }
-    }
 
 
     /**
@@ -1401,11 +1380,16 @@ public class CsvUtil {
          * @param isCat _more_
          * @param category _more_
          */
-        public Cmd(boolean isCat, String category) {
+        public Cmd(boolean isCat, String category,String desc) {
             this.category = isCat;
-            this.desc     = category;
+	    this.cmd = category;
+            this.desc     = desc;
         }
 
+
+        public Cmd(boolean isCat, String category) {
+	    this(isCat, category,"");
+	}
 
         /**
          * _more_
@@ -1415,21 +1399,6 @@ public class CsvUtil {
          * @param desc _more_
          */
         public Cmd(String cmd, String desc, Object... args) {
-            this(cmd, (Label) null, desc, args);
-        }
-
-        /**
-         * _more_
-         *
-         * @param cmd _more_
-         * @param label _more_
-         * @param desc _more_
-         * @param args _more_
-         */
-        public Cmd(String cmd, Label label, String desc, Object... args) {
-            if (label != null) {
-                this.label = label.label;
-            }
             this.cmd  = cmd;
             this.desc = desc;
             for (Object obj : args) {
@@ -1481,7 +1450,7 @@ public class CsvUtil {
                 "print help that matches topic"),
 
         /** * Input   * */
-        new Cmd(true, "Input"),
+        new Cmd(true, "Input","Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XML, Shapefile, etc"),
         new Cmd("-delimiter", "Specify a delimiter",
                 new Arg("delimiter", "Use 'space' for space, 'tab' for tab",
                         "size", "5")),
@@ -1498,8 +1467,7 @@ public class CsvUtil {
 					   "40"), new Arg("properties",
 							  "Other attributes - <br>&nbsp;&nbsp;removeEntity false removePattern pattern exrtractUrls true column1.extractUrls true stripTags false column1.stripTags false",
 							  "rows", "6", "size", "40")),
-        new Cmd("-htmlpattern", new Label("Extract from html"),
-                "Parse the input html file",
+        new Cmd("-htmlpattern", "Parse the input html file",
                 new Arg("columns", "Column names", "type", "columns"),
                 new Arg("startPattern", "", "type", "pattern"),
                 new Arg("endPattern", "", "type", "pattern"),
@@ -1520,11 +1488,11 @@ public class CsvUtil {
 							"list", "size", "30")),
         new Cmd("-geojson", "Parse the input as geojson",new Arg("includePolygon","true|false Include polygon")),
         new Cmd("-lines", "Parse the input as text lines"),
-        new Cmd("-pdf", "Read input from a PDF file"),	
+        new Cmd("-pdf", "Read input from a PDF file. The RAMADDA_TABULA environment variable needs to be set to the tabula.sh file found in this release"),	
         new Cmd("-xml", "Parse the input as xml",
                 new Arg("path", "Path to the elements", "size", "60")),
         new Cmd("-shapefile", "Parse the input shapefile",
-                new Arg("props", "addPoints true addShapes false")),	
+                new Arg("props", "\"addPoints true addShapes false\"")),	
         new Cmd("-text", "Extract rows from the text",
                 new Arg("comma separated header"),
                 new Arg("chunk pattern", "", "type", "pattern"),
@@ -1548,8 +1516,7 @@ public class CsvUtil {
         new Cmd("-prune", "Prune out the first N bytes",
                 new Arg("bytes", "Number of leading bytes to remove", "type",
                         "number")),
-        new Cmd("-deheader", new Label("Remove the  header"),
-		"Strip off the point header"),
+        new Cmd("-deheader", "Strip off the RAMADDA point header"),
         new Cmd("-headernames", "Clean up names"),
         new Cmd("-cat", "One or more csv files", "*.csv"),
 
@@ -1557,7 +1524,7 @@ public class CsvUtil {
         new Cmd(true, "Filter"),
         new Cmd("-skiplines", "Skip number of raw lines.",
                 new Arg("lines", "How many raw lines to skip", "type", "number")),	
-        new Cmd("-if", "Next N args specify a filter command followed by any change commands followed by an -endif"),
+        new Cmd("-if", "Next N args specify a filter command followed by any change commands followed by an -endif. e.g.: -if -pattern column string -change column .* XXX  -endif"),
         new Cmd("-start", "Start at pattern in source file",
                 new Arg("start pattern", "", "type", "pattern")),
         new Cmd("-stop", "End at pattern in source file",
@@ -1591,56 +1558,48 @@ public class CsvUtil {
                 new Arg("column1", "", "type", "column"),
                 new Arg("column2", "", "type", "column")),			
         new Cmd("-unique", "Pass through unique values", new Arg("columns")),
-        new Cmd("-dups", new Label("Duplicate values"),
-                "Pass through duplicate values", new Arg("columns")),
+        new Cmd("-dups", "Pass through duplicate values", new Arg("columns")),
         new Cmd("-sample", "Pass through rows based on probablity",
                 new Arg("probablity", "0-1 probability of passing through a row")),
-        new Cmd("-maxvalue", new Label("Max value"), "", "key column",
-                "value column"),
-        new Cmd("-eq", new Label("Equals"),
-                "Extract rows that pass the expression",
+        new Cmd("-maxvalue",  "Pass through the row that has the max value in the group of columns defined by the key column", new Arg("key column"),
+                new Arg("value column")),
+        new Cmd("-eq", "Pass through rows that the column value equals the given value",
                 new Arg("column", "", "type", "column"), new Arg("value")),
-        new Cmd("-ne", new Label("Not equals"),
-                "Extract rows that pass the expression",
+        new Cmd("-ne", "Pass through rows that the column value does not equal the given value",
                 new Arg("column", "", "type", "column"), new Arg("value")),
-        new Cmd("-gt", new Label("Greater than"),
-                "Extract rows that pass the expression",
+        new Cmd("-gt", "Pass through rows that the column value is greater than the given value",
                 new Arg("column", "", "type", "column"), new Arg("value")),
-        new Cmd("-ge", new Label("Greater than/equals"),
-                "Extract rows that pass the expression",
+        new Cmd("-ge", "Pass through rows that the column value is greater than or equals the given value",
                 new Arg("column", "", "type", "column"), new Arg("value")),
-        new Cmd("-lt", new Label("Less than"),
-                "Extract rows that pass the expression",
+        new Cmd("-lt", "Pass through rows that the column value is less than the given value",
                 new Arg("column", "", "type", "column"), new Arg("value")),
-        new Cmd("-le", new Label("Less than/equals"),
-                "Extract rows that pass the expression",
+        new Cmd("-le", "Pass through rows that the column value is less than or equals the given value",
                 new Arg("column", "", "type", "column"), new Arg("value")),
-        new Cmd("-between", new Label("Between"),
-                "Extract rows that are within the range",
+        new Cmd("-between", "Extract rows that are within the range",
                 new Arg("column", "", "type", "column"), new Arg("min value"),new Arg("max value")),
 
-	new Cmd("-notbetween", new Label("Not between"),
-                "Extract rows that are not within the range",
+	new Cmd("-notbetween","Extract rows that are not within the range",
                 new Arg("column", "", "type", "column"), new Arg("min value"),new Arg("max value")),
-
-        new Cmd("-groupfilter", new Label("Group filter"),
-                "One row in each group has to match",
-                new Arg("column", "", "type", "column"),
+        new Cmd("-groupfilter", "One row in each group has to match",
+                new Arg("column", "key column", "type", "column"),
                 new Arg("value_column", "Value column", "type", "column"),
                 new Arg("operator", "", "values", "=,!=,~,<,<=,>,>="),
                 new Arg("value")),
-        new Cmd("-before", new Label("Before date"), "",
-                new Arg("column", "", "type", "column"), new Arg("format"),
-                new Arg("date"), new Arg("format2")),
-        new Cmd("-after", new Label("After date"), "",
-                new Arg("column", "", "type", "column"), new Arg("format"),
-                new Arg("date"), new Arg("format2")),
-        new Cmd("-latest", new Label("Latest date"), "",
+        new Cmd("-before", "Pass through rows whose date is before the given date",
+                new Arg("column", "", "type", "column"),
+		new Arg("format","Date Format, e.g. yyyy-MM-dd"),
+                new Arg("date"),
+		new Arg("format2","Date Format, e.g. yyyy-MM-dd")),
+        new Cmd("-after", "Pass through rows whose date is after the given date",
+                new Arg("column", "", "type", "column"), 
+		new Arg("format","Date Format, e.g. yyyy-MM-dd"),
+                new Arg("date"),
+		new Arg("format2","Date Format, e.g. yyyy-MM-dd")),
+        new Cmd("-latest", "Pass through rows whose date is the latest in the group of rows defined by the key column",
                 new Arg("columns", "Key columns", "type", "columns"),
                 new Arg("column", "Date column", "type", "column"),
-                new Arg("format")),
-        new Cmd("-countvalue", new Label("Max unique values"),
-                "No more than count unique values",
+                new Arg("format"),"Date Format, e.g. yyyy-MM-dd"),
+        new Cmd("-countvalue", "No more than count unique values",
                 new Arg("column", "", "type", "column"), new Arg("count")),
         new Cmd("-decimate", "only include every <skip factor> row",
                 new Arg("rows", "# of start rows to include"),
@@ -1665,49 +1624,37 @@ public class CsvUtil {
 
         /** *  Slice and dice * */
         new Cmd(true, "Slice and Dice"),
-        new Cmd("-columns", new Label("Select columns"),
-                "Only include the given columns",
+        new Cmd("-columns",  "Only include the given columns",
                 new Arg("columns", "", "type", "columns")),
-        new Cmd("-notcolumns", new Label("Deselect columns"),
-                "Don't include given columns",
+        new Cmd("-notcolumns", "Don't include given columns",
                 new Arg("columns", "", "type", "columns")),
-        new Cmd("-firstcolumns", new Label("Move columns to start"),
-                "Move columns",
+        new Cmd("-firstcolumns", "Move columns to beginning",
                 new Arg("columns", "", "type", "columns")),
-        new Cmd("-columnsbefore", new Label("Move columns before given column"),
-                "Move columns",
+        new Cmd("-columnsbefore", "Move columns before the given column",
                 new Arg("column", "Column to move before", "type", "column"),
                 new Arg("columns", "Columns to move", "type", "columns")),
-        new Cmd("-columnsafter", new Label("Move columns after given column"),
-                "Move columns",
+        new Cmd("-columnsafter", "Move columns after given column",
                 new Arg("column", "Column to move after", "type", "column"),
                 new Arg("columns", "Columns to move", "type", "columns")),	
-
-
-        new Cmd("-delete", new Label("Delete columns"), "Remove the columns",
+        new Cmd("-delete", "Remove the columns",
                 new Arg("columns", "", "type", "columns")),
-        new Cmd("-cut", new Label("Drop rows"), "",
+        new Cmd("-cut", "Drop rows",
                 new Arg("rows",
                         "One or more rows. -1 to the end. e.g., 0-3,5,10,-1",
                         "type", "rows")),
-        new Cmd("-include", new Label("Include rows"),
-                "Only include specified rows",
+        new Cmd("-include", "Only include specified rows",
                 new Arg("rows", "one or more rows, -1 to the end", "type",
                         "rows")),
-	new Cmd("-rows_first", new Label("Move rows that match"),
-                "Move rows to the top that match the pattern",
+	new Cmd("-rows_first", "Move rows to the top that match the pattern",
                 new Arg("columns", "columns to match on", "type",  "columns"),
                 new Arg("pattern", "Pattern")),
-	new Cmd("-rows_last", new Label("Move rows that match"),
-                "Move rows to the end of list that match the pattern",
+	new Cmd("-rows_last", "Move rows to the end of list that match the pattern",
                 new Arg("columns", "columns to match on", "type",  "columns"),
                 new Arg("pattern", "Pattern")),
 
-        new Cmd("-copy", new Label("Copy column"), "",
+        new Cmd("-copy", "Copy column",
                 new Arg("column", "", "type", "column"), "name"),
-        new Cmd(
-		"-insert", new Label("Insert column"),
-		"Insert new column values",
+        new Cmd("-insert","Insert new column values",
 		new Arg("column", "Column to insert before", "type", "column"),
 		new Arg("name", "Name of new column"),		
 		new Arg(
@@ -1726,8 +1673,7 @@ public class CsvUtil {
                 "Create a new column from the values in the given column",
                 "key col", new Arg("column", "", "type", "column"),
                 "delimiter", new Arg("name", "new column name")),
-        new Cmd("-shift", new Label("Shift columns"),
-                "Shift columns over by count for given rows",
+        new Cmd("-shift", "Shift columns over by count for given rows",
                 new Arg("rows", "Rows to apply to", "type", "rows"),
                 new Arg("column", "Column to start at", "type", "column"),
                 new Arg("count")),
@@ -1736,17 +1682,14 @@ public class CsvUtil {
                 new Arg("columns", "Columns to move", "type", "columns"),
                 new Arg("dest", "Desc column to move to", "type", "column"),
                 new Arg("fill", "Comma separated list of values to fill out the new row")),				
-        new Cmd("-addcell", new Label("Add cell"),
-                "Add a new cell at row/column", new Arg("row"),
+        new Cmd("-addcell", "Add a new cell at row/column", new Arg("row"),
                 new Arg("column", "", "type", "column"), "value"),
-        new Cmd("-deletecell", new Label("Delete cell"),
-                "Delete cell at row/column", new Arg("row"),
+        new Cmd("-deletecell",  "Delete cell at row/column", new Arg("row"),
                 new Arg("column", "", "type", "column")),
-        new Cmd("-mergerows", new Label("Merge rows"), "",
+        new Cmd("-mergerows", "Merge rows",
                 new Arg("rows", "2 or more rows", "type", "rows"),
                 new Arg("delimiter"), new Arg("close")),
-        new Cmd("-rowop", new Label("Row Operator"),
-                "Apply an operator to columns and merge rows",
+        new Cmd("-rowop", "Apply an operator to columns and merge rows",
                 new Arg("keys", "Key columns", "type", "columns"),
                 new Arg("values", "Value columns", "type", "columns"),
                 new Arg("operator", "Operator", "values",
@@ -1920,11 +1863,11 @@ public class CsvUtil {
                 "Combine columns with the delimiter. deleting columns",
                 new Arg("column", "", "type", "columns"), "delimiter",
                 "new column name"),
-        new Cmd("-combineinplace", new Label("Combine in place"),
-                "Combine columns with the delimiter",
+        new Cmd("-combineinplace", "Combine columns with the delimiter",
                 new Arg("column", "", "type", "columns"), "delimiter",
                 "new column name"),
-        new Cmd("-format", "", new Arg("columns", "", "type", "columns"),
+        new Cmd("-format", "Apply decimal format to the columns", 
+		new Arg("columns", "", "type", "columns"),
                 new Arg("format", "Decimal format  e.g. '##0.00'")),
         new Cmd(
 		"-denormalize",
@@ -1970,27 +1913,24 @@ public class CsvUtil {
 
         /** *  Dates * */
         new Cmd(true, "Dates"),
-        new Cmd("-dateformat", new Label("Specify date format for later use"),  "",
+        new Cmd("-dateformat", "Specify date format for later use",
                 new Arg("format", "e.g. yyyy-MM-dd HH:mm:ss"),
 		new Arg("timezone", "")),
 
-        new Cmd("-convertdate", new Label("Convert date"), "",
+        new Cmd("-convertdate", "Convert date", 
                 new Arg("column", "", "type", "columns"),
                 new Arg("destformat", "date format")),
 
-        new Cmd(
-		"-extractdate", new Label("Extract date"), "",
+        new Cmd("-extractdate", "Extract date",
 		new Arg("date column", "", "type", "column"),
-		new Arg(
-			"what", "What to extract, e.g., year, month, day_of_week, etc", "values",
+		new Arg("what", "What to extract, e.g., year, month, day_of_week, etc", "values",
 			"era,year,month,day_of_month,day_of_week,week_of_month,day_of_week_in_month,am_pm,hour,hour_of_day,minute,second,millisecond")),
 
-        new Cmd("-formatdate", new Label("Format date"), "",
+        new Cmd("-formatdate", "Format date",
                 new Arg("columns"), "target date format"),
 
-        new Cmd("-elapsed", new Label("Calculate elapsed time between rows"), "Writes milliseconds",
+        new Cmd("-elapsed", "Calculate elapsed time (ms) between rows",
                 new Arg("column")),
-
 
         /** *  Numeric * */
         new Cmd(true, "Numeric/Boolean"),
@@ -2048,14 +1988,14 @@ public class CsvUtil {
         new Cmd("-column_not", "Not value", new Arg("name","New column name"), new Arg("column", "", "type", "column")),		
 
         /** * Geocode  * */
-        new Cmd(true, "Geocode"),
-        new Cmd("-geocode", "", new Arg("columns", "", "type", "columns"),
-                new Arg("prefix", "e.g., state: or county:"),
+        new Cmd("-geocode", 
+		"Specify prefix to use internal tables. Else, defaults to using US Census geocode API. To use Google geocoding set the environment variable:<br>GOOGLE_API_KEY=...<br>To use geocod.io set the environment variable:<br>GEOCIDEIO_API_KEY=...", 
+		new Arg("columns", "", "type", "columns"),
+                new Arg("prefix", "optional prefix e.g., state: or county: or country:"),
                 new Arg("suffix")),
-        new Cmd("-geocodeaddressdb", new Label("Geocode address for DB"), "",
+        new Cmd("-geocodeaddressdb", "Geocode address for DB", 
                 new Arg("columns"), "prefix", "suffix"),
-        new Cmd("-geocodejoin", new Label("Geocode with file"),
-                "Geocode with file",
+        new Cmd("-geocodejoin", "Geocode with file",
                 new Arg("column", "", "type", "columns"),
                 new Arg("csv file", "File to get lat/lon from", "type",
                         "file"), "name idx", "lat idx", "lon idx"),
@@ -2069,13 +2009,13 @@ public class CsvUtil {
                 new Arg("lat", "Latitude column", "type", "column"),
                 new Arg("lon", "Longitude column", "type", "column")),	
 
-        new Cmd("-mercator", "Convert x/y to lon/lat", new Arg("columns")),
+        new Cmd("-mercator", "Convert x/y to lon/lat", new Arg("columns","x and y columns")),
         new Cmd("-region", "Add the state's region",
-                new Arg("columns", "", "type", "columns")),
+                new Arg("columns", "Columns with state name or abbrev.", "type", "columns")),
         new Cmd("-population", "Add in population from address",
                 new Arg("columns", "", "type", "columns"),
                 new Arg("prefix", "e.g., state: or county:"), "suffix"),
-	new Cmd("-neighborhood", "Look up neighborhood",
+	new Cmd("-neighborhood", "Look up neighborhood using precisely.com. Set the env var:<br>PRECISELY_API_KEY=...",
                 new Arg("lat", "Latitude column", "type", "column"),
                 new Arg("lon", "Longitude column", "type", "column")),	
 
@@ -2099,18 +2039,16 @@ public class CsvUtil {
 		new Arg("name","Macro name"),
 		new Arg("pattern","Pattern")),		
         new Cmd("-maxrows", "", "Max rows to print"),
-        new Cmd("-changeline", new Label("Change line"), "Change the line",
+        new Cmd("-changeline",  "Change the line",
                 "from", "to"),
-        new Cmd("-changeraw", new Label("Change input"), "Change input text",
-                "from", "to"),
-        new Cmd("-crop", new Label("Crop string"),
-                "Crop last part of string after any of the patterns",
+        new Cmd("-changeraw",  "Change input text",
+                new Arg("from","From pattern"),
+		new Arg("to","To string")),
+        new Cmd("-crop",  "Crop last part of string after any of the patterns",
                 "columns", "pattern1,pattern2"),
-        new Cmd(
-		"-strict",
+        new Cmd("-strict",
 		"Be strict on columns. any rows that are not the size of the other rows are dropped"),
-        new Cmd(
-		"-flag",
+        new Cmd("-flag",
 		"Be strict on columns. any rows that are not the size of the other rows are shown"),
         new Cmd("-verify",
                 "Throw error if a row has a different number of columns",
@@ -2139,8 +2077,7 @@ public class CsvUtil {
                         "6"), new Arg("delimiter", "Output between rows",
                                       "size", "40"), new Arg("suffix", "",
 							     "size", "40")),
-        new Cmd("-addheader", new Label("Add header"),
-                "Add the RAMADDA point properties",
+        new Cmd("-addheader", "Add the RAMADDA point properties",
                 new Arg("properties", "name1 value1 ... nameN valueN",
                         "rows", "6")),
         new Cmd(
@@ -2327,11 +2264,62 @@ public class CsvUtil {
      * @throws Exception _more_
      */
     public void genHelp() throws Exception {
-        PrintWriter pw = new PrintWriter(getOutputStream());
+	StringBuilder sb = new StringBuilder();
+	StringBuilder header = new StringBuilder();	
+
+	boolean open = false;
         for (Cmd c : commands) {
-            pw.println("[etl {" + c.cmd + "} {" + c.args + "} {" + c.desc
-                       + "}]");
+	    if(c.category) {
+		if(open) sb.append("</ul><br>");
+		open = true;
+		if(header.length()>0) header.append(" | ");
+		header.append("<a href='#" + c.cmd +"'>" + c.cmd+"</a>");
+		sb.append("<a name='" + c.cmd+"'></a>");
+		sb.append("<b style='font-size:120%;'>" + c.cmd+"</b><br>\n");
+		sb.append(c.desc);
+		continue;
+	    }
+	    if(c.cmd.startsWith("-help")) continue;
+	    sb.append("<pre> <i>" + c.cmd+"</i> ");
+	    for(Arg arg: c.args) {
+		sb.append(" &lt;" +arg.id+"&gt; ");
+	    }
+	    sb.append("</pre><ul>");
+	    if(Utils.stringDefined(c.desc)) {
+		sb.append(c.desc);
+		sb.append("<br>\n");
+	    }
+	    if(c.args.size()>0) {
+		sb.append("<b>Arguments:</b><br>\n");
+		for(Arg arg: c.args) {
+		    sb.append("<i>" +arg.id+"</i>\n");
+		    if(Utils.stringDefined(arg.desc)) sb.append(arg.desc.replace("<br>"," "));
+		    for(int i=0;i<arg.props.length;i+=2) {
+			if(arg.props[i].equals("values"))
+			    sb.append(" values:" + arg.props[i+1]+" "); 
+		    }
+		    sb.append("<br>\n");
+		}
+	    }
+	    sb.append("<br>\n");
+	    sb.append("</ul>\n");
+
+	    // {" + c.cmd + "} {" + c.args + "} {" + c.desc + "}]");
         }
+	sb.append("</ul>\n");
+
+        PrintWriter pw = new PrintWriter(getOutputStream());
+
+	pw.println("<style type='text/css'>body {font-family: Arial, sans-serif;} ul {margin:0px;} 	pre {border : 1px #ccc solid; background:rgb(245,245,245); padding:4px; border-radius: 4px; margin-bottom:5px; margin-top:5px;}</style>");
+	pw.println("<h2>RAMADDA CSV Utils Commands</h2>");
+	pw.append("<center>" + header.toString() +"</center>");
+	pw.println("<b style='font-size:120%;'>" + "Install"+"</b><ul>");
+	pw.println("<li> Download the csvutil.zip file from the RAMADDA <a href=https://geodesystems.com/repository/alias/release>download</a> site");
+	pw.println("<li> Unzip the file");
+	pw.println("<li> Consult the README");	
+	pw.println("<li> Usage:<br> csv.sh &lt;any number of commands&gt; -p &ltinput file&gt; &gt; output file");
+	pw.println("</ul><p>");
+	pw.append(sb);
         pw.flush();
     }
 
