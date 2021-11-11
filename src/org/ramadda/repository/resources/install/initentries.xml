@@ -13,11 +13,10 @@
 <description>A place to store data</description>
 </entry>
 
+<!-- not now
 <entry parent="root" name="Utilities" type="group" id="utilities">
 <description></description>
 </entry>
-
-
 
 <entry parent="utilities" name="All entries created in the last 1 days" type="type_virtual" >
 <description>Entries created in the last day</description>
@@ -61,7 +60,7 @@ innerHeight="200"
 -section
 ]]></wikitext>
 </entry>
-
+-->
 
 
 </entries>

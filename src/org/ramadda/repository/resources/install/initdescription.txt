@@ -1,26 +1,24 @@
 <wiki>
-<!-- 
++skip
 Hi, this is RAMADDA's wiki text. The wiki tag above tells RAMADDA to treat this description as wiki
 The +section, +row, +col etc tags do the layout
 Documentation here: http://geodesystems.com/repository/userguide/wikitext.html
--->
+-skip
 +section title="Welcome to your RAMADDA" #
 +row
-+col-md-6
-:heading Thanks
-Thank you for trying RAMADDA. If you have any problems or suggestions please send a note to <a href="mailto:support@geodesystems.com">support@geodesystems.com</a>.
-<p>
-Jeff McWhirter
++col-md-4
++box
+Thanks for trying RAMADDA. If you have any problems or suggestions please send a note to <a href="mailto:support@geodesystems.com">support@geodesystems.com</a>
 <br>
-President, Geode Systems
+Jeff McWhirter
+-box
 -col
-+col-md-6
-:heading Next Steps
-* <a  href="${root}/user/login">Login</a> to <a href="${root}/admin/settings">administer</a> your RAMADDA.
-* <a href="${root}/entry/form?entryid=${topid}">Edit</a> this page (you must login to edit) - <a target="_docs" href="http://geodesystems.com/repository/userguide/wikitext.html">Documentation</a>
-* Create new <a href="${root}/entry/form?group=${topid}&type=group">folders</a> or upload <a href="${root}/entry/form?group=${topid}&type=file">files</a>. 
-* Lots of ways to view and edit this page with the <img src="${root}/icons/menu_arrow.gif"> menu above. 
-* <a href="${root}/search/form">Search</a> this repository
++col-md-8
+* Use the <i class="fas fa-cog"></i> icon above to <a  href="/repository/user/login">login</a> and <a href="/repository/admin/settings">administer</a> your RAMADDA
+* <a href="/repository/entry/form?entryid=13cd5246-0672-46cb-b68d-ab7b671a7cbe">Edit</a> this page - <a target="_docs" href="http://geodesystems.com/repository/userguide/wikitext.html">Documentation</a>
+* Lots of ways to view and edit this page with the <i class="fas fa-caret-down"></i> menu above
+* Create new <a href="/repository/entry/form?group=13cd5246-0672-46cb-b68d-ab7b671a7cbe&type=group">folders</a> or upload <a href="/repository/entry/form?group=13cd5246-0672-46cb-b68d-ab7b671a7cbe&type=file">files</a>
+* <a href="/repository/search/form">Search</a> this repository
 <p>
 -col
 -row
