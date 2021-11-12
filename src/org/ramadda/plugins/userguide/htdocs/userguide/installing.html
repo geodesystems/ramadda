@@ -8,7 +8,7 @@
 <body>
 <div class="ramadda-documentation">
 <table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
-<a href="page_installationandsiteadministration.html"><span title="Previous: Installation and Site Administration"><i class="fa fa-caret-left "></i></span></a> <a href="aws.html"><span title="Next: Installing on Amazon AWS"><i class="fa fa-caret-right "></i></span></a>  <a href="toc.html#installing.html"><span title="Table of contents"><i class="fa fa-list "></i></span></a>
+<a href="page_installationandsiteadministration.html"><span title="Previous: Installation and Site Administration"><i  style='font-size:20pt;'  class="fa fa-caret-left "></i></span></a> <a href="aws.html"><span title="Next: Installing on Amazon AWS"><i  style='font-size:20pt;'  class="fa fa-caret-right "></i></span></a>  <a href="toc.html#installing.html"><span title="Table of contents"><i  style='font-size:20pt;'  class="fa fa-list "></i></span></a>
 </td>
 <td width=40% align=center>
 <div class="ramadda-page-title"><a href="${root}/userguide/index.html">RAMADDA User Guide</a></div>
@@ -27,7 +27,9 @@ pre {
 
 
 
++callout-info
 There are a few things you need to figure out to install RAMADDA:
+-callout
 
 <ol>
 
@@ -39,7 +41,7 @@ a servlet container like <a href="#tomcat">Tomcat</a>.
 
 <li> Where is RAMADDA going to store files? <br>
 RAMADDA needs a <a href="#home">home directory</a> on your server to store files, databases, etc.
-
+When RAMADDA first starts up it will create a number of directories and files in this home directory.
 <p>
 
 
@@ -47,21 +49,13 @@ RAMADDA needs a <a href="#home">home directory</a> on your server to store files
 RAMADDA comes with its own built-in  database  (Java Derby) but 
 can be easily <a href='database.html'>configured</a> to use other databases.
 
+<p>  
+
+<li> Configure <a href="#ssl">https (SSL) </a> access. 
+
 <p>
 
-
-<li> Configure RAMADDA<br>
-<div class="ramadda-box-yellow">
-You must create the home directory first  and add a &lt;some_file_name&gt;.properties file to it. This .properties file must have the following property set in order to finish the initial web-based installation. When you go to the web to install you will be prompted for this password. 
-
-<pre>
-ramadda.install.password=&lt;some password&gt; 
-</pre>
-</div>
-
-
-<ul>
-<li> Once installed and running you can finish the configuration process through your browser by going to:<pre>
+<li> Once installed and running the last steps of the configuration process are done through your browser. Go to:<pre>
 <i>http://&lt;hostname&gt;:&lt;port&gt;/repository </i>
 </pre>
 
@@ -69,11 +63,14 @@ If you are running on your local machine you go to:<pre>
 <a href="http://localhost:8080/repository">http://localhost:8080/repository</a>
 </pre>
 
+To ensure only authenticated users can do this final configuration step RAMADDA will prompt for an install password.
+You can find the install password on your server in:<pre>
+    &lt;RAMADDA home directory&gt;/install.properties
+</pre>
+
+
 <p>
 
-<li> <b>Important!</b>. For security you really should configure <a href="#ssl">https (SSL) </a> access. 
-
-<p>
 <li>  Do further  <a href="#configuration">site configuration</a>.
 
 <p>
@@ -93,15 +90,8 @@ See <a href='aws.html'>aws.html</a> for further details.
 You can run RAMADDA stand-alone from the command line. This requires  Java 1.7 or greater. 
 
 <ol>
-<li>
-Download the ramaddaserver.zip from the 
-<a href="http://geodesystems.com/repository/alias/release">Geode Systems</a> site.
-
-<p>
+<li> Download the ramaddaserver.zip from the <a href="http://geodesystems.com/repository/alias/release">Geode Systems</a> site.
 <li> Unzip the file and consult the README.
-
-<br>
-
 <li> Or, skip reading the documentation and jump right in and start RAMADDA.  Figure out where you want RAMADDA to store files in its <a href="#home">home directory</a>. The default is <i>&lt;your home dir&gt;/.ramadda</i>. To run RAMADDA there must
 be a home directory already created and it must contain a .properties file with:
 
@@ -137,24 +127,15 @@ This assumes you have Tomcat or some other servlet (e.g., Glassfish) container a
 
 <ol>
 <li> First,  download the repository.war from the <a href="http://geodesystems.com/repository/alias/release>">Geode Systems</a> site.
-
-
-<p>
-
 <li> Specify the location of the  RAMADDA <a href="#home">home directory</a> by setting the property ramadda_home=/home/dir. 
 Either set this as an environmental or Java run time variable as  a property 
 in a <i>repository.properties</i> in the ${CATALINA_HOME}/conf directory.
 </pre>
 
 <li> To run under Tomcat just place the repository.war in the tomcat webapps directory. 
-
-<p>
 <li> Go to the /repository page in your browser to continue the installation process, e.g.:
 http://&lt;server&gt;/repository
-
-<p>
-<li> 
-By default the repository is accessed at /repository on the web server. 
+<li>  By default the repository is accessed at /repository on the web server. 
 With Tomcat the top-level path can only be a single level and
 corresponds to the name of the war file. 
 If you change the top-level path for Tomcat then you also need to tell 
@@ -462,7 +443,7 @@ sh ramadda.sh
 <a href="#fromgit">Building RAMADDA from source</a>
 </a><br></td></tr></table></div>
 <p>&nbsp;<p>
-<a href="page_installationandsiteadministration.html"><span title="Previous: Installation and Site Administration"><i class="fa fa-caret-left "></i></span></a> <a href="aws.html"><span title="Next: Installing on Amazon AWS"><i class="fa fa-caret-right "></i></span></a>  <a href="toc.html#installing.html"><span title="Table of contents"><i class="fa fa-list "></i></span></a>
+<a href="page_installationandsiteadministration.html"><span title="Previous: Installation and Site Administration"><i  style='font-size:20pt;'  class="fa fa-caret-left "></i></span></a> <a href="aws.html"><span title="Next: Installing on Amazon AWS"><i  style='font-size:20pt;'  class="fa fa-caret-right "></i></span></a>  <a href="toc.html#installing.html"><span title="Table of contents"><i  style='font-size:20pt;'  class="fa fa-list "></i></span></a>
 <p>
 </div>
 </body>
