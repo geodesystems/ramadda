@@ -1768,7 +1768,6 @@ function RecordFilter(display,filterFieldId, properties) {
 	getWidget: function(fieldMap, bottom,records, vertical) {
 	    this.records = records;
 	    let debug = false;
-	    debug = true;
 	    if(debug) console.log(this.id +".getWidget field:" + this.getField());
 	    if(!this.isEnabled()) {
 		if(debug) console.log("\tnot enabled");
