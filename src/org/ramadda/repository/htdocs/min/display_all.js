@@ -12708,7 +12708,7 @@ function makePointData(json, derived, source,url) {
 
     var offsetFields = [];
     var lastField = null;
-    console.dir(json.fields);
+//    console.dir(json.fields);
     for (var i = 0; i < json.fields.length; i++) {
         var field = json.fields[i];
         var recordField = new RecordField(field,source);

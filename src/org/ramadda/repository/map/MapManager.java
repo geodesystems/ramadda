@@ -572,8 +572,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                 sb, getPageHandler().getCdnPath("/ramaddamap3.js"));
             sb.append("\n");
         }
-        HtmlUtils.importJS(sb,
-			   getPageHandler().makeHtdocsUrl("/map/extra.js"));
+	String extra =  getRepository().getUrlBase() + "/map/extra/"  + RepositoryUtil.getHtdocsVersion() + "/extra.js";
+        HtmlUtils.importJS(sb,extra);
 
         if (minified) {
             HtmlUtils.cssLink(

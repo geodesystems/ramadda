@@ -815,7 +815,11 @@ RepositoryMap.prototype = {
 
         this.addBaseLayers();
 	try {
-	    initExtraMap(this);
+	    if(window["initExtraMap"]) {
+		initExtraMap(this);
+	    } else {
+		console.log("No initExtraMap");
+	    }
 	} catch(err) {
 	    console.log("Error calling initExtraMap:" + err);
 	}
