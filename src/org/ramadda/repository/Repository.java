@@ -460,7 +460,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private int htdocsCacheSize = 0;
 
     /** _more_ */
-    private final int htdocsCacheLimit = 5000000;
+    private static final int HTDOCS_CACHE_LIMIT = 10000000;
 
     /** _more_ */
     private Hashtable<String, byte[]> htdocsCache = new Hashtable<String,
@@ -4132,19 +4132,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     private void putHtdocsCache(String path, byte[] bytes, boolean force) {
         synchronized (htdocsCache) {
-            if ( !force && (htdocsCacheSize > htdocsCacheLimit)) {
+            if ( !force && (htdocsCacheSize > HTDOCS_CACHE_LIMIT)) {
                 //            htdocsCache =  new Hashtable<String,  byte[]>();
                 //            htdocsCacheSize =0;
-		System.err.println("cache full:"+ path);
+		//		System.err.println("cache full:"+ path);
                 return;
             }
-            if (getCacheResources()) {
-		System.err.println("caching resources:" + path);
+	    //For now always cache the htdocs requests
+	    //            if (getCacheResources()) {
                 htdocsCacheSize += bytes.length;
                 htdocsCache.put(path, bytes);
-            } else {
-		System.err.println("not caching resources:" + path);
-	    }
+		//}
         }
     }
 
@@ -4218,23 +4216,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     protected Result getHtdocsFile(Request request) throws Exception {
-
         request.setCORSHeaderOnResponse();
         String path       = request.getRequestPath().replaceAll("//", "/");
         String urlBase    = getUrlBase();
-        String htdocsBase = getPageHandler().makeHtdocsUrl("");
-        if (path.startsWith(urlBase)) {
+	if (path.startsWith(urlBase)) {
             int length = urlBase.length();
             path = path.substring(length);
         }
 
-        //Check for the version in the path and strip it off, e.g.
-        // /repository/htdocs_v1/style.css
-        //We do this so we can cleanly update new css and js
-        /*        if (path.startsWith(RepositoryUtil.HTDOCS_VERSION_SLASH)) {
-            path = path.substring(
-                RepositoryUtil.HTDOCS_VERSION_SLASH.length());
-                }*/
 
         if (path.startsWith("/htdocs_v")) {
             path = path.substring(9);
@@ -4353,7 +4342,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     || pluginPath.endsWith(".json")) {
                 String js = IOUtil.readInputStream(inputStream);
                 js = js.replace("${urlroot}", urlBase);
-                js = js.replace("${htdocs}", htdocsBase).replace("${root}",
+                js = js.replace("${htdocs}", getPageHandler().makeHtdocsUrl("")).replace("${root}",
                                 urlBase);
                 js    = js.replace("${hostname}", request.getServerName());
                 bytes = js.getBytes();
