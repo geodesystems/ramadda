@@ -41,7 +41,7 @@ echo "Updating GIT and running build"
 pushd ${SOURCE}
 #svn update
 git pull --no-edit origin master
-ant -Dbuild.compiler=javac1.7 ${target}
+ant -S -Dbuild.compiler=javac1.7 ${target}
 
 if [ ! -d "${DIST}/ramaddaserver" ]; then
     echo "Build seemed to fail. No ${DIST}/ramaddaserver dir. Exiting"
