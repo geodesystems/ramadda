@@ -66,6 +66,7 @@
       <ant antfile="${src_dir}/org/ramadda/plugins/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/geodata/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/bio/build.xml" inheritAll="false"/>
+      <echo message="Building project plugins"/>
       <ant antfile="${src_dir}/org/ramadda/projects/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/gov/noaa/esrl/psd/repository/build.xml" inheritAll="false"/>
 
@@ -330,7 +331,6 @@
             Windowtitle="RAMADDA"
             classpath="${classpath}"
             destdir="${dist_javadoc}"
-            maxmemory="512m"
             sourcepath="${src_dir}"
                  >
             <link href="http://java.sun.com/javase/6/docs/api/"/>
@@ -354,7 +354,6 @@
             destdir="${src_dir}"
             failonerror="${javac.failonerror}"
             fork="${javac.fork}"
-            memoryMaximumSize="${javac.maxmemory}"
             source="${javac.version}"
             target="${javac.version}">
 	  <compilerarg value="-Xlint:unchecked"/>
@@ -395,7 +394,6 @@
             destdir="${src_dir}"
             failonerror="${javac.failonerror}"
             fork="${javac.fork}"
-            memoryMaximumSize="${javac.maxmemory}"
             source="${javac.version}"
             target="${javac.version}">
         <include name="org/ramadda/util/**"/>
@@ -430,7 +428,6 @@
             destdir="${src_dir}"
             failonerror="${javac.failonerror}"
             fork="${javac.fork}"
-            memoryMaximumSize="${javac.maxmemory}"
             source="${javac.version}"
             target="${javac.version}"
 >

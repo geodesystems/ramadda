@@ -97,7 +97,6 @@
             nowarn="true"
             srcdir="${src_dir}"
             fork="${javac.fork}"
-            memoryMaximumSize="${javac.maxmemory}"
             source="${javac.version}"
             target="${javac.version}"
         >
@@ -196,6 +195,9 @@
 
 
     <target name="compile" depends="init,clean">
+<!--
+            memoryMaximumSize="${javac.maxmemory}"
+-->
         <javac
             classpath="${classpath}"
             debug="true"
@@ -207,7 +209,6 @@
             source="${javac.version}"
             target="${javac.version}"
             fork="${javac.fork}"
-            memoryMaximumSize="${javac.maxmemory}"
         >
 	  <compilerarg value="-Xlint:unchecked"/>
 	  <compilerarg value="-Xlint:deprecation"/>
@@ -424,7 +425,6 @@
             Windowtitle="RAMADDA"
             classpath="${classpath}"
             destdir="${docs_javadoc_dest}"
-            maxmemory="${javac.maxmemory}"
             source="${javac.version}"
             target="${javac.version}"
             sourcepath="${src_dir}">
@@ -444,7 +444,6 @@
             nowarn="true"
             srcdir="${src_dir}"
             fork="${javac.fork}"
-            memoryMaximumSize="${javac.maxmemory}"
             source="${javac.version}"
             target="${javac.version}"
         >
