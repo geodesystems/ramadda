@@ -4,7 +4,11 @@ MYDIR=`dirname $0`
 #This is used for building and restarting RAMADDA on geodesystems.com
 #This assumes the directory structure:
 
-export ANT=/home/ec2-user/ant/bin/ant
+
+export ANT_OPTS="-Xmx1500m"
+export ANT_HOME="/home/ec2-user/ant"
+export PATH=${ANT_HOME}/bin:$PATH:$HOME/bin
+
 #the github source tree
 #/some/dir/source/ramadda  
 
@@ -42,7 +46,7 @@ echo "Updating GIT and running build"
 pushd ${SOURCE}
 #svn update
 git pull --no-edit origin master
-${ANT}  -Dbuild.compiler=javac1.7 -S ${target}
+ant  -Dbuild.compiler=javac1.7 -S ${target}
 
 if [ ! -d "${DIST}/ramaddaserver" ]; then
     echo "Build seemed to fail. No ${DIST}/ramaddaserver dir. Exiting"
