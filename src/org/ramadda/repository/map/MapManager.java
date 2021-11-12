@@ -313,7 +313,9 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             extra = "function initExtraMap(map) {\n" + extra + "\n}\n";
         }
 
-        return new Result(extra, Result.TYPE_JS);
+	Result result =  new Result(extra, Result.TYPE_JS);
+	result.setCacheOk(true);
+	return result;
     }
 
 
@@ -571,7 +573,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             sb.append("\n");
         }
         HtmlUtils.importJS(sb,
-                           getRepository().getUrlBase() + "/map/extra.js");
+			   getPageHandler().makeHtdocsUrl("/map/extra.js"));
 
         if (minified) {
             HtmlUtils.cssLink(
