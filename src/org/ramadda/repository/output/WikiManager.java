@@ -5833,7 +5833,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         StringBuilder buttons = new StringBuilder();
         if (request.get("doImports", true)) {
-            addDisplayImports(request, buttons);
+            addDisplayImports(request, buttons,true);
         }
         StringBuilder tags1  = new StringBuilder();
         StringBuilder tags2 = new StringBuilder();
@@ -6891,7 +6891,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         String displayType = getProperty(wikiUtil, props, "type",
                                          "linechart");
-        this.addDisplayImports(request, sb);
+
+        boolean isMap = displayType.equals("map") || displayType.equals("editablemap");	
+	System.err.println("type:" + displayType +" map:" + isMap);
+        this.addDisplayImports(request, sb, isMap);
         List<String> topProps = new ArrayList<String>();
         if (propList == null) {
             propList = new ArrayList<String>();
@@ -7288,7 +7291,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         //Only add the default layer to the display if its been specified
         defaultLayer = getProperty(wikiUtil, props, "defaultLayer",
                                    (String) null);
-        boolean isMap = displayType.equals("map") || displayType.equals("editablemap");
 
 
 
@@ -7524,7 +7526,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      */
     public void addDisplayImports(Request request, Appendable sb)
             throws Exception {
-        getMapManager().addMapImports(request, sb);
+	addDisplayImports(request, sb, true);
+    }
+
+    public void addDisplayImports(Request request, Appendable sb, boolean includeMap)
+            throws Exception {
+	if(includeMap) {
+	    getMapManager().addMapImports(request, sb);
+	}
         if (request.getExtraProperty("initchart") == null) {
             request.putExtraProperty("initchart", "added");
 	    request.appendHead(displayImports);
