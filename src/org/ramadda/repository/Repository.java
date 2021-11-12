@@ -3954,7 +3954,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         ApiMethod apiMethod = getApiManager().findApiMethod(request);
         if (apiMethod == null) {
-            return getHtdocsFile(request);
+	    Result result =  getHtdocsFile(request);
+	    return result;
         }
 
         Result sslRedirect = checkForSslRedirect(request, apiMethod);
@@ -4134,12 +4135,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
             if ( !force && (htdocsCacheSize > htdocsCacheLimit)) {
                 //            htdocsCache =  new Hashtable<String,  byte[]>();
                 //            htdocsCacheSize =0;
+		System.err.println("cache full:"+ path);
                 return;
             }
             if (getCacheResources()) {
+		System.err.println("caching resources:" + path);
                 htdocsCacheSize += bytes.length;
                 htdocsCache.put(path, bytes);
-            }
+            } else {
+		System.err.println("not caching resources:" + path);
+	    }
         }
     }
 
@@ -4275,10 +4280,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     if (path.endsWith("base.js")) {
                         String referer = request.getReferer(null);
                         String base    = urlBase;
-                        //For file based pages
-                        if (referer == null) {
-                            //                      base = request.getAbsoluteUrl(base);
-                        }
                         js = js.replace(
                             "${ramadda.htdocs}",
                             base + "/"
