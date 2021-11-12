@@ -635,19 +635,30 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
             }
 
             this.lastUrl = url;
-            var jqxhr = $.getJSON(url, function(data) {
+	    let  load = async function() {
+		await Utils.importJS(ramaddaBaseHtdocs + "/lib/jquery.handsontable.full.min.js");
+		await Utils.importCSS(ramaddaBaseHtdocs + "/lib/jquery.handsontable.full.min.css");
+		var jqxhr = $.getJSON(url, function(data) {
                     if (GuiUtils.isJsonError(data)) {
                         _this.displayMessage("Error: " + data.error);
                         return;
                     }
-                    _this.showTableData(data);
+		    try {
+			_this.showTableData(data);
+
+		    } catch(exc) {
+                        _this.displayMessage("Error: " + exc);
+			this.handleError("Error:" + exc, exc);
+		    }
                 })
                 .fail(function(jqxhr, textStatus, error) {
                     var err = textStatus + ", " + error;
                     _this.displayMessage("An error occurred: " + error);
                     console.log("JSON error:" + err);
                 });
-        }
+	    }
+	    load();
+	}
     });
 
 }

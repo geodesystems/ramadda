@@ -4223,7 +4223,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
             path = path.substring(length);
         }
 
-
         //Check for the version in the path and strip it off, e.g.
         // /repository/htdocs_v1/style.css
         //We do this so we can cleanly update new css and js

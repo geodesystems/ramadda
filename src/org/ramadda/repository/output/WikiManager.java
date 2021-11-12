@@ -7554,10 +7554,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 	    sb.append("\n");
             HU.importJS(sb, getPageHandler().getCdnPath("/lib/d3/d3.min.js"));
 	    sb.append("\n");
-            HU.importJS(sb, getPageHandler().getCdnPath("/lib/jquery.handsontable.full.min.js"));
-	    sb.append("\n");
-            HU.cssLink(sb,getPageHandler().getCdnPath("/lib/jquery.handsontable.full.min.css"));
-	    sb.append("\n");
             HU.importJS(sb, getPageHandler().getCdnPath("/lib/jquery.ui.touch-punch.min.js"));
 	    sb.append("\n");
             HU.importJS(sb, getPageHandler().getCdnPath("/lib/dom-drag.min.js"));
