@@ -29,6 +29,7 @@ import java.util.regex.*;
  *
  *
  */
+@SuppressWarnings("unchecked")
 public class HarvesterFile extends FileInfo {
 
     /** _more_ */

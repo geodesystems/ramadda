@@ -48,6 +48,7 @@ import java.util.List;
  * @version        $version$, Thu, Apr 2, '15
  * @author         Enter your name here...
  */
+@SuppressWarnings("unchecked")
 public class UshcnPointDatabaseTypeHandler extends PointDatabaseTypeHandler {
 
     /** _more_ */

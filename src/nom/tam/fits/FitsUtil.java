@@ -39,6 +39,7 @@ import java.util.zip.GZIPInputStream;
  *  utility functions used throughout
  *  the FITS classes.
  */
+@SuppressWarnings({"unchecked","deprecation"})
 public class FitsUtil {
 
     /** _more_ */

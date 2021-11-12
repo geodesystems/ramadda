@@ -34,6 +34,7 @@ import java.util.List;
  *
  */
 
+@SuppressWarnings("unchecked")
 public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
         DbConstants {
 

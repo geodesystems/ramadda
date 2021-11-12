@@ -21,6 +21,7 @@ import java.util.List;
 /**
  * A class to hold a Result
  */
+@SuppressWarnings("unchecked")
 public class Result {
 
     /** OK response code */

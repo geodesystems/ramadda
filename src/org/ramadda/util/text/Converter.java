@@ -61,6 +61,7 @@ import javax.script.*;
  * @version        $version$, Fri, Jan 9, '15
  * @author         Jeff McWhirter
  */
+@SuppressWarnings("unchecked")
 public abstract class Converter extends Processor {
 
 
@@ -568,7 +569,7 @@ public abstract class Converter extends Processor {
             if (url.toLowerCase().startsWith("file")) {
                 fatal("Bad url:" + url);
             }
-            String type = Misc.getFileExtension(url);
+            String type = IOUtil.getFileExtension(url);
             if ( !Utils.stringDefined(type)) {
                 type = "png";
             }

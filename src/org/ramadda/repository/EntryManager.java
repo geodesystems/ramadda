@@ -99,6 +99,7 @@ import java.util.zip.ZipInputStream;
 /**
  * This class does most of the work of managing the entries
  */
+@SuppressWarnings("unchecked")
 public class EntryManager extends RepositoryManager {
 
     /** _more_ */
@@ -1903,8 +1904,8 @@ public class EntryManager extends RepositoryManager {
                     StringBuilder sb        = new StringBuilder();
                     String        dateRange = "";
                     try {
-                        dateRange = new Date(formTimestamp) + ":"
-			    + new Date(currentTimestamp);
+			dateRange = getDateHandler().parseDate(formTimestamp) + ":"
+			    + getDateHandler().parseDate(currentTimestamp);
                     } catch (Exception ignore) {}
                     getPageHandler().entrySectionOpen(request, entry, sb,
 						      "Entry Edit");

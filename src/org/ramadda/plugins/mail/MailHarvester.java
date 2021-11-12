@@ -48,6 +48,7 @@ import javax.mail.internet.*;
 
 /**
  */
+@SuppressWarnings("unchecked")
 public class MailHarvester extends Harvester {
 
     /** _more_ */

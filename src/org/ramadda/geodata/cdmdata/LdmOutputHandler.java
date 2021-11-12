@@ -44,9 +44,9 @@ import java.util.zip.*;
 /**
  *
  *
- * @author IDV Development Team
  * @version $Revision: 1.3 $
  */
+@SuppressWarnings("unchecked")
 public class LdmOutputHandler extends OutputHandler {
 
 

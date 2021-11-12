@@ -57,6 +57,7 @@ import javax.mail.internet.*;
  * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
+@SuppressWarnings("unchecked")
 public class MailManager extends RepositoryManager {
 
     /** _more_ */

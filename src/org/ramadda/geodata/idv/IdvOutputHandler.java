@@ -80,6 +80,7 @@ import java.util.List;
  *
  * @author Jeff McWhirter
  */
+@SuppressWarnings("unchecked")
 public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
     /** IDV enabled property identifier */

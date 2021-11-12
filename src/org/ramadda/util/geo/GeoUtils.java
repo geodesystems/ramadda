@@ -42,6 +42,7 @@ import java.util.TimeZone;
  *
  * @author  Jeff McWhirter
  */
+@SuppressWarnings("unchecked")
 public class GeoUtils {
 
     /**

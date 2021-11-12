@@ -45,6 +45,7 @@ import java.util.List;
  * Proxy that searches wolfram
  *
  */
+@SuppressWarnings("unchecked")
 public class EntrezSearchProvider extends SearchProvider {
 
     /** _more_ */

@@ -63,6 +63,7 @@ import javax.crypto.spec.SecretKeySpec;
  *
  * @author Jeff McWhirter
  */
+@SuppressWarnings("unchecked")
 public class UserManager extends RepositoryManager {
 
     /** _more_ */

@@ -83,6 +83,7 @@ import java.util.regex.Pattern;
  *
  * @author RAMADDA Development Team
  */
+@SuppressWarnings("unchecked")
 public class TypeHandler extends RepositoryManager {
 
     /** _more_ */

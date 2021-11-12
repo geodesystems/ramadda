@@ -32,6 +32,7 @@ import java.util.zip.*;
 
 /**
  */
+@SuppressWarnings("unchecked")
 public class LatLonImageTypeHandler extends GenericTypeHandler {
 
 

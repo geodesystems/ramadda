@@ -52,6 +52,7 @@ import java.util.regex.*;
  * @author IDV & RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
+@SuppressWarnings("unchecked")
 public class Clause {
 
     /** calendar */
@@ -716,6 +717,7 @@ public class Clause {
      *
      * @return new Clause
      */
+    @SuppressWarnings("unchecked")
     public static Clause makeOrSplit(String column, String values) {
         List toks    = StringUtil.split(values, ",", true, true);
         List nots    = new ArrayList();
@@ -1148,7 +1150,7 @@ public class Clause {
                 return subClauses[0].toString();
             }
 
-            return "(" + Misc.join(" " + expr + " ", subClauses) + ")";
+            return "(" + Utils.join(Misc.toList(subClauses), " " + expr + " ") + ")";
         }
 
         return "clause:null";

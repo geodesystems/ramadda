@@ -130,7 +130,7 @@ public class RadarTypeHandler extends GenericTypeHandler {
         Hashtable<String, String> attrMap = new Hashtable<String, String>();
         List<Attribute>           attrs   = ncf.getGlobalAttributes();
         for (Attribute attr : attrs) {
-            String name  = attr.getName();
+            String name  = attr.getFullName();
             String value = attr.getStringValue();
             if (value == null) {
                 value = "" + attr.getNumericValue();

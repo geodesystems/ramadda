@@ -28,6 +28,7 @@ import java.util.List;
 
 /**
  */
+@SuppressWarnings("unchecked")
 public class HeaderPointFile extends CsvFile {
 
 

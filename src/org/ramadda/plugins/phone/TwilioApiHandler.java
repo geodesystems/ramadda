@@ -48,6 +48,7 @@ import java.util.regex.*;
  * Provides a top-level API
  *
  */
+@SuppressWarnings("unchecked")
 public class TwilioApiHandler extends RepositoryManager implements RequestHandler {
 
     /** _more_ */

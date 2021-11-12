@@ -21,7 +21,6 @@ import java.util.TimeZone;
 /**
  * A collection of utilities for atom feeds xml.
  *
- * @author IDV development team
  */
 
 public class AtomUtil {

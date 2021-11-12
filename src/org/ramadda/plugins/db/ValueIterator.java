@@ -86,6 +86,7 @@ import java.util.function.*;
  * @version        $version$, Tue, Nov 2, '21
  * @author         Enter your name here...    
  */
+@SuppressWarnings("unchecked")
 public abstract class ValueIterator implements DbConstants {
 
     /** _more_          */

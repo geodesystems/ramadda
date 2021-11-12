@@ -35,7 +35,6 @@ import javax.xml.parsers.*;
 /**
  * A collection of utilities for xml.
  *
- * @author IDV development team
  */
 
 public abstract class XmlUtils {

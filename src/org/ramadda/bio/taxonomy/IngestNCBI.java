@@ -17,6 +17,7 @@
 package org.ramadda.bio.taxonomy;
 
 
+import org.ramadda.util.Utils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -331,7 +332,7 @@ public class IngestNCBI {
 
             sb.append(
                 XmlUtil.tag(
-                    "entry", XmlUtil.attrs(Misc.listToStringArray(attrs)),
+                    "entry", XmlUtil.attrs(Utils.toStringArray(attrs)),
                     contents.toString()));
             StringBuffer desc = new StringBuffer();
 

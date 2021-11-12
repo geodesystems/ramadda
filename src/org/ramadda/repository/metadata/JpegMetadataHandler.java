@@ -38,6 +38,7 @@ import java.util.List;
  *
  * @author RAMADDA Development Team
  */
+@SuppressWarnings("unchecked")
 public class JpegMetadataHandler extends MetadataHandler {
 
     /** Camera Direction type */

@@ -28,6 +28,7 @@ import java.util.Properties;
 
 /**
  */
+@SuppressWarnings("unchecked")
 public abstract class MetametaGroupTypeHandler extends OrderedGroupTypeHandler {
 
 

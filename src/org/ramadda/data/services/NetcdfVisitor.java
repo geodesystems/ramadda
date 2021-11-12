@@ -23,8 +23,7 @@ import ucar.nc2.VariableSimpleAdapter;
 import ucar.nc2.VariableSimpleIF;
 //import ucar.nc2.ft.point.writer.CFPointObWriter;
 //import ucar.nc2.ft.point.writer.PointObVar;
-import ucar.nc2.dt.point.CFPointObWriter;
-import ucar.nc2.dt.point.PointObVar;
+//import ucar.nc2.dt.point.CFPointObWriter;
 import ucar.nc2.ft.point.writer.WriterCFPointCollection;
 import ucar.nc2.units.DateUnit;
 

@@ -33,6 +33,7 @@
       <copy overwrite="true" file="${dist_plugins}/geoplugins.jar"  todir="${src_dir}/org/ramadda/repository/resources/plugins"/>
       <copy overwrite="true" file="${dist_plugins}/bioplugins.jar"  todir="${src_dir}/org/ramadda/repository/resources/plugins"/>
       <copy overwrite="true" file="${dist_plugins}/miscplugins.jar"  todir="${src_dir}/org/ramadda/repository/resources/plugins"/>
+      <echo message="Building RAMADDA"/>
       <ant antfile="${src_dir}/org/ramadda/repository/build.xml" inheritAll="false" target="release"/>
     </target>
 
@@ -139,6 +140,7 @@
 
 
     <target name="plugin" depends="init,pluginclean">
+      <echo message="    Building plugin ${plugin}"/>
         <property name="plugin_extra_classes" value=""/>
         <property name="plugin_destdir" value="${dist_plugins}/plugins"/>
         <mkdir dir="${plugin_destdir}"/>
@@ -159,6 +161,9 @@
             fork="${javac.fork}"
             source="${javac.version}"
             target="${javac.version}">
+	  <compilerarg value="-Xlint:unchecked"/>
+	  <compilerarg value="-Xlint:deprecation"/>
+
         <include name="${plugin_dir}/**/*.java"/>
         <include name="${plugin_extra_src}"/>
         </javac>
@@ -185,6 +190,7 @@
 
 
     <target name="csvutil" depends="init,clean">
+      <echo message="Building CSV Util"/>
         <property name="csvutil_destdir" value="${dist_dir}/csvutil"/>
         <mkdir dir="${csvutil_destdir}"/>
         <mkdir dir="${csvutil_destdir}/lib"/>	
@@ -200,6 +206,8 @@
             fork="${javac.fork}"
             source="${javac.version}"
             target="${javac.version}">
+	  <compilerarg value="-Xlint:unchecked"/>
+	  <compilerarg value="-Xlint:deprecation"/>
 	  <include name="org/ramadda/util/text/*.java"/>
         </javac>
 
@@ -253,7 +261,7 @@
     <target name="pluginnocode" depends="init,pluginclean">
         <property name="plugin_destdir" value="${dist_plugins}/plugins"/>
         <mkdir dir="${plugin_destdir}"/>
-        <echo message="Making jar ${plugin_destdir}/${plugin_jar}"/>
+       <echo message="Making jar ${plugin_destdir}/${plugin_jar}"/>
         <jar 
             basedir="${src_dir}"
             update="false"
@@ -349,6 +357,8 @@
             memoryMaximumSize="${javac.maxmemory}"
             source="${javac.version}"
             target="${javac.version}">
+	  <compilerarg value="-Xlint:unchecked"/>
+	  <compilerarg value="-Xlint:deprecation"/>
         <include name="org/ramadda/data/record/**"/>
         <include name="org/ramadda/data/point/**"/>
         <include name="org/ramadda/data/tools/**"/>
@@ -424,6 +434,8 @@
             source="${javac.version}"
             target="${javac.version}"
 >
+	  <compilerarg value="-Xlint:unchecked"/>
+	  <compilerarg value="-Xlint:deprecation"/>
         <include name="**/*.java"/>
         <exclude name="nom/**/*.java"/>
         <exclude name="com/**/*.java"/>

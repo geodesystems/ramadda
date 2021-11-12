@@ -22,6 +22,7 @@ import java.util.List;
 
 /**
  */
+@SuppressWarnings("unchecked")
 public class TabularVisitInfo {
 
     /** _more_ */

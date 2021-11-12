@@ -56,6 +56,7 @@ import java.util.Properties;
  * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
+@SuppressWarnings("unchecked")
 public class HarvesterManager extends RepositoryManager {
 
 

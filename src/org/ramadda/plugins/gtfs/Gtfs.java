@@ -60,6 +60,7 @@ import java.util.TimeZone;
  *
  *
  */
+@SuppressWarnings("unchecked")
 public class Gtfs implements Constants {
 
     /** _more_ */

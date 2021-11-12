@@ -27,6 +27,7 @@ import java.util.Map;
 /**
  * A holder for Feature information
  */
+@SuppressWarnings("unchecked")
 public class Feature {
 
     /** _more_ */

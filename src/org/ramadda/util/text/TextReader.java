@@ -41,6 +41,7 @@ import java.util.regex.*;
  */
 
 
+@SuppressWarnings("unchecked")
 public class TextReader implements Cloneable {
 
     /** _more_ */

@@ -59,6 +59,7 @@ import java.util.Map;
  * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
+@SuppressWarnings("unchecked")
 public class AssociationManager extends RepositoryManager {
 
     /** _more_ */

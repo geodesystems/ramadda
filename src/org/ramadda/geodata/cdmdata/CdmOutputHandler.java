@@ -63,8 +63,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.TrajectoryObsDataset;
-import ucar.nc2.dt.TrajectoryObsDatatype;
 import ucar.nc2.dt.grid.GridAsPointDataset;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.FeatureCollection;

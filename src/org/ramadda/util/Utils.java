@@ -72,6 +72,7 @@ import javax.imageio.*;
  * @author Jeff McWhirter
  */
 
+@SuppressWarnings("unchecked")
 public class Utils extends IO {
 
     /** _more_ */

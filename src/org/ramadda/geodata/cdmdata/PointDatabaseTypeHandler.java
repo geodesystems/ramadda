@@ -3,6 +3,8 @@ Copyright (c) 2008-2021 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
+
+
 package org.ramadda.geodata.cdmdata;
 
 
@@ -42,17 +44,10 @@ import ucar.nc2.VariableSimpleIF;
 
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
-
-
 //import ucar.nc2.dt.PointObsDataset;
 //import ucar.nc2.dt.PointObsDatatype;
 
-import ucar.nc2.dt.TrajectoryObsDataset;
-import ucar.nc2.dt.TrajectoryObsDatatype;
-import ucar.nc2.dt.TypedDatasetFactory;
-
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.dt.trajectory.TrajectoryObsDatasetFactory;
 
 import ucar.nc2.ft.FeatureCollection;
 
@@ -121,10 +116,9 @@ import javax.swing.*;
 
 /**
  *
- *
- * @author IDV Development Team
  * @version $Revision: 1.3 $
  */
+@SuppressWarnings({"unchecked","deprecation"})
 public class PointDatabaseTypeHandler extends BlobTypeHandler {
 
     /** _more_ */
@@ -595,7 +589,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                     ? stringMetadata
                     : numericMetadata);
             listToAddTo.add(new PointDataMetadata(tableName, colName,
-                    metadata.size(), varName, var.getName(), unit, (isString
+                    metadata.size(), varName, var.getFullName(), unit, (isString
                     ? PointDataMetadata.TYPE_STRING
                     : PointDataMetadata.TYPE_DOUBLE)));
         }
@@ -2983,7 +2977,6 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
      * Class PointDataMetadata _more_
      *
      *
-     * @author IDV Development Team
      */
     public static class PointDataMetadata {
 
@@ -3322,7 +3315,6 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
      * Class PointData _more_
      *
      *
-     * @author IDV Development Team
      */
     public static class PointData {
 

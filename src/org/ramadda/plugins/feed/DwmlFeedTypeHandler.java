@@ -42,6 +42,7 @@ import java.util.TimeZone;
 
 /**
  */
+@SuppressWarnings("unchecked")
 public class DwmlFeedTypeHandler extends GenericTypeHandler {
 
     /** _more_ */

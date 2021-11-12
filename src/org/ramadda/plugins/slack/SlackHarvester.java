@@ -277,7 +277,7 @@ public class SlackHarvester extends CommandHarvester {
 
             }
             if (channel != null) {
-                mpe.addPart(Slack.ARG_CHANNELS, new StringBody(channel));
+                mpe.addPart(Slack.ARG_CHANNELS, new StringBody(channel,ContentType.TEXT_PLAIN));
             }
 
             HttpEntity requestEntity = mpe.build();

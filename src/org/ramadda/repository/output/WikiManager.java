@@ -91,6 +91,7 @@ import java.util.function.*;
 /**
  * Provides wiki text processing services
  */
+@SuppressWarnings("unchecked")
 public class WikiManager extends RepositoryManager implements WikiConstants,
         WikiUtil.WikiPageHandler {
 

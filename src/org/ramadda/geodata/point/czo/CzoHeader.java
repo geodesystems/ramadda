@@ -40,6 +40,7 @@ import java.util.Properties;
  * @version        $version$, Mon, Dec 2, '13
  * @author         Enter your name here...
  */
+@SuppressWarnings("unchecked")
 public class CzoHeader {
 
     /** _more_ */

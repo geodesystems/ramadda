@@ -52,6 +52,7 @@ import java.util.regex.*;
  * @author Jeff McWhirter
  */
 
+@SuppressWarnings("unchecked")
 public abstract class Processor extends CsvOperator {
 
     //These are copies from /org.ramadda.data.record.RecordField;

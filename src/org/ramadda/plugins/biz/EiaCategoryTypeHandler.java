@@ -229,7 +229,7 @@ public class EiaCategoryTypeHandler extends ExtensibleGroupTypeHandler {
 
 
     /** _more_ */
-    HashSet seenUrls = new HashSet();
+    HashSet<String> seenUrls = new HashSet<String>();
 
     /**
      * _more_

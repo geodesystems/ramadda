@@ -35,6 +35,7 @@ import javax.naming.NamingException;
  * @author Kristian Sebastian Blalid Coastal Ocean Observing and Forecast System, Balearic Islands ICTS
  * @author Jeff McWhirter ramadda.org
  */
+@SuppressWarnings("unchecked")
 public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
 
     /** property name */

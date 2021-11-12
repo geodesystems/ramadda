@@ -32,7 +32,6 @@ import java.util.List;
 /**
  *
  *
- * @author IDV Development Team
  * @version $Revision: 1.3 $
  */
 public class LasOutputHandler extends OutputHandler {
@@ -334,7 +333,7 @@ public class LasOutputHandler extends OutputHandler {
                     }
                     XmlUtil.create(getTagName(varName), variablesNode,
                                    new String[] { ATTR_NAME,
-                            var.getName(), ATTR_UNITS,
+                            var.getFullName(), ATTR_UNITS,
                             var.getUnitsString() });
                 }
             } finally {

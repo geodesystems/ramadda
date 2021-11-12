@@ -6,6 +6,8 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.geodata.usgswater;
 
 
+
+
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 
@@ -130,7 +132,7 @@ public class UsgsWaterQualityFile extends CsvFile {
      *
      * @return _more_
      */
-    public Record doMakeRecord(VisitInfo visitInfo) {
+    public BaseRecord doMakeRecord(VisitInfo visitInfo) {
         TextRecord record = (TextRecord) super.doMakeRecord(visitInfo);
         record.setBePickyAboutTokens(false);
 
@@ -236,7 +238,7 @@ public class UsgsWaterQualityFile extends CsvFile {
      *
      * @throws Exception _more_
      */
-    public boolean processAfterReading(VisitInfo visitInfo, Record record)
+    public boolean processAfterReading(VisitInfo visitInfo, BaseRecord record)
             throws Exception {
         if ( !super.processAfterReading(visitInfo, record)) {
             return false;
@@ -259,7 +261,7 @@ public class UsgsWaterQualityFile extends CsvFile {
                 int    hhmmss = (int) value;
                 double rem    = value - hhmmss;
                 dttm.append(" ");
-                dttm.append(Misc.padLeft("" + hhmmss, 6, "0"));
+                dttm.append(StringUtil.padLeft("" + hhmmss, 6, "0"));
                 dttm.append(" ");
                 dttm.append((int) (rem * 1000));
                 sdf = sdfLong;

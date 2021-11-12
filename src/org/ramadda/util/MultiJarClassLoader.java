@@ -35,10 +35,9 @@ import java.util.regex.*;
 /**
  * Class PluginClassLoader. Loads plugin classes
  *
- *
- * @author IDV Development Team
  * @version $Revision: 1.54 $
  */
+@SuppressWarnings("unchecked")
 public class MultiJarClassLoader extends ClassLoader {
 
     /** for url plugins */

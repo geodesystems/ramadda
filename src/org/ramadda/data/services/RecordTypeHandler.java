@@ -45,6 +45,7 @@ import java.util.List;
  * @author Jeff McWhirter
  * @version $Revision: 1.3 $
  */
+@SuppressWarnings("unchecked")
 public abstract class RecordTypeHandler extends BlobTypeHandler implements RecordConstants,
         RecordFileContext {
 

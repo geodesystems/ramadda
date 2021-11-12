@@ -54,6 +54,7 @@ import java.util.zip.*;
  *
  * @author Jeff McWhirter
  */
+@SuppressWarnings("unchecked")
 public class CsvUtil {
 
     /** _more_          */

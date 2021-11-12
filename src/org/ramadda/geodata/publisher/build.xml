@@ -18,7 +18,8 @@
     </target>
 
     <target name="publisherplugin" depends="init,clean">
-        <property name="pluginclasspath" value="${lib_dir}/${tika_jar}:${lib_dir}/idv.jar:${lib_dir}/ramaddatds.jar:${lib_dir}/ramaddalib.jar:${lib_dir}/servlet-api.jar"/>
+      <echo message="Building plugin publisher"/>
+        <property name="pluginclasspath" value="${lib_dir}/idv.jar:${lib_dir}/ramaddatds.jar:${lib_dir}/ramaddalib.jar:${lib_dir}/servlet-api.jar:${lib_dir}/${tika_jar}"/>
         <javac
             verbose="false"
             classpath="${pluginclasspath}"
@@ -33,6 +34,8 @@
             memoryMaximumSize="256m"
             target="${javac.version}"
         >
+	  <compilerarg value="-Xlint:unchecked"/>
+	  <compilerarg value="-Xlint:deprecation"/>
         <include name="org/ramadda/geodata/publisher/RamaddaPublisher.java"/>
         <include name="${repositoryrelpath}/client/InteractiveRepositoryClient.java"/>
         </javac>

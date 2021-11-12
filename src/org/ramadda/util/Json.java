@@ -33,6 +33,7 @@ import java.util.List;
 /**
  * JSON Utility class
  */
+@SuppressWarnings("unchecked")
 public class Json {
 
     /** JSON MIME type */

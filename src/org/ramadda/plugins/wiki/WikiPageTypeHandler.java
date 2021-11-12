@@ -53,6 +53,7 @@ import java.util.Properties;
  *
  *
  */
+@SuppressWarnings("unchecked")
 public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
 
     /**

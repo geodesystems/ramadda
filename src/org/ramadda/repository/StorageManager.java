@@ -59,6 +59,7 @@ import javax.crypto.spec.DESKeySpec;
  *
  * @author RAMADDA Development Team
  */
+@SuppressWarnings("unchecked")
 public class StorageManager extends RepositoryManager implements PointFile
     .FileReader, Utils.FileChecker {
 

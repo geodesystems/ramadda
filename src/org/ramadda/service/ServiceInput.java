@@ -35,6 +35,7 @@ import java.util.List;
  *
  *
  */
+@SuppressWarnings("unchecked")
 public class ServiceInput {
 
     /** the process directory for this input */

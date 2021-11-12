@@ -91,6 +91,7 @@ import java.util.zip.*;
  *
  */
 
+@SuppressWarnings("unchecked")
 public class DbTypeHandler extends PointTypeHandler implements DbConstants /* BlobTypeHandler*/ {
 
     /** _more_ */
@@ -5592,7 +5593,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         if (doGroupBy) {
             colNames       = new ArrayList<String>();
-            groupByColumns = new ArrayList();
+            groupByColumns = new ArrayList<Column>();
             String       orderBy = null;
             List<String> cols    = new ArrayList<String>();
             List<String> labels  = new ArrayList<String>();

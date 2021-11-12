@@ -63,6 +63,7 @@ import javax.swing.JTextField;
 /**
  * @author IDV development team
  */
+@SuppressWarnings("unchecked")
 public class RamaddaPublisher extends ucar.unidata.idv.publish
     .IdvPublisher implements org.ramadda.repository.Constants {
 

@@ -48,6 +48,7 @@ import java.util.TimeZone;
  * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
+@SuppressWarnings("unchecked")
 public class FtpManager extends RepositoryManager {
 
     /** _more_ */

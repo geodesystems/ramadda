@@ -65,6 +65,7 @@ import java.util.zip.ZipOutputStream;
 /**
  * Class to handle the output of shapefiles
  */
+@SuppressWarnings("unchecked")
 public class ShapefileOutputHandler extends OutputHandler implements WikiConstants {
 
     /** _more_ */

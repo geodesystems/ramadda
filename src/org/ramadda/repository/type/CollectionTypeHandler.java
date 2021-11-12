@@ -45,6 +45,7 @@ import java.util.Properties;
  * @version        $version$, Fri, Aug 23, '13
  * @author         Enter your name here...
  */
+@SuppressWarnings("unchecked")
 public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
 
     /** collection field id */

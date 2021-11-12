@@ -21,6 +21,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.HtmlOutputHandler;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
+import org.ramadda.util.Utils;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.WikiUtil;
 
@@ -480,9 +481,9 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
      * @param sb _more_
      */
     public static void getDiff(String text1, String text2, StringBuffer sb) {
-        String[] aLines = Misc.listToStringArray(StringUtil.split(text1,
+        String[] aLines = Utils.toStringArray(StringUtil.split(text1,
                               "\n", false, false));
-        String[] bLines = Misc.listToStringArray(StringUtil.split(text2,
+        String[] bLines = Utils.toStringArray(StringUtil.split(text2,
                               "\n", false, false));
         List     diffs    = (new Diff(aLines, bLines)).diff();
 

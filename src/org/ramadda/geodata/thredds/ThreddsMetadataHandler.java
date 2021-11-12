@@ -71,6 +71,7 @@ import java.util.List;
  * @author IDV Development Team
  * @version $Revision: 1.3 $
  */
+@SuppressWarnings("unchecked")
 public class ThreddsMetadataHandler extends MetadataHandler {
 
     /** _more_ */
@@ -208,7 +209,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
         MAMath.MinMax minmax = MAMath.getMinMax(a);
         Unit fromUnit = parseUnit(var.getUnitsString(), var.getUnitsString());
         /*
-        System.out.println(var.getName());
+        System.out.println(var.getFullName());
         System.out.println("\tminmax:" + minmax.min + " " + minmax.max + " " + fromUnit);
         System.out.println("\tto unit:" + toUnit.toThis(minmax.min, fromUnit) + " " +toUnit.toThis(minmax.min, fromUnit));
         System.out.println("\tto unit:" + new Date((long)(1000*toUnit.toThis(minmax.min, toUnit))));
@@ -449,7 +450,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
 
 
             for (Attribute attr : attrs) {
-                String name  = attr.getName();
+                String name  = attr.getFullName();
                 String value = attr.getStringValue();
                 if (value == null) {
                     value = "" + attr.getNumericValue();
@@ -664,7 +665,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                         }
                     } else {
                         axisWasRecognized = false;
-                        //                        System.err.println("unknown axis:" + axisType + " for var:" + var.getName());
+                        //                        System.err.println("unknown axis:" + axisType + " for var:" + var.getFullName());
                     }
                     if (axisWasRecognized) {
                         continue;

@@ -41,6 +41,7 @@ import java.util.List;
 /**
  * A file reader for the Level 2 Ameriflux CSV data format
  */
+@SuppressWarnings("unchecked")
 public class AmerifluxLevel2PointFile extends CsvFile {
 
     /** _more_ */

@@ -29,6 +29,7 @@ import java.util.List;
  * @author RAMADDA Development Team
  * @version $Revision: 1.30 $
  */
+@SuppressWarnings("unchecked")
 public class Filter implements Constants {
 
     /** _more_ */

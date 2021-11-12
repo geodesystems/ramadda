@@ -31,6 +31,7 @@ import java.util.regex.*;
  * @author Jeff McWhirter
  */
 
+@SuppressWarnings("unchecked")
 public class Filter extends Processor {
 
 

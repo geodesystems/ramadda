@@ -142,6 +142,7 @@ import javax.net.ssl.*;
  * The main RAMADDA class.
  *
  */
+@SuppressWarnings("unchecked")
 public class Repository extends RepositoryBase implements RequestHandler,
         PropertyProvider {
 
@@ -4230,6 +4231,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             path = path.substring(
                 RepositoryUtil.HTDOCS_VERSION_SLASH.length());
                 }*/
+
         if (path.startsWith("/htdocs_v")) {
             path = path.substring(9);
             int index = path.indexOf("/");
@@ -4252,7 +4254,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         byte[] bytes = htdocsCache.get(path);
         if (bytes != null) {
             InputStream inputStream = new ByteArrayInputStream(bytes);
-
             return makeResult(request, path, inputStream, mimeType, true);
         }
         String cachePath = htdocsPathCache.get(path);
@@ -4316,10 +4317,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     html = html.replace("${hostname}",
                                         request.getServerName());
 
-                    if ((path.indexOf(".wiki.") >= 0)
-                            || html.startsWith(WIKI_PREFIX)) {
+
+		    //                    if ((path.indexOf(".wiki.") >= 0) || html.startsWith(WIKI_PREFIX)) {
                         html = getWikiManager().wikify(request, html);
-                    }
+			//                    }
                     Result result = new Result(BLANK,
                                         new StringBuilder(html));
                     //If its just sitting on the server then don't decorate
@@ -4346,7 +4347,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (pluginPath != null) {
             //We can go directly here instead of thru the storagemanager which checks the white list
             InputStream inputStream = IOUtil.getInputStream(pluginPath,
-                                          getClass());
+							    getClass());
 
             if (pluginPath.endsWith(".js") || pluginPath.endsWith(".css")
                     || pluginPath.endsWith(".json")) {
@@ -4367,10 +4368,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 String html = IOUtil.readInputStream(inputStream);
                 html = getPageHandler().applyBaseMacros(html);
                 html = html.replace("${hostname}", request.getServerName());
-                if ((path.indexOf(".wiki.") >= 0)
-                        || html.startsWith(WIKI_PREFIX)) {
-                    html = getWikiManager().wikify(request, html);
-                }
+		//Always wikify
+		html = getWikiManager().wikify(request, html);
+		//                if ((path.indexOf(".wiki.") >= 0)|| html.startsWith(WIKI_PREFIX)) {
+		    //                }
 
                 return getEntryManager().addHeaderToAncillaryPage(request,
                         new Result(BLANK, new StringBuilder(html)));

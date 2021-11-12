@@ -55,9 +55,9 @@ import java.util.Properties;
  * Class CatalogHarvester _more_
  *
  *
- * @author IDV Development Team
  * @version $Revision: 1.3 $
  */
+@SuppressWarnings("unchecked")
 public class CatalogHarvester extends Harvester {
 
     /** arg and xml attr */

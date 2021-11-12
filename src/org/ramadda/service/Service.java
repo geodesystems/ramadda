@@ -61,6 +61,7 @@ import java.util.zip.*;
 /**
  *
  */
+@SuppressWarnings("unchecked")
 public class Service extends RepositoryManager {
 
     /** _more_ */

@@ -60,6 +60,7 @@ import java.util.zip.ZipInputStream;
 
 /**
  */
+@SuppressWarnings("unchecked")
 public class GtfsImportHandler extends ImportHandler {
 
     /** _more_ */

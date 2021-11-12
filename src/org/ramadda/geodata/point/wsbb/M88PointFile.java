@@ -270,7 +270,7 @@ public class M88PointFile extends CsvFile {
                 int    hhmmss = (int) value;
                 double rem    = value - hhmmss;
                 dttm.append(" ");
-                dttm.append(Misc.padLeft("" + hhmmss, 6, "0"));
+                dttm.append(StringUtil.padLeft("" + hhmmss, 6, "0"));
                 dttm.append(" ");
                 dttm.append((int) (rem * 1000));
                 sdf = sdfLong;

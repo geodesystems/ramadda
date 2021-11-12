@@ -37,11 +37,8 @@ import java.util.List;
  *
  *
  */
+@SuppressWarnings("unchecked")
 public class DoiOutputHandler extends OutputHandler {
-
-
-
-
 
 
     /** _more_ */

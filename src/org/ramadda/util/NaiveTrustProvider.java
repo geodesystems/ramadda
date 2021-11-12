@@ -21,6 +21,7 @@ import javax.net.ssl.*;
  * to a man-in-the-middle attack.
  */
 
+@SuppressWarnings("unchecked")
 public final class NaiveTrustProvider extends Provider {
 
     /** The name of our algorithm */

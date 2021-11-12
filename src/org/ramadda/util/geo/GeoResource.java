@@ -28,6 +28,7 @@ import java.util.List;
  *     @version        $version$, Tue, Oct 27, '15
  *     @author         Enter your name here...
  */
+@SuppressWarnings("unchecked")
 public class GeoResource {
 
     /**  */

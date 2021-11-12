@@ -44,6 +44,7 @@ import java.util.HashMap;
  * @version        $version$, Thu, Apr 2, '15
  * @author         Enter your name here...
  */
+@SuppressWarnings({"unchecked","deprecation"})
 public class HashedList implements Collection {
 
     /** An ordered list of the keys */

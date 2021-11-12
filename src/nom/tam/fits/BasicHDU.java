@@ -25,6 +25,7 @@ import java.util.Iterator;
  * This abstract class is the parent of all HDU types.
  * It provides basic functionality for an HDU.
  */
+@SuppressWarnings({"unchecked","deprecation"})
 public abstract class BasicHDU implements FitsElement {
 
     /** _more_ */

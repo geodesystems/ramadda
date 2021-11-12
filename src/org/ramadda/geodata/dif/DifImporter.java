@@ -42,6 +42,7 @@ import java.util.List;
  * @version        $version$, Thu, Nov 25, '10
  * @author         Enter your name here...
  */
+@SuppressWarnings("unchecked")
 public class DifImporter extends ImportHandler {
 
     /** _more_ */

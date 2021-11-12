@@ -49,6 +49,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author RAMADDA Development Team
  */
+@SuppressWarnings("unchecked")
 public class Request implements Constants, Cloneable {
 
     //    public org.ramadda.util.HtmlTemplate template = null;

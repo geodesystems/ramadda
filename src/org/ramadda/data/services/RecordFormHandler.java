@@ -60,6 +60,7 @@ import java.util.List;
  *
  * @author         Jeff McWhirter
  */
+@SuppressWarnings("unchecked")
 public class RecordFormHandler extends RepositoryManager implements RecordConstants {
 
     /** _more_ */

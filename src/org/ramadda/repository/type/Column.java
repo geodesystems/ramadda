@@ -52,6 +52,7 @@ import java.util.List;
 /**
  */
 
+@SuppressWarnings("unchecked")
 public class Column implements DataTypes, Constants, Cloneable {
 
     /** _more_ */

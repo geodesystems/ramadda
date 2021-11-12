@@ -36,8 +36,8 @@ import java.util.zip.*;
  * Class HtmlTemplate _more_
  *
  *
- * @author IDV Development Team
  */
+@SuppressWarnings("unchecked")
 public class HtmlTemplate {
 
     /** _more_ */

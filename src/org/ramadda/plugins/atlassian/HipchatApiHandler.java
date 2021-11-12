@@ -44,6 +44,7 @@ import java.util.regex.*;
  * Provides a top-level API
  *
  */
+@SuppressWarnings("unchecked")
 public class HipchatApiHandler extends RepositoryManager implements RequestHandler {
 
     /**

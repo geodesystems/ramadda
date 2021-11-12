@@ -32,6 +32,7 @@ import java.util.List;
 
 /**
  */
+@SuppressWarnings("unchecked")
 public class PointJobManager extends RecordJobManager {
 
 

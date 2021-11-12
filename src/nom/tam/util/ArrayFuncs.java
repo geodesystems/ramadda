@@ -21,6 +21,7 @@ import java.util.Arrays;
  * to complete without throwing errors by ignoring data
  * they cannot understand.
  */
+@SuppressWarnings({"unchecked","deprecation"})
 public class ArrayFuncs implements PrimitiveInfo {
 
     /**

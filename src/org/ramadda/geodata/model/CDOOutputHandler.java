@@ -63,6 +63,7 @@ import java.util.TreeSet;
 /**
  * Interface to the Climate Data Operators (CDO) package
  */
+@SuppressWarnings("unchecked")
 public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
 
     /** CDO program path */

@@ -49,6 +49,7 @@ import java.util.List;
  *
  *
  */
+@SuppressWarnings("unchecked")
 public class GridVisitor extends BridgeRecordVisitor {
 
     /** the request */

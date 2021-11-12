@@ -35,6 +35,7 @@ import java.util.List;
  *
  * @author Jeff McWhirter/geodesystems.com
  */
+@SuppressWarnings("unchecked")
 public class TikaService extends Service {
 
 

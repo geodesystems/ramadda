@@ -55,6 +55,7 @@ import javax.swing.tree.TreePath;
  * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
+@SuppressWarnings("unchecked")
 public class InteractiveRepositoryClient extends RepositoryClient {
 
     /** _more_ */

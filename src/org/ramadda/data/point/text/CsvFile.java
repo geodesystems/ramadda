@@ -27,6 +27,7 @@ import java.util.List;
  * CSV file supports any form of column delimited files - comma, tab, space, etc
  *
  */
+@SuppressWarnings("unchecked")
 public class CsvFile extends TextFile {
 
 

@@ -33,6 +33,7 @@ import javax.naming.directory.SearchResult;
  * Does the work of communicating with the ldap server
  *
  */
+@SuppressWarnings("unchecked")
 public class LDAPManager {
 
     /** The LDAPManager instance object */

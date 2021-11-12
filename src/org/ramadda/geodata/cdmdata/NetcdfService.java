@@ -134,10 +134,10 @@ public class NetcdfService extends Service {
         List<TwoFacedObject> varNames = new ArrayList<TwoFacedObject>();
         for (Variable var : variables) {
             if (var instanceof CoordinateAxis) {
-                coordNames.add(new TwoFacedObject(var.getName(),
+                coordNames.add(new TwoFacedObject(var.getFullName(),
                         var.getShortName()));
             }
-            varNames.add(new TwoFacedObject(var.getName(),
+            varNames.add(new TwoFacedObject(var.getFullName(),
                                             var.getShortName()));
         }
 

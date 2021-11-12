@@ -643,7 +643,7 @@ public class JsonOutputHandler extends OutputHandler {
                     Json.quoteAttr(items, "filename", "");
                 } else {
                     Json.quoteAttr(items, "filename",
-                                   java.net.URLEncoder.encode(temp));
+                                   java.net.URLEncoder.encode(temp, "UTF-8"));
                 }
 
                 Json.attr(items, "filesize", "" + resource.getFileSize());
@@ -721,7 +721,7 @@ public class JsonOutputHandler extends OutputHandler {
                     : Json.quote(outputType.toString()), "url",
                     (link.getUrl() == null)
                     ? Json.quote("")
-                    : Json.quote(java.net.URLEncoder.encode(link.getUrl())),
+                    : Json.quote(java.net.URLEncoder.encode(link.getUrl(), "UTF-8")),
                     "icon", Json.quote(link.getIcon())
                 }));
             }

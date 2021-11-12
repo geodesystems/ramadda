@@ -46,6 +46,7 @@ import java.util.List;
  *
  *
  */
+@SuppressWarnings({"unchecked","deprecation"})
 public class FitsOutputHandler extends OutputHandler {
 
     /** _more_ */
@@ -167,7 +168,7 @@ public class FitsOutputHandler extends OutputHandler {
         result.setNeedToWrite(false);
         BufferedDataOutputStream bdos = new BufferedDataOutputStream(os);
 
-        for (int headerIdx = 0; headerIdx < fits.size(); headerIdx++) {
+        for (int headerIdx = 0; headerIdx < fits.getNumberOfHDUs(); headerIdx++) {
             if ( !hdus.contains("" + headerIdx)) {
                 continue;
             }
@@ -252,7 +253,7 @@ public class FitsOutputHandler extends OutputHandler {
             }
             imageHdu = (ImageHDU) hdu;
         } else {
-            for (int hduIdx = 0; hduIdx < fits.size(); hduIdx++) {
+            for (int hduIdx = 0; hduIdx < fits.getNumberOfHDUs(); hduIdx++) {
                 BasicHDU hdu = fits.getHDU(hduIdx);
                 if (hdu instanceof ImageHDU) {
                     imageHdu = (ImageHDU) hdu;
@@ -366,7 +367,7 @@ public class FitsOutputHandler extends OutputHandler {
         sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_INFO.getId()));
 
         Fits fits = new Fits(entry.getFile());
-        for (int hduIdx = 0; hduIdx < fits.size(); hduIdx++) {
+        for (int hduIdx = 0; hduIdx < fits.getNumberOfHDUs(); hduIdx++) {
             BasicHDU            hdu       = fits.getHDU(hduIdx);
             nom.tam.fits.Header header    = hdu.getHeader();
             StringBuffer        subSB     = new StringBuffer();

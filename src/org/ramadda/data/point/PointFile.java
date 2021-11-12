@@ -44,6 +44,7 @@ import java.util.TimeZone;
 
 /**
  */
+@SuppressWarnings("unchecked")
 public abstract class PointFile extends RecordFile implements Cloneable,
         Fields {
 

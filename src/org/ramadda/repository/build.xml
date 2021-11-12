@@ -209,6 +209,8 @@
             fork="${javac.fork}"
             memoryMaximumSize="${javac.maxmemory}"
         >
+	  <compilerarg value="-Xlint:unchecked"/>
+	  <compilerarg value="-Xlint:deprecation"/>
         <include name="${ramadda_relpath}/*.java"/>
         <include name="${ramadda_relpath}/admin/*.java"/>
         <include name="${ramadda_relpath}/auth/*.java"/>

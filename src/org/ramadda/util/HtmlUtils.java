@@ -49,6 +49,7 @@ import java.util.regex.*;
 /**
  */
 
+@SuppressWarnings("unchecked")
 public class HtmlUtils implements HtmlUtilsConstants {
 
     /** _more_ */
@@ -3236,7 +3237,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * Class Selector _more_
      *
      *
-     * @author IDV Development Team
      */
     public static class Selector {
 

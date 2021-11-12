@@ -24,8 +24,6 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.RadialDatasetSweep;
-import ucar.nc2.dt.TrajectoryObsDataset;
-import ucar.nc2.dt.TypedDatasetFactory;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
@@ -54,6 +52,7 @@ import java.util.regex.Pattern;
 /**
  * A manager for netCDF-Java CDM data
  */
+@SuppressWarnings({"unchecked","deprecation"})
 public class CdmManager extends RepositoryManager {
 
     /** NCML suffix */
@@ -526,7 +525,7 @@ public class CdmManager extends RepositoryManager {
                 getStorageManager().dirTouched(nj22Dir, null);
 
                 RadialDatasetSweep pods =
-                    (RadialDatasetSweep) TypedDatasetFactory.open(
+                    (RadialDatasetSweep) ucar.nc2.dt.TypedDatasetFactory.open(
                         ucar.nc2.constants.FeatureType.RADIAL, path, null,
                         new StringBuilder());
 
@@ -545,6 +544,7 @@ public class CdmManager extends RepositoryManager {
     };
 
     /** trajectory pool */
+    /*
     private DatedObjectPool<String, TrajectoryObsDataset> trajectoryPool =
         new DatedObjectPool<String, TrajectoryObsDataset>(10) {
         protected void removeValue(String key, TrajectoryObsDataset dataset) {
@@ -554,13 +554,6 @@ public class CdmManager extends RepositoryManager {
             } catch (Exception exc) {}
         }
 
-        /*
-        protected  TrajectoryObsDataset getFromPool(List<TrajectoryObsDataset> list) {
-            TrajectoryObsDataset dataset = super.getFromPool(list);
-            //dataset.sync();
-            return dataset;
-            }*/
-
         protected TrajectoryObsDataset createValue(String path) {
             try {
                 getStorageManager().dirTouched(nj22Dir, null);
@@ -568,7 +561,7 @@ public class CdmManager extends RepositoryManager {
                 long t1 = System.currentTimeMillis();
                 //                System.err.println("track:" + path);
                 TrajectoryObsDataset dataset =
-                    (TrajectoryObsDataset) TypedDatasetFactory.open(
+                    (TrajectoryObsDataset) ucar.nc2.dt.TypedDatasetFactory.open(
                         FeatureType.TRAJECTORY, path, null,
                         new StringBuilder());
 
@@ -588,7 +581,7 @@ public class CdmManager extends RepositoryManager {
 
 
     };
-
+    */
 
 
     /**
@@ -615,8 +608,7 @@ public class CdmManager extends RepositoryManager {
                 + " Dap Count:" + opendapCounter.getCount() + poolStats
                 + HtmlUtils.br() + "Grid Pool:" + gridPool.getSize()
                 + HtmlUtils.br() + "Point Pool:" + pointPool.getSize()
-                + HtmlUtils.br() + "Trajectory Pool:"
-                + trajectoryPool.getSize() + HtmlUtils.br()));
+                + HtmlUtils.br()));
 
     }
 
@@ -630,8 +622,6 @@ public class CdmManager extends RepositoryManager {
         ncDatasetPool.clear();
         gridPool.clear();
         pointPool.clear();
-        trajectoryPool.clear();
-
         cdmEntries.clear();
         gridEntries.clear();
         pointEntries.clear();
@@ -859,38 +849,6 @@ public class CdmManager extends RepositoryManager {
         return b.booleanValue();
     }
 
-    /**
-     * Can the Entry be loaded as a trajectory?
-     *
-     * @param entry  the Entry
-     *
-     * @return  true if trajectory supported
-     */
-    public boolean canLoadAsTrajectory(Entry entry) {
-        if (excludedByPattern(entry, TYPE_TRAJECTORY)) {
-            return false;
-        }
-        if (includedByPattern(entry, TYPE_TRAJECTORY)) {
-            return true;
-        }
-
-        if ( !canLoadAsCdm(entry)) {
-            return false;
-        }
-
-        Boolean b = (Boolean) trajectoryEntries.get(entry.getId());
-        if (b == null) {
-            boolean ok = false;
-            if (canLoadEntry(entry)) {
-                try {
-                    ok = trajectoryPool.containsOrCreate(getPath(entry));
-                } catch (Exception ignoreThis) {}
-            }
-            trajectoryEntries.put(entry.getId(), b = new Boolean(ok));
-        }
-
-        return b.booleanValue();
-    }
 
 
 
@@ -1230,9 +1188,11 @@ public class CdmManager extends RepositoryManager {
      *
      * @return  the Trajectory Dataset
      */
-    public TrajectoryObsDataset getTrajectoryDataset(String path) {
+    /*
+    private TrajectoryObsDataset getTrajectoryDataset(String path) {
         return trajectoryPool.get(path);
     }
+    */
 
     /**
      * Return the TrajectoryDataset to the pool
@@ -1240,10 +1200,12 @@ public class CdmManager extends RepositoryManager {
      * @param path  the file path
      * @param tod   the dataset
      */
-    public void returnTrajectoryDataset(String path,
+    /*
+    private void returnTrajectoryDataset(String path,
                                         TrajectoryObsDataset tod) {
         trajectoryPool.put(path, tod);
     }
+    */
 
 
     /**

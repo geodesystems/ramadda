@@ -40,6 +40,7 @@ import java.util.List;
  *
  *
  */
+@SuppressWarnings("unchecked")
 public class BarnesVisitor extends BridgeRecordVisitor {
 
     /** the request */

@@ -39,6 +39,7 @@ import java.util.List;
 /**
  * A MapInfo class to hold map info
  */
+@SuppressWarnings("unchecked")
 public class MapInfo {
 
     /**  */

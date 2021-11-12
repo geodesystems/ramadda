@@ -35,6 +35,7 @@ import java.util.zip.*;
  *
  * @author Jeff McWhirter
  */
+@SuppressWarnings("unchecked")
 public abstract class RecordFile {
 
     /** debug */

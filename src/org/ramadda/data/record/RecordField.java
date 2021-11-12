@@ -28,6 +28,7 @@ import java.util.List;
  *
  * @author Jeff McWhirter
  */
+@SuppressWarnings("unchecked")
 public class RecordField {
 
 

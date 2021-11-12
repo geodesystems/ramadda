@@ -37,7 +37,9 @@ import java.util.List;
 
 /**
  */
+@SuppressWarnings("unchecked")
 public class CsvImporter extends ImportHandler {
+
 
     /** _more_ */
     public static final String TYPE_CSV = "CSV";

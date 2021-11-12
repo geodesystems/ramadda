@@ -63,6 +63,7 @@ import java.util.List;
  *
  * @author         Jeff McWhirter
  */
+@SuppressWarnings("unchecked")
 public class PointFormHandler extends RecordFormHandler {
 
     /** _more_ */

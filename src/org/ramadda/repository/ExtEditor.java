@@ -58,6 +58,7 @@ import java.util.List;
 /**
  * This class handles the extended entry edit functions
  */
+@SuppressWarnings("unchecked")
 public class ExtEditor extends RepositoryManager {
 
 

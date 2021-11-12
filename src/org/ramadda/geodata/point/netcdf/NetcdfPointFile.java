@@ -58,6 +58,7 @@ import java.util.List;
  * @version        $version$, Fri, Aug 23, '13
  * @author         Enter your name here...
  */
+@SuppressWarnings("unchecked")
 public class NetcdfPointFile extends PointFile {
 
     /** _more_ */
@@ -397,7 +398,7 @@ public class NetcdfPointFile extends PointFile {
 
         List<Attribute> attrs    = dataset.getGlobalAttributes();
         for (Attribute attr : attrs) {
-            String name  = attr.getName();
+            String name  = attr.getFullName();
             String value = attr.getStringValue();
             if (value == null) {
                 continue;

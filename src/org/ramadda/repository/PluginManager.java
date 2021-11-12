@@ -67,6 +67,7 @@ import java.util.zip.*;
 /**
  * This class loads and manages the plugins
  */
+@SuppressWarnings("unchecked")
 public class PluginManager extends RepositoryManager {
 
     //Uggh

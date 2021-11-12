@@ -39,9 +39,9 @@ import java.util.zip.*;
 /**
  * DataSource for Web Map Servers
  *
- * @author IDV development team
  * @version $Revision: 1.38 $ $Date: 2007/04/16 20:34:52 $
  */
+@SuppressWarnings("unchecked")
 public class KmlUtil {
 
     //J-

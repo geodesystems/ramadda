@@ -29,6 +29,7 @@ import java.util.List;
 /**
  * Class to hold a set of entries for a ServiceInput or Output
  */
+@SuppressWarnings("unchecked")
 public class ServiceOperand {
 
     /** The list of entries for this operand */

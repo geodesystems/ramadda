@@ -35,6 +35,7 @@ import java.util.List;
 /**
  * The class to hold Entry information
  */
+@SuppressWarnings("unchecked")
 public class Entry implements Cloneable {
 
 

@@ -48,6 +48,7 @@ import java.util.regex.*;
  * @version        $version$, Fri, Jan 9, '15
  * @author         Jeff McWhirter
  */
+@SuppressWarnings("unchecked")
 public class RowCollector extends Processor {
 
     /** _more_ */

@@ -70,6 +70,7 @@ import javax.imageio.*;
  * @author Jeff McWhirter
  */
 
+@SuppressWarnings("unchecked")
 public class WebHarvester {
 
     /**  */

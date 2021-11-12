@@ -52,6 +52,7 @@ import java.util.List;
  * @version        $version$, Thu, Oct 31, '13
  * @author         Enter your name here...
  */
+@SuppressWarnings({"unchecked","deprecation"})
 public class NetcdfRecord extends DataRecord {
 
     /** _more_ */

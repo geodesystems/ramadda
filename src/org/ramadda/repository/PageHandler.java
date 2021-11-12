@@ -64,6 +64,7 @@ import java.util.TimeZone;
  * The main class.
  *
  */
+@SuppressWarnings("unchecked")
 public class PageHandler extends RepositoryManager {
 
 
@@ -2748,7 +2749,7 @@ public class PageHandler extends RepositoryManager {
 
         String leftTable;
         leftTable =
-            HU.table(HU.row(HU.cols(Misc.listToStringArray(menuItems)),
+            HU.table(HU.row(HU.cols(Utils.toStringArray(menuItems)),
                             " cellpadding=0 cellspacing=0 border=0 "));
 
         return leftTable;

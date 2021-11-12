@@ -27,6 +27,7 @@ import java.util.List;
  * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
+@SuppressWarnings("unchecked")
 public class User {
 
     /** _more_ */

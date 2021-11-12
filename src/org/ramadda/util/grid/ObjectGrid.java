@@ -26,6 +26,7 @@ import java.util.List;
  *
  * @param <T>
  */
+@SuppressWarnings("unchecked")
 public class ObjectGrid<T> extends Grid {
 
     /** An extra 2d array of counts */

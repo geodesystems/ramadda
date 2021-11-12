@@ -36,6 +36,7 @@ import java.util.Properties;
 /**
  * Class to hold a Collection of Features.  Modeled off the GEOJson spec.
  */
+@SuppressWarnings("unchecked")
 public class FeatureCollection {
 
     /** FeatureCollection type */

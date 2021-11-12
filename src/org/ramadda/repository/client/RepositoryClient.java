@@ -41,6 +41,7 @@ import java.util.zip.ZipOutputStream;
  *
  * @author RAMADDA Development Team
  */
+@SuppressWarnings("unchecked")
 public class RepositoryClient extends RepositoryBase {
 
     /** _more_ */

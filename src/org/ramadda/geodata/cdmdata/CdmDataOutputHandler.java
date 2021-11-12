@@ -61,8 +61,6 @@ import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.dt.GridCoordSystem;
 
 import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.TrajectoryObsDataset;
-import ucar.nc2.dt.TrajectoryObsDatatype;
 import ucar.nc2.dt.grid.CFGridWriter2;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
@@ -120,6 +118,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * A class for handling CDM data output
  */
+@SuppressWarnings({"unchecked","deprecation"})
 public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstants {
 
     /** _more_ */
@@ -175,12 +174,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                        OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
                        ICON_CSV, GROUP_DATA);
 
-
-    /** Trajectory map Output Type */
-    public static final OutputType OUTPUT_TRAJECTORY_MAP =
-        new OutputType("Show track on Map", "data.trajectory.map",
-                       OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
-                       ICON_MAP, GROUP_DATA);
 
     /** Radar map Output Type */
     public static final OutputType OUTPUT_RADAR_MAP =
@@ -255,7 +248,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         addType(OUTPUT_CDL);
         addType(OUTPUT_JSON);
         addType(OUTPUT_WCS);
-        addType(OUTPUT_TRAJECTORY_MAP);
         addType(OUTPUT_POINT_MAP);
         addType(OUTPUT_POINT_SUBSET);
         addType(OUTPUT_GRIDSUBSET);
@@ -359,8 +351,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             addOutputLink(request, entry, links,
                           GridPointOutputHandler.OUTPUT_GRIDASPOINT_FORM);
             addOutputLink(request, entry, links, OUTPUT_JSON);
-        } else if (getCdmManager().canLoadAsTrajectory(entry)) {
-            addOutputLink(request, entry, links, OUTPUT_TRAJECTORY_MAP);
         } else if (getCdmManager().canLoadAsPoint(entry)) {
             addOutputLink(request, entry, links, OUTPUT_POINT_MAP);
             addOutputLink(request, entry, links, OUTPUT_POINT_SUBSET);
@@ -744,7 +734,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         //      displayProps.add(Json.quote(column.getSearchArg()));
 
         displayProps.add("requestFields");
-        displayProps.add(Json.quote(Misc.join(",", all)));
+        displayProps.add(Json.quote(Utils.join(all,",")));
 
         getCdmManager().returnGridDataset(path, gds);
 
@@ -2031,79 +2021,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
     }
 
 
-    /**
-     * Output a trajectory map
-     *
-     * @param request  the request
-     * @param entry    the entry
-     *
-     * @return  the result
-     *
-     * @throws Exception  on badness
-     */
-    public Result outputTrajectoryMap(Request request, Entry entry)
-            throws Exception {
-        String               path = getPath(request, entry);
-        TrajectoryObsDataset tod  =
-            getCdmManager().getTrajectoryDataset(path);
-        StringBuffer         sb   = new StringBuffer();
-
-        MapInfo map = getRepository().getMapManager().createMap(request,
-                          entry, "800", "600", false, null);
-        List trajectories = tod.getTrajectories();
-        //TODO: Use new openlayers map
-        for (int i = 0; i < trajectories.size(); i++) {
-            List allVariables = tod.getDataVariables();
-            TrajectoryObsDatatype todt =
-                (TrajectoryObsDatatype) trajectories.get(i);
-            float[] lats    = toFloatArray(todt.getLatitude(null));
-            float[] lons    = toFloatArray(todt.getLongitude(null));
-            float   lastLat = 0,
-                    lastLon = 0;
-            int     stride  = lats.length / 500;
-            for (int ptIdx = 0; ptIdx < lats.length; ptIdx += stride) {
-                float lat = lats[ptIdx];
-                float lon = lons[ptIdx];
-                if (ptIdx > 0) {
-                    if (ptIdx + stride >= lats.length) {
-                        map.addMarker("", lat, lon, null, "",
-                                      "End time:" + todt.getEndDate());
-                    }
-                    //#FF0000
-                    map.addLine(entry, "", lastLat, lastLon, lat, lon, null);
-                } else {
-                    map.addMarker("", lat, lon, null, "",
-                                  "Start time:" + todt.getEndDate());
-                }
-                lastLat = lat;
-                lastLon = lon;
-            }
-            StructureData    structure = todt.getData(0);
-            VariableSimpleIF theVar    = null;
-            for (int varIdx = 0; varIdx < allVariables.size(); varIdx++) {
-                VariableSimpleIF var =
-                    (VariableSimpleIF) allVariables.get(varIdx);
-                if (var.getRank() != 0) {
-                    continue;
-                }
-                theVar = var;
-
-                break;
-            }
-            if (theVar == null) {
-                continue;
-            }
-        }
-
-        map.centerOn(entry);
-        sb.append(map.getHtml());
-        getCdmManager().returnTrajectoryDataset(path, tod);
-
-        return new Result(msg("Trajectory Map"), sb);
-
-
-    }
-
 
 
 
@@ -2468,9 +2385,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             return outputGridSubset(request, entry);
         }
 
-        if (outputType.equals(OUTPUT_TRAJECTORY_MAP)) {
-            return outputTrajectoryMap(request, entry);
-        }
 
         if (outputType.equals(OUTPUT_POINT_MAP)) {
             return outputPointMap(request, entry);

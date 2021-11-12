@@ -20,13 +20,13 @@ import java.util.List;
  * given cache size this will remove the elements from the list on a key based last used
  *  basis
  *
- * @author IDV development group.
- *
+
  * @version $Revision: 1.271 $
  *
  * @param <KeyType>
  * @param <ValueType>
  */
+@SuppressWarnings("unchecked")
 public class ObjectPool<KeyType, ValueType> {
 
     /** _more_ */

@@ -85,6 +85,7 @@ import java.util.zip.*;
  * The main class.
  *
  */
+@SuppressWarnings("unchecked")
 public class ApiManager extends RepositoryManager {
 
     /** _more_ */

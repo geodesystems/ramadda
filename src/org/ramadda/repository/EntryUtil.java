@@ -47,10 +47,8 @@ import java.util.regex.Pattern;
 /**
  * This class does most of the work of managing repository content
  */
+@SuppressWarnings("unchecked")
 public class EntryUtil extends RepositoryManager {
-
-
-
 
     //Cache for 1 hour
 

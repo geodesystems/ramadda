@@ -48,6 +48,7 @@ import java.util.List;
  * @author Jeff McWhirter
  * @version $Revision: 1.3 $
  */
+@SuppressWarnings("deprecation")
 public class FitsTypeHandler extends GenericTypeHandler {
 
     /** _more_ */
@@ -242,7 +243,7 @@ public class FitsTypeHandler extends GenericTypeHandler {
         }
 
         Fits fits = new Fits(entry.getFile());
-        for (int headerIdx = 0; headerIdx < fits.size(); headerIdx++) {
+        for (int headerIdx = 0; headerIdx < fits.getNumberOfHDUs(); headerIdx++) {
             BasicHDU            hdu       = fits.getHDU(headerIdx);
             nom.tam.fits.Header header    = hdu.getHeader();
 
@@ -284,7 +285,7 @@ public class FitsTypeHandler extends GenericTypeHandler {
     public static void processFits(String file) throws Exception {
         Fits fits = new Fits(file);
         //        System.err.println(file);
-        for (int headerIdx = 0; headerIdx < fits.size(); headerIdx++) {
+        for (int headerIdx = 0; headerIdx < fits.getNumberOfHDUs(); headerIdx++) {
             BasicHDU            hdu       = fits.getHDU(headerIdx);
             nom.tam.fits.Header header    = hdu.getHeader();
             Date[]              dateRange = getDateRange(header);

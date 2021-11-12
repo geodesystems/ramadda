@@ -63,6 +63,7 @@ import java.util.Properties;
 
 /**
  */
+@SuppressWarnings("unchecked")
 public class CommandHarvester extends Harvester {
 
 

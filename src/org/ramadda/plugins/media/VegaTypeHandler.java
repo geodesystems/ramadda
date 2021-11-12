@@ -39,6 +39,7 @@ import java.util.List;
 
 /**
  */
+@SuppressWarnings("unchecked")
 public class VegaTypeHandler extends ConvertibleTypeHandler {
 
 

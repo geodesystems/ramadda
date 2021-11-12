@@ -49,6 +49,7 @@ import java.util.TimeZone;
 
 /**
  */
+@SuppressWarnings("unchecked")
 public class AcsFile extends CsvFile {
 
     /** _more_ */

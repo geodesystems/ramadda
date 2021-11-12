@@ -40,7 +40,7 @@ import java.util.List;
  * Class for handling grid aggregation
  *
  */
-
+@SuppressWarnings("unchecked")
 public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
 
     /** Type index for GUI */

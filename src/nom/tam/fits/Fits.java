@@ -77,6 +77,7 @@ import java.util.*;
  *
  * @version 1.08.1  January 30, 2012
  */
+@SuppressWarnings({"unchecked","deprecation"})
 public class Fits {
 
     /**

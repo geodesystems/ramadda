@@ -49,6 +49,7 @@ import java.util.TreeSet;
 /**
  * Service for area statistics using CDO
  */
+@SuppressWarnings("unchecked")
 public class CDOArealStatisticsService extends CDODataService {
 
     /** the type of request */

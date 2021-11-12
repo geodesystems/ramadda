@@ -26,6 +26,7 @@ import java.util.List;
  *
  *
  */
+@SuppressWarnings("unchecked")
 public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
 
 
@@ -145,7 +146,7 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
 
 
         //sort the categories and put the blank one at the end
-        cats = new ArrayList<String>(ucar.unidata.util.Misc.sort(cats));
+	cats = new ArrayList<String>((ArrayList<String>)ucar.unidata.util.Misc.sort(cats));
         if (cats.contains("")) {
             cats.remove("");
             cats.add("");

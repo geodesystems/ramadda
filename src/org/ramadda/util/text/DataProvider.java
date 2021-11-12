@@ -49,6 +49,7 @@ import java.util.regex.*;
  * @author Jeff McWhirter
  */
 
+@SuppressWarnings("unchecked")
 public abstract class DataProvider {
 
     /** _more_ */

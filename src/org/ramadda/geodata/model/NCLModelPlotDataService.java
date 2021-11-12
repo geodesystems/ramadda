@@ -52,6 +52,7 @@ import java.util.TreeSet;
 /**
  * Map plotting process using NCL
  */
+@SuppressWarnings("unchecked")
 public class NCLModelPlotDataService extends NCLDataService {
 
     /** list of colormaps */

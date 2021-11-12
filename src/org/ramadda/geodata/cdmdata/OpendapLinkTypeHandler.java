@@ -19,7 +19,6 @@ import ucar.unidata.util.IOUtil;
 /**
  *
  *
- * @author IDV Development Team
  * @version $Revision: 1.3 $
  */
 public class OpendapLinkTypeHandler extends GridTypeHandler {

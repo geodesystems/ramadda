@@ -49,6 +49,7 @@ import java.util.regex.*;
  *
  *
  */
+@SuppressWarnings("unchecked")
 public class ExternalDbTypeHandler extends PointTypeHandler {
 
     /** _more_ */

@@ -43,6 +43,7 @@ import java.util.regex.*;
  * @author IDV Development Team
  * @version $Revision: 1.3 $
  */
+@SuppressWarnings("unchecked")
 public class SqlUtil {
 
     /** _more_ */

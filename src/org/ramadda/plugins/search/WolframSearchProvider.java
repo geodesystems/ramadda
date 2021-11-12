@@ -32,6 +32,7 @@ import java.util.List;
  * Proxy that searches wolfram
  *
  */
+@SuppressWarnings("unchecked")
 public class WolframSearchProvider extends SearchProvider {
 
 

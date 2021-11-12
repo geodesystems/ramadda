@@ -30,6 +30,7 @@ import java.util.regex.*;
 
 /**
  */
+@SuppressWarnings("unchecked")
 public class WikiUtil {
 
 
@@ -3219,7 +3220,7 @@ public class WikiUtil {
                         inner = "before Bad date format:" + before;
                     } else {
                         Date now = new Date();
-                        if (now.getDate() > dttm.getDate()) {
+                        if (now.getTime() > dttm.getTime()) {
                             shouldShow = false;
                         }
                     }
@@ -3230,7 +3231,7 @@ public class WikiUtil {
                         inner = "Bad date format:" + after;
                     } else {
                         Date now = new Date();
-                        if (now.getDate() < dttm.getDate()) {
+                        if (now.getTime() < dttm.getTime()) {
                             shouldShow = false;
                         }
                     }
@@ -4669,7 +4670,6 @@ public class WikiUtil {
      * WikiPageHandler _more_
      *
      *
-     * @author IDV Development Team
      * @version $Revision: 1.3 $
      */
     public static interface WikiPageHandler {

@@ -52,11 +52,9 @@ import java.util.Properties;
 
 /**
  * Class TypeHandler _more_
- *
- *
- * @author IDV Development Team
  * @version $Revision: 1.3 $
  */
+@SuppressWarnings("unchecked")
 public class CatalogTypeHandler extends ExtensibleGroupTypeHandler {
 
     /** _more_ */
@@ -363,7 +361,6 @@ public class CatalogTypeHandler extends ExtensibleGroupTypeHandler {
      * Class DomHolder _more_
      *
      *
-     * @author IDV Development Team
      * @version $Revision: 1.3 $
      */
     public static class DomHolder {

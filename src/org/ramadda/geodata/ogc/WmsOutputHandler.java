@@ -30,6 +30,7 @@ import java.util.List;
  * This class handles WMS Capabilities URLs. It loads the XML and generates a web page listing
  * each of the layers
  */
+@SuppressWarnings("unchecked")
 public class WmsOutputHandler extends OutputHandler {
 
     /** output type for viewing map */

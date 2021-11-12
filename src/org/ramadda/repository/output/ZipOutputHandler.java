@@ -45,6 +45,7 @@ import java.util.zip.*;
  * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
+@SuppressWarnings("unchecked")
 public class ZipOutputHandler extends OutputHandler {
 
     /** _more_ */

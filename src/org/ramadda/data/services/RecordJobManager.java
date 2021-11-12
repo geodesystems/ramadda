@@ -47,6 +47,7 @@ import java.util.zip.*;
 
 /**
  */
+@SuppressWarnings("unchecked")
 public class RecordJobManager extends JobManager implements RecordConstants {
 
 

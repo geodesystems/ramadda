@@ -45,6 +45,7 @@ import java.util.List;
  * An API for doing climate model comparisons
  *
  */
+@SuppressWarnings("unchecked")
 public class ClimateModelApiHandler extends RepositoryManager implements RequestHandler {
 
     /** search action */

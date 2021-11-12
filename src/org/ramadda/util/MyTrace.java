@@ -34,10 +34,8 @@ import javax.swing.*;
  * Provides for applicatin level call tracing, timing and memory
  * tracing.
  *
- * @author IDV development team
  */
-
-
+@SuppressWarnings("unchecked")
 public class MyTrace {
 
     /** _more_ */

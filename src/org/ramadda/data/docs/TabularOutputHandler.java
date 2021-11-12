@@ -64,6 +64,7 @@ import java.util.zip.*;
 
 /**
  */
+@SuppressWarnings("unchecked")
 public class TabularOutputHandler extends OutputHandler {
 
     /** _more_ */

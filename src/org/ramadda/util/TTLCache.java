@@ -26,6 +26,7 @@ import java.util.List;
  * @param <KEY>
  * @param <VALUE>
  */
+@SuppressWarnings("unchecked")
 public class TTLCache<KEY, VALUE> {
 
     /** _more_ */

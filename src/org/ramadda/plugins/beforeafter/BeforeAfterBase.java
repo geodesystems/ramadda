@@ -131,7 +131,7 @@ public class BeforeAfterBase extends GenericTypeHandler {
             return;
         }
 
-        HashSet<String> except =
+        @SuppressWarnings("unchecked") HashSet<String> except =
             (HashSet<String>) Utils.makeHashSet(ARG_IMAGELAYOUT);
         String url;
         if ( !tag.equals(TAG_BEFOREAFTER)) {

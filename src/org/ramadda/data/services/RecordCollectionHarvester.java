@@ -41,6 +41,7 @@ import java.util.regex.*;
  *
  * @author Jeff McWhirter
  */
+@SuppressWarnings("unchecked")
 public abstract class RecordCollectionHarvester extends PatternHarvester {
 
     /** _more_ */

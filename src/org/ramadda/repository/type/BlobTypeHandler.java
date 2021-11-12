@@ -5,20 +5,11 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.type;
 
-
 import org.ramadda.repository.*;
 
-
-
-
 import org.w3c.dom.*;
-
 import ucar.unidata.xml.XmlUtil;
-
-
 import java.util.Hashtable;
-
-
 
 
 
@@ -28,6 +19,7 @@ import java.util.Hashtable;
  * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
+@SuppressWarnings("unchecked")
 public class BlobTypeHandler extends GenericTypeHandler {
 
 

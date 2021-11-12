@@ -37,6 +37,7 @@ import java.util.List;
  * @author Jeff McWhirter
  * @version $Revision: 1.3 $
  */
+@SuppressWarnings("unchecked")
 public abstract class RecordCollectionTypeHandler extends ExtensibleGroupTypeHandler implements RecordConstants {
 
     /** _more_ */

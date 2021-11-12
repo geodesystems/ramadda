@@ -36,6 +36,7 @@ import java.util.List;
 /**
  * Manages WMS capabilities URLs
  */
+@SuppressWarnings("unchecked")
 public class WmsCapabilitiesTypeHandler extends ExtensibleGroupTypeHandler {
 
 

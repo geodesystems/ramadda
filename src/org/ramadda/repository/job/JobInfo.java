@@ -19,6 +19,7 @@ import java.util.List;
  * Holds information about processing jobs
  *
  */
+@SuppressWarnings("unchecked")
 public class JobInfo implements Constants {
 
     /** _more_ */
