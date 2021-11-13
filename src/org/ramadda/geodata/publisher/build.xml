@@ -31,7 +31,6 @@
             nowarn="true"
             srcdir="${src_dir}"
             fork="true"
-            memoryMaximumSize="256m"
             target="${javac.version}"
         >
 	  <compilerarg value="-Xlint:unchecked"/>
