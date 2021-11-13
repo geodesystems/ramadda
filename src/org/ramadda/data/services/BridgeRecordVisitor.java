@@ -211,13 +211,14 @@ public abstract class BridgeRecordVisitor extends RecordVisitor {
     public void close(VisitInfo visitInfo) {
         closed = true;
         super.close(visitInfo);
+        if (pw != null) {
+	    pw.flush();
+            pw.close();
+            pw = null;
+        }
         if (os != null) {
             IOUtil.close(os);
             os = null;
-        }
-        if (pw != null) {
-            pw.close();
-            pw = null;
         }
         if (dos != null) {
             IOUtil.close(dos);
