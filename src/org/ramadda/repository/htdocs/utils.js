@@ -1736,11 +1736,11 @@ var Utils =  {
     },
     areDisplaysReady: function() {
 	if(!Utils.getPageLoaded()) {
-	    console.log("page has not loaded");
+//	    console.log("page has not loaded");
 	    return 0;
 	}
 	if(Utils.displaysList.length==0) {
-	    console.log("no displays");
+//	    console.log("no displays");
 	    return 1;
 	}
 	let allReady = true;
@@ -1748,19 +1748,19 @@ var Utils =  {
 	    if(!display.hasData) return;
             if (!display.hasData()) {
 		if(display.needsData()) {
-		    console.log("display:" + display.type +" does not have data and needs data");
+//		    console.log("display:" + display.type +" does not have data and needs data");
 		    allReady = false;
 		}
 	    } else {
-		console.log("display:" + display.type +" has data");
+//		console.log("display:" + display.type +" has data");
 	    }
 	});
 
 	if(allReady) {
-	    console.log("all ready");
+//	    console.log("all ready");
 	    return 1
 	}
-	console.log("not ready");
+//	console.log("not ready");
 	return 0;
     },
     checkForResize: function() {

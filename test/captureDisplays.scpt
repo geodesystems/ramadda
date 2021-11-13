@@ -10,7 +10,7 @@ repeat while ok = 0
 	        log "Too many tries: " & tries
 		exit repeat
 	   end if
-           set ok to   do JavaScript "Utils.areDisplaysReady();" in document 1 
+           set ok to   do JavaScript "if(!window['Utils']) {captureValue = 0;} else {captureValue = Utils.areDisplaysReady();}" in document 1 
 	   if ok = 0
 	        delay 1
 	   end if
