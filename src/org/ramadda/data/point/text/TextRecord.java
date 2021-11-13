@@ -13,6 +13,7 @@ import org.ramadda.data.point.*;
 
 import org.ramadda.data.record.*;
 
+import org.ramadda.util.NamedChannel;
 import org.ramadda.util.Station;
 import org.ramadda.util.Utils;
 import org.ramadda.util.text.*;
@@ -23,6 +24,8 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.WrapperException;
 
 import java.io.*;
+import java.nio.*;
+import java.nio.channels.*;
 
 import java.text.SimpleDateFormat;
 
@@ -266,6 +269,8 @@ public class TextRecord extends DataRecord {
 
 
 
+    static boolean nio  =false;
+
     /**
      * _more_
      *
@@ -278,8 +283,17 @@ public class TextRecord extends DataRecord {
     public String readNextLine(RecordIO recordIO) throws Exception {
         boolean debug = false;
         if (textReader == null) {
+	    nio=!nio;
+	    nio = false;
             textReader = new TextReader();
-            textReader.setReader(recordIO.getBufferedReader());
+	    //	    System.err.println("making text reader:" +(nio?"new way":"old way"));
+	    InputStream fis = recordIO.getInputStream();
+	    if(nio) {
+		ReadableByteChannel in = Channels.newChannel(fis);
+		textReader.setInputChannel(new NamedChannel("",in));
+	    } else {
+		textReader.setReader(recordIO.getBufferedReader());
+	    }
         }
         while (true) {
             if (firstDataLine != null) {
@@ -295,17 +309,13 @@ public class TextRecord extends DataRecord {
                 if (debug) {
                     System.err.println("TextRecord: currentLine is null");
                 }
-
                 return null;
             }
-            //Don't trim the line as there might be a tab delimiter at the end
-            //            currentLine = currentLine.trim();
-            if ( !lineOk(currentLine)) {
+            if (!lineOk(currentLine)) {
                 if (debug) {
                     System.err.println("TextRecord: currentLine not ok:"
                                        + currentLine);
                 }
-
                 continue;
             }
 
@@ -343,12 +353,9 @@ public class TextRecord extends DataRecord {
      */
     @Override
     public ReadStatus read(RecordIO recordIO) throws Exception {
-
-
         String line = null;
         if ((tokens != null) && (tokens.length == 0)) {
             System.err.println("TextRecord.read zero length tokens array");
-
             return ReadStatus.EOF;
         }
 
