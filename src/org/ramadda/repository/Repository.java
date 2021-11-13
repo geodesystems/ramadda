@@ -179,7 +179,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         null;
 
     /** Cache resoruces property */
-    public static final String PROP_CACHERESOURCES = "ramadda.cacheresources";
+    public static final String PROP_CACHE_RESOURCES = "ramadda.cacheresources";
+    public static final String PROP_CACHE_HTDOCS = "ramadda.cachehtdocs";    
 
     /** Entry edit URLs */
     protected List<RequestUrl> entryEditUrls;
@@ -459,6 +460,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private int htdocsCacheSize = 0;
 
+    private boolean cacheHtdocs = true;
+    
     /** _more_ */
     private static final int HTDOCS_CACHE_LIMIT = 10000000;
 
@@ -4145,11 +4148,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		//		System.err.println("cache full:"+ path);
                 return;
             }
-	    //For now always cache the htdocs requests
-	    //            if (getCacheResources()) {
+	    if (cacheHtdocs) {
+		//System.err.println("caching:" + path +" size:" + bytes.length + " total size:" + htdocsCacheSize);
                 htdocsCacheSize += bytes.length;
                 htdocsCache.put(path, bytes);
-		//}
+	    } else {
+		//		System.err.println("no cache:" + path);
+	    }
         }
     }
 
@@ -4467,7 +4472,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	alwaysHttps           =  getProperty(PROP_ALWAYS_HTTPS, false);
         allSsl                = getProperty(PROP_ACCESS_ALLSSL, false);
         sslIgnore             = getProperty(PROP_SSL_IGNORE, false);
-        cacheResources        = getProperty(PROP_CACHERESOURCES, false);
+        cacheResources        = getProperty(PROP_CACHE_RESOURCES, false);
+	cacheHtdocs           = getProperty(PROP_CACHE_HTDOCS, true);
         repositoryName = getProperty(PROP_REPOSITORY_NAME, repositoryName);
         repositoryDescription = getProperty(PROP_REPOSITORY_DESCRIPTION, "");
         language              = getProperty(PROP_LANGUAGE, "");
