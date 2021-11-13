@@ -5,6 +5,8 @@
  */
 
 
+
+
 var root = ramaddaBaseUrl;
 var urlroot = ramaddaBaseUrl;
 var icon_close = "fas fa-window-close";
@@ -1731,6 +1733,35 @@ var Utils =  {
 		Utils.checkPageReload(time-1,id,showLabel);
 	    },1000);
 	}
+    },
+    areDisplaysReady: function() {
+	if(!Utils.getPageLoaded()) {
+	    console.log("page has not loaded");
+	    return 0;
+	}
+	if(Utils.displaysList.length==0) {
+	    console.log("no displays");
+	    return 1;
+	}
+	let allReady = true;
+	Utils.displaysList.forEach(display=>{
+	    if(!display.hasData) return;
+            if (!display.hasData()) {
+		if(display.needsData()) {
+		    console.log("display:" + display.type +" does not have data and needs data");
+		    allReady = false;
+		}
+	    } else {
+		console.log("display:" + display.type +" has data");
+	    }
+	});
+
+	if(allReady) {
+	    console.log("all ready");
+	    return 1
+	}
+	console.log("not ready");
+	return 0;
     },
     checkForResize: function() {
 	/*
@@ -5183,3 +5214,4 @@ $( document ).ready(function() {
 
 
 
+Utils.areDisplaysReady()
