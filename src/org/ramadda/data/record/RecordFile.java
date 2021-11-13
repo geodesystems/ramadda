@@ -1004,8 +1004,7 @@ public abstract class RecordFile {
                 }
                 try {
                     //This sets the record index
-                    BaseRecord.ReadStatus status = readNextRecord(visitInfo,
-                                                       record);
+                    BaseRecord.ReadStatus status = readNextRecord(visitInfo, record);
                     if (status == BaseRecord.ReadStatus.EOF) {
                         break;
                     }
@@ -1027,9 +1026,6 @@ public abstract class RecordFile {
                             }
                         }
                     }
-
-                    //System.err.println ("TIME:" + new Date(record.getRecordTime()));
-
                     record = makeNextRecord(record);
                     if (record == null) {
                         return;
