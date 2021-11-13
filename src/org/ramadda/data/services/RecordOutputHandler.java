@@ -35,6 +35,8 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.BufferedWriter;
+import java.io.OutputStreamWriter;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -650,7 +652,7 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
         }
         String fileName = getOutputFilename(entry, ext);
         if (jobId == null) {
-            //            System.err.println ("POINT: writing directly " + request.getOutputStream().getClass().getName());
+	    //	    System.err.println ("POINT: writing directly " + request.getOutputStream().getClass().getName());
             return request.getOutputStream();
             //            return new BufferedOutputStream(request.getOutputStream(),
             //                                            10000);
@@ -679,10 +681,8 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
     public PrintWriter getPrintWriter(Request request, Object jobId,
                                       Entry entry, String ext)
             throws Exception {
-        //        if (jobId == null) {
-        //            return request.getHttpServletResponse().getWriter();
-        //        }
-        return new PrintWriter(getOutputStream(request, jobId, entry, ext));
+	//        return new PrintWriter(new BufferedWriter(new OutputStreamWriter(getOutputStream(request, jobId, entry, ext))));
+	return new PrintWriter(getOutputStream(request, jobId, entry, ext));
     }
 
     /**

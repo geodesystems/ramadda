@@ -22,8 +22,10 @@ import org.ramadda.util.Json;
 //import ucar.nc2.ft.point.writer.PointObVar;
 
 
+import java.io.OutputStream;
 import java.io.PrintWriter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -43,21 +45,24 @@ public class JsonVisitor extends BridgeRecordVisitor {
     /** _more_ */
     private static final String QUOTE = "\"";
 
+    private static final String VALUES_OPEN = Json.MAP_OPEN+ QUOTE+Json.FIELD_VALUES+"\":"+Json.LIST_OPEN;
+
+    private static final String VALUES_CLOSE = Json.LIST_CLOSE+Json.MAP_CLOSE;
+
+
     /** _more_ */
-    private int cnt = 0;
+    private int rowCnt = 0;
 
     /** _more_ */
     private List<RecordField> fields;
 
-    /** _more_ */
-    private PrintWriter pw;
+    private List<RecordField> fieldsToUse;
 
     /** _more_ */
-    static int _cnt = 0;
+    private Appendable pw;
 
-    /** _more_ */
-    int mycnt = _cnt++;
-
+    private OutputStream os;
+    
     /** _more_ */
     private boolean initParams = false;
 
@@ -86,6 +91,10 @@ public class JsonVisitor extends BridgeRecordVisitor {
         super(handler, request, processId, mainEntry, suffix);
     }
 
+    private void write(String s) throws Exception {
+	pw.append(s);
+    }
+
     /**
      * _more_
      *
@@ -100,16 +109,7 @@ public class JsonVisitor extends BridgeRecordVisitor {
     public boolean doVisitRecord(RecordFile file, VisitInfo visitInfo,
                                  BaseRecord record)
             throws Exception {
-
-        boolean debug = false;
-        if (debug) {
-            System.err.println("JsonVisitor.doVisitRecord");
-        }
         if ( !getHandler().jobOK(getProcessId())) {
-            if (debug) {
-                System.err.println("\tjob not OK");
-            }
-
             return false;
         }
         PointRecord pointRecord = (PointRecord) record;
@@ -130,119 +130,101 @@ public class JsonVisitor extends BridgeRecordVisitor {
             fields = record.getFields();
             RecordField.addJsonHeader(pw, mainEntry.getName(), fields,
                                       addGeo, addElevation, addTime);
+	    fieldsToUse = new ArrayList<RecordField>();
+	    for (RecordField field : fields) {
+		if (field.getIsLatitude()) {
+		    addGeo = false;
+		}
+		if (field.getIsAltitude()) {
+		    addElevation = false;
+		}
+		if (field.getSynthetic()) {
+		    continue;
+		}
+		if (field.getArity() > 1) {
+		    continue;
+		}
+		fieldsToUse.add(field);
+	    }
         }
 
-        int fieldCnt = 0;
-        if (cnt > 0) {
-            pw.append(COMMA);
+	if (rowCnt > 0) {
+	    write(COMMA);
         }
-
-        pw.append(Json.MAP_OPEN);
-        pw.append(QUOTE);
-        pw.append(Json.FIELD_VALUES);
-        pw.append("\":");
-        pw.append(Json.LIST_OPEN);
+        rowCnt++;
+        write(VALUES_OPEN);
         double d = 0;
-        for (RecordField field : fields) {
-            if (field.getIsLatitude()) {
-                addGeo = false;
-            }
-            if (field.getIsAltitude()) {
-                addElevation = false;
-            }
-            if (field.getSynthetic()) {
-                continue;
-            }
-            if (field.getArity() > 1) {
-                continue;
-            }
+        int fieldCnt = 0;
+        for (RecordField field : fieldsToUse) {
             ValueGetter getter = field.getValueGetter();
             if (fieldCnt > 0) {
-                pw.append(COMMA);
+		write(COMMA);
             }
-
+            fieldCnt++;
             if (getter == null) {
                 if (field.isTypeString()) {
                     Json.quote(pw, record.getStringValue(field.getParamId()));
-                    //                    pw.append(QUOTE);
-                    //                    pw.append(record.getStringValue(field.getParamId()));
-                    //                    pw.append(QUOTE);
                 } else if (field.isTypeDate()) {
-                    pw.append(QUOTE);
-                    pw.append(record.getStringValue(field.getParamId()));
-                    pw.append(QUOTE);
+                    write(QUOTE);
+                    write(record.getStringValue(field.getParamId()));
+                    write(QUOTE);
                 } else {
                     d = record.getValue(field.getParamId());
                     if (Json.isNullNumber(d)) {
-                        pw.append("null");
+                        write(Json.NULL);
                     } else {
-                        pw.append(Double.toString(d));
+                        write(Double.toString(d));
                     }
                 }
             } else {
                 if (field.isTypeString() || field.isTypeDate()) {
-                    Json.quote(pw,
-                               getter.getStringValue(record, field,
-                                   visitInfo));
-                    //                    pw.append(QUOTE);
-                    //                    pw.append(getter.getStringValue(record, field,
-                    //                            visitInfo));
-                    //                    pw.append(QUOTE);
+		    Json.quote(pw,  getter.getStringValue(record, field,visitInfo));
                 } else {
                     d = getter.getValue(record, field, visitInfo);
                     if (Json.isNullNumber(d)) {
-                        pw.append("null");
+			write(Json.NULL);
                     } else {
-                        pw.append(Double.toString(d));
+			write(Double.toString(d));
                     }
                 }
             }
-            fieldCnt++;
         }
 
+
         if (addGeo) {
-            pw.append(COMMA);
+            write(COMMA);
             d = pointRecord.getLatitude();
             if (Json.isNullNumber(d)) {
-                pw.append("null");
+                write(Json.NULL);
             } else {
-                pw.append(Double.toString(d));
+                write(Double.toString(d));
             }
-            pw.append(COMMA);
+            write(COMMA);
             d = pointRecord.getLongitude();
             if (Json.isNullNumber(d)) {
-                pw.append("null");
+                write(Json.NULL);
             } else {
-                pw.append(Double.toString(d));
+                write(Double.toString(d));
             }
         }
 
         if (addElevation) {
-            pw.append(COMMA);
+            write(COMMA);
             d = pointRecord.getAltitude();
             if (Json.isNullNumber(d)) {
-                pw.append("null");
+                write(Json.NULL);
             } else {
-                pw.append(Double.toString(d));
+                write(Double.toString(d));
             }
         }
 
         if (addTime) {
-            pw.append(COMMA);
+            write(COMMA);
             //Just use the milliseconds
-            pw.append(Json.formatNumber(pointRecord.getRecordTime()));
+            write(Json.formatNumber(pointRecord.getRecordTime()));
         }
-
-        pw.append(Json.LIST_CLOSE);
-        pw.append(Json.MAP_CLOSE);
-        cnt++;
-
-        if (debug) {
-            System.err.println("\tdone");
-        }
-
+        write(VALUES_CLOSE);
         return true;
-
     }
 
     /**
