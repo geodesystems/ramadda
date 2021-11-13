@@ -635,9 +635,13 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
             }
 
             this.lastUrl = url;
+
 	    let  load = async function() {
-		await Utils.importJS(ramaddaBaseHtdocs + "/lib/jquery.handsontable.full.min.js");
-		await Utils.importCSS(ramaddaBaseHtdocs + "/lib/jquery.handsontable.full.min.css");
+		if(!this.loadedJS) {
+		    await Utils.importJS(ramaddaBaseHtdocs + "/lib/jquery.handsontable.full.min.js");
+		    await Utils.importCSS(ramaddaBaseHtdocs + "/lib/jquery.handsontable.full.min.css");
+		    this.loadedJS = true;
+		}
 		var jqxhr = $.getJSON(url, function(data) {
                     if (GuiUtils.isJsonError(data)) {
                         _this.displayMessage("Error: " + data.error);
