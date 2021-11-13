@@ -166,6 +166,26 @@ public class RecordJobManager extends JobManager implements RecordConstants {
     }
 
 
+    public void visit(
+            final Request request,
+            final List<? extends RecordEntry> recordEntries,
+            final RecordVisitor visitor, final VisitInfo visitInfo)
+            throws Throwable {
+	long t1 = System.currentTimeMillis();
+	for (RecordEntry recordEntry : recordEntries) {
+	    if ( !recordEntry.isEnabled()) {
+		continue;
+	    }
+	    recordEntry.visit(visitor, visitInfo);
+	}
+	long t2 = System.currentTimeMillis();
+	visitor.close(visitInfo);
+	//                    System.err.println("POINT: processing done time:" + (t2 - t1));
+    }
+
+
+
+
     /**
      * Apply the visitor to to the record file
      *
