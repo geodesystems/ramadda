@@ -48,10 +48,15 @@ proc capture {_group name id} {
 	if {[catch {
 	    exec osascript -e {activate application "Safari"}
 	    exec osascript -e $cmd
-	    exec osascript $::loc/captureDisplays.scpt
+	    if {[catch {
+		exec osascript $::loc/captureDisplays.scpt
+	    } err]} {
+		##Do this since any call to log in the above script triggers an error
+		puts stderr "$err"
+	    }
 	    exec cp capture.png $thumb
 	} err]} {
-	    puts stderr "Error: $err"
+	    puts stderr "Error running script: $err"
 	    write "Error: $err<hr>"
 	    write "</div>"
 	    exit
