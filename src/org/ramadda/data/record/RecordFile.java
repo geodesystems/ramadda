@@ -541,9 +541,9 @@ public abstract class RecordFile {
             value = (String) getProperty(prop, (String) null);
         }
         if (value == null) {
-            value = getContextProperty(field, prop, dflt);
+	    //For now don't do this as it bubbles up to the repository and there are lots of calls to this
+	    //	    value = getContextProperty(field, prop, dflt);
         }
-
 
         if (value == null) {
             value = dflt;
@@ -1050,7 +1050,7 @@ public abstract class RecordFile {
                 visitorFinished(visitor, visitInfo);
             }
             long t2 = System.currentTimeMillis();
-            if (debug) {
+            if (true || debug) {
                 System.err.println("RECORD: # visited:" + cnt + " in time:"
                                    + (t2 - t1) + "ms");
             }
