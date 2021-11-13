@@ -249,14 +249,6 @@ public class UserManager extends RepositoryManager {
                                                      "/user/select/do");
 
 
-    /** _more_ */
-    public static final String PROP_SHOW_HELP = "ramadda.html.show.help";
-
-    /** _more_ */
-    public static final String PROP_SHOW_CART = "ramadda.html.show.cart";
-
-
-
 
 
 

@@ -258,6 +258,14 @@ public class PageHandler extends RepositoryManager {
     /** _more_ */
     private boolean cacheTemplates;
 
+    private boolean showHelp = true;
+
+    private boolean noStyle = false;
+
+    private String logoUrl="";
+
+    private String bootstrapVersion  = "bootstrap-5.1.3";
+
 
     /** _more_ */
     TimeZone defaultTimeZone;
@@ -266,7 +274,6 @@ public class PageHandler extends RepositoryManager {
     /** _more_ */
     private Hashtable<String, SimpleDateFormat> dateFormats =
         new Hashtable<String, SimpleDateFormat>();
-
 
     /** _more_ */
     protected List<SimpleDateFormat> parseFormats;
@@ -317,9 +324,13 @@ public class PageHandler extends RepositoryManager {
                                         "none").trim();
         footer      = repository.getProperty(PROP_HTML_FOOTER, BLANK);
         myLogoImage = getRepository().getProperty(PROP_LOGO_IMAGE, null);
+	noStyle = getRepository().getProperty(PROP_NOSTYLE, false);
+	showHelp = getRepository().getProperty(PROP_SHOW_HELP, true);
         cacheTemplates =
             getRepository().getProperty("ramadda.cachetemplates", true);
 
+	bootstrapVersion  = getRepository().getProperty("ramadda.bootstrap.version", bootstrapVersion);
+	logoUrl = getRepository().getProperty(PROP_LOGO_URL, "");
         initWebResources();
     }
 
@@ -506,7 +517,7 @@ public class PageHandler extends RepositoryManager {
         String logoImage = getLogoImage(result);
         String logoUrl   = (String) result.getProperty(PROP_LOGO_URL);
         if ( !Utils.stringDefined(logoUrl)) {
-            logoUrl = getRepository().getProperty(PROP_LOGO_URL, "");
+            logoUrl = this.logoUrl;
         }
         if ( !Utils.stringDefined(logoUrl)) {
             logoUrl = getRepository().getUrlBase();
@@ -1876,9 +1887,7 @@ public class PageHandler extends RepositoryManager {
             }
         }
 
-        if (getRepository()
-                .getProperty(getUserManager()
-                    .PROP_SHOW_HELP, true) && (getRepository()
+        if (showHelp && (getRepository()
                         .getPluginManager().getDocUrls().size() > 0)) {
             urls.add(request.makeUrl(getRepositoryBase().URL_HELP));
             extras.add("");
@@ -2245,8 +2254,7 @@ public class PageHandler extends RepositoryManager {
             //for now - default the toolbar=false
             pageStyle.setShowToolbar(false);
 
-            if (request.exists(PROP_NOSTYLE)
-                    || getRepository().getProperty(PROP_NOSTYLE, false)) {
+            if (request.exists(PROP_NOSTYLE) || noStyle) {
                 return pageStyle;
             }
             List<Metadata> metadataList =
@@ -2952,35 +2960,7 @@ public class PageHandler extends RepositoryManager {
         sb.append(share);
         */
 
-        sb.append("</td><td>");
-
-
-        // Ratings 
-        boolean doRatings = getRepository().getProperty(PROP_RATINGS_ENABLE,
-                                true);
-        if (doRatings) {
-            String link = request.makeUrl(getRepository().URL_COMMENTS_SHOW,
-                                          ARG_ENTRYID, entry.getId());
-            String ratings =
-                HU.div("",
-                    HU.cssClass("js-kit-rating")
-                    + HU.attr(HU.ATTR_TITLE, entry.getFullName())
-                    + HU.attr("permalink",
-                        link)) + HU.importJS("http://js-kit.com/ratings.js");
-
-            sb.append(
-                HU.table(
-                    HU.row(HU.col(
-                        ratings,
-                        HU.attr(HU.ATTR_ALIGN, HU.VALUE_RIGHT)), HU.attr(
-                            HU.ATTR_VALIGN, HU.VALUE_TOP)), HU.attr(
-                                HU.ATTR_WIDTH, "100%")));
-        } else {
-            sb.append(HU.p());
-        }
-
-
-        sb.append("</td></tr></table>");
+        sb.append("</td><td><p></td></tr></table>");
 
         return sb.toString();
     }
@@ -3608,11 +3588,7 @@ public class PageHandler extends RepositoryManager {
                       + RepositoryUtil.getHtdocsVersion();
         String htdocsBase = makeHtdocsUrl("");
 
-        s = s.replace(
-            "${ramadda.bootstrap.version}",
-            getRepository().getProperty(
-                "ramadda.bootstrap.version", "bootstrap-5.1.3"));
-
+        s = s.replace("${ramadda.bootstrap.version}",bootstrapVersion);
         String now = htdocsBase + (new Date().getTime());
 
         return s.replace("${now}", now).replace(

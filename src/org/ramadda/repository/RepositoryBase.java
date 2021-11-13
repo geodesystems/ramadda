@@ -298,6 +298,9 @@ public class RepositoryBase implements Constants, RepositorySource {
     /** _more_ */
     private String urlBase = "/repository";
 
+    protected boolean alwaysHttps = false;
+
+
     /** _more_ */
     private boolean isMinified;
 
@@ -384,11 +387,15 @@ public class RepositoryBase implements Constants, RepositorySource {
      * @return _more_
      */
     public String getHttpProtocol() {
-        if (getProperty(PROP_ALWAYS_HTTPS, false)) {
+        if (getAlwaysHttps()) {
             return "https";
         }
 
         return "http";
+    }
+
+    public boolean getAlwaysHttps() {
+	return alwaysHttps;
     }
 
     /**

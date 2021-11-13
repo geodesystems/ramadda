@@ -52,15 +52,9 @@ import javax.servlet.http.HttpServletResponse;
 @SuppressWarnings("unchecked")
 public class Request implements Constants, Cloneable {
 
-    //    public org.ramadda.util.HtmlTemplate template = null;
-
-
     /** _more_ */
     public static final RequestArgument[] AREA_NWSE = { REQUESTARG_NORTH,
             REQUESTARG_WEST, REQUESTARG_SOUTH, REQUESTARG_EAST };
-
-
-
 
     /** _more_ */
     private static int COUNTER = 0;
@@ -834,8 +828,7 @@ public class Request implements Constants, Cloneable {
      */
     public String getAbsoluteUrl(String url) {
         int     port        = getServerPort();
-        boolean alwaysHttps = repository.getProperty(PROP_ALWAYS_HTTPS,
-                                  false);
+        boolean alwaysHttps = repository.getAlwaysHttps();
         String protocol = (alwaysHttps)
                           ? "https"
                           : "http";
@@ -1594,7 +1587,6 @@ public class Request implements Constants, Cloneable {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -3118,13 +3110,14 @@ public class Request implements Constants, Cloneable {
     }
 
 
+    private static final String[] argPrefixes = { ARG_AREA, ARG_BBOX };
+
     /**
      * _more_
      *
      * @return _more_
      */
     public SelectionRectangle getSelectionBounds() {
-        String[] argPrefixes = { ARG_AREA, ARG_BBOX };
         double[] bbox = { Double.NaN, Double.NaN, Double.NaN, Double.NaN };
         for (String argPrefix : argPrefixes) {
             if (defined(argPrefix)) {
@@ -3158,17 +3151,8 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     public List<String> getArgs(RequestArgument arg) {
-        List<String> args         = arg.getArgs();
-        String       argsProperty = arg.getProperty();
-        if (args == null) {
-            args = Utils.split(getRepository().getProperty(argsProperty, ""));
-        }
-
-        return args;
+	return arg.getArgs(getRepository());
     }
-
-
-
 
     /**
      * _more_

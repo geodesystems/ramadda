@@ -521,6 +521,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private boolean minifiedOk = true;
 
+    private boolean acceptRobots = true;    
+
+    private boolean commentsEnabled  =false;
+
+
+    private boolean useFixedHostName = false;
+
+    private boolean corsOk = true;
+
+
     /** _more_ */
     private boolean cdnOk = false;
 
@@ -676,7 +686,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public boolean useFixedHostnameForAbsoluteUrls() {
-        return getProperty(PROP_USE_FIXED_HOSTNAME, false);
+        return useFixedHostName;
     }
 
     /**
@@ -686,7 +696,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public boolean isCORSOk() {
-        return getProperty(PROP_CORS_OK, false);
+	return corsOk;
     }
 
 
@@ -3374,23 +3384,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 new Result(msg("Error"),
                            new StringBuilder("Repository not active"));
             result.setResponseCode(Result.RESPONSE_NOTFOUND);
-
             return result;
         }
 
         long t1 = System.currentTimeMillis();
-        //        propdebug = request.getRequestPath().equals("/repository/entry/show");
-        if (propdebug) {
-            System.err.println("handleRequest");
-        }
         propcnt = 0;
+	//	propdebug = true;
         Result result = handleRequestInner(request);
         long   t2     = System.currentTimeMillis();
-        if (propdebug) {
-            Utils.printTimes("handleRequest:" + request.getRequestPath()
-                             + " prop cnt:" + propcnt, t1, t2);
-        }
-
+	String path       = request.getRequestPath();
+	//	System.err.println((t2-t1) +" " +path +" " + propcnt);
+	propdebug = false;
         return result;
     }
 
@@ -3406,7 +3410,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     private boolean acceptRobots() {
-        return !getProperty(PROP_ACCESS_NOBOTS, false);
+        return acceptRobots;
     }
 
     /**
@@ -3415,7 +3419,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public boolean getCommentsEnabled() {
-        return getProperty("ramadda.enable_comments", false);
+	return commentsEnabled;
     }
 
 
@@ -3479,7 +3483,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     private Result handleRequestInner(Request request) throws Exception {
 
-        //      System.err.println("r:" + request);
         if (debugSession) {
             debugSession(request,
                          "RAMADDA.handleRequest:" + request.getRequestPath());
@@ -3506,7 +3509,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
-        //A hack (should put this in a user-agent blacklist file sometime
+        //A hack  - should put this in a user-agent blacklist file sometime
         String userAgent = request.getUserAgent();
         if (userAgent != null) {
             if ((userAgent.indexOf("OpenVAS") >= 0)
@@ -3515,19 +3518,20 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
-
-        String requestPath = request.getRequestPath().replaceAll("//", "/");
+        String requestPath = request.getRequestPath();
         //Check for scanners
         if (requestPath.endsWith(".php")) {
             return makeBlockedResult(request);
         }
 
 
+        boolean debugMemory = false;
+	/*
         String theUrl = request.toString();
-        boolean debugMemory =
-            !theUrl.matches(".*(images|icons|htdocs|/metadata/view).*")
+	debugMemory =         !theUrl.matches(".*(images|icons|htdocs|/metadata/view).*")
             && !theUrl.matches(".*(\\.js|\\.png|\\.gif|favicon.ico)$");
-	debugMemory = false;
+	*/
+
         if (debugMemory) {
             Runtime.getRuntime().gc();
         }
@@ -3537,11 +3541,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                   + request.toString());
         }
 
-
-
         //        logInfo("request:" + request);
         Result  result         = null;
-        boolean responseAsData = request.responseAsData();
         try {
             try {
                 getSessionManager().checkSession(request);
@@ -3562,6 +3563,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
             Throwable     inner     = LogUtil.getInnerException(exc);
             boolean       badAccess = inner instanceof AccessException;
             StringBuilder sb        = new StringBuilder();
+	    boolean responseAsData = request.responseAsData();
+
             if ( !badAccess || responseAsData) {
                 inner.printStackTrace();
                 sb.append(makeErrorResponse(request, inner.getMessage()));
@@ -3637,7 +3640,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             if (responseAsData) {
                 result.setShouldDecorate(false);
             }
-        }
+	}
 
         if (debugMemory) {
             Runtime.getRuntime().gc();
@@ -3954,7 +3957,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         ApiMethod apiMethod = getApiManager().findApiMethod(request);
         if (apiMethod == null) {
+	    long t1 = System.currentTimeMillis();
 	    Result result =  getHtdocsFile(request);
+	    long t2 = System.currentTimeMillis();
+	    //	    String path       = request.getRequestPath();
+	    //	    System.err.println((t2-t1) +" " +path);
 	    return result;
         }
 
@@ -4457,6 +4464,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private void initRepositoryAttributes() {
         adminOnly             = getProperty(PROP_ACCESS_ADMINONLY, false);
         requireLogin          = getProperty(PROP_ACCESS_REQUIRELOGIN, false);
+	alwaysHttps           =  getProperty(PROP_ALWAYS_HTTPS, false);
         allSsl                = getProperty(PROP_ACCESS_ALLSSL, false);
         sslIgnore             = getProperty(PROP_SSL_IGNORE, false);
         cacheResources        = getProperty(PROP_CACHERESOURCES, false);
@@ -4466,6 +4474,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         languageDefault       = getProperty(PROP_LANGUAGE_DEFAULT, "default");
         downloadOk            = getProperty(PROP_DOWNLOAD_OK, true);
         minifiedOk            = getProperty(PROP_MINIFIED, true);
+        acceptRobots          = !getProperty(PROP_ACCESS_NOBOTS, false);
+        commentsEnabled       =  getProperty("ramadda.enable_comments", false);
+	useFixedHostName      =  getProperty(PROP_USE_FIXED_HOSTNAME, false);
+        corsOk                = getProperty(PROP_CORS_OK, false);
         cdnOk                 = getProperty(PROP_CDNOK, false);
         enableHostnameMapping = getProperty(PROP_ENABLE_HOSTNAME_MAPPING,
                                             false);
@@ -4688,12 +4700,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     private String getPropertyValue(String name, boolean checkDb,
                                     boolean needsToBeNonEmpty) {
-
         //        propdebug = name.equals(PROP_REGISTRY_SERVERS);
-        if (propdebug) {
-            System.err.println("getPropertyValue:" + name);
-        }
-        propcnt++;
+
+	//	System.err.println("getPropertyValue:" + name);
+	propcnt++;
+
+	if(propdebug) {
+	    //	    System.err.println("getPropertyValue:" + name);
+	    //	    propcnt++;
+	}
         if (systemEnv == null) {
             systemEnv = System.getenv();
         }
@@ -4704,7 +4719,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         prop = (String) cmdLineProperties.get(override);
         if (checkProperty(prop, needsToBeNonEmpty)) {
             if (propdebug) {
-                System.err.println("\t override from command line:" + prop);
+		//                System.err.println("\t override from command line:" + prop);
             }
 
             return prop;
@@ -4713,7 +4728,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         prop = (String) localProperties.get(override);
         if (checkProperty(prop, needsToBeNonEmpty)) {
             if (propdebug) {
-                System.err.println("\t override from local:" + prop);
+		//                System.err.println("\t override from local:" + prop);
             }
 
             return prop;
@@ -4722,7 +4737,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         prop = (String) pluginProperties.get(override);
         if (checkProperty(prop, needsToBeNonEmpty)) {
             if (propdebug) {
-                System.err.println("\t override from plugin:" + prop);
+		//                System.err.println("\t override from plugin:" + prop);
             }
 
             return prop;
@@ -4731,7 +4746,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         prop = (String) coreProperties.get(override);
         if (checkProperty(prop, needsToBeNonEmpty)) {
             if (propdebug) {
-                System.err.println("\t override from core:" + prop);
+		//                System.err.println("\t override from core:" + prop);
             }
 
             return prop;
@@ -4742,7 +4757,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         prop = (String) cmdLineProperties.get(name);
         if (checkProperty(prop, needsToBeNonEmpty)) {
             if (propdebug) {
-                System.err.println("\t from command line:" + prop);
+		//                System.err.println("\t from command line:" + prop);
             }
 
             return prop;

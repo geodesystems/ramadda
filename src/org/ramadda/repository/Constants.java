@@ -1115,6 +1115,16 @@ public interface Constants {
     public static final String PROP_ENABLE_HOSTNAME_MAPPING =
         "ramadda.enable_hostname_mapping";
 
+    /** _more_ */
+    public static final String PROP_SHOW_HELP = "ramadda.html.show.help";
+
+    /** _more_ */
+    public static final String PROP_SHOW_CART = "ramadda.html.show.cart";
+
+
+
+
+
 
 
     /** _more_ */

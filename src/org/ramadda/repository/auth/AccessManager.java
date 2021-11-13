@@ -83,6 +83,9 @@ public class AccessManager extends RepositoryManager {
         "ramadda.auth.stopatfirstrole";
 
 
+    private boolean stopAtFirstRole = true;
+
+
     /**
      * _more_
      *
@@ -99,6 +102,13 @@ public class AccessManager extends RepositoryManager {
      */
     public synchronized void clearCache() {
         recentPermissions.clearCache();
+    }
+
+
+    @Override
+    public void initAttributes() {
+        super.initAttributes();
+	stopAtFirstRole = getRepository().getProperty(PROP_STOPATFIRSTROLE, true);
     }
 
 
@@ -423,8 +433,7 @@ public class AccessManager extends RepositoryManager {
                                      String action, User user,
                                      String requestIp)
             throws Exception {
-        boolean stop = getRepository().getProperty(PROP_STOPATFIRSTROLE,
-                           true);
+        boolean stop = stopAtFirstRole;
         //System.err.println("canDoAction:  user=" + user +" action=" + action +" entry=" + entry);
         while (entry != null) {
             boolean      hadInherit     = false;

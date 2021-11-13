@@ -5,6 +5,8 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.util;
 
+import org.ramadda.repository.Repository;
+import org.ramadda.util.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,12 +19,11 @@ import java.util.List;
  */
 public class RequestArgument {
 
-    /** _more_ */
-    private String argsProperty;
-
 
     /** _more_ */
     private List<String> args;
+
+    private String argsProperty;
 
 
     /**
@@ -31,7 +32,7 @@ public class RequestArgument {
      * @param argsProperty _more_
      */
     public RequestArgument(String argsProperty) {
-        this.argsProperty = argsProperty;
+	this.argsProperty = argsProperty;
     }
 
 
@@ -47,20 +48,13 @@ public class RequestArgument {
         }
     }
 
-
     /**
      *
      * @return _more_
      */
-    public String getProperty() {
-        return argsProperty;
-    }
-
-    /**
-     *
-     * @return _more_
-     */
-    public List<String> getArgs() {
+    public List<String> getArgs(Repository repository) {
+	if(args==null)
+	    args = Utils.split(repository.getProperty(argsProperty, ""));
         return args;
 
     }
