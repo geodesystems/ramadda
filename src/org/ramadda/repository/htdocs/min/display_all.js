@@ -14268,7 +14268,7 @@ var RecordUtil = {
 		    //			console.log("bad location: index=" + j + " " + record.getLatitude() + " " + record.getLongitude());
                 }
 		if(points)
-                    points.push(new OpenLayers.Geometry.Point(record.getLongitude(), record.getLatitude()));
+                    points.push({x:record.getLongitude(), y:record.getLatitude()});
             }
         }
         bounds.north = north;
@@ -14304,7 +14304,7 @@ var RecordUtil = {
         var result = [];
         for (var i = 0; i < points.length; i++) {
             var point = points[i];
-            result.push(new OpenLayers.Geometry.Point(point.x, point.y));
+            result.push({x:point.x, y:point.y});
         }
         return result;
     }
@@ -30525,7 +30525,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 			
 		    }
 //		    map.addMarker:  function(id, location, iconUrl, markerName, text, parentId, size, yoffset, canSelect, attrs) {
-		    map.addMarker('',new OpenLayers.LonLat(entry.getLongitude(),entry.getLatitude()), entry.getIconUrl(),"",text,null,16,0,true,{});
+		    map.addMarker('',{x:entry.getLongitude(),y:entry.getLatitude()}, entry.getIconUrl(),"",text,null,16,0,true,{});
 /*
 {"pointRadius":16,
 												     "strokeWidth":1,

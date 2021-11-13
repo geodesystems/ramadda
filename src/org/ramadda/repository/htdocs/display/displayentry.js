@@ -1956,7 +1956,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 			
 		    }
 //		    map.addMarker:  function(id, location, iconUrl, markerName, text, parentId, size, yoffset, canSelect, attrs) {
-		    map.addMarker('',new OpenLayers.LonLat(entry.getLongitude(),entry.getLatitude()), entry.getIconUrl(),"",text,null,16,0,true,{});
+		    map.addMarker('',{x:entry.getLongitude(),y:entry.getLatitude()}, entry.getIconUrl(),"",text,null,16,0,true,{});
 /*
 {"pointRadius":16,
 												     "strokeWidth":1,
