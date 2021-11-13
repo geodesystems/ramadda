@@ -596,7 +596,6 @@ public class Json {
         }
         StringBuilder sb = new StringBuilder();
         quote(sb, s);
-
         return sb.toString();
     }
 
@@ -610,26 +609,18 @@ public class Json {
         try {
             if (s == null) {
                 sb.append(NULL);
-
                 return;
             }
-            s = cleanString(s);
-            s = s.replaceAll("\n", "\\n");
-            s = s.replaceAll("\r", "\\r");
-            s = s.replaceAll("\"", "\\\\\"");
+	    //	    s = cleanString(s);
+	    //            s = s.replaceAll("\n", "\\n");
+	    //            s = s.replaceAll("\r", "\\r");
+	    //            s = s.replaceAll("\"", "\\\\\"");
             if (s.equals("true") || s.equals("false")) {
-                sb.append(s);
-
+		sb.append(s);
                 return;
             }
-            //This can mess up and match on what should be a string value, e.g.
-            //00000000000
-            //Not sure what to do here
-            //            if(s.matches("^[0-9]+\\.?[0-9]*$")) return s;
-
-            sb.append("\"");
-            sb.append(s);
-            sb.append("\"");
+	    sb.append(JSONWriter.valueToString(s));
+	    //	    sb.append("\"");	    sb.append(s);	    sb.append("\"");
         } catch (Exception exc) {
             throw new IllegalArgumentException("Could not quote string:" + s);
         }
@@ -684,7 +675,6 @@ public class Json {
 
         //Make into all ascii ??
         s = s.replaceAll("[^\n\\x20-\\x7E]+", " ");
-
         return s;
     }
 
@@ -1433,6 +1423,16 @@ public class Json {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+
+	long t1 = System.currentTimeMillis();
+	for(int  i=0;i<1000000;i++) {
+	    quote(null,"\"test");
+	    //	    JSONWriter.valueToString("\"test");
+	}
+	long t2 = System.currentTimeMillis();
+	Utils.printTimes("",t1,t2);
+
+	System.exit(0);
 
         /*
           geojsonPolygon(args[0], System.out);
