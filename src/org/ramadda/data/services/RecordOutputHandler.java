@@ -678,10 +678,16 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
      *
      * @throws Exception On badness
      */
+    static boolean buffered = true;
     public PrintWriter getPrintWriter(Request request, Object jobId,
                                       Entry entry, String ext)
             throws Exception {
-	//        return new PrintWriter(new BufferedWriter(new OutputStreamWriter(getOutputStream(request, jobId, entry, ext))));
+	buffered=!buffered;
+	if(buffered) {
+	    System.err.println("Using buffered");
+	    return new PrintWriter(new BufferedWriter(new OutputStreamWriter(getOutputStream(request, jobId, entry, ext))));
+	}
+	System.err.println("Using unbuffered");
 	return new PrintWriter(getOutputStream(request, jobId, entry, ext));
     }
 
