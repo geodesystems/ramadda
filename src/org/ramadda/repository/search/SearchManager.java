@@ -270,6 +270,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     private Hashtable<String,List<String>> synonyms;
 
+    private boolean showMetadata= true;
+
+
     /**
      * _more_
      *
@@ -285,6 +288,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     @Override
     public void initAttributes() {
         super.initAttributes();
+        showMetadata = getRepository().getProperty(PROP_SEARCH_SHOW_METADATA, true);
         isLuceneEnabled =
             getRepository().getProperty(PROP_SEARCH_LUCENE_ENABLED, false);
 	try {
@@ -341,7 +345,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @return _more_
      */
     public boolean includeMetadata() {
-        return getRepository().getProperty(PROP_SEARCH_SHOW_METADATA, true);
+	return showMetadata;
     }
 
     /**
