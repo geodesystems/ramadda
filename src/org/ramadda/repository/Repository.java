@@ -3393,7 +3393,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         Result result = handleRequestInner(request);
         long   t2     = System.currentTimeMillis();
 	String path       = request.getRequestPath();
-	//	System.err.println((t2-t1) +" " +path +" " + propcnt);
+	//	if(path.indexOf("/entry/show")>=0) System.err.println((t2-t1) +" " +path +" " + propcnt);
 	propdebug = false;
         return result;
     }
