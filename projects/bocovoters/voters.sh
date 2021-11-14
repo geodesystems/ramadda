@@ -88,6 +88,7 @@ do_prep() {
 
 do_histogram() {
     bins="18,25,35,45,50,75"
+    bins="18,25,35,45,55,65,75"    
     echo "doing 2017 histograms"
     ${csv} -delimiter "|" \
 	   -dots ${dots} \
