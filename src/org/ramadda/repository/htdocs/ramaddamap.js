@@ -3148,7 +3148,8 @@ RepositoryMap.prototype = {
     ensureLonLat:function(points) {
 	if(points.length>0 && !points[0].transform) {
 	    points = points.map(point=>{
-		return new OpenLayers.LonLat(point.x,point.y);
+                point = new OpenLayers.Geometry.Point(point.x,point.y);
+		return point;
 	    });
 	}
 	return points;
@@ -4131,6 +4132,7 @@ RepositoryMap.prototype = {
         } else {
             location = new OpenLayers.LonLat(points[0].x, points[0].y);
         }
+
 	points = this.transformPoints(points);
         let base_style = OpenLayers.Util.extend({},
 						OpenLayers.Feature.Vector.style['default']);

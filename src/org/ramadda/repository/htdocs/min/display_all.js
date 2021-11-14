@@ -11755,7 +11755,7 @@ function RamaddaMultiDisplay(displayManager, id, properties) {
 }
 
 /**
-   Copyright 2008-2021 Geode Systems LLC
+   Copyright 2008-2020 Geode Systems LLC
 */
 
 const FILTER_ALL = "-all-";
@@ -12280,9 +12280,7 @@ function PointData(name, recordFields, records, url, properties) {
 		let root = String(window.location).replace(/\/[^\/]+$/,"");
 		url = root + "/" + url;
 	    }
-	    if(!window.location.hash  || window.location.hash!="#fortest") {
-		console.log(display.type+" load point data:" + url);
-	    }
+	    console.log(display.type+" load point data:" + url);
             Utils.doFetch(url, success,fail,null);	    
 //            var jqxhr = $.getJSON(url, success,{crossDomain:true}).fail(fail);
         }
@@ -12436,7 +12434,7 @@ function RecordField(props, source) {
 	toString: function() {
 	    if(this.group)
 		return this.getId();
-	    return this.getId()+":"+this.getLabel()+"[" + this.type+"]";
+	    return this.getId();
 	},
 	getForDisplay: function() {
 	    return this.forDisplay;
@@ -12444,9 +12442,6 @@ function RecordField(props, source) {
         getIndex: function() {
             return this.index;
         },
-        setIndex: function(i) {
-            this.index=i;
-        },	
         getValue: function(record,dflt) {
 	    let v;
 	    if(record.getValue)
@@ -12723,7 +12718,6 @@ function makePointData(json, derived, source,url) {
 
     var offsetFields = [];
     var lastField = null;
-//    console.dir(json.fields);
     for (var i = 0; i < json.fields.length; i++) {
         var field = json.fields[i];
         var recordField = new RecordField(field,source);
@@ -12827,7 +12821,6 @@ function makePointData(json, derived, source,url) {
 		date.setUTCMilliseconds(tuple.date);
             }
         }
-
         if (isArray || (typeof tuple.latitude === 'undefined')) {
             if (latitudeIdx >= 0)
                 tuple.latitude = values[latitudeIdx];
@@ -12841,14 +12834,7 @@ function makePointData(json, derived, source,url) {
                 tuple.longitude = NaN;
         }
         for (var j = 0; j < dateIndexes.length; j++) {
-	    let dateString = values[dateIndexes[j]];
-	    //safari doesn't handle timezone offset
-	    if((typeof dateString == "string") && dateString.endsWith("+0000")) {
-		dateString  =dateString.replace("\+0000","");
-		
-	    }
-	    values[dateIndexes[j]] = new Date(dateString);
-//	    console.log("date string:" + dateString +" dttm:" + values[dateIndexes[j]]);
+            values[dateIndexes[j]] = new Date(values[dateIndexes[j]]);
         }
         for (var col = 0; col < values.length; col++) {
             if(values[col]==null) {
@@ -13054,12 +13040,10 @@ function RecordFilter(display,filterFieldId, properties) {
 	fields = display.getFieldsByType(null, "string");
     } else {
 	let filterField = display.getFieldById(null, filterFieldId);
-	if(filterField) {
+	if(filterField)
 	    fields = [filterField];
-	} else {
-	    console.error(display.type+" Error: could not find filter field:" + filterFieldId);
-	    //Call again with debug=true
-	    display.getFieldById(null, filterFieldId,true);
+	else {
+	    console.log("Error: could not find filter field::" + filterFieldId);
 	    fields = [];
 	}
     }
@@ -13159,14 +13143,12 @@ function RecordFilter(display,filterFieldId, properties) {
 	getPropertyFromUrl: function(key, dflt) {
 	    return this.display.getPropertyFromUrl(key, dflt);
 	},	
-	prepareToFilter: function(debug) {
-	    if(debug) console.log(this.getId()+".prepareToFilter " + this.getField() +" " + this.getFieldType());
+	prepareToFilter: function() {
 	    this.mySearch = null;
 	    if(this.depend) {
 		this.checkDependency();
 	    }
 	    if(!this.isEnabled()) {
-		if(debug) console.log(this.getId()+".prepareToFilter: not enabled");
 		return;
 	    }
 	    //	    if (prefix) pattern = prefix + value;
@@ -13211,15 +13193,9 @@ function RecordFilter(display,filterFieldId, properties) {
 		    value = [date1,date2]; 
 	    }  else {
 		values = this.getFieldValues();
-		if(!values) {
-		    if(debug) console.log("\t null fieldValues");
-		    return;
-		}
+		if(!values) return;
 		if(!Array.isArray(values)) values = [values];
-		if(values.length==0) {
-		    if(debug) console.log("\t no fieldValues");
-		    return;
-		}		    
+		if(values.length==0) return;
 		values = values.map(v=>{
 		    return v.replace(/_comma_/g,",");
 		});
@@ -13229,11 +13205,9 @@ function RecordFilter(display,filterFieldId, properties) {
 			matchers.push(new TextMatcher(v));
 		    } catch(skipIt){}
 		});
-		if(debug) console.log("\tfieldValues:" + values);
 	    }
 	    let anyValues = value!=null;
 	    if(!anyValues && values) {
-		
 		values.forEach(v=>{if(v.length>0 && v!= FILTER_ALL)anyValues = true});
 	    }
 	    if(anyValues) {
@@ -13335,7 +13309,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	},
 
 	doTags:function() {
-	    if(this.getProperty(this.getId()+".showFilterTags")===false) return false;
+	    if(!this.getProperty(this.getId()+".showFilterTags",true)) return false;
 	    let tags =  this.getProperty(this.getId()+".showFilterTags") || this.getProperty("showFilterTags");
 	    return tags;
 	},
@@ -13524,7 +13498,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	getWidget: function(fieldMap, bottom,records, vertical) {
 	    this.records = records;
 	    let debug = false;
-	    if(debug) console.log(this.id +".getWidget field:" + this.getField());
+	    if(debug) console.log(this.id +".getWidget");
 	    if(!this.isEnabled()) {
 		if(debug) console.log("\tnot enabled");
 		return "";
@@ -13543,7 +13517,6 @@ function RecordFilter(display,filterFieldId, properties) {
 	    let suffix =   this.getProperty(this.getId()+".filterSuffix","");
 
             if(this.ops) {
-		if(debug) console.log("\tops");
 		let labels =[];
 		this.ops.forEach((op,idx)=>{
 		    labels.push([String(idx),op.label]);
@@ -14264,26 +14237,24 @@ var RecordUtil = {
 	let errorCnt = 0;
         for (j = 0; j < records.length; j++) {
             var record = records[j];
-	    let lat = record.getLatitude();
-	    let lon = record.getLongitude();
-            if (!isNaN(record.getLatitude()) && !isNaN(record.getLongitude()) && lat!==null && lon!==null) {
+            if (!isNaN(record.getLatitude()) && !isNaN(record.getLongitude())) {
                 if (j == 0) {
-                    north = lat;
-                    south = lat;
-                    west = lon;
-                    east = lon;
+                    north = record.getLatitude();
+                    south = record.getLatitude();
+                    west = record.getLongitude();
+                    east = record.getLongitude();
                 } else {
-                    north = Math.max(north, lat);
-                    south = Math.min(south, lat);
-                    west = Math.min(west, lon);
-                    east = Math.max(east, lon);
+                    north = Math.max(north, record.getLatitude());
+                    south = Math.min(south, record.getLatitude());
+                    west = Math.min(west, record.getLongitude());
+                    east = Math.max(east, record.getLongitude());
                 }
                 if (record.getLongitude() < -180 || record.getLatitude() > 90) {
 		    //		    if(errorCnt++<50)
 		    //			console.log("bad location: index=" + j + " " + record.getLatitude() + " " + record.getLongitude());
                 }
 		if(points)
-                    points.push({x:record.getLongitude(), y:record.getLatitude()});
+                    points.push(new OpenLayers.Geometry.Point(record.getLongitude(), record.getLatitude()));
             }
         }
         bounds.north = north;
@@ -14319,7 +14290,7 @@ var RecordUtil = {
         var result = [];
         for (var i = 0; i < points.length; i++) {
             var point = points[i];
-            result.push({x:point.x, y:point.y});
+            result.push(new OpenLayers.Geometry.Point(point.x, point.y));
         }
         return result;
     }
@@ -14346,9 +14317,9 @@ function CsvUtil() {
 		    }
 		});
 	    } catch(e) {
-		console.error("Error applying derived function:" + theCmd.command);
-		throw e;
-//		display.handleError(e,e);
+		console.log("Error applying derived function:" + theCmd.command);
+		console.log(e);
+		console.log(e.stack);
 	    }
 	    return pointData;
 	},
@@ -15022,55 +14993,6 @@ function CsvUtil() {
 	    }
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
-	count: function(pointData, args) {
-	    let records = pointData.getRecords(); 
-            let allFields  = pointData.getRecordFields();
-	    if(!args.field)
-		throw new Error("No field defined:  args:" + JSON.stringify(args));		
-	    let field = this.display.getFieldById(allFields,args.field,false);
-	    if(!field)
-		throw new Error("Could not find field:" + args.field);
-	    let newRecords  =[]
-	    let newFields = [];
-	    let newField=field.clone();
-	    newField.setIndex(0);
-	    newFields.push(newField)
-	    newFields.push(new RecordField({
-		id:"count",
-		index:newFields.length,
-		label:args.label||"Count",
-		type:"int",
-		chartable:true,
-	    }));
-
-//	    console.log("new:"+ newFields);
-	    let uniques=[];
-	    let counts={};
-	    let type;
-	    for (let rowIdx=0; rowIdx <records.length; rowIdx++) {
-		let record = records[rowIdx];
-		let value = field.getValue(record);
-		if(rowIdx==0)
-		    type=typeof value;
-		if(!Utils.isDefined(counts[value])) {
-		    uniques.push(value);
-		    counts[value]=0;
-		}
-		counts[value]++;	
-	    }
-	    if(String(args.sort)==="true") {
-		if(type=="number")
-		    uniques=Utils.sortNumbers(uniques);
-		else uniques.sort();
-	    }
-	    uniques.forEach(value=>{
-		let tuple = [value,counts[value]];
-		newRecords.push(new  PointRecord(newFields,NaN,NaN, NaN, null,tuple));
-	    });
-	    
-	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
-	},
-
 
 	prune: function(pointData, args) {
 	    let records = pointData.getRecords(); 
@@ -15957,12 +15879,6 @@ function RamaddaBounds(north,west,south,east) {
 	this.east = east;
     }
     $.extend(this,{
-	getWidth: function() {
-	    return this.east-this.west;
-	},
-	getHeight: function() {
-	    return this.north-this.south;
-	},	
 	toString: function() {
 	    return "N:" + this.north +" W:" + this.west +" S:" + this.south +" E:" + this.east;
 	}
