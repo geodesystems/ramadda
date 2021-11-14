@@ -1745,14 +1745,9 @@ var Utils =  {
 	}
 	let allReady = true;
 	Utils.displaysList.forEach(display=>{
-	    if(!display.hasData) return;
-            if (!display.hasData()) {
-		if(display.needsData()) {
-//		    console.log("display:" + display.type +" does not have data and needs data");
-		    allReady = false;
-		}
-	    } else {
-//		console.log("display:" + display.type +" has data");
+	    if(!display.isDisplayFinished) return;
+	    if(!display.isDisplayFinished()) {
+		allReady = false;
 	    }
 	});
 
