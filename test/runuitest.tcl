@@ -17,11 +17,11 @@ proc getUrl {url} {
 
 
 proc finish {} {
-    write  "</div>"
+    write  "</div></body></html>"
 }
 
 proc write {html {mode a}} {
-    set fp [open uiimages.html $mode]
+    set fp [open results.html $mode]
     puts $fp $html
     flush $fp
     close $fp
@@ -63,14 +63,15 @@ proc capture {_group name id} {
 	}
     }
     incr ::cnt
-    set line  "<a href=\"$url\"><div>#$::cnt $name</div>\n<img width=75% border=0 src=${thumb}>\n</a>\n"
+    set line  "<div class='ramadda-gridbox ramadda-gridbox-decorated' style='width:300px;display:inline-block;margin:6px;'><a href=\"$url\">#$::cnt $name\n<img width=100% border=0 src=${thumb}>\n</a></div>\n"
     write $line
-    finish
+#    finish
 }    
 
 
 proc runit {group id {groupLimit 10000}} {
-    write "<h2>$group</h2>"
+    write "</div>\n"
+    write "<h2>$group</h2><div class=ramadda-grid>"
     set url "$::root/entry/show?ascending=true&orderby=name&entryid=${id}&output=default.csv&fields=name,id&showheader=false&showheader=false"
     puts "group: $group"
     set csv [getUrl $url]
@@ -87,23 +88,7 @@ proc runit {group id {groupLimit 10000}} {
 
 
 
-
-proc processGroup {root} {
-    set csv [getUrl "https://geodesystems.com/repository/entry/show?entryid=${root}&ascending=true&orderby=name&output=default.csv&fields=name,id&showheader=false"]
-    foreach line [split $csv "\n"] {
-	set line [string trim $line]
-	if {$line==""} continue;
-	incr ::tcnt
-	foreach     {name id} [split $line ,] break
-	puts stderr "processing $name"
-	runit $name $id
-	if {$name=="Features" || $name=="Latest"} continue;
-    }
-    finish
-}
-    
-
-write "" w
+write "<html><title>RAMADDA Test Results</title><head><link href='https://geodesystems.com/repository/htdocs_v5_0_69/style.css'  rel='stylesheet'  type='text/css' />\n</head><body>\n<div class=ramadda-grid>\n" w
 if {[llength $argv] != 0} {
     foreach id $argv {
 	capture "Local"  "Page" $id
@@ -117,6 +102,7 @@ if {[llength $argv] != 0} {
     runit "Text" 23847d93-4bca-4d54-a6db-f96a19be250b
     runit "Boulder and Colorado" 4624f63d-cd71-43e8-a558-83835c6b5541
     runit Dashboards eb4102f8-720f-4ef3-9211-0ce5940da04d
+
     runit "Media" bca6228e-3f8e-49d4-a20e-b5a0ea8a6441
     runit Cards e4b6667d-d640-4048-a756-b06e4c352a62 3
     #runit Features 26fff0d9-3de7-4bbd-8a6f-a26d8a287f4a
