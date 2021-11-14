@@ -7923,7 +7923,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
 	isDisplayFinished: function() {
             if (!this.hasData()) {
-		if(display.needsData()) {
+		if(this.needsData()) {
 		    return false;
 		}
 	    }

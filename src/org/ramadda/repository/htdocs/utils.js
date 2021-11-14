@@ -1736,11 +1736,9 @@ var Utils =  {
     },
     areDisplaysReady: function() {
 	if(!Utils.getPageLoaded()) {
-//	    console.log("page has not loaded");
 	    return 0;
 	}
 	if(Utils.displaysList.length==0) {
-//	    console.log("no displays");
 	    return 1;
 	}
 	let allReady = true;
@@ -1750,12 +1748,9 @@ var Utils =  {
 		allReady = false;
 	    }
 	});
-
 	if(allReady) {
-//	    console.log("all ready");
 	    return 1
 	}
-//	console.log("not ready");
 	return 0;
     },
     checkForResize: function() {

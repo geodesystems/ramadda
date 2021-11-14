@@ -53,6 +53,9 @@ proc capture {_group name id} {
 	    } err]} {
 		##Do this since any call to log in the above script triggers an error
 		puts stderr "$err"
+		if {[regexp variable $err]} {
+		    exit
+		}
 	    }
 	    exec cp capture.png $thumb
 	} err]} {
