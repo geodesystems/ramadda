@@ -958,7 +958,7 @@ public class CsvUtil {
                     continue;
                 }
                 String p = ze.getName().toLowerCase();
-                if (p.endsWith(".csv") || p.endsWith(".tsv")) {
+                if (p.endsWith(".csv") || p.endsWith(".tsv")||p.endsWith(".txt")) {
                     return zin;
                 }
                 //Apple health
@@ -966,6 +966,8 @@ public class CsvUtil {
                     return zin;
                 }
             }
+	    throw new IllegalArgumentException("Could not find .csv, .tsv or .txt file in the zip file");
+
         } else {
             if (new File(file).exists()) {
                 try {
@@ -980,7 +982,6 @@ public class CsvUtil {
             }
             return IO.getInputStream(file);
         }
-        return null;
     }
 
 
@@ -1973,7 +1974,7 @@ public class CsvUtil {
 		"-histogram",
 		"Make a histogram with the given column and bins",
 		new Arg("column","The column","type","column"),
-		new Arg("bins","Comma separated set of bin values or 'auto'")),		
+		new Arg("bins","Comma separated set of bin values")),		
         new Cmd("-percent", "", "columns to add"),
         new Cmd("-increase", "Calculate percent increase",
                 new Arg("column", "", "type", "columns"), "how far back"),
