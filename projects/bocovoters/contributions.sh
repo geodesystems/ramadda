@@ -1,10 +1,10 @@
 #!/bin/sh
 mydir=`dirname $0`
-set -e
-export csv=~/bin/csv.sh 
+source ${mydir}/init.sh
+
 
 do_fetch() {
-    wget -O source/new.csv --post-data="exportType=Contribution&electionID=20&committeeID=-1&filingDateStart=&filingDateStop=&transactionDateStart=&transactionDateStop=" https://election.bouldercolorado.gov/electionContributions.php
+    wget -O ${datadir}/2021_contributions.csv --post-data="exportType=Contribution&electionID=20&committeeID=-1&filingDateStart=&filingDateStop=&transactionDateStart=&transactionDateStop=" https://election.bouldercolorado.gov/electionContributions.php
 }
 
 do_convert() {
@@ -17,7 +17,7 @@ do_convert() {
 	   -change filingdate,amendeddate,transactiondate "Invalid Date" "" \
     	   -case  FromCandidate lower \
 	   -case  anonymous lower \
-	   -p source/Election_Contributions.csv > oldtmp.csv
+	   -p ${datadir}/Election_Contributions.csv > oldtmp.csv
     echo "converting new"
     ${csv} -dots 100 -notcolumns "YTDAmount,AmendsContributionID,ContributionID" \
 	   -case city proper \
@@ -27,7 +27,7 @@ do_convert() {
 	   -change filingdate,amendeddate,transactiondate "Invalid Date" "" \
 	   -case  FromCandidate lower \
 	   -case  anonymous lower \
-	   -p source/new.csv > newtmp.csv
+	   -p  ${datadir}/2021_contributions.csv > newtmp.csv
 }
 
 
@@ -105,11 +105,9 @@ anonymous.type enumeration \
 " contributions_old.csv > boulder_campaign_contributionsdb.xml
 
 
-cp boulder_campaign_contributionsdb.xml ~/.ramadda/plugins
-cp contributions_new.csv ~/
-cp contributions_final.csv ~/
-sh /Users/jeffmc/source/ramadda/bin/scpgeode.sh 50.112.99.202 contributions_new.csv staging
-sh /Users/jeffmc/source/ramadda/bin/scpgeode.sh 50.112.99.202 contributions_final.csv staging
-sh /Users/jeffmc/source/ramadda/bin/scpgeode.sh 50.112.99.202  boulder_campaign_contributionsdb.xml plugins
+release_plugin boulder_campaign_contributionsdb.xml 
+stage_local  contributions_new.csv  contributions_final.csv 
+stage_ramadda contributions_new.csv  contributions_final.csv 
+
 
 

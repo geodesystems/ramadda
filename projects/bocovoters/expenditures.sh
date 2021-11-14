@@ -1,9 +1,8 @@
 #!/bin/sh
 mydir=`dirname $0`
-set -e
-export csv=~/bin/csv.sh 
+source ${mydir}/init.sh
 
-source=source/electionExpenditures.csv
+source=${datadir}/electionExpenditures.csv
 
 
 wget -O ${source} --post-data="exportType=Expenditure&electionID=20&committeeID=-1&filingDateStart=&filingDateStop=&transactionDateStart=&transactionDateStop=" https://election.bouldercolorado.gov/electionExpenditures.php 
@@ -18,13 +17,6 @@ ${csv} -columns "committee,type,candidate,filingdate,amendeddate,officialfiling,
        -columnsafter committee "full_name,expenditure,purpose" \
        -change "expenditure" "_dollar_" "" \
        -p ${source} > expenditures_final.csv
-
-
-
-
-
-
-
 
 ${csv} -db " table.id boulder_campaign_expenditures table.label {Boulder Campaign Expenditures} \
 defaultOrder expenditure \
@@ -50,6 +42,6 @@ purpose.cansearch true  purpose.canlist true   \
        expenditures_final.csv > boulder_campaign_expendituresdb.xml
 
 
-cp expenditures_final.csv ~/
-cp boulder_campaign_expendituresdb.xml ~/.ramadda/plugins/
-sh /Users/jeffmc/source/ramadda/bin/scpgeode.sh 50.112.99.202  boulder_campaign_expendituresdb.xml plugins
+stage_local  expenditures_final.csv
+release_plugin  boulder_campaign_expendituresdb.xml
+

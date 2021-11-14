@@ -1,19 +1,15 @@
 #!/bin/sh
 mydir=`dirname $0`
-set -e
-export csv=~/bin/csv.sh 
+source ${mydir}/init.sh
 
-dots=5000
-#registered_voters=source/ce-vr011b.txt
-registered_voters=source/ce-vr011d.txt
-voting_report=source/ce-068-2021.txt
+#registered_voters=${datadir}/ce-vr011b.txt.zip
+registered_voters=${datadir}/ce-vr011d.txt.zip
+voting_report_2021=${datadir}/ce-068-2021.txt.zip
 source=voters_boulder.csv
 unique_voter_history=voter_history_unique.csv
-precincts=source/boco_precincts.csv
-geocodio=source/voters_addresses_geocodio.csv
-
-voting_report_url=https://election.boco.solutions/ElectionDataPublicFiles/CE-068_Voters_With_Ballots_List_Public.zip
-ex=bC!Erlction!$
+precincts=${datadir}/boco_precincts.csv
+splits=${datadir}/boulder_splits.csv
+geocodio=${datadir}/voters_addresses_geocodio.csv.zip
 
 
 do_all() {
@@ -23,7 +19,6 @@ do_all() {
     do_history
     do_counts
     do_joins
-    do_histogram
     do_final
     do_db
     do_release
@@ -32,14 +27,8 @@ do_all() {
 
 
 init_files() {
-    echo "fetching voter report"
-    wget  -O CE-068_Voters_With_Ballots_List_Public.zip ${voting_report_url}
-    cd tmp
-    jar -xvf ../CE-068_Voters_With_Ballots_List_Public.zip
-    cp ../source/ce-068-2021.txt ../source/bak/ce-068-2021-last.txt 
-    mv *.txt ../source/ce-068-2021.txt
-    cd ..
-    echo "initializing files"
+    fetch_voting_report
+    echo "making voter_history"
     cp source/Master_Voting_History_List_Part1.csv voter_history.csv
     tail -n+2 source/Master_Voting_History_List_Part2.csv >>voter_history.csv
     tail -n+2 source/Master_Voting_History_List_Part3.csv >>voter_history.csv        
@@ -56,14 +45,14 @@ do_prep() {
 	    -trim voted_in_2021 \
 	    -change voted_in_2021 "^$" false \
 	    -change voted_in_2021 ".*[0-9]+.*" true \
-	    -p ${voting_report}  > voted_in_2021.csv
+	    -p ${voting_report_2021}  > voted_in_2021.csv
     ${csv}  -delimiter "|" 	 -dots ${dots}   \
 	    -columns voter_id,MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE \
 	    -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "" voted_in_2021 \
 	    -trim voted_in_2021 \
 	    -change voted_in_2021 "^$" false \
 	    -change voted_in_2021 ".*[0-9]+.*" true \
-	    -p ${voting_report}  > all_voted_in_2021.csv
+	    -p ${voting_report_2021}  > all_voted_in_2021.csv
 
 
     echo "processing registered voters"
@@ -71,7 +60,7 @@ do_prep() {
 #    ${csv}  -delimiter "|"  -dots ${dots}  -notcolumns "regex:(?i)BALLOT_.*"  -pattern res_city BOULDER  -p ${registered_voters} > voters_base.csv
 
     ${csv}  -delimiter "|"  -dots ${dots}  -notcolumns "regex:(?i)BALLOT_.*"  -concat precinct,split "." precinct_split  \
-	    -ifin  split source/boulder_splits.csv precinct_split -notcolumns precinct_split -p ${registered_voters} > voters_base.csv        
+	    -ifin  split ${splits} precinct_split -notcolumns precinct_split -p ${registered_voters} > voters_base.csv        
 
     ${csv} -if -pattern mail_addr1,mailing_country "^$" -copycolumns res_address mail_addr1  -endif\
 	   -if -pattern mailing_city,mailing_country "^$" -copycolumns res_city mailing_city  -endif \
@@ -86,144 +75,9 @@ do_prep() {
 #do_prep
 #exit
 
-do_histogram() {
-    bins="18,25,35,45,50,75"
-    bins="18,25,35,45,55,65,75"    
-    echo "doing 2017 histograms"
-    ${csv} -delimiter "|" \
-	   -dots ${dots} \
-	   -ifin voter_id voters_boulder.csv  voter_id  \
-	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" 05-NOV-09 \
-	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" ".*SEP.*" \
-	   -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "," "voted_date" \
-	   -change voted_date "," "" \
-	   -notpattern voted_date "" \
-	   -change voted_date "-17$" "-2017" \
-	   -change voted_date "OCT" "10" \
-	   -change voted_date "NOV" "11" \
-	   -change voted_date "(..)-(..)-(....)" "\$3-\$2-\$1" \
-	   -change voted_date "(..)/(..)/(....)" "\$3-\$1-\$2" \
-	   -func age "2017-_yob" \
-	   -notpattern voted_date 2017-11-17 \
-	   -p source/ce-068-2017.txt > voting_report_2017.csv
-    
-    ${csv} -dots ${dots} \
-	   -summary "count,avg" voted_date age "" \
-	   -gt count 20 \
-	   -sort voted_date \
-	   -notpattern voted_date 2017-11-17 \
-	   -addheader "voted_date.type date voted_date.format yyyy-MM-dd" \
-	   -p voting_report_2017.csv > boulder_voting_2021_histogram.csv
-
-    ${csv} -dots ${dots} \
-	   -histogram age "${bins}" \
-	   -addheader "" \
-	   -p voting_report_2017.csv > boulder_voting_2017_age_histogram.csv
-
-    echo "doing 2019 histogram"
-    ${csv} -delimiter "|" \
-	   -dots ${dots} \
-	   -ifin voter_id voters_boulder.csv  voter_id  \
-	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" 05-NOV-09 \
-	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" ".*SEP.*" \
-	   -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "," "voted_date" \
-	   -change voted_date "," "" \
-	   -notpattern voted_date "" \
-	   -change voted_date "-19" "-2019" \
-	   -change voted_date "OCT" "10" \
-	   -change voted_date "NOV" "11" \
-	   -change voted_date "(..)-(..)-(....)" "\$3-\$2-\$1" \
-	   -change voted_date "(..)/(..)/(....)" "\$3-\$1-\$2" \
-	   -func age "2019-_yob" \
-	   -p source/ce-068-2019.txt >voting_report_2019.csv
-
-    ${csv} -dots ${dots} \
-	   -summary "count,avg" voted_date age "" \
-	   -decimals age_avg 1\
-	   -gt count 20 \
-	   -sort voted_date \
-	   -addheader "voted_date.type date voted_date.format yyyy-MM-dd" \
-	   -p voting_report_2019.csv > boulder_voting_2019_histogram.csv
-
-    ${csv} -dots ${dots} \
-	   -histogram age "${bins}" \
-	   -addheader "" \
-	   -p voting_report_2019.csv > boulder_voting_2019_age_histogram.csv
-
-
-
-    echo "doing 2020 histograms"
-    ${csv} -delimiter "|" \
-	   -dots ${dots} \
-	   -ifin voter_id voters_boulder.csv  voter_id  \
-	   -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "," "voted_date" \
-	   -change voted_date "," "" \
-	   -notpattern voted_date "" \
-	   -change voted_date "(..)/(..)/(....)" "\$3-\$1-\$2" \
-	   -func age "2020-_yob" \
-	   -p source/ce-068-2020.txt > voting_report_2020.csv
-
-    ${csv} -dots ${dots} \
-	   -summary "count,avg" voted_date age "" \
-	   -gt count 20 \
-	   -sort voted_date \
-	   -addheader "voted_date.type date voted_date.format yyyy-MM-dd" \
-	   -p voting_report_2020.csv > boulder_voting_2020_histogram.csv
-
-    ${csv} -dots ${dots} \
-	   -histogram age "${bins}" \
-	   -addheader "" \
-	   -p voting_report_2020.csv > boulder_voting_2020_age_histogram.csv
-
-
-    echo "doing 2021 histograms"
-    ${csv} -delimiter "|" \
-	   -dots ${dots} \
-	   -ifin voter_id voters_boulder.csv  voter_id  \
-	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" 05-NOV-09 \
-	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" ".*SEP.*" \
-	   -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "," "voted_date" \
-	   -change voted_date "," "" \
-	   -notpattern voted_date "" \
-	   -change voted_date "-19" "-2019" \
-	   -change voted_date "OCT" "10" \
-	   -change voted_date "NOV" "11" \
-	   -change voted_date "(..)-(..)-(....)" "\$3-\$2-\$1" \
-	   -change voted_date "(..)/(..)/(....)" "\$3-\$1-\$2" \
-	   -func age "2021-_yob" \
-	   -p source/ce-068-2021.txt > voting_report_2021.csv
-
-    ${csv} -dots ${dots} \
-	   -summary "count,avg" voted_date age "" \
-	   -decimals age_avg 1\
-	   -gt count 20 \
-	   -sort voted_date \
-	   -addheader "voted_date.type date voted_date.format yyyy-MM-dd" \
-	   -p voting_report_2021.csv > boulder_voting_2021_histogram.csv
-
-    ${csv} -dots ${dots} \
-	   -histogram age "${bins}" \
-	   -addheader "" \
-	   -p voting_report_2021.csv > boulder_voting_2021_age_histogram.csv
-
-    ${csv}  -dots ${dots} \
-	   -summary "count" precinct "" "voted_date" \
-	   -join precinct latitude,longitude source/boco_precincts.csv  precinct NaN \
-	   -sort voted_date \
-	   -addheader "voted_date.type date voted_date.format yyyy-MM-dd" \
-	   -p voting_report_2021.csv > boulder_voting_2021_map.csv
-
-    cp *histogram.csv ~/
-
-}
-
-do_histogram
-exit
-    
-
 do_precincts() {
-    ${csv} -join precinct_name active_voters source/precincts_voters.csv precinct 0   \
-	   -join precinct city source/precincts_city.csv precinct ""   \
+    ${csv} -join precinct_name active_voters ${datadir}/precincts_voters.csv precinct 0   \
+	   -join precinct city ${datadir}/precincts_city.csv precinct ""   \
 	   -columnsafter  neighborhood city \
 	   -columnsafter  city active_voters \
 	   -concat "latitude,longitude" ";" Location -notcolumns latitude,longitude \
@@ -432,7 +286,7 @@ do_joins() {
     echo "doing joins"
     infile=${source}
     cp ${infile} working.csv
-    ${csv} -join precinct_name precinct_turnout_2019 source/precincts_turnout.csv precinct 0 -p working.csv > tmp.csv
+    ${csv} -join precinct_name precinct_turnout_2019 ${datadir}/precincts_turnout.csv precinct 0 -p working.csv > tmp.csv
     mv tmp.csv working.csv
     ${csv} -join 0 voted_in_2021 voted_in_2021.csv voter_id false   -dots ${dots} -p working.csv > tmp.csv
     mv tmp.csv working.csv
@@ -465,10 +319,11 @@ do_joins() {
 ##Delete the temp address
     ${csv} -notcolumns res_address_trim -p working.csv > tmp.csv
 
-
     mv tmp.csv voters_joined.csv
     rm working.csv
 }
+
+
 
 
 
@@ -478,11 +333,11 @@ do_join_demographics() {
 }
 
 #do_joins
+#exit
 
 
 do_final() {
     echo "making final"
-##	    -ifin precinct_name source/city_boulder_precincts.csv precinct \
     ${csv}  \
 	    -notcolumns MUNICIPALITY,city_ward,county,preference,uocava,uocava_type,issue_method,split \
 	    -set county_regn_date 0 registration_date  \
@@ -557,15 +412,13 @@ voters_final.csv > bocovotersdb.xml
 
 
 do_release() {
-    echo "Copying to geode"
-    cp bocovotersdb.xml  ~/.ramadda/plugins
-    sh /Users/jeffmc/source/ramadda/bin/scpgeode.sh 50.112.99.202 voters_final.csv staging
-    sh /Users/jeffmc/source/ramadda/bin/scpgeode.sh 50.112.99.202 bocovotersdb.xml plugins
+    release_plugin bocovotersdb.xml 
+    stage_ramadda  voters_final.csv 
+
 }
 
-
 #do_db
-#do_release
-#exit
+do_release
+exit
 
 do_all
