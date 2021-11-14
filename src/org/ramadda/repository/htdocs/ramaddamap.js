@@ -3145,10 +3145,20 @@ RepositoryMap.prototype = {
         return llbounds.transform(this.displayProjection, this.sourceProjection);
     },
 
+    ensureLonLat:function(points) {
+	if(points.length>0 && !points[0].transform) {
+	    points = points.map(point=>{
+		return new OpenLayers.LonLat(point.x,point.y);
+	    });
+	}
+	return points;
+    },
     transformPoints: function(points) {
-        for (let i = 0; i < points.length; i++) {
-            points[i].transform(this.displayProjection, this.sourceProjection);
-        }
+	points = this.ensureLonLat(points);
+        points.forEach(point=>{
+            point.transform(this.displayProjection, this.sourceProjection);
+        });
+	return points;
     },
     transformLLPoint:  function(point) {
         if (!point)
@@ -4121,9 +4131,7 @@ RepositoryMap.prototype = {
         } else {
             location = new OpenLayers.LonLat(points[0].x, points[0].y);
         }
-        for (let i = 0; i < points.length; i++) {
-            points[i].transform(this.displayProjection, this.sourceProjection);
-        }
+	points = this.transformPoints(points);
         let base_style = OpenLayers.Util.extend({},
 						OpenLayers.Feature.Vector.style['default']);
         let style = OpenLayers.Util.extend({}, base_style);
