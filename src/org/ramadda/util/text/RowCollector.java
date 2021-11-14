@@ -2696,11 +2696,115 @@ public class RowCollector extends Processor {
 
 
         }
-
-
-
-
     }
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Jan 9, '15
+     * @author         Jeff McWhirter
+     */
+    public static class Histogram extends RowCollector {
+
+	List<Double> bins;
+
+	int[] counts;
+
+
+        /**
+         * _more_
+         *
+         */
+        public Histogram(String column, String bins) {
+	    super(column);
+	    if(bins.equals("auto")) {
+	    } else {
+		this.bins = new ArrayList<Double>();
+		for(String tok: Utils.split(bins,",",true,true)) {
+		    this.bins.add(Double.parseDouble(tok));
+		}
+		counts = new int[this.bins.size()+2];
+		for(int i=0;i<counts.length;i++) counts[i] = 0;
+	    }
+        }
+
+        /**
+         * _more_
+         *
+         * @param ctx _more_
+         * @param rows _more_
+         *
+         *
+         * @return _more_
+         * @throws Exception On badness
+         */
+        @Override
+        public List<Row> finish(TextReader ctx, List<Row> rows)
+	    throws Exception {
+	    int column = getIndex(ctx);
+            int          rowIndex = 0;
+            List<Row>              allRows   = getRows(rows);
+            Row                    headerRow = allRows.get(0);
+            Row                    firstRow  = allRows.get(0);
+            allRows.remove(0);
+            List<Row> newRows   = new ArrayList<Row>();
+            Row       newHeader = new Row();
+	    newHeader.add(headerRow.getString(column) +" range");
+	    newHeader.add("Count");
+	    newHeader.add("Percent");	    
+	    newRows.add(newHeader);
+	    final int total = allRows.size();
+            Function<Integer,Integer> percent = (col) -> {
+		return (int)((col/(double)total)*100);
+	    };
+
+
+            for (Row row : allRows) {
+                List          values = row.getValues();
+		double value = Double.parseDouble(row.getString(column));
+		if(value<bins.get(0)) {
+		    counts[0]++;
+		} else 	if(value>bins.get(bins.size()-1)) {
+		    counts[counts.length-1]++;
+		} else {
+		    boolean didIt = false;
+		    for(int i=0;i<bins.size()-1;i++) {
+			if(value>=bins.get(i) && value<=bins.get(i+1)) {
+			    counts[i+1]++;
+			    didIt = true;
+			    break;
+			} 
+		    }
+		    if(!didIt) System.err.println("no range:" + value);
+		}
+            }
+	    //18,25,30,35,40,45,50
+	    if(counts[0]>0) {
+		Row    row = new Row();
+		newRows.add(row);
+		row.add("<" + Utils.format(bins.get(0)));
+		row.add(counts[0]);
+		row.add(percent.apply(counts[0]));
+	    }
+	    for(int i=0;i<bins.size()-1;i++) {
+		Row    row = new Row();
+		newRows.add(row);
+		row.add(Utils.format(bins.get(i))+" - "+Utils.format(bins.get(i+1)));
+		row.add(counts[i+1]);
+		row.add(percent.apply(counts[i+1]));
+	    }
+	    if(counts[counts.length-1]>0) {
+		Row    row = new Row();
+		newRows.add(row);
+		row.add(">" + Utils.format(bins.get(bins.size()-1)));
+		row.add(counts[counts.length-1]);
+		row.add(percent.apply(counts[counts.length-1]));
+	    }
+	    return newRows;
+	}
+    }
+
 
 
     /**

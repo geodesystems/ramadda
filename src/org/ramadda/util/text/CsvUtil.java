@@ -1856,7 +1856,6 @@ public class CsvUtil {
                 new Arg("column", "", "type", "column"),
                 new Arg("argname", "URL arg name")),
 
-
         new Cmd("-map", "Change values in column to new values",
                 new Arg("column", "", "type", "columns"), "new columns name",
                 "value newvalue ..."),
@@ -1970,7 +1969,11 @@ public class CsvUtil {
 		"count/sum/avg/min/max values keying on key column value. If no value columns specified then do a count",
 		new Arg("ops","any of count,sum,avg,min,max"),
 		"key columns", "value columns", "carry over columns"),	
-
+        new Cmd(
+		"-histogram",
+		"Make a histogram with the given column and bins",
+		new Arg("column","The column","type","column"),
+		new Arg("bins","Comma separated set of bin values or 'auto'")),		
         new Cmd("-percent", "", "columns to add"),
         new Cmd("-increase", "Calculate percent increase",
                 new Arg("column", "", "type", "columns"), "how far back"),
@@ -2690,6 +2693,10 @@ public class CsvUtil {
 		List<String> values = getCols(args.get(++i));
 		List<String> extra  = getCols(args.get(++i));
 		ctx.addProcessor(new RowCollector.Summary(what,keys, values, extra));
+		return i;
+	    });	
+	defineFunction("-histogram",2,(ctx,args,i) -> {
+		ctx.addProcessor(new RowCollector.Histogram(args.get(++i),args.get(++i)));
 		return i;
 	    });	
 
