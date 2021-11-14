@@ -7921,6 +7921,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.setDisplayReady(true);
 	    }
         },
+	isDisplayFinished: function() {
+            if (!this.hasData()) {
+		if(display.needsData()) {
+		    return false;
+		}
+	    }
+	    return true;
+	},
 	doFinalInitialization:function() {
 	},
         initDisplay: function() {
@@ -8048,16 +8056,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let left = HU.div([ATTR_ID, this.getDomId(ID_LEFT),STYLE,leftStyle],leftInner);
 	    let right = HU.div([ATTR_ID, this.getDomId(ID_RIGHT)],rightInner);
 	    let sideWidth = "1%";
+	    let centerWidth = "98%";	    
             let contents = this.getContentsDiv();
 	    //display table
 	    //We set a transparent 1px border here because for some reason the google charts will have a little bit of scroll in them if we don't set a border
             let table =   HU.open('table', [STYLE,"border:1px solid transparent;",CLASS, 'display-ui-table', 'width','100%','border','0','cellpadding','0','cellspacing','0']);
 	    if(this.getProperty('showDisplayTop',true)) {
-		table+= HU.tr([],HU.td(['width',sideWidth]) + HU.td(['width','99%'],top) +HU.td(['width',sideWidth]));
+		table+= HU.tr([],HU.td(['width',sideWidth]) + HU.td(['width',centerWidth],top) +HU.td(['width',sideWidth]));
 	    }
-	    table+= HU.tr(["valign","top"],HU.td(['width',sideWidth],left) + HU.td(['width','99%'],contents) +HU.td(['width',sideWidth],right));
+	    table+= HU.tr(["valign","top"],HU.td(['width',sideWidth],left) + HU.td(['width',centerWidth],contents) +HU.td(['width',sideWidth],right));
 	    if(this.getProperty('showDisplayBottom',true)) {
-		table+= HU.tr([],HU.td(['width',sideWidth]) + HU.td(['width','99%'],bottom) +HU.td(['width',sideWidth]));
+		table+= HU.tr([],HU.td(['width',sideWidth]) + HU.td(['width',centerWidth],bottom) +HU.td(['width',sideWidth]));
 	    }
 	    table+=HU.close('table');
 	    let message= HU.div([ID,this.domId(ID_DISPLAY_MESSAGE),CLASS,"display-output-message", STYLE,HU.css("display","none","position","absolute","top","10px","left","50%",
