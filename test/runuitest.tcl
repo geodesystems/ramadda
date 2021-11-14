@@ -34,6 +34,7 @@ proc capture {_group name id} {
     regsub -all {[/ .'\",]+} $name _ clean
     set image image_${clean}.png
     set thumb thumb_${_group}_${clean}.png
+    set consoleFile console_${_group}_${clean}.txt
     set url $id
     if {![regexp {^http} $url]} {
 	set url "$::root/entry/show?entryid=${id}#fortest"
@@ -57,7 +58,23 @@ proc capture {_group name id} {
 		    exit
 		}
 	    }
+	    set console ~/Console.txt
+	    file delete -force $consoleFile
 	    exec cp capture.png $thumb
+	    ##Now grab the contents of the file
+	    if {[file exists $console]} {
+		file delete -force $console
+	    }
+	    exec osascript $::loc/grabconsole.scpt
+	    ##Wait for it
+	    exec sleep 1
+	    if {[file exists $console]} {
+		set c [read [open $console r]]
+		set fp [open $consoleFile w] 
+		puts $fp $c
+		close $fp
+		file delete $console
+	    } 
 	} err]} {
 	    puts stderr "Error running script: $err"
 	    write "Error: $err<hr>"
@@ -66,7 +83,16 @@ proc capture {_group name id} {
 	}
     }
     incr ::cnt
-    set line  "<div class='ramadda-gridbox ramadda-gridbox-decorated' style='width:300px;display:inline-block;margin:6px;'><a href=\"$url\">#$::cnt $name\n<img width=100% border=0 src=${thumb}>\n</a></div>\n"
+    set extra ""
+    if {[file exists $consoleFile]} {
+	set fp [open $consoleFile r]
+	set c [read $fp]
+	close $fp
+	regsub -all {<} $c {&lt;} c
+	regsub -all {>} $c {&gt;} c	
+	set extra "<br><div style='border:1px solid #efefef;background:#FEAFAF;max-width:100%;'>$c</div>"
+    }
+    set line  "<div class='ramadda-gridbox ' style='width:300px;display:inline-block;margin:6px;'><a href=\"$url\">#$::cnt $name\n<img width=100% border=0 src=${thumb}>\n</a>$extra</div>\n"
     write $line
 #    finish
 }    
