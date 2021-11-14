@@ -17,6 +17,6 @@ repeat while ok = 0
        end tell
 end repeat
 if ok is not 0
-   delay 3
+   delay 5
    do shell script "screencapture   -o -a -x -l " & winID & " capture.png"
 end if

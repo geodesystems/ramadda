@@ -47872,7 +47872,6 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		    .arcDashGap(0);
 	    } else if(polygonField) {
 		let polygonColorTable = this.getColorTable(true, "polygonColorTable",null);
-		let map = new RepositoryMap();
 		let delimiter;
 		let first = !this.didit;
 		if(!this.didit) {

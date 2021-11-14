@@ -6892,7 +6892,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         String displayType = getProperty(wikiUtil, props, "type",
                                          "linechart");
 
-        boolean isMap = displayType.equals("map") || displayType.equals("editablemap");	
+        boolean isMap = displayType.equals("map") || displayType.equals("editablemap") || displayType.equals("entrylist");	
 	//	System.err.println("type:" + displayType +" map:" + isMap);
         this.addDisplayImports(request, sb, isMap);
         List<String> topProps = new ArrayList<String>();
