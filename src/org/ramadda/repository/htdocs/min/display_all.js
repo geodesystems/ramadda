@@ -10491,7 +10491,13 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
     const LAYOUT_ROWS = "rows";
     const SUPER = new RamaddaDisplay(argDisplayManager, argId, type||"group", argProperties);
     RamaddaUtil.inherit(this, SUPER);
-    RamaddaUtil.defineMembers(this, {
+    let myProps = [
+	{label:'Group Properties'},
+	{p:PROP_LAYOUT_TYPE,ex:Utils.join([LAYOUT_TABLE,LAYOUT_HTABLE,LAYOUT_TABS,LAYOUT_COLUMNS,LAYOUT_ROWS],",")},
+	{p:PROP_LAYOUT_COLUMNS,d:1},
+	]
+
+    displayDefineMembers(this, myProps, {
         displays: [],
         layout: this.getProperty(PROP_LAYOUT_TYPE, LAYOUT_TABLE),
         columns: this.getProperty(PROP_LAYOUT_COLUMNS, 1),
