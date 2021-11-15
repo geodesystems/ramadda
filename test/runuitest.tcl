@@ -85,14 +85,16 @@ proc capture {_group name id} {
     incr ::cnt
     set extra ""
     if {[file exists $consoleFile]} {
+	puts stderr "got console from $name"
 	set fp [open $consoleFile r]
 	set c [read $fp]
 	close $fp
 	regsub -all {<} $c {&lt;} c
 	regsub -all {>} $c {&gt;} c	
 	set extra "<br><div style='border:1px solid #efefef;background:#FEAFAF;max-width:100%;'>$c</div>"
+	append extra "\n<script  type='text/JavaScript'>doError('$name');</script>\n"
     }
-    set line  "<div class='ramadda-gridbox ' style='width:300px;display:inline-block;margin:6px;'><a href=\"$url\">#$::cnt $name\n<img width=100% border=0 src=${thumb}>\n</a>$extra</div>\n"
+    set line  "<a name='$name'></a><div class='ramadda-gridbox ' style='width:300px;display:inline-block;margin:6px;'><a href=\"$url\">#$::cnt $name\n<img width=100% border=0 src=${thumb}>\n</a>$extra</div>\n"
     write $line
 #    finish
 }    
@@ -117,7 +119,26 @@ proc runit {group id {groupLimit 10000}} {
 
 
 
-write "<html><title>RAMADDA Test Results</title><head><link href='https://geodesystems.com/repository/htdocs_v5_0_69/style.css'  rel='stylesheet'  type='text/css' />\n</head><body>\n<div class=ramadda-grid>\n" w
+set top  "<html><title>RAMADDA Test Results</title><head>\n<script  type='text/JavaScript'>\n"
+append top {
+    var errorCnt = 0;
+    function doError(name) {
+	name = "<a href='#" + name+"'>" + name +"</a>";
+	var ele = document.getElementById('header');
+	if (errorCnt>0) 
+	    ele.innerHTML=ele.innerHTML+"&nbsp;|&nbsp;";
+	errorCnt++;
+	ele.innerHTML=ele.innerHTML+name +"&nbsp;";
+    }
+} 
+append top "</script>\n";
+
+
+append top "<link href='https://geodesystems.com/repository/htdocs_v5_0_69/style.css'  rel='stylesheet'  type='text/css' />\n</head><body><center><div id=header></div></center>\n<div class=ramadda-grid>\n"
+write $top w
+
+exec osascript $::loc/clearcache.scpt
+
 if {[llength $argv] != 0} {
     foreach id $argv {
 	capture "Local"  "Page" $id
