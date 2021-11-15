@@ -1044,15 +1044,22 @@ var Utils =  {
     getMonthShortNames: function() {
         return this.monthShortNames;
     },
+    xparseDate: function(date) {
+	date = date.replaceAll(/\+0000$/,"");
+	return new Date(date);
+    },
+
+    dateRegex:new RegExp("(rel|now|today)(\\+|-)(.*)", 'i'),
     parseDate: function(s, roundUp, rel) {
         if (s == null) return null;
+	if((typeof s)=="number") {
+	    return new Date(s);
+	}
+
         s = s.trim();
         if (s == "") return null;
-        var regexpStr = "(rel|now|today)(\\+|-)(.*)"
-        var regex = new RegExp(regexpStr, 'i');
-        var match = s.match(regex);
+        var match = s.match(this.dateRegex);
         var offset = 0;
-
         if (match != null) {
             offset = parseFloat(match[3]);
             if (match[2] == "-") offset = -offset;
@@ -5205,3 +5212,4 @@ $( document ).ready(function() {
 
 
 Utils.areDisplaysReady()
+
