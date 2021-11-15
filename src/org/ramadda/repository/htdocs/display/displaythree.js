@@ -187,24 +187,26 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 	},
 
         updateUI: async function() {
-            if(!ramaddaLoadedThreeGlobe) {
-                ramaddaLoadedThreeGlobe = true;
-		await Utils.importJS("//unpkg.com/globe.gl");
-            }
-
-            if(!ramaddaLoadedThree) {
-                ramaddaLoadedThree = true;
-		await Utils.importJS(ramaddaBaseHtdocs+"/lib/three/three.min.js");
-//		await Utils.importJS("//unpkg.com/three");
-            }
 	    if(!window["THREE"]) {
+		if(!ramaddaLoadedThree) {
+                    ramaddaLoadedThree = true;
+//		    Utils.importJS(ramaddaBaseHtdocs+"/lib/three/three.min.js");
+		    Utils.importJS("//unpkg.com/three");		    
+		}
 		setTimeout(()=>{this.updateUI()},100);
 		return
 	    }	    
+
 	    if(!window["Globe"]) {
+		if(!ramaddaLoadedThreeGlobe) {
+                    ramaddaLoadedThreeGlobe = true;
+		    Utils.importJS("//unpkg.com/globe.gl");
+		}
 		setTimeout(()=>{this.updateUI()},100);
 		return
 	    }	    
+
+
             SUPER.updateUI.call(this);
 	    this.jq(ID_POPUP).hide();
 	    let records =this.filterData();
@@ -777,8 +779,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		    }
 
 		    if(!record) {
-//			if(logCnt++<50)
-			    console.log("Could not find record for feature:" +names);
+//			this.handleLog("Could not find record for feature:" +names);
 			return;
 		    }
 		    f.record=record;
@@ -838,8 +839,6 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 		    url = ramaddaBaseHtdocs+"/resources/" + url;
 		}
 	    }
-	    console.log("map url:" + url);
-	    
 	    return url;
 	},	
         handleEventRecordSelection: function(source, args) {
@@ -935,7 +934,6 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 	    let rectWidth = sqrt*(cubeWidth+cubeSpace);
 	    let topRadius = cubeWidth;
 	    let bottomRadius = cubeWidth;	    
-//	    console.log(records.length + " " +sqrt + " " + cubeWidth);
 
 	    if(!this.initCamera) {
 		this.initCamera = true;
@@ -960,7 +958,6 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 		})
 	    }
 	    let bounds = RecordUtil.getBounds(records);
-//	    console.log("bounds:" + bounds)
 
 	    let heightBy;
 	    let heightScale = this.getHeightScale();
@@ -997,7 +994,6 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 //			image = "https://ramadda.org/repository/metadata/view/Screenshot_2021-10-19_at_13-51-39_Point_Data_Collection.png?element=1&entryid=90e2c8e8-7e24-4f6b-9f0c-134fbd690999&metadata_id=b34d307a-7e7c-4a62-8c1e-1e1cd5637b2b";
 //			image = 'https://localhost:8430/repository/images/logo.png';
 			if(Utils.stringDefined(image)) {
-			    console.log(image);
 			    materials.push(new THREE.MeshBasicMaterial({map: loader.load(image)}));
 			}
 		    });
@@ -1150,7 +1146,6 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 			attrs.forEach((a,idx)=>pos+=(idx>0?",":"") + a+":" + this.getControls().object.up[a]);
 			pos+="}}";
 			let state = '"'+name+'":' + pos;
-			console.log(state);
 			Utils.copyToClipboard(pos.replace(/\n/g,""));
 		    }
 
@@ -1220,10 +1215,9 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
 		    requestAnimationFrame( animate );
 		    _this.controls.update();
 		    _this.shapes.forEach((shape,idx)=>{
-			return
-			shape.rotation.x+=0.01
+//			shape.rotation.x+=0.01
 //			shape.rotation.y+=0.01
-			if(idx==0) console.log(shape.rotation.x);
+//			if(idx==0) console.log(shape.rotation.x);
 		    });
 		    _this.renderer.render( _this.scene, _this.camera );
 		}

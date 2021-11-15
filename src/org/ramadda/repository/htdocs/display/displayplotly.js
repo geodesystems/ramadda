@@ -862,7 +862,6 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         getDisplayStyle: function() {
             return "";
-            return "border: 1px #ccc solid;";
         },
 
         updateUI: function() {

@@ -496,6 +496,7 @@ var Utils =  {
                 }
             }).fail((jqxhr, settings, exc) => {
                 console.log("initial importJS failed: " + path);
+                console.log("error:" + exc);		
             });
         } catch (e) {
             try {

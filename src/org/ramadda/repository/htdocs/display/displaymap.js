@@ -3960,7 +3960,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		return;
 	    }
 	    this.handleEventRecordHighlight(source,args);
-	    return;
+	    //For now return
+	    if(true) return;
+
             var record = args.record;
             if (record.hasLocation()) {
                 var latitude = record.getLatitude();
@@ -6564,11 +6566,12 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 		    _this.tooltipDiv.style("opacity", 1);
 		    //For now don't transition as it seems to screw up
 		    //subsequent mouse overs
-		    return;
+		    /*
 		    _this.tooltipDiv.transition()
 			.delay(500)
 			.duration(500)
 			.style("opacity", 1);
+		    */
 		}
 	    });
 	    polys.on('mouseout', function (d, i) {
