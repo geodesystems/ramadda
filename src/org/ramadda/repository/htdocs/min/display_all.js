@@ -9661,6 +9661,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 msg += error;
             }
 	    
+	    msg = msg.replace(/\n/g,"<br>");
 	    this.setErrorMessage(msg);
         },
         //callback from the pointData.loadData call
