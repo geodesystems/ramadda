@@ -34999,9 +34999,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let seen ={};
 		let numLocs = 0;
 		points.every(p=>{
-		    if(!seen[p]) {
+		    let key = p.x+"_"+p.y;
+		    if(!seen[key]) {
 			numLocs++;
-			seen[p] = true;
+			seen[key] = true;
 		    }
 		    return true;
 		});
