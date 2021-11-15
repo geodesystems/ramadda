@@ -12800,6 +12800,7 @@ function makePointData(json, derived, source,url) {
 	    values = tuple;
 	else
             values = tuple.values;
+
         //lat,lon,alt,time,data values
         let date = null;
         if (isArray || !hasDate) {
@@ -12809,7 +12810,7 @@ function makePointData(json, derived, source,url) {
 		    setDateFlags = true;
 		}
 		if(dateIsString) {
-		    date = new Date(values[dateIdx]);
+		    date = Utils.parseDate(values[dateIdx]);
 		} else {
 		    date = new Date(0);
 		    date.setUTCMilliseconds(values[dateIdx]);
@@ -12834,7 +12835,9 @@ function makePointData(json, derived, source,url) {
                 tuple.longitude = NaN;
         }
         for (var j = 0; j < dateIndexes.length; j++) {
-            values[dateIndexes[j]] = new Date(values[dateIndexes[j]]);
+	    let index = dateIndexes[j];
+	    let value = values[index];
+	    values[index] = Utils.parseDate(value);
         }
         for (var col = 0; col < values.length; col++) {
             if(values[col]==null) {
