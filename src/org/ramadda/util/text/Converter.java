@@ -5433,6 +5433,42 @@ public abstract class Converter extends Processor {
      * @version        $version$, Wed, Dec 2, '15
      * @author         Enter your name here...
      */
+    public static class NumColumns extends Converter {
+
+	int number;
+
+        /**
+         * @param indices _more_
+         */
+        public NumColumns(int number) {
+	    this.number= number;
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+	    List values  = row.getValues();
+	    while(values.size()<number) values.add("");
+	    while(values.size()>number) values.remove(values.size()-1);	    
+	    return row;
+        }
+
+    }
+
+
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Wed, Dec 2, '15
+     * @author         Enter your name here...
+     */
     public static class Trim extends Converter {
 
         /**

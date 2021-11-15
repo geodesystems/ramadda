@@ -941,6 +941,51 @@ public abstract class Processor extends CsvOperator {
      * @version        $version$, Tue, Nov 19, '19
      * @author         Enter your name here...
      */
+    public static class DebugRows extends Processor {
+
+        /**  */
+        int rows;
+
+        /**
+         * _more_
+         *
+         * @param every _more_
+         */
+        public DebugRows(int rows) {
+            this.rows = rows;
+        }
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) throws Exception {
+	    rowCnt++;
+	    if(rowCnt<=rows) {
+                System.err.println("row #" + rowCnt +" cols: " + row.size() +" data:" + row.getValues()); 
+            }
+            return row;
+        }
+    }
+
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Tue, Nov 19, '19
+     * @author         Enter your name here...
+     */
     public static class If extends Processor {
 
         /**  */

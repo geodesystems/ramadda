@@ -1542,6 +1542,10 @@ public class CsvUtil {
 		"-max",
 		"Only pass through lines that have no more than this number of columns",
 		new Arg("max # columns", "", "type", "number")),
+        new Cmd(
+		"-numcolumns",
+		"Remove or add values so each row has the number of columns",
+		new Arg("number", "", "type", "number")),
         new Cmd("-pattern", "Pass through rows that the columns each match the pattern",
                 new Arg("columns", "", "type", "columns"),
                 new Arg("pattern", "", "type", "pattern")),
@@ -2100,6 +2104,8 @@ public class CsvUtil {
         new Cmd("-run", "", "Name of process directory"),
         new Cmd("-dots", "", "Print a dot every count row",
 		new Arg("every", "Dot every")),
+        new Cmd("-debugrow", "", "Debug # rows",
+		new Arg("rows", "# of rows")),	
 
 	new Cmd("-script", "Generate the script to call"),
         new Cmd("-args", "Generate the CSV file commands"),
@@ -3479,6 +3485,12 @@ public class CsvUtil {
 	    });	
 
 
+	defineFunction("-numcolumns", 1,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.NumColumns(Integer.parseInt(args.get(++i))));
+		return i;
+	    });	
+
+
 
 	defineFunction("-trim", 1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Trim(getCols(args.get(++i))));
@@ -3711,6 +3723,11 @@ public class CsvUtil {
 		return i;
 	    });
 
+	defineFunction("-debugrows",1,(ctx,args,i) -> {
+		ctx.addProcessor(new Processor.DebugRows(new Integer(args.get(++i))));
+		return i;
+	    });
+	
 
 	defineFunction("-headernames",0,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.HeaderNames());

@@ -632,7 +632,6 @@ public abstract class DataProvider {
         public void tokenize(TextReader ctx, String s) throws Exception {
 
             boolean    debug = false;
-
             int        xcnt  = 0;
             JSONArray  array = null;
             JSONObject root  = null;
@@ -780,13 +779,12 @@ public abstract class DataProvider {
                         if (value == null) {
                             value = "NULL";
                         }
+			//			System.err.println("NAME:" + name +" value:" + value);
                         row.add(value);
                     }
                 }
-            }
-
-
-        }
+	    }
+	}
     }
 
     /**
