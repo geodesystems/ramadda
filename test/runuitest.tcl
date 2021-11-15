@@ -85,14 +85,27 @@ proc capture {_group name id} {
     incr ::cnt
     set extra ""
     if {[file exists $consoleFile]} {
-	puts stderr "got console from $name"
 	set fp [open $consoleFile r]
 	set c [read $fp]
 	close $fp
-	regsub -all {<} $c {&lt;} c
-	regsub -all {>} $c {&gt;} c	
-	set extra "<br><div style='border:1px solid #efefef;background:#FEAFAF;max-width:100%;'>$c</div>"
-	append extra "\n<script  type='text/JavaScript'>doError('$name');</script>\n"
+	set ignore 1
+	foreach line [split $c "\n"] {
+	    set line [string trim $line]
+	    if {$line==""} continue;
+	    if {[regexp {allowed to display insecure content from} $line]} {
+		continue;
+	    }
+	    puts stderr "console: $line"
+	    set ignore 0
+	    break;
+	}
+	if {!$ignore} {
+	    puts stderr "got console from $name"
+	    regsub -all {<} $c {&lt;} c
+	    regsub -all {>} $c {&gt;} c	
+	    set extra "<br><div style='border:1px solid #efefef;background:#FEAFAF;max-width:100%;'>$c</div>"
+	    append extra "\n<script  type='text/JavaScript'>doError('$name');</script>\n"
+	}
     }
     set line  "<a name='$name'></a><div class='ramadda-gridbox ' style='width:300px;display:inline-block;margin:6px;'><a href=\"$url\">#$::cnt $name\n<img width=100% border=0 src=${thumb}>\n</a>$extra</div>\n"
     write $line
