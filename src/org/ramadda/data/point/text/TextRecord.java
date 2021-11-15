@@ -445,8 +445,20 @@ public class TextRecord extends DataRecord {
 
                             break;
                         }
-
                     }
+		    int max = Math.max(fields.size(),toks.size());
+                    for (int i = 0; i < max; i++) {
+			if(i<fields.size())
+			    msg.append(fields.get(i).getName());
+			else
+			    msg.append("MISSING");
+			msg.append(":");
+			if(i<toks.size())
+			    msg.append(toks.get(i));
+			else
+			    msg.append("MISSING");
+			msg.append("\n");			
+		    }
 
                     throw new IllegalArgumentException(msg.toString());
                 }
