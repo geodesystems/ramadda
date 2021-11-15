@@ -417,15 +417,16 @@ public class TextRecord extends DataRecord {
 
                 if (bePickyAboutTokens && (toks.size() != tokens.length)) {
                     StringBuilder msg =
-                        new StringBuilder("Error processing file:"
+                        new StringBuilder("Error processing file: "
                                           + getRecordFile() + "\n"
-                                          + "Bad token count:"
-                                          + tokens.length + " toks:"
-                                          + toks.size());
+                                          + "Bad token count: expected: "
+                                          + tokens.length + " got: "
+                                          + toks.size()+"\n");
                     if (line.length() > 1000) {
                         line = line.substring(0, 999) + "...";
                     }
-                    msg.append("\nLine:" + line);
+                    msg.append("Line:" + line+"\n");
+		    /*
                     msg.append("\nExpected:");
                     for (int i = 0; i < fields.size(); i++) {
                         RecordField field = fields.get(i);
@@ -446,6 +447,8 @@ public class TextRecord extends DataRecord {
                             break;
                         }
                     }
+		    */
+		    msg.append("Fields:\n");
 		    int max = Math.max(fields.size(),toks.size());
                     for (int i = 0; i < max; i++) {
 			if(i<fields.size())
