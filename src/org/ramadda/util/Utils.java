@@ -7,7 +7,7 @@ package org.ramadda.util;
 
 
 import org.apache.commons.lang3.text.StrTokenizer;
-
+import org.apache.commons.text.StringTokenizer;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
@@ -609,10 +609,10 @@ public class Utils extends IO {
      */
     public static List<String> tokenizeColumns(String line,
             StrTokenizer tokenizer) {
-        List<String> toks = new ArrayList<String>();
-
-        return tokenizeColumns(line, tokenizer, toks);
+        return tokenizeColumns(line, tokenizer, null);
     }
+
+    public static boolean flag =true;
 
     /**
      * _more_
@@ -624,19 +624,17 @@ public class Utils extends IO {
      * @return _more_
      */
     public static List<String> tokenizeColumns(String line,
-            StrTokenizer tokenizer, List<String> toks) {
-        tokenizer.reset(line);
-        //        tokenizer.setQuoteChar('"');
-        while (tokenizer.hasNext()) {
-            String tok = tokenizer.nextToken();
-            if (tok == null) {
-                tok = "";
-            }
-            toks.add(tok);
-        }
-
-        //      if(true) return toks;
-        return toks;
+					       StrTokenizer tokenizer, List<String> toks) { 
+       tokenizer.reset(line);
+       String tokens[] = tokenizer.getTokenArray();
+       if(toks==null) {
+	   toks = new ArrayList(tokens.length);
+       }
+       for(String s:tokens) {
+	   if(s==null) s="";
+	   toks.add(s);
+       }
+       return toks;
     }
 
     /**
@@ -1400,6 +1398,22 @@ public class Utils extends IO {
         for (Enumeration keys = properties.keys(); keys.hasMoreElements(); ) {
             Object key = keys.nextElement();
             l.add(properties.get(key));
+        }
+
+        return l;
+    }
+
+    /**
+     *
+     * @param properties _more_
+     *
+     * @return _more_
+     */
+    public static List getKeys(Hashtable properties) {
+        List l = new ArrayList();
+        for (Enumeration keys = properties.keys(); keys.hasMoreElements(); ) {
+            Object key = keys.nextElement();
+            l.add(key);
         }
 
         return l;
@@ -2186,11 +2200,15 @@ public class Utils extends IO {
      * @param args _more_
      */
     public static void printTimes(String what, long... args) {
-        System.out.print(what + " ");
+        System.err.print(what + " ");
         for (int i = 1; i < args.length; i++) {
-            System.out.print(" " + (args[i] - args[i - 1]));
+            System.err.print(" " + (args[i] - args[i - 1]));
         }
-        System.out.println("  total: " + (args[args.length - 1] - args[0]));
+	if(args.length>2)
+	    System.err.println("  total: " + (args[args.length - 1] - args[0]));
+	else
+	    System.err.println("");
+
     }
 
     /**
@@ -3390,6 +3408,7 @@ public class Utils extends IO {
      * @return _more_
      */
     public static boolean isUrl(String s) {
+	s  = s.toLowerCase();
         return s.startsWith("https:") || s.startsWith("http:");
     }
 
