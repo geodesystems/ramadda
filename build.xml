@@ -227,7 +227,7 @@
               <attribute name="Implementation-Version" value="1.0"/>
               <attribute name="Implementation-Vendor" value="RAMADDA"/>
               <attribute name="Main-class" value="org.ramadda.util.text.CsvUtil"/>
-              <attribute name="Class-Path" value="unidatautil.jar json.jar rhino-1.7.13.jar commons-lang3-3.1.jar "/>
+              <attribute name="Class-Path" value="unidatautil.jar json.jar rhino-1.7.13.jar commons-lang3-3.1.jar commons-io-2.8.0.jar"/>
             </manifest> 
 
 	</jar>
@@ -239,7 +239,9 @@
 	<copy overwrite="true" file="${lib_dir}/unidatautil.jar"  todir="${csvutil_destdir}/lib"/>
 	<copy overwrite="true" file="${lib_dir}/json.jar"  todir="${csvutil_destdir}/lib"/>
 	<copy overwrite="true" file="${lib_dir}/rhino-1.7.13.jar"  todir="${csvutil_destdir}/lib"/>
-	<copy overwrite="true" file="${lib_dir}/commons-lang3-3.1.jar"  todir="${csvutil_destdir}/lib"/>			
+	<copy overwrite="true" file="${lib_dir}/commons-io-2.8.0.jar"  todir="${csvutil_destdir}/lib"/>		
+	<copy overwrite="true" file="${lib_dir}/commons-lang3-3.1.jar"  todir="${csvutil_destdir}/lib"/>		
+	
 	<zip destfile="${dist_dir}/csvutil.zip">
           <zipfileset dir="${dist_dir}/csvutil" includes="*" prefix="csvutil"/>
           <zipfileset dir="${dist_dir}/csvutil" includes="lib/*" prefix="csvutil"/>	  
