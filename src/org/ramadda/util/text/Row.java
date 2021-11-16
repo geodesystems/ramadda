@@ -35,14 +35,11 @@ public class Row {
     private static int cnt = 0;
 
     /** _more_ */
-    private String id = "" + (cnt++);
+    private int id =  (cnt++);
 
 
     /** _more_ */
     private List values;
-
-    /** _more_ */
-    private Object skipTo;
 
 
     /**
@@ -87,27 +84,8 @@ public class Row {
      *
      * @return _more_
      */
-    public String getId() {
+    public int getId() {
         return id;
-    }
-
-
-    /**
-     * Set the SkipTo property.
-     *
-     * @param value The new value for SkipTo
-     */
-    public void setSkipTo(Object value) {
-        skipTo = value;
-    }
-
-    /**
-     * Get the SkipTo property.
-     *
-     * @return The SkipTo
-     */
-    public Object getSkipTo() {
-        return skipTo;
     }
 
 
