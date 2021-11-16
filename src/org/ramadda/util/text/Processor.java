@@ -633,7 +633,7 @@ public abstract class Processor extends CsvOperator {
                 newRow.add(value);
             }
             if (header != null) {
-                extraId = newRow.getId();
+                extraId = ""+newRow.getId();
                 ctx.setExtraRow(newRow);
                 Row tmp = header;
                 header = null;
@@ -1129,6 +1129,7 @@ public abstract class Processor extends CsvOperator {
         /** _more_ */
         private boolean trim = false;
 
+	private String commentChar;
 
         /**
          * ctor
@@ -1196,11 +1197,9 @@ public abstract class Processor extends CsvOperator {
             if (addPointHeader) {
                 addPointHeader = false;
                 handleHeaderRow(ctx.getWriter(), row, null /*exValues*/);
-
                 return row;
             }
             handleRow(ctx, ctx.getWriter(), row);
-
             return row;
         }
 
@@ -1214,7 +1213,7 @@ public abstract class Processor extends CsvOperator {
          *
          * @throws Exception _more_
          */
-        private void handleHeaderRow(PrintWriter writer, Row header,
+        private void handleHeaderRow(Appendable writer, Row header,
                                      List exValues)
                 throws Exception {
             StringBuilder   sb     = new StringBuilder();
@@ -1232,7 +1231,8 @@ public abstract class Processor extends CsvOperator {
                               : headerValue.toString();
                 addFieldDescriptor(name, sb, i, seen, null /*rows*/);
             }
-            writer.println(sb.toString());
+            writer.append(sb.toString());
+	    writer.append("\n");
         }
 
 
@@ -1253,7 +1253,6 @@ public abstract class Processor extends CsvOperator {
         }
 
 
-
         /**
          * _more_
          *
@@ -1264,63 +1263,70 @@ public abstract class Processor extends CsvOperator {
          *
          * @throws Exception _more_
          */
-        private void handleRow(TextReader ctx, PrintWriter writer, Row row)
+        private void handleRow(TextReader ctx, Appendable writer, Row row)
                 throws Exception {
-            boolean first = rowCnt++ == 0;
-            if (first && (prefix != null)) {
-                writer.print(prefix);
-            }
-            if ( !first && (delimiter != null)) {
-                writer.print(delimiter);
+            boolean firstRow = rowCnt++ == 0;
+            if (firstRow) {
+		commentChar = ctx.getCommentChar();
+		if(prefix != null) {
+		    writer.append(prefix);
+		}
+            } else {
+		if (delimiter != null) {
+		    writer.append(delimiter);
+		}
             }
             String  theTemplate   = template;
             List    values        = row.getValues();
             boolean escapeColumns = true;
-            for (int colIdx = 0; colIdx < values.size(); colIdx++) {
-                Object v = values.get(colIdx);
-                if (theTemplate == null) {
+	    if (theTemplate == null) {
+		for (int colIdx = 0; colIdx < values.size(); colIdx++) {
+		    Object v = values.get(colIdx);
                     if (colIdx > 0) {
-                        writer.print(",");
+                        writer.append(",");
                     }
                     if (v != null) {
                         String sv = v.toString();
                         if (trim) {
                             sv = sv.trim();
                         }
-                        if ((first && sv.startsWith("#"))
-                                || ((colIdx == 0)
-                                    && (ctx.getCommentChar() != null)
-                                    && sv.startsWith(ctx.getCommentChar()))) {
+                        if ((firstRow && sv.startsWith("#"))
+                                || (colIdx == 0
+                                    && commentChar != null
+                                    && sv.startsWith(commentChar))) {
                             escapeColumns = false;
                         }
                         boolean addQuote = false;
                         if (escapeColumns) {
                             addQuote = (sv.indexOf(",") >= 0)
-                                       || (sv.indexOf("\n") >= 0);
+				|| (sv.indexOf("\n") >= 0);
                             if (sv.indexOf("\"") >= 0) {
                                 addQuote = true;
                                 sv       = sv.replaceAll("\"", "\"\"");
                             }
                             if (addQuote) {
-                                writer.print("\"");
+                                writer.append("\"");
                             }
                         }
-                        writer.print(sv);
+                        writer.append(sv);
                         if (addQuote) {
-                            writer.print("\"");
+                            writer.append("\"");
                         }
-                    } else {
-                        writer.print("");
+		    } else {
+                        writer.append("");
                     }
-                } else {
+		}
+	    } else {
+		for (int colIdx = 0; colIdx < values.size(); colIdx++) {
+		    Object v = values.get(colIdx);
                     theTemplate = theTemplate.replace("${" + colIdx + "}",
-                            v.toString());
+						      v.toString());
                 }
             }
             if (theTemplate == null) {
-                writer.print("\n");
+                writer.append("\n");
             } else {
-                writer.print(theTemplate);
+                writer.append(theTemplate);
             }
         }
 
@@ -1337,11 +1343,11 @@ public abstract class Processor extends CsvOperator {
          *
          * @throws Exception _more_
          */
-        public void writeCsv(TextReader ctx, PrintWriter writer,
+        public void writeCsv(TextReader ctx, Appendable writer,
                              List<Row> rows)
                 throws Exception {
             if (prefix != null) {
-                writer.print(prefix);
+                writer.append(prefix);
             }
 
             if (addPointHeader) {
@@ -1356,13 +1362,13 @@ public abstract class Processor extends CsvOperator {
 
             for (int i = 0; i < rows.size(); i++) {
                 if ((i > 0) && (delimiter != null)) {
-                    writer.print(delimiter);
+                    writer.append(delimiter);
                 }
                 Row row = rows.get(i);
                 handleRow(ctx, writer, row);
             }
             if (suffix != null) {
-                writer.print(suffix);
+                writer.append(suffix);
             }
         }
 
@@ -1403,7 +1409,6 @@ public abstract class Processor extends CsvOperator {
             if (headerRow == null) {
                 headerRow = row;
                 ctx.getWriter().println("[");
-
                 return row;
             }
             handleRow(ctx, ctx.getWriter(), row);
