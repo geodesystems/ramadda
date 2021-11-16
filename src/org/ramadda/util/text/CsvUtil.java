@@ -581,15 +581,10 @@ public class CsvUtil {
                 continue;
             }
 
-            if (arg.equals("-bom")) {
-                inputIsBom = true;
-                continue;
-            }
 
 
             if (arg.equals("-raw")) {
                 doRaw = true;
-
                 continue;
             }
 
@@ -2217,7 +2212,8 @@ public class CsvUtil {
                 }
                 if (c.category) {
                     pw.println(Json.mapAndQuote("isCategory", "true",
-						"description", c.desc));
+						"label",c.cmd));
+
                 } else {
                     String argList = "[]";
                     if (c.args != null) {
@@ -2786,7 +2782,11 @@ public class CsvUtil {
 	defineFunction("-cleaninput",0,(ctx,args,i) -> {
 		ctx.setCleanInput(true);
 		return i;
-	    });		
+	    });
+	defineFunction("-bom",0,(ctx,args,i) -> {
+		inputIsBom = true;
+		return i;
+	    });			
 
 	defineFunction("-widths",1,(ctx,args,i) -> {
 		List<Integer> widths = new ArrayList<Integer>();
