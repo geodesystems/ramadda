@@ -570,7 +570,6 @@ public class CsvOperator {
             columnMap   = new Hashtable<String, Integer>();
             if (header == null) {
                 debug("no names or header");
-
                 return;
             }
 
@@ -673,19 +672,23 @@ public class CsvOperator {
                         //                      System.err.println(colName);
                     }
                     //              System.out.println("TOK:" + tok);
-                    for (Enumeration keys = columnMap.keys();
-                            keys.hasMoreElements(); ) {
-                        String key = (String) keys.nextElement();
-                        if (key.length() == 0) {
+		    StringBuilder msg = new StringBuilder("");
+                    for (Object key: Utils.getKeys(columnMap)) {
+                        String skey = (String) key;
+                        if (skey.length() == 0) {
                             continue;
                         }
-                        if (key.matches("^[0-9]+$")) {
+                        if (skey.matches("^[0-9]+$")) {
                             continue;
                         }
-                        //                      System.out.println("KEY:" + key);
+			if(msg.length()>0)
+			    msg.append(",");
+			else
+			    msg.append("\nColumns: ");
+			msg.append(skey);
                     }
                     //              System.err.println(columnMap);
-                    fatal("Could not find index:" + tok);
+                    fatal("Could not find index:" + tok+ msg+"\n");
                 }
             } else {
                 String tok1 = toks.get(0);
