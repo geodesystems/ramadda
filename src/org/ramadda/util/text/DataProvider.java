@@ -1794,8 +1794,6 @@ public abstract class DataProvider {
         /**  */
         private StrTokenizer tokenizer;
 
-
-
         /**
          * _more_
          *
@@ -1833,6 +1831,18 @@ public abstract class DataProvider {
         }
 
 
+	private StrTokenizer getTokenizer(TextReader ctx) {
+	    if (tokenizer == null) {
+		tokenizer = StrTokenizer.getCSVInstance();
+		tokenizer.setEmptyTokenAsNull(true);
+		if ( !ctx.getDelimiter().equals(",")) {
+		    tokenizer.setDelimiterChar(
+					       ctx.getDelimiter().charAt(0));
+		}
+	    }
+	    return tokenizer;
+	}
+	    
         /**
          * _more_
          *
@@ -1858,10 +1868,11 @@ public abstract class DataProvider {
             while (true) {
                 String line = ctx.readLine();
                 if (line == null) {
-                    //              System.err.println("Done reading CSV file");
+                    //              System.err.println("Done reading CSV file read");
                     return null;
                 }
-                cnt++;
+		//		if(true) return  new Row(Utils.tokenizeColumns(line, getTokenizer(ctx)));
+
                 if (rawLines > 0) {
                     ctx.getWriter().println(line);
                     rawLines--;
@@ -1879,15 +1890,12 @@ public abstract class DataProvider {
                         deHeader = false;
                     }
                 }
-
                 if ( !ctx.lineOk(line)) {
-                    System.err.println("LINE not OK:" + line);
                     continue;
                 }
 
                 rowCnt++;
                 if (rowCnt <= ctx.getSkipLines()) {
-                    //              System.err.println("skipping");
                     ctx.addHeaderLine(line);
                     continue;
                 }
@@ -1904,29 +1912,15 @@ public abstract class DataProvider {
                     ctx.setDelimiter(delimiter);
                 }
                 if (line.length() == 0) {
-                    System.err.println("empty line");
                     continue;
                 }
-                Row row = null;
                 if (widths != null) {
-                    row = new Row(Utils.tokenizeColumns(line, widths));
+                    return  new Row(Utils.tokenizeColumns(line, widths));
                 } else if (ctx.getSplitOnSpaces()) {
-                    row = new Row(Utils.split(line, " ", true, true));
+                    return  new Row(Utils.split(line, " ", true, true));
                 } else {
-                    if (tokenizer == null) {
-                        tokenizer = StrTokenizer.getCSVInstance();
-                        tokenizer.setEmptyTokenAsNull(true);
-                        if ( !ctx.getDelimiter().equals(",")) {
-                            tokenizer.setDelimiterChar(
-                                ctx.getDelimiter().charAt(0));
-                        }
-                    }
-                    List<String> toks = Utils.tokenizeColumns(line,
-                                            tokenizer);
-                    row = new Row(toks);
-                }
-
-                return row;
+                    return new Row(Utils.tokenizeColumns(line,  getTokenizer(ctx)));
+		}
             }
         }
 
