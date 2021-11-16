@@ -528,13 +528,11 @@ public class CsvUtil {
 	    }
 
 
-
             //      System.out.println("ARG:" + arg);
             //      if(true) continue;
             if (arg.equals("-printargs")) {
                 System.out.print("java  org.ramadda.util.text.CsvUtil ");
                 printArgs = true;
-
                 continue;
             }
             if (printArgs) {
@@ -562,7 +560,6 @@ public class CsvUtil {
             }
             if (arg.startsWith("-help:")) {
                 usage("", arg.substring("-help:".length()));
-
                 return;
             }
             if (arg.equals("-alldata")) {
@@ -601,11 +598,10 @@ public class CsvUtil {
             if (arg.startsWith("-iter")) {
                 iterateColumn = args.get(++i);
                 iterateValues = Utils.split(args.get(++i), ",");
-
                 continue;
             }
             extra.add(arg);
-        }
+	}
 
 
 	if (doArgs) {
@@ -651,17 +647,16 @@ public class CsvUtil {
                 iteratePattern = new Filter.PatternFilter(getCols(iterateColumn), "");
                 myTextReader.addProcessor(iteratePattern);
             }
+	    //For now do the old way so we handle utf-8 better
+	    boolean newWay = false;
             for (int i = 0; i < iterateValues.size(); i++) {
                 String pattern = iterateValues.get(i);
                 if (iteratePattern != null) {
                     iteratePattern.setPattern(pattern);
                 }
-		//For now do the old way so we handle utf-8 better
-		boolean newWay = false;
 		for(String file: files) {
 		    if(Utils.isUrl(file)) newWay=false;
 		}
-		//		newWay=false;
                 for (DataProvider provider : providers) {
 		    if(newWay) {
 			for (NamedChannel input : getChannels(files)) {
@@ -744,16 +739,6 @@ public class CsvUtil {
             processRow(ctx, firstRow);
             rowCnt++;
         }
-	/*
-	  while (true) {
-	  String line = ctx.readLine();
-	  if(line==null) break;
-	  rowCnt++;
-	  if((rowCnt%10000)==0) System.err.print(".");
-	  }
-	  if(true) return;
-	*/
-	
 	long t1 = System.currentTimeMillis();
         Row row;
         while ((row = provider.readRow()) != null) {
@@ -1247,7 +1232,6 @@ public class CsvUtil {
                 s           = s.replaceAll("\"", "\"\"");
                 needToQuote = true;
             }
-
             if (needToQuote) {
                 sb.append('"');
                 sb.append(s);
@@ -1460,6 +1444,7 @@ public class CsvUtil {
         new Cmd("-widths", "Columns are fixed widths",
                 new Arg("widths", "w1,w2,...,wN")),
         new Cmd("-quotesnotspecial", "Don't treat quotes as special characters"),
+        new Cmd("-cleaninput", "Input is one text line per row. i.e., no new lines in a data row"),	
         new Cmd("-header", "Raw header",
                 new Arg("header", "Column names", "type", "list")),
         new Cmd("-htmltable", "Parse the table in the input html file",
@@ -2104,7 +2089,7 @@ public class CsvUtil {
         new Cmd("-run", "", "Name of process directory"),
         new Cmd("-dots", "", "Print a dot every count row",
 		new Arg("every", "Dot every")),
-        new Cmd("-debugrow", "", "Debug # rows",
+        new Cmd("-debugrows", "", "Debug # rows",
 		new Arg("rows", "# of rows")),	
 
 	new Cmd("-script", "Generate the script to call"),
@@ -2779,7 +2764,11 @@ public class CsvUtil {
 	defineFunction("-quotesnotspecial",0,(ctx,args,i) -> {
 		ctx.setQuotesNotSpecial(true);
 		return i;
-	    });	
+	    });
+	defineFunction("-cleaninput",0,(ctx,args,i) -> {
+		ctx.setCleanInput(true);
+		return i;
+	    });		
 
 	defineFunction("-widths",1,(ctx,args,i) -> {
 		List<Integer> widths = new ArrayList<Integer>();
@@ -3898,7 +3887,6 @@ public class CsvUtil {
 	}
 
 	PrintWriter pw        = null;
-	boolean     seenPrint = false;
 	if (debugArgs) {
 	    System.err.println("ParseArgs");
 	}
@@ -4225,31 +4213,7 @@ public class CsvUtil {
      * @throws Exception On badness
      */
     public static void main(String[] args) throws Exception {
-	//	IO.debugStderr();
 	GeoUtils.setCacheDir(new File("."));
-	//	String value = StringUtil.findPattern("_2019_boulder_election.csv", "(\\d\\d\\d\\d)");
-	//	System.err.println("v:" + value);
-	//	if(true) return;
-	/*
-	  FileInputStream stdin = new FileInputStream(FileDescriptor.in);
-	  ReadableByteChannel inChannel = stdin.getChannel();
-	  //	FileChannel inChannel = aFile.getChannel();
-	  ByteBuffer buf = ByteBuffer.allocate(32000);
-	  int bytesRead = inChannel.read(buf); //read into buffer.
-	  int bc= 0;
-	  while (bytesRead != -1) {
-	  buf.flip(); 
-	  while(buf.hasRemaining()) {
-	  buf.get();
-	  bc++;
-	  }
-	  buf.clear(); 
-	  bytesRead = inChannel.read(buf);
-	  }
-	  System.err.println("bc:" +bc);
-	  System.exit(0);
-	*/
-
 	CsvUtil csvUtil = new CsvUtil(args);
 	csvUtil.setCsvContext(new CsvContext() {
 		public List<Class> getClasses() {
@@ -4279,5 +4243,7 @@ public class CsvUtil {
 	}
 	System.exit(0);
     }
+
+
 
 }
