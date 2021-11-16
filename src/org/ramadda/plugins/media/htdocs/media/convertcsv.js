@@ -195,16 +195,19 @@ function  ConvertForm(inputId, entry) {
 		    let category="";
 		    this.outputCommands = [];
 		    this.commands.forEach(cmd=>{
-
 			let command = cmd.command;
 			if(cmd.isCategory) {
-			    docs+="etlcat {" + cmd.description+"}\n";
-			    category = cmd.description;
+			    console.dir(cmd);
+			    category = cmd.label;
+			    
+			    docs+="etlcat {" + category+"}\n";
+
 			    categories[category] = menuItems = [];
 			    menus.push(HU.div(["class","ramadda-highlightable ramadda-menubar-button","category",category], category));
 			    return;
 			}
 			if(!command || !command.startsWith("-") || command.startsWith("-help")) return;
+			console.log(category);
 			if(category=="Output") {
 			    if(cmd.args.length==0) {
 				this.outputCommands.push(cmd);
