@@ -6,6 +6,7 @@ source ${mydir}/init.sh
 registered_voters=${datadir}/ce-vr011d.txt.zip
 voting_report_2021=${datadir}/ce-068-2021.txt.zip
 source=voters_boulder.csv
+voter_history=voter_history.csv
 unique_voter_history=voter_history_unique.csv
 precincts=${datadir}/boco_precincts.csv
 splits=${datadir}/boulder_splits.csv
@@ -28,25 +29,27 @@ do_all() {
 
 init_files() {
     fetch_voting_report
-    echo "making voter_history"
-    cp source/Master_Voting_History_List_Part1.csv voter_history.csv
-    tail -n+2 source/Master_Voting_History_List_Part2.csv >>voter_history.csv
-    tail -n+2 source/Master_Voting_History_List_Part3.csv >>voter_history.csv        
+    if [ ! -f ${voter_history} ]; then
+       echo "making voter_history"
+       cp source/Master_Voting_History_List_Part1.csv ${voter_history}
+       tail -n+2 source/Master_Voting_History_List_Part2.csv >> ${voter_history}
+       tail -n+2 source/Master_Voting_History_List_Part3.csv >> ${voter_history}        
+   fi
 }
 
-#init_files
-#exit
+init_files
+exit
 
 do_prep() {
     echo "processing voting report"
-    ${csv}  -delimiter "|" 	 -dots ${dots}    -pattern RES_CITY BOULDER \
+    ${csv}  -delimiter "|" 	-cleaninput  -dots ${dots}    -pattern RES_CITY BOULDER \
 	    -columns voter_id,MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE \
 	    -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "" voted_in_2021 \
 	    -trim voted_in_2021 \
 	    -change voted_in_2021 "^$" false \
 	    -change voted_in_2021 ".*[0-9]+.*" true \
 	    -p ${voting_report_2021}  > voted_in_2021.csv
-    ${csv}  -delimiter "|" 	 -dots ${dots}   \
+    ${csv}  -delimiter "|" 	-cleaninput 	 -dots ${dots}   \
 	    -columns voter_id,MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE \
 	    -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "" voted_in_2021 \
 	    -trim voted_in_2021 \
@@ -57,9 +60,9 @@ do_prep() {
 
     echo "processing registered voters"
 
-#    ${csv}  -delimiter "|"  -dots ${dots}  -notcolumns "regex:(?i)BALLOT_.*"  -pattern res_city BOULDER  -p ${registered_voters} > voters_base.csv
+#    ${csv}  -delimiter "|"  	-cleaninput  -dots ${dots}  -notcolumns "regex:(?i)BALLOT_.*"  -pattern res_city BOULDER  -p ${registered_voters} > voters_base.csv
 
-    ${csv}  -delimiter "|"  -dots ${dots}  -notcolumns "regex:(?i)BALLOT_.*"  -concat precinct,split "." precinct_split  \
+    ${csv}  -delimiter "|"  	-cleaninput  -dots ${dots}  -notcolumns "regex:(?i)BALLOT_.*"  -concat precinct,split "." precinct_split  \
 	    -ifin  split ${splits} precinct_split -notcolumns precinct_split -p ${registered_voters} > voters_base.csv        
 
     ${csv} -if -pattern mail_addr1,mailing_country "^$" -copycolumns res_address mail_addr1  -endif\
@@ -67,7 +70,7 @@ do_prep() {
 	   -if -pattern mailing_state,mailing_country "^$" -copycolumns res_state mailing_state  -endif\
 	   -if -pattern mailing_zip,mailing_country "^$" -copycolumns res_zip_code mailing_zip  -endif\
 	   -p voters_base.csv > ${source}
-    ${csv} -columns res_address,res_city -change res_address " APT .*" "" -change res_address " UNIT .*" "" -trim res_address -unique res_address -insert "" state Colorado  -set 0 0 address -set 1 0 city -dots ${dots} -p ${source} > voters_addresses.csv
+    ${csv} -columns res_address,res_city -change res_address " APT .*" "" -change res_address " UNIT .*" "" -trim res_address -unique res_address -insert "" state Colorado  -set 0 0 address -set 1 0 city 	-cleaninput -dots ${dots} -p ${source} > voters_addresses.csv
     ${csv} -sample 0.01  -p voters_addresses.csv > voters_addresses_short.csv        
 #    rm voters_base.csv
 }
@@ -101,31 +104,31 @@ do_precincts() {
 
 do_history() {
    echo "making unique voting history"
-   ${csv} -ifin voter_id voters_boulder.csv  voter_id -p voter_history.csv  > voter_history_boulder.csv
-   ${csv} -dots ${dots} -unique  "voter_id,election_date" -p voter_history_boulder.csv > ${unique_voter_history}
+   ${csv} -cleaninput -dots ${dots} -ifin voter_id voters_boulder.csv  voter_id -p voter_history.csv  > voter_history_boulder.csv
+   ${csv} -cleaninput -dots ${dots} -unique  "voter_id,election_date" -p voter_history_boulder.csv > ${unique_voter_history}
    echo "making off year"
-   ${csv} -dots ${dots} -pattern election_date "(11/../2001|11/../2003|11/../2005|11/../2007|11/../2009|11/../2011|11/../2013|11/../2015|11/../2017|11/../2019)" -p ${unique_voter_history} > history_offyears10.csv
-   ${csv} -dots ${dots} -pattern election_date "(11/../2020)" -p ${unique_voter_history} > history_2020.csv
-   ${csv} -dots ${dots} -pattern election_date "(11/../2019)" -p ${unique_voter_history} > history_2019.csv      
-   ${csv} -dots ${dots} -pattern election_date "(11/../2015|11/../2017|11/../2019)" -p ${unique_voter_history} > history_offyears3.csv   
+   ${csv} -cleaninput -dots ${dots} -pattern election_date "(11/../2001|11/../2003|11/../2005|11/../2007|11/../2009|11/../2011|11/../2013|11/../2015|11/../2017|11/../2019)" -p ${unique_voter_history} > history_offyears10.csv
+   ${csv}  -cleaninput -dots ${dots} -pattern election_date "(11/../2020)" -p ${unique_voter_history} > history_2020.csv
+   ${csv}  -cleaninput -dots  ${dots} -pattern election_date "(11/../2019)" -p ${unique_voter_history} > history_2019.csv      
+   ${csv}  -cleaninput -dots  ${dots} -pattern election_date "(11/../2015|11/../2017|11/../2019)" -p ${unique_voter_history} > history_offyears3.csv   
 }
 
 
 do_counts() {
     echo "making off year count"
     cols=VOTER_ID,count
-    ${csv}   -countunique voter_id -columns ${cols} -set 1 0 "Voted in 2020" -p history_2020.csv   >tmp.csv
-    ${csv}   -change voted_in_2020 1 true  -p tmp.csv   >count_2020.csv
-    ${csv}   -countunique voter_id -columns ${cols} -set 1 0 "Voted in 2019" -p history_2019.csv   >tmp.csv
-    ${csv}   -change voted_in_2019 1 true  -p tmp.csv   >count_2019.csv    
-    ${csv}   -countunique voter_id -columns ${cols} -set 1 0 "Last 3 offyear elections" -p history_offyears3.csv   >count_offyears3.csv
-    ${csv}   -countunique voter_id -columns ${cols} -set 1 0 "Last 10 offyear elections" -p history_offyears10.csv   >count_offyears10.csv
+    ${csv} -cleaninput -dots   -countunique voter_id -columns ${cols} -set 1 0 "Voted in 2020" -p history_2020.csv   >tmp.csv
+    ${csv}  -cleaninput -dots  -change voted_in_2020 1 true  -p tmp.csv   >count_2020.csv
+    ${csv}  -cleaninput -dots  -countunique voter_id -columns ${cols} -set 1 0 "Voted in 2019" -p history_2019.csv   >tmp.csv
+    ${csv}  -cleaninput -dots  -change voted_in_2019 1 true  -p tmp.csv   >count_2019.csv    
+    ${csv}  -cleaninput -dots  -countunique voter_id -columns ${cols} -set 1 0 "Last 3 offyear elections" -p history_offyears3.csv   >count_offyears3.csv
+    ${csv}  -cleaninput -dots  -countunique voter_id -columns ${cols} -set 1 0 "Last 10 offyear elections" -p history_offyears10.csv   >count_offyears10.csv
     echo "making all count"
-    ${csv}   -countunique voter_id -columns ${cols} -set 1 0 "All elections" -p ${unique_voter_history}  >count_all.csv
+    ${csv} -cleaninput -dots   -countunique voter_id -columns ${cols} -set 1 0 "All elections" -p ${unique_voter_history}  >count_all.csv
 #    echo "making municipal count"
 #    ${csv} -pattern election_type Municipal  -countunique voter_id -columns ${cols} -set 1 0 "Municipal elections"  -p ${unique_voter_history}  >count_municipal.csv
     echo "making primary count"
-    ${csv} -pattern election_type Primary  -countunique voter_id -columns ${cols} -set 1 0 "Primary elections"  -p ${unique_voter_history} >count_primary.csv
+    ${csv} -cleaninput -dots -pattern election_type Primary  -countunique voter_id -columns ${cols} -set 1 0 "Primary elections"  -p ${unique_voter_history} >count_primary.csv
 }
 
 #do_counts
@@ -136,7 +139,7 @@ do_demographics() {
     echo "cleaning up the demographics"
 #	-rand latitude 39.983 40.042  -rand longitude -105.303 -105.216 \
 #	-notcolumns latitude,longitude \
-    ${csv}  \
+    ${csv}  -cleaninput -dots ${dots} \
 	-notcolumns "regex:(?i).*veteran.*" \
 	-between latitude 39.955 40.1 \
 	-between longitude -105.3777 -105.155 \
@@ -288,24 +291,24 @@ do_joins() {
     cp ${infile} working.csv
     ${csv} -join precinct_name precinct_turnout_2019 ${datadir}/precincts_turnout.csv precinct 0 -p working.csv > tmp.csv
     mv tmp.csv working.csv
-    ${csv} -join 0 voted_in_2021 voted_in_2021.csv voter_id false   -dots ${dots} -p working.csv > tmp.csv
+    ${csv} -join 0 voted_in_2021 voted_in_2021.csv voter_id false    -cleaninput -dots  ${dots} -p working.csv > tmp.csv
     mv tmp.csv working.csv
-    ${csv} -join 0 1 count_2020.csv voter_id false   -dots ${dots} -p working.csv > tmp.csv
+    ${csv} -join 0 1 count_2020.csv voter_id false    -cleaninput -dots  ${dots} -p working.csv > tmp.csv
     mv tmp.csv working.csv
-    ${csv} -join 0 1 count_2019.csv voter_id false   -dots ${dots} -p working.csv > tmp.csv
+    ${csv} -join 0 1 count_2019.csv voter_id false    -cleaninput -dots  ${dots} -p working.csv > tmp.csv
     mv tmp.csv working.csv    
-    ${csv} -join 0 1 count_offyears3.csv voter_id 0   -dots ${dots} -p working.csv > tmp.csv
+    ${csv} -join 0 1 count_offyears3.csv voter_id 0    -cleaninput -dots  ${dots} -p working.csv > tmp.csv
     mv tmp.csv working.csv
-    ${csv} -join 0 1 count_offyears10.csv voter_id 0   -dots ${dots} -p working.csv > tmp.csv
+    ${csv} -join 0 1 count_offyears10.csv voter_id 0    -cleaninput -dots  ${dots} -p working.csv > tmp.csv
     mv tmp.csv working.csv
-    ${csv} -join 0 1  count_all.csv voter_id 0   -dots ${dots} -p working.csv > tmp.csv
+    ${csv} -join 0 1  count_all.csv voter_id 0    -cleaninput  -cleaninput -dots  ${dots} -p working.csv > tmp.csv
     mv tmp.csv working.csv
-    ${csv} -join 0 1 count_primary.csv voter_id 0   -dots ${dots} -p working.csv > tmp.csv
+    ${csv} -join 0 1 count_primary.csv voter_id 0   -cleaninput   -cleaninput -dots  ${dots} -p working.csv > tmp.csv
     mv tmp.csv working.csv    
-#    ${csv} -join 0 1 count_municipal.csv voter_id 0   -dots ${dots} -p working.csv > tmp.csv
+#    ${csv} -join 0 1 count_municipal.csv voter_id 0   -cleaninput   -cleaninput -dots  ${dots} -p working.csv > tmp.csv
 #    mv tmp.csv working.csv
 #join the precincts
-    ${csv} -join 0 1 ${precincts} precinct  "" -dots ${dots} -p working.csv > tmp.csv
+    ${csv} -join 0 1 ${precincts} precinct  ""  -cleaninput   -cleaninput -dots  ${dots} -p working.csv > tmp.csv
     mv tmp.csv working.csv
 #join the  demographics
 
@@ -329,7 +332,7 @@ do_joins() {
 
 do_join_demographics() {
     echo "doing demographics join"
-    ${csv} -join address "*" voters_geocode_trim.csv res_address_trim "0"  -dots ${dots} -p $1 > $2
+    ${csv} -cleaninput -dots ${dots} -join address "*" voters_geocode_trim.csv res_address_trim "0"    -p $1 > $2
 }
 
 #do_joins
@@ -418,7 +421,7 @@ do_release() {
 }
 
 #do_db
-do_release
-exit
+#do_release
+#exit
 
 do_all
