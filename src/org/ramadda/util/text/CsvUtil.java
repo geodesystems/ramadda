@@ -29,6 +29,7 @@ import org.ramadda.util.Utils;
 import org.ramadda.util.XlsUtil;
 
 
+import org.apache.commons.io.input.BOMInputStream;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 
@@ -132,6 +133,8 @@ public class CsvUtil {
 
 
     private boolean hasSink = false;
+
+    private boolean inputIsBom = false;
 
 
     /**
@@ -578,6 +581,12 @@ public class CsvUtil {
                 continue;
             }
 
+            if (arg.equals("-bom")) {
+                inputIsBom = true;
+                continue;
+            }
+
+
             if (arg.equals("-raw")) {
                 doRaw = true;
 
@@ -794,6 +803,13 @@ public class CsvUtil {
     }
 
 
+    private InputStream wrapInputStream(InputStream is) {
+	if(inputIsBom) {
+	    return new BOMInputStream(is);
+	}
+	return is;
+    }
+
     /**
      * _more_
      *
@@ -811,13 +827,13 @@ public class CsvUtil {
         ArrayList<NamedInputStream> streams =
             new ArrayList<NamedInputStream>();
         for (String file : files) {
-            streams.add(new NamedInputStream(file, makeInputStream(file)));
+            streams.add(new NamedInputStream(file, wrapInputStream(makeInputStream(file))));
         }
         if (inputStream != null) {
-            streams.add(new NamedInputStream("input", inputStream));
+            streams.add(new NamedInputStream("input", wrapInputStream(inputStream)));
         }
         if (streams.size() == 0) {
-            streams.add(new NamedInputStream("stdin", System.in));
+            streams.add(new NamedInputStream("stdin", wrapInputStream(System.in)));
         }
         return streams;
     }
@@ -1444,7 +1460,9 @@ public class CsvUtil {
         new Cmd("-widths", "Columns are fixed widths",
                 new Arg("widths", "w1,w2,...,wN")),
         new Cmd("-quotesnotspecial", "Don't treat quotes as special characters"),
-        new Cmd("-cleaninput", "Input is one text line per row. i.e., no new lines in a data row"),	
+        new Cmd("-cleaninput", "Input is one text line per row. i.e., no new lines in a data row"),
+        new Cmd("-bom", "Input has a leading byte order mark (BOM) that should be stripped out"),		
+
         new Cmd("-header", "Raw header",
                 new Arg("header", "Column names", "type", "list")),
         new Cmd("-htmltable", "Parse the table in the input html file",
