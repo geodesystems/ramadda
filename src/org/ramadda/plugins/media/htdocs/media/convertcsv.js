@@ -197,9 +197,7 @@ function  ConvertForm(inputId, entry) {
 		    this.commands.forEach(cmd=>{
 			let command = cmd.command;
 			if(cmd.isCategory) {
-			    console.dir(cmd);
 			    category = cmd.label;
-			    
 			    docs+="etlcat {" + category+"}\n";
 
 			    categories[category] = menuItems = [];
