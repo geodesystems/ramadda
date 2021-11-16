@@ -250,7 +250,7 @@ public class TextReader implements Cloneable {
     /** _more_ */
     public boolean verbose = false;
 
-
+    public boolean cleanInput = false;
 
     /**
      * _more_
@@ -284,6 +284,13 @@ public class TextReader implements Cloneable {
 
 
     /**
+      * @return _more_
+     */
+    public String toString() {
+        return "TextReader input:" + this.input;
+    }
+
+    /**
      *
      * @param tok _more_
      *
@@ -304,6 +311,7 @@ public class TextReader implements Cloneable {
     }
 
 
+
     /**
      *
      * @param csvUtil _more_
@@ -317,9 +325,14 @@ public class TextReader implements Cloneable {
         if (firstProcessor != null) {
             row = firstProcessor.handleRow(this, row);
         } else {
-            getWriter().println(csvUtil.columnsToString(row.getValues(),
-                    getOutputDelimiter()));
-            getWriter().flush();
+	    /* for now don't print out to csv - need to use -p
+	       if(cnt==1) System.err.println("using csvtil.columnsToString");
+	    Appendable pw = getWriter();
+            pw.append(csvUtil.columnsToString(row.getValues(),
+					      getOutputDelimiter()));
+	    pw.append("\n");
+	    //            getWriter().flush();
+	    */
         }
 
         return row;
@@ -721,6 +734,7 @@ public class TextReader implements Cloneable {
                               OutputStream output)
             throws CloneNotSupportedException {
         TextReader that = (TextReader) super.clone();
+	that.cleanInput = this.cleanInput;
         that.debug      = this.debug;
         that.input      = input;
         that.output     = output;
@@ -826,6 +840,10 @@ public class TextReader implements Cloneable {
     }
 
 
+    public void setCleanInput(boolean clean) {
+	this.cleanInput = clean;
+    }
+
     /**
      * _more_
      *
@@ -927,6 +945,7 @@ public class TextReader implements Cloneable {
         if (c == UNDEF) {
             hasInput = false;
         }
+
         return c;
     }
 
@@ -945,7 +964,7 @@ public class TextReader implements Cloneable {
                 c = prependReader.read();
                 if (c == -1) {
                     this.prependReader = null;
-                    c   = getReader().read();
+                    c                  = getReader().read();
                 }
             } else {
                 while (pruneBytes > 0) {
@@ -997,6 +1016,20 @@ public class TextReader implements Cloneable {
         if ( !hasInput) {
             return null;
         }
+
+	if(cleanInput) {
+            if (prependReader != null) {
+                String line =  prependReader.readLine();
+		if(line==null) {
+		    prependReader = null;
+		} else {
+		    return line;
+		}
+	    }
+	    return  getReader().readLine();
+	}
+
+
         lb.setLength(0);
         int           c;
         boolean       inQuote = false;
@@ -1022,6 +1055,7 @@ public class TextReader implements Cloneable {
                 if (result.length() == 0) {
                     return null;
                 }
+
                 return result;
             }
 
@@ -1052,13 +1086,14 @@ public class TextReader implements Cloneable {
                             inQuote  = false;
                             nextChar = UNDEF;
                             ok       = false;
+
                             break;
                         }
                     }
                     if ( !ok) {
                         continue;
                     }
-		}
+                }
                 if ( !inQuote) {
                     break;
                 }
@@ -1077,9 +1112,10 @@ public class TextReader implements Cloneable {
                     if (nextChar == NEWLINE) {
                         nextChar = UNDEF;
                     }
+
                     break;
                 }
-            } 
+            }
             lb.append((char) c);
             if (debug) {
                 sb.append("\tchar:" + (char) c + "  inQuote: " + inQuote);
@@ -1111,6 +1147,7 @@ public class TextReader implements Cloneable {
                             if (debug) {
                                 sb.append("\tnew line:" + inQuote + "\n");
                             }
+
                             break;
                         }
                         if (nextChar == CARRIAGE_RETURN) {
@@ -1121,12 +1158,14 @@ public class TextReader implements Cloneable {
                             if (nextChar == NEWLINE) {
                                 nextChar = UNDEF;
                             }
+
                             break;
                         }
                     }
                     if (nextChar != UNDEF) {
                         if (debug) {
-                            sb.append("\tnext char:" + (char) nextChar+ "\n");
+                            sb.append("\tnext char:" + (char) nextChar
+                                      + "\n");
                         }
                         lb.append((char) nextChar);
                     }
@@ -1137,7 +1176,9 @@ public class TextReader implements Cloneable {
         if (debug) {
             System.out.println(sb);
         }
-        return  lb.toString();
+
+        return lb.toString();
+
     }
 
     /**
@@ -1251,7 +1292,9 @@ public class TextReader implements Cloneable {
     public PrintWriter getWriter() {
         try {
             if (writer == null) {
-                writer = new PrintWriter(this.getOutput());
+		OutputStream os = this.getOutput();
+		//		System.err.println("bos");
+		writer = new PrintWriter(os);
                 if (getDebug()) {
                     if (debugSB.length() > 0) {
                         writer.print(debugSB);
@@ -1509,8 +1552,12 @@ public class TextReader implements Cloneable {
     }
 
 
+    /**
+     *
+     * @param channel _more_
+     */
     public void setInputChannel(NamedChannel channel) {
-	this.inputChannel = channel;
+        this.inputChannel = channel;
     }
 
     /**
@@ -1902,40 +1949,51 @@ public class TextReader implements Cloneable {
         return positionStart;
     }
 
+    /**
+     *
+     * @param args _more_
+     *
+     * @throws Exception _more_
+     */
     public static void main(String[] args) throws Exception {
-	for(int i=0;i<5;i++) {
-	    TextReader textReader = new TextReader();
-	    InputStream fis = new FileInputStream(args[0]);
-	    ReadableByteChannel channel = Channels.newChannel(fis);
-	    textReader.inputChannel = 	new NamedChannel(args[0], channel);
-	    //	    textReader.setReader(new BufferedReader(new InputStreamReader(fis)));
-	    long t1  = System.currentTimeMillis();
-	    int cnt = 0;
-	    while(true) {
-		String line = textReader.readLine();
-		if(line==null) break;
-		cnt++;
-	    }
-	    long t2  = System.currentTimeMillis();
-	    System.err.println("cnt:"+cnt+" time:" + (t2-t1));
-	}
-	System.err.println("reader");
-	for(int i=0;i<5;i++) {
-	    InputStream fis = new FileInputStream(args[0]);
-	    BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
-	    long t1  = System.currentTimeMillis();
-	    int cnt = 0;
-	    while(true) {
-		if(reader.readLine()==null) break;
-		cnt++;
-	    }
-	    long t2  = System.currentTimeMillis();
-	    System.err.println("cnt:"+cnt+" time:" + (t2-t1));
-	}
+        for (int i = 0; i < 5; i++) {
+            TextReader          textReader = new TextReader();
+            InputStream         fis        = new FileInputStream(args[0]);
+            ReadableByteChannel channel    = Channels.newChannel(fis);
+            textReader.inputChannel = new NamedChannel(args[0], channel);
+            //      textReader.setReader(new BufferedReader(new InputStreamReader(fis)));
+            long t1  = System.currentTimeMillis();
+            int  cnt = 0;
+            while (true) {
+                String line = textReader.readLine();
+                if (line == null) {
+                    break;
+                }
+                cnt++;
+            }
+            long t2 = System.currentTimeMillis();
+            System.err.println("cnt:" + cnt + " time:" + (t2 - t1));
+        }
+        System.err.println("reader");
+        for (int i = 0; i < 5; i++) {
+            InputStream fis = new FileInputStream(args[0]);
+            BufferedReader reader =
+                new BufferedReader(new InputStreamReader(fis));
+            long t1  = System.currentTimeMillis();
+            int  cnt = 0;
+            while (true) {
+                if (reader.readLine() == null) {
+                    break;
+                }
+                cnt++;
+            }
+            long t2 = System.currentTimeMillis();
+            System.err.println("cnt:" + cnt + " time:" + (t2 - t1));
+        }
 
 
 
-	System.exit(0);
+        System.exit(0);
     }
 
 
