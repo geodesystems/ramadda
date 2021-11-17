@@ -5734,11 +5734,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     uniqueNames.add(column.getName());
                 }
             }
+	    /*
             if (isPostgres && (uniqueCols != null)) {
                 colNames.add(0, "distinct(concat("
                              + Utils.join(uniqueNames, ",") + "))");
             }
-        }
+	    */
+	}
+
 
         Statement stmt = null;
         extra += limitString;
@@ -5773,8 +5776,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
         HashSet seenValue = new HashSet();
-        //      System.err.println("Uniques:" + uniqueCols);
-
         try {
             SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
             ResultSet        results;
@@ -5819,32 +5820,35 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     if (values == null) {
                         values = tableHandler.makeEntryValueArray();
                     }
-                    if (isPostgres && (uniqueCols != null)) {
+                    /**
+		       if (isPostgres && (uniqueCols != null)) {
                         //If we are running on postgres and one or more unique columns was selected
                         //then there is a distinct(concat(...)) column to start so we bump up the valueIdx here
                         valueIdx++;
                     }
+		    */
                     for (Column column : selectedColumns) {
                         valueIdx = column.readValues(myEntry, results,
                                 values, valueIdx);
-                    }
+		    }
+		    if ( !isPostgres && (uniqueCols != null)) {
+			String key = "";
+			for (Column c : uniqueCols) {
+			    Object o = c.getObject(values);
+			    key = key + "_" + o;
+			}
+			if (seenValue.contains(key)) {
+			    continue;
+			}
+			seenValue.add(key);
+		    }
+
                     if (pw != null) {
                         pw.println(
                             Utils.encodeBase64(xmlEncoder.toXml(values)));
                     } else if (iterator != null) {
                         iterator.processRow(request, values);
                     } else {
-                        if ( !isPostgres && (uniqueCols != null)) {
-                            String key = "";
-                            for (Column c : uniqueCols) {
-                                Object o = c.getObject(values);
-                                key = key + "_" + o;
-                            }
-                            if (seenValue.contains(key)) {
-                                continue;
-                            }
-                            seenValue.add(key);
-                        }
                         result.add(values);
                         values = null;
                     }

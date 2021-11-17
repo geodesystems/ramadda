@@ -168,7 +168,6 @@ public abstract class ValueIterator implements DbConstants {
     private String viewHeaderId;
     public void addViewHeader(Request request, Entry entry, String view,  String extraLinks) throws Exception {
 	Appendable sb       = getBuffer();
-	System.err.println("addViewHeader:" + embedded);
 	if (embedded) {
 	    db.addStyleSheet(sb);
 	} else {
