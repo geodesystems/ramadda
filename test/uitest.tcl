@@ -166,6 +166,12 @@ proc capture {_group name url {doDisplays 1} {sleep 3}} {
 	    if {[regexp {allowed to display insecure content from} $line]} {
 		continue;
 	    }
+	    if {[regexp {Multiple instances of Three} $line]} {
+		continue;
+	    }
+	    if {[regexp {The input spec uses Vega} $line]} {
+		continue;
+	    }	    	    
 	    set ignore 0
 	    break;
 	}
