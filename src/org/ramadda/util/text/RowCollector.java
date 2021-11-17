@@ -1431,9 +1431,9 @@ public class RowCollector extends Processor {
                         if (matched) {
                             row.set(i, kv2.value);
                             if ( !kv1.value.equals(kv2.value)) {
-                                System.err.println("match:k1:" + kv1.key
-						   + " k2:" + kv2.key + " v:"
-						   + kv1.value + " v2:" + kv2.value);
+                                //System.err.println("match:k1:" + kv1.key
+				//						   + " k2:" + kv2.key + " v:"
+				//						   + kv1.value + " v2:" + kv2.value);
                             }
                             kv1.value   = kv2.value;
                             kv1.key     = cleanName(kv1.value);

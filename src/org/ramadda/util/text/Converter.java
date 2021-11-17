@@ -2186,8 +2186,8 @@ public abstract class Converter extends Processor {
                         String s  = row.getString(index).trim();
                         String os = s;
                         if (isRegex) {
+			    String before =s;
                             s = s.replaceAll(pattern, value);
-                            //                  System.err.println(value);
                         } else {
                             s = s.replaceAll(pattern, value);
                         }
