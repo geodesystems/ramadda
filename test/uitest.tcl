@@ -28,8 +28,8 @@ proc finish {} {
     write  "</div></body></html>"
 }
 
-proc getTop {} {
-    set top  "<html><title>Test Results</title><head>\n<script  type='text/JavaScript'>\n"
+proc getTop {{title {Test Results}}} {
+    set top  "<html><title>$title</title><head>\n<script  type='text/JavaScript'>\n"
     append top {
 	var errorCnt = 0;
 	function doError(name,prefix) {
@@ -96,7 +96,7 @@ proc write {html {inError 0}} {
     if {$inError} {
 	if {!$::haveWrittenError} {
 	    set fp [open errors.html w]
-	    puts $fp [getTop]
+	    puts $fp [getTop "Test Errors"]
 	    close $fp
 	    set ::haveWrittenError 1
 	}
@@ -172,31 +172,38 @@ proc capture {_group name url {doDisplays 1} {sleep 3}} {
     set extra ""
     set inError 0
     if {[file exists $consoleFile]} {
-	set inError 1
 	set fp [open $consoleFile r]
 	set c [read $fp]
 	close $fp
-	set ignore 1
+	set lines ""
+	set debug [regexp {Submarine} $consoleFile]
+	set debug 0
 	foreach line [split $c "\n"] {
 	    set line [string trim $line]
 	    if {$line==""} continue;
+	    if {$debug} {puts stderr "Line: $line"}
 	    if {[regexp {allowed to display insecure content from} $line]} {
 		continue;
 	    }
-	    if {[regexp {Multiple instances of Three} $line]} {
+	    if {[regexp -nocase {multiple instances of three} $line]} {
+		if {$debug} {puts stderr "SKIPPING : $line"}
 		continue;
+	    } else {
+		if {$debug} {puts stderr "NO SKIP Line: $line"}
 	    }
 	    if {[regexp {The input spec uses Vega} $line]} {
 		continue;
 	    }	    	    
-	    set ignore 0
+	    append lines "$line\n";
 	    break;
 	}
-	if {!$ignore} {
-	    regsub -all {<} $c {&lt;} c
-	    regsub -all {>} $c {&gt;} c	
+	if {$lines!=""} {
+	    set inError 1
+	    if {$debug} {puts stderr "Lines:$lines"}
+	    regsub -all {<} $lines {&lt;} lines
+	    regsub -all {>} $lines {&gt;} lines	
 	    incr ::consoleCnt
-	    set extra "<br><div style='border:1px solid #efefef;background:#FEAFAF;max-width:100%;'>$c</div>"
+	    set extra "<br><div style='border:1px solid #efefef;background:#FEAFAF;max-width:100%;'>$lines</div>"
 	    append extra "\n<script  type='text/JavaScript'>doError('$name');</script>\n"
 	}
     }
