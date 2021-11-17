@@ -5,6 +5,40 @@ bins="18,25,35,45,55,65,75"
 
 
 
+<<comment
+comment
+
+year=2017
+
+make_age_histogram () {
+    year="$1"
+
+    ${csv} -cleaninput -dots ${dots} \
+	   -insert "" voted 0 \
+	   -if -notpattern voted_date "" -setcol "" "" voted 1 -endif \
+	   -histogram age "${bins}"  "voted" "sum" \
+	   -insert 0  year $year \
+	   -func "Turnout" "100*(_voted_sum)/_count" \
+	   -decimals turnout 1 \
+	   -p voting_report_${year}.csv > voted_${year}.csv
+
+
+    ${csv} -cleaninput -dots ${dots} \
+	   -notpattern voted_date "" \
+	   -summary "count,avg" voted_date age "" \
+	   -gt count 20 \
+	   -sort voted_date \
+	   -notpattern voted_date 2017-11-17 \
+	   -addheader "voted_date.type date voted_date.format yyyy-MM-dd" \
+	   -p voting_report_${year}.csv > boulder_voting_${year}_histogram.csv
+
+    ${csv} -cleaninput -dots ${dots} \
+	   -notpattern voted_date "" \
+	   -histogram age "${bins}"  "" "" \
+	   -addheader "" \
+	   -p voting_report_${year}.csv > boulder_voting_${year}_age_histogram.csv
+}    
+
 do_histogram() {
 #    fetch_voting_report
     year=2017
@@ -15,7 +49,6 @@ do_histogram() {
 	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" ".*SEP.*" \
 	   -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "," "voted_date" \
 	   -change voted_date "," "" \
-	   -notpattern voted_date "" \
 	   -change voted_date "-17$" "-2017" \
 	   -change voted_date "OCT" "10" \
 	   -change voted_date "NOV" "11" \
@@ -26,18 +59,7 @@ do_histogram() {
 	   -p ${datadir}/ce-068-${year}.txt.zip > voting_report_${year}.csv
 
 
-    ${csv} -cleaninput -dots ${dots} \
-	   -summary "count,avg" voted_date age "" \
-	   -gt count 20 \
-	   -sort voted_date \
-	   -notpattern voted_date 2017-11-17 \
-	   -addheader "voted_date.type date voted_date.format yyyy-MM-dd" \
-	   -p voting_report_${year}.csv > boulder_voting_${year}_histogram.csv
-
-    ${csv} -cleaninput -dots ${dots} \
-	   -histogram age "${bins}" \
-	   -addheader "" \
-	   -p voting_report_${year}.csv > boulder_voting_${year}_age_histogram.csv
+    make_age_histogram $year
 
     year=2019
     echo "doing ${year} histogram"
@@ -47,7 +69,6 @@ do_histogram() {
 	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" ".*SEP.*" \
 	   -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "," "voted_date" \
 	   -change voted_date "," "" \
-	   -notpattern voted_date "" \
 	   -change voted_date "-19" "-2019" \
 	   -change voted_date "OCT" "10" \
 	   -change voted_date "NOV" "11" \
@@ -56,19 +77,7 @@ do_histogram() {
 	   -func age "${year}-_yob" \
 	   -p ${datadir}/ce-068-${year}.txt.zip >voting_report_${year}.csv
 
-    ${csv} -cleaninput -dots ${dots} \
-	   -summary "count,avg" voted_date age "" \
-	   -decimals age_avg 1\
-	   -gt count 20 \
-	   -sort voted_date \
-	   -addheader "voted_date.type date voted_date.format yyyy-MM-dd" \
-	   -p voting_report_${year}.csv > boulder_voting_${year}_histogram.csv
-
-    ${csv} -cleaninput -dots ${dots} \
-	   -histogram age "${bins}" \
-	   -addheader "" \
-	   -p voting_report_${year}.csv > boulder_voting_${year}_age_histogram.csv
-
+    make_age_histogram $year
 
     year=2020
     echo "doing ${year} histograms"
@@ -76,23 +85,11 @@ do_histogram() {
 	   -ifin voter_id voters_boulder.csv  voter_id  \
 	   -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "," "voted_date" \
 	   -change voted_date "," "" \
-	   -notpattern voted_date "" \
 	   -change voted_date "(..)/(..)/(....)" "\$3-\$1-\$2" \
 	   -func age "${year}-_yob" \
 	   -p ${datadir}/ce-068-${year}.txt.zip > voting_report_${year}.csv
 
-    ${csv} -cleaninput -dots ${dots} \
-	   -summary "count,avg" voted_date age "" \
-	   -gt count 20 \
-	   -sort voted_date \
-	   -addheader "voted_date.type date voted_date.format yyyy-MM-dd" \
-	   -p voting_report_${year}.csv > boulder_voting_${year}_histogram.csv
-
-    ${csv} -cleaninput -dots ${dots} \
-	   -histogram age "${bins}" \
-	   -addheader "" \
-	   -p voting_report_${year}.csv > boulder_voting_${year}_age_histogram.csv
-
+    make_age_histogram $year
 
     year=2021
     echo "doing ${year} histograms"
@@ -102,7 +99,6 @@ do_histogram() {
 	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" ".*SEP.*" \
 	   -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "," "voted_date" \
 	   -change voted_date "," "" \
-	   -notpattern voted_date "" \
 	   -change voted_date "-19" "-2019" \
 	   -change voted_date "OCT" "10" \
 	   -change voted_date "NOV" "11" \
@@ -111,18 +107,8 @@ do_histogram() {
 	   -func age "${year}-_yob" \
 	   -p ${datadir}/ce-068-${year}.txt.zip > voting_report_${year}.csv
 
-    ${csv} -cleaninput -dots ${dots} \
-	   -summary "count,avg" voted_date age "" \
-	   -decimals age_avg 1\
-	   -gt count 20 \
-	   -sort voted_date \
-	   -addheader "voted_date.type date voted_date.format yyyy-MM-dd" \
-	   -p voting_report_${year}.csv > boulder_voting_${year}_histogram.csv
+    make_age_histogram $year
 
-    ${csv} -cleaninput -dots ${dots} \
-	   -histogram age "${bins}" \
-	   -addheader "" \
-	   -p voting_report_${year}.csv > boulder_voting_${year}_age_histogram.csv
 
     ${csv}  -cleaninput -dots ${dots} \
 	   -summary "count" precinct "" "voted_date" \
@@ -130,10 +116,6 @@ do_histogram() {
 	   -sort voted_date \
 	   -addheader "voted_date.type date voted_date.format yyyy-MM-dd" \
 	   -p voting_report_${year}.csv > boulder_voting_${year}_map.csv
-
-
-
-
 
     ${csv} -deheader boulder_voting_2017_age_histogram.csv -p > tmp2017.csv
     ${csv} -deheader boulder_voting_2019_age_histogram.csv -p > tmp2019.csv
@@ -153,7 +135,7 @@ do_histogram() {
 	   -pattern status Active \
 	   -columns yob \
 	   -func age "2021-_yob" \
-	   -histogram age "${bins}" \
+	   -histogram age "${bins}"  "" "" \
 	   -set 1 0 "Total voters" \
 	   -join age_range count tmp2021.csv  age_range 0 \
 	   -set 3 0 "2021 Votes" \
@@ -176,5 +158,17 @@ do_histogram() {
 
 }
 
+do_turnout() {
+    cat  voted_2017.csv > tmp.csv
+    tail -n+2 voted_2019.csv >> tmp.csv
+    tail -n+2 voted_2020.csv >> tmp.csv
+    tail -n+2 voted_2021.csv >> tmp.csv
+
+    ${csv} -makefields age_range turnout year "" -addheader "year.type string year.format yyyy" -p tmp.csv >boulder_voting_turnout.csv
+
+    stage_local boulder_voting_turnout.csv
+}    
+
 
 do_histogram
+do_turnout
