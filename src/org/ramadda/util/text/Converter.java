@@ -6742,16 +6742,18 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
-                return row;
-            }
-            if (patternCol == -1) {
                 patternCol = getIndex(ctx, spatternCol);
                 writeCol   = getIndex(ctx, swriteCol);
+                return row;
             }
-            String v = row.get(patternCol).toString();
-            if (v.matches(pattern) || (v.indexOf(pattern) >= 0)) {
-                row.set(writeCol, what);
-            }
+	    if(patternCol==-1) {
+		row.set(writeCol, what);
+	    } else {
+		String v = row.get(patternCol).toString();
+		if (v.matches(pattern) || (v.indexOf(pattern) >= 0)) {
+		    row.set(writeCol, what);
+		}
+	    }
 
             return row;
 

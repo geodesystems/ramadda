@@ -257,13 +257,13 @@ public class RowCollector extends Processor {
                            String op) {
             super(keys);
             this.opLabel = op;
-            if (op.equals("sum")) {
+            if (op.equals(OPERAND_SUM)) {
                 this.op = OP_SUM;
-            } else if (op.equals("average")) {
+            } else if (op.equals(OPERAND_AVERAGE)) {
                 this.op = OP_AVERAGE;
-            } else if (op.equals("min")) {
+            } else if (op.equals(OPERAND_MIN)) {
                 this.op = OP_MIN;
-            } else if (op.equals("max")) {
+            } else if (op.equals(OPERAND_MAX)) {
                 this.op = OP_MAX;
             } else if (op.equals("count")) {
                 this.op = OP_COUNT;
@@ -2673,11 +2673,11 @@ public class RowCollector extends Processor {
                         sum += v;
                     }
 		    for(String w: what) {
-			if(w.equals("sum")) {
+			if(w.equals(OPERAND_SUM)) {
 			    newRow.add(new Double(sum));
- 			} else if(w.equals("min")) {
+ 			} else if(w.equals(OPERAND_MIN)) {
 			    newRow.add(new Double(min));
- 			} else if(w.equals("max")) {
+ 			} else if(w.equals(OPERAND_MAX)) {
 			    newRow.add(new Double(max));
  			} else if(w.equals("avg")) {
 			    newRow.add(new Double(sum/rowGroup.size()));
@@ -2707,26 +2707,76 @@ public class RowCollector extends Processor {
      */
     public static class Histogram extends RowCollector {
 
-	List<Double> bins;
+	List<Bin> bins;
+	List<String> what;
+	String scolumn;
+	int column;
 
-	int[] counts;
+	private  class Bin {
+	    double min;
+	    double max;
+	    int count;
+	    double[]totals;
+	    double[]mins;
+	    double[]maxs; 	    	    
 
+	    Bin(double min,double max) {this.min = min;this.max = max;}
+	    public boolean firstBin() {
+		return (min==Double.NEGATIVE_INFINITY);
+	    }
+
+	    public boolean inRange(double v) {
+		if(firstBin()) {
+		    return v<max;
+		}
+		return v>=min && v<=max;
+	    }
+	    public void addValues(List<Integer> indices, Row row) {
+		count++;
+		if(indices.size()==0) return;
+		if(totals==null)  {
+		    totals = new double[indices.size()];
+		    for(int i=0;i<totals.length;i++) totals[i]=0;
+		    mins = new double[indices.size()];
+		    for(int i=0;i<mins.length;i++) mins[i]=Double.POSITIVE_INFINITY;
+		    maxs = new double[indices.size()];
+		    for(int i=0;i<maxs.length;i++) maxs[i]=Double.NEGATIVE_INFINITY;	    
+		}
+		for(int i=0;i<indices.size();i++) {
+		    double v = Double.parseDouble(row.getString(indices.get(i)));
+		    if(Double.isNaN(v)) continue;
+		    totals[i]+=v;
+		    mins[i] =Math.min(v,mins[i]);
+		    maxs[i] =Math.max(v,maxs[i]);		    
+		}
+	    }
+
+	    public String getLabel() {
+		if(min==Double.NEGATIVE_INFINITY)
+		    return "<" + Utils.format(max);
+		if(max==Double.POSITIVE_INFINITY)
+		    return ">" + Utils.format(min);		
+		return Utils.format(min) +" - " + Utils.format(max);		
+	    }
+	}
 
         /**
          * _more_
          *
          */
-        public Histogram(String column, String bins) {
-	    super(column);
-	    if(bins.equals("auto")) {
-	    } else {
-		this.bins = new ArrayList<Double>();
-		for(String tok: Utils.split(bins,",",true,true)) {
-		    this.bins.add(Double.parseDouble(tok));
-		}
-		counts = new int[this.bins.size()+2];
-		for(int i=0;i<counts.length;i++) counts[i] = 0;
+        public Histogram(String column, String bins,List<String> cols,String what) {
+	    super(cols);
+	    this.scolumn = column;
+	    this.what = Utils.split(what,",",true,true);
+	    if(cols.size()>0 && this.what.size()==0) this.what.add(OPERAND_SUM);
+	    this.bins = new ArrayList<Bin>();
+	    double prevValue = Double.NEGATIVE_INFINITY;
+	    for(String tok: Utils.split(bins,",",true,true)) {
+		double v = Double.parseDouble(tok);
+		this.bins.add(new Bin(prevValue,v));
+		prevValue =v;
 	    }
+	    this.bins.add(new Bin(prevValue,Double.POSITIVE_INFINITY));
         }
 
         /**
@@ -2742,7 +2792,8 @@ public class RowCollector extends Processor {
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
-	    int column = getIndex(ctx);
+	    int column = getIndex(ctx,scolumn);
+            List<Integer> indices   = getIndices(ctx);
             int          rowIndex = 0;
             List<Row>              allRows   = getRows(rows);
             Row                    headerRow = allRows.get(0);
@@ -2752,7 +2803,15 @@ public class RowCollector extends Processor {
             Row       newHeader = new Row();
 	    newHeader.add(headerRow.getString(column) +" range");
 	    newHeader.add("Count");
-	    newHeader.add("Percent");	    
+	    newHeader.add("Percent");
+
+	    for (int i: indices) {
+		String label = Utils.makeLabel(headerRow.getString(i));
+		for(String op: this.what) {
+		    newHeader.add(label +" " + op);
+		}
+	    }
+
 	    newRows.add(newHeader);
 	    final int total = allRows.size();
             Function<Integer,Integer> percent = (col) -> {
@@ -2763,43 +2822,40 @@ public class RowCollector extends Processor {
             for (Row row : allRows) {
                 List          values = row.getValues();
 		double value = Double.parseDouble(row.getString(column));
-		if(value<bins.get(0)) {
-		    counts[0]++;
-		} else 	if(value>bins.get(bins.size()-1)) {
-		    counts[counts.length-1]++;
-		} else {
-		    boolean didIt = false;
-		    for(int i=0;i<bins.size()-1;i++) {
-			if(value>=bins.get(i) && value<=bins.get(i+1)) {
-			    counts[i+1]++;
-			    didIt = true;
-			    break;
-			} 
+		for(Bin bin: bins) {
+		    if(bin.inRange(value)) {
+			bin.addValues(indices,row);
+			break;
 		    }
-		    if(!didIt) System.err.println("no range:" + value);
 		}
             }
-	    //18,25,30,35,40,45,50
-	    if(counts[0]>0) {
+
+	    for(Bin bin: bins) {
+		if(bin.firstBin() && bin.count==0) continue;
 		Row    row = new Row();
 		newRows.add(row);
-		row.add("<" + Utils.format(bins.get(0)));
-		row.add(counts[0]);
-		row.add(percent.apply(counts[0]));
-	    }
-	    for(int i=0;i<bins.size()-1;i++) {
-		Row    row = new Row();
-		newRows.add(row);
-		row.add(Utils.format(bins.get(i))+" - "+Utils.format(bins.get(i+1)));
-		row.add(counts[i+1]);
-		row.add(percent.apply(counts[i+1]));
-	    }
-	    if(counts[counts.length-1]>0) {
-		Row    row = new Row();
-		newRows.add(row);
-		row.add(">" + Utils.format(bins.get(bins.size()-1)));
-		row.add(counts[counts.length-1]);
-		row.add(percent.apply(counts[counts.length-1]));
+		row.add(bin.getLabel());
+		row.add(bin.count);
+		row.add(percent.apply(bin.count));
+
+		for (int i=0;i<indices.size();i++) {
+		    for(String op: this.what) {
+			if(op.equals(OPERAND_SUM)) row.add(bin.totals[i]);
+			else if(op.equals(OPERAND_MIN)) {
+			    row.add(bin.mins[i]==Double.POSITIVE_INFINITY?"NaN":Double.toString(bin.mins[i]));
+			} else if(op.equals(OPERAND_MAX)) {
+			    row.add(bin.maxs[i]==Double.NEGATIVE_INFINITY?"NaN":Double.toString(bin.maxs[i]));
+			} else if(op.equals(OPERAND_AVERAGE)) {
+			    if(bin.count==0) row.add("NaN");
+			    else row.add(bin.totals[i]/bin.count);
+			} else {
+			    fatal("Unknown histogram operator:"+ op);
+			}
+		    }
+		}
+
+
+
 	    }
 	    return newRows;
 	}

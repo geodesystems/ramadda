@@ -74,6 +74,12 @@ public class CsvOperator {
     /** _more_ */
     public static int OP_MATCH = 7;
 
+    public static final String OPERAND_SUM = "sum";
+    public static final String OPERAND_MIN = "min";
+    public static final String OPERAND_MAX = "max";
+    public static final String OPERAND_AVERAGE  ="average";
+
+
     /** _more_ */
     protected int rowCnt = 0;
 
@@ -637,9 +643,13 @@ public class CsvOperator {
         s = s.toLowerCase().trim();
 
         try {
-            if (toks.size() == 1) {
+	    if(toks.size()==0) {
+		//No columns
+		return;
+            } else if (toks.size() == 1) {
                 //not now               if(Utils.testAndSet(seen,s)) return;
                 start = end = Integer.parseInt(s);
+
             } else {
                 start = Integer.parseInt(toks.get(0));
                 end   = Integer.parseInt(toks.get(1));
@@ -675,6 +685,7 @@ public class CsvOperator {
 		    StringBuilder msg = new StringBuilder("");
                     for (Object key: Utils.getKeys(columnMap)) {
                         String skey = (String) key;
+			//			System.err.println("KEY:" + skey);
                         if (skey.length() == 0) {
                             continue;
                         }
@@ -799,8 +810,8 @@ public class CsvOperator {
         List<Integer> indices = new ArrayList<Integer>();
         getColumnIndex(ctx, indices, idx, new HashSet());
         if (indices.size() == 0) {
-            throw new IllegalArgumentException("Could not find column index:"
-                    + idx);
+	    return -1;
+	    //            throw new IllegalArgumentException("Could not find column index:" + idx);
 
         }
 

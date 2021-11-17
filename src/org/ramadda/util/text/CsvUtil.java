@@ -1518,7 +1518,7 @@ public class CsvUtil {
                         "number")),
         new Cmd("-deheader", "Strip off the RAMADDA point header"),
         new Cmd("-headernames", "Clean up names"),
-        new Cmd("-cat", "One or more csv files", "*.csv"),
+        new Cmd("-cat", "Concat the columns in one or more csv files", "*.csv"),
 
         /** *  Filter * */
         new Cmd(true, "Filter"),
@@ -1976,7 +1976,9 @@ public class CsvUtil {
 		"-histogram",
 		"Make a histogram with the given column and bins",
 		new Arg("column","The column","type","column"),
-		new Arg("bins","Comma separated set of bin values")),		
+		new Arg("bins","Comma separated set of bin values"),
+		new Arg("value columns","Extra columns to sum up","type","columns"),
+		new Arg("ops","ops to apply to extra columns - any of count,sum,avg,min,max")),		
         new Cmd("-percent", "", "columns to add"),
         new Cmd("-increase", "Calculate percent increase",
                 new Arg("column", "", "type", "columns"), "how far back"),
@@ -2701,8 +2703,8 @@ public class CsvUtil {
 		ctx.addProcessor(new RowCollector.Summary(what,keys, values, extra));
 		return i;
 	    });	
-	defineFunction("-histogram",2,(ctx,args,i) -> {
-		ctx.addProcessor(new RowCollector.Histogram(args.get(++i),args.get(++i)));
+	defineFunction("-histogram",4,(ctx,args,i) -> {
+		ctx.addProcessor(new RowCollector.Histogram(args.get(++i),args.get(++i),getCols(args.get(++i)),args.get(++i)));
 		return i;
 	    });	
 
