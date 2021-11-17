@@ -1333,10 +1333,10 @@ public class CsvUtil {
          */
         public Arg(String id, String desc, String... props) {
             if ((desc.length() == 0) && id.equals("columns")) {
-                desc = "Column indices.<br>Can include ranges, e.g. 0-5";
+                desc = "Column indices. Can include ranges, e.g. 0-5";
             }
             if ((desc.length() == 0) && id.equals("rows")) {
-                desc = "Row indices.<br>Can include ranges, e.g. 0-5";
+                desc = "Row indices. Can include ranges, e.g. 0-5";
             }
             this.id    = id;
             this.desc  = desc;
@@ -1760,7 +1760,7 @@ public class CsvUtil {
 		new Arg("end", "End index")),		
         /** *  Change values * */
         new Cmd(true, "Change"),
-        new Cmd("-change", "Change columns",
+        new Cmd("-change", "Change columns. Use file:file.txt in place of the pattern and no sub. string. file is of the form:<br>pattern::replace_string<br>e.g.:<br>(?i).*foo.*::foobar<br>",
                 new Arg("columns", "", "type", "columns"),
                 new Arg("pattern", "", "type", "pattern"),
                 new Arg("substitution string",
@@ -2196,7 +2196,6 @@ public class CsvUtil {
 
                 if (c.category) {
                     matchedCategory = ok;
-
                     continue;
                 } else {
                     ok = ok || matchedCategory;
@@ -2253,6 +2252,7 @@ public class CsvUtil {
                 if (c.category) {
                     pw.println(c.desc);
                 } else {
+		    cmd = cmd.replaceAll("<br>","\n");
                     pw.println(pad + cmd);
                 }
             }
