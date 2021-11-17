@@ -4,6 +4,11 @@ source ${mydir}/init.sh
 
 source=${datadir}/electionExpenditures.csv
 
+#${csv} -c full_name -u 0 -p expenditures_final.csv | sort -u > names.csv
+#exit
+
+
+
 
 wget -O ${source} --post-data="exportType=Expenditure&electionID=20&committeeID=-1&filingDateStart=&filingDateStop=&transactionDateStart=&transactionDateStop=" https://election.bouldercolorado.gov/electionExpenditures.php 
 
@@ -15,6 +20,7 @@ ${csv} -columns "committee,type,candidate,filingdate,amendeddate,officialfiling,
        -normal full_name \
        -change full_name "file:${mydir}/expenditure_patterns.txt" "" \
        -columnsafter committee "full_name,expenditure,purpose" \
+       -case full_name proper \
        -change "expenditure" "_dollar_" "" \
        -p ${source} > expenditures_final.csv
 
@@ -45,3 +51,6 @@ purpose.cansearch true  purpose.canlist true   \
 stage_local  expenditures_final.csv
 release_plugin  boulder_campaign_expendituresdb.xml
 
+
+${csv} -c full_name -u 0 -p expenditures_final.csv | sort -u > names.csv
+exit

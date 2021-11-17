@@ -2,4 +2,35 @@
 (?i)Pure Buttons::Purebuttons.com
 (?i)Google; LLC::Google
 (?i)Squarespace; Inc.::Square Space
-Amazon.com Services LLC::Amazon
+(?i)Amazon.com Services LLC::Amazon
+(?).*Prairie Mountain Publishing.*::Daily Camera
+(?i).*Prairie Mountain Media.*::Daily Camera
+(?i).*Prarie Mountain Media.*::Daily Camera
+(?i).*Medianews Group;.*::Daily Camera
+(?i)daily camera::Daily Camera
+(?i)Fed Ex Kinkos::Fedex Office
+(?i)Fed Ex Office Supply::Fedex Office
+(?i)Google INC.::Google
+(?i)Google Llc::Google
+(?i)Google Ads::Google
+(?i)Facebook Ads::Facebook
+(?i)Facebook INC.::Facebook
+(?i)Big Red F REST. Grp::Big Red F Restaurant Group
+(?i)Boulder Weekley Voter Guide::Boulder Weekly
+(?i)C&d Printing And Mailing::C&d Printing
+(?i)CO Secy State::Colorado Secretary Of State
+(?i)Co Secy State::Colorado Secretary Of State
+(?i)Costco Wholesale::Costco
+(?i)McGuckins Hardware::McGuckins
+(?i)Photo Craft Imaging/graphx Group::Photo Craft Group
+(?i)Premier Members Credit Union::Premier Credit Union
+(?i).*Rebel Idealist.*::donorbox.org
+(?i).*Donor Box.*::donorbox.org
+(?i).*Netbrands Media CORP.*::IMPRINT.COM
+(?i).*stripe.*::stripe.com
+(?i).*Postcard Card Mania.*::Post Card Mania
+IMPRINT.COM::imprint.com
+(?i)INPRINT.COM::imprint.com
+(?)Imprint::imprint.com
+
+
