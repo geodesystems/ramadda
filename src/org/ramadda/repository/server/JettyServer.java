@@ -25,6 +25,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 
+
 import org.ramadda.repository.Constants;
 import org.ramadda.repository.Repository;
 
@@ -268,7 +269,7 @@ public class JettyServer implements Constants {
         httpConfig.setOutputBufferSize(32768);
 
         //        System.err.println("key:" + keystore +" pass:" + password+ " " + keyPassword);
-        SslContextFactory sslContextFactory = new SslContextFactory();
+        SslContextFactory sslContextFactory = new SslContextFactory.Server();
         sslContextFactory.setKeyStorePath(keystore.toString());
         sslContextFactory.setKeyStorePassword(password);
         sslContextFactory.setKeyManagerPassword(keyPassword);
