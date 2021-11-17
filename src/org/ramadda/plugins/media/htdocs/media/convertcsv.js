@@ -205,7 +205,6 @@ function  ConvertForm(inputId, entry) {
 			    return;
 			}
 			if(!command || !command.startsWith("-") || command.startsWith("-help")) return;
-			console.log(category);
 			if(category=="Output") {
 			    if(cmd.args.length==0) {
 				this.outputCommands.push(cmd);
