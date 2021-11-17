@@ -1,6 +1,7 @@
 set ::mydir [file dirname [file normalize [info script]]]
 set ::pageCnt 0
 set ::haveWritten 0
+set ::haveWrittenError 0
 set ::initTest 0
 set ::output stdout
 set ::consoleCnt 0
@@ -27,67 +28,81 @@ proc finish {} {
     write  "</div></body></html>"
 }
 
-proc write {html {mode a}} {
-    #    set fp [open results.html $mode]
-    if {!$::haveWritten} {
-	set top  "<html><title>Test Results</title><head>\n<script  type='text/JavaScript'>\n"
-	append top {
-	    var errorCnt = 0;
-	    function doError(name,prefix) {
-		name = "<a href='#" + name+"'>" + name +"</a>";
-		var ele = document.getElementById('header');
-		if (errorCnt>0) 
-	        	ele.innerHTML=ele.innerHTML+"&nbsp;|&nbsp;";
-		else
-		ele.innerHTML="Had console output: "; 
-		errorCnt++;
-		ele.innerHTML=ele.innerHTML+name +"&nbsp;";
-	    }
-	} 
-	append top "</script>\n";
-	append top {
-	    <style type='text/css'>
-	    :root {
-		--font-size:12pt;
-		--font-family:  'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif;
-	    }
-	    body {
-		font-family: var(--font-family);
-		font-size: var(--font-size) !important;
-		margin: 0px;
-		margin-left:10px;
-		padding: 0px;
-	    }
-
-	    html, body {
-		height: 100%;
-	    }
-
-	    img {
-		border:1px solid #eee;
-	    }
-	    .test-grid {
-		vertical-align:top;
-		display:flex;
-		flex-wrap: wrap;
-	    }
-	    .test-gridbox {
-		display:inline-block;
-		flex-grow:1;
-		vertical-align:top;
-		margin:5px;
-		padding:10px;
-		padding-bottom:6px;
-		padding-top:6px;
-		text-align:left;
-	    }
-
-	    </style>
+proc getTop {} {
+    set top  "<html><title>Test Results</title><head>\n<script  type='text/JavaScript'>\n"
+    append top {
+	var errorCnt = 0;
+	function doError(name,prefix) {
+	    name = "<a href='#" + name+"'>" + name +"</a>";
+	    var ele = document.getElementById('header');
+	    if (errorCnt>0) 
+	    ele.innerHTML=ele.innerHTML+"&nbsp;|&nbsp;";
+	    else
+	    ele.innerHTML="Had console output: "; 
+	    errorCnt++;
+	    ele.innerHTML=ele.innerHTML+name +"&nbsp;";
+	}
+    } 
+    append top "</script>\n";
+    append top {
+	<style type='text/css'>
+	:root {
+	    --font-size:12pt;
+	    --font-family:  'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif;
+	}
+	body {
+	    font-family: var(--font-family);
+	    font-size: var(--font-size) !important;
+	    margin: 0px;
+	    margin-left:10px;
+	    padding: 0px;
 	}
 
-	append top "\n</head><body><center><div id=header></div></center>\n<div class=test-grid>\n"
-	puts $::output $top
+	html, body {
+	    height: 100%;
+	}
+
+	img {
+	    border:1px solid #eee;
+	}
+	.test-grid {
+	    vertical-align:top;
+	    display:flex;
+	    flex-wrap: wrap;
+	}
+	.test-gridbox {
+	    display:inline-block;
+	    flex-grow:1;
+	    vertical-align:top;
+	    margin:5px;
+	    padding:10px;
+	    padding-bottom:6px;
+	    padding-top:6px;
+	    text-align:left;
+	}
+
+	</style>
+    }
+
+    append top "\n</head><body><center><div id=header></div></center>\n<div class=test-grid>\n"
+    set top
+}
+
+proc write {html {inError 0}} {
+    if {!$::haveWritten} {
+	puts $::output [getTop]
 	set ::haveWritten 1
+    }
+    if {$inError} {
+	if {!$::haveWrittenError} {
+	    set fp [open errors.html w]
+	    puts $fp [getTop]
+	    close $fp
+	    set ::haveWrittenError 1
+	}
+	set fp [open errors.html a]
+	puts $fp $html
+	close $fp
     }
     puts $::output $html
     flush $::output
@@ -155,7 +170,9 @@ proc capture {_group name url {doDisplays 1} {sleep 3}} {
     }
     incr ::pageCnt
     set extra ""
+    set inError 0
     if {[file exists $consoleFile]} {
+	set inError 1
 	set fp [open $consoleFile r]
 	set c [read $fp]
 	close $fp
@@ -184,7 +201,7 @@ proc capture {_group name url {doDisplays 1} {sleep 3}} {
 	}
     }
     set line  "<a name='$name'></a><div class='test-gridbox ' style='width:300px;display:inline-block;margin:6px;'><a href=\"$url\">#$::pageCnt $name\n<img width=100% border=0 src=${thumb}>\n</a>$extra</div>\n"
-    write $line
+    write $line $inError
 }    
 
 
