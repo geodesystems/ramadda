@@ -6,7 +6,6 @@
 
 
 
-
 var root = ramaddaBaseUrl;
 var urlroot = ramaddaBaseUrl;
 var icon_close = "fas fa-window-close";
@@ -4336,8 +4335,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    console.log("loadGoogleCharts: no google");
 	    return;
 	}
-	//	let version = "current";
-	let	version = "49";
+//	let version = "current";
+	let	version = "51";
         google.charts.load(version, {
             packages: ['corechart', 'calendar', 'table', 'bar', 'treemap', /*'sankey',*/ 'wordtree', 'timeline', 'gauge','orgchart']
         });
