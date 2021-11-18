@@ -607,6 +607,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         myMarkers: {},
         mapEntryInfos: {},
 	tracks:{},
+	checkFinished: function() {
+	    return true;
+	},
         initDisplay: function() {
             SUPER.initDisplay.call(this);
             var _this = this;
@@ -2411,13 +2414,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		try {
 		    this.updateUIInner(args, pointData, records,debug);
 		    if(args.callback)args.callback();
+		    this.clearProgress();
 		} catch(exc) {
 		    console.log(exc)
 		    console.log(exc.stack);
 		    this.setMessage("Error:" + exc);
-		    return;
 		}
-		this.clearProgress();
+		this.setIsFinished();
 	    });
 
 
