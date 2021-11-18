@@ -28,7 +28,7 @@ proc finish {} {
     write  "</div></body></html>"
 }
 
-proc getTop {{title {Test Results}}} {
+proc getTop { {title {Test Results}} {inError 0}} {
     set top  "<html><title>$title</title><head>\n<script  type='text/JavaScript'>\n"
     append top {
 	var errorCnt = 0;
@@ -84,7 +84,11 @@ proc getTop {{title {Test Results}}} {
 	</style>
     }
 
-    append top "\n</head><body><center><div id=header></div></center>\n<div class=test-grid>\n"
+    append top "\n</head><body>";
+    if {$inError} {
+	append top "<h2>Errors</h2>"
+    }
+    append top "<center><div id=header></div></center>\n<div class=test-grid>\n"
     set top
 }
 
@@ -96,12 +100,15 @@ proc write {html {inError 0}} {
     if {$inError} {
 	if {!$::haveWrittenError} {
 	    set fp [open errors.html w]
-	    puts $fp [getTop "Test Errors"]
+	    puts $fp [getTop  "Test Errors" 1]
 	    close $fp
 	    set ::haveWrittenError 1
 	}
 	set fp [open errors.html a]
-	puts $fp $html
+	set error $html
+	regsub  -all {<img.*?>} $error {} error
+	regsub  -all {doError\(.*?\)} $error {} error	
+	puts $fp $error
 	close $fp
     }
     puts $::output $html
@@ -176,26 +183,48 @@ proc capture {_group name url {doDisplays 1} {sleep 3}} {
 	set c [read $fp]
 	close $fp
 	set lines ""
-	set debug [regexp {Submarine} $consoleFile]
+	set debug [regexp {.*Vega.*} $consoleFile]
 	set debug 0
+	set seenFailed 0
 	foreach line [split $c "\n"] {
 	    set line [string trim $line]
 	    if {$line==""} continue;
 	    if {$debug} {puts stderr "Line: $line"}
+	    if {[regexp {vega-embed\.min\.js\.map} $line]} {
+		continue
+	    }
+	    if {[regexp {Failed to load resource} $line]} {
+		if {![regexp {Insurrection} $line]} {
+		    if {$seenFailed} continue;
+		    set seenFailed 1
+		}
+	    }
 	    if {[regexp {allowed to display insecure content from} $line]} {
 		continue;
 	    }
 	    if {[regexp -nocase {multiple instances of three} $line]} {
 		if {$debug} {puts stderr "SKIPPING : $line"}
 		continue;
-	    } else {
-		if {$debug} {puts stderr "NO SKIP Line: $line"}
-	    }
+	    } 
 	    if {[regexp {The input spec uses Vega} $line]} {
 		continue;
 	    }	    	    
-	    append lines "$line\n";
-	    break;
+	    if {[regexp -nocase {Feature policy.*failed for iframe with origin} $line]} {
+		continue;
+	    }
+	    if {[regexp -nocase {invalid sandbox flag} $line]} {
+		continue;
+	    }	    
+	    if {[regexp -nocase {A-Frame:warn} $line]} {
+		continue;
+	    }	    
+	    if {[regexp -nocase {\[Log\].*load point data} $line]} {
+		continue;
+	    }	    
+
+
+
+	    append lines "$line<br>\n"
 	}
 	if {$lines!=""} {
 	    set inError 1
@@ -203,12 +232,14 @@ proc capture {_group name url {doDisplays 1} {sleep 3}} {
 	    regsub -all {<} $lines {&lt;} lines
 	    regsub -all {>} $lines {&gt;} lines	
 	    incr ::consoleCnt
-	    set extra "<br><div style='border:1px solid #efefef;background:#FEAFAF;max-width:100%;'>$lines</div>"
+	    set extra "<br><div style='max-height:200px;overflow-y:auto;border:1px solid #efefef;background:#FEAFAF;max-width:100%;'>$lines</div>"
 	    append extra "\n<script  type='text/JavaScript'>doError('$name');</script>\n"
 	}
     }
     set line  "<a name='$name'></a><div class='test-gridbox ' style='width:300px;display:inline-block;margin:6px;'><a href=\"$url\">#$::pageCnt $name\n<img width=100% border=0 src=${thumb}>\n</a>$extra</div>\n"
-    write $line $inError
+    if {$inError} {
+	write $line $inError
+    }
 }    
 
 
