@@ -2907,6 +2907,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    return null;
 		}
                 fields = pointData.getRecordFields();
+		if(debug) {
+		    console.log("\tusing  fields:" + fields);
+		}
             }
 	    let aliases= {};
 	    let tmp = this.getProperty("fieldAliases");
