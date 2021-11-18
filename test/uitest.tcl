@@ -88,32 +88,32 @@ proc getTop { {title {Test Results}} {inError 0}} {
     if {$inError} {
 	append top "<h2>Errors</h2>"
     }
-    append top "<center><div id=header></div></center>\n<div class=test-grid>\n"
+    append top "<center><div id=header></div></center>\n<div xclass=test-grid>\n"
     set top
 }
 
-proc write {html {inError 0}} {
+proc write {html} {
     if {!$::haveWritten} {
 	puts $::output [getTop]
 	set ::haveWritten 1
     }
-    if {$inError} {
-	if {!$::haveWrittenError} {
-	    set fp [open errors.html w]
-	    puts $fp [getTop  "Test Errors" 1]
-	    close $fp
-	    set ::haveWrittenError 1
-	}
-	set fp [open errors.html a]
-	set error $html
-	regsub  -all {<img.*?>} $error {} error
-	regsub  -all {doError\(.*?\)} $error {} error	
-	puts $fp $error
-	close $fp
-    }
     puts $::output $html
     flush $::output
 }
+
+proc writeError {html} {
+    if {!$::haveWrittenError} {
+	set fp [open errors.html w]
+	puts $fp [getTop  "Test Errors" 1]
+	close $fp
+	set ::haveWrittenError 1
+    }
+    set fp [open errors.html a]
+    set error $html
+    puts $fp $error
+    close $fp
+}
+
 
 
 
@@ -177,6 +177,7 @@ proc capture {_group name url {doDisplays 1} {sleep 3}} {
     }
     incr ::pageCnt
     set extra ""
+    set extraError ""    
     set inError 0
     if {[file exists $consoleFile]} {
 	set fp [open $consoleFile r]
@@ -202,6 +203,13 @@ proc capture {_group name url {doDisplays 1} {sleep 3}} {
 	    if {[regexp {allowed to display insecure content from} $line]} {
 		continue;
 	    }
+	    if {[regexp -nocase {Texture has been resized from} $line]} {
+		continue;
+	    }
+	    if {[regexp -nocase {\.min\.js\.map} $line]} {
+		continue;
+	    }	    	    	    
+
 	    if {[regexp -nocase {multiple instances of three} $line]} {
 		if {$debug} {puts stderr "SKIPPING : $line"}
 		continue;
@@ -221,24 +229,24 @@ proc capture {_group name url {doDisplays 1} {sleep 3}} {
 	    if {[regexp -nocase {\[Log\].*load point data} $line]} {
 		continue;
 	    }	    
-
-
-
-	    append lines "$line<br>\n"
+	    regsub -all {<} $line {\&lt;} line
+	    regsub -all {>} $line {\&gt;} line	
+	    append lines "$line\n"
 	}
 	if {$lines!=""} {
 	    set inError 1
 	    if {$debug} {puts stderr "Lines:$lines"}
-	    regsub -all {<} $lines {&lt;} lines
-	    regsub -all {>} $lines {&gt;} lines	
 	    incr ::consoleCnt
-	    set extra "<br><div style='max-height:200px;overflow-y:auto;border:1px solid #efefef;background:#FEAFAF;max-width:100%;'>$lines</div>"
+	    set extra "<br><pre style='font-size:10pt;padding:2px;margin:0px;max-height:200px;overflow-y:auto;border:1px solid #efefef;background:#FEAFAF;max-width:100%;'>$lines</pre>"
 	    append extra "\n<script  type='text/JavaScript'>doError('$name');</script>\n"
+	    set extraError "<pre style='font-size:10pt;padding:4px;margin:10px;margin-top:2px;margin-bottom:10px;max-height:200px;overflow-y:auto;border:1px solid #ccc;'>$lines</pre>"
 	}
     }
-    set line  "<a name='$name'></a><div class='test-gridbox ' style='width:300px;display:inline-block;margin:6px;'><a href=\"$url\">#$::pageCnt $name\n<img width=100% border=0 src=${thumb}>\n</a>$extra</div>\n"
+    set line  "<a name='$name'></a><div xxxclass='test-gridbox ' style='width:400px;display:inline-block;margin:6px;'><a href=\"$url\">#$::pageCnt $name\n<img width=100% border=0 src=${thumb}>\n</a>$extra</div>\n"
+    write $line
     if {$inError} {
-	write $line $inError
+	set line  "<a href=\"$url\">#$::pageCnt $name </a>$extraError";
+	writeError $line
     }
 }    
 
