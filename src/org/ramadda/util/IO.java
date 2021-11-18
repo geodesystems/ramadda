@@ -1080,6 +1080,40 @@ public class IO {
 
 
     /**
+     * Merge the CSV files
+     *
+     * @param files files
+     * @param out output
+     *
+     * @throws Exception On badness
+     */
+    public static void append(List<String> files, OutputStream out, int rowSkip)
+            throws Exception {
+        PrintWriter          writer    = new PrintWriter(out);
+        String               delimiter = ",";
+        for (int i=0;i<files.size();i++) {
+	    BufferedReader br = new BufferedReader(
+						   new InputStreamReader(new FileInputStream(files.get(i))));
+	    int skip = rowSkip;
+	    while(true) {
+		String  line = br.readLine();
+		if (line == null) {
+		    break;
+		}
+		if(i>0) {
+		    if(skip-->0) {
+			continue;
+		    } 
+		}
+                writer.print(line);
+		writer.print("\n");
+                writer.flush();
+            }
+        }
+    }
+    
+
+    /**
      * _more_
      *
      * @param file _more_

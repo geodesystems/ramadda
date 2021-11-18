@@ -475,6 +475,8 @@ public class CsvUtil {
         }
 	this.inputFiles = files;
         boolean      doConcat      = false;
+        boolean      doAppend      = false;	
+	int appendSkip = 1;
         boolean      doHeader      = false;
         boolean      doRaw         = false;
         int          rawCut        = 0;
@@ -581,6 +583,12 @@ public class CsvUtil {
                 continue;
             }
 
+            if (arg.equals("-append")) {
+                doAppend = true;
+		appendSkip = Integer.parseInt(args.get(++i));
+                continue;
+            }	    
+
 
 
             if (arg.equals("-raw")) {
@@ -635,6 +643,8 @@ public class CsvUtil {
 
         if (doConcat) {
             IO.concat(files, getOutputStream());
+	} else if (doAppend) {
+            IO.append(files, getOutputStream(),appendSkip);	    
         } else if (doHeader) {
             header(files, myTextReader, doPoint);
         } else if (doRaw) {
@@ -1519,7 +1529,9 @@ public class CsvUtil {
         new Cmd("-deheader", "Strip off the RAMADDA point header"),
         new Cmd("-headernames", "Clean up names"),
         new Cmd("-cat", "Concat the columns in one or more csv files", "*.csv"),
-
+        new Cmd("-append", "Append the files, skipping the given rows in the latter files",
+		new Arg("skip","Number of rows to skip"),
+		new Arg("files","*.csv")),	
         /** *  Filter * */
         new Cmd(true, "Filter"),
         new Cmd("-skiplines", "Skip number of raw lines.",
