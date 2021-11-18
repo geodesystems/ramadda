@@ -278,6 +278,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 
     defineDisplay(this, SUPER, myProps, {
+	checkFinished: function() {
+	    return true;
+	},
 	useDisplayMessage:function() {
 	    return true;
 	},
@@ -573,7 +576,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     setTimeout(()=> {
                         this.googleChartCallbackPending = false;
                         this.displayData();
-                    }, 10000);
+                    }, 100);
                 }
                 return;
             }
@@ -792,8 +795,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    Utils.displayTimes("chart.makeGoogleChart",[tt1,tt2],true);
             } catch (e) {
 		this.handleError("Error making chart:" + e,e);
+		this.setIsFinished();
                 return;
             }
+	    this.setIsFinished();
             let container = this.jq(ID_CHART);
 	    if(this.jq(ID_CHART).is(':visible')) {
 		this.lastWidth = container.width();

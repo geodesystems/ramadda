@@ -4891,7 +4891,20 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.setDisplayReady(true);
 	    }
         },
+	checkFinished: function() {
+	    return false;
+	},
+	getIsFinished() {
+	    return this.isFinished;
+	},
+	setIsFinished() {
+//	    console.log(this.type+" isFinished");
+	    this.isFinished = true;
+	},	
 	isDisplayFinished: function() {
+	    if(this.checkFinished()) {
+		return this.getIsFinished();
+	    }
             if (!this.hasData()) {
 		if(this.needsData()) {
 		    return false;
