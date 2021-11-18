@@ -159,12 +159,9 @@ do_histogram() {
 }
 
 do_turnout() {
-    cat  voted_2017.csv > tmp.csv
-    tail -n+2 voted_2019.csv >> tmp.csv
-    tail -n+2 voted_2020.csv >> tmp.csv
-    tail -n+2 voted_2021.csv >> tmp.csv
-
-    ${csv} -makefields age_range turnout year "" -addheader "year.type string year.format yyyy" -p tmp.csv >boulder_voting_turnout.csv
+    ${csv} -append  1 voted_2017.csv voted_2019.csv voted_2020.csv voted_2021.csv > tmp.csv
+    ${csv} -makefields age_range turnout year "" \
+	   -addheader "18_25.unit % 35_45.unit % 45_55.unit % 55_65.unit % 75.unit % year.type string year.format yyyy" -p tmp.csv >boulder_voting_turnout.csv
 
     stage_local boulder_voting_turnout.csv
 }    
