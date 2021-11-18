@@ -1334,6 +1334,7 @@ ColorByInfo.prototype = {
 		colors.push(color);
 	    }
 	    this.display.displayColorTable(colors, domId || ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
+		field: this.field,
 		colorByInfo:this,
 		width:width,
 		stringValues: this.colorByValues});
@@ -1350,6 +1351,7 @@ ColorByInfo.prototype = {
 		return a.value.toString().localeCompare(b.value.toString());
 	    });
 	    this.display.displayColorTable(colors, domId || ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
+		field: this.field,
 		colorByInfo:this,
 		width:width,
 		stringValues: cbs
@@ -4478,6 +4480,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'colorByMax',ex:'value',tt:'Max scale value'},
 	{p:'nullColor',ex:'transparent'},
 	{p:'showColorTable',ex:'false',tt:'Display the color table'},
+	{p:'colorTableLabel',ex:''},
 	{p:'showColorTableDots',ex:true},
 	{p:'colorTableDotsDecimals',ex:'0'},
 	{p:'colorTableSide',ex:'bottom|right|left|top'},
@@ -4668,6 +4671,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    args.horizontal= this.getColorTableHorizontal();
 	    args.stride = this.getProperty("showColorTableStride",1);
             Utils.displayColorTable(ct, this.getDomId(domId), min, max, args);
+	    let label = this.getColorTableLabel();
+	    if(label) {
+		if(args.field) label = label.replace("${field}", args.field.getLabel());
+		this.jq(domId).prepend(HU.center(label));
+	    }
 	    if(!args || !args.colorByInfo) return;
 	    this.jq(domId).find(".display-colortable-slice").css("cursor","pointer");
 	    let _this = this;
@@ -17878,6 +17886,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    ]);
 
 		    let t1 = new Date();
+
 		    chart.draw(this.useTestData?testData:dataTable, this.chartOptions);
 //		    Utils.displayTimes("chart.draw",[t1,new Date()],true);
 		} catch(err) {
@@ -19424,8 +19433,29 @@ function TreemapDisplay(displayManager, id, properties) {
 
 function TimerangechartDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_TIMERANGECHART, properties);
-    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+    let myProps = [
+	{label:'Time Range'},
+	{p:'startDateField',ex:''},
+	{p:'endDateField',ex:''},
+	{p:'labelFields',ex:''},
+	{p:'showLabel',ex:'false'},		
+	{p:"fontSize",d:10},
+	{p:"font",d:'Helvetica'},
+	{p:'alternatingRowStyle',d:'true',ex:'false'}
+    ];
+
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
+	    if(this.dataColors && this.dataColors.length)
+		chartOptions.colors = this.dataColors;
+
+	    chartOptions.alternatingRowStyle = this.getAlternatingRowStyle();
+	    chartOptions.timeline =  {
+		rowLabelStyle: {fontName: this.getFont(), fontSize: this.getFontSize()},
+                barLabelStyle: {fontName: this.getFont(), fontSize:  this.getFontSize() }
+	    };
+
+	    chartOptions.tooltip = null;
             return new google.visualization.Timeline(chartDiv);
         },
         makeDataTable: function(dataList, props, selectedFields) {
@@ -19445,14 +19475,21 @@ function TimerangechartDisplay(displayManager, id, properties) {
                 if (field)
                     labelFields.push(field);
             }
-            let dateFields = this.getFieldsByType(selectedFields, "date");
-            if (dateFields.length == 0)
+
+	    let startDateField = this.getFieldById(null,this.getPropertyStartDateField());
+	    let endDateField = this.getFieldById(null,this.getPropertyEndDateField());
+            let dateFields = [];
+	    if(startDateField==null || endDateField==null) {
                 dateFields = this.getFieldsByType(null, "date");
+	    } else {
+		dateFields = [startDateField, endDateField];
+	    }
             let values = [];
             let dataTable = new google.visualization.DataTable();
             if (dateFields.length < 2) {
                 throw new Error("Need to have at least 2 date fields");
             }
+
             if (stringField) {
                 dataTable.addColumn({
                     type: 'string',
@@ -19464,12 +19501,29 @@ function TimerangechartDisplay(displayManager, id, properties) {
                     id: "Index"
                 });
             }
+
+	    labelFields = [];
+
             if (labelFields.length > 0) {
                 dataTable.addColumn({
                     type: 'string',
                     id: 'Label'
                 });
-            }
+            } else if(addTooltip) {
+                dataTable.addColumn({
+                    type: 'string',
+                    id: 'dummy'
+                });
+	    }
+	    if(addTooltip)  {
+		dataTable.addColumn({
+                    type: 'string',
+                    role: 'tooltip',
+                    'p': {
+			'html': true
+                    }});
+	    }
+
             dataTable.addColumn({
                 type: 'date',
                 id: dateFields[0].getLabel()
@@ -19478,18 +19532,21 @@ function TimerangechartDisplay(displayManager, id, properties) {
                 type: 'date',
                 id: dateFields[1].getLabel()
             });
-	    /*
-	    dataTable.addColumn({
-                type: 'string',
-                role: 'tooltip',
-                'p': {
-		    'html': true
-                }});
-	    */
+
+
+
+            let colorBy = this.getColorByInfo(records);
+	    if(colorBy.isEnabled()) {
+		this.dataColors = [];
+	    }
 
             for (let r = 0; r < records.length; r++) {
+		let record = records[r];
                 let row = this.getDataValues(records[r]);
                 let tuple = [];
+		if(this.dataColors) {
+		    this.dataColors.push(colorBy.getColorFromRecord(record, "blue"));
+		}
                 values.push(tuple);
                 if (stringField && showLabel)
                     tuple.push(row[stringField.getIndex()]);
@@ -19510,11 +19567,20 @@ function TimerangechartDisplay(displayManager, id, properties) {
 
                     }
                     tuple.push(label);
-                }
+                } else 	if(addTooltip)  {
+		    tuple.push(null);
+		}
+		if(addTooltip)  {
+		    let text =   this.getRecordHtml(record, null, tt);
+		    tuple.push(text);
+		}
                 tuple.push(row[dateFields[0].getIndex()]);
                 tuple.push(row[dateFields[1].getIndex()]);
             }
             dataTable.addRows(values);
+	    if(colorBy.isEnabled()) {
+		colorBy.displayColorTable(null,true);
+	    }
             return dataTable;
         }
     });
