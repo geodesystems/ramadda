@@ -1445,6 +1445,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'colorByMax',ex:'value',tt:'Max scale value'},
 	{p:'nullColor',ex:'transparent'},
 	{p:'showColorTable',ex:'false',tt:'Display the color table'},
+	{p:'colorTableLabel',ex:''},
 	{p:'showColorTableDots',ex:true},
 	{p:'colorTableDotsDecimals',ex:'0'},
 	{p:'colorTableSide',ex:'bottom|right|left|top'},
@@ -1635,6 +1636,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    args.horizontal= this.getColorTableHorizontal();
 	    args.stride = this.getProperty("showColorTableStride",1);
             Utils.displayColorTable(ct, this.getDomId(domId), min, max, args);
+	    let label = this.getColorTableLabel();
+	    if(label) {
+		if(args.field) label = label.replace("${field}", args.field.getLabel());
+		this.jq(domId).prepend(HU.center(label));
+	    }
 	    if(!args || !args.colorByInfo) return;
 	    this.jq(domId).find(".display-colortable-slice").css("cursor","pointer");
 	    let _this = this;

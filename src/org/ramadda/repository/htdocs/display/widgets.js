@@ -1334,6 +1334,7 @@ ColorByInfo.prototype = {
 		colors.push(color);
 	    }
 	    this.display.displayColorTable(colors, domId || ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
+		field: this.field,
 		colorByInfo:this,
 		width:width,
 		stringValues: this.colorByValues});
@@ -1350,6 +1351,7 @@ ColorByInfo.prototype = {
 		return a.value.toString().localeCompare(b.value.toString());
 	    });
 	    this.display.displayColorTable(colors, domId || ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
+		field: this.field,
 		colorByInfo:this,
 		width:width,
 		stringValues: cbs
