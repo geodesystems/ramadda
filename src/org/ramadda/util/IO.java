@@ -608,15 +608,12 @@ public class IO {
         checkFile(contentName);
         boolean isUrl = false;
         try {
-            System.err.println("testing");
             URL testUrl = new URL(contentName);
             isUrl = true;
-            System.err.println("OK");
         } catch (Exception ignoreThis) {}
         if (isUrl) {
             return readUrl(contentName);
         }
-
         return IOUtil.readContents(contentName, dflt);
     }
 
