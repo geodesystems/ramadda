@@ -827,13 +827,12 @@ public class GeoUtils {
                 System.err.println("geocodeio url:" + url);
             }
             String result = IO.readContents(url, GeoUtils.class);
-            System.err.println(result);
             //"lat":39.988424,"lng":-105.226083
             latString = StringUtil.findPattern(result,
                     "\"lat\"\\s*:\\s*([-\\d\\.]+),");
             lonString = StringUtil.findPattern(result,
                     "\"lng\"\\s*:\\s*([-\\d\\.]+)\\s*");
-            System.err.println("geocodeio:" + latString + " " + lonString);
+	    //            System.err.println("geocodeio:" + latString + " " + lonString);
         } else if (googleKey != null) {
             String result = null;
             try {
