@@ -2402,7 +2402,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
             buffer.append(formEntry(request, msgLabel("Printing"), print));
 
-        }
+	    String simpleMap = HtmlUtils.labeledCheckbox(
+						       "simpleMap", "true",
+						       request.get("simpleMap", false),
+						       "Simple Map");
+
+            buffer.append(formEntry(request, "",simpleMap));
+	    
+	}
 
 
         int    cnt         = 0;
@@ -4622,6 +4629,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             props.put("mapCenter", request.getString("mapCenter", ""));
         }
 
+
         boolean makeRectangles = valueList.size() <= 20;
         String  leftWidth      = "300px";
         String  mapAttrs       = "";
@@ -4630,7 +4638,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             leftWidth = "50%";
         }
 
-        String           icon          = getMapIcon(request, entry);
+	//        String           icon          = getMapIcon(request, entry);
+        String           icon          = getDbIconUrl("/db/icons/blue-dot.png");
         SimpleDateFormat sdf           = getDateFormat(entry);
         Column           polygonColumn = getDbInfo().getPolygonColumn();
         //      int rowCnt = 0;
