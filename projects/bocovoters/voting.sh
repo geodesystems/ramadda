@@ -169,6 +169,15 @@ do_histogram() {
 	   -addheader "" \
 	   -p tmp2019.csv > boulder_voting_2019_2021.csv
 
+    ${csv} -join age_range  count tmp2021.csv age_range 0 \
+	   -set 1 0 "2017 Votes" \
+	   -set  3 0 "2021 Votes" -notcolumns percent \
+	   -func "Difference" "_2021_votes-_2017_votes" \
+	   -func "Percent Change" "100*(_2021_votes-_2017_votes)/_2017_votes" \
+	   -round percent_change \
+	   -addheader "" \
+	   -p tmp2017.csv > boulder_voting_2017_2021.csv
+    
 
     echo "Making boulder voters by age"
     ${csv} -cleaninput -dots ${dots} \

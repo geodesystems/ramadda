@@ -21,12 +21,13 @@ do_convert() {
     echo "converting new"
     ${csv} -dots 100 -notcolumns "YTDAmount,AmendsContributionID,ContributionID" \
 	   -case city proper \
-	   -change city "^(Bouder|Booulder|Boudler|Bouilder|Boukder|Boul;der|Boulde|Boulder County|Boulder-Co|Bouldera|Bouldewr|Bouldewwr|Bouldr|Bouldwer|Bouler|Bouolder|Bouulder)$" Boulder \
+	   -change city "^(Bolder|Bouder|Booulder|Boudler|Bouilder|Boukder|Boul;der|Boulde|Boulderr||Boulder County|Boulder-Co|Bouldera|Bouldewr|Bouldewwr|Bouldr|Bouldwer|Bouler|Bouolder|Bouulder)$" Boulder \
 	   -change filingdate,amendeddate,transactiondate "(..)/(..)/(....)" "\$3/\$1/\$2" \
 	   -change filingdate,amendeddate,transactiondate "(....)-(..)-(..).*" "\$1/\$2/\$3" \
 	   -change filingdate,amendeddate,transactiondate "Invalid Date" "" \
 	   -case  FromCandidate lower \
 	   -case  anonymous lower \
+	   -geocodeaddressdb street,city,state "" "" \
 	   -p  ${datadir}/2021_contributions.csv > newtmp.csv
 }
 
@@ -59,7 +60,7 @@ do_contributions() {
 }
 
 
-do_fetch
+#do_fetch
 echo "converting"
 do_convert
 echo "making old"
@@ -79,6 +80,7 @@ candidate.cansearch true  candidate.canlist true   \
 filing_date.cansearch true  filing_date.canlist true   \
 official_filing.cansearch true   \
 election_year.cansearch true  election_year.canlist true   \
+full_name.islabel true committee.islabel true \
 full_name.cansearch true  full_name.canlist true   \
 contribution.cansearch true  contribution.canlist true   \
 contribution.dostats true \
@@ -89,6 +91,7 @@ committee.type enumeration type.type enumeration candidate.type enumeration \
 candidate.numberOfSearchWidgets 4 \
 official_filing.type enumeration \
 from_candidate.type enumeration \
+location.type latlon \
 table.showEntryCreate false \
 table.format yyyy/MM/dd \
 table.addressTemplate _quote_\${first_name} \${last_name}<br>\${street}<br>\${city} \${state}<br>\${zip}_quote_ 
@@ -102,7 +105,7 @@ state.type enumeration state.cansearch true state.addnot true \
 filing_date.type date amended_date.type date transaction_date.type date 
 zip.type string contribution_type.type enumeration acontribution_type.addnot true \
 anonymous.type enumeration \
-" contributions_old.csv > boulder_campaign_contributionsdb.xml
+" contributions_new.csv > boulder_campaign_contributionsdb.xml
 
 
 release_plugin boulder_campaign_contributionsdb.xml 
