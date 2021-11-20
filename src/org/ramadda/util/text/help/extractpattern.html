@@ -1,0 +1,19 @@
+If you have a row oriented but  unstructured  text file the 
+-extractpattern command can be used to extract the columns from it.
+Specify a comma separated header and a regular expression 
+(<a href="https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html">help</a>)
+with groups that define the columns.
+<p>
+Assume you have a file test.txt
+<pre>
+Person:  name: Joe age: 53
+Person:  name: Sally age: 93
+</pre>
+
+Extract the data with:
+<pre>
+csv.sh -extractpattern "name,age" "name:(.*)age:(.*)" -p file.txt
+</pre>
+
+
+

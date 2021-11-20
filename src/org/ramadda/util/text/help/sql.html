@@ -1,0 +1,23 @@
+
+The -sql command uses a number of RAMADDA properties or environment variables that define the databases that can
+be accessed. The command specifies a database as:
+<pre>
+  -sql &lt;db&gt; ...
+e.g.:
+  -sql test ...  
+</pre>
+
+Where  for the given db  there should be 2 environment variables:
+<pre>
+export csv_db_&lt;db&gt;_url=JDBC URL
+export csv_db_&lt;db&gt;_tables=List of tables that can be accessed
+</pre>
+So for the db "test" in a Derby database:
+
+<pre>
+export csv_db_test_url=jdbc:derby:/Users/home/derby/db1;create=true;
+export csv_db_test_tables=test_table1,test_table2,test_table3
+</pre>
+
+
+

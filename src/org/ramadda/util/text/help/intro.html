@@ -1,0 +1,66 @@
+
+<style type='text/css'>
+  body {font-family: Arial, sans-serif;}
+  ul {margin:0px;}
+  .header {margin:10px;} .header a, .command a {color:#000; text-decoration:none;}
+  pre {
+      border : 1px #ccc solid;
+      background:rgb(245,245,245);
+      padding:4px;
+      border-radius: 4px;
+      margin-bottom:10px;
+      margin-top:5px;
+  }
+  .examples {
+      max-height: 400px;
+      overflow-y:auto;
+  }
+  .command {border : 1px #ccc solid; padding:4px; background:#E7EFF4;}
+  .command-block {
+      margin-left:20px;
+  }
+
+</style>
+
+<h2>RAMADDA CSV Utils Commands</h2>
+<center>${header}</center>
+<b style='font-size:120%;'>Install</b>
+<ul>
+<li> Download the csvutil.zip file from the RAMADDA <a href=https://geodesystems.com/repository/alias/release>download</a> site
+<li> Unzip the file
+<li> Consult the README
+<li> Usage:<br> csv.sh &lt;any number of commands&gt; -p &ltinput file&gt; &gt; output file
+</ul>
+<p>
+
+<b style='font-size:120%;'>Examples</b>  
+<pre class=examples>
+####  selecting columns
+#Subset test.csv and only include column1 and column2
+csv.sh -columns column1,column2 -p test.csv > newtest.csv
+
+#You can also use numeric indices - zero based
+csv.sh -columns 0,1 -p test.csv > newtest.csv
+
+#Specify a range of columns 
+csv.sh -columns column1-columnN -p test.csv > newtest.csv
+
+#Mix and match
+csv.sh -columns 0-1,columnA,columnB,columnF-columnZ -p test.csv > newtest.csv
+
+#include all columns except column1
+csv.sh -notcolumns column1 -p test.csv > newtest.csv
+
+
+#subset columns and then change the values 
+csv.sh -columns column1,column2 -change column1,column2 "pattern" "new value" -p test.csv > newtest.csv
+
+#Only include column1 and then only pass through unique values
+csv.sh -columns column1 -unique 0 -p test.csv > newtest.csv
+
+#Get uniques and sort them
+csv.sh -columns column1 -unique 0 -sort column1 -p test.csv > newtest.csv
+
+
+
+</pre>

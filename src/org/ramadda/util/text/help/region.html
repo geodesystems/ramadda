@@ -1,0 +1,24 @@
+
+This does a lookup from an internal table of the regions that maps state name (or abbrev) to region:
+<pre>
+Alaska=West
+AK=West
+Alabama=South
+AL=South
+Arkansas=South
+...
+</pre>
+
+So with the following data:
+<pre>
+name
+Wyoming
+California
+Colorado
+</pre>
+
+The region is added with:
+
+<pre>
+csv.sh -region name
+</pre>

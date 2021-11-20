@@ -1,0 +1,24 @@
+
+If you have an unstructured  text file the -text command can extract out a set of rows and columns from it.
+The idea is you specify one regular expression (<a href="https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html">help</a>) for finding a chunk of text in the file that holds the row values
+and another regular expression to extract the column values from the chunk.
+<p>
+Assume you have a file test.txt
+<pre>
+  Hello there how are you
+Person:  name: Jim age: 42
+and some more text  
+Person:  name: Joe age: 53
+Person:  name: Sally age: 93
+and more
+</pre>
+
+We are going to extract the names and age with:
+<pre>
+csv.sh -text "name,age" "(?m)(?s).*?Person:(.*?$)" "name:(.*?)age: *(\d+)"
+#The (?m)(?s) are directives to match multiple lines
+#The (.*?$) in the first pattern is the group that is matched 
+#The second pattern: name:(.*?)age: *(\d+)  has 2 groups, one  for the name and one for the age
+</pre>
+
+

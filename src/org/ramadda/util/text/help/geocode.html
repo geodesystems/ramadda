@@ -1,0 +1,60 @@
+
+
+
+You can use Google or geocode.io for geo coding by setting the following environment variables.
+Else, this defaults to using US Census geocode API.
+<p>
+To use Google geocoding set the environment variable:
+<pre>
+GOOGLE_API_KEY=...
+</pre>
+
+To use geocod.io set the environment variable:
+<pre>
+GEOCIDEIO_API_KEY=...
+</pre>
+
+
+With the following file:
+<pre class=examples>
+city,state
+Boulder,CO
+Laramie,WY
+Buffalo,NY
+</pre>
+
+To geocode
+<pre class=examples>
+csv.sh -geocode city,state "" "" ...
+</pre>
+
+This concatenates the city and state field, e.g., "Boulder CO" and calls the API to geolocate.
+<p>
+To use internal location tables set the prefix argument to one of:
+<pre>
+csv.sh -geocode columns "city:" "" ...
+csv.sh -geocode columns "county:" "" ...
+csv.sh -geocode columns "state:" "" ...
+csv.sh -geocode columns "zip:" "" ...  
+csv.sh -geocode columns "country:" "" ...    
+</pre>
+
+
+The prefix gets appended to the query string. For example if you had a file with just cities in a state, e.g.:
+<pre class=examples>
+city
+Boulder
+Denver
+Grand Junction
+Pueblo
+</pre>
+
+You can geocode with:
+<pre>
+  csv.sh -geocode city "" "CO"
+</pre>
+
+
+
+
+
