@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.geodata.cdmdata;
 
 
+import org.ramadda.util.Utils;
 import org.ramadda.util.text.*;
 
 import java.util.ArrayList;
@@ -24,6 +25,8 @@ public class CsvPointWriter extends DataSink {
 
     /**  */
     private Row header = null;
+
+    private Hashtable<String, String> props;
 
     /**
      *
@@ -49,6 +52,8 @@ public class CsvPointWriter extends DataSink {
      *  @return _more_
      */
     public int processArgs(CsvUtil csvUtil, List<String> args, int index) {
+	if(index>=args.size()-2) throw new IllegalArgumentException("Usage: -tonc \"name value\" ");
+	props =  csvUtil.parseProps(args.get(++index));    
         return index;
     }
 
@@ -64,8 +69,7 @@ public class CsvPointWriter extends DataSink {
      */
     public Row processRow(TextReader ctx, Row row) throws Exception {
         if (header == null) {}
-        System.err.println("processRow:" + row);
-
+        System.err.println("CsvPointWriter.processRow:" + row);
         return row;
     }
 
@@ -80,8 +84,9 @@ public class CsvPointWriter extends DataSink {
      *
      * @throws Exception _more_
      */
-    public List<Row> finish(TextReader ctx, List<Row> rows) throws Exception {
-        return rows;
+    @Override
+    public void finish(TextReader ctx) throws Exception {
+        System.err.println("CsvPointWriter.finish");
     }
 
 
