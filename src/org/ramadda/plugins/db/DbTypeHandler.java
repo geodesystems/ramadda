@@ -2405,10 +2405,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    String simpleMap = HtmlUtils.labeledCheckbox(
 						       "simpleMap", "true",
 						       request.get("simpleMap", false),
-						       "Simple Map");
+						       "Simple");
 
-            buffer.append(formEntry(request, "",simpleMap));
-	    
+            buffer.append(formEntry(request, "Map:",simpleMap+HU.space(2)+"Height:" +
+				    HU.input("mapheight",request.getString("mapheight","500"),HU.SIZE_5)));
 	}
 
 
@@ -4610,7 +4610,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
         String width  = "";
-        String height = "500";
+        String height = request.getString("mapheight","500");
         if (forPrint) {
             width  = "300";
             height = "300";
