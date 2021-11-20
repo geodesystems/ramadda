@@ -4819,6 +4819,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             entryList.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
             entryList.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
 
+	    map.center();
             if ( !simpleMap) {
                 HtmlUtils.open(sb, "table", "class",
                                " db-map-table " + (forPrint
@@ -4826,7 +4827,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         : ""), "cellpadding", "0", "border", "0", "width",
                                "100%");
                 HtmlUtils.open(sb, "tr", "valign", "top");
-                map.center();
                 sb.append(HtmlUtils.col(entryList.toString(),
                                         " class=\"db-map-column\" "
                                         + HtmlUtils.attr("width",
@@ -4856,12 +4856,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 HtmlUtils.close(sb, "tr", "table");
             } else {
                 sb.append(map.getHtml());
-            }
+	    }
             String js =
                 "highlightMarkers('.db-map-list-outer .db-map-list-entry', "
                 + map.getVariableName() + ", '#ffffcc', 'white');";
             sb.append(HtmlUtils.script(JQuery.ready(js)));
-        }
+	}
 
 
 
