@@ -370,6 +370,10 @@ public class TextReader implements Cloneable {
     }
 
 
+    public  Processor getLastProcessor() {
+	return lastProcessor;
+    }
+
     /**
      *  Set the Verbose property.
      *

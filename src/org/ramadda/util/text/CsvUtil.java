@@ -48,7 +48,13 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Properties;
 import java.util.zip.*;
+
+
+import java.sql.*;
+import org.ramadda.util.sql.Clause;
+import org.ramadda.util.sql.SqlUtil;
 
 
 /**
@@ -126,11 +132,14 @@ public class CsvUtil {
 
 
     private PropertyProvider propertyProvider;
-    private MapProvider mapProvider;    
-    private List<String> inputFiles;
-    private CsvContext csvContext;
-    private List<DataSink> sinks;
 
+    private MapProvider mapProvider;    
+
+    private List<String> inputFiles;
+
+    private CsvContext csvContext;
+
+    private List<DataSink> sinks;
 
     private boolean hasSink = false;
 
@@ -249,6 +258,7 @@ public class CsvUtil {
 
 	    }
 	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
 	}
     }
 
@@ -265,7 +275,6 @@ public class CsvUtil {
 	if(csvContext!=null) return csvContext.getTmpFile(name);
 	return null;
     }
-
 
 
     /**
@@ -361,6 +370,69 @@ public class CsvUtil {
             myTextReader.stopRunning();
         }
     }
+
+
+    public Connection getDbConnection(CsvOperator op, Hashtable<String,String> props, String db, String table) throws Exception {
+	String dbs = getProperty("csv_dbs");
+	if(!Utils.stringDefined(db)) {
+	    op.fatal("No db specified." + (dbs!=null?"Available dbs:" + dbs:""));
+
+	}
+	String jdbcUrl = getProperty("csv_db_" + db + "_url");
+	Properties connectionProps = new Properties();
+	if(jdbcUrl==null) {
+	    op.fatal("No csv_db_" + db + "_url environment variable specified. " + (dbs!=null?"Available dbs:" + dbs:""));
+	}
+
+	String     user            = props.get("db.user");
+	String     password        = props.get("db.password");
+	if(user==null) user = getProperty("csv_db_" + db +"_user");
+	if(password==null) password = getProperty("csv_db_" + db +"_password");	
+
+	Connection connection = null;
+	try {
+	    connection = SqlUtil.getConnection(jdbcUrl, user, password);
+	} catch (Exception exc) {
+	    op.fatal("Error making JDBC connection:"+ jdbcUrl, exc);
+	}
+
+	if (props.get("help")!=null && props.get("help").equals("true")) {
+	    throw new CsvUtil.MessageException("table:" + table
+					       + "\ncolumns:\n"
+					       + Utils.wrap(SqlUtil.getColumnNames(connection,
+										   table, true), "\t", "\n"));
+	}
+
+
+	//Check tables whitelist
+	String tables   = getProperty("csv_db_" + db + "_tables",  "");
+	List   okTables = Utils.split(tables, ",", true, true);
+	if ((okTables.size() == 1) && okTables.get(0).equals("*")) {
+	    okTables = SqlUtil.getTableNames(connection);
+	}
+
+
+	List<String> tableList = Utils.split(table, ",", true, true);
+	if (tableList.size() == 0) {
+	    op.fatal("No table specified"
+		     + "\nAvailable tables:\n"
+		     + Utils.wrap(okTables, "\t", "\n"));
+	}
+	
+	for (String t : tableList) {
+	    if ( !Utils.containsIgnoreCase(okTables, t)) {
+		op.fatal("Unknown table:" + t
+			 + "\nAvailable tables:\n"
+			 + Utils.wrap(okTables, "\t", "\n"));
+            }
+	}
+
+
+
+
+	return connection;
+    }
+
 
 
     /**
@@ -727,7 +799,7 @@ public class CsvUtil {
             CsvOperator op = (ctx == null)
 		? null
 		: ctx.getCurrentOperator();
-            System.err.println("error:" + op);
+
             if (op != null) {
                 errorDescription = "Error processing text with operator: "
 		    + op.getDescription();
@@ -1485,10 +1557,6 @@ public class CsvUtil {
                         "type", "pattern")),
         new Cmd("-harvest", "Harvest links in web page",
 		new Arg("pattern","regexp to match")),
-
-		
-
-
         new Cmd("-json", "Parse the input as json",
                 new Arg("arrayPath",
 			"Path to the array e.g., obj1.arr[2].obj2", "size", "30",
@@ -1497,31 +1565,33 @@ public class CsvUtil {
 							"size", "30", "label", "Object paths", "type",
 							"list", "size", "30")),
         new Cmd("-geojson", "Parse the input as geojson",new Arg("includePolygon","true|false Include polygon")),
-        new Cmd("-lines", "Parse the input as text lines"),
-        new Cmd("-pdf", "Read input from a PDF file. The RAMADDA_TABULA environment variable needs to be set to the tabula.sh file found in this release"),	
+        new Cmd("-pdf", "Read input from a PDF file."),	
         new Cmd("-xml", "Parse the input as xml",
                 new Arg("path", "Path to the elements", "size", "60")),
         new Cmd("-shapefile", "Parse the input shapefile",
                 new Arg("props", "\"addPoints true addShapes false\"")),	
+        new Cmd("-lines", "Parse the input as text lines"),
         new Cmd("-text", "Extract rows from the text",
                 new Arg("comma separated header"),
                 new Arg("chunk pattern", "", "type", "pattern"),
                 new Arg("token pattern", "", "type", "pattern")),
+	/*
         new Cmd("-text2", "Extract rows from the text",
                 new Arg("comma separated header"),
                 new Arg("chunk pattern", "", "type", "pattern"),
                 new Arg("token pattern", "", "type", "pattern")),
+	*/
         new Cmd("-extractpattern", "Extract rows from the text",
                 new Arg("comma separated header"),
                 new Arg("token pattern", "", "type", "pattern")),
         new Cmd("-tokenize", "Tokenize the input from the pattern",
                 new Arg("header", "header1,header2..."),
                 new Arg("pattern", "", "type", "pattern")),
-        new Cmd("-sql", "Connect to the given database",
+        new Cmd("-sql", "Read data from the given database",
                 new Arg("db", "The database id (defined in the environment)","type","enumeration","values","property:csv_dbs"),
 		new Arg("table", "Comma separate list of tables to select from","size","60"),
 		new Arg("columns", "Comma separated list of columns to select"),
-		new Arg("where", "column1 expr value\ncolumn2 expr value\n...\nWhere expr is: =|<|>|<>|like|notlike","type","rows","delimiter",";","size","60"),				
+		new Arg("where", "column1:expr:value;column2:expr:value;...\ne.g.: name:like:joe;age:>:60\nWhere expr is: =|<|>|<>|like|notlike","type","rows","delimiter",";","size","60"),				
 		new Arg("properties", "name space value properties. e.g., join col1,col2")),
         new Cmd("-prune", "Prune out the first N bytes",
                 new Arg("bytes", "Number of leading bytes to remove", "type",
@@ -1536,7 +1606,7 @@ public class CsvUtil {
         new Cmd(true, "Filter"),
         new Cmd("-skiplines", "Skip number of raw lines.",
                 new Arg("lines", "How many raw lines to skip", "type", "number")),	
-        new Cmd("-if", "Next N args specify a filter command followed by any change commands followed by an -endif. e.g.: -if -pattern column string -change column .* XXX  -endif"),
+        new Cmd("-if", "Next N args specify a filter command followed by any change commands followed by an -endif."),
         new Cmd("-start", "Start at pattern in source file",
                 new Arg("start pattern", "", "type", "pattern")),
         new Cmd("-stop", "End at pattern in source file",
@@ -1639,7 +1709,7 @@ public class CsvUtil {
 
 
         /** *  Slice and dice * */
-        new Cmd(true, "Slice and Dice"),
+        new Cmd(true, "Slice and Dice","Add/remove columns, rows, restructure, etc"),
         new Cmd("-columns",  "Only include the given columns",
                 new Arg("columns", "", "type", "columns")),
         new Cmd("-notcolumns", "Don't include given columns",
@@ -1764,7 +1834,7 @@ public class CsvUtil {
 		new Arg("name", "New column name"),
 		new Arg("number", "Number of characters")),
         new Cmd(
-		"-between",
+		"-between_indices",
 		"Extract characters between the 2 indices",
 		new Arg("column", "", "type", "column"),
 		new Arg("name", "New column name"),
@@ -1772,7 +1842,7 @@ public class CsvUtil {
 		new Arg("end", "End index")),		
         /** *  Change values * */
         new Cmd(true, "Change"),
-        new Cmd("-change", "Change columns. Use file:file.txt in place of the pattern and no sub. string. file is of the form:<br>pattern::replace_string<br>e.g.:<br>(?i).*foo.*::foobar<br>",
+        new Cmd("-change", "Change columns",
                 new Arg("columns", "", "type", "columns"),
                 new Arg("pattern", "", "type", "pattern"),
                 new Arg("substitution string",
@@ -1939,7 +2009,7 @@ public class CsvUtil {
         new Cmd("-extractdate", "Extract date",
 		new Arg("date column", "", "type", "column"),
 		new Arg("what", "What to extract, e.g., year, month, day_of_week, etc", "values",
-			"era,year,month,day_of_month,day_of_week,week_of_month,day_of_week_in_month,am_pm,hour,hour_of_day,minute,second,millisecond")),
+			"era,year,month,day_of_month,day_of_week,week_of_month,\nday_of_week_in_month,am_pm,hour,hour_of_day,\nminute,second,millisecond")),
 
         new Cmd("-formatdate", "Format date",
                 new Arg("columns"), "target date format"),
@@ -2008,18 +2078,22 @@ public class CsvUtil {
         new Cmd("-colum_nor", "Or values", new Arg("name","New column name"), new Arg("columns", "", "type", "columns")),
         new Cmd("-column_not", "Not value", new Arg("name","New column name"), new Arg("column", "", "type", "column")),		
 
+
+
+
         /** * Geocode  * */
+        new Cmd(true, "Geospatial"),
         new Cmd("-geocode", 
-		"Specify prefix to use internal tables. Else, defaults to using US Census geocode API. To use Google geocoding set the environment variable:<br>GOOGLE_API_KEY=...<br>To use geocod.io set the environment variable:<br>GEOCIDEIO_API_KEY=...", 
+		"Geocode using given columns", 
 		new Arg("columns", "", "type", "columns"),
                 new Arg("prefix", "optional prefix e.g., state: or county: or country:"),
                 new Arg("suffix")),
-        new Cmd("-geocodeaddressdb", "Geocode address for DB", 
+        new Cmd("-geocodeaddressdb", "Geocode for import into RAMADDA's DB. The lat/lon is one semi-colon delimited column", 
                 new Arg("columns"), "prefix", "suffix"),
         new Cmd("-geocodejoin", "Geocode with file",
-                new Arg("column", "", "type", "columns"),
+                new Arg("column", "key column", "type", "columns"),
                 new Arg("csv file", "File to get lat/lon from", "type",
-                        "file"), "name idx", "lat idx", "lon idx"),
+                        "file"), "key idx", "lat idx", "lon idx"),
         new Cmd("-statename", "Add state name from state ID",
                 new Arg("column")),
 	new Cmd("-geoname", "Look up location name",
@@ -2036,7 +2110,7 @@ public class CsvUtil {
         new Cmd("-population", "Add in population from address",
                 new Arg("columns", "", "type", "columns"),
                 new Arg("prefix", "e.g., state: or county:"), "suffix"),
-	new Cmd("-neighborhood", "Look up neighborhood using precisely.com. Set the env var:<br>PRECISELY_API_KEY=...",
+	new Cmd("-neighborhood", "Look up neighborhood for a given location",
                 new Arg("lat", "Latitude column", "type", "column"),
                 new Arg("lon", "Longitude column", "type", "column")),	
 
@@ -2090,8 +2164,13 @@ public class CsvUtil {
         new Cmd("-table", "Print table and stats"),	
         new Cmd("-stats", "Print summary stats"),
         new Cmd("-record", "Print records"),
-        new Cmd("-toxml", "Generate XML", new Arg("tag1"),new Arg("tag2")),
-        new Cmd("-tojson", "Generate JSON"),	
+        new Cmd("-toxml", "Generate XML", new Arg("outer tag"),new Arg("inner tag")),
+        new Cmd("-tojson", "Generate JSON"),
+        new Cmd("-todb", "Write to Database",
+		new Arg("db id",""),
+		new Arg("table","table name"),
+		new Arg("columns","database columns"),		
+		new Arg("properties","name value properties")),		
         new Cmd("-template", "Apply the template to make the output",
                 new Arg("prefix", "", "size", "40"),
                 new Arg("template", "Use ${0},${1}, etc for values", "rows",
@@ -2291,30 +2370,46 @@ public class CsvUtil {
 	StringBuilder sb = new StringBuilder();
 	StringBuilder header = new StringBuilder();	
 
+	List<StringBuilder> headers = new ArrayList<StringBuilder>();
+
 	boolean open = false;
+	StringBuilder hb = new StringBuilder();
+	int cnt = 0;
         for (Cmd c : commands) {
 	    if(c.category) {
 		if(open) sb.append("</ul><br>");
 		open = true;
 		if(header.length()>0) header.append(" | ");
 		header.append("<a href='#" + c.cmd +"'>" + c.cmd+"</a>");
+		sb.append("<hr>");
 		sb.append("<a name='" + c.cmd+"'></a>");
 		sb.append("<b style='font-size:120%;'>" + c.cmd+"</b><br>\n");
 		sb.append(c.desc);
+		sb.append("${header" + headers.size()+"}");
+		hb = new StringBuilder("Commands: ");
+		headers.add(hb);
+		String extra = IO.readContents("/org/ramadda/util/text/help/category_" + Utils.makeID(c.cmd).toLowerCase()+".html",(String) null);
+		if(extra!=null) sb.append(extra);
 		continue;
 	    }
+	    cnt++;
+	    String path = "/org/ramadda/util/text/help/" + c.cmd.replace("-","")+".html";
+	    String extra = IO.readContents(path,(String)null);
 	    if(c.cmd.startsWith("-help")) continue;
-	    sb.append("<pre> <i>" + c.cmd+"</i> ");
+	    sb.append("<a name='" + c.cmd+"'></a>");
+	    hb.append("<a href='#" + c.cmd +"'>" + c.cmd+"</a> ");
+	    sb.append("<div class=command> <i><a href='#" + c.cmd +"'>" + c.cmd+"</a></i> ");
 	    for(Arg arg: c.args) {
 		sb.append(" &lt;" +arg.id+"&gt; ");
 	    }
-	    sb.append("</pre><ul>");
+	    sb.append("</div><div class=command-block>");
 	    if(Utils.stringDefined(c.desc)) {
 		sb.append(c.desc);
 		sb.append("<br>\n");
 	    }
 	    if(c.args.size()>0) {
 		sb.append("<b>Arguments:</b><br>\n");
+		sb.append("<ul>\n");
 		for(Arg arg: c.args) {
 		    sb.append("<i>" +arg.id+"</i>\n");
 		    if(Utils.stringDefined(arg.desc)) sb.append(arg.desc.replace("<br>"," "));
@@ -2327,23 +2422,25 @@ public class CsvUtil {
 	    }
 	    sb.append("<br>\n");
 	    sb.append("</ul>\n");
-
-	    // {" + c.cmd + "} {" + c.args + "} {" + c.desc + "}]");
-        }
+	    if(extra!=null) {
+		sb.append(extra);
+		sb.append("<p>");
+	    }
+	    sb.append("</div>");
+	}
 	sb.append("</ul>\n");
 
         PrintWriter pw = new PrintWriter(getOutputStream());
+	String intro = IO.readContents("/org/ramadda/util/text/help/intro.html","");
+	intro = intro.replace("${header}",header.toString()+"<br>The RAMADDA CSV Utils package provides " + cnt +" commands for manipulating CSV and other types of files");
+	pw.println(intro);
 
-	pw.println("<style type='text/css'>body {font-family: Arial, sans-serif;} ul {margin:0px;} 	pre {border : 1px #ccc solid; background:rgb(245,245,245); padding:4px; border-radius: 4px; margin-bottom:5px; margin-top:5px;}</style>");
-	pw.println("<h2>RAMADDA CSV Utils Commands</h2>");
-	pw.append("<center>" + header.toString() +"</center>");
-	pw.println("<b style='font-size:120%;'>" + "Install"+"</b><ul>");
-	pw.println("<li> Download the csvutil.zip file from the RAMADDA <a href=https://geodesystems.com/repository/alias/release>download</a> site");
-	pw.println("<li> Unzip the file");
-	pw.println("<li> Consult the README");	
-	pw.println("<li> Usage:<br> csv.sh &lt;any number of commands&gt; -p &ltinput file&gt; &gt; output file");
-	pw.println("</ul><p>");
-	pw.append(sb);
+	String html = sb.toString();
+	for(int i=0;i< headers.size(); i++) {
+	    String s  = "<div class=header>" + headers.get(i).toString() +"</div>";
+	    html = html.replace("${header" + i+"}", s);
+	}
+	pw.append(html);
         pw.flush();
     }
 
@@ -2930,7 +3027,7 @@ public class CsvUtil {
 		ctx.addProcessor(new Processor.Last(args.get(++i), args.get(++i), args.get(++i)));
 		return i;
 	    });			
-	defineFunction("-between",4,(ctx,args,i) -> {
+	defineFunction("-between_indices",4,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Between(args.get(++i), args.get(++i),args.get(++i), args.get(++i)));
 		return i;
 	    });			
@@ -3243,7 +3340,7 @@ public class CsvUtil {
 		return i;
 	    });
 	
-	defineFunction("-sql",4,(ctx,args,i) -> {
+	defineFunction("-sql",5,(ctx,args,i) -> {
 		//-sql db table cols "col1 value col2 value"
 		ctx.getProviders().add(new DataProvider.SqlDataProvider(args.get(++i),
 									args.get(++i),
@@ -3782,15 +3879,25 @@ public class CsvUtil {
 
 	defineFunction("-toxml",2,(ctx,args,i) -> {
 		hasSink = true;
-		ctx.addProcessor(new RowCollector.ToXml(args.get(++i),args.get(++i)));
+		ctx.addProcessor(new DataSink.ToXml(args.get(++i),args.get(++i)));
 		return i;
 	    });
 
+	defineFunction("-todb",4,(ctx,args,i) -> {
+		//		hasSink = true;
+		ctx.addProcessor(new DataSink.ToDb(this, args.get(++i), args.get(++i),args.get(++i),parseProps(args.get(++i))));
+		return i;
+	    });
+
+
+
 	defineFunction("-tojson",0,(ctx,args,i) -> {
 		hasSink = true;
-		ctx.addProcessor(new Processor.ToJson());
+		ctx.addProcessor(new DataSink.ToJson());
 		return i;
-	    });	
+	    });
+
+	
 
 
 	defineFunction("-table",0, (ctx,args,i) -> {
@@ -4249,7 +4356,24 @@ public class CsvUtil {
 	CsvUtil csvUtil = new CsvUtil(args);
 	csvUtil.setCsvContext(new CsvContext() {
 		public List<Class> getClasses() {
-		    return new ArrayList<Class>();
+		    String _name=null;
+		    try {
+			ArrayList<Class> classes = new ArrayList<Class>();
+			String prop = System.getenv("CSV_CLASSES");
+			if(prop!=null) {
+			    for(String name: Utils.split(prop,":",true,true)) {
+				_name = name;
+				Class c  = Class.forName(name);
+				classes.add(c);
+			    }
+			}
+			return classes;
+		    } catch(Exception exc) {
+			if(_name!=null) {
+			    System.err.println("Error reading class:" + _name +" error:" + exc);
+			}
+			throw new RuntimeException(exc);
+		    }
 		}
 		public String getProperty(String key, String dflt) {
 		    String v =  System.getProperty(key);
@@ -4268,8 +4392,10 @@ public class CsvUtil {
 
 	try {
 	    csvUtil.run(null);
+	} catch(MessageException cexc) {
+	    System.err.println(cexc.getMessage());
+	    System.exit(1);
 	} catch(Exception exc) {
-	    System.err.println("Error:" + exc);
 	    exc.printStackTrace();
 	    System.exit(1);
 	}

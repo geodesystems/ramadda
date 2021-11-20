@@ -17,6 +17,7 @@ import org.ramadda.util.KmlUtil;
 import org.ramadda.util.NamedInputStream;
 import org.ramadda.util.Utils;
 
+import java.sql.*;
 import org.ramadda.util.sql.Clause;
 import org.ramadda.util.sql.SqlUtil;
 
@@ -30,7 +31,7 @@ import java.io.*;
 
 import java.net.URL;
 
-import java.sql.*;
+
 
 import java.util.ArrayList;
 
@@ -50,7 +51,7 @@ import java.util.regex.*;
  */
 
 @SuppressWarnings("unchecked")
-public abstract class DataProvider {
+public abstract class DataProvider extends CsvOperator {
 
     /** _more_ */
     private CsvUtil csvUtil;
@@ -907,56 +908,8 @@ public abstract class DataProvider {
          */
         public void initialize(CsvUtil csvUtil, TextReader ctx)
                 throws Exception {
-            String jdbcUrl = csvUtil.getProperty("csv_" + db + "_url");
-            if (jdbcUrl == null) {
-                String dbs = csvUtil.getProperty("csv_dbs");
-
-                throw new IllegalArgumentException("Unknown database:" + db
-                        + " " + ((dbs == null)
-                                 ? ""
-                                 : "Available databases:" + dbs));
-            }
-
-            String user     = csvUtil.getProperty("csv_" + db + "_user");
-            String password = csvUtil.getProperty("csv_" + db + "_password");
-            this.connection = SqlUtil.getConnection(jdbcUrl, user, password);
-
-            //Check tables whitelist
-            String tables   = csvUtil.getProperty("csv_" + db + "_tables",
-                                  "");
-            List   okTables = Utils.split(tables, ",", true, true);
-            if ((okTables.size() == 1) && okTables.get(0).equals("*")) {
-                okTables = SqlUtil.getTableNames(this.connection);
-            }
-
-            List<String> tableList = Utils.split(table, ",", true, true);
-            if (tableList.size() == 0) {
-                throw new IllegalArgumentException("No table specified"
-                        + "\nAvailable tables:\n"
-                        + Utils.wrap(okTables, "\t", "\n"));
-            }
-
-
-
-            for (String t : tableList) {
-                if ( !Utils.containsIgnoreCase(okTables, t)) {
-                    throw new IllegalArgumentException("Unknown table:" + t
-                            + "\nAvailable tables:\n"
-                            + Utils.wrap(okTables, "\t", "\n"));
-                }
-            }
-
-            if (Misc.equals(props.get("help"), "true")) {
-                throw new CsvUtil.MessageException("table:" + table
-                        + "\ncolumns:\n"
-                        + Utils.wrap(SqlUtil.getColumnNames(connection,
-                            table, true), "\t", "\n"));
-            }
-
-
+	    this.connection = csvUtil.getDbConnection(this, props,db, table);
             List<Clause> clauses = new ArrayList<Clause>();
-
-
             String       join    = (String) props.get("join");
             if (join != null) {
                 List<String> toks = Utils.split(join, ",");
@@ -969,9 +922,9 @@ public abstract class DataProvider {
             if ((what == null) || (what.length() == 0)) {
                 what = "*";
             }
-            if ((where != null) && (where.length() > 0)) {
+            if (Utils.stringDefined(where)) {
                 for (String tok : where.split(";")) {
-                    List<String> toks = StringUtil.splitUpTo(tok, " ", 3);
+                    List<String> toks = StringUtil.splitUpTo(tok, ":", 3);
                     if (toks.size() != 3) {
                         throw new IllegalArgumentException("Bad where value:"
                                 + tok);
@@ -987,6 +940,7 @@ public abstract class DataProvider {
                     clauses.add(new Clause(col, expr, value));
                 }
             }
+	    System.err.println(clauses);
             Clause clause = (clauses.size() > 0)
                             ? Clause.and(clauses)
                             : null;
@@ -1721,12 +1675,14 @@ public abstract class DataProvider {
             for (String tok : Utils.split(header, ",")) {
                 headerRow.add(tok);
             }
-            try {
+            try { 
+		//		System.err.println("pattern:" + chunkPattern);
                 Pattern p1 = Pattern.compile(chunkPattern);
                 Pattern p2 = Pattern.compile(tokenPattern);
                 while (true) {
                     Matcher m1 = p1.matcher(s);
-                    if ( !m1.find()) {
+                    if (!m1.find()) {
+			//			System.err.println("no match");
                         break;
                     }
                     String s2 = s.substring(m1.end());
@@ -1739,6 +1695,7 @@ public abstract class DataProvider {
                             "There should only be one sub-pattern in the chunk");
                     }
                     String  chunk = m1.group(1).trim();
+		    //		    System.err.println("match:" + chunk +"**");
                     Matcher m2    = p2.matcher(chunk);
                     if ( !m2.find()) {
                         break;
@@ -1974,7 +1931,6 @@ public abstract class DataProvider {
             if ( !didFirst) {
                 didFirst = true;
                 row.add("line");
-
                 return row;
             }
             String line = ctx.readLine();

@@ -32,8 +32,9 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
-import java.util.ArrayList;
+import ucar.unidata.xml.XmlUtil;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -89,6 +90,15 @@ public abstract class Processor extends CsvOperator {
      * _more_
      */
     public Processor() {}
+
+
+
+
+
+
+    public Processor(CsvUtil csvUtil) {
+	super(csvUtil);
+    }
 
 
     /**
@@ -1373,95 +1383,6 @@ public abstract class Processor extends CsvOperator {
         }
 
     }
-
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sat, Apr 3, '21
-     * @author         Enter your name here...
-     */
-    public static class ToJson extends Processor {
-
-        /** _more_ */
-        private Row headerRow;
-
-        /**
-         * ctor
-         */
-        public ToJson() {}
-
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
-        @Override
-        public Row processRow(TextReader ctx, Row row) throws Exception {
-            if (headerRow == null) {
-                headerRow = row;
-                ctx.getWriter().println("[");
-                return row;
-            }
-            handleRow(ctx, ctx.getWriter(), row);
-
-            return row;
-        }
-
-
-
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @throws Exception _more_
-         */
-        @Override
-        public void finish(TextReader ctx) throws Exception {
-            super.finish(ctx);
-            ctx.getWriter().println("]");
-        }
-
-
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param writer _more_
-         * @param row _more_
-         *
-         * @throws Exception _more_
-         */
-        private void handleRow(TextReader ctx, PrintWriter writer, Row row)
-                throws Exception {
-            rowCnt++;
-            if (rowCnt > 1) {
-                writer.println(",");
-            }
-            List<String> attrs = new ArrayList<String>();
-            for (int i = 0; i < headerRow.size(); i++) {
-                String field = headerRow.getString(i);
-                String value = row.getString(i);
-                attrs.add(field);
-                attrs.add(value);
-            }
-            writer.print(Json.mapAndGuessType(attrs));
-        }
-
-    }
-
-
-
 
 
 

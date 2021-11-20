@@ -117,10 +117,19 @@ public class CsvOperator {
     /** _more_ */
     private String scol;
 
+    CsvUtil csvUtil;
+
+
+
     /**
      * _more_
      */
     public CsvOperator() {}
+
+    public CsvOperator(CsvUtil csvUtil) {
+	this.csvUtil = csvUtil;
+    }
+
 
     /**
      * _more_
@@ -142,6 +151,14 @@ public class CsvOperator {
     public CsvOperator(List<String> cols) {
         this.sindices = cols;
     }
+
+
+    public String getProperty(String name) {
+	if(csvUtil!=null)
+	    return csvUtil.getProperty(name);
+	return null;
+    }
+
 
 
     /**
@@ -364,8 +381,8 @@ public class CsvOperator {
      * @throws RuntimeException _more_
      */
     public void fatal(String msg) throws RuntimeException {
-        throw new RuntimeException(msg + " function: "
-                                   + getClass().getSimpleName());
+        throw new CsvUtil.MessageException(msg + " function: "
+					   + getClass().getSimpleName());
     }
 
     /**
@@ -377,7 +394,7 @@ public class CsvOperator {
      */
     public void fatal(String msg, Exception exc) throws RuntimeException {
         throw new RuntimeException(msg + " function: "
-                                   + getClass().getSimpleName(), exc);
+			       + getClass().getSimpleName(), exc);
     }
 
 
@@ -937,7 +954,12 @@ public class CsvOperator {
     }
 
 
-
+    public static class CsvException extends RuntimeException {
+	public CsvException(String msg) {
+	    super(msg);
+	}
+    }
+       
 
 
 }
