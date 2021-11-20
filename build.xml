@@ -220,6 +220,7 @@
             <include name="org/**/*.class"/>
 	    <include name="org/ramadda/repository/resources/geo/*"/>
 	    <include name="org/ramadda/util/**/*.zip"/>
+	    <include name="org/ramadda/util/text/**/*.html"/>
 	    <include name="org/ramadda/util/text/*.csv"/>
 	    <include name="org/ramadda/util/text/*.properties"/>
            <manifest>
