@@ -8,6 +8,7 @@ bins="18,25,35,45,55,65,75"
 <<comment
 comment
 
+
 year=2017
 
 make_age_histogram () {
@@ -26,7 +27,7 @@ make_age_histogram () {
     ${csv} -cleaninput -dots ${dots} \
 	   -notpattern voted_date "" \
 	   -summary "count,avg" voted_date age "" \
-	   -gt count 20 \
+	   -gt count 150 \
 	   -sort voted_date \
 	   -notpattern voted_date 2017-11-17 \
 	   -addheader "voted_date.type date voted_date.format yyyy-MM-dd" \
@@ -41,6 +42,24 @@ make_age_histogram () {
 
 do_histogram() {
 #    fetch_voting_report
+    year=2016
+    echo "doing ${year} histograms"
+    ${csv} -delimiter "|"  -cleaninput -dots ${dots} \
+	   -ifin voter_id voters_boulder.csv  voter_id  \
+	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" 05-NOV-09 \
+	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" ".*SEP.*" \
+	   -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "," "voted_date" \
+	   -change voted_date "," "" \
+	   -change voted_date "-16$" "-${year}" \
+	   -change voted_date "OCT" "10" \
+	   -change voted_date "NOV" "11" \
+	   -change voted_date "(..)-(..)-(....)" "\$3-\$2-\$1" \
+	   -change voted_date "(..)/(..)/(....)" "\$3-\$1-\$2" \
+	   -func age "${year}-_yob" \
+	   -p ${datadir}/ce-068-${year}.txt.zip > voting_report_${year}.csv
+    make_age_histogram $year
+
+
     year=2017
     echo "doing ${year} histograms"
     ${csv} -delimiter "|"  -cleaninput -dots ${dots} \
@@ -49,7 +68,7 @@ do_histogram() {
 	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" ".*SEP.*" \
 	   -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "," "voted_date" \
 	   -change voted_date "," "" \
-	   -change voted_date "-17$" "-2017" \
+	   -change voted_date "-17$" "-${year}" \
 	   -change voted_date "OCT" "10" \
 	   -change voted_date "NOV" "11" \
 	   -change voted_date "(..)-(..)-(....)" "\$3-\$2-\$1" \
@@ -60,6 +79,27 @@ do_histogram() {
 
 
     make_age_histogram $year
+
+    year=2018
+    echo "doing ${year} histograms"
+    ${csv} -delimiter "|"  -cleaninput -dots ${dots} \
+	   -ifin voter_id voters_boulder.csv  voter_id  \
+	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" 05-NOV-09 \
+	   -notpattern "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" ".*SEP.*" \
+	   -concat "MAIL_BALLOT_RECEIVE_DATE,IN_PERSON_VOTE_DATE" "," "voted_date" \
+	   -change voted_date "," "" \
+	   -change voted_date "-18$" "-2018" \
+	   -change voted_date "OCT" "10" \
+	   -change voted_date "NOV" "11" \
+	   -change voted_date "(..)-(..)-(....)" "\$3-\$2-\$1" \
+	   -change voted_date "(..)/(..)/(....)" "\$3-\$1-\$2" \
+	   -func age "${year}-_yob" \
+	   -p ${datadir}/ce-068-${year}.txt.zip > voting_report_${year}.csv
+
+
+    make_age_histogram $year
+
+
 
     year=2019
     echo "doing ${year} histogram"
@@ -159,7 +199,7 @@ do_histogram() {
 }
 
 do_turnout() {
-    ${csv} -append  1 voted_2017.csv voted_2019.csv voted_2020.csv voted_2021.csv > tmp.csv
+    ${csv} -append  1 voted_2016.csv voted_2017.csv voted_2018.csv voted_2019.csv voted_2020.csv voted_2021.csv > tmp.csv
     ${csv} -makefields age_range turnout year "" \
 	   -addheader "18_25.unit % 35_45.unit % 45_55.unit % 55_65.unit % 75.unit % year.type string year.format yyyy" -p tmp.csv >boulder_voting_turnout.csv
 
