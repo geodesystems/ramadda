@@ -2426,7 +2426,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                        (String) null);
             }
 
-
             if ((tag == null) && (template == null)) {
                 return getPageHandler().showDialogError(
                     "No _tag or _template attribute specified");
@@ -2506,7 +2505,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     theEntry = entries.get(i);
                 }
 
-
                 String header = ((headers != null) && (i < headers.size()))
                                 ? headers.get(i)
                                 : null;
@@ -2522,8 +2520,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 if (s != null) {
                     s = s.replaceAll("_dollar_", "\\$");
                     //              System.err.println("WIKIFY:" + tmp.trim());
-                    String tmp = wikifyEntry(request, theEntry, wikiUtil, s,
-                                             false, null, null, null, false);
+		    //                    String tmp = wikifyEntry(request, theEntry, wikiUtil, s, false, null, null, null, false);
+                    String tmp = wikifyEntry(request, theEntry, s);
                     buff.append(tmp);
                 } else {
 		    if(debug) {
@@ -5306,8 +5304,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             return rtmp;
         }
-
-
 
         if (orderBy == null) {
             orderBy = (String) props.get("sort");
