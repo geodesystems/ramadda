@@ -6,7 +6,7 @@ export scpgeode=/Users/jeffmc/source/ramadda/bin/scpgeode.sh
 export staging=~/staging
 export dots=5000
 export voting_report_url=https://election.boco.solutions/ElectionDataPublicFiles/CE-068_Voters_With_Ballots_List_Public.zip
-ex=bC!Erlction!$
+ex=4bC!Erlction!$
 
 
 mkdir -p ${staging}
