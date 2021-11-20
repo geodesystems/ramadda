@@ -4660,6 +4660,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             props.put("displayDiv", mapDisplayId);
             MapInfo map = getRepository().getMapManager().createMap(request,
                               entry, width, height, false, props);
+	    map.addProperty("linked","true");
             StringBuilder entryList = new StringBuilder();
             if ( !forPrint) {
                 sb.append(
