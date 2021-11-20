@@ -4357,23 +4357,23 @@ public class CsvUtil {
 	csvUtil.setCsvContext(new CsvContext() {
 		public List<Class> getClasses() {
 		    String _name=null;
-		    try {
-			ArrayList<Class> classes = new ArrayList<Class>();
-			String prop = System.getenv("CSV_CLASSES");
-			if(prop!=null) {
-			    for(String name: Utils.split(prop,":",true,true)) {
-				_name = name;
+		    ArrayList<Class> classes = new ArrayList<Class>();
+		    String prop = System.getenv("CSV_CLASSES");
+		    if(prop!=null) {
+			for(String name: Utils.split(prop,":",true,true)) {
+			    _name = name;
+			    try {
 				Class c  = Class.forName(name);
 				classes.add(c);
+			    } catch(Exception exc) {
+				if(_name!=null) {
+				    System.err.println("Error reading class:" + _name +" error:" + exc);
+				}
 			    }
 			}
-			return classes;
-		    } catch(Exception exc) {
-			if(_name!=null) {
-			    System.err.println("Error reading class:" + _name +" error:" + exc);
-			}
-			throw new RuntimeException(exc);
+			//			throw new RuntimeException(exc);
 		    }
+		    return classes;
 		}
 		public String getProperty(String key, String dflt) {
 		    String v =  System.getProperty(key);
