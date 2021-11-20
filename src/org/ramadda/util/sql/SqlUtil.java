@@ -6,10 +6,10 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.util.sql;
 
 
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
@@ -751,6 +751,24 @@ public class SqlUtil {
         return sb.toString();
     }
 
+
+    public static String makeInsert(String table, List<String> names) {
+        StringBuffer sb = new StringBuffer();
+        sb.append("INSERT INTO ");
+        sb.append(table);
+        sb.append(" (");
+        sb.append(comma(names));
+        sb.append(" ) values ( ");
+        for (int i = 0; i < names.size(); i++) {
+            if (i > 0) {
+                sb.append(",");
+            }
+            sb.append(" ? ");
+        }
+        sb.append(" )");
+        return sb.toString();
+    }
+    
 
 
 
@@ -1560,6 +1578,56 @@ public class SqlUtil {
     }
 
 
+    public static List<String> getColumnTypes(Connection connection,
+            String tableName)
+            throws Exception {
+        List<String>     types = new ArrayList<String>();
+        DatabaseMetaData dbmd     = connection.getMetaData();
+        ResultSet        cols = dbmd.getColumns(null, null, tableName, null);
+        while (cols.next()) {
+            String name = cols.getString("COLUMN_NAME");
+            String type = cols.getString("TYPE_NAME");
+	    types.add(type);
+        }
+        //Try upper
+        if (types.size() == 0) {
+            cols = dbmd.getColumns(null, null, tableName.toUpperCase(), null);
+            while (cols.next()) {
+                String type = cols.getString("TYPE_NAME");
+		types.add(type);
+            }
+        }
+
+        return types;
+    }
+    
+    public static Hashtable<String,String> getColumnInfo(Connection connection,
+            String tableName)
+            throws Exception {
+        Hashtable<String,String>     info = new Hashtable<String,String>();
+        DatabaseMetaData dbmd     = connection.getMetaData();
+        ResultSet        cols = dbmd.getColumns(null, null, tableName, null);
+        while (cols.next()) {
+            String name = cols.getString("COLUMN_NAME");
+            String type = cols.getString("TYPE_NAME");
+	    info.put(name,type.toLowerCase());
+        }
+        //Try upper
+        if (info.size() == 0) {
+            cols = dbmd.getColumns(null, null, tableName.toUpperCase(), null);
+            while (cols.next()) {
+		String name = cols.getString("COLUMN_NAME");
+                String type = cols.getString("TYPE_NAME");
+		info.put(name,type.toLowerCase());
+            }
+        }
+
+        return info;
+    }
+    
+
+
+
 
 
     /**
@@ -2108,6 +2176,7 @@ public class SqlUtil {
      * @throws SQLException _more_
      */
     public static void close(Statement stmt) throws SQLException {
+	if(stmt==null) return;
         if (connectionManager != null) {
             connectionManager.closeStatement(stmt);
         } else {
@@ -2715,5 +2784,34 @@ public class SqlUtil {
          */
         public boolean handleResults(ResultSet results) throws Exception;
     }
+
+    public static void main(String[]args) throws Exception {
+	if(args.length!=4) {
+	    System.err.println("Usage: SqlUtil <jdbc url> <user> <password> <sql file>");
+	    System.exit(1);
+	}
+	String user = args[1];
+	String password = args[2];	
+
+        Properties connectionProps = new Properties();
+        if (Utils.stringDefined(user)) {
+            connectionProps.put("user", user);
+        }
+        if (Utils.stringDefined(password)) {
+            connectionProps.put("password", password);
+        }
+
+        Connection connection = DriverManager.getConnection(args[0],
+							    connectionProps);
+        Statement statement = connection.createStatement();
+	String sql = IO.readContents(args[3]);
+	loadSql(sql, statement,false,null);
+	statement.close();
+	connection.close();
+
+	System.exit(0);
+    }
+
+
 
 }
