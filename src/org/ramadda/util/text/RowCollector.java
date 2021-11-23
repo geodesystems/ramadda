@@ -1205,10 +1205,10 @@ public class RowCollector extends Processor {
          *
          * @throws Exception _more_
          */
+	@Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             if (rowCnt++ == 0) {
                 header = row;
-
                 return null;
             }
             List<Integer> indices = getIndices(ctx);
