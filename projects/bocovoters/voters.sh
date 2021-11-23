@@ -31,14 +31,15 @@ init_files() {
     fetch_voting_report
     if [ ! -f ${voter_history} ]; then
        echo "making voter_history"
-       cp source/Master_Voting_History_List_Part1.csv ${voter_history}
-       tail -n+2 source/Master_Voting_History_List_Part2.csv >> ${voter_history}
-       tail -n+2 source/Master_Voting_History_List_Part3.csv >> ${voter_history}        
+       
+#       cp source/Master_Voting_History_List_Part1.csv ${voter_history}
+#       tail -n+2 source/Master_Voting_History_List_Part2.csv >> ${voter_history}
+#       tail -n+2 source/Master_Voting_History_List_Part3.csv >> ${voter_history}
+       ${csv} -append  source/Master_Voting_History_List_Part1.csv source/Master_Voting_History_List_Part2.csv >> ${voter_history} source/Master_Voting_History_List_Part3.csv >> ${voter_history}               
    fi
 }
 
-init_files
-exit
+
 
 do_prep() {
     echo "processing voting report"
@@ -117,18 +118,18 @@ do_history() {
 do_counts() {
     echo "making off year count"
     cols=VOTER_ID,count
-    ${csv} -cleaninput -dots   -countunique voter_id -columns ${cols} -set 1 0 "Voted in 2020" -p history_2020.csv   >tmp.csv
-    ${csv}  -cleaninput -dots  -change voted_in_2020 1 true  -p tmp.csv   >count_2020.csv
-    ${csv}  -cleaninput -dots  -countunique voter_id -columns ${cols} -set 1 0 "Voted in 2019" -p history_2019.csv   >tmp.csv
-    ${csv}  -cleaninput -dots  -change voted_in_2019 1 true  -p tmp.csv   >count_2019.csv    
-    ${csv}  -cleaninput -dots  -countunique voter_id -columns ${cols} -set 1 0 "Last 3 offyear elections" -p history_offyears3.csv   >count_offyears3.csv
-    ${csv}  -cleaninput -dots  -countunique voter_id -columns ${cols} -set 1 0 "Last 10 offyear elections" -p history_offyears10.csv   >count_offyears10.csv
+    ${csv} -cleaninput -dots  ${dots}  -countunique voter_id -columns ${cols} -set 1 0 "Voted in 2020" -p history_2020.csv   >tmp.csv
+    ${csv}  -cleaninput -dots  ${dots} -change voted_in_2020 1 true  -p tmp.csv   >count_2020.csv
+    ${csv}  -cleaninput -dots  ${dots} -countunique voter_id -columns ${cols} -set 1 0 "Voted in 2019" -p history_2019.csv   >tmp.csv
+    ${csv}  -cleaninput -dots  ${dots} -change voted_in_2019 1 true  -p tmp.csv   >count_2019.csv    
+    ${csv}  -cleaninput -dots  ${dots} -countunique voter_id -columns ${cols} -set 1 0 "Last 3 offyear elections" -p history_offyears3.csv   >count_offyears3.csv
+    ${csv}  -cleaninput -dots  ${dots} -countunique voter_id -columns ${cols} -set 1 0 "Last 10 offyear elections" -p history_offyears10.csv   >count_offyears10.csv
     echo "making all count"
-    ${csv} -cleaninput -dots   -countunique voter_id -columns ${cols} -set 1 0 "All elections" -p ${unique_voter_history}  >count_all.csv
+    ${csv} -cleaninput -dots   ${dots} -countunique voter_id -columns ${cols} -set 1 0 "All elections" -p ${unique_voter_history}  >count_all.csv
 #    echo "making municipal count"
 #    ${csv} -pattern election_type Municipal  -countunique voter_id -columns ${cols} -set 1 0 "Municipal elections"  -p ${unique_voter_history}  >count_municipal.csv
     echo "making primary count"
-    ${csv} -cleaninput -dots -pattern election_type Primary  -countunique voter_id -columns ${cols} -set 1 0 "Primary elections"  -p ${unique_voter_history} >count_primary.csv
+    ${csv} -cleaninput -dots ${dots} -pattern election_type Primary  -countunique voter_id -columns ${cols} -set 1 0 "Primary elections"  -p ${unique_voter_history} >count_primary.csv
 }
 
 #do_counts
