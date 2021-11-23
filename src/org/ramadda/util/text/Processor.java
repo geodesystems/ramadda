@@ -514,7 +514,7 @@ public abstract class Processor extends CsvOperator {
          * @param col _more_
          * @param suffix _more_
          */
-        public Downloader(CsvUtil csvUtil, String col, String suffix) {
+        public Downloader(TextReader ctx, CsvUtil csvUtil, String col, String suffix) {
             super(col);
             this.csvUtil = csvUtil;
             this.suffix  = suffix;
@@ -864,7 +864,7 @@ public abstract class Processor extends CsvOperator {
         /**
          * _more_
          */
-        public Pass() {}
+        public Pass(TextReader ctx) {}
 
 
         /**
@@ -1014,7 +1014,7 @@ public abstract class Processor extends CsvOperator {
          * @param predicate _more_
          * @param ctx _more_
          */
-        public If(CsvUtil csvUtil, TextReader predicate, TextReader ctx) {
+        public If(TextReader dummy, CsvUtil csvUtil, TextReader predicate, TextReader ctx) {
             this.csvUtil   = csvUtil;
             this.predicate = predicate;
             this.ctx       = ctx;
@@ -1078,7 +1078,7 @@ public abstract class Processor extends CsvOperator {
         /**
          * _more_
          */
-        public Verifier() {}
+        public Verifier(TextReader ctx) {}
 
 
         /**
@@ -1416,7 +1416,7 @@ public abstract class Processor extends CsvOperator {
          *
          * @param props _more_
          */
-        public DbXml(Hashtable<String, String> props) {
+        public DbXml(TextReader ctx, Hashtable<String, String> props) {
             this.props = props;
             for (Enumeration k = props.keys(); k.hasMoreElements(); ) {
                 String key = (String) k.nextElement();
@@ -1857,7 +1857,7 @@ public abstract class Processor extends CsvOperator {
          * @param idPattern _more_
          * @param suffixPattern _more_
          */
-        public DbProps(String idPattern, String suffixPattern) {
+        public DbProps(TextReader ctx, String idPattern, String suffixPattern) {
             this.idPattern = idPattern;
             if (this.idPattern.length() > 0) {
                 this.idPattern = ".*" + this.idPattern + ".*";
@@ -1961,7 +1961,7 @@ public abstract class Processor extends CsvOperator {
         /**
          * _more_
          */
-        public Fields() {}
+        public Fields(TextReader ctx) {}
 
 
         /**
@@ -2114,14 +2114,14 @@ public abstract class Processor extends CsvOperator {
         /**
          * _more_
          */
-        public Counter() {}
+        public Counter(TextReader ctx) {}
 
         /**
          * _more_
          *
          * @param strict _more_
          */
-        public Counter(boolean strict) {
+        public Counter(TextReader ctx, boolean strict) {
             this.strict = strict;
         }
 
@@ -2132,7 +2132,7 @@ public abstract class Processor extends CsvOperator {
          * @param strict _more_
          * @param error _more_
          */
-        public Counter(boolean strict, boolean error) {
+        public Counter(TextReader ctx, boolean strict, boolean error) {
             this.strict = strict;
             this.error  = error;
         }
@@ -2238,7 +2238,7 @@ public abstract class Processor extends CsvOperator {
         /**
          * _more_
          */
-        public Logger() {}
+        public Logger(TextReader ctx) {}
 
         /**
          * _more_
@@ -2433,7 +2433,7 @@ public abstract class Processor extends CsvOperator {
          * @param keys2 _more_
          * @param dflt _more_
          */
-        public Joiner(List<String> keys1, List<String> values1, String file,
+        public Joiner(TextReader ctx, List<String> keys1, List<String> values1, String file,
                       List<String> keys2, String dflt) {
             this.keys1   = keys1;
             this.values1 = values1;
@@ -2441,7 +2441,7 @@ public abstract class Processor extends CsvOperator {
             this.file    = file;
             this.dflt    = dflt;
             try {
-                init();
+                init(ctx);
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
@@ -2453,7 +2453,7 @@ public abstract class Processor extends CsvOperator {
          *
          * @throws Exception _more_
          */
-        private void init() throws Exception {
+        private void init(TextReader ctx) throws Exception {
             if ( !IO.okToReadFrom(file)) {
                 throw new RuntimeException("Cannot read file:" + file);
             }
@@ -2494,7 +2494,7 @@ public abstract class Processor extends CsvOperator {
                 String key = "";
                 for (int i : keys1Indices) {
                     if ((i < 0) || (i >= cols.size())) {
-                        fatal("Mismatch between columns and keys. Columns:"
+                        fatal(ctx, "Mismatch between columns and keys. Columns:"
                               + cols + " key index:" + i);
                     }
                     key += cols.get(i) + "_";
@@ -2507,7 +2507,7 @@ public abstract class Processor extends CsvOperator {
                 map.put(key, row);
             }
             if (operator == null) {
-                fatal("Unable to read any data from:" + file);
+                fatal(ctx, "Unable to read any data from:" + file);
             }
         }
 
@@ -2620,7 +2620,7 @@ public abstract class Processor extends CsvOperator {
          * @param keys2 _more_
          * @param dflt _more_
          */
-        public FuzzyJoiner(int threshold, List<String> keys1,
+        public FuzzyJoiner(TextReader ctx, int threshold, List<String> keys1,
                            List<String> values1, String file,
                            List<String> keys2, String dflt) {
             this.threshold = threshold;
@@ -2629,9 +2629,9 @@ public abstract class Processor extends CsvOperator {
             this.keys2     = keys2;
             this.dflt      = dflt;
             try {
-                init(file);
+                init(ctx, file);
             } catch (Exception exc) {
-                fatal("Error opening file:" + file, exc);
+                fatal(ctx, "Error opening file:" + file, exc);
             }
         }
 
@@ -2671,7 +2671,7 @@ public abstract class Processor extends CsvOperator {
          * @param file _more_
          * @throws Exception _more_
          */
-        private void init(String file) throws Exception {
+        private void init(TextReader ctx, String file) throws Exception {
             List<Integer> keys1Indices = null;
             BufferedReader br = new BufferedReader(
                                     new InputStreamReader(
@@ -2712,7 +2712,7 @@ public abstract class Processor extends CsvOperator {
                     }
                     int index = keys1Indices.get(i);
                     if ((index < 0) || (index >= cols.size())) {
-                        fatal("Mismatch between columns and keys. Columns:"
+                        fatal(ctx, "Mismatch between columns and keys. Columns:"
                               + cols + " key index:" + index);
                     }
                     key += cols.get(index);
@@ -2724,7 +2724,7 @@ public abstract class Processor extends CsvOperator {
                 rows.add(new KeyRow(key, row));
             }
             if (operator == null) {
-                fatal("Unable to read any data from:" + file);
+                fatal(ctx, "Unable to read any data from:" + file);
             }
         }
 

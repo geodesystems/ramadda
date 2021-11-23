@@ -20,6 +20,7 @@ import org.ramadda.util.Utils;
 import org.ramadda.util.geo.GeoUtils;
 
 import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.LogUtil;
 
 import java.io.*;
 
@@ -74,6 +75,8 @@ public class CsvOperator {
     /** _more_ */
     public static int OP_MATCH = 7;
 
+    public static final String OPERAND_PERCENT = "percent";
+    public static final String OPERAND_COUNT = "count";
     public static final String OPERAND_SUM = "sum";
     public static final String OPERAND_MIN = "min";
     public static final String OPERAND_MAX = "max";
@@ -380,7 +383,7 @@ public class CsvOperator {
      *
      * @throws RuntimeException _more_
      */
-    public void fatal(String msg) throws RuntimeException {
+    public void fatal(TextReader ctx, String msg) throws RuntimeException {
         throw new CsvUtil.MessageException(msg + " function: "
 					   + getClass().getSimpleName());
     }
@@ -392,9 +395,10 @@ public class CsvOperator {
      *
      * @throws RuntimeException _more_
      */
-    public void fatal(String msg, Exception exc) throws RuntimeException {
+    public void fatal(TextReader ctx, String msg, Exception exc) throws RuntimeException {
+	Throwable inner = LogUtil.getInnerException(exc);
         throw new RuntimeException(msg + " function: "
-			       + getClass().getSimpleName(), exc);
+			       + getClass().getSimpleName(), inner);
     }
 
 
@@ -411,7 +415,7 @@ public class CsvOperator {
         }
         List<Integer> indices = getIndices(ctx);
         if (indices.size() == 0) {
-            fatal("No indices specified");
+            fatal(ctx, "No indices specified");
         }
         index = indices.get(0);
 
@@ -716,7 +720,7 @@ public class CsvOperator {
 			msg.append(skey);
                     }
                     //              System.err.println(columnMap);
-                    fatal("Could not find index:" + tok+ msg+"\n");
+                    fatal(ctx, "Could not find index:" + tok+ msg+"\n");
                 }
             } else {
                 String tok1 = toks.get(0);
@@ -743,7 +747,7 @@ public class CsvOperator {
                         String key = (String) keys.nextElement();
                         System.err.println("key:" + key);
                     }
-                    fatal("Could not find indices:" + toks);
+                    fatal(ctx, "Could not find indices:" + toks);
                 }
                 /*
                   Integer iv2 = getColumnIndex(ctx, tok2);

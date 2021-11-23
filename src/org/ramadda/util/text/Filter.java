@@ -229,14 +229,14 @@ public class Filter extends Processor {
         /**
          * _more_
          */
-        public FilterGroup() {}
+        public FilterGroup(TextReader ctx) {}
 
         /**
          * _more_
          *
          * @param andLogic _more_
          */
-        public FilterGroup(boolean andLogic) {
+        public FilterGroup(TextReader ctx, boolean andLogic) {
             this.andLogic = andLogic;
         }
 
@@ -318,16 +318,16 @@ public class Filter extends Processor {
          * @param file _more_
          * @param column2 _more_
          */
-        public IfIn(boolean in, String column1, String file, String column2) {
+        public IfIn(TextReader ctx, boolean in, String column1, String file, String column2) {
             this.in = in;
             if ( !IO.okToReadFrom(file)) {
-                fatal("Cannot read file:" + file);
+                fatal(ctx, "Cannot read file:" + file);
             }
             this.column2 = column2;
             try {
                 init(file, column1);
             } catch (Exception exc) {
-                fatal("Reading file:" + file, exc);
+                fatal(ctx, "Reading file:" + file, exc);
             }
         }
 
@@ -438,7 +438,7 @@ public class Filter extends Processor {
          * @param pattern _more_
          * @param negate _more_
          */
-        public PatternFilter(List<String> cols, String pattern,
+        public PatternFilter(TextReader ctx, List<String> cols, String pattern,
                              boolean negate) {
             super(cols, negate);
             setPattern(pattern);
@@ -454,7 +454,7 @@ public class Filter extends Processor {
          * @param cols _more_
          * @param pattern _more_
          */
-        public PatternFilter(List<String> cols, String pattern) {
+        public PatternFilter(TextReader ctx, List<String> cols, String pattern) {
             super(cols);
             setPattern(pattern);
             if ((cols.size() == 1) && cols.get(0).equals("-1")) {
@@ -469,7 +469,7 @@ public class Filter extends Processor {
          * @param idx _more_
          * @param pattern _more_
          */
-        public PatternFilter(int idx, String pattern) {
+        public PatternFilter(TextReader ctx, int idx, String pattern) {
             super(idx);
             setPattern(pattern);
             setIndex(idx);
@@ -630,7 +630,7 @@ public class Filter extends Processor {
          * @param pattern _more_
          * @param negate _more_
          */
-        public FuzzyFilter(int threshold, List<String> cols, String pattern,
+        public FuzzyFilter(TextReader ctx, int threshold, List<String> cols, String pattern,
                            boolean negate) {
             super(cols, negate);
             this.threshold = threshold;
@@ -770,7 +770,7 @@ public class Filter extends Processor {
          * @param col2 _more_
          * @param negate _more_
          */
-        public Same(String col1, String col2, boolean negate) {
+        public Same(TextReader ctx, String col1, String col2, boolean negate) {
             super(negate);
             scol1 = col1;
             scol2 = col2;
@@ -823,7 +823,7 @@ public class Filter extends Processor {
          * @param col _more_
          * @param count _more_
          */
-        public CountValue(String col, int count) {
+        public CountValue(TextReader ctx, String col, int count) {
             super(col);
             this.count = count;
         }
@@ -882,7 +882,7 @@ public class Filter extends Processor {
          * @param start _more_
          * @param skip _more_
          */
-        public Decimate(int start, int skip) {
+        public Decimate(TextReader ctx, int start, int skip) {
             this.start = start;
             this.skip  = skip;
         }
@@ -934,7 +934,7 @@ public class Filter extends Processor {
          *
          * @param pattern _more_
          */
-        public Stop(String pattern) {
+        public Stop(TextReader ctx, String pattern) {
             this.pattern  = pattern;
             this.seenStop = false;
         }
@@ -989,7 +989,7 @@ public class Filter extends Processor {
          *
          * @param pattern _more_
          */
-        public Start(String pattern) {
+        public Start(TextReader ctx, String pattern) {
             this.pattern   = pattern;
             this.seenStart = false;
         }
@@ -1040,7 +1040,7 @@ public class Filter extends Processor {
          *
          * @param cnt _more_
          */
-        public MinColumns(int cnt) {
+        public MinColumns(TextReader ctx, int cnt) {
             this.cnt = cnt;
         }
 
@@ -1082,7 +1082,7 @@ public class Filter extends Processor {
          * _more_
          * @param cnt _more_
          */
-        public MaxColumns(int cnt) {
+        public MaxColumns(TextReader ctx, int cnt) {
             this.cnt = cnt;
         }
 
@@ -1137,7 +1137,7 @@ public class Filter extends Processor {
          * @param op _more_
          * @param value _more_
          */
-        public ValueFilter(List<String> cols, int op, double value) {
+        public ValueFilter(TextReader ctx, List<String> cols, int op, double value) {
             super(cols);
             this.op    = op;
             this.value = value;
@@ -1242,7 +1242,7 @@ public class Filter extends Processor {
          * @param min _more_
          * @param max _more_
          */
-        public RangeFilter(boolean between, List<String> cols, double min,
+        public RangeFilter(TextReader ctx, boolean between, List<String> cols, double min,
                            double max) {
             super(cols);
             this.between = between;
@@ -1324,7 +1324,7 @@ public class Filter extends Processor {
          * _more_
          * @param rows _more_
          */
-        public RowCutter(List<Integer> rows) {
+        public RowCutter(TextReader ctx, List<Integer> rows) {
             this.rows = rows;
         }
 
@@ -1334,8 +1334,8 @@ public class Filter extends Processor {
          * @param rows _more_
          * @param cut _more_
          */
-        public RowCutter(List<Integer> rows, boolean cut) {
-            this(rows);
+        public RowCutter(TextReader ctx, List<Integer> rows, boolean cut) {
+            this(ctx, rows);
             this.cut = cut;
         }
 
@@ -1398,7 +1398,7 @@ public class Filter extends Processor {
          *
          * @param toks _more_
          */
-        public Unique(List<String> toks) {
+        public Unique(TextReader ctx, List<String> toks) {
             super(toks);
         }
 
@@ -1448,7 +1448,7 @@ public class Filter extends Processor {
          *
          * @param prob _more_
          */
-        public Sample(double prob) {
+        public Sample(TextReader ctx, double prob) {
             this.prob = prob;
         }
 

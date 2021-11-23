@@ -30,6 +30,7 @@ import org.ramadda.util.XlsUtil;
 
 
 import org.apache.commons.io.input.BOMInputStream;
+import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 
@@ -372,16 +373,16 @@ public class CsvUtil {
     }
 
 
-    public Connection getDbConnection(CsvOperator op, Hashtable<String,String> props, String db, String table) throws Exception {
+    public Connection getDbConnection(TextReader ctx, CsvOperator op, Hashtable<String,String> props, String db, String table) throws Exception {
 	String dbs = getProperty("csv_dbs");
 	if(!Utils.stringDefined(db)) {
-	    op.fatal("No db specified." + (dbs!=null?"Available dbs:" + dbs:""));
+	    op.fatal(ctx, "No db specified." + (dbs!=null?"Available dbs:" + dbs:""));
 
 	}
 	String jdbcUrl = getProperty("csv_db_" + db + "_url");
 	Properties connectionProps = new Properties();
 	if(jdbcUrl==null) {
-	    op.fatal("No csv_db_" + db + "_url environment variable specified. " + (dbs!=null?"Available dbs:" + dbs:""));
+	    op.fatal(ctx, "No csv_db_" + db + "_url environment variable specified. " + (dbs!=null?"Available dbs:" + dbs:""));
 	}
 
 	String     user            = props.get("db.user");
@@ -393,7 +394,7 @@ public class CsvUtil {
 	try {
 	    connection = SqlUtil.getConnection(jdbcUrl, user, password);
 	} catch (Exception exc) {
-	    op.fatal("Error making JDBC connection:"+ jdbcUrl, exc);
+	    op.fatal(ctx, "Error making JDBC connection:"+ jdbcUrl, exc);
 	}
 
 	if (props.get("help")!=null && props.get("help").equals("true")) {
@@ -414,14 +415,14 @@ public class CsvUtil {
 
 	List<String> tableList = Utils.split(table, ",", true, true);
 	if (tableList.size() == 0) {
-	    op.fatal("No table specified"
+	    op.fatal(ctx, "No table specified"
 		     + "\nAvailable tables:\n"
 		     + Utils.wrap(okTables, "\t", "\n"));
 	}
 	
 	for (String t : tableList) {
 	    if ( !Utils.containsIgnoreCase(okTables, t)) {
-		op.fatal("Unknown table:" + t
+		op.fatal(ctx, "Unknown table:" + t
 			 + "\nAvailable tables:\n"
 			 + Utils.wrap(okTables, "\t", "\n"));
             }
@@ -730,7 +731,7 @@ public class CsvUtil {
             if (iterateColumn == null) {
                 iterateValues.add("dummy");
             } else {
-                iteratePattern = new Filter.PatternFilter(getCols(iterateColumn), "");
+                iteratePattern = new Filter.PatternFilter(myTextReader, getCols(iterateColumn), "");
                 myTextReader.addProcessor(iteratePattern);
             }
 	    //For now do the old way so we handle utf-8 better
@@ -2538,7 +2539,7 @@ public class CsvUtil {
 	    });
 
 	defineFunction("-pass",0,(ctx,args,i) -> {
-		ctx.addProcessor(new Processor.Pass());
+		ctx.addProcessor(new Processor.Pass(ctx));
 		return i;
 	    });
 
@@ -2548,91 +2549,91 @@ public class CsvUtil {
 	    });
 
 	defineFunction("-image",2, (ctx,args,i) -> {
-		ctx.addProcessor(new Converter.ImageSearch(getCols(args.get(++i)), args.get(++i)));
+		ctx.addProcessor(new Converter.ImageSearch(ctx, getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });
 	defineFunction("-rows_first",2, (ctx,args,i) -> {
-		ctx.addProcessor(new RowCollector.RowShuffler(true,getCols(args.get(++i)), args.get(++i)));
+		ctx.addProcessor(new RowCollector.RowShuffler(ctx, true,getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });
 	defineFunction("-rows_last",2, (ctx,args,i) -> {
-		ctx.addProcessor(new RowCollector.RowShuffler(false,getCols(args.get(++i)), args.get(++i)));
+		ctx.addProcessor(new RowCollector.RowShuffler(ctx,false,getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });		
 	defineFunction("-embed",1, (ctx,args,i) -> {
-		ctx.addProcessor(new Converter.Embed(args.get(++i)));
+		ctx.addProcessor(new Converter.Embed(ctx, args.get(++i)));
 		return i;
 	    });
 	defineFunction("-fetch",2, (ctx,args,i) -> {
-		ctx.addProcessor(new Converter.Fetch(args.get(++i), args.get(++i)));
+		ctx.addProcessor(new Converter.Fetch(ctx, args.get(++i), args.get(++i)));
 		return i;
 	    });		
 	defineFunction("-countunique",1, (ctx,args,i) -> {
-		ctx.addProcessor(new RowCollector.CountUnique(getCols(args.get(++i))));
+		ctx.addProcessor(new RowCollector.CountUnique(ctx, getCols(args.get(++i))));
 		return i;
 	    });
 
 	defineFunction("-download",2, (ctx,args,i) -> {
-		ctx.addProcessor(new Processor.Downloader(this, args.get(++i), args.get(++i)));
+		ctx.addProcessor(new Processor.Downloader(ctx, this, args.get(++i), args.get(++i)));
 		return i;
 	    });	
 
 	defineFunction(new String[]{"-c","-columns"},1,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.ColumnSelector(getCols(args.get(++i))));
+		ctx.addProcessor(new Converter.ColumnSelector(ctx, getCols(args.get(++i))));
 		return i;
 	    });
 	defineFunction("-columnsbefore",2,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.ColumnsBefore(args.get(++i),getCols(args.get(++i))));
+		ctx.addProcessor(new Converter.ColumnsBefore(ctx, args.get(++i),getCols(args.get(++i))));
 		return i;
 	    });
 	defineFunction("-columnsafter",2,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.ColumnsAfter(args.get(++i),getCols(args.get(++i))));
+		ctx.addProcessor(new Converter.ColumnsAfter(ctx, args.get(++i),getCols(args.get(++i))));
 		return i;
 	    });		
 	defineFunction("-firstcolumns",1,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.ColumnFirst(getCols(args.get(++i))));
+		ctx.addProcessor(new Converter.ColumnFirst(ctx, getCols(args.get(++i))));
 		return i;
 	    });
 
 	defineFunction("-notcolumns",1,(ctx,args,i) -> {
 		List<String> cols = getCols(args.get(++i));
-		ctx.addProcessor(new Converter.ColumnNotSelector(cols));
+		ctx.addProcessor(new Converter.ColumnNotSelector(ctx, cols));
 		return i;
 	    });
 
 	defineFunction("-number",0,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.Number());
+		ctx.addProcessor(new Converter.Number(ctx));
 		return i;
 	    });
 
 	defineFunction("-letter",0,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.Letter());
+		ctx.addProcessor(new Converter.Letter(ctx));
 		return i;
 	    });
 
 	defineFunction("-uuid",0,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.UUID());
+		ctx.addProcessor(new Converter.UUID(ctx));
 		return i;
 	    });
 
 	defineFunction("-start",1,(ctx,args,i) -> {
-		ctx.addProcessor(new Filter.Start(args.get(++i)));
+		ctx.addProcessor(new Filter.Start(ctx,args.get(++i)));
 		return i;
 	    });
 
 	defineFunction("-stop",1,(ctx,args,i) -> {
-		ctx.addProcessor(new Filter.Stop(args.get(++i)));
+		ctx.addProcessor(new Filter.Stop(ctx,args.get(++i)));
 
 		return i;
 	    });
 
 	defineFunction("-min",1,(ctx,args,i) -> {
-		ctx.addProcessor(new Filter.MinColumns(new Integer(args.get(++i))));
+		ctx.addProcessor(new Filter.MinColumns(ctx,new Integer(args.get(++i))));
 		return i;
 	    });
 
 	defineFunction("-max",1,(ctx,args,i) -> {
-		ctx.addProcessor(new Filter.MaxColumns(new Integer(args.get(++i))));
+		ctx.addProcessor(new Filter.MaxColumns(ctx, new Integer(args.get(++i))));
 		return i;
 	    });
 
@@ -2641,7 +2642,7 @@ public class CsvUtil {
 		int skip  = Integer.parseInt(args.get(++i));
 		if (skip > 0) {
 		    ctx.addProcessor(
-				     new Filter.Decimate(start, skip));
+				     new Filter.Decimate(ctx, start, skip));
 		}
 		return i;
 	    });
@@ -2653,18 +2654,18 @@ public class CsvUtil {
 		ctx.putProperty("nukeDb", ""+(Utils.equals(props.get("-nukedb"), "true")
 					      || Utils.equals(props.get("nukedb"),
 							      "true")));
-		ctx.addProcessor(dbXml =  new Processor.DbXml(props));
+		ctx.addProcessor(dbXml =  new Processor.DbXml(ctx,props));
 		ctx.setMaxRows(30);
 		return i;
 	    });
 
 	defineFunction(new String[]{"-dbprops"},2,(ctx,args,i) -> {
-		ctx.addProcessor(new Processor.DbProps(args.get(++i),args.get(++i)));
+		ctx.addProcessor(new Processor.DbProps(ctx,args.get(++i),args.get(++i)));
 		return i;
 	    });
 
 	defineFunction(new String[]{"-fields"},0,(ctx,args,i) -> {
-		ctx.addProcessor(new Processor.Fields());
+		ctx.addProcessor(new Processor.Fields(ctx));
 		return i;
 	    });
 	
@@ -2707,7 +2708,7 @@ public class CsvUtil {
 			throw new RuntimeException("Unknown function in -if:" + ifArgs);
 		    j=idx;
 		}
-		ctx.addProcessor(new Processor.If(this,predicate,ifCtx));
+		ctx.addProcessor(new Processor.If(ctx, this,predicate,ifCtx));
 		return i;
 	    });
 
@@ -2717,7 +2718,7 @@ public class CsvUtil {
 	    List<String> valueCols = getCols(args.get(++i));
 	    String       uniqueCol = args.get(++i);
 	    List<String> extraCols = getCols(args.get(++i));
-	    ctx.addProcessor(new RowCollector.Unfurler(
+	    ctx.addProcessor(new RowCollector.Unfurler(ctx,
 						       mainCol, valueCols, uniqueCol, extraCols));
 
 	    return i;
@@ -2728,7 +2729,7 @@ public class CsvUtil {
 
 	defineFunction("-furl",3,(ctx,args,i) -> {
 		List<String> valueCols = getCols(args.get(++i));
-		ctx.addProcessor(new RowCollector.Furler(
+		ctx.addProcessor(new RowCollector.Furler(ctx,
 							 valueCols, args.get(++i), args.get(++i)));
 
 		return i;
@@ -2738,29 +2739,29 @@ public class CsvUtil {
 		String       label1 = args.get(++i);
 		String       label2 = args.get(++i);
 		List<String> cols   = getCols(args.get(++i));
-		ctx.addProcessor(new RowCollector.Breaker(label1, label2, cols));
+		ctx.addProcessor(new RowCollector.Breaker(ctx,label1, label2, cols));
 
 		return i;
 	    });
 
 	defineFunction("-sort",1,(ctx,args,i) -> {
-		ctx.addProcessor(new RowCollector.Sorter(args.get(++i), true));
+		ctx.addProcessor(new RowCollector.Sorter(ctx,args.get(++i), true));
 
 		return i;
 	    });
 
 	defineFunction("-descsort",1,(ctx,args,i) -> {
-		ctx.addProcessor(new RowCollector.Sorter(args.get(++i), false));
+		ctx.addProcessor(new RowCollector.Sorter(ctx,args.get(++i), false));
 		return i;
 	    });
 
 	defineFunction("-ifin",3,(ctx,args,i) -> {
-		ctx.addProcessor(new Filter.IfIn(true, args.get(++i),args.get(++i),args.get(++i)));
+		ctx.addProcessor(new Filter.IfIn(ctx, true, args.get(++i),args.get(++i),args.get(++i)));
 		return i;
 	    });
 
 	defineFunction("-ifnotin",3,(ctx,args,i) -> {
-		ctx.addProcessor(new Filter.IfIn(false,args.get(++i),args.get(++i),args.get(++i)));
+		ctx.addProcessor(new Filter.IfIn(ctx, false,args.get(++i),args.get(++i),args.get(++i)));
 		return i;
 	    });
 	
@@ -2770,7 +2771,7 @@ public class CsvUtil {
 		List<String> values1 = getCols(args.get(++i));
 		String       file    = args.get(++i);
 		List<String> keys2   = getCols(args.get(++i));
-		ctx.addProcessor(new Processor.Joiner(keys1, values1, file, keys2,args.get(++i)));
+		ctx.addProcessor(new Processor.Joiner(ctx,keys1, values1, file, keys2,args.get(++i)));
 		return i;
 	    });
 
@@ -2780,18 +2781,18 @@ public class CsvUtil {
 		List<String> values1 = getCols(args.get(++i));
 		String       file    = args.get(++i);
 		List<String> keys2   = getCols(args.get(++i));
-		ctx.addProcessor(new Processor.FuzzyJoiner(threshold, keys1, values1, file, keys2,args.get(++i)));
+		ctx.addProcessor(new Processor.FuzzyJoiner(ctx, threshold, keys1, values1, file, keys2,args.get(++i)));
 		return i;
 	    });
 	
 	defineFunction("-normal",1,(ctx,args,i) -> {
 		List<String> cols   = getCols(args.get(++i));
-		ctx.addProcessor(new RowCollector.Normal(cols));
+		ctx.addProcessor(new RowCollector.Normal(ctx, cols));
 		return i;
 	    });
 
 	defineFunction("-ranges",4,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.Ranges(args.get(++i),args.get(++i), Double.parseDouble(args.get(++i)), Double.parseDouble(args.get(++i))));
+		ctx.addProcessor(new Converter.Ranges(ctx, args.get(++i),args.get(++i), Double.parseDouble(args.get(++i)), Double.parseDouble(args.get(++i))));
 		return i;
 	    });
 
@@ -2801,7 +2802,7 @@ public class CsvUtil {
 		List<String> extra  = getCols(args.get(++i));
 		List<String> what = new ArrayList<String>();
 		what.add("sum");
-		ctx.addProcessor(new RowCollector.Summary(what,keys, values, extra));
+		ctx.addProcessor(new RowCollector.Summary(ctx,what,keys, values, extra));
 		return i;
 	    });
 	defineFunction("-summary",4,(ctx,args,i) -> {
@@ -2809,63 +2810,63 @@ public class CsvUtil {
 		List<String> keys   = getCols(args.get(++i));
 		List<String> values = getCols(args.get(++i));
 		List<String> extra  = getCols(args.get(++i));
-		ctx.addProcessor(new RowCollector.Summary(what,keys, values, extra));
+		ctx.addProcessor(new RowCollector.Summary(ctx, what,keys, values, extra));
 		return i;
 	    });	
 	defineFunction("-histogram",4,(ctx,args,i) -> {
-		ctx.addProcessor(new RowCollector.Histogram(args.get(++i),args.get(++i),getCols(args.get(++i)),args.get(++i)));
+		ctx.addProcessor(new RowCollector.Histogram(ctx, args.get(++i),args.get(++i),getCols(args.get(++i)),args.get(++i)));
 		return i;
 	    });	
 
 	defineFunction(new String[]{"-u","-unique"},1,(ctx,args,i) -> {
 		List<String> toks = getCols(args.get(++i));
-		ctx.addProcessor(new Filter.Unique(toks));
+		ctx.addProcessor(new Filter.Unique(ctx, toks));
 		return i;
 	    });
 	defineFunction(new String[]{"-sample"},1,(ctx,args,i) -> {
-		ctx.addProcessor(new Filter.Sample(Double.parseDouble(args.get(++i))));
+		ctx.addProcessor(new Filter.Sample(ctx, Double.parseDouble(args.get(++i))));
 		return i;
 	    });	
 
 	defineFunction("-dups",1,(ctx,args,i) -> {
-		ctx.addProcessor(new RowCollector.Dups(getCols(args.get(++i))));
+		ctx.addProcessor(new RowCollector.Dups(ctx,getCols(args.get(++i))));
 		return i;
 	    });
 
 	defineFunction("-verify",0,(ctx,args,i) -> {
-		ctx.addProcessor(new Processor.Verifier());
+		ctx.addProcessor(new Processor.Verifier(ctx));
 		return i;
 	    });
 
 	defineFunction("-count",0,(ctx,args,i) -> {
-		ctx.addProcessor(new Processor.Counter());
+		ctx.addProcessor(new Processor.Counter(ctx));
 		return i;
 	    });
 
 
 	defineFunction("-log",0,(ctx,args,i) -> {
-		ctx.addProcessor(new Processor.Logger());
+		ctx.addProcessor(new Processor.Logger(ctx));
 		return i;
 	    });
 
 	defineFunction("-strict",0,(ctx,args,i) -> {
-		ctx.addProcessor(new Processor.Counter(true));
+		ctx.addProcessor(new Processor.Counter(ctx,true));
 		return i;
 	    });
 
 	defineFunction("-flag",0,(ctx,args,i) -> {
-		ctx.addProcessor(new Processor.Counter(true, true));
+		ctx.addProcessor(new Processor.Counter(ctx, true, true));
 		return i;
 	    });
 
 
 	defineFunction("-rotate",0,(ctx,args,i) -> {
-		ctx.addProcessor(new RowCollector.Rotator());
+		ctx.addProcessor(new RowCollector.Rotator(ctx));
 		return i;
 	    });
 
 	defineFunction("-flip",0,(ctx,args,i) -> {
-		ctx.addProcessor(new RowCollector.Flipper());
+		ctx.addProcessor(new RowCollector.Flipper(ctx));
 		return i;
 	    });
 
@@ -2924,13 +2925,13 @@ public class CsvUtil {
 	    });
 
 	defineFunction("-cut",1,(ctx,args,i) -> {
-		ctx.addProcessor(new Filter.RowCutter(Utils.getNumbers(args.get(++i)), true));
+		ctx.addProcessor(new Filter.RowCutter(ctx,Utils.getNumbers(args.get(++i)), true));
 		return i;
 	    });
 
 
 	defineFunction("-include",1,(ctx,args,i) -> {
-		ctx.addProcessor(new Filter.RowCutter(Utils.getNumbers(args.get(++i)), false));
+		ctx.addProcessor(new Filter.RowCutter(ctx, Utils.getNumbers(args.get(++i)), false));
 		return i;
 	    });
 
@@ -3007,7 +3008,7 @@ public class CsvUtil {
 
 
 	defineFunction("-explode",1,(ctx,args,i) -> {
-		ctx.addProcessor(new RowCollector.Exploder(args.get(++i)));
+		ctx.addProcessor(new RowCollector.Exploder(ctx, args.get(++i)));
 		return i;
 	    });
 	defineFunction("-dissect",2,(ctx,args,i) -> {
@@ -3039,12 +3040,12 @@ public class CsvUtil {
 	    });
 
 	defineFunction("-ximage",2,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.ImageSearch(getCols(args.get(++i)), args.get(++i)));
+		ctx.addProcessor(new Converter.ImageSearch(ctx,getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });
 
 	defineFunction("-imagefill",3,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.ImageSearch(getCols(args.get(++i)), args.get(++i),args.get(++i)));
+		ctx.addProcessor(new Converter.ImageSearch(ctx,getCols(args.get(++i)), args.get(++i),args.get(++i)));
 		return i;
 	    });
 
@@ -3114,7 +3115,7 @@ public class CsvUtil {
 	    });
 
 	defineFunction("-change",3,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.ColumnChanger(getCols(args.get(++i)),Utils.convertPattern(args.get(++i)),  args.get(++i)));
+		ctx.addProcessor(new Converter.ColumnChanger(ctx,getCols(args.get(++i)),Utils.convertPattern(args.get(++i)),  args.get(++i)));
 		return i;
 	    });
 
@@ -3271,7 +3272,7 @@ public class CsvUtil {
 		String       col  = args.get(++i);
 		String       sdf  = args.get(++i);
 		ctx.addProcessor(
-				 new RowCollector.DateLatest(
+				 new RowCollector.DateLatest(ctx,
 							     cols, col, new SimpleDateFormat(sdf)));
 
 		return i;
@@ -3448,7 +3449,7 @@ public class CsvUtil {
 		List<String> cols  = getCols(args.get(++i));
 		String dest = args.get(++i);
 		List<String> fill = Utils.split(args.get(++i),",",false,false);
-		ctx.addProcessor(new RowCollector.Slicer(cols, dest,fill));
+		ctx.addProcessor(new RowCollector.Slicer(ctx, cols, dest,fill));
 		return i;
 	    });
 	
@@ -3512,7 +3513,7 @@ public class CsvUtil {
 		String value     = args.get(++i);
 		String delimiter = args.get(++i);
 		String name      = args.get(++i);
-		ctx.addProcessor(new RowCollector.Splatter(key, value, delimiter, name));
+		ctx.addProcessor(new RowCollector.Splatter(ctx, key, value, delimiter, name));
 		return i;
 	    });
 	defineFunction("-delta", 2,(ctx,args,i) -> {
@@ -3540,7 +3541,7 @@ public class CsvUtil {
 	    });
 
 	defineFunction("-func", 2,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.ColumnFunc(js.toString(), args.get(++i), args.get(++i)));
+		ctx.addProcessor(new Converter.ColumnFunc(ctx, js.toString(), args.get(++i), args.get(++i)));
 		return i;
 	    });
 
@@ -3566,7 +3567,7 @@ public class CsvUtil {
 		return i;
 	    });		
 	defineFunction("-md", 2,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.MD(getCols(args.get(++i)),args.get(++i)));
+		ctx.addProcessor(new Converter.MD(ctx,getCols(args.get(++i)),args.get(++i)));
 		return i;
 	    });
 	defineFunction("-soundex", 1,(ctx,args,i) -> {
@@ -3699,7 +3700,7 @@ public class CsvUtil {
 
 
 	defineFunction("-or",0,(ctx,args,i) -> {
-		ctx.setFilterToAddTo(new Filter.FilterGroup(false));
+		ctx.setFilterToAddTo(new Filter.FilterGroup(ctx,false));
 		ctx.addProcessor(ctx.getFilterToAddTo());
 		return i;
 	    });
@@ -3710,44 +3711,44 @@ public class CsvUtil {
 	    });
 
 	defineFunction("-and",0,(ctx,args,i) -> {
-		ctx.setFilterToAddTo(new Filter.FilterGroup(true));
+		ctx.setFilterToAddTo(new Filter.FilterGroup(ctx,true));
 		ctx.addProcessor(ctx.getFilterToAddTo());
 		return i;
 	    });
 
 
 	defineFunction("-same", 2,(ctx,args,i) -> {
-		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.Same(args.get(++i), args.get(++i),false));
+		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.Same(ctx,args.get(++i), args.get(++i),false));
 		return i;
 	    });
 
 	defineFunction("-notsame", 2,(ctx,args,i) -> {
-		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.Same(args.get(++i), args.get(++i),true));
+		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.Same(ctx,args.get(++i), args.get(++i),true));
 		return i;
 	    });		
 
 
 	defineFunction("-pattern", 2,(ctx,args,i) -> {
-		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.PatternFilter(getCols(args.get(++i)), args.get(++i)));
+		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.PatternFilter(ctx,getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });
 	defineFunction("-notpattern", 2,(ctx,args,i) -> {
-		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.PatternFilter(getCols(args.get(++i)),args.get(++i), true));
+		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.PatternFilter(ctx,getCols(args.get(++i)),args.get(++i), true));
 		return i;
 	    });
 
 	defineFunction("-fuzzypattern", 3,(ctx,args,i) -> {
-		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.FuzzyFilter(Integer.parseInt(args.get(++i)), getCols(args.get(++i)), args.get(++i),false));
+		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.FuzzyFilter(ctx,Integer.parseInt(args.get(++i)), getCols(args.get(++i)), args.get(++i),false));
 		return i;
 	    });
 
 	defineFunction("-countvalue", 2,(ctx,args,i) -> {
-		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.CountValue(args.get(++i), Integer.parseInt(args.get(++i))));
+		handlePattern(ctx, ctx.getFilterToAddTo(), new Filter.CountValue(ctx,args.get(++i), Integer.parseInt(args.get(++i))));
 		return i;
 	    });
 
 	defineFunction("-groupfilter", 4,(ctx,args,i) -> {
-		ctx.addProcessor(new RowCollector.GroupFilter(getCols(args.get(++i)), Integer.parseInt(args.get(++i)),
+		ctx.addProcessor(new RowCollector.GroupFilter(ctx, getCols(args.get(++i)), Integer.parseInt(args.get(++i)),
 							      CsvOperator.getOperator(args.get(++i)),
 							      args.get(++i)));
 		return i;
@@ -3756,7 +3757,7 @@ public class CsvUtil {
 
 	defineFunction("-eq", 2,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(),
-			      new Filter.ValueFilter(getCols(args.get(++i)),
+			      new Filter.ValueFilter(ctx,getCols(args.get(++i)),
 						     Filter.ValueFilter.OP_EQUALS,
 						     Double.parseDouble(args.get(++i))));
 		return i;
@@ -3764,7 +3765,7 @@ public class CsvUtil {
 
 	defineFunction("-ne", 2,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(),
-			      new Filter.ValueFilter(getCols(args.get(++i)),
+			      new Filter.ValueFilter(ctx,getCols(args.get(++i)),
 						     Filter.ValueFilter.OP_NOTEQUALS,
 						     Double.parseDouble(args.get(++i))));
 		return i;
@@ -3773,7 +3774,7 @@ public class CsvUtil {
 
 	defineFunction("-lt", 2,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(),
-			      new Filter.ValueFilter(
+			      new Filter.ValueFilter(ctx,
 						     getCols(args.get(++i)), Filter.ValueFilter.OP_LT,
 						     Double.parseDouble(args.get(++i))));
 		return i;
@@ -3781,7 +3782,7 @@ public class CsvUtil {
 
 	defineFunction("-gt", 2,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(),
-			      new Filter.ValueFilter(
+			      new Filter.ValueFilter(ctx,
 						     getCols(args.get(++i)), Filter.ValueFilter.OP_GT,
 						     Double.parseDouble(args.get(++i))));
 		return i;
@@ -3790,7 +3791,7 @@ public class CsvUtil {
 
 	defineFunction("-between", 3,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(),
-			      new Filter.RangeFilter(true,
+			      new Filter.RangeFilter(ctx,true,
 						     getCols(args.get(++i)), 
 						     Double.parseDouble(args.get(++i)),
 						     Double.parseDouble(args.get(++i))));						     
@@ -3799,7 +3800,7 @@ public class CsvUtil {
 
 	defineFunction("-notbetween", 3,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(),
-			      new Filter.RangeFilter(false,
+			      new Filter.RangeFilter(ctx,false,
 						     getCols(args.get(++i)), 
 						     Double.parseDouble(args.get(++i)),
 						     Double.parseDouble(args.get(++i))));						     
@@ -3810,14 +3811,14 @@ public class CsvUtil {
 
 	defineFunction("-defined", 1,(ctx,args,i) -> {
 		handlePattern(ctx, ctx.getFilterToAddTo(),
-			      new Filter.ValueFilter(getCols(args.get(++i)),Filter.ValueFilter.OP_DEFINED, 0));
+			      new Filter.ValueFilter(ctx,getCols(args.get(++i)),Filter.ValueFilter.OP_DEFINED, 0));
 		return i;
 	    });
 	defineFunction("-maxvalue", 2,(ctx,args,i) -> {
 		String key   = args.get(++i);
 		String value = args.get(++i);
 		ctx.addProcessor(
-				 new RowCollector.MaxValue(key, value));
+				 new RowCollector.MaxValue(ctx, key, value));
 
 		return i;
 	    });
@@ -3829,7 +3830,7 @@ public class CsvUtil {
 		    ctx.addProcessor(
 				     new Processor.Printer(ctx.getPrintFields(), false));
 		} else if (last.equals("-table")) {
-		    ctx.addProcessor(new RowCollector.Html());
+		    ctx.addProcessor(new RowCollector.Html(ctx));
 		}
 		return -1;
 	    });
@@ -3901,7 +3902,7 @@ public class CsvUtil {
 
 
 	defineFunction("-table",0, (ctx,args,i) -> {
-		ctx.addProcessor(new RowCollector.Html());
+		ctx.addProcessor(new RowCollector.Html(ctx));
 		return i;
 	    });
 
@@ -3930,7 +3931,7 @@ public class CsvUtil {
 
 	defineFunction("-stats",0,(ctx,args,i) -> {
 		if(hasSink) return SKIP_INDEX;
-		ctx.addProcessor(new RowCollector.Stats(this,true));
+		ctx.addProcessor(new RowCollector.Stats(ctx, this,true));
 		return i;
 	    });
 
@@ -3941,7 +3942,7 @@ public class CsvUtil {
 
 	defineFunction("-table",0,(ctx,args,i) -> {
 		if(hasSink) return SKIP_INDEX;
-		ctx.addProcessor(new RowCollector.Stats(this,false));
+		ctx.addProcessor(new RowCollector.Stats(ctx, this,false));
 		return i;
 	    });	
 	
@@ -3982,7 +3983,7 @@ public class CsvUtil {
 
 
 	defineFunction("-tcl", 1,(ctx,args,i) -> {
-		ctx.addProcessor(new RowCollector.TclWrapper(args.get(++i)));
+		ctx.addProcessor(new RowCollector.TclWrapper(ctx, args.get(++i)));
 		return i;
 	    });
 
@@ -4396,7 +4397,9 @@ public class CsvUtil {
 	    System.err.println(cexc.getMessage());
 	    System.exit(1);
 	} catch(Exception exc) {
-	    exc.printStackTrace();
+	    Throwable inner = LogUtil.getInnerException(exc);
+	    System.err.println(exc.getMessage());
+	    inner.printStackTrace();
 	    System.exit(1);
 	}
 	System.exit(0);

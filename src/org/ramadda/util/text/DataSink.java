@@ -383,22 +383,22 @@ public abstract class DataSink extends Processor implements Cloneable,
         /**
           * @return _more_
          */
-        private void init(Row row) throws Exception {
+        private void init(TextReader ctx, Row row) throws Exception {
 	    this.header = row;
-	    this.connection = csvUtil.getDbConnection(this, props,db, table);
+	    this.connection = csvUtil.getDbConnection(ctx, this, props,db, table);
 	    //"" -> db1,db2,...
 	    if(columns.size()==0) {
 		try {
 		    List values = row.getValues();
 		    dbColumns = SqlUtil.getColumnNames(connection, table, false);
 		    if(values.size()!=dbColumns.size()) {
-			fatal("Mismatch between row:" + values +" and database:" + dbColumns +" You need to specify columns");
+			fatal(ctx, "Mismatch between row:" + values +" and database:" + dbColumns +" You need to specify columns");
 		    }
 		    for(int i=0;i<values.size();i++)
 			columns.add(new String[]{values.get(i).toString().toLowerCase(),dbColumns.get(i)});
 		    
 		} catch(Exception exc) {
-		    fatal("Error reading columns:" + exc);
+		    fatal(ctx, "Error reading columns:" + exc);
 		}
 	    }  else if(columns.size()==1 && columns.get(0)[0].equals("_default_")) {
 		dbColumns = Utils.split(Utils.join(row.getValues(),","),",");
@@ -426,7 +426,7 @@ public abstract class DataSink extends Processor implements Cloneable,
 		    sb2.append(values.get(i) +":'db col'");
 		}
 		sb.append("try: -todb " + db +" " + table + " \"" + sb2 +"\" \n");
-		fatal("Error creating statement:\n"+ insert +" error:" + exc +sb);
+		fatal(ctx, "Error creating statement:\n"+ insert +" error:" + exc +sb);
 	    }
         }
 
@@ -444,10 +444,10 @@ public abstract class DataSink extends Processor implements Cloneable,
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
 	    if(rowCnt++==0) {
-		init(row);
+		init(ctx, row);
 		return row;
 	    }
-	    if(row.size()!=header.size()) fatal("#data columns:" + row.size() +" != # header columns:" + header.size());
+	    if(row.size()!=header.size()) fatal(ctx, "#data columns:" + row.size() +" != # header columns:" + header.size());
 	    Hashtable<String,Object> valueMap = new Hashtable<String,Object>();
 	    for(int i=0;i<row.size();i++) {
 		valueMap.put(header.getString(i).toLowerCase(),row.get(i));
@@ -465,10 +465,10 @@ public abstract class DataSink extends Processor implements Cloneable,
 		    type  = info.get(column.toLowerCase());
 		}		
 		if(type==null) {
-		    fatal("No column in table:" + column +" types:" + info);
+		    fatal(ctx, "No column in table:" + column +" types:" + info);
 		}
 		Object o = valueMap.get(tuple[0]);
-		if(o==null) fatal("No value found for column:" + tuple[0]);
+		if(o==null) fatal(ctx, "No value found for column:" + tuple[0]);
 		System.err.println("\tdata:" + tuple[0] +" value:" + o + " column:"  + column +" type:" + type);
 		if(type.equals("integer")) o = new Integer((int)Double.parseDouble(o.toString()));
 		else if(type.equals("double")) o = Double.parseDouble(o.toString());		

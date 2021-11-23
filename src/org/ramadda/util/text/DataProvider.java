@@ -908,7 +908,7 @@ public abstract class DataProvider extends CsvOperator {
          */
         public void initialize(CsvUtil csvUtil, TextReader ctx)
                 throws Exception {
-	    this.connection = csvUtil.getDbConnection(this, props,db, table);
+	    this.connection = csvUtil.getDbConnection(ctx, this, props,db, table);
             List<Clause> clauses = new ArrayList<Clause>();
             String       join    = (String) props.get("join");
             if (join != null) {

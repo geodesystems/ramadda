@@ -414,7 +414,7 @@ public class RowCollector extends Processor {
          * _more_
          *
          */
-        public Rotator() {}
+        public Rotator(TextReader ctx) {}
 
         /**
          * _more_
@@ -469,7 +469,7 @@ public class RowCollector extends Processor {
          * @param cols _more_
          * @param pattern _more_
          */
-        public RowShuffler(boolean atStart, List<String> cols,
+        public RowShuffler(TextReader ctx, boolean atStart, List<String> cols,
                            String pattern) {
             super(cols);
             this.atStart = atStart;
@@ -550,7 +550,7 @@ public class RowCollector extends Processor {
          * @param key _more_
          * @param value _more_
          */
-        public MaxValue(String key, String value) {
+        public MaxValue(TextReader ctx, String key, String value) {
             this.key   = key;
             this.value = value;
         }
@@ -619,7 +619,7 @@ public class RowCollector extends Processor {
         /**
          * ctor
          */
-        public Flipper() {}
+        public Flipper(TextReader ctx) {}
 
         /**
          * _more_
@@ -664,7 +664,7 @@ public class RowCollector extends Processor {
          * _more_
          * @param prefix _more_
          */
-        public TclWrapper(String prefix) {
+        public TclWrapper(TextReader ctx, String prefix) {
             super();
             this.prefix = prefix;
         }
@@ -716,7 +716,7 @@ public class RowCollector extends Processor {
          *
          * @param col _more_
          */
-        public Exploder(String col) {
+        public Exploder(TextReader ctx, String col) {
             super(col);
         }
 
@@ -807,7 +807,7 @@ public class RowCollector extends Processor {
          * _more_
          *
          */
-        public Html() {}
+        public Html(TextReader ctx) {}
 
 
         /** _more_ */
@@ -1008,7 +1008,7 @@ public class RowCollector extends Processor {
          * @param uniqueCol _more_
          * @param extraCols _more_
          */
-        public Unfurler(String unfurlIndex, List<String> valueCols,
+        public Unfurler(TextReader ctx, String unfurlIndex, List<String> valueCols,
                         String uniqueCol, List<String> extraCols) {
             super(extraCols);
             this.unfurlCol = unfurlIndex;
@@ -1192,7 +1192,7 @@ public class RowCollector extends Processor {
          *
          * @param cols _more_
          */
-        public CountUnique(List<String> cols) {
+        public CountUnique(TextReader ctx, List<String> cols) {
             super(cols);
         }
 
@@ -1273,7 +1273,7 @@ public class RowCollector extends Processor {
          *
          * @param cols _more_
          */
-        public Normal(List<String> cols) {
+        public Normal(TextReader ctx, List<String> cols) {
             super(cols);
         }
 
@@ -1451,7 +1451,7 @@ public class RowCollector extends Processor {
          * @param label1 _more_
          * @param label2 _more_
          */
-        public Furler(List<String> cols, String label1, String label2) {
+        public Furler(TextReader ctx, List<String> cols, String label1, String label2) {
             super(cols);
             this.label1 = label1;
             this.label2 = label2;
@@ -1525,7 +1525,7 @@ public class RowCollector extends Processor {
          *
          * @param columns _more_
          */
-        public Dups(List<String> columns) {
+        public Dups(TextReader ctx, List<String> columns) {
             this.columns = columns;
         }
 
@@ -1605,7 +1605,7 @@ public class RowCollector extends Processor {
          * @param delim _more_
          * @param name _more_
          */
-        public Splatter(String key, String value, String delim, String name) {
+        public Splatter(TextReader ctx, String key, String value, String delim, String name) {
             this.key       = key;
             this.value     = value;
             this.delimiter = delim;
@@ -1686,7 +1686,7 @@ public class RowCollector extends Processor {
          * @param label2 _more_
          * @param cols _more_
          */
-        public Breaker(String label1, String label2, List<String> cols) {
+        public Breaker(TextReader ctx, String label1, String label2, List<String> cols) {
             super(cols);
             this.label1 = label1;
             this.label2 = label2;
@@ -1777,7 +1777,7 @@ public class RowCollector extends Processor {
          * @param col _more_
          * @param asc _more_
          */
-        public Sorter(String col, boolean asc) {
+        public Sorter(TextReader ctx, String col, boolean asc) {
             super(col);
             this.asc = asc;
         }
@@ -1848,7 +1848,8 @@ public class RowCollector extends Processor {
          * @param util _more_
          * @param justStats _more_
          */
-        public Stats(CsvUtil util, boolean justStats) {
+        public Stats(TextReader ctx, CsvUtil util, boolean justStats) {
+	    super(ctx);
             this.util      = util;
             this.justStats = justStats;
             interactive    = util.getInteractive();
@@ -2435,7 +2436,7 @@ public class RowCollector extends Processor {
          * @param values _more_
          * @param extra _more_
          */
-        public Summary(List<String> what,List<String> keys, List<String> values,
+        public Summary(TextReader ctx, List<String> what,List<String> keys, List<String> values,
                       List<String> extra) {
 	    
 	    if(what.size()==0) {
@@ -2628,7 +2629,7 @@ public class RowCollector extends Processor {
 		if(firstBin()) {
 		    return v<max;
 		}
-		return v>=min && v<=max;
+		return v>=min && v<max;
 	    }
 	    public void addValues(List<Integer> indices, Row row) {
 		count++;
@@ -2663,7 +2664,7 @@ public class RowCollector extends Processor {
          * _more_
          *
          */
-        public Histogram(String column, String bins,List<String> cols,String what) {
+        public Histogram(TextReader ctx, String column, String bins,List<String> cols,String what) {
 	    super(cols);
 	    this.scolumn = column;
 	    this.what = Utils.split(what,",",true,true);
@@ -2701,9 +2702,6 @@ public class RowCollector extends Processor {
             List<Row> newRows   = new ArrayList<Row>();
             Row       newHeader = new Row();
 	    newHeader.add(headerRow.getString(column) +" range");
-	    newHeader.add("Count");
-	    newHeader.add("Percent");
-
 	    for (int i: indices) {
 		String label = Utils.makeLabel(headerRow.getString(i));
 		for(String op: this.what) {
@@ -2734,12 +2732,11 @@ public class RowCollector extends Processor {
 		Row    row = new Row();
 		newRows.add(row);
 		row.add(bin.getLabel());
-		row.add(bin.count);
-		row.add(percent.apply(bin.count));
-
 		for (int i=0;i<indices.size();i++) {
 		    for(String op: this.what) {
 			if(op.equals(OPERAND_SUM)) row.add(bin.totals[i]);
+			else if(op.equals(OPERAND_COUNT)) row.add(bin.count);
+			else if(op.equals(OPERAND_PERCENT)) row.add(percent.apply(bin.count));
 			else if(op.equals(OPERAND_MIN)) {
 			    row.add(bin.mins[i]==Double.POSITIVE_INFINITY?"NaN":Double.toString(bin.mins[i]));
 			} else if(op.equals(OPERAND_MAX)) {
@@ -2748,7 +2745,7 @@ public class RowCollector extends Processor {
 			    if(bin.count==0) row.add("NaN");
 			    else row.add(bin.totals[i]/bin.count);
 			} else {
-			    fatal("Unknown histogram operator:"+ op);
+			    fatal(ctx, "Unknown histogram operator:"+ op);
 			}
 		    }
 		}
@@ -2788,7 +2785,7 @@ public class RowCollector extends Processor {
          * @param op _more_
          * @param value _more_
          */
-        public GroupFilter(List<String> cols, int valueIdx, int op,
+        public GroupFilter(TextReader ctx, List<String> cols, int valueIdx, int op,
                            String value) {
             super(cols);
             this.op       = op;
@@ -2927,7 +2924,7 @@ public class RowCollector extends Processor {
          * @param sdest _more_
          * @param fill _more_
          */
-        public Slicer(List<String> cols, String sdest, List<String> fill) {
+        public Slicer(TextReader ctx, List<String> cols, String sdest, List<String> fill) {
             super(cols);
             this.sdest = sdest;
             this.fill  = fill;
@@ -3043,7 +3040,7 @@ public class RowCollector extends Processor {
          * @param colName _more_
          * @param sdf _more_
          */
-        public DateLatest(List<String> cols, String colName,
+        public DateLatest(TextReader ctx, List<String> cols, String colName,
                           SimpleDateFormat sdf) {
             this.keys    = cols;
             this.colName = colName;

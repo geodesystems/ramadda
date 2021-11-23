@@ -114,7 +114,7 @@ public abstract class Converter extends Processor {
         /**
          * @param cols _more_
          */
-        public ColumnSelector(List<String> cols) {
+        public ColumnSelector(TextReader ctx, List<String> cols) {
             super(cols);
         }
 
@@ -166,7 +166,7 @@ public abstract class Converter extends Processor {
         /**
          * @param cols _more_
          */
-        public ColumnFirst(List<String> cols) {
+        public ColumnFirst(TextReader ctx, List<String> cols) {
             super(cols);
         }
 
@@ -225,7 +225,7 @@ public abstract class Converter extends Processor {
          * @param col _more_
          * @param cols _more_
          */
-        public ColumnsBefore(String col, List<String> cols) {
+        public ColumnsBefore(TextReader ctx, String col, List<String> cols) {
             super(cols);
             this.col = col;
         }
@@ -295,7 +295,7 @@ public abstract class Converter extends Processor {
          * @param col _more_
          * @param cols _more_
          */
-        public ColumnsAfter(String col, List<String> cols) {
+        public ColumnsAfter(TextReader ctx, String col, List<String> cols) {
             super(cols);
             this.col = col;
         }
@@ -310,7 +310,7 @@ public abstract class Converter extends Processor {
             if (colIdx == -1) {
                 Integer i = getColumnIndex(ctx, col);
                 if (i == null) {
-                    fatal("Could not find index:" + col);
+                    fatal(ctx, "Could not find index:" + col);
                 }
                 colIdx = i;
             }
@@ -360,7 +360,7 @@ public abstract class Converter extends Processor {
         /**
          * @param cols _more_
          */
-        public ColumnNotSelector(List<String> cols) {
+        public ColumnNotSelector(TextReader ctx, List<String> cols) {
             super(cols);
         }
 
@@ -413,7 +413,7 @@ public abstract class Converter extends Processor {
          * @param cols _more_
          * @param suffix _more_
          */
-        public ImageSearch(List<String> cols, String suffix) {
+        public ImageSearch(TextReader ctx, List<String> cols, String suffix) {
             super(cols);
             this.suffix = suffix;
         }
@@ -423,7 +423,7 @@ public abstract class Converter extends Processor {
          * @param suffix _more_
          * @param imageColumn _more_
          */
-        public ImageSearch(List<String> cols, String suffix,
+        public ImageSearch(TextReader ctx, List<String> cols, String suffix,
                            String imageColumn) {
             super(cols);
             this.suffix      = suffix;
@@ -537,7 +537,7 @@ public abstract class Converter extends Processor {
         /**
          * @param col _more_
          */
-        public Embed(String col) {
+        public Embed(TextReader ctx, String col) {
             super();
             imageColumn = col;
         }
@@ -567,7 +567,7 @@ public abstract class Converter extends Processor {
             }
             url = url.trim();
             if (url.toLowerCase().startsWith("file")) {
-                fatal("Bad url:" + url);
+                fatal(ctx, "Bad url:" + url);
             }
             String type = IOUtil.getFileExtension(url);
             if ( !Utils.stringDefined(type)) {
@@ -584,7 +584,7 @@ public abstract class Converter extends Processor {
                 System.err.println("Error reading url:" + url);
                 exc.printStackTrace();
                 row.add("");
-                //              fatal("Reading url:" + url, exc);
+                //              fatal(ctx, "Reading url:" + url, exc);
             }
 
             return row;
@@ -615,7 +615,7 @@ public abstract class Converter extends Processor {
          * @param name _more_
          * @param urlTemplate _more_
          */
-        public Fetch(String name, String urlTemplate) {
+        public Fetch(TextReader ctx, String name, String urlTemplate) {
             super();
             this.name        = name;
             this.urlTemplate = urlTemplate;
@@ -649,7 +649,7 @@ public abstract class Converter extends Processor {
 
             System.err.println("URL:" + url);
             if (url.toLowerCase().startsWith("file")) {
-                fatal("Bad url:" + url);
+                fatal(ctx, "Bad url:" + url);
             }
             try {
                 URL         _url     = new URL(url);
@@ -658,7 +658,7 @@ public abstract class Converter extends Processor {
                 is.close();
                 row.add(contents);
             } catch (Exception exc) {
-                fatal("Reading url:" + url, exc);
+                fatal(ctx, "Reading url:" + url, exc);
             }
 
             return row;
@@ -1593,7 +1593,7 @@ public abstract class Converter extends Processor {
          * @param start _more_
          * @param size _more_
          */
-        public Ranges(String col, String name, double start, double size) {
+        public Ranges(TextReader ctx, String col, String name, double start, double size) {
             super(col);
             this.name  = name;
             this.start = start;
@@ -1930,7 +1930,7 @@ public abstract class Converter extends Processor {
          * @param names _more_
          * @param code _more_
          */
-        public ColumnFunc(String js, String names, String code) {
+        public ColumnFunc(TextReader ctx, String js, String names, String code) {
             this.names = Utils.split(names, ",", true, true);
             if (code.indexOf("return ") >= 0) {
                 code = "function _tmp() {" + code + "}\n_tmp()";
@@ -1950,7 +1950,8 @@ public abstract class Converter extends Processor {
                 //                eval(testScript);
                 script = cx.compileString(code, "code", 0, null);
             } catch (Exception exc) {
-                throw new RuntimeException(exc);
+		fatal(ctx, "Error evaluation function:" + code,exc);
+		//                throw new RuntimeException(exc);
             }
         }
 
@@ -1996,18 +1997,26 @@ public abstract class Converter extends Processor {
 
                 return row;
             }
+	    List<String> vars=null;
             try {
                 List hdr = headerRow.getValues();
+		if(ctx.getDebug()) {
+		    ctx.printDebug("function:" + code);
+		    vars = new ArrayList<String>();
+		}
                 for (int i = 0; i < hdr.size(); i++) {
                     if (i >= row.size()) {
                         continue;
                     }
                     Object o   = row.get(i);
-                    String var = hdr.get(i).toString();
+		    String var = hdr.get(i).toString();
                     var = Utils.makeID(var.toLowerCase());
+		    if(ctx.getDebug())
+			ctx.printDebug("\tvar:" + var);
                     put("_" + var, o);
                     put("_" + var + "_idx", i);
                     put("_col" + i, o);
+		    if(vars!=null) vars.add("_" + var);
                 }
                 put("_header", hdr);
                 put("_values", row.getValues());
@@ -2033,7 +2042,9 @@ public abstract class Converter extends Processor {
                 //              System.err.println("func row:" + row);
                 return row;
             } catch (Exception exc) {
-                throw new RuntimeException(exc);
+		fatal(ctx,"Error evaluating function:" + code +"\n\theader:" + headerRow +(vars!=null?"\n\tvars:" + Utils.join(vars,","):""),exc);
+		//                throw new RuntimeException(exc);
+		return row;
             }
         }
 
@@ -2123,18 +2134,18 @@ public abstract class Converter extends Processor {
          * @param pattern _more_
          * @param value _more_
          */
-        public ColumnChanger(List<String> cols, String pattern,
+        public ColumnChanger(TextReader ctx, List<String> cols, String pattern,
                              String value) {
             super(cols);
             if (pattern.startsWith("file:")) {
                 String file = pattern.substring("file:".length());
                 if ( !IO.okToReadFrom(file)) {
-                    fatal("Cannot read file:" + file);
+                    fatal(ctx,"Cannot read file:" + file);
                 }
                 try {
                     init(file);
                 } catch (Exception exc) {
-                    fatal("Reading file:" + file, exc);
+                    fatal(ctx,"Reading file:" + file, exc);
                 }
                 this.isRegex = true;
             } else {
@@ -2417,14 +2428,14 @@ public abstract class Converter extends Processor {
             try {
                 d = sdf1.parse(s);
             } catch (Exception exc) {
-                fatal("Could not parse date:" + s + " with format:"
+                fatal(ctx,"Could not parse date:" + s + " with format:"
                       + format1);
             }
             try {
                 //              System.err.println(s + " D:" + d  +" " + sdf2.format(d));
                 row.set(col, sdf2.format(d));
             } catch (Exception exc) {
-                fatal("Could not format date:" + s + " with format:"
+                fatal(ctx,"Could not format date:" + s + " with format:"
                       + format2);
             }
 
@@ -5725,7 +5736,7 @@ public abstract class Converter extends Processor {
          * @param indices _more_
          * @param type _more_
          */
-        public MD(List<String> indices, String type) {
+        public MD(TextReader ctx, List<String> indices, String type) {
             super(indices);
             try {
                 type = type.trim();
@@ -5734,7 +5745,7 @@ public abstract class Converter extends Processor {
                 }
                 md = MessageDigest.getInstance(type);
             } catch (Exception exc) {
-                fatal("Creating message digest:" + type, exc);
+                fatal(ctx,"Creating message digest:" + type, exc);
             }
         }
 
@@ -5766,7 +5777,7 @@ public abstract class Converter extends Processor {
             try {
                 row.add(Utils.encodeMD(md.digest()));
             } catch (Exception exc) {
-                fatal("Error making message digest", exc);
+                fatal(ctx,"Error making message digest", exc);
             }
 
             return row;
@@ -6563,7 +6574,7 @@ public abstract class Converter extends Processor {
 
         /**
          */
-        public Letter() {}
+        public Letter(TextReader ctx) {}
 
         /**
          * @param ctx _more_
@@ -6617,7 +6628,7 @@ public abstract class Converter extends Processor {
 
         /**
          */
-        public Number() {}
+        public Number(TextReader ctx) {}
 
         /**
          * @param ctx _more_
@@ -6667,7 +6678,7 @@ public abstract class Converter extends Processor {
 
         /**
          */
-        public UUID() {}
+        public UUID(TextReader ctx) {}
 
         /**
          * @param ctx _more_
