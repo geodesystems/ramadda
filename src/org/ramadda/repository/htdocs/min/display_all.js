@@ -26560,6 +26560,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	{p:"selectField"},
 	{p:"selectValue"},
 	{p:'onlyShowSelected',ex:'true'},
+	{p:'showRecords',tt:'comma separated list of record indices',ex:'0,3,4'},
+	{p:'dontShowRecords',tt:'comma separated list of record indices to not show',ex:'0,3,4'},	
 	{p:'showFirst',ex:'true'},
 	{p:'showLast',ex:'true'},		
 	{p:'selectHighlight',ex:'true'},	
@@ -26607,6 +26609,27 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		}
 	    }
 	    records= this.sortRecords(records);
+	    let showRecords = this.getShowRecords();
+	    if(showRecords) {
+		let tmp = [];
+		showRecords.split(",").forEach(idx=>{
+		    tmp.push(records[+idx]);
+		});
+		records = tmp;
+	    }
+	    let dontShowRecords = this.getDontShowRecords();
+	    if(dontShowRecords) {
+		let notOK = {};
+		dontShowRecords.split(",").forEach(idx=>{
+		    notOK[+idx]=true;
+		});
+		let tmp = [];
+		for(let i=0;i<records.length;i++) {
+		    if(notOK[i]) continue;
+		    tmp.push(records[i]);
+		}
+		records = tmp;
+	    }	    
 	    let fields = pointData.getRecordFields();
 	    let uniqueFields  = this.getFieldsByIds(fields, this.getProperty("uniqueFields"));
 	    let uniqueMap ={};
