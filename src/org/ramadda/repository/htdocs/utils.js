@@ -1339,6 +1339,21 @@ var Utils =  {
 			    }
 			}
 
+			if(t.attrs["positiveTemplate"] || t.attrs["negativeTemplate"]) {
+			    value = +value;
+			    if(value>=0) {
+				if(t.attrs["negativeTemplate"]) {
+				    value = t.attrs["positiveTemplate"].replace("${value}",value);
+				}
+			    } else if(t.attrs["negativeTemplate"]) {
+				if(t.attrs["doAbsolute"]) {
+				    value = -value;
+				}
+				value = t.attrs["negativeTemplate"].replace("${value}",value);
+			    }
+			} 
+
+
 
 			if(t.attrs["youtube"]) {
 			    if(value.trim().length==0) return null;
