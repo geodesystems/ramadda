@@ -2969,7 +2969,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
                     return row;
                 } catch (Exception exc) {
-                    fatal("Loading db", exc);
+                    fatal(textReader, "Loading db", exc);
 
                     return null;
                 }
