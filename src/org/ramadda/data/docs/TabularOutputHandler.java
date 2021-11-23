@@ -719,11 +719,11 @@ public class TabularOutputHandler extends OutputHandler {
                             double value = Double.parseDouble(s);
                             int op = Filter.ValueFilter.getOperator(operator);
                             textReader.addProcessor(
-                                new Filter.ValueFilter(cols, op, value));
+						    new Filter.ValueFilter(textReader, cols, op, value));
                             continue;
                         }
                         textReader.addProcessor(
-                            new Filter.PatternFilter(
+						new Filter.PatternFilter(textReader,
                                 column, request.getString(id, "")));
 
                     }
@@ -735,7 +735,7 @@ public class TabularOutputHandler extends OutputHandler {
         String searchText = request.getString("table.text", (String) null);
         if (Utils.stringDefined(searchText)) {
             //match all
-            textReader.addProcessor(new Filter.PatternFilter(-1,
+            textReader.addProcessor(new Filter.PatternFilter(textReader,-1,
                     "(?i:.*" + searchText + ".*)"));
         }
         CsvUtil csvUtil = new CsvUtil(new ArrayList<String>());
