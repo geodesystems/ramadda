@@ -1233,6 +1233,7 @@ public class PageHandler extends RepositoryManager {
                     //                    resource = resource.replace("${imports}", webImports);
                     HtmlTemplate template = new HtmlTemplate(getRepository(),
                                                 path, resource);
+
                     int idx = template.getTemplate().indexOf("${content}");
                     if (idx >= 0) {
                         template.setPrefix(new HtmlTemplate(template,
@@ -3584,18 +3585,19 @@ public class PageHandler extends RepositoryManager {
                    + RepositoryUtil.getHtdocsVersion();
         }
 
-        String root = getRepository().getUrlBase() + "/"
-                      + RepositoryUtil.getHtdocsVersion();
+        String root = getRepository().getUrlBase();
         String htdocsBase = makeHtdocsUrl("");
 
         s = s.replace("${ramadda.bootstrap.version}",bootstrapVersion);
         String now = htdocsBase + (new Date().getTime());
 
-        return s.replace("${now}", now).replace(
+        s = s.replace("${now}", now).replace(
             "${htdocs}", htdocsBase).replace("${cdnpath}", path).replace(
             "${root}", root).replace(
             "${baseentry}", getEntryManager().getRootEntry().getId()).replace(
             "${min}", mini).replace("${dotmin}", dotmini);
+
+	return s;
     }
 
     /**
