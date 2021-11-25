@@ -5966,7 +5966,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let hasRegexp = fieldId.indexOf("*")>=0;
 		for (let i = 0; i < fields.length; i++) {
                     let field = fields[i];
-		    if(debug)	console.log("\tField:" + field.getId());
+		    if(debug)	{
+			console.log("\tField:" + field.getId());
+		    }
+		    
                     if (field.getId() == fieldId || fieldId == ("#" + (i+1)) || field.getId()==alias) {
 			theField =  field;
 			if(debug)
@@ -13075,7 +13078,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    fields = [filterField];
 	else {
 	    console.warn("Error: could not find filter field::" + filterFieldId);
-	    display.getFieldById(null, filterFieldId,true);
+	    display.getFieldById(null, filterFieldId);
 	    fields = [];
 	}
     }
@@ -33771,9 +33774,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(feature)  recordToFeature[record.getId()] = feature;
 	    });
 
-
-
 	    if(linkFeature && linkField) {
+		linkFeature = linkFeature.toLowerCase();
 		let recordMap = {};
 		points.forEach(p=>{
 		    let record = p.record;
@@ -33786,11 +33788,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
 		});
 
-		features.forEach(feature=>{
+		features.forEach((feature,idx)=>{
 		    let attrs = feature.attributes;
 		    let ok = false;
 		    for (let attr in attrs) {
-			if(linkFeature==attr) {
+			let _attr = String(attr).toLowerCase();
+			if(linkFeature==_attr) {
 			    ok  = true;
 			    let value = this.map.getAttrValue(attrs, attr);
 			    let debug = false;

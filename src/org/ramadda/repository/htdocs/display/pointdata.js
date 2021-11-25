@@ -1291,7 +1291,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    fields = [filterField];
 	else {
 	    console.warn("Error: could not find filter field::" + filterFieldId);
-	    display.getFieldById(null, filterFieldId,true);
+	    display.getFieldById(null, filterFieldId);
 	    fields = [];
 	}
     }
