@@ -825,7 +825,6 @@ public abstract class DataProvider extends CsvOperator {
             StrTokenizer tokenizer = StrTokenizer.getCSVInstance();
             tokenizer.setEmptyTokenAsNull(true);
             for (String line : Utils.split(sb.toString(), "\n", true, true)) {
-                System.err.println("line:" + line);
                 List<String> toks = Utils.tokenizeColumns(line, tokenizer);
                 Row          row  = new Row(toks);
                 addRow(row);

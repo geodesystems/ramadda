@@ -1136,6 +1136,7 @@ public abstract class Converter extends Processor {
                     tok = Utils.upperCaseFirst(tok);
                     tmp += tok;
                 }
+		tmp = tmp.replaceAll("[^\\p{ASCII}]"," ");
                 row.set(i, tmp);
             }
 
