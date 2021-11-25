@@ -620,7 +620,7 @@ public interface WikiConstants {
     public static final String PROP_DELIM = ":";
 
     /** _more_ */
-    public static final String PROP_ADDED_GROUP = "added group";
+    public static final String PROP_GROUP_VAR = "groupvar";
 
     /** the id for this */
     public static final String ID_THIS = "this";

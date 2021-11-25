@@ -215,6 +215,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
 
+    private int groupCount = 0;
+
     /** _more_ */
     private String displayImports;
     private String displayInits;
@@ -478,8 +480,19 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             theEntry.getTypeHandler().addWikiProperties(theEntry, wikiUtil,
                     tag, props);
             addWikiLink(wikiUtil, theEntry);
+	    //If we are doing an {{import}} of an entry that does have displays but has no group defined then
+	    //there can be any number of errors. This fixes it:
+	    Object tmpAddedGroup =    tag.equals("import")?request.getExtraProperty(PROP_GROUP_VAR):null;
+	    if(tmpAddedGroup!=null) {
+		//		System.err.println("tag:" + tag+" removing:" + tmpAddedGroup);
+		request.removeExtraProperty(PROP_GROUP_VAR);
+	    }
+
             String include = handleWikiImport(wikiUtil, request, entry,
                                  theEntry, tag, props);
+	    if(tmpAddedGroup!=null) {
+		request.putExtraProperty(PROP_GROUP_VAR,tmpAddedGroup);
+	    }
             try {
                 if (include != null) {
                     return include;
@@ -7225,14 +7238,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 topProps.add(Json.quote(value.toString()));
             }
             HU.div(sb, "", HU.id(mainDivId));
-            request.putExtraProperty(PROP_ADDED_GROUP, "true");
+	    String groupVar = "displayManager" + (groupCount++);
+            request.putExtraProperty(PROP_GROUP_VAR, groupVar);
             topProps.addAll(propList);
-            js.append("\nvar displayManager = getOrCreateDisplayManager("
+            js.append("\nvar " + groupVar +" = getOrCreateDisplayManager("
                       + HU.quote(mainDivId) + "," + Json.map(topProps, false)
                       + ",true);\n");
             wikiUtil.appendJavascript(js.toString());
             return;
-        }
+        } 
 
 
         String fields = getProperty(wikiUtil, props, "fields", (String) null);
@@ -7264,8 +7278,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         Utils.add(propList, "divid", Json.quote(anotherDivId));
         props.remove("layoutHere");
 
-        boolean needToCreateGroup =
-            request.getExtraProperty(PROP_ADDED_GROUP) == null;
+	String groupVar = (String) request.getExtraProperty(PROP_GROUP_VAR);
+	boolean needToCreateGroup = groupVar == null;
 
         String groupDivId = HU.getUniqueId("groupdiv");
         //Put the main div after the display div
@@ -7397,9 +7411,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
         if (needToCreateGroup) {
-            request.putExtraProperty(PROP_ADDED_GROUP, "true");
+	    groupVar = "displayManager"+(groupCount++);
+            request.putExtraProperty(PROP_GROUP_VAR, groupVar);
             Utils.concatBuff(
-                js, "\nvar displayManager = getOrCreateDisplayManager(",
+                js, "\nvar " + groupVar +" = getOrCreateDisplayManager(",
                 HU.quote(groupDivId), ",", Json.map(topProps, false), ");\n");
         }
         Utils.add(propList, "entryId", HU.quote(entry.getId()),"thisEntryType",HU.quote(entry.getTypeHandler().getType()));
@@ -7507,7 +7522,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         wikiUtil.addWikiAttributes(propList);
 	js.append("\n");
-        js.append("displayManager.createDisplay(" + HU.quote(displayType)
+	js.append(groupVar+".createDisplay(" + HU.quote(displayType)
                   + "," + Json.map(propList, false) + ");\n");
         wikiUtil.appendJavascript(js.toString());
     }
