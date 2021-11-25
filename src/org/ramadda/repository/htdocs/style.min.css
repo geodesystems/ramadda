@@ -102,6 +102,11 @@ input:focus, textarea:focus, .ramadda-search-input:focus {
     outline:none;
 }
 
+select {
+    background:#fff;
+    padding:2px;
+}
+
 select:focus {
     border:var(--highlight-border);
     outline:none;
