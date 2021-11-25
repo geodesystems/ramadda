@@ -1797,6 +1797,19 @@ public class CsvUtil {
         new Cmd("-concat", "Create a new column from the given columns",
                 new Arg("columns", "", "type", "columns"), "delimiter",
 		new Arg("name","Name of new colums")),
+        new Cmd("-combine",
+                "Combine columns with the delimiter. deleting columns",
+                new Arg("column", "", "type", "columns"), "delimiter",
+                "new column name"),
+        new Cmd("-combineinplace", "Combine columns with the delimiter",
+                new Arg("column", "", "type", "columns"), "delimiter",
+                "new column name"),
+        new Cmd("-merge",
+                "Apply operators to columns",
+                new Arg("columns", "Columns to merge", "type", "columns"),
+		new Arg("name", "New column(s) name"),
+                new Arg("operator", "Operator", "values",
+                        "average,min,max,count")),
         new Cmd("-split", "Split the column",
                 new Arg("column", "", "type", "column"),
                 new Arg("delimiter", "What to split on"),
@@ -1991,13 +2004,6 @@ public class CsvUtil {
         new Cmd("-map", "Change values in column to new values",
                 new Arg("column", "", "type", "columns"), "new columns name",
                 "value newvalue ..."),
-        new Cmd("-combine",
-                "Combine columns with the delimiter. deleting columns",
-                new Arg("column", "", "type", "columns"), "delimiter",
-                "new column name"),
-        new Cmd("-combineinplace", "Combine columns with the delimiter",
-                new Arg("column", "", "type", "columns"), "delimiter",
-                "new column name"),
         new Cmd("-format", "Apply decimal format to the columns", 
 		new Arg("columns", "", "type", "columns"),
                 new Arg("format", "Decimal format  e.g. '##0.00'")),
@@ -3718,6 +3724,13 @@ public class CsvUtil {
 		ctx.addProcessor(new Converter.ColumnWidth(getCols(args.get(++i)), Integer.parseInt(args.get(++i))));
 		return i;
 	    });
+
+	defineFunction("-merge", 3,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.ColumnMerger(getCols(args.get(++i)),args.get(++i),args.get(++i)));
+		return i;
+	    });
+
+
 
 	defineFunction("-combine", 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnConcatter(getCols(args.get(++i)),args.get(++i),args.get(++i),false));

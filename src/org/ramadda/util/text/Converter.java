@@ -3549,6 +3549,87 @@ public abstract class Converter extends Processor {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Jan 16, '15
+     * @author         Enter your name here...
+     */
+    public static class ColumnMerger extends Converter {
+
+
+        /** _more_ */
+        private String name;
+
+	private List<String> what;
+
+        /** _more_ */
+        private boolean inPlace;
+
+        /**
+         * @param indices _more_
+         * @param delimiter _more_
+         * @param name _more_
+         * @param inPlace _more_
+         */
+        public ColumnMerger(List<String> indices, String name,
+                               String what) {
+            super(indices);
+	    this.what = Utils.split(what,",",true,true);
+            this.name      = name;
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            List<Integer> indices = getIndices(ctx);
+            if (rowCnt++ == 0) {
+		for(String what: this.what) {
+		    row.getValues().add(name +" " + what);
+		}
+		return row;
+            }
+
+
+	    double min = Double.POSITIVE_INFINITY;	    
+	    double max = Double.NEGATIVE_INFINITY;
+
+	    double total = 0;
+	    int count = 0;
+            for (Integer idx : indices) {
+                int i = idx.intValue();
+		double v = Double.parseDouble(row.getString(i));
+		if(Double.isNaN(v)) continue;
+		total+=v;
+		count++;
+		min   =Math.min(min, v);
+		max   =Math.max(max, v);
+            }
+
+	    for(String op: what) {
+		if(op.equals(OPERAND_SUM)) row.add(total);
+		else if(op.equals(OPERAND_MIN)) {
+		    row.add(min==Double.POSITIVE_INFINITY?"NaN":Double.toString(min));
+		} else if(op.equals(OPERAND_MAX)) {
+		    row.add(max==Double.NEGATIVE_INFINITY?"NaN":Double.toString(max));
+		} else if(op.equals(OPERAND_AVERAGE)) {
+		    if(count==0) row.add("NaN");
+		    else row.add(total/count);
+		} else {
+		    fatal(ctx, "Unknown histogram operator:"+ op);
+		}
+	    }
+            return row;
+        }
+
+    }
+    
+
 
 
     /**
@@ -4627,12 +4708,15 @@ public abstract class Converter extends Processor {
         /** _more_ */
         private int tens;
 
+	private int decimals;
+
         /**
          * @param cols _more_
          * @param decimals _more_
          */
         public Decimals(List<String> cols, int decimals) {
             super(cols);
+	    this.decimals = decimals;
             this.tens = (int) Math.pow(10, decimals);
         }
 
@@ -4652,8 +4736,12 @@ public abstract class Converter extends Processor {
                     }
                     double value =
                         Double.parseDouble(row.get(index).toString());
-                    value = (double) Math.round(value * tens) / tens;
-                    row.set(index, new Double(value));
+		    if(decimals==0) {
+			row.set(index, new Integer((int)value));
+		    } else {
+			value = (double) Math.round(value * tens) / tens;
+			row.set(index, new Double(value));
+		    }
                 } catch (NumberFormatException nfe) {}
             }
 
