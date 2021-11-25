@@ -5420,10 +5420,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let _this = this;
 	    jq.mousedown(function(){
 		let id = $(this).attr(ID);
-		id = id.replace(/_min$/,"").replace(/_max$/,"");
+		//Do these like this in case we have a field that ends with _max
+		if(id.endsWith("_min")) {
+		    id = id.replace(/_min$/,"");
+		} else if(id.endsWith("_max")) {
+			id = id.replace(/_max$/,"");
+		}
 		let min = $("#" + id+"_min");
 		let max = $("#" + id+"_max");
-		
 		let range = {
 		    min: parseFloat(min.attr("data-min")),
 		    max: parseFloat(max.attr("data-max"))};
@@ -5436,6 +5440,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let popup = HtmlUtils.getTooltip();
 		popup.html(html);
 		popup.show();
+
 		popup.position({
 		    of: min,
 		    my: "left top",
