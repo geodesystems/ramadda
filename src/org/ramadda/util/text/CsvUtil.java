@@ -1647,6 +1647,7 @@ public class CsvUtil {
                         "number")),
         new Cmd("-deheader", "Strip off the RAMADDA point header"),
         new Cmd("-headernames", "Clean up names"),
+        new Cmd("-ids", "Use canonical names"),
         new Cmd("-cat", "Concat the columns in one or more csv files", "*.csv"),
         new Cmd("-append", "Append the files, skipping the given rows in the latter files",
 		new Arg("skip","Number of rows to skip"),
@@ -1743,12 +1744,22 @@ public class CsvUtil {
         new Cmd("-ifin", "Pass through rows that the columns with ID is in given file",
                 new Arg("column", "Column in the file", "type", "column"),
                 new Arg("file", "The file"),
-                new Arg("column2", "Column in mainr file", "type", "column")),
+                new Arg("column2", "Column in main file", "type", "column")),
         new Cmd("-ifnotin", "Pass through rows that the columns with ID is not in given file",
                 new Arg("column", "Column in the file", "type", "column"),
                 new Arg("file", "The file"),
-                new Arg("column2", "Column in mainr file", "type", "column")),	
+                new Arg("column2", "Column in main file", "type", "column")),	
 
+        new Cmd("-ifmatchesfile", "Pass through rows that the columns with ID begins with something in the given file",
+                new Arg("pattern", "Pattern template, e.g. ^${value}"),
+                new Arg("column", "Column in the file", "type", "column"),
+                new Arg("file", "The file"),
+                new Arg("column2", "Column in main file", "type", "column")),
+        new Cmd("-ifnotmatchesfile", "Pass through rows that the columns with ID does not begin with something in the given file",
+                new Arg("pattern", "Pattern template, e.g. ^${value}"),
+                new Arg("file", "The file"),
+                new Arg("column2", "Column in main file", "type", "column")),	
+	
 
         new Cmd("-skippattern", "Skip any line that matches the pattern",
                 new Arg("pattern", "", "type", "pattern")),
@@ -2811,6 +2822,16 @@ public class CsvUtil {
 
 	defineFunction("-ifnotin",3,(ctx,args,i) -> {
 		ctx.addProcessor(new Filter.IfIn(ctx, false,args.get(++i),args.get(++i),args.get(++i)));
+		return i;
+	    });
+
+	defineFunction("-ifmatchesfile",4,(ctx,args,i) -> {
+		ctx.addProcessor(new Filter.MatchesFile(ctx, true, args.get(++i),args.get(++i),args.get(++i),args.get(++i)));
+		return i;
+	    });
+
+	defineFunction("-ifnotmatchesfile",4,(ctx,args,i) -> {
+		ctx.addProcessor(new Filter.MatchesFile(ctx, false, args.get(++i),args.get(++i),args.get(++i),args.get(++i)));
 		return i;
 	    });
 	
@@ -3908,6 +3929,11 @@ public class CsvUtil {
 		ctx.addProcessor(new Converter.HeaderNames());
 		return i;
 	    });
+
+	defineFunction("-ids",0,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.Ids());
+		return i;
+	    });	
 
 
 	defineFunction("-addheader",1,(ctx,args,i) -> {

@@ -1,0 +1,41 @@
+The  <span class=cmd>-ifmatchesfile</span> command takes a pattern template and a file of strings.
+For each line in the file it creates a regular expression pattern using the template
+by substituting the line into the pattern with the macro <i>${value}</i>.
+<p>
+For example, say you have a file of addresses short.csv:
+<pre>
+address,city,state
+123 oak, boulder, co
+345 main, denver,co
+...
+</pre>
+
+And your source data has a set of full addresses full.csv:
+<pre>
+full address,city,state
+123 oak unit #5
+789 pine apt 3
+345 main
+...
+</pre>
+
+And you only want to pass through rows in full.csv
+address begins with some address in the short.csv file. To do this call:
+<pre>
+  csv -ifmatchesfile "^${value}.*" address short.csv full_address -p fill.csv
+</pre>
+
+What this does is construct regexp patterns as:
+<pre>
+^123 oak.*
+^345 main.*
+...
+</pre>
+
+And then only passes through the rows in full.csv that match one of these patterns.
+<p>
+The command  <span class=cmd>-ifnotmatchesfile</span> does the opposite. For a row to pass through none of the patterns
+can match.
+
+
+

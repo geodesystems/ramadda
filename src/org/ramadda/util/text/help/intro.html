@@ -2,6 +2,11 @@
   body {font-family: Arial, sans-serif;}
   ul {margin:0px;}
   .header {margin:10px;} .header a, .command a {color:#000; text-decoration:none;}
+  h2 {
+      font-size:120%;
+      font-weight:bold;
+      margin:0px;
+  }
   pre {
       border : 1px #ccc solid;
       background:rgb(245,245,245);
@@ -9,6 +14,7 @@
       border-radius: 4px;
       margin-bottom:10px;
       margin-top:5px;
+      margin-left:10px;
   }
   .examples {
       max-height: 400px;
@@ -18,12 +24,15 @@
   .command-block {
       margin-left:20px;
   }
+  .cmd {
+      font-style:italic;
+  }
 
 </style>
 
 <h2>RAMADDA CSV Utils Commands</h2>
 <center>${header}</center>
-<b style='font-size:120%;'>Install</b>
+<h2>Install</h2>
 <ul>
 <li> Download the csvutil.zip file from the RAMADDA <a href=https://geodesystems.com/repository/alias/release>download</a> site
 <li> Unzip the file
@@ -32,7 +41,51 @@
 </ul>
 <p>
 
-<b style='font-size:120%;'>Examples</b>  
+
+<h2>Basic Use</h2>  
+The general use of the CSV tools is as follows:
+<pre class=examples>
+csv.sh &lt;a number of processing commands&gt; &lt;some output command&gt; file.csv &gt; output.csv
+
+#With no processing commands and just printing the header:
+csv.sh -printheader file.csv
+
+#Or a shortcut
+csv.sh -ph file.csv
+
+#With no processing commands and csv output:
+csv.sh -p file.csv &gt; output.csv
+
+#With no processing commands and a record oriented  output:
+csv.sh -record file.csv &gt; output.csv
+
+#With the -columns command printing csv output
+csv.sh -columns column1,column2 -p file.csv > output.csv
+</pre>
+
+
+
+<h2>Column Identifiers</h2>  
+Note: many of these commands use one or more column names from the source file. 
+These column names are converted to a canonical identifier format by lower casing, changing spaces to "_" and
+removing non alpha numeric characters.
+So for example if your source file is:
+<pre>
+column 1, Column 2, Some "funny" column
+ ...
+</pre>
+Then the column ids are:
+<pre>
+column_1,column_2,some_funny_column
+</pre>
+
+You can always use the <span class=cmd>-ids</span> command to list the ids
+<pre class=examples>
+csv.sh -ids -printheader test.csv
+</pre>
+
+
+<h2>Some Examples</h2>  
 <pre class=examples>
 ####  selecting columns
 #Subset test.csv and only include column1 and column2

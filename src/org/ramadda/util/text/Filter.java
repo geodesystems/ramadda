@@ -402,6 +402,137 @@ public class Filter extends Processor {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Jan 9, '15
+     * @author         Jeff McWhirter
+     */
+    public static class MatchesFile extends Filter {
+
+        /**  */
+        private boolean in;
+
+        /**  */
+        private List<String> strings;
+
+        private List<Pattern> patterns;	
+
+        /**  */
+        private int idx1;
+
+        /**  */
+        private int idx2;
+
+        /**  */
+        private String column2;
+
+        /**
+         * _more_
+         *
+         * @param in _more_
+         * @param column1 _more_
+         * @param file _more_
+         * @param column2 _more_
+         */
+        public MatchesFile(TextReader ctx, boolean in, String pattern, String column1, String file, String column2) {
+            this.in = in;
+            if ( !IO.okToReadFrom(file)) {
+                fatal(ctx, "Cannot read file:" + file);
+            }
+            this.column2 = column2;
+            try {
+                init(file, pattern, column1);
+            } catch (Exception exc) {
+                fatal(ctx, "Reading file:" + file, exc);
+            }
+        }
+
+        /**
+         *
+         * @param file _more_
+         * @param col1 _more_
+         *
+         * @throws Exception _more_
+         */
+        private void init(String file, String pattern, String col1) throws Exception {
+            BufferedReader br = new BufferedReader(
+                                    new InputStreamReader(
+                                        getInputStream(file)));
+            CsvOperator operator = null;
+            TextReader  reader   = new TextReader(br);
+	    strings = new ArrayList<String>();
+	    patterns = new ArrayList<Pattern>();
+            String delimiter = null;
+            while (true) {
+                String line = reader.readLine();
+                if (line == null) {
+                    break;
+                }
+                line = line.trim();
+                if (line.length() == 0) {
+                    continue;
+                }
+                if (delimiter == null) {
+                    if (line.indexOf("\t") >= 0) {
+                        delimiter = "\t";
+                    } else {
+                        delimiter = ",";
+                    }
+                }
+                List<String> cols = Utils.tokenizeColumns(line, delimiter);
+                if (operator == null) {
+                    operator = new CsvOperator();
+                    operator.setHeader(cols);
+                    idx1 = operator.getColumnIndex(reader, col1);
+                }
+                String v = cols.get(idx1);
+		if(pattern.length()>0)
+		    v= pattern.replaceAll("\\$\\{value\\}",v);
+		//		System.err.println(v);
+		patterns.add(Pattern.compile(v));
+                strings.add(v);
+            }
+        }
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public boolean rowOk(TextReader ctx, Row row) {
+            if (cnt++ == 0) {
+                idx2 = getColumnIndex(ctx, column2);
+
+                return true;
+            }
+
+            String v = row.getString(idx2);
+	    boolean matches=false;
+	    for(Pattern p: patterns) {
+		if(p.matcher(v).matches()) {
+		    matches = true;
+		    break;
+		}
+	    }
+
+            if (matches) {
+                return in;
+            } else {
+                return !in;
+            }
+        }
+
+    }
+
+    
 
 
     /**

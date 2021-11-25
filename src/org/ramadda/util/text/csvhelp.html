@@ -1,8 +1,12 @@
-
 <style type='text/css'>
   body {font-family: Arial, sans-serif;}
   ul {margin:0px;}
   .header {margin:10px;} .header a, .command a {color:#000; text-decoration:none;}
+  h2 {
+      font-size:120%;
+      font-weight:bold;
+      margin:0px;
+  }
   pre {
       border : 1px #ccc solid;
       background:rgb(245,245,245);
@@ -10,6 +14,7 @@
       border-radius: 4px;
       margin-bottom:10px;
       margin-top:5px;
+      margin-left:10px;
   }
   .examples {
       max-height: 400px;
@@ -19,12 +24,15 @@
   .command-block {
       margin-left:20px;
   }
+  .cmd {
+      font-style:italic;
+  }
 
 </style>
 
 <h2>RAMADDA CSV Utils Commands</h2>
-<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA CSV Utils package provides 216 commands for manipulating CSV and other types of files</center>
-<b style='font-size:120%;'>Install</b>
+<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA CSV Utils package provides 220 commands for manipulating CSV and other types of files</center>
+<h2>Install</h2>
 <ul>
 <li> Download the csvutil.zip file from the RAMADDA <a href=https://geodesystems.com/repository/alias/release>download</a> site
 <li> Unzip the file
@@ -33,7 +41,51 @@
 </ul>
 <p>
 
-<b style='font-size:120%;'>Examples</b>  
+
+<h2>Basic Use</h2>  
+The general use of the CSV tools is as follows:
+<pre class=examples>
+csv.sh &lt;a number of processing commands&gt; &lt;some output command&gt; file.csv &gt; output.csv
+
+#With no processing commands and just printing the header:
+csv.sh -printheader file.csv
+
+#Or a shortcut
+csv.sh -ph file.csv
+
+#With no processing commands and csv output:
+csv.sh -p file.csv &gt; output.csv
+
+#With no processing commands and a record oriented  output:
+csv.sh -record file.csv &gt; output.csv
+
+#With the -columns command printing csv output
+csv.sh -columns column1,column2 -p file.csv > output.csv
+</pre>
+
+
+
+<h2>Column Identifiers</h2>  
+Note: many of these commands use one or more column names from the source file. 
+These column names are converted to a canonical identifier format by lower casing, changing spaces to "_" and
+removing non alpha numeric characters.
+So for example if your source file is:
+<pre>
+column 1, Column 2, Some "funny" column
+ ...
+</pre>
+Then the column ids are:
+<pre>
+column_1,column_2,some_funny_column
+</pre>
+
+You can always use the <span class=cmd>-ids</span> command to list the ids
+<pre class=examples>
+csv.sh -ids -printheader test.csv
+</pre>
+
+
+<h2>Some Examples</h2>  
 <pre class=examples>
 ####  selecting columns
 #Subset test.csv and only include column1 and column2
@@ -42,15 +94,23 @@ csv.sh -columns column1,column2 -p test.csv > newtest.csv
 #You can also use numeric indices - zero based
 csv.sh -columns 0,1 -p test.csv > newtest.csv
 
-#Specify a range of columns 
+#Specify a range of columns
+#either using column names:
 csv.sh -columns column1-columnN -p test.csv > newtest.csv
+#or indices:
+csv.sh -columns 1-5,6,7,10-15 -p test.csv > newtest.csv
 
-#Mix and match
+#or mix and match
 csv.sh -columns 0-1,columnA,columnB,columnF-columnZ -p test.csv > newtest.csv
+
+#Specify a step:
+#csv.sh -columns start-end:step
+
+#e.g. below gives 0,3,6,9,12,15
+csv.sh -columns 0-15:3
 
 #include all columns except column1
 csv.sh -notcolumns column1 -p test.csv > newtest.csv
-
 
 #subset columns and then change the values 
 csv.sh -columns column1,column2 -change column1,column2 "pattern" "new value" -p test.csv > newtest.csv
@@ -58,7 +118,7 @@ csv.sh -columns column1,column2 -change column1,column2 "pattern" "new value" -p
 #Only include column1 and then only pass through unique values
 csv.sh -columns column1 -unique 0 -p test.csv > newtest.csv
 
-#Get uniques and sort them
+#Only pass throught unique values in the first column and then sort the output
 csv.sh -columns column1 -unique 0 -sort column1 -p test.csv > newtest.csv
 
 
@@ -66,7 +126,7 @@ csv.sh -columns column1 -unique 0 -sort column1 -p test.csv > newtest.csv
 </pre>
 
 <hr><a name='Input'></a><b style='font-size:120%;'>Input</b><br>
-Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XML, Shapefile, etc<div class=header>Commands: <a href='#-delimiter'>-delimiter</a> <a href='#-tab'>-tab</a> <a href='#-widths'>-widths</a> <a href='#-quotesnotspecial'>-quotesnotspecial</a> <a href='#-cleaninput'>-cleaninput</a> <a href='#-bom'>-bom</a> <a href='#-header'>-header</a> <a href='#-htmltable'>-htmltable</a> <a href='#-htmlpattern'>-htmlpattern</a> <a href='#-harvest'>-harvest</a> <a href='#-json'>-json</a> <a href='#-geojson'>-geojson</a> <a href='#-pdf'>-pdf</a> <a href='#-xml'>-xml</a> <a href='#-shapefile'>-shapefile</a> <a href='#-lines'>-lines</a> <a href='#-text'>-text</a> <a href='#-extractpattern'>-extractpattern</a> <a href='#-tokenize'>-tokenize</a> <a href='#-sql'>-sql</a> <a href='#-prune'>-prune</a> <a href='#-deheader'>-deheader</a> <a href='#-headernames'>-headernames</a> <a href='#-cat'>-cat</a> <a href='#-append'>-append</a> </div>
+Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XML, Shapefile, etc<div class=header>Commands: <a href='#-delimiter'>-delimiter</a> <a href='#-tab'>-tab</a> <a href='#-widths'>-widths</a> <a href='#-quotesnotspecial'>-quotesnotspecial</a> <a href='#-cleaninput'>-cleaninput</a> <a href='#-bom'>-bom</a> <a href='#-header'>-header</a> <a href='#-htmltable'>-htmltable</a> <a href='#-htmlpattern'>-htmlpattern</a> <a href='#-harvest'>-harvest</a> <a href='#-json'>-json</a> <a href='#-geojson'>-geojson</a> <a href='#-pdf'>-pdf</a> <a href='#-xml'>-xml</a> <a href='#-shapefile'>-shapefile</a> <a href='#-lines'>-lines</a> <a href='#-text'>-text</a> <a href='#-extractpattern'>-extractpattern</a> <a href='#-tokenize'>-tokenize</a> <a href='#-sql'>-sql</a> <a href='#-prune'>-prune</a> <a href='#-deheader'>-deheader</a> <a href='#-headernames'>-headernames</a> <a href='#-ids'>-ids</a> <a href='#-cat'>-cat</a> <a href='#-append'>-append</a> </div>
 <b style='font-size:120%;'>Examples</b>  
 
 <pre class=examples>
@@ -112,7 +172,7 @@ w1,w2,...,wN<br>
 </div><a name='-quotesnotspecial'></a><div class=command> <i><a href='#-quotesnotspecial'>-quotesnotspecial</a></i> </div><div class=command-block>Don't treat quotes as special characters<br>
 <br>
 </ul>
-</div><a name='-cleaninput'></a><div class=command> <i><a href='#-cleaninput'>-cleaninput</a></i> </div><div class=command-block>Input is one text line per row. i.e., no new lines in a data row<br>
+</div><a name='-cleaninput'></a><div class=command> <i><a href='#-cleaninput'>-cleaninput</a></i> </div><div class=command-block>Input is one text line per row. i.e., no new lines in a data row. Setting this can improve performance on large files<br>
 <br>
 </ul>
 </div><a name='-bom'></a><div class=command> <i><a href='#-bom'>-bom</a></i> </div><div class=command-block>Input has a leading byte order mark (BOM) that should be stripped out<br>
@@ -149,7 +209,7 @@ Column names<br>
 Row pattern. Use (...) to match columns<br>
 <br>
 </ul>
-</div><a name='-harvest'></a><div class=command> <i><a href='#-harvest'>-harvest</a></i>  &lt;pattern&gt; </div><div class=command-block>Harvest links in web page<br>
+</div><a name='-harvest'></a><div class=command> <i><a href='#-harvest'>-harvest</a></i>  &lt;pattern&gt; </div><div class=command-block>Harvest links in web page. This results in a 2 column dataset with fields: label,url<br>
 <b>Arguments:</b><br>
 <ul>
 <i>pattern</i>
@@ -327,6 +387,9 @@ Number of leading bytes to remove<br>
 </div><a name='-headernames'></a><div class=command> <i><a href='#-headernames'>-headernames</a></i> </div><div class=command-block>Clean up names<br>
 <br>
 </ul>
+</div><a name='-ids'></a><div class=command> <i><a href='#-ids'>-ids</a></i> </div><div class=command-block>Use canonical names<br>
+<br>
+</ul>
 </div><a name='-cat'></a><div class=command> <i><a href='#-cat'>-cat</a></i>  &lt;*.csv&gt; </div><div class=command-block>Concat the columns in one or more csv files<br>
 <b>Arguments:</b><br>
 <ul>
@@ -344,7 +407,7 @@ Number of rows to skip<br>
 <br>
 </ul>
 </div></ul><br><hr><a name='Filter'></a><b style='font-size:120%;'>Filter</b><br>
-<div class=header>Commands: <a href='#-skiplines'>-skiplines</a> <a href='#-if'>-if</a> <a href='#-start'>-start</a> <a href='#-stop'>-stop</a> <a href='#-rawlines'>-rawlines</a> <a href='#-min'>-min</a> <a href='#-max'>-max</a> <a href='#-numcolumns'>-numcolumns</a> <a href='#-pattern'>-pattern</a> <a href='#-notpattern'>-notpattern</a> <a href='#-fuzzypattern'>-fuzzypattern</a> <a href='#-same'>-same</a> <a href='#-notsame'>-notsame</a> <a href='#-unique'>-unique</a> <a href='#-dups'>-dups</a> <a href='#-sample'>-sample</a> <a href='#-maxvalue'>-maxvalue</a> <a href='#-eq'>-eq</a> <a href='#-ne'>-ne</a> <a href='#-gt'>-gt</a> <a href='#-ge'>-ge</a> <a href='#-lt'>-lt</a> <a href='#-le'>-le</a> <a href='#-between'>-between</a> <a href='#-notbetween'>-notbetween</a> <a href='#-groupfilter'>-groupfilter</a> <a href='#-before'>-before</a> <a href='#-after'>-after</a> <a href='#-latest'>-latest</a> <a href='#-countvalue'>-countvalue</a> <a href='#-decimate'>-decimate</a> <a href='#-ifin'>-ifin</a> <a href='#-ifnotin'>-ifnotin</a> <a href='#-skippattern'>-skippattern</a> <a href='#-skip'>-skip</a> </div><a name='-skiplines'></a><div class=command> <i><a href='#-skiplines'>-skiplines</a></i>  &lt;lines&gt; </div><div class=command-block>Skip number of raw lines.<br>
+<div class=header>Commands: <a href='#-skiplines'>-skiplines</a> <a href='#-if'>-if</a> <a href='#-start'>-start</a> <a href='#-stop'>-stop</a> <a href='#-rawlines'>-rawlines</a> <a href='#-min'>-min</a> <a href='#-max'>-max</a> <a href='#-numcolumns'>-numcolumns</a> <a href='#-pattern'>-pattern</a> <a href='#-notpattern'>-notpattern</a> <a href='#-fuzzypattern'>-fuzzypattern</a> <a href='#-same'>-same</a> <a href='#-notsame'>-notsame</a> <a href='#-unique'>-unique</a> <a href='#-dups'>-dups</a> <a href='#-sample'>-sample</a> <a href='#-maxvalue'>-maxvalue</a> <a href='#-eq'>-eq</a> <a href='#-ne'>-ne</a> <a href='#-gt'>-gt</a> <a href='#-ge'>-ge</a> <a href='#-lt'>-lt</a> <a href='#-le'>-le</a> <a href='#-between'>-between</a> <a href='#-notbetween'>-notbetween</a> <a href='#-groupfilter'>-groupfilter</a> <a href='#-before'>-before</a> <a href='#-after'>-after</a> <a href='#-latest'>-latest</a> <a href='#-countvalue'>-countvalue</a> <a href='#-decimate'>-decimate</a> <a href='#-ifin'>-ifin</a> <a href='#-ifnotin'>-ifnotin</a> <a href='#-ifmatchesfile'>-ifmatchesfile</a> <a href='#-ifnotmatchesfile'>-ifnotmatchesfile</a> <a href='#-skippattern'>-skippattern</a> <a href='#-skip'>-skip</a> </div><a name='-skiplines'></a><div class=command> <i><a href='#-skiplines'>-skiplines</a></i>  &lt;lines&gt; </div><div class=command-block>Skip number of raw lines.<br>
 <b>Arguments:</b><br>
 <ul>
 <i>lines</i>
@@ -634,10 +697,43 @@ Column in the file<br>
 <i>file</i>
 The file<br>
 <i>column2</i>
-Column in mainr file<br>
+Column in main file<br>
 <br>
 </ul>
-</div><a name='-ifnotin'></a><div class=command> <i><a href='#-ifnotin'>-ifnotin</a></i>  &lt;column&gt;  &lt;file&gt;  &lt;column2&gt; </div><div class=command-block>Pass through rows that the columns with ID is not in given file<br>
+The  <span class=cmd>-ifin</span> command takes a file of values and will only pass through the row if the
+value in the row matches at least one of the values in the file.
+
+For example, say you have a file  precincts.csv:
+<pre>
+precinct
+p1
+p2
+p3
+</pre>
+
+And a file voters.csv:
+<pre>
+name,voter precinct
+jim,p1
+joe,p1
+sally,p7
+...
+</pre>
+
+If you only want voters whose  precinct is in the precints.csv you would do:
+<pre>
+  csv -ifin precinct precincts.csv voter_precinct -p voters.csv
+</pre>
+
+The  <span class=cmd>-ifnotin</span> command does the opposite only passing through rows that are not in the file, e.g.:
+<pre>
+  csv -ifnotin precinct precincts.csv voter_precinct -p voters.csv
+</pre>
+
+
+
+
+<p></div><a name='-ifnotin'></a><div class=command> <i><a href='#-ifnotin'>-ifnotin</a></i>  &lt;column&gt;  &lt;file&gt;  &lt;column2&gt; </div><div class=command-block>Pass through rows that the columns with ID is not in given file<br>
 <b>Arguments:</b><br>
 <ul>
 <i>column</i>
@@ -645,7 +741,72 @@ Column in the file<br>
 <i>file</i>
 The file<br>
 <i>column2</i>
-Column in mainr file<br>
+Column in main file<br>
+<br>
+</ul>
+</div><a name='-ifmatchesfile'></a><div class=command> <i><a href='#-ifmatchesfile'>-ifmatchesfile</a></i>  &lt;pattern&gt;  &lt;column&gt;  &lt;file&gt;  &lt;column2&gt; </div><div class=command-block>Pass through rows that the columns with ID begins with something in the given file<br>
+<b>Arguments:</b><br>
+<ul>
+<i>pattern</i>
+Pattern template, e.g. ^${value}<br>
+<i>column</i>
+Column in the file<br>
+<i>file</i>
+The file<br>
+<i>column2</i>
+Column in main file<br>
+<br>
+</ul>
+The  <span class=cmd>-ifmatchesfile</span> command takes a pattern template and a file of strings.
+For each line in the file it creates a regular expression pattern using the template
+by substituting the line into the pattern with the macro <i>${value}</i>.
+<p>
+For example, say you have a file of addresses short.csv:
+<pre>
+address,city,state
+123 oak, boulder, co
+345 main, denver,co
+...
+</pre>
+
+And your source data has a set of full addresses full.csv:
+<pre>
+full address,city,state
+123 oak unit #5
+789 pine apt 3
+345 main
+...
+</pre>
+
+And you only want to pass through rows in full.csv
+address begins with some address in the short.csv file. To do this call:
+<pre>
+  csv -ifmatchesfile "^${value}.*" address short.csv full_address -p fill.csv
+</pre>
+
+What this does is construct regexp patterns as:
+<pre>
+^123 oak.*
+^345 main.*
+...
+</pre>
+
+And then only passes through the rows in full.csv that match one of these patterns.
+<p>
+The command  <span class=cmd>-ifnotmatchesfile</span> does the opposite. For a row to pass through none of the patterns
+can match.
+
+
+
+<p></div><a name='-ifnotmatchesfile'></a><div class=command> <i><a href='#-ifnotmatchesfile'>-ifnotmatchesfile</a></i>  &lt;pattern&gt;  &lt;file&gt;  &lt;column2&gt; </div><div class=command-block>Pass through rows that the columns with ID does not begin with something in the given file<br>
+<b>Arguments:</b><br>
+<ul>
+<i>pattern</i>
+Pattern template, e.g. ^${value}<br>
+<i>file</i>
+The file<br>
+<i>column2</i>
+Column in main file<br>
 <br>
 </ul>
 </div><a name='-skippattern'></a><div class=command> <i><a href='#-skippattern'>-skippattern</a></i>  &lt;pattern&gt; </div><div class=command-block>Skip any line that matches the pattern<br>
@@ -663,7 +824,7 @@ How many rows to skip<br>
 <br>
 </ul>
 </div></ul><br><hr><a name='Slice and Dice'></a><b style='font-size:120%;'>Slice and Dice</b><br>
-Add/remove columns, rows, restructure, etc<div class=header>Commands: <a href='#-columns'>-columns</a> <a href='#-notcolumns'>-notcolumns</a> <a href='#-firstcolumns'>-firstcolumns</a> <a href='#-columnsbefore'>-columnsbefore</a> <a href='#-columnsafter'>-columnsafter</a> <a href='#-delete'>-delete</a> <a href='#-cut'>-cut</a> <a href='#-include'>-include</a> <a href='#-rows_first'>-rows_first</a> <a href='#-rows_last'>-rows_last</a> <a href='#-copy'>-copy</a> <a href='#-insert'>-insert</a> <a href='#-concat'>-concat</a> <a href='#-split'>-split</a> <a href='#-splat'>-splat</a> <a href='#-shift'>-shift</a> <a href='#-slice'>-slice</a> <a href='#-addcell'>-addcell</a> <a href='#-deletecell'>-deletecell</a> <a href='#-mergerows'>-mergerows</a> <a href='#-rowop'>-rowop</a> <a href='#-rotate'>-rotate</a> <a href='#-flip'>-flip</a> <a href='#-makefields'>-makefields</a> <a href='#-furl'>-furl</a> <a href='#-explode'>-explode</a> <a href='#-join'>-join</a> <a href='#-fuzzyjoin'>-fuzzyjoin</a> <a href='#-normal'>-normal</a> <a href='#-countunique'>-countunique</a> <a href='#-dissect'>-dissect</a> <a href='#-keyvalue'>-keyvalue</a> <a href='#-firstchars'>-firstchars</a> <a href='#-lastchars'>-lastchars</a> <a href='#-between_indices'>-between_indices</a> </div><a name='-columns'></a><div class=command> <i><a href='#-columns'>-columns</a></i>  &lt;columns&gt; </div><div class=command-block>Only include the given columns<br>
+Add/remove columns, rows, restructure, etc<div class=header>Commands: <a href='#-columns'>-columns</a> <a href='#-notcolumns'>-notcolumns</a> <a href='#-firstcolumns'>-firstcolumns</a> <a href='#-columnsbefore'>-columnsbefore</a> <a href='#-columnsafter'>-columnsafter</a> <a href='#-delete'>-delete</a> <a href='#-cut'>-cut</a> <a href='#-include'>-include</a> <a href='#-rows_first'>-rows_first</a> <a href='#-rows_last'>-rows_last</a> <a href='#-copy'>-copy</a> <a href='#-insert'>-insert</a> <a href='#-concat'>-concat</a> <a href='#-combine'>-combine</a> <a href='#-combineinplace'>-combineinplace</a> <a href='#-merge'>-merge</a> <a href='#-split'>-split</a> <a href='#-splat'>-splat</a> <a href='#-shift'>-shift</a> <a href='#-slice'>-slice</a> <a href='#-addcell'>-addcell</a> <a href='#-deletecell'>-deletecell</a> <a href='#-mergerows'>-mergerows</a> <a href='#-rowop'>-rowop</a> <a href='#-rotate'>-rotate</a> <a href='#-flip'>-flip</a> <a href='#-makefields'>-makefields</a> <a href='#-furl'>-furl</a> <a href='#-explode'>-explode</a> <a href='#-join'>-join</a> <a href='#-fuzzyjoin'>-fuzzyjoin</a> <a href='#-normal'>-normal</a> <a href='#-countunique'>-countunique</a> <a href='#-dissect'>-dissect</a> <a href='#-keyvalue'>-keyvalue</a> <a href='#-firstchars'>-firstchars</a> <a href='#-lastchars'>-lastchars</a> <a href='#-between_indices'>-between_indices</a> </div><a name='-columns'></a><div class=command> <i><a href='#-columns'>-columns</a></i>  &lt;columns&gt; </div><div class=command-block>Only include the given columns<br>
 <b>Arguments:</b><br>
 <ul>
 <i>columns</i>
@@ -770,6 +931,39 @@ Column indices. Can include ranges, e.g. 0-5<br>
 <br>
 <i>name</i>
 Name of new colums<br>
+<br>
+</ul>
+</div><a name='-combine'></a><div class=command> <i><a href='#-combine'>-combine</a></i>  &lt;column&gt;  &lt;delimiter&gt;  &lt;new column name&gt; </div><div class=command-block>Combine columns with the delimiter. deleting columns<br>
+<b>Arguments:</b><br>
+<ul>
+<i>column</i>
+<br>
+<i>delimiter</i>
+<br>
+<i>new column name</i>
+<br>
+<br>
+</ul>
+</div><a name='-combineinplace'></a><div class=command> <i><a href='#-combineinplace'>-combineinplace</a></i>  &lt;column&gt;  &lt;delimiter&gt;  &lt;new column name&gt; </div><div class=command-block>Combine columns with the delimiter<br>
+<b>Arguments:</b><br>
+<ul>
+<i>column</i>
+<br>
+<i>delimiter</i>
+<br>
+<i>new column name</i>
+<br>
+<br>
+</ul>
+</div><a name='-merge'></a><div class=command> <i><a href='#-merge'>-merge</a></i>  &lt;columns&gt;  &lt;name&gt;  &lt;operator&gt; </div><div class=command-block>Apply operators to columns<br>
+<b>Arguments:</b><br>
+<ul>
+<i>columns</i>
+Columns to merge<br>
+<i>name</i>
+New column(s) name<br>
+<i>operator</i>
+Operator values:average,min,max,count <br>
 <br>
 </ul>
 </div><a name='-split'></a><div class=command> <i><a href='#-split'>-split</a></i>  &lt;column&gt;  &lt;delimiter&gt;  &lt;names&gt; </div><div class=command-block>Split the column<br>
@@ -995,7 +1189,7 @@ End index<br>
 <br>
 </ul>
 </div></ul><br><hr><a name='Change'></a><b style='font-size:120%;'>Change</b><br>
-<div class=header>Commands: <a href='#-change'>-change</a> <a href='#-changerow'>-changerow</a> <a href='#-set'>-set</a> <a href='#-macro'>-macro</a> <a href='#-setcol'>-setcol</a> <a href='#-copyif'>-copyif</a> <a href='#-copycolumns'>-copycolumns</a> <a href='#-filldown'>-filldown</a> <a href='#-priorprefix'>-priorprefix</a> <a href='#-case'>-case</a> <a href='#-padleft'>-padleft</a> <a href='#-padright'>-padright</a> <a href='#-trim'>-trim</a> <a href='#-trimquotes'>-trimquotes</a> <a href='#-width'>-width</a> <a href='#-prepend'>-prepend</a> <a href='#-pad'>-pad</a> <a href='#-prefix'>-prefix</a> <a href='#-suffix'>-suffix</a> <a href='#-ascii'>-ascii</a> <a href='#-js'>-js</a> <a href='#-func'>-func</a> <a href='#-endswith'>-endswith</a> <a href='#-truncate'>-truncate</a> <a href='#-extract'>-extract</a> <a href='#-urlarg'>-urlarg</a> <a href='#-map'>-map</a> <a href='#-combine'>-combine</a> <a href='#-combineinplace'>-combineinplace</a> <a href='#-format'>-format</a> <a href='#-denormalize'>-denormalize</a> <a href='#-break'>-break</a> <a href='#-makeids'>-makeids</a> </div><a name='-change'></a><div class=command> <i><a href='#-change'>-change</a></i>  &lt;columns&gt;  &lt;pattern&gt;  &lt;substitution string&gt; </div><div class=command-block>Change columns<br>
+<div class=header>Commands: <a href='#-change'>-change</a> <a href='#-changerow'>-changerow</a> <a href='#-set'>-set</a> <a href='#-macro'>-macro</a> <a href='#-setcol'>-setcol</a> <a href='#-copyif'>-copyif</a> <a href='#-copycolumns'>-copycolumns</a> <a href='#-filldown'>-filldown</a> <a href='#-priorprefix'>-priorprefix</a> <a href='#-case'>-case</a> <a href='#-padleft'>-padleft</a> <a href='#-padright'>-padright</a> <a href='#-trim'>-trim</a> <a href='#-trimquotes'>-trimquotes</a> <a href='#-width'>-width</a> <a href='#-prepend'>-prepend</a> <a href='#-pad'>-pad</a> <a href='#-prefix'>-prefix</a> <a href='#-suffix'>-suffix</a> <a href='#-ascii'>-ascii</a> <a href='#-js'>-js</a> <a href='#-func'>-func</a> <a href='#-endswith'>-endswith</a> <a href='#-truncate'>-truncate</a> <a href='#-extract'>-extract</a> <a href='#-urlarg'>-urlarg</a> <a href='#-map'>-map</a> <a href='#-format'>-format</a> <a href='#-denormalize'>-denormalize</a> <a href='#-break'>-break</a> <a href='#-makeids'>-makeids</a> </div><a name='-change'></a><div class=command> <i><a href='#-change'>-change</a></i>  &lt;columns&gt;  &lt;pattern&gt;  &lt;substitution string&gt; </div><div class=command-block>Change columns<br>
 <b>Arguments:</b><br>
 <ul>
 <i>columns</i>
@@ -1272,28 +1466,6 @@ URL arg name<br>
 <i>new columns name</i>
 <br>
 <i>value newvalue ...</i>
-<br>
-<br>
-</ul>
-</div><a name='-combine'></a><div class=command> <i><a href='#-combine'>-combine</a></i>  &lt;column&gt;  &lt;delimiter&gt;  &lt;new column name&gt; </div><div class=command-block>Combine columns with the delimiter. deleting columns<br>
-<b>Arguments:</b><br>
-<ul>
-<i>column</i>
-<br>
-<i>delimiter</i>
-<br>
-<i>new column name</i>
-<br>
-<br>
-</ul>
-</div><a name='-combineinplace'></a><div class=command> <i><a href='#-combineinplace'>-combineinplace</a></i>  &lt;column&gt;  &lt;delimiter&gt;  &lt;new column name&gt; </div><div class=command-block>Combine columns with the delimiter<br>
-<b>Arguments:</b><br>
-<ul>
-<i>column</i>
-<br>
-<i>delimiter</i>
-<br>
-<i>new column name</i>
 <br>
 <br>
 </ul>
@@ -2147,7 +2319,8 @@ v1,v2,v3
 ...
 </pre>
 
-The addheader command is run as below passing in one set of name/value arguments:
+The addheader command is run as below passing in one set of name/value arguments. If the value has spaces then group the
+text with {...} brackets.
 <pre>
   csv -addheader "arg1 value1 arg2 {value 2} arg3 value3"
 </pre>
@@ -2240,18 +2413,16 @@ Name value pairs:
 <br>
 <br>
 </ul>
-</div><a name='-dots'></a><div class=command> <i><a href='#-dots'>-dots</a></i>  &lt;Print a dot every count row&gt;  &lt;every&gt; </div><div class=command-block><b>Arguments:</b><br>
+</div><a name='-dots'></a><div class=command> <i><a href='#-dots'>-dots</a></i>  &lt;every&gt; </div><div class=command-block>Print a dot every count row. Used to show progress<br>
+<b>Arguments:</b><br>
 <ul>
-<i>Print a dot every count row</i>
-<br>
 <i>every</i>
 Dot every<br>
 <br>
 </ul>
-</div><a name='-debugrows'></a><div class=command> <i><a href='#-debugrows'>-debugrows</a></i>  &lt;Debug # rows&gt;  &lt;rows&gt; </div><div class=command-block><b>Arguments:</b><br>
+</div><a name='-debugrows'></a><div class=command> <i><a href='#-debugrows'>-debugrows</a></i>  &lt;rows&gt; </div><div class=command-block>Debug # rows<br>
+<b>Arguments:</b><br>
 <ul>
-<i>Debug # rows</i>
-<br>
 <i>rows</i>
 # of rows<br>
 <br>

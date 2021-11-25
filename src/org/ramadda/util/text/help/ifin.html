@@ -1,0 +1,33 @@
+The  <span class=cmd>-ifin</span> command takes a file of values and will only pass through the row if the
+value in the row matches at least one of the values in the file.
+
+For example, say you have a file  precincts.csv:
+<pre>
+precinct
+p1
+p2
+p3
+</pre>
+
+And a file voters.csv:
+<pre>
+name,voter precinct
+jim,p1
+joe,p1
+sally,p7
+...
+</pre>
+
+If you only want voters whose  precinct is in the precints.csv you would do:
+<pre>
+  csv -ifin precinct precincts.csv voter_precinct -p voters.csv
+</pre>
+
+The  <span class=cmd>-ifnotin</span> command does the opposite only passing through rows that are not in the file, e.g.:
+<pre>
+  csv -ifnotin precinct precincts.csv voter_precinct -p voters.csv
+</pre>
+
+
+
+
