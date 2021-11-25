@@ -24,6 +24,7 @@ import org.ramadda.util.Json;
 import org.ramadda.util.NamedInputStream;
 import org.ramadda.util.NamedChannel;
 import org.ramadda.util.MapProvider;
+import org.ramadda.util.PatternProps;
 import org.ramadda.util.PropertyProvider;
 import org.ramadda.util.Utils;
 import org.ramadda.util.XlsUtil;
@@ -1239,6 +1240,22 @@ public class CsvUtil {
         return dflt;
     }
 
+    public static String getDbProp(PatternProps props,
+                                   String colId, String prop, String dflt) {
+        String key   = (colId == null)
+	    ? prop
+	    : colId + "." + prop;
+        String value = props.get("-" + key);
+        if (value == null) {
+            value = props.get(key);
+        }
+        if (value != null) {
+            return value;
+        }
+
+        return dflt;
+    }
+
 
     /**
      * _more_
@@ -1281,6 +1298,39 @@ public class CsvUtil {
         }
         return value.equals("true");
     }
+
+    public static String getDbProp(PatternProps props,
+                                   String colId, int index, String prop,
+                                   String dflt) {
+        String value = getDbProp(props, colId, prop, null);
+        if (value != null) {
+            return value;
+        }
+
+        return getDbProp(props, index + "", prop, dflt);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param props _more_
+     * @param colId _more_
+     * @param prop _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    public static boolean getDbProp(PatternProps props,
+                                    String colId, String prop, boolean dflt) {
+        String value = getDbProp(props, colId, prop, (String) null);
+        if (value == null) {
+            return dflt;
+        }
+        return value.equals("true");
+    }
+    
+
 
 
     /**
@@ -1538,11 +1588,9 @@ public class CsvUtil {
         new Cmd("-widths", "Columns are fixed widths",
                 new Arg("widths", "w1,w2,...,wN")),
         new Cmd("-quotesnotspecial", "Don't treat quotes as special characters"),
-        new Cmd("-cleaninput", "Input is one text line per row. i.e., no new lines in a data row"),
+        new Cmd("-cleaninput", "Input is one text line per row. i.e., no new lines in a data row. Setting this can improve performance on large files"),
         new Cmd("-bom", "Input has a leading byte order mark (BOM) that should be stripped out"),		
-
-        new Cmd("-header", "Raw header",
-                new Arg("header", "Column names", "type", "list")),
+        new Cmd("-header", "Raw header",  new Arg("header", "Column names", "type", "list")),
         new Cmd("-htmltable", "Parse the table in the input html file",
                 new Arg("skip", "Number of tables to skip", "type",
 			"number"), new Arg("pattern", "Pattern to skip to",
@@ -1556,7 +1604,7 @@ public class CsvUtil {
                 new Arg("endPattern", "", "type", "pattern"),
                 new Arg("pattern", "Row pattern. Use (...) to match columns",
                         "type", "pattern")),
-        new Cmd("-harvest", "Harvest links in web page",
+        new Cmd("-harvest", "Harvest links in web page. This results in a 2 column dataset with fields: label,url",
 		new Arg("pattern","regexp to match")),
         new Cmd("-json", "Parse the input as json",
                 new Arg("arrayPath",
@@ -1706,8 +1754,6 @@ public class CsvUtil {
                 new Arg("pattern", "", "type", "pattern")),
         new Cmd("-skip", "Skip number of processed rows.",
                 new Arg("rows", "How many rows to skip", "type", "number")),
-
-
 
         /** *  Slice and dice * */
         new Cmd(true, "Slice and Dice","Add/remove columns, rows, restructure, etc"),
@@ -2053,8 +2099,9 @@ public class CsvUtil {
         new Cmd(
 		"-summary",
 		"count/sum/avg/min/max values keying on key column value. If no value columns specified then do a count",
-		new Arg("ops","any of count,sum,avg,min,max"),
-		"key columns", "value columns", "carry over columns"),	
+		new Arg("key columns","Columns to key on","type","columns"), new Arg("value columns", "Columns to apply operators on","type","columns"),
+		new Arg("carry over columns","Extra columns to include","type","columns"),
+		new Arg("ops","any of count,sum,avg,min,max")),
         new Cmd(
 		"-histogram",
 		"Make a histogram with the given column and bins",
@@ -2190,19 +2237,15 @@ public class CsvUtil {
 		"-dbprops", "Print to stdout props for db generation",
 		new Arg("id pattern"),
 		new Arg("suffix pattern")),
-        new Cmd(
-		"-fields", "Print the fields"),
-
+        new Cmd("-fields", "Print the fields"),
         new Cmd("-run", "", "Name of process directory"),
-        new Cmd("-dots", "", "Print a dot every count row",
+        new Cmd("-dots", "Print a dot every count row. Used to show progress",
 		new Arg("every", "Dot every")),
-        new Cmd("-debugrows", "", "Debug # rows",
+        new Cmd("-debugrows", "Debug # rows",
 		new Arg("rows", "# of rows")),	
-
 	new Cmd("-script", "Generate the script to call"),
         new Cmd("-args", "Generate the CSV file commands"),
         new Cmd("-pointheader", "Generate the RAMADDA point properties"),
-	//        new Cmd("-args2", "Print out the args"),
     };
 
 
@@ -2806,10 +2849,10 @@ public class CsvUtil {
 		return i;
 	    });
 	defineFunction("-summary",4,(ctx,args,i) -> {
-		List<String> what   = Utils.split(args.get(++i),",",true,true);
 		List<String> keys   = getCols(args.get(++i));
 		List<String> values = getCols(args.get(++i));
 		List<String> extra  = getCols(args.get(++i));
+		List<String> what   = Utils.split(args.get(++i),",",true,true);
 		ctx.addProcessor(new RowCollector.Summary(ctx, what,keys, values, extra));
 		return i;
 	    });	

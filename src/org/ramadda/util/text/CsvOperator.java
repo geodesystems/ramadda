@@ -660,6 +660,7 @@ public class CsvOperator {
         //      System.err.println("\ttoks:" + toks);
         int start = -1;
         int end   = -1;
+	int step = 1;
 
         s = s.toLowerCase().trim();
 
@@ -673,14 +674,20 @@ public class CsvOperator {
 
             } else {
                 start = Integer.parseInt(toks.get(0));
-                end   = Integer.parseInt(toks.get(1));
+		String second = toks.get(1);
+		int index = second.indexOf(":");
+		if(index>=0) {
+		    step  = Integer.parseInt(second.substring(index+1));
+		    second  = second.substring(0,index);
+		}
+		//		System.err.println("step:" + step +" second:" + second);
+                end   = Integer.parseInt(second);
             }
         } catch (NumberFormatException exc) {
             if (toks.size() == 1) {
                 String tok = toks.get(0);
                 if (isLastIndex(tok)) {
                     indices.add(getLastIndex(tok, header.size() - 1));
-
                     return;
                 }
 
@@ -758,8 +765,9 @@ public class CsvOperator {
                 */
             }
         }
+	if(step<=0) throw new IllegalArgumentException("Step can't be <=0:" + step);
         if (start >= 0) {
-            for (int i = start; i <= end; i++) {
+            for (int i = start; i <= end; i+=step) {
                 //not now               if(Utils.testAndSet(seen,i)) continue;
                 colsSeen.add(i);
                 indices.add(i);

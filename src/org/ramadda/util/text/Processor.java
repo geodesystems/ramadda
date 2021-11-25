@@ -2538,7 +2538,6 @@ public abstract class Processor extends CsvOperator {
                     //                    System.err.println("idx:" + j);
                     row.add(headerRow1.get(j));
                 }
-
                 return row;
             }
             String key = "";
@@ -2550,7 +2549,6 @@ public abstract class Processor extends CsvOperator {
                 for (int j : values1Indices) {
                     row.add(dflt);
                 }
-
                 return row;
             }
             for (int j : values1Indices) {

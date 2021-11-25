@@ -2511,7 +2511,7 @@ public class RowCollector extends Processor {
 	    for(int i:valueIndices) {
 		for(String w: what) {
 		    if(w.equals("count"))
-		       newHeader.add("Count");
+		       newHeader.add(headerRow.get(i)+" Count");
 		    else
 			newHeader.add(headerRow.get(i)+" " + w);
 		}
@@ -2607,58 +2607,11 @@ public class RowCollector extends Processor {
      */
     public static class Histogram extends RowCollector {
 
+
 	List<Bin> bins;
 	List<String> what;
 	String scolumn;
 	int column;
-
-	private  class Bin {
-	    double min;
-	    double max;
-	    int count;
-	    double[]totals;
-	    double[]mins;
-	    double[]maxs; 	    	    
-
-	    Bin(double min,double max) {this.min = min;this.max = max;}
-	    public boolean firstBin() {
-		return (min==Double.NEGATIVE_INFINITY);
-	    }
-
-	    public boolean inRange(double v) {
-		if(firstBin()) {
-		    return v<max;
-		}
-		return v>=min && v<max;
-	    }
-	    public void addValues(List<Integer> indices, Row row) {
-		count++;
-		if(indices.size()==0) return;
-		if(totals==null)  {
-		    totals = new double[indices.size()];
-		    for(int i=0;i<totals.length;i++) totals[i]=0;
-		    mins = new double[indices.size()];
-		    for(int i=0;i<mins.length;i++) mins[i]=Double.POSITIVE_INFINITY;
-		    maxs = new double[indices.size()];
-		    for(int i=0;i<maxs.length;i++) maxs[i]=Double.NEGATIVE_INFINITY;	    
-		}
-		for(int i=0;i<indices.size();i++) {
-		    double v = Double.parseDouble(row.getString(indices.get(i)));
-		    if(Double.isNaN(v)) continue;
-		    totals[i]+=v;
-		    mins[i] =Math.min(v,mins[i]);
-		    maxs[i] =Math.max(v,maxs[i]);		    
-		}
-	    }
-
-	    public String getLabel() {
-		if(min==Double.NEGATIVE_INFINITY)
-		    return "<" + Utils.format(max);
-		if(max==Double.POSITIVE_INFINITY)
-		    return ">" + Utils.format(min);		
-		return Utils.format(min) +" - " + Utils.format(max);		
-	    }
-	}
 
         /**
          * _more_
@@ -2671,8 +2624,7 @@ public class RowCollector extends Processor {
 	    if(cols.size()>0 && this.what.size()==0) this.what.add(OPERAND_SUM);
 	    this.bins = new ArrayList<Bin>();
 	    double prevValue = Double.NEGATIVE_INFINITY;
-	    for(String tok: Utils.split(bins,",",true,true)) {
-		double v = Double.parseDouble(tok);
+	    for(double v: Utils.getDoubles(bins)) {
 		this.bins.add(new Bin(prevValue,v));
 		prevValue =v;
 	    }
@@ -2727,6 +2679,28 @@ public class RowCollector extends Processor {
 		}
             }
 
+	    //Check if they're single value
+	    boolean allSingle = true;
+	    for(Bin bin: bins) {
+		if(bin.count==0) continue;
+		if(bin.firstBin() || bin.lastBin()) {
+		    continue;
+		}
+		allSingle = Utils.isInt(bin.min) && Utils.isInt(bin.max) && ((int)bin.max) == ((int)bin.min)+1;
+		if(!allSingle) {
+		    break;
+		}
+	    }
+
+	    if(allSingle) {
+		for(Bin bin: bins) {
+		    if(!bin.firstBin() && !bin.lastBin()) {
+			bin.label = ""+((int)bin.min);
+		    }
+		}
+		
+	    }
+
 	    for(Bin bin: bins) {
 		if(bin.firstBin() && bin.count==0) continue;
 		Row    row = new Row();
@@ -2755,6 +2729,67 @@ public class RowCollector extends Processor {
 	    }
 	    return newRows;
 	}
+
+	private  class Bin {
+	    String label;
+	    double min;
+	    double max;
+	    int count;
+	    double[]totals;
+	    double[]mins;
+	    double[]maxs; 	    	    
+
+	    Bin(double min,double max) {this.min = min;this.max = max;}
+	    public boolean firstBin() {
+		return (min==Double.NEGATIVE_INFINITY);
+	    }
+
+	    public boolean lastBin() {
+		return (max==Double.POSITIVE_INFINITY);
+	    }
+	    
+	    public boolean inRange(double v) {
+		if(firstBin()) {
+		    return v<max;
+		}
+		return v>=min && v<max;
+	    }
+	    public void addValues(List<Integer> indices, Row row) {
+		count++;
+		if(indices.size()==0) return;
+		if(totals==null)  {
+		    totals = new double[indices.size()];
+		    for(int i=0;i<totals.length;i++) totals[i]=0;
+		    mins = new double[indices.size()];
+		    for(int i=0;i<mins.length;i++) mins[i]=Double.POSITIVE_INFINITY;
+		    maxs = new double[indices.size()];
+		    for(int i=0;i<maxs.length;i++) maxs[i]=Double.NEGATIVE_INFINITY;	    
+		}
+		for(int i=0;i<indices.size();i++) {
+		    double v = Double.parseDouble(row.getString(indices.get(i)));
+		    if(Double.isNaN(v)) continue;
+		    totals[i]+=v;
+		    mins[i] =Math.min(v,mins[i]);
+		    maxs[i] =Math.max(v,maxs[i]);		    
+		}
+	    }
+
+	    public String getLabel() {
+		if(label!=null) return label;
+		if(min==Double.NEGATIVE_INFINITY)
+		    return "<" + Utils.format(max);
+		if(max==Double.POSITIVE_INFINITY)
+		    return ">" + Utils.format(min);		
+		return Utils.format(min) +" - " + Utils.format(max);		
+	    }
+	    public String toString() {
+		return "bin min:" + min + " max:" + max +" count:" + count;
+	    }
+	}
+
+	
+
+
     }
 
 

@@ -12,6 +12,7 @@ import org.apache.commons.codec.language.Soundex;
 import org.json.*;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.PatternProps;
 
 
 import org.ramadda.util.IO;
@@ -47,7 +48,6 @@ import java.util.Properties;
 import java.util.TimeZone;
 
 import java.util.regex.*;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -1161,7 +1161,7 @@ public abstract class Converter extends Processor {
         /* */
 
         /** _more_ */
-        Hashtable<String, String> props;
+        PatternProps props;
 
         /* */
 
@@ -1186,7 +1186,7 @@ public abstract class Converter extends Processor {
          * @param props _more_
          */
         public HeaderMaker(Hashtable<String, String> props) {
-            this.props = props;
+            this.props = new PatternProps(props);
             defaultType = CsvUtil.getDbProp(props, "default", "type",
                                             defaultType);
             defaultChartable = CsvUtil.getDbProp(props, "default",
@@ -1283,7 +1283,6 @@ public abstract class Converter extends Processor {
                                    (String) null);
                 if (group != null) {
                     attrs.append(" group=\"" + group + "\" ");
-
                 }
 
                 if (label == null) {
