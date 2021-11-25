@@ -4339,7 +4339,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'doEntries',ex:true,tt:'Make the children entries be data'},
 	{p:'addAttributes',ex:true,tt:'Include the extra attributes of the children'},
 	{p:'sortFields',tt:'Comma separated list of fields to sort the data on'},
-	{p:'sortAscending',ex:'true|false'},
+	{p:'sortAscending',ex:'true|false',d:true},
 	{p:'showSortDirection',ex:true},		
 	{p:'sortByFields',ex:'',tt:'Show sort by fields in a menu'},
 	{p:'sortHighlight',ex:true,tt:'Sort based on highlight from the filters'},
@@ -5865,7 +5865,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    if(sortFields.length>0) {
 		records = Utils.cloneList(records);
-		let sortAscending = this.getProperty("sortAscending",true);
+		let sortAscending = this.getSortAscending();
 		let cnt = 0;
 		records.sort((a,b)=>{
 		    let row1 = this.getDataValues(a);
@@ -8640,6 +8640,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(field.isFieldGeo()) return;
 		    let id = field.getId();
 		    let label = field.getLabel();
+		    if(Utils.stringDefined(field.getGroup())) {
+			label = field.getGroup()+"-" + label;
+		    }
 		    let suffix1=" &uarr;";
 		    let suffix2=" &darr;";
 		    if(field.isFieldString()) {
@@ -21486,7 +21489,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	{label:'Download'},
 	{p:'csvLabel',ex:'Download'},
 	{p:'useIcon',d:'false',ex:'false'},
-	{p:'iconSize',ex:''},	
+	{p:'iconSize',ex:'',d:'16pt'},	
 	{p:'fileName',d:'download',ex:'download'},
 	{p:'askFields',d:'false',ex:'true'},
 	{p:'showCsvButton',ex:false,tt:'Show/hide the CSV button'},
@@ -21503,7 +21506,8 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	    let label = this.getPropertyCsvLabel("Download Data");
 	    label = label.replace("${title}",this.getProperty("title",""));
 	    let useIcon = this.getPropertyUseIcon(true);
-	    label = HU.span([ID,this.getDomId("csv")], useIcon?HU.getIconImage("fa-download",[STYLE,"cursor:pointer;font-size:32pt !important;",TITLE,label]):label);
+	    let iconSize = this.getIconSize();
+	    label = HU.span([ID,this.getDomId("csv")], useIcon?HU.getIconImage("fa-download",null,[STYLE,"cursor:pointer;font-size:" + iconSize+";",TITLE,label]):label);
 	    /*
 	    if(!Utils.isAnonymous() && this.getDoSave()) {
 		label+=SPACE2 +HU.span([ID,this.domId("save"),CLASS,"ramadda-clickable"], HU.getIconImage("fas fa-save")) +SPACE +HU.span([ID,this.domId("savelabel")]);
@@ -41773,12 +41777,30 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 
 	    html+="<tr  valign=top>\n"
 	    let headerStyle = this.getTableHeaderStyle("")+"text-align:center;";
+	    let fieldMap = {}
+	    let sortFields = this.getProperty("sortFields");
+	    let sortAscending = this.getSortAscending();
+	    if(sortFields) {
+		let tmp = {};
+		sortFields.split(",").forEach(f=>{tmp[f]=true;});
+		sortFields= tmp;
+	    }
 	    fields.forEach((f,idx)=>{
-		if(fancy) {
-		    html+=HU.th([STYLE,headerStyle],HU.div(headerAttrs,this.getFieldLabel(f)));
+		fieldMap[f.getId()] = f;
+		let sort = sortFields && sortFields[f.getId()];
+		let attrs = [TITLE,"Click to sort",CLASS,"ramadda-clickable display-table-header", "field-id",f.getId(),STYLE,headerStyle];
+		if(sort) {
+		    attrs.push("sorted");
+		    attrs.push("true");
 		}
-		else
-		    html+=HU.th([],HU.div(headerAttrs,f.getId() +"[" + f.getType()+"]"));
+		if(fancy) {
+		    let label = this.getFieldLabel(f);
+		    if(sort) label = HU.getIconImage(sortAscending?"fas fa-arrow-down":"fas fa-arrow-up",null, [STYLE,HU.css('font-size','8pt !important')]) +" " + label;
+		    html+=HU.th(attrs,HU.div(headerAttrs,label));
+		}
+		else {
+		    html+=HU.th(attrs,HU.div(headerAttrs,f.getId() +"[" + f.getType()+"]"));
+		}
 		
 	    });
 
@@ -41974,6 +41996,17 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		dom.append(HU.div([ID,id]));
 		cb.displayColorTable(null,true,ID_COLORTABLE+idx);
 	    });
+
+	    let headers =  this.find(".display-table-header");
+	    headers.click(function() {
+		let field = fieldMap[$(this).attr("field-id")];
+		if($(this).attr("sorted")==="true") {
+		    _this.setProperty("sortAscending",!_this.getSortAscending());
+		} 
+		_this.setProperty("sortFields", field.getId());
+		_this.sortByFieldChanged(field.getId());
+	    });
+
 
 	    let _this = this;
 	    let tooltipClick = this.getProperty("tooltipClick");
