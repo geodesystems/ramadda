@@ -1304,7 +1304,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'doEntries',ex:true,tt:'Make the children entries be data'},
 	{p:'addAttributes',ex:true,tt:'Include the extra attributes of the children'},
 	{p:'sortFields',tt:'Comma separated list of fields to sort the data on'},
-	{p:'sortAscending',ex:'true|false'},
+	{p:'sortAscending',ex:'true|false',d:true},
 	{p:'showSortDirection',ex:true},		
 	{p:'sortByFields',ex:'',tt:'Show sort by fields in a menu'},
 	{p:'sortHighlight',ex:true,tt:'Sort based on highlight from the filters'},
@@ -2830,7 +2830,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    if(sortFields.length>0) {
 		records = Utils.cloneList(records);
-		let sortAscending = this.getProperty("sortAscending",true);
+		let sortAscending = this.getSortAscending();
 		let cnt = 0;
 		records.sort((a,b)=>{
 		    let row1 = this.getDataValues(a);
@@ -5605,6 +5605,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(field.isFieldGeo()) return;
 		    let id = field.getId();
 		    let label = field.getLabel();
+		    if(Utils.stringDefined(field.getGroup())) {
+			label = field.getGroup()+"-" + label;
+		    }
 		    let suffix1=" &uarr;";
 		    let suffix2=" &darr;";
 		    if(field.isFieldString()) {

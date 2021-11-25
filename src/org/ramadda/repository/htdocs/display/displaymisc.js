@@ -1186,12 +1186,30 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 
 	    html+="<tr  valign=top>\n"
 	    let headerStyle = this.getTableHeaderStyle("")+"text-align:center;";
+	    let fieldMap = {}
+	    let sortFields = this.getProperty("sortFields");
+	    let sortAscending = this.getSortAscending();
+	    if(sortFields) {
+		let tmp = {};
+		sortFields.split(",").forEach(f=>{tmp[f]=true;});
+		sortFields= tmp;
+	    }
 	    fields.forEach((f,idx)=>{
-		if(fancy) {
-		    html+=HU.th([STYLE,headerStyle],HU.div(headerAttrs,this.getFieldLabel(f)));
+		fieldMap[f.getId()] = f;
+		let sort = sortFields && sortFields[f.getId()];
+		let attrs = [TITLE,"Click to sort",CLASS,"ramadda-clickable display-table-header", "field-id",f.getId(),STYLE,headerStyle];
+		if(sort) {
+		    attrs.push("sorted");
+		    attrs.push("true");
 		}
-		else
-		    html+=HU.th([],HU.div(headerAttrs,f.getId() +"[" + f.getType()+"]"));
+		if(fancy) {
+		    let label = this.getFieldLabel(f);
+		    if(sort) label = HU.getIconImage(sortAscending?"fas fa-arrow-down":"fas fa-arrow-up",null, [STYLE,HU.css('font-size','8pt !important')]) +" " + label;
+		    html+=HU.th(attrs,HU.div(headerAttrs,label));
+		}
+		else {
+		    html+=HU.th(attrs,HU.div(headerAttrs,f.getId() +"[" + f.getType()+"]"));
+		}
 		
 	    });
 
@@ -1387,6 +1405,17 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		dom.append(HU.div([ID,id]));
 		cb.displayColorTable(null,true,ID_COLORTABLE+idx);
 	    });
+
+	    let headers =  this.find(".display-table-header");
+	    headers.click(function() {
+		let field = fieldMap[$(this).attr("field-id")];
+		if($(this).attr("sorted")==="true") {
+		    _this.setProperty("sortAscending",!_this.getSortAscending());
+		} 
+		_this.setProperty("sortFields", field.getId());
+		_this.sortByFieldChanged(field.getId());
+	    });
+
 
 	    let _this = this;
 	    let tooltipClick = this.getProperty("tooltipClick");

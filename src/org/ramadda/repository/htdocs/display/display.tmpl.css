@@ -1094,7 +1094,9 @@ svg > g > g:last-child { pointer-events: none }
 
 }
 
-
+.display-table-header {
+    white-space: nowrap;
+}
 
 
 .display-stats-header {
