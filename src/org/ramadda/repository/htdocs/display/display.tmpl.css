@@ -204,9 +204,18 @@ a.display-container {
     border-collapse: separate;
 }
 
+.display-correlation-contents .ui-slider-handle   {
+    top:0.1em !important;
+    height:1em !important;
+    width:0.75em !important;
+    margin-left:-.4em !important;
+}
+
+
+
 
 .display-correlation-cell  {
-    border:1px #efefef solid;
+    border:0.5px #aaa solid;
     padding-left: 3px;
     padding-right: 3px;
     height:100%;
