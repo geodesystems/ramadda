@@ -644,35 +644,43 @@ public class Utils extends IO {
      *
      * @return _more_
      */
-    public static List<Integer> getNumbers(String s) {
-        List<Integer> cols = new ArrayList<Integer>();
+    public static List<Double> getDoubles(String s) {
+        List<Double> cols = new ArrayList<Double>();
         for (String tok : Utils.split(s, ",", true, true)) {
             if ((tok.indexOf("-") >= 0) && !tok.startsWith("-")) {
-                int from = new Integer(Utils.split(tok, "-", true,
+                int from = new Double(Utils.split(tok, "-", true,
                                true).get(0)).intValue();
 
-                int    step  = 1;
+                double   step  = 1;
                 String right = Utils.split(tok, "-", true, true).get(1);
                 if (right.indexOf(":") >= 0) {
                     List<String> tmp = Utils.split(right, ":", true, true);
                     right = tmp.get(0);
                     if (tmp.size() > 1) {
-                        step = Integer.parseInt(tmp.get(1));
+                        step = Double.parseDouble(tmp.get(1));
                     }
                 }
-                int to = Integer.parseInt(right);
-                for (int i = from; i <= to; i += step) {
+                double to = Double.parseDouble(right);
+                for (double i = from; i <= to; i += step) {
                     cols.add(i);
                 }
 
                 continue;
             }
-            cols.add(Integer.parseInt(tok));
+            cols.add(Double.parseDouble(tok));
         }
 
         return cols;
     }
 
+    public static List<Integer> getNumbers(String s) {
+        List<Integer> cols = new ArrayList<Integer>();
+	for(double d: getDoubles(s)) {
+	    cols.add((int)d);
+        }
+        return cols;
+    }
+    
 
 
 
@@ -2453,6 +2461,11 @@ public class Utils extends IO {
         return false;
     }
 
+
+    public static boolean isInt(double d) {
+	return d == (int)d;
+
+    }
 
     /**
      * _more_
