@@ -2205,7 +2205,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_CORRELATION, properties);
     let myProps = [
 	{label:'Correlation'},
-	{p:'showSelectSlider',ex:'false'},
+	{p:'showSelectSlider',ex:'false',d:true},
 	{p:'range.low.min',ex:'-1'},
 	{p:'range.low.max',ex:'0'},
 	{p:'range.high.min',ex:'0'},
@@ -2292,7 +2292,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 		    max:this.getProperty("range.high.max",1)
 		}
 	    }
-	    if(this.getProperty("showSelectSlider",true)) {
+	    if(this.getShowSelectSlider()) {
 		let lowSlider = HU.div([STYLE,HU.css('display','inline-block')],"Low Range" + HU.tag(BR) + 
 				       HU.div([ID,this.gid(ID_SLIDER_LOW_MIN),STYLE,HU.css(WIDTH,'50px','display','inline-block','text-align','right','margin-right','15px')],this.range.low.min) +
 				       HU.div([STYLE,HU.css(HEIGHT,'20px','display','inline-block',WIDTH,'200px','background','#A6A6FF'), ID,this.gid(ID_SLIDER_LOW)]) +
@@ -2308,7 +2308,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 	    html +=HU.div([ID,this.domId(ID_TABLE)]);
             this.setContents(html);
 	    this.makeTable();
-	    if(this.getProperty("showSelectSlider",true)) {
+	    if(this.getShowSelectSlider()) {
 		this.jq(ID_SLIDER_LOW).slider({
 		    range: true,
 		    min: 0,
@@ -2445,15 +2445,22 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 			(r>=this.range.low.min && r<=this.range.low.max):
 			(r>=this.range.high.min && r<=this.range.high.max);
                     let style = "";
-                    if (ok && colors != null) {
-                        let percent = (r - colorByMin) / (colorByMax - colorByMin);
-                        let index = parseInt(percent * colors.length);
-                        if (index >= colors.length) index = colors.length - 1;
-                        else if (index < 0) index = 0;
-                        style = HU.css("background-color", colors[index]);
+    		    
+		    
+		    if (ok && colors != null) {
+			if(fieldIdx1!=fieldIdx2) {
+                            let percent = (r - colorByMin) / (colorByMax - colorByMin);
+                            let index = parseInt(percent * colors.length);
+                            if (index >= colors.length) index = colors.length - 1;
+                            else if (index < 0) index = 0;
+                            style = HU.css("background-color", colors[index]);
+			} else {
+                            style = HU.css("background-color", "#eee");
+			}
                     }
                     let value = r.toFixed(3);
                     let label = value;
+		    if(fieldIdx1==fieldIdx2) label = SPACE;
                     if (!showValue || short) label = SPACE;
 		    let cellContents = "";
 		    if(ok) {
