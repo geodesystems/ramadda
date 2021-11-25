@@ -1601,17 +1601,17 @@ Column indices. Can include ranges, e.g. 0-5<br>
 <br>
 <br>
 </ul>
-</div><a name='-summary'></a><div class=command> <i><a href='#-summary'>-summary</a></i>  &lt;ops&gt;  &lt;key columns&gt;  &lt;value columns&gt;  &lt;carry over columns&gt; </div><div class=command-block>count/sum/avg/min/max values keying on key column value. If no value columns specified then do a count<br>
+</div><a name='-summary'></a><div class=command> <i><a href='#-summary'>-summary</a></i>  &lt;key columns&gt;  &lt;value columns&gt;  &lt;carry over columns&gt;  &lt;ops&gt; </div><div class=command-block>count/sum/avg/min/max values keying on key column value. If no value columns specified then do a count<br>
 <b>Arguments:</b><br>
 <ul>
+<i>key columns</i>
+Columns to key on<br>
+<i>value columns</i>
+Columns to apply operators on<br>
+<i>carry over columns</i>
+Extra columns to include<br>
 <i>ops</i>
 any of count,sum,avg,min,max<br>
-<i>key columns</i>
-<br>
-<i>value columns</i>
-<br>
-<i>carry over columns</i>
-<br>
 <br>
 </ul>
 </div><a name='-histogram'></a><div class=command> <i><a href='#-histogram'>-histogram</a></i>  &lt;column&gt;  &lt;bins&gt;  &lt;value columns&gt;  &lt;ops&gt; </div><div class=command-block>Make a histogram with the given column and bins<br>
@@ -2138,7 +2138,77 @@ Output between rows<br>
 name1 value1 ... nameN valueN<br>
 <br>
 </ul>
-</div><a name='-db'></a><div class=command> <i><a href='#-db'>-db</a></i>  &lt;properties&gt; </div><div class=command-block>Generate the RAMADDA db xml from the header<br>
+The -addheader command adds RAMADDA's point data header to the output file.
+The header specifies the canonical field ids and a set of properties for
+each field and  is of the form:
+<pre>
+#fields=field1[prop1=value1 prop2=value2 ...],field2[],...,fieldN[propn=valuen ...]
+v1,v2,v3
+...
+</pre>
+
+The addheader command is run as below passing in one set of name/value arguments:
+<pre>
+  csv -addheader "arg1 value1 arg2 {value 2} arg3 value3"
+</pre>
+
+The args are typically of the form <i>canonical_field_name.some_property</i> where canonical field
+name is the column header cleaned up - lowercase, spaces converted to "_", strip off non alphanumeric characters.
+
+
+<p>
+For example, say you have a file like this:
+<pre>
+some date,year,some field
+2018-09-01,2023,10
+2019-10-01,2024,20
+2020-09-01,2024,30
+</pre>
+
+Running this command:
+<pre>
+csv -addheader "some_date.type date date.format yyyy-MM-dd year.type date year.format yyyy some_field.id temperature some_field.label {The Temperature} some_field.type celsius" -p testdate.csv
+</pre>
+
+will result in an output:
+<pre>
+#fields=some_date[label="Some Date"  type="date" format="yyyy-MM-dd" ] ,year[label="Year"  type="date" format="yyyy" ] ,temperature[label="Some Field"  type="integer" chartable="true" ] 
+2018-09-01,2023,10
+2019-10-01,2024,20
+</pre>
+
+This specifies:
+<ul>
+  <li> The type of the field "date" as date with the date format following the <a href="https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html">Java date format</a>  as yyyy-MM-dd. Other types include:
+    <ul>
+      <li> "enumeration", e.g. field.type enumeration
+      <li> "integer", e.g. field.type integer
+      <li> "double", e.g. field.type double
+    </ul>
+  <li> The year field is also a date with format yyyy
+  <li> The canonical id of "some field" field is changed to "temperature"
+  <li> The label of "some field" is changed to "The Temperature"
+  <li> The unit of "some field" is set to be celsius. This can be used when displaying the data.
+</ul>
+
+Other field properties include:
+<ul>
+  <li> group, e.g. field.group {some group} - this is used to group a set of fields and is primarily used for display, e.g., providing a header in a table
+  <li> default.format, e.g. default.format {yyyy-MM-dd}  - this is to set the default date format that is applied to all fields
+  <li> {some pattern}.{some property} - instead of the field name as the prefix you can specify a regular expression pattern. For example if you had data like:
+<pre>
+  value1,value2,value3
+  10,20,30
+</pre>
+
+You can specify the type as "value.*.type integer".
+<p>
+Adding a grouping to the pattern can be used to pull out text from the field name and use it in the value. For example, below would set the label:
+<pre>
+-addheader "(value.*).*.label {Some label \$1}" 
+</pre>    
+</ul>
+<p></div><a name='-db'></a><div class=command> <i><a href='#-db'>-db</a></i>  &lt;properties&gt; </div><div class=command-block>Generate the RAMADDA db xml from the header<br>
 <b>Arguments:</b><br>
 <ul>
 <i>properties</i>
