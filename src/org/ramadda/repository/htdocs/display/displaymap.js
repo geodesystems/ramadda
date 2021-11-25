@@ -1657,9 +1657,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(feature)  recordToFeature[record.getId()] = feature;
 	    });
 
-
-
 	    if(linkFeature && linkField) {
+		linkFeature = linkFeature.toLowerCase();
 		let recordMap = {};
 		points.forEach(p=>{
 		    let record = p.record;
@@ -1672,11 +1671,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
 		});
 
-		features.forEach(feature=>{
+		features.forEach((feature,idx)=>{
 		    let attrs = feature.attributes;
 		    let ok = false;
 		    for (let attr in attrs) {
-			if(linkFeature==attr) {
+			let _attr = String(attr).toLowerCase();
+			if(linkFeature==_attr) {
 			    ok  = true;
 			    let value = this.map.getAttrValue(attrs, attr);
 			    let debug = false;
