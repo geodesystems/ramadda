@@ -1363,7 +1363,8 @@ RepositoryMap.prototype = {
             select_strokeColor: "#666",
             select_strokeWidth: 1
         };
-        if (args) RamaddaUtil.inherit(props, args);
+       if (args) RamaddaUtil.inherit(props, args);
+
         var temporaryStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style["temporary"]);
         $.extend(temporaryStyle, {
             pointRadius: props.pointRadius,
@@ -1389,6 +1390,8 @@ RepositoryMap.prototype = {
             strokeColor: props.strokeColor,
             strokeWidth: props.strokeWidth
         });
+
+
         let map = new OpenLayers.StyleMap({
             "temporary": temporaryStyle,
             "default": defaultStyle,
@@ -2151,12 +2154,13 @@ RepositoryMap.prototype = {
             //xxstyleMap: this.getVectorLayerStyleMap(args)
         });
 	let opts =  {
-            strokeColor: 'blue',
-            strokeWidth: 1,
-	    fillColor:"#ccc",
-	    fillOpacity:0.4
+            strokeColor: this.params.layerStrokeColor||'blue',
+            strokeWidth: this.params.layerStrokeWidth||1,
+	    fillColor:this.params.layerFillColor||"#ccc",
+	    fillOpacity:this.params.layerFillOpacity||0.4
         }
 	if(args) $.extend(opts, args);
+
         layer.styleMap = this.getVectorLayerStyleMap(layer, opts);
         this.initMapVectorLayer(layer, canSelect, selectCallback, unselectCallback, loadCallback, zoomToExtent);
         return layer;
