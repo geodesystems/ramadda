@@ -8,7 +8,7 @@
 <body>
 <div class="ramadda-documentation">
 <table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
-<a href="page_datafacilities.html"><span title="Previous: Data Facilities"><i  style='font-size:20pt;'  class="fa fa-caret-left "></i></span></a> <a href="etlcommands.html"><span title="Next: ETL Tools"><i  style='font-size:20pt;'  class="fa fa-caret-right "></i></span></a>  <a href="toc.html#etl.html"><span title="Table of contents"><i  style='font-size:20pt;'  class="fa fa-list "></i></span></a>
+<a href="page_datafacilities.html"><span title="Previous: Data Facilities"><i  style='font-size:20pt;'  class="fa fa-caret-left "></i></span></a> <a href="csvcommands.html"><span title="Next: RAMADDA CSV Commands"><i  style='font-size:20pt;'  class="fa fa-caret-right "></i></span></a>  <a href="toc.html#etl.html"><span title="Table of contents"><i  style='font-size:20pt;'  class="fa fa-list "></i></span></a>
 </td>
 <td width=40% align=center>
 <div class="ramadda-page-title"><a href="${root}/userguide/index.html">RAMADDA User Guide</a></div>
@@ -24,7 +24,6 @@ pre {
 </style>
 
 <div style="margin-left:20px;">
-
 
 
 
@@ -56,35 +55,6 @@ The Do Commands checkbox applies the commands when you press one of the run butt
 </ul>
 
 
-Many of the commands below take a columns specification. This takes the form of:
-<pre>
-&quot;colA,colB,colC-colD,colE,...&quot;
-e.g.:
-&quot;0,1,2,7-10,12&quot;
-</pre>
-
-
-<a name="html"></a><p><div class="ramadda-help-heading">7.0.1 <a href="#html">Extracting HTML</a></div> 
-The conversion service supports extracting data from an HTML table in a HTML page. Save the HTML page and upload to RAMADDA as a CSV File entry type. Then go to the conversion page.  The first command to enter is the -html command:
-<pre>
--html &quot;name value arguments&quot;
-</pre>
-
-
-The name/value arguments include:
-<pre>
--html &quot;skip &lt;how many tables in the HTML file to skip&gt;&quot;
--html &quot;removePattern &lt;regexp pattern to remove&gt;  removePattern2 &lt;another pattern to remove&gt;&quot;
-</pre>
-
-Because there are many levels of parsing of escape characters if 
-you need to remove text that contains special regular expression characters - [,],(,) and . - use the special tags:
-_leftbracket_, _rightbracket_, _leftparent_, _rightparen_, _dot_, e.g.:
-
-<pre>
--html &quot;removePattern _leftbracket_.*?_rightbracket_ &quot;
-</pre>
-
 
 </body>
 
@@ -94,7 +64,7 @@ _leftbracket_, _rightbracket_, _leftparent_, _rightparen_, _dot_, e.g.:
 <p>
 
 <p>&nbsp;<p>
-<a href="page_datafacilities.html"><span title="Previous: Data Facilities"><i  style='font-size:20pt;'  class="fa fa-caret-left "></i></span></a> <a href="etlcommands.html"><span title="Next: ETL Tools"><i  style='font-size:20pt;'  class="fa fa-caret-right "></i></span></a>  <a href="toc.html#etl.html"><span title="Table of contents"><i  style='font-size:20pt;'  class="fa fa-list "></i></span></a>
+<a href="page_datafacilities.html"><span title="Previous: Data Facilities"><i  style='font-size:20pt;'  class="fa fa-caret-left "></i></span></a> <a href="csvcommands.html"><span title="Next: RAMADDA CSV Commands"><i  style='font-size:20pt;'  class="fa fa-caret-right "></i></span></a>  <a href="toc.html#etl.html"><span title="Table of contents"><i  style='font-size:20pt;'  class="fa fa-list "></i></span></a>
 <p>
 </div>
 </body>

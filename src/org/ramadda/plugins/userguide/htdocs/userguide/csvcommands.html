@@ -1,3 +1,32 @@
+<html>
+<head>
+<title>RAMADDA CSV Commands</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
+<a href="etl.html"><span title="Previous: ETL Tools"><i  style='font-size:20pt;'  class="fa fa-caret-left "></i></span></a> <a href="dataexample.html"><span title="Next: Data Example"><i  style='font-size:20pt;'  class="fa fa-caret-right "></i></span></a>  <a href="toc.html#csvcommands.html"><span title="Table of contents"><i  style='font-size:20pt;'  class="fa fa-list "></i></span></a>
+</td>
+<td width=40% align=center>
+<div class="ramadda-page-title"><a href="${root}/userguide/index.html">RAMADDA User Guide</a></div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="ramadda-page-heading">Section 7.1: RAMADDA CSV Commands</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+<div style="margin-left:20px;">
+
+</head>    
+<notcl>
 <style type='text/css'>
   body {font-family: Arial, sans-serif;}
   ul {margin:0px;}
@@ -28,10 +57,25 @@
       font-style:italic;
   }
 
+
 </style>
 
 <h2>RAMADDA CSV Utils Commands</h2>
-<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA CSV Utils package provides 220 commands for manipulating CSV and other types of files</center>
+<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA CSV Utils package provides 221 commands for manipulating CSV and other types of files</center>
+
+
+<h2>Introduction</h2>
+The RAMADDA CSV commands can be used both interactively from within RAMADDA as well as via the command line. The examples here show the command line use. If running interactively the commands are the same form except for the csv.sh calls and the specification of the input file. So, for example, if you are calling the tool from the command line as:
+<pre class=example>
+csv.sh -columns column1,column2 -p file.csv > output.csv
+</pre>
+
+The corresponding commands interactively would be:
+<pre class=example>
+-columns column1,column2
+</pre>
+
+
 <h2>Install</h2>
 <ul>
 <li> Download the csvutil.zip file from the RAMADDA <a href=https://geodesystems.com/repository/alias/release>download</a> site
@@ -1189,7 +1233,7 @@ End index<br>
 <br>
 </ul>
 </div></ul><br><hr><a name='Change'></a><b style='font-size:120%;'>Change</b><br>
-<div class=header>Commands: <a href='#-change'>-change</a> <a href='#-changerow'>-changerow</a> <a href='#-set'>-set</a> <a href='#-macro'>-macro</a> <a href='#-setcol'>-setcol</a> <a href='#-copyif'>-copyif</a> <a href='#-copycolumns'>-copycolumns</a> <a href='#-filldown'>-filldown</a> <a href='#-priorprefix'>-priorprefix</a> <a href='#-case'>-case</a> <a href='#-padleft'>-padleft</a> <a href='#-padright'>-padright</a> <a href='#-trim'>-trim</a> <a href='#-trimquotes'>-trimquotes</a> <a href='#-width'>-width</a> <a href='#-prepend'>-prepend</a> <a href='#-pad'>-pad</a> <a href='#-prefix'>-prefix</a> <a href='#-suffix'>-suffix</a> <a href='#-ascii'>-ascii</a> <a href='#-js'>-js</a> <a href='#-func'>-func</a> <a href='#-endswith'>-endswith</a> <a href='#-truncate'>-truncate</a> <a href='#-extract'>-extract</a> <a href='#-urlarg'>-urlarg</a> <a href='#-map'>-map</a> <a href='#-format'>-format</a> <a href='#-denormalize'>-denormalize</a> <a href='#-break'>-break</a> <a href='#-makeids'>-makeids</a> </div><a name='-change'></a><div class=command> <i><a href='#-change'>-change</a></i>  &lt;columns&gt;  &lt;pattern&gt;  &lt;substitution string&gt; </div><div class=command-block>Change columns<br>
+<div class=header>Commands: <a href='#-change'>-change</a> <a href='#-changerow'>-changerow</a> <a href='#-set'>-set</a> <a href='#-macro'>-macro</a> <a href='#-setcol'>-setcol</a> <a href='#-copyif'>-copyif</a> <a href='#-copycolumns'>-copycolumns</a> <a href='#-filldown'>-filldown</a> <a href='#-priorprefix'>-priorprefix</a> <a href='#-case'>-case</a> <a href='#-padleft'>-padleft</a> <a href='#-padright'>-padright</a> <a href='#-trim'>-trim</a> <a href='#-trimquotes'>-trimquotes</a> <a href='#-width'>-width</a> <a href='#-prepend'>-prepend</a> <a href='#-pad'>-pad</a> <a href='#-prefix'>-prefix</a> <a href='#-suffix'>-suffix</a> <a href='#-ascii'>-ascii</a> <a href='#-ismobile'>-ismobile</a> <a href='#-js'>-js</a> <a href='#-func'>-func</a> <a href='#-endswith'>-endswith</a> <a href='#-truncate'>-truncate</a> <a href='#-extract'>-extract</a> <a href='#-urlarg'>-urlarg</a> <a href='#-map'>-map</a> <a href='#-format'>-format</a> <a href='#-denormalize'>-denormalize</a> <a href='#-break'>-break</a> <a href='#-makeids'>-makeids</a> </div><a name='-change'></a><div class=command> <i><a href='#-change'>-change</a></i>  &lt;columns&gt;  &lt;pattern&gt;  &lt;substitution string&gt; </div><div class=command-block>Change columns<br>
 <b>Arguments:</b><br>
 <ul>
 <i>columns</i>
@@ -1399,6 +1443,13 @@ Column indices. Can include ranges, e.g. 0-5<br>
 Column indices. Can include ranges, e.g. 0-5<br>
 <i>substitution string</i>
 <br>
+<br>
+</ul>
+</div><a name='-ismobile'></a><div class=command> <i><a href='#-ismobile'>-ismobile</a></i>  &lt;columns&gt; </div><div class=command-block>Add a true/false if the string is a mobile phone<br>
+<b>Arguments:</b><br>
+<ul>
+<i>columns</i>
+Column indices. Can include ranges, e.g. 0-5<br>
 <br>
 </ul>
 </div><a name='-js'></a><div class=command> <i><a href='#-js'>-js</a></i>  &lt;javascript&gt; </div><div class=command-block>Define Javascript (e.g., functions) to use later in the -func call<br>
@@ -2437,3 +2488,13 @@ Dot every<br>
 <br>
 </ul>
 </div></ul>
+</div>
+<p>
+<div  class="childlist" ><table  width="100%" ></table></div>
+<p>&nbsp;<p>
+<a href="etl.html"><span title="Previous: ETL Tools"><i  style='font-size:20pt;'  class="fa fa-caret-left "></i></span></a> <a href="dataexample.html"><span title="Next: Data Example"><i  style='font-size:20pt;'  class="fa fa-caret-right "></i></span></a>  <a href="toc.html#csvcommands.html"><span title="Table of contents"><i  style='font-size:20pt;'  class="fa fa-list "></i></span></a>
+<p>
+</div>
+</body>
+</html>
+

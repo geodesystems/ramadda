@@ -39,8 +39,8 @@ Year,Category,Sub-Category,Emissions per Sub-Category (MTCO2e)
 
 [ug::subheading {Convert the raw file} convert]
 Next, the data needs to be cleaned up, reformatting the numeric values, removing the missing years and transforming the data to group the fields by year to be able to create time series displays.
-From the menu choose "Convert Spreadsheet" -
-[ht::cimg images/dataexample/menu2.png]
+From the menu choose "Convert Data" -
+[ht::cimg images/dataexample/menu2.png width="400px"]
 
 This takes us to the interactive ETL conversion form (view it
 <a href="https://geodesystems.com/repository/entry/show/Home/Content/Community+Data/Colorado/Boulder+Data+Hub/Development/Ghgi+Community+Emissions+Sector?entryid=67609c54-abd1-4e5b-aa95-a78845e67853&output=convert_form">here</a>).
@@ -48,7 +48,7 @@ This takes us to the interactive ETL conversion form (view it
 [ht::cimg images/dataexample/convert1.png "" "width=80%"]
 
 
-RAMADDA's ETL facility provides a large number of operations (documented <a href="https://geodesystems.com/repository/userguide/etl.html">here</a>) for transforming the CSV file.  One adds any number of conversion commands in the main input area. The buttons along the bottom (e.g., Table, Records) allow for the results to be viewed in different ways. 
+RAMADDA's ETL facility provides a large number of operations (documented <a href="csvcommands.html">here</a>) for transforming the CSV file.  One adds any number of conversion commands in the main input area. The buttons along the bottom (e.g., Table, Records) allow for the results to be viewed in different ways. 
 <p>
 
 The below commands are used to convert the raw data. This changes the commas in the
@@ -95,8 +95,8 @@ Alternately you can create other wiki pages that import and display data from ot
 some folder in RAMADDA and choose  "Pick a Type" from the Folder's menu. The Wiki Page type is listed under the "Information" category (search for "wiki" in the web page. Create the wiki page - specifying a name and the wiki text. To display data from other entries you use the same wiki text as described above but you also specify an
 entry-
 <pre>
-{{display  type="linechart"  layoutHere="true"  fields="#1" entry="becb663b-d464-451a-a3c6-3ec8a4816515"}} 
-{{display  type="linechart"  layoutHere="true"  fields="#1" entry="some other entry id"}} 
+{<noop>{display  type="linechart"  layoutHere="true"  fields="#1" entry="becb663b-d464-451a-a3c6-3ec8a4816515"}} 
+{<noop>{display  type="linechart"  layoutHere="true"  fields="#1" entry="some other entry id"}} 
 </pre>
 
 

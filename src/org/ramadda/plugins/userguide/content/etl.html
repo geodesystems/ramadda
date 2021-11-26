@@ -2,7 +2,6 @@
 <%nochildlist%>
 
 
-
 [ug::subheading {Extract, Transform, Load CSV Files} etl]
 
 RAMADDA provides an interactive facility to transform CSV, JSON, XML or HTML files and create structured
@@ -28,35 +27,6 @@ The Save checkbox saves the command text when you run the commands so you can re
 The Do Commands checkbox applies the commands when you press one of the run buttons.
 </ul>
 
-
-Many of the commands below take a columns specification. This takes the form of:
-[ht::pre {
-"colA,colB,colC-colD,colE,..."
-e.g.:
-"0,1,2,7-10,12"
-}]
-
-
-[ug::subheading {Extracting HTML} html]
-The conversion service supports extracting data from an HTML table in a HTML page. Save the HTML page and upload to RAMADDA as a CSV File entry type. Then go to the conversion page.  The first command to enter is the -html command:
-[ht::pre {
--html "name value arguments"
-}]
-
-
-The name/value arguments include:
-[ht::pre {
--html "skip <how many tables in the HTML file to skip>"
--html "removePattern <regexp pattern to remove>  removePattern2 <another pattern to remove>"
-}]
-
-Because there are many levels of parsing of escape characters if 
-you need to remove text that contains special regular expression characters - \[,\],(,) and . - use the special tags:
-_leftbracket_, _rightbracket_, _leftparent_, _rightparen_, _dot_, e.g.:
-
-[ht::pre {
--html "removePattern _leftbracket_.*?_rightbracket_ "
-}]
 
 
 [ht::foot]

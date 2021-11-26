@@ -10,6 +10,12 @@ gen::defineMacro {<%ramadda.version%>} {5.0}
 
 namespace eval wiki {}
 
+proc wiki::clean {t} {
+     regsub -all "\{\{" $t "\{<noop>\{" t
+     set t
+}
+
+
 proc wiki::tagdef {t {attrs {}}} {
     set block  ""
     set attrs [string trim $attrs]
@@ -19,7 +25,8 @@ proc wiki::tagdef {t {attrs {}}} {
         set block   "{{$t <i>$attrs</i>}}"
     }
     set block [wiki::text $block]
-    return "<a name=\"$t\"></a>Tag: <a href=\"#${t}\">$t</a><div class='ramadda-wiki-tag'>$block</div>"
+    set t "<a name=\"$t\"></a>Tag: <a href=\"#${t}\">$t</a><div class='ramadda-wiki-tag'>$block</div>"
+    return [wiki::clean $t]
 }
 
 proc wiki::tagdefBlock {t {attrs {}}} {
@@ -30,24 +37,26 @@ proc wiki::tagdefBlock {t {attrs {}}} {
     } else {
         set block   [wiki::text  "{{$t $attrs}}"]
     }
-    set block [wiki::text $block]
-    return "<a name=\"$t\"></a>$block"
+    return [wiki::clean "<a name=\"$t\"></a>$block"]
 }
 
 proc wiki::tag {t {attrs {}}} {
     if {$attrs==""} {
-        return "{<noop>{$t}}"
+        set t "{{$t}}"
     } else {
-        return "{<noop>{$t <i>$attrs</i>}}"
+         set t "{{$t <i>$attrs</i>}}"
     }
+    return [wiki::clean  $t]
 }
 
 proc wiki::text {t} {
 if {$::doXml} {
     set t [string trim $t]
-    return "\n+pre class=wikitext\n$t\n-pre\n"
+    set t "\n+pre class=wikitext\n$t\n-pre\n"
+} else {
+  set t "<pre>$t</pre>"
 }
-    return "<pre>$t</pre>"
+    return [wiki::clean  $t]
 }
 
 proc class {c} {

@@ -108,15 +108,15 @@ and a list of entries in a sub-folder called "Links". If you used the below wiki
 and "Could not find entry" error messages. 
 
 [wiki::text {
-{{image src="::*"}}
-{{links entry="Links"}}
+{<noop>{image src="::*"}}
+{<noop>{links entry="Links"}}
 }]
 
 If, however, you specify a blank message then nothing will be shown:
 
 [wiki::text {
-{{image src="::*" message=""}}
-{{links entry="Links" message=""}}
+{<noop>{image src="::*" message=""}}
+{<noop>{links entry="Links" message=""}}
 }]
 
 [ug::subsubheading {Prefix and suffix attributes} prefix]
@@ -124,7 +124,7 @@ If, however, you specify a blank message then nothing will be shown:
 You can specify  prefix and suffix attributes that are only used if the tag was successful. So for example you could specify a heading for the links: 
 
 [wiki::text {
-{{links entry="Links" message="" prefix="Here are the links:&lt;br&gt;"}}
+{<noop>{links entry="Links" message="" prefix="Here are the links:&lt;br&gt;"}}
 }]
 
 This would only show when there is a Links sub-folder.
@@ -162,12 +162,12 @@ The attribute metadata.types is an optional comma separated list of the metata (
 
 For example, if you wanted to show all of the properties except for the Project PI property do:
 [wiki::text {
-{{properties metadata.types="!project_pi" message="" }}
+{<noop>{properties metadata.types="!project_pi" message="" }}
 }]
 
 Then if you wanted to just show  the Project PI property then do:
 [wiki::text {
-{{properties metadata.types="project_pi" message="" }}
+{<noop>{properties metadata.types="project_pi" message="" }}
 }]
 
 
@@ -182,13 +182,13 @@ If you do not specify a width then the map will be sized to fit its page.
 The listwidth is the width devoted to the entry list. This may be a fixed pixel value or a percentage:
 
 [wiki::text {
-{{map listentries="true" listwidth="25%"}}
+{<noop>{map listentries="true" listwidth="25%"}}
 }]
 
 
 If you have a Folder (or other group) and want to just show the Folder and nots it children then do:
 [wiki::text {
-{{map entries="this"}}
+{<noop>{map entries="this"}}
 }]
 
 
@@ -232,20 +232,20 @@ Show the menu actions. If menus is not specified
 show all of the menus. If menus is specified only show those menus listed.
 Show all menus in a toggle block:
 [wiki::text {
-{{menu}}
+{<noop>{menu}}
 }]
 
 
 You can specify which menus to show with a comma separated list of menu names. Only show the
 file and view menu:
 [wiki::text {
-{{menu menus="file,view"}}
+{<noop>{menu menus="file,view"}}
 }]
 
 
 Show the menu actions in a popup:
 [wiki::text {
-{{menu popup="true" title="Click here"}}
+{<noop>{menu popup="true" title="Click here"}}
 }]
 
 </ul>
@@ -256,7 +256,7 @@ Show the menu actions in a popup:
 The following tags display a collection of entries. By default they
 are the children entries of the wiki entry but you can specify
 other groups of entries with any of the following arguments:
-[wiki::text {{{<i>tag</i> entry="some other entry" 
+[wiki::text {<noop>{<noop>{<i>tag</i> entry="some other entry" 
                entries="entryid1,entryid2,entryid3.." 
                entries.filter="file|folder|image|type:some type|geo|name:name aptterh|suffix:file suffixes"
                entries.fromDate="absolute or relative date"
@@ -292,13 +292,13 @@ descriptor:baseEntryId
 So, for example, if you had 2 different Folder entries - folder1 and folder2 and you wanted to list all of the children of each folder you could do:
 
 [wiki::text {
-{{tree  entries="children:folder1_id,children:folder2_id"}}
+{<noop>{tree  entries="children:folder1_id,children:folder2_id"}}
 }]
 
 
 You can combine different relative descriptors, e.g.:
 [wiki::text {
-{{tree  entries="children:folder1_id,grandchildren:folder2_id"}}
+{<noop>{tree  entries="children:folder1_id,grandchildren:folder2_id"}}
 }]
 
 
@@ -332,13 +332,13 @@ Here are some examples:
 <p>
 Find all entries with text 'climate':
 [wiki::text {
-{{tree search.text="climate" entries="search"}}
+{<noop>{tree search.text="climate" entries="search"}}
 }]
 
 
 Find all entries with file suffix 'pdf' that have been created in the last 2 days:
 [wiki::text {
-{{tree search.suffix="pdf" search.createdate.relative="-2 days" entries="search"}}
+{<noop>{tree search.suffix="pdf" search.createdate.relative="-2 days" entries="search"}}
 }]
 
 
@@ -366,9 +366,9 @@ entries.filter=!file|!folder|!image|!type:some type|!geo
 So,  you could show all of the georeferenced entries in a map and all of the non-georeferenced entries in a list:
 
 [wiki::text {
-{{map  message="" prefix="==Map=="}}
+{<noop>{map  message="" prefix="==Map=="}}
 
-{{tree message="" prefix="==Non georeferenced entries==" entries.filter="!geo"}}
+{<noop>{tree message="" prefix="==Non georeferenced entries==" entries.filter="!geo"}}
 }]
 
 You can also:
@@ -445,14 +445,14 @@ search
 <li> [wiki::tagdef tree]
 The tree tag is used to display the children entries of a folder.
 It can take the form:
-[wiki::text {{{tree title="Links" showtoggle="false" open="true" }}}]
+[wiki::text {<noop>{<noop>{tree title="Links" showtoggle="false" open="true" }}}]
 
 The title attribute is used in place of "Children". 
 If showtoggle="false" then the show/hide toggle link is not shown.
 
 <li> [wiki::tagdef grid] Show the children in a grid. e.g., show 
 the grandchildren as a grid:
-[wiki::text {{{grid entries="grandchildren"}}}]
+[wiki::text {{<noop>{grid entries="grandchildren"}}}]
 
 
 <li> [wiki::tagdef recent {days="number of days to show"}]
@@ -460,7 +460,7 @@ Show the most recent N days in a list organized by day.
 
 <li> [wiki::tagdef imageplayer {width="image width" loopdelay="delay in milliseconds" loopstart="true|false" useAttachment="true|false"}]
 Show images in an image player, e.g.
-[wiki::text {{{imageplayer loopdelay="500" loopstart="true"}}}] 
+[wiki::text {{<noop>{imageplayer loopdelay="500" loopstart="true"}}}] 
 
 If <i>useAttachment</i> is true then, if the entry's file is not an image but it has
 an attachment that is an image then use the attachment image.
@@ -468,24 +468,24 @@ an attachment that is an image then use the attachment image.
 
 <li> [wiki::tagdef gallery {width="image width" columns="number of columns" showdescription="true"}]
 Show a 3 column gallery:
-[wiki::text {{{gallery columns="3"}}}] 
+[wiki::text {{<noop>{gallery columns="3"}}}] 
 
 Show a vertical listing of the children entry images:
-[wiki::text {{{gallery columns="1"}}}] 
+[wiki::text {{<noop>{gallery columns="1"}}}] 
 
 Set the image width and only show up to 5 images:
-[wiki::text {{{gallery  width="300" max="5"}}}]
+[wiki::text {{<noop>{gallery  width="300" max="5"}}}]
 
 <li> [wiki::tagdef tabs] Show the children as tabs:
-[wiki::text {{{tabs}}}] 
+[wiki::text {{<noop>{tabs}}}] 
 
 Show only the 3 specified entries in tabs:
-[wiki::text {{{tabs entries="0af4d166-5723-4775-88fc-b83b72ab47a4,
+[wiki::text {{<noop>{tabs entries="0af4d166-5723-4775-88fc-b83b72ab47a4,
                  83539d5c-e9d9-408e-b0af-35f480000ae6,
                  49684d25-6af1-4188-a0ae-4d5302d22f2a" }}}] 
 
 Show only the children of type wikipage in tabs:
-[wiki::text {{{tabs entries="type:wikipage"}}}]
+[wiki::text {{<noop>{tabs entries="type:wikipage"}}}]
 
 Additional arguments:
 
@@ -503,7 +503,7 @@ Additional arguments:
 
 
 <li> [wiki::tagdef slideshow] Show the children in a slideshow:
-[wiki::text {{{slideshow}}}] 
+[wiki::text {{<noop>{slideshow}}}] 
 <p>
 Uses the same arguments as tabs, plus:
 <ul>
@@ -528,26 +528,26 @@ This produces a set of links to the entries.
 A bulleted list:
 [wiki::text {
 &lt;ul&gt;
-{{links}}
+{<noop>{links}}
 &lt;/ul&gt;
 }]
 
 A bulleted list with the links to the entry's file:
 [wiki::text {
 &lt;ul&gt;
-{{links linkresource="true"}}
+{<noop>{links linkresource="true"}}
 &lt;/ul&gt;
 }]
 
 If you wanted to make a vertical list do:
 [wiki::text {
-{{links tagopen="&lt;div&gt;" tagclose="&lt;/div&gt;"}}
+{<noop>{links tagopen="&lt;div&gt;" tagclose="&lt;/div&gt;"}}
 }]
 
 You can create a header with wiki text like:
 [wiki::text {
 &lt;center&gt;
-{{links separator="&amp;nbsp;|&amp;nbsp" tagopen=""}}
+{<noop>{links separator="&amp;nbsp;|&amp;nbsp" tagopen=""}}
 &lt;/center&gt;
 }]
 
@@ -568,7 +568,7 @@ the results in a variety of ways (e.g.,  table, tabs);
 The apply tag is of the form:
 
 [wiki::text {
-{{apply
+{<noop>{apply
 apply.entry="the entry to find the children of"
 apply.tag="some tag to apply to the entries"
 apply.layout="table, accordion or tabs"
@@ -601,7 +601,7 @@ parent
 If you used the apply tag:
 
 [wiki::text {
-{{apply
+{<noop>{apply
 apply.entry="parent"
 apply.layout="tabs"
 apply.tag="links"
@@ -614,7 +614,7 @@ This applies the tag "links" to each main entry. It puts each result in a tab.
 This tag would make a 2 column table of maps with links to the entries show in the header.
 
 [wiki::text {
-{{apply
+{<noop>{apply
 apply.layout="table"
 apply.columns="2"
 apply.tag="map"

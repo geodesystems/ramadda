@@ -298,10 +298,12 @@ proc gen::include {file {tag ""}} {
     }
 
     if {[gen::getDoTclEvaluation]} {
-        set ::currentFile $file
-        if {[catch {set c [subst -novariables $c]} err]} {
-            puts "Error evaluating virtual\n$::errorInfo"
-        }
+	   if {![regepx {<notcl>} $c]} {
+		  set ::currentFile $file
+		  if {[catch {set c [subst -novariables $c]} err]} {
+			 puts "Error evaluating virtual\n$::errorInfo"
+		     }
+	      }
     }
 
     set c
@@ -325,7 +327,9 @@ proc displayType {name id desc args {img ""} {url ""} } {
    set args [string trim $args]
    set h [ug::subsubheading $name $id]
    append h $desc
-   append h [wiki::tagdefBlock display "type=\"$id\" $args"]
+   set wiki [wiki::tagdefBlock display_$id "$args"]
+
+   append h $wiki
    set url [string trim $url]
    if {$url !=""} {
       append h "<a href='$url'>Example</a>"
@@ -1011,9 +1015,11 @@ proc gen::getTitleOverviewBody {path {canUseBodyForOverview 0} {htmlRaw 0}} {
     if {[gen::getDoTclEvaluation]} {
         set ::currentFile $path
         set ::inpageToc [list]
-        if {[catch {set content [subst -novariables $content]} err]} {
-            puts "Error evaluating $path\n$::errorInfo"
-        }
+	if {![regexp {<notcl>} $content]} {
+               if {[catch {set content [subst -novariables $content]} err]} {
+		      puts "Error evaluating $path\n$::errorInfo"
+		  }
+	   }
 
         if {[llength $::inpageToc]!=0} {
                 set s "<ul>"
