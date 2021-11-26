@@ -288,11 +288,9 @@ a.display-container {
 }
 
 .display-header-span {
-//    text-align:right;
     display:inline-block;
     line-height:1.5em;
 }
-
 
 .display-header-vertical .display-header-span {
     text-align:left;
@@ -892,7 +890,7 @@ svg > g > g:last-child { pointer-events: none }
 
 
 .google-visualization-table {
- border: 0px #000 solid;
+    border: 0px #000 solid;
 }
 
 .google-visualization-table-table th {
@@ -925,7 +923,6 @@ svg > g > g:last-child { pointer-events: none }
 .google-visualization-table-td, .google-visualization-table-table td {
     padding:0px;
 }
-
 
 .display-stats-value-link {
     cursor:pointer;

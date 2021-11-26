@@ -1000,7 +1000,6 @@ a.ramadda-menubar-button:hover {
     vertical-align:top;
     display:flex;
     flex-wrap: wrap;
-//    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
 }
 
  
@@ -1035,24 +1034,6 @@ a.ramadda-menubar-button:hover {
     padding-top:6px;
     text-align:left;
 }
-
-/*
-.ramadda-gridbox {
-    --element-border: gainsboro;
-    --element-color:gray;
-    border: 1px solid var(--element-border);
-    border-radius: 5px;
-    background: rgba(0, 0, 0, 0) linear-gradient(to right, rgb(248, 243, 248), rgb(250, 248, 250)) repeat scroll 0% 0%;
-    color: var(--element-color);
-    transition: all 300ms ease 0s;
-    line-height: 20px;
-    padding:10px;
-    padding-left:15px;
-    padding-right:15px;
-}
-*/
-
-
 
 .ramadda-gridbox ul {
     margin:0px;
@@ -1173,7 +1154,7 @@ a.ramadda-menubar-button:hover {
     text-decoration: underline;
 }
 
-  /* avoid pink tiles */
+/* avoid pink tiles */
 .olImageLoadError {
     background-color: transparent !important;
 }
@@ -1886,12 +1867,11 @@ ul {
 }
 
 .ramadda-clickable, .ramadda-noselect {
-    -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-    -khtml-user-select: none; /* Konqueror HTML */
-    -ms-user-select: none; /* Internet Explorer/Edge */
-    user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome and Opera */
+    -webkit-touch-callout: none; 
+    -webkit-user-select: none; 
+    -khtml-user-select: none; 
+    -ms-user-select: none; 
+    user-select: none; 
 }
 
 .ramadda-action-results {
@@ -2400,7 +2380,7 @@ td.entry-table-block {
   position: absolute;
   width: 100%;
   height: 100%;
-  -webkit-backface-visibility: hidden; /* Safari */
+  -webkit-backface-visibility: hidden; 
   backface-visibility: hidden;
 }
 
@@ -2684,7 +2664,6 @@ a.btn-primary:link, a.btn-primary  {
   top: 0;
   width: 100%; /* Full width */
   height: 100%; /* Full height */
-  background-color: rgb(0,0,0); /* Fallback color */
   background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 }
 
@@ -3203,10 +3182,7 @@ label {
 }
 
 .ramadda-user-field, .ramadda-user-field:focus  {
-
     border : 1px #888888 solid;
-/*        padding-left: 18px;
-	  background: URL(icons/user.png) no-repeat;*/
     background-position: 1px 1px;
 }
 
@@ -4581,7 +4557,6 @@ a.wiki-link-noexist {
 
 /* JQuery overrides */
 /*jeffmc: added these*/
-
 .ramadda-accordion .ui-accordion-header, .ramadda-accordion .ui-state-default, .ramadda-accordion .ui-state-active {
     border: 0px #fff solid;
     background: none;
@@ -4605,33 +4580,6 @@ a.wiki-link-noexist {
     padding: 0px;
     padding-left: 10px;
 }
-
-/*
-.ui-accordion .ui-accordion-content {
-border:1px solid #ddd;
-border-top:0px solid #ddd;
-padding:20px;
-padding-left:15px;
-    border-radius: 0px; 
-}
-.ui-accordion .ui-accordion-header {
-    border-radius: 0px; 
-margin:0px;
-background:#F7F7F7;
-padding-left:40px;
-padding:22px;
-border:1px solid #ddd;
-}
-
-h3.ui-accordion-header a {
-    text-decoration: underline;
-    color: blue;
-}
-
-.ui-accordion-header-icon {
-  display:none;
-}
-*/
 
 /* delete this someday */
 .ramadda-accordian-contents {
@@ -4670,17 +4618,12 @@ h3.ui-accordion-header a {
     overflow: hidden;
 }
 
-
-
-
-
 .ui-tabs {
     background:rgba(0,0,0,0);
 }
 
 .ui-tabs .ui-tabs-nav li.ui-tabs-active {
 }
-
 
 .ui-tabs .ui-tabs-nav .ui-tabs-anchor {
     padding-left: .5em;
@@ -4696,7 +4639,6 @@ h3.ui-accordion-header a {
     padding-right:1em;
 }
 
-
 /** for pagination **/
 .vertical-center {
     text-align:center;
@@ -4708,9 +4650,6 @@ h3.ui-accordion-header a {
 .vertical-center p {
     margin-top:23px;
 }
-
-
-
 
 .ramadda-tabs-center .ui-tabs-nav { 
     height: 1.8em; 
@@ -4725,8 +4664,6 @@ h3.ui-accordion-header a {
     padding-bottom: 0px; 
 }
 
-
-
 .ramadda-tabs-min .ui-tabs .ui-tabs-panel {
     border:0px solid #ccc;
 }
@@ -4738,16 +4675,15 @@ h3.ui-accordion-header a {
 .ramadda-tabs-min .ui-tabs .ui-tabs-nav .ui-tabs-anchor {
 }
 
-
 .ramadda-tabs-minarrow .ui-tabs .ui-tabs-nav .ui-tabs-anchor {
     padding-bottom: .5em;
-
 }
 
 .ramadda-tabs-min { 
     background: transparent; 
     border: none; 
 } 
+
 .ramadda-tabs-min .ui-widget-header { 
     background: transparent; 
     border: none; 
@@ -4755,6 +4691,7 @@ h3.ui-accordion-header a {
     -webkit-border-radius: 0px; 
     border-radius: 0px; 
 } 
+
 .ramadda-tabs-min .ui-tabs-nav .ui-state-default { 
     background: transparent; 
     border: none; 
@@ -4805,7 +4742,7 @@ h3.ui-accordion-header a {
     background: none;
 }
 
-<.ui-dialog {
+.ui-dialog {
     -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
     box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
     filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray');
@@ -4825,47 +4762,8 @@ h3.ui-accordion-header a {
 }
 
 .ramadda-select-icon {
-/* comment this out for now because of Don's problem
-    width: 16px;
-    height: unset;
-*/
 }
 
-@media only screen and (max-device-width : 600px) {
-    img { 
-        max-width: 480px;
-    }
-    input { 
-        max-width: 90%; 
-    }
-
-    .entry-arrow img {
-        width: 20px;
-    }
-
-    .ramadda-section  {
-        padding-top:4px;
-        padding-bottom:4px;
-        padding-left:0%;
-        padding-right:0%;
-    }
-
-    .ramadda-page-heading, .ramadda-heading {
-	font-size:120%;
-	margin-bottom: 0px;
-	font-weight: bold;
-    }
-
-    .ramadda-page-heading-small {
-	font-size:100%;
-	margin-bottom: 0px;
-	font-weight: bold;
-    }
-
-    h1, h2, h3 {
-	font-size: 110%;
-    }
-}
 
 
 .wiki-editor {
@@ -5168,15 +5066,12 @@ h3 a:visited {
     color:black;
 }
 
-
-
 .ramadda-frame-title a, .inherit-color a {
     color:inherit;
 }
 
 .ramadda-frame-title a:hover {
 }
-
 
 @media print {
     .pagebreak {
@@ -5185,3 +5080,40 @@ h3 a:visited {
 	page-break-after:always; 	
     } 
 }
+
+@media only screen and (max-device-width : 600px) {
+    img { 
+        max-width: 480px;
+    }
+    input { 
+        max-width: 90%; 
+    }
+
+    .entry-arrow img {
+        width: 20px;
+    }
+
+    .ramadda-section  {
+        padding-top:4px;
+        padding-bottom:4px;
+        padding-left:0%;
+        padding-right:0%;
+    }
+
+    .ramadda-page-heading, .ramadda-heading {
+	font-size:120%;
+	margin-bottom: 0px;
+	font-weight: bold;
+    }
+
+    .ramadda-page-heading-small {
+	font-size:100%;
+	margin-bottom: 0px;
+	font-weight: bold;
+    }
+
+    h1, h2, h3 {
+	font-size: 110%;
+    }
+}
+
