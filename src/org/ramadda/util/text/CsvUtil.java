@@ -26,6 +26,7 @@ import org.ramadda.util.NamedChannel;
 import org.ramadda.util.MapProvider;
 import org.ramadda.util.PatternProps;
 import org.ramadda.util.PropertyProvider;
+import org.ramadda.util.PhoneUtils;
 import org.ramadda.util.Utils;
 import org.ramadda.util.XlsUtil;
 
@@ -1990,7 +1991,8 @@ public class CsvUtil {
         new Cmd("-ascii", "Convert non ascii characters",
                 new Arg("columns", "", "type", "columns"),
                 new Arg("substitution string", "")),
-
+        new Cmd("-ismobile", "Add a true/false if the string is a mobile phone",
+                new Arg("columns", "", "type", "columns")),
         new Cmd(
 		"-js",
 		"Define Javascript (e.g., functions) to use later in the -func call",
@@ -3192,6 +3194,29 @@ public class CsvUtil {
 
 	defineFunction("-ascii",2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Ascii(getCols(args.get(++i)),args.get(++i)));
+		return i;
+	    });
+
+
+	defineFunction("-ismobile",1,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter(args.get(++i)) {
+			int index;
+			@Override
+			public Row processRow(TextReader ctx, Row row) {
+			    if(rowCnt++==0) {
+				index = getIndex(ctx);
+				row.add("ismobile");
+				return row;
+			    }
+			    try {
+				boolean isMobile = PhoneUtils.isPhoneMobile(row.getString(index));
+				row.add(""+ isMobile);
+			    } catch(Exception exc) {
+				fatal(ctx, "Error checking ismobile", exc);
+			    }
+			    return row;
+			}
+		    });
 		return i;
 	    });
 	
