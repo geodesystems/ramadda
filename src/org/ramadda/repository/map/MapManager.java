@@ -1419,21 +1419,18 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         map.getMapProps().put("showSearch", "" + search);
         map.getMapProps().put("linked",
                               Utils.getProperty(props, "linked", "false"));
-        String linkGroup = Utils.getProperty(props, "linkGroup",
-                                             (String) null);
-        if (linkGroup != null) {
-            map.getMapProps().put("linkGroup", HtmlUtils.quote(linkGroup));
-        }
-        if (props.get("zoomLevel") != null) {
-            map.getMapProps().put("zoomLevel", props.get("zoomLevel"));
-        }
-        if (props.get("doMouseOver") != null) {
-            map.getMapProps().put("doMouseOver", props.get("doMouseOver"));
-        }
-        if (props.get("mapCenter") != null) {
-            map.getMapProps().put(
-                "mapCenter", Json.quote((String) props.get("mapCenter")));
-        }
+	for(Object key: Utils.getKeys(props)) {
+	    String skey = key.toString();
+	    String v = (String)props.get(skey);
+	    if(v.equals("true") || v.equals("false")) {
+	    } else {
+		v = Json.quote(v);
+	    }
+	    //	    System.err.println(skey+"=" + v);
+            map.getMapProps().put(skey,v);
+	    
+	}
+
         map.getMapProps().put("showLocationSearch", "" + showLocationSearch);
 
 
