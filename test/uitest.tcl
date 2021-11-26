@@ -200,6 +200,9 @@ proc capture {_group name url {doDisplays 1} {sleep 3}} {
 		    set seenFailed 1
 		}
 	    }
+	    if {[regexp {not represented on screen} $line]} {
+		continue;
+	    }
 	    if {[regexp {allowed to display insecure content from} $line]} {
 		continue;
 	    }

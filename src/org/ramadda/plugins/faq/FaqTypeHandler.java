@@ -94,7 +94,7 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
             new Hashtable<String, StringBuffer>();
         Hashtable<String, StringBuffer> catAnswerMap = new Hashtable<String,
                                                            StringBuffer>();
-        List<String> cats = new ArrayList<String>();
+        List cats = new ArrayList();
         subGroups.addAll(entries);
         sb.append(
             "<style type=\"text/css\">.faq_question {margin:0px;margin-bottom:5px;}\n.faq_question a {text-decoration:none;}\n</style>");
@@ -145,13 +145,15 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
 
+
         //sort the categories and put the blank one at the end
-	cats = new ArrayList<String>((ArrayList<String>)ucar.unidata.util.Misc.sort(cats));
+	cats = ucar.unidata.util.Misc.sort(cats);
         if (cats.contains("")) {
             cats.remove("");
             cats.add("");
         }
-        for (String cat : cats) {
+	for(int i=0;i<cats.size();i++) {
+	    String cat = (String) cats.get(i);
             StringBuffer catQuestionSB = catQuestionMap.get(cat);
             catQuestionSB.append("</ol>");
             if (cats.size() > 1) {
@@ -161,7 +163,8 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
 
-        for (String cat : cats) {
+	for(int i=0;i<cats.size();i++) {
+	    String cat = (String) cats.get(i);
             StringBuffer catAnswerSB = catAnswerMap.get(cat);
             sb.append("<hr>");
             catAnswerSB.append("</ol>");
