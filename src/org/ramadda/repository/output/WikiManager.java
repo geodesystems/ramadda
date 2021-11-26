@@ -217,6 +217,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
     private int groupCount = 0;
 
+
     /** _more_ */
     private String displayImports;
     private String displayInits;
@@ -2534,7 +2535,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     s = s.replaceAll("_dollar_", "\\$");
                     //              System.err.println("WIKIFY:" + tmp.trim());
 		    //                    String tmp = wikifyEntry(request, theEntry, wikiUtil, s, false, null, null, null, false);
-                    String tmp = wikifyEntry(request, theEntry, s);
+		    String tmp=  wikifyEntry(request, entry, wikiUtil, s,
+                                             false, null, null, null, false);
+
+
+		    //                    String tmp = wikifyEntry(request, theEntry, s);
                     buff.append(tmp);
                 } else {
 		    if(debug) {
@@ -6802,6 +6807,16 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
     }
 
+    private String getGroupVar(Request request) {
+	groupCount++;
+	if(groupCount>1000000) groupCount=0;
+	String var = "displayManager" + groupCount;
+	request.putExtraProperty(PROP_GROUP_VAR, var);
+	return var;
+    }
+
+
+
     /**
      * _more_
      *
@@ -7224,7 +7239,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 	}
 
 
-
         String mainDivId = getProperty(wikiUtil, props, "divid");
         if (mainDivId == null) {
             mainDivId = HU.getUniqueId("displaydiv");
@@ -7238,8 +7252,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 topProps.add(Json.quote(value.toString()));
             }
             HU.div(sb, "", HU.id(mainDivId));
-	    String groupVar = "displayManager" + (groupCount++);
-            request.putExtraProperty(PROP_GROUP_VAR, groupVar);
+	    String groupVar = getGroupVar(request);
             topProps.addAll(propList);
             js.append("\nvar " + groupVar +" = getOrCreateDisplayManager("
                       + HU.quote(mainDivId) + "," + Json.map(topProps, false)
@@ -7411,8 +7424,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
         if (needToCreateGroup) {
-	    groupVar = "displayManager"+(groupCount++);
-            request.putExtraProperty(PROP_GROUP_VAR, groupVar);
+	    groupVar = getGroupVar(request);
             Utils.concatBuff(
                 js, "\nvar " + groupVar +" = getOrCreateDisplayManager(",
                 HU.quote(groupDivId), ",", Json.map(topProps, false), ");\n");
@@ -7524,6 +7536,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 	js.append("\n");
 	js.append(groupVar+".createDisplay(" + HU.quote(displayType)
                   + "," + Json.map(propList, false) + ");\n");
+	//xxxx
         wikiUtil.appendJavascript(js.toString());
     }
 
