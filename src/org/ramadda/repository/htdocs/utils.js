@@ -4341,6 +4341,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
 
     loadedGoogleCharts: false,
+    googleChartsVersion:"51",
     loadGoogleCharts: function() {
         if (this.loadedGoogleCharts) {
             return;
@@ -4351,8 +4352,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    return;
 	}
 //	let version = "current";
-	let	version = "51";
-        google.charts.load(version, {
+        google.charts.load(this.googleChartsVersion, {
             packages: ['corechart', 'calendar', 'table', 'bar', 'treemap', /*'sankey',*/ 'wordtree', 'timeline', 'gauge','orgchart']
         });
     },

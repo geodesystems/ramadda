@@ -2577,7 +2577,7 @@ function PiechartDisplay(displayManager, id, properties) {
 
 function SankeyDisplay(displayManager, id, properties) {
     this.tries = 0;
-    google.charts.load('49', {
+    google.charts.load(HtmlUtils.googleChartsVersion, {
         packages: ['sankey']
     });
     const SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_SANKEY, properties);
