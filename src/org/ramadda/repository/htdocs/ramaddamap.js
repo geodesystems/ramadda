@@ -4112,7 +4112,7 @@ RepositoryMap.prototype = {
         for (let i = 0; i < values.length; i += 2) {
             points.push(new OpenLayers.Geometry.Point(values[i + 1], values[i]));
         }
-        return this.addPolygon(id, name, points, attrs, info);
+        return this.addPolygon(id, name, points, attrs, info,false,true);
     },
 
     removePolygon:  function(line) {
@@ -4123,7 +4123,7 @@ RepositoryMap.prototype = {
     },
 
 
-    createPolygon:  function(id, name, points, attrs, marker) {
+    createPolygon:  function(id, name, points, attrs, marker,makeLineString) {
         let _this = this;
         let location;
         if (points.length > 1) {
@@ -4145,7 +4145,6 @@ RepositoryMap.prototype = {
 //	points.push(points[0]);
 
 	//for now create a polygon not a linestring
-	let makeLineString = false;
 	let geom;
 	if(makeLineString) {
 	    geom = new OpenLayers.Geometry.LineString(points);
@@ -4169,8 +4168,8 @@ RepositoryMap.prototype = {
         }
         return line;
     },
-    addPolygon:  function(id, name, points, attrs, marker,justCreate) {
-	let polygon  =this.createPolygon(id,name,points,attrs,marker);
+    addPolygon:  function(id, name, points, attrs, marker,justCreate,makeLineString) {
+	let polygon  =this.createPolygon(id,name,points,attrs,marker,makeLineString);
 	if(!justCreate) {
             this.getLinesLayer().addFeatures([polygon]);
 	}
