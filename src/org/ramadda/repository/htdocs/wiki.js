@@ -1076,7 +1076,7 @@ class  WikiEditor {
 		{p:'highlightStrokeColor',ex:''},
 		{p:'highlightFillColor',ex:''},
 		{p:'highlightStrokeWidth',ex:''},
-		{p:'highlightOpacity',ex:''},
+		{p:'highlightFillOpacity',ex:''},
 
 
 		{p:'popupWidth',ex:'200'},

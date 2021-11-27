@@ -512,7 +512,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         boolean minified = getRepository().getMinifiedOk();
         if (OPENLAYERS_VERSION == OPENLAYERS_V2) {
 	    //For now always do the minified version of the map
-            if (true || minified) {
+	    //            if (false) {
+	    if (true || minified) {
                 HtmlUtils.cssLink(
                     sb,
                     getRepository().getHtdocsUrl(

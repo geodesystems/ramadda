@@ -32259,7 +32259,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    height = HU.getDimension(height);
             extraStyle += HU.css(HEIGHT, height);
 
-	    let map =HU.div([ATTR_CLASS, "display-map-map ramadda-expandable-target", STYLE,
+	    let map =HU.div(["tabindex","1",ATTR_CLASS, "display-map-map ramadda-expandable-target", STYLE,
 			     extraStyle, ATTR_ID, this.domId(ID_MAP)]);
 
 	    let mapContainer = HU.div([CLASS,"ramadda-map-container"],
@@ -33019,7 +33019,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			return;
 		    }
 
-//		    console.log("zoomend:" + this.lastZoom +" " + this.map.getZoom());
 		    //Wait a bit
 		    if(this.lastCollisionTimeout) {
 			clearTimeout(this.lastCollisionTimeout);
@@ -35350,7 +35349,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    });
 
 
-	    if(this.getPropertyHandleCollisions()) {
+	    if(this.getHandleCollisions()) {
 		//TODO: labels
 		let doLabels = this.getProperty("collisionLabels",false);
 		if(doLabels &!this.map.collisionLabelsLayer) {
@@ -35416,11 +35415,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
 		});
 		let collisionState= this.collisionState = {};
-
-
-
-
-
 		records.forEach((record,idx)=>{
 		    let recordLayout = displayInfo[record.getId()];
 		    let point = recordLayout;
