@@ -510,69 +510,38 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
         boolean minified = getRepository().getMinifiedOk();
-        if (OPENLAYERS_VERSION == OPENLAYERS_V2) {
-	    //For now always do the minified version of the map
-	    //            if (false) {
-	    if (true || minified) {
-                HtmlUtils.cssLink(
-                    sb,
-                    getRepository().getHtdocsUrl(
-                        OPENLAYERS_BASE_V2
-                        + "/theme/default/style.mini.css"));
-                sb.append("\n");
-                HtmlUtils.importJS(
-                    sb,
-                    getRepository().getHtdocsUrl(
-                        OPENLAYERS_BASE_V2 + "/OpenLayers.mini.js"));
-                sb.append("\n");
-            } else {
-                HtmlUtils.cssLink(
-                    sb,
-                    getRepository().getHtdocsUrl(
-                        OPENLAYERS_BASE_V2 + "/theme/default/style.css"));
-                sb.append("\n");
-                HtmlUtils.importJS(
-                    sb,
-                    getRepository().getHtdocsUrl(
-                        OPENLAYERS_BASE_V2 + "/OpenLayers.debug.js"));
-                sb.append("\n");
-            }
-        } else {
-            /*
-            sb.append(
-                HtmlUtils.cssLink(
-                    getRepository().getHtdocsUrl(
-                        OPENLAYERS_BASE_V3 + "/ol.css")));
-            sb.append(
-                HtmlUtils.importJS(
-                    getRepository().getHtdocsUrl(
-                        OPENLAYERS_BASE_V3 + "/ol.js")));
-*/
-            sb.append(
-                HtmlUtils.cssLink(
-                    "https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.6.4/ol-debug.css"));
-            sb.append(
-                HtmlUtils.importJS(
-                    "https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.6.4/ol-debug.js"));
-        }
+	if (minified) {
+	    HtmlUtils.cssLink(
+			      sb,
+			      getPageHandler().getCdnPath(
+							  OPENLAYERS_BASE_V2
+							  + "/theme/default/style.mini.css"));
+	    sb.append("\n");
+	    HtmlUtils.importJS(
+			       sb,
+			       getPageHandler().getCdnPath(
+							   OPENLAYERS_BASE_V2 + "/OpenLayers.mini.js"));
+	    sb.append("\n");
+	} else {
+	    HtmlUtils.cssLink(sb,
+			      getPageHandler().getCdnPath(
+							  OPENLAYERS_BASE_V2 + "/theme/default/style.css"));
+	    sb.append("\n");
+	    HtmlUtils.importJS(sb,
+			       getPageHandler().getCdnPath(OPENLAYERS_BASE_V2 + "/OpenLayers.debug.js"));
+	    sb.append("\n");
+	}
 
         //        addGoogleMapsApi(request, sb);
-        if (OPENLAYERS_VERSION == OPENLAYERS_V2) {
-            if (minified) {
-                HtmlUtils.importJS(
-                    sb,
-                    getPageHandler().getCdnPath("/min/ramaddamap.min.js"));
-                sb.append("\n");
-            } else {
-                HtmlUtils.importJS(
-                    sb, getPageHandler().getCdnPath("/ramaddamap.js"));
-                sb.append("\n");
-            }
-        } else {
-            HtmlUtils.importJS(
-                sb, getPageHandler().getCdnPath("/ramaddamap3.js"));
-            sb.append("\n");
-        }
+	if (minified) {
+	    HtmlUtils.importJS(sb, getPageHandler().getCdnPath("/min/ramaddamap.min.js"));
+	    sb.append("\n");
+	} else {
+	    HtmlUtils.importJS(sb, getPageHandler().getCdnPath("/ramaddamap.js"));
+	    sb.append("\n");
+	}
+
+
 	String extra =  getRepository().getUrlBase() + "/map/extra/"  + RepositoryUtil.getHtdocsVersion() + "/extra.js";
         HtmlUtils.importJS(sb,extra);
 
