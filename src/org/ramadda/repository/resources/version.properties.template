@@ -1,0 +1,7 @@
+#This is used by the top-level build.xml version target
+#It is copied to version.properties
+ramadda.version.major=@VERSION_MAJOR@
+ramadda.version.minor=@VERSION_MINOR@
+ramadda.version.patch=@VERSION_PATCH@
+ramadda.version=@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@
+
