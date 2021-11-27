@@ -7258,7 +7258,6 @@ OpenLayers.Event = {
      *     radio-button clicking, etc).  Default is false.
      */
     stop: function(event, allowDefault) {
-        
         if (!allowDefault) { 
             OpenLayers.Event.preventDefault(event);
         }
@@ -35097,7 +35096,7 @@ OpenLayers.Handler.MouseWheel = OpenLayers.Class(OpenLayers.Handler, {
      * e - {Event} 
      */
     onWheelEvent: function(e){
-        
+	        
         // make sure we have a map and check keyboard modifiers
         if (!this.map || !this.checkModifiers(e)) {
             return;
@@ -35116,7 +35115,6 @@ OpenLayers.Handler.MouseWheel = OpenLayers.Class(OpenLayers.Handler, {
         
         var elem = OpenLayers.Event.element(e);
         while((elem != null) && !overMapDiv && !overScrollableDiv) {
-
             if (!overScrollableDiv) {
                 try {
                     var overflow;
@@ -35205,6 +35203,7 @@ OpenLayers.Handler.MouseWheel = OpenLayers.Class(OpenLayers.Handler, {
                 }
             }
             OpenLayers.Event.stop(e);
+//	    e.preventDefault();
         }
     },
 
@@ -35239,9 +35238,11 @@ OpenLayers.Handler.MouseWheel = OpenLayers.Class(OpenLayers.Handler, {
         if (OpenLayers.Handler.prototype.activate.apply(this, arguments)) {
             //register mousewheel events specifically on the window and document
             var wheelListener = this.wheelListener;
-            OpenLayers.Event.observe(window, "DOMMouseScroll", wheelListener);
-            OpenLayers.Event.observe(window, "mousewheel", wheelListener);
-            OpenLayers.Event.observe(document, "mousewheel", wheelListener);
+	    //jeffmc:
+            OpenLayers.Event.observe(window, "wheel", wheelListener);
+//            OpenLayers.Event.observe(window, "DOMMouseScroll", wheelListener);
+//            OpenLayers.Event.observe(window, "mousewheel", wheelListener);
+//            OpenLayers.Event.observe(document, "mousewheel", wheelListener);
             return true;
         } else {
             return false;
@@ -35255,7 +35256,9 @@ OpenLayers.Handler.MouseWheel = OpenLayers.Class(OpenLayers.Handler, {
         if (OpenLayers.Handler.prototype.deactivate.apply(this, arguments)) {
             // unregister mousewheel events specifically on the window and document
             var wheelListener = this.wheelListener;
-            OpenLayers.Event.stopObserving(window, "DOMMouseScroll", wheelListener);
+	    //jeffmc:
+            OpenLayers.Event.stopObserving(window, "wheel", wheelListener);
+//            OpenLayers.Event.stopObserving(window, "DOMMouseScroll", wheelListener);
             OpenLayers.Event.stopObserving(window, "mousewheel", wheelListener);
             OpenLayers.Event.stopObserving(document, "mousewheel", wheelListener);
             return true;
@@ -73239,7 +73242,8 @@ OpenLayers.Events.featureclick = OpenLayers.Class({
 	    //jeffmc: check for NPE
 	    if(layer==null) continue;
             clicked[layer.id] = true;
-            more = this.triggerEvent("featureclick", {feature: feature});
+	    //jeffmc: add the event:
+            more = this.triggerEvent("featureclick", {feature: feature,event:evt});
             if (more === false) {
                 break;
             }
