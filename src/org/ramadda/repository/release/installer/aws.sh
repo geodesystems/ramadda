@@ -9,8 +9,7 @@
 ##https://console.aws.amazon.com/iam/home#/home
 ############################################################################################################
 
-ramaddaVersion=@VERSION@
-
+#ramaddaVersion=@VERSION@
 
 downloadUrl="https://geodesystems.com/repository/release/latest/ramaddainstaller.zip"
 securityGroup="ramadda"
