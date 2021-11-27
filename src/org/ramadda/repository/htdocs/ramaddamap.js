@@ -217,8 +217,7 @@ function ramaddaMapShareState(source, state) {
 	if(map.mapId==source.mapId) continue;
 	if(linkGroup && linkGroup != map.params.linkGroup) continue;
 	map.stateIsBeingSet = true;
-	map.map.setCenter(source.map.getCenter(),
-			  source.map.getZoom());
+	map.receiveShareState(source, state);
 	map.stateIsBeingSet = false;
     }
 }
@@ -299,7 +298,8 @@ function RepositoryMap(mapId, params) {
         enableDragPan: true,
 	
 	linked:false,
-	linkGroup:null
+	linkGroup:null,
+	linkMouse:false
     };
 
 
@@ -913,8 +913,19 @@ RepositoryMap.prototype = {
     },
     zoomChanged: function() {
     },
+    receiveShareState:function(source, state) {
+	if(state.center) {
+	    this.getMap().setCenter(state.center, state.zoom);
+	} else if(state.mouse) {
+	    if(this.sharedMouse) {
+		this.getMarkersLayer().removeFeatures([this.sharedMouse],{silent:true});
+	    }
+	    this.sharedMouse = this.addPoint("mouse", state.mouse, {},"");
+	}
+    },
     locationChanged: function() {
-	ramaddaMapShareState(this,"bounds");
+	ramaddaMapShareState(this,{center:this.map.getCenter(),
+				   zoom: this.map.getZoom()});
 	//buffer calls
 	if(this.pendingLocationChangeTimeout) {
 	    clearTimeout(this.pendingLocationChangeTimeout);
@@ -2659,6 +2670,21 @@ RepositoryMap.prototype = {
         this.getMap().addControl(keyboardControl);
         this.getMap().addControl(new OpenLayers.Control.KeyboardDefaults());
 
+	
+	if(this.params.linkMouse) {
+	    this.getMap().events.register("mousemove", this.getMap(), event=>{
+		if(this.sharedMouse) {
+		    this.getMarkersLayer().removeFeatures([this.sharedMouse],{silent:true});
+		}
+                if (event.shiftKey) {
+		    let location = this.getMap().getLonLatFromPixel(event.xy)
+		    location = this.transformProjPoint(location);
+		    ramaddaMapShareState(this,{mouse:location});
+		}
+	    });
+	}
+
+
         if (this.params.showLayerSwitcher) {
             this.getMap().addControl(new OpenLayers.Control.LayerSwitcher());
         }
@@ -4127,7 +4153,7 @@ RepositoryMap.prototype = {
     addPoint:  function(id, point, attrs, text, textGetter) {
 	let feature = this.createPoint(id,point,attrs,text,textGetter);
 	this.getMarkersLayer().addFeatures([feature],{silent:true});
-        return point;
+        return feature;
     },
 
     addPoints:function(points) {
