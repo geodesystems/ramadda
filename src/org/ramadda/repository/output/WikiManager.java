@@ -7584,15 +7584,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             HU.importJS(sb, getPageHandler().getCdnPath("/lib/dom-drag.min.js"));
 	    sb.append("\n");
             if (getRepository().getMinifiedOk()) {
-                HU.importJS(sb,
-                    getPageHandler().getCdnPath("/min/display_all.min.js"));
-                HU.cssLink(
-                    sb, getPageHandler().getCdnPath("/min/display.min.css"));
+                HU.importJS(sb, getPageHandler().getCdnPath("/min/display_all.min.js"));
+                HU.cssLink(sb, getPageHandler().getCdnPath("/min/display.min.css"));
 		sb.append("\n");
             } else {
 		sb.append("\n");
-                HU.cssLink(
-                    sb, getPageHandler().getCdnPath("/display/display.css"));
+                HU.cssLink(sb, getPageHandler().getCdnPath("/display/display.css"));
 		sb.append("\n");
 		for(String js: new String[]{"/display/pointdata.js", "/display/widgets.js",
 					    "/display/display.js",
