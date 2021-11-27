@@ -549,6 +549,7 @@ function OrgchartDisplay(displayManager, id, properties) {
 	    })) {
 		return;
 	    }
+	    if(!ramaddaLoadGoogleChart(this,'orgchart')) return;
             this.displayHtml(HU.div([ID,this.domId(ID_ORGCHART)],""));
 	    if(this.jq(ID_ORGCHART).length==0) {
 		setTimeout(()=>this.updateUI(),1000);

@@ -32,6 +32,23 @@ if(window["google"]) {
     google.charts.setOnLoadCallback(googleChartsHaveLoaded);
 }
 
+var ramaddaChartsLoaded={};
+
+function ramaddaLoadGoogleChart(display, what) {
+    if(!ramaddaChartsLoaded[what]) {
+	google.charts.load(HtmlUtils.googleChartsVersion, {
+            packages: [what],
+	    callback:()=>{
+		ramaddaChartsLoaded[what] = true;
+		display.updateUI();
+	    }
+	});
+	return false;
+    }
+    return true;
+}
+
+
 function haveGoogleChartsLoaded() {
     if (!googleChartsLoaded) {
         if (Utils.isDefined(google.visualization)) {
@@ -2575,13 +2592,16 @@ function PiechartDisplay(displayManager, id, properties) {
 
 //TODO: this is broken because we don't load the sankey package because it loads an old version of d3
 
+
 function SankeyDisplay(displayManager, id, properties) {
     this.tries = 0;
-    google.charts.load(HtmlUtils.googleChartsVersion, {
-        packages: ['sankey']
-    });
     const SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_SANKEY, properties);
     defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+        updateUI: function(args) {
+	    if(!ramaddaLoadGoogleChart(this,'sankey')) return;
+	    args = args || {};
+            SUPER.updateUI.call(this, args);
+	},
         doMakeGoogleChart: function(dataList, props, chartDiv,  selectedFields, chartOptions) {
             chartOptions.height = parseInt(this.getProperty("chartHeight", this.getProperty("height", "400")));
             chartOptions.sankey = {
@@ -2598,17 +2618,7 @@ function SankeyDisplay(displayManager, id, properties) {
                     }
                 }
             }
-	    try {
-		return new google.visualization.Sankey(chartDiv);
-	    } catch(e) {
-		//maybe sankey hasn't been loaded
-		if(this.tries++<5) {
-		    setTimeout(()=>{
-			this.callUpdateUI();
-		    },1000);
-		}
-		return null;
-	    }
+	    return new google.visualization.Sankey(chartDiv);
         },
         defaultSelectedToAll: function() {
             return true;
@@ -2668,6 +2678,11 @@ function WordtreeDisplay(displayManager, id, properties) {
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         handleEventRecordSelection: function(source, args) {},
+        updateUI: function(args) {
+	    if(!ramaddaLoadGoogleChart(this,'wordtree')) return;
+	    args = args || {};
+            SUPER.updateUI.call(this, args);
+	},
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
             if (this.getProperty("chartHeight"))
                 chartOptions.height = parseInt(this.getProperty("chartHeight"));
@@ -2838,6 +2853,11 @@ function TableDisplay(displayManager, id, properties) {
 	{p:'headerStyle'}];
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+	updateUI: function(args) {
+	    if(!ramaddaLoadGoogleChart(this,'table')) return;
+	    args = args || {};
+            SUPER.updateUI.call(this, args);
+	},
         canDoGroupBy: function() {
             return true;
         },
@@ -3216,6 +3236,11 @@ function BubbleDisplay(displayManager, id, properties) {
 function BartableDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaSeriesChart(displayManager, id, DISPLAY_BARTABLE, properties);
     defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+	updateUI: function(args) {
+	    if(!ramaddaLoadGoogleChart(this,'bar')) return;
+	    args = args || {};
+            SUPER.updateUI.call(this, args);
+	},
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
             let height = "";
             if (Utils.isDefined(this.chartHeight)) {
@@ -3294,6 +3319,11 @@ function TreemapDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_TREEMAP, properties);
     defineDisplay(addRamaddaDisplay(this), SUPER, [], {
         handleEventRecordSelection: function(source, args) {},
+        updateUI: function(args) {
+	    if(!ramaddaLoadGoogleChart(this,'treemap')) return;
+	    args = args || {};
+            SUPER.updateUI.call(this, args);
+	},
         getFieldsToSelect: function(pointData) {
             return pointData.getRecordFields();
         },
@@ -3460,6 +3490,11 @@ function TimerangechartDisplay(displayManager, id, properties) {
     ];
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+	updateUI: function(args) {
+	    if(!ramaddaLoadGoogleChart(this,'timeline')) return;
+	    args = args || {};
+            SUPER.updateUI.call(this, args);
+	},
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
 	    if(this.dataColors && this.dataColors.length)
 		chartOptions.colors = this.dataColors;
@@ -3618,6 +3653,11 @@ function CalendarDisplay(displayManager, id, properties) {
 
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+        updateUI: function(args) {
+	    if(!ramaddaLoadGoogleChart(this,'calendar')) return;
+	    args = args || {};
+            SUPER.updateUI.call(this, args);
+	},
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
 	    let opts = {
 		calendar: {
@@ -3730,9 +3770,20 @@ function CalendarDisplay(displayManager, id, properties) {
 
 
 
+
+
+
+
+
 function GaugeDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaGoogleChart(displayManager, id, DISPLAY_GAUGE, properties);
     defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+        updateUI: function(args) {
+	    if(!ramaddaLoadGoogleChart(this,'gauge')) return;
+	    args = args || {};
+            SUPER.updateUI.call(this, args);
+	},
+
         getChartHeight: function() {
             return this.getProperty("height", this.getChartWidth());
         },
