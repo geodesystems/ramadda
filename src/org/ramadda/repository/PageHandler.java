@@ -356,13 +356,13 @@ public class PageHandler extends RepositoryManager {
                 if (file.startsWith("#")) {
                     continue;
                 }
-                cssImports += HU.cssLink("${root}" + file).trim() + "\n";
+                cssImports += HU.cssLink("${cdnpath}" + file).trim() + "\n";
             }
             for (String file : jsFiles) {
                 if (file.startsWith("#")) {
                     continue;
                 }
-                jsImports += HU.importJS("${root}" + file).trim() + "\n";
+                jsImports += HU.importJS("${cdnpath}" + file).trim() + "\n";
             }
             webImports = applyBaseMacros(cssImports.trim() + "\n"
                                          + jsImports.trim() + "\n");
@@ -3559,9 +3559,7 @@ public class PageHandler extends RepositoryManager {
     }
 
     /** _more_ */
-    private static final String CDN =
-        "https://cdn.jsdelivr.net/gh/geodesystems/ramadda/src/org/ramadda/repository/htdocs";
-
+    private static  String CDN =null;
 
     /**
      * _more_
@@ -3577,12 +3575,16 @@ public class PageHandler extends RepositoryManager {
         String mini    = getRepository().getMinifiedOk()
                          ? "min/"
                          : "";
+        String libpath;
         String path;
         if (getRepository().getCdnOk()) {
-            path = CDN;
+	    path = getCdn();
+	    libpath=getCdn();
         } else {
             path = getRepository().getUrlBase() + "/"
                    + RepositoryUtil.getHtdocsVersion();
+            libpath = getRepository().getUrlBase() + "/"
+		+ RepositoryUtil.getHtdocsVersion();	    
         }
 
         String root = getRepository().getUrlBase();
@@ -3592,7 +3594,7 @@ public class PageHandler extends RepositoryManager {
         String now = htdocsBase + (new Date().getTime());
 
         s = s.replace("${now}", now).replace(
-            "${htdocs}", htdocsBase).replace("${cdnpath}", path).replace(
+					     "${htdocs}", htdocsBase).replace("${cdnpath}", path).replace("${cdnlibpath}", libpath).replace(
             "${root}", root).replace(
             "${baseentry}", getEntryManager().getRootEntry().getId()).replace(
             "${min}", mini).replace("${dotmin}", dotmini);
@@ -3609,11 +3611,19 @@ public class PageHandler extends RepositoryManager {
      */
     public String getCdnPath(String path) {
         if (getRepository().getCdnOk()) {
-            return CDN + path;
+            return getCdn() + path;
         } else {
             return getRepository().getHtdocsUrl(path);
         }
     }
+
+    private String getCdn() {
+	if(CDN==null) {
+	    CDN =   "https://cdn.jsdelivr.net/gh/geodesystems/ramadda@"   + RepositoryUtil.getVersion()+"/src/org/ramadda/repository/htdocs";
+	}
+	return CDN;
+    }
+
 
     /**
      * _more_
