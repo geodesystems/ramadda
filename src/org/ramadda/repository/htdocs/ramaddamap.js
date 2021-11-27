@@ -296,7 +296,11 @@ function RepositoryMap(mapId, params) {
 	linked:false,
 	linkGroup:null
     };
-    params.initialZoom= Utils.isDefined(params.zoomLevel)?params.zoomLevel:MapUtils.defaults.defaultZoomLevel;
+
+
+    if(!Utils.isDefined(params.initialZoom)) {
+	params.initialZoom= Utils.isDefined(params.zoomLevel)?params.zoomLevel:MapUtils.defaults.defaultZoomLevel;
+    }
 
     $.extend(dflt, params);
     params = this.params = dflt;
