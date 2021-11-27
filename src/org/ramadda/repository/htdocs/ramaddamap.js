@@ -207,15 +207,14 @@ function ramaddaMapShareState(source, state) {
     ramaddaMapLastShareMap = source.mapId;
     if(source.stateIsBeingSet) return;
     let linkGroup = source.params.linkGroup;
-    if(!source.params.linked && !linkGroup) return;
+    if(!source.params.linked && !source.params.linkMouse && !linkGroup) return;
     var bounds = source.getBounds();
     var baseLayer = source.map.baseLayer;
     var zoom = source.map.getZoom();
     for(var i=0;i<window.globalMapList.length;i++) {
 	var map = window.globalMapList[i];
-	if(map.stateIsBeingSet || (!map.params.linked && !map.params.linkGroup)) continue;
-	if(map.mapId==source.mapId) continue;
-	if(linkGroup && linkGroup != map.params.linkGroup) continue;
+	if(map.stateIsBeingSet || map.mapId==source.mapId) continue;
+	if(linkGroup != map.params.linkGroup) continue;
 	map.stateIsBeingSet = true;
 	map.receiveShareState(source, state);
 	map.stateIsBeingSet = false;
@@ -915,8 +914,10 @@ RepositoryMap.prototype = {
     },
     receiveShareState:function(source, state) {
 	if(state.center) {
+	    if(!this.params.linked) return;
 	    this.getMap().setCenter(state.center, state.zoom);
 	} else if(state.mouse) {
+	    if(!this.params.linkMouse) return;
 	    if(this.sharedMouse) {
 		this.getMarkersLayer().removeFeatures([this.sharedMouse],{silent:true});
 	    }
@@ -2673,10 +2674,10 @@ RepositoryMap.prototype = {
 	
 	if(this.params.linkMouse) {
 	    this.getMap().events.register("mousemove", this.getMap(), event=>{
-		if(this.sharedMouse) {
-		    this.getMarkersLayer().removeFeatures([this.sharedMouse],{silent:true});
-		}
                 if (event.shiftKey) {
+		    if(this.sharedMouse) {
+			this.getMarkersLayer().removeFeatures([this.sharedMouse],{silent:true});
+		    }
 		    let location = this.getMap().getLonLatFromPixel(event.xy)
 		    location = this.transformProjPoint(location);
 		    ramaddaMapShareState(this,{mouse:location});

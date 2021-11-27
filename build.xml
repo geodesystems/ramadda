@@ -41,6 +41,14 @@
        </exec>       
     </target>
       
+    <target name="tag" depends="init">
+       <exec executable="git">
+	 <arg value="tag"/>	 
+	 <arg value="${version}"/>
+       </exec>
+    </target>
+
+
     <target name="commoninit">
       <mkdir dir="${dist_dir}"/>
     </target>
