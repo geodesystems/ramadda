@@ -1084,6 +1084,8 @@ class  WikiEditor {
 		{p:'doPopupSlider',ex:'true'},
 		{p:'popupSliderRight',ex:'true'},
 		{p:'linked',ex:'true'},
+		{p:'linkMouse',ex:'true'},
+		{p:'linkGroup',ex:'some name'},		
 		{p:'layer',ex:'ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|esri.lightgray|esri.physical|opentopo|usgs.topo|usgs.imagery|shadedrelief|naips|osm.toner|osm.toner.lite|watercolor'},
 
 		{p:'iconsonly',ex:'false'},],
