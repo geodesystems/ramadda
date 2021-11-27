@@ -257,9 +257,14 @@ function RepositoryMap(mapId, params) {
 	highlightStrokeColor:"red",
 	highlightFillColor:"blue",	
 	highlightStrokeWidth:2,
-	highlightOpacity:0.1,
+	highlightFillOpacity:0.1,
 
-        scrollToZoom: false,
+	selectStrokeColor:null,
+	selectFillColor:null,
+	selectStrokeWidth:null,
+	selectFillOpacity:0.4,	
+
+        scrollToZoom: true,
         selectOnHover: false,
         highlightOnHover: true,
         showLocationSearch: false,
@@ -277,7 +282,7 @@ function RepositoryMap(mapId, params) {
 
         showScaleLine: showDflt,
         showLayerSwitcher: showDflt,
-        showLatLonPosition: showDflt,
+        showLatLonPosition: false,
         showZoomPanControl: false,
         showZoomOnlyControl: true,
         showSearch: false,
@@ -367,7 +372,7 @@ function RepositoryMap(mapId, params) {
 	strokeColor:this.params.highlightStrokeColor,
 	strokeWidth:this.params.highlightStrokeWidth,
 	fillColor:this.params.highlightFillColor,
-	fillOpacity:this.params.highlightOpacity
+	fillOpacity:this.params.highlightFillOpacity
     }
 
 
@@ -429,6 +434,7 @@ function RepositoryMap(mapId, params) {
 		    return;
 		}
 
+
                 if(e.feature && e.feature.noSelect) {
                     return;
                 }
@@ -440,7 +446,7 @@ function RepositoryMap(mapId, params) {
 		    }
 		}
 		this.lastClickTime  = time;
-		_this.handleFeatureclick(e.layer, e.feature);
+		_this.handleFeatureclick(e.layer, e.feature,false,e);
             }
         }
     };
@@ -782,11 +788,9 @@ RepositoryMap.prototype = {
     setInitialCenterAndZoom: function(lon, lat, zoomLevel) {
         this.defaultLocation = MapUtils.createLonLat(lon, lat);
         this.params.initialZoom = zoomLevel;
-	console.log("z2:" + this.params.initialZoom);
     },
     setInitialZoom: function(zoomLevel) {
         this.params.initialZoom = zoomLevel;
-	console.log("z1:" + this.params.initialZoom);
     },
     setInitialCenter: function(lon,lat) {
         this.defaultLocation = MapUtils.createLonLat(lon, lat);
@@ -817,10 +821,15 @@ RepositoryMap.prototype = {
 	    //		$("#" + this.mapDivId+"_themap").append(HtmlUtils.div(["id",this.mapDivId+"_bookmarks", "style","z-index:2000;position:absolute;top:140px;left:20px;"],HtmlUtils.getIconImage("fa-bookmark")));
 	}
 
+
+
         this.map = new OpenLayers.Map(this.mapDivId+"_themap", this.mapOptions);
+
+
+
+
+
         //register the location listeners later since the map triggers a number of
-
-
         //events at the start
         var callback = function() {
             _this.getMap().events.register("changebaselayer", "", function() {
@@ -1080,7 +1089,7 @@ RepositoryMap.prototype = {
             this.clearDateFeature();
         }
     },
-    handleFeatureclick: function(layer, feature, center) {
+    handleFeatureclick: function(layer, feature, center,event) {
         if (!layer)
             layer = feature.layer;
 
@@ -1092,23 +1101,24 @@ RepositoryMap.prototype = {
             this.unselectFeature(layer.selectedFeature);
         }
 
-	if(!this.params.doSelect) return;
+	if(!this.params.doSelect) {
+	    return;
+	}
         this.selectedFeature = feature;
         layer.selectedFeature = feature;
         layer.selectedFeature.isSelected = true;
 	let style = $.extend({},feature.style);
 	$.extend(style, {
-	    strokeColor:this.highlightStrokeColor,
-	    strokeWidth: this.highlightStrokeWidth,
-	    strokeOpacity: 0.75,
-	    fillOpacity: 0.40,
+	    strokeColor:this.params.selectStrokeColor || this.params.highlightStrokeColor,
+	    strokeWidth: this.params.selectStrokeWidth || this.params.highlightStrokeWidth,
+	    strokeOpacity: this.params.selectStrokeOpacity ||0.75,
+	    fillOpacity: this.params.selectFillOpacity ||this.params.highlightFillOpacity,
 	    fill: true,
 	});
 
 	if(style.fillColor!="transparent") {
-	    style.fillColor  = this.params.highlightStrokeColor;
+	    style.fillColor  = this.params.selectFillColor || this.params.highlightFillColor;
 	} 
-
 
 
 	if(Utils.isDefined(style.pointRadius)) {
@@ -1141,7 +1151,7 @@ RepositoryMap.prototype = {
             if (feature.originalStyle) {
                 feature.style = feature.originalStyle;
             }
-            layer.selectCallback(layer);
+            layer.selectCallback(layer,event);
         } else {
             this.showMarkerPopup(feature, true);
         }
@@ -1688,7 +1698,7 @@ RepositoryMap.prototype = {
             if (didSearch || (didOn && didOff)) {
                 let id = this.mapDivId + "_features";
                 this.showText(HtmlUtils.div(["id", id, "class", "ramadda-map-features"], html));
-                $("#" + id + " .ramadda-map-feature").click(function() {
+                $("#" + id + " .ramadda-map-feature").click(function(e) {
                     let index = parseInt($(this).attr("feature-index"));
                     _this.handleFeatureclick(layer, layer.features[index], true);
                 });
@@ -1783,7 +1793,7 @@ RepositoryMap.prototype = {
         }
         return out;
     },
-    onFeatureSelect: function(layer) {
+    onFeatureSelect: function(layer,event) {
 
 	let _this = this;
         if (this.onSelect) {
@@ -1806,7 +1816,14 @@ RepositoryMap.prototype = {
             this.currentPopup.destroy();
         }
 
-        let popup = this.makePopup(feature.geometry.getBounds().getCenterLonLat(),out);
+	let location = null;
+	if(event && event.event && event.event.xy) {
+	    location = this.getMap().getLonLatFromPixel(event.event.xy)
+	}
+	if(location==null) {
+	    location = feature.geometry.getBounds().getCenterLonLat();
+	}
+        let popup = this.makePopup(location,out);
         feature.popup = popup;
         popup.feature = feature;
         this.getMap().addPopup(popup);
@@ -1865,12 +1882,12 @@ RepositoryMap.prototype = {
                 //                highlight.selectStyle = OpenLayers.Feature.Vector.style['temporary'];
                 */
             if (selectCallback == null || !Utils.isDefined(selectCallback))
-                selectCallback = function(layer) {
-                    _this.onFeatureSelect(layer)
+                selectCallback = function(layer,event) {
+                    _this.onFeatureSelect(layer,event)
                 };
             if (unselectCallback == null || !Utils.isDefined(unselectCallback))
-                unselectCallback = function(layer) {
-                    _this.onFeatureUnselect()
+                unselectCallback = function(layer,event) {
+                    _this.onFeatureUnselect(layer,event)
                 };
             layer.selectCallback = selectCallback;
             layer.unselectCallback = selectCallback;
@@ -2177,6 +2194,8 @@ RepositoryMap.prototype = {
 
     addGeoJsonLayer:  function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent) {
         let layer = new OpenLayers.Layer.Vector(name, {
+//            numZoomLevels: MapUtils.defaults.zoomLevels,
+//	    alwaysInRange:true,
             projection: this.displayProjection,
             strategies: [new OpenLayers.Strategy.Fixed()],
             protocol: new OpenLayers.Protocol.HTTP({
@@ -2184,6 +2203,8 @@ RepositoryMap.prototype = {
                 format: new OpenLayers.Format.GeoJSON({})
             }),
         });
+//	this.tmp = layer;
+
 	let opts =  {
             strokeColor: this.getProperty("layerStrokeColor",'blue'),
             strokeWidth: this.getProperty("layerStrokeWidth",1),
@@ -2191,7 +2212,6 @@ RepositoryMap.prototype = {
 	    fillOpacity:this.getProperty("layerFillOpacity",0.4)
         }
 	if(args) $.extend(opts, args);
-
         layer.styleMap = this.getVectorLayerStyleMap(layer, opts);
         this.initMapVectorLayer(layer, canSelect, selectCallback, unselectCallback, loadCallback, zoomToExtent);
         return layer;
@@ -2199,6 +2219,7 @@ RepositoryMap.prototype = {
 
     addKMLLayer:  function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent) {
         let layer = new OpenLayers.Layer.Vector(name, {
+//            numZoomLevels: MapUtils.defaults.zoomLevels,
             projection: this.displayProjection,
             strategies: [new OpenLayers.Strategy.Fixed()],
             protocol: new OpenLayers.Protocol.HTTP({
@@ -2294,16 +2315,24 @@ RepositoryMap.prototype = {
                     '//b.tile.openstreetmap.org/${z}/${x}/${y}.png',
                     '//c.tile.openstreetmap.org/${z}/${x}/${y}.png'
                 ];
-                newLayer = new OpenLayers.Layer.OSM("Open Street Map", urls);
+                newLayer = new OpenLayers.Layer.OSM("Open Street Map", urls,{
+                    numZoomLevels: MapUtils.defaults.zoomLevels,
+		});
             } else if (mapLayer == map_osm_toner) {
                 let urls = ["http://a.tile.stamen.com/toner/${z}/${x}/${y}.png"];
-                newLayer = new OpenLayers.Layer.OSM("OSM-Toner", urls);
+                newLayer = new OpenLayers.Layer.OSM("OSM-Toner", urls,{
+                    numZoomLevels: MapUtils.defaults.zoomLevels,
+		});
             } else if (mapLayer == map_osm_toner_lite) {
                 let urls = ["http://a.tile.stamen.com/toner-lite/${z}/${x}/${y}.png"];
-                newLayer = new OpenLayers.Layer.OSM("OSM-Toner Lite", urls);
+                newLayer = new OpenLayers.Layer.OSM("OSM-Toner Lite", urls,{
+                    numZoomLevels: MapUtils.defaults.zoomLevels,
+		});
             } else if (mapLayer == map_watercolor) {
                 let urls = ["http://c.tile.stamen.com/watercolor/${z}/${x}/${y}.jpg"];
-                newLayer = new OpenLayers.Layer.OSM("Watercolor", urls);
+                newLayer = new OpenLayers.Layer.OSM("Watercolor", urls,{
+                    numZoomLevels: MapUtils.defaults.zoomLevels,
+		});
             } else if (mapLayer == map_opentopo) {
                 newLayer = this.createXYZLayer("OpenTopo", "//a.tile.opentopomap.org/${z}/${x}/${y}.png}");
 	    } else if (mapLayer == map_forestservice) {
@@ -2554,14 +2583,27 @@ RepositoryMap.prototype = {
         if (this.inited)
             return;
         this.inited = true;
-        if (this.enableDragPan) {
+        if (this.params.enableDragPan) {
             this.getMap().addControl(new OpenLayers.Control.Navigation({
-                zoomWheelEnabled: this.scrollToZoom,
+                zoomWheelEnabled: this.params.scrollToZoom,
                 dragPanOptions: {
                     enableKinetic: true
                 }
             }));
         }
+
+	if(this.params.scrollToZoom) {
+	    //	$("#"+this.mapDivId+"_themap").attr('tabindex','1');
+	    const el = document.querySelector("#"+this.mapDivId+"_themap");
+	    el.onwheel = (event)=>{
+		if(this.tmp)
+		    console.dir(this.tmp);
+		this.tmp = null;
+		//log(this.getMap().getZoom());
+		event.preventDefault();
+	    };
+	}
+	    
 
         /*this.getMap().addControl(new OpenLayers.Control.TouchNavigation({
           dragPanOptions: {
