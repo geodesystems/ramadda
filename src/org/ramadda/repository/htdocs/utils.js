@@ -4353,7 +4353,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	}
 //	let version = "current";
         google.charts.load(this.googleChartsVersion, {
-            packages: ['corechart', 'calendar', 'table', 'bar', 'treemap', /*'sankey',*/ 'wordtree', 'timeline', 'gauge','orgchart']
+            packages: ['corechart']
         });
     },
 
