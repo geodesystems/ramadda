@@ -16,8 +16,12 @@
         <property name="ramadda_dir" value="${src_dir}/org/ramadda/repository" />
 	<property name="propdest" value="${ramadda_dir}/resources/version.properties"/>
 	<echo message="releasing version ${version}"/>
+       <tstamp>
+         <format property="version_date" pattern="yyyy-MM-dd HH:mm z" timezone="UTC"/>
+       </tstamp>
         <copy overwrite="true" file="${ramadda_dir}/resources/version.properties.template" tofile="${propdest}">
             <filterset>
+              <filter token="VERSION_DATE" value="${version_date}"/>
               <filter token="VERSION_MAJOR" value="${version_major}"/>
               <filter token="VERSION_MINOR" value="${version_minor}"/>
               <filter token="VERSION_PATCH" value="${version_patch}"/>	      	      
