@@ -8,7 +8,6 @@ var getMapDebug = false;
 //This gets set by Java
 var ramaddaMapRegions = null;
 
-
 /* base maps to add */
 var map_esri_topo = "esri.topo";
 var map_esri_street = "esri.street";
@@ -207,16 +206,16 @@ function ramaddaMapShareState(source, state) {
     ramaddaMapLastShareTime = time;
     ramaddaMapLastShareMap = source.mapId;
     if(source.stateIsBeingSet) return;
-    let linkGroup = source.linkGroup;
-    if(!source.linked && !linkGroup) return;
+    let linkGroup = source.params.linkGroup;
+    if(!source.params.linked && !linkGroup) return;
     var bounds = source.getBounds();
     var baseLayer = source.map.baseLayer;
     var zoom = source.map.getZoom();
     for(var i=0;i<window.globalMapList.length;i++) {
 	var map = window.globalMapList[i];
-	if(map.stateIsBeingSet || (!map.linked && !map.linkGroup)) continue;
+	if(map.stateIsBeingSet || (!map.params.linked && !map.params.linkGroup)) continue;
 	if(map.mapId==source.mapId) continue;
-	if(linkGroup && linkGroup != map.linkGroup) continue;
+	if(linkGroup && linkGroup != map.params.linkGroup) continue;
 	map.stateIsBeingSet = true;
 	map.map.setCenter(source.map.getCenter(),
 			  source.map.getZoom());
@@ -227,11 +226,13 @@ function ramaddaMapShareState(source, state) {
 
 
 function RepositoryMap(mapId, params) {
+    ramaddaMapAdd(this);
+
+
     let _this = this;
     if (!params) params = {};
     this.params = params;
     this.mapId = mapId || "map";
-    ramaddaMapAdd(this);
     if(params.mapCenter) {
 	[lat,lon] =  params.mapCenter.split(",");
 	params.initialLocation = {lon:lon,lat:lat};
@@ -241,31 +242,83 @@ function RepositoryMap(mapId, params) {
     if(params.simple)
 	showDflt = false;
 
-    $.extend(this, {
-        name: "map",
-        sourceProjection: MapUtils.defaults.sourceProjection,
-        displayProjection: MapUtils.defaults.displayProjection,
-        projectionUnits: MapUtils.defaults.units,
-        mapDivId: this.mapId,
+    let dflt = {
+        pointRadius: 3,
+        strokeColor: "blue",
+        strokeWidth: 1,
+        fillOpacity: 0.8,
+        fillColor: "#e6e6e6",
+
+	layerStrokeColor:"blue",
+	layerStrokeWith:1,
+	layerFillColor:"#ccc",
+	layerFillOpacity:0.3,	
+
+	highlightStrokeColor:"red",
+	highlightFillColor:"blue",	
+	highlightStrokeWidth:2,
+	highlightOpacity:0.1,
+
+        scrollToZoom: false,
+        selectOnHover: false,
+        highlightOnHover: true,
+        showLocationSearch: false,
+	imageOpacity:1.0,
+	iconSize:null,
+	iconWidth:null,
+	iconHeight:null,
+
+        tickSelectColor: "red",
+        tickHoverColor: "blue",
+        tickColor: "#888",
+	showDates:true,
+
+        defaultMapLayer: map_default_layer,
+
         showScaleLine: showDflt,
         showLayerSwitcher: showDflt,
         showLatLonPosition: showDflt,
         showZoomPanControl: false,
         showZoomOnlyControl: true,
-        enableDragPan: true,
-        defaultLocation: MapUtils.defaults.location,
-        initialZoom: Utils.isDefined(params.zoomLevel)?params.zoomLevel:MapUtils.defaults.defaultZoomLevel,
-        latlonReadout: null,
-        map: null,
+        showSearch: false,
+	showBookmarks:false,
         showBounds: true,
-        defaultMapLayer: map_default_layer,
-        haveAddedDefaultLayer: false,
+	showOpacitySlider:false,
+
+	doPopup:true,
+	doPopupSlider:false,
+	popupWidth:200, 
+	popupHeight:200,	
+	popupSliderRight:false,
+	doSelect:true,
+        enableDragPan: true,
+	
+	linked:false,
+	linkGroup:null
+    };
+    params.initialZoom= Utils.isDefined(params.zoomLevel)?params.zoomLevel:MapUtils.defaults.defaultZoomLevel;
+
+    $.extend(dflt, params);
+    params = this.params = dflt;
+
+    this.getProperty = (key,dflt)=>{
+	if(Utils.isDefined(this.params[key])) return this.params[key];
+	return dflt;
+    };
+
+    $.extend(this, {
+        name: "map",
+        map: null,
+
+        sourceProjection: MapUtils.defaults.sourceProjection,
+        displayProjection: MapUtils.defaults.displayProjection,
+        projectionUnits: MapUtils.defaults.units,
+        mapDivId: this.mapId,
+        defaultLocation: MapUtils.defaults.location,
+        latlonReadout: null,
+
+	haveAddedDefaultLayer: false,
         defaultCanSelect: true,
-	highlightColor:"blue",
-	highlightFillColor:"blue",	
-	highlightStrokeWidth:2,
-	highlightOpacity:0.3,
-	imageOpacity:1.0,
         layer: null,
         markers: null,
         vectors: null,
@@ -273,13 +326,10 @@ function RepositoryMap(mapId, params) {
 	externalLayers:[],
         loadedLayers: [],
 	nonSelectLayers: [],
-	doPopup:true,
 	shareSelected:false,
-	doSelect:true,
         boxes: null,
         kmlLayer: null,
         kmlLayerName: null,
-        showSearch: false,
         geojsonlLayer: null,
         geojsonLayerName: null,
         vectorLayers: [],
@@ -292,9 +342,6 @@ function RepositoryMap(mapId, params) {
         initialLayers: [],
         imageLayers: {},
         imageLayersList: [],	
-        tickSelectColor: "red",
-        tickHoverColor: "blue",
-        tickColor: "#888"
     });
 
     this.seenMarkers = {};    
@@ -303,42 +350,22 @@ function RepositoryMap(mapId, params) {
     this.startFeature = null;
     this.endFeature = null;
     this.basePointStyle = null;
-
-
-    var dflt = {
-        pointRadius: 3,
-        fillOpacity: 0.8,
-        fillColor: "#e6e6e6",
-        fill: true,
-        strokeColor: "blue",
-        strokeWidth: 1,
-        scrollToZoom: false,
-        selectOnHover: false,
-        highlightOnHover: true,
-        showLocationSearch: false,
-    };
-
-    $.extend(this, dflt);
-    $.extend(this, params);
-
     this.defaultStyle = {
-        pointRadius: this.pointRadius,
-        fillOpacity: this.fillOpacity,
-        fillColor: this.fillColor,
-        fill: this.fill,
-        strokeColor: this.strokeColor,
-        strokeWidth: this.strokeWidth,
+        pointRadius: this.params.pointRadius,
+        fillOpacity: this.params.fillOpacity,
+        fillColor: this.params.fillColor,
+        fill: this.params.fill,
+        strokeColor: this.params.strokeColor,
+        strokeWidth: this.params.strokeWidth,
     };
-
 
     this.highlightStyle = {
-	strokeColor:this.highlightColor,
-	strokeWidth:this.highlightStrokeWidth,
-	fillColor:this.highlightFillColor,
-	fillOpacity:this.highlightOpacity
+	strokeColor:this.params.highlightStrokeColor,
+	strokeWidth:this.params.highlightStrokeWidth,
+	fillColor:this.params.highlightFillColor,
+	fillOpacity:this.params.highlightOpacity
     }
 
-    this.defaults = {};
 
     if (Utils.isDefined(params.onSelect)) {
         this.onSelect = params.onSelect;
@@ -750,17 +777,19 @@ RepositoryMap.prototype = {
     },
     setInitialCenterAndZoom: function(lon, lat, zoomLevel) {
         this.defaultLocation = MapUtils.createLonLat(lon, lat);
-        this.initialZoom = zoomLevel;
+        this.params.initialZoom = zoomLevel;
+	console.log("z2:" + this.params.initialZoom);
     },
     setInitialZoom: function(zoomLevel) {
-        this.initialZoom = zoomLevel;
+        this.params.initialZoom = zoomLevel;
+	console.log("z1:" + this.params.initialZoom);
     },
     setInitialCenter: function(lon,lat) {
         this.defaultLocation = MapUtils.createLonLat(lon, lat);
     },
     finishMapInit: function() {
         let _this = this;
-        if (this.showSearch) {
+        if (this.params.showSearch) {
             this.searchDiv = this.mapDivId + "_search";
             var cbx = HtmlUtils.checkbox(this.searchDiv + "_download", [], false);
             var input = "<input placeholder=\"Search - ? for help\" id=\"" + this.searchDiv + "_input" + "\" size=40>";
@@ -780,7 +809,7 @@ RepositoryMap.prototype = {
 	$("#" + this.mapDivId+"_themap").append(HtmlUtils.div(["id",this.mapDivId+"_progress", CLASS,"ramadda-map-progesss", "style","z-index:3000;position:absolute;top:10px;left:50px;"],""));
 	$("#" + this.mapDivId+"_themap").append(HtmlUtils.div(["id",this.mapDivId+"_label", "style","z-index:1000;position:absolute;bottom:10px;left:10px;"],""));
 	$("#" + this.mapDivId+"_themap").append(HtmlUtils.div(["id",this.mapDivId+"_toolbar", "style","z-index:1000;position:absolute;top:10px;left:50%;    transform: translateX(-50%);"],""));
-	if(this.showBookmarks || true) {
+	if(this.params.showBookmarks || true) {
 	    //		$("#" + this.mapDivId+"_themap").append(HtmlUtils.div(["id",this.mapDivId+"_bookmarks", "style","z-index:2000;position:absolute;top:140px;left:20px;"],HtmlUtils.getIconImage("fa-bookmark")));
 	}
 
@@ -835,7 +864,7 @@ RepositoryMap.prototype = {
         }
 	Utils.addDisplay(this);
 
-	if(this.showOpacitySlider) {
+	if(this.params.showOpacitySlider) {
 	    //Do this later for when this map is being shown for a display_map
 	    let makeSlider = () =>{
 	    let slider = HU.div([ID,this.mapDivId +"_filter_range",STYLE,HU.css("display","inline-block","width","200px")],"");
@@ -844,12 +873,12 @@ RepositoryMap.prototype = {
 		min: 0,
 		max: 1,
 		step:0.05,
-		value:_this.imageOpacity,
+		value:_this.params.imageOpacity,
 		slide: function( event, ui ) {
-		    _this.imageOpacity = ui.value;
+		    _this.params.imageOpacity = ui.value;
 		    if(!_this.imageLayersList) return;
 		    _this.imageLayersList.forEach(image=>{
-			image.setOpacity(_this.imageOpacity);
+			image.setOpacity(_this.params.imageOpacity);
 		    });
 		},
 	    });
@@ -919,7 +948,7 @@ RepositoryMap.prototype = {
         this.centerOnMarkers(this.dfltBounds);
     },
     makePopup: function(projPoint, text) {
-	let size  =  new OpenLayers.Size(this.popupWidth||200, this.popupHeight||200);
+	let size  =  new OpenLayers.Size(this.params.popupWidth||200, this.params.popupHeight||200);
 	return  new OpenLayers.Popup("popup",
 				     projPoint,
 				     size,
@@ -1059,22 +1088,21 @@ RepositoryMap.prototype = {
             this.unselectFeature(layer.selectedFeature);
         }
 
-	if(!this.doSelect) return;
+	if(!this.params.doSelect) return;
         this.selectedFeature = feature;
         layer.selectedFeature = feature;
         layer.selectedFeature.isSelected = true;
 	let style = $.extend({},feature.style);
 	$.extend(style, {
-	    strokeColor:this.highlightColor,
+	    strokeColor:this.highlightStrokeColor,
 	    strokeWidth: this.highlightStrokeWidth,
 	    strokeOpacity: 0.75,
 	    fillOpacity: 0.40,
-	    fill:this.highlightColor,
 	    fill: true,
 	});
 
 	if(style.fillColor!="transparent") {
-	    style.fillColor  = this.highlightColor;
+	    style.fillColor  = this.params.highlightStrokeColor;
 	} 
 
 
@@ -1260,7 +1288,7 @@ RepositoryMap.prototype = {
         image.west = west;
         image.south = south;
         image.east = east;
-	image.opacity=this.imageOpacity;
+	image.opacity=this.params.imageOpacity;
 
         if (!this.imageLayers) this.imageLayers = {}
         if (!theArgs.isBaseLayer) {
@@ -1352,13 +1380,13 @@ RepositoryMap.prototype = {
 
     getVectorLayerStyleMap: function(layer, args) {
         var props = {
-            pointRadius: this.pointRadius,
-            fillOpacity: this.fillOpacity,
-            fillColor: this.fillColor,
-            fill: this.fill,
-            strokeColor: this.strokeColor,
-            strokeWidth: this.strokeWidth,
-            select_fillOpacity: this.fillOpacity,
+            pointRadius: this.params.pointRadius,
+            fillOpacity: this.params.fillOpacity,
+            fillColor: this.params.fillColor,
+            fill: this.params.fill,
+            strokeColor: this.params.strokeColor,
+            strokeWidth: this.params.strokeWidth,
+            select_fillOpacity: this.params.fillOpacity,
             select_fillColor: "#666",
             select_strokeColor: "#666",
             select_strokeWidth: 1
@@ -1766,7 +1794,7 @@ RepositoryMap.prototype = {
 	    }
 	}
 
-	if(!this.doPopup) return;
+	if(!this.params.doPopup) return;
         let out = this.getFeatureText(layer, feature);
 	if(!out) return;
         if (this.currentPopup) {
@@ -1902,7 +1930,7 @@ RepositoryMap.prototype = {
                 }
             }
         }
-        if (this.hasDates) {
+        if (this.hasDates && this.params.showDates) {
             let options = null;
             if (didYear)
                 options = {
@@ -2067,12 +2095,12 @@ RepositoryMap.prototype = {
     },
     dateFeatureSelect:  function(feature) {
         let tick = this.getFeatureTick(feature);
-        tick.css("background-color", this.tickSelectColor);
+        tick.css("background-color", this.params.tickSelectColor);
         tick.css("zIndex", "100");
     },
     dateFeatureOver:  function(feature) {
         let tick = this.getFeatureTick(feature);
-        tick.css("background-color", this.tickHoverColor);
+        tick.css("background-color", this.params.tickHoverColor);
         tick.css("zIndex", "100");
         //In case some aren't closed
         //        this.getFeatureTick(null).tooltip("close");
@@ -2083,7 +2111,7 @@ RepositoryMap.prototype = {
     dateFeatureOut:  function(feature) {
         let tick = this.getFeatureTick(feature);
         if (feature && (feature == this.startFeature || feature == this.endFeature)) {
-            tick.css("background-color", this.tickSelectColor);
+            tick.css("background-color", this.params.tickSelectColor);
             tick.css("zIndex", "0");
         } else {
             tick.css("background-color", "");
@@ -2151,13 +2179,12 @@ RepositoryMap.prototype = {
                 url: url,
                 format: new OpenLayers.Format.GeoJSON({})
             }),
-            //xxstyleMap: this.getVectorLayerStyleMap(args)
         });
 	let opts =  {
-            strokeColor: this.params.layerStrokeColor||'blue',
-            strokeWidth: this.params.layerStrokeWidth||1,
-	    fillColor:this.params.layerFillColor||"#ccc",
-	    fillOpacity:this.params.layerFillOpacity||0.4
+            strokeColor: this.getProperty("layerStrokeColor",'blue'),
+            strokeWidth: this.getProperty("layerStrokeWidth",1),
+	    fillColor:this.getProperty("layerFillColor","#ccc"),
+	    fillOpacity:this.getProperty("layerFillOpacity",0.4)
         }
 	if(args) $.extend(opts, args);
 
@@ -2182,8 +2209,8 @@ RepositoryMap.prototype = {
         });
         if (!args) {
             args = {
-                strokeColor: 'blue',
-                strokeWidth: 2
+                strokeColor: this.getProperty("layerStrokeColor",'blue'),
+                strokeWidth: this.getProperty("layerStrokeWidth",2),
             }
         }
         layer.styleMap = this.getVectorLayerStyleMap(layer, args);
@@ -2234,7 +2261,7 @@ RepositoryMap.prototype = {
                 map_black,
             ];
         }
-        let dflt = this.defaultMapLayer || map_osm;
+        let dflt = this.params.defaultMapLayer || map_osm;
         if (!this.haveAddedDefaultLayer && dflt) {
             let index = this.mapLayers.indexOf(dflt);
             if (index >= 0) {
@@ -2379,7 +2406,7 @@ RepositoryMap.prototype = {
 		l+=mapLayer+":" + newLayer.name;
 		this.baseLayers[mapLayer] = newLayer;
                 newLayer.ramaddaId = mapLayer;
-                if (mapLayer == this.defaultMapLayer) {
+                if (mapLayer == this.params.defaultMapLayer) {
                     this.defaultOLMapLayer = newLayer;
                 }
 		this.addBaseLayer(newLayer);
@@ -2392,7 +2419,7 @@ RepositoryMap.prototype = {
 	    xautoActivate:false,
             numPoints: 2,
             labelled: true,
-            visible: this.showLatLonLines===true
+            visible: this.params.showLatLonLines===true
         });
         this.getMap().addControl(this.graticule);
     },
@@ -2539,14 +2566,14 @@ RepositoryMap.prototype = {
           }));*/
 
 
-        if (this.showZoomPanControl && !this.showZoomOnlyControl) {
+        if (this.params.showZoomPanControl && !this.params.showZoomOnlyControl) {
             this.getMap().addControl(new OpenLayers.Control.PanZoom());
         }
-        if (this.showZoomOnlyControl && !this.showZoomPanControl) {
+        if (this.params.showZoomOnlyControl && !this.params.showZoomPanControl) {
 
             this.getMap().addControl(new OpenLayers.Control.Zoom());
         }
-        if (this.showScaleLine) {
+        if (this.params.showScaleLine) {
             this.getMap().addControl(new OpenLayers.Control.ScaleLine());
         }
 //	this.getMap().addControl(new OpenLayers.Control.OverviewMap());
@@ -2586,12 +2613,12 @@ RepositoryMap.prototype = {
         this.getMap().addControl(keyboardControl);
         this.getMap().addControl(new OpenLayers.Control.KeyboardDefaults());
 
-        if (this.showLayerSwitcher) {
+        if (this.params.showLayerSwitcher) {
             this.getMap().addControl(new OpenLayers.Control.LayerSwitcher());
         }
 
 
-        if (this.showLatLonPosition) {
+        if (this.params.showLatLonPosition) {
             if (!this.latlonReadout)
                 this.latlonReadout = this.mapId + "_latlonreadout";
             let latLonReadout = GuiUtils.getDomObject(this.latlonReadout);
@@ -2608,7 +2635,7 @@ RepositoryMap.prototype = {
                 }));
             }
         }
-        if (this.showLocationSearch) {
+        if (this.params.showLocationSearch) {
             this.initLocationSearch();
         }
 
@@ -2664,7 +2691,7 @@ RepositoryMap.prototype = {
 	if(this.defaultLocation) {
             let projPoint = this.transformLLPoint(this.defaultLocation);
             this.getMap().setCenter(projPoint);
-	    if(!(this.initialZoom>=0)) {
+	    if(!(this.params.initialZoom>=0)) {
 		this.getMap().zoomTo(4);
 	    }
 	    this.defaultLocation = null;
@@ -2672,11 +2699,11 @@ RepositoryMap.prototype = {
             let llPoint = this.defaultBounds.getCenterLonLat();
             let projPoint = this.transformLLPoint(llPoint);
 	    if(debugBounds)
-		console.log("applying default bounds: center:" +  llPoint +" b:" + this.defaultBounds +" zoom:" + this.initialZoom);
+		console.log("applying default bounds: center:" +  llPoint +" b:" + this.defaultBounds +" zoom:" + this.params.initialZoom);
             this.getMap().setCenter(projPoint);
 	    let extent = this.transformLLBounds(this.defaultBounds);
             this.zoomToExtent(extent);
-	    if(this.initialZoom<0) {
+	    if(this.params.initialZoom<0) {
 		let width = this.defaultBounds.right-this.defaultBounds.left;
 		let zoom = -1;
 		//a hack for zoomed in boxes
@@ -2692,18 +2719,18 @@ RepositoryMap.prototype = {
 		});
 		console.log(width +" " + zoom);
 		*/
-		this.initialZoom = zoom;
+		this.params.initialZoom = zoom;
 	    }
             this.defaultBounds = null;
         } else {
             this.getMap().zoomToMaxExtent();
         }
 
-	if(this.initialZoom>=0) {
+	if(this.params.initialZoom>=0) {
 	    if(debugBounds)
-		console.log("initial zoom:" + this.initialZoom);
-	    let zoom = this.initialZoom;
-	    this.initialZoom=-1;
+		console.log("initial zoom:" + this.params.initialZoom);
+	    let zoom = this.params.initialZoom;
+	    this.params.initialZoom=-1;
 	    this.getMap().zoomTo(zoom);
 	    //In case we are in tabs then set the zoom level later
 	    if(true || this.initialZoomTimeout) {
@@ -3709,8 +3736,8 @@ RepositoryMap.prototype = {
             location = MapUtils.createLonLat(location[0], location[1]);
         }
 	//TODO: sometime clean up the size, etc
-	let width = size || this.iconWidth || this.iconSize || 20;
-	let height = size || this.iconHeight || this.iconSize || 20;	
+	let width = size || this.params.iconWidth || this.params.iconSize || 20;
+	let height = size || this.params.iconHeight || this.params.iconSize || 20;	
 	size=width;
         if (xoffset == null) xoffset = 0;
         if (yoffset == null) yoffset = 0;
@@ -4106,10 +4133,10 @@ RepositoryMap.prototype = {
     addLines:  function(id, name, attrs, values, info) {
 	attrs = attrs || {};
 	if (!attrs.strokeWidth)
-	    attrs.strokeWidth = this.strokeWidth;
+	    attrs.strokeWidth = this.params.strokeWidth;
 
 	if (!attrs.strokeColor)
-	    attrs.strokeColor = this.strokeColor;
+	    attrs.strokeColor = this.params.strokeColor;
 	    
 
         let points = [];
@@ -4260,8 +4287,8 @@ RepositoryMap.prototype = {
 	    ramaddaDisplaySetSelectedEntry(id);
 	}
 
-//xxxx
-	if(!this.doPopup) {
+
+	if(!this.params.doPopup) {
 	    return;
 	}
 
@@ -4346,14 +4373,14 @@ RepositoryMap.prototype = {
 
 
 
-	if(this.doPopupSlider) {
+	if(this.params.doPopupSlider) {
 	    //Set location then do the popup later to allow map to repaint
 	    this.doingPopup = true;
 	    if(marker.location)
 		this.setCenter(marker.location);
 	    setTimeout(()=> {
 		let slider = $("#" +this.mapDivId+"_slider");
-		if(this.popupSliderRight) {
+		if(this.params.popupSliderRight) {
 		    slider.css("right","0px");
 		} else {
 		    slider.css("left","0px");

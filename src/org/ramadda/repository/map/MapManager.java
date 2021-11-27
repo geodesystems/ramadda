@@ -1351,11 +1351,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         boolean listentries = Utils.getProperty(props, ATTR_LISTENTRIES,
                                   false);
         boolean cbx = Utils.getProperty(props, "showCheckbox", false);
-        boolean search = Utils.getProperty(props, "showSearch", false);
         boolean searchMarkers = Utils.getProperty(props, "showMarkersSearch",
                                     false);
-        boolean showLocationSearch = Utils.getProperty(props,
-                                         "showLocationSearch", false);
 
         boolean cbxOn        = Utils.getProperty(props, "checkboxOn", true);
         String  mapVar       = Utils.getProperty(props, ATTR_MAPVAR);
@@ -1383,16 +1380,6 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             return null;
         }
 
-        for (String prop : new String[] { "iconSize", "popupWidth",
-                                          "popupHeight", "doPopupSlider",
-                                          "popupSliderRight" }) {
-            String v = (String) props.get(prop);
-            if (v != null) {
-                map.addProperty(prop, v);
-            }
-        }
-
-
         if (selectFields != null) {
             map.setSelectFields(selectFields);
         }
@@ -1407,32 +1394,22 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         if (mapProps != null) {
             map.getMapProps().putAll(mapProps);
         }
-        String showOpacitySlider = (String) props.get("showOpacitySlider");
-        if (showOpacitySlider != null) {
-            map.getMapProps().put("showOpacitySlider", showOpacitySlider);
-        }
-        String imageOpacity = (String) props.get("imageOpacity");
-        if (imageOpacity != null) {
-            map.getMapProps().put("imageOpacity", imageOpacity);
-        }
 
-        map.getMapProps().put("showSearch", "" + search);
-        map.getMapProps().put("linked",
-                              Utils.getProperty(props, "linked", "false"));
 	for(Object key: Utils.getKeys(props)) {
 	    String skey = key.toString();
 	    String v = (String)props.get(skey);
 	    if(v.equals("true") || v.equals("false")) {
 	    } else {
-		v = Json.quote(v);
+		try {
+		    Double.parseDouble(v);
+		} catch(Exception exc) {
+		    v = Json.quote(v);
+		}
 	    }
 	    //	    System.err.println(skey+"=" + v);
             map.getMapProps().put(skey,v);
 	    
 	}
-
-        map.getMapProps().put("showLocationSearch", "" + showLocationSearch);
-
 
         if ((entriesToUse.size() == 1)
                 && !entriesToUse.get(0).hasAreaDefined()) {
