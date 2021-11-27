@@ -12,6 +12,31 @@
     </target>
 
 
+    <target name="version" depends="init">
+        <property name="ramadda_dir" value="${src_dir}/org/ramadda/repository" />
+	<property name="propdest" value="${ramadda_dir}/resources/version.properties"/>
+	<echo message="releasing version ${version}"/>
+        <copy overwrite="true" file="${ramadda_dir}/resources/version.properties.template" tofile="${propdest}">
+            <filterset>
+              <filter token="VERSION_MAJOR" value="${version_major}"/>
+              <filter token="VERSION_MINOR" value="${version_minor}"/>
+              <filter token="VERSION_PATCH" value="${version_patch}"/>	      	      
+            </filterset>
+       </copy>
+       <exec executable="git">
+	 <arg value="commit"/>
+	 <arg value="-m"/>	 
+	 <arg value="releasing version ${version}"/>
+	 <arg value="${propdest}"/>
+       </exec>
+       <exec executable="git">
+	 <arg value="commit"/>
+	 <arg value="-m"/>	 
+	 <arg value="releasing version ${version}"/>
+	 <arg value="${basedir}/build.properties"/>
+       </exec>       
+    </target>
+      
     <target name="commoninit">
       <mkdir dir="${dist_dir}"/>
     </target>
