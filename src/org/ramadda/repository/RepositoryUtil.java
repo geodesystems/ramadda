@@ -39,32 +39,32 @@ import java.util.TimeZone;
  */
 public class RepositoryUtil {
 
-    //When changing the major version make sure to change the version properties in the top-level build.properties
-    //and in the /bin/releasecode.sh script
+    /**
+       The versions are set in the top level build.properties file
+     */
 
-    /** _more_ */
-    private static final double MAJOR_VERSION = 5.0;
+    private static String VERSION = "1.0";
 
-    /** _more_ */
-    private static final int MINOR_VERSION = 76;
-
-
-    //When we make any real change to the css or javascript change this version
-    //so the browsers will pick up the new resource
-    //The imports.html header has a ${htdocs_version} macro in it
-    //that gets replaced with  this. Repository checks incoming paths and strips this off
+    private static String VERSION_FULL = VERSION+".0";
 
     /**  */
     private static int requestCnt = 0;
 
     /** _more_ */
-    private static final String HTDOCS_VERSION =
-        "htdocs_v" + Double.toString(MAJOR_VERSION).replace(".", "_") + "_"
-        + MINOR_VERSION;
+    private static String HTDOCS_VERSION =    "htdocs_v" + VERSION_FULL.replaceAll("\\.","_");
+    //Double.toString(MAJOR_VERSION).replace(".", "_") + "_"        + MINOR_VERSION;	
 
 
     /** _more_ */
-    private static final String HTDOCS_VERSION_SLASH = "/" + HTDOCS_VERSION;
+    private static String HTDOCS_VERSION_SLASH = "/" + HTDOCS_VERSION;
+
+
+    protected static void setVersion(String major,String minor, String patch) {
+	VERSION = major+"." + minor;
+	VERSION_FULL = VERSION +"." + patch;
+	HTDOCS_VERSION =    "htdocs_v" + VERSION_FULL.replaceAll("\\.","_");	
+	HTDOCS_VERSION_SLASH = "/" + HTDOCS_VERSION;
+    }
 
 
     /** _more_ */
@@ -83,6 +83,12 @@ public class RepositoryUtil {
     /** The regular expression that matches the entry id */
     public static final String ENTRY_ID_REGEX =
         "[a-f|0-9]{8}-([a-f|0-9]{4}-){3}[a-f|0-9]{12}_";
+
+    public static String getVersion() {
+        return VERSION_FULL;
+    }
+
+
 
 
     /**

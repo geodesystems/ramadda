@@ -1104,7 +1104,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                          + getStorageManager().getRepositoryDir());
 
         statusMsg.append("  Version: "
-                         + getProperty(PROP_BUILD_VERSION, "1.0"));
+                         + RepositoryUtil.getVersion());
         statusMsg.append("  Build Date: "
                          + getProperty(PROP_BUILD_DATE, "N/A"));
         statusMsg.append("  Java version: "
@@ -1225,8 +1225,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
             loadProperties(
                 coreProperties,
                 "/org/ramadda/repository/resources/build.properties");
+            loadProperties(
+                coreProperties,
+                "/org/ramadda/repository/resources/version.properties");	    
         } catch (Exception exc) {}
 
+
+	RepositoryUtil.setVersion((String)coreProperties.get(PROP_VERSION_MAJOR),
+				  (String)coreProperties.get(PROP_VERSION_MINOR),
+				  (String)coreProperties.get(PROP_VERSION_PATCH));				  
 
 
 
@@ -2640,11 +2647,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     public void checkVersion() throws Exception {
+	/*
         double version = getDbProperty(PROP_VERSION, 0.0);
         if (version == VERSION) {
             return;
         }
         updateToVersion1_0();
+	*/
         //        writeGlobal(PROP_VERSION,""+VERSION);
     }
 
@@ -4484,10 +4493,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         commentsEnabled       =  getProperty("ramadda.enable_comments", false);
 	useFixedHostName      =  getProperty(PROP_USE_FIXED_HOSTNAME, false);
         corsOk                = getProperty(PROP_CORS_OK, false);
-        cdnOk                 = getProperty(PROP_CDNOK, false);
-        enableHostnameMapping = getProperty(PROP_ENABLE_HOSTNAME_MAPPING,
-                                            false);
-
+        enableHostnameMapping = getProperty(PROP_ENABLE_HOSTNAME_MAPPING,   false);
+        cdnOk                 = getProperty(PROP_CDNOK, true);
     }
 
     /**

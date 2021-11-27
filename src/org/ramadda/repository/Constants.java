@@ -1893,6 +1893,9 @@ public interface Constants {
 
     /** _more_ */
     public static final String PROP_VERSION = "ramadda.version";
+    public static final String PROP_VERSION_MAJOR = "ramadda.version.major";
+    public static final String PROP_VERSION_MINOR = "ramadda.version.minor";
+    public static final String PROP_VERSION_PATCH = "ramadda.version.patch";            
 
 
     /** _more_ */
