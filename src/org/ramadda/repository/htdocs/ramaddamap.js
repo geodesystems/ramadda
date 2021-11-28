@@ -278,6 +278,7 @@ function RepositoryMap(mapId, params) {
 
         defaultMapLayer: map_default_layer,
 
+	showLatLonLines:false,
         showScaleLine: showDflt,
         showLayerSwitcher: showDflt,
         showLatLonPosition: false,
@@ -811,13 +812,20 @@ RepositoryMap.prototype = {
             });
         }
 
-
-	$("#" + this.mapDivId).html(HtmlUtils.div(["style","width:100%;height:100%;position:relative;","id",this.mapDivId+"_themap"]));
-	$("#" + this.mapDivId+"_themap").append(HtmlUtils.div(["id",this.mapDivId+"_progress", CLASS,"ramadda-map-progesss", "style","z-index:3000;position:absolute;top:10px;left:50px;"],""));
-	$("#" + this.mapDivId+"_themap").append(HtmlUtils.div(["id",this.mapDivId+"_label", "style","z-index:1000;position:absolute;bottom:10px;left:10px;"],""));
-	$("#" + this.mapDivId+"_themap").append(HtmlUtils.div(["id",this.mapDivId+"_toolbar", "style","z-index:1000;position:absolute;top:10px;left:50%;    transform: translateX(-50%);"],""));
+	let getId = id=>{
+	    return this.mapDivId+"_" + id;
+	};
+	let html = HU.open("table",[STYLE,HU.css("height","100%"), WIDTH,"100%","border","0"  ]);
+	let theMap = HtmlUtils.div([CLASS, "ramadda-map-inner", "style","width:100%;height:100%;position:relative;","id",getId("themap")]);
+	let left = HU.div([ID,getId("left")],"X");
+	html+=HU.tr([STYLE,HU.css("height","100%")],HU.td([],left) +HU.td([WIDTH,"100%"],theMap));
+	html+="</table>";
+	$("#" + this.mapDivId).html(html);
+	$("#" + getId("themap")).append(HtmlUtils.div(["id",getId("progress"), CLASS,"ramadda-map-progess", "style","z-index:3000;position:absolute;top:10px;left:50px;"],""));
+	$("#" + getId("themap")).append(HtmlUtils.div(["id",getId("label"), "style","z-index:1000;position:absolute;bottom:10px;left:10px;"],""));
+	$("#" + getId("themap")).append(HtmlUtils.div(["id",getId("toolbar"), "style","z-index:1000;position:absolute;top:10px;left:50%;    transform: translateX(-50%);"],""));
 	if(this.params.showBookmarks || true) {
-	    //		$("#" + this.mapDivId+"_themap").append(HtmlUtils.div(["id",this.mapDivId+"_bookmarks", "style","z-index:2000;position:absolute;top:140px;left:20px;"],HtmlUtils.getIconImage("fa-bookmark")));
+	    //		$("#" + getId("themap")).append(HtmlUtils.div(["id",getId("bookmarks"), "style","z-index:2000;position:absolute;top:140px;left:20px;"],HtmlUtils.getIconImage("fa-bookmark")));
 	}
 
 
