@@ -817,10 +817,11 @@ RepositoryMap.prototype = {
 	};
 	let html = HU.open("table",[STYLE,HU.css("height","100%"), WIDTH,"100%","border","0"  ]);
 	let theMap = HtmlUtils.div([CLASS, "ramadda-map-inner", "style","width:100%;height:100%;position:relative;","id",getId("themap")]);
-	let left = HU.div([ID,getId("left")],"X");
-	html+=HU.tr([STYLE,HU.css("height","100%")],HU.td([],left) +HU.td([WIDTH,"100%"],theMap));
+	html+=HU.tr([STYLE,HU.css("height","100%")],HU.td([WIDTH,"100%"],theMap));
 	html+="</table>";
-	$("#" + this.mapDivId).html(html);
+//	$("#" + this.mapDivId).html(html);
+	$("#" + this.mapDivId).html(theMap);
+
 	$("#" + getId("themap")).append(HtmlUtils.div(["id",getId("progress"), CLASS,"ramadda-map-progess", "style","z-index:3000;position:absolute;top:10px;left:50px;"],""));
 	$("#" + getId("themap")).append(HtmlUtils.div(["id",getId("label"), "style","z-index:1000;position:absolute;bottom:10px;left:10px;"],""));
 	$("#" + getId("themap")).append(HtmlUtils.div(["id",getId("toolbar"), "style","z-index:1000;position:absolute;top:10px;left:50%;    transform: translateX(-50%);"],""));
