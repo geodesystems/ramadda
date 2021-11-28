@@ -3972,8 +3972,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    long t1 = System.currentTimeMillis();
 	    Result result =  getHtdocsFile(request);
 	    long t2 = System.currentTimeMillis();
-	    //	    String path       = request.getRequestPath();
-	    //	    System.err.println((t2-t1) +" " +path);
+	    String path       = request.getRequestPath();
+	    System.err.println((t2-t1) +" " +path);
 	    return result;
         }
 
@@ -4287,8 +4287,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 if (path.endsWith(".js") || path.endsWith(".css")) {
                     String js = IOUtil.readInputStream(inputStream);
                     //If its the base js then don't cache and add in the user info
-                    if (path.endsWith("base.js")) {
-                        String referer = request.getReferer(null);
+                    if (path.endsWith("/base.js")) {
                         String base    = urlBase;
                         js = js.replace(
                             "${ramadda.htdocs}",
