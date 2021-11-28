@@ -29,3 +29,8 @@ ${minify} ${dir}/ramaddamap.css > ${dest}/ramaddamap.min.css
 #${minify} ${dir}/display/display.css > ${dest}/display.min.css
 cp ${dir}/display/display.css  ${dest}/display.min.css
 
+
+cat ${dir}/utils.js ${dir}/ramadda.js ${dir}/entry.js ${dir}/wiki.js > ${dir}/tmp.js
+${minify} ${dir}/tmp.js > ${dest}/ramadda_all.min.js
+rm ${dir}/tmp.js
+
