@@ -5110,7 +5110,7 @@ public class TypeHandler extends RepositoryManager {
         if (request.getExtraProperty("didace") == null) {
             request.putExtraProperty("didace", "true");
             HtmlUtils.importJS(
-                sb, getRepository().getHtdocsUrl("/lib/ace/src-min/ace.js"));
+			       sb, getPageHandler().getCdnPath("/lib/ace/src-min/ace.js"));
             if ((formInfo != null) && !readOnly) {
                 formInfo.appendExtraJS(
                     "HtmlUtil.handleWikiEditorSubmit();\n");
