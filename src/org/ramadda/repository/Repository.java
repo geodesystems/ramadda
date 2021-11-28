@@ -6037,7 +6037,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         sb.append(
             HtmlUtils.formEntry(
                 msgLabel("RAMADDA Version"),
-                getRepository().getProperty(PROP_BUILD_VERSION, "1.0")));
+                RepositoryUtil.getVersion()));
         sb.append(
             HtmlUtils.formEntry(
                 msgLabel("Build Date"),

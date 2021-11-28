@@ -52,25 +52,13 @@ public class RepositoryUtil {
 
     /** _more_ */
     private static String HTDOCS_VERSION =    "htdocs_v" + VERSION_FULL.replaceAll("\\.","_");
-    //Double.toString(MAJOR_VERSION).replace(".", "_") + "_"        + MINOR_VERSION;	
-
 
     /** _more_ */
     private static String HTDOCS_VERSION_SLASH = "/" + HTDOCS_VERSION;
 
 
-    protected static void setVersion(String major,String minor, String patch) {
-	VERSION = major+"." + minor;
-	VERSION_FULL = VERSION +"." + patch;
-	HTDOCS_VERSION =    "htdocs_v" + VERSION_FULL.replaceAll("\\.","_");	
-	HTDOCS_VERSION_SLASH = "/" + HTDOCS_VERSION;
-    }
-
-
     /** _more_ */
     public static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC");
-
-
 
     /** timezone */
     public static final TimeZone TIMEZONE_DEFAULT =
@@ -84,12 +72,17 @@ public class RepositoryUtil {
     public static final String ENTRY_ID_REGEX =
         "[a-f|0-9]{8}-([a-f|0-9]{4}-){3}[a-f|0-9]{12}_";
 
-    public static String getVersion() {
-        return VERSION_FULL;
+    protected static void setVersion(String major,String minor, String patch) {
+	VERSION = major+"." + minor;
+	VERSION_FULL = VERSION +"." + patch;
+	HTDOCS_VERSION =    "htdocs_v" + VERSION_FULL.replaceAll("\\.","_");	
+	HTDOCS_VERSION_SLASH = "/" + HTDOCS_VERSION;
     }
 
 
-
+    public static String getVersion() {
+        return VERSION_FULL;
+    }
 
     /**
      * _more_
