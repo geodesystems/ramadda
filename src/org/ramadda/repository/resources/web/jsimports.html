@@ -6,15 +6,20 @@ https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
 https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js
 
 
-/lib/datatables/src/jquery.dataTables.min.js
-/lib/jquery/js/jquery.cookie.js
-/lib/jquery.easing.1.3.min.js
-/lib/jquery.bt.min.js
-/lib/jquery.ui.touch-punch.min.js
-/lib/jbreadcrumb/js/jquery.jBreadCrumb.1.1.min.js
-/lib/superfish/js/superfish.min.js
-/lib/selectboxit/javascripts/jquery.selectBoxIt.min.js
-/lib/fancybox-3/jquery.fancybox.min.js
+#jquery_all.min.js contains the following files in one big chunk
+#this file is created with the ant htdocs target which calls /htdocs/build.sh
+/min/jquery_lib_all.min.js
+#/lib/datatables/src/jquery.dataTables.min.js
+#/lib/jquery/js/jquery.cookie.js
+#/lib/jquery.easing.1.3.min.js
+#/lib/jquery.bt.min.js
+#/lib/jquery.ui.touch-punch.min.js
+#/lib/superfish/js/superfish.min.js
+#/lib/jbreadcrumb/js/jquery.jBreadCrumb.1.1.min.js
+#/lib/selectboxit/javascripts/jquery.selectBoxIt.min.js
+#/lib/fancybox-3/jquery.fancybox.min.js
+
+#local files
 full:/utils.js
 full:/ramadda.js
 full:/entry.js

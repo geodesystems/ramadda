@@ -27504,33 +27504,32 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaBaseTextDisplay(displayManager, id, DISPLAY_TEXTSTATS, properties);
     defineDisplay(addRamaddaDisplay(this), SUPER, [], {
         updateUI: function() {
-            var cnt = {};
-            var fieldInfo = this.processText(cnt);
+            let cnt = {};
+            let fieldInfo = this.processText(cnt);
             if (fieldInfo == null) return;
             let records = this.filterData();
-            var allFields = this.getData().getRecordFields();
-            var fields = this.getSelectedFields(allFields);
+            let allFields = this.getData().getRecordFields();
+            let fields = this.getSelectedFields(allFields);
             if (fields.length == 0)
                 fields = allFields;
 
-            var strings = this.getFieldsByType(fields, "string");
+            let strings = this.getFieldsByType(fields, "string");
             let _this = this;
-            var divs = "";
-            var words = [];
-            var html = "";
-            var counts = [];
-            var maxWords = parseInt(this.getProperty("maxWords", -1));
-            var minCount = parseInt(this.getProperty("minCount", 0));
-            var showBars = this.getProperty("showBars", true);
-            var scale = this.getProperty("barsScale", 10);
-            var barColor = this.getProperty("barColor", "blue");
-
-            var barWidth = parseInt(this.getProperty("barWidth", "400"));
+            let divs = "";
+            let words = [];
+            let html = "";
+            let counts = [];
+            let maxWords = parseInt(this.getProperty("maxWords", -1));
+            let minCount = parseInt(this.getProperty("minCount", 0));
+            let showBars = this.getProperty("showBars", true);
+            let scale = this.getProperty("barsScale", 10);
+            let barColor = this.getProperty("barColor", "blue");
+            let barWidth = parseInt(this.getProperty("barWidth", "400"));
             for (a in fieldInfo) {
-                var fi = fieldInfo[a];
+                let fi = fieldInfo[a];
                 let field = fi.field;
                 for (word in fi.counts) {
-                    var count = fi.counts[word];
+                    let count = fi.counts[word];
                     counts.push({
                         word: word,
                         count: count
@@ -27542,8 +27541,8 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                     return 0;
                 });
                 if (minCount > 0) {
-                    var tmp = [];
-                    for (var i = 0; i < counts.length; i++) {
+                    let tmp = [];
+                    for (let i = 0; i < counts.length; i++) {
                         if (counts[i].count >= minCount)
                             tmp.push(counts[i]);
                     }
@@ -27551,22 +27550,22 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                 }
 
                 if (maxWords > 0) {
-                    var tmp = [];
-                    for (var i = 0; i <= maxWords && i < counts.length; i++) {
+                    let tmp = [];
+                    for (let i = 0; i <= maxWords && i < counts.length; i++) {
                         if (counts[i].count >= minCount)
                             tmp.push(counts[i]);
                     }
                     counts = tmp;
                 }
 
-                var min = 0;
-                var max = 0;
+                let min = 0;
+                let max = 0;
                 if (counts.length > 0) {
                     max = counts[0].count;
                     min = counts[counts.length - 1].count;
                 }
 
-                var tmp = [];
+                let tmp = [];
                 for (a in cnt.lengths) {
                     tmp.push({
                         length: parseInt(a),
@@ -27578,16 +27577,16 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                     if (a.length > b.length) return 1;
                     return 0;
                 });
-                var min = 0;
-                var max = 0;
-                for (var i = 0; i < tmp.length; i++) {
+                min = 0;
+                max = 0;
+                for (let i = 0; i < tmp.length; i++) {
                     max = (i == 0 ? tmp[i].count : Math.max(max, tmp[i].count));
                     min = (i == 0 ? tmp[i].count : Math.min(min, tmp[i].count));
                 }
                 if (this.getProperty("showFieldLabel", true))
                     html += HU.b(fi.field.getLabel()) + "<br>";
-                var td1Width = "20%";
-                var td2Width = "10%";
+                let td1Width = "20%";
+                let td2Width = "10%";
                 if (this.getProperty("showSummary", true)) {
                     html += HU.openTag("table", [CLASS, "nowrap ramadda-table", ID, this.domId("table_summary")]);
                     html += HU.openTag("thead", []);
@@ -27608,13 +27607,13 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                     html += HU.tr([], HU.th(["width", td1Width], "Word Length") + HU.th(["width", td2Width], "Count") + (showBars ? HU.th([], "") : ""));
                     html += HU.closeTag("thead");
                     html += HU.openTag("tbody", []);
-                    for (var i = 0; i < tmp.length; i++) {
-                        var row = HU.td([], tmp[i].length) + HU.td([], tmp[i].count);
+                    for (let i = 0; i < tmp.length; i++) {
+                        let row = HU.td([], tmp[i].length) + HU.td([], tmp[i].count);
                         if (showBars) {
-                            var wpercent = (tmp[i].count - min) / max;
-                            var width = 2 + wpercent * barWidth;
-                            var color = barColor;
-                            var div = HU.div([STYLE, "height:10px;width:" + width + "px;background:" + color], "");
+                            let wpercent = (tmp[i].count - min) / max;
+                            let width = 2 + wpercent * barWidth;
+                            let color = barColor;
+                            let div = HU.div([STYLE, "height:10px;width:" + width + "px;background:" + color], "");
                             row += HU.td([], div);
                         }
                         html += HU.tr([], row);
@@ -27629,25 +27628,25 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                     html += HU.tr([], HU.th(["width", td1Width], "Word") + HU.th(["width", td2Width], "Frequency") + (showBars ? HU.th([], "") : ""));
                     html += HU.closeTag("thead");
                     html += HU.openTag("tbody", []);
-                    var min = 0;
-                    var max = 0;
+                    let min = 0;
+                    let max = 0;
                     if (counts.length > 0) {
                         min = counts[0].count;
                         max = counts[counts.length - 1].count;
                     }
-                    var totalWords = 0;
-                    for (var i = 0; i < counts.length; i++) {
+                    let totalWords = 0;
+                    for (let i = 0; i < counts.length; i++) {
                         totalWords += counts[i].count;
                     }
-                    for (var i = counts.length - 1; i >= 0; i--) {
-                        var percent = Math.round(10000 * (counts[i].count / totalWords)) / 100;
-                        var row = HU.td([], counts[i].word + "&nbsp;:&nbsp;") +
+                    for (let i = counts.length - 1; i >= 0; i--) {
+                        let percent = Math.round(10000 * (counts[i].count / totalWords)) / 100;
+                        let row = HU.td([], counts[i].word + "&nbsp;:&nbsp;") +
                             HU.td([], counts[i].count + "&nbsp;&nbsp;(" + percent + "%)&nbsp;:&nbsp;");
                         if (showBars) {
-                            var wpercent = (counts[i].count - min) / max;
-                            var width = 2 + wpercent * barWidth;
-                            var color = barColor;
-                            var div = HU.div([STYLE, "height:10px;width:" + width + "px;background:" + color], "");
+                            let wpercent = (counts[i].count - min) / max;
+                            let width = 2 + wpercent * barWidth;
+                            let color = barColor;
+                            let div = HU.div([STYLE, "height:10px;width:" + width + "px;background:" + color], "");
                             row += HU.td([], div);
                         }
                         html += HU.tr([], row);
@@ -27657,8 +27656,9 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                 }
             }
             this.setContents(html);
-            var tableHeight = this.getProperty("tableHeight", "200");
+            let tableHeight = this.getProperty("tableHeight", "200");
 
+	    console.log("A")
             if (this.getProperty("showSummary", true))
                 HU.formatTable("#" + this.domId("table_summary"), {
                     scrollY: this.getProperty("tableSummaryHeight", tableHeight)

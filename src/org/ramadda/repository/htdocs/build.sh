@@ -34,3 +34,16 @@ cat ${dir}/utils.js ${dir}/ramadda.js ${dir}/entry.js ${dir}/wiki.js > ${dir}/tm
 ${minify} ${dir}/tmp.js > ${dest}/ramadda_all.min.js
 rm ${dir}/tmp.js
 
+
+cat \
+${dir}/lib/datatables/src/jquery.dataTables.min.js \
+${dir}/lib/jquery/js/jquery.cookie.js \
+${dir}/lib/jquery.easing.1.3.min.js \
+${dir}/lib/jquery.bt.min.js \
+${dir}/lib/jquery.ui.touch-punch.min.js \
+${dir}/lib/superfish/js/superfish.min.js \
+${dir}/lib/jbreadcrumb/js/jquery.jBreadCrumb.1.1.min.js \
+${dir}/lib/selectboxit/javascripts/jquery.selectBoxIt.min.js \
+${dir}/lib/fancybox-3/jquery.fancybox.min.js \
+> ${dir}/min/jquery_lib_all.min.js
+
