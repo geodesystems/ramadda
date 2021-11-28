@@ -47,3 +47,9 @@ ${dir}/lib/selectboxit/javascripts/jquery.selectBoxIt.min.js \
 ${dir}/lib/fancybox-3/jquery.fancybox.min.js \
 > ${dir}/min/jquery_lib_all.min.js
 
+
+cat \
+    ${dir}/lib/superfish/css/superfish.css \
+    ${dir}/lib/selectboxit/stylesheets/jquery.selectBoxIt.css \
+    ${dir}/lib/fancybox-3/jquery.fancybox.min.css \
+    > ${dir}/min/lib_all.css

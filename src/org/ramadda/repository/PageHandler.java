@@ -343,12 +343,14 @@ public class PageHandler extends RepositoryManager {
 
 	boolean minified = getRepository().getMinifiedOk();
 	String path;
-        if (getRepository().getCdnOk()) {
+	boolean cdnOk = getRepository().getCdnOk();
+        if (cdnOk) {
 	    path = getCdn();
         } else {
             path = getRepository().getUrlBase() + "/"
                    + RepositoryUtil.getHtdocsVersion();
 	}
+	//	System.err.println("cdn:" + cdnOk);
 	for (String file : files) {
 	    if (file.startsWith("#")) {
 		continue;
@@ -359,7 +361,14 @@ public class PageHandler extends RepositoryManager {
 	    } else if(file.startsWith("min:")) {
 		if(!minified) continue;
 		file = file.substring("min:".length());
+	    } else if(file.startsWith("cdn:")) {
+		if(!cdnOk) continue;
+		file = file.substring("cdn:".length());
+	    } else if(file.startsWith("nocdn:")) {
+		if(cdnOk) continue;
+		file = file.substring("nocdn:".length());				
 	    }
+	    //	    System.err.println("\tfile:" + file);
 	    if(file.startsWith("http"))
 		result.add(file);
 	    else
