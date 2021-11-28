@@ -7573,16 +7573,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     public String makeDisplayImports() {
         try {
             Appendable sb = Utils.makeAppendable();
-            HU.importJS(sb, "https://www.gstatic.com/charts/loader.js");
-	    sb.append("\n");
-	    HU.importJS(sb, getPageHandler().getCdnPath("/initgoogle.js"));
-	    sb.append("\n");
-            HU.importJS(sb, getPageHandler().getCdnPath("/lib/d3/d3.min.js"));
-	    sb.append("\n");
-            HU.importJS(sb, getPageHandler().getCdnPath("/lib/jquery.ui.touch-punch.min.js"));
-	    sb.append("\n");
-            HU.importJS(sb, getPageHandler().getCdnPath("/lib/dom-drag.min.js"));
-	    sb.append("\n");
+            for (String file : getPageHandler().readWebResources("/org/ramadda/repository/resources/web/wikijsimports.txt")) {
+		sb.append(HU.importJS(file).trim() + "\n");
+            }
+
             if (getRepository().getMinifiedOk()) {
                 HU.importJS(sb, getPageHandler().getCdnPath("/min/display_all.min.js"));
                 HU.cssLink(sb, getPageHandler().getCdnPath("/min/display.min.css"));
