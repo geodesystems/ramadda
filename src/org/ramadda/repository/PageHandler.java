@@ -335,42 +335,61 @@ public class PageHandler extends RepositoryManager {
     }
 
 
+    public List<String> readWebResources(String resource) throws Exception {
+	List<String> result = new ArrayList<String>();
+	List<String> files =
+                Utils.split(
+			    getStorageManager().readSystemResource(resource), "\n", true, true);
+
+	boolean minified = getRepository().getMinifiedOk();
+	String path;
+        if (getRepository().getCdnOk()) {
+	    path = getCdn();
+        } else {
+            path = getRepository().getUrlBase() + "/"
+                   + RepositoryUtil.getHtdocsVersion();
+	}
+	for (String file : files) {
+	    if (file.startsWith("#")) {
+		continue;
+	    }
+	    if(file.startsWith("full:")) {
+		if(minified) continue;
+		file = file.substring("full:".length());
+	    } else if(file.startsWith("min:")) {
+		if(!minified) continue;
+		file = file.substring("min:".length());
+	    }
+	    if(file.startsWith("http"))
+		result.add(file);
+	    else
+		result.add(path + file);
+	}
+	return result;
+    }	
+
+
+
     /**
      * _more_
      */
     private void initWebResources() {
         try {
-            webImports = "";
-            String cssImports = "";
-            List<String> cssFiles =
-                Utils.split(
-                    getStorageManager().readSystemResource(
-                        "/org/ramadda/repository/resources/web/cssimports.html"), "\n", true, true);
-            String jsImports = "";
-            List<String> jsFiles =
-                Utils.split(
-                    getStorageManager().readSystemResource(
-                        "/org/ramadda/repository/resources/web/jsimports.html"), "\n", true, true);
 
-            for (String file : cssFiles) {
-                if (file.startsWith("#")) {
-                    continue;
-                }
-                cssImports += HU.cssLink("${cdnpath}" + file).trim() + "\n";
+
+            StringBuilder jsImports = new StringBuilder();
+            for (String file : readWebResources("/org/ramadda/repository/resources/web/jsimports.html")) {
+		jsImports.append(HU.importJS(file).trim() + "\n");
             }
-            for (String file : jsFiles) {
-                if (file.startsWith("#")) {
-                    continue;
-                }
-                jsImports += HU.importJS("${cdnpath}" + file).trim() + "\n";
+
+            StringBuilder cssImports = new StringBuilder();
+            for (String file : readWebResources("/org/ramadda/repository/resources/web/cssimports.html")) {
+		cssImports.append(HU.cssLink(file).trim() + "\n");
             }
-            webImports = applyBaseMacros(cssImports.trim() + "\n"
-                                         + jsImports.trim() + "\n");
+            webImports = applyBaseMacros(cssImports.toString().trim() + "\n"
+                                         + jsImports.toString().trim() + "\n");
             webImports = IMPORTS_BEGIN + "\n" + webImports + "\n"
                          + IMPORTS_END + "\n";
-
-
-
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
