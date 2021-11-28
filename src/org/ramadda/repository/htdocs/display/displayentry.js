@@ -981,7 +981,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
             if (this.ramaddas.length > 0) {
                 let repositoriesSelect = HU.openTag(TAG_SELECT, [ATTR_ID, this.getDomId(ID_REPOSITORY), ATTR_CLASS, "display-repositories-select"]);
-                let icon = ramaddaBaseUrl + "/icons/favicon.png";
+                let icon = ramaddaCdn + "/icons/favicon.png";
                 for (let i = 0; i < this.ramaddas.length; i++) {
                     let ramadda = this.ramaddas[i];
                     let attrs = [ATTR_TITLE, "", ATTR_VALUE, ramadda.getId(),

@@ -49,7 +49,7 @@ addGlobalDisplayType({
 function RamaddaCardsDisplay(displayManager, id, properties) {
     const ID_RESULTS = "results";
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_CARDS, properties);
-    Utils.importJS(ramaddaBaseUrl + "/lib/color-thief.umd.js",
+    Utils.importJS(ramaddaCdn + "/lib/color-thief.umd.js",
 		   () => {},
 		   (jqxhr, settings, exception) => {
 		       console.log("err");

@@ -2192,7 +2192,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		url  =url.trim();
 		if(url.length==0) return;
 		if(!url.startsWith("/") && !url.startsWith("http")) {
-		    url = ramaddaBaseUrl + "/resources/" +url;			
+		    url = ramaddaCdn + "/resources/" +url;			
 		}
 		let success = (data) =>{data=JSON.parse(data);this.addLocationMenu(url, data);};
 		let fail = err=>{console.log("Error loading location json:" + url+"\n" + err);}
@@ -2459,7 +2459,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.getProperty("showRegionSelector")) {
 		//Fetch the regions
 		if(!ramaddaMapRegions) {
-		    let jqxhr = $.getJSON(ramaddaBaseUrl +"/regions.json", data=> {
+		    let jqxhr = $.getJSON(ramaddaCdn +"/regions.json", data=> {
 			if (GuiUtils.isJsonError(data)) {
 			    console.log("Error fetching regions");
 			    ramaddaMapRegions=[];
@@ -3043,8 +3043,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    featuresToAdd.push(this.map.createPoint(ID,  points[0], attrs, null));
 		} else {
 		    if(this.getShowPathEndPoint()) {
-			featuresToAdd.push(this.map.createMarker("startpoint", points[0],ramaddaBaseUrl+"/icons/map/marker-green.png"));
-			featuresToAdd.push(this.map.createMarker("endpoint", points[points.length-1],ramaddaBaseUrl+"/icons/map/marker-blue.png"));
+			featuresToAdd.push(this.map.createMarker("startpoint", points[0],ramaddaCdn+"/icons/map/marker-green.png"));
+			featuresToAdd.push(this.map.createMarker("endpoint", points[points.length-1],ramaddaCdn+"/icons/map/marker-blue.png"));
 		    }
                     featuresToAdd.push(this.map.createPolygon(ID, "", points, attrs, null));
 		}
@@ -3940,7 +3940,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
             displayMapCurrentMarker++;
             if (displayMapCurrentMarker >= displayMapMarkers.length) displayMapCurrentMarker = 0;
-            return ramaddaBaseUrl + "/lib/openlayers/v2/img/" + displayMapMarkers[displayMapCurrentMarker];
+            return ramaddaCdn + "/lib/openlayers/v2/img/" + displayMapMarkers[displayMapCurrentMarker];
         },
 	highlightMarker:null,
         handleEventRecordHighlight: function(source, args) {
@@ -6587,7 +6587,7 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 		    this.gettingFile = true;
 		    let mapFile = this.getPropertyMapFile();
 		    if(!mapFile.startsWith("/") && !mapFile.startsWith("http")) {
-			mapFile =ramaddaBaseUrl +"/resources/" + mapFile;
+			mapFile =ramaddaCdn +"/resources/" + mapFile;
 		    }
 		    var jqxhr = $.getJSON(mapFile, (data) =>{
 			this.mapJson = data;

@@ -130,7 +130,7 @@ function Repository(repositoryRoot) {
             return this.repositoryRoot;
         },
         getIconUrl: function(entry) {
-            return ramaddaBaseUrl + "/icons/page.png";
+            return ramaddaCdn + "/icons/page.png";
         },
         getEntryTypes: function(callback) {
             return new Array();

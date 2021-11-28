@@ -2842,7 +2842,7 @@ RepositoryMap.prototype = {
             let lonlat = new MapUtils.createLonLat(result.longitude, result.latitude);
             let icon = result.icon;
             if (!icon)
-                icon = ramaddaBaseUrl + "/icons/green-dot.png";
+                icon = ramaddaCdn + "/icons/green-dot.png";
             this.searchMarkerList.push(this.addMarker("search", lonlat, icon, "", result.name, 20, 20));
             east = i == 0 ? result.longitude : Math.max(east, result.longitude);
             west = i == 0 ? result.longitude : Math.min(west, result.longitude);
@@ -2904,7 +2904,7 @@ RepositoryMap.prototype = {
                         let n = data.result[i].name.replace("\"", "'");
                         let icon = data.result[i].icon;
                         if (!icon)
-                            icon = ramaddaBaseUrl + "/icons/green-dot.png";
+                            icon = ramaddaCdn + "/icons/green-dot.png";
                         result += HtmlUtils.div(["class", "ramadda-map-loc", "name", n, "icon", icon, "latitude", data.result[i].latitude, "longitude", data.result[i].longitude], "<img width='16' src=" + icon + "> " + data.result[i].name);
                     }
                     result += HtmlUtils.div(["class", "ramadda-map-loc", "name", "all"], "Show all");
@@ -3699,7 +3699,7 @@ RepositoryMap.prototype = {
         this.loadingImage = OpenLayers.Util.createImage("loadingimage",
 							position,
 							sz,
-							ramaddaBaseUrl + '/icons/mapprogress.gif');
+							ramaddaCdn + '/icons/mapprogress.gif');
         this.loadingImage.style.zIndex = 1010;
         this.getMap().viewPortDiv.appendChild(this.loadingImage);
     },
@@ -3828,7 +3828,7 @@ RepositoryMap.prototype = {
             this.addVectorLayer(this.markers, canSelect);
         }
         if (!iconUrl) {
-            iconUrl = ramaddaBaseUrl + '/icons/marker.png';
+            iconUrl = ramaddaCdn + '/icons/marker.png';
         }
 
 

@@ -1,38 +1,32 @@
 //"use strict";
-
 /**
  * Copyright (c) 2008-2021 Geode Systems LLC
  */
-
-
 
 var root = ramaddaBaseUrl;
 var urlroot = ramaddaBaseUrl;
 var icon_close = "fas fa-window-close";
 var icon_pin = "fas fa-thumbtack";
 var icon_help = "fas fa-question-circle";
-var icon_rightarrow = ramaddaBaseUrl + "/icons/grayrightarrow.gif";
-var icon_downdart = ramaddaBaseUrl + "/icons/downdart.gif";
-var icon_rightdart = ramaddaBaseUrl + "/icons/rightdart.gif";
-var icon_progress = ramaddaBaseUrl + "/icons/progress.gif";
-var icon_wait = ramaddaBaseUrl + "/icons/wait.gif";
-var icon_information = ramaddaBaseUrl + "/icons/information.png";
-
-var icon_folderclosed = ramaddaBaseUrl + "/icons/folderclosed.png";
-var icon_folderopen = ramaddaBaseUrl + "/icons/togglearrowdown.gif";
-
+var icon_rightarrow = ramaddaCdn + "/icons/grayrightarrow.gif";
+var icon_downdart = ramaddaCdn + "/icons/downdart.gif";
+var icon_rightdart = ramaddaCdn + "/icons/rightdart.gif";
+var icon_progress = ramaddaCdn + "/icons/progress.gif";
+var icon_wait = ramaddaCdn + "/icons/wait.gif";
+var icon_information = ramaddaCdn + "/icons/information.png";
+var icon_folderclosed = ramaddaCdn + "/icons/folderclosed.png";
+var icon_folderopen = ramaddaCdn + "/icons/togglearrowdown.gif";
 var icon_folderclosed = "fas fa-caret-right";
 var icon_folderopen = "fas fa-caret-down";
-
-var icon_tree_open = ramaddaBaseUrl + "/icons/togglearrowdown.gif";
-var icon_tree_closed = ramaddaBaseUrl + "/icons/togglearrowright.gif";
-var icon_zoom = ramaddaBaseUrl + "/icons/magnifier.png";
-var icon_zoom_in = ramaddaBaseUrl + "/icons/magnifier_zoom_in.png";
-var icon_zoom_out = ramaddaBaseUrl + "/icons/magnifier_zoom_out.png";
-var icon_menuarrow = ramaddaBaseUrl + "/icons/downdart.gif";
-var icon_blank16 = ramaddaBaseUrl + "/icons/blank16.png";
-var icon_blank = ramaddaBaseUrl + "/icons/blank.gif";
-var icon_menu = ramaddaBaseUrl + "/icons/menu.png";
+var icon_tree_open = ramaddaCdn + "/icons/togglearrowdown.gif";
+var icon_tree_closed = ramaddaCdn + "/icons/togglearrowright.gif";
+var icon_zoom = ramaddaCdn + "/icons/magnifier.png";
+var icon_zoom_in = ramaddaCdn + "/icons/magnifier_zoom_in.png";
+var icon_zoom_out = ramaddaCdn + "/icons/magnifier_zoom_out.png";
+var icon_menuarrow = ramaddaCdn + "/icons/downdart.gif";
+var icon_blank16 = ramaddaCdn + "/icons/blank16.png";
+var icon_blank = ramaddaCdn + "/icons/blank.gif";
+var icon_menu = ramaddaCdn + "/icons/menu.png";
 
 
 function noop() {}
@@ -169,7 +163,7 @@ var Utils =  {
 	return ramaddaUser =="anonymous";
     },
     getIcon: function(icon) {
-        return ramaddaBaseUrl + "/icons/" + icon;
+        return ramaddaCdn + "/icons/" + icon;
     },
     imports: {},
     get: function(list,idx,dflt) {
@@ -2191,7 +2185,7 @@ var Utils =  {
 	}
     },
     treeViewClick:function(entryId, url, label, template) {
-	var href = "<a href='" + url + "'> <img src=\"" + ramaddaBaseUrl + "/icons/link.png" + "\" border=0> " + label + "</a>";
+	var href = "<a href='" + url + "'> <img src=\"" + ramaddaCdn + "/icons/link.png" + "\" border=0> " + label + "</a>";
 	$("#treeview_header").html(href);
 	if (template)
             url = url + "&template=" + template;
@@ -3387,7 +3381,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     loadSlides: function() {
 	if(!HtmlUtils.slidesLoaded) {
-	    let base =  ramaddaBaseUrl +"/lib/slick/";
+	    let base =  ramaddaCdn +"/lib/slick/";
 	    let imports = HU.cssLink(base+"slick.css") + "\n" + HU.cssLink(base+"slick-theme.css") + "\n";
 	    $(imports).appendTo("head");
 	    imports = HU.javascriptLink(base+"slick.min.js");
@@ -3416,7 +3410,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	let e = ()=> {
 	    $("#" + targetId).html("Error loading showdown");
 	};
-	let imports = "<script src='" +ramaddaBaseUrl + "/lib/showdown.min.js'/>";
+	let imports = "<script src='" +ramaddaCdn + "/lib/showdown.min.js'/>";
 	HtmlUtils.loadAndWait("showdown",imports,f,e);
     },
     applyLatex:function(srcId,targetId) {
@@ -4598,7 +4592,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         url = base + url;
 
         var input = HtmlUtils.input("formurl", url, ["size", "80","id","formurl"]);
-        var html = HtmlUtils.div(["class", "ramadda-form-url"], HtmlUtils.href(url, HtmlUtils.image(ramaddaBaseUrl + "/icons/link.png")) + " " + input);
+        var html = HtmlUtils.div(["class", "ramadda-form-url"], HtmlUtils.href(url, HtmlUtils.image(ramaddaCdn + "/icons/link.png")) + " " + input);
         if (hook) {
             html += hook({
                 entryId: entryid,
@@ -4706,8 +4700,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     makeToggle: function(imageId,blockId,visible) {
 	if(visible===null) visible = true;
-        let img1 = ramaddaBaseUrl + "/icons/togglearrowdown.gif";
-        let img2 = ramaddaBaseUrl + "/icons/togglearrowright.gif";
+        let img1 = ramaddaCdn + "/icons/togglearrowdown.gif";
+        let img2 = ramaddaCdn + "/icons/togglearrowright.gif";
 	$("#" + imageId).attr("state","open");
 	$("#" + imageId).attr("src",img1);
 	$("#" + imageId).css("cursor","pointer");	
