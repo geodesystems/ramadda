@@ -3972,8 +3972,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    long t1 = System.currentTimeMillis();
 	    Result result =  getHtdocsFile(request);
 	    long t2 = System.currentTimeMillis();
-	    String path       = request.getRequestPath();
-	    System.err.println((t2-t1) +" " +path);
+	    //	    String path       = request.getRequestPath();
+	    //	    System.err.println("time: " + (t2-t1) +"ms  " +path);
 	    return result;
         }
 
