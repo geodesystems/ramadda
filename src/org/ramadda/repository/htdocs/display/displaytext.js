@@ -227,6 +227,7 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
         checkLayout: function() {
             this.updateUIInner();
         },
+	hasJq:false,
         updateUI: function() {
 	    if(!this.loadedJq) {
 		this.loadedJq = true;
@@ -234,11 +235,17 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
 		includes += "<script src='" + ramaddaCdn + "/lib/jqcloud.min.js'></script>";
 		this.writeHtml(ID_DISPLAY_TOP, includes);
 		let _this = this;
+		let tmp = $("body");
 		let func = function() {
-                    _this.updateUIInner();
+		    if(!tmp.jQCloud) {
+			setTimeout(func, 100);
+		    } else {
+			_this.hasJq = true;
+			_this.updateUIInner();
+		    }
 		};
-		setTimeout(func, 10);
-	    } else {
+		setTimeout(func, 100);
+	    } else if(this.hasJq) {
                 this.updateUIInner();
 	    }
         },
