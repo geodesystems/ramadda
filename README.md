@@ -1,6 +1,5 @@
 
 
-
 RAMADDA is a freely available content and data management platform that is simple to install and use - in the cloud or even on your laptop. With its open and extensible framework, RAMADDA provides a place for all of your documents, data and digital stuff.
 
 See the main site [here](https://geodesystems.com).
@@ -16,7 +15,6 @@ You can build from source (below) or download prebuilt versions of RAMADDA at
 
 
 # Building
-
 
 To build RAMADDA run:
 ant
@@ -43,8 +41,6 @@ and run:
 java -XX:MaxPermSize=256m -Xmx2048m org.ramadda.repository.server.JettyServer
 
 
-
-
 # Plugins
 To build the ramadda.org plugins run:
 ant plugins
@@ -62,7 +58,6 @@ If you don't have this then you can either define the path to tclsh in the build
 file or when you run ant do:
 
      ant -Dtclsh=<path to tclsh>
-
 
 
 # Making a release
@@ -84,8 +79,6 @@ dist/repository.war  - The war to be used by Tomcat
 dist/ramadda<version>.zip  - The zip file that holds the stand-alone RAMADDA release (which uses Jetty)
 dist/repositoryclient.jar  - Used by 3rd party clients (e.g., IDV, JGRASS) 
 dist/repositoryclient.zip  - To run the stand-alone command line client
-
-
 
 
 # RAMADDA Source  Tree
@@ -124,6 +117,13 @@ That contain macros of the form @MACRO_NAME@
 The files are generated in the ant task css in the
 src/org/ramadda/repository/build.xml
 file. They get generated in the build process
+
+The JS and CSS files that  are used are created with the script:
+src/org/ramadda/repository/htdocs/build.sh
+This script cats together groups of JS and CSS files and then runs a minify script on them.
+This script uses the jsmin python  script for minification. See the script on how to install it
+
+
 
 
 
