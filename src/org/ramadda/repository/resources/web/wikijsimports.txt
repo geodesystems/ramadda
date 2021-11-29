@@ -2,8 +2,7 @@ https://www.gstatic.com/charts/loader.js
 /initgoogle.js
 
 
-#v5.15
-cdn:https://ajax.googleapis.com/ajax/libs/d3js/7.0.0/d3.min.js
+cdn:https://ajax.googleapis.com/ajax/libs/d3js/5.15.0/d3.min.js
 nocdn:/lib/d3/d3.min.js
 
 
