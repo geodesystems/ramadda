@@ -2951,7 +2951,7 @@ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;
 .ramadda-header {
     z-index:var(--header-z-index);
     background-repeat: repeat; 
-    background-image:url(images/background.png);
+    background-image:url(images/background_short.png);
     padding-bottom: 0px;
     border-bottom : var(--basic-border);
     position:relative;
@@ -3246,7 +3246,7 @@ a.ramadda-heading-2-link:visited {
     padding:10px;
     text-align:center;
     background-repeat: repeat; 
-    background-image:url(images/background.png);
+    background-image:url(images/background_short.png);
     border-top : var(--basic-border);
 }
 
