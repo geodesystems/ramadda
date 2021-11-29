@@ -2463,6 +2463,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             if (columns > 0) {
                 colWidth = ((int) 100 / columns) + "%";
             }
+
+
             for (int i = 0; i < max; i++) {
 		boolean debug = false;
                 Hashtable _props = new Hashtable();
@@ -2530,24 +2532,29 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 		    header = headerTemplate.replace("${name}",theEntry.getName());
                     buff.append(header);
 		}
+		Entry  tmpEntry    = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
+		wikiUtil.putProperty(ATTR_ENTRY, theEntry);
                 if (s != null) {
                     s = s.replaceAll("_dollar_", "\\$");
                     //              System.err.println("WIKIFY:" + tmp.trim());
 		    //                    String tmp = wikifyEntry(request, theEntry, wikiUtil, s, false, null, null, null, false);
-		    String tmp=  wikifyEntry(request, entry, wikiUtil, s,
+		    String tmp=  wikifyEntry(request, theEntry, wikiUtil, s,
                                              false, null, null, null, false);
 
 
-		    //                    String tmp = wikifyEntry(request, theEntry, s);
                     buff.append(tmp);
                 } else {
 		    if(debug) {
 			System.err.println("p6:" + _props.get("chartHeight"));
 			System.err.println("p7:" + firstProps.get("chartHeight"));
 		    }
+		    System.err.println("Wikify 2: " + theEntry);
                     buff.append(getWikiIncludeInner(wikiUtil, request,
 						    originalEntry, theEntry, tag, _props));
                 }
+		if(tmpEntry!=null)
+		    wikiUtil.putProperty(ATTR_ENTRY, tmpEntry);
+
 		if(style!=null) 
                     buff.append("\n</div>");
                 if (columns > 0) {
@@ -6443,7 +6450,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                               HashSet notTags)
             throws Exception {
 
-	
 
 	//Check for loops
 	Hashtable alreadyDoingIt  = (Hashtable) request.getExtraProperty("alreadyDoingIt");
