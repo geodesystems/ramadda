@@ -1367,6 +1367,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
 	for(Object key: Utils.getKeys(props)) {
 	    String skey = key.toString();
+	    String converted  = skey.replaceAll("[!a-zA-Z0-9]","X");
+	    if(!skey.equals(converted)) continue;
 	    String v = (String)props.get(skey);
 	    if(v.equals("true") || v.equals("false")) {
 	    } else {
