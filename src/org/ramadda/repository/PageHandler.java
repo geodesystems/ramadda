@@ -75,6 +75,7 @@ public class PageHandler extends RepositoryManager {
     public static final String IMPORTS_END = "<!--end imports-->";
 
 
+    public static final String PREFIX_NOPRELOAD= "nopreload:";
 
     /** _more_ */
     private static boolean debugTemplates = false;
@@ -368,11 +369,18 @@ public class PageHandler extends RepositoryManager {
 		if(cdnOk) continue;
 		file = file.substring("nocdn:".length());				
 	    }
+	    boolean nopreload = file.startsWith(PREFIX_NOPRELOAD);
+	    if(nopreload) {
+		file = file.substring(PREFIX_NOPRELOAD.length());
+	    }
 	    //	    System.err.println("\tfile:" + file);
-	    if(file.startsWith("http"))
-		result.add(file);
-	    else
-		result.add(path + file);
+	    if(!file.startsWith("http"))
+		file = path + file;
+
+	    if(nopreload) {
+		file = PREFIX_NOPRELOAD + file;
+	    }
+	    result.add(file);
 	}
 	return result;
     }	
@@ -393,7 +401,11 @@ public class PageHandler extends RepositoryManager {
 
             StringBuilder cssImports = new StringBuilder();
             for (String file : readWebResources("/org/ramadda/repository/resources/web/cssimports.html")) {
-		HU.cssPreloadLink(cssImports, file);
+		if(file.startsWith(PREFIX_NOPRELOAD)) {
+		    HU.cssLink(cssImports,file.substring(PREFIX_NOPRELOAD.length()));
+		} else {
+		    HU.cssPreloadLink(cssImports, file);
+		}
 		/*
 		if(file.startsWith("preload:")) {
 		    HU.cssPreloadLink(cssImports, file.substring("preload:".length()));
