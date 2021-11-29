@@ -676,9 +676,7 @@ function RecordField(props, source) {
 	    return newField;
 	},
 	toString: function() {
-	    if(this.group)
-		return this.getId();
-	    return this.getId();
+	    return this.getId() +" type:" + this.getType() +" index:" + this.index;
 	},
 	getForDisplay: function() {
 	    return this.forDisplay;
@@ -3241,6 +3239,45 @@ function CsvUtil() {
 	    }
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
+	count: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+            let allFields  = pointData.getRecordFields();
+
+	    if(!args.field)
+		throw new Error("No field specified");
+	    let field = this.display.getFieldById(allFields, args.field);
+	    let newFields = [];
+	    let newField = field.clone();
+	    newField.index=0;
+	    newFields.push(newField);
+	    newFields.push(new RecordField({
+		id:"count",
+		index:1,
+		label:"Count",
+		type:"integer",
+		chartable:true,
+	    }));
+
+	    let counts = {};
+	    let values = [];
+	    for (var rowIdx=0; rowIdx <records.length; rowIdx++) {
+		let record = records[rowIdx];
+		let value = field.getValue(record);
+		if(!Utils.isDefined(counts[value])) {
+		    counts[value]=0;
+		    values.push(value);
+		}
+	    }
+	    let newRecords  =[]
+	    if(args.sort) values.sort();
+	    values.forEach(value=>{
+		let newData = [value,values[value]];
+		let newRecord = new  PointRecord(newFields,NaN,NaN, NaN, null, newData);
+		newRecords.push(newRecord);
+	    });
+	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
+	},
+
 
 	prune: function(pointData, args) {
 	    let records = pointData.getRecords(); 
