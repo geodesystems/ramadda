@@ -12468,9 +12468,7 @@ function RecordField(props, source) {
 	    return newField;
 	},
 	toString: function() {
-	    if(this.group)
-		return this.getId();
-	    return this.getId();
+	    return this.getId() +" type:" + this.getType() +" index:" + this.index;
 	},
 	getForDisplay: function() {
 	    return this.forDisplay;
@@ -15033,6 +15031,45 @@ function CsvUtil() {
 	    }
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
+	count: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+            let allFields  = pointData.getRecordFields();
+
+	    if(!args.field)
+		throw new Error("No field specified");
+	    let field = this.display.getFieldById(allFields, args.field);
+	    let newFields = [];
+	    let newField = field.clone();
+	    newField.index=0;
+	    newFields.push(newField);
+	    newFields.push(new RecordField({
+		id:"count",
+		index:1,
+		label:"Count",
+		type:"integer",
+		chartable:true,
+	    }));
+
+	    let counts = {};
+	    let values = [];
+	    for (var rowIdx=0; rowIdx <records.length; rowIdx++) {
+		let record = records[rowIdx];
+		let value = field.getValue(record);
+		if(!Utils.isDefined(counts[value])) {
+		    counts[value]=0;
+		    values.push(value);
+		}
+	    }
+	    let newRecords  =[]
+	    if(args.sort) values.sort();
+	    values.forEach(value=>{
+		let newData = [value,values[value]];
+		let newRecord = new  PointRecord(newFields,NaN,NaN, NaN, null, newData);
+		newRecords.push(newRecord);
+	    });
+	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
+	},
+
 
 	prune: function(pointData, args) {
 	    let records = pointData.getRecords(); 
@@ -27658,7 +27695,6 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
             this.setContents(html);
             let tableHeight = this.getProperty("tableHeight", "200");
 
-	    console.log("A")
             if (this.getProperty("showSummary", true))
                 HU.formatTable("#" + this.domId("table_summary"), {
                     scrollY: this.getProperty("tableSummaryHeight", tableHeight)
@@ -27980,9 +28016,13 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
             this.writeHtml(ID_DISPLAY_TOP, includes);
             let _this = this;
             var func = function() {
-                _this.updateUIInner();
+		if(window.nlp) {
+                    _this.updateUIInner();
+		} else {
+		    setTimeout(func, 100);
+		}
             };
-            setTimeout(func, 10);
+            setTimeout(func, 100);
         },
         updateUIInner: function() {
             let records = this.filterData();
@@ -34630,7 +34670,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.getProperty("showRegionSelector")) {
 		//Fetch the regions
 		if(!ramaddaMapRegions) {
-		    let jqxhr = $.getJSON(ramaddaCdn +"/regions.json", data=> {
+		    let jqxhr = $.getJSON(ramaddaBaseUrl +"/regions.json", data=> {
 			if (GuiUtils.isJsonError(data)) {
 			    console.log("Error fetching regions");
 			    ramaddaMapRegions=[];
@@ -38728,6 +38768,7 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 		    tt =  _this.getRecordHtml(record,null,tooltip);
 		}
 		if(tt) {
+		    console.log("d:" + d3.event);
 		    _this.tooltipDiv.html(tt)
 			.style("left", (d3.event.pageX + 10) + "px")
 			.style("top", (d3.event.pageY + 20) + "px");
@@ -41885,6 +41926,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		if(numRecords>-1 && recordIdx>numRecords) return false;
 		let d = record.getData();
 		d = d.map(d=>{
+		    if(!d) return d;
 		    if(d.getTime) return this.formatDate(d);
 		    return d;
 		});
