@@ -393,7 +393,7 @@ public class PageHandler extends RepositoryManager {
 
             StringBuilder cssImports = new StringBuilder();
             for (String file : readWebResources("/org/ramadda/repository/resources/web/cssimports.html")) {
-		HU.cssPreloadLink(cssImports, file.substring("preload:".length()));
+		HU.cssPreloadLink(cssImports, file);
 		/*
 		if(file.startsWith("preload:")) {
 		    HU.cssPreloadLink(cssImports, file.substring("preload:".length()));
