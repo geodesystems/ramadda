@@ -1259,16 +1259,40 @@ public class IO {
             public void println(Object x) {
                 oldErr.println("**************   ERROR\n"
                                + Utils.getStack(10) + "\n************");
-                //                new RuntimeException("stderr").printStackTrace();
                 oldErr.println(x);
             }
             @Override
             public void print(Object x) {
                 oldErr.println("**************   ERROR\n"
                                + Utils.getStack(10) + "\n************");
-                //                new RuntimeException("stderr").printStackTrace();
                 oldErr.print(x);
             }
+            @Override
+            public void println(String x) {
+                oldErr.println("**************   ERROR\n"
+                               + Utils.getStack(10) + "\n************");
+                oldErr.println(x);
+            }
+            @Override
+            public void print(String x) {
+                oldErr.println("**************   ERROR\n"
+                               + Utils.getStack(10) + "\n************");
+                oldErr.print(x);
+            }
+            @Override
+            public void println(int x) {
+                oldErr.println("**************   ERROR\n"
+                               + Utils.getStack(10) + "\n************");
+                oldErr.println(x);
+            }
+            @Override
+            public void print(int x) {
+                oldErr.println("**************   ERROR\n"
+                               + Utils.getStack(10) + "\n************");
+                oldErr.print(x);
+            }
+
+
 
         });
     }
