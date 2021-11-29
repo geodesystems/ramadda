@@ -19,6 +19,7 @@
   <group handler="entrymanager">
       <api request="/entry/show"             method="processEntryShow"       name="${topgroup}" toplevel="true" ishome="true" icon="fa-home"/>
       <api request="/entry/show/*"           method="processEntryShow"       checkauthmethod="true"/>
+      <api request="/entry/data"             method="processEntryData"/>
       <api request="/entry/form"             method="processEntryForm"       actions="edit"/>
       <api request="/entry/access/*"         method="processEntryAccess"     actions=""/>
       <api request="/entry/change"           method="processEntryChange"     actions="edit"/>
@@ -40,7 +41,6 @@
       <api request="/entry/*"                method="processEntryShowPath"        authmethod="httpauth"  />
       <api request="/entry/dump"             method="processEntryDump" admin="true"/>
       <api request="/entry/types"             method="processEntryTypes"/>
-      <api request="/entry/data"              method="processEntryData"/>
   </group>
 
 

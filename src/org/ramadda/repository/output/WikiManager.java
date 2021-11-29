@@ -2181,9 +2181,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 					    ARG_ENTRYID,entry.getId(), ARG_OUTPUT,
 					    JsonOutputHandler.OUTPUT_JSON_POINT.getId(),"remoteRequest","true");
 		} else {
-		    //		    jsonUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT,
-		    //					       JsonOutputHandler.OUTPUT_JSON_POINT.getId());
-		    jsonUrl = request.entryUrl(getRepository().URL_ENTRY_DATA, entry);
+		    jsonUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT,
+					       JsonOutputHandler.OUTPUT_JSON_POINT.getId());
 		}
                 if (doEntry) {
                     jsonUrl += "&onlyentry=true";
