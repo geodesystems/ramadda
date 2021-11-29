@@ -15,8 +15,8 @@
     <target name="version" depends="init">
         <property name="ramadda_dir" value="${src_dir}/org/ramadda/repository" />
 	<property name="propdest" value="${ramadda_dir}/resources/version.properties"/>
-	<echo message="releasing version ${version}"/>
-       <tstamp>
+	<echo message="setting version to: ${version}"/>
+	<tstamp>
          <format property="version_date" pattern="yyyy-MM-dd HH:mm z" timezone="UTC"/>
        </tstamp>
         <copy overwrite="true" file="${ramadda_dir}/resources/version.properties.template" tofile="${propdest}">
@@ -42,6 +42,7 @@
     </target>
       
     <target name="tag" depends="init">
+      <echo message="tagging with version: ${version}"/>
        <exec executable="git">
 	 <arg value="tag"/>	 
 	 <arg value="${version}"/>
@@ -345,7 +346,7 @@
 
    <target name="clean" depends="init" >
         <delete>
-            <fileset dir="${src_dir}" includes="**/*.class"/>
+          <fileset dir="${src_dir}" includes="**/*.class"/>
         </delete>
     </target>
 

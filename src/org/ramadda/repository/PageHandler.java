@@ -3668,6 +3668,8 @@ public class PageHandler extends RepositoryManager {
         }
     }
 
+    //https://purge.jsdelivr.net/gh/geodesystems/ramadda@latest/src/org/ramadda/repository/htdocs/min/display_all.min.js
+
     private String getCdn() {
 	if(CDN==null) {
 	    CDN =   "https://cdn.jsdelivr.net/gh/geodesystems/ramadda@"   + RepositoryUtil.getVersion()+"/src/org/ramadda/repository/htdocs";
