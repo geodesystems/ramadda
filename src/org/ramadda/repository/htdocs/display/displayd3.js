@@ -811,6 +811,7 @@ function RamaddaGliderCrossSectionDisplay(displayManager, id, properties) {
 
 
 
+var loadedVenn = false;
 function RamaddaVennDisplay(displayManager, id, properties) {
     const ID_VENN = "venn";
     const SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_VENN, properties);
@@ -822,13 +823,20 @@ function RamaddaVennDisplay(displayManager, id, properties) {
             this.updateUIInner();
         },
         updateUI: function() {
-            var includes = "<script src='" + ramaddaCdn + "/lib/venn.js'></script>";
-            this.writeHtml(ID_DISPLAY_TOP, includes);
-            let _this = this;
-            var func = function() {
-                _this.updateUIInner();
+	    if(!loadedVenn) {
+		loadedVenn = true;
+		var includes = "<script src='" + ramaddaCdn + "/lib/venn.js'></script>";
+		this.writeHtml(ID_DISPLAY_TOP, includes);
+	    }
+	    let _this = this;
+	    var func = function() {
+		if(!window["venn"]) {
+		    setTimeout(func, 1000);
+		} else {
+                    _this.updateUIInner();
+		}
             };
-            setTimeout(func, 10);
+	    func();
         },
         updateUIInner: function() {
             let records = this.filterData();
