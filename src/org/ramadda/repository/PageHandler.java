@@ -1901,13 +1901,6 @@ public class PageHandler extends RepositoryManager {
                 tips.add(msg("Login"));
             }
 
-            if (getUserManager().isCartEnabled()) {
-                extras.add("");
-                urls.add(request.makeUrl(getRepositoryBase().URL_USER_CART));
-                labels.add(getIconImage("/icons/cart.png") + " "
-                           + msg("Data Cart"));
-                tips.add(msg("View data cart"));
-            }
         } else {
             extras.add("");
             urls.add(request.makeUrl(getRepositoryBase().URL_USER_LOGOUT));
@@ -1934,6 +1927,17 @@ public class PageHandler extends RepositoryManager {
                 tips.add(msg("Go to user settings"));
             }
         }
+
+	/*
+	  Don't add this for now
+	  if (getUserManager().isCartEnabled()) {
+	  extras.add("");
+	  urls.add(request.makeUrl(getRepositoryBase().URL_USER_CART));
+	  labels.add(getIconImage("/icons/cart.png") + " "
+	  + msg("Data Cart"));
+	  tips.add(msg("View data cart"));
+	  }
+	*/
 
         if (showHelp && (getRepository()
                         .getPluginManager().getDocUrls().size() > 0)) {
