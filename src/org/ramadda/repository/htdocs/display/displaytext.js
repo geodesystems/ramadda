@@ -1543,7 +1543,6 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
             this.setContents(html);
             let tableHeight = this.getProperty("tableHeight", "200");
 
-	    console.log("A")
             if (this.getProperty("showSummary", true))
                 HU.formatTable("#" + this.domId("table_summary"), {
                     scrollY: this.getProperty("tableSummaryHeight", tableHeight)
@@ -1865,9 +1864,13 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
             this.writeHtml(ID_DISPLAY_TOP, includes);
             let _this = this;
             var func = function() {
-                _this.updateUIInner();
+		if(window.nlp) {
+                    _this.updateUIInner();
+		} else {
+		    setTimeout(func, 100);
+		}
             };
-            setTimeout(func, 10);
+            setTimeout(func, 100);
         },
         updateUIInner: function() {
             let records = this.filterData();

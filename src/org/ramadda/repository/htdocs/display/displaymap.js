@@ -2459,7 +2459,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.getProperty("showRegionSelector")) {
 		//Fetch the regions
 		if(!ramaddaMapRegions) {
-		    let jqxhr = $.getJSON(ramaddaCdn +"/regions.json", data=> {
+		    let jqxhr = $.getJSON(ramaddaBaseUrl +"/regions.json", data=> {
 			if (GuiUtils.isJsonError(data)) {
 			    console.log("Error fetching regions");
 			    ramaddaMapRegions=[];
@@ -6557,6 +6557,7 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 		    tt =  _this.getRecordHtml(record,null,tooltip);
 		}
 		if(tt) {
+		    console.log("d:" + d3.event);
 		    _this.tooltipDiv.html(tt)
 			.style("left", (d3.event.pageX + 10) + "px")
 			.style("top", (d3.event.pageY + 20) + "px");

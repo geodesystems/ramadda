@@ -1243,6 +1243,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		if(numRecords>-1 && recordIdx>numRecords) return false;
 		let d = record.getData();
 		d = d.map(d=>{
+		    if(!d) return d;
 		    if(d.getTime) return this.formatDate(d);
 		    return d;
 		});
