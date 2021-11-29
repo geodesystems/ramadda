@@ -32,6 +32,27 @@ See [ug::link installing.html#ssljetty here] if you are running stand-alone.
 </faqitem>
 
 
+<faqitem cat="Administration" id="cdn" q="How do I improve the page loading performance?" >
+By default RAMADDA serves up all of its CSS and Javascript files as individual files. You can improve
+page loading performance in by setting the following properties:
+  
+<pre>
+#This caches the HTML resources in memory
+ramadda.cachehtdocs = false
+
+#This serves up the JS and CSS files as aggregated minified files
+ramadda.minified=true
+
+#This uses the cdn.jsdelivr.net CDN network to deiver most of the CSS and Javascript files
+ramadda.cdnok=true
+
+</pre>
+
+</faqitem>
+
+
+
+
 <faqitem cat="Administration" id="permgen" q="I got an out of memory error saying something about PermGen size. Whats up with that?" >
 You will need to change your java runtime memory settings by adding:
 <pre>
