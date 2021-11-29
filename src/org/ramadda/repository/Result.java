@@ -101,6 +101,8 @@ public class Result {
     /** authorization method */
     private AuthorizationMethod authorizationMethod;
 
+    private boolean okToAddCookies = true;
+    
     /**
      * Default ctor
      */
@@ -257,6 +259,25 @@ public class Result {
         this.title          = title;
         this.mimeType       = mimeType;
         this.shouldDecorate = shouldDecorate;
+    }
+
+
+    /**
+       Set the OkToAddCookies property.
+
+       @param value The new value for OkToAddCookies
+    **/
+    public void setOkToAddCookies (boolean value) {
+	okToAddCookies = value;
+    }
+
+    /**
+       Get the OkToAddCookies property.
+
+       @return The OkToAddCookies
+    **/
+    public boolean getOkToAddCookies () {
+	return okToAddCookies;
     }
 
 

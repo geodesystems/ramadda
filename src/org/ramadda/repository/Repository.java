@@ -3670,16 +3670,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
         if (result != null) {
-            okToAddCookie = result.getResponseCode() == Result.RESPONSE_OK;
-            if ((result.getInputStream() == null) && result.isHtml()
-                    && result.getShouldDecorate()
-                    && result.getNeedToWrite()) {
-                getPageHandler().decorateResult(request, result);
-            }
-            if (result.getRedirectUrl() != null) {
-                okToAddCookie = true;
-            }
-        }
+	    if ((result.getInputStream() == null) && result.isHtml()
+		&& result.getShouldDecorate()
+		&& result.getNeedToWrite()) {
+		getPageHandler().decorateResult(request, result);
+	    }
+	    if(result.getOkToAddCookies()) {
+		okToAddCookie = result.getResponseCode() == Result.RESPONSE_OK;
+	    }
+	    if (result.getRedirectUrl() != null) {
+		okToAddCookie = true;
+	    } 
+	}
 
 
         if (request.getSessionHasBeenHandled()) {
@@ -3971,6 +3973,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (apiMethod == null) {
 	    long t1 = System.currentTimeMillis();
 	    Result result =  getHtdocsFile(request);
+	    //Don't do this for now
+	    //if(result!=null) result.setOkToAddCookies(false);
 	    long t2 = System.currentTimeMillis();
 	    //	    String path       = request.getRequestPath();
 	    //	    System.err.println("time: " + (t2-t1) +"ms  " +path);
@@ -4259,6 +4263,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (path.endsWith("asm.data")) {
             mimeType = "application/octet-stream";
         }
+
+
+
+
         boolean decorate = true;
         if (path.startsWith("/raw")) {
             path     = path.substring("/raw".length());
@@ -6009,6 +6017,19 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return result;
     }
 
+    private byte[] favIcon;
+    public Result processFavIcon(Request request) throws Exception {
+	if(favIcon==null) {
+	    InputStream is =getStorageManager().getInputStream("/org/ramadda/repository/htdocs/favicon.ico");
+	    favIcon = IOUtil.readBytes(is);
+	    is.close();
+	}
+	InputStream inputStream = new ByteArrayInputStream(favIcon);
+        Result result = new Result("favicon.ico", inputStream,  "image/x-icon");
+        result.setCacheOk(true);
+	return result;
+    }
+    
 
     /**
      * _more_
