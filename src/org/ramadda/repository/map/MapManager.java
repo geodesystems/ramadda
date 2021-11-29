@@ -1335,6 +1335,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
         if ((viewBounds != null) && viewBounds.equals("<bounds>")) {
             viewBounds = mainEntry.getBoundsString();
+	    System.err.println("VB1:" + viewBounds);
         }
         if (request.get("mapsubset", false)) {
             forceBounds = false;
@@ -1367,8 +1368,11 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
 	for(Object key: Utils.getKeys(props)) {
 	    String skey = key.toString();
-	    String converted  = skey.replaceAll("[!a-zA-Z0-9]","X");
-	    if(!skey.equals(converted)) continue;
+	    String converted  = skey.replaceAll("[^a-zA-Z0-9_]","X");
+	    if(!skey.equals(converted)) {
+		//		System.err.println("skipping:" + skey +" converted:" + converted);
+		continue;
+	    }
 	    String v = (String)props.get(skey);
 	    if(v.equals("true") || v.equals("false")) {
 	    } else {
@@ -1378,9 +1382,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 		    v = Json.quote(v);
 		}
 	    }
-	    //	    System.err.println(skey+"=" + v);
+	    //	    System.err.println("key:" + skey+"=" + v);
             map.getMapProps().put(skey,v);
-	    
 	}
 
         if ((entriesToUse.size() == 1)
@@ -1411,14 +1414,16 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                 double east  = Double.parseDouble(toks.get(3));
                 bounds = new Rectangle2D.Double(west, south, east - west,
                         north - south);
+		System.err.println("VB2:" + bounds);
             }
+
         }
         if (bounds == null) {
             bounds = getEntryUtil().getBounds(entriesToUse);
         }
+
+
         boolean haveLocation = false;
-
-
         if (request.defined("map_bounds")) {
             haveLocation = true;
             List<String> toks = Utils.split(request.getString("map_bounds",
@@ -1444,6 +1449,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                     || (props.get("mapBounds") != null))) {
             haveLocation = true;
         }
+
 
 
 
