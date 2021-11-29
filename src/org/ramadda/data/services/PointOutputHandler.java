@@ -968,9 +968,7 @@ public class PointOutputHandler extends RecordOutputHandler {
             extra += "&" + RecordFormHandler.ARG_RECORD_SKIP + "=" + skip;
         }
 
-        return request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
-                                ARG_OUTPUT, OUTPUT_PRODUCT.getId(),
-                                ARG_PRODUCT, OUTPUT_JSON.toString()) + "&"
+        return request.entryUrl(getRepository().URL_ENTRY_DATA, entry) + "&"
                                     + RecordFormHandler.ARG_MAX + "=" + max
                                     + extra;
 

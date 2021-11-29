@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Nov 28 22:25:14 MST 2021";
+var build_date="RAMADDA build date: Sun Nov 28 22:38:17 MST 2021";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -12318,7 +12318,7 @@ function PointData(name, recordFields, records, url, properties) {
 		let root = String(window.location).replace(/\/[^\/]+$/,"");
 		url = root + "/" + url;
 	    }
-	    display.handleLog(display.type+" load point data:" + url);
+	    display.handleLog("display:" + display.type+" data:" + url);
             Utils.doFetch(url, success,fail,null);	    
 //            var jqxhr = $.getJSON(url, success,{crossDomain:true}).fail(fail);
         }

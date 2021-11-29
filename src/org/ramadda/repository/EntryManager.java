@@ -885,6 +885,11 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+    public Result processEntryData(Request request) throws Exception {
+	request.put("output","points.product");
+	request.put("product","points.json");
+	return processEntryShow(request);
+    }
 
 
 
