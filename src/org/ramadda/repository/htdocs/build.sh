@@ -19,7 +19,7 @@ dest="${dir}/min"
 
 now=`date`
 echo "var build_date=\"RAMADDA build date: $now\";\n" > ${dir}/now.txt
-cat ${dir}/now.txt ${dir}/display/widgets.js ${dir}/display/display.js ${dir}/display/displaymanager.js ${dir}/display/pointdata.js   ${dir}/display/displaychart.js ${dir}/display/displayimages.js ${dir}/display/control.js ${dir}/display/notebook.js ${dir}/display/displayd3.js ${dir}/display/displaytext.js  ${dir}/display/displayentry.js ${dir}/display/displayext.js  ${dir}/display/displaymap.js ${dir}/display/editablemap.js ${dir}/display/displaymisc.js ${dir}/display/displaytable.js ${dir}/display/displayplotly.js ${dir}/display/displaythree.js > ${dest}/display_all.js
+cat ${dir}/now.txt ${dir}/display/widgets.js ${dir}/display/display.js ${dir}/display/displaymanager.js ${dir}/display/pointdata.js   ${dir}/display/displaychart.js ${dir}/display/displayimages.js ${dir}/display/control.js ${dir}/display/notebook.js ${dir}/display/displayd3.js ${dir}/display/displaytext.js  ${dir}/display/displayentry.js ${dir}/display/displayext.js  ${dir}/display/displaymap.js ${dir}/display/editablemap.js ${dir}/display/displaymisc.js  ${dir}/display/displayplotly.js ${dir}/display/displaythree.js ${dir}/display/displaytable.js > ${dest}/display_all.js
 ${jsminify} ${dest}/display_all.js > ${dest}/display_all.min.js
 ${jsminify} ${dest}/display_all.js > ${dest}/display_all.min.js
 #${jsminify} ${dir}/display/displayplotly.js > ${dest}/displayplotly.min.js
