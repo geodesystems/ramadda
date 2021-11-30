@@ -19,61 +19,89 @@ const DISPLAY_GAUGE = "gauge";
 const DISPLAY_TABLE = "table";
 const DISPLAY_WORDTREE = "wordtree";
 const DISPLAY_TREEMAP = "treemap";
+const DISPLAY_ORGCHART = "orgchart";
 const ID_CHART = "chart";
 const ID_CHARTS = "charts";
 const ID_CHARTS_INNER = "chartsinner";
 
 
-var googleChartsLoaded = false;
-function googleChartsHaveLoaded() {
-    googleChartsLoaded = true;
-}
-if(window["google"]) {
-    google.charts.setOnLoadCallback(googleChartsHaveLoaded);
-}
-
-var ramaddaChartsLoaded={};
-
-function ramaddaLoadGoogleChart(display, what) {
-    if(!ramaddaChartsLoaded[what]) {
-	google.charts.load(HtmlUtils.googleChartsVersion, {
-            packages: [what],
-	    callback:()=>{
-		ramaddaChartsLoaded[what] = true;
-		display.updateUI();
-	    }
+var ramaddaChartInfo = {
+    debug:false,
+    version:"51",
+    loading:false,
+    chartsHaveLoaded:false,
+    pending:[],
+    packages:{}
+};
+function haveGoogleChartsLoaded(callback) {
+//    console.log("haveGoogleChartsLoaded");
+    if(ramaddaChartInfo.chartsHaveLoaded) {
+	if(callback) callback();
+	return true;
+    }
+    if(callback) {
+	ramaddaChartInfo.pending.push(callback);
+    }
+    if(!window["google"]) {
+	if(ramaddaChartInfo.debug)
+	    console.log("\tno google");
+	if(ramaddaChartInfo.loading) {
+	    return false;
+	}
+	ramaddaChartInfo.loading = true;
+	Utils.loadScript('https://www.gstatic.com/charts/loader.js',()=>{
+	    if(ramaddaChartInfo.debug)
+		console.log("loader.js loaded calling google.charts.load version:" + ramaddaChartInfo.version);
+	    google.charts.load(ramaddaChartInfo.version, {
+		packages: ['corechart']
+	    });
+//	    console.log("calling setOnLoadCallback");
+	    google.charts.setOnLoadCallback(() =>{
+		if(ramaddaChartInfo.debug)
+		    console.log("core chart loaded");
+		ramaddaChartInfo.chartsHaveLoaded = true;
+		ramaddaChartInfo.pending.forEach(callback=>{
+		    if(ramaddaChartInfo.debug)
+			console.log("\tcalling callback");
+		    callback();
+		});
+		ramaddaChartInfo.pendingDisplays = [];
+	    });
 	});
+    }
+}
+
+
+function ramaddaLoadGoogleChart(what, callback) {
+    let package = ramaddaChartInfo.packages[what];
+    if(!package)
+	package = ramaddaChartInfo.packages[what] ={
+	    loading:false,
+	    loaded:false,
+	    pending:[]
+	};
+    if(!package.loaded) {
+	if(callback)
+	    package.pending.push(callback);
+	if (!package.loading) {
+	    package.loading = true;
+	    if(ramaddaChartInfo.debug)
+		console.log("calling google.charts.load:" + what);
+	    google.charts.load(ramaddaChartInfo.version, {
+		packages: [what],
+		callback:()=>{
+		    if(ramaddaChartInfo.debug)
+			console.log("google.charts.load callback:" + what +" pending:" + package.pending.length);
+		    package.loaded = true;
+		    package.pending.forEach(callback=>callback());
+		}
+	    });
+	}
 	return false;
     }
     return true;
 }
 
-
-function haveGoogleChartsLoaded() {
-    if (!googleChartsLoaded) {
-        if (Utils.isDefined(google.visualization)) {
-            if (Utils.isDefined(google.visualization.Gauge)) {
-                googleChartsLoaded = true;
-            }
-        }
-    }
-    return googleChartsLoaded;
-}
-
-function waitOnGoogleCharts(object, callback) {
-    if (haveGoogleChartsLoaded()) {
-	return true;
-    }
-    if (!object.googleChartCallbackPending) {
-        object.googleChartCallbackPending = true;
-        let func = function() {
-            object.googleChartCallbackPending = false;
-            callback();
-        }
-        setTimeout(func, 100);
-    }
-    return false;
-}
 
 
 addGlobalDisplayType({
@@ -211,6 +239,16 @@ addGlobalDisplayType({
     tooltip: makeDisplayTooltip("A tree map","treemap.png")    
 });
 
+addGlobalDisplayType({
+    type: DISPLAY_ORGCHART,
+    label: "Org Chart",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_RADIAL_ETC,
+    tooltip: makeDisplayTooltip(null,"orgchart.png")                                
+});
+
+
 
 
 let PROP_CHART_MIN = "chartMin";
@@ -312,10 +350,43 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         defaultSelectedToAll: function() {
             return false;
         },
+	getRequiredPackages: function() {
+	    return [];
+	},
+	chartCallbackPending: false,
         updateUI: function(args) {
-	    let debug = false;
+	    let callback = this.chartCallbackPending?null:()=>{
+//		console.log(this.type +".updateUI: charts loaded");
+		this.updateUI();
+	    };
+	    this.chartCallbackPending=true;
+	    if(!haveGoogleChartsLoaded(callback)) {
+		return;
+	    }
+
+	    let required = this.getRequiredPackages();
+	    if(required.length>0) {
+		if(!this.packageLoading) this.packageLoading = {};
+		let gotPackages  = required.length;
+//		console.log(this.type+" loading packages:" + required);
+		required.forEach(pkg=> {
+		    let callback = this.packageLoading[pkg]?null:()=>{
+//			console.log(this.type+" package loaded callback");
+			this.updateUI();
+		    };
+		    if(ramaddaLoadGoogleChart(pkg,callback)) {
+			gotPackages--;
+		    }
+		});
+		if(gotPackages>0) return;
+	    }
 	    args = args || {};
             SUPER.updateUI.call(this, args);
+	    console.log(this.type +".updateUI: ready");
+	    this.updateUIInner(args);
+	},
+	updateUIInner: function(args) {
+	    let debug = false;
 	    if(debug)
 		console.log(this.type+".updateUI")
             if (!this.getDisplayReady()) {
@@ -2597,10 +2668,8 @@ function SankeyDisplay(displayManager, id, properties) {
     this.tries = 0;
     const SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_SANKEY, properties);
     defineDisplay(addRamaddaDisplay(this), SUPER, [], {
-        updateUI: function(args) {
-	    if(!ramaddaLoadGoogleChart(this,'sankey')) return;
-	    args = args || {};
-            SUPER.updateUI.call(this, args);
+	getRequiredPackages: function() {
+	    return ['sankey'];
 	},
         doMakeGoogleChart: function(dataList, props, chartDiv,  selectedFields, chartOptions) {
             chartOptions.height = parseInt(this.getProperty("chartHeight", this.getProperty("height", "400")));
@@ -2678,10 +2747,8 @@ function WordtreeDisplay(displayManager, id, properties) {
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         handleEventRecordSelection: function(source, args) {},
-        updateUI: function(args) {
-	    if(!ramaddaLoadGoogleChart(this,'wordtree')) return;
-	    args = args || {};
-            SUPER.updateUI.call(this, args);
+	getRequiredPackages: function() {
+	    return ['wordtree'];
 	},
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
             if (this.getProperty("chartHeight"))
@@ -2853,10 +2920,8 @@ function TableDisplay(displayManager, id, properties) {
 	{p:'headerStyle'}];
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
-	updateUI: function(args) {
-	    if(!ramaddaLoadGoogleChart(this,'table')) return;
-	    args = args || {};
-            SUPER.updateUI.call(this, args);
+	getRequiredPackages: function() {
+	    return ['table'];
 	},
         canDoGroupBy: function() {
             return true;
@@ -3236,10 +3301,8 @@ function BubbleDisplay(displayManager, id, properties) {
 function BartableDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaSeriesChart(displayManager, id, DISPLAY_BARTABLE, properties);
     defineDisplay(addRamaddaDisplay(this), SUPER, [], {
-	updateUI: function(args) {
-	    if(!ramaddaLoadGoogleChart(this,'bar')) return;
-	    args = args || {};
-            SUPER.updateUI.call(this, args);
+	getRequiredPackages: function() {
+	    return ['bar'];
 	},
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
             let height = "";
@@ -3319,10 +3382,8 @@ function TreemapDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_TREEMAP, properties);
     defineDisplay(addRamaddaDisplay(this), SUPER, [], {
         handleEventRecordSelection: function(source, args) {},
-        updateUI: function(args) {
-	    if(!ramaddaLoadGoogleChart(this,'treemap')) return;
-	    args = args || {};
-            SUPER.updateUI.call(this, args);
+	getRequiredPackages: function() {
+	    return ['treemap'];
 	},
         getFieldsToSelect: function(pointData) {
             return pointData.getRecordFields();
@@ -3490,10 +3551,8 @@ function TimerangechartDisplay(displayManager, id, properties) {
     ];
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
-	updateUI: function(args) {
-	    if(!ramaddaLoadGoogleChart(this,'timeline')) return;
-	    args = args || {};
-            SUPER.updateUI.call(this, args);
+	getRequiredPackages: function() {
+	    return ['timeline'];
 	},
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
 	    if(this.dataColors && this.dataColors.length)
@@ -3653,10 +3712,8 @@ function CalendarDisplay(displayManager, id, properties) {
 
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
-        updateUI: function(args) {
-	    if(!ramaddaLoadGoogleChart(this,'calendar')) return;
-	    args = args || {};
-            SUPER.updateUI.call(this, args);
+	getRequiredPackages: function() {
+	    return ['calendar'];
 	},
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
 	    let opts = {
@@ -3778,12 +3835,9 @@ function CalendarDisplay(displayManager, id, properties) {
 function GaugeDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaGoogleChart(displayManager, id, DISPLAY_GAUGE, properties);
     defineDisplay(addRamaddaDisplay(this), SUPER, [], {
-        updateUI: function(args) {
-	    if(!ramaddaLoadGoogleChart(this,'gauge')) return;
-	    args = args || {};
-            SUPER.updateUI.call(this, args);
+	getRequiredPackages: function() {
+	    return ['gauge'];
 	},
-
         getChartHeight: function() {
             return this.getProperty("height", this.getChartWidth());
         },
@@ -4010,3 +4064,69 @@ function ScatterplotDisplay(displayManager, id, properties) {
 
 
 
+function OrgchartDisplay(displayManager, id, properties) {
+    const ID_ORGCHART = "orgchart";
+    const SUPER = new RamaddaGoogleChart(displayManager, id, DISPLAY_ORGCHART, properties);
+    let myProps = [
+	{label:'Orgchart'},
+	{p:'labelField',ex:''},
+	{p:'parentField',ex:''},
+	{p:'idField',ex:''},
+	{p:'treeRoot',ex:'some label'},
+	{p:'treeTemplate',ex:''},
+	{p:'treeNodeSize',ex:'small|medium|large'}
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER,myProps, {
+        handleEventRecordSelection: function(source, args) {},
+        needsData: function() {
+            return true;
+        },
+	getRequiredPackages: function() {
+	    return ['orgchart'];
+	},
+
+	updateUIInner: function() {
+            this.displayHtml(HU.div([ID,this.domId(ID_ORGCHART)],""));
+	    if(this.jq(ID_ORGCHART).length==0) {
+		setTimeout(()=>this.updateUI(),1000);
+		return;
+	    }
+	    let roots=null;
+	    try {
+		roots = this.makeTree();
+	    } catch(error) {
+		this.handleError("An error has occurred:" + error, error);
+		return;
+	    }
+	    if(roots==null) return;
+
+	    let data = new google.visualization.DataTable();
+            data.addColumn('string', 'Name');
+            data.addColumn('string', 'Parent');
+            data.addColumn('string', 'ToolTip');
+	    let rows = [];
+	    let cnt=0;
+	    let func = function(node) {
+		cnt++;
+		let value = node.label;
+		if(node.display) {
+		    value = {'v':node.label,f:node.display};
+		}
+		let row = [value, node.parent?node.parent.label:"",node.tooltip||""];
+		rows.push(row);
+		if(node.children.length>0) {
+		    node.children.map(func);
+		}
+		if(node.record) {
+		    //		    _this.countToRecord[cnt] = node.record;
+		}
+	    }
+	    roots.map(func);
+            data.addRows(rows);
+            let chart = new google.visualization.OrgChart(document.getElementById(this.domId(ID_ORGCHART)));
+            // Draw the chart, setting the allowHtml option to true for the tooltips.
+            chart.draw(data, {'allowHtml':true,'allowCollapse':true,
+			      'size':this.getProperty("treeNodeSize","medium")});
+	}
+    });
+}
