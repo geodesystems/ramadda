@@ -623,6 +623,8 @@ function selectClick(id, entryId, value) {
         insertAtCursor(selector.elementId, selector.textComp.obj, "[[" + entryId + "|" + value + "]]");
     } else   if (selector.selecttype == "fieldname") {
         insertAtCursor(selector.elementId, selector.textComp.obj,  value);
+    } else   if (selector.selecttype == "image") {
+        insertAtCursor(selector.elementId, selector.textComp.obj,  "{{image entry=\"" + entryId +"\" caption=\"" + value+"\" width=400px align=center}} ");	
     } else if (selector.selecttype == "entryid") {
         //        insertTagsInner(selector.elementId, selector.textComp.obj, "" +entryId+"|"+value+" "," ","importtype");
 	let editor = HU.getWikiEditor(selector.elementId);
