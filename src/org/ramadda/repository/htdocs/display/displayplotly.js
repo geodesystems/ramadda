@@ -122,11 +122,6 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
     const ID_PLOTY = "plotly";
     let SUPER = new RamaddaFieldsDisplay(displayManager, id, type, properties);
     //Dynamically load plotly
-    if(!window.Plotly) {
-	let url = ramaddaBaseUrl+"/lib/plotly/plotly-latest.min.js";
-        var imports = "<script src='" + url+"'></script>";
-        $(imports).appendTo("head");
-    }
     RamaddaUtil.inherit(this, SUPER);
     RamaddaUtil.defineMembers(this, {
 	getRequirement:function() {
@@ -135,6 +130,19 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
         needsData: function() {
             return true;
         },
+	updateUI:function(args) {
+	    if(!window.Plotly) {
+		let url = ramaddaCdn+"/lib/plotly/plotly-latest.min.js";
+		let callback = this.loadingJS?null:   ()=>{
+		    this.updateUI(args);
+		};
+		Utils.loadScript(url,callback); 
+		return;
+	    }
+	    this.updateUIInner(args);
+	},
+	updateUIInner:function(args) {
+	},
         setDimensions: function(layout, widthDelta) {
             //                var width  = parseInt(this.getProperty("width","400").replace("px","").replace("%",""));
             var height = parseInt(this.getProperty("height", "400").replace("px", "").replace("%", ""));
@@ -240,7 +248,7 @@ function RamaddaRadialDisplay(displayManager, id, type, properties) {
         getPlotType: function() {
             return 'barpolar';
         },
-        updateUI: function() {
+        updateUIInner: function() {
             var records = this.filterData();
             if (!records) {
                 return;
@@ -349,7 +357,7 @@ function RamaddaDensityDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this, SUPER = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_DENSITY, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
-        updateUI: function() {
+        updateUIInner: function() {
             var records = this.filterData();
             if (!records) return;
             var fields = this.getSelectedFields(this.getData().getRecordFields());
@@ -437,7 +445,7 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
             //                'mesh3d'
             return 'scatter3d';
         },
-        updateUI: function() {
+        updateUIInner: function() {
             var records = this.filterData();
             if (!records) return;
             var fields = this.getSelectedFields(this.getData().getRecordFields());
@@ -569,7 +577,7 @@ function RamaddaSunburstDisplay(displayManager, id, properties) {
         getDisplayStyle: function() {
             return "";
         },
-        updateUI: function() {
+        updateUIInner: function() {
             var records = this.filterData();
             if (!records) return;
             var parentField = this.getFieldById(null, this.getProperty("parentField"));
@@ -708,7 +716,7 @@ function RamaddaTernaryDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this, SUPER = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_TERNARY, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
-        updateUI: function() {
+        updateUIInner: function() {
             var records = this.filterData();
             if (!records) return;
             var fields = this.getSelectedFields(this.getData().getRecordFields());
@@ -864,7 +872,7 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
             return "";
         },
 
-        updateUI: function() {
+        updateUIInner: function() {
             let records = this.filterData();
             if (!records) return;
             var pointData = this.getData();
@@ -1028,7 +1036,7 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
         getDisplayStyle: function() {
             return "";
         },
-        updateUI: function() {
+        updateUIInner: function() {
             let records = this.filterData();
             if (!records) return;
 //	    this.writePropertyDef = "";
@@ -1180,7 +1188,7 @@ function RamaddaSplomDisplay(displayManager, id, properties) {
                 }
             }
         },
-        updateUI: function() {
+        updateUIInner: function() {
             var records = this.filterData();
             if (!records) return;
             var fields = this.getSelectedFields(this.getData().getRecordFields());
@@ -1304,7 +1312,7 @@ function RamaddaPTreemapDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this, SUPER = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_TREEMAP, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
-        updateUI: function() {
+        updateUIInner: function() {
             var records = this.filterData();
             if (!records) return;
             var selectedFields = this.getSelectedFields(this.getData().getRecordFields());
@@ -1426,7 +1434,7 @@ function TextcountDisplay(displayManager, id, properties) {
             });
 
         },
-        updateUI: function() {
+        updateUIInner: function() {
             let records = this.filterData();
             if (!records) return;
 	    let patterns = this.getProperty("patterns");
@@ -1531,7 +1539,7 @@ function CombochartDisplay(displayManager, id, properties) {
 	{p:'chartPad',ex:''},
     ];	
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
-	updateUI: function() {
+	updateUIInner: function() {
             let records = this.filterData();
             if (!records) return;
 	    var layout = {
@@ -1623,7 +1631,7 @@ function RamaddaParcoordsDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
-        updateUI: function() {
+        updateUIInner: function() {
             var records = this.filterData();
             if (!records) return;
 	    let fields   = this.getFieldsByIds(null, this.getPropertyFields(""));
