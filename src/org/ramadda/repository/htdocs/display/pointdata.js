@@ -1714,7 +1714,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		    });
 		}
 		this.selectedTags = [];
-		prop.value.forEach(value=>{
+		console.dir(prop)
+		prop.values.forEach(value=>{
 		    this.toggleTag(value,true);
 		});
 		return;

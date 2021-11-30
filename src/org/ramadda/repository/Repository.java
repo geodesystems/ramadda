@@ -4294,31 +4294,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 htdocsPathCache.put(path, fullPath);
                 if (path.endsWith(".js") || path.endsWith(".css")) {
                     String js = IOUtil.readInputStream(inputStream);
-                    //If its the base js then don't cache and add in the user info
-                    if (path.endsWith("/base.js")) {
-                        String base    = urlBase;
-                        js = js.replace(
-                            "${ramadda.htdocs}",
-                            base + "/"
-                            + RepositoryUtil.getHtdocsVersion()).replace(
-                                "${ramadda.root}", base);
-			js  = js.replace("${ramadda.cdn}", getPageHandler().getCdnPath(""));
-                        js = js.replace("${ramadda.search.tree}",
-                                        getSearchManager().isLuceneEnabled()
-                                        + "");
-                        js = js.replace("${ramadda.urlroot}", base);
-                        js = js.replace(
-                            "${ramadda.baseentry}",
-                            getEntryManager().getRootEntry().getId());
-                        js = js.replace("${hostname}",
-                                        request.getServerName());
-                        js = js.replace("${ramadda.user}",
-                                        request.getUser().getId());
-                        bytes = js.getBytes();
-                    } else {
-                        bytes = js.getBytes();
-                        putHtdocsCache(path, bytes, false);
-                    }
+		    bytes = js.getBytes();
+		    putHtdocsCache(path, bytes, false);
                     inputStream = new ByteArrayInputStream(bytes);
                 } else if (path.endsWith(".png") || path.endsWith(".gif")
                            || path.endsWith(".jpg")
@@ -6027,6 +6004,44 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	InputStream inputStream = new ByteArrayInputStream(favIcon);
         Result result = new Result("favicon.ico", inputStream,  "image/x-icon");
         result.setCacheOk(true);
+	return result;
+    }
+
+    private String baseJs;
+    public String getBaseJs(Request request) throws Exception {
+	if(baseJs==null) {
+	    InputStream is =getStorageManager().getInputStream("/org/ramadda/repository/htdocs/base.js");
+	    baseJs = new String(IOUtil.readBytes(is));
+	    is.close();
+	}
+	String js = baseJs;
+        String base    = getUrlBase();
+	js = js.replace(
+			"${ramadda.htdocs}",
+			base + "/"
+			+ RepositoryUtil.getHtdocsVersion()).replace(
+								     "${ramadda.root}", base);
+	js  = js.replace("${ramadda.cdn}", getPageHandler().getCdnPath(""));
+	js = js.replace("${ramadda.search.tree}",
+			getSearchManager().isLuceneEnabled()+ "");
+	js = js.replace("${ramadda.urlroot}", base);
+	js = js.replace(
+			"${ramadda.baseentry}",
+			getEntryManager().getRootEntry().getId());
+	js = js.replace("${hostname}",
+			request.getServerName());
+	js = js.replace("${ramadda.user}",
+			request.getUser().getId());
+
+	return js;
+    }
+
+
+    public Result processBaseJs(Request request) throws Exception {
+	String js = getBaseJs(request);
+	System.err.println(js);
+	Result result =  new Result("base.js",js.getBytes(),"application/x-javascript");
+        result.setCacheOk(false);
 	return result;
     }
     

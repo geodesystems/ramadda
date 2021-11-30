@@ -546,9 +546,8 @@ public class PageHandler extends RepositoryManager {
         }
 
         //make the request to base.js be unique every time so the browser does not cache it
-        HU.importJS(head,
-                    getRepository().getUrlBase() + "/htdocs_v"
-                    + (new Date().getTime()) + "/base.js");
+	
+	HU.script(head, getRepository().getBaseJs(request));
         head.append(webImports);
         String head2 = request.getHead();
         if (head2 != null) {
@@ -560,7 +559,6 @@ public class PageHandler extends RepositoryManager {
                     currentEntry));
         }
         String imports   = head.toString();
-
         String logoImage = getLogoImage(result);
         String logoUrl   = (String) result.getProperty(PROP_LOGO_URL);
         if ( !Utils.stringDefined(logoUrl)) {

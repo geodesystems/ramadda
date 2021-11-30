@@ -12,9 +12,9 @@
      <api request="/docs"             method="processDocs"/>
      <api request="/colortables"      method="processColorTables"/>
      <api request="/geocode"          method="processGeocode"/>
-     <api request="/favicon.ico"      method="processFavIcon"/>     
+     <api request="/favicon.ico"      method="processFavIcon"/>
+     <api request="/base.js"          method="processBaseJs"/>          
   </group>
-
 
 
   <group handler="entrymanager">
