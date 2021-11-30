@@ -3672,8 +3672,12 @@ public class PageHandler extends RepositoryManager {
 
     private String getCdn() {
 	if(CDN==null) {
-	    CDN =   "https://cdn.jsdelivr.net/gh/geodesystems/ramadda@"   + RepositoryUtil.getVersion()+"/src/org/ramadda/repository/htdocs";
-	    CDN =   "https://cdn.jsdelivr.net/gh/geodesystems/ramadda@latest/src/org/ramadda/repository/htdocs";
+	    String root = "https://cdn.jsdelivr.net/gh/geodesystems/ramadda@"   + RepositoryUtil.getVersion();
+	    CDN =   root+"/src/org/ramadda/repository/htdocs";
+	    //	    CDN =   "https://cdn.jsdelivr.net/gh/geodesystems/ramadda@latest/src/org/ramadda/repository/htdocs";
+	    if (getRepository().getCdnOk()) {
+		System.err.println("RAMADDA: Using CDN:" + root);
+	    }
 	}
 	return CDN;
     }
