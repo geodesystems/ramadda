@@ -1,11 +1,5 @@
-https://www.gstatic.com/charts/loader.js
-/initgoogle.js
-
-
 cdn:https://ajax.googleapis.com/ajax/libs/d3js/5.15.0/d3.min.js
 nocdn:/lib/d3/d3.min.js
-
-
 /lib/dom-drag.min.js
 
 
