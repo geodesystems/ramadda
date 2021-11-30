@@ -1,3 +1,16 @@
+/*
+This is a file that (hopefully) contains all of the bootstrap css that
+RAMADDA uses. The following css up to the "CSS Used from: ..." was copied 
+from the browser. The css after that was gotten using the CSS Used Chrome 
+plugin.  After installing the plugin go to a representative page, popup up
+various menus then copy and paste the result. All of the css that is
+used shows up so look for the bootstrap css
+
+Using this file is not the default. To use it  set the property:
+ramadda.bootstrap.version=bootstrap-reduced
+
+*/
+
 /*!
  * Bootstrap v3.4.1 (https://getbootstrap.com/)
  * Copyright 2011-2019 Twitter, Inc.
@@ -74,29 +87,7 @@ body {
 }
 
 
-/*! CSS Used from: https://localhost:8430/repository/htdocs_v6_4_0/lib/bootstrap-5.1.3/css/bootstrap.min.css */
-*,::after,::before{box-sizing:border-box;}
-body{margin:0;font-family:var(--bs-body-font-family);font-size:var(--bs-body-font-size);font-weight:var(--bs-body-font-weight);line-height:var(--bs-body-line-height);color:var(--bs-body-color);text-align:var(--bs-body-text-align);background-color:var(--bs-body-bg);-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent;}
-p{margin-top:0;margin-bottom:1rem;}
-ul{padding-left:2rem;}
-ul{margin-top:0;margin-bottom:1rem;}
-b{font-weight:bolder;}
-a{color:#0d6efd;text-decoration:underline;}
-a:hover{color:#0a58ca;}
-img{vertical-align:middle;}
-table{caption-side:bottom;border-collapse:collapse;}
-tbody,td,tr{border-color:inherit;border-style:solid;border-width:0;}
-input,select{margin:0;font-family:inherit;font-size:inherit;line-height:inherit;}
-select{text-transform:none;}
-[role=button]{cursor:pointer;}
-select{word-wrap:normal;}
-select:disabled{opacity:1;}
-[type=submit]{-webkit-appearance:button;}
-::-moz-focus-inner{padding:0;border-style:none;}
-.img-thumbnail{padding:.25rem;background-color:#fff;border:1px solid #dee2e6;border-radius:.25rem;max-width:100%;height:auto;}
-
-
-/** end recduced */
+/** end reduced */
 
 html {
   font-family: sans-serif;
@@ -868,3 +859,29 @@ video {
     margin-left: 0%;
   }
 }
+
+
+
+
+/*! CSS Used from: https://localhost:8430/repository/htdocs_v6_4_0/lib/bootstrap-5.1.3/css/bootstrap.min.css */
+*,::after,::before{box-sizing:border-box;}
+body{margin:0;font-family:var(--bs-body-font-family);font-size:var(--bs-body-font-size);font-weight:var(--bs-body-font-weight);line-height:var(--bs-body-line-height);color:var(--bs-body-color);text-align:var(--bs-body-text-align);background-color:var(--bs-body-bg);-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent;}
+p{margin-top:0;margin-bottom:1rem;}
+ul{padding-left:2rem;}
+ul{margin-top:0;margin-bottom:1rem;}
+b{font-weight:bolder;}
+a{color:#0d6efd;text-decoration:underline;}
+a:hover{color:#0a58ca;}
+img{vertical-align:middle;}
+table{caption-side:bottom;border-collapse:collapse;}
+tbody,td,tr{border-color:inherit;border-style:solid;border-width:0;}
+input,select{margin:0;font-family:inherit;font-size:inherit;line-height:inherit;}
+select{text-transform:none;}
+[role=button]{cursor:pointer;}
+select{word-wrap:normal;}
+select:disabled{opacity:1;}
+[type=submit]{-webkit-appearance:button;}
+::-moz-focus-inner{padding:0;border-style:none;}
+.img-thumbnail{padding:.25rem;background-color:#fff;border:1px solid #dee2e6;border-radius:.25rem;max-width:100%;height:auto;}
+
+
