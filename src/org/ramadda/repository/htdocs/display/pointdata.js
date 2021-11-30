@@ -1714,9 +1714,20 @@ function RecordFilter(display,filterFieldId, properties) {
 		    });
 		}
 		this.selectedTags = [];
-		console.dir(prop)
-		prop.values.forEach(value=>{
-		    this.toggleTag(value,true);
+		let values = prop.values?prop.values:null;
+		if(!values) {
+		    if(prop.value) {
+			if(Array.isArray(prop.value)) values= prop.value;
+			else values[prop.value];
+		    } else {
+			values=[];
+		    }
+		}
+
+		prop.value.forEach(value=>{
+		    if(value) {
+			this.toggleTag(value,true);
+		    }
 		});
 		return;
 	    }
