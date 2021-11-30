@@ -382,7 +382,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    }
 	    args = args || {};
             SUPER.updateUI.call(this, args);
-	    console.log(this.type +".updateUI: ready");
+//	    console.log(this.type +".updateUI: ready");
 	    this.updateUIInner(args);
 	},
 	updateUIInner: function(args) {

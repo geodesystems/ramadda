@@ -39,6 +39,9 @@
 	 <arg value="releasing version ${version}"/>
 	 <arg value="${basedir}/build.properties"/>
        </exec>       
+       <exec executable="git">
+	 <arg value="push"/>
+       </exec>
     </target>
       
     <target name="tag" depends="version">

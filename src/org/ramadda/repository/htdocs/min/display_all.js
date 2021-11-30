@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Nov 30 07:01:11 MST 2021";
+var build_date="RAMADDA build date: Tue Nov 30 07:11:01 MST 2021";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -16418,7 +16418,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    }
 	    args = args || {};
             SUPER.updateUI.call(this, args);
-	    console.log(this.type +".updateUI: ready");
+//	    console.log(this.type +".updateUI: ready");
 	    this.updateUIInner(args);
 	},
 	updateUIInner: function(args) {
