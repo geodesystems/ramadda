@@ -232,6 +232,7 @@ class  WikiEditor {
 	this.wikiInitDisplaysButton();
 
 	this.jq("previewbutton").click(()=>{
+	    HtmlUtils.hidePopupObject();
 	    this.doPreview(this.entryId);
 	});
     }
