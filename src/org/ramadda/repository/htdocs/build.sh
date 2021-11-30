@@ -67,6 +67,7 @@ ${dir}/lib/superfish/js/superfish.min.js \
 ${dir}/lib/jbreadcrumb/js/jquery.jBreadCrumb.1.1.min.js \
 ${dir}/lib/selectboxit/javascripts/jquery.selectBoxIt.min.js \
 ${dir}/lib/fancybox-3/jquery.fancybox.min.js \
+${dir}/lib/dom-drag.min.js \
 > ${dir}/min/jquery_lib_all.min.js
 
 
