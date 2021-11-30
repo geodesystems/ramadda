@@ -4,7 +4,6 @@
 
 const DISPLAY_GRAPH = "graph";
 const DISPLAY_TREE = "tree";
-const DISPLAY_ORGCHART = "orgchart";
 const DISPLAY_TIMELINE = "timeline";
 const DISPLAY_HOURS = "hours";
 const DISPLAY_BLANK = "blank";
@@ -142,15 +141,6 @@ addGlobalDisplayType({
     requiresData: false,
     category: CATEGORY_RADIAL_ETC,
     tooltip: makeDisplayTooltip(null,"tree.png")                                    
-});
-
-addGlobalDisplayType({
-    type: DISPLAY_ORGCHART,
-    label: "Org Chart",
-    requiresData: true,
-    forUser: true,
-    category: CATEGORY_RADIAL_ETC,
-    tooltip: makeDisplayTooltip(null,"orgchart.png")                                
 });
 
 addGlobalDisplayType({
@@ -525,75 +515,6 @@ function RamaddaTreeDisplay(displayManager, id, properties) {
 }
 
 
-
-function OrgchartDisplay(displayManager, id, properties) {
-    const ID_ORGCHART = "orgchart";
-    const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_ORGCHART, properties);
-    let myProps = [
-	{label:'Orgchart'},
-	{p:'labelField',ex:''},
-	{p:'parentField',ex:''},
-	{p:'idField',ex:''},
-	{p:'treeRoot',ex:'some label'},
-	{p:'treeTemplate',ex:''},
-	{p:'treeNodeSize',ex:'small|medium|large'}
-    ];
-    defineDisplay(addRamaddaDisplay(this), SUPER,myProps, {
-        handleEventRecordSelection: function(source, args) {},
-        needsData: function() {
-            return true;
-        },
-	updateUI: function() {
-	    if(!waitOnGoogleCharts(this, ()=>{
-		this.updateUI();
-	    })) {
-		return;
-	    }
-	    if(!ramaddaLoadGoogleChart(this,'orgchart')) return;
-            this.displayHtml(HU.div([ID,this.domId(ID_ORGCHART)],""));
-	    if(this.jq(ID_ORGCHART).length==0) {
-		setTimeout(()=>this.updateUI(),1000);
-		return;
-	    }
-	    let roots=null;
-	    try {
-		roots = this.makeTree();
-	    } catch(error) {
-		this.handleError("An error has occurred:" + error, error);
-		return;
-	    }
-	    if(roots==null) return;
-
-	    let data = new google.visualization.DataTable();
-            data.addColumn('string', 'Name');
-            data.addColumn('string', 'Parent');
-            data.addColumn('string', 'ToolTip');
-	    let rows = [];
-	    let cnt=0;
-	    let func = function(node) {
-		cnt++;
-		let value = node.label;
-		if(node.display) {
-		    value = {'v':node.label,f:node.display};
-		}
-		let row = [value, node.parent?node.parent.label:"",node.tooltip||""];
-		rows.push(row);
-		if(node.children.length>0) {
-		    node.children.map(func);
-		}
-		if(node.record) {
-		    //		    _this.countToRecord[cnt] = node.record;
-		}
-	    }
-	    roots.map(func);
-            data.addRows(rows);
-            let chart = new google.visualization.OrgChart(document.getElementById(this.domId(ID_ORGCHART)));
-            // Draw the chart, setting the allowHtml option to true for the tooltips.
-            chart.draw(data, {'allowHtml':true,'allowCollapse':true,
-			      'size':this.getProperty("treeNodeSize","medium")});
-	}
-    });
-}
 
 
 function RamaddaTimelineDisplay(displayManager, id, properties) {
