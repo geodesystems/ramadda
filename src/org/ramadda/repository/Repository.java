@@ -6039,7 +6039,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     public Result processBaseJs(Request request) throws Exception {
 	String js = getBaseJs(request);
-	System.err.println(js);
 	Result result =  new Result("base.js",js.getBytes(),"application/x-javascript");
         result.setCacheOk(false);
 	return result;
