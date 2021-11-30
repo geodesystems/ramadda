@@ -452,7 +452,7 @@ public class HtmlOutputHandler extends OutputHandler {
             String        target = request.getString(ATTR_TARGET, "");
             String        type   = request.getString(ARG_SELECTTYPE, "");
             entry.getTypeHandler().addToSelectMenu(request, entry, sb, type,
-                    target);
+						   target);
 
             return makeAjaxResult(request, sb.toString());
         }
@@ -972,6 +972,8 @@ public class HtmlOutputHandler extends OutputHandler {
                                List<Entry> subGroups, List<Entry> entries)
             throws Exception {
 
+	String        selectType   = request.getString(ARG_SELECTTYPE, "");
+	boolean isImage = Misc.equals(selectType,"image");
         String        localeId = request.getString(ARG_LOCALEID, null);
         String        target   = request.getString(ATTR_TARGET, "");
         StringBuilder sb       = new StringBuilder();
@@ -1028,6 +1030,9 @@ public class HtmlOutputHandler extends OutputHandler {
                 List    favoriteLinks = new ArrayList();
                 boolean didOne        = false;
                 for (Entry recent : recents) {
+		    if(isImage && !recent.isImage() && !recent.isGroup()) {
+			continue;
+		    }
                     String link = getSelectLink(request, recent, seen,
                                       target);
                     if (link.length() == 0) {
@@ -1104,6 +1109,9 @@ public class HtmlOutputHandler extends OutputHandler {
             if (Misc.equals(localeId, subGroup.getId())) {
                 continue;
             }
+	    if(isImage && !subGroup.isImage() && !subGroup.isGroup()) {
+		continue;
+	    }
             sb.append(getSelectLink(request, subGroup, seen, target));
         }
 
@@ -1116,6 +1124,9 @@ public class HtmlOutputHandler extends OutputHandler {
                         && !entry.getTypeHandler().isType(entryType)) {
                     continue;
                 }
+		if(isImage && !entry.isImage() && !entry.isGroup()) {
+		    continue;
+		}
                 sb.append(getSelectLink(request, entry, seen, target));
             }
         }

@@ -5970,6 +5970,18 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                                   HU.div(contents, "class='wiki-editor-popup'"),
 						  new NamedValue("linkAttributes", buttonClass));
 	};
+
+        String previewButton =
+	    HU.href("#", "Preview",
+		    HU.attrs("id", textAreaId+"_previewbutton", "xstyle", "padding:5px;",
+			     "xclass",
+			     "ramadda-menubar-button ramadda-menubar-button-last"))
+		    +   HU.div("",HU.attrs("id", textAreaId+"_preview", "class", "wiki-editor-preview"));
+
+
+	help.append(previewButton+"<div class=ramadda-thin-hr></div><b>Help</b><br>");
+
+
 	BiConsumer<String,String> makeHelp = (p,title)->{
 	    help.append(HU.href(getRepository().getUrlBase()
 				+ p, title,
@@ -5999,7 +6011,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         makeHelp.accept("/search/info#entrytypes", "Entry Types");
         makeHelp.accept("/search/info#metadatatypes", "Metadata Types");
         makeHelp.accept("/colortables", "Color Tables");
-        String helpButton = makeButton.apply("Help", help.toString());
+
+
+
+        String helpButton = makeButton.apply("Etc...", help.toString());
         String formattingButton = makeButton.apply("Formatting",
 						   HU.hbox(tags1, tags2,tags3,tags4));
 
@@ -6054,12 +6069,16 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                               "Entry ID", true, "entryid", entry, false,
                               buttonClass);
 
+        String addImage = OutputHandler.getSelect(request, textAreaId,
+                              "Insert Image", true, "image", entry, false,
+                              buttonClass);	
+
         String addLink = OutputHandler.getSelect(request, textAreaId,
-                             "Entry link", true, "wikilink", entry, false,
+                             "Entry Link", true, "wikilink", entry, false,
                              buttonClass);
 
         String fieldLink = OutputHandler.getSelect(request, textAreaId,
-                               "Field name", true, "fieldname", entry, false,
+                               "Field ID", true, "fieldname", entry, false,
                                buttonClass);
 
         HU.open(buttons, "div",
@@ -6073,7 +6092,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 							  new NamedValue("linkAttributes", buttonClass)));
         }
 
-        Utils.appendAll(buttons, displaysButton, addEntry, addLink,
+        Utils.appendAll(buttons, displaysButton, addEntry, addLink,addImage,
                         fieldLink);
 
         if (entry != null) {
@@ -6082,14 +6101,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
         buttons.append(helpButton);
-        String previewButton =
-            HU.href("#", "Preview",
-                HU.attrs("id", textAreaId+"_previewbutton", "style", "padding:5px;",
-			 "class",
-			 "ramadda-menubar-button ramadda-menubar-button-last")) +
-	    HU.div("",HU.attrs("id", textAreaId+"_preview", "class", "wiki-editor-preview"));
-
-        buttons.append(previewButton);
+	//        buttons.append(previewButton);
         HU.close(buttons, "div");
 
         return buttons.toString();
