@@ -471,6 +471,39 @@ var Utils =  {
         s = s.replace(pattern,ramaddaBaseUrl);
         return s;
     },
+    loadScriptInfo:{},
+    loadScript:function( url, callback, noCache ) {
+	let script = document.createElement( "script" )
+        let key = "js:" + url;
+	let info = Utils.loadScriptInfo[key];
+	if(!info) {
+	    info = Utils.loadScriptInfo[key] = {loaded:false,loading:false,callbacks:[]};
+	}
+        if (!noCache && info.loaded) {
+	    if(callback) callback();
+	    return true;
+	}
+	if(callback)
+	    info.callbacks.push(callback);
+	if(info.loading) return false;
+	info.loading = true;
+	script.type = "text/javascript";
+	if(script.readyState) {  // only required for IE <9
+	    script.onreadystatechange = function() {
+		if ( script.readyState === "loaded" || script.readyState === "complete" ) {
+		    script.onreadystatechange = null;
+		    info.callbacks.forEach(callback=>callback());
+		}
+	    };
+	} else {  //Others
+	    script.onload = function() {
+		info.callbacks.forEach(callback=>callback());
+	    };
+	}
+	info.callback=[];
+	script.src = url;
+	document.getElementsByTagName( "head" )[0].appendChild( script );
+    },
     importJS: async function(path, callback, err, noCache) {
         path =this.replaceRoot(path);
         let _this = this;
@@ -4333,24 +4366,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     classAttr: function(s) {
         return this.attr("class", s);
     },
-
-    loadedGoogleCharts: false,
-    googleChartsVersion:"51",
-    loadGoogleCharts: function() {
-        if (this.loadedGoogleCharts) {
-            return;
-        }
-        this.loadedGoogleCharts = true;
-        if(!window["google"]) {
-	    console.log("loadGoogleCharts: no google");
-	    return;
-	}
-//	let version = "current";
-        google.charts.load(this.googleChartsVersion, {
-            packages: ['corechart']
-        });
-    },
-
     makeExpandable:function(selector) {
 	let icon =HtmlUtils.getIconImage("fa-expand-arrows-alt");
         let id = HtmlUtils.getUniqueId();
