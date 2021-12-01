@@ -3271,13 +3271,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	args = args||{};
 	//check and wait for it
 	if(!$(selector).fancybox) {
-	    console.log("no fancybox yet");
 	    setTimeout(()=>{
 		HtmlUtils.createFancyBox(selector,args);
 	    },100);
 	    return
 	}
-	console.log("got fancybox");
         $(selector).fancybox(args);
     },
     checkToHidePopup:function() {

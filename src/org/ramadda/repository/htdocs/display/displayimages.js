@@ -636,6 +636,12 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 			}
 		    });
 		}
+	    } else {
+		HU.createFancyBox( this.jq(ID_RESULTS).find("a.popup_image"), {
+                    caption : function( instance, item ) {
+			return  $(this).data('data-caption') || '';
+                    }});
+		
 	    }
 	    this.jq(ID_PREV).button().click(()=>{
 		this.startIndex-=number;

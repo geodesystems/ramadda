@@ -9,25 +9,8 @@ RAMADDA_SRC=${mydir}/../
 #/Users/jeffmc/source/ramadda
 
 
-text="update"
-if [  "$1" ]; then
-    text="$1"
-fi
 
-target="release"
-if [  "$2" ]; then
-    target="$2"
-fi
-
-pushd ${RAMADDA_SRC}
-echo "making htdocs";
-${ANT_HOME} -S -buildfile ${RAMADDA_SRC}/src/org/ramadda/repository/build.xml htdocs
-echo "Pulling"
-git pull
-echo "commiting";
-git commit -m "${text}" -a
-echo "pushing";
-git push
+sh ${mydir}/doall.sh
 echo "building";
 sh ${mydir}/makerelease.sh ${GEODESYSTEMS_IP} ${target}
 popd
