@@ -149,7 +149,8 @@ public class Request implements Constants, Cloneable {
     private boolean sessionHasBeenHandled = false;
 
     private boolean canStreamResult = true;
-
+    
+    private boolean cloned = false;
     
     /**
      * ctor
@@ -261,6 +262,7 @@ public class Request implements Constants, Cloneable {
     public Request cloneMe(Repository repository) {
         try {
             Request that = (Request) super.clone();
+	    that.cloned = true;
 	    that.canStreamResult    =  false;
 	    that.printWriter        = this.printWriter;
             that.parameters         = (this.parameters != null)
@@ -1497,6 +1499,10 @@ public class Request implements Constants, Cloneable {
         }
     }
 
+
+    public boolean getCloned() {
+	return cloned;
+    }
 
     /**
        Set the CanStreamResult property.
