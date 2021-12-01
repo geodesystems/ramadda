@@ -766,7 +766,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                     String value = metadata.getAttr(element.getIndex());
                     if ((value != null) && value.startsWith("http")) {
                         sb.append(HtmlUtils.space(1));
-                        sb.append(HtmlUtils.img(value));
+                        sb.append(HtmlUtils.img(value,"",HU.attr("loading", "lazy")));
                         sb.append(HtmlUtils.space(1));
                     }
                 }
