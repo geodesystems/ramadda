@@ -526,7 +526,8 @@ public class HtmlOutputHandler extends OutputHandler {
             }
         }
 
-        StringBuilder sb        = new StringBuilder();
+	ResultHandler resultHandler = new ResultHandler(request, this,entry,  new State(entry));
+	Appendable sb = resultHandler.getAppendable();
         boolean       doingInfo = outputType.equals(OUTPUT_INFO);
         if (doingInfo) {
             getPageHandler().entrySectionOpen(request, entry, sb,
@@ -542,8 +543,9 @@ public class HtmlOutputHandler extends OutputHandler {
             handleDefaultWiki(request, entry, sb, null, null);
         }
 
-        return makeLinksResult(request, entry.getName(), sb,
-                               new State(entry));
+	resultHandler.finish();
+        return resultHandler.getResult();
+	//        return makeLinksResult(request, entry.getName(), sb, new State(entry));
     }
 
 
@@ -2018,26 +2020,15 @@ public class HtmlOutputHandler extends OutputHandler {
             }
         }
 
-        StringBuilder sb = new StringBuilder("");
+	ResultHandler resultHandler = new ResultHandler(request, this,group,  new State(group, subGroups, entries));
+	Appendable sb = resultHandler.getAppendable();
         request.appendMessage(sb);
-
         String prefix = request.getPrefixHtml();
         if (prefix != null) {
             sb.append(prefix);
         }
-
-
         boolean hasChildren = ((subGroups.size() != 0)
                                || (entries.size() != 0));
-
-
-        if (isSearchResults) {
-            if ( !hasChildren) {
-                //                sb.append(
-                //                    getPageHandler().showDialogNote(msg("No entries found")));
-            }
-        }
-
 
         String        wikiTemplate = null;
         StringBuilder suffix       = new StringBuilder();
@@ -2063,7 +2054,6 @@ public class HtmlOutputHandler extends OutputHandler {
                 }
             }
 
-            //            showNext(request, subGroups, entries, sb);
             List<Entry> allEntries = new ArrayList<Entry>();
             allEntries.addAll(subGroups);
             allEntries.addAll(entries);
@@ -2076,15 +2066,6 @@ public class HtmlOutputHandler extends OutputHandler {
             if (allEntries.size() > 0) {
                 getEntriesList(request, sb, allEntries, true,
                                group.isDummy(), true);
-            } else {
-
-                if ( !isSearchResults
-                        && !Utils.stringDefined(group.getDescription())) {
-                    /*                    sb.append(
-                        getPageHandler().showDialogNote(
-                            msg(LABEL_EMPTY_FOLDER)));
-                    */
-                }
             }
 
             if ( !group.isDummy() && (subGroups.size() == 0)
@@ -2110,18 +2091,9 @@ public class HtmlOutputHandler extends OutputHandler {
             sb.append(rsuffix);
         }
 
-        Result result = makeLinksResult(request, group.getName(), sb,
-                                        new State(group, subGroups, entries));
-
-        return result;
+	resultHandler.finish();
+        return resultHandler.getResult();
     }
-
-
-
-
-
-
-
 
 
     /**

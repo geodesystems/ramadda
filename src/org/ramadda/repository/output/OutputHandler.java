@@ -605,7 +605,6 @@ public class OutputHandler extends RepositoryManager {
             throws Exception {
         Result result = new Result(title, sb);
         addLinks(request, result, state);
-
         return result;
     }
 
@@ -2547,6 +2546,61 @@ public class OutputHandler extends RepositoryManager {
 
         return f;
     }
+
+
+    public static class ResultHandler {
+	private boolean newWay = true;
+	private Request request;
+	private Entry entry;
+	private	State state;
+	private Result result;
+	private	PrintWriter pw;
+	private Appendable sb;
+	private OutputHandler outputHandler;
+
+
+	public ResultHandler(Request request, OutputHandler outputHandler, Entry entry, State state) throws Exception {
+	    this.request = request;
+	    this.entry = entry;
+	    this.outputHandler = outputHandler;
+	    this.state = state;
+	    if(newWay) {
+		result = request.getOutputStreamResult(entry.getName(), "text/html");
+		sb = pw = new PrintWriter(request.getOutputStream());
+		request.setPrintWriter(pw);
+		outputHandler.getEntryManager().addEntryHeader(request, entry, result);
+		outputHandler.addLinks(request, result, state);
+		outputHandler.getPageHandler().decorateResult(request,
+							      result, sb, true, false);
+		pw.flush();
+	    } else {
+		sb = new StringBuilder("");
+	    }
+	}
+
+	public Appendable getAppendable() {
+	    return sb;
+	}
+
+	public Result getResult() {
+	    return result;
+	}
+
+	public void finish() throws Exception {
+	    if(newWay) {
+		outputHandler.getPageHandler().decorateResult(request,  result, sb, false, true);
+		if(pw!=null) {
+		    pw.flush();
+		}
+	    }  else {
+		result = outputHandler.makeLinksResult(request, entry.getName(), sb,state);
+		outputHandler.getEntryManager().addEntryHeader(request, entry, result);
+		outputHandler.getPageHandler().decorateResult(request,  result);
+	    }
+	}	    
+
+    }
+	
 
 
 
