@@ -784,7 +784,7 @@ public class PageHandler extends RepositoryManager {
             logoImage = myLogoImage;
         }
         if (logoImage == null) {
-            logoImage = "${root}/images/logo.png";
+            logoImage = "${cdnpath}/images/logo.png";
         }
         logoImage = applyBaseMacros(logoImage);
 
