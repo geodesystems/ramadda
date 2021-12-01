@@ -282,8 +282,8 @@ public class RepositoryServlet extends HttpServlet implements Constants {
         Result         repositoryResult = null;
         boolean        isHeadRequest    = request.getMethod().equals("HEAD");
         try {
-	    boolean debug = "/repository/entry/show".equals(request.getRequestURI()) ||
-		request.getRequestURI().indexOf("/repository/a")>=0;
+	    boolean debug = false;
+	    //	    boolean debug = "/repository/entry/show".equals(request.getRequestURI()) ||	request.getRequestURI().indexOf("/repository/a")>=0;
 	    long t1 = System.currentTimeMillis();
 	    long t2 = 0;
             try {
