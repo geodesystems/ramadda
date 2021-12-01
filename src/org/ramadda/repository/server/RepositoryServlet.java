@@ -282,9 +282,10 @@ public class RepositoryServlet extends HttpServlet implements Constants {
         Result         repositoryResult = null;
         boolean        isHeadRequest    = request.getMethod().equals("HEAD");
         try {
+	    boolean debug = "/repository/entry/show".equals(request.getRequestURI()) ||
+		request.getRequestURI().indexOf("/repository/a")>=0;
 	    long t1 = System.currentTimeMillis();
 	    long t2 = 0;
-	    long t3 = 0;	    
             try {
                 // create a org.ramadda.repository.Request object from the relevant info from the HttpServletRequest object
                 Request repositoryRequest = new Request(repository,
@@ -297,7 +298,6 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                 repositoryRequest.setFileUploads(handler.fileUploads);
                 repositoryRequest.setHttpHeaderArgs(handler.httpArgs);
                 // create a org.ramadda.repository.Result object and transpose the relevant info into a HttpServletResponse object
-		t2 = System.currentTimeMillis();
                 repositoryResult =
                     repository.handleRequest(repositoryRequest);
                 if (standAloneServer != null) {
@@ -320,7 +320,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                 return;
             }
 
-	    t3 = System.currentTimeMillis();
+	    t2 = System.currentTimeMillis();
             if (repositoryResult.getNeedToWrite()) {
                 List<String> args = repositoryResult.getHttpHeaderArgs();
                 if (args != null) {
@@ -338,13 +338,10 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                 }
 
                 if (repositoryResult.getCacheOk()) {
-                    //                    response.setHeader("Cache-Control",
-                    //                                       "public,max-age=259200");
-                    response.setHeader("Expires",
-                                       "Tue, 08 Jan 2025 07:41:19 GMT");
+                    //                    response.setHeader("Cache-Control",  "public,max-age=259200");
+                    response.setHeader("Expires", "Tue, 08 Jan 2028 07:41:19 GMT");
                     if (lastModified == null) {
-                        //                        response.setHeader("Last-Modified",
-                        //                                           "Tue, 20 Jan 2010 01:45:54 GMT");
+                        //response.setHeader("Last-Modified", "Tue, 20 Jan 2010 01:45:54 GMT");
                     }
                 } else {
                     response.setHeader("Cache-Control", "no-cache");
@@ -364,7 +361,6 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                     }
                 } else if (repositoryResult.getInputStream() != null) {
                     try {
-
                         response.setStatus(
                             repositoryResult.getResponseCode());
                         response.setContentType(
@@ -395,7 +391,9 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                             repositoryResult.getMimeType());
                         OutputStream output = response.getOutputStream();
                         try {
-                            output.write(repositoryResult.getContent());
+			    byte[] content = repositoryResult.getContent();
+			    if(debug) System.err.println("size:" + content.length);
+                            output.write(content);
                         } catch (java.net.SocketException se) {
                             //ignore
                         } catch (IOException se) {
@@ -407,9 +405,9 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                         logException(e, request);
                     }
                 }
-		long t4 = System.currentTimeMillis();		
-		if("/repository/entry/show".equals(request.getRequestURI())) {
-		    Utils.printTimes("Times:",t1,t2,t3,t4);
+		long t3 = System.currentTimeMillis();		
+		if(debug) {
+		    Utils.printTimes("Times:",t1,t2,t3);
 		}
             }
         } finally {
