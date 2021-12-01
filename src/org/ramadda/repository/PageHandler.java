@@ -479,6 +479,15 @@ public class PageHandler extends RepositoryManager {
     public String decorateResult(Request request, Result result,
                                  boolean prefix, boolean suffix)
             throws Exception {
+	StringBuilder sb =new StringBuilder();
+	if(!decorateResult(request, result, sb, prefix, suffix)) return null;
+	return  sb.toString();
+    }
+
+
+    public boolean decorateResult(Request request, Result result, Appendable sb,
+                                 boolean prefix, boolean suffix)
+	throws Exception {	
 
         boolean fullTemplate = prefix && suffix;
         //      Runtime.getRuntime().gc();
@@ -486,7 +495,7 @@ public class PageHandler extends RepositoryManager {
 
         long   t0   = System.currentTimeMillis();
         if ( !request.get(ARG_DECORATE, true)) {
-            return null;
+            return false;
         }
         Repository   repository     = getRepository();
         Entry        currentEntry = getSessionManager().getLastEntry(request);
@@ -657,7 +666,6 @@ public class PageHandler extends RepositoryManager {
             values.put(MACRO_FAVORITES, getFavorites(request, htmlTemplate));
         }
 
-        StringBuilder sb = new StringBuilder();
         //Toks are [html,macro,html,macro,...,html]
         List<String> templateToks;
         if (htmlTemplate.getWikify()) {
@@ -680,15 +688,12 @@ public class PageHandler extends RepositoryManager {
                 }
             }
         }
-        html = sb.toString();
-        html = translate(request, html);
-
-        /*
-        double mem2 = Utils.getUsedMemory();
-        System.err.println("PageDecorator memory:" +  Utils.decimals(mem2-mem1,1) +" length:" + html.length());
-        */
-        return html;
-
+	//
+	//Todo: don't support multiple languages for now
+	//        html = sb.toString();
+	//        html = translate(request, html);
+	//        return html;
+	return true;
     }
 
 
