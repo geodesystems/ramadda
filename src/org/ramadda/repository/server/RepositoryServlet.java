@@ -282,6 +282,9 @@ public class RepositoryServlet extends HttpServlet implements Constants {
         Result         repositoryResult = null;
         boolean        isHeadRequest    = request.getMethod().equals("HEAD");
         try {
+	    long t1 = System.currentTimeMillis();
+	    long t2 = 0;
+	    long t3 = 0;	    
             try {
                 // create a org.ramadda.repository.Request object from the relevant info from the HttpServletRequest object
                 Request repositoryRequest = new Request(repository,
@@ -294,6 +297,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                 repositoryRequest.setFileUploads(handler.fileUploads);
                 repositoryRequest.setHttpHeaderArgs(handler.httpArgs);
                 // create a org.ramadda.repository.Result object and transpose the relevant info into a HttpServletResponse object
+		t2 = System.currentTimeMillis();
                 repositoryResult =
                     repository.handleRequest(repositoryRequest);
                 if (standAloneServer != null) {
@@ -316,6 +320,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                 return;
             }
 
+	    t3 = System.currentTimeMillis();
             if (repositoryResult.getNeedToWrite()) {
                 List<String> args = repositoryResult.getHttpHeaderArgs();
                 if (args != null) {
@@ -347,7 +352,6 @@ public class RepositoryServlet extends HttpServlet implements Constants {
 
                 if (isHeadRequest) {
                     response.setStatus(repositoryResult.getResponseCode());
-
                     return;
                 }
 
@@ -403,6 +407,10 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                         logException(e, request);
                     }
                 }
+		long t4 = System.currentTimeMillis();		
+		if("/repository/entry/show".equals(request.getRequestURI())) {
+		    Utils.printTimes("Times:",t1,t2,t3,t4);
+		}
             }
         } finally {
             if ((repositoryResult != null)
