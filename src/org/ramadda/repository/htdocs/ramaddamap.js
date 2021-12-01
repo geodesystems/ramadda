@@ -1053,7 +1053,7 @@ RepositoryMap.prototype = {
 	    }
 //	    console.log(feature.geometry.CLASS_NAME +" draw:" + JSON.stringify(highlightStyle));
             layer.drawFeature(feature, highlightStyle);
-            if (this.displayDiv) {
+            if (this.params.displayDiv) {
                 this.displayedFeature = feature;
                 var callback = function() {
                     if (_this.displayedFeature == feature) {
@@ -1095,7 +1095,7 @@ RepositoryMap.prototype = {
         }
         this.dateFeatureOut(feature);
         if (!skipText && this.displayedFeature == feature && !this.fixedText) {
-	    if(!this.displayDivSticky) 
+	    if(!this.params.displayDivSticky) 
                 this.showText("");
         }
     },
@@ -1734,7 +1734,7 @@ RepositoryMap.prototype = {
 
             } else {
                 this.clearDateFeature();
-		if(!this.displayDivSticky) 
+		if(!this.params.displayDivSticky) 
 		    this.showText("");
             }
         }
@@ -2201,7 +2201,7 @@ RepositoryMap.prototype = {
                 if (loadCallback) {
                     loadCallback(_this, layer);
                 }
-                if (layer.features.length == 1 && _this.displayDiv) {
+                if (layer.features.length == 1 && _this.params.displayDiv) {
                     _this.fixedText = true;
                     _this.showText(_this.getFeatureText(layer, layer.features[0]));
                 }
@@ -3533,8 +3533,8 @@ RepositoryMap.prototype = {
 
 
     onPopupClose:  function(evt) {
-	if(this.displayDiv) {
-	    $("#" + this.displayDiv).html("");
+	if(this.params.displayDiv) {
+	    $("#" + this.params.displayDiv).html("");
 	}
         if (this.currentPopup) {
             this.getMap().removePopup(this.currentPopup);
@@ -4083,7 +4083,7 @@ RepositoryMap.prototype = {
 	    this.featureHighlightHandler(feature,true);
 	}
         let _this = this;
-        if (feature.text && this.displayDiv) {
+        if (feature.text && this.params.displayDiv) {
             this.textFeature = feature;
             let callback = function() {
                 if (_this.textFeature == feature) {
@@ -4095,14 +4095,14 @@ RepositoryMap.prototype = {
     },
 
     showText:  function(text) {
-        $("#" + this.displayDiv).html(text);
+        $("#" + this.params.displayDiv).html(text);
     },
 
     hideFeatureText:  function(feature) {
 	if(this.featureHighlightHandler)
 	    this.featureHighlightHandler(feature,false);
         if (!feature || this.textFeature == feature) {
-	    if(!this.displayDivSticky) 
+	    if(!this.params.displayDivSticky) 
                 this.showText("");
         }
     },
@@ -4391,8 +4391,9 @@ RepositoryMap.prototype = {
 	    markerText =marker.text;
 	}
 	if(!markerText) return;
-	if(this.displayDiv) {
-	    $("#" + this.displayDiv).html(markerText);
+	if(this.params.displayDiv) {
+	    $("#" + this.params.displayDiv).html(markerText);
+	    return;
 	}
 
         if (fromClick && marker.locationKey != null) {
