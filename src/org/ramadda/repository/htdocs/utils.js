@@ -3265,14 +3265,12 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    let url =   ramaddaCdn +"/lib/fancybox-3/jquery.fancybox.min.js";
 	    let html = 
 		"<script src='" + url +"'  type=text/JavaScript></script>";
-	    console.log("appending fancy box")
 	    $(html).appendTo("head");
 	    HtmlUtils.loadedFancyBox = true;
-	    console.log("done ...");
 	}
 	args = args||{};
 	//check and wait for it
-	if(!("body").fancybox) {
+	if(!$(selector).fancybox) {
 	    console.log("no fancybox yet");
 	    setTimeout(()=>{
 		HtmlUtils.createFancyBox(selector,args);
