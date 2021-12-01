@@ -2564,9 +2564,10 @@ public class OutputHandler extends RepositoryManager {
 	    this.entry = entry;
 	    this.outputHandler = outputHandler;
 	    this.state = state;
-	    if(newWay) {
+	    OutputStream outputStream  = request.getOutputStream();
+	    if(newWay && outputStream!=null) {
 		result = request.getOutputStreamResult(entry.getName(), "text/html");
-		sb = pw = new PrintWriter(request.getOutputStream());
+		sb = pw = new PrintWriter(outputStream);
 		request.setPrintWriter(pw);
 		outputHandler.getEntryManager().addEntryHeader(request, entry, result);
 		outputHandler.addLinks(request, result, state);
