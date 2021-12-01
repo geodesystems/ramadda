@@ -3256,6 +3256,23 @@ var SPACE4 = "&nbsp;&nbsp;&nbsp;&nbsp;";
 
 var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     me:"HtmlUtils",
+
+    loadedFancyBox:false,
+    createFancyBox: function(selector, args) {
+	if(!HtmlUtils.loadedFancyBox) {
+	    let css = "<link rel='stylesheet' href='" +ramaddaCdn +"/lib/fancybox-3/jquery.fancybox.min.css" +"' crossorigin='anonymous'>";
+	    $(css).appendTo("head");
+	    let url =   ramaddaCdn +"/lib/fancybox-3/jquery.fancybox.min.js";
+	    let html = 
+		"<script src='" + url +"'  type=text/JavaScript></script>";
+	    console.log("appending fancy box")
+	    $(html).appendTo("head");
+	    HtmlUtils.loadedFancyBox = true;
+	    console.log("done ...");
+	}
+	args = args||{};
+        $(selector).fancybox(args);
+    },
     checkToHidePopup:function() {
 	if (this.popupTime) {
             var now = new Date();
