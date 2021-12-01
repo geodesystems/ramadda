@@ -3271,6 +3271,15 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    console.log("done ...");
 	}
 	args = args||{};
+	//check and wait for it
+	if(!("body").fancybox) {
+	    console.log("no fancybox yet");
+	    setTimeout(()=>{
+		HtmlUtils.createFancyBox(selector,args);
+	    },100);
+	    return
+	}
+	console.log("got fancybox");
         $(selector).fancybox(args);
     },
     checkToHidePopup:function() {
