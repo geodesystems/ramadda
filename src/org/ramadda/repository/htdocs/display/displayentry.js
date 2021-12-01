@@ -1873,7 +1873,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
             this.addEntrySelect();
             this.getDisplayManager().handleEventEntriesChanged(this, entries);
 	    if(this.galleryId) {
-	    	$("#" + this.galleryId).find("a.popup_image").fancybox({helpers:{title:{type:'over'}}});
+		HU.createFancyBox($("#" + this.galleryId).find("a.popup_image"),{helpers:{title:{type:'over'}}});
 	    }
 	    let tabbed = (event,ui)=>{
 		this.activeTabIndex = ui.newTab.index();

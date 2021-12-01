@@ -368,7 +368,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             let topHtml = HU.div([CLASS,"display-cards-header"],"Total" +" (" + total+")");
             topHtml+=this.makeGroupHtml(topGroup, topGroup);
             this.writeHtml(ID_RESULTS, topHtml);
-            this.jq(ID_RESULTS).find("a.display-cards-popup").fancybox({
+	    HU.createFancyBox( this.jq(ID_RESULTS).find("a.display-cards-popup"), {
                 caption : function( instance, item ) {
                     return  $(this).data('caption') || '';
                 }});

@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Nov 30 20:13:56 MST 2021";
+var build_date="RAMADDA build date: Tue Nov 30 21:42:36 MST 2021";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -20552,7 +20552,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             let topHtml = HU.div([CLASS,"display-cards-header"],"Total" +" (" + total+")");
             topHtml+=this.makeGroupHtml(topGroup, topGroup);
             this.writeHtml(ID_RESULTS, topHtml);
-            this.jq(ID_RESULTS).find("a.display-cards-popup").fancybox({
+	    HU.createFancyBox( this.jq(ID_RESULTS).find("a.display-cards-popup"), {
                 caption : function( instance, item ) {
                     return  $(this).data('caption') || '';
                 }});
@@ -30742,7 +30742,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
             this.addEntrySelect();
             this.getDisplayManager().handleEventEntriesChanged(this, entries);
 	    if(this.galleryId) {
-	    	$("#" + this.galleryId).find("a.popup_image").fancybox({helpers:{title:{type:'over'}}});
+		HU.createFancyBox($("#" + this.galleryId).find("a.popup_image"),{helpers:{title:{type:'over'}}});
 	    }
 	    let tabbed = (event,ui)=>{
 		this.activeTabIndex = ui.newTab.index();

@@ -11,6 +11,19 @@
 dir=`dirname $0`
 cssminify="python -m jsmin "
 
+func() {
+ls -l  ${dir}/lib/datatables/src/jquery.dataTables.min.js 
+ls -l  ${dir}/lib/jquery/js/jquery.cookie.js 
+ls -l  ${dir}/lib/jquery.easing.1.3.min.js 
+ls -l  ${dir}/lib/jquery.ui.touch-punch.min.js 
+ls -l  ${dir}/lib/superfish/js/superfish.min.js 
+ls -l  ${dir}/lib/jbreadcrumb/js/jquery.jBreadCrumb.1.1.min.js 
+ls -l  ${dir}/lib/selectboxit/javascripts/jquery.selectBoxIt.min.js 
+ls -l  ${dir}/lib/dom-drag.min.js 
+}
+
+
+
 jsminify="terser --compress --mangle -- "
 #If you don't want to install terser then set jsminify to
 #jsminify="${cssminify}"
@@ -56,23 +69,25 @@ ${jsminify} ${dir}/tmp.js > ${dest}/ramadda_all.min.js
 rm ${dir}/tmp.js
 
 
+##Not needed for now
+#${dir}/lib/jquery.bt.min.js \
+#${dir}/lib/fancybox-3/jquery.fancybox.min.js \
+
 cat \
 ${dir}/now.txt \
 ${dir}/lib/datatables/src/jquery.dataTables.min.js \
 ${dir}/lib/jquery/js/jquery.cookie.js \
 ${dir}/lib/jquery.easing.1.3.min.js \
-${dir}/lib/jquery.bt.min.js \
 ${dir}/lib/jquery.ui.touch-punch.min.js \
 ${dir}/lib/superfish/js/superfish.min.js \
 ${dir}/lib/jbreadcrumb/js/jquery.jBreadCrumb.1.1.min.js \
 ${dir}/lib/selectboxit/javascripts/jquery.selectBoxIt.min.js \
-${dir}/lib/fancybox-3/jquery.fancybox.min.js \
 ${dir}/lib/dom-drag.min.js \
 > ${dir}/min/jquery_lib_all.min.js
 
 
+#    ${dir}/lib/fancybox-3/jquery.fancybox.min.css \
 cat \
     ${dir}/lib/superfish/css/superfish.css \
     ${dir}/lib/selectboxit/stylesheets/jquery.selectBoxIt.css \
-    ${dir}/lib/fancybox-3/jquery.fancybox.min.css \
     > ${dir}/min/lib_all.css
