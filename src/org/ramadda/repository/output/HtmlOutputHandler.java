@@ -2091,6 +2091,7 @@ public class HtmlOutputHandler extends OutputHandler {
             sb.append(rsuffix);
         }
 
+	System.err.println("calling resultHandler.finish");
 	resultHandler.finish();
         return resultHandler.getResult();
     }

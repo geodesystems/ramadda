@@ -2567,8 +2567,12 @@ public class OutputHandler extends RepositoryManager {
 	    newWay = outputHandler.getRepository().getProperty("ramadda.streamoutput",newWay);
 	    OutputStream outputStream  = request.getOutputStream();
 	    if(outputStream==null) newWay = false;
+	    System.err.println("ResultHandler newWay:" + newWay);
+
+
 	    if(newWay) {
 		result = request.getOutputStreamResult(entry.getName(), "text/html");
+		System.err.println("\tcreated result:" + result);
 		sb = pw = new PrintWriter(outputStream);
 		request.setPrintWriter(pw);
 		outputHandler.getEntryManager().addEntryHeader(request, entry, result);
@@ -2590,6 +2594,7 @@ public class OutputHandler extends RepositoryManager {
 	}
 
 	public void finish() throws Exception {
+	    System.err.println("finish:" + newWay);
 	    if(newWay) {
 		outputHandler.getPageHandler().decorateResult(request,  result, sb, false, true);
 		if(pw!=null) {
@@ -2597,6 +2602,7 @@ public class OutputHandler extends RepositoryManager {
 		}
 	    }  else {
 		result = outputHandler.makeLinksResult(request, entry.getName(), sb,state);
+		System.err.println("make links result:"+ result);
 		outputHandler.getEntryManager().addEntryHeader(request, entry, result);
 		//		outputHandler.getPageHandler().decorateResult(request,  result);
 	    }
