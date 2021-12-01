@@ -1643,7 +1643,6 @@ public class MetadataManager extends RepositoryManager {
             Result result = getRepository().makeErrorResult(request,
                                 "No entry");
             result.setResponseCode(Result.RESPONSE_NOTFOUND);
-
             return result;
         }
         List<Metadata> metadataList = getMetadata(entry);
@@ -1677,8 +1676,7 @@ public class MetadataManager extends RepositoryManager {
                                      metadata);
 
         long            t3      = System.currentTimeMillis();
-        result = getEntryManager().addEntryHeader(request,
-                request.getRootEntry(), result);
+	//        result = getEntryManager().addEntryHeader(request,     request.getRootEntry(), result);
         long t4 = System.currentTimeMillis();
 
         //        Utils.printTimes("metadata", t1,t2,t3,t4);
