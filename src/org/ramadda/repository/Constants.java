@@ -122,7 +122,9 @@ public interface Constants {
     public static final String ICON_ENTRY = "fas fa-info-circle";
 
     /** _more_ */
-    public static final String ICON_ENTRY_ADD = "/icons/fileadd.png";
+    //    public static final String ICON_ENTRY_ADD = "/icons/fileadd.png";
+    public static final String ICON_ENTRY_ADD = "fas fa-file-medical";
+
 
     /** _more_ */
     public static final String ICON_PUBLISH = "/icons/flag_green.png";
