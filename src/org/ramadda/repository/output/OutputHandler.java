@@ -2549,7 +2549,7 @@ public class OutputHandler extends RepositoryManager {
 
 
     public static class ResultHandler {
-	private boolean newWay = true;
+	private boolean newWay = false;
 	private Request request;
 	private Entry entry;
 	private	State state;
