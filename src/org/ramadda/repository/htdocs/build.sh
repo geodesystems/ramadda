@@ -64,7 +64,8 @@ cp ${dir}/display/display.css  ${dest}/display.min.css
 
 
 echo "minifying ramadda_all"
-cat ${dir}/now.txt ${dir}/utils.js ${dir}/ramadda.js ${dir}/entry.js ${dir}/wiki.js > ${dir}/tmp.js
+# ${dir}/wiki.js
+cat ${dir}/now.txt ${dir}/utils.js ${dir}/ramadda.js ${dir}/entry.js > ${dir}/tmp.js
 ${jsminify} ${dir}/tmp.js > ${dest}/ramadda_all.min.js
 rm ${dir}/tmp.js
 

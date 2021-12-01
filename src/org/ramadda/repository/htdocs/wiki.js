@@ -176,9 +176,7 @@ function insertTagsInner(id, txtarea, tagOpen, tagClose, sampleText) {
 
 }
 
-
 class  WikiEditor {
-
     constructor(entryId, formId, id, hidden,argOptions) {
 	this.entryId  = entryId;
 	this.ID_WIKI_PREVIEW = "preview";
@@ -918,9 +916,6 @@ class  WikiEditor {
 	});
 	
     }
-
-
-
 
     initAttributes() {
 	this.groupAttributes = [
