@@ -488,7 +488,7 @@ public class PageHandler extends RepositoryManager {
     public boolean decorateResult(Request request, Result result, Appendable sb,
 				  boolean prefix, boolean suffix)
 	throws Exception {	
-	System.err.println("decorateResult:" + Utils.getStack(10));
+	//	System.err.println("decorateResult:" + Utils.getStack(10));
 
         boolean fullTemplate = prefix && suffix;
         //      Runtime.getRuntime().gc();
