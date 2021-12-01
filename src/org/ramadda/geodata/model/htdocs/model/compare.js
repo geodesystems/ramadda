@@ -223,9 +223,10 @@ function CollectionForm(formId, plottype, args) {
                 // Enable the image popup
                 if (images.length > 0) {
                     $(document).ready(function() {
-                      $("a.popup_image").fancybox({
-                        'titleShow' : false
-                      });
+			HtmlUtils.createFancyBox(
+			    $("a.popup_image"), {
+				'titleShow' : false
+			    });
                     });
                 }
                 // Show GE plugin if we have KMZ
