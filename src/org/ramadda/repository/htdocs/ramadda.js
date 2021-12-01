@@ -571,7 +571,12 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
 
     this.handleClick = function(event) {
         let srcId = this.id + '_selectlink';
-        let src = $("#" + srcId);
+        let src = null;
+	if(event.target) {
+	    src = $(event.target);
+	}
+	if(src==null)
+	    src = $("#" + srcId);
 	if(src.length==0) {
 	    src = $("#" + this.id);
 	}

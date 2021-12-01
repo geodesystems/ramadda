@@ -1054,17 +1054,15 @@ public class OutputHandler extends RepositoryManager {
                                            ? ""
                                            : "_" + type);
         String event = getSelectEvent(request, elementId, allEntries,   type,  entry);
-        String link = label==null?"":HtmlUtils.mouseClickHref(event, label,
+        String link = label==null?"":HU.mouseClickHref(event, label,
 					       linkExtra
-					       + HtmlUtils.id(selectorId + "_selectlink"));
+					       + HU.id(selectorId + "_selectlink"));
         if (addClear) {
-	    String clearEvent = HtmlUtils.call("clearSelect",
-					       HtmlUtils.squote(selectorId));
+	    String clearEvent = HU.call("clearSelect", HU.squote(selectorId));
             link = link + " "
-		+ HtmlUtils.mouseClickHref(clearEvent, HU.getIconImage("fas fa-eraser"),
-					   HU.attr("title","Clear selection") +HtmlUtils.id(selectorId + "_selectlink"));
+		+ HU.mouseClickHref(clearEvent, HU.getIconImage("fas fa-eraser"),
+					   HU.attr("title","Clear selection") +HU.id(selectorId + "_selectlink"));
         }
-
         return link;
     }
 

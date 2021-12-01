@@ -10180,14 +10180,18 @@ public class EntryManager extends RepositoryManager {
         StringBuffer sb = new StringBuffer();
         String select =
             getRepository().getHtmlOutputHandler().getSelect(request,
-							     baseArg, "Select", true, null, entry);
+							     baseArg,  HU.span(HU.image("fas fa-hand-pointer"),HU.attr("title","Select")),
+							     true, null, entry);
+        String event = getRepository().getHtmlOutputHandler().getSelectEvent(request, baseArg, true,null,  entry);
+
         sb.append("\n");
         sb.append(HU.hidden(baseArg + "_hidden", value,
 			    HU.id(baseArg + "_hidden")));
         sb.append("\n");
         sb.append(HU.disabledInput(baseArg, ((theEntry != null)
 					     ? theEntry.getFullName()
-					     : ""), HU.id(baseArg) + HU.SIZE_60) + select);
+					     : ""), HU.onMouseClick(event) +
+				   HU.cssClass(HU.CLASS_DISABLEDINPUT+" ramadda-clickable") + HU.id(baseArg) + HU.SIZE_40) + select);
         sb.append("\n");
 
         return sb.toString();
