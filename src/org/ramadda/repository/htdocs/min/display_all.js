@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Nov 30 13:34:34 MST 2021";
+var build_date="RAMADDA build date: Tue Nov 30 17:34:53 MST 2021";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -6430,7 +6430,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    let allOk = true;
 		    let anyOk = false;		    
 		    this.filters.forEach(filter=>{
-			if(!filter.isEnabled()) return;
+			if(!filter.isEnabled()) {
+			    return;
+			}
 			let filterOk = filter.isRecordOk(record, rowIdx<5&&debug);
 			if(!filterOk) allOk = false;
 			else anyOk = true;
@@ -6455,7 +6457,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    if(debug)   console.log("filterData-2 #records:" + records.length);
 
-            var stride = parseInt(this.getProperty("stride", -1));
+            let stride = parseInt(this.getProperty("stride", -1));
             if (stride < 0) {
 		var maxSize = parseInt(this.getProperty("maxDisplayedPoints", -1));		
 		if(maxSize>0 && records.length>0) {
@@ -10490,11 +10492,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             };
         },
         applyFilters: function(record, values) {
-            for (var i = 0; i < this.filters.length; i++) {
-                if (!this.filters[i].isRecordOk(record)) {
+	    this.filters.forEach(filter=>{
+                if (!filter.isRecordOk(record)) {
                     return false;
                 }
-            }
+            });
             return true;
         }
     });
@@ -13184,6 +13186,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    return this.display.getPropertyFromUrl(key, dflt);
 	},	
 	prepareToFilter: function() {
+//	    console.log(this+" prepareToFilter");
 	    this.mySearch = null;
 	    if(this.depend) {
 		this.checkDependency();
@@ -13233,9 +13236,13 @@ function RecordFilter(display,filterFieldId, properties) {
 		    value = [date1,date2]; 
 	    }  else {
 		values = this.getFieldValues();
-		if(!values) return;
+		if(!values) {
+		    return;
+		}
 		if(!Array.isArray(values)) values = [values];
-		if(values.length==0) return;
+		if(values.length==0) {
+		    return;
+		}
 		values = values.map(v=>{
 		    return v.replace(/_comma_/g,",");
 		});
@@ -13267,14 +13274,11 @@ function RecordFilter(display,filterFieldId, properties) {
 	    let ok = true;
 	    if(!this.isEnabled() || !this.mySearch) {
 		if(debug) {
-		    if(!this.isEnabled())
-			console.log("\tfilter  not enabled");
-		    if(!this.mySearch)
-			console.log("\tfilter  no mySearch");
+		    if(!this.isEnabled())			console.log("\t"+ this+"  not enabled");
+		    if(!this.mySearch)			console.log("\t" + this+"  no mySearch");
 		}
 		return ok;
 	    }
-	    if(debug) console.log("\tfilter.isRecordOk:" + JSON.stringify(this.mySearch));
 	    let rowValue = this.getValue(record);
 	    if(this.ops) {
 		let op = this.ops[this.mySearch.index];
@@ -13292,8 +13296,6 @@ function RecordFilter(display,filterFieldId, properties) {
 			value=value.trim();
 			if(this.mySearch.values.includes(value)) ok = true;
 		    });
-//		    console.log(this.mySearch.values);
-		    
 		} else {
 		    ok = this.mySearch.values.includes(rowValue);
 		}
@@ -13349,8 +13351,10 @@ function RecordFilter(display,filterFieldId, properties) {
 	},
 
 	doTags:function() {
-	    if(!this.getProperty(this.getId()+".showFilterTags",true)) return false;
-	    let tags =  this.getProperty(this.getId()+".showFilterTags") || this.getProperty("showFilterTags");
+	    if(!this.getProperty(this.getId()+".showFilterTags",true)) {
+		return false;
+	    }
+	    let tags =  this.getProperty("showFilterTags");
 	    return tags;
 	},
 	doTagsColor:function() {
@@ -13362,6 +13366,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	getFieldValues: function() {
 	    if(this.isFieldEnumeration()) {
 		if(this.doTags()) {
+//		    console.log("\tselected tags: " + this.selectedTags);
 		    return this.selectedTags ||[];
 		}
 	    }

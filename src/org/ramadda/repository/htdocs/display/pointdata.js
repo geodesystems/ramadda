@@ -1390,6 +1390,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    return this.display.getPropertyFromUrl(key, dflt);
 	},	
 	prepareToFilter: function() {
+//	    console.log(this+" prepareToFilter");
 	    this.mySearch = null;
 	    if(this.depend) {
 		this.checkDependency();
@@ -1439,9 +1440,13 @@ function RecordFilter(display,filterFieldId, properties) {
 		    value = [date1,date2]; 
 	    }  else {
 		values = this.getFieldValues();
-		if(!values) return;
+		if(!values) {
+		    return;
+		}
 		if(!Array.isArray(values)) values = [values];
-		if(values.length==0) return;
+		if(values.length==0) {
+		    return;
+		}
 		values = values.map(v=>{
 		    return v.replace(/_comma_/g,",");
 		});
@@ -1473,14 +1478,11 @@ function RecordFilter(display,filterFieldId, properties) {
 	    let ok = true;
 	    if(!this.isEnabled() || !this.mySearch) {
 		if(debug) {
-		    if(!this.isEnabled())
-			console.log("\tfilter  not enabled");
-		    if(!this.mySearch)
-			console.log("\tfilter  no mySearch");
+		    if(!this.isEnabled())			console.log("\t"+ this+"  not enabled");
+		    if(!this.mySearch)			console.log("\t" + this+"  no mySearch");
 		}
 		return ok;
 	    }
-	    if(debug) console.log("\tfilter.isRecordOk:" + JSON.stringify(this.mySearch));
 	    let rowValue = this.getValue(record);
 	    if(this.ops) {
 		let op = this.ops[this.mySearch.index];
@@ -1498,8 +1500,6 @@ function RecordFilter(display,filterFieldId, properties) {
 			value=value.trim();
 			if(this.mySearch.values.includes(value)) ok = true;
 		    });
-//		    console.log(this.mySearch.values);
-		    
 		} else {
 		    ok = this.mySearch.values.includes(rowValue);
 		}
@@ -1555,8 +1555,10 @@ function RecordFilter(display,filterFieldId, properties) {
 	},
 
 	doTags:function() {
-	    if(!this.getProperty(this.getId()+".showFilterTags",true)) return false;
-	    let tags =  this.getProperty(this.getId()+".showFilterTags") || this.getProperty("showFilterTags");
+	    if(!this.getProperty(this.getId()+".showFilterTags",true)) {
+		return false;
+	    }
+	    let tags =  this.getProperty("showFilterTags");
 	    return tags;
 	},
 	doTagsColor:function() {
@@ -1568,6 +1570,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	getFieldValues: function() {
 	    if(this.isFieldEnumeration()) {
 		if(this.doTags()) {
+//		    console.log("\tselected tags: " + this.selectedTags);
 		    return this.selectedTags ||[];
 		}
 	    }

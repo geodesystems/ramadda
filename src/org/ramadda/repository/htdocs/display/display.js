@@ -3393,7 +3393,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    let allOk = true;
 		    let anyOk = false;		    
 		    this.filters.forEach(filter=>{
-			if(!filter.isEnabled()) return;
+			if(!filter.isEnabled()) {
+			    return;
+			}
 			let filterOk = filter.isRecordOk(record, rowIdx<5&&debug);
 			if(!filterOk) allOk = false;
 			else anyOk = true;
@@ -3418,7 +3420,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    if(debug)   console.log("filterData-2 #records:" + records.length);
 
-            var stride = parseInt(this.getProperty("stride", -1));
+            let stride = parseInt(this.getProperty("stride", -1));
             if (stride < 0) {
 		var maxSize = parseInt(this.getProperty("maxDisplayedPoints", -1));		
 		if(maxSize>0 && records.length>0) {
@@ -7453,11 +7455,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             };
         },
         applyFilters: function(record, values) {
-            for (var i = 0; i < this.filters.length; i++) {
-                if (!this.filters[i].isRecordOk(record)) {
+	    this.filters.forEach(filter=>{
+                if (!filter.isRecordOk(record)) {
                     return false;
                 }
-            }
+            });
             return true;
         }
     });
