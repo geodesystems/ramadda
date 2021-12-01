@@ -148,7 +148,9 @@ public class Request implements Constants, Cloneable {
     /** _more_ */
     private boolean sessionHasBeenHandled = false;
 
+    private boolean canStreamResult = true;
 
+    
     /**
      * ctor
      *
@@ -259,6 +261,7 @@ public class Request implements Constants, Cloneable {
     public Request cloneMe(Repository repository) {
         try {
             Request that = (Request) super.clone();
+	    that.canStreamResult    =  false;
 	    that.printWriter        = this.printWriter;
             that.parameters         = (this.parameters != null)
                                       ? new Hashtable(this.parameters)
@@ -1493,6 +1496,26 @@ public class Request implements Constants, Cloneable {
             throw new RuntimeException(ioe);
         }
     }
+
+
+    /**
+       Set the CanStreamResult property.
+
+       @param value The new value for CanStreamResult
+    **/
+    public void setCanStreamResult (boolean value) {
+	canStreamResult = value;
+    }
+
+    /**
+       Get the CanStreamResult property.
+
+       @return The CanStreamResult
+    **/
+    public boolean getCanStreamResult () {
+	return canStreamResult;
+    }
+
 
 
     /**

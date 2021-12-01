@@ -2138,12 +2138,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             myRequest.put(ARG_OUTPUT, OutputHandler.OUTPUT_HTML.getId());
             myRequest.put(ARG_EMBEDDED, "true");
 
-
             Result result = getEntryManager().processEntryShow(myRequest,
-                                entry);
+							       entry);
             //            Result result = getHtmlOutputHandler().getHtmlResult(newRequest,
             //                                OutputHandler.OUTPUT_HTML, entry);
-
             return new String(result.getContent());
         } else if (theTag.equals(WIKI_TAG_ZIPFILE)) {
 	    StringBuilder tmp = new StringBuilder();
