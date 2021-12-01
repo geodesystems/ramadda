@@ -4188,13 +4188,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             if (wikiUtil != null) {
                 wikiUtil.appendJavascript(
-                    "$(document).ready(function() {\n $(\"a.popup_image\").fancybox("
+					  "$(document).ready(function() {\n HU.createFancyBox($(\"a.popup_image\"),"
                     + options.toString() + ");\n });\n");
             } else {
                 buf.append(
                     HU.script(
-                        "$(document).ready(function() {\n $(\"a.popup_image\").fancybox("
-                        + options.toString() + ");\n });\n"));
+			      "$(document).ready(function() {\n HU.createFancyBox($(\"a.popup_image\"),"
+			      + options.toString() + ");\n });\n"));
             }
             request.putExtraProperty("added fancybox", "yes");
         }
