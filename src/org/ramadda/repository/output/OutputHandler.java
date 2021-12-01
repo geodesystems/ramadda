@@ -2565,7 +2565,8 @@ public class OutputHandler extends RepositoryManager {
 	    this.outputHandler = outputHandler;
 	    this.state = state;
 	    OutputStream outputStream  = request.getOutputStream();
-	    if(newWay && outputStream!=null) {
+	    if(outputStream==null) newWay = false;
+	    if(newWay) {
 		result = request.getOutputStreamResult(entry.getName(), "text/html");
 		sb = pw = new PrintWriter(outputStream);
 		request.setPrintWriter(pw);
