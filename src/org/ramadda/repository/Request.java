@@ -26,7 +26,7 @@ import ucar.unidata.util.WrapperException;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
-
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import java.util.Collections;
@@ -190,6 +190,7 @@ public class Request implements Constants, Cloneable {
         this.urlPath             = path;
         this.parameters          = new Hashtable();
         this.originalParameters  = new Hashtable();
+	this.printWriter         = that.printWriter;
         this.isMobile            = that.isMobile;
         this.isRobot             = that.isRobot;
         this.ip                  = that.ip;
@@ -258,6 +259,7 @@ public class Request implements Constants, Cloneable {
     public Request cloneMe(Repository repository) {
         try {
             Request that = (Request) super.clone();
+	    that.printWriter        = this.printWriter;
             that.parameters         = (this.parameters != null)
                                       ? new Hashtable(this.parameters)
                                       : new Hashtable();
@@ -1493,8 +1495,6 @@ public class Request implements Constants, Cloneable {
     }
 
 
-
-
     /**
      * _more_
      */
@@ -2722,6 +2722,12 @@ public class Request implements Constants, Cloneable {
      * @param s _more_
      */
     public synchronized void appendHead0(String s) {
+	if(printWriter!=null) {
+	    printWriter.append(s);
+	    return;
+	}
+
+
         StringBuilder head0 = (StringBuilder) getExtraProperty("head0");
         if (head0 == null) {
             head0 = new StringBuilder();
@@ -2746,7 +2752,19 @@ public class Request implements Constants, Cloneable {
     }
 
 
+    public void clearHead0() {
+	removeExtraProperty("head0");
+    }
 
+    public void clearHead() {
+	removeExtraProperty("head");
+    }    
+
+    private PrintWriter printWriter;
+
+    public void setPrintWriter(PrintWriter pw) {
+	printWriter = pw;
+    }
 
 
     /**
@@ -2755,6 +2773,10 @@ public class Request implements Constants, Cloneable {
      * @param s _more_
      */
     public synchronized void appendHead(String s) {
+	if(printWriter!=null) {
+	    printWriter.append(s);
+	    return;
+	}
         StringBuilder head = (StringBuilder) getExtraProperty("head");
         if (head == null) {
             head = new StringBuilder();
