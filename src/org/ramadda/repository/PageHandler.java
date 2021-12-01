@@ -552,6 +552,7 @@ public class PageHandler extends RepositoryManager {
         StringBuilder head    = new StringBuilder();
         if (request.getHead0() != null) {
             head.append(request.getHead0());
+	    request.clearHead0();
         }
 
         //make the request to base.js be unique every time so the browser does not cache it
@@ -561,6 +562,7 @@ public class PageHandler extends RepositoryManager {
         String head2 = request.getHead();
         if (head2 != null) {
             head.append(head2);
+	    request.clearHead();
         }
         if (request.get("ramadda.showjsonld", true) && showJsonLd
                 && (currentEntry != null)) {
