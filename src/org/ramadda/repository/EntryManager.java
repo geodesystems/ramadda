@@ -1079,8 +1079,11 @@ public class EntryManager extends RepositoryManager {
         if (entry == null) {
             return result;
         }
+	if(request.getCloned()) return result;
 	//Check if we've already done this
-	if(request.getExtraProperty("added entry header")!=null) return result;
+	if(request.getExtraProperty("added entry header")!=null) {
+	    return result;
+	}
 	request.putExtraProperty("added entry header","true");
 	//	System.err.println("addEntryHeader:" + Utils.getStack(10));
         if (Utils.stringUndefined(result.getTitle())) {
