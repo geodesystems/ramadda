@@ -903,15 +903,6 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result processEntryShow(Request request) throws Exception {
-	if(false) {
-	    return new Result("", new StringBuilder(
-						    getPageHandler().showDialogNote("There was a problem") +
-						    getPageHandler().showDialogQuestion("There was a problem","Buttons") +						    
-						    getPageHandler().showDialogWarning("There was a problem") +
-						    getPageHandler().showDialogError("There was a problem")));
-	}
-
-
         if (request.getCheckingAuthMethod()) {
             OutputHandler handler = getRepository().getOutputHandler(request);
             return new Result(handler.getAuthorizationMethod(request));
@@ -985,7 +976,6 @@ public class EntryManager extends RepositoryManager {
                 return new Result(request.getUrl());
             }
         }
-
 
         Result result = processEntryShow(request, entry);
         return addEntryHeader(request, entry, result);
@@ -1089,6 +1079,10 @@ public class EntryManager extends RepositoryManager {
         if (entry == null) {
             return result;
         }
+	//Check if we've already done this
+	if(request.getExtraProperty("added entry header")!=null) return result;
+	request.putExtraProperty("added entry header","true");
+	//	System.err.println("addEntryHeader:" + Utils.getStack(10));
         if (Utils.stringUndefined(result.getTitle())) {
             result.setTitle(entry.getTypeHandler().getEntryName(entry));
         }
