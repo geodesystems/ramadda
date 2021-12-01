@@ -2568,8 +2568,6 @@ public class OutputHandler extends RepositoryManager {
 	    OutputStream outputStream  = request.getOutputStream();
 	    if(outputStream==null || !request.getCanStreamResult()) newWay = false;
 	    System.err.println("ResultHandler newWay:" + newWay);
-
-
 	    if(newWay) {
 		result = request.getOutputStreamResult(entry.getName(), "text/html");
 		sb = pw = new PrintWriter(outputStream);
