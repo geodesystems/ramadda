@@ -2567,7 +2567,7 @@ public class OutputHandler extends RepositoryManager {
 	    newWay = outputHandler.getRepository().getProperty("ramadda.streamoutput",newWay);
 	    OutputStream outputStream  = request.getOutputStream();
 	    if(outputStream==null || !request.getCanStreamResult()) newWay = false;
-	    System.err.println("ResultHandler newWay:" + newWay);
+	    //	    System.err.println("ResultHandler newWay:" + newWay);
 	    if(newWay) {
 		result = request.getOutputStreamResult(entry.getName(), "text/html");
 		sb = pw = new PrintWriter(outputStream);
