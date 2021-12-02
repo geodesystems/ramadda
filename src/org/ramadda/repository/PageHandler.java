@@ -336,8 +336,8 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    public List<String> readWebResources(String resource) throws Exception {
-	List<String> result = new ArrayList<String>();
+    public List<String[]> readWebResources(String resource) throws Exception {
+	List<String[]> result = new ArrayList<String[]>();
 	List<String> files =
                 Utils.split(
 			    getStorageManager().readSystemResource(resource), "\n", true, true);
@@ -380,10 +380,29 @@ public class PageHandler extends RepositoryManager {
 	    if(nopreload) {
 		file = PREFIX_NOPRELOAD + file;
 	    }
-	    result.add(file);
+	    int intIdx = file.indexOf(":integrity:");
+	    if(intIdx>=0) {
+		String integrity=file.substring(intIdx+":integrity:".length());
+		file=file.substring(0,intIdx);		
+		result.add(new String[]{file,integrity});
+	    } else {
+		result.add(new String[]{file});
+	    }
 	}
 	return result;
     }	
+
+
+	
+
+
+
+    public void addJSImports(Appendable sb, String resourcePath) throws Exception {
+	for (String[] file : readWebResources(resourcePath)) {
+	    HU.importJS(sb,file[0],file.length>1?file[1]:null);
+	    sb.append("\n");
+	}
+    }
 
 
 
@@ -393,29 +412,17 @@ public class PageHandler extends RepositoryManager {
     private void initWebResources() {
         try {
 
-
-            StringBuilder jsImports = new StringBuilder();
-            for (String file : readWebResources("/org/ramadda/repository/resources/web/jsimports.html")) {
-		jsImports.append(HU.importJS(file).trim() + "\n");
-            }
-
-            StringBuilder cssImports = new StringBuilder();
-            for (String file : readWebResources("/org/ramadda/repository/resources/web/cssimports.html")) {
+            StringBuilder imports = new StringBuilder();
+	    addJSImports(imports, "/org/ramadda/repository/resources/web/jsimports.html");
+            for (String[] tuple : readWebResources("/org/ramadda/repository/resources/web/cssimports.html")) {
+		String file = tuple[0];
 		if(file.startsWith(PREFIX_NOPRELOAD)) {
-		    HU.cssLink(cssImports,file.substring(PREFIX_NOPRELOAD.length()));
+		    HU.cssLink(imports,file.substring(PREFIX_NOPRELOAD.length()));
 		} else {
-		    HU.cssPreloadLink(cssImports, file);
+		    HU.cssPreloadLink(imports, file);
 		}
-		/*
-		if(file.startsWith("preload:")) {
-		    HU.cssPreloadLink(cssImports, file.substring("preload:".length()));
-		} else {
-		    cssImports.append(HU.cssLink(file).trim() + "\n");
-		}
-		*/
             }
-            webImports = applyBaseMacros(cssImports.toString().trim() + "\n"
-                                         + jsImports.toString().trim() + "\n");
+            webImports = applyBaseMacros(imports.toString());
             webImports = IMPORTS_BEGIN + "\n" + webImports + "\n"
                          + IMPORTS_END + "\n";
         } catch (Exception exc) {
