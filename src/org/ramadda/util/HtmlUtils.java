@@ -4629,7 +4629,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static String importJS(String jsUrl) {
         StringBuilder sb = new StringBuilder("\n");
         importJS(sb, jsUrl);
-
         return sb.toString();
     }
 
@@ -4640,15 +4639,24 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @param jsUrl _more_
      */
     public static void importJS(Appendable sb, String jsUrl) {
-        try {
-            sb.append(tag(TAG_SCRIPT,
-                          attrs(ATTR_SRC, jsUrl, ATTR_TYPE,
-                                "text/JavaScript"), ""));
-        } catch (IOException ioe) {
-            throw new RuntimeException(ioe);
-        }
+	tag(sb, TAG_SCRIPT,
+	    attrs(ATTR_SRC, jsUrl, ATTR_TYPE,
+		  "text/JavaScript"), "");
     }
 
+    public static void importJS(Appendable sb, String jsUrl, String integrity) {
+	if(integrity==null) {
+	    importJS(sb,jsUrl);
+	    return;
+	}
+	tag(sb, TAG_SCRIPT,
+	    attrs(ATTR_SRC, jsUrl, ATTR_TYPE,
+		  "text/JavaScript",
+		  "referrerpolicy","no-referrer",
+		  "integrity",integrity,
+		  "crossorigin","anonymous"),"");
+    }
+    
 
     /**
      * _more_
