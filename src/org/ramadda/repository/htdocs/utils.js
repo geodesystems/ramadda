@@ -1869,7 +1869,10 @@ var Utils =  {
         else parent = parent + " ";
         //tableize
 	try {
-	    HtmlUtils.formatTable(parent + ".ramadda-table");
+	    let tables = $(parent + ".ramadda-table");
+	    if(tables.length) {
+		HtmlUtils.formatTable(tables);
+	    }
 	} catch (e) {
 	    console.log("Error formatting table:" + e);
 	    console.log(e.stack);
@@ -3257,26 +3260,35 @@ var SPACE4 = "&nbsp;&nbsp;&nbsp;&nbsp;";
 var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     me:"HtmlUtils",
 
-    loadedFancyBox:false,
-    createFancyBox: function(selector, args) {
-	if(!HtmlUtils.loadedFancyBox) {
-	    let css = "<link rel='stylesheet' href='" +ramaddaCdn +"/lib/fancybox-3/jquery.fancybox.min.css" +"' crossorigin='anonymous'>";
-	    $(css).appendTo("head");
-	    let url =   ramaddaCdn +"/lib/fancybox-3/jquery.fancybox.min.js";
-	    let html = 
-		"<script src='" + url +"'  type=text/JavaScript></script>";
-	    $(html).appendTo("head");
-	    HtmlUtils.loadedFancyBox = true;
+    loaded:{},
+    loadJqueryLib: function(name,css,js,selector,callback) {
+	if(!HtmlUtils.loaded[name]) {
+	    console.log('loading ' + name);
+	    css.forEach(url=>{
+		let css = "<link rel='stylesheet' href='" +url+ "' crossorigin='anonymous'>";
+		$(css).appendTo("head");
+	    });
+	    js.forEach(url=>{
+		let html = 
+		    "<script src='" + url +"'  type=text/JavaScript></script>";
+		$(html).appendTo("head");
+	    });
+	    HtmlUtils.loaded[name] = true;
 	}
-	args = args||{};
 	//check and wait for it
-	if(!$(selector).fancybox) {
+	if(!$(selector)[name]) {
 	    setTimeout(()=>{
-		HtmlUtils.createFancyBox(selector,args);
-	    },100);
+		HtmlUtils.loadJqueryLib(name,css,js,selector,callback);
+	    },50);
 	    return
 	}
-        $(selector).fancybox(args);
+	callback();
+    },
+    createFancyBox: function(selector, args) {
+	args = args||{};
+	HtmlUtils.loadJqueryLib('fancybox',[ramaddaCdn +"/lib/fancybox-3/jquery.fancybox.min.css"],
+				[ramaddaCdn +"/lib/fancybox-3/jquery.fancybox.min.js"],
+				selector,()=>{$(selector).fancybox(args);});
     },
     checkToHidePopup:function() {
 	if (this.popupTime) {
@@ -4065,42 +4077,45 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	});
     },
     formatTable: function(id, args) {
-	let table;
-        $(id).each(function() {
-            let options = {
-                paging: false,
-                ordering: false,
-                info: false,
-                searching: false,
-                scrollCollapse: true,
-		retrieve: true,
-		fixedHeader:false,
-            };
-            if (args)
-                $.extend(options, args);
-	    
-            let height = options.height || $(this).attr("table-height");
-            if (height)
-                options.scrollY = height;
-            let ordering = $(this).attr("table-ordering");
-            if (ordering)
-                options.ordering = (ordering == "true");
-            let searching = $(this).attr("table-searching");
-            if (searching)
-                options.searching = (searching == "true");
-            let paging = $(this).attr("table-paging");
-            if (paging)
-                options.paging = (paging == "true");
-            if (Utils.isDefined(options.scrollY)) {
-                let sh = "" + options.scrollY;
-                if (!sh.endsWith("px")) options.scrollY += "px";
-            }
-	    if($.fn.dataTable.isDataTable("#"+$(this).attr("id"))) {
-		return;
-	    }
-            table = $(this).DataTable(options);
-        });
-	return table;
+        let options = {
+            paging: false,
+            ordering: false,
+            info: false,
+            searching: false,
+            scrollCollapse: true,
+	    retrieve: true,
+	    fixedHeader:false,
+        };
+        if (args)
+            $.extend(options, args);
+	
+        let height = options.height || $(this).attr("table-height");
+        if (height)
+            options.scrollY = height;
+        let ordering = $(this).attr("table-ordering");
+        if (ordering)
+            options.ordering = (ordering == "true");
+        let searching = $(this).attr("table-searching");
+        if (searching)
+            options.searching = (searching == "true");
+        let paging = $(this).attr("table-paging");
+        if (paging)
+            options.paging = (paging == "true");
+        if (Utils.isDefined(options.scrollY)) {
+            let sh = "" + options.scrollY;
+            if (!sh.endsWith("px")) options.scrollY += "px";
+        }
+
+	HtmlUtils.loadJqueryLib('DataTable',[ramaddaCdn +"/lib/datatables/src/jquery.dataTables.min.css"],
+				[ramaddaCdn + "/lib/datatables/src/jquery.dataTables.min.js"],
+				id,()=>{
+				    $(id).each(function() {
+					if($.fn.dataTable.isDataTable("#"+$(this).attr("id"))) {
+					    return;
+					}
+					$(this).DataTable(options);
+				    });
+				});
     },
     th: function(attrs, inner) {
         return this.tag("th", attrs, inner);
@@ -4716,13 +4731,16 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return "<textarea " + HtmlUtils.attrs(attrs) + HtmlUtils.attrs(["name", name]) + ">" + value + "</textarea>";
     },
     initSelect: function(s) {
+	if(s.length==0) return;
 	let opts = {
 	    showEffect: "fadeIn",
 	    showEffectSpeed: 400,
 	    hideEffect: "fadeOut",
 	    hideEffectSpeed: 400,
 	};
-        $(s).selectBoxIt(opts);
+	HtmlUtils.loadJqueryLib('selectBoxIt',[ramaddaCdn +"/lib/selectboxit/stylesheets/jquery.selectBoxIt.css"],
+				[ramaddaCdn +"/lib/selectboxit/javascripts/jquery.selectBoxIt.min.js"],
+				s, ()=>{$(s).selectBoxIt(opts);});
     },
     valueDefined: function(value) {
         if (value != "" && value.indexOf("--") != 0) {
