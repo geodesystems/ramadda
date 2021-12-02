@@ -2454,7 +2454,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 buff.append(headerProp);
             }
             if (columns > 0) {
-                buff.append("<table width=100%><tr valign=top>\n");
+                buff.append("\n<table width=100%><tr valign=top>\n");
             }
             int    colCnt   = 0;
             String colWidth = null;
@@ -2527,7 +2527,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     }
                     buff.append(header);
                 } else if(headerTemplate != null) {
-		    header = headerTemplate.replace("${name}",theEntry.getName());
+		    header = headerTemplate.replace("${name}",theEntry.getName()).replace("${entryid}", theEntry.getId());
+
+		    header =  wikifyEntry(request, theEntry, header, false);
                     buff.append(header);
 		}
 		Entry  tmpEntry    = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
