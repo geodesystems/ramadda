@@ -1100,11 +1100,8 @@ a.ramadda-menubar-button:hover {
 
 
 .ramadda-draft {
-    pointer-events: none;
-    color:rgba(200,200,200,0.5);
-    font-size:120px;
-    transform:rotate(325deg);
-    -webkit-transform:rotate(325deg);
+    background: URL(images/draft.png);
+    xmin-height:400px;
 }
 
 .ramadda-splash-container {
