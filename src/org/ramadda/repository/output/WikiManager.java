@@ -7588,9 +7588,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     public String makeDisplayImports() {
         try {
             Appendable sb = Utils.makeAppendable();
-            for (String file : getPageHandler().readWebResources("/org/ramadda/repository/resources/web/wikijsimports.txt")) {
-		sb.append(HU.importJS(file).trim() + "\n");
-            }
+	    getPageHandler().addJSImports(sb, "/org/ramadda/repository/resources/web/wikijsimports.txt");
 
             if (getRepository().getMinifiedOk()) {
                 HU.importJS(sb, getPageHandler().getCdnPath("/min/display_all.min.js"));
