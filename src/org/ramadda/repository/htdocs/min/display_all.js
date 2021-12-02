@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Dec  2 07:36:51 MST 2021";
+var build_date="RAMADDA build date: Thu Dec  2 09:33:49 MST 2021";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -3617,7 +3617,7 @@ function DisplayThing(argId, argProperties) {
 		hideEffectSpeed: 400,
 	    };
 	    if(args) $.extend(opts,args);
-            selector.selectBoxIt(opts);
+            HtmlUtils.initSelect(selector,opts);
 	},
         writeHtml: function(idSuffix, html) {
             $("#" + this.getDomId(idSuffix)).html(html);
@@ -13447,7 +13447,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    };
 
 	    this.initDateWidget(inputFunc);
-//	    this.display.selectboxit($("#" + this.widgetId));
+	    //	HtmlUtils.initSelect($("#" + this.widgetId));
 	    if(this.tagCbxs) {
 		let _this = this;
 		let cbxChange = function() {
@@ -29497,11 +29497,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             });
 
 	    //Don't selectbox the orderby
-//	    this.selectboxit(this.jq(ID_SEARCH_ORDERBY));
+	    //	HtmlUtils.initSelect(this.jq(ID_SEARCH_ORDERBY));
 	    this.jq(ID_SEARCH_ORDERBY).change(()=>{	    
                 this.submitSearchForm();
 	    });
-            this.selectboxit(this.jq(ID_REPOSITORY));
+            HtmlUtils.initSelect(this.jq(ID_REPOSITORY));
             this.jq(ID_REPOSITORY).change(function() {
                 let v = theDisplay.jq(ID_REPOSITORY).val();
                 let ramadda = getRamadda(v);
@@ -30156,7 +30156,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    }
 	    if(!this.getShowTags()) {
 		$("#" + this.getMetadataFieldId(metadataType)).html(select);
-		this.selectboxit($("#" + this.getMetadataFieldId(metadataType)));
+		HtmlUtils.initSelect($("#" + this.getMetadataFieldId(metadataType)));
 	    } else {
 		let countId = this.getMetadataFieldId(metadataType)+"_count";
 		let wrapperId = this.getMetadataFieldId(metadataType)+"_wrapper";		
@@ -30217,7 +30217,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    return true;
 	},
 	typeTagClicked:function(type) {
-	    this.jq(ID_TYPE_FIELD).selectBoxIt('selectOption', type.getId());
+	    HtmlUtils.initSelect(this.jq(ID_TYPE_FIELD),{selectOption: type.getId()});
 	},	
 	metadataTagClicked:function(metadata) {
 	    if(!this.metadataBoxes[metadata.type] || !this.metadataBoxes[metadata.type][metadata.value.attr1]) {
@@ -30329,7 +30329,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		this.writeHtml(ID_TYPE_DIV, select);
 	    }
 	    
-            this.selectboxit(this.jq(ID_TYPE_FIELD),    { autoWidth: false,  "max-height":"100px"});
+            HtmlUtils.initSelect(this.jq(ID_TYPE_FIELD),    { autoWidth: false,  "max-height":"100px"});
             this.addExtraForm();
 	    if(hadSelected) {
 		this.submitSearchForm();
@@ -30465,7 +30465,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    $("#" + id).hide();
 	    });
 	    let menus = this.jq(ID_TYPEFIELDS).find(".display-searchmenu");
-	    this.selectboxit(menus);
+	    HtmlUtils.initSelect(menus);
 	    menus.change(()=>{
 		this.submitSearchForm();
 	    });
@@ -30531,7 +30531,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
             if (this.entryList != null && this.entryList.haveLoaded) {
                 this.entryListChanged(this.entryList);
             }
-            this.selectboxit(this.jq(ID_PROVIDERS),   { autoWidth: false,  "max-height":"100px"});
+            HtmlUtils.initSelect(this.jq(ID_PROVIDERS),   { autoWidth: false,  "max-height":"100px"});
             this.jq(ID_PROVIDERS).change(function() {
                 _this.providerChanged();
             });

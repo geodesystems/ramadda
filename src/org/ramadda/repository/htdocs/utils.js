@@ -4730,7 +4730,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     textarea: function(name, value, attrs) {
         return "<textarea " + HtmlUtils.attrs(attrs) + HtmlUtils.attrs(["name", name]) + ">" + value + "</textarea>";
     },
-    initSelect: function(s) {
+    initSelect: function(s, args) {
 	if(s.length==0) return;
 	let opts = {
 	    showEffect: "fadeIn",
@@ -4738,6 +4738,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    hideEffect: "fadeOut",
 	    hideEffectSpeed: 400,
 	};
+	if(args) $.extend(opts,args);
 	HtmlUtils.loadJqueryLib('selectBoxIt',[ramaddaCdn +"/lib/selectboxit/stylesheets/jquery.selectBoxIt.css"],
 				[ramaddaCdn +"/lib/selectboxit/javascripts/jquery.selectBoxIt.min.js"],
 				s, ()=>{$(s).selectBoxIt(opts);});

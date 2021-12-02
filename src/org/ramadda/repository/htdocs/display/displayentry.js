@@ -622,11 +622,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             });
 
 	    //Don't selectbox the orderby
-//	    this.selectboxit(this.jq(ID_SEARCH_ORDERBY));
+	    //	HtmlUtils.initSelect(this.jq(ID_SEARCH_ORDERBY));
 	    this.jq(ID_SEARCH_ORDERBY).change(()=>{	    
                 this.submitSearchForm();
 	    });
-            this.selectboxit(this.jq(ID_REPOSITORY));
+            HtmlUtils.initSelect(this.jq(ID_REPOSITORY));
             this.jq(ID_REPOSITORY).change(function() {
                 let v = theDisplay.jq(ID_REPOSITORY).val();
                 let ramadda = getRamadda(v);
@@ -1281,7 +1281,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    }
 	    if(!this.getShowTags()) {
 		$("#" + this.getMetadataFieldId(metadataType)).html(select);
-		this.selectboxit($("#" + this.getMetadataFieldId(metadataType)));
+		HtmlUtils.initSelect($("#" + this.getMetadataFieldId(metadataType)));
 	    } else {
 		let countId = this.getMetadataFieldId(metadataType)+"_count";
 		let wrapperId = this.getMetadataFieldId(metadataType)+"_wrapper";		
@@ -1342,7 +1342,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    return true;
 	},
 	typeTagClicked:function(type) {
-	    this.jq(ID_TYPE_FIELD).selectBoxIt('selectOption', type.getId());
+	    HtmlUtils.initSelect(this.jq(ID_TYPE_FIELD),{selectOption: type.getId()});
 	},	
 	metadataTagClicked:function(metadata) {
 	    if(!this.metadataBoxes[metadata.type] || !this.metadataBoxes[metadata.type][metadata.value.attr1]) {
@@ -1454,7 +1454,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		this.writeHtml(ID_TYPE_DIV, select);
 	    }
 	    
-            this.selectboxit(this.jq(ID_TYPE_FIELD),    { autoWidth: false,  "max-height":"100px"});
+            HtmlUtils.initSelect(this.jq(ID_TYPE_FIELD),    { autoWidth: false,  "max-height":"100px"});
             this.addExtraForm();
 	    if(hadSelected) {
 		this.submitSearchForm();
@@ -1590,7 +1590,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    $("#" + id).hide();
 	    });
 	    let menus = this.jq(ID_TYPEFIELDS).find(".display-searchmenu");
-	    this.selectboxit(menus);
+	    HtmlUtils.initSelect(menus);
 	    menus.change(()=>{
 		this.submitSearchForm();
 	    });
@@ -1656,7 +1656,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
             if (this.entryList != null && this.entryList.haveLoaded) {
                 this.entryListChanged(this.entryList);
             }
-            this.selectboxit(this.jq(ID_PROVIDERS),   { autoWidth: false,  "max-height":"100px"});
+            HtmlUtils.initSelect(this.jq(ID_PROVIDERS),   { autoWidth: false,  "max-height":"100px"});
             this.jq(ID_PROVIDERS).change(function() {
                 _this.providerChanged();
             });

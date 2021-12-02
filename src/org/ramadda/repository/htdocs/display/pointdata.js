@@ -1651,7 +1651,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    };
 
 	    this.initDateWidget(inputFunc);
-//	    this.display.selectboxit($("#" + this.widgetId));
+	    //	HtmlUtils.initSelect($("#" + this.widgetId));
 	    if(this.tagCbxs) {
 		let _this = this;
 		let cbxChange = function() {

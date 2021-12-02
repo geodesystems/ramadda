@@ -1165,7 +1165,7 @@ class  WikiEditor {
 		{p:'_template',ex:'',tt:'wiki text template. Escape { and } with backslash'},
 		{p:'_entries',ex:'entries',tt:'entries to apply to'},
 		{p:'_headers',ex:'comma separated headers'},
-		{p:'_headerTemplate',ex:'...${header}...'},
+		{p:'_headerTemplate',ex:':heading {{name link=true}}'},
 		{p:'_columns',ex:'number of columns'},
 		{p:'_width',ex:'200',tt:'Set the width and flow the blocks'},
 		{p:'_style',ex:'padding:10px;',tt:'Style for each block'},		

@@ -580,7 +580,7 @@ function DisplayThing(argId, argProperties) {
 		hideEffectSpeed: 400,
 	    };
 	    if(args) $.extend(opts,args);
-            selector.selectBoxIt(opts);
+            HtmlUtils.initSelect(selector,opts);
 	},
         writeHtml: function(idSuffix, html) {
             $("#" + this.getDomId(idSuffix)).html(html);
