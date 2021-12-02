@@ -2645,6 +2645,17 @@ public class WikiUtil {
                     continue;
                 }
 
+                if (tline.startsWith("+draft")) {
+                    buff.append("<div class=ramadda-draft>");
+                    continue;
+                }
+
+                if (tline.startsWith("-draft")) {
+                    buff.append("</div>");
+		    continue;
+		}
+
+
                 if (tline.startsWith(":anchor")) {
                     List<String> toks  = Utils.splitUpTo(tline, " ", 2);
                     String       label = (toks.size() > 1)
