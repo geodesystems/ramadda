@@ -4687,7 +4687,8 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
 
     public static void cssPreloadLink(Appendable sb, String url) throws IOException {
-	String template = "<link rel='preload' href='file.css' as='style' onload=\"this.onload=null;this.rel='stylesheet'\">\n<noscript><link rel='stylesheet' href='file.css'></noscript>\n";
+	String template = "<link rel='preload' href='file.css' as='style' onload=\"this.onload=null;this.rel='stylesheet'\">\n";
+	//\n<noscript><link rel='stylesheet' href='file.css'></noscript>\n";
 	sb.append(template.replace("file.css",url));
     }
 
