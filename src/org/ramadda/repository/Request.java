@@ -263,6 +263,7 @@ public class Request implements Constants, Cloneable {
         try {
             Request that = (Request) super.clone();
 	    that.cloned = true;
+	    that.pageStyle = null;
 	    that.canStreamResult    =  false;
 	    that.printWriter        = this.printWriter;
             that.parameters         = (this.parameters != null)
@@ -3001,9 +3002,8 @@ public class Request implements Constants, Cloneable {
     public PageStyle getPageStyle(Entry entry) {
         if (pageStyle == null) {
             pageStyle = repository.getPageHandler().doMakePageStyle(this,
-                    entry);
+								    entry);
         }
-
         return pageStyle;
     }
 
