@@ -521,9 +521,11 @@ public class PageHandler extends RepositoryManager {
             } else {
                 htmlTemplate = htmlTemplate.getSuffix();
             }
-        }
+        } 
+
 
         String template      = htmlTemplate.getTemplate();
+		
         String systemMessage = getRepository().getSystemMessage(request);
         String entryHeader = (String) result.getProperty(PROP_ENTRY_HEADER,
                                  (String) null);
@@ -1306,7 +1308,12 @@ public class PageHandler extends RepositoryManager {
 
                     template.setTemplate(
                         applyBaseMacros(template.getTemplate()));
-                    //              System.out.println("p: " + path + " " + template.getId()+ " " + template.getName());
+		    if(template.getPrefix()!=null)
+			template.getPrefix().setTemplate(applyBaseMacros(template.getPrefix().getTemplate()));
+		    if(template.getSuffix()!=null)
+			template.getSuffix().setTemplate(applyBaseMacros(template.getSuffix().getTemplate()));		    
+
+
                     //Check if we got some other ...template.html file from a plugin
                     if (template.getId() == null) {
                         System.err.println("template: no id in " + path);
@@ -1382,11 +1389,7 @@ public class PageHandler extends RepositoryManager {
             htmlTemplates   = theTemplates;
             //            }
         }
-
         return theTemplates;
-
-
-
     }
 
 
@@ -3651,14 +3654,17 @@ public class PageHandler extends RepositoryManager {
 		+ RepositoryUtil.getHtdocsVersion();	    
         }
 
+
         String root = getRepository().getUrlBase();
         String htdocsBase = makeHtdocsUrl("");
 
         s = s.replace("${ramadda.bootstrap.version}",bootstrapVersion);
         String now = htdocsBase + (new Date().getTime());
 
-        s = s.replace("${now}", now).replace(
-					     "${htdocs}", htdocsBase).replace("${cdnpath}", path).replace("${cdnlibpath}", libpath).replace(
+        s = s.replace("${now}", now);
+	s = s.replace("${htdocs}", htdocsBase);
+	s = s.replace("${cdnpath}", path);
+	s = s.replace("${cdnlibpath}", libpath).replace(
             "${root}", root).replace(
             "${baseentry}", getEntryManager().getRootEntry().getId()).replace(
             "${min}", mini).replace("${dotmin}", dotmini);
