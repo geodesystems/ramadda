@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Dec  2 20:55:35 MST 2021";
+var build_date="RAMADDA build date: Thu Dec  2 21:42:18 MST 2021";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -12216,7 +12216,7 @@ function PointData(name, recordFields, records, url, properties) {
 		} else {
 		    err = error;
 		}
-		console.log("Point data load error:" + (err?err:""));
+		console.log("Point data load error:" + url+" " + (err?err:""));
 		cacheObject.pending.map(display=>{
                     display.pointDataLoadFailed(err);
 		});
@@ -12314,7 +12314,6 @@ function PointData(name, recordFields, records, url, properties) {
 		fullUrl = base+fullUrl;
 	    }
 
-	    //            Utils.doFetch(url, success,fail,"json");
 	    //Handle the snapshot relative file
 	    if(!url.startsWith("/") && !url.startsWith("http")) {
 		let root = String(window.location).replace(/\/[^\/]+$/,"");

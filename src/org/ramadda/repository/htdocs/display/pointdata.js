@@ -420,7 +420,7 @@ function PointData(name, recordFields, records, url, properties) {
 		} else {
 		    err = error;
 		}
-		console.log("Point data load error:" + (err?err:""));
+		console.log("Point data load error:" + url+" " + (err?err:""));
 		cacheObject.pending.map(display=>{
                     display.pointDataLoadFailed(err);
 		});
@@ -518,7 +518,6 @@ function PointData(name, recordFields, records, url, properties) {
 		fullUrl = base+fullUrl;
 	    }
 
-	    //            Utils.doFetch(url, success,fail,"json");
 	    //Handle the snapshot relative file
 	    if(!url.startsWith("/") && !url.startsWith("http")) {
 		let root = String(window.location).replace(/\/[^\/]+$/,"");
