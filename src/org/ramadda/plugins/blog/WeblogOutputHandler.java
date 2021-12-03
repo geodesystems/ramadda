@@ -140,7 +140,7 @@ public class WeblogOutputHandler extends OutputHandler {
                 HtmlUtils.div(blogEntry, HtmlUtils.cssClass("blog-entry")));
         }
 
-        boolean embedded = request.get(ARG_EMBEDDED, false);
+        boolean embedded = request.isEmbedded();
 
         wrapContent(request, group, sb,
                     HtmlUtils.div(blogEntries.toString(),
@@ -168,7 +168,7 @@ public class WeblogOutputHandler extends OutputHandler {
             throws Exception {
         sb.append(HtmlUtils.cssLink(getRepository().getUrlBase()
                                     + "/blog/blogstyle.css"));
-        boolean embedded = request.get(ARG_EMBEDDED, false);
+        boolean embedded = request.isEmbedded();
         if (embedded) {
             sb.append(content);
 
@@ -268,7 +268,7 @@ public class WeblogOutputHandler extends OutputHandler {
      */
     public String getBlogEntry(Request request, Entry entry, boolean single)
             throws Exception {
-        boolean       embedded  = request.get(ARG_EMBEDDED, false);
+        boolean       embedded  = request.isEmbedded();
         StringBuilder blogEntry = new StringBuilder();
         String entryUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                            entry);

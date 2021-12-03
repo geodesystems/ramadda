@@ -127,7 +127,7 @@ public class BeforeAfterBase extends GenericTypeHandler {
         if ( !Utils.getProperty(props, "showLinks", false)) {
             return;
         }
-        if (request.get("embedded", false)) {
+        if (request.isEmbedded()) {
             return;
         }
 
@@ -404,7 +404,6 @@ public class BeforeAfterBase extends GenericTypeHandler {
             divs.append("</div>\n");
             String path = getRepository().getUrlBase() + "/beforeafter/";
             String args = "{";
-            //      args+="showFullLinks:" + (!request.get("embedded",false))+",\n";
             args += "showFullLinks:false,\n";
             args += "imagePath:'" + path + "'}";
             sb.append("\n");
