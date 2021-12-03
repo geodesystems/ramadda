@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Dec  3 11:17:00 MST 2021";
+var build_date="RAMADDA build date: Fri Dec  3 15:45:02 MST 2021";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -4764,7 +4764,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.colorList =  v;
 	    }
 	    if(!this.colorList || this.colorList.length==0) {
-		this.colorList= ['black','blue', 'red', 'green', 'orange', 'fuchsia', 'aqua',   'navy', 'brown','cadetblue','blueviolet','coral','cornflowerblue','darkcyan','darkgoldenrod','darkorange','darkseagreen'];
+		this.colorList= ['blue', 'red', 'green', 'orange', 'fuchsia', 'aqua',   'navy', 'brown','cadetblue','blueviolet','coral','cornflowerblue','darkcyan','darkgoldenrod','darkorange','darkseagreen'];
 	    }
 	    return this.colorList;
 	},
