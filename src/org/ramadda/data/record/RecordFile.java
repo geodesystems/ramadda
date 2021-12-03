@@ -1046,7 +1046,7 @@ public abstract class RecordFile {
                 visitorFinished(visitor, visitInfo);
             }
             long t2 = System.currentTimeMillis();
-            if (true || debug) {
+            if (debug) {
                 System.err.println("RECORD: # visited:" + cnt + " in time:"
                                    + (t2 - t1) + "ms");
             }
