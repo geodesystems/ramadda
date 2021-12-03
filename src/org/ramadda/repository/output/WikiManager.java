@@ -2136,7 +2136,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             Request myRequest = request.cloneMe();
             myRequest.put(ARG_ENTRYID, entry.getId());
             myRequest.put(ARG_OUTPUT, OutputHandler.OUTPUT_HTML.getId());
-            myRequest.put(ARG_EMBEDDED, "true");
+            myRequest.setEmbedded(true);
 
             Result result = getEntryManager().processEntryShow(myRequest,
 							       entry);
@@ -2553,7 +2553,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 			System.err.println("p6:" + _props.get("chartHeight"));
 			System.err.println("p7:" + firstProps.get("chartHeight"));
 		    }
-		    System.err.println("Wikify 2: " + theEntry);
                     buff.append(getWikiIncludeInner(wikiUtil, request,
 						    originalEntry, theEntry, tag, _props));
                 }
@@ -4279,8 +4278,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 newRequest.put(key, props.get(key));
             }
         }
-        newRequest.put(ARG_EMBEDDED, "true");
-
+	newRequest.setEmbedded(true);
         return newRequest;
     }
 
@@ -5716,7 +5714,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             OutputType outputType = handler.findOutputType(tag);
             myRequest.put(ARG_ENTRYID, importEntry.getId());
             myRequest.put(ARG_OUTPUT, outputType.getId());
-            myRequest.put(ARG_EMBEDDED, "true");
+	    myRequest.setEmbedded(true);
 
             Result result = getEntryManager().processEntryShow(myRequest,
                                 importEntry);
