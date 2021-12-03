@@ -583,7 +583,13 @@ function DisplayThing(argId, argProperties) {
             HtmlUtils.initSelect(selector,opts);
 	},
         writeHtml: function(idSuffix, html) {
-            $("#" + this.getDomId(idSuffix)).html(html);
+	    try {
+		$("#" + this.getDomId(idSuffix)).html(html);
+	    } catch(err) {
+		console.log("writeHtml error:" + err);
+		console.log("idSuffix:" + idSuffix);
+		console.log("html:" + html);
+	    }
         },
 	getTemplateProps: function(fields) {
 	    return {
