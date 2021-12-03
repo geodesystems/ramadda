@@ -1727,7 +1727,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.colorList =  v;
 	    }
 	    if(!this.colorList || this.colorList.length==0) {
-		this.colorList= ['black','blue', 'red', 'green', 'orange', 'fuchsia', 'aqua',   'navy', 'brown','cadetblue','blueviolet','coral','cornflowerblue','darkcyan','darkgoldenrod','darkorange','darkseagreen'];
+		this.colorList= ['blue', 'red', 'green', 'orange', 'fuchsia', 'aqua',   'navy', 'brown','cadetblue','blueviolet','coral','cornflowerblue','darkcyan','darkgoldenrod','darkorange','darkseagreen'];
 	    }
 	    return this.colorList;
 	},
