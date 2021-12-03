@@ -995,6 +995,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	{p:'colorCells',ex:'field1,field2'},
 	{p:'iconField'},
 	{p:'linkField'},
+        {p:'showBar',ex:'true',tt:'Default show bar'},
         {p:'&lt;field&gt;.showBar',ex:'true',tt:'Show bar'},
         {p:'&lt;field&gt;.barMin',ex:'0',tt:'Min value'},
         {p:'&lt;field&gt;.barMax',ex:'100',tt:'Max value'},
@@ -1244,18 +1245,20 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		    let color = null;
 		    let foreground="#000";
 		    let tdAttrs = [];
-		    let showBar = false;
+		    let showBar = this.getProperty("showBar",false);
 		    let barLabelInside = true;		    
 		    let barMin = 0;
 		    let barMax = 100;
 		    let barStyle = "";
 		    if(f.isFieldNumeric()) {
 			tdAttrs = ["align","right"];
-			showBar = this.getProperty(f.getId()+".showBar");
+			showBar = this.getProperty(f.getId()+".showBar",showBar);
 			barMin = this.getProperty(f.getId()+".barMin",barMin);
 			barMax = this.getProperty(f.getId()+".barMax",barMax);
 			barStyle = this.getProperty(f.getId()+".barStyle",this.getProperty("barStyle",barStyle));
 			barLabelInside = this.getProperty(f.getId()+".barLabelInside",this.getProperty("barLabelInside",barLabelInside));			
+		    } else {
+			showBar = false;
 		    }
 		    tdAttrs.push("class");
 		    tdAttrs.push("display-td");		    
