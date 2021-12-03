@@ -2063,7 +2063,7 @@ public class TypeHandler extends RepositoryManager {
         //Then initialize it, e.g., point data type will read the file and set the entry values, etc.
         initializeNewEntry(request, entry, false);
         Object[] values = getEntryValues(entry);
-        if (origColumns != null) {
+        if (origColumns != null && columns!=null) {
             for (int i = 0; i < origColumns.size(); i++) {
                 if (i >= columns.size()) {
                     break;
