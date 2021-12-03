@@ -1076,16 +1076,39 @@ public class EntryManager extends RepositoryManager {
      */
     public Result addEntryHeader(Request request, Entry entry, Result result)
 	throws Exception {
+
+	boolean debug = false;
         if (entry == null) {
             return result;
         }
-	if(request.getCloned()) return result;
-	//Check if we've already done this
+
+	if(request.getCloned()) {
+	    if(debug) System.err.println("addEntryHeader cloned:" + entry);
+	    return result;
+	}
+	if(request.isEmbedded()) {
+	    if(debug) System.err.println("addEntryHeader embedded:" + entry);
+	    return result;
+	}
+	String mime = result.getMimeType();
+	if(mime!=null && !mime.equals("text/html")) {
+	    if(debug) System.err.println("addEntryHeader don't need to write:" + entry +" " + request);
+	    //	    if(debug)  System.err.println(Utils.getStack(10));
+	    return result;
+	}
 	if(request.getExtraProperty("added entry header")!=null) {
+	    if(debug) {
+		System.err.println("addEntryHeader already added:" + entry);
+		//		System.err.println(Utils.getStack(10));
+	    }
 	    return result;
 	}
 	request.putExtraProperty("added entry header","true");
-	//	System.err.println("addEntryHeader:" + Utils.getStack(10));
+
+	if(debug)
+	    System.err.println("addEntryHeader:" + entry +" mime:" + result.getMimeType() +" " + request);
+	//	if(debug)   System.err.println(Utils.getStack(10));
+	
         if (Utils.stringUndefined(result.getTitle())) {
             result.setTitle(entry.getTypeHandler().getEntryName(entry));
         }
@@ -1160,7 +1183,7 @@ public class EntryManager extends RepositoryManager {
         if (true) {
             return;
         }
-        if ( !request.get(ARG_EMBEDDED, false)
+        if ( !request.isEmbedded()
 	     && (request.getString("output", null) == null)) {
             System.err.println("/entry " + entry.getName());
             System.err.println("https://" + request.getServerName() + ":"
@@ -1233,7 +1256,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Result processGroupShow(Request request,
+    private Result processGroupShow(Request request,
                                    OutputHandler outputHandler,
                                    OutputType outputType, Entry group)
 	throws Exception {
