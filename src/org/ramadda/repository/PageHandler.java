@@ -3495,7 +3495,7 @@ public class PageHandler extends RepositoryManager {
                                  String title, boolean showLine)
             throws Exception {
 
-        if (request.get(ARG_EMBEDDED, false)) {
+        if (request.isEmbedded()) {
             return;
         }
         sb.append(HU.sectionOpen(null, showLine));
@@ -3530,7 +3530,7 @@ public class PageHandler extends RepositoryManager {
      */
     public void entrySectionClose(Request request, Entry entry, Appendable sb)
             throws Exception {
-        if (request.get(ARG_EMBEDDED, false)) {
+        if (request.isEmbedded()) {
             return;
         }
         sb.append(HU.sectionClose());
