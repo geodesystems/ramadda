@@ -138,10 +138,16 @@ public abstract class TextFile extends PointFile {
     public RecordIO doMakeInputIO(VisitInfo visitInfo, boolean buffered)
             throws Exception {
         String file = getFilename();
-        if ((file != null) && file.endsWith(".xls")) {
+        if ((file != null) && file.toLowerCase().endsWith(".xls")) {
             return new RecordIO(
                 new BufferedReader(new StringReader(XlsUtil.xlsToCsv(file))));
         }
+
+        if ((file != null) && file.toLowerCase().endsWith(".xlsx")) {
+            return new RecordIO(
+                new BufferedReader(new StringReader(XlsUtil.xlsxToCsv(file))));
+        }	
+
 
         return super.doMakeInputIO(visitInfo, buffered);
     }
@@ -568,14 +574,16 @@ public abstract class TextFile extends PointFile {
                 String sampleLine = visitInfo.getRecordIO().readLine();
                 visitInfo.getRecordIO().putBackLine(sampleLine);
                 List<String> toks = Utils.tokenizeColumns(fieldsLine, delim);
-                //              System.err.println("LINE:" + fieldsLine);
+		System.err.println("LINE:" + fieldsLine);
                 List<String> sampleToks = Utils.tokenizeColumns(sampleLine,
                                               delim);
                 List<String> cleaned = new ArrayList<String>();
                 boolean      didDate = false;
+		System.err.println("TOKS:" + toks.size());
+		System.err.println("SAMPLE:" + sampleToks.size());
                 for (int tokIdx = 0; tokIdx < toks.size(); tokIdx++) {
                     String tok    = toks.get(tokIdx);
-                    String sample = sampleToks.get(tokIdx).toLowerCase();
+                    String sample = tokIdx<sampleToks.size()?sampleToks.get(tokIdx).toLowerCase():"";
                     tok = tok.replaceAll("\"", "");
                     String        name  = tok;
                     String        id    = Utils.makeID(tok);
