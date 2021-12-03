@@ -731,7 +731,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                        Clause.eq(COL_ID, entry.getId()),
                                        null);
         StringBuilder sb = new StringBuilder();
-        addStyleSheet(sb);
+        addStyleSheet(request, sb);
         makeTable(request, entry, valueList, false, sb, false, true);
 
 
@@ -965,7 +965,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             getPageHandler().entrySectionOpen(request, entry, name, sb, null,
                     false);
             //      sb.append(getWikiManager().wikifyEntry(request, entry, request.getString(ARG_DB_SEARCHDESC, "")));
-            addStyleSheet(sb);
+            addStyleSheet(request,sb);
             request.put(ARG_TEMPLATE, "empty");
 
             return;
@@ -982,14 +982,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                  false);
         if (doAnonForm) {
             if ( !getAccessManager().canEditEntry(request, entry)) {
-                addStyleSheet(sb);
+                addStyleSheet(request,sb);
 
                 return;
             }
         }
 
 
-        addStyleSheet(sb);
+        addStyleSheet(request,sb);
         boolean embedded = request.isEmbedded();
         if (embedded) {
             return;
@@ -3494,7 +3494,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             addViewHeader(request, entry, sb, VIEW_TABLE, valueList.size(),
                           fromSearch, null);
         } else {
-            addStyleSheet(sb);
+            addStyleSheet(request,sb);
         }
         boolean doGroupBy = isGroupBy(request);
         if (doGroupBy) {
@@ -3522,10 +3522,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      *
      * @throws Exception _more_
      */
-    protected void addStyleSheet(Appendable sb) throws Exception {
-        HtmlUtils.cssLink(sb,
-                          getPageHandler().makeHtdocsUrl("/db/dbstyle.css"));
-        HtmlUtils.importJS(sb, getPageHandler().makeHtdocsUrl("/db/db.js"));
+    protected void addStyleSheet(Request request, Appendable sb) throws Exception {
+	if(request.getExtraProperty("added dbjs")==null) {
+	    request.putExtraProperty("added dbjs","true");
+	    HtmlUtils.cssLink(sb,
+			      getPageHandler().makeHtdocsUrl("/db/dbstyle.css"));
+	    HtmlUtils.importJS(sb, getPageHandler().makeHtdocsUrl("/db/db.js"));
+	}
     }
 
     /**
@@ -5198,7 +5201,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             newRequest.put(ARG_DB_SHOWHEADER, "false");
             newRequest.setEmbedded(true);
             StringBuilder sb = new StringBuilder();
-            addStyleSheet(sb);
+            addStyleSheet(request,sb);
             String zoom = (String) props.get("zoomLevel");
             if (zoom != null) {
                 newRequest.put("zoomLevel", zoom);
