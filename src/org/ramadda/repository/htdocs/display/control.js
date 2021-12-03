@@ -508,16 +508,40 @@ function RamaddaLegendDisplay(displayManager, id, properties) {
 	{p:'inBox',ex:'true'},
 	{p:'labelColor',ex:'#fff'},
 	{p:'labelColors',ex:'color1,color2,...'},
+	{p:'labelField',ex:''},	
 	{p:'orientation',ex:'vertical'}
     ];
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+	getColorList:function() {
+	    if (this.getProperty("colorTable")) {
+		let ct =this.getColorTable();
+		return ct.colors;
+	    }	    
+	    return SUPER.getColorList.call(this);
+	},
+
 	needsData: function() {
-            return false;
+            return this.getProperty("labelField")!=null;
 	},
 	updateUI: function() {
 	    let labels = this.getProperty("labels","").split(",");
+            let labelField = this.getFieldById(null, this.getProperty("labelField"));
+	    if(labelField) {
+		let records = this.filterData();
+		if (!records) {
+                    this.setDisplayMessage(this.getLoadingMessage());
+                    return;
+		}
+		labels = [];
+		records.forEach(record=>{
+		    labels.push(labelField.getValue(record));
+		});
+	    }
+
+
 	    let colors = this.getColorList();
+	    console.dir(colors)
 	    let html = "";
 	    let colorWidth = this.getProperty("colorWidth","20px");
 	    let labelColor = this.getProperty("labelColor","#000");
@@ -526,6 +550,11 @@ function RamaddaLegendDisplay(displayManager, id, properties) {
 	    let orientation = this.getProperty("orientation","horizontal");
 	    let delim = orientation=="horizontal"?" ":"<br>";
 	    let circles = this.getCircles();
+
+
+
+
+
 	    for(let i=0;i<labels.length;i++) {
 		let label = labels[i];
 		let color = colors[i]||"#fff";
