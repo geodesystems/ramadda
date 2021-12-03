@@ -2598,7 +2598,7 @@ public class OutputHandler extends RepositoryManager {
 		}
 	    }  else {
 		result = outputHandler.makeLinksResult(request, entry.getName(), sb,state);
-		outputHandler.getEntryManager().addEntryHeader(request, entry, result);
+		//		outputHandler.getEntryManager().addEntryHeader(request, entry, result);
 		//		outputHandler.getPageHandler().decorateResult(request,  result);
 	    }
 	}	    
