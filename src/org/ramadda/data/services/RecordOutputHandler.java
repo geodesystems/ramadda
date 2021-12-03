@@ -719,8 +719,8 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
      */
     public Result getDummyResult() {
         Result result = new Result();
+	result.setMimeType("dummy");
         result.setNeedToWrite(false);
-
         return result;
     }
 
