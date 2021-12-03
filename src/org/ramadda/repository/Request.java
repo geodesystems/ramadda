@@ -152,6 +152,9 @@ public class Request implements Constants, Cloneable {
     
     private boolean cloned = false;
     
+    private boolean embedded = false;
+
+    
     /**
      * ctor
      *
@@ -1012,14 +1015,6 @@ public class Request implements Constants, Cloneable {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public boolean isEmbedded() {
-        return get(ARG_EMBEDDED, false);
-    }
 
 
     /**
@@ -1506,6 +1501,25 @@ public class Request implements Constants, Cloneable {
     }
 
     /**
+       Set the Embedded property.
+
+       @param value The new value for Embedded
+    **/
+    public void setEmbedded (boolean value) {
+	embedded = value;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public boolean isEmbedded() {
+        return embedded || get(ARG_EMBEDDED, false);
+    }
+
+    /**
        Set the CanStreamResult property.
 
        @param value The new value for CanStreamResult
@@ -1585,9 +1599,9 @@ public class Request implements Constants, Cloneable {
                 return;
             }
             getRepository().getLogManager().logError(
-                "Request.ensureAuthToken: authToken != sessionAuth :"
-                + "\n\tsession:" + mySessionId + "\n\tauth token:"
-                + authToken + "\n\tsession hashed:" + sessionAuth, null);
+						     "Request.ensureAuthToken: authToken != sessionAuth :"
+						     + "\n\tsession:" + mySessionId + "\n\tauth token:"
+						     + authToken + "\n\tsession hashed:" + sessionAuth, null);
         }
 
         //If we are publishing anonymously then don't look for a auth token
@@ -1597,8 +1611,8 @@ public class Request implements Constants, Cloneable {
 
 
         getRepository().getLogManager().logError(
-            "Request.ensureAuthToken: something null:" + "\n\tsession:"
-            + mySessionId + "\n\tauth token:" + authToken, null);
+						 "Request.ensureAuthToken: something null:" + "\n\tsession:"
+						 + mySessionId + "\n\tauth token:" + authToken, null);
 
         throw new IllegalArgumentException("Bad authentication token");
     }
@@ -1962,7 +1976,7 @@ public class Request implements Constants, Cloneable {
         }
         String llString = (String) getString(from, "").trim();
         if ((llString == null) || (llString.length() == 0)
-                || (llString.startsWith("${"))) {
+	    || (llString.startsWith("${"))) {
             return dflt;
         }
         double result = Utils.decodeLatLon(llString);
@@ -1990,7 +2004,7 @@ public class Request implements Constants, Cloneable {
         String llString = (String) getString(from, "").trim();
         //        System.err.println("\tllstring:" + llString);
         if ((llString == null) || (llString.length() == 0)
-                || (llString.startsWith("${"))) {
+	    || (llString.startsWith("${"))) {
             return dflt;
         }
 
@@ -2125,7 +2139,7 @@ public class Request implements Constants, Cloneable {
      * @throws java.text.ParseException On badness
      */
     public Date[] getDateRange(String from, String to, Date dflt)
-            throws java.text.ParseException {
+	throws java.text.ParseException {
         return getDateRange(from, to, ARG_RELATIVEDATE, dflt);
     }
 
@@ -2143,7 +2157,7 @@ public class Request implements Constants, Cloneable {
      */
     public Date[] getDateRange(String from, String to, String relativeArg,
                                Date dflt)
-            throws java.text.ParseException {
+	throws java.text.ParseException {
         String fromDate = "";
         String toDate   = "";
         if (defined(from) || defined(to)) {
@@ -2284,9 +2298,9 @@ public class Request implements Constants, Cloneable {
         //TODO: be smarter about this
         String ua = getUserAgent("").toLowerCase();
         isMobile = (ua.indexOf("iphone") >= 0)
-                   || (ua.indexOf("android") >= 0)
-                   || (ua.indexOf("mobile") >= 0)
-                   || (ua.indexOf("blackberry") >= 0);
+	    || (ua.indexOf("android") >= 0)
+	    || (ua.indexOf("mobile") >= 0)
+	    || (ua.indexOf("blackberry") >= 0);
         isRobot = checkForRobot();
     }
 
@@ -2923,7 +2937,7 @@ public class Request implements Constants, Cloneable {
      */
     public boolean responseAsJson() {
         return getString(ARG_RESPONSE, "").equals(RESPONSE_JSON)
-               || getString(ARG_OUTPUT).equals("json");
+	    || getString(ARG_OUTPUT).equals("json");
     }
 
     /**
@@ -3024,7 +3038,7 @@ public class Request implements Constants, Cloneable {
         OutputStream os = getHttpServletResponse().getOutputStream();
         InputStream fis =
             getRepository().getStorageManager().getFileInputStream(
-                file.toString());
+								   file.toString());
         IOUtil.writeTo(fis, os);
         IOUtil.close(os);
         IOUtil.close(fis);
@@ -3055,8 +3069,8 @@ public class Request implements Constants, Cloneable {
 
 
     /*
-       Makes a result where the caller will be writing directly to the
-       http output stream which is gotten by calling request.getOutputStream()
+      Makes a result where the caller will be writing directly to the
+      http output stream which is gotten by calling request.getOutputStream()
     */
 
     /**
@@ -3070,7 +3084,7 @@ public class Request implements Constants, Cloneable {
      * @throws Exception _more_
      */
     public Result getOutputStreamResult(String filename, String mimeType)
-            throws Exception {
+	throws Exception {
         getHttpServletResponse().setContentType(mimeType);
         setReturnFilename(filename);
         Result result = new Result(filename, (byte[]) null, mimeType);
@@ -3173,7 +3187,7 @@ public class Request implements Constants, Cloneable {
         for (String argPrefix : argPrefixes) {
             if (defined(argPrefix)) {
                 List<String> toks = Utils.split(getString(argPrefix, ""),
-                                        ",", true, true);
+						",", true, true);
                 //n,w,s,e
                 if (toks.size() == 4) {
                     for (int i = 0; i < 4; i++) {
