@@ -6641,8 +6641,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var msg = "";
 	    if(data && data.error) {
 		msg = data.error;
+		msg  = String(msg).replace(/</g,"&lt;").replace(/>/g,"&gt;");
 	    } else   if (data && data.errorcode && data.errorcode == "warning") {
                 msg = data.error;
+		msg  = String(msg).replace(/</g,"&lt;").replace(/>/g,"&gt;");
             } else {
                 msg = "<b>An error has occurred:</b>";
                 if (!data) data = this.getNoDataMessage();
