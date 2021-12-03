@@ -1527,9 +1527,19 @@ a.ramadda-menubar-button:hover {
 }
 
 .ramadda-frame-title a, .ramadda-frame-title a:hover  {
-    color:white;
+    color:white !important;
     text-decoration:none;
 }
+
+.inherit-color a {
+    color:inherit;
+}
+
+
+.ramadda-frame-title a:hover {
+}
+
+
 
 
 .ramadda-frame-shadow {
@@ -5063,12 +5073,6 @@ h3 a:visited {
     color:black;
 }
 
-.ramadda-frame-title a, .inherit-color a {
-    color:inherit;
-}
-
-.ramadda-frame-title a:hover {
-}
 
 @media print {
     .pagebreak {
