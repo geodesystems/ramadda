@@ -1594,11 +1594,12 @@ public class WikiUtil {
 		    Hashtable props = getProps.apply(tline);
 		    if (props.get("min") != null) {
 			divClass = "ramadda-tabs-min";
-		    } else if (props.get("center") != null) {
-			divClass = "ramadda-tabs-center";
 		    } else if (props.get("minarrow") != null) {
 			divClass =
 			    "ramadda-tabs-min ramadda-tabs-minarrow";
+		    }
+		    if (props.get("center") != null) {
+			divClass += " ramadda-tabs-center ";
 		    }
 		    if (props.get("transparent") != null) {
 			divClass += " ramadda-tabs-transparent ";
