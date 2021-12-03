@@ -190,7 +190,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag(WIKI_TAG_TOOLS),
                             new WikiTag(WIKI_TAG_TOOLBAR),
                             new WikiTag(WIKI_TAG_LAYOUT),
-                            new WikiTag(WIKI_TAG_MENU),
+			    new WikiTag(WIKI_TAG_MENU,null,"popup","true","ifUser","false"),
                             new WikiTag(WIKI_TAG_ENTRYID),
                             new WikiTag(WIKI_TAG_SEARCH,null,
                                         ATTR_TYPE, "", 
@@ -2324,6 +2324,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_MENU)) {
+	    boolean ifUser = getProperty(wikiUtil, props, "ifUser",false);
+	    if(ifUser && request.isAnonymous()) {
+		return "";
+	    }
+
             String menus = getProperty(wikiUtil, props, ATTR_MENUS, "");
             int type = OutputType.getTypeMask(Utils.split(menus, ",",
                            true, true));
@@ -2346,7 +2351,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 }
 		links =  HU.div(links,"class=wiki-popup-inner");
                 String menuLinkImg = HU.img(getRepository().getIconUrl(
-                                         "/icons/menu_arrow.gif"), msg(
+								       "fas fa-caret-down"), msg(
                                          "Click to show menu"), HU.cssClass(
                                          "ramadda-breadcrumbs-menu-img"));
 		String menuLink = HU.makePopup(popup, menuLinkImg, links);
