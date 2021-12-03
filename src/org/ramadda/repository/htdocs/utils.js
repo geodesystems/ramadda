@@ -3263,7 +3263,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     loaded:{},
     loadJqueryLib: function(name,css,js,selector,callback) {
 	if(!HtmlUtils.loaded[name]) {
-	    console.log('loading ' + name);
+//	    console.log('loading ' + name);
 	    css.forEach(url=>{
 		let css = "<link rel='stylesheet' href='" +url+ "' crossorigin='anonymous'>";
 		$(css).appendTo("head");
