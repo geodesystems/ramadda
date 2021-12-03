@@ -4663,6 +4663,12 @@ a.wiki-link-noexist {
     text-align: center; 
 } 
 
+
+.ramadda-tabs-center.ramadda-tabs-min .ui-tabs-nav { 
+    height: 2.25em;
+}
+
+
 .ramadda-tabs-center .ui-tabs-nav li { 
     display: inline-block; 
     float: none; 
