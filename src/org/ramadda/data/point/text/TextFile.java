@@ -579,8 +579,6 @@ public abstract class TextFile extends PointFile {
                                               delim);
                 List<String> cleaned = new ArrayList<String>();
                 boolean      didDate = false;
-		System.err.println("TOKS:" + toks.size());
-		System.err.println("SAMPLE:" + sampleToks.size());
                 for (int tokIdx = 0; tokIdx < toks.size(); tokIdx++) {
                     String tok    = toks.get(tokIdx);
                     String sample = tokIdx<sampleToks.size()?sampleToks.get(tokIdx).toLowerCase():"";
