@@ -37,6 +37,7 @@
       <api request="/entry/import"           method="processEntryImport" actions="new"/>
       <api request="/entry/export/*"         method="processEntryExport" />
       <api request="/entry/links"            method="processEntryLinks" />
+      <api request="/entry/menu"            method="processEntryMenu" />
       <api request="/entry/publish"        method="processEntryPublish"/>
       <api request="/entry/xmlcreate"        method="processEntryXmlCreate"/>
       <api request="/entry/*"                method="processEntryShowPath"        authmethod="httpauth"  />
