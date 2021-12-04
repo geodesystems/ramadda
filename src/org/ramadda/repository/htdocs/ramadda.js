@@ -810,3 +810,32 @@ let EntryTree = {
     }
 
 }
+
+
+
+var RamaddaUtils = {
+    contents:{},
+    showEntryPopup:function(id,entryId,label) {
+	let html = RamaddaUtils.contents[entryId];
+	if(html) {
+	    RamaddaUtils.showEntryPopupInner(id,entryId,label,html);
+	} else {
+	    let url = ramaddaBaseUrl +"/entry/menu?entryid=" + entryId;
+            $.ajax({
+                url: url,
+                dataType: 'text',
+                success: function(html) {
+		    RamaddaUtils.contents[entryId] = html;
+		    RamaddaUtils.showEntryPopupInner(id,entryId,label,html);
+                }
+            }).fail((jqxhr, settings, exc) => {
+                console.log("/entry/menu failed:" + exc);
+            });
+	}
+    },
+
+    showEntryPopupInner:function(id,entryId,label,html) {
+	let anchor = $("#" + id);
+	HU.makeDialog({content:html,my:"left top",at:"left bottom",title:label,anchor:anchor,draggable:true,header:true,inPlace:false});    
+    }
+}

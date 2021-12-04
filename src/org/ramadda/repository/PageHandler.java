@@ -2592,26 +2592,21 @@ public class PageHandler extends RepositoryManager {
 
 
         HtmlTemplate htmlTemplate = getPageHandler().getTemplate(request);
-        List<Link> linkList = getEntryManager().getEntryLinks(request, entry);
-
         String headerLabel =
             HU.href(getEntryManager().getEntryUrl(request, entry),
                     HU.img(getIconUrl(request, entry)) + " "
                     + getEntryDisplayName(entry));
 
-        String links = getEntryManager().getEntryActionsTable(request, entry,
-                           OutputType.TYPE_MENU, linkList, false, null);
-
-
         StringBuilder popup = new StringBuilder();
+	String menuId  = HU.getUniqueId("menulink");
         String menuLinkImg =
             HU.div(HU.img("fas fa-caret-down"),
+		   HU.attr("id",menuId) +
                    HU.attr("title", "Entry menu")
-                   + HU.cssClass("ramadda-breadcrumbs-menu-button"));
+                   + HU.cssClass("ramadda-breadcrumbs-menu-button ramadda-clickable"));
 
-        String menuLink = HU.makePopup(popup, menuLinkImg, links,
-                                       arg("title", headerLabel),
-                                       arg("header", true));
+	String menuLink = HU.span(menuLinkImg, HU.onMouseClick(HU.call("RamaddaUtils.showEntryPopup",HU.squote(menuId),HU.squote(entry.getId()),HU.squote(headerLabel))));
+
         List<Entry>  parents = getEntryManager().getParents(request, entry);
         List<String> titleList = new ArrayList();
         List<String> breadcrumbs = makeBreadcrumbList(request, parents,

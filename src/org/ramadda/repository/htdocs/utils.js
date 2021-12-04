@@ -2100,9 +2100,14 @@ var Utils =  {
 	    form+=HU.checkbox("popup_search_here",['name','ancestor', 'value',ramaddaThisEntry, TITLE,"Search under this entry"],false) +HU.tag("label",[CLASS,"ramadda-clickable", "for","popup_search_here"]," here" + SPACE);
 	}
 	form +="</form>";
+
 	let linksId = HU.getUniqueId();
-	let links =  HU.div(["id", linksId,STYLE,"text-align:right"],
-			    HU.link(ramaddaBaseUrl + '/search/form', 'Advanced', [TITLE, 'Go to form', STYLE,HU.css('color','#888','font-size','13px')]));
+	let links =  HU.div(["id", linksId,STYLE,HU.css('text-align','right','color','#888','font-size','13px')],
+			    HU.link(ramaddaBaseUrl + '/search/form', 'Search Form', [TITLE, 'Go to search form', STYLE,HU.css('color','#888','font-size','13px')])  +
+			    " | " +
+			    HU.link(ramaddaBaseUrl + '/search/type', 'By Type', [TITLE, 'Go to type form', STYLE,HU.css('color','#888','font-size','13px')]) +
+			    " | " +
+			    HU.link(ramaddaBaseUrl + '/search/browse', 'By Metadata', [TITLE, 'Go to metadata form', STYLE,HU.css('color','#888','font-size','13px')]));
 
 	let resultsId = HU.getUniqueId('searchresults');
 	let results = HU.div([ID,resultsId,CLASS,'ramadda-search-popup-results']);
