@@ -135,7 +135,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		if(glyph) {
 		    let styleMap = new OpenLayers.StyleMap({"default":{}});
 		    let tmpStyle = {};
-		    $.extend(tmpStyle,glyph.style);
+		    $.extend(tmpStyle,glyph.getStyle());
 		    if(glyph.isImage()) {
 			let url = prompt("Image URL:",this.lastImageUrl);
 			if(!url) return;
@@ -190,7 +190,12 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	pasteCount:0,
 	doPaste: function(evt) {
 	    if(!this.clipboard) return;
-	    let newOnes = this.clipboard.map(feature=>{return feature.clone();});
+	    let newOnes = this.clipboard.map(feature=>{
+		feature= feature.clone();
+		if(feature.style) {
+		    feature.style =$.extent({},feature.style);
+		}
+	    });
 	    for(let i=0;i<newOnes.length;i++) {
 		newOnes[i].type = this.clipboard[i].type;
 	    }
@@ -212,6 +217,8 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    }
 	    if(!feature) return;
 	    let style = feature.style;
+//	    style.fillColor="green";
+
 	    let html =HU.div([STYLE,HU.css("margin","8px")], "Feature: " + feature.type); 
 	    this.myLayer.redraw(feature);
 	    let apply = props=>{
@@ -665,10 +672,12 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    return;
 		}
 		let glyph = glyphMap?glyphMap[mapGlyph.type]:null;
-		let style = mapGlyph.style||(glyph?glyph.style:{});
+		let style = mapGlyph.style||(glyph?glyph.getStyle():{});
+		style = $.extend({},style);
 		if(style.label) {
 		    style.pointRadius=0
 		}
+		if(!style.fillColor) style.fillColor = "transparent";
 		let feature;
 		if(mapGlyph.points.length>1) {
 		    let points = [];
@@ -795,7 +804,9 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 
 		new GlyphType(this,"polyline", "Polyline",
 			     {strokeColor:this.getStrokeColor(),
-			      strokeWidth:this.getStrokeWidth()},
+			      strokeWidth:this.getStrokeWidth(),
+			      fillColor:"transparent",
+			      fillOpacity:1.0},
 			     OpenLayers.Handler.Path),
 		new GlyphType(this,"freehand","Freehand",
 			     {strokeColor:this.getStrokeColor(),
@@ -1076,24 +1087,27 @@ var GlyphType = function(display,type,label,style,handler,options) {
     this.display = display;
     this.label = label;
     this.type = type;
-    this.style = style;
+    this.glyphStyle = style;
     this.handler = handler;
     this.options = options || {};
     this.options.display = display;
     this.options.mapGlyph = this;
     $.extend(this,{
+	getStyle:function() {
+	    return this.glyphStyle;
+	},
 	isLabel:  function() {
-	    return this.style.label!=null;
+	    return this.getStyle().label!=null;
 	},
 	isImage:  function() {
 	    return this.options.isImage;
 	},	
 	isIcon:  function() {
-	    return this.style.externalGraphic!=null;
+	    return this.getStyle().externalGraphic!=null;
 	},	
 	applyStyle: function(style) {
 	    for(a in style) {
-		if(this.style[a]) this.style[a] = style[a];
+		if(this.getStyle()[a]) this.getStyle()[a] = style[a];
 	    }
 	},
 	newFeature: function(feature) {
@@ -1106,7 +1120,7 @@ var GlyphType = function(display,type,label,style,handler,options) {
 		initialize: function(layer, options) {
 		    let defaultStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style["default"]);
 		    defaultStyle={};
-		    $.extend(defaultStyle, _this.style);		    
+		    $.extend(defaultStyle, _this.getStyle());		    
 		    let styleMap = new OpenLayers.StyleMap({"default":defaultStyle});
 		    options = {
 			handlerOptions:{
@@ -1128,14 +1142,19 @@ var GlyphType = function(display,type,label,style,handler,options) {
 			feature.image = this.handler.theImage;
 		    }
 		    feature.type = _this.type;
+  
 		    let newStyle;
 		    if(this.handler.style) {
 			newStyle=this.handler.style;
 		    }
 		    if(newStyle) {
+			for(a in _this.getStyle()) {
+			    if(!Utils.isDefined(newStyle[a])) {
+				newStyle[a] = _this.getStyle()[s];
+			    }
+			}
 			if(feature.style && feature.style.label)
 			    newStyle.label = feature.style.label;
-//			console.log(JSON.stringify(newStyle));
 			let tmp = {};
 			$.extend(tmp, newStyle);
 			feature.style=tmp;

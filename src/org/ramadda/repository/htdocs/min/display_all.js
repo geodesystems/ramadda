@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Dec  3 15:45:02 MST 2021";
+var build_date="RAMADDA build date: Fri Dec  3 21:09:26 MST 2021";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -32519,6 +32519,15 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'highlightColor',ex:'#ccc',tt:''},
 	{p:'highlightFillColor',ex:'#ccc',tt:''},	
 	{p:'highlightStrokeWidth',ex:'2',tt:''},	
+	{p:"highlightStrokeColor"},
+	{p:"highlightStrokeWidth"},
+	{p:"highlightFill"},
+	{p:"highlightOpacity"},
+
+        {p:"vectorLayerStrokeColor"},
+	{p:"vectorLayerFillColor"},
+	{p:"vectorLayerFillOpacity",ex:0.25},
+        {p:"vectorLayerStrokeWidth",ex:2},
 ];
     
     displayDefineMembers(this, myProps, {
@@ -32622,6 +32631,12 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    if(this.getProperty("showOpacitySlider")||true) {
 		params.showOpacitySlider=true;
 	    }
+	    ['highlightStrokeColor','highlightFillColor',"highlightStrokeWidth","highlightFillOpacity"].forEach(p=>{
+		let v = this.getProperty(p);
+		if(Utils.isDefined(v)) {
+		    params[p] = v;
+		}
+	    });
 	},
 	initMap:function(map) {
 	},
@@ -32806,6 +32821,59 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		},500);
             }
         },
+        addBaseMapLayer: function(url, isKml) {
+            let _this = this;
+            mapLoadInfo = displayMapUrlToVectorListeners[url];
+            if (mapLoadInfo == null) {
+                mapLoadInfo = {
+                    otherMaps: [],
+                    layer: null
+                };
+                let selectFunc = function(layer) {
+                    _this.mapFeatureSelected(layer);
+                }
+		//Don't do this for now as its handled elsewhere?
+		selectFunc = null;
+                let hasBounds = this.getProperty("bounds") != null ||
+		    Utils.isDefined(this.getProperty("zoomLevel"))   ||
+		    Utils.isDefined(this.getProperty("mapCenter"));
+		let attrs =   {
+                    strokeColor: this.getProperty("vectorLayerStrokeColor","#000"),
+		    fillColor:this.getProperty("vectorLayerFillColor","#ccc"),
+		    fillOpacity:this.getProperty("vectorLayerFillOpacity",0.25),
+                    strokeWidth: this.getProperty("vectorLayerStrokeWidth",1),
+		}
+                if (isKml)
+                    this.map.addKMLLayer(this.getProperty("kmlLayerName"), url, this.doDisplayMap(), selectFunc, null, attrs,
+					 function(map, layer) {
+					     _this.baseMapLoaded(layer, url);
+					 }, !hasBounds);
+                else
+                    this.map.addGeoJsonLayer(this.getProperty("geojsonLayerName"), url, this.doDisplayMap(), selectFunc, null, attrs,
+					     function(map, layer) {
+						 _this.baseMapLoaded(layer, url);
+					     }, !hasBounds);
+            } else if (mapLoadInfo.layer) {
+                this.cloneLayer(mapLoadInfo.layer);
+            } else {
+                this.map.showLoadingImage();
+                mapLoadInfo.otherMaps.push(this);
+            }
+        },
+        baseMapLoaded: function(layer, url) {
+            this.vectorLayer = layer;
+            this.applyVectorMap();
+            mapLoadInfo = displayMapUrlToVectorListeners[url];
+            if (mapLoadInfo) {
+                mapLoadInfo.layer = layer;
+                for (var i = 0; i < mapLoadInfo.otherMaps.length; i++) {
+                    mapLoadInfo.otherMaps[i].cloneLayer(layer);
+                }
+                mapLoadInfo.otherMaps = [];
+            }
+        },
+        applyVectorMap: function(force, textGetter, args) {
+	},
         getBounds: function() {
 	    return this.map.getBounds();
 	},
@@ -32916,12 +32984,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'unhighlightStrokeWidth',ex:'1',tt:'Stroke width for when records are unhighlighted with the filters'},
 	{p:'unhighlightStrokeColor',ex:'#aaa',tt:'Stroke color for when records are unhighlighted with the filters'},
 	{p:'unhighlightRadius',ex:'1',tt:'Radius for when records are highlighted with the filters'},
-
-	{label:'Map Vectors'},
-	{p:'vectorLayerStrokeColor',ex:'#000'},
-	{p:'vectorLayerFillColor',ex:'#ccc'},
-	{p:'vectorLayerFillOpacity',ex:'0.25'},
-	{p:'vectorLayerStrokeWidth',ex:'1'},
 
 	{label:"Map Collisions"},
 	{p:'handleCollisions',ex:'true',tt:"Handle point collisions"},
@@ -33449,45 +33511,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         getBounds: function() {
 	    return this.map.getBounds();
 	},
-        addBaseMapLayer: function(url, isKml) {
-            let _this = this;
-            mapLoadInfo = displayMapUrlToVectorListeners[url];
-            if (mapLoadInfo == null) {
-                mapLoadInfo = {
-                    otherMaps: [],
-                    layer: null
-                };
-                let selectFunc = function(layer) {
-                    _this.mapFeatureSelected(layer);
-                }
-		//Don't do this for now as its handled elsewhere?
-		selectFunc = null;
-                let hasBounds = this.getProperty("bounds") != null ||
-		    Utils.isDefined(this.getProperty("zoomLevel"))   ||
-		    Utils.isDefined(this.getProperty("mapCenter"));
-		let attrs =   {
-                    strokeColor: this.getProperty("vectorLayerStrokeColor","#000"),
-		    fillColor:this.getProperty("vectorLayerFillColor","#ccc"),
-		    fillOpacity:this.getProperty("vectorLayerFillOpacity",0.25),
-                    strokeWidth: this.getProperty("vectorLayerStrokeWidth",1),
-		}
-                if (isKml)
-                    this.map.addKMLLayer(this.getProperty("kmlLayerName"), url, this.doDisplayMap(), selectFunc, null, attrs,
-					 function(map, layer) {
-					     _this.baseMapLoaded(layer, url);
-					 }, !hasBounds);
-                else
-                    this.map.addGeoJsonLayer(this.getProperty("geojsonLayerName"), url, this.doDisplayMap(), selectFunc, null, attrs,
-					     function(map, layer) {
-						 _this.baseMapLoaded(layer, url);
-					     }, !hasBounds);
-            } else if (mapLoadInfo.layer) {
-                this.cloneLayer(mapLoadInfo.layer);
-            } else {
-                this.map.showLoadingImage();
-                mapLoadInfo.otherMaps.push(this);
-            }
-        },
         mapFeatureSelected: function(layer) {
             if (!this.getPointData()) {
                 return;
@@ -33552,18 +33575,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.getProperty("selectedFieldIsColorBy") && fields.length>0) {
 		this.colorByFieldChanged(fields[0]);
 	    }
-        },
-        baseMapLoaded: function(layer, url) {
-            this.vectorLayer = layer;
-            this.applyVectorMap();
-            mapLoadInfo = displayMapUrlToVectorListeners[url];
-            if (mapLoadInfo) {
-                mapLoadInfo.layer = layer;
-                for (var i = 0; i < mapLoadInfo.otherMaps.length; i++) {
-                    mapLoadInfo.otherMaps[i].cloneLayer(layer);
-                }
-                mapLoadInfo.otherMaps = [];
-            }
         },
         handleLayerSelect: function(layer) {
             var args = this.layerSelectArgs;
@@ -36663,9 +36674,6 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 	{p:'minLat'},			
 	{p:"strokeColor"},
 	{p:"strokeWidth"},
-	{p:"highlightStrokeColor"},
-	{p:"highlightStrokeWidth"},
-	{p:"highlightFill"},
 	{p:"missingFill"},			
     ];
 
@@ -37716,7 +37724,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		if(glyph) {
 		    let styleMap = new OpenLayers.StyleMap({"default":{}});
 		    let tmpStyle = {};
-		    $.extend(tmpStyle,glyph.style);
+		    $.extend(tmpStyle,glyph.getStyle());
 		    if(glyph.isImage()) {
 			let url = prompt("Image URL:",this.lastImageUrl);
 			if(!url) return;
@@ -37771,7 +37779,12 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	pasteCount:0,
 	doPaste: function(evt) {
 	    if(!this.clipboard) return;
-	    let newOnes = this.clipboard.map(feature=>{return feature.clone();});
+	    let newOnes = this.clipboard.map(feature=>{
+		feature= feature.clone();
+		if(feature.style) {
+		    feature.style =$.extent({},feature.style);
+		}
+	    });
 	    for(let i=0;i<newOnes.length;i++) {
 		newOnes[i].type = this.clipboard[i].type;
 	    }
@@ -37793,6 +37806,8 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    }
 	    if(!feature) return;
 	    let style = feature.style;
+//	    style.fillColor="green";
+
 	    let html =HU.div([STYLE,HU.css("margin","8px")], "Feature: " + feature.type); 
 	    this.myLayer.redraw(feature);
 	    let apply = props=>{
@@ -38246,10 +38261,12 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    return;
 		}
 		let glyph = glyphMap?glyphMap[mapGlyph.type]:null;
-		let style = mapGlyph.style||(glyph?glyph.style:{});
+		let style = mapGlyph.style||(glyph?glyph.getStyle():{});
+		style = $.extend({},style);
 		if(style.label) {
 		    style.pointRadius=0
 		}
+		if(!style.fillColor) style.fillColor = "transparent";
 		let feature;
 		if(mapGlyph.points.length>1) {
 		    let points = [];
@@ -38376,7 +38393,9 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 
 		new GlyphType(this,"polyline", "Polyline",
 			     {strokeColor:this.getStrokeColor(),
-			      strokeWidth:this.getStrokeWidth()},
+			      strokeWidth:this.getStrokeWidth(),
+			      fillColor:"transparent",
+			      fillOpacity:1.0},
 			     OpenLayers.Handler.Path),
 		new GlyphType(this,"freehand","Freehand",
 			     {strokeColor:this.getStrokeColor(),
@@ -38657,24 +38676,27 @@ var GlyphType = function(display,type,label,style,handler,options) {
     this.display = display;
     this.label = label;
     this.type = type;
-    this.style = style;
+    this.glyphStyle = style;
     this.handler = handler;
     this.options = options || {};
     this.options.display = display;
     this.options.mapGlyph = this;
     $.extend(this,{
+	getStyle:function() {
+	    return this.glyphStyle;
+	},
 	isLabel:  function() {
-	    return this.style.label!=null;
+	    return this.getStyle().label!=null;
 	},
 	isImage:  function() {
 	    return this.options.isImage;
 	},	
 	isIcon:  function() {
-	    return this.style.externalGraphic!=null;
+	    return this.getStyle().externalGraphic!=null;
 	},	
 	applyStyle: function(style) {
 	    for(a in style) {
-		if(this.style[a]) this.style[a] = style[a];
+		if(this.getStyle()[a]) this.getStyle()[a] = style[a];
 	    }
 	},
 	newFeature: function(feature) {
@@ -38687,7 +38709,7 @@ var GlyphType = function(display,type,label,style,handler,options) {
 		initialize: function(layer, options) {
 		    let defaultStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style["default"]);
 		    defaultStyle={};
-		    $.extend(defaultStyle, _this.style);		    
+		    $.extend(defaultStyle, _this.getStyle());		    
 		    let styleMap = new OpenLayers.StyleMap({"default":defaultStyle});
 		    options = {
 			handlerOptions:{
@@ -38709,14 +38731,19 @@ var GlyphType = function(display,type,label,style,handler,options) {
 			feature.image = this.handler.theImage;
 		    }
 		    feature.type = _this.type;
+  
 		    let newStyle;
 		    if(this.handler.style) {
 			newStyle=this.handler.style;
 		    }
 		    if(newStyle) {
+			for(a in _this.getStyle()) {
+			    if(!Utils.isDefined(newStyle[a])) {
+				newStyle[a] = _this.getStyle()[s];
+			    }
+			}
 			if(feature.style && feature.style.label)
 			    newStyle.label = feature.style.label;
-//			console.log(JSON.stringify(newStyle));
 			let tmp = {};
 			$.extend(tmp, newStyle);
 			feature.style=tmp;

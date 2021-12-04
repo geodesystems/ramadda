@@ -110,6 +110,15 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'highlightColor',ex:'#ccc',tt:''},
 	{p:'highlightFillColor',ex:'#ccc',tt:''},	
 	{p:'highlightStrokeWidth',ex:'2',tt:''},	
+	{p:"highlightStrokeColor"},
+	{p:"highlightStrokeWidth"},
+	{p:"highlightFill"},
+	{p:"highlightOpacity"},
+
+        {p:"vectorLayerStrokeColor"},
+	{p:"vectorLayerFillColor"},
+	{p:"vectorLayerFillOpacity",ex:0.25},
+        {p:"vectorLayerStrokeWidth",ex:2},
 ];
     
     displayDefineMembers(this, myProps, {
@@ -213,6 +222,12 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    if(this.getProperty("showOpacitySlider")||true) {
 		params.showOpacitySlider=true;
 	    }
+	    ['highlightStrokeColor','highlightFillColor',"highlightStrokeWidth","highlightFillOpacity"].forEach(p=>{
+		let v = this.getProperty(p);
+		if(Utils.isDefined(v)) {
+		    params[p] = v;
+		}
+	    });
 	},
 	initMap:function(map) {
 	},
@@ -397,6 +412,59 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		},500);
             }
         },
+        addBaseMapLayer: function(url, isKml) {
+            let _this = this;
+            mapLoadInfo = displayMapUrlToVectorListeners[url];
+            if (mapLoadInfo == null) {
+                mapLoadInfo = {
+                    otherMaps: [],
+                    layer: null
+                };
+                let selectFunc = function(layer) {
+                    _this.mapFeatureSelected(layer);
+                }
+		//Don't do this for now as its handled elsewhere?
+		selectFunc = null;
+                let hasBounds = this.getProperty("bounds") != null ||
+		    Utils.isDefined(this.getProperty("zoomLevel"))   ||
+		    Utils.isDefined(this.getProperty("mapCenter"));
+		let attrs =   {
+                    strokeColor: this.getProperty("vectorLayerStrokeColor","#000"),
+		    fillColor:this.getProperty("vectorLayerFillColor","#ccc"),
+		    fillOpacity:this.getProperty("vectorLayerFillOpacity",0.25),
+                    strokeWidth: this.getProperty("vectorLayerStrokeWidth",1),
+		}
+                if (isKml)
+                    this.map.addKMLLayer(this.getProperty("kmlLayerName"), url, this.doDisplayMap(), selectFunc, null, attrs,
+					 function(map, layer) {
+					     _this.baseMapLoaded(layer, url);
+					 }, !hasBounds);
+                else
+                    this.map.addGeoJsonLayer(this.getProperty("geojsonLayerName"), url, this.doDisplayMap(), selectFunc, null, attrs,
+					     function(map, layer) {
+						 _this.baseMapLoaded(layer, url);
+					     }, !hasBounds);
+            } else if (mapLoadInfo.layer) {
+                this.cloneLayer(mapLoadInfo.layer);
+            } else {
+                this.map.showLoadingImage();
+                mapLoadInfo.otherMaps.push(this);
+            }
+        },
+        baseMapLoaded: function(layer, url) {
+            this.vectorLayer = layer;
+            this.applyVectorMap();
+            mapLoadInfo = displayMapUrlToVectorListeners[url];
+            if (mapLoadInfo) {
+                mapLoadInfo.layer = layer;
+                for (var i = 0; i < mapLoadInfo.otherMaps.length; i++) {
+                    mapLoadInfo.otherMaps[i].cloneLayer(layer);
+                }
+                mapLoadInfo.otherMaps = [];
+            }
+        },
+        applyVectorMap: function(force, textGetter, args) {
+	},
         getBounds: function() {
 	    return this.map.getBounds();
 	},
@@ -507,12 +575,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'unhighlightStrokeWidth',ex:'1',tt:'Stroke width for when records are unhighlighted with the filters'},
 	{p:'unhighlightStrokeColor',ex:'#aaa',tt:'Stroke color for when records are unhighlighted with the filters'},
 	{p:'unhighlightRadius',ex:'1',tt:'Radius for when records are highlighted with the filters'},
-
-	{label:'Map Vectors'},
-	{p:'vectorLayerStrokeColor',ex:'#000'},
-	{p:'vectorLayerFillColor',ex:'#ccc'},
-	{p:'vectorLayerFillOpacity',ex:'0.25'},
-	{p:'vectorLayerStrokeWidth',ex:'1'},
 
 	{label:"Map Collisions"},
 	{p:'handleCollisions',ex:'true',tt:"Handle point collisions"},
@@ -1040,45 +1102,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         getBounds: function() {
 	    return this.map.getBounds();
 	},
-        addBaseMapLayer: function(url, isKml) {
-            let _this = this;
-            mapLoadInfo = displayMapUrlToVectorListeners[url];
-            if (mapLoadInfo == null) {
-                mapLoadInfo = {
-                    otherMaps: [],
-                    layer: null
-                };
-                let selectFunc = function(layer) {
-                    _this.mapFeatureSelected(layer);
-                }
-		//Don't do this for now as its handled elsewhere?
-		selectFunc = null;
-                let hasBounds = this.getProperty("bounds") != null ||
-		    Utils.isDefined(this.getProperty("zoomLevel"))   ||
-		    Utils.isDefined(this.getProperty("mapCenter"));
-		let attrs =   {
-                    strokeColor: this.getProperty("vectorLayerStrokeColor","#000"),
-		    fillColor:this.getProperty("vectorLayerFillColor","#ccc"),
-		    fillOpacity:this.getProperty("vectorLayerFillOpacity",0.25),
-                    strokeWidth: this.getProperty("vectorLayerStrokeWidth",1),
-		}
-                if (isKml)
-                    this.map.addKMLLayer(this.getProperty("kmlLayerName"), url, this.doDisplayMap(), selectFunc, null, attrs,
-					 function(map, layer) {
-					     _this.baseMapLoaded(layer, url);
-					 }, !hasBounds);
-                else
-                    this.map.addGeoJsonLayer(this.getProperty("geojsonLayerName"), url, this.doDisplayMap(), selectFunc, null, attrs,
-					     function(map, layer) {
-						 _this.baseMapLoaded(layer, url);
-					     }, !hasBounds);
-            } else if (mapLoadInfo.layer) {
-                this.cloneLayer(mapLoadInfo.layer);
-            } else {
-                this.map.showLoadingImage();
-                mapLoadInfo.otherMaps.push(this);
-            }
-        },
         mapFeatureSelected: function(layer) {
             if (!this.getPointData()) {
                 return;
@@ -1143,18 +1166,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.getProperty("selectedFieldIsColorBy") && fields.length>0) {
 		this.colorByFieldChanged(fields[0]);
 	    }
-        },
-        baseMapLoaded: function(layer, url) {
-            this.vectorLayer = layer;
-            this.applyVectorMap();
-            mapLoadInfo = displayMapUrlToVectorListeners[url];
-            if (mapLoadInfo) {
-                mapLoadInfo.layer = layer;
-                for (var i = 0; i < mapLoadInfo.otherMaps.length; i++) {
-                    mapLoadInfo.otherMaps[i].cloneLayer(layer);
-                }
-                mapLoadInfo.otherMaps = [];
-            }
         },
         handleLayerSelect: function(layer) {
             var args = this.layerSelectArgs;
@@ -4254,9 +4265,6 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 	{p:'minLat'},			
 	{p:"strokeColor"},
 	{p:"strokeWidth"},
-	{p:"highlightStrokeColor"},
-	{p:"highlightStrokeWidth"},
-	{p:"highlightFill"},
 	{p:"missingFill"},			
     ];
 
