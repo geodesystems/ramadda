@@ -3785,6 +3785,25 @@ public class EntryManager extends RepositoryManager {
                               new Result(msg("Entry Actions"), sb));
     }
 
+    public Result processEntryMenu(Request request) throws Exception {
+        Entry entry = getEntry(request);
+        if (entry == null) {
+            throw new IllegalArgumentException("Unable to find entry:"
+					       + request);
+        }
+        StringBuilder sb = new StringBuilder();
+        List<Link> linkList = getEntryManager().getEntryLinks(request, entry);
+        String links = getEntryManager().getEntryActionsTable(request, entry,
+                           OutputType.TYPE_MENU, linkList, false, null);
+
+	Result result = new Result("",new StringBuilder(links));
+	result.setShouldDecorate(false);
+	return result;
+
+    }
+
+
+
     /**
      * _more_
      *
@@ -6278,7 +6297,6 @@ public class EntryManager extends RepositoryManager {
                                        int typeMask)
 	throws Exception {
         List<Link> links = getEntryLinks(request, entry);
-
         return getEntryActionsTable(request, entry, typeMask, links);
     }
 
