@@ -5434,7 +5434,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             StringBuilder sb)
             throws Exception {
 
-        int width = getProperty(wikiUtil, props, ATTR_WIDTH, -100);
+        String width = getProperty(wikiUtil, props, ATTR_WIDTH, "100%");
         int serverImageWidth = getProperty(wikiUtil, props, ATTR_IMAGEWIDTH,
                                            -1);
 
@@ -5509,10 +5509,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
             String extra = "";
-            if (width > 0) {
+	    if(width.startsWith("-")) {
+                extra = extra + HU.attr(HU.ATTR_WIDTH, "" + (width.substring(1)) + "%");
+	    } else {
                 extra = extra + HU.attr(HU.ATTR_WIDTH, "" + width);
-            } else if (width < 0) {
-                extra = extra + HU.attr(HU.ATTR_WIDTH, "" + (-width) + "%");
             }
             String name       = getEntryDisplayName(child);
             String theCaption = caption;
@@ -5540,6 +5540,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 	    if(decorate) {
 		buff.append("<div class=\"image-outer\">");
 		buff.append("<div class=\"image-inner\">");
+	    } else {
+		buff.append("<div style='padding:10px;'>");
 	    }
             if (popup) {
 		String thePopupCaption = popupCaption;
@@ -5587,7 +5589,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 	    if(decorate) {
 		buff.append("</div>");
+	    } else {
+		buff.append("</div>");
 	    }
+
         }
         int    colInt   = 12 / Math.min(12, columns);
         String colClass = "col-md-" + colInt;
