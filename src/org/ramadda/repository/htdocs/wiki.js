@@ -205,6 +205,8 @@ class  WikiEditor {
 		  formId:formId,
 		  hidden:hidden});
 	HU.addWikiEditor(this);
+	this.initDragAndDrop();
+
 	this.editor.setBehavioursEnabled(false);
 	this.editor.setDisplayIndentGuides(false);
 	this.editor.setKeyboardHandler("emacs");
@@ -213,6 +215,7 @@ class  WikiEditor {
 	this.editor.setOptions(options);
 	this.editor.session.setMode("ace/mode/ramadda");
 	this.toolbar = $("#" + this.getId() +"_toolbar");
+
 	this.editor.container.addEventListener("contextmenu", (e) =>{
 	    e.preventDefault();
 	    this.handlePopupMenu(e);
@@ -243,6 +246,95 @@ class  WikiEditor {
     domId(suffix) {
 	return this.getId() +"_"+ suffix;
     }
+
+    handleDropEvent(event,file, result) {
+	let isImage= file.type.match('^image.*');
+	let url = ramaddaBaseUrl +"/entry/addfile";
+	let wikiCallback = (html,status,xhr) =>{
+	    console.log("ok");
+	}
+	let wikiError = (html,status,xhr) =>{
+	    console.log("error");
+	};
+
+	this.lastDesc = prompt("Description:",this.lastDesc||"");
+	if(this.lastDesc===null) {
+	    return;
+	}
+
+	let data = new FormData();
+	data.append("filename",file.name);
+	data.append("filetype",file.type);
+	data.append("group",this.entryId);
+	data.append("description",this.lastDesc);
+	data.append("file", result);
+	let _this = this;
+
+	$.ajax({
+	    url: url,
+	    cache: false,
+	    contentType: false,
+	    processData: false,
+	    method: 'POST',
+	    type: 'POST', 
+	    data: data,
+	    success: function (data) {
+		if(data.status!='ok') {
+		    alert("An error occurred creating file:"  + data.message);
+		    return;
+		}
+		let id = data.entryid;
+		let text;
+		if(isImage) {
+		    text = " {{image entry=" + id+" caption='" + data.name+"' align=center width=50% }} ";
+		} else {
+		    text = " [[" + data.entryid +"|"+ data.name+"]] "
+		}
+		_this.getEditor().session.insert(_this.lastPosition,text);
+	    },
+	    error: function (err) {
+		alert("An error occurred creating file:"  + err);
+	    }
+	});
+    }
+
+    initDragAndDrop() {
+	let _this = this;
+	let editor = $("#"+this.getId());
+	let origCss=null;
+	editor.on('dragover', function(event) {
+	    _this.lastPosition =  _this.getEditor().renderer.screenToTextCoordinates(event.clientX, event.clientY);
+	    event.stopPropagation();
+	    event.preventDefault();
+	    editor.addClass("ramadda-drop-active");
+	});
+
+	editor.on('dragleave', function(event) {
+	    event.stopPropagation()
+	    event.preventDefault()
+	    editor.removeClass("ramadda-drop-active");
+	})
+
+	editor.on('drop', function(event) {
+	    event.stopPropagation();
+	    event.preventDefault();
+	    let files = event.originalEvent.target.files || event.originalEvent.dataTransfer.files
+	    for (var i=0; i<files.length;i++) {
+		let file  = files[i];
+		if(!file) continue;
+		var reader = new FileReader();
+		reader.onload = function(e2) {
+		    var reader = new FileReader()
+		    reader.onload = function(event) {
+			_this.handleDropEvent(e2,file,e2.target.result);
+		    }
+		    reader.readAsDataURL(files[0])
+		}
+		reader.readAsDataURL(file); // start reading the file data.
+	    }
+	});
+    }	
+
 
     jq(suffix) {
 	return $("#"+this.domId(suffix));
@@ -522,6 +614,7 @@ class  WikiEditor {
 	};
 	let text = this.getValue();
 	let url = ramaddaBaseUrl + "/wikify";
+
 
 	$.post(url,{
 	    doImports:"false",
@@ -1186,10 +1279,6 @@ class  WikiEditor {
     }
     
 }
-
-
-
-
 
 
 

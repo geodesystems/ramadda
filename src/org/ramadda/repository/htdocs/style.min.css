@@ -1541,7 +1541,6 @@ a.ramadda-menubar-button:hover {
 
 
 
-
 .ramadda-frame-shadow {
     -webkit-box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.3);
     box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.3);
@@ -4936,6 +4935,10 @@ a.wiki-link-noexist {
     height:500px;
 }
 
+
+.ramadda-drop-active {
+    border:1px solid #666;
+}
 
 /** Calendar styles **/
  
