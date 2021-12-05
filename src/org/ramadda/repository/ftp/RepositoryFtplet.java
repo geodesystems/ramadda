@@ -632,7 +632,7 @@ public class RepositoryFtplet extends DefaultFtplet {
         System.err.println("making entry");
         EntryManager entryManager = getEntryManager();
         Entry entry = entryManager.addFileEntry(request, newFile, group,
-                          name, request.getUser());
+						name, "", request.getUser());
 
 
         System.err.println("closing session");
