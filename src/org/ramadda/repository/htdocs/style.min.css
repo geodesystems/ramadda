@@ -1198,6 +1198,10 @@ a.ramadda-menubar-button:hover {
 }
 
 
+.ramadda-map-header {
+    text-align:center;
+}
+
 .ramadda-map-slider {
     position:absolute;
     top:0px;
@@ -1872,7 +1876,7 @@ ul {
     padding:10px;
 }
 
-.ramadda-clickable, .ramadda-noselect {
+label, .ramadda-clickable, .ramadda-noselect {
     -webkit-touch-callout: none; 
     -webkit-user-select: none; 
     -khtml-user-select: none; 

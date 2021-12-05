@@ -99,15 +99,16 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'extraLayers',tt:'comma separated list of layers to display'},
 	{p:'annotationLayerTop',ex:'true',tt:'If showing the extra annotation layer put it on top'},
 	{p:'showLocationSearch',ex:'true'},
-	{p:'showLatLonPosition',ex:'false'},
-	{p:'showLayerSwitcher',ex:'false'},
-	{p:'showScaleLine',ex:'true'},
-	{p:'showZoomPanControl',ex:'true'},
-	{p:'showZoomOnlyControl',ex:'false'},
-	{p:'enableDragPan',ex:'false'},
+	{p:'showLatLonPosition',ex:'false',d:true},
+	{p:'showLayerSwitcher',d:true,ex:'false'},
+	{p:'showScaleLine',ex:'true',d:false},
+	{p:'showZoomPanControl',ex:'true',d:true},
+	{p:'showZoomOnlyControl',ex:'false',d:false},
+	{p:'enableDragPan',ex:'false',d:true},
 	{p:'showLayers',d:true,ex:'false'},
+	{p:'showBaseLayersSelect',ex:true,d:false},
 	{p:'locations',ex:'usairports.json,usstates.json'},
-	{p:'highlightColor',ex:'#ccc',tt:''},
+	{p:'highlightColor',d:'blue',ex:'#ccc',tt:''},
 	{p:'highlightFillColor',ex:'#ccc',tt:''},	
 	{p:'highlightStrokeWidth',ex:'2',tt:''},	
 	{p:"highlightStrokeColor"},
@@ -238,13 +239,13 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
             let _this = this;
             var params = {
                 defaultMapLayer: this.getDefaultMapLayer(map_default_layer),
-		showLayerSwitcher: this.getShowLayerSwitcher(true),
-		showScaleLine: this.getShowScaleLine(false),
-		showLatLonPosition: this.getShowLatLonPosition(true),
-		showZoomPanControl: this.getShowZoomPanControl(false),
-		showZoomOnlyControl: this.getShowZoomOnlyControl(true),
-		enableDragPan: this.getEnableDragPan(true),
-		highlightColor: this.getHighlightColor("blue"),
+		showLayerSwitcher: this.getShowLayerSwitcher(),
+		showScaleLine: this.getShowScaleLine(),
+		showLatLonPosition: this.getShowLatLonPosition(),
+		showZoomPanControl: this.getShowZoomPanControl(),
+		showZoomOnlyControl: this.getShowZoomOnlyControl(),
+		enableDragPan: this.getEnableDragPan(),
+		highlightColor: this.getHighlightColor(),
 		highlightFillColor: this.getHighlightFillColor("transparent"),		
 		highlightStrokeWidth: this.getHighlightStrokeWidth(1),
 		showLatLonLines:this.getProperty("showLatLonLines")
@@ -541,7 +542,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'labelField',ex:'',tt:'field to show in TOC'},
 	{p:'showRegionSelector',ex:true},
 	{p:'regionSelectorLabel'},	
-	{p:'showBaseLayersSelect',ex:true},
 	{p:'centerOnFilterChange',ex:true,tt:'Center map when the data filters change'},
 	{p:'centerOnHighlight',ex:true,tt:'Center map when a record is highlighted'},
 	{p:'boundsAnimation',ex:true,tt:'Animate when map is centered'},
@@ -2085,7 +2085,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 				    this.getProperty("showMarkersToggleLabel","Show Markers")) +SPACE2;
 	    }
 
-	    if(this.getProperty("showBaseLayersSelect",false)) {
+
+	    if(this.getShowBaseLayersSelect()) {
 		if(this.map.baseLayers) {
 		    let items = [];
 		    let on = false;

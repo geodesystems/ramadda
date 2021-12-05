@@ -1134,6 +1134,7 @@ class  WikiEditor {
 		{p:'showLocationSearch',ex:'true'},
 		{p:'showCheckbox',ex:'true'},
 		{p:'showSearch',ex:'false'},
+		{p:'showLayerToggle',ex:'true'},
 		{p:'showLatLonLines',ex:'true'},
 		{p:'showScaleLine',ex:'true'},
 		{p:'showLayerSwitcher',ex:'true'},

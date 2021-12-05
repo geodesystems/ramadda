@@ -278,6 +278,7 @@ function RepositoryMap(mapId, params) {
 
         defaultMapLayer: map_default_layer,
 
+	showLayerToggle:false,
 	showLatLonLines:false,
         showScaleLine: showDflt,
         showLayerSwitcher: showDflt,
@@ -889,7 +890,7 @@ RepositoryMap.prototype = {
 	    //Do this later for when this map is being shown for a display_map
 	    let makeSlider = () =>{
 	    let slider = HU.div([ID,this.mapDivId +"_filter_range",STYLE,HU.css("display","inline-block","width","200px")],"");
-	    $("#" + this.mapDivId+"_header").append("<center>Image Opacity: " + slider+"</center>");
+	    $("#" + this.mapDivId+"_header").append("Image Opacity: " + slider+"");
 	    $("#"+ this.mapDivId +"_filter_range").slider({
 		min: 0,
 		max: 1,
@@ -2226,15 +2227,22 @@ RepositoryMap.prototype = {
         });
 //	this.tmp = layer;
 
+	let idx  = this.loadedLayers.length+1;
 	let opts =  {
-            strokeColor: this.getProperty("layerStrokeColor",'blue'),
-            strokeWidth: this.getProperty("layerStrokeWidth",1),
-	    fillColor:this.getProperty("layerFillColor","#ccc"),
-	    fillOpacity:this.getProperty("layerFillOpacity",0.4)
+            strokeColor: this.getProperty("layerStrokeColor"+idx,
+					  this.getProperty("layerStrokeColor",'blue')),
+            strokeWidth: this.getProperty("layerStrokeWidth"+idx,
+					  this.getProperty("layerStrokeWidth",1)),
+	    fillColor:this.getProperty("layerFillColor"+idx,
+				       this.getProperty("layerFillColor","#ccc")),
+	    fillOpacity:this.getProperty("layerFillOpacity"+idx,
+					 this.getProperty("layerFillOpacity",0.4))
         }
-	if(args) $.extend(opts, args);
+	args = args||{};
+	$.extend(opts, args);
         layer.styleMap = this.getVectorLayerStyleMap(layer, opts);
         this.initMapVectorLayer(layer, canSelect, selectCallback, unselectCallback, loadCallback, zoomToExtent);
+	this.checkLayerToggle(name,layer,idx,opts);
         return layer;
     },
 
@@ -2253,15 +2261,41 @@ RepositoryMap.prototype = {
             }),
             //styleMap: this.getVectorLayerStyleMap(args)
         });
-        if (!args) {
-            args = {
-                strokeColor: this.getProperty("layerStrokeColor",'blue'),
-                strokeWidth: this.getProperty("layerStrokeWidth",2),
-            }
+	let idx  = this.loadedLayers.length+1;
+	let opts =  {
+            strokeColor: this.getProperty("layerStrokeColor"+idx,
+					  this.getProperty("layerStrokeColor",'blue')),
+            strokeWidth: this.getProperty("layerStrokeWidth"+idx,
+					  this.getProperty("layerStrokeWidth",1)),
+	    fillColor:this.getProperty("layerFillColor"+idx,
+				       this.getProperty("layerFillColor","#ccc")),
+	    fillOpacity:this.getProperty("layerFillOpacity"+idx,
+					 this.getProperty("layerFillOpacity",0.4))
         }
-        layer.styleMap = this.getVectorLayerStyleMap(layer, args);
+
+	args = args||{};
+	$.extend(opts, args);
+        layer.styleMap = this.getVectorLayerStyleMap(layer, opts);
         this.initMapVectorLayer(layer, canSelect, selectCallback, unselectCallback, loadCallback, zoomToExtent);
+	this.checkLayerToggle(name,layer,idx,opts);
         return layer;
+    },
+
+    checkLayerToggle:function(name,layer,idx,opts) {
+	if(this.params["showLayerToggle"]) {
+	    let color = Utils.addAlphaToColor(opts.fillColor,0.4);
+            let cbx = HU.span([], HtmlUtils.checkbox(this.mapDivId + "_layertoggle"+idx, ["title", "Toggle Layer"], true,name)) +" ";
+	    cbx = HU.span([STYLE,HU.css('margin-right','5px','padding','5px','background',color)], cbx);
+	    $("#" + this.mapDivId+"_header").append(" " +cbx);
+	    $("#" + this.mapDivId + "_layertoggle"+idx).change(function() {
+		if($(this).is(':checked')) {
+		    layer.setVisibility(true);
+		} else {
+		    layer.setVisibility(false);
+		}
+	    });
+	    
+	}
     },
 
     createXYZLayer:  function(name, url, attribution,notBaseLayer) {

@@ -32,15 +32,9 @@ public interface Constants {
     /** _more_ */
     public static final String ICON_ACCESS = "fas fa-lock";
 
-    /** _more_ */
-    public static final String ICON_ADD = "/icons/add.gif";
 
     /** _more_ */
-    public static final String ICON_ELLIPSIS = "/icons/ellipsis.gif";
-
-    /** _more_ */
-    public static final String ICON_ROTATE =
-        "/icons/arrow_rotate_clockwise.png";
+    public static final String ICON_ROTATE =     "/icons/arrow_rotate_clockwise.png";
 
     /** _more_ */
     public static final String ICON_ANTIROTATE =
@@ -72,9 +66,6 @@ public interface Constants {
 
     /** _more_ */
     public static final String ICON_CHAT = "fas fa-comments";
-
-    /** _more_ */
-    public static final String ICON_CLOCK = "/icons/clock.png";
 
     /** _more_ */
     public static final String ICON_TIMELINE = "/icons/timeline_marker.png";
@@ -122,9 +113,7 @@ public interface Constants {
     public static final String ICON_ENTRY = "fas fa-info-circle";
 
     /** _more_ */
-    //    public static final String ICON_ENTRY_ADD = "/icons/fileadd.png";
     public static final String ICON_ENTRY_ADD = "fas fa-file-medical";
-
 
     /** _more_ */
     public static final String ICON_PUBLISH = "/icons/flag_green.png";
@@ -266,7 +255,7 @@ public interface Constants {
     public static final String ICON_QUESTION = "/icons/question.png";
 
     /** _more_ */
-    public static final String ICON_RANGE = "/icons/range.gif";
+    public static final String ICON_RANGE = "fas fa-arrow-right";
 
     /** _more_ */
     public static final String ICON_RCURVE = "/icons/brc.gif";
