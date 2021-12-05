@@ -352,7 +352,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
 
 
                 Entry newEntry = getEntryManager().addFileEntry(request, f,
-                                     parent, name, request.getUser(),
+								parent, name, "", request.getUser(),
                                      typeHandler, initializer);
 
                 if (status.length() == 0) {
