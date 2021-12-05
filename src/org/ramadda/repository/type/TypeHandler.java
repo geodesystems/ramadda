@@ -3858,7 +3858,7 @@ public class TypeHandler extends RepositoryManager {
                                ? entry
                                : entry.getParentEntry();
                 Entry newEntry = getEntryManager().addFileEntry(request, f,
-                                     parent, name, request.getUser(),
+								parent, name, "", request.getUser(),
                                      typeHandler, null);
 
                 getRepository().addAuthToken(request);
