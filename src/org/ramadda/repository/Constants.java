@@ -110,7 +110,7 @@ public interface Constants {
     public static final String ICON_DOWNARROW = "/icons/downarrow.gif";
 
     /** _more_ */
-    public static final String ICON_DOWNLOAD = "/icons/download.png";
+    public static final String ICON_DOWNLOAD = "fas fa-download";
 
     /** _more_ */
     public static final String ICON_DOWNDART = "/icons/downdart.gif";
