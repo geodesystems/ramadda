@@ -828,7 +828,7 @@ public class GpsOutputHandler extends OutputHandler {
                 };
 
                 Entry newEntry = getEntryManager().addFileEntry(request, f,
-                                     parent, name, request.getUser(),
+								parent, name, "",request.getUser(),
                                      typeHandler, initializer);
 
                 if (cnt == 0) {
@@ -1236,7 +1236,7 @@ public class GpsOutputHandler extends OutputHandler {
             final double[] pts = { maxLat, minLon, minLat, maxLon };
 
             Entry newEntry = getEntryManager().addFileEntry(request, f,
-                                 parent, fileName, request.getUser(),
+							    parent, fileName, "",request.getUser(),
                                  typeHandler, new EntryInitializer() {
                 public void initEntry(Entry entry) {
                     entry.setNorth(pts[0]);
@@ -2004,7 +2004,7 @@ public class GpsOutputHandler extends OutputHandler {
             }
         };
         Entry newEntry = getEntryManager().addFileEntry(request, f,
-                             parentEntry, opusFileName, request.getUser(),
+							parentEntry, opusFileName, "", request.getUser(),
                              typeHandler, initializer);
 
 
