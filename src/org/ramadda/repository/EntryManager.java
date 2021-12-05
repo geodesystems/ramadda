@@ -54,7 +54,11 @@ import ucar.unidata.xml.XmlNodeList;
 import ucar.unidata.xml.XmlUtil;
 
 
+
 import java.awt.Image;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+
 import java.awt.geom.Rectangle2D;
 
 import java.io.*;
@@ -76,6 +80,7 @@ import java.util.function.Function;
 import java.util.function.BiFunction;
 import java.util.function.BiConsumer;
 
+import javax.xml.bind.DatatypeConverter;
 
 import java.util.zip.*;
 
@@ -1023,6 +1028,71 @@ public class EntryManager extends RepositoryManager {
         request.setCORSHeaderOnResponse();
         return new Result("", sb, Json.MIMETYPE);
     }
+
+    public Result processEntryAddFile(Request request) throws Exception {
+	StringBuilder sb = new StringBuilder();
+	try {
+	    Entry group = findGroup(request);
+	    request.setReturnFilename("result.json");
+	    if ( !getAccessManager().canDoAction(request, group,
+						 Permission.ACTION_NEW)) {
+		sb.append(Json.mapAndQuote("status","error","message","You do not have permission to add a file"));
+		return new Result("", sb, Json.MIMETYPE);
+	    }
+	    String fileContents = request.getString("file",(String) null);
+	    String fileName = request.getString("filename",(String) null);	
+	    String fileType = request.getString("filetype","");
+	    File tmpFile = getStorageManager().getTmpFile(request,fileName);
+	    TypeHandler typeHandler = findDefaultTypeHandler(fileName);
+	    //	    System.err.println("file:" + fileName +" type: " + fileType);
+	    //	    System.err.println("contents:" + fileContents.substring(0,100));
+	    
+	    fileContents = fileContents.substring(fileContents.indexOf(",") + 1);
+
+
+	    if(fileType.startsWith("image/")) {
+		byte[] imagedata = DatatypeConverter.parseBase64Binary(fileContents);
+		BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imagedata));
+		String suffix = IOUtil.getFileExtension(fileName).toLowerCase();
+		if(suffix.startsWith(".")) suffix = suffix.substring(1);
+		if(bufferedImage==null) {
+		    
+		    return new Result("",
+				      new StringBuilder(Json.mapAndQuote("status","error","message","Unable to create image -  file:" + fileName +" suffix:" + suffix)), 
+				      Json.MIMETYPE);
+
+		    
+		}
+
+		ImageIO.write(bufferedImage, suffix, tmpFile);
+	    } else {
+		fileContents = new String(Utils.decodeBase64(fileContents));
+		FileOutputStream fos = new FileOutputStream(tmpFile);
+		IOUtil.writeFile(tmpFile, fileContents);
+		fos.close();
+	    }
+	    if(!tmpFile.exists()) {
+		sb.append(Json.mapAndQuote("status","error","message","Unable to write file:" + fileName));
+		return new Result("", sb, Json.MIMETYPE);
+	    }
+	    tmpFile = getStorageManager().copyToStorage(request, tmpFile,fileName);
+	    
+	    String name = fileName.replaceAll("_", " ");
+	    name = IOUtil.stripExtension(name);
+	    name = StringUtil.camelCase(name);
+	    Entry newEntry = addFileEntry(request, tmpFile,
+					  group, name, request.getString("description",""), request.getUser(),
+					  typeHandler, null);
+	    sb.append(Json.mapAndQuote("status","ok","message","File added","entryid",newEntry.getId(),"name",newEntry.getName()));
+	    return new Result("", sb, Json.MIMETYPE);
+	} catch(Exception exc) {
+	    System.err.println("Error:" + exc);
+	    exc.printStackTrace();
+	    sb.append(Json.mapAndQuote("status","error","message","Error:" + exc));
+	    return new Result("", sb, Json.MIMETYPE);
+	}
+    }
+
 
 
 
@@ -7226,9 +7296,9 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Entry addFileEntry(Request request, File newFile, Entry group,
-                              String name, User user)
+                              String name, String desc, User user)
 	throws Exception {
-        return addFileEntry(request, newFile, group, name, user, null, null);
+        return addFileEntry(request, newFile, group, name, desc, user, null, null);
     }
 
     /**
@@ -7247,7 +7317,7 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Entry addFileEntry(Request request, File newFile, Entry group,
-                              String name, User user,
+                              String name, String desc, User user,
                               TypeHandler typeHandler,
                               EntryInitializer initializer)
 	throws Exception {
@@ -7264,7 +7334,7 @@ public class EntryManager extends RepositoryManager {
 
 
         Entry entry = makeEntry(request, new Resource(newFile, resourceType),
-                                group, name, "", user, typeHandler,
+                                group, name, desc, user, typeHandler,
                                 initializer);
 
         addNewEntry(request, entry);
@@ -9562,12 +9632,12 @@ public class EntryManager extends RepositoryManager {
 
 
         if (groupNameOrId == null) {
-            throw new IllegalArgumentException("No folder specified");
+            throw new IllegalArgumentException("No group entry specified");
         }
         Entry entry = getEntry(request, groupNameOrId, false);
         if (entry != null) {
             if ( !entry.isGroup()) {
-                throw new IllegalArgumentException("Not a folder:"
+                throw new IllegalArgumentException("Not a group:"
 						   + groupNameOrId);
             }
 
