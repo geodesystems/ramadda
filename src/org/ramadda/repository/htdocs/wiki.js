@@ -257,16 +257,29 @@ class  WikiEditor {
 	    console.log("error");
 	};
 
-	this.lastDesc = prompt("Description:",this.lastDesc||"");
-	if(this.lastDesc===null) {
-	    return;
+	let desc = "";
+	let name = file.name;
+	if(!name) {
+	    name = prompt("Name:");
+	    if(!name) return;
+	} else {
+	    this.lastDesc = prompt("Description:",this.lastDesc||"");
+	    if(this.lastDesc===null) {
+		return;
+	    }
+	    desc = this.lastDesc;
 	}
 
+	let fileName = file.name;
+	let suffix = file.type.replace(/image\//,"");
+	if(!fileName) {
+	    fileName =  name+"." + suffix;
+	}
 	let data = new FormData();
-	data.append("filename",file.name);
+	data.append("filename",fileName);
 	data.append("filetype",file.type);
 	data.append("group",this.entryId);
-	data.append("description",this.lastDesc);
+	data.append("description",desc);
 	data.append("file", result);
 	let _this = this;
 
@@ -302,6 +315,24 @@ class  WikiEditor {
 	let _this = this;
 	let editor = $("#"+this.getId());
 	let origCss=null;
+	editor.on('paste', function(event) {
+	    _this.lastPosition =  _this.getEditor().renderer.screenToTextCoordinates(event.clientX, event.clientY);
+	    var items = (event.clipboardData || event.originalEvent.clipboardData).items;
+	    for(let i=0;i<items.length;i++) {
+		let item = items[i];
+		if(item.kind!="file") continue;
+		event.stopPropagation();
+		event.preventDefault();
+		var blob = item.getAsFile();
+		var reader = new FileReader();
+		reader.onload = function(event){
+		    let file = event.target.result;
+		    _this.handleDropEvent(event,item,file);
+		}; 
+		reader.readAsDataURL(blob);
+	    }
+	});
+
 	editor.on('dragover', function(event) {
 	    _this.lastPosition =  _this.getEditor().renderer.screenToTextCoordinates(event.clientX, event.clientY);
 	    event.stopPropagation();

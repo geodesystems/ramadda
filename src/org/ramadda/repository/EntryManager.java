@@ -1048,8 +1048,6 @@ public class EntryManager extends RepositoryManager {
 	    //	    System.err.println("contents:" + fileContents.substring(0,100));
 	    
 	    fileContents = fileContents.substring(fileContents.indexOf(",") + 1);
-
-
 	    if(fileType.startsWith("image/")) {
 		byte[] imagedata = DatatypeConverter.parseBase64Binary(fileContents);
 		BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imagedata));
@@ -1063,7 +1061,7 @@ public class EntryManager extends RepositoryManager {
 
 		    
 		}
-
+		//		System.err.println("writing: " + suffix +" file:" + tmpFile);
 		ImageIO.write(bufferedImage, suffix, tmpFile);
 	    } else {
 		fileContents = new String(Utils.decodeBase64(fileContents));
