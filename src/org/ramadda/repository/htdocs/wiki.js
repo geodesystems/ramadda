@@ -48,8 +48,13 @@ function insertText(id, value) {
 
 
 function insertAtCursor(id, myField, value) {
-    value = Utils.decodeText(value);    
     var editor = HtmlUtils.getWikiEditor(id);
+    if(value.entryId && editor) {
+	editor.handleEntryLink(value.entryId, value.name,null,false,value);
+	return;
+    }
+
+    value = Utils.decodeText(value);    
     if (editor) {
 	editor.insertAtCursor(value);
         return;
@@ -204,6 +209,8 @@ class  WikiEditor {
 		  editor:ace.edit(id),
 		  formId:formId,
 		  hidden:hidden});
+	this.myDiv =  $("#"+this.getId());
+
 	HU.addWikiEditor(this);
 	this.initDragAndDrop();
 
@@ -291,19 +298,12 @@ class  WikiEditor {
 	    method: 'POST',
 	    type: 'POST', 
 	    data: data,
-	    success: function (data) {
+	    success:  (data) =>{
 		if(data.status!='ok') {
 		    alert("An error occurred creating file:"  + data.message);
 		    return;
 		}
-		let id = data.entryid;
-		let text;
-		if(isImage) {
-		    text = " {{image entry=" + id+" caption='" + data.name+"' align=center width=50% }} ";
-		} else {
-		    text = " [[" + data.entryid +"|"+ data.name+"]] "
-		}
-		_this.getEditor().session.insert(_this.lastPosition,text);
+		this.handleEntryLink(data.entryid, data.name,this.lastPosition,true,{isImage:isImage});
 	    },
 	    error: function (err) {
 		alert("An error occurred creating file:"  + err);
@@ -311,57 +311,152 @@ class  WikiEditor {
 	});
     }
 
+    handleEntryLink(entryId, name,pos,isNew,opts) {
+	let html =  HU.center(HU.b(name));
+	if(isNew) {
+	    html +="The new entry has been added. What do you want to insert into the document?<br>";
+	} else {
+	    html +="What do you want to insert into the document?<br>";
+	}
+	let what = [];
+	if(isNew) {
+	    what.push("Link");
+	    if(opts.isImage) what.push("Image");
+	    what.push("ID");
+	    what.push("Nothing");
+	} else {
+	    what.push("Link");
+	    if(opts.isImage) {
+		what.push("Image");
+	    }
+	    if(opts.isGeo) 
+		what.push("Map");
+	    if(opts.entryType=="geo_editable_json") 
+		what.push("Editable map");
+
+
+	    if(opts.isGroup) {
+		what.push("Tree");
+		what.push("Grid");
+		what.push("Gallery");	    
+	    }
+
+
+
+	    what.push("Import");	    
+	    what.push("ID");
+	}
+
+	html += HU.select("",[ATTR_ID, this.domId("addtype")],what);
+	html += "<p>";
+	html += HU.div([STYLE,HU.css("display","inline-block"), CLASS,"ramadda-button",ID,this.domId("addok")],"OK")+
+	    SPACE3 +
+	    HU.div([STYLE,HU.css("display","inline-block"), CLASS,"ramadda-button",ID,this.domId("addcancel")],"Cancel");
+	html = HU.div([STYLE,HU.css('padding','10px','width','400px')],html);
+	let dialog = this.addDialog = HU.makeDialog({content:html,anchor:this.getScroller(),title:"New Entry",header:true,
+						     sticky:true,draggable:true,modal:true,xmodalContentsCss:HU.css('left','50px')});
+	let menu = dialog.find("#"+this.domId("addtype"));
+	HU.initSelect(menu);
+	dialog.find("#" +this.domId("addcancel")).button().click(()=>{
+	    this.addDialog.remove();
+	});
+
+	dialog.find("#" +this.domId("addok")).button().click(()=>{
+	    this.addDialog.remove();
+	    let what=menu.val();
+	    let text="";
+	    if(what=="Image") {
+		text = " {{image entry=" + entryId+" caption='" + name+"' align=center width=50% }} ";
+	    } else  if(what=="Map") {
+		text = " {{map entry=" + entryId+" details=true}}";
+	    } else  if(what=="Editable map") {
+		text = " {{editable_map entry=" + entryId+" }}";
+	    } else  if(what=="Tree") {
+		text = " {{tree entry=" + entryId+" }}";
+	    } else  if(what=="ID") {
+		text = entryId;
+	    } else  if(what=="Gallery") {
+		text = " {{gallery entry=" + entryId+" }}";
+	    } else  if(what=="Import") {
+		text = " {{import entry=" + entryId+" }}";		
+	    } else  if(what=="Grid") {
+		text = " {{grid entry=" + entryId+" }}";				
+	    } else if(what=="Link") {
+		text = " [[" + entryId +"|" + name+"]] ";
+	    } else if(what=="Nothing") {
+		return;
+	    } else {
+		text = " {{" + what.toLowerCase() +" entry=" + entryId+" }}";				
+	    }
+	    if(pos)
+		this.getEditor().session.insert(pos,text);
+	    else
+		this.insertAtCursor(text);
+	});
+    }
+
+
+
+    clearDragAndDrop() {
+	this.getDiv().removeClass("ramadda-drop-active");
+	if(this.dragMarker)    this.getEditor().session.removeMarker(this.dragMarker);
+    }
+
+    getDiv() {
+	return this.myDiv;
+    }
+
     initDragAndDrop() {
 	let _this = this;
-	let editor = $("#"+this.getId());
 	let origCss=null;
-	editor.on('paste', function(event) {
-	    _this.lastPosition =  _this.getEditor().renderer.screenToTextCoordinates(event.clientX, event.clientY);
-	    var items = (event.clipboardData || event.originalEvent.clipboardData).items;
+	this.getDiv().on('paste', (event) => {
+	    this.lastPosition =  this.getEditor().renderer.screenToTextCoordinates(event.clientX, event.clientY);
+	    let items = (event.clipboardData || event.originalEvent.clipboardData).items;
 	    for(let i=0;i<items.length;i++) {
 		let item = items[i];
 		if(item.kind!="file") continue;
 		event.stopPropagation();
 		event.preventDefault();
-		var blob = item.getAsFile();
-		var reader = new FileReader();
-		reader.onload = function(event){
-		    let file = event.target.result;
-		    _this.handleDropEvent(event,item,file);
+		let blob = item.getAsFile();
+		let reader = new FileReader();
+		reader.onload = (event) => {
+		    this.handleDropEvent(event,item,event.target.result);
 		}; 
 		reader.readAsDataURL(blob);
 	    }
 	});
 
-	editor.on('dragover', function(event) {
-	    _this.lastPosition =  _this.getEditor().renderer.screenToTextCoordinates(event.clientX, event.clientY);
+	this.getDiv().on('dragover', (event) => {
+	    let pos = this.lastPosition =  this.getEditor().renderer.screenToTextCoordinates(event.clientX, event.clientY);
+	    let Range = ace.require('ace/range').Range;
+	    let range =new Range(pos.row, pos.column, pos.row, pos.column+5);
+	    if(this.dragMarker)    this.editor.session.removeMarker(this.dragMarker);
+	    this.dragMarker = _this.getEditor().session.addMarker(range, "ace_active_char", "text", false);
+
 	    event.stopPropagation();
 	    event.preventDefault();
-	    editor.addClass("ramadda-drop-active");
+	    this.getDiv().addClass("ramadda-drop-active");
 	});
 
-	editor.on('dragleave', function(event) {
-	    event.stopPropagation()
-	    event.preventDefault()
-	    editor.removeClass("ramadda-drop-active");
+	this.getDiv().on('dragleave', (event) => {
+//	    event.stopPropagation()
+//	    event.preventDefault()
+	    this.clearDragAndDrop();
 	})
 
-	editor.on('drop', function(event) {
+	this.getDiv().on('drop', (event) => {
+	    this.clearDragAndDrop();
 	    event.stopPropagation();
 	    event.preventDefault();
 	    let files = event.originalEvent.target.files || event.originalEvent.dataTransfer.files
-	    for (var i=0; i<files.length;i++) {
+	    for (let i=0; i<files.length;i++) {
 		let file  = files[i];
 		if(!file) continue;
-		var reader = new FileReader();
-		reader.onload = function(e2) {
-		    var reader = new FileReader()
-		    reader.onload = function(event) {
-			_this.handleDropEvent(e2,file,e2.target.result);
-		    }
-		    reader.readAsDataURL(files[0])
-		}
-		reader.readAsDataURL(file); // start reading the file data.
+		let reader = new FileReader();
+		reader.onload = (onloadEvent) => {
+		    this.handleDropEvent(onloadEvent,file,onloadEvent.target.result);
+		};
+		reader.readAsDataURL(file); 
 	    }
 	});
     }	

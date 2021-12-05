@@ -4789,9 +4789,7 @@ a.wiki-link-noexist {
 .wiki-editor-tag-highlight {
 }
 
-.ace_contents {
-    display:relative;
-}
+
 
 .wiki-editor-message {
     position:absolute;
@@ -4911,6 +4909,16 @@ a.wiki-link-noexist {
 
 .wiki-editor-editor {
     background:#efefef;
+}
+
+.ace_contents {
+    display:relative;
+}
+
+.ace_active_char {
+    position: absolute;
+    background:green;
+    min-width:20px;
 }
 
 .ace_attribute-name {

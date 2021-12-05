@@ -6077,12 +6077,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                               "Entry ID", true, "entryid", entry, false,
                               buttonClass);
 
-        String addImage = OutputHandler.getSelect(request, textAreaId,
-                              "Insert Image", true, "image", entry, false,
-                              buttonClass);	
 
-        String addLink = OutputHandler.getSelect(request, textAreaId,
-                             "Entry Link", true, "wikilink", entry, false,
+
+        String importEntry = OutputHandler.getSelect(request, textAreaId,
+                             "Import Entry", true, "wikilink", entry, false,
                              buttonClass);
 
         String fieldLink = OutputHandler.getSelect(request, textAreaId,
@@ -6100,7 +6098,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 							  new NamedValue("linkAttributes", buttonClass)));
         }
 
-        Utils.appendAll(buttons, displaysButton, addEntry, addLink,addImage,
+        Utils.appendAll(buttons, importEntry, displaysButton,  addEntry, 
                         fieldLink);
 
         if (entry != null) {

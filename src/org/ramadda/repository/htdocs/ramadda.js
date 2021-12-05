@@ -613,7 +613,8 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
     this.handleClick(event);
 }
 
-function selectClick(id, entryId, value) {
+
+function selectClick(id, entryId, value, opts) {
     selector = selectors[id];
     let handler = getHandler(id);
     if(!handler) handler = getHandler(selector.elementId);
@@ -625,7 +626,9 @@ function selectClick(id, entryId, value) {
     }
 
     if (selector.selecttype == "wikilink") {
-        insertAtCursor(selector.elementId, selector.textComp.obj, "[[" + entryId + "|" + value + "]]");
+	let args = {entryId: entryId,name:value};
+	if(opts) $.extend(args, opts);
+        insertAtCursor(selector.elementId, selector.textComp.obj,args);
     } else   if (selector.selecttype == "fieldname") {
         insertAtCursor(selector.elementId, selector.textComp.obj,  value);
     } else   if (selector.selecttype == "image") {

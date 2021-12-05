@@ -1156,15 +1156,23 @@ public class OutputHandler extends RepositoryManager {
 
         String type      = request.getString(ARG_SELECTTYPE, "");
         String elementId = entry.getId();
-        String value     = entry.isGroup()
+        String name     = entry.isGroup()
                            ? ((Entry) entry).getName()
                            : getEntryDisplayName(entry);
-        value = value.replace("'", "\\'");
+	boolean isGroup = entry.getTypeHandler().isGroup();
+	boolean isImage = entry.isImage();
+
+        name = name.replace("'", "\\'");
         sb.append(HU.mouseClickHref(HU.call("selectClick",
                 HU.comma(HU.squote(target),
-                                HU.squote(entry.getId()),
-                                HU.squote(value),
-                                HU.squote(type))), linkText));
+			 HU.squote(entry.getId()),
+			 HU.squote(name),
+			 Json.map("entryType",HU.squote(entry.getTypeHandler().getType()),
+				  "isGroup",""+isGroup,
+				  "isImage",
+				  ""+isImage,
+				  "isGeo",""+entry.isGeoreferenced()),
+			 HU.squote(type))), linkText));
 
 	HU.close(sb,"span");
         sb.append(HU.br());
