@@ -3,6 +3,7 @@
  * Copyright (c) 2008-2021 Geode Systems LLC
  */
 
+
 var root = ramaddaBaseUrl;
 var urlroot = ramaddaBaseUrl;
 var icon_close = "fas fa-window-close";
@@ -3291,9 +3292,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     createFancyBox: function(selector, args) {
 	args = args||{};
+	console.log("HtmlUtils.createFancyBox  called. selector:" + $(selector).length);
 	HtmlUtils.loadJqueryLib('fancybox',[ramaddaCdn +"/lib/fancybox-3/jquery.fancybox.min.css"],
 				[ramaddaCdn +"/lib/fancybox-3/jquery.fancybox.min.js"],
-				selector,()=>{$(selector).fancybox(args);});
+				selector,()=>{
+				    console.log("fancybox loaded. calling fancybox on selector");
+				    $(selector).fancybox(args);
+				});
     },
     checkToHidePopup:function() {
 	if (this.popupTime) {
