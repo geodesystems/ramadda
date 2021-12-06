@@ -113,10 +113,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag(WIKI_TAG_DATE_CHANGE,"Change Date", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT), 
                             new WikiTag(WIKI_TAG_LABEL, null, ATTR_TEXT,"",ATTR_ID,"arbitrary id to match with property"),
                             new WikiTag(WIKI_TAG_LINK, null, ATTR_TITLE,"","button","false"),
-                            new WikiTag(WIKI_TAG_HTML),
+                            new WikiTag(WIKI_TAG_HTML,null,"showTitle","false"),
                             new WikiTag("multi", null, "_attrs", "attr1,attr2"),
                             new WikiTag(WIKI_TAG_SIMPLE, null, ATTR_TEXTPOSITION, POS_LEFT),
-                            new WikiTag(WIKI_TAG_IMPORT, null, ATTR_ENTRY,""),
+                            new WikiTag(WIKI_TAG_IMPORT, null, ATTR_ENTRY,"","showTitle","false"),
                             new WikiTag(WIKI_TAG_EMBED, null, ATTR_ENTRY,"",ATTR_SKIP_LINES,"0",ATTR_MAX_LINES,"1000",ATTR_FORCE,"false",ATTR_MAXHEIGHT,"300",ATTR_ANNOTATE,"true","raw","true","wikify","true"),
                             new WikiTag(WIKI_TAG_FIELD, null, "name", "")),
         new WikiTagCategory("Layout", 
@@ -489,6 +489,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 		request.removeExtraProperty(PROP_GROUP_VAR);
 	    }
 
+
+
             String include = handleWikiImport(wikiUtil, request, entry,
                                  theEntry, tag, props);
 	    if(tmpAddedGroup!=null) {
@@ -512,14 +514,174 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     }
 
 
-    private ServerInfo getServer(Request request, Entry entry,
-				 WikiUtil wikiUtil, Hashtable props) throws Exception {
-	ServerInfo server = entry!=null?entry.getRemoteServer():null;
-	if(server!=null) return server;
-	String remoteServer = getProperty(wikiUtil, props, "remoteServer", null);
-	return  !Utils.stringDefined(remoteServer)?null:new ServerInfo(new URL(remoteServer),"","");
 
+    /**
+     * Wikify the entry
+     *
+     * @param request The request
+     * @param entry   the Entry
+     * @param wikiContent  the content
+     *
+     * @return wikified content
+     *
+     * @throws Exception  problem wikifying
+     */
+    public String wikifyEntry(Request request, Entry entry,
+                              String wikiContent)
+            throws Exception {
+        return wikifyEntry(request, entry, wikiContent, true, null, null);
     }
+
+    public String wikifyEntry(Request request, Entry entry,
+                              String wikiContent,boolean wrap)
+            throws Exception {
+        return wikifyEntry(request, entry, wikiContent, wrap, null, null);
+    }    
+
+
+    /**
+     * Wikify the entry
+     *
+     * @param request The request
+     * @param entry   the Entry
+     * @param wikiContent  the content to wikify
+     * @param wrapInDiv    true to wrap in a div tag
+     * @param subGroups    the list of subgroups to include
+     * @param subEntries   the list of subentries to include
+     *
+     * @return the wikified Entry
+     *
+     * @throws Exception  problem wikifying
+     */
+    public String wikifyEntry(Request request, Entry entry,
+                              String wikiContent, boolean wrapInDiv,
+                              List<Entry> subGroups, List<Entry> subEntries)
+            throws Exception {
+        return wikifyEntry(request, entry, wikiContent, wrapInDiv, subGroups,
+                           subEntries, null);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request the request
+     * @param entry _more_
+     * @param wikiContent _more_
+     * @param wrapInDiv _more_
+     * @param subGroups _more_
+     * @param subEntries _more_
+     * @param notTags _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String wikifyEntry(Request request, Entry entry,
+                              String wikiContent, boolean wrapInDiv,
+                              List<Entry> subGroups, List<Entry> subEntries,
+                              HashSet notTags)
+            throws Exception {
+
+	//Check for loops
+	Hashtable alreadyDoingIt  = (Hashtable) request.getExtraProperty("alreadyDoingIt");
+	if(alreadyDoingIt==null) {
+	    alreadyDoingIt = new Hashtable();
+	    request.putExtraProperty("alreadyDoingIt", alreadyDoingIt);
+	}
+	List contentList = (List) alreadyDoingIt.get(entry.getId());
+	if(contentList==null) {
+	    alreadyDoingIt.put(entry.getId(),contentList = new ArrayList());
+	}
+	if(contentList.contains(wikiContent)) {
+	    return "";
+	}
+	contentList.add(wikiContent);
+
+
+        Request myRequest = request.cloneMe();
+        WikiUtil wikiUtil =
+            initWikiUtil(myRequest,
+                         new WikiUtil(Misc.newHashtable(new Object[] {
+                             ATTR_REQUEST,
+                             myRequest, ATTR_ENTRY, entry })), entry);
+
+
+        return wikifyEntry(request, entry, wikiUtil, wikiContent, wrapInDiv,
+                           subGroups, subEntries, notTags, true);
+    }
+
+
+    /**
+     * Wikify the entry
+     *
+     * @param request The request
+     * @param entry   the Entry
+     * @param wikiUtil The wiki util
+     * @param wikiContent  the content to wikify
+     * @param wrapInDiv    true to wrap in a div tag
+     * @param subGroups    the list of subgroups to include
+     * @param subEntries   the list of subentries to include
+     * @param notTags _more_
+     * @param includeJavascript _more_
+     *
+     * @return the wikified Entry
+     *
+     * @throws Exception  problem wikifying
+     */
+    public String wikifyEntry(Request request, Entry entry,
+                              WikiUtil wikiUtil, String wikiContent,
+                              boolean wrapInDiv, List<Entry> subGroups,
+                              List<Entry> subEntries, HashSet notTags,
+                              boolean includeJavascript)
+            throws Exception {
+
+	if(!request.get(PROP_SHOW_TITLE,true)) {
+	    wikiUtil.putProperty(PROP_SHOW_TITLE,"false");
+	} else {
+	    wikiUtil.removeProperty(PROP_SHOW_TITLE);
+	}
+
+        List children = new ArrayList();
+        if (subGroups != null) {
+            wikiUtil.putProperty(entry.getId() + "_subgroups", subGroups);
+            children.addAll(subGroups);
+        }
+
+        if (subEntries != null) {
+            wikiUtil.putProperty(entry.getId() + "_subentries", subEntries);
+            children.addAll(subEntries);
+        }
+
+
+        //TODO: We need to keep track of what is getting called so we prevent
+        //infinite loops
+        String content;
+	try {
+	    content = wikiUtil.wikify(wikiContent, this, notTags);
+	} catch(Exception exc) {
+            getLogManager().logError("WikiManager.wikifyEntry", exc);
+	    return getPageHandler().showDialogError("An error occurred:" + exc);
+	}
+        if (wrapInDiv) {
+            content = HU.div(content, HU.cssClass("wikicontent")) + "\n";
+        }
+        if (includeJavascript) {
+            String js = wikiUtil.getJavascript(true);
+            if (js!=null && js.length() > 0) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(content);
+                sb.append(HU.script(js));
+                content = sb.toString();
+            }
+        }
+
+        return content;
+    }
+
+
+
+
 
     public Result processFindEntryFromId(Request request) throws Exception {
 	StringBuilder sb = new StringBuilder();
@@ -2137,7 +2299,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             myRequest.put(ARG_ENTRYID, entry.getId());
             myRequest.put(ARG_OUTPUT, OutputHandler.OUTPUT_HTML.getId());
             myRequest.setEmbedded(true);
-
+	    if(!getProperty(wikiUtil,props,"showTitle",true)) {
+		myRequest.put(PROP_SHOW_TITLE,"false");
+	    }
             Result result = getEntryManager().processEntryShow(myRequest,
 							       entry);
             //            Result result = getHtmlOutputHandler().getHtmlResult(newRequest,
@@ -5680,6 +5844,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                     Entry originalEntry, Entry importEntry,
                                     String tag, Hashtable props) {
         try {
+
             if ( !tag.equals(WIKI_TAG_IMPORT)) {
                 String include = my_getWikiInclude(wikiUtil, request,
                                      originalEntry, importEntry, tag, props,
@@ -5715,6 +5880,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 Object key = keys.nextElement();
                 myRequest.put(key, props.get(key));
             }
+
+	    if(!getProperty(wikiUtil,props,"showTitle",true)) {
+		myRequest.put(PROP_SHOW_TITLE,"false");
+	    }
 
             OutputType outputType = handler.findOutputType(tag);
             myRequest.put(ARG_ENTRYID, importEntry.getId());
@@ -6267,6 +6436,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
     }
 
+    public boolean titleOk(WikiUtil wikiUtil) {
+	if(Misc.equals(wikiUtil.getProperty(PROP_SHOW_TITLE),"false")) {
+	    return false;
+	}
+	return true;
+    }
+
     /**
      * Get a wiki link
      *
@@ -6399,164 +6575,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     }
 
 
-
-    /**
-     * Wikify the entry
-     *
-     * @param request The request
-     * @param entry   the Entry
-     * @param wikiContent  the content
-     *
-     * @return wikified content
-     *
-     * @throws Exception  problem wikifying
-     */
-    public String wikifyEntry(Request request, Entry entry,
-                              String wikiContent)
-            throws Exception {
-        return wikifyEntry(request, entry, wikiContent, true, null, null);
-    }
-
-    public String wikifyEntry(Request request, Entry entry,
-                              String wikiContent,boolean wrap)
-            throws Exception {
-        return wikifyEntry(request, entry, wikiContent, wrap, null, null);
-    }    
-
-
-    /**
-     * Wikify the entry
-     *
-     * @param request The request
-     * @param entry   the Entry
-     * @param wikiContent  the content to wikify
-     * @param wrapInDiv    true to wrap in a div tag
-     * @param subGroups    the list of subgroups to include
-     * @param subEntries   the list of subentries to include
-     *
-     * @return the wikified Entry
-     *
-     * @throws Exception  problem wikifying
-     */
-    public String wikifyEntry(Request request, Entry entry,
-                              String wikiContent, boolean wrapInDiv,
-                              List<Entry> subGroups, List<Entry> subEntries)
-            throws Exception {
-        return wikifyEntry(request, entry, wikiContent, wrapInDiv, subGroups,
-                           subEntries, null);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param entry _more_
-     * @param wikiContent _more_
-     * @param wrapInDiv _more_
-     * @param subGroups _more_
-     * @param subEntries _more_
-     * @param notTags _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public String wikifyEntry(Request request, Entry entry,
-                              String wikiContent, boolean wrapInDiv,
-                              List<Entry> subGroups, List<Entry> subEntries,
-                              HashSet notTags)
-            throws Exception {
-
-
-	//Check for loops
-	Hashtable alreadyDoingIt  = (Hashtable) request.getExtraProperty("alreadyDoingIt");
-	if(alreadyDoingIt==null) {
-	    alreadyDoingIt = new Hashtable();
-	    request.putExtraProperty("alreadyDoingIt", alreadyDoingIt);
-	}
-	List contentList = (List) alreadyDoingIt.get(entry.getId());
-	if(contentList==null) {
-	    alreadyDoingIt.put(entry.getId(),contentList = new ArrayList());
-	}
-	if(contentList.contains(wikiContent)) {
-	    return "";
-	}
-	contentList.add(wikiContent);
-
-
-        Request myRequest = request.cloneMe();
-        WikiUtil wikiUtil =
-            initWikiUtil(myRequest,
-                         new WikiUtil(Misc.newHashtable(new Object[] {
-                             ATTR_REQUEST,
-                             myRequest, ATTR_ENTRY, entry })), entry);
-
-
-        return wikifyEntry(request, entry, wikiUtil, wikiContent, wrapInDiv,
-                           subGroups, subEntries, notTags, true);
-    }
-
-
-    /**
-     * Wikify the entry
-     *
-     * @param request The request
-     * @param entry   the Entry
-     * @param wikiUtil The wiki util
-     * @param wikiContent  the content to wikify
-     * @param wrapInDiv    true to wrap in a div tag
-     * @param subGroups    the list of subgroups to include
-     * @param subEntries   the list of subentries to include
-     * @param notTags _more_
-     * @param includeJavascript _more_
-     *
-     * @return the wikified Entry
-     *
-     * @throws Exception  problem wikifying
-     */
-    public String wikifyEntry(Request request, Entry entry,
-                              WikiUtil wikiUtil, String wikiContent,
-                              boolean wrapInDiv, List<Entry> subGroups,
-                              List<Entry> subEntries, HashSet notTags,
-                              boolean includeJavascript)
-            throws Exception {
-        List children = new ArrayList();
-        if (subGroups != null) {
-            wikiUtil.putProperty(entry.getId() + "_subgroups", subGroups);
-            children.addAll(subGroups);
-        }
-
-        if (subEntries != null) {
-            wikiUtil.putProperty(entry.getId() + "_subentries", subEntries);
-            children.addAll(subEntries);
-        }
-
-
-        //TODO: We need to keep track of what is getting called so we prevent
-        //infinite loops
-        String content;
-	try {
-	    content = wikiUtil.wikify(wikiContent, this, notTags);
-	} catch(Exception exc) {
-            getLogManager().logError("WikiManager.wikifyEntry", exc);
-	    return getPageHandler().showDialogError("An error occurred:" + exc);
-	}
-        if (wrapInDiv) {
-            content = HU.div(content, HU.cssClass("wikicontent")) + "\n";
-        }
-        if (includeJavascript) {
-            String js = wikiUtil.getJavascript(true);
-            if (js!=null && js.length() > 0) {
-                StringBuilder sb = new StringBuilder();
-                sb.append(content);
-                sb.append(HU.script(js));
-                content = sb.toString();
-            }
-        }
-
-        return content;
-    }
 
     /**
      * Add a wiki link
@@ -7693,6 +7711,18 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     }
 
 
+    private ServerInfo getServer(Request request, Entry entry,
+				 WikiUtil wikiUtil, Hashtable props) throws Exception {
+	ServerInfo server = entry!=null?entry.getRemoteServer():null;
+	if(server!=null) return server;
+	String remoteServer = getProperty(wikiUtil, props, "remoteServer", null);
+	return  !Utils.stringDefined(remoteServer)?null:new ServerInfo(new URL(remoteServer),"","");
+
+    }
+
+
+
+
     /**
      * Class description
      *
@@ -7806,5 +7836,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         s = s.replaceAll("(?m)^//[^$]*$", "");
         System.err.println(s);
     }
+
+
+
 
 }

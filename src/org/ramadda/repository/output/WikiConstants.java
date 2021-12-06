@@ -619,6 +619,8 @@ public interface WikiConstants {
     /** property delimiter */
     public static final String PROP_DELIM = ":";
 
+    public static final String PROP_SHOW_TITLE = "wikiShowTitle";
+
     /** _more_ */
     public static final String PROP_GROUP_VAR = "groupvar";
 
