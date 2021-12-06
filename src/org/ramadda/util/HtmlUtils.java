@@ -1613,6 +1613,12 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb;
     }
 
+    public static String hrow(String... cols)
+            throws Exception {
+	StringBuilder sb = new StringBuilder();
+	hrow(sb,cols);
+	return sb.toString();
+    }
 
 
     /**
@@ -3968,7 +3974,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
      */
     public static String formTable(String clazz, boolean fullWidth) {
         return open(TAG_TABLE, (fullWidth
-                                ? attr("width", "100%")
+		    ? (style("width","100%") +    attr("width", "100%"))
                                 : "") + cssClass(" formtable "
                                 + ((clazz != null)
                                    ? clazz
