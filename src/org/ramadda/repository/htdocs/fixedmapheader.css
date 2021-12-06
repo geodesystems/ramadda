@@ -25,9 +25,10 @@
     border-bottom : 0px transparent;
 }
 .ramadda-logo-image {
-    height:55px;
+    height:45px;
 }
 /* the margin  should be a little more than the height of the logo image */
 .ramadda-outercontents {
-    margin-top:55px;
+    margin-top:46px;
 }
+
