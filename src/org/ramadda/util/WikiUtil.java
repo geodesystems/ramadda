@@ -360,11 +360,12 @@ public class WikiUtil {
         if (properties == null) {
             return null;
         }
-
         return properties.get(key);
     }
 
-
+    public Hashtable getProperties() {
+	return properties;
+    }
 
     /**
      * _more_
@@ -2079,6 +2080,43 @@ public class WikiUtil {
                     continue;
                 }
 
+                if (tline.startsWith("+fullscreen")) {
+		    Hashtable props = getProps.apply(tline);
+                    dragId = HU.getUniqueId("expandable");
+                    String  header = (String) props.get("header");
+                    String  clazz  = "ramadda-expandable";
+                    String  clazz2 = "";
+                    boolean expand = Misc.equals(props.get("expand"), "true");
+                    if (expand) {
+                        clazz2 += " ramadda-expand-now";
+                    }
+                    if (Misc.equals("true", props.get("framed"))) {
+                        clazz = "ramadda-expandable-frame";
+                    }
+                    HU.open(buff, "div", "id", dragId, "style",
+                            "position:relative;", "class", clazz2);
+                    if (header != null) {
+                        HU.div(buff, header,
+                               HU.attrs("class",
+                                        "ramadda-expandable-header"));
+                    }
+                    HU.open(buff, "div", "class", clazz);
+
+                    continue;
+                }
+
+                if (tline.startsWith("-fullscreen")) {
+                    if (dragId != null) {
+                        HU.close(buff, "div");
+                        HU.close(buff, "div");
+                        //              HU.script(buff, "$('#" + dragId +"').expandable();\n");
+                        HU.script(buff,
+                                  "HU.makeExpandable('#" + dragId + "',true);\n");
+                    }
+
+                    continue;
+                }
+
                 if (tline.startsWith("+section")) {
                     List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
@@ -2172,11 +2210,13 @@ public class WikiUtil {
                             sub = HU.div(subTitle,
                                          HU.clazz("ramadda-page-subtitle"));
                         }
-                        buff.append(HU.div(getTitle(title, titleStyle) + sub,
-                                           HU.cssClass("ramadda-page-title")
-                                           + ((headerStyle == null)
-                                ? ""
-                                : HU.style(headerStyle))));
+			if(handler.titleOk(this)) {
+			    HU.div(buff,getTitle(title, titleStyle) + sub,
+				   HU.cssClass("ramadda-page-title")
+				   + ((headerStyle == null)
+				      ? ""
+				      : HU.style(headerStyle)));
+			}
                     }
 
                     continue;
@@ -2354,18 +2394,20 @@ public class WikiUtil {
                 }
 
                 if (tline.startsWith(":title")) {
-                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
-                    if (toks.size() > 1) {
-                        String label = toks.get(1);
-                        if (label.indexOf("{{") >= 0) {
-                            label = wikify(label, handler);
-                            label = label.replaceAll(".*<.*?>(.*)</.*>.*",
-                                    "$1");
-                        }
-                        defineHeading.accept(buff, label, 0);
-                        buff.append(
-                            HU.div(getTitle(toks.get(1)),
-                                   HU.cssClass("ramadda-page-title")));
+		    if(handler.titleOk(this)) {
+			List<String> toks = Utils.splitUpTo(tline, " ", 2);
+			if (toks.size() > 1) {
+			    String label = toks.get(1);
+			    if (label.indexOf("{{") >= 0) {
+				label = wikify(label, handler);
+				label = label.replaceAll(".*<.*?>(.*)</.*>.*",
+							 "$1");
+			    }
+			    defineHeading.accept(buff, label, 0);
+			    buff.append(
+					HU.div(getTitle(toks.get(1)),
+					       HU.cssClass("ramadda-page-title")));
+			}
                     }
                     continue;
                 }
@@ -3410,7 +3452,6 @@ public class WikiUtil {
      */
     public String getTitle(String label, String style) {
         String url = getTitleUrl(true);
-
         return (url != null)
                ? HU.href(url, label, (style == null)
                                      ? null
@@ -4736,6 +4777,10 @@ public class WikiUtil {
         public String getWikiPropertyValue(WikiUtil wikiUtil,
                                            String property, String tag,
                                            String remainder, HashSet notTags);
+
+	public boolean titleOk(WikiUtil wikiUtil);
+
+
     }
 
 
