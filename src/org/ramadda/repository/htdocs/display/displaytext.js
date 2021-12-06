@@ -500,7 +500,7 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
 function RamaddaTemplateDisplay(displayManager, id, properties) {
     if(!Utils.isDefined(properties.showTitle)) properties.showTitle=false;
     if(!Utils.isDefined(properties.showMenu)) properties.showMenu=false;
-    if(!Utils.isDefined(properties.displayStyle)) properties.displayStyle = "background:rgba(0,0,0,0);";
+//    if(!Utils.isDefined(properties.displayStyle)) properties.displayStyle = "background:rgba(0,0,0,0);";
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TEMPLATE, properties);
     let myProps = [
 	{label:"Template"},
@@ -1559,20 +1559,20 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                     scrollY: this.getProperty("tableCountsHeight", tableHeight)
                 });
             if (this.getProperty("showFrequency", true)) {
-                this.frequencyTable = HU.formatTable("#" + this.domId("table_frequency"), {
+                HU.formatTable("#" + this.domId("table_frequency"), {
 		    scrollY: this.getProperty("tableFrequenecyHeight", tableHeight),
 		    searching: this.getProperty("showSearch", true)
-		});
-		this.frequencyTable.on( 'search.dt', ()=>{
-		    if(this.settingSearch) return;
-		    this.propagateEvent(DisplayEvent.propertyChanged, {
-			property: "searchValue",
-			value: this.frequencyTable.search()
+		}, table =>{
+		    this.frequencyTable = table;
+		    this.frequencyTable.on( 'search.dt', ()=>{
+			if(this.settingSearch) return;
+			this.propagateEvent(DisplayEvent.propertyChanged, {
+			    property: "searchValue",
+			    value: this.frequencyTable.search()
+			});
 		    });
-
-		} );
+		});
 	    }
-	    
         },
         handleEventPropertyChanged: function(source, prop) {
             if (prop.property == "searchValue") {

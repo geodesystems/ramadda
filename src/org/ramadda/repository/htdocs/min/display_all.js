@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Dec  5 20:13:00 MST 2021";
+var build_date="RAMADDA build date: Mon Dec  6 07:50:19 MST 2021";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -21083,7 +21083,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
     const ID_SLIDE = "slide";
     const ID_PREV = "prev";
     const ID_NEXT = "next";
-    if(!Utils.isDefined(properties.displayStyle)) properties.displayStyle = "background:rgba(0,0,0,0);";
+//    if(!Utils.isDefined(properties.displayStyle)) properties.displayStyle = "background:rgba(0,0,0,0);";
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_SLIDES, properties);
     let myProps = [
 	{label:'Slides Attributes'},
@@ -21092,7 +21092,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	slideIndex:0,
 
-        handleEventRecordSelection: function(source, args) {
+       handleEventRecordSelection: function(source, args) {
 	    //	    console.log(this.type+ ".recordSelection");
 	    if(!this.records) return;
 	    var index =-1;
@@ -26841,7 +26841,7 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
 function RamaddaTemplateDisplay(displayManager, id, properties) {
     if(!Utils.isDefined(properties.showTitle)) properties.showTitle=false;
     if(!Utils.isDefined(properties.showMenu)) properties.showMenu=false;
-    if(!Utils.isDefined(properties.displayStyle)) properties.displayStyle = "background:rgba(0,0,0,0);";
+//    if(!Utils.isDefined(properties.displayStyle)) properties.displayStyle = "background:rgba(0,0,0,0);";
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TEMPLATE, properties);
     let myProps = [
 	{label:"Template"},
@@ -27900,20 +27900,20 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                     scrollY: this.getProperty("tableCountsHeight", tableHeight)
                 });
             if (this.getProperty("showFrequency", true)) {
-                this.frequencyTable = HU.formatTable("#" + this.domId("table_frequency"), {
+                HU.formatTable("#" + this.domId("table_frequency"), {
 		    scrollY: this.getProperty("tableFrequenecyHeight", tableHeight),
 		    searching: this.getProperty("showSearch", true)
-		});
-		this.frequencyTable.on( 'search.dt', ()=>{
-		    if(this.settingSearch) return;
-		    this.propagateEvent(DisplayEvent.propertyChanged, {
-			property: "searchValue",
-			value: this.frequencyTable.search()
+		}, table =>{
+		    this.frequencyTable = table;
+		    this.frequencyTable.on( 'search.dt', ()=>{
+			if(this.settingSearch) return;
+			this.propagateEvent(DisplayEvent.propertyChanged, {
+			    property: "searchValue",
+			    value: this.frequencyTable.search()
+			});
 		    });
-
-		} );
+		});
 	    }
-	    
         },
         handleEventPropertyChanged: function(source, prop) {
             if (prop.property == "searchValue") {
@@ -33711,7 +33711,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 					       .clonePoints(feature.points), null);
         },
         getContentsDiv: function() {
-            let html =  HU.div([ATTR_CLASS, "display-contents", ID,
+            let html =  HU.div([ATTR_CLASS, "display-inner-contents", ID,
 			   this.domId(ID_DISPLAY_CONTENTS)], "");
 	    return html;
         },

@@ -4081,7 +4081,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    }
 	});
     },
-    formatTable: function(id, args) {
+    formatTable: function(id, args, callback) {
         let options = {
             paging: false,
             ordering: false,
@@ -4119,6 +4119,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 					    return;
 					}
 					$(this).DataTable(options);
+					if(callback) callback($(this));
 				    });
 				});
     },

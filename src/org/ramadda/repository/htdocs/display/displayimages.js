@@ -890,7 +890,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
     const ID_SLIDE = "slide";
     const ID_PREV = "prev";
     const ID_NEXT = "next";
-    if(!Utils.isDefined(properties.displayStyle)) properties.displayStyle = "background:rgba(0,0,0,0);";
+//    if(!Utils.isDefined(properties.displayStyle)) properties.displayStyle = "background:rgba(0,0,0,0);";
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_SLIDES, properties);
     let myProps = [
 	{label:'Slides Attributes'},
@@ -899,7 +899,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	slideIndex:0,
 
-        handleEventRecordSelection: function(source, args) {
+       handleEventRecordSelection: function(source, args) {
 	    //	    console.log(this.type+ ".recordSelection");
 	    if(!this.records) return;
 	    var index =-1;

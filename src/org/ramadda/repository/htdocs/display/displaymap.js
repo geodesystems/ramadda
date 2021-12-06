@@ -1304,7 +1304,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 					       .clonePoints(feature.points), null);
         },
         getContentsDiv: function() {
-            let html =  HU.div([ATTR_CLASS, "display-contents", ID,
+            let html =  HU.div([ATTR_CLASS, "display-inner-contents", ID,
 			   this.domId(ID_DISPLAY_CONTENTS)], "");
 	    return html;
         },
