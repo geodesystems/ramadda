@@ -23,7 +23,24 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	finalize: function() {
 	    this.theImage = this.image;
 	    this.image =null;
+	    if(this.imageBounds) {
+		let aspect = this.imageBounds.width/this.imageBounds.height;
+		let ring = this.feature.geometry.components[0];
+		let pts = ring.components;
+		let nw = pts[0], ne=pts[1],se=pts[2],sw=pts[3];
+		let w = ne.x-nw.x;
+		let h = nw.y-sw.y;		
+		se.x = ne.x = nw.x+aspect*(nw.y-sw.y);
+		w = ne.x-nw.x;
+		h = nw.y-sw.y;		
+	    }
+
 	    OpenLayers.Handler.RegularPolygon.prototype.finalize.apply(this,arguments);
+
+
+
+
+
 	    //call deactivate in a bit. If we do this now then there is an error in OL
 	    setTimeout(()=>{
 		this.display.clearCommands();
@@ -48,12 +65,19 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    if(this.image) {
 		this.display.map.removeLayer(this.image);
 	    }
+	    let ring = this.feature.geometry.components[0];
+	    let pts = ring.components;
+	    let nw = pts[0], ne=pts[1],se=pts[2],sw=pts[3];
+	    let w = ne.x-nw.x;
+	    let h = nw.y-sw.y;		
+
 	    let b = this.display.map.transformProjBounds(mapBounds);
 	    if(this.imageBounds) {
 		let aspect = this.imageBounds.width/this.imageBounds.height;
 		if(!evt.shiftKey)
 		    b.right = aspect*(b.top-b.bottom) + b.left 
 	    }
+	    this.lastBounds = b;
 	    this.image=  this.display.map.addImageLayer("","","",this.style.imageUrl,true,  b.top,b.left,b.bottom,b.right);
 	    this.image.setOpacity(this.style.imageOpacity);
 	}
@@ -138,6 +162,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    $.extend(tmpStyle,glyph.getStyle());
 		    if(glyph.isImage()) {
 			let url = prompt("Image URL:",this.lastImageUrl);
+//			let url = "https://localhost:8430/repository/entry/get/Flood%20flows.png?entryid=15a46519-d0f9-4f89-8c78-f6481e286f2f";
 			if(!url) return;
 			this.lastImageUrl = url;
 			tmpStyle.imageUrl = this.lastImageUrl;
