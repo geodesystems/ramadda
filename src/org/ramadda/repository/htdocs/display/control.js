@@ -539,9 +539,7 @@ function RamaddaLegendDisplay(displayManager, id, properties) {
 		});
 	    }
 
-
 	    let colors = this.getColorList();
-	    console.dir(colors)
 	    let html = "";
 	    let colorWidth = this.getProperty("colorWidth","20px");
 	    let labelColor = this.getProperty("labelColor","#000");
