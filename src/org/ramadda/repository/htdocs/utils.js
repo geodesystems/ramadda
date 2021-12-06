@@ -3292,11 +3292,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     createFancyBox: function(selector, args) {
 	args = args||{};
-	console.log("HtmlUtils.createFancyBox  called. selector:" + $(selector).length);
 	HtmlUtils.loadJqueryLib('fancybox',[ramaddaCdn +"/lib/fancybox-3/jquery.fancybox.min.css"],
 				[ramaddaCdn +"/lib/fancybox-3/jquery.fancybox.min.js"],
 				selector,()=>{
-				    console.log("fancybox loaded. calling fancybox on selector");
 				    $(selector).fancybox(args);
 				});
     },
