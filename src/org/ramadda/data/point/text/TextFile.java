@@ -574,7 +574,6 @@ public abstract class TextFile extends PointFile {
                 String sampleLine = visitInfo.getRecordIO().readLine();
                 visitInfo.getRecordIO().putBackLine(sampleLine);
                 List<String> toks = Utils.tokenizeColumns(fieldsLine, delim);
-		System.err.println("LINE:" + fieldsLine);
                 List<String> sampleToks = Utils.tokenizeColumns(sampleLine,
                                               delim);
                 List<String> cleaned = new ArrayList<String>();

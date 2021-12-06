@@ -1335,7 +1335,6 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
         if ((viewBounds != null) && viewBounds.equals("<bounds>")) {
             viewBounds = mainEntry.getBoundsString();
-	    System.err.println("VB1:" + viewBounds);
         }
         if (request.get("mapsubset", false)) {
             forceBounds = false;
