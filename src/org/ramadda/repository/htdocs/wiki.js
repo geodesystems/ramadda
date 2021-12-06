@@ -186,6 +186,8 @@ class  WikiEditor {
 	this.entryId  = entryId;
 	this.ID_WIKI_PREVIEW = "preview";
 	this.ID_WIKI_PREVIEW_INNER = "preview_inner";
+	this.ID_WIKI_PREVIEW_LIVE = "preview_live";
+	this.ID_WIKI_PREVIEW_CONTENTS = "preview_contents";	
 	this.ID_WIKI_PREVIEW_OPEN= "preview_open";
 	this.ID_WIKI_PREVIEW_CLOSE = "preview_close";
 	this.ID_WIKI_MESSAGE = "message";
@@ -236,6 +238,16 @@ class  WikiEditor {
 	this.editor.container.addEventListener("mousemove", (e) => {
 	    this.handleMouseMove(e);
 	});
+	this.editor.getSession().on('change', (e)=> {
+	    if(this.previewShown && this.previewLive) {
+		if(this.previewPending) return;
+		this.previewPending = setTimeout(()=>{
+		    this.previewPending = null;
+		    this.doPreview(this.entryId,true);
+		},100);
+	    }
+
+	});
 	this.getBlock().find("#" + this.id).append(HU.div([STYLE,HU.css("display","none"), CLASS,"wiki-editor-message",ID,this.domId(this.ID_WIKI_MESSAGE)]));
 	this.wikiInitDisplaysButton();
 
@@ -270,11 +282,14 @@ class  WikiEditor {
 	    name = prompt("Name:");
 	    if(!name) return;
 	} else {
+	    /*
 	    this.lastDesc = prompt("Description:",this.lastDesc||"");
 	    if(this.lastDesc===null) {
 		return;
 	    }
 	    desc = this.lastDesc;
+	    */
+	    desc = "";
 	}
 
 	let fileName = file.name;
@@ -320,9 +335,10 @@ class  WikiEditor {
 	}
 	let what = [];
 	if(isNew) {
-	    what.push("Link");
 	    if(opts.isImage) what.push("Image");
+	    what.push("Link");
 	    what.push("ID");
+	    what.push("entry=ID");	    
 	    what.push("Nothing");
 	} else {
 	    what.push("Link");
@@ -345,9 +361,10 @@ class  WikiEditor {
 
 	    what.push("Import");	    
 	    what.push("ID");
+	    what.push("entry=ID");	    
 	}
 
-	html += HU.select("",[ATTR_ID, this.domId("addtype")],what);
+	html += HU.select("",[ATTR_ID, this.domId("addtype")],what,this.lastWhat);
 	html += "<p>";
 	html += HU.div([STYLE,HU.css("display","inline-block"), CLASS,"ramadda-button",ID,this.domId("addok")],"OK")+
 	    SPACE3 +
@@ -363,7 +380,7 @@ class  WikiEditor {
 
 	dialog.find("#" +this.domId("addok")).button().click(()=>{
 	    this.addDialog.remove();
-	    let what=menu.val();
+	    let what=this.lastWhat=menu.val();
 	    let text="";
 	    if(what=="Image") {
 		text = " {{image entry=" + entryId+" caption='" + name+"' align=center width=50% }} ";
@@ -375,12 +392,14 @@ class  WikiEditor {
 		text = " {{tree entry=" + entryId+" }}";
 	    } else  if(what=="ID") {
 		text = entryId;
+	    } else  if(what=="entry=ID") {
+		text = " entry=" +entryId+" ";		
 	    } else  if(what=="Gallery") {
 		text = " {{gallery entry=" + entryId+" }}";
 	    } else  if(what=="Import") {
 		text = " {{import entry=" + entryId+" }}";		
 	    } else  if(what=="Grid") {
-		text = " {{grid entry=" + entryId+" }}";				
+		text = " {{grid entry=" + entryId+" }}";			
 	    } else if(what=="Link") {
 		text = " [[" + entryId +"|" + name+"]] ";
 	    } else if(what=="Nothing") {
@@ -696,7 +715,7 @@ class  WikiEditor {
 	$("#" + this.hidden).val(this.getEditor().getValue());
     }
 
-    async doPreview   (entry,  inPlace) {
+    async doPreview(entry,  inPlace) {
 	let id = this.getId();
 	let area = $("#" + id);
 	if(!inPlace) {
@@ -706,16 +725,22 @@ class  WikiEditor {
 	    $(HU.div([ID, this.domId(this.ID_WIKI_PREVIEW), CLASS,"wiki-editor-preview"],"")).appendTo(this.getBlock());
 	    let preview = $("#" + this.domId(this.ID_WIKI_PREVIEW));
 	    preview.css("width",width+"px");
+	    this.previewShown = true;
 	}
-	let bar = HtmlUtils.div(['class','ramadda-menubar',"style","text-align:center;width:100%;border:1px solid #ccc"],
-				HU.span([CLASS, "ramadda-clickable",ID,this.domId(this.ID_WIKI_PREVIEW_OPEN)], HtmlUtils.getIconImage("fa-sync",["title","Preview Again"])) +
-				SPACE2 +
-				HU.span([CLASS, "ramadda-clickable",ID,this.domId(this.ID_WIKI_PREVIEW_CLOSE)], HtmlUtils.getIconImage("fa-window-close",["title","Close Preview"])));
-
 	let wikiCallback = (html,status,xhr) =>{
+	    let _this = this;
 	    if(inPlace) {
 		$("#" + this.domId(this.ID_WIKI_PREVIEW_INNER)).html(html);
 	    } else {
+		let bar = HtmlUtils.div(['class','ramadda-menubar',"style","text-align:center;width:100%;border:1px solid #ccc"],
+					HU.span([CLASS, "ramadda-clickable",ID,this.domId(this.ID_WIKI_PREVIEW_OPEN)], HtmlUtils.getIconImage("fa-sync",["title","Preview Again"])) +
+					SPACE2 +
+					HU.checkbox("",[ID,this.domId(this.ID_WIKI_PREVIEW_LIVE)],this.previewLive,"Live") +
+					SPACE2 +
+					HU.span([CLASS, "ramadda-clickable",ID,this.domId(this.ID_WIKI_PREVIEW_CLOSE)], HtmlUtils.getIconImage("fa-window-close",["title","Close Preview"])));
+
+
+
 		html = HtmlUtils.div([ID,this.domId(this.ID_WIKI_PREVIEW_INNER), CLASS,"wiki-editor-preview-inner"], html);
 		html = bar + html;
 		let preview = $("#"+this.domId(this.ID_WIKI_PREVIEW));
@@ -725,12 +750,15 @@ class  WikiEditor {
 		    preview.html(HU.getErrorDialog("An error occurred:" + err));
 		}
 		preview.draggable();
-		preview.resizable({handles: 'ne, nw'});	    
-
+		preview.resizable({handles: 'ne,nw'});	    
+		$("#" + this.domId(this.ID_WIKI_PREVIEW_LIVE)).click(function() {
+		    _this.previewLive = $(this).is(':checked');
+		});
 		$("#" + this.domId(this.ID_WIKI_PREVIEW_OPEN)).click(() =>{
 		    this.doPreview(entry,true);
 		});
 		$("#" + this.domId(this.ID_WIKI_PREVIEW_CLOSE)).click(() =>{
+		    this.previewShown = false;
 		    $("#"+ this.domId(this.ID_WIKI_PREVIEW)).hide();
 		});		
 	    }
