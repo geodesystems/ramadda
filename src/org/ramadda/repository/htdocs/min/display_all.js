@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Dec  5 09:56:06 MST 2021";
+var build_date="RAMADDA build date: Sun Dec  5 18:34:44 MST 2021";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -21719,9 +21719,7 @@ function RamaddaLegendDisplay(displayManager, id, properties) {
 		});
 	    }
 
-
 	    let colors = this.getColorList();
-	    console.dir(colors)
 	    let html = "";
 	    let colorWidth = this.getProperty("colorWidth","20px");
 	    let labelColor = this.getProperty("labelColor","#000");
