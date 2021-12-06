@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Dec  6 08:52:45 MST 2021";
+var build_date="RAMADDA build date: Mon Dec  6 10:06:38 MST 2021";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -31122,7 +31122,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 //	    inner = HU.div([CLASS,"display-simplesearch-entries"],inner);
             this.writeEntries(inner, entries);
 	    let _this = this;
-	    this.jq(ID_ENTRIES).find(".display-simplesearch-entry").tooltip({
+	    this.jq(ID_ENTRIES).find(".display-simplesearch-entry img").tooltip({
 		content: function() {
 		    let thumb = $(this).attr("thumbnail");
 		    let entry = map[$(this).attr("entryid")];
