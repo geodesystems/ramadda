@@ -4642,11 +4642,14 @@ public class TypeHandler extends RepositoryManager {
                                 + HtmlUtils.squote(cbxId) + ");");
 
                         HtmlUtils.close(tmpSB, "div");
-
+			String edit = cbx+" " + HU.b("Description:") + "<br>"+tmpSB.toString();
+			sb.append(HU.row(HU.td(edit,"colspan=2")));
+			/*
                         sb.append(formEntryTop(request,
                                 getFormLabel(entry, ARG_DESCRIPTION,
-                                             "Description:<br>"
+                                             ""
                                              + cbx), tmpSB.toString()));
+			*/
                     }
                 }
 
