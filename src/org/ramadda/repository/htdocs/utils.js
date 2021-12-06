@@ -4415,6 +4415,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return this.attr("class", s);
     },
     makeFullScreen:function(elem) {
+	if(elem==null) {
+	    console.log("HtmlUtils.makeFullScreen: null elem argument");
+	    console.trace();
+	    return;
+	}
 	if (elem.requestFullscreen) {
 	    elem.requestFullscreen();
 	} else if (elem.webkitRequestFullscreen) { /* Safari */
@@ -4460,7 +4465,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		$(this).attr("title","Contract");
 
 		if(fullScreen) {
-		    let target  = $(selector).find(".ramadda-expandable-target");
+		    let target  = $(selector).find(".ramadda-expandable");
 		    target.css("background","#fff");
 		    HtmlUtils.makeFullScreen(target.get(0));
 		    return
