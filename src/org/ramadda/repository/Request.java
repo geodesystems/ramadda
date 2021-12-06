@@ -826,7 +826,6 @@ public class Request implements Constants, Cloneable {
      */
     public String getAbsoluteUrl(RequestUrl url) {
         String path = repository.getUrlBase() + url.getPath();
-
         return getAbsoluteUrl(path);
     }
 
@@ -838,6 +837,7 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     public String getAbsoluteUrl(String url) {
+	if(url.startsWith("http:") || url.startsWith("https:")) return url;
         int     port        = getServerPort();
         boolean alwaysHttps = repository.getAlwaysHttps();
         String protocol = (alwaysHttps)
