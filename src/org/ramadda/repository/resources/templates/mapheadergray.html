@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head><title>${title}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<properties>
+name=Map Header Gray
+id=mapheadergray
+</properties>
+${imports}
+${headfinal}
+<link href="${cdnpath}/fixedmapheader.css"  rel="stylesheet"  type="text/css" />
+<style type='text/css'>
+.ramadda-innercontent {
+   padding-top: 0px;
+   margin: 0px;
+   min-height:800px;
+   margin:0px;
+   background-color:#F0F2F5;
+}
+
+.display-contents:not(:empty) {
+    border:1px solid #cfcfcf;
+    margin:5px;
+    background:#fff;
+    border-radius:4px;
+}
+
+.display-simplesearch-contents:not(:empty), .display-animation-contents:not(:empty),.display-menu-contents:not(:empty), .display-legend-contents:not(:empty) {
+    xdisplay:inline-block;
+    background:transparent;
+    border:1px solid transparent;    
+}
+
+.ramadda-tabs-min .ui-tabs {
+    background: transparent;
+}
+.ui-tabs .ui-tabs-panel {
+    background: transparent;
+}
+.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active, a.ui-button:active, .ui-button:active, .ui-button.ui-state-active:hover {
+    background: transparent;
+}
+</style>
+</head>
+<body>
+<div class="ramadda-header">
+<div class="ramadda-header-center"></div>
+<table border="0" width="100%" cellspacing="0" cellpadding="0"><tr valign="bottom">
+<td width="5%"><a href="${logo.url}"><img valign="bottom" class="ramadda-logo-image"  src="${logo.image}" ></a></td>
+<td>${entry.header}</td>
+<td align=right>${links}</td>
+</table>
+</div>
+<div class="ramadda-outercontents">
+<div class="ramadda-innercontent">
+${content}
+</div> 
+</div> 
+<div class="ramadda-footer">
+${footer}
+<div class="ramadda-acknowledgement">
+Powered by <a href="https://geodesystems.com">Geode Systems and RAMADDA</a>
+</div>
+</div>
+${bottom}
+</body>
+</html>
