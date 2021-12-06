@@ -447,10 +447,14 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
         StringBuilder tmpSB = new StringBuilder();
         addWikiEditor(request, entry, tmpSB, formInfo, ARG_WIKI_TEXTAREA,
                       wikiText, null, false, 256000, true);
+	String edit = HU.b("Wiki Text:") + "<br>"+tmpSB.toString();
+	
+	sb.append(HU.row(HU.td(edit,"colspan=2")));
+	/*
         sb.append(formEntryTop(request,
                                getFormLabel(entry, ARG_WIKI_TEXTAREA,
                                             "Wiki Text"), tmpSB.toString()));
-
+	*/
         addDateToEntryForm(request, sb, entry);
         addAreaWidget(request, entry, sb, formInfo);
         sb.append(formEntry(request, msgLabel("Order"),
