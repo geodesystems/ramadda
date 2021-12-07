@@ -6199,6 +6199,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         StringBuilder misc2 = new StringBuilder();
         StringBuilder misc3 = new StringBuilder();		
 	Utils.appendAll(misc3,
+			l.call( "Macro", ":macro name value", ""),
 			l.call( "CSS", "+css_newline_", "-css"),
 			l.call( "PRE", "+pre_newline_", "-pre"),
 			l.call( "Javascript", "+js_newline_", "-js"),
