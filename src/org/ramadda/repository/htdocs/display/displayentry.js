@@ -2232,7 +2232,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		    if(thumb) {
 			html+=
 			    HU.div([STYLE,HU.css("max-height","100px","overflow-y","hidden")],
-				   HU.image(thumb,["width","200px"]));
+				   HU.image(thumb,["width","300px"]));
 		    }
 
 		    return html;

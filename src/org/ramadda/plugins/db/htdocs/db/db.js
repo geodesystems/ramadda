@@ -114,7 +114,7 @@ var DB =  {
 	let even = true;
 	table.find("input").each(function(){
 	    let id = $(this).attr("id");
-	    $(this).attr("onClick","checkboxClicked(event,'dbid_selected','" + id+"')");
+	    $(this).attr("onClick","HtmlUtils.checkboxClicked(event,'dbid_selected','" + id+"')");
 	});
 
 	table.find("tr").each(function(){
