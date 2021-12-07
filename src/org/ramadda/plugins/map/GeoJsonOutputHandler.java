@@ -49,6 +49,10 @@ public class GeoJsonOutputHandler extends OutputHandler {
         new OutputType("Reduce GeoJson", "geojsonreduce", OutputType.TYPE_VIEW, "",
                        ICON_MAP);
 
+    public static final OutputType OUTPUT_GEOJSON_FILTER =
+        new OutputType("Filter GeoJson", "geojsonfilter", OutputType.TYPE_VIEW, "",
+                       ICON_MAP);    
+
 
     /**
      * Create a MapOutputHandler
@@ -62,6 +66,7 @@ public class GeoJsonOutputHandler extends OutputHandler {
             throws Exception {
         super(repository, element);
         addType(OUTPUT_GEOJSON_TABLE);
+        addType(OUTPUT_GEOJSON_FILTER);	
         addType(OUTPUT_GEOJSON_REDUCE);	
         addType(OUTPUT_GEOJSONCSV);
     }
@@ -83,6 +88,8 @@ public class GeoJsonOutputHandler extends OutputHandler {
                 && state.getEntry().getTypeHandler().isType("geo_geojson")) {
             links.add(makeLink(request, state.getEntry(),
                                OUTPUT_GEOJSON_TABLE));
+            links.add(makeLink(request, state.getEntry(),
+                               OUTPUT_GEOJSON_FILTER));	    
             links.add(makeLink(request, state.getEntry(),
                                OUTPUT_GEOJSON_REDUCE));	    
             links.add(makeLink(request, state.getEntry(), OUTPUT_GEOJSONCSV));
@@ -106,6 +113,49 @@ public class GeoJsonOutputHandler extends OutputHandler {
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
+
+
+        if (outputType.equals(OUTPUT_GEOJSON_FILTER)) {
+	    if(!request.exists("geojson_property")) {
+		StringBuilder sb = new StringBuilder();
+		getPageHandler().entrySectionOpen(request, entry, sb, "Geojson Filter");
+		sb.append(HtmlUtils.formTable());
+		sb.append( HtmlUtils.form(getRepository().URL_ENTRY_SHOW.toString()));
+		sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+		sb.append(HtmlUtils.hidden(ARG_OUTPUT,
+					   OUTPUT_GEOJSON_FILTER.toString()));
+		sb.append(
+			  HtmlUtils.formEntry(
+					      msgLabel("Property"),
+					      HU.input("geojson_property")));
+		sb.append(
+			  HtmlUtils.formEntry(
+					      msgLabel("Value"),
+					      HU.input("geojson_value")));		
+
+		StringBuffer buttons =
+		    new StringBuffer(HtmlUtils.submit("Subset",
+						      "geojson_subset"));
+		sb.append(HtmlUtils.formEntry("", buttons.toString()));
+		sb.append(HtmlUtils.formClose());
+		sb.append(HtmlUtils.formTableClose());
+		getPageHandler().entrySectionClose(request, entry, sb);
+		return new Result("", sb);
+	    }
+
+	    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+	    PrintStream           pw  = new PrintStream(bos);
+	    Json.geojsonSubsetByProperty(entry.getResource().getPath(), pw,
+					 request.getString("geojson_property",""),
+					 request.getString("geojson_value",""));
+
+	    pw.close();
+	    StringBuilder sb = new StringBuilder(new String(bos.toByteArray()));	    
+	    request.setReturnFilename(getStorageManager().getOriginalFilename(entry.getResource().getPath()));
+            Result result = new Result("", sb, "application/json");
+	    return result;
+
+	}
 
 
         if (outputType.equals(OUTPUT_GEOJSON_REDUCE)) {
