@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.util.geo;
 
 
-import org.ramadda.util.Bounds;
+import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;

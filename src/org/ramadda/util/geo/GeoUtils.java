@@ -9,7 +9,7 @@ package org.ramadda.util.geo;
 import org.json.*;
 
 
-import org.ramadda.util.Bounds;
+import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
@@ -389,6 +389,7 @@ public class GeoUtils {
         FeatureCollection fc = FeatureCollection.getFeatureCollection(path,
                                    null);
         if (fc == null) {
+	    String _path = path.toLowerCase();
             if (path.equals("counties")) {
                 path = "/org/ramadda/util/geo/resources/counties.zip";
             } else if (path.equals("states")) {
@@ -396,11 +397,11 @@ public class GeoUtils {
             } else if (path.equals("timezones")) {
                 path = "/org/ramadda/util/geo/resources/timezones.zip";
             }
-            if ( !path.endsWith(".zip") && !path.startsWith("/")) {
+            if ( !_path.endsWith(".zip") && !_path.startsWith("/") && !_path.endsWith("json")) {
                 path = "/org/ramadda/util/geo/resources/" + path + ".zip";
             }
             fc = FeatureCollection.getFeatureCollection(path,
-                    IO.getInputStream(path));
+							IO.getInputStream(path));
         }
 
         return fc.find((float) lat, (float) lon);

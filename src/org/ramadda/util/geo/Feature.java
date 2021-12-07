@@ -125,7 +125,7 @@ public class Feature {
      * @return _more_
      */
     public String toString() {
-        return "feature:" + data;
+        return "feature:" + featureProperties;
     }
 
     /**

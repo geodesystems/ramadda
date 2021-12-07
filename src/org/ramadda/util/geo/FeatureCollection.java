@@ -87,6 +87,11 @@ public class FeatureCollection {
         new TTLCache<String, FeatureCollection>(60 * 1000 * 5);
 
 
+    public FeatureCollection(List<Feature> features) {
+	this.features = features;
+    }
+
+
     /**
      * Create a FeatureCollection
      */
@@ -176,7 +181,11 @@ public class FeatureCollection {
             throws Exception {
         FeatureCollection fc = cache.get(path);
         if ((fc == null) && (is != null)) {
-            fc = makeFeatureCollection(is);
+	    if(path.toLowerCase().endsWith("json")) {
+		fc  = new FeatureCollection(GeoJson.getFeatures(path));
+	    } else {
+		fc = makeFeatureCollection(is);
+	    }
             cache.put(path, fc);
         }
 
