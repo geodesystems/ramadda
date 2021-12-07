@@ -1423,6 +1423,11 @@ public class Json {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+	geojsonSubsetByProperty(args[0], System.out, args[1], args[2]);
+	if (true) {
+	    return;
+	}
+
 
 	long t1 = System.currentTimeMillis();
 	for(int  i=0;i<1000000;i++) {
