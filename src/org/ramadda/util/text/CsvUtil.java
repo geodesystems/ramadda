@@ -2167,7 +2167,12 @@ public class CsvUtil {
                 new Arg("lookup","('counties' or 'states' or 'countries' or 'timezones')"),
                 new Arg("fields","fields in shapefile"),		
                 new Arg("lat", "Latitude column", "type", "column"),
-                new Arg("lon", "Longitude column", "type", "column")),	
+                new Arg("lon", "Longitude column", "type", "column")),
+	new Cmd("-geocontains", "Check for containment",
+                new Arg("lookup","('counties' or 'states' or 'countries' or 'timezones')"),
+                new Arg("name","new column name"),		
+                new Arg("lat", "Latitude column", "type", "column"),
+                new Arg("lon", "Longitude column", "type", "column")),		
 	new Cmd("-elevation", "Look up elevation(using 1/3 arc-second DEM)",
                 new Arg("lat", "Latitude column", "type", "column"),
                 new Arg("lon", "Longitude column", "type", "column")),	
@@ -3135,6 +3140,10 @@ public class CsvUtil {
 		ctx.addProcessor(new Converter.GeoNamer(args.get(++i),args.get(++i),args.get(++i),args.get(++i)));
 		return i;
 	    });
+	defineFunction("-geocontains",4,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.GeoContains(args.get(++i),args.get(++i),args.get(++i),args.get(++i)));
+		return i;
+	    });	
 	defineFunction("-elevation",2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Elevation(args.get(++i),args.get(++i)));
 		return i;

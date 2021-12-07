@@ -1270,6 +1270,7 @@ class  WikiEditor {
 		{label:'HTML Properties'},
 		{p:'info',ex:'true', tt:'Include the HTML of the entry'},
 		{p:'children',ex:'true',tt:'Include HTML of children entries'},
+		{p:'showTitle',ex:'false'},		
 	    ],
 
 

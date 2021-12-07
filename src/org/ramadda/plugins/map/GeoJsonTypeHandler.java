@@ -17,7 +17,8 @@ import org.ramadda.repository.output.KmlOutputHandler;
 import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.type.GenericTypeHandler;
 
-import org.ramadda.util.Bounds;
+import org.ramadda.util.geo.GeoJson;
+import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
 import org.ramadda.util.Utils;
@@ -73,7 +74,7 @@ public class GeoJsonTypeHandler extends GenericTypeHandler implements WikiConsta
         if ( !entry.isFile()) {
             return;
         }
-        Bounds bounds = Json.getBounds(entry.getResource().toString());
+        Bounds bounds = GeoJson.getBounds(entry.getResource().toString());
         if (bounds != null) {
             entry.setBounds(bounds);
         }

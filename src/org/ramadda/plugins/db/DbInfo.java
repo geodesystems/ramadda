@@ -27,7 +27,7 @@ import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.output.RssOutputHandler;
 import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.type.*;
-import org.ramadda.util.Bounds;
+import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.GoogleChart;
 

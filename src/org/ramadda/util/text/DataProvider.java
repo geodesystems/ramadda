@@ -10,6 +10,7 @@ import org.apache.commons.lang3.text.StrTokenizer;
 
 import org.json.*;
 
+import org.ramadda.util.geo.GeoJson;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Json;
@@ -821,7 +822,7 @@ public abstract class DataProvider extends CsvOperator {
          */
         public void tokenize(TextReader ctx, String s) throws Exception {
             StringBuilder sb = new StringBuilder();
-            Json.geojsonToCsv(s, sb, null, addPolygon);
+            GeoJson.geojsonToCsv(s, sb, null, addPolygon);
             StrTokenizer tokenizer = StrTokenizer.getCSVInstance();
             tokenizer.setEmptyTokenAsNull(true);
             for (String line : Utils.split(sb.toString(), "\n", true, true)) {

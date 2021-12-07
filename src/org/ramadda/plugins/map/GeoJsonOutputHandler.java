@@ -6,8 +6,10 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.plugins.map;
 
 
+
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
+import org.ramadda.util.geo.GeoJson;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
 import org.ramadda.util.text.CsvUtil;
@@ -145,7 +147,7 @@ public class GeoJsonOutputHandler extends OutputHandler {
 
 	    ByteArrayOutputStream bos = new ByteArrayOutputStream();
 	    PrintStream           pw  = new PrintStream(bos);
-	    Json.geojsonSubsetByProperty(entry.getResource().getPath(), pw,
+	    GeoJson.geojsonSubsetByProperty(entry.getResource().getPath(), pw,
 					 request.getString("geojson_property",""),
 					 request.getString("geojson_value",""));
 
@@ -172,7 +174,7 @@ public class GeoJsonOutputHandler extends OutputHandler {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         PrintStream           pw  = new PrintStream(bos);
-        Json.geojsonFileToCsv(entry.getResource().getPath(), pw, null);
+        GeoJson.geojsonFileToCsv(entry.getResource().getPath(), pw, null);
         pw.close();
         StringBuilder sb = new StringBuilder(new String(bos.toByteArray()));
 

@@ -18,7 +18,7 @@ import org.ramadda.repository.map.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.TypeHandler;
 
-import org.ramadda.util.Bounds;
+import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.Utils;

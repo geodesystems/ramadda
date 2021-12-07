@@ -19,6 +19,7 @@ import org.ramadda.util.IO;
 import org.ramadda.util.Json;
 import org.ramadda.util.Utils;
 
+import org.ramadda.util.geo.Feature;
 import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.geo.Place;
 
@@ -4239,6 +4240,89 @@ public abstract class Converter extends Processor {
     }
 
 
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Jan 16, '15
+     * @author         Enter your name here...
+     */
+    public static class GeoContains extends Converter {
+
+
+	private String file;
+	
+        /** _more_ */
+        private String name;
+
+        /** _more_ */
+        private String lat;
+
+        /** _more_ */
+        private String lon;
+
+
+        /** _more_ */
+        private int latColumn = -1;
+
+        /** _more_ */
+        private int lonColumn = -1;
+
+
+
+        /**
+         * @param file _more_
+         * @param lat _more_
+         * @param lon _more_
+         */
+        public GeoContains(String file, String name,String lat, String lon) {
+            super();
+            this.file = file;
+            this.name = name;	    
+            this.lat   = lat;
+            this.lon   = lon;
+        }
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+                latColumn = getIndex(ctx, lat);
+                lonColumn = getIndex(ctx, lon);
+		row.add(name);
+                return row;
+            }
+            try {
+		//		System.err.println(latColumn +" " + lonColumn);		System.err.println(row);
+		String slat =row.getString(latColumn).trim();
+		String slon =row.getString(lonColumn).trim();		
+		if(slat.length()==0 || slon.length()==0) {
+		    row.add("false");
+		    return row;
+		}
+                double latValue =
+                    Double.parseDouble(slat);
+                double lonValue =
+                    Double.parseDouble(slon);
+		
+		if(GeoUtils.findFeature(file, latValue, lonValue)!=null)
+		    row.add("true");
+		else
+		    row.add("false");
+		return row;
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
+        }
+
+    }
+
+    
     /**
      * Class description
      *

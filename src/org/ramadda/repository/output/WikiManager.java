@@ -52,7 +52,7 @@ import org.ramadda.repository.util.DateArgument;
 import org.ramadda.repository.util.ServerInfo;
 
 
-import org.ramadda.util.Bounds;
+import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.BufferMapList;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;

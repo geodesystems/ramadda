@@ -13,7 +13,7 @@ import org.ramadda.data.record.filter.*;
 
 
 import org.ramadda.repository.*;
-import org.ramadda.util.Bounds;
+import org.ramadda.util.geo.Bounds;
 
 import ucar.unidata.util.IOUtil;
 

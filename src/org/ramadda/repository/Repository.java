@@ -63,7 +63,7 @@ import org.ramadda.repository.util.ServerInfo;
 
 
 import org.ramadda.service.Service;
-import org.ramadda.util.Bounds;
+import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;

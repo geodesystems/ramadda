@@ -13,7 +13,7 @@ import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.type.Column;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.util.ServerInfo;
-import org.ramadda.util.Bounds;
+import org.ramadda.util.geo.Bounds;
 
 import org.ramadda.util.Utils;
 
