@@ -116,23 +116,23 @@ public class GeoJsonOutputHandler extends OutputHandler {
 
 
         if (outputType.equals(OUTPUT_GEOJSON_FILTER)) {
-	    if(!request.exists("geojson_property")) {
+	    if(!request.exists("geojson_subset")) {
 		StringBuilder sb = new StringBuilder();
 		getPageHandler().entrySectionOpen(request, entry, sb, "Geojson Filter");
 		sb.append(HtmlUtils.formTable());
-		sb.append( HtmlUtils.form(getRepository().URL_ENTRY_SHOW.toString()));
+		sb.append(HtmlUtils.form(getRepository().URL_ENTRY_SHOW.toString()));
 		sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
 		sb.append(HtmlUtils.hidden(ARG_OUTPUT,
 					   OUTPUT_GEOJSON_FILTER.toString()));
 		sb.append(
 			  HtmlUtils.formEntry(
 					      msgLabel("Property"),
-					      HU.input("geojson_property")));
+					      HU.input("geojson_property",request.getString("geojson_property",""))));
 		sb.append(
 			  HtmlUtils.formEntry(
 					      msgLabel("Value"),
-					      HU.input("geojson_value")));		
-
+					      HU.input("geojson_value",
+						       request.getString("geojson_value",""))));
 		StringBuffer buttons =
 		    new StringBuffer(HtmlUtils.submit("Subset",
 						      "geojson_subset"));

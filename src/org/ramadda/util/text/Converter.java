@@ -4169,13 +4169,16 @@ public abstract class Converter extends Processor {
         private int lonColumn = -1;
 
 
+	private List<String> fields;
+
         /**
          * @param where _more_
          * @param lat _more_
          * @param lon _more_
          */
-        public GeoNamer(String where, String lat, String lon) {
+        public GeoNamer(String where, String what,String lat, String lon) {
             super();
+	    this.fields = Utils.split(what,",",true,true);
             this.where = where;
             this.lat   = lat;
             this.lon   = lon;
@@ -4191,28 +4194,43 @@ public abstract class Converter extends Processor {
             if (rowIdx++ == 0) {
                 latColumn = getIndex(ctx, lat);
                 lonColumn = getIndex(ctx, lon);
-                String label = where.equals("counties")
-                               ? "County"
-                               : where.equals("states")
-                                 ? "State"
-                                 : where.equals("timezones")
-                                   ? "Timezone"
-                                   : where;
-                row.add(label);
-
+		if(fields.size()>0) {
+		    for(String f: fields) row.add(f);
+		} else {
+		    String label = where.equals("counties")
+			? "County"
+			: where.equals("states")
+			? "State"
+			: where.equals("timezones")
+			? "Timezone"
+			: where;
+		    row.add(label);
+		}
                 return row;
             }
             try {
+		String slat =row.getString(latColumn).trim();
+		String slon =row.getString(lonColumn).trim();		
+		if(slat.length()==0 || slon.length()==0) {
+		    for(String f: fields) row.add("");
+		    return row;
+		}
                 double latValue =
-                    Double.parseDouble(row.getString(latColumn));
+                    Double.parseDouble(slat);
                 double lonValue =
-                    Double.parseDouble(row.getString(lonColumn));
-                String name = GeoUtils.findFeatureName(where, latValue,
-                                  lonValue, "");
-                name = name.trim();
-                row.add(name);
-
-                return row;
+                    Double.parseDouble(slon);
+		
+		List<Object> vs =  GeoUtils.findFeatureFields(where, fields,latValue,
+                                  lonValue);
+		if(vs==null) {
+		    for(String f: fields) row.add("");
+		} else {
+		    for(Object o:vs) {
+			if(o==null) o="";
+			row.add(o.toString().trim());
+		    }
+		}
+		return row;
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }

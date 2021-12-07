@@ -2165,6 +2165,7 @@ public class CsvUtil {
                 new Arg("column")),
 	new Cmd("-geoname", "Look up location name",
                 new Arg("lookup","('counties' or 'states' or 'countries' or 'timezones')"),
+                new Arg("fields","fields in shapefile"),		
                 new Arg("lat", "Latitude column", "type", "column"),
                 new Arg("lon", "Longitude column", "type", "column")),	
 	new Cmd("-elevation", "Look up elevation(using 1/3 arc-second DEM)",
@@ -3130,8 +3131,8 @@ public class CsvUtil {
 		ctx.addProcessor(new Converter.StateNamer(args.get(++i)));
 		return i;
 	    });
-	defineFunction("-geoname",3,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.GeoNamer(args.get(++i),args.get(++i),args.get(++i)));
+	defineFunction("-geoname",4,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.GeoNamer(args.get(++i),args.get(++i),args.get(++i),args.get(++i)));
 		return i;
 	    });
 	defineFunction("-elevation",2,(ctx,args,i) -> {

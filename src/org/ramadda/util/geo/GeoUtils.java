@@ -32,6 +32,7 @@ import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.TimeZone;
@@ -432,6 +433,34 @@ public class GeoUtils {
         return dflt;
     }
 
+    public static List<Object> findFeatureFields(String path, List<String> fields,
+                                          double lat, double lon)
+            throws Exception {
+	if(fields.size()==0) {
+	    String v  = findFeatureName(path, lat,lon,"");
+	    List<Object> vs = new ArrayList<Object>();
+	    vs.add(v);
+	    return vs;
+	}
+
+        Feature feature = findFeature(path, lat, lon);
+        if (feature != null) {
+            Hashtable data = feature.getData();
+            if (data != null) {
+		List<Object> vs = new ArrayList<Object>();
+		for(String field: fields) {
+		    Object o = data.get(field);
+		    if(o==null) {
+			o = data.get(field.toUpperCase());
+		    }
+		    vs.add(o);
+		}
+		return vs;
+            }
+        }
+	return null;
+    }
+    
     /** _more_ */
     private static final String[] NAME_FIELDS = new String[] { "name",
             "state_name", "cntry_name", "tzid" };
@@ -1221,6 +1250,14 @@ public class GeoUtils {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+	if(true) {
+	    System.err.println(findFeatureField(args[0],"drainage",
+						Double.parseDouble(args[1]),
+						Double.parseDouble(args[2]),null));
+	    return;
+	}
+
+
         setCacheDir(new File("."));
 
         /*
