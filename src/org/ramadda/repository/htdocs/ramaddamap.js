@@ -435,7 +435,6 @@ function RepositoryMap(mapId, params) {
 		    return;
 		}
 
-
                 if(e.feature && e.feature.noSelect) {
                     return;
                 }
@@ -998,6 +997,14 @@ RepositoryMap.prototype = {
 
     },
 
+    getLayerHighlightStyle:function(layer) {
+	let highlightStyle = $.extend({},this.highlightStyle);
+	if(layer.highlightStyle) {
+	    $.extend(highlightStyle, layer.highlightStyle);
+	}
+	return highlightStyle;
+    },
+
     handleFeatureover: function(feature, skipText) {
 	if(this.doMouseOver || feature.highlightText || feature.highlightTextGetter) {
 	    var location = feature.location;
@@ -1036,13 +1043,16 @@ RepositoryMap.prototype = {
 
 
 	if (layer.canSelect === false) return;
+	if (layer.noHighlight) return;
 
         var _this = this;
         if (!feature.isSelected) {
             feature.originalStyle = feature.style;
             feature.style = null;
 	    //"temporary"
-	    let highlightStyle = $.extend({},this.highlightStyle);
+	    let highlightStyle = this.getLayerHighlightStyle(layer);
+
+
 	    if(highlightStyle.fillColor!="transparent" && feature.originalStyle) {
 		highlightStyle.fillColor  = Utils.brighterColor(feature.originalStyle.fillColor||highlightStyle.fillColor,0.4);
 	    }
@@ -1130,18 +1140,18 @@ RepositoryMap.prototype = {
         layer.selectedFeature = feature;
         layer.selectedFeature.isSelected = true;
 	let style = $.extend({},feature.style);
+	let highlightStyle = this.getLayerHighlightStyle(layer);
 	$.extend(style, {
-	    strokeColor:this.params.selectStrokeColor || this.params.highlightStrokeColor,
-	    strokeWidth: this.params.selectStrokeWidth || this.params.highlightStrokeWidth,
+	    strokeColor:this.params.selectStrokeColor || highlightStyle.strokeColor,
+	    strokeWidth: this.params.selectStrokeWidth || highlightStyle.strokeWidth,
 	    strokeOpacity: this.params.selectStrokeOpacity ||0.75,
-	    fillOpacity: this.params.selectFillOpacity ||this.params.highlightFillOpacity,
+	    fillOpacity: this.params.selectFillOpacity ||highlightStyle.fillOpacity,
 	    fill: true,
 	});
 
 	if(style.fillColor!="transparent") {
-	    style.fillColor  = this.params.selectFillColor || this.params.highlightFillColor;
+	    style.fillColor  = this.params.selectFillColor || highlightStyle.fillColor;
 	} 
-
 
 	if(Utils.isDefined(style.pointRadius)) {
 	    style.pointRadius = Math.round(style.pointRadius*1.5);
@@ -2214,10 +2224,44 @@ RepositoryMap.prototype = {
         this.addSelectCallback(layer, canSelect, selectCallback, unselectCallback);
     },
 
+    getLayerProperty:function(layer, prop, idx,name, dflt) {
+	let id = Utils.makeId(name);
+	let v = this.getProperty(prop  +"_"+id, this.getProperty(prop+idx,this.getProperty(prop, dflt)));
+	return v;
+    },
+    addMapFileLayer:  function(layer, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent) {
+
+	let idx  = this.loadedLayers.length+1;
+	let opts =  {
+            strokeColor: this.getLayerProperty(layer, "layerStrokeColor", idx,name, "blue"),
+            strokeWidth: this.getLayerProperty(layer, "layerStrokeWidth", idx,name, 1),
+	    fillColor:this.getLayerProperty(layer, "layerFillColor", idx,name, "#ccc"),
+	    fillOpacity:this.getLayerProperty(layer, "layerFillOpacity", idx,name, 0.4)
+        }
+	let highlightStyle = {};
+	$.extend(highlightStyle, this.highlightStyle);
+
+	for(a in highlightStyle) {
+	    let prop = String(a);
+	    prop = "highlight" + prop.substring(0,1).toUpperCase() + prop.substring(1);
+	    highlightStyle[a] = this.getLayerProperty(layer, prop,  idx,name,  highlightStyle[a]);
+	}
+	layer.highlightStyle = highlightStyle;
+	if(this.getLayerProperty(layer, "noHighlight", idx,name, false)) {
+	    layer.noHighlight = true;
+	} 
+
+	args = args||{};
+	$.extend(opts, args);
+        layer.styleMap = this.getVectorLayerStyleMap(layer, opts);
+	this.checkLayerToggle(name,layer,idx,opts);
+        this.initMapVectorLayer(layer, canSelect, selectCallback, unselectCallback, loadCallback, zoomToExtent);
+
+        return layer;
+    },
+
     addGeoJsonLayer:  function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent) {
         let layer = new OpenLayers.Layer.Vector(name, {
-//            numZoomLevels: MapUtils.defaults.zoomLevels,
-//	    alwaysInRange:true,
             projection: this.displayProjection,
             strategies: [new OpenLayers.Strategy.Fixed()],
             protocol: new OpenLayers.Protocol.HTTP({
@@ -2225,30 +2269,13 @@ RepositoryMap.prototype = {
                 format: new OpenLayers.Format.GeoJSON({})
             }),
         });
-//	this.tmp = layer;
 
-	let idx  = this.loadedLayers.length+1;
-	let opts =  {
-            strokeColor: this.getProperty("layerStrokeColor"+idx,
-					  this.getProperty("layerStrokeColor",'blue')),
-            strokeWidth: this.getProperty("layerStrokeWidth"+idx,
-					  this.getProperty("layerStrokeWidth",1)),
-	    fillColor:this.getProperty("layerFillColor"+idx,
-				       this.getProperty("layerFillColor","#ccc")),
-	    fillOpacity:this.getProperty("layerFillOpacity"+idx,
-					 this.getProperty("layerFillOpacity",0.4))
-        }
-	args = args||{};
-	$.extend(opts, args);
-        layer.styleMap = this.getVectorLayerStyleMap(layer, opts);
-        this.initMapVectorLayer(layer, canSelect, selectCallback, unselectCallback, loadCallback, zoomToExtent);
-	this.checkLayerToggle(name,layer,idx,opts);
-        return layer;
+	this.addMapFileLayer(layer, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent);
+	return layer;
     },
 
     addKMLLayer:  function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent) {
         let layer = new OpenLayers.Layer.Vector(name, {
-//            numZoomLevels: MapUtils.defaults.zoomLevels,
             projection: this.displayProjection,
             strategies: [new OpenLayers.Strategy.Fixed()],
             protocol: new OpenLayers.Protocol.HTTP({
@@ -2259,32 +2286,20 @@ RepositoryMap.prototype = {
                     maxDepth: 2
                 })
             }),
-            //styleMap: this.getVectorLayerStyleMap(args)
         });
-	let idx  = this.loadedLayers.length+1;
-	let opts =  {
-            strokeColor: this.getProperty("layerStrokeColor"+idx,
-					  this.getProperty("layerStrokeColor",'blue')),
-            strokeWidth: this.getProperty("layerStrokeWidth"+idx,
-					  this.getProperty("layerStrokeWidth",1)),
-	    fillColor:this.getProperty("layerFillColor"+idx,
-				       this.getProperty("layerFillColor","#ccc")),
-	    fillOpacity:this.getProperty("layerFillOpacity"+idx,
-					 this.getProperty("layerFillOpacity",0.4))
-        }
-
-	args = args||{};
-	$.extend(opts, args);
-        layer.styleMap = this.getVectorLayerStyleMap(layer, opts);
-        this.initMapVectorLayer(layer, canSelect, selectCallback, unselectCallback, loadCallback, zoomToExtent);
-	this.checkLayerToggle(name,layer,idx,opts);
+	this.addMapFileLayer(layer, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent);
         return layer;
     },
 
     checkLayerToggle:function(name,layer,idx,opts) {
+	let visible = this.getLayerProperty(layer, "layerVisible", idx,name, true);
+	if(!visible) {
+	    layer.setVisibility(false);
+	}
+
 	if(this.params["showLayerToggle"]) {
 	    let color = Utils.addAlphaToColor(opts.fillColor,0.4);
-            let cbx = HU.span([], HtmlUtils.checkbox(this.mapDivId + "_layertoggle"+idx, ["title", "Toggle Layer"], true,name)) +" ";
+            let cbx = HU.span([], HtmlUtils.checkbox(this.mapDivId + "_layertoggle"+idx, ["title", "Toggle Layer"], visible,name)) +" ";
 	    cbx = HU.span([STYLE,HU.css('margin-right','5px','padding','5px','background',color)], cbx);
 	    $("#" + this.mapDivId+"_header").append(" " +cbx);
 	    $("#" + this.mapDivId + "_layertoggle"+idx).change(function() {
