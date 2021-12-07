@@ -2004,13 +2004,16 @@ public class RowCollector extends Processor {
                     String id = Utils.makeID(name);
                     label = HU.span(type + "&nbsp;" + label,HU.attrs("class","csv-id","fieldid",id));
                     String extra = "";
-                    if (Utils.equalsOne(col.name.trim().toLowerCase(), "latitude","longitude")) {
+		    String extraAttrs = "";
+                    if (!col.skip && Utils.equalsOne(col.name.trim().toLowerCase(), "latitude","longitude")) {
                         ColStat next = i<cols.size()-1?cols.get(i+1):null;
                         if(next!=null && Utils.equalsOne(next.name.toLowerCase(),"longitude","latitude")) {
+			    next.skip = true;
                             ColStat lat = col.name.equalsIgnoreCase("latitude")?col:next;
                             ColStat lon = col.name.equalsIgnoreCase("longitude")?col:next;
-                            i++;
-                            StringBuilder map = new StringBuilder();
+			    //                            i++;
+			    //			    extraAttrs=HU.attr("colspan","2");
+                            StringBuilder map = new StringBuilder();	
                             MapProvider mp  = util.getMapProvider();
                             if(mp!=null) {
                                 List<double[]> pts = new ArrayList<double[]>();
@@ -2056,7 +2059,7 @@ public class RowCollector extends Processor {
                         }
                     }
                     extra = HU.div(extra,HU.attrs("class","csv-summary","style","display:none;"));
-                    w.println("<th nowrap>" +  label  + extra + "</th>");
+                    w.println("<th " + extraAttrs+" nowrap>" +  label  + extra + "</th>");
                 }
                 w.println("</tr>");
 
@@ -2136,8 +2139,14 @@ public class RowCollector extends Processor {
 		    Row r = new Row();
 		    for (int i = 0; i < cols.size(); i++) {
 			ColStat col = cols.get(i);
-			if(i<row.size())
-			    r.add(col.format(row.get(i)));
+			//			if(col.skip) continue;
+			if(i<row.size()) {
+			    if(col.mergeNext) {
+				r.add(col.format(row.get(i))+"," + cols.get(i+1).format(row.get(i+1)));
+			    } else {
+				r.add(col.format(row.get(i)));
+			    }
+			}
 		    }
 		    if(!justStats) {
 			printRow(ctx, r, false);
@@ -2205,6 +2214,8 @@ public class RowCollector extends Processor {
             /**  */
             boolean interactive;
 
+	    boolean isGeo = false;
+
             /** _more_ */
             Hashtable<Object, Integer> uniques = new Hashtable<Object,
 		Integer>();
@@ -2218,6 +2229,9 @@ public class RowCollector extends Processor {
 
             /** _more_ */
             Date maxDate;
+
+	    boolean skip = false;
+	    boolean mergeNext = false;
 
             /**
              * _more_
@@ -2265,6 +2279,10 @@ public class RowCollector extends Processor {
                     }
                 }
             }
+
+	    public String toString() {
+		return name;
+	    }
 
             /**
              * _more_
