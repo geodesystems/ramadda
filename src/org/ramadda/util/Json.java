@@ -842,6 +842,8 @@ public class Json {
     public static void geojsonSubsetByProperty(String file, PrintStream pw,
             String prop, String value)
             throws Exception {
+	//	System.err.println("prop:" + prop);
+	//	System.err.println("value:" + value);	
         InputStream    is   = IOUtil.getInputStream(file, Json.class);
         BufferedReader br   = new BufferedReader(new InputStreamReader(is));
 
@@ -864,14 +866,23 @@ public class Json {
         pw.println("\"features\":[");
         JSONArray features = readArray(obj, "features");
         int       cnt      = 0;
+
+	boolean isRegexp = StringUtil.containsRegExp(value);
         for (int i = 0; i < features.length(); i++) {
             JSONObject feature = features.getJSONObject(i);
             JSONObject props   = feature.getJSONObject("properties");
             String[]   names   = JSONObject.getNames(props);
             boolean    haveIt  = false;
             for (int j = 0; (j < names.length) && !haveIt; j++) {
-                haveIt = names[j].equals(prop)
-                         && props.optString(names[j], "").equals(value);
+		String name = names[j];
+		if(name.equalsIgnoreCase(prop)) {
+		    String v = props.optString(names[j], "");
+		    if(isRegexp) {
+			haveIt =  v.matches(value);
+		    } else {
+			haveIt =  v.equals(value);
+		    }
+		}
             }
             if ( !haveIt) {
                 continue;
