@@ -36,7 +36,7 @@ public class GeoJsonOutputHandler extends OutputHandler {
 
 
     /** Map output type */
-    public static final OutputType OUTPUT_GEOJSONTABLE =
+    public static final OutputType OUTPUT_GEOJSON_TABLE =
         new OutputType("Map Table", "geojsontable", OutputType.TYPE_VIEW, "",
                        ICON_TABLE);
 
@@ -44,6 +44,11 @@ public class GeoJsonOutputHandler extends OutputHandler {
     public static final OutputType OUTPUT_GEOJSONCSV =
         new OutputType("GeoJson CSV", "geojsoncsv", OutputType.TYPE_FILE, "",
                        ICON_CSV);
+
+    public static final OutputType OUTPUT_GEOJSON_REDUCE =
+        new OutputType("Reduce GeoJson", "geojsonreduce", OutputType.TYPE_VIEW, "",
+                       ICON_MAP);
+
 
     /**
      * Create a MapOutputHandler
@@ -56,7 +61,8 @@ public class GeoJsonOutputHandler extends OutputHandler {
     public GeoJsonOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
-        addType(OUTPUT_GEOJSONTABLE);
+        addType(OUTPUT_GEOJSON_TABLE);
+        addType(OUTPUT_GEOJSON_REDUCE);	
         addType(OUTPUT_GEOJSONCSV);
     }
 
@@ -76,7 +82,9 @@ public class GeoJsonOutputHandler extends OutputHandler {
         if ((state.getEntry() != null)
                 && state.getEntry().getTypeHandler().isType("geo_geojson")) {
             links.add(makeLink(request, state.getEntry(),
-                               OUTPUT_GEOJSONTABLE));
+                               OUTPUT_GEOJSON_TABLE));
+            links.add(makeLink(request, state.getEntry(),
+                               OUTPUT_GEOJSON_REDUCE));	    
             links.add(makeLink(request, state.getEntry(), OUTPUT_GEOJSONCSV));
 
         }
@@ -98,11 +106,28 @@ public class GeoJsonOutputHandler extends OutputHandler {
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
+
+
+        if (outputType.equals(OUTPUT_GEOJSON_REDUCE)) {
+	    String geoJson = getStorageManager().readFile(entry.getResource().getPath());
+	    
+	    geoJson  = geoJson.replaceAll("\\.(\\d\\d\\d\\d\\d\\d)[\\d]+", "$1");
+	    request.setReturnFilename(getStorageManager().getOriginalFilename(entry.getResource().getPath()));
+
+            Result result = new Result("", new StringBuilder(geoJson), "application/json");
+	    return result;
+
+	}	
+
+
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         PrintStream           pw  = new PrintStream(bos);
         Json.geojsonFileToCsv(entry.getResource().getPath(), pw, null);
         pw.close();
         StringBuilder sb = new StringBuilder(new String(bos.toByteArray()));
+
+
+
 
         if (outputType.equals(OUTPUT_GEOJSONCSV)) {
             Result result = new Result("", sb, "text/csv");
@@ -114,9 +139,11 @@ public class GeoJsonOutputHandler extends OutputHandler {
 
         ByteArrayOutputStream bos2 = new ByteArrayOutputStream();
         String[]              args = new String[] { "-table" };
+	
         CsvUtil csvUtil = new CsvUtil(args, new BufferedOutputStream(bos2),
                                       null);
 
+	csvUtil.setInteractive(true);
         csvUtil.setInputStream(
             new ByteArrayInputStream(sb.toString().getBytes()));
         csvUtil.run(null);
