@@ -1803,7 +1803,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             String cbxId = HtmlUtils.getUniqueId("cbx");
             String cbxCall =
                 HtmlUtils.attr(HtmlUtils.ATTR_ONCLICK,
-                               HtmlUtils.call("checkboxClicked",
+                               HtmlUtils.call("HtmlUtils.checkboxClicked",
 					      HtmlUtils.comma("event",
 							      HtmlUtils.squote(ARG_PROVIDER),
 							      HtmlUtils.squote(cbxId))));

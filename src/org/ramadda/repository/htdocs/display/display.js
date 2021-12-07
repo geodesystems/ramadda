@@ -291,7 +291,6 @@ function ramaddaDisplayStepAnimation() {
 }
 
 
-
 function displayDefineMembers(display, props, members) {
     RamaddaUtil.defineMembers(display, members);
     if(props && display.defineProperties) display.defineProperties(props);

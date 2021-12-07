@@ -1136,7 +1136,7 @@ public abstract class ValueIterator implements DbConstants {
                         HtmlUtils.attr(
                             HtmlUtils.ATTR_ONCLICK,
                             HtmlUtils.call(
-                                "checkboxClicked",
+					   "HtmlUtils.checkboxClicked",
                                 HtmlUtils.comma(
                                     "event",
                                     HtmlUtils.squote(ARG_DBID_SELECTED),

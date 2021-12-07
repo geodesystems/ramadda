@@ -2703,7 +2703,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             String  cbxId   = "cbx" + (cbxCnt++);
             String cbxExtra = HtmlUtils.id(cbxId)
                               + HtmlUtils.attr(HtmlUtils.ATTR_ONCLICK,
-                                  HtmlUtils.call("checkboxClicked",
+                                  HtmlUtils.call("HtmlUtils.checkboxClicked",
                                       HtmlUtils.comma("event",
                                           HtmlUtils.squote(ARG_POINT_PARAM),
                                           HtmlUtils.squote(cbxId))));

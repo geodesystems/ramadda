@@ -3783,7 +3783,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         HtmlUtils.attr(
                             HtmlUtils.ATTR_ONCLICK,
                             HtmlUtils.call(
-                                "checkboxClicked",
+                                "HtmlUtils.checkboxClicked",
                                 HtmlUtils.comma(
                                     "event",
                                     HtmlUtils.squote(ARG_DBID_SELECTED),

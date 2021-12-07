@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Dec  6 13:01:26 MST 2021";
+var build_date="RAMADDA build date: Mon Dec  6 17:27:27 MST 2021";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -3326,7 +3326,6 @@ function ramaddaDisplayStepAnimation() {
 	}
     });
 }
-
 
 
 function displayDefineMembers(display, props, members) {

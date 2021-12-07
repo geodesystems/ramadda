@@ -76,7 +76,7 @@ function getRamadda(id) {
 
 
     if (repo == null) {
-        repo = new Ramadda(id);
+        repo = new RamaddaRepository(id);
         if (name != null) {
             repo.name = name;
         }
@@ -230,7 +230,7 @@ function RepositoryContainer(id, name) {
 
 }
 
-function Ramadda(repositoryRoot) {
+function RamaddaRepository(repositoryRoot) {
     if (repositoryRoot == null) {
         repositoryRoot = ramaddaBaseUrl;
     }

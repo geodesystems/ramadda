@@ -2,84 +2,235 @@
  * Copyright (c) 2008-2021 Geode Systems LLC
  */
 
-var currentRamaddaBase;
 
+var RamaddaUtils;
+var RamaddaUtil;
+var Ramadda = RamaddaUtils = RamaddaUtil  = {
+    contents:{},
+    currentRamaddaBase:null,
 
-function mouseOverOnEntry(event, entryId, targetId) {
-    if (Utils.mouseIsDown && Utils.entryDragInfo) {
-	if(Utils.entryDragInfo.hasEntry(entryId)) return;
-        $("#" + targetId).css("borderBottom", "2px black solid");
-    }
-}
+    //applies extend to the given object
+    //and sets a super member to the original object
+    //you can call original super class methods with:
+    //this.super.<method>.call(this,...);
+    inherit: function(object, parent) {
+        $.extend(object, parent);
+        parent.getThis = function() {
+            return object;
+        }
+        object.getThis = function() {
+            return object;
+        }
+        object.mysuper = parent;
+        return object;
+    },
+    //Just a wrapper around extend. We use this so it is easy to find 
+    //class definitions
+    initMembers: function(object, members) {
+        $.extend(object, members);
+        return object;
+    },
+    //Just a wrapper around extend. We use this so it is easy to find 
+    //class definitions
+    defineMembers: function(object, members) {
+        $.extend(object, members);
+        return object;
+    },
 
-function mouseOutOnEntry(event, entryId, targetId) {
-    if(Utils.entryDragInfo) {
-	if(Utils.entryDragInfo.entryId == entryId) return;
-    }
-    $("#" + targetId).css("borderBottom","");
-}
+    showEntryPopup:function(id,entryId,label) {
+	let html = RamaddaUtils.contents[entryId];
+	if(html) {
+	    RamaddaUtils.showEntryPopupInner(id,entryId,label,html);
+	} else {
+	    let url = ramaddaBaseUrl +"/entry/menu?entryid=" + entryId;
+            $.ajax({
+                url: url,
+                dataType: 'text',
+                success: function(html) {
+		    RamaddaUtils.contents[entryId] = html;
+		    RamaddaUtils.showEntryPopupInner(id,entryId,label,html);
+                }
+            }).fail((jqxhr, settings, exc) => {
+                console.log("/entry/menu failed:" + exc);
+            });
+	}
+    },
 
+    showEntryPopupInner:function(id,entryId,label,html) {
+	let anchor = $("#" + id);
+	HU.makeDialog({content:html,my:"left top",at:"left bottom",title:label,anchor:anchor,draggable:true,header:true,inPlace:false});    
+    },
 
-function mouseDownOnEntry(event, entryId, name, sourceIconId, icon) {
-    event = GuiUtils.getEvent(event);
-    Utils.entryDragInfo = {
-	dragSource: sourceIconId,
-	getIds: function() {
-	    return this.entryIds.join(",");
-	},
-	getHtml:function() {
-	    let html = "";
-	    this.entries.forEach(entry=>{
-		if(html!="") html+="<br>";
-		html+=  HU.image(entry.args.icon) + SPACE +entry.args.name;
-	    });
-	    return html;
-	},
-	hasEntry:function(id) {
-	    return this.entryIds.includes(id);
-	},
-	addEntry:function(entry) {
-	    if(!this.hasEntry(entry.entryId)) {
-		this.entries.push(entry);
-		this.entryIds.push(entry.entryId);
-	    }
-	},
-	entryIds:[],
-	entries:[]
-    }
-    let entry = Utils.globalEntryRows[entryId];
-    if(entry) {
-	Utils.entryDragInfo.addEntry(entry);
-    }
+    mouseOverOnEntry: function(event, entryId, targetId) {
+	if (Utils.mouseIsDown && Utils.entryDragInfo) {
+	    if(Utils.entryDragInfo.hasEntry(entryId)) return;
+            $("#" + targetId).css("borderBottom", "2px black solid");
+	}
+    },
 
-    $(".ramadda-entry-select:checked").each(function() {
-	let id  =$(this).attr("id");
-	let entry = Utils.globalEntryRows[id];
+    mouseOutOnEntry:function(event, entryId, targetId) {
+	if(Utils.entryDragInfo) {
+	    if(Utils.entryDragInfo.entryId == entryId) return;
+	}
+	$("#" + targetId).css("borderBottom","");
+    },
+
+    mouseDownOnEntry:function(event, entryId, name, sourceIconId, icon) {
+	event = GuiUtils.getEvent(event);
+	Utils.entryDragInfo = {
+	    dragSource: sourceIconId,
+	    getIds: function() {
+		return this.entryIds.join(",");
+	    },
+	    getHtml:function() {
+		let html = "";
+		this.entries.forEach(entry=>{
+		    if(html!="") html+="<br>";
+		    html+=  HU.image(entry.args.icon) + SPACE +entry.args.name;
+		});
+		return html;
+	    },
+	    hasEntry:function(id) {
+		return this.entryIds.includes(id);
+	    },
+	    addEntry:function(entry) {
+		if(!this.hasEntry(entry.entryId)) {
+		    this.entries.push(entry);
+		    this.entryIds.push(entry.entryId);
+		}
+	    },
+	    entryIds:[],
+	    entries:[]
+	}
+	let entry = Utils.globalEntryRows[entryId];
 	if(entry) {
 	    Utils.entryDragInfo.addEntry(entry);
 	}
-    });
 
-    Utils.mouseIsDown = true;
-    if (event.preventDefault) {
-        event.preventDefault();
-    } else {
-        event.returnValue = false;
-        return false;
+	$(".ramadda-entry-select:checked").each(function() {
+	    let id  =$(this).attr("id");
+	    let entry = Utils.globalEntryRows[id];
+	    if(entry) {
+		Utils.entryDragInfo.addEntry(entry);
+	    }
+	});
+
+	Utils.mouseIsDown = true;
+	if (event.preventDefault) {
+            event.preventDefault();
+	} else {
+            event.returnValue = false;
+            return false;
+	}
+    },
+
+    mouseUpOnEntry:function(event, entryId, targetId) {
+	if(!Utils.entryDragInfo) return;
+	if(Utils.entryDragInfo.hasEntry(entryId)) return;
+	$("#"+ targetId).css("borderBottom","");
+	if(!Utils.entryDragInfo.hasEntry(entryId)) {
+            url = ramaddaBaseUrl + "/entry/copy?action=action.move&from=" + Utils.entryDragInfo.getIds() + "&to=" + entryId;
+            document.location = url;
+	}
+    },
+    initEntryListForm:function(formId) {
+	let visibilityGroup = Utils.entryGroups[formId];
+	if (visibilityGroup) {
+            visibilityGroup.on = 0;
+            visibilityGroup.setVisbility();
+	}
+    },
+
+    hideEntryPopup:function() {
+	HtmlUtils.getTooltip().hide();
+    },
+
+    findEntryRow:function(rowId) {
+	let idx;
+	for (idx = 0; idx < Utils.groupList.length; idx++) {
+            let entryRow = Utils.groupList[idx].findEntryRow(rowId);
+            if (entryRow) return entryRow;
+	}
+	return null;
+    },
+
+    entryRowOver:function(rowId) {
+	let entryRow = Ramadda.findEntryRow(rowId);
+	if (entryRow) entryRow.mouseOver();
+    },
+
+    entryRowOut:function(rowId) {
+	let entryRow = Ramadda.findEntryRow(rowId);
+	if (entryRow) entryRow.mouseOut();
+    },
+
+    entryRowClick:function(event, rowId) {
+	let entryRow = Ramadda.findEntryRow(rowId);
+	if (entryRow) entryRow.mouseClick(event);
+    },
+
+
+    originalImages:new Array(),
+    changeImages: new Array(),
+
+    folderClick:function(uid, url, changeImg) {
+	Ramadda.changeImages[uid] = changeImg;
+	let jqBlock = $("#" + uid);
+	if (jqBlock.length == 0) {
+            return;
+	}
+	let jqImage = $("#img_" + uid);
+	let showing = jqBlock.css('display') != "none";
+	if (!showing) {
+            Ramadda.originalImages[uid] = jqImage.html();
+            jqBlock.show();
+            jqImage.html(HU.getIconImage("fa-caret-down"));
+	    url +="&orderby=entryorder&ascending=true";
+	    if(url.startsWith("/") && Ramadda.currentRamaddaBase) {
+		url = Ramadda.currentRamaddaBase +url;
+	    }
+
+            GuiUtils.loadXML(url, Ramadda.handleFolderList, uid);
+	} else {
+            if (changeImg) {
+		jqImage.html(HU.getIconImage("fa-caret-right"));
+	    }
+            jqBlock.hide();
+	}
+    },
+
+    handleFolderList:function(request, uid) {
+	if (request.responseXML != null) {
+            let xmlDoc = request.responseXML.documentElement;
+            let script;
+            let html;
+            for (i = 0; i < xmlDoc.childNodes.length; i++) {
+		let childNode = xmlDoc.childNodes[i];
+		if (childNode.tagName == "javascript") {
+                    script = getChildText(childNode);
+		} else if (childNode.tagName == "content") {
+                    html = getChildText(childNode);
+		} else {}
+            }
+            if (!html) {
+		html = getChildText(xmlDoc);
+            }
+            if (html) {
+		$("#" + uid).html("<div>" + html + "</div>");
+		Utils.checkTabs(html);
+            }
+            if (script) {
+		eval(script);
+            }
+	}
+	
+	if (Ramadda.changeImages[uid]) {
+            $("#img_" + uid).attr('src', icon_folderopen);
+	} else {
+            $("#img_" + uid).attr('src', Ramadda.originalImages[uid]);
+	}
     }
 }
-
-
-function mouseUpOnEntry(event, entryId, targetId) {
-    if(!Utils.entryDragInfo) return;
-    if(Utils.entryDragInfo.hasEntry(entryId)) return;
-    $("#"+ targetId).css("borderBottom","");
-    if(!Utils.entryDragInfo.hasEntry(entryId)) {
-        url = ramaddaBaseUrl + "/entry/copy?action=action.move&from=" + Utils.entryDragInfo.getIds() + "&to=" + entryId;
-        document.location = url;
-    }
-}
-
 
 
 function EntryFormList(formId, img, selectId, initialOn) {
@@ -202,25 +353,7 @@ function EntryFormList(formId, img, selectId, initialOn) {
         this.on = fromUrl =="true";
 	this.setVisibility();
     }
-	
-
-
 }
-
-
-
-
-
-function initEntryListForm(formId) {
-    let visibilityGroup = Utils.entryGroups[formId];
-    if (visibilityGroup) {
-        visibilityGroup.on = 0;
-        visibilityGroup.setVisbility();
-    }
-}
-
-
-
 
 
 function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails,args) {
@@ -315,7 +448,7 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails,args) {
         text = getChildText(xmlDoc);
         let leftSide = entryRow.getRow().offset().left;
         let offset = entryRow.lastClick - leftSide;
-        let close = HU.jsLink("", HU.getIconImage(icon_close), ["onmousedown", "hideEntryPopup();","id","tooltipclose"]);
+        let close = HU.jsLink("", HU.getIconImage(icon_close), ["onmousedown", "RamaddaUtil.hideEntryPopup();","id","tooltipclose"]);
 	let label = HU.image(entryRow.args.icon)+ SPACE +entryRow.args.name;
 	let header =  HU.div([CLASS,"ramadda-popup-header"],close +SPACE2 +label);
 	let html = HU.div([CLASS,"ramadda-popup",STYLE,"display:block;"],   header + "<table>" + text + "</table>");
@@ -349,197 +482,6 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails,args) {
 
 
 
-
-function hideEntryPopup() {
-    HtmlUtils.getTooltip().hide();
-}
-
-function findEntryRow(rowId) {
-    let idx;
-    for (idx = 0; idx < Utils.groupList.length; idx++) {
-        let entryRow = Utils.groupList[idx].findEntryRow(rowId);
-        if (entryRow) return entryRow;
-    }
-    return null;
-}
-
-
-function entryRowOver(rowId) {
-    let entryRow = findEntryRow(rowId);
-    if (entryRow) entryRow.mouseOver();
-}
-
-
-function entryRowOut(rowId) {
-    let entryRow = findEntryRow(rowId);
-    if (entryRow) entryRow.mouseOut();
-}
-
-function entryRowClick(event, rowId) {
-    let entryRow = findEntryRow(rowId);
-    if (entryRow) entryRow.mouseClick(event);
-}
-
-var lastCbxClicked;
-var lastCbxIdClicked;
-
-
-function checkboxClicked(event, cbxPrefix, id) {
-    if (!event) return;
-    let cbx = GuiUtils.getDomObject(id);
-    if (!cbx) return;
-    cbx = cbx.obj;
-    let checkBoxes = new Array();
-    if (!cbx.form) return;
-    let elements = cbx.form.elements;
-    for (i = 0; i < elements.length; i++) {
-        if (elements[i].name.indexOf(cbxPrefix) >= 0 || elements[i].id.indexOf(cbxPrefix) >= 0) {
-            checkBoxes.push(elements[i]);
-        }
-    }
-
-
-    let value = cbx.checked;
-    if (event.ctrlKey) {
-        for (i = 0; i < checkBoxes.length; i++) {
-            checkBoxes[i].checked = value;
-        }
-    }
-
-
-    if (event.shiftKey) {
-        if (lastCbxClicked) {
-            let pos1 = GuiUtils.getTop(cbx);
-            let pos2 = GuiUtils.getTop(lastCbxClicked);
-
-            let lastCbx = $("#" + lastCbxIdClicked);
-            let thisCbx = $("#" + id);
-
-            if (lastCbx.position()) {
-                pos2 = lastCbx.position().top;
-            }
-            if (thisCbx.position()) {
-                pos1 = thisCbx.position().top;
-            }
-
-            if (pos1 > pos2) {
-                let tmp = pos1;
-                pos1 = pos2;
-                pos2 = tmp;
-            }
-            for (i = 0; i < checkBoxes.length; i++) {
-                let top = $("#" + checkBoxes[i].id).position().top;
-                if (top >= pos1 && top <= pos2) {
-                    checkBoxes[i].checked = value;
-                }
-            }
-        }
-        return;
-    }
-    lastCbxClicked = cbx;
-    lastCbxIdClicked = id;
-}
-
-
-
-function toggleBlockVisibility(id, imgid, showimg, hideimg) {
-    if (toggleVisibility(id, 'block')) {
-        if(HU.isFontAwesome(showimg)) {
-            $("#" + imgid).html(HU.makeToggleImage(showimg));
-        } else {
-            $("#" + imgid).attr('src', showimg);
-        }
-    } else {
-        if(HU.isFontAwesome(showimg)) {
-            $("#" + imgid).html(HU.makeToggleImage(hideimg));
-        } else {
-            $("#" + imgid).attr('src', hideimg);
-        }
-    }
-    Utils.ramaddaUpdateMaps();
-}
-
-
-function toggleInlineVisibility(id, imgid, showimg, hideimg) {
-    let img = GuiUtils.getDomObject(imgid);
-    let icon;
-    if (toggleVisibility(id, 'inline')) {
-        icon= showimg;
-    } else {
-        icon = hideimg;
-    }
-    if(StringUtil.startsWith(icon,"fa-")) {
-        $("#" + imgid).html(HtmlUtils.getIconImage(icon,[]));
-    } else {
-        if(img) img.obj.src = icon;
-    }
-    Utils.ramaddaUpdateMaps();
-}
-
-
-let originalImages = new Array();
-let changeImages = new Array();
-
-function folderClick(uid, url, changeImg) {
-    changeImages[uid] = changeImg;
-    let jqBlock = $("#" + uid);
-    if (jqBlock.length == 0) {
-        return;
-    }
-    let jqImage = $("#img_" + uid);
-    let showing = jqBlock.css('display') != "none";
-    if (!showing) {
-        originalImages[uid] = jqImage.html();
-        jqBlock.show();
-        jqImage.html(HU.getIconImage("fa-caret-down"));
-	url +="&orderby=entryorder&ascending=true";
-	if(url.startsWith("/") && currentRamaddaBase) {
-	    url = currentRamaddaBase +url;
-	}
-
-
-
-        GuiUtils.loadXML(url, handleFolderList, uid);
-    } else {
-        if (changeImg) {
-            jqImage.html(HU.getIconImage("fa-caret-right"));
-	}
-        jqBlock.hide();
-    }
-}
-
-
-function handleFolderList(request, uid) {
-    if (request.responseXML != null) {
-        let xmlDoc = request.responseXML.documentElement;
-        let script;
-        let html;
-        for (i = 0; i < xmlDoc.childNodes.length; i++) {
-            let childNode = xmlDoc.childNodes[i];
-            if (childNode.tagName == "javascript") {
-                script = getChildText(childNode);
-            } else if (childNode.tagName == "content") {
-                html = getChildText(childNode);
-            } else {}
-        }
-        if (!html) {
-            html = getChildText(xmlDoc);
-        }
-        if (html) {
-            $("#" + uid).html("<div>" + html + "</div>");
-            Utils.checkTabs(html);
-        }
-        if (script) {
-            eval(script);
-        }
-    }
-    
-    if (changeImages[uid]) {
-        $("#img_" + uid).attr('src', icon_folderopen);
-    } else {
-        $("#img_" + uid).attr('src', originalImages[uid]);
-    }
-}
 
 
 let selectors = new Array();
@@ -595,10 +537,10 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
 	if(this.ramaddaUrl && !this.ramaddaUrl.startsWith("/")) {
 	    let pathname = new URL(this.ramaddaUrl).pathname
 	    let root = this.ramaddaUrl.replace(pathname,"");
-	    currentRamaddaBase = root;
+	    Ramadda.currentRamaddaBase = root;
             url = this.ramaddaUrl + url;
 	} else {
-	    currentRamaddaBase = null;
+	    Ramadda.currentRamaddaBase = null;
 	    url = ramaddaBaseUrl+url;
 	}
         if (this.localeId) {
@@ -612,6 +554,33 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
     }
     this.handleClick(event);
 }
+
+
+let EntryTree = {
+    initSelectAll:function() {
+	$("#selectall").click(function(event) {
+	    let value = $(this).is(":checked");
+	    $(".ramadda-entry-select").each(function(){
+		let entryRow = Utils.globalEntryRows[$(this).attr("id")];
+		if(entryRow) {
+		    entryRow.setCheckbox(value);
+		}
+	    });
+	});
+    },
+    entryRowCheckboxClicked:function(event, cbxId) {
+	let cbx = GuiUtils.getDomObject(cbxId);
+	if (!cbx) return;
+	cbx = cbx.obj;
+	if (!cbx.form) return;
+	let visibilityGroup = Utils.entryGroups[cbx.form.id];
+	if (visibilityGroup) {
+            visibilityGroup.checkboxClicked(event, cbxId);
+	}
+    }
+
+}
+
 
 
 function selectClick(id, entryId, value, opts) {
@@ -734,6 +703,41 @@ function getChildText(node) {
 }
 
 
+function toggleBlockVisibility(id, imgid, showimg, hideimg) {
+    if (toggleVisibility(id, 'block')) {
+        if(HU.isFontAwesome(showimg)) {
+            $("#" + imgid).html(HU.makeToggleImage(showimg));
+        } else {
+            $("#" + imgid).attr('src', showimg);
+        }
+    } else {
+        if(HU.isFontAwesome(showimg)) {
+            $("#" + imgid).html(HU.makeToggleImage(hideimg));
+        } else {
+            $("#" + imgid).attr('src', hideimg);
+        }
+    }
+    Utils.ramaddaUpdateMaps();
+}
+
+
+function toggleInlineVisibility(id, imgid, showimg, hideimg) {
+    let img = GuiUtils.getDomObject(imgid);
+    let icon;
+    if (toggleVisibility(id, 'inline')) {
+        icon= showimg;
+    } else {
+        icon = hideimg;
+    }
+    if(StringUtil.startsWith(icon,"fa-")) {
+        $("#" + imgid).html(HtmlUtils.getIconImage(icon,[]));
+    } else {
+        if(img) img.obj.src = icon;
+    }
+    Utils.ramaddaUpdateMaps();
+}
+
+
 function toggleVisibility(id, style) {
     let display = $("#" + id).css('display');
     $("#" + id).toggle();
@@ -743,29 +747,6 @@ function toggleVisibility(id, style) {
 function hide(id) {
     $("#" + id).hide();
 }
-
-
-
-function showStickyPopup(event, srcId, popupId, alignLeft) {
-    let myalign = 'left top';
-    let atalign = 'left top';
-    $("#" + popupId).show("slow");
-    $("#" + popupId).position({
-        of: jQuery("#" + srcId),
-        my: myalign,
-        at: atalign,
-        collision: "none none"
-    });
-    //Do it again to fix a bug on safari
-    $("#" + popupId).position({
-        of: jQuery("#" + srcId),
-        my: myalign,
-        at: atalign,
-        collision: "none none"
-    });
-}
-
-
 
 function hideObject(obj) {
     if (!obj) {
@@ -789,56 +770,6 @@ function toggleVisibilityOnObject(obj, display) {
 
 
 
-let EntryTree = {
-    initSelectAll:function() {
-	$("#selectall").click(function(event) {
-	    let value = $(this).is(":checked");
-	    $(".ramadda-entry-select").each(function(){
-		let entryRow = Utils.globalEntryRows[$(this).attr("id")];
-		if(entryRow) {
-		    entryRow.setCheckbox(value);
-		}
-	    });
-	});
-    },
-    entryRowCheckboxClicked:function(event, cbxId) {
-	let cbx = GuiUtils.getDomObject(cbxId);
-	if (!cbx) return;
-	cbx = cbx.obj;
-	if (!cbx.form) return;
-	let visibilityGroup = Utils.entryGroups[cbx.form.id];
-	if (visibilityGroup) {
-            visibilityGroup.checkboxClicked(event, cbxId);
-	}
-    }
-
-}
 
 
 
-var RamaddaUtils = {
-    contents:{},
-    showEntryPopup:function(id,entryId,label) {
-	let html = RamaddaUtils.contents[entryId];
-	if(html) {
-	    RamaddaUtils.showEntryPopupInner(id,entryId,label,html);
-	} else {
-	    let url = ramaddaBaseUrl +"/entry/menu?entryid=" + entryId;
-            $.ajax({
-                url: url,
-                dataType: 'text',
-                success: function(html) {
-		    RamaddaUtils.contents[entryId] = html;
-		    RamaddaUtils.showEntryPopupInner(id,entryId,label,html);
-                }
-            }).fail((jqxhr, settings, exc) => {
-                console.log("/entry/menu failed:" + exc);
-            });
-	}
-    },
-
-    showEntryPopupInner:function(id,entryId,label,html) {
-	let anchor = $("#" + id);
-	HU.makeDialog({content:html,my:"left top",at:"left bottom",title:label,anchor:anchor,draggable:true,header:true,inPlace:false});    
-    }
-}

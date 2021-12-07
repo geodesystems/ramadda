@@ -824,7 +824,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             String cbxId = "varcbx_" + (varCnt++);
             String call =
                 HtmlUtils.attr(HtmlUtils.ATTR_ONCLICK,
-                               HtmlUtils.call("checkboxClicked",
+                               HtmlUtils.call("HtmlUtils.checkboxClicked",
                                    HtmlUtils.comma("event",
                                        HtmlUtils.squote(ARG_VARIABLE),
                                        HtmlUtils.squote(cbxId))));

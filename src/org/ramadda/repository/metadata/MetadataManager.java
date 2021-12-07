@@ -1777,7 +1777,7 @@ public class MetadataManager extends RepositoryManager {
                             "Shift-click: select range; Control-click: toggle all")) + HtmlUtils.attr(
                                 HtmlUtils.ATTR_ONCLICK,
                                 HtmlUtils.call(
-                                    "checkboxClicked",
+                                    "HtmlUtils.checkboxClicked",
                                     HtmlUtils.comma(
                                         "event", HtmlUtils.squote("cbx_"),
                                         HtmlUtils.squote(cbxId)))));

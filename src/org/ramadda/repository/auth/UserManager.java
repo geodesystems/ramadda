@@ -2338,7 +2338,7 @@ public class UserManager extends RepositoryManager {
                                 HtmlUtils.ATTR_ID, cbxId,
                                 HtmlUtils.ATTR_ONCLICK,
                                 HtmlUtils.call(
-                                    "checkboxClicked",
+                                    "HtmlUtils.checkboxClicked",
                                     HtmlUtils.comma(
                                         "event", HtmlUtils.squote("entry_"),
                                         HtmlUtils.squote(cbxId)))));

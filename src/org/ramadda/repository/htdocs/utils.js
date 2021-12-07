@@ -3358,6 +3358,64 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	}
     },
 
+    lastCbxClicked:null,
+    lastCbxIdClicked:null,
+    checkboxClicked: function(event, cbxPrefix, id) {
+	if (!event) return;
+	let cbx = GuiUtils.getDomObject(id);
+	if (!cbx) return;
+	cbx = cbx.obj;
+	let checkBoxes = new Array();
+	if (!cbx.form) return;
+	let elements = cbx.form.elements;
+	for (i = 0; i < elements.length; i++) {
+            if (elements[i].name.indexOf(cbxPrefix) >= 0 || elements[i].id.indexOf(cbxPrefix) >= 0) {
+		checkBoxes.push(elements[i]);
+            }
+	}
+
+
+	let value = cbx.checked;
+	if (event.ctrlKey) {
+            for (i = 0; i < checkBoxes.length; i++) {
+		checkBoxes[i].checked = value;
+            }
+	}
+
+	if (event.shiftKey) {
+            if (HtmlUtils.lastCbxClicked) {
+		let pos1 = GuiUtils.getTop(cbx);
+		let pos2 = GuiUtils.getTop(HtmlUtils.lastCbxClicked);
+
+		let lastCbx = $("#" + HtmlUtils.lastCbxIdClicked);
+		let thisCbx = $("#" + id);
+
+		if (lastCbx.position()) {
+                    pos2 = lastCbx.position().top;
+		}
+		if (thisCbx.position()) {
+                    pos1 = thisCbx.position().top;
+		}
+
+		if (pos1 > pos2) {
+                    let tmp = pos1;
+                    pos1 = pos2;
+                    pos2 = tmp;
+		}
+		for (i = 0; i < checkBoxes.length; i++) {
+                    let top = $("#" + checkBoxes[i].id).position().top;
+                    if (top >= pos1 && top <= pos2) {
+			checkBoxes[i].checked = value;
+                    }
+		}
+            }
+            return;
+	}
+	HtmlUtils.lastCbxClicked = cbx;
+	HtmlUtils.lastCbxIdClicked = id;
+    },
+
+
     tabLoaded: function(event, ui) {
         if (window["ramaddaDisplayCheckLayout"]) {
             ramaddaDisplayCheckLayout();
@@ -4936,45 +4994,6 @@ function DomObject(name) {
 }
 
 
-var RamaddaUtil = {
-    //applies extend to the given object
-    //and sets a super member to the original object
-    //you can call original super class methods with:
-    //this.super.<method>.call(this,...);
-    inherit: function(object, parent) {
-        $.extend(object, parent);
-        parent.getThis = function() {
-            return object;
-        }
-        object.getThis = function() {
-            return object;
-        }
-        object.mysuper = parent;
-        return object;
-    },
-    //Just a wrapper around extend. We use this so it is easy to find 
-    //class definitions
-    initMembers: function(object, members) {
-        $.extend(object, members);
-        return object;
-    },
-    //Just a wrapper around extend. We use this so it is easy to find 
-    //class definitions
-    defineMembers: function(object, members) {
-        $.extend(object, members);
-        return object;
-    }
-}
-
-
-//Set a flag so we know not to show error dialogs above
-/*
-  $(window).on('beforeunload', function(){
-  GuiUtils.pageUnloading = true;
-  return null;
-  });
-*/
-
 
 function pageIsUnloading() {
     GuiUtils.pageUnloading = true;
@@ -5311,4 +5330,5 @@ $( document ).ready(function() {
 
 
 Utils.areDisplaysReady()
+
 

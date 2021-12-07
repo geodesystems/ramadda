@@ -1143,7 +1143,7 @@ public class OutputHandler extends RepositoryManager {
 	if(!showArrow) {
 	    prefix =  HU.img(getIconUrl(ICON_BLANK), "", HU.attr(HU.ATTR_WIDTH, "10"));
 	} else {
-	    String click =  HU.onMouseClick(HU.call("folderClick",
+	    String click =  HU.onMouseClick(HU.call("Ramadda.folderClick",
 						    HU.comma(HU.squote(uid), HU.squote(folderClickUrl), HU.squote(getIconUrl(ICON_TOGGLEARROWDOWN)))));
 	    prefix = HU.img(getIconUrl(ICON_TOGGLEARROWRIGHT), msg(message));
 	    prefix = HU.span(prefix, HU.id("img_" + uid)+click+HU.cssClass("ramadda-clickable"));
@@ -1760,15 +1760,15 @@ public class OutputHandler extends RepositoryManager {
                   : CSS_CLASS_ENTRY_TREE_ROW);
         sb.append("\" ");
         sb.append(HU.ATTR_ONCLICK);
-        sb.append("=\"entryRowClick(event, '");
+        sb.append("=\"Ramadda.entryRowClick(event, '");
         sb.append(rowId);
         sb.append("');\" ");
         sb.append(HU.ATTR_ONMOUSEOVER);
-        sb.append("=\"entryRowOver('");
+        sb.append("=\"Ramadda.entryRowOver('");
         sb.append(rowId);
         sb.append("'); \" ");
         sb.append(HU.ATTR_ONMOUSEOUT);
-        sb.append("=\"entryRowOut('");
+        sb.append("=\"Ramadda.entryRowOut('");
         sb.append(rowId);
         sb.append("'); \"  >");
         sb.append(

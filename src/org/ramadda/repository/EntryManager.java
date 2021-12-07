@@ -6138,7 +6138,7 @@ public class EntryManager extends RepositoryManager {
 		? "Click to open folder"
 		: "Click to view contents";
             String imgClick =
-                HU.onMouseClick(HU.call("folderClick",
+                HU.onMouseClick(HU.call("Ramadda.folderClick",
 					HU.comma(HU.squote(uid),
 						 HU.squote(folderClickUrl),
 						 HU.squote(getDownArrowIcon()))));
@@ -6162,20 +6162,20 @@ public class EntryManager extends RepositoryManager {
                 HU.onMouseOver(
 			       targetEvent,
 			       HU.call(
-				       "mouseOverOnEntry",
+				       "Ramadda.mouseOverOnEntry",
 				       HU.comma(
 						"event", HU.squote(entry.getId()),
 						qtargetId)));
 
 
                 HU.onMouseUp(targetEvent,
-			     HU.call("mouseUpOnEntry",
+			     HU.call("Ramadda.mouseUpOnEntry",
 				     HU.comma("event",
 					      HU.squote(entry.getId()),
 					      qtargetId)));
             }
             HU.onMouseOut(targetEvent,
-			  HU.call("mouseOutOnEntry",
+			  HU.call("Ramadda.mouseOutOnEntry",
 				  HU.comma("event",
 					   HU.squote(entry.getId()),
 					   qtargetId)));
@@ -6183,7 +6183,7 @@ public class EntryManager extends RepositoryManager {
             HU.onMouseDown(
 			   sourceEvent,
 			   HU.call(
-				   "mouseDownOnEntry",
+				   "Ramadda.mouseDownOnEntry",
 				   HU.comma(
 					    "event", HU.squote(entry.getId()),
 					    HU.squote(entry.getLabel().replace("'", "")),
