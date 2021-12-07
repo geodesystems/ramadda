@@ -1413,7 +1413,6 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                 double east  = Double.parseDouble(toks.get(3));
                 bounds = new Rectangle2D.Double(west, south, east - west,
                         north - south);
-		System.err.println("VB2:" + bounds);
             }
 
         }
