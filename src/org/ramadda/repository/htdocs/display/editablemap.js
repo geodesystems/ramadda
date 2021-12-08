@@ -102,6 +102,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
     const ID_PASTE= "paste";        
     const ID_COMMANDS = "commands";
     const ID_CLEAR = "clear";
+    const ID_LIST = "list";    
     const ID_PROPERTIES = "properties";
     const ID_NAVIGATE = "navigate";
     const ID_SAVE = "save";
@@ -195,6 +196,57 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    });
 	    this.command= null;
 	    this.myLayer.redraw();
+	},
+	listFeatures:function() {
+	    let html ="";
+	    let features="<table width=100%>";
+	    features+="<tr valign=top><td style='padding:5px;'><b>Delete</b></td><td style='padding:5px;'><b>Type</b></td></tr>";
+
+            this.myLayer.features.forEach((feature,idx)=>{
+		if(!feature.type) return;
+		let style  = feature.style;
+		features+="<tr valign=top>";
+ 		features += HU.td([STYLE,HU.css("padding","5px")], HU.checkbox("",[ID,this.domId("cbx" + idx)],false));
+ 		features += HU.td([STYLE,HU.css("padding","5px")], feature.type);
+		let col = "";
+		if(feature.style.imageUrl) {
+		    col+= HU.href(feature.style.imageUrl,feature.style.imageUrl,['target','_image']); 
+		} else if(feature.type=="label") {
+		    col +=style.label;
+		} else {
+		    col += JSON.stringify(style);
+		}
+		features+= HU.td([STYLE,HU.css("padding","5px")],col);
+		features+="</tr>";
+	    });
+
+	    features+="</table>";
+	    html+= HU.center(HU.b("Features"));
+	    html+=HU.div([STYLE,HU.css("margin-bottom","10px","border","1px solid #ccc", "max-height","300px","max-width","600px","overflow-x","auto","overflow-y","auto")], features);
+
+	    html +=HU.div([ID,this.domId(ID_OK), CLASS,"display-button"], "Ok");
+	    html += SPACE2;
+	    html +=HU.div([ID,this.domId(ID_CANCEL), CLASS,"display-button"], "Cancel");	    
+
+	    html  = HU.div([CLASS,"wiki-editor-popup"], html);
+	    let dialog = HU.makeDialog({content:html,anchor:this.jq(ID_MENU_FILE),title:"Features",header:true,draggable:true,remove:false});
+	    this.jq(ID_OK).button().click(()=>{
+		let nuke = [];
+		this.myLayer.features.forEach((feature,idx)=>{
+		    if(this.jq("cbx" + idx).is(':checked')) {
+			nuke.push(feature);
+		    }
+		});
+
+		this.myLayer.removeFeatures(nuke);
+		dialog.hide();
+		dialog.remove();
+	    });
+	    this.jq(ID_CANCEL).button().click(()=>{
+		dialog.hide();
+		dialog.remove();
+	    });
+
 	},
 	addFeatures:function(features) {
 	    let layer = this.myLayer;
@@ -500,6 +552,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    }
 	    html+= this.menuItem(this.domId(ID_DOWNLOAD),"Download")
 	    html+= this.menuItem(this.domId(ID_PROPERTIES),"Set Default Properties");
+	    html+= this.menuItem(this.domId(ID_LIST),"List Features");
 	    html+= this.menuItem(this.domId(ID_CLEAR),"Clear Commands");
 //	    html+= this.menuItem(this.domId(ID_NAVIGATE),"Navigate");	    
 
@@ -531,6 +584,10 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    this.jq(ID_CLEAR).click(function(){
 		HtmlUtils.hidePopupObject();
 		_this.clearCommands();
+	    });	    
+	    this.jq(ID_LIST).click(function(){
+		HtmlUtils.hidePopupObject();
+		_this.listFeatures();
 	    });	    
 	},
 	showNewMenu: function(button) {
