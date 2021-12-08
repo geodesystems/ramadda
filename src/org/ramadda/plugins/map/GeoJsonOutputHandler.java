@@ -9,11 +9,16 @@ package org.ramadda.plugins.map;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
+import org.ramadda.util.geo.Bounds;
+import org.ramadda.util.geo.Point;
 import org.ramadda.util.geo.GeoJson;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
 import org.ramadda.util.text.CsvUtil;
 
+import org.ramadda.util.Utils;
+import org.ramadda.util.geo.KmlUtil;
+import org.json.*;
 import org.w3c.dom.*;
 
 import ucar.unidata.gis.shapefile.EsriShapefile;
@@ -23,6 +28,7 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.xml.XmlUtil;
 
 
+import java.awt.Color;
 import java.io.*;
 
 import java.util.ArrayList;
@@ -55,6 +61,10 @@ public class GeoJsonOutputHandler extends OutputHandler {
         new OutputType("Filter GeoJson", "geojsonfilter", OutputType.TYPE_VIEW, "",
                        ICON_MAP);    
 
+    public static final OutputType OUTPUT_EDITABLE_TOKML =
+        new OutputType("Convert to KML", "editable.kml", OutputType.TYPE_VIEW,
+                       "", ICON_KML);
+
 
     /**
      * Create a MapOutputHandler
@@ -71,6 +81,7 @@ public class GeoJsonOutputHandler extends OutputHandler {
         addType(OUTPUT_GEOJSON_FILTER);	
         addType(OUTPUT_GEOJSON_REDUCE);	
         addType(OUTPUT_GEOJSONCSV);
+	addType(OUTPUT_EDITABLE_TOKML);
     }
 
 
@@ -86,19 +97,38 @@ public class GeoJsonOutputHandler extends OutputHandler {
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
-        if ((state.getEntry() != null)
-                && state.getEntry().getTypeHandler().isType("geo_geojson")) {
-            links.add(makeLink(request, state.getEntry(),
-                               OUTPUT_GEOJSON_TABLE));
-            links.add(makeLink(request, state.getEntry(),
-                               OUTPUT_GEOJSON_FILTER));	    
-            links.add(makeLink(request, state.getEntry(),
-                               OUTPUT_GEOJSON_REDUCE));	    
-            links.add(makeLink(request, state.getEntry(), OUTPUT_GEOJSONCSV));
+        if (state.getEntry() != null) {
+	    if(state.getEntry().getTypeHandler().isType("geo_geojson")) {
+		links.add(makeLink(request, state.getEntry(),
+				   OUTPUT_GEOJSON_TABLE));
+		links.add(makeLink(request, state.getEntry(),
+				   OUTPUT_GEOJSON_FILTER));	    
+		links.add(makeLink(request, state.getEntry(),
+				   OUTPUT_GEOJSON_REDUCE));	    
+		links.add(makeLink(request, state.getEntry(), OUTPUT_GEOJSONCSV));
 
-        }
+	    }
+	    if (state.getEntry().getTypeHandler().isType("geo_editable_json")) {
+		links.add(makeLink(request, state.getEntry(), OUTPUT_EDITABLE_TOKML));
+	    }
+	}
+
     }
 
+
+
+    @Override
+    public Result outputGroup(Request request, OutputType outputType,
+                              Entry group, List<Entry> subGroups,
+                              List<Entry> entries)
+            throws Exception {
+
+        if (outputType.equals(OUTPUT_EDITABLE_TOKML)) {
+            return outputEditableToKml(request, group);
+        }	
+
+	return null;
+    }
 
 
     /**
@@ -112,6 +142,7 @@ public class GeoJsonOutputHandler extends OutputHandler {
      *
      * @throws Exception  problem outputting entry
      */
+    @Override
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
@@ -209,5 +240,67 @@ public class GeoJsonOutputHandler extends OutputHandler {
 
         return new Result("", sb);
     }
+
+    private Result outputEditableToKml(Request request, Entry entry)
+            throws Exception {
+
+	String json  = getStorageManager().readFile(entry.getResource().getPath());
+        JSONArray array     = new JSONArray(json);
+        Element                root       = KmlUtil.kml(getName());
+        Element                doc = KmlUtil.document(root, entry.getName(),  true);
+        Element folder = KmlUtil.folder(doc, entry.getName(), true);
+
+        for (int i = 0; i < array.length(); i++) {
+            JSONObject feature = array.getJSONObject(i);
+	    String type = feature.optString("type","");
+	    JSONObject style  = Json.readObject(feature,"style");
+	    JSONArray jpoints  = Json.readArray(feature,"points");		
+	    List<Point> points= new ArrayList<Point>();
+	    Bounds b = new Bounds();
+	    for (int ptIdx = 0; ptIdx < jpoints.length(); ptIdx++) {
+		JSONObject jpoint = jpoints.getJSONObject(ptIdx);
+		Point p = new Point(jpoint.getDouble("latitude"),jpoint.getDouble("longitude"));
+		b.expand(p);
+		points.add(p);
+	    }
+	    if(type.equals("image")) {
+		String url = style.getString("imageUrl");
+		if(!url.startsWith("http")) {
+		    url = request.getAbsoluteUrl(url);
+		}
+		Element  ele = KmlUtil.groundOverlay(folder, "image","",url,
+						     b.getNorth(),b.getSouth(),b.getEast(),b.getWest(),true);
+
+	    } else if(type.equals("line") || type.equals("polyline") || type.equals("freehand")) {
+		KmlUtil.placemark(folder,"line","",Point.getCoordinates(points),
+				  Utils.decodeColor(style.optString("strokeColor",(String)null),Color.blue), style.optInt("strokeWidth",1));
+	    } else if(type.equals("point")) {
+		KmlUtil.placemark(folder, "",
+				  "",points.get(0).getLatitude(),
+				  points.get(0).getLongitude(),	0,null);
+	    } else if(type.equals("label")) {
+		String label = style.optString("label","");
+		String _label = label;
+		if(_label.length()>10) _label = _label.substring(0,9)+"...";
+		KmlUtil.placemark(folder, _label,
+				  label,points.get(0).getLatitude(),
+				  points.get(0).getLongitude(),	0,null);
+	    }
+	}
+
+
+
+	String       xml  = XmlUtil.toString(root, true);
+        String returnFile =
+            IOUtil.stripExtension(getStorageManager().getFileTail(entry))
+            + ".kml";
+	request.setReturnFilename(returnFile);
+				  
+	Result result = new Result("", new StringBuilder(xml),KmlOutputHandler.MIME_KML);
+        return result;
+    }
+    
+
+
 
 }
