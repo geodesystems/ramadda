@@ -297,9 +297,11 @@ public class GeoJson extends Json {
             JSONObject jsonProps   = feature.getJSONObject("properties");
             String[]   names   = JSONObject.getNames(jsonProps);
             boolean    haveIt  = false;
+	    boolean gotName = false;
             for (int j = 0; (j < names.length) && !haveIt; j++) {
 		String name = names[j];
 		if(name.equalsIgnoreCase(prop)) {
+		    gotName = true;
 		    String v = jsonProps.optString(names[j], "");
 		    if(isRegexp) {
 			haveIt =  v.matches(value);
@@ -308,6 +310,10 @@ public class GeoJson extends Json {
 		    }
 		}
             }
+	    
+	    if(!gotName) {
+		throw new IllegalArgumentException("Could not find property:" + prop +" properties:" + Arrays.asList(names));
+	    }
             if ( !haveIt) {
                 continue;
             }

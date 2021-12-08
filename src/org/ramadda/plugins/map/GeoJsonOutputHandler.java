@@ -193,8 +193,7 @@ public class GeoJsonOutputHandler extends OutputHandler {
 
         if (outputType.equals(OUTPUT_GEOJSON_REDUCE)) {
 	    String geoJson = getStorageManager().readFile(entry.getResource().getPath());
-	    
-	    geoJson  = geoJson.replaceAll("\\.(\\d\\d\\d\\d\\d\\d)[\\d]+", "$1");
+	    geoJson  = geoJson.replaceAll("\\.(\\d\\d\\d\\d\\d\\d)[\\d]+", ".$1");
 	    request.setReturnFilename(getStorageManager().getOriginalFilename(entry.getResource().getPath()));
 
             Result result = new Result("", new StringBuilder(geoJson), "application/json");
