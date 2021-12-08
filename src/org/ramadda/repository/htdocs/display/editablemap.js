@@ -86,6 +86,9 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 
 
     const ID_MESSAGE  ="message";
+    const ID_LIST_DELETE  ="listdelete";
+    const ID_LIST_OK  ="listok";
+    const ID_LIST_CANCEL = "listcancel";
     const ID_DELETE  ="delete";
     const ID_OK  ="ok";
     const ID_APPLY  ="apply";
@@ -102,7 +105,8 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
     const ID_PASTE= "paste";        
     const ID_COMMANDS = "commands";
     const ID_CLEAR = "clear";
-    const ID_LIST = "list";    
+    const ID_CMD_LIST = "list";
+    const ID_LIST = "list";        
     const ID_PROPERTIES = "properties";
     const ID_NAVIGATE = "navigate";
     const ID_SAVE = "save";
@@ -197,17 +201,16 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    this.command= null;
 	    this.myLayer.redraw();
 	},
-	listFeatures:function() {
-	    let html ="";
+	addFeatureList:function() {
 	    let features="<table width=100%>";
-	    features+="<tr valign=top><td style='padding:5px;'><b>Delete</b></td><td style='padding:5px;'><b>Type</b></td></tr>";
-
+	    features+="<tr title='Shift click to edit' valign=top><td style='padding:5px;'><b>Type</b></td></tr>";
+	    this.featureListMap = {};
             this.myLayer.features.forEach((feature,idx)=>{
 		if(!feature.type) return;
+		this.featureListMap[idx]  = feature;
 		let style  = feature.style;
-		features+="<tr valign=top>";
- 		features += HU.td([STYLE,HU.css("padding","5px")], HU.checkbox("",[ID,this.domId("cbx" + idx)],false));
- 		features += HU.td([STYLE,HU.css("padding","5px")], feature.type);
+		features+=HU.openTag("tr",[CLASS,"ramadda-clickable ramadda-display-editablemap-feature","feature-idx",idx]);
+ 		features += HU.td([TITLE,'Shift click to edit',STYLE,HU.css("padding","5px")], feature.type);
 		let col = "";
 		if(feature.style.imageUrl) {
 		    col+= HU.href(feature.style.imageUrl,feature.style.imageUrl,['target','_image']); 
@@ -216,21 +219,79 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		} else {
 		    col += JSON.stringify(style);
 		}
-		features+= HU.td([STYLE,HU.css("padding","5px")],col);
+		features+= HU.td([TITLE,'Shift click to edit',STYLE,HU.css("padding","5px")],col);
 		features+="</tr>";
 	    });
 
 	    features+="</table>";
-	    html+= HU.center(HU.b("Features"));
-	    html+=HU.div([STYLE,HU.css("margin-bottom","10px","border","1px solid #ccc", "max-height","300px","max-width","600px","overflow-x","auto","overflow-y","auto")], features);
+	    let _this  = this;
+	    this.jq(ID_LIST).html(features);
 
-	    html +=HU.div([ID,this.domId(ID_OK), CLASS,"display-button"], "Ok");
+	    this.jq(ID_LIST).find(".ramadda-display-editablemap-feature").click(function(event) {
+		let clazz  = "ramadda-display-editablemap-feature-selected";
+		let feature   = _this.featureListMap[$(this).attr("feature-idx")];
+		if (event.shiftKey) {
+		    if(feature) {
+			_this.doProperties(feature.style, _this.getFeaturePropertyApply(), feature);
+			return;
+		    }
+		}
+
+		if($(this).hasClass(clazz)) {
+		    $(this).removeClass(clazz);
+		    if(feature) {
+			_this.featureSelector.clickoutFeature(feature);
+		    }
+		} else {
+		    $(this).addClass(clazz);
+		    if(feature) {
+			_this.featureSelector.clickFeature(feature);
+		    }
+		}
+	    });
+	},
+	    
+	listFeatures:function() {
+	    let close = () =>{
+		if(this.listDialog) {
+		    this.listDialog.hide();
+		    this.listDialog.remove();
+		}
+		this.listDialog = null;
+	    };
+	    close();
+
+	    let html ="";
+	    html+= HU.center(HU.b("Features"));
+	    html+=HU.div([ID,this.domId(ID_LIST), STYLE,HU.css("margin-bottom","10px","border","1px solid #ccc", "max-height","300px","max-width","600px","overflow-x","auto","overflow-y","auto")], "");
+
+	    html +=HU.div([ID,this.domId(ID_LIST_DELETE), CLASS,"display-button"], "Delete Selected");
+	    html += SPACE2;	    
+	    html +=HU.div([ID,this.domId(ID_LIST_OK), CLASS,"display-button"], "Ok");
 	    html += SPACE2;
-	    html +=HU.div([ID,this.domId(ID_CANCEL), CLASS,"display-button"], "Cancel");	    
+	    html +=HU.div([ID,this.domId(ID_LIST_CANCEL), CLASS,"display-button"], "Cancel");	    
+
 
 	    html  = HU.div([CLASS,"wiki-editor-popup"], html);
-	    let dialog = HU.makeDialog({content:html,anchor:this.jq(ID_MENU_FILE),title:"Features",header:true,draggable:true,remove:false});
-	    this.jq(ID_OK).button().click(()=>{
+	    let dialog = this.listDialog  = HU.makeDialog({content:html,anchor:this.jq(ID_MENU_FILE),title:"Features",header:true,draggable:true,remove:false});
+	    this.addFeatureList();
+	    this.jq(ID_LIST_DELETE).button().click(()=>{
+		let _this  = this;
+		let cut  = [];
+		this.jq(ID_LIST).find(".ramadda-display-editablemap-feature-selected").each(function() {
+		    let feature   = _this.featureListMap[$(this).attr("feature-idx")];
+		    if(!feature) return;
+		    cut.push(feature);
+		});
+		this.removeImages(cut);
+		this.setClipboard(cut);
+		this.myLayer.removeFeatures(cut);
+		this.addFeatureList();
+	    });
+
+
+
+	    this.jq(ID_LIST_OK).button().click(()=>{
 		let nuke = [];
 		this.myLayer.features.forEach((feature,idx)=>{
 		    if(this.jq("cbx" + idx).is(':checked')) {
@@ -239,14 +300,11 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		});
 
 		this.myLayer.removeFeatures(nuke);
-		dialog.hide();
-		dialog.remove();
+		close();
+		this.listDialog  = null;
 	    });
-	    this.jq(ID_CANCEL).button().click(()=>{
-		dialog.hide();
-		dialog.remove();
-	    });
-
+	    this.jq(ID_LIST_CANCEL).button().click(()=>{
+		close()});
 	},
 	addFeatures:function(features) {
 	    let layer = this.myLayer;
@@ -285,20 +343,8 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    });
 	    this.myLayer.addFeatures(newOnes);
 	},
-	doEdit: function(feature) {
-//	    this.clearCommands();
-	    if(!feature) {
-		if(!this.myLayer.selectedFeatures) return;
-		if(this.myLayer.selectedFeatures.length==0) return;
-		feature = this.myLayer.selectedFeatures[0];
-	    }
-	    if(!feature) return;
-	    let style = feature.style;
-//	    style.fillColor="green";
-
-	    let html =HU.div([STYLE,HU.css("margin","8px")], "Feature: " + feature.type); 
-	    this.myLayer.redraw(feature);
-	    let apply = props=>{
+	getFeaturePropertyApply:function() {
+	    return (feature, props)=>{
 		props.forEach(prop=>{
 		    if(prop=="labelSelect") return;
 		    let v = this.jq(prop).val();
@@ -313,6 +359,21 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		}
 		this.myLayer.redraw();
 	    };
+	},
+	doEdit: function(feature) {
+//	    this.clearCommands();
+	    if(!feature) {
+		if(!this.myLayer.selectedFeatures) return;
+		if(this.myLayer.selectedFeatures.length==0) return;
+		feature = this.myLayer.selectedFeatures[0];
+	    }
+	    if(!feature) return;
+	    let style = feature.style;
+//	    style.fillColor="green";
+
+	    let html =HU.div([STYLE,HU.css("margin","8px")], "Feature: " + feature.type); 
+	    this.myLayer.redraw(feature);
+	    let apply =this.getFeaturePropertyApply();
 	    if(feature.image && Utils.isDefined(feature.image.opacity)) {
 		feature.style.imageOpacity=feature.image.opacity;
 	    }
@@ -347,7 +408,9 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    }
 	    props.forEach(prop=>{
 		if(prop=="labelSelect") return;
-		let label = Utils.makeLabel(prop);
+		let label = prop;
+		label = label.replace('stroke','stroke ').replace('fill','fill ');
+		label   = Utils.makeLabel(label);		
 		let widget;
 		if(prop=="externalGraphic") {
 		    let icons = ["/map/marker-blue.png","/map/marker-gold.png","/map/marker-green.png","/map/marker.png","/map/POI.png","/map/arts.png","/map/bar.png","/map/binocular.png","/map/blue-dot.png","/map/blue-pushpin.png","/map/building.png","/map/burn.png","/map/bus.png","/map/cabs.png","/map/calendar.png","/map/camera.png","/map/campfire.png","/map/campground.png","/map/car.png","/map/caution.png","/map/coffeehouse.png","/map/convienancestore.png","/map/cycling.png","/map/dollar.png","/map/drinking_water.png","/map/earthquake.png","/map/electronics.png","/map/envelope.png","/map/euro.png","/map/fallingrocks.png","/map/ferry.png","/map/film.png","/map/firedept.png","/map/fishing.png","/map/flag.png","/map/gas.png","/map/glass.png","/map/globe.png","/map/golfer.png","/map/green-dot.png","/map/grn-pushpin.png","/map/grocerystore.png","/map/hammer.png","/map/helicopter.png","/map/hiker.png","/map/home.png","/map/homegardenbusiness.png","/map/horsebackriding.png","/map/hospitals.png","/map/hotsprings.png","/map/info.png","/map/info_circle.png","/map/lodging.png","/map/ltblu-pushpin.png","/map/ltblue-dot.png","/map/man.png","/map/marina.png","/map/mechanic.png","/map/motorcycling.png","/map/mountain.png","/map/movies.png","/map/orange-dot.png","/map/paper-plane.png","/map/parkinglot.png","/map/partly_cloudy.png","/map/pharmacy-us.png","/map/phone.png","/map/picnic.png","/map/pink-dot.png","/map/pink-pushpin.png","/map/plane.png","/map/police.png","/map/postoffice-us.png","/map/purple-dot.png","/map/purple-pushpin.png","/map/question.png","/map/rail.png","/map/rainy.png","/map/rangerstation.png","/map/realestate.png","/map/recycle.png","/map/red-dot.png","/map/red-pushpin.png","/map/restaurant.png","/map/sailing.png","/map/salon.png","/map/shopping-basket.png","/map/shopping.png","/map/ski.png","/map/smiley.png","/map/snack_bar.png","/map/snowflake_simple.png","/map/sportvenue.png","/map/star.png","/map/sticky-note.png","/map/subway.png","/map/sunny.png","/map/swimming.png","/map/toilets.png","/map/trail.png","/map/tram.png","/map/tree.png","/map/truck.png","/map/volcano.png","/map/water.png","/map/waterfalls.png","/map/wheel_chair_accessible.png","/map/woman.png","/map/yellow-dot.png","/map/yen.png","/map/ylw-pushpin.png"];
@@ -439,11 +502,11 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		});
 	    }
 	    this.jq(ID_OK).button().click(()=>{
-		apply(props);
+		apply(feature,props);
 		close();
 	    });
 	    this.jq(ID_APPLY).button().click(()=>{
-		apply(props);
+		apply(feature,props);
 	    });
 	    this.jq(ID_CANCEL).button().click(()=>{
 		close();
@@ -552,7 +615,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    }
 	    html+= this.menuItem(this.domId(ID_DOWNLOAD),"Download")
 	    html+= this.menuItem(this.domId(ID_PROPERTIES),"Set Default Properties");
-	    html+= this.menuItem(this.domId(ID_LIST),"List Features");
+	    html+= this.menuItem(this.domId(ID_CMD_LIST),"List Features");
 	    html+= this.menuItem(this.domId(ID_CLEAR),"Clear Commands");
 //	    html+= this.menuItem(this.domId(ID_NAVIGATE),"Navigate");	    
 
@@ -585,7 +648,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		HtmlUtils.hidePopupObject();
 		_this.clearCommands();
 	    });	    
-	    this.jq(ID_LIST).click(function(){
+	    this.jq(ID_CMD_LIST).click(function(){
 		HtmlUtils.hidePopupObject();
 		_this.listFeatures();
 	    });	    
@@ -970,9 +1033,10 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		var handler = new OpenLayers.Handler.Keyboard(control, callbacks, options);
 		handler.activate();
 		this.map.getMap().addControl(keyboardControl);
-		this.addControl(ID_SELECTOR,"Click-drag to select",new OpenLayers.Control.SelectFeature(this.myLayer, {
+		this.addControl(ID_SELECTOR,"Click-drag to select",this.featureSelector = new OpenLayers.Control.SelectFeature(this.myLayer, {
 		    highlight: function(feature) {
 			let tmp = {};
+//			_this.selectFeature(feature);
 			$.extend(tmp,feature.style);
 			tmp.strokeColor = "#000";
 			if(tmp.pointRadius) tmp.pointRadius*=1.5;
