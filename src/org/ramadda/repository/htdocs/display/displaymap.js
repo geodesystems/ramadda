@@ -105,7 +105,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'showZoomPanControl',ex:'true',d:true},
 	{p:'showZoomOnlyControl',ex:'false',d:false},
 	{p:'enableDragPan',ex:'false',d:true},
-	{p:'showLayers',d:true,ex:'false'},
+	{p:'showLayers',d:true,ex:'false',tt:'Connect points with map vectors'},
 	{p:'showBaseLayersSelect',ex:true,d:false},
 	{p:'locations',ex:'usairports.json,usstates.json'},
 	{p:'highlightColor',d:'blue',ex:'#ccc',tt:''},
@@ -399,6 +399,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    });
 
 
+
             if (this.getShowLayers()) {
 		//do this later so the map displays its initial location OK
 		setTimeout(()=>{
@@ -520,7 +521,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'markerIcon',ex:"/icons/..."},
 	{p:'iconSize',ex:16},
 	{p:'justOneMarker',ex:"true",tt:'This is for data that is all at one point and you want to support selecting points for other displays'},	
-	{p:'showPoints',ex:'true',tt:'Also show the map points when showing heatmap or glyphs'},
+	{p:'showPoints',ex:'true',tt:'Also show the map points when showing heatmap or glyphs or vectors'},
+	{p:'applyPointsToVectors',d:true,tt:'If false then just show any attached map vectors without coloring them from the points'},
 	{p:'bounds',ex:'north,west,south,east',tt:'initial bounds'},
 	{p:'gridBounds',ex:'north,west,south,east'},	
 	{p:'mapCenter',ex:'lat,lon',tt:"initial position"},
@@ -529,12 +531,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'fixedPosition',ex:true,tt:'Keep the initial position'},
 	{p:'linked',ex:true,tt:"Link location with other maps"},
 	{p:'linkGroup',ex:'some_name',tt:"Map groups to link with"},
-
 	{p:'initialLocation', ex:'lat,lon',tt:"initial location"},
 	{p:'defaultMapLayer',ex:'ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|esri.lightgray|esri.physical|opentopo|usgs.topo|usgs.imagery|usgs.relief|osm.toner|osm.toner.lite|watercolor'},
 	{p:'mapLayers',ex:'ol.openstreetmap,esri.topo,esri.street,esri.worldimagery,esri.lightgray,esri.physical,opentopo,usgs.topo,usgs.imagery,usgs.relief,osm.toner,osm.toner.lite,watercolor'},
 	{p:'extraLayers',tt:'comma separated list of layers to display',
 	 ex:'baselayer:goes-visible,baselayer:nexrad,geojson:US States:/resources/usmap.json:fillColor:transparent'},
+
 	{p:'doPopup', ex:'false',tt:"Don't show popups"},
 	{p:'doPopupSlider', ex:'true',tt:"Do the inline popup that slides down"},
 	{p:'popupSliderRight', ex:'true',tt:"Position the inline slider to the right"},	
@@ -1641,10 +1643,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 return;
             }
 	    let points = this.myPoints || this.myFeatures;
-
             if (!this.doDisplayMap() || !this.vectorLayer || !points) {
                 return;
             }
+	    if(!this.getApplyPointsToVectors()) return;
+
+
 	    
 	    if(!args) args = {};
 	    let debug = false;
@@ -3706,6 +3710,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    });
 	    
 	    times.push(new Date());
+
+
+	    
 	    if(showPoints) {
 		this.addFeatures(pointsToAdd);
 	    }
