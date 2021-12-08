@@ -80,6 +80,10 @@ public class Bounds {
 
     }
 
+    public void expand(Point point) {
+	expand(point.getLatitude(), point.getLongitude());
+    }
+
     /**
      * _more_
      *

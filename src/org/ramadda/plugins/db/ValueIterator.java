@@ -28,7 +28,7 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.Json;
 
-import org.ramadda.util.KmlUtil;
+import org.ramadda.util.geo.KmlUtil;
 import org.ramadda.util.NamedBuffer;
 
 import org.ramadda.util.NamedInputStream;

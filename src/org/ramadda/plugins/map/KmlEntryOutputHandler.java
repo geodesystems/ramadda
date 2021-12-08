@@ -10,7 +10,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.util.HtmlUtils;
 
-import org.ramadda.util.KmlUtil;
+import org.ramadda.util.geo.KmlUtil;
 
 import org.w3c.dom.*;
 
@@ -46,6 +46,8 @@ public class KmlEntryOutputHandler extends OutputHandler {
         new OutputType("Display as HTML", "kml.image", OutputType.TYPE_VIEW,
                        "", ICON_KML);
 
+
+    
 
     /**
      * Create a MapOutputHandler
@@ -101,6 +103,7 @@ public class KmlEntryOutputHandler extends OutputHandler {
             return outputKmlHtml(request, entry);
         }
 
+	
         return null;
     }
 
@@ -208,6 +211,9 @@ public class KmlEntryOutputHandler extends OutputHandler {
             walkTree(request, entry, sb, child);
         }
     }
+
+
+
 
 
 

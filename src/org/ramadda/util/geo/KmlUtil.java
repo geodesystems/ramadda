@@ -5,9 +5,10 @@ SPDX-License-Identifier: Apache-2.0
 // Copyright (c) 2008-2021 Geode Systems LLC
 // SPDX-License-Identifier: Apache-2.0
 
-package org.ramadda.util;
+package org.ramadda.util.geo;
 
 
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
 
@@ -1101,7 +1102,7 @@ public class KmlUtil {
         Element node = makeElement(parent, TAG_GROUNDOVERLAY);
         name(node, name);
         description(node, description);
-        visible(node, false);
+        visible(node, visible);
         Element icon = makeElement(node, TAG_ICON);
         makeText(icon, TAG_HREF, url);
         Element llb = makeElement(node, TAG_LATLONBOX);
@@ -1247,6 +1248,15 @@ public class KmlUtil {
                        "0") + StringUtil.padRight(
                            Integer.toHexString(c.getRed()), 2, "0");
     }
+
+
+    public static String convertHtmlColor(String c) {
+	if(c==null) return null;
+	Color color  = Utils.decodeColor(c,null);
+	if(color==null) return null;
+	return toBGRHexString(color);
+    }
+
 
     /**
      * Create a ScreenOverlay Element

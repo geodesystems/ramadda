@@ -13,7 +13,7 @@ import org.ramadda.repository.metadata.Metadata;
 
 import org.ramadda.util.HtmlUtils;
 
-import org.ramadda.util.KmlUtil;
+import org.ramadda.util.geo.KmlUtil;
 import org.ramadda.util.Utils;
 
 

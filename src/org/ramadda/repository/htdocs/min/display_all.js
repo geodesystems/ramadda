@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Dec  7 15:33:36 MST 2021";
+var build_date="RAMADDA build date: Tue Dec  7 21:30:29 MST 2021";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -32511,7 +32511,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'showZoomPanControl',ex:'true',d:true},
 	{p:'showZoomOnlyControl',ex:'false',d:false},
 	{p:'enableDragPan',ex:'false',d:true},
-	{p:'showLayers',d:true,ex:'false'},
+	{p:'showLayers',d:true,ex:'false',tt:'Connect points with map vectors'},
 	{p:'showBaseLayersSelect',ex:true,d:false},
 	{p:'locations',ex:'usairports.json,usstates.json'},
 	{p:'highlightColor',d:'blue',ex:'#ccc',tt:''},
@@ -32805,6 +32805,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    });
 
 
+
             if (this.getShowLayers()) {
 		//do this later so the map displays its initial location OK
 		setTimeout(()=>{
@@ -32926,7 +32927,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'markerIcon',ex:"/icons/..."},
 	{p:'iconSize',ex:16},
 	{p:'justOneMarker',ex:"true",tt:'This is for data that is all at one point and you want to support selecting points for other displays'},	
-	{p:'showPoints',ex:'true',tt:'Also show the map points when showing heatmap or glyphs'},
+	{p:'showPoints',ex:'true',tt:'Also show the map points when showing heatmap or glyphs or vectors'},
+	{p:'applyPointsToVectors',d:true,tt:'If false then just show any attached map vectors without coloring them from the points'},
 	{p:'bounds',ex:'north,west,south,east',tt:'initial bounds'},
 	{p:'gridBounds',ex:'north,west,south,east'},	
 	{p:'mapCenter',ex:'lat,lon',tt:"initial position"},
@@ -32935,12 +32937,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'fixedPosition',ex:true,tt:'Keep the initial position'},
 	{p:'linked',ex:true,tt:"Link location with other maps"},
 	{p:'linkGroup',ex:'some_name',tt:"Map groups to link with"},
-
 	{p:'initialLocation', ex:'lat,lon',tt:"initial location"},
 	{p:'defaultMapLayer',ex:'ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|esri.lightgray|esri.physical|opentopo|usgs.topo|usgs.imagery|usgs.relief|osm.toner|osm.toner.lite|watercolor'},
 	{p:'mapLayers',ex:'ol.openstreetmap,esri.topo,esri.street,esri.worldimagery,esri.lightgray,esri.physical,opentopo,usgs.topo,usgs.imagery,usgs.relief,osm.toner,osm.toner.lite,watercolor'},
 	{p:'extraLayers',tt:'comma separated list of layers to display',
 	 ex:'baselayer:goes-visible,baselayer:nexrad,geojson:US States:/resources/usmap.json:fillColor:transparent'},
+
 	{p:'doPopup', ex:'false',tt:"Don't show popups"},
 	{p:'doPopupSlider', ex:'true',tt:"Do the inline popup that slides down"},
 	{p:'popupSliderRight', ex:'true',tt:"Position the inline slider to the right"},	
@@ -34047,10 +34049,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 return;
             }
 	    let points = this.myPoints || this.myFeatures;
-
             if (!this.doDisplayMap() || !this.vectorLayer || !points) {
                 return;
             }
+	    if(!this.getApplyPointsToVectors()) return;
+
+
 	    
 	    if(!args) args = {};
 	    let debug = false;
@@ -36112,6 +36116,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    });
 	    
 	    times.push(new Date());
+
+
+	    
 	    if(showPoints) {
 		this.addFeatures(pointsToAdd);
 	    }
@@ -37689,6 +37696,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
     const ID_PASTE= "paste";        
     const ID_COMMANDS = "commands";
     const ID_CLEAR = "clear";
+    const ID_LIST = "list";    
     const ID_PROPERTIES = "properties";
     const ID_NAVIGATE = "navigate";
     const ID_SAVE = "save";
@@ -37782,6 +37790,57 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    });
 	    this.command= null;
 	    this.myLayer.redraw();
+	},
+	listFeatures:function() {
+	    let html ="";
+	    let features="<table width=100%>";
+	    features+="<tr valign=top><td style='padding:5px;'><b>Delete</b></td><td style='padding:5px;'><b>Type</b></td></tr>";
+
+            this.myLayer.features.forEach((feature,idx)=>{
+		if(!feature.type) return;
+		let style  = feature.style;
+		features+="<tr valign=top>";
+ 		features += HU.td([STYLE,HU.css("padding","5px")], HU.checkbox("",[ID,this.domId("cbx" + idx)],false));
+ 		features += HU.td([STYLE,HU.css("padding","5px")], feature.type);
+		let col = "";
+		if(feature.style.imageUrl) {
+		    col+= HU.href(feature.style.imageUrl,feature.style.imageUrl,['target','_image']); 
+		} else if(feature.type=="label") {
+		    col +=style.label;
+		} else {
+		    col += JSON.stringify(style);
+		}
+		features+= HU.td([STYLE,HU.css("padding","5px")],col);
+		features+="</tr>";
+	    });
+
+	    features+="</table>";
+	    html+= HU.center(HU.b("Features"));
+	    html+=HU.div([STYLE,HU.css("margin-bottom","10px","border","1px solid #ccc", "max-height","300px","max-width","600px","overflow-x","auto","overflow-y","auto")], features);
+
+	    html +=HU.div([ID,this.domId(ID_OK), CLASS,"display-button"], "Ok");
+	    html += SPACE2;
+	    html +=HU.div([ID,this.domId(ID_CANCEL), CLASS,"display-button"], "Cancel");	    
+
+	    html  = HU.div([CLASS,"wiki-editor-popup"], html);
+	    let dialog = HU.makeDialog({content:html,anchor:this.jq(ID_MENU_FILE),title:"Features",header:true,draggable:true,remove:false});
+	    this.jq(ID_OK).button().click(()=>{
+		let nuke = [];
+		this.myLayer.features.forEach((feature,idx)=>{
+		    if(this.jq("cbx" + idx).is(':checked')) {
+			nuke.push(feature);
+		    }
+		});
+
+		this.myLayer.removeFeatures(nuke);
+		dialog.hide();
+		dialog.remove();
+	    });
+	    this.jq(ID_CANCEL).button().click(()=>{
+		dialog.hide();
+		dialog.remove();
+	    });
+
 	},
 	addFeatures:function(features) {
 	    let layer = this.myLayer;
@@ -38087,6 +38146,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    }
 	    html+= this.menuItem(this.domId(ID_DOWNLOAD),"Download")
 	    html+= this.menuItem(this.domId(ID_PROPERTIES),"Set Default Properties");
+	    html+= this.menuItem(this.domId(ID_LIST),"List Features");
 	    html+= this.menuItem(this.domId(ID_CLEAR),"Clear Commands");
 //	    html+= this.menuItem(this.domId(ID_NAVIGATE),"Navigate");	    
 
@@ -38118,6 +38178,10 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    this.jq(ID_CLEAR).click(function(){
 		HtmlUtils.hidePopupObject();
 		_this.clearCommands();
+	    });	    
+	    this.jq(ID_LIST).click(function(){
+		HtmlUtils.hidePopupObject();
+		_this.listFeatures();
 	    });	    
 	},
 	showNewMenu: function(button) {

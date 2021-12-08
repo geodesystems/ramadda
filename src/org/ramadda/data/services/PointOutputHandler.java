@@ -38,7 +38,7 @@ import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.ColorTable;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
-import org.ramadda.util.KmlUtil;
+import org.ramadda.util.geo.KmlUtil;
 import org.ramadda.util.SelectionRectangle;
 import org.ramadda.util.Utils;
 import org.ramadda.util.grid.IdwGrid;

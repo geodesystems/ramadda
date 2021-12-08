@@ -20,7 +20,7 @@ import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.util.ColorTable;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
-import org.ramadda.util.KmlUtil;
+import org.ramadda.util.geo.KmlUtil;
 
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
@@ -1109,8 +1109,8 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         List<DbaseDataWrapper> fieldDatum = fc.getDatum();
 
 
-
-        Element                root       = KmlUtil.kml(getName());
+ 
+	Element                root       = KmlUtil.kml(getName());
         Element                doc = KmlUtil.document(root, getName(), true);
         boolean                haveSchema = false;
         if ( !properties.isEmpty()

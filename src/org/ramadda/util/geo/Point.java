@@ -5,6 +5,8 @@
 
 package org.ramadda.util.geo;
 
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  *
@@ -38,7 +40,19 @@ public class Point {
 
 
 
+    public static float[][] getCoordinates(List<Point> points) {
+	float[][]coordinates = new float[2][points.size()];
+	for(int i=0;i<points.size();i++) {
+	    coordinates[0][i] = (float) points.get(i).getLatitude();	    
+	    coordinates[1][i] = (float) points.get(i).getLongitude();
+
+	}
+	return coordinates;
+    }
+
+
     /**
+
        Set the Latitude property.
 
        @param value The new value for Latitude

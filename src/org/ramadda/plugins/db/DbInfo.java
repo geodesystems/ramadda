@@ -36,7 +36,7 @@ import org.ramadda.util.JQuery;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.Json;
 
-import org.ramadda.util.KmlUtil;
+import org.ramadda.util.geo.KmlUtil;
 import org.ramadda.util.RssUtil;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;

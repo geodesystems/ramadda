@@ -432,7 +432,8 @@ public class GeoJson extends Json {
                 JSONArray coords2 = coords1.getJSONArray(idx1);
 		List<Point> p2 = new ArrayList<Point>();
                 bounds = getBounds(coords2, bounds, p2);
-		pts.add(p2);
+		if(pts!=null)
+		    pts.add(p2);
             }
         } else if (type.equals("MultiPolygon")) {
             for (int idx1 = 0; idx1 < coords1.length(); idx1++) {
@@ -441,19 +442,22 @@ public class GeoJson extends Json {
                     JSONArray coords3 = coords2.getJSONArray(idx2);
 		    List<Point> p2 = new ArrayList<Point>();
                     bounds = getBounds(coords3, bounds, p2);
-		    pts.add(p2);
+		    if(pts!=null)
+			pts.add(p2);
                 }
             }
         } else if (type.equals("LineString")) {
 	    List<Point> p2 = new ArrayList<Point>();
             bounds = getBounds(coords1, bounds, p2);
-	    pts.add(p2);
+	    if(pts!=null)
+		pts.add(p2);
         } else {
             double lon = coords1.getDouble(0);
             double lat = coords1.getDouble(1);
 	    List<Point> p2 = new ArrayList<Point>();
 	    p2.add(new Point(lat,lon));
-	    pts.add(p2);
+	    if(pts!=null)
+		pts.add(p2);
             if (bounds == null) {
                 bounds = new Bounds(lat, lon, lat, lon);
             } else {

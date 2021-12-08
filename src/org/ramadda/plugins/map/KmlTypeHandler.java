@@ -13,7 +13,7 @@ import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 
-import org.ramadda.util.KmlUtil;
+import org.ramadda.util.geo.KmlUtil;
 
 import org.w3c.dom.*;
 import org.w3c.dom.Element;

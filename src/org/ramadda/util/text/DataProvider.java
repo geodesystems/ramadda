@@ -11,10 +11,10 @@ import org.apache.commons.lang3.text.StrTokenizer;
 import org.json.*;
 
 import org.ramadda.util.geo.GeoJson;
+import org.ramadda.util.geo.KmlUtil;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Json;
-import org.ramadda.util.KmlUtil;
 import org.ramadda.util.NamedInputStream;
 import org.ramadda.util.Utils;
 

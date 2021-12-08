@@ -20,7 +20,7 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
 
-import org.ramadda.util.KmlUtil;
+import org.ramadda.util.geo.KmlUtil;
 import org.ramadda.util.sql.Clause;
 
 import org.ramadda.util.sql.SqlUtil;
