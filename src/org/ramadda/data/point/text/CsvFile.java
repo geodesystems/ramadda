@@ -31,6 +31,9 @@ import java.util.List;
 public class CsvFile extends TextFile {
 
 
+    boolean debug             = false;
+    boolean debugCsvFile      = false;    
+
     /** column delimiter */
     private String delimiter = null;
 
@@ -185,6 +188,8 @@ public class CsvFile extends TextFile {
         if ( !commands.get(commands.size() - 1).equals("-print")) {
             commands.add("-print");
         }
+	if(debug)
+	    System.err.println("making CsvUtil:" + commands);
         CsvUtil csvUtil = new CsvUtil(commands,
                                       new BufferedOutputStream(fos), null);
 
@@ -210,7 +215,6 @@ public class CsvFile extends TextFile {
      */
     public InputStream doMakeInputStream(boolean buffered) throws Exception {
         List<String> commands     = getCsvCommands();
-	//	System.err.println("csv commands:" + commands);
         boolean      shouldCreate = shouldCreateCsvFile();
         if ( !shouldCreate && (commands.size() == 0)) {
 
@@ -242,7 +246,7 @@ public class CsvFile extends TextFile {
         File file = checkCachedFile();
         if ((file == null) || !file.exists()) {
             try {
-                if (debug) {
+                if (debug || debugCsvFile) {
                     System.err.println("Creating CSV cached file: " + file
                                        + "\ncommands:" + commands);
                 }
