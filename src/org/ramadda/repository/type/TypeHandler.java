@@ -347,7 +347,7 @@ public class TypeHandler extends RepositoryManager {
     private List<String> childTypes;
 
     /** _more_ */
-    private List<String[]> requiredMetadata = new ArrayList<String[]>();
+   private List<String[]> requiredMetadata = new ArrayList<String[]>();
 
     /** _more_ */
     private List<Service> services = new ArrayList<Service>();
@@ -1138,6 +1138,10 @@ public class TypeHandler extends RepositoryManager {
      */
     public String getEntryText(Entry entry) {
         return entry.getDescription();
+    }
+
+    public String getExtraText(Entry entry) {
+	return null;
     }
 
     /**
