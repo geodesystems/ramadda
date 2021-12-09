@@ -1277,6 +1277,7 @@ public abstract class Processor extends CsvOperator {
          */
         private void handleRow(TextReader ctx, Appendable writer, Row row)
                 throws Exception {
+            String  theTemplate   = template;
             boolean firstRow = rowCnt++ == 0;
             if (firstRow) {
 		headerRow = row;
@@ -1284,12 +1285,12 @@ public abstract class Processor extends CsvOperator {
 		if(prefix != null) {
 		    writer.append(prefix);
 		}
+		if(theTemplate!=null) return;
             } else {
 		if (delimiter != null) {
 		    writer.append(delimiter);
 		}
             }
-            String  theTemplate   = template;
             List    values        = row.getValues();
             boolean escapeColumns = true;
 	    if (theTemplate == null) {
