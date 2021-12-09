@@ -798,7 +798,12 @@ public class WikiUtil {
         boolean          dragToggle        = false;
         boolean          dragToggleVisible = false;
 
-        String           lmrWidth          = "50%";
+        String           leftWidth          = "50%";
+	String           middleWidth          = "50%";
+	String           rightWidth          = "50%";
+        String           leftStyle          = "";
+	String           middleStyle          = "";
+	String           rightStyle          = "";	
 	int menuCnt = 0;
 	String menuId = null;
 
@@ -1285,13 +1290,23 @@ public class WikiUtil {
 
 
                 if (tline.equals("+leftright")) {
-                    buff.append("<table width=100%><tr>");
-                    lmrWidth = "50%";
+		    Hashtable props = getProps.apply(tline);
+                    buff.append("<table width=100%><tr valign=" + Utils.getProperty(props,"valign","top") +">");
+                    leftWidth = Utils.getProperty(props,"leftWidth","33%");
+                    rightWidth = Utils.getProperty(props,"rightWidth","33%");
+                    leftStyle = Utils.getProperty(props,"leftStyle","");
+                    rightStyle = Utils.getProperty(props,"rightStyle","");		    
                     continue;
                 }
-                if (tline.equals("+leftmiddleright")) {
-                    buff.append("<table width=100%><tr>");
-                    lmrWidth = "33%";
+                if (tline.startsWith("+leftmiddleright")) {
+		    Hashtable props = getProps.apply(tline);
+                    buff.append("<table width=100%><tr valign=" + Utils.getProperty(props,"valign","top") +">");
+                    leftWidth = Utils.getProperty(props,"leftWidth","33%");
+                    middleWidth = Utils.getProperty(props,"middleWidth","33%");
+                    rightWidth = Utils.getProperty(props,"rightWidth","33%");
+                    leftStyle = Utils.getProperty(props,"leftStyle","");
+                    middleStyle = Utils.getProperty(props,"middleStyle","");
+                    rightStyle = Utils.getProperty(props,"rightStyle","");		    
                     continue;
                 }
 
@@ -1304,27 +1319,30 @@ public class WikiUtil {
                     continue;
                 }
                 if (tline.equals("+left")) {
-                    buff.append("<td width=" + lmrWidth + ">");
+                    buff.append("<td width=" + leftWidth+">");
+		    HU.open(buff,"div",HU.attr("style", leftStyle));
                     continue;
                 }
                 if (tline.equals("-left")) {
-                    buff.append("</td>");
+                    buff.append("</div></td>");
                     continue;
                 }
                 if (tline.equals("+middle")) {
-                    buff.append("<td align=center width=" + lmrWidth + ">");
+                    buff.append("<td align=center width=" + middleWidth + ">");
+		    HU.open(buff,"div",HU.attr("style", middleStyle));
                     continue;
                 }
                 if (tline.equals("-middle")) {
-                    buff.append("</td>");
+                    buff.append("</div></td>");
                     continue;
                 }
                 if (tline.equals("+right")) {
-                    buff.append("<td align=right width=" + lmrWidth + ">");
+                    buff.append("<td align=right width=" + rightWidth+">");
+		    HU.open(buff,"div",HU.attr("style", rightStyle));
                     continue;
                 }
                 if (tline.equals("-right")) {
-                    buff.append("</td>");
+                    buff.append("</div></td>");
                     continue;
                 }
 
@@ -3159,34 +3177,35 @@ public class WikiUtil {
             if (left) {
 		StringBuilder args = new StringBuilder();
 		boolean open = Utils.getProperty(headingsProps,"leftOpen", true);
-		String leftWidth = Utils.getProperty(headingsProps,"leftWidth", "250px");
-                String leftStyle = (String) Utils.getProperty(headingsProps,
+		String theLeftWidth = Utils.getProperty(headingsProps,"leftWidth", "250px");
+                String theLeftStyle = (String) Utils.getProperty(headingsProps,
 							      "leftStyle", "");
-                String rightStyle = (String) Utils.getProperty(headingsProps,
+                String theRightStyle = (String) Utils.getProperty(headingsProps,
 							       "rightStyle", "");
 		String title = Utils.getProperty(headingsProps, "title",null);
-		leftStyle = HU.css("width",leftWidth) +
-		    leftStyle;
+		theLeftStyle = HU.css("width",theLeftWidth) +
+		    theLeftStyle;
 		args.append("leftOpen:" + open +",");
-		args.append("leftWidth:'" + leftWidth +"',");		
+		args.append("leftWidth:'" + theLeftWidth +"',");		
 		if(!open) {
-		    rightStyle+=HU.css("margin-left","0px");
-		    leftStyle+=HU.css("display","none");		    
+		    theRightStyle+=HU.css("margin-left","0px");
+		    theLeftStyle+=HU.css("display","none");		    
 		} else {
-		    rightStyle+=HU.css("margin-left",leftWidth);
+		    theRightStyle+=HU.css("margin-left",theLeftWidth);
 		}
                 s = s.replace("${" + headingsNav + "}", "");
+		boolean haveLinks = hb.length()>0;
                 String leftLinks = HU.div(hb.toString(),
                                           HU.attrs("class","ramadda-nav-left-links"));
 
-		if(title!=null) {
+		if(title!=null && haveLinks) {
 		    leftLinks = "<div class=ramadda-links>" +HU.h3(title) + "</div>\n" + leftLinks;
 		}
                 s = "<div class=ramadda-nav-horizontal><div class=ramadda-nav-left style='"
-                    + leftStyle + "'><div id=ramadda-nav-1></div>"
-                    + leftLinks
+                    + theLeftStyle + "'><div id=ramadda-nav-1></div>"
+                    + (haveLinks?leftLinks:"")
                     + "<div id=ramadda-nav-2></div><div id=ramadda-nav-3></div></div><div style='"
-                    + rightStyle + "' class=ramadda-nav-right>" + s
+                    + theRightStyle + "' class=ramadda-nav-right>" + s
                     + "</div></div>" + HU.script("HtmlUtils.initNavLinks({" + args+"})");
             } else if (list) {
                 String style = Utils.getProperty(headingsProps, "style", "");
