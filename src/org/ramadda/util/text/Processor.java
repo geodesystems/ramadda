@@ -1141,6 +1141,8 @@ public abstract class Processor extends CsvOperator {
 
 	private String commentChar;
 
+	private Row headerRow;
+
         /**
          * ctor
          *
@@ -1277,6 +1279,7 @@ public abstract class Processor extends CsvOperator {
                 throws Exception {
             boolean firstRow = rowCnt++ == 0;
             if (firstRow) {
+		headerRow = row;
 		commentChar = ctx.getCommentChar();
 		if(prefix != null) {
 		    writer.append(prefix);
@@ -1329,8 +1332,10 @@ public abstract class Processor extends CsvOperator {
 	    } else {
 		for (int colIdx = 0; colIdx < values.size(); colIdx++) {
 		    Object v = values.get(colIdx);
+		    String sv = v.toString();
+		    String field = headerRow.getString(colIdx);
                     theTemplate = theTemplate.replace("${" + colIdx + "}",
-						      v.toString());
+						      sv).replace("${" + field +"}", sv);
                 }
             }
             if (theTemplate == null) {
