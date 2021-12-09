@@ -1243,19 +1243,20 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader ctx, Row row) {
 
+            boolean      debug  = Misc.equals(props.get("debug"), "true");
+	    //	    debug = true;
             rowCnt++;
             if (rowCnt > 2) {
-                //              System.err.println("hdr rest:" + row);
+		if(debug)   System.err.println("addHeader data row:" + row);
                 return row;
             }
             if (firstRow == null) {
                 firstRow = row;
-
+		if(debug)   System.err.println("got first row:" + row);
                 return null;
             }
             boolean justFields  = Misc.equals(props.get("justFields"),
                                       "true");
-            boolean      debug  = Misc.equals(props.get("debug"), "true");
             PrintWriter  writer = ctx.getWriter();
             StringBuffer sb     = new StringBuffer();
             if (toStdOut) {
@@ -1413,7 +1414,6 @@ public abstract class Converter extends Processor {
                 }
 
 
-
                 type = CsvUtil.getDbProp(props, id, i, "type", type);
                 if (Misc.equals(type, "enum")) {
                     type = "enumeration";
@@ -1464,10 +1464,12 @@ public abstract class Converter extends Processor {
                 values.add(field);
             }
 
+	    if(debug)   System.err.println("header values:" + values);
             Processor nextProcessor = getNextProcessor();
             firstRow.setValues(values);
             if (nextProcessor != null) {
                 try {
+		    if(debug)   System.err.println("addheader: telling nextProcessor to handle row:" + firstRow);
                     nextProcessor.handleRow(ctx, firstRow);
                 } catch (Exception exc) {
                     throw new RuntimeException(exc);
@@ -1475,6 +1477,7 @@ public abstract class Converter extends Processor {
             }
             firstRow = null;
 
+	    if(debug)   System.err.println("addheader: returning row:" + row);
             return row;
 
         }
