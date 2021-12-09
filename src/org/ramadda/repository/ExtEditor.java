@@ -995,6 +995,7 @@ public class ExtEditor extends RepositoryManager {
         }
         getEntryManager().addSessionType(request, newTypeHandler.getType());
 
+	String extraDesc =   entry.getTypeHandler().getExtraText(entry);
         Connection connection = getDatabaseManager().getConnection();
         try {
             Statement extraStmt = connection.createStatement();
@@ -1005,6 +1006,7 @@ public class ExtEditor extends RepositoryManager {
             getDatabaseManager().closeConnection(connection);
         }
 
+
         getDatabaseManager().update(Tables.ENTRIES.NAME,
                                     Tables.ENTRIES.COL_ID, entry.getId(),
                                     new String[] { Tables.ENTRIES.COL_TYPE },
@@ -1013,6 +1015,12 @@ public class ExtEditor extends RepositoryManager {
         getEntryManager().removeFromCache(entry);
         entry = newTypeHandler.changeType(request, entry);
 
+	if(extraDesc!=null) {
+	    //This case shows up when converting a wiki page to something else
+	    //The wiki page has its main text in another field, not the description
+	    entry.setDescription(entry.getDescription()+extraDesc);
+            getEntryManager().updateEntry(request, entry);
+	}
         return entry;
     }
 
