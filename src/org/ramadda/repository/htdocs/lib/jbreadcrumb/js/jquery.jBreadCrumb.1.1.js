@@ -18,7 +18,7 @@
     var _container = {};
     var _breadCrumbElements = {};
     var _autoIntervalArray = [];
-	var _easingEquation;
+    var _easingEquation;
     
     // Public functions
     
@@ -155,7 +155,8 @@
                     {
                         width: _options.previewWidth
                     }, _options.timeInitialCollapse, _options.easing);
-                }, (150 * (i - 2)));
+		    //jeffmc:change 150 to 10 for faster easing
+                }, (10 * (i - 2)));
                 
             }
         });

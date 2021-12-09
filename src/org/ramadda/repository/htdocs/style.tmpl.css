@@ -2203,6 +2203,8 @@ table.dataTable tbody td {
 .entry-row-label {
     white-space:nowrap;
     padding-left:5px;
+    max-width:100%;
+    overflow-x:auto;
 }
 
 

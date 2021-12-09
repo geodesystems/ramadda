@@ -3620,12 +3620,23 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	HtmlUtils.makeBreadcrumbs(id);
     },
     makeBreadcrumbs: function(id) {
-        jQuery("#" + id).jBreadCrumb({
-            previewWidth: 10,
-            easing: 'swing',
+	let bc = jQuery("#" + id);
+	let num = bc.find("li").length
+	let begin = 0;
+	let end = 4;
+	let w = 0;
+	if(num>5) {
+	    end=0;
+	}
+        bc.jBreadCrumb({
+            previewWidth: w,
+//	    maxFinalElementLength:400,
+//	    minFinalElementLength:10,
+	    easing:'easeOutQuad',
+//            easing: 'swing',
             //(sic)
-            beginingElementsToLeaveOpen: 0,
-            endElementsToLeaveOpen: 4
+            beginingElementsToLeaveOpen: begin,
+            endElementsToLeaveOpen:end
         });
     },
     tooltipInit: function(openerId, id) {
