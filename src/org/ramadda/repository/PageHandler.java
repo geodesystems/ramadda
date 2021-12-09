@@ -2616,7 +2616,6 @@ public class PageHandler extends RepositoryManager {
         boolean showMenu        = pageStyle.getShowMenubar(entry);
         boolean showToolbar     = pageStyle.getShowToolbar(entry);
 
-
         //FOR NOW:
         showToolbar = false;
 
@@ -2649,7 +2648,7 @@ public class PageHandler extends RepositoryManager {
             makeBreadcrumbs(request, breadcrumbs, sb);
             if (doTable) {
                 sb.append("</td>");
-                sb.append("<td align=right width=100>");
+		//                sb.append("<td align=right width=100>");
             }
             sb.append(toolbar);
             if (doTable) {
