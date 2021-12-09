@@ -1738,6 +1738,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 		    root = findEntryFromId(request, entry, wikiUtil, props,
 					   entryRoot);
 		}
+		String type = getProperty(wikiUtil, props, "entryType",(String)null);
+
+		if(type!=null) {
+		    request= request.cloneMe();
+		    request.put(ARG_TYPE, type);
+		}
+
 		if(next) {
 		    other = getEntryUtil().getNext(request,  entry,  root, tree, sort, asc);
 		} else {
