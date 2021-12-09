@@ -25,7 +25,7 @@
 
  <property name="record.properties">
 csvcommands1=-skip,2,-makefields,parameter,measValue
-csvcommands2=measDate,,-addheader, measdate.type date   measdate.format {yyyy-MM-dd}   dischrg.unit unit  cfs  gage_ht.unit unit  ft,-print
+csvcommands2=measDate,,-addheader, measdate.type date   measdate.format {yyyy-MM-dd}   dischrg.unit cfs  gage_ht.unit ft,-print
   </property>
 <wiki>
 <![CDATA[
