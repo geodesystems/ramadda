@@ -1007,6 +1007,21 @@ public class CsvUtil {
     }
 
 
+    public static void checkOkToRead(String file) {
+	if(!IO.okToReadFrom(file)) 
+	    throw new IllegalArgumentException("Cannot read file:"   + file);
+    }
+
+
+    public String readFile(String file) throws Exception {
+	if (file.startsWith("file:")) {
+	    file = file.substring("file:".length());
+	}
+	checkOkToRead(file);
+	return  IO.readContents(new File(file));
+    }
+
+
     /**
      * _more_
      *
@@ -1017,9 +1032,8 @@ public class CsvUtil {
      * @throws Exception _more_
      */
     public InputStream makeInputStream(String file) throws Exception {
-	if(!Utils.isUrl(file) && !IO.okToReadFrom(file)) {
-	    throw new IllegalArgumentException("Cannot read file:"
-					       + file);
+	if(!Utils.isUrl(file)) {
+	    checkOkToRead(file);
         }
 
         if (file.endsWith(".xls")) {
@@ -1923,6 +1937,10 @@ public class CsvUtil {
                 new Arg("rows"), new Arg("columns", "", "type", "columns"),
                 new Arg("pattern", "", "type", "pattern"),
                 new Arg("substitution string")),
+        new Cmd("-replace", "Replace",
+                new Arg("columns", "", "type", "columns"),
+                new Arg("substitution string",
+                        "use {value} for value")),
         new Cmd("-set", "Write the value into the cells",
                 new Arg("columns", "", "type", "columns"),
                 new Arg("rows", "", "type", "list"), new Arg("value")),
@@ -3197,9 +3215,14 @@ public class CsvUtil {
 	    });
 
 	defineFunction("-change",3,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.ColumnChanger(ctx,getCols(args.get(++i)),Utils.convertPattern(args.get(++i)),  args.get(++i)));
+		ctx.addProcessor(new Converter.ColumnChanger(ctx,getCols(args.get(++i)),args.get(++i),  args.get(++i)));
 		return i;
 	    });
+
+	defineFunction("-replace",2,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.ColumnReplacer(ctx,getCols(args.get(++i)),args.get(++i)));
+		return i;
+	    });	
 
 
 	defineFunction("-ascii",2,(ctx,args,i) -> {
@@ -3277,7 +3300,7 @@ public class CsvUtil {
 		String        pattern = args.get(++i);
 		pattern = Utils.convertPattern(pattern);
 		ctx.addProcessor(
-				 new Converter.RowChanger(
+				 new Converter.RowChanger(ctx,
 							  rows, cols, pattern, args.get(++i)));
 
 		return i;
@@ -4071,8 +4094,14 @@ public class CsvUtil {
 		    String template = args.get(++i).replaceAll("_nl_", "\n");
 		    String delim    = args.get(++i).replaceAll("_nl_", "\n");
 		    String suffix   = args.get(++i).replaceAll("_nl_", "\n");
-		    if (new File(template).exists()) {
-			template = IO.readContents(new File(template));
+		    if (prefix.startsWith("file:")) {
+			prefix = readFile(prefix);
+		    }
+		    if (template.startsWith("file:")) {
+			template = readFile(template);
+		    }
+		    if (suffix.startsWith("file:")) {
+			suffix = readFile(suffix);
 		    }
 		    ctx.addProcessor(
 				     new Processor.Printer(

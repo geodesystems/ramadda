@@ -731,10 +731,20 @@ public abstract class DataProvider extends CsvOperator {
                                 array.getJSONArray(arrayIdx), true,
                                 arrayKeys));
                     } catch (Exception exc) {
-                        primary.putAll(
-                            Json.getHashtable(
-                                array.getJSONObject(arrayIdx), true,
-                                arrayKeys));
+			try {
+			    primary.putAll(
+					   Json.getHashtable(
+							     array.getJSONObject(arrayIdx), true,
+							     arrayKeys));
+			} catch(Exception exc2) {
+			    //Maybe it is an array of strings
+			    for (int arrayIdx2 = 0; arrayIdx2 < array.length(); arrayIdx2++) {
+				Row row = new Row();
+				row.add(array.getString(arrayIdx2));
+				addRow(row);
+			    }
+			    return;
+			}
                     }
                 }
 

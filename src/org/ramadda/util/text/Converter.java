@@ -28,6 +28,8 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
+import java.util.Collections;
+import java.util.Comparator;
 
 import java.net.URL;
 
@@ -2146,31 +2148,20 @@ public abstract class Converter extends Processor {
 
 
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 16, '15
-     * @author         Enter your name here...
-     */
-    public static class ColumnChanger extends Converter {
-
-        /* */
+    public static class Changer extends Converter {
 
         /** _more_ */
-        private boolean isRegex;
+        boolean isRegex;
 
         /**  */
-        private List<String[]> patterns = new ArrayList<String[]>();
+        List<String[]> patterns = new ArrayList<String[]>();
 
         /**
          * @param cols _more_
          * @param pattern _more_
          * @param value _more_
          */
-        public ColumnChanger(TextReader ctx, List<String> cols, String pattern,
+        public Changer(TextReader ctx, List<String> cols, String pattern,
                              String value) {
             super(cols);
             if (pattern.startsWith("file:")) {
@@ -2186,7 +2177,7 @@ public abstract class Converter extends Processor {
                 this.isRegex = true;
             } else {
                 this.isRegex = StringUtil.containsRegExp(pattern);
-                patterns.add(new String[] { pattern, value });
+                patterns.add(new String[] { Utils.convertPattern(pattern), value });
             }
         }
 
@@ -2199,16 +2190,74 @@ public abstract class Converter extends Processor {
             List<String> lines    = Utils.split(contents, "\n");
             for (int i = 0; i < lines.size(); i++) {
                 String line = lines.get(i).trim();
-                if (line.length() == 0) {
+                if (line.length() == 0 ||line.startsWith("#")) {
                     continue;
                 }
-                List<String> toks = Utils.split(line, "::");
-                patterns.add(new String[] { toks.get(0),
+                List<String> toks;
+		if(line.indexOf("::")>=0) {
+		    toks = Utils.splitUpTo(line, "::",2);
+		} else {
+		    toks = Utils.splitUpTo(line, ",",2);
+		}
+		String pattern = toks.get(0);
+                patterns.add(new String[] { Utils.convertPattern(pattern),
                                             (toks.size() > 1)
                                             ? toks.get(1)
                                             : "" });
+		//		System.out.println(Utils.convertPattern(pattern));
             }
+	    
+	    Collections.sort(patterns,new Comparator() {
+		    public int compare(Object o1, Object o2) {
+			String[] t1 = (String[]) o1;
+			String[] t2 = (String[]) o2;
+			return t2[0].length()-t1[0].length();
+		    }
+		});
+	    //	    for(String[]t:patterns)System.err.println(t[0]);
         }
+
+	String change(TextReader ctx, Row row, String s)  {
+	    String os = s;
+	    //	    System.out.println("change:" + s);
+	    for (String[] tuple : patterns) {
+		String pattern = tuple[0];
+		String value   = tuple[1];
+		s = s.replaceAll(pattern, value);
+		//		System.out.println("\tchange:" + s);
+		//		if(!os.equals(s)) break;
+	    }
+	    //	    if(os.equals(s))System.out.println("\tno changes:" + os +" s:" + s);
+	    //	    else System.out.println("\tchanged:" + os +" s:" + s);	    
+	    return s;
+	}
+
+
+    }
+
+
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Jan 16, '15
+     * @author         Enter your name here...
+     */
+    public static class ColumnChanger extends Changer {
+
+
+        /**
+         * @param cols _more_
+         * @param pattern _more_
+         * @param value _more_
+         */
+        public ColumnChanger(TextReader ctx, List<String> cols, String pattern,
+                             String value) {
+            super(ctx, cols, pattern, value);
+        }
+
 
         /**
          * @param ctx _more_
@@ -2225,22 +2274,11 @@ public abstract class Converter extends Processor {
             }
             List<Integer> indices = getIndices(ctx);
             for (Integer idx : indices) {
-                for (String[] tuple : patterns) {
-                    String pattern = tuple[0];
-                    String value   = tuple[1];
-                    int    index   = idx.intValue();
-                    if ((index >= 0) && (index < row.size())) {
-                        String s  = row.getString(index).trim();
-                        String os = s;
-                        if (isRegex) {
-			    String before =s;
-                            s = s.replaceAll(pattern, value);
-                        } else {
-                            s = s.replaceAll(pattern, value);
-                        }
-                        //                  System.err.println("\tP:"  + pattern +" os:" + os +" s:" + s);
-                        row.set(index, s);
-                    }
+		int    index   = idx.intValue();
+		if ((index >= 0) && (index < row.size())) {
+		    String s  = row.getString(index).trim();
+		    s  = change(ctx,row,s);
+		    row.set(index, s);
                 }
             }
 
@@ -2248,6 +2286,59 @@ public abstract class Converter extends Processor {
         }
 
     }
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Jan 16, '15
+     * @author         Enter your name here...
+     */
+    public static class ColumnReplacer extends Converter {
+
+	String with;
+
+
+        /**
+         * @param cols _more_
+         * @param pattern _more_
+         * @param value _more_
+         */
+        public ColumnReplacer(TextReader ctx, List<String> cols, String with) {
+            super(cols);
+	    this.with = with;
+        }
+
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            //Don't process the first row
+            if (rowCnt++ == 0) {
+                if ( !ctx.getAllData()) {
+                    return row;
+                }
+            }
+            List<Integer> indices = getIndices(ctx);
+            for (Integer idx : indices) {
+		int    index   = idx.intValue();
+		if ((index >= 0) && (index < row.size())) {
+		    String s  = row.getString(index).trim();
+		    s  = with.replace("{value}",s);
+		    row.set(index, s);
+                }
+            }
+
+            return row;
+        }
+
+    }
+
 
 
 
@@ -2936,20 +3027,7 @@ public abstract class Converter extends Processor {
      * @version        $version$, Fri, Mar 22, '19
      * @author         Enter your name here...
      */
-    public static class RowChanger extends Converter {
-
-
-        /* */
-
-        /** _more_ */
-        private String pattern;
-
-        /* */
-
-        /** _more_ */
-        private String value;
-
-        /* */
+    public static class RowChanger extends Changer {
 
         /** _more_ */
         private HashSet<Integer> rows;
@@ -2960,15 +3038,14 @@ public abstract class Converter extends Processor {
          * @param pattern _more_
          * @param value _more_
          */
-        public RowChanger(List<Integer> rowList, List<String> cols,
+        public RowChanger(TextReader ctx, List<Integer> rowList, List<String> cols,
                           String pattern, String value) {
-            super(cols);
+
+            super(ctx, cols, pattern, value);
             rows = new HashSet<Integer>();
             for (int row : rowList) {
                 rows.add(row);
             }
-            this.pattern = pattern;
-            this.value   = value;
         }
 
         /**
@@ -2988,7 +3065,7 @@ public abstract class Converter extends Processor {
             for (Integer idx : indices) {
                 int    index = idx.intValue();
                 String s     = row.getString(index);
-                s = s.replaceAll(pattern, value);
+		s  = change(ctx,row,s);
                 row.set(index, s);
             }
 
