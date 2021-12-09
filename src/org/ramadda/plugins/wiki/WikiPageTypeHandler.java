@@ -113,6 +113,12 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
+    @Override
+    public String getExtraText(Entry entry) {
+        return (String) entry.getValue(0);
+    }    
+
+
 
     /**
      * _more_
