@@ -3063,8 +3063,11 @@ public class TypeHandler extends RepositoryManager {
     public String getPathForEntry(Request request, Entry entry)
             throws Exception {
         Resource resource = entry.getResource();
-        String   path     = Utils.normalizeTemplateUrl(resource.getPath());
-
+	String path =resource.getPath();
+	if(!Utils.stringDefined(path)) {
+            path = getTypeProperty("fixed_url", (String) null);
+	}
+        path     = Utils.normalizeTemplateUrl(path);
         return path;
     }
 
