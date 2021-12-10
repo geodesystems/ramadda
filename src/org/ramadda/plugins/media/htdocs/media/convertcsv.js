@@ -880,6 +880,13 @@ function  ConvertForm(inputId, entry) {
 				    _this.makeHeaderMenu(field+".type","date","date")+ SPACE2 +
 				    _this.makeHeaderMenu(field+".type","url","url")+SPACE2 +
 				    _this.makeHeaderMenu(field+".type","image","image");
+				html +="<br>" +  
+				    _this.makeHeaderMenu(field+".unit","unit","unit")+
+				    SPACE2;
+				html +="<br>" +
+				    _this.makeHeaderMenu(field+".format","{yyyy-MM-dd hh:mm:ss}","add date format")+ SPACE2;
+				
+
 				html+="</div>";
 				let dialog =   HU.makeDialog({content:html,anchor:$(this)});
 				dialog.find(".ramadda-clickable").click(function() {
@@ -924,8 +931,9 @@ function  ConvertForm(inputId, entry) {
 			    if(!id) return;
 			    _this.insertColumnIndex(id,true);
 			});
-			if(table)
+			if(table) {
 			    HtmlUtils.formatTable(output.find( ".ramadda-table"),{paging:false,height:"200px",fixedHeader: true,scrollX:true});
+			}
 		    } else if(!raw && showHtml) {
   			let newresult = result.replace(/(<th>.*?)(#[0-9]+)(.*?<.*?>)([^<>]*?)(<.*?)<\/th>/g,"$1<a href='#' index='$2' style='color:blue;' class=csv_header_field field='table' onclick=noop()  title='Add field id'>$2</a>$3<a href='#' label='$4' style='color:blue;' class=csv_header_field field='table' onclick=noop()  title='Add field id'>$4</a>$5</th>");
 			result = newresult;
