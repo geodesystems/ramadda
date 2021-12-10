@@ -44,6 +44,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 
+import java.io.*;
+import javax.xml.bind.DatatypeConverter;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
 import java.util.zip.*;
 
 import javax.crypto.Cipher;
@@ -1530,6 +1535,45 @@ public class StorageManager extends RepositoryManager implements PointFile
 
         return name;
     }
+
+
+    public File decodeFileContents(Request request, String fileName, String fileContents) throws Exception {
+	File tmpFile = getTmpFile(request,fileName);
+	//data:image/png;...
+	String fileType = "text/plain";
+	boolean hasData = false;
+	if(fileContents.startsWith("data:")) {
+	    hasData = true;
+	    int idx = fileContents.indexOf(",");
+	    if(idx<0) {
+		throw new IllegalArgumentException("Bad file contents");
+	    }
+	    fileType = fileContents.substring(0,idx-1);
+	    fileType = fileType.substring(0,fileType.indexOf(";"));
+	    fileType = fileType.substring(fileType.indexOf(":")+1);
+	    fileContents = fileContents.substring(idx + 1);
+	}
+	//	System.err.println("type:" + fileType);
+
+	if(fileType.startsWith("image/")) {
+	    byte[] imagedata = DatatypeConverter.parseBase64Binary(fileContents);
+	    BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imagedata));
+	    String suffix = IOUtil.getFileExtension(fileName).toLowerCase();
+	    if(suffix.startsWith(".")) suffix = suffix.substring(1);
+	    if(bufferedImage==null) {
+		throw new IllegalArgumentException("Unable to create image -  file:" + fileName +" suffix:" + suffix);
+	    }
+	    ImageIO.write(bufferedImage, suffix, tmpFile);
+	} else {
+	    if(hasData)
+		fileContents = new String(Utils.decodeBase64(fileContents));
+	    FileOutputStream fos = new FileOutputStream(tmpFile);
+	    IOUtil.writeFile(tmpFile, fileContents);
+	    fos.close();
+	}
+	return tmpFile;
+    }
+
 
 
     /**
