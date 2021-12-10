@@ -383,6 +383,7 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+
     /**
      * _more_
      *
@@ -1081,7 +1082,11 @@ public class EntryManager extends RepositoryManager {
 	    Entry newEntry = addFileEntry(request, tmpFile,
 					  group, name, request.getString("description",""), request.getUser(),
 					  typeHandler, null);
-	    sb.append(Json.mapAndQuote("status","ok","message","File added","entryid",newEntry.getId(),"name",newEntry.getName()));
+	    String url = getEntryResourceUrl(request, newEntry,
+					     false,true);
+
+	    sb.append(Json.mapAndQuote("status","ok","message","File added","entryid",newEntry.getId(),"name",newEntry.getName(),"geturl",
+				       url));
 	    return new Result("", sb, Json.MIMETYPE);
 	} catch(Exception exc) {
 	    System.err.println("Error:" + exc);
@@ -8062,6 +8067,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @return _more_
      */
+
     public String getEntryResourceUrl(Request request, Entry entry,
                                       boolean full, boolean addPath) {
         if (entry.getResource().isUrl()) {
