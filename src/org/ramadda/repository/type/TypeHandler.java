@@ -3067,7 +3067,9 @@ public class TypeHandler extends RepositoryManager {
 	if(!Utils.stringDefined(path)) {
             path = getTypeProperty("fixed_url", (String) null);
 	}
-        path     = Utils.normalizeTemplateUrl(path);
+	if(path!=null) {
+	    path     = Utils.normalizeTemplateUrl(path);
+	}
         return path;
     }
 
