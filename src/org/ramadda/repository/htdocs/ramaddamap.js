@@ -3607,7 +3607,7 @@ RepositoryMap.prototype = {
         for (i = 0; i < array.length; i++) {
             let aid = array[i].ramaddaId;
             if (!aid)
-                array[i].id;
+                aid =array[i].id;
             if (aid == id) {
                 return array[i];
             }
