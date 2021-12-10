@@ -1043,32 +1043,18 @@ public class EntryManager extends RepositoryManager {
 	    String fileContents = request.getString("file",(String) null);
 	    String fileName = request.getString("filename",(String) null);	
 	    String fileType = request.getString("filetype","");
-	    File tmpFile = getStorageManager().getTmpFile(request,fileName);
 	    TypeHandler typeHandler = findDefaultTypeHandler(fileName);
 	    //	    System.err.println("file:" + fileName +" type: " + fileType);
 	    //	    System.err.println("contents:" + fileContents.substring(0,100));
 	    
-	    fileContents = fileContents.substring(fileContents.indexOf(",") + 1);
-	    if(fileType.startsWith("image/")) {
-		byte[] imagedata = DatatypeConverter.parseBase64Binary(fileContents);
-		BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imagedata));
-		String suffix = IOUtil.getFileExtension(fileName).toLowerCase();
-		if(suffix.startsWith(".")) suffix = suffix.substring(1);
-		if(bufferedImage==null) {
-		    
-		    return new Result("",
-				      new StringBuilder(Json.mapAndQuote("status","error","message","Unable to create image -  file:" + fileName +" suffix:" + suffix)), 
-				      Json.MIMETYPE);
-
-		    
-		}
-		//		System.err.println("writing: " + suffix +" file:" + tmpFile);
-		ImageIO.write(bufferedImage, suffix, tmpFile);
-	    } else {
-		fileContents = new String(Utils.decodeBase64(fileContents));
-		FileOutputStream fos = new FileOutputStream(tmpFile);
-		IOUtil.writeFile(tmpFile, fileContents);
-		fos.close();
+	    File tmpFile; 
+	    try {
+		tmpFile = getStorageManager().decodeFileContents(request,fileName, fileContents);
+	    } catch(Exception exc) {
+		exc.printStackTrace();
+		return new Result("",
+				  new StringBuilder(Json.mapAndQuote("status","error","message",exc.getMessage())), 
+				  Json.MIMETYPE);
 	    }
 	    if(!tmpFile.exists()) {
 		sb.append(Json.mapAndQuote("status","error","message","Unable to write file:" + fileName));
@@ -1919,6 +1905,43 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+    private Result doProcessEntryChange(Request request, boolean forUpload,
+                                        Object actionId)
+	throws Exception {
+	Entry  parentEntry=null;
+	Entry entry = null;
+        if (request.defined(ARG_GROUP)) {
+	    parentEntry = findGroup(request);
+	}
+        if (request.defined(ARG_ENTRYID)) {
+            entry = getEntry(request);
+	}
+	try {
+	    return doProcessEntryChangeInner(request,  forUpload, actionId, parentEntry, entry);
+	} catch(Exception exc) {
+	    logError("", exc);
+	    StringBuilder sb = new StringBuilder();
+            Throwable     inner     = LogUtil.getInnerException(exc);
+	    Entry theEntry= entry!=null?entry:parentEntry;
+	    if(theEntry!=null)
+		getPageHandler().entrySectionOpen(request, theEntry, sb, "Error");
+
+	    sb.append(getPageHandler().showDialogError(inner.getMessage()));
+            if ((request.getUser() != null) && request.getUser().getAdmin()) {
+                sb.append(
+                    HtmlUtils.pre(
+                        HtmlUtils.entityEncode(
+                            LogUtil.getStackTrace(inner))));
+            }
+	    if(theEntry!=null)
+		getPageHandler().entrySectionClose(request, theEntry, sb);
+            Result result = new Result(msg("Error"), sb);
+	    result.setResponseCode(Result.RESPONSE_INTERNALERROR);
+	    return result;
+	}
+    }
+
+
 
     /**
      * _more_
@@ -1931,8 +1954,8 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    private Result doProcessEntryChange(Request request, boolean forUpload,
-                                        Object actionId)
+    private Result doProcessEntryChangeInner(Request request, boolean forUpload,
+					     Object actionId, Entry parentEntry, Entry entry)
 	throws Exception {
 
         User user = request.getUser();
@@ -1940,11 +1963,9 @@ public class EntryManager extends RepositoryManager {
             logInfo("upload doProcessEntryChange user = " + user);
         }
 
-        Entry       entry       = null;
         TypeHandler typeHandler = null;
         boolean     newEntry    = true;
         if (request.defined(ARG_ENTRYID)) {
-            entry = getEntry(request);
             if (entry == null) {
                 fatalError(request, "Cannot find entry");
             }
@@ -2066,17 +2087,15 @@ public class EntryManager extends RepositoryManager {
             getStorageManager().checkLocalFile(serverFile);
         }
 
-        Entry parentEntry = null;
         if (entry == null) {
 
             if (forUpload) {
                 logInfo("Upload:creating a new entry");
             }
             String groupId = request.getString(ARG_GROUP, (String) null);
-            if (groupId == null) {
+            if (parentEntry == null) {
                 fatalError(request, "You must specify a parent folder");
             }
-            parentEntry = findGroup(request);
             if (forUpload) {
                 logInfo("Upload:checking access");
             }
@@ -2182,8 +2201,22 @@ public class EntryManager extends RepositoryManager {
             */
 
             boolean hasZip = false;
+	    boolean hasUpload = false;
+	    for(int i=0;i<100;i++) {
+		if(!request.defined("upload_file_"+i)) continue;
+		hasUpload  = true;
+		String name = request.getString("upload_name_"+i);
+		String contents = request.getString("upload_file_"+i);
+		File tmpFile = getStorageManager().decodeFileContents(request, name, contents);
+		origNames.add(name);
+		resources.add(tmpFile.toString());
+		parents.add(parentEntry);
+	    }
 
-            if (serverFile != null) {
+
+	    if(hasUpload) {
+		isFile = true;
+	    } else if (serverFile != null) {
                 if ( !serverFile.exists()) {
                     StringBuilder message =
                         new StringBuilder(
@@ -2505,9 +2538,7 @@ public class EntryManager extends RepositoryManager {
                     newResourceName = url;
                     newResourceType = Resource.TYPE_URL;
                 }
-            }
-
-
+	    }
 
 
             if ((newResourceName != null)
@@ -2654,8 +2685,15 @@ public class EntryManager extends RepositoryManager {
 							getRepository().translate(
 										  request, "files uploaded"))));
         } else {
-            return new Result(BLANK,
-                              new StringBuilder(msg("No entries created")));
+	    StringBuilder sb = new StringBuilder();
+	    if(parentEntry!=null)
+		getPageHandler().entrySectionOpen(request, parentEntry, sb,
+						  "Entry Create");
+	    sb.append(getPageHandler().showDialogWarning("No entries created"));
+	    if(parentEntry!=null)
+		getPageHandler().entrySectionClose(request, parentEntry, sb);
+            return new Result(BLANK,sb);
+
         }
 
     }
