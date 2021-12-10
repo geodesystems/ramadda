@@ -1223,6 +1223,7 @@ public class GenericTypeHandler extends TypeHandler {
     public String getPathForEntry(Request request, Entry entry)
             throws Exception {
         String   path   = super.getPathForEntry(request, entry);
+	if(path==null) return path;
         Object[] values = getEntryValues(entry);
         if (values != null) {
             for (Column column : getMyColumns()) {
