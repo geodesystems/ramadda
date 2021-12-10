@@ -1,0 +1,6 @@
+
+<entry name="${station_name}"  type="type_hydro_colorado"  latitude="${latdecdeg}" longitude="${longdecdeg}">
+    <description><![CDATA[<a href="${more_information}">More information]]></description>
+    <site_id encoded="false"><![CDATA[${site_id}]]></site_id>
+</entry>
+
