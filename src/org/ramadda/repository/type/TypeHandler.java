@@ -4690,8 +4690,15 @@ public class TypeHandler extends RepositoryManager {
                     String fileLabel = getFormLabel(entry, ARG_FILE, "File");
                     if (showFile) {
                         String formContent = HtmlUtils.fileInput(ARG_FILE,
-                                                 size);
+								 size);
                         tabTitles.add(msg(fileLabel));
+			if(entry==null) {
+			    String icon = HU.img("fas fa-upload");
+			    formContent += HU.div(HU.div(icon+" Or drag files here",HU.cssClass("ramadda-file-dnd-label")),HU.cssClass("ramadda-file-dnd-target")+HU.id(formInfo.getId()+"_dnd")+
+						  HU.attr("form-id",formInfo.getId()));
+					      
+			    formContent+=HtmlUtils.script("Ramadda.initFormUpload('" +formInfo.getId()+"','" + formInfo.getId()+"_dnd"+"');");
+			}
                         tabContent.add(HtmlUtils.inset(formContent, 8));
                     }
                     if (showUrl) {
