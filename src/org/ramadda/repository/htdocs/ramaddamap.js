@@ -540,46 +540,6 @@ var firstCustom = true;
 
 var markerMap = {};
 
-function highlightMarkers(selector, mapVar, background1, background2, id) {
-    $(selector).mouseenter(
-        function() {
-            if (background1)
-                $(this).css('background', background1);
-            if (!$(this).data('mapid'))
-                return;
-            if (mapVar.circleMarker($(this).data('mapid'), MapUtils.circleHiliteAttrs)) {
-                return;
-            }
-            if (id == null)
-                return;
-            if (!Utils.isDefined($(this).data('latitude'))) {
-                console.log("no lat");
-                return;
-            }
-            attrs = {
-                pointRadius: 12,
-                stroke: true,
-                strokeColor: "blue",
-                strokeWidth: 2,
-                fill: false,
-            };
-            point = mapVar.addPoint(id, new OpenLayers.LonLat($(this).data('longitude'), $(this).data('latitude')),
-				    attrs);
-            markerMap[id] = point;
-        });
-    $(selector).mouseleave(
-        function() {
-            if (background2)
-                $(this).css('background', background2);
-            if (!$(this).data('mapid'))
-                return;
-            if (id && markerMap[id]) {
-                mapVar.removePoint(markerMap[id]);
-                markerMap[id] = null;
-            }
-            mapVar.uncircleMarker($(this).data('mapid'));
-        });
-}
 
 
 function ramaddaFindFeature(layer, point) {
@@ -996,6 +956,53 @@ RepositoryMap.prototype = {
 	**/
 
     },
+
+    highlightMarkers:function(selector,  background1, background2, id) {
+	let _this =  this;
+	if(!background1) background1= '#ffffcc';
+	$(selector).mouseenter(
+            function() {
+		if (background1)
+                    $(this).css('background', background1);
+		if (!$(this).data('mapid'))
+                    return;
+		if (_this.circleMarker($(this).data('mapid'), MapUtils.circleHiliteAttrs)) {
+                    return;
+		}
+		if (id == null)
+                    return;
+		if (!Utils.isDefined($(this).data('latitude'))) {
+                    console.log("no lat");
+                    return;
+		}
+		attrs = {
+                    pointRadius: 12,
+                    stroke: true,
+                    strokeColor: "blue",
+                    strokeWidth: 2,
+                    fill: false,
+		};
+		point = _this.addPoint(id, new OpenLayers.LonLat($(this).data('longitude'), $(this).data('latitude')),
+				      attrs);
+		markerMap[id] = point;
+            });
+	$(selector).mouseleave(
+            function() {
+		if (background2)
+                    $(this).css('background', background2);
+		else 
+                    $(this).css('background', 'transparent');
+		if (!$(this).data('mapid'))
+                    return;
+		if (id && markerMap[id]) {
+                    _this.removePoint(markerMap[id]);
+                    markerMap[id] = null;
+		}
+		_this.uncircleMarker($(this).data('mapid'));
+            });
+    },
+
+
 
     getLayerHighlightStyle:function(layer) {
 	let highlightStyle = $.extend({},this.highlightStyle);

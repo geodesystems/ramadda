@@ -313,9 +313,9 @@ public class GtfsTripTypeHandler extends GenericTypeHandler {
                 sb.append("</table>");
                 sb.append("</div>");
 
-                String js = "highlightMarkers('#gtfs-stops-list-"
+                String js = "gtfsTripMap.highlightMarkers('#gtfs-stops-list-"
                             + entry.getId()
-                            + "  tr', gtfsTripMap, '#ffffcc', 'white', '"
+                            + "  tr', null, null, '"
                             + entry.getId() + "');";
                 sb.append(HtmlUtils.script(JQuery.ready(js)));
             }

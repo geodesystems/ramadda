@@ -853,8 +853,7 @@ public class GpxTypeHandler extends PointTypeHandler {
             extra.append("</div>");
             if (tfos.size() > 0) {
                 String js =
-                    "highlightMarkers('.gpx-map-links .gpx-map-link', "
-                    + map.getVariableName() + ", '#ffffcc', 'white');";
+		    map.getVariableName()+".highlightMarkers('.gpx-map-links .gpx-map-link','#ffffcc');";
                 extra.append(HtmlUtils.script(JQuery.ready(js)));
                 map.appendExtraNav(extra.toString());
             }

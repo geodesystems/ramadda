@@ -4862,8 +4862,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 sb.append(map.getHtml());
 	    }
             String js =
-                "highlightMarkers('.db-map-list-outer .db-map-list-entry', "
-                + map.getVariableName() + ", '#ffffcc', 'white');";
+		map.getVariableName()+  ".highlightMarkers('.db-map-list-outer .db-map-list-entry');";
             sb.append(HtmlUtils.script(JQuery.ready(js)));
 	}
 
