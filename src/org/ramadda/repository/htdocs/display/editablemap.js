@@ -543,6 +543,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    });
 	},
 	doSave: function() {
+	    let _this = this;
 	    if(this.getProperty("thisEntryType")!="geo_editable_json") {
 		this.showMessage("Entry is not the correct type");
 		return;
@@ -556,12 +557,12 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
             };
             $.post(url, args, (result) => {
 		if(result.error) {
-		    this.showMessage(result.error);
+		    _this.showMessage(result.error);
 		} else {
-		    this.showMessage(result.message);
+		    _this.showMessage(result.message);
 		}
 	    }).fail(function(jqxhr, textStatus, error) {
-		this.showMessage("failed to save map:" + textStatus +" " + error);
+		_this.showMessage("failed to save map:" + textStatus +" " + error);
 	    });
 	},
 	doDownload: function() {
