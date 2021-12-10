@@ -53,7 +53,7 @@ public class FreewavePointFile extends CsvFile {
      * @return _more_
      */
     public String getStationsPath() {
-        return "/org/ramadda/data/point/amrc/freewavestations.txt";
+        return "/org/ramadda/geodata/point/amrc/freewavestations.txt";
     }
 
 
