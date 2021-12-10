@@ -9,6 +9,58 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     contents:{},
     currentRamaddaBase:null,
 
+    handleDropEvent:function(event,file, result,entryId,callback) {
+	let isImage= file.type.match('^image.*');
+	let url = ramaddaBaseUrl +"/entry/addfile";
+	let wikiCallback = (html,status,xhr) =>{
+	    console.log("ok");
+	}
+	let wikiError = (html,status,xhr) =>{
+	    console.log("error");
+	};
+
+	let desc = "";
+	let name = file.name;
+	if(!name) {
+	    name = prompt("Name:");
+	    if(!name) return;
+	}
+
+	let fileName = file.name;
+	let suffix = file.type.replace(/image\//,"");
+	if(!fileName) {
+	    fileName =  name+"." + suffix;
+	}
+	let data = new FormData();
+	data.append("filename",fileName);
+	data.append("filetype",file.type);
+	data.append("group",entryId);
+	data.append("description",desc);
+	data.append("file", result);
+	$.ajax({
+	    url: url,
+	    cache: false,
+	    contentType: false,
+	    processData: false,
+	    method: 'POST',
+	    type: 'POST', 
+	    data: data,
+	    success:  (data) =>{
+		if(data.status!='ok') {
+		    alert("An error occurred creating file:"  + data.message);
+		    return;
+		}
+		if(callback) callback(data,data.entryid, data.name,isImage);
+	    },
+	    error: function (err) {
+		alert("An error occurred creating file:"  + err);
+	    }
+	});
+    },
+
+
+
+
     //applies extend to the given object
     //and sets a super member to the original object
     //you can call original super class methods with:

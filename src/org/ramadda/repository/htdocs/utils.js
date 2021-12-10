@@ -81,6 +81,57 @@ var Utils =  {
 	console.log("writing" +value);
     },
 
+    initDragAndDrop:function(target, dragOver,dragLeave,drop,type) {
+	let origCss=null;
+	target.on('dragover', (event) => {
+	    let files = event.originalEvent.target.files || event.originalEvent.dataTransfer.files
+	    event.stopPropagation();
+	    event.preventDefault();
+	    target.addClass("ramadda-drop-active");
+	    if(dragOver) dragOver(event);
+	});
+
+	target.on('dragleave', (event) => {
+	    if(dragLeave) dragLeave(event);
+	});
+
+	target.on('drop', (event) => {
+	    target.removeClass("ramadda-drop-active");
+	    event.stopPropagation();
+	    event.preventDefault();
+	    let files = event.originalEvent.target.files || event.originalEvent.dataTransfer.files
+	    for (let i=0; i<files.length;i++) {
+		let file  = files[i];
+		if(!file) continue;
+		if(type &&!file.type.match(type)) continue;
+		let reader = new FileReader();
+		reader.onload = (onloadEvent) => {
+		    if(drop) drop(onloadEvent,file,onloadEvent.target.result);
+		};
+		reader.readAsDataURL(file); 
+	    }
+	});
+
+	target.on('paste', (event) => {
+	    let items = (event.clipboardData || event.originalEvent.clipboardData).items;
+	    for(let i=0;i<items.length;i++) {
+		let item = items[i];
+		if(item.kind!="file") continue;
+		event.stopPropagation();
+		event.preventDefault();
+		let blob = item.getAsFile();
+		let reader = new FileReader();
+		reader.onload = (event) => {
+		    if(drop)drop(event,item,event.target.result);
+		}; 
+		reader.readAsDataURL(blob);
+	    }
+	});
+	
+
+    },
+
+
     isPost:function() {
 	let meta = $("#request-method");
 	if(meta.length==0) return false;

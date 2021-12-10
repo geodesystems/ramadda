@@ -214,7 +214,24 @@ class  WikiEditor {
 	this.myDiv =  $("#"+this.getId());
 
 	HU.addWikiEditor(this);
-	this.initDragAndDrop();
+	Utils.initDragAndDrop(this.getDiv(),
+			      event=>{
+				 let pos = this.lastPosition =  this.getEditor().renderer.screenToTextCoordinates(event.clientX, event.clientY);
+				 let Range = ace.require('ace/range').Range;
+				 let range =new Range(pos.row, pos.column, pos.row, pos.column+5);
+				 if(this.dragMarker)    this.editor.session.removeMarker(this.dragMarker);
+				 this.dragMarker = this.getEditor().session.addMarker(range, "ace_active_char", "text", false);
+			     },
+			     event=>{
+				 this.clearDragAndDrop();
+			     },
+			     (event,item,result) =>{
+				 this.clearDragAndDrop();
+				 this.lastPosition =  this.getEditor().renderer.screenToTextCoordinates(event.clientX, event.clientY);
+				 Ramadda.handleDropEvent(event, item, result, this.entryId,(data, entryid, name,isImage)=>{
+				     this.handleEntryLink(entryid, name,this.lastPosition,true,{isImage:isImage});
+				 });
+			     });
 
 	this.editor.setBehavioursEnabled(false);
 	this.editor.setDisplayIndentGuides(false);
@@ -266,65 +283,6 @@ class  WikiEditor {
 	return this.getId() +"_"+ suffix;
     }
 
-    handleDropEvent(event,file, result) {
-	let isImage= file.type.match('^image.*');
-	let url = ramaddaBaseUrl +"/entry/addfile";
-	let wikiCallback = (html,status,xhr) =>{
-	    console.log("ok");
-	}
-	let wikiError = (html,status,xhr) =>{
-	    console.log("error");
-	};
-
-	let desc = "";
-	let name = file.name;
-	if(!name) {
-	    name = prompt("Name:");
-	    if(!name) return;
-	} else {
-	    /*
-	    this.lastDesc = prompt("Description:",this.lastDesc||"");
-	    if(this.lastDesc===null) {
-		return;
-	    }
-	    desc = this.lastDesc;
-	    */
-	    desc = "";
-	}
-
-	let fileName = file.name;
-	let suffix = file.type.replace(/image\//,"");
-	if(!fileName) {
-	    fileName =  name+"." + suffix;
-	}
-	let data = new FormData();
-	data.append("filename",fileName);
-	data.append("filetype",file.type);
-	data.append("group",this.entryId);
-	data.append("description",desc);
-	data.append("file", result);
-	let _this = this;
-
-	$.ajax({
-	    url: url,
-	    cache: false,
-	    contentType: false,
-	    processData: false,
-	    method: 'POST',
-	    type: 'POST', 
-	    data: data,
-	    success:  (data) =>{
-		if(data.status!='ok') {
-		    alert("An error occurred creating file:"  + data.message);
-		    return;
-		}
-		this.handleEntryLink(data.entryid, data.name,this.lastPosition,true,{isImage:isImage});
-	    },
-	    error: function (err) {
-		alert("An error occurred creating file:"  + err);
-	    }
-	});
-    }
 
     handleEntryLink(entryId, name,pos,isNew,opts) {
 	let html =  HU.center(HU.b(name));
@@ -417,7 +375,6 @@ class  WikiEditor {
 
 
     clearDragAndDrop() {
-	this.getDiv().removeClass("ramadda-drop-active");
 	if(this.dragMarker)    this.getEditor().session.removeMarker(this.dragMarker);
     }
 
@@ -425,60 +382,7 @@ class  WikiEditor {
 	return this.myDiv;
     }
 
-    initDragAndDrop() {
-	let _this = this;
-	let origCss=null;
-	this.getDiv().on('paste', (event) => {
-	    this.lastPosition =  this.getEditor().renderer.screenToTextCoordinates(event.clientX, event.clientY);
-	    let items = (event.clipboardData || event.originalEvent.clipboardData).items;
-	    for(let i=0;i<items.length;i++) {
-		let item = items[i];
-		if(item.kind!="file") continue;
-		event.stopPropagation();
-		event.preventDefault();
-		let blob = item.getAsFile();
-		let reader = new FileReader();
-		reader.onload = (event) => {
-		    this.handleDropEvent(event,item,event.target.result);
-		}; 
-		reader.readAsDataURL(blob);
-	    }
-	});
 
-	this.getDiv().on('dragover', (event) => {
-	    let pos = this.lastPosition =  this.getEditor().renderer.screenToTextCoordinates(event.clientX, event.clientY);
-	    let Range = ace.require('ace/range').Range;
-	    let range =new Range(pos.row, pos.column, pos.row, pos.column+5);
-	    if(this.dragMarker)    this.editor.session.removeMarker(this.dragMarker);
-	    this.dragMarker = _this.getEditor().session.addMarker(range, "ace_active_char", "text", false);
-
-	    event.stopPropagation();
-	    event.preventDefault();
-	    this.getDiv().addClass("ramadda-drop-active");
-	});
-
-	this.getDiv().on('dragleave', (event) => {
-//	    event.stopPropagation()
-//	    event.preventDefault()
-	    this.clearDragAndDrop();
-	})
-
-	this.getDiv().on('drop', (event) => {
-	    this.clearDragAndDrop();
-	    event.stopPropagation();
-	    event.preventDefault();
-	    let files = event.originalEvent.target.files || event.originalEvent.dataTransfer.files
-	    for (let i=0; i<files.length;i++) {
-		let file  = files[i];
-		if(!file) continue;
-		let reader = new FileReader();
-		reader.onload = (onloadEvent) => {
-		    this.handleDropEvent(onloadEvent,file,onloadEvent.target.result);
-		};
-		reader.readAsDataURL(file); 
-	    }
-	});
-    }	
 
 
     jq(suffix) {

@@ -148,7 +148,8 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	handleEvent:function(event,lonlat) {
 	    return;
 	},
-	setCommand:function(command) {
+	setCommand:function(command, args) {
+	    args = args ||{};
 	    this.clearCommands();
 	    this.command = command;
 	    let glyph = this.glyphMap[command];
@@ -166,8 +167,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    let tmpStyle = {};
 		    $.extend(tmpStyle,glyph.getStyle());
 		    if(glyph.isImage()) {
-			let url = prompt("Image URL:",this.lastImageUrl);
-//			let url = "https://localhost:8430/repository/entry/get/Flood%20flows.png?entryid=15a46519-d0f9-4f89-8c78-f6481e286f2f";
+			let url = args.url||prompt("Image URL:",this.lastImageUrl);
 			if(!url) return;
 			this.lastImageUrl = url;
 			tmpStyle.imageUrl = this.lastImageUrl;
@@ -1199,6 +1199,20 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    });
 	    */
 
+	    this.jq(ID_MAP).mouseover(function(){
+		$(this).focus();
+	    });
+	    
+	    Utils.initDragAndDrop(this.jq(ID_MAP),
+				  event=>{},
+				  event=>{},
+				  (event,item,result) =>{
+				      let entryId = this.getProperty("entryId") || this.entryId;
+				      Ramadda.handleDropEvent(event, item, result, entryId,(data,entryid, name,isImage)=>{
+					  this.setCommand('image',{url:data.geturl});
+				      });
+				  },
+				  "image.*");
 
 	    if(this.getProperty("thisEntryType")=="geo_editable_json") {
 		this.loadMap();
