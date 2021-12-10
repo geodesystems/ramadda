@@ -77,6 +77,8 @@ public class ExtEditor extends RepositoryManager {
 
     public static final String ARG_EXTEDIT_TYPE= "extedit.type";
 
+    public static final String ARG_EXTEDIT_THISONE= "extedit.thisone";    
+
 
     /** _more_ */
     public static final String ARG_EXTEDIT_URL_TO = "extedit.url.to";
@@ -344,6 +346,7 @@ public class ExtEditor extends RepositoryManager {
                 request.get(ARG_EXTEDIT_JS_CONFIRM, false);
 	    final String js = request.getString(ARG_EXTEDIT_SOURCE,"");
             final String type = request.getString(ARG_EXTEDIT_TYPE, (String) null);
+	    final boolean thisOne = request.get(ARG_EXTEDIT_THISONE,false);
 	    final boolean anyFile = Misc.equals(TypeHandler.TYPE_ANY, type);
 
             ActionManager.Action action = new ActionManager.Action() {
@@ -366,6 +369,10 @@ public class ExtEditor extends RepositoryManager {
 			    public boolean processEntry(Entry entry,
 							List<Entry> children)
                                 throws Exception {
+				if(!thisOne && entry.getId().equals(finalEntry.getId())) {
+				    return true;
+				}
+
 				if(anyFile) {
 				    if(!entry.getResource().isFile()) {
 					return true;
@@ -402,6 +409,10 @@ public class ExtEditor extends RepositoryManager {
 						changed = true;
 						entry.setName(wrapper.name);
 					    }
+					    if(wrapper.description!=null) {
+						changed = true;
+						entry.setDescription(wrapper.description);
+					    }					    
 					    if(wrapper.url!=null) {
 						changed = true;
 						entry.getResource().setPath(wrapper.url);
@@ -683,26 +694,36 @@ public class ExtEditor extends RepositoryManager {
 	    } else if(form.equals(ARG_EXTEDIT_JS)){
 		opener.accept("Process with Javascript");
 		sb.append(HU.formTable());
-		HtmlUtils.formEntry(sb, msgLabel("Only apply to entries of type"),
+		HtmlUtils.formEntry(sb, HU.b("Only apply to entries of type: ")+
 				    HtmlUtils.select(ARG_EXTEDIT_TYPE, tfos,request.getString(ARG_EXTEDIT_TYPE,null)));
 
-		String ex ="//Include any javascript here\n" +
-		    "ctx.print('Processing: ' + entry.getName());\n" +
-		    "//entry access:\n//entry.getName() entry.setName()\n//entry.getType()\n//entry.getStartDate() entry.getEndDate()\n" +
-		    "//entry.setStartDate(String) entry.setEndDate(String)\n" +
-		    "//entry.getValue('column_name');\n" +
+		HU.formEntry(sb, HU.labeledCheckbox(ARG_EXTEDIT_THISONE, "true",
+					     request.get(ARG_EXTEDIT_THISONE,true), "Apply to this entry"));
+
+
+		String eg =   "entry.getName() entry.setName()\n" +
+		    "entry.getType()\n"+
+		    "entry.getDescription()  entry.setDescription(String)\n" +
+		    "entry.getStartDate() entry.getEndDate()\n" +
+		    "entry.setStartDate(String) entry.setEndDate(String)\n" +
+		    "entry.getValue('column_name');\n" +
 		    "//ctx is the context object\n" +
-		    "//ctx.print() prints output\n" +
-		    "//ctx.stop() will stop processing but still apply any changes\n" +
-		    "//ctx.cancel() will cancel processing and no changes will be applied\n";
+		    "ctx.print() prints output\n" +
+		    "//stop processing but still apply any changes\n" +
+		    "ctx.stop() \n"+
+		    "//cancel processing and no changes will be applied\n"+
+		    "ctx.cancel() \n";
+
+		String ex ="//Include any javascript here\n" +
+		    "ctx.print('Processing: ' + entry.getName());\n";
 		ex = request.getString(ARG_EXTEDIT_SOURCE, ex);
-		HU.formEntry(sb,  msgLabel("Javascript"),
-			     HU.textArea(ARG_EXTEDIT_SOURCE, ex,10,80));
+		HU.formEntry(sb,  HU.b("Javascript:")+
+			     HU.table(HU.rowTop(HU.cols(HU.textArea(ARG_EXTEDIT_SOURCE, ex,10,60),
+						     HU.pre(eg)))));
 		
-		HU.formEntry(sb, "",
-			     HU.checkbox(
-					 ARG_EXTEDIT_JS_CONFIRM, "true",
-					 request.get(ARG_EXTEDIT_JS_CONFIRM,false)) + " " + msg("Apply changes to entries"));
+		HU.formEntry(sb, HU.labeledCheckbox(
+					     ARG_EXTEDIT_JS_CONFIRM, "true",
+					     request.get(ARG_EXTEDIT_JS_CONFIRM,false), "Apply changes to entries"));
 		sb.append(HU.formTableClose());
 		closer.accept(form,"Apply Javascript");
 	    }
@@ -1132,6 +1153,7 @@ public class ExtEditor extends RepositoryManager {
 	private Entry entry;
 
 	String name;
+	String description;
 	Date startDate;
 	Date endDate;
 	String url;
@@ -1156,6 +1178,14 @@ public class ExtEditor extends RepositoryManager {
 	    this.name = name;
 	}	
 
+	public String getDescription() {
+	    return entry.getDescription();
+	}
+
+	public void setDescription(String description) {
+	    this.description = description;
+	}	
+
 	public String getFile() {
 	    return entry.getResource().getPath();
 	}
@@ -1167,7 +1197,6 @@ public class ExtEditor extends RepositoryManager {
 	public void setUrl(String url) {
 	    this.url = url;
 	}
-
 
 
 	public Date getStartDate() {
@@ -1187,7 +1216,9 @@ public class ExtEditor extends RepositoryManager {
 	    this.endDate = Utils.parseDate(date);
 	}	
 	
-
+	public String toString() {
+	    return getName();
+	}
 	
     }
     

@@ -215,8 +215,8 @@ var Utils =  {
     handleActionResults: function(id,url) {
 	setTimeout(() =>{
 	    let success=json=>{
-		let msg = "Status:" + json.status;
-		if(json.message) msg+="<br>" + json.message.replace(/\n/g,"<br>");
+		let msg = "";
+		if(json.message) msg= json.message.replace(/\n/g,"<br>");
 		$("#" + id).html(msg);
 		if(json.status=="running") {
 		    Utils.handleActionResults(id,url);

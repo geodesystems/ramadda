@@ -4052,6 +4052,17 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
     }
 
+    public static void formEntry(Appendable sb, String left) {
+        try {
+            sb.append(tag(TAG_TR, "",
+			  tag(TAG_TD,
+			      attrs("colspan","2", ATTR_CLASS,
+				    CLASS_FORMCONTENTS), left)));
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
+    }
+
 
     /**
      * _more_
