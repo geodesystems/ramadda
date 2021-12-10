@@ -94,6 +94,7 @@ select, input, password, fileinput, textarea {
     border  :var(--basic-border)
 }
 
+
 input:focus, textarea:focus, .ramadda-search-input:focus {
     border:var(--highlight-border);
     outline:none;
@@ -4978,8 +4979,53 @@ a.wiki-link-noexist {
 }
 
 
+
+.ramadda-file-dnd-target {
+    min-width:400px;
+    display:inline-block;
+    margin-left:10px;
+    padding:2px;
+    background:#efefef;
+    border: 2px dashed #aaa;    
+}
+
 .ramadda-drop-active {
     border:1px solid #666;
+}
+
+
+.ramadda-file-dnd-label {
+    display: inline-block;
+    padding:5px;
+    margin-bottom:25px;
+}
+
+.ramadda-file-dnd-label .fas {
+    font-size:24pt;
+    color:#ccc;    
+    margin-left:5px;
+    margin-right:5px;
+}
+
+.ramadda-file-dnd-target.ramadda-drop-active {
+    border: 2px solid #aaa !important;        
+}
+
+.ramadda-dnd-target-files {
+    margin-top:4px;
+    margin-bottom:4px;    
+    display:inline-block;
+    height:50px;
+    max-height:50px;
+    overflow-y:auto;
+    overflow-x:auto;
+    max-width:300px;
+    font-size:80%;
+}
+
+.ramadda-dnd-target-files .fas {
+    color:#999;
+    font-size:12pt;
 }
 
 /** Calendar styles **/

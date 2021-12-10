@@ -30,6 +30,12 @@
     <property name="icon" value="/icons/js.png"/>
 </type>
 
+<type name="type_file_java"  description="Java File" pattern=".*\.java"  category="Documents">
+</type>
+
+<type name="type_file_py"  description="Java File" pattern=".*\.py"  category="Documents">
+</type>
+
 
 <type name="type_json"  super="type_convertible" description="Json File" pattern=".*\.json" handler="org.ramadda.plugins.files.JsonFileTypeHandler" category="Data">
      <property name="icon" value="/icons/json.png"/>

@@ -28,7 +28,7 @@ var icon_menuarrow = ramaddaCdn + "/icons/downdart.gif";
 var icon_blank16 = ramaddaCdn + "/icons/blank16.png";
 var icon_blank = ramaddaCdn + "/icons/blank.gif";
 var icon_menu = ramaddaCdn + "/icons/menu.png";
-
+var icon_trash =  "fas fa-trash-alt";
 
 function noop() {}
 
@@ -81,10 +81,9 @@ var Utils =  {
 	console.log("writing" +value);
     },
 
-    initDragAndDrop:function(target, dragOver,dragLeave,drop,type) {
+    initDragAndDrop:function(target, dragOver,dragLeave,drop,type, acceptText) {
 	let origCss=null;
 	target.on('dragover', (event) => {
-	    let files = event.originalEvent.target.files || event.originalEvent.dataTransfer.files
 	    event.stopPropagation();
 	    event.preventDefault();
 	    target.addClass("ramadda-drop-active");
@@ -116,15 +115,29 @@ var Utils =  {
 	    let items = (event.clipboardData || event.originalEvent.clipboardData).items;
 	    for(let i=0;i<items.length;i++) {
 		let item = items[i];
-		if(item.kind!="file") continue;
+
+		if(item.kind=="string") {
+		    if(!acceptText) continue;
+		    if(item.type!="text/plain") continue;
+		    item.getAsString(s=>{
+			if(drop)drop(event,item,s,false);
+		    });
+		    continue;
+		    event.stopPropagation();
+		    event.preventDefault();
+		} else 	if(item.kind!="file") {
+		    continue;
+		}
 		event.stopPropagation();
 		event.preventDefault();
-		let blob = item.getAsFile();
+
 		let reader = new FileReader();
 		reader.onload = (event) => {
 		    if(drop)drop(event,item,event.target.result,false);
 		}; 
+		let blob = item.getAsFile();
 		reader.readAsDataURL(blob);
+		break
 	    }
 	});
 	
@@ -1659,6 +1672,23 @@ var Utils =  {
 	    //	    return wholeFormatted +"." + String(Utils.formatNumber(rem)).replace("0\.","");
 	}
     },
+    formatFileLength:function(bytes) {
+        if (bytes < 0) {
+            return "";
+        }
+        if (bytes < 5000) {
+            return Math.round(bytes) + " bytes";
+        }
+        if (bytes < 1000000) {
+            bytes = (Math.round((bytes * 100) / 1000.0)) / 100.0;
+
+            return Math.round(bytes) + " KB";
+        }
+        bytes = Math.round(((bytes * 100) / 1000000.0)) / 100.0;
+
+        return bytes + " MB";
+    },
+
 
     numberToString:null,
     roundDecimals: function(value, decimals,debug) {
