@@ -225,9 +225,13 @@ class  WikiEditor {
 			     event=>{
 				 this.clearDragAndDrop();
 			     },
-			     (event,item,result) =>{
-				 this.clearDragAndDrop();
-				 this.lastPosition =  this.getEditor().renderer.screenToTextCoordinates(event.clientX, event.clientY);
+			      (event,item,result,wasDrop) =>{
+				  this.clearDragAndDrop();
+
+				  if(!wasDrop) {
+				      this.lastPosition = this.getEditor().getCursorPosition();
+				  }
+
 				 Ramadda.handleDropEvent(event, item, result, this.entryId,(data, entryid, name,isImage)=>{
 				     this.handleEntryLink(entryid, name,this.lastPosition,true,{isImage:isImage});
 				 });

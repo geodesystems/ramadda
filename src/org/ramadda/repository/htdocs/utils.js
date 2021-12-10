@@ -106,7 +106,7 @@ var Utils =  {
 		if(type &&!file.type.match(type)) continue;
 		let reader = new FileReader();
 		reader.onload = (onloadEvent) => {
-		    if(drop) drop(onloadEvent,file,onloadEvent.target.result);
+		    if(drop) drop(onloadEvent,file,onloadEvent.target.result,true);
 		};
 		reader.readAsDataURL(file); 
 	    }
@@ -122,7 +122,7 @@ var Utils =  {
 		let blob = item.getAsFile();
 		let reader = new FileReader();
 		reader.onload = (event) => {
-		    if(drop)drop(event,item,event.target.result);
+		    if(drop)drop(event,item,event.target.result,false);
 		}; 
 		reader.readAsDataURL(blob);
 	    }
