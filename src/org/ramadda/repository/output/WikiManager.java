@@ -1888,7 +1888,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 return HU.href(url, title);
             }
         } else if (theTag.equals(WIKI_TAG_VERSION)) {
-	    return RepositoryUtil.getMajorMinorVersion();
+	    return RepositoryUtil.getVersion();
         } else if (theTag.equals(WIKI_TAG_RESOURCE)) {
             String url = null;
             String label;
