@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Dec 11 07:41:53 MST 2021";
+var build_date="RAMADDA build date: Sat Dec 11 10:28:56 MST 2021";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -30928,7 +30928,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 			return;
 		    }
 		    if(!_this.getDoPageSearch()) {
-			if(val.length<=4) return;
+			if(val.length<4) return;
 		    }
 		    let myCallNumber = ++_this.callNumber;
 		    //Wait a bit in case more keys are coming
