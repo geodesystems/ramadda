@@ -311,22 +311,18 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     public Hashtable<String,List<String>>getSynonyms() throws Exception {
 	if(synonyms==null) {
 	    Hashtable<String,List<String>>tmp = new Hashtable<String,List<String>>();
+	    //https://www.kaggle.com/duketemon/wordnet-synonyms
 	    String resource = getStorageManager().readSystemResource("/org/ramadda/repository/resources/synonyms.csv");
 	    //big,adjective,large
+	    System.err.println("sysnon");
 	    for(String line: Utils.split(resource,"\n",true,true)) {
-		List<String> toks = Utils.splitUpTo(line,",",2);
+		List<String> toks = Utils.splitUpTo(line,",",3);
 		String word  = toks.get(0);
-		toks = Utils.split(toks.get(1),";");
 		List<String> row = new ArrayList<String>();
-		System.out.println("word:" + word);
-		for(String tuple: toks) {
-		    List<String> pair = StringUtil.split(tuple,",",true,true);
-		    if(pair.size()>1) {
-			System.out.println("\tsyn:" + pair.get(1));
-			row.add(pair.get(1));
-		    }
+		for(String tuple: Utils.split(toks.get(2),";",true,true)) {
+		    row.addAll(Utils.split(tuple,"|",true,true));
 		}
-		System.out.println("word:" + word +" row:" + row);
+		//		System.out.println("word:" + word +" row:" + row);
 		tmp.put(word,row);
 	    }
 
@@ -900,19 +896,23 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    Hashtable<String,List<String>>synonyms=null; 
 	    text = text.toLowerCase();
 	    BooleanQuery.Builder builder = new BooleanQuery.Builder();
-	    List<String> toks= Utils.split(text," ",true,true);
-	    List<String> words = new ArrayList<String>();
-	    for (String word : toks) {
-		boolean isSyn = false;
-		if(word.startsWith("~")) {
-		    word = word.substring(1);
-		    isSyn = true;
-		}
-		words.add(word);
-		if(isSyn) {
-		    List<String> syns = getSynonyms(word);
-		    if(syns!=null)  {
-			words.addAll(syns);
+	    List<String> toks = Utils.parseCommandLine(text,false);
+	    List<List<String>> words = new ArrayList<List<String>>();
+	    if(toks!=null) {
+		for (String word : toks) {
+		    boolean isSyn = false;
+		    if(word.startsWith("~")) {
+			word = word.substring(1);
+			isSyn = true;
+		    }
+		    List<String> ors = new ArrayList<String>();
+		    words.add(ors);
+		    ors.add(word);
+		    if(isSyn) {
+			List<String> syns = getSynonyms(word);
+			if(syns!=null)  {
+			    ors.addAll(syns);
+			}
 		    }
 		}
 	    }
@@ -920,12 +920,26 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    for(String field: SEARCH_FIELDS) {
 		boolean isName = field.equals(FIELD_NAME);
 		if(searchField!=null && !field.equals(searchField)) continue;
-		if(words.size()>1) {
+		// for now always do this
+		if(true ||words.size()>1) {
 		    BooleanQuery.Builder multiBuilder = new BooleanQuery.Builder();
-		    for (String word : words) {
-			Query term = new WildcardQuery(new Term(field, word));		
-			if(isName) term = new BoostQuery(term,6);
-			multiBuilder.add(term, BooleanClause.Occur.MUST);
+		    for (List<String> ors: words) {
+			BooleanQuery.Builder orBuilder = new BooleanQuery.Builder();
+			for (String word : ors) {
+			    Query term;
+			    if(word.indexOf(" ")>0) {
+				PhraseQuery.Builder phraseBuilder = new PhraseQuery.Builder();
+				for (String pword : Utils.split(word," ",true,true)) {
+				    phraseBuilder.add(new Term(field, pword));
+				}
+				term = phraseBuilder.build();
+			    } else {
+				term = new WildcardQuery(new Term(field, word));		
+			    }
+			    if(isName) term = new BoostQuery(term,6);
+			    orBuilder.add(term, BooleanClause.Occur.SHOULD);
+			}
+			multiBuilder.add(orBuilder.build(),BooleanClause.Occur.MUST);
 		    }
 		    builder.add(multiBuilder.build(),BooleanClause.Occur.SHOULD);
 		} else {
@@ -948,8 +962,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    Date date1 = dateRange[0];
 	    Date date2 = dateRange[1];
 	    if(date1==null && date2==null) continue;
-	    System.err.println(date1);
-	    System.err.println(date2);
+	    //	    System.err.println(date1);	    System.err.println(date2);
 	    if (arg.forCreateDate() || arg.forChangeDate()) {
 		String field = arg.forCreateDate()
 		    ? FIELD_DATE_CREATED
@@ -1476,6 +1489,28 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
         return makeResult(request, msg("Search Form"), sb);
     }
+
+
+    public Result processSearchSynonyms(Request request) throws Exception {
+        StringBuilder sb = new StringBuilder();
+        sb.append(HtmlUtils.sectionOpen(null, false));
+	Hashtable<String,List<String>> syns =getSynonyms();
+        sb.append("<table>");
+	for(Object o:Utils.getKeys(syns)) {
+	    List s= syns.get(o);
+	    sb.append("<tr valign=top>");
+	    sb.append(HU.td(o.toString()));
+	    sb.append(HU.td(Utils.join(s,", ")));
+	    sb.append("</tr>");
+	}
+	sb.append("</table>");
+        sb.append(HtmlUtils.sectionClose());
+        return makeResult(request, msg("Search Synonyms"), sb);
+    }
+
+
+
+
 
 
     /**
