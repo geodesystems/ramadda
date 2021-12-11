@@ -62,6 +62,9 @@ foreach file [glob *] {
 }
 
 
+##for good measure
+file delete -force org/apache/logging/log4j/core/lookup/JndiLookup.class
+
 file delete -force META-INF/MANIFEST.MF
 
 cd ../../META-INF
