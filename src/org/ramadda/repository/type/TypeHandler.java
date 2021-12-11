@@ -4564,13 +4564,12 @@ public class TypeHandler extends RepositoryManager {
                     String nameDefault = request.getString(ARG_NAME,
                                              getFormDefault(entry, ARG_NAME,
                                                  ""));
-                    sb.append(
-                        formEntry(
-                            request,
-                            msgLabel(getFormLabel(entry, ARG_NAME, "Name")),
-                            HtmlUtils.input(ARG_NAME, ((entry != null)
-                            ? entry.getName()
-                            : nameDefault), size + HtmlUtils.id(domId))));
+		    //                            msgLabel(getFormLabel(entry, ARG_NAME, "Name")),
+		    HU.formEntry(sb,
+				 HtmlUtils.input(ARG_NAME, ((entry != null)
+							    ? entry.getName()
+							    : nameDefault),
+						 size + HU.attr("placeholder","Name")  + HU.id(domId)));
                 } else {
                     String nameDefault = getFormDefault(entry, ARG_NAME,
                                              null);
@@ -4588,7 +4587,7 @@ public class TypeHandler extends RepositoryManager {
                     int rows = getProperty(
                                    entry, "form.description.rows",
                                    getRepository().getProperty(
-                                       "ramadda.edit.rows", 5));
+							       "ramadda.edit.rows", 8));
                     boolean isWiki = isDescriptionWiki(entry);
                     if (entry != null) {
                         desc = entry.getDescription();
@@ -4763,14 +4762,13 @@ public class TypeHandler extends RepositoryManager {
 
                     if (entry == null) {
                         if (tabTitles.size() > 1) {
-                            sb.append(formEntryTop(request,
-                                    msgLabel("Resource"),
-                                    OutputHandler.makeTabs(tabTitles,
-                                        tabContent, true) + extra));
+                            HU.formEntry(sb,
+					 OutputHandler.makeTabs(tabTitles,
+								tabContent, true) + extra);
                         } else if (tabTitles.size() == 1) {
-                            sb.append(formEntry(request,
-                                    tabTitles.get(0) + ":",
-                                    tabContent.get(0) + extra));
+                            HU.formEntry(sb,
+					 tabTitles.get(0) + ":",
+					 tabContent.get(0) + extra);
                         }
                     } else {
                         //                if (entry.getResource().isFile()) {
