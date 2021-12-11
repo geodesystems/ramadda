@@ -2009,7 +2009,8 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		input.keyup(function(event) {
 		    _this.getSearchSettings().skip =0;
                     _this.getSearchSettings().max = DEFAULT_MAX;
-		    if($(this).val().trim()=="") {
+		    let val = $(this).val().trim();
+		    if(val=="") {
 			_this.writeMessage("");
 			_this.writeEntries("");			
 			if(_this.dialog) {
@@ -2018,6 +2019,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 			}
 			return;
 		    }
+		    if(val.length<=4) return;
 		    let myCallNumber = ++_this.callNumber;
 		    //Wait a bit in case more keys are coming
 		    setTimeout(()=>{
