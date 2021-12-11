@@ -1982,12 +1982,13 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	{p:'maxWidth',ex:200},		
 	{p:"autoSearch",ex:true},
 	{p:"showHeader",ex:true},
-	{p:"inputSize",ex:"100%"},
+	{p:"inputSize",d:'100',ex:"100%"},
 	{p:"searchEntryType",ex:"",tt:"Constrain search to entries of this type"},		
 	{p:"doPageSearch",ex:"true"},
 	{p:"pageSearchSelector",d:'.search-component,.entry-list-row'},	
     ];
 
+    if(!properties.width) properties.width="200px";
     const SUPER   = new RamaddaSearcherDisplay(displayManager, id, DISPLAY_SIMPLESEARCH, properties);
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	callNumber:1,
@@ -2071,7 +2072,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    
 	    let eg = this.getEgText();
 	    let text  = this.getFormText();
-	    let size = this.getPropertyInputSize("100%");
+	    let size = this.getPropertyInputSize();
             let textField = HU.input("", text, [STYLE, HU.css("width", size), "placeholder", eg, ATTR_CLASS, "display-search-input", ATTR_ID, this.getDomId(ID_TEXT_FIELD)]);
 
 	    form += textField;
