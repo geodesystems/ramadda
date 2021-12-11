@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Dec 10 16:56:52 MST 2021";
+var build_date="RAMADDA build date: Fri Dec 10 17:51:15 MST 2021";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -33298,7 +33298,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.handlePopup(feature, popup);
 	    };
 	    this.map.addFeatureSelectHandler(feature=>{
-		this.lastFeatureSelectTime = new Date();
+		let didSomething= false;
 		if(feature.collisionInfo)  {
 		    feature.collisionInfo.dotSelected(feature);
 		    return;
@@ -33306,17 +33306,22 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(feature.record) {
 		    this.propagateEventRecordSelection({record:feature.record});
 		    this.propagateFilterFields(feature.record);
+		    didSomething= true;
 		}
 
 		if(feature.record && !this.map.doPopup && this.getProperty("showRecordSelection", true)) {
 		    this.highlightPoint(feature.record.getLatitude(),feature.record.getLongitude(),true,false);
+		    didSomething= true;
 		}
 		if(feature.record && this.getProperty("shareSelected")) {
 		    let idField = this.getFieldById(null,"id");
 		    if(idField) {
 			ramaddaDisplaySetSelectedEntry(feature.record.getValue(idField.getIndex()),this.getDisplayManager().getDisplays());
 		    }
+		    didSomething= true;
 		}
+		if(didSomething)
+		    this.lastFeatureSelectTime = new Date();
 	    });
 
             this.map.addFeatureHighlightHandler((feature, highlight)=>{
@@ -33799,10 +33804,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    });
 	},	    
         handleClick: function(theMap, event, lon, lat) {
+	    let debug = false;
+	    if(debug)   console.log("click");
 	    if(this.lastFeatureSelectTime) {
 		let diff = new Date().getTime()-this.lastFeatureSelectTime.getTime();
 		this.lastFeatureSelectTime = null;
 		if(diff<1000) {
+		    if(debug)   console.log("\tclick: lastFeatureSelectTime:" + diff)
 		    return;
 		}
 	    }
@@ -33814,21 +33822,23 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let url = ramaddaBaseUrl +"/metadata/addform?entryid=" + this.getProperty("entryId")+"&metadata_type=map_marker&metadata_attr1=" +
 		    encodeURIComponent(text) +"&metadata_attr2=" + lat +"," + lon; 
 		window.location = url;
-//		console.log("click-shift");
+		if(debug) console.log("\tclick:shift");
 		return
 	    }
 
             if (!this.map) {
+		if(debug)    console.log("\tclick:no map")
                 return;
             }
             if (this.doDisplayMap()) {
+		if(debug)    console.log("\tclick: no display map")
                 return;
             }
-//	    console.log("click-2");
-            var justOneMarker = this.getProperty("justOneMarker",false);
 
+            let justOneMarker = this.getJustOneMarker(false);
             if(justOneMarker) {
-                var pointData = this.getPointData();
+		if(debug)    console.log("\tclick: just one")
+                let pointData = this.getPointData();
                 if(pointData) {
                     pointData.handleEventMapClick(this, this, lon, lat);
 		    this.getDisplayManager().notifyEvent("mapClick", this, {lat:lat,lon:lon});
@@ -33836,12 +33846,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
 
 
-	    if(!this.records) return;
-//	    console.log("click-3");
+	    if(!this.records) {
+		if(debug)    console.log("\tclick: no records")
+		return;
+	    }
 	    let indexObj = [];
             let closest = RecordUtil.findClosest(this.records, lon, lat, indexObj);
-            if (!closest) return;
-//	    console.log("click-4");
+            if (!closest) {
+		if(debug)    console.log("\tclick: no closest")
+		return;
+	    }
+	    if(debug)    console.log("\tclick: handling")
 	    this.propagateEventRecordSelection({record: closest});
 
 	    //If we are highlighting a record then change the marker
