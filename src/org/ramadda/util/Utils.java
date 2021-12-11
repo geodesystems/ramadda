@@ -3005,6 +3005,11 @@ public class Utils extends IO {
      * @return _more_
      */
     public static List<String> parseCommandLine(String s) {
+	return parseCommandLine(s, true);
+    }
+
+
+    public static List<String> parseCommandLine(String s, boolean throwError) {	
 
         //        System.err.println("command line:" + s);
         List<String> args = new ArrayList<String>();
@@ -3099,9 +3104,11 @@ public class Utils extends IO {
             sb.append(c);
         }
         if (inQuote) {
+	    if(!throwError) return null;
             throw new IllegalArgumentException("Unclosed quote:" + s);
         }
         if (inBracket) {
+	    if(!throwError) return null;
             throw new IllegalArgumentException("Unclosed bracket:" + s);
         }
         if (sb.length() > 0) {
