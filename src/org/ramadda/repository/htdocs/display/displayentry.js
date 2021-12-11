@@ -2018,7 +2018,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 			return;
 		    }
 		    if(!_this.getDoPageSearch()) {
-			if(val.length<=4) return;
+			if(val.length<4) return;
 		    }
 		    let myCallNumber = ++_this.callNumber;
 		    //Wait a bit in case more keys are coming
