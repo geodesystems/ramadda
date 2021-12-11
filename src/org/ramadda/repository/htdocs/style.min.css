@@ -2084,11 +2084,11 @@ table.dataTable tbody tr {
 }
 
 table.dataTable thead th, table.dataTable thead td {
-    padding: 2px 8px;
+    padding: 2px 8px !important;
 }
 
 table.dataTable tbody th, table.dataTable tbody td {
-    padding: 2px 8px;
+    padding: 4px 8px !important;
 }
 
 table.dataTable thead th, table.dataTable thead td {
