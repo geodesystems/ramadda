@@ -80,13 +80,14 @@ public class ModelUtil {
             //            System.err.println("   file:" + s);
             String s = child.getResource().getPath();
             File   f = new File(s);
-            sb.append(XmlUtil
-                .tag(NcmlUtil.TAG_NETCDF,
-                     XmlUtil.attrs(NcmlUtil.ATTR_LOCATION,
-                                   IOUtil.getURL(s,
-                                       new ModelUtil().getClass())
-                                           .toString(), NcmlUtil
-                                           .ATTR_ENHANCE, "true"), ""));
+            sb.append(XmlUtil.tag(NcmlUtil.TAG_NETCDF,
+                                  XmlUtil.attrs(NcmlUtil.ATTR_LOCATION,
+                                          IOUtil.getURL(s,
+                                                  new ModelUtil().getClass())
+                                                  .toString(),
+                                          NcmlUtil.ATTR_ENHANCE,
+                                          "true"),
+                                  ""));
         }
 
         sb.append(XmlUtil.closeTag(NcmlUtil.TAG_AGGREGATION));
@@ -336,6 +337,18 @@ public class ModelUtil {
     public static String getFrequency(Request request, Entry sample) {
         Entry collection = GranuleTypeHandler.getCollectionEntry(request,
                                sample);
+        return getCollectionFrequency(request, collection);
+    }
+
+    /**
+     * Get the time frequency for this collection
+     *
+     * @param request  the request
+     * @param sample   the sample Entry
+     *
+     * @return  the time frequency (e.g. monthly, daily, etc)
+     */
+    public static String getCollectionFrequency(Request request, Entry collection) {
         String frequency = CDOOutputHandler.FREQUENCY_MONTHLY;
         if (collection != null) {
             String sval = collection.getValue(0).toString();
