@@ -4235,6 +4235,19 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	});
     },
     formatTable: function(id, args, callback) {
+	HtmlUtils.loadJqueryLib('DataTable',[ramaddaCdn +"/lib/datatables/src/jquery.dataTables.min.css"],
+				[ramaddaCdn + "/lib/datatables/src/jquery.dataTables.min.js"],
+				id,()=>{
+				    $(id).each(function() {
+					if($.fn.dataTable.isDataTable(this)) {
+					    return;
+					}
+					HtmlUtils.formatTableInner($(this),args);
+					if(callback) callback($(this));
+				    });
+				});
+    },
+    formatTableInner: function(table, args) {
         let options = {
             paging: false,
             ordering: false,
@@ -4247,35 +4260,25 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         if (args)
             $.extend(options, args);
 	
-        let height = options.height || $(this).attr("table-height");
+        let height = options.height || table.attr("table-height");
         if (height)
             options.scrollY = height;
-        let ordering = $(this).attr("table-ordering");
+        let ordering = table.attr("table-ordering");
         if (ordering)
             options.ordering = (ordering == "true");
-        let searching = $(this).attr("table-searching");
+        let searching = table.attr("table-searching");
         if (searching)
             options.searching = (searching == "true");
-        let paging = $(this).attr("table-paging");
+        let paging = table.attr("table-paging");
         if (paging)
             options.paging = (paging == "true");
         if (Utils.isDefined(options.scrollY)) {
             let sh = "" + options.scrollY;
             if (!sh.endsWith("px")) options.scrollY += "px";
         }
-
-	HtmlUtils.loadJqueryLib('DataTable',[ramaddaCdn +"/lib/datatables/src/jquery.dataTables.min.css"],
-				[ramaddaCdn + "/lib/datatables/src/jquery.dataTables.min.js"],
-				id,()=>{
-				    $(id).each(function() {
-					if($.fn.dataTable.isDataTable("#"+$(this).attr("id"))) {
-					    return;
-					}
-					$(this).DataTable(options);
-					if(callback) callback($(this));
-				    });
-				});
+	table.DataTable(options);
     },
+
     th: function(attrs, inner) {
         return this.tag("th", attrs, inner);
     },
