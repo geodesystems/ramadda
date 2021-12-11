@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Dec 10 20:22:41 MST 2021";
+var build_date="RAMADDA build date: Sat Dec 11 05:41:18 MST 2021";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -30894,6 +30894,8 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	{p:"showHeader",ex:true},
 	{p:"inputSize",ex:"100%"},
 	{p:"searchEntryType",ex:"",tt:"Constrain search to entries of this type"},		
+	{p:"doPageSearch",ex:"true"},
+	{p:"pageSearchSelector",d:'.search-component',ex:".search-component or .entry-list-row"},	
     ];
 
     const SUPER   = new RamaddaSearcherDisplay(displayManager, id, DISPLAY_SIMPLESEARCH, properties);
@@ -30921,20 +30923,17 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
                     _this.getSearchSettings().max = DEFAULT_MAX;
 		    let val = $(this).val().trim();
 		    if(val=="") {
-			_this.writeMessage("");
-			_this.writeEntries("");			
-			if(_this.dialog) {
-			    _this.dialog.remove();
-			    _this.dialog = null;
-			}
+			_this.clearSearch();
 			return;
 		    }
-		    if(val.length<=4) return;
+		    if(!_this.getDoPageSearch()) {
+			if(val.length<=4) return;
+		    }
 		    let myCallNumber = ++_this.callNumber;
 		    //Wait a bit in case more keys are coming
 		    setTimeout(()=>{
 			if(myCallNumber == _this.callNumber) {
-			    _this.submitSearchForm(true,myCallNumber);
+			    _this.doSearch(true,myCallNumber);
 			} else {
 			}
 		    },400);
@@ -30942,11 +30941,11 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    }
 
             this.jq(ID_SEARCH).click(function(event) {
-		_this.submitSearchForm(false,++_this.callNumber);
+		_this.doSearch(false,++_this.callNumber);
                 event.preventDefault();
             });
             this.jq(ID_FORM).submit(function(event) {
-		_this.submitSearchForm(false,++_this.callNumber);
+		_this.doSearch(false,++_this.callNumber);
                 event.preventDefault();
             });
 
@@ -31028,6 +31027,68 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    }
 	},
 
+	getPageSearchSelectors:function() {
+	    let sel=$(this.getPageSearchSelector());
+	    if(sel.length==0) {
+		console.log(this.type+" could not find page search components:" + this.getPageSearchSelector());
+	    }
+	    return sel;
+
+	},
+	doPageSearch:function() {
+	    let value = (this.jq(ID_TEXT_FIELD).val()||"").trim();
+	    if(value=="") {
+		this.clearPageSearch();
+		return
+	    }
+	    let sel = this.getPageSearchSelectors();
+	    value  = value.toLowerCase();
+	    let regexp;
+//	    console.clear();
+	    try {
+		regexp  = new RegExp(value);
+	    } catch(err) {
+		console.log("bad regexp:" + err);
+	    }
+	    sel.each(function() {
+		let html = Utils.stripTags($(this).html()).toLowerCase();
+		let ok = false;
+		if(html.indexOf(value)>=0) {
+		    ok=true;
+		} else if(regexp) {
+		    if(html.match(regexp)) ok = true;
+		}
+		if(!ok) {
+		    $(this).hide();
+		} else {
+		    $(this).show();
+		}
+	    });
+					  
+	    
+	},
+	clearPageSearch:function() {
+	    let sel = this.getPageSearchSelectors();
+	    sel.show();
+	},
+	clearSearch:function() {
+	    this.writeMessage("");
+	    this.writeEntries("");			
+	    if(this.dialog) {
+		this.dialog.remove();
+		this.dialog = null;
+	    }
+	    if(this.getDoPageSearch()) {
+		this.clearPageSearch();
+	    }
+	},
+	doSearch:function(auto, callNumber) {
+	    if(this.getDoPageSearch()) {
+		this.doPageSearch();
+		return;
+	    }
+	    this.submitSearchForm(auto,callNumber);
+	},
         submitSearchForm: function(auto, callNumber) {
 	    this.writeMessage(this.getWaitImage() + " " +"Searching...");
 	    if(callNumber==null) callNumber = this.callNumber;
