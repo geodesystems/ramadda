@@ -3572,7 +3572,7 @@ public class WikiUtil {
 			}
 			if(cnt>max) break;
 
-			String message = commit.optString("message","");
+			String message = commit.optString("message","").replaceAll("<","&lt;").replaceAll(">","&gt;");
 			String url = commit.getString("url");
 			url = url.replace("//api.","//").replace("/repos/","/").replace("/commits/","/commit/");
 			
@@ -3617,7 +3617,8 @@ public class WikiUtil {
 		String date = committer.getString("date");
 		String name = committer.getString("name");
 		if(date.length()>0) date = sdf.format(Utils.parseDate(date));
-		String message = commit.getString("message");
+		String message = commit.getString("message").replaceAll("<","&lt;").replaceAll(">","&gt;");
+		
 		String url = item.getString("html_url");
 		message=HU.href(url, message);
 		if(decorate && avatar!=null) {
