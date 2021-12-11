@@ -1985,7 +1985,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	{p:"inputSize",ex:"100%"},
 	{p:"searchEntryType",ex:"",tt:"Constrain search to entries of this type"},		
 	{p:"doPageSearch",ex:"true"},
-	{p:"pageSearchSelector",d:'.search-component',ex:".search-component or .entry-list-row"},	
+	{p:"pageSearchSelector",d:'.search-component,.entry-list-row'},	
     ];
 
     const SUPER   = new RamaddaSearcherDisplay(displayManager, id, DISPLAY_SIMPLESEARCH, properties);
@@ -2149,7 +2149,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		    if(html.match(regexp)) ok = true;
 		}
 		if(!ok) {
-		    $(this).hide();
+		    $(this).fadeOut();
 		} else {
 		    $(this).show();
 		}
