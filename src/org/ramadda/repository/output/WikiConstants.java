@@ -315,6 +315,9 @@ public interface WikiConstants {
     /** _more_ */
     public static final String WIKI_TAG_GROUP = "group";
 
+    public static final String WIKI_TAG_VERSION = "ramadda_version";
+
+
     /**  */
     public static final String WIKI_TAG_TEMPLATE = "template";
 

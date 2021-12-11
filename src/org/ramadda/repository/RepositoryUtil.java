@@ -80,6 +80,10 @@ public class RepositoryUtil {
     }
 
 
+    public static String getMajorMinorVersion() {
+	return VERSION;
+    }
+
     public static String getVersion() {
         return VERSION_FULL;
     }
