@@ -15,6 +15,10 @@ import java.io.IOException;
 
 import java.net.URL;
 
+import java.text.SimpleDateFormat;
+import java.util.TimeZone;
+
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -3518,6 +3522,123 @@ public class WikiUtil {
         }
     }
 
+    public void  embedGithub(Appendable sb,Hashtable props) throws Exception {
+	try {
+	    embedGithubInner(sb, props);
+	} catch(Exception exc) {
+	    sb.append("Error embedding github:"+ exc.getMessage());
+	    exc.printStackTrace();
+	}
+    }
+
+    public void  embedGithubInner(Appendable sb,Hashtable props) throws Exception {	
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        sdf.setTimeZone(Utils.TIMEZONE_DEFAULT);
+	String user = Utils.getProperty(props,"user",(String)null);
+	String owner = Utils.getProperty(props,"owner",(String)null);
+	String repository = Utils.getProperty(props,"repository",(String)null);	
+	int max = Utils.getProperty(props,"max",100);
+	boolean decorate = Utils.getProperty(props,"decorate",false);
+	boolean showAuthor = Utils.getProperty(props,"showAuthor",false);	
+	String height = Utils.getProperty(props,"height","200");
+	if(user!=null) {
+	    String json = Utils.readContents("https://api.github.com/users/" + user+"/events/public", getClass());
+            JSONArray a = new JSONArray(json);
+	    int cnt = 0;
+            for (int itemIdx = 0; itemIdx < a.length(); itemIdx++) {
+                JSONObject item = a.getJSONObject(itemIdx);
+		if(!item.has("payload")) {
+		    continue;
+		}
+		String login = null;
+		String avatar = null;
+		if(item.has("actor")) {
+		    JSONObject actor = item.getJSONObject("actor");
+		    login = actor.optString("login",null);
+		    avatar = actor.optString("avatar_url",null);		    
+		}
+
+		JSONObject payload = item.getJSONObject("payload");
+		if(payload.has("commits")) {
+		    JSONArray commits = payload.getJSONArray("commits");
+		    String date = item.optString("created_at","");
+		    if(date.length()>0) date = sdf.format(Utils.parseDate(date));
+		    for (int commitIdx = 0; commitIdx < commits.length(); commitIdx++) {
+			JSONObject commit = commits.getJSONObject(commitIdx);
+			if(cnt++==0) {
+			    sb.append("<table table-height='" + height+"' class='ramadda-table stripe'><thead><tr>");
+			    if(showAuthor)sb.append("<th>Author</th>");
+			    sb.append("<th>Date</th><th>Commit</th></tr></thead><tbody>");
+			}
+			if(cnt>max) break;
+
+			String message = commit.optString("message","");
+			String url = commit.getString("url");
+			url = url.replace("//api.","//").replace("/repos/","/").replace("/commits/","/commit/");
+			
+			//https://api.github.com/repos/geodesystems/ramadda/commits/c20a284f23fa57b0d4f2912b741bfe2300d2e20d
+			//https://github.com/geodesystems/ramadda/commit/c20a284f23fa57b0d4f2912b741bfe2300d2e20d
+			message=HU.href(url, message);
+			
+			String name = Json.readValue(commit,"author.name","NA");
+			if(decorate && avatar!=null) {
+			    name = HU.image(avatar,"width","40px") +" "+ name;
+			}
+			if(login!=null) {
+			    name= HU.href("https://github.com/" + login,name);
+			}
+			HU.row(sb,showAuthor?HU.cols(name,date,message):HU.cols(date,message));
+		    }
+		}
+	    }
+	    if(cnt>0) {
+		sb.append("</table>");
+	    } else {
+		sb.append("Github: No commits found");
+	    }
+	} else 	if(owner!=null && repository!=null) {
+	    String json = Utils.readContents("https://api.github.com/repos/" + owner+"/" + repository+"/commits", getClass());
+            JSONArray a = new JSONArray(json);
+	    int cnt = 0;
+            for (int commitIdx = 0; commitIdx < a.length(); commitIdx++) {
+		if(cnt++==0) {
+		    sb.append("<table table-height='" + height+"' class='ramadda-table stripe'><thead><tr>");
+		    if(showAuthor)sb.append("<th>Author</th>");
+		    sb.append("<th>Date</th><th>Commit</th></tr></thead><tbody>");
+		}
+		if(cnt>max) break;
+                JSONObject item = a.getJSONObject(commitIdx);
+                JSONObject commit = item.getJSONObject("commit");
+                JSONObject committer = commit.getJSONObject("committer");		
+                JSONObject author = item.getJSONObject("author");				
+
+		String avatar = author.optString("avatar_url",null);
+		String authorUrl = author.getString("html_url");		
+		String date = committer.getString("date");
+		String name = committer.getString("name");
+		if(date.length()>0) date = sdf.format(Utils.parseDate(date));
+		String message = commit.getString("message");
+		String url = item.getString("html_url");
+		message=HU.href(url, message);
+		if(decorate && avatar!=null) {
+		    name = HU.image(avatar,"width","40px") +" "+ name;
+		}
+		name= HU.href(authorUrl, name);
+		HU.row(sb,showAuthor?HU.cols(name,date,message):HU.cols(date,message));
+	    }
+	    if(cnt>0) {
+		sb.append("</table>");
+	    } else {
+		sb.append("Github: No commits found");
+	    }
+	} else {
+	    sb.append("Github: No user, owner or repository specified");
+	}
+	
+
+
+    }
+
     /**
      * _more_
      *
@@ -3609,6 +3730,8 @@ public class WikiUtil {
 	    sb.append(extract);
         } else if(Pattern.matches("",url)) {
 	    sb.append("");
+        } else if(url.equals("github")) {
+	    embedGithub(sb,props);
 	} else {
             Oembed.Response response = Oembed.get(url, width, height);
             if (response != null) {
