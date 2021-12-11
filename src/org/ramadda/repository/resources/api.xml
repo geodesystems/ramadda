@@ -96,6 +96,7 @@
       <api request="/search/remote/do"       method="processRemoteSearch"            name="Remote Search" />
       <api request="/search/opensearch.xml"  method="processOpenSearch"              name="Open Search Descriptor"/>
       <api request="/search/capabilities.xml"  method="processCapabilities"          name="Search Capabilities"/>
+      <api request="/search/synonyms"            method="processSearchSynonyms"/>
    </group>
 
   <group handler="graphmanager">
