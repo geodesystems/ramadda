@@ -3125,7 +3125,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 int    colCnt   = 10000;
                 int    weight   = 12 / columns;
 
-                String boxClass = HU.cssClass("ramadda-gridbox ramadda-gridbox-decorated");
+                String boxClass = HU.cssClass("ramadda-gridbox ramadda-gridbox-decorated search-component");
                 String boxStyle = "";
                 width = getProperty(wikiUtil, props, ATTR_WIDTH,
                                     (String) null);
@@ -5711,7 +5711,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             String entryUrl =
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, child);
 	    if(decorate) {
-		buff.append("<div class=\"image-outer\">");
+		buff.append("<div class=\"image-outer search-component\">");
 		buff.append("<div class=\"image-inner\">");
 	    } else {
 		buff.append("<div style='padding:10px;'>");
