@@ -1,10 +1,10 @@
 #!/bin/sh
 export mydir=`dirname $0`
-export data=${mydir}/data
+export data=data
 #export csv=~/bin/csv.sh 
 
 csv() {
-    ~/bin/csv.sh -cleaninput -dots 1000000 "$@"
+    ~/bin/csv.sh -cleaninput -dots 100000 "$@"
 }
 
 
