@@ -2715,8 +2715,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 		Entry  tmpEntry    = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
 		wikiUtil.putProperty(ATTR_ENTRY, theEntry);
                 if (s != null) {
-                    s = s.replaceAll("_dollar_", "\\$");
-                    //              System.err.println("WIKIFY:" + tmp.trim());
+                    s = s.replaceAll("_dollar_", "\\$").replaceAll("_nl_", "\n").replaceAll("_qt_","\"");
+		    //		    System.err.println("WIKIFY:" + s);
 		    //                    String tmp = wikifyEntry(request, theEntry, wikiUtil, s, false, null, null, null, false);
 		    String tmp=  wikifyEntry(request, theEntry, wikiUtil, s,
                                              false, null, null, null, false);
@@ -6455,6 +6455,30 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 	    return false;
 	}
 	return true;
+    }
+
+
+
+    public void putWikiCache(String key, String value) {
+	key = Utils.makeID(key);
+	try {
+	    getStorageManager().putCacheObject("wiki",key,value);
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
+    }
+
+    public String getWikiCache(String key,long ttl) {
+	key = Utils.makeID(key);
+	try {
+	    return (String) getStorageManager().getCacheObject("wiki",key,ttl);
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
+    }
+
+    public String getWikiProperty(String key, String dflt) {
+	return getRepository().getProperty(key,dflt);
     }
 
     /**
