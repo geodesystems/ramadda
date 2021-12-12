@@ -164,7 +164,6 @@ public class RowCollector extends Processor {
     @Override
     public Row processRow(TextReader ctx, Row row) throws Exception {
         rows.add(row);
-
         return row;
     }
 
@@ -399,6 +398,43 @@ public class RowCollector extends Processor {
         }
 
     }
+
+
+	private static  class Count {
+	    Row sample;
+	    double min;
+	    double max;
+	    int count;
+	    double[]totals;
+	    double[]mins;
+	    double[]maxs; 	    	    
+
+	    Count() {}
+	    Count(Row sample) {
+		this.sample = sample;
+	    }
+	    public void addValues(List<Integer> indices, Row row) {
+		count++;
+		if(indices.size()==0) return;
+		if(totals==null)  {
+		    totals = new double[indices.size()];
+		    for(int i=0;i<totals.length;i++) totals[i]=0;
+		    mins = new double[indices.size()];
+		    for(int i=0;i<mins.length;i++) mins[i]=Double.POSITIVE_INFINITY;
+		    maxs = new double[indices.size()];
+		    for(int i=0;i<maxs.length;i++) maxs[i]=Double.NEGATIVE_INFINITY;	    
+		}
+		for(int i=0;i<indices.size();i++) {
+		    double v = Double.parseDouble(row.getString(indices.get(i)));
+		    if(Double.isNaN(v)) continue;
+		    totals[i]+=v;
+		    mins[i] =Math.min(v,mins[i]);
+		    maxs[i] =Math.max(v,maxs[i]);		    
+		}
+	    }
+	}
+
+
 
 
     /**
@@ -2415,6 +2451,7 @@ public class RowCollector extends Processor {
 
 
 
+
     /**
      * Class description
      *
@@ -2436,7 +2473,7 @@ public class RowCollector extends Processor {
         private List<Integer> extraIndices;
 
         /** _more_ */
-        private List<String> keys;
+        private List<String> keyCols;
 
         /** _more_ */
         private List<String> values;
@@ -2444,6 +2481,13 @@ public class RowCollector extends Processor {
         /** _more_ */
         private List<String> extra;
 
+	private Object[] array = null;
+
+	List<String> keys     = new ArrayList<String>();
+	Hashtable<String, Count> counts = new Hashtable<String,Count>();
+	Hashtable<String, Row> origMap   = new Hashtable<String, Row>();
+	Row                    headerRow;
+	Row                    firstRow ;
 
         /**
          * _more_
@@ -2462,10 +2506,53 @@ public class RowCollector extends Processor {
 		what.add("count");
 	    }
 	    this.what = what;
-            this.keys   = keys;
+            this.keyCols   = keys;
             this.values = values;
             this.extra  = extra;
         }
+
+
+        public Row processRow(TextReader ctx, Row row) throws Exception {
+	    //            super.processRow(ctx, row);
+	    if(uniqueIndices==null) {
+		uniqueIndices = getIndices(ctx, keyCols);
+		valueIndices  = getIndices(ctx, values);
+		valueIndices  = getIndices(ctx, values);
+		extraIndices  = getIndices(ctx, extra);
+	    }
+	    if(rowCnt++==0) {
+		headerRow = row;
+		firstRow =row ;
+		return null;
+	    }
+	    List          values = row.getValues();
+	    if (array == null) {
+		array = new Object[values.size()];
+	    }
+
+	    String    key;
+	    if(uniqueIndices.size()>1) {
+		StringBuilder keySB  = new StringBuilder();
+		for (int i : uniqueIndices) {
+		    if ((i >= -0) && (i < values.size())) {
+			keySB.append(values.get(i));
+			keySB.append("_");
+		    }
+		}
+		key = keySB.toString();
+	    } else {
+		key  = values.get(uniqueIndices.get(0)).toString();
+	    }
+
+	    Count count = counts.get(key);
+	    if (count==null) {
+		count = new Count(row);
+		counts.put(key, count);
+		keys.add(key);
+	    }
+	    count.addValues(valueIndices, row);
+	    return null;
+	}
 
 
         /**
@@ -2481,46 +2568,7 @@ public class RowCollector extends Processor {
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
-
-            uniqueIndices = getIndices(ctx, keys);
-            valueIndices  = getIndices(ctx, values);
-            valueIndices  = getIndices(ctx, values);
-            extraIndices  = getIndices(ctx, extra);
-
-            int          rowIndex = 0;
-            List<String> keys     = new ArrayList<String>();
-            Hashtable<String, List<Row>> rowMap = new Hashtable<String,
-		List<Row>>();
-            Hashtable<String, Row> origMap   = new Hashtable<String, Row>();
-            List<Row>              allRows   = getRows(rows);
-            Row                    headerRow = allRows.get(0);
-            Row                    firstRow  = allRows.get(0);
-            allRows.remove(0);
-            //            Collections.sort(allRows,new Row.RowCompare(uniqueIndex));
-            Object[] array = null;
-            for (Row row : allRows) {
-                List          values = row.getValues();
-                StringBuilder keySB  = new StringBuilder();
-                for (int i : uniqueIndices) {
-                    if ((i >= -0) && (i < values.size())) {
-                        keySB.append(values.get(i));
-                        keySB.append("_");
-                    }
-                }
-                String    key      = keySB.toString();
-                List<Row> rowGroup = rowMap.get(key);
-                if (rowGroup == null) {
-                    origMap.put(key, row);
-                    rowMap.put(key, rowGroup = new ArrayList<Row>());
-                    keys.add(key);
-                }
-                rowGroup.add(row);
-                if (array == null) {
-                    array = new Object[row.getValues().size()];
-                }
-            }
-
-
+	    
             List<Row> newRows   = new ArrayList<Row>();
             Row       newHeader = new Row();
 	    for(int i:uniqueIndices) {
@@ -2541,73 +2589,52 @@ public class RowCollector extends Processor {
             for (int j : extraIndices) {
                 newHeader.add(firstRow.get(j));
             }
-	    //	    System.err.println("\nheader:" + newHeader);
             newRows.add(newHeader);
             for (String key : keys) {
-                Row orig = origMap.get(key);
+                Count count = counts.get(key);
                 if (valueIndices.size() == 0) {
                     //just count them
-                    List<Row> rowGroup = rowMap.get(key);
-                    Row       row      = rowGroup.get(0);
+                    Row       row      = count.sample;
                     Row       newRow   = new Row();
                     newRows.add(newRow);
                     for (int i : uniqueIndices) {
                         newRow.add(row.get(i));
                     }
-                    newRow.add(rowGroup.size());
+                    newRow.add(count.count);
                     for (int j : extraIndices) {
-                        newRow.add(orig.get(j));
+                        newRow.add(row.get(j));
                     }
-
                     continue;
                 }
-                for (int i = 0; i < array.length; i++) {
-                    array[i] = null;
-                }
+		
                 Row newRow = null;
                 for (int i = 0; i < valueIndices.size(); i++) {
                     int    valueIdx = valueIndices.get(i);
-                    double sum      = 0;
-                    double min      = Double.NaN;
-                    double max      = Double.NaN;		    		    
-                    List<Row> rowGroup = rowMap.get(key);
-                    for (Row row : rowGroup) {
-                        if (newRow == null) {
-                            newRow = new Row();
-                            for (int u = 0; u < uniqueIndices.size(); u++) {
-                                newRow.add(row.get(uniqueIndices.get(u)));
-                            }
-                            newRows.add(newRow);
-                        }
-                        Object value = row.get(valueIdx);
-                        if (value == null) {
-                            continue;
-                        }
-			double v = Double.parseDouble(value.toString());
-			if(Double.isNaN(min)) min = v;
-			else min = Math.min(v,min);
-			if(Double.isNaN(max)) max = v;
-			else max = Math.max(v,max);						
-                        sum += v;
-                    }
+		    if (newRow == null) {
+			newRow = new Row();
+			for (int u = 0; u < uniqueIndices.size(); u++) {
+			    newRow.add(count.sample.get(uniqueIndices.get(u)));
+			}
+			newRows.add(newRow);
+		    }
+
 		    for(String w: what) {
 			if(w.equals(OPERAND_SUM)) {
-			    newRow.add(new Double(sum));
+			    newRow.add(new Double(count.totals[i]));
  			} else if(w.equals(OPERAND_MIN)) {
-			    newRow.add(new Double(min));
+			    newRow.add(new Double(count.mins[i]));
  			} else if(w.equals(OPERAND_MAX)) {
-			    newRow.add(new Double(max));
+			    newRow.add(new Double(count.maxs[i]));
  			} else if(w.equals("avg")) {
-			    newRow.add(new Double(sum/rowGroup.size()));
+			    newRow.add(new Double(count.totals[i]/count.count));
  			} else if(w.equals("count")) {
-			    newRow.add(new Integer(rowGroup.size()));
+			    newRow.add(new Integer(count.count));
 			}
 		    }
-                }
+		}
                 for (int j : extraIndices) {
-                    newRow.add(orig.get(j));
+                    newRow.add(count.sample.get(j));
                 }
-		//		System.err.println("row:" + newRow);
             }
 
             return newRows;
@@ -2748,7 +2775,9 @@ public class RowCollector extends Processor {
 	    return newRows;
 	}
 
-	private  class Bin {
+
+
+	private  class Bin extends Count {
 	    String label;
 	    double min;
 	    double max;
@@ -2772,25 +2801,6 @@ public class RowCollector extends Processor {
 		}
 		return v>=min && v<max;
 	    }
-	    public void addValues(List<Integer> indices, Row row) {
-		count++;
-		if(indices.size()==0) return;
-		if(totals==null)  {
-		    totals = new double[indices.size()];
-		    for(int i=0;i<totals.length;i++) totals[i]=0;
-		    mins = new double[indices.size()];
-		    for(int i=0;i<mins.length;i++) mins[i]=Double.POSITIVE_INFINITY;
-		    maxs = new double[indices.size()];
-		    for(int i=0;i<maxs.length;i++) maxs[i]=Double.NEGATIVE_INFINITY;	    
-		}
-		for(int i=0;i<indices.size();i++) {
-		    double v = Double.parseDouble(row.getString(indices.get(i)));
-		    if(Double.isNaN(v)) continue;
-		    totals[i]+=v;
-		    mins[i] =Math.min(v,mins[i]);
-		    maxs[i] =Math.max(v,maxs[i]);		    
-		}
-	    }
 
 	    public String getLabel() {
 		if(label!=null) return label;
@@ -2804,8 +2814,6 @@ public class RowCollector extends Processor {
 		return "bin min:" + min + " max:" + max +" count:" + count;
 	    }
 	}
-
-	
 
 
     }
@@ -3052,7 +3060,7 @@ public class RowCollector extends Processor {
 
     /**
      * Class description
-     *
+     *a
      *
      * @version        $version$, Sat, Jul 18, '20
      * @author         Enter your name here...
