@@ -162,11 +162,12 @@ public class CsvUtil {
             this.args.add(arg);
         }
         if (debugArgs) {
-            System.out.println("Initial args");
+            System.err.println("Initial args");
             for (String arg : this.args) {
-                System.out.println("Arg:" + arg);
+                System.err.println("Arg:" + arg);
             }
         }
+//	debugArgs = true;
     }
 
     /**
@@ -4018,14 +4019,23 @@ public class CsvUtil {
 		ctx.putProperty("deheader","true");
 		return i;
 	    });
-
+ 
 
 	defineFunction("-output",1,(ctx,args,i) -> {
 		try {
 		    String out = args.get(++i);
+		    boolean zip = out.endsWith(".zip");
 		    this.outputStream = makeOutputStream(out);
+		    if(zip) {
+			ZipOutputStream zos = new ZipOutputStream(this.outputStream);
+			String f = new File(out).getName();
+			//Assume its a csv
+			if(f.indexOf(",")<0) f = f+".csv";
+			zos.putNextEntry(new ZipEntry(f.replace(".zip","")));
+			this.outputStream = zos;
+		    }
 		    ctx.setWriter(new PrintWriter(this.outputStream));
-		    ctx.addProcessor(new Processor.Printer(ctx.getPrintFields(), false));
+		    //		    ctx.addProcessor(new Processor.Printer(ctx.getPrintFields(), false));
 		    return i;
 		} catch(Exception exc) {
 		    throw new RuntimeException(exc);
@@ -4514,6 +4524,17 @@ public class CsvUtil {
      * @throws Exception On badness
      */
     public static void main(String[] args) throws Exception {
+	if(false) {
+	String pre = "\b\b\b\b\b\b\b\b\b\b\b";
+	System.err.print(pre+StringUtil.padRight("XXX",10," "));
+	ucar.unidata.util.Misc.sleepSeconds(1);
+	System.err.print(pre+StringUtil.padRight("ZZZZZZZZ",10," "));
+	ucar.unidata.util.Misc.sleepSeconds(1);
+	System.err.print(pre+StringUtil.padRight("a",10," "));
+	System.err.println("");
+	System.exit(0);
+	}
+
 	GeoUtils.setCacheDir(new File("."));
 	CsvUtil csvUtil = new CsvUtil(args);
 	csvUtil.setCsvContext(new CsvContext() {
