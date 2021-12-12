@@ -8,6 +8,7 @@ package org.ramadda.util;
 import org.json.*;
 
 
+import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
@@ -3534,15 +3535,28 @@ public class WikiUtil {
     public void  embedGithubInner(Appendable sb,Hashtable props) throws Exception {	
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         sdf.setTimeZone(Utils.TIMEZONE_DEFAULT);
+        SimpleDateFormat rsdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmz");
+        rsdf.setTimeZone(Utils.TIMEZONE_DEFAULT);	
 	String user = Utils.getProperty(props,"user",(String)null);
 	String owner = Utils.getProperty(props,"owner",(String)null);
 	String repository = Utils.getProperty(props,"repository",(String)null);	
 	int max = Utils.getProperty(props,"max",100);
+	String since = Utils.getProperty(props,"since",(String)null);
+	if(since!=null) {
+	    since = rsdf.format(DateUtil.getRelativeDate(new Date(), since));	    
+	}
+	String until = Utils.getProperty(props,"until",(String)null);		
+	if(until!=null) {
+	    until = rsdf.format(DateUtil.getRelativeDate(new Date(), until));	    
+	}
+
+
 	boolean decorate = Utils.getProperty(props,"decorate",false);
 	boolean showAuthor = Utils.getProperty(props,"showAuthor",false);	
 	String height = Utils.getProperty(props,"height","200");
 	if(user!=null) {
-	    String json = Utils.readContents("https://api.github.com/users/" + user+"/events/public", getClass());
+	    String apiUrl = HU.url("https://api.github.com/users/" + user+"/events/public","per_page","" + max);
+	    String json = Utils.readContents(apiUrl, getClass());
             JSONArray a = new JSONArray(json);
 	    int cnt = 0;
             for (int itemIdx = 0; itemIdx < a.length(); itemIdx++) {
@@ -3568,7 +3582,7 @@ public class WikiUtil {
 			if(cnt++==0) {
 			    sb.append("<table table-height='" + height+"' class='ramadda-table stripe'><thead><tr>");
 			    if(showAuthor)sb.append("<th>Author</th>");
-			    sb.append("<th>Date</th><th>Commit</th></tr></thead><tbody>");
+			    sb.append("<th width=20%>Date</th><th>Commit</th></tr></thead><tbody>");
 			}
 			if(cnt>max) break;
 
@@ -3597,14 +3611,17 @@ public class WikiUtil {
 		sb.append("Github: No commits found");
 	    }
 	} else 	if(owner!=null && repository!=null) {
-	    String json = Utils.readContents("https://api.github.com/repos/" + owner+"/" + repository+"/commits", getClass());
+	    String apiUrl = HU.url("https://api.github.com/repos/" + owner+"/" + repository+"/commits","per_page","" + max);
+	    if(since!=null) apiUrl+="&since=" + since;
+	    if(until!=null) apiUrl+="&until=" + until;	    
+	    String json = Utils.readContents(apiUrl, getClass());
             JSONArray a = new JSONArray(json);
 	    int cnt = 0;
             for (int commitIdx = 0; commitIdx < a.length(); commitIdx++) {
 		if(cnt++==0) {
 		    sb.append("<table table-height='" + height+"' class='ramadda-table stripe'><thead><tr>");
 		    if(showAuthor)sb.append("<th>Author</th>");
-		    sb.append("<th>Date</th><th>Commit</th></tr></thead><tbody>");
+		    sb.append("<th width=20%>Date</th><th>Commit</th></tr></thead><tbody>");
 		}
 		if(cnt>max) break;
                 JSONObject item = a.getJSONObject(commitIdx);
