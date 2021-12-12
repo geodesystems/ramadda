@@ -830,9 +830,18 @@ public class CsvUtil {
         }
 	long t1 = System.currentTimeMillis();
         Row row;
+	double mem1=Utils.getUsedMemory();
         while ((row = provider.readRow()) != null) {
 	    if(row==null) break;
             rowCnt++;
+	    if((rowCnt%100000)==0) {
+		//		Runtime.getRuntime().gc();
+		//		double mem2=Utils.getUsedMemory();
+		//		System.err.println("gc " + rowCnt +" "+ (mem2-mem1));
+		//		mem1=mem2;
+
+	    }
+
 	    //	    if((rowCnt%100000)==0) System.err.print(".");
             if (rowCnt <= ctx.getSkip()) {
                 continue;
@@ -1661,7 +1670,8 @@ public class CsvUtil {
                 new Arg("bytes", "Number of leading bytes to remove", "type",
                         "number")),
         new Cmd("-deheader", "Strip off the RAMADDA point header"),
-        new Cmd("-headernames", "Clean up names"),
+        new Cmd("-headernames", "Make the header proper capitalization"),
+        new Cmd("-headerids", "Make the header be ids"),	
         new Cmd("-ids", "Use canonical names"),
         new Cmd("-cat", "Concat the columns in one or more csv files", "*.csv"),
         new Cmd("-append", "Append the files, skipping the given rows in the latter files",
@@ -1749,7 +1759,7 @@ public class CsvUtil {
         new Cmd("-latest", "Pass through rows whose date is the latest in the group of rows defined by the key column",
                 new Arg("columns", "Key columns", "type", "columns"),
                 new Arg("column", "Date column", "type", "column"),
-                new Arg("format"),"Date Format, e.g. yyyy-MM-dd"),
+                new Arg("format","Date Format, e.g. yyyy-MM-dd")),
         new Cmd("-countvalue", "No more than count unique values",
                 new Arg("column", "", "type", "column"), new Arg("count")),
         new Cmd("-decimate", "only include every <skip factor> row",
@@ -3988,6 +3998,11 @@ public class CsvUtil {
 		return i;
 	    });
 
+	defineFunction("-headerids",0,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.HeaderIds());
+		return i;
+	    });
+	
 	defineFunction("-ids",0,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Ids());
 		return i;
@@ -4514,7 +4529,7 @@ public class CsvUtil {
 				classes.add(c);
 			    } catch(Exception exc) {
 				if(_name!=null) {
-				    System.err.println("Error reading class:" + _name +" error:" + exc);
+				    //				    System.err.println("Error reading class:" + _name +" error:" + exc);
 				}
 			    }
 			}
