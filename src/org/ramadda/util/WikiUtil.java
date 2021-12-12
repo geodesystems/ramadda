@@ -3551,13 +3551,38 @@ public class WikiUtil {
 	}
 
 
+	Function<String,JSONArray> getJson = (url)->{
+	    try {
+		//Cache for 10 minutes
+		String json = handler.getWikiCache(url,Utils.minutesToMillis(10));
+		if(json==null) {
+		    System.err.println("calling:" + url);
+		    String token = handler.getWikiProperty("github.token",null);
+		    json = IO.doHttpRequest("GET",new URL(url),null,
+					    "Authorization",token!=null?"token "+token:null);
+		    handler.putWikiCache(url,json);		    
+		} else {
+		    System.err.println("got cache:" + json.substring(0,50));
+		    
+		}
+		
+		return  new JSONArray(json);
+	    } catch(Exception exc) {
+		throw new RuntimeException(exc);
+	    }
+	};
+
+
+
+
+
 	boolean decorate = Utils.getProperty(props,"decorate",true);
 	boolean showAuthor = Utils.getProperty(props,"showAuthor",true);	
 	String height = Utils.getProperty(props,"height","200");
 	if(user!=null) {
 	    String apiUrl = HU.url("https://api.github.com/users/" + user+"/events/public","per_page","" + max);
-	    String json = Utils.readContents(apiUrl, getClass());
-            JSONArray a = new JSONArray(json);
+            JSONArray a = getJson.apply(apiUrl);
+	    
 	    int cnt = 0;
             for (int itemIdx = 0; itemIdx < a.length(); itemIdx++) {
                 JSONObject item = a.getJSONObject(itemIdx);
@@ -3601,7 +3626,7 @@ public class WikiUtil {
 			if(login!=null) {
 			    name= HU.href("https://github.com/" + login,name);
 			}
-			HU.row(sb,showAuthor?HU.cols(name,date,message):HU.cols(date,message));
+			HU.row(sb,showAuthor?HU.cols(name,date,message):HU.cols(date,message),HU.cssClass("search-component"));
 		    }
 		}
 	    }
@@ -3614,8 +3639,7 @@ public class WikiUtil {
 	    String apiUrl = HU.url("https://api.github.com/repos/" + owner+"/" + repository+"/commits","per_page","" + max);
 	    if(since!=null) apiUrl+="&since=" + since;
 	    if(until!=null) apiUrl+="&until=" + until;	    
-	    String json = Utils.readContents(apiUrl, getClass());
-            JSONArray a = new JSONArray(json);
+            JSONArray a = getJson.apply(apiUrl);
 	    int cnt = 0;
             for (int commitIdx = 0; commitIdx < a.length(); commitIdx++) {
 		if(cnt++==0) {
@@ -3642,7 +3666,7 @@ public class WikiUtil {
 		    name = HU.image(avatar,"width","40px") +" "+ name;
 		}
 		name= HU.href(authorUrl, name);
-		HU.row(sb,showAuthor?HU.cols(name,date,message):HU.cols(date,message));
+		HU.row(sb,showAuthor?HU.cols(name,date,message):HU.cols(date,message),HU.cssClass("search-component"));
 	    }
 	    if(cnt>0) {
 		sb.append("</table>");
@@ -4888,6 +4912,11 @@ public class WikiUtil {
      * @version $Revision: 1.3 $
      */
     public static interface WikiPageHandler {
+
+	public void putWikiCache(String key, String value);
+	public String getWikiCache(String key,long ttl);	
+	public String getWikiProperty(String key, String dflt);
+	
 
         /**
          * _more_
