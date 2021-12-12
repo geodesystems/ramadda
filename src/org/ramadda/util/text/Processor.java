@@ -899,6 +899,8 @@ public abstract class Processor extends CsvOperator {
         /**  */
         int every;
 
+	int printCnt = 0;
+
         /**
          * _more_
          *
@@ -917,7 +919,8 @@ public abstract class Processor extends CsvOperator {
         @Override
         public void finish(TextReader ctx) throws Exception {
             super.finish(ctx);
-            System.err.print("\n");
+	    if(printCnt>0)
+		System.err.print("\n");
         }
 
         /**
@@ -937,7 +940,10 @@ public abstract class Processor extends CsvOperator {
             if (every == 0) {
                 System.err.println(rowCnt);
             } else if ((rowCnt) % every == 0) {
-                System.err.print(".");
+		printCnt++;
+		String pre = "\b\b\b\b\b\b\b\b\b\b\b";
+		System.err.print(pre+StringUtil.padRight("#"+rowCnt,10," "));
+		//                System.err.print(".");
             }
 
             return row;
@@ -1154,6 +1160,7 @@ public abstract class Processor extends CsvOperator {
          */
         public Printer(String prefix, String template, String delimiter,
                        String suffix) {
+	    //	    System.err.println("new printer " + Utils.getStack(6));
             this.prefix    = prefix;
             this.template  = template;
             this.delimiter = delimiter;
@@ -1167,6 +1174,7 @@ public abstract class Processor extends CsvOperator {
          * @param trim _more_
          */
         public Printer(String template, boolean trim) {
+	    //	    System.err.println("new printer " + Utils.getStack(6));
             this.template = template;
             this.trim     = trim;
         }
@@ -1177,6 +1185,7 @@ public abstract class Processor extends CsvOperator {
          * @param addHeader _more_
          */
         public Printer(boolean addHeader) {
+	    //	    System.err.println("new printer " + Utils.getStack(6));
             this.addPointHeader = addHeader;
         }
 
