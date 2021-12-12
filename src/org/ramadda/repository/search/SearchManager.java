@@ -290,7 +290,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         super.initAttributes();
         showMetadata = getRepository().getProperty(PROP_SEARCH_SHOW_METADATA, true);
         isLuceneEnabled =
-            getRepository().getProperty(PROP_SEARCH_LUCENE_ENABLED, false);
+            getRepository().getProperty(PROP_SEARCH_LUCENE_ENABLED, true);
 	try {
 	    tikaConfig = new TikaConfig(getClass().getResourceAsStream("/org/ramadda/repository/resources/tika-config.xml"));
 	} catch(Exception exc) {
