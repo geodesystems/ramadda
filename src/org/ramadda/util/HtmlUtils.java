@@ -2233,6 +2233,18 @@ public class HtmlUtils implements HtmlUtilsConstants {
     /**
      * _more_
      *
+     * @param sb _more_
+     * @param row _more_
+     */
+    public static void row(Appendable sb, String row, String extra) {
+        tag(sb, TAG_TR, extra, row);
+    }
+
+
+
+    /**
+     * _more_
+     *
      * @param row _more_
      * @param extra _more_
      *
