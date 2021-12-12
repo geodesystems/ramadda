@@ -227,6 +227,7 @@ public class LogManager extends RepositoryManager {
         message = message.replace(LOG_MACRO_REFERER, referer);
         message = message.replace(LOG_MACRO_USER, "-");
         message = message.replace(LOG_MACRO_SIZE, "" + count);
+	message = message.replaceAll("\\$","_dollar_");
         getAccessLogger().info(message);
     }
 
