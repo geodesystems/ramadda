@@ -3551,8 +3551,8 @@ public class WikiUtil {
 	}
 
 
-	boolean decorate = Utils.getProperty(props,"decorate",false);
-	boolean showAuthor = Utils.getProperty(props,"showAuthor",false);	
+	boolean decorate = Utils.getProperty(props,"decorate",true);
+	boolean showAuthor = Utils.getProperty(props,"showAuthor",true);	
 	String height = Utils.getProperty(props,"height","200");
 	if(user!=null) {
 	    String apiUrl = HU.url("https://api.github.com/users/" + user+"/events/public","per_page","" + max);
@@ -3581,7 +3581,7 @@ public class WikiUtil {
 			JSONObject commit = commits.getJSONObject(commitIdx);
 			if(cnt++==0) {
 			    sb.append("<table table-height='" + height+"' class='ramadda-table stripe'><thead><tr>");
-			    if(showAuthor)sb.append("<th>Author</th>");
+			    if(showAuthor)sb.append("<th width=30%>Author</th>");
 			    sb.append("<th width=20%>Date</th><th>Commit</th></tr></thead><tbody>");
 			}
 			if(cnt>max) break;
@@ -3620,7 +3620,7 @@ public class WikiUtil {
             for (int commitIdx = 0; commitIdx < a.length(); commitIdx++) {
 		if(cnt++==0) {
 		    sb.append("<table table-height='" + height+"' class='ramadda-table stripe'><thead><tr>");
-		    if(showAuthor)sb.append("<th>Author</th>");
+		    if(showAuthor)sb.append("<th width=30%>Author</th>");
 		    sb.append("<th width=20%>Date</th><th>Commit</th></tr></thead><tbody>");
 		}
 		if(cnt>max) break;

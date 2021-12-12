@@ -672,7 +672,7 @@ class  WikiEditor {
 	    }
 	}
 	let wikiError = (html,status,xhr) =>{
-	    console.log("error");
+	    console.log("error fetching preview:" + html);
 	};
 	let text = this.getValue();
 	let url = ramaddaBaseUrl + "/wikify";
