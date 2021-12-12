@@ -765,6 +765,7 @@ public class IO {
         connection.setRequestProperty("charset", "utf-8");
         for (int i = 0; i < args.length; i += 2) {
             //      System.err.println(args[i]+":" + args[i+1]);
+	    if(args[i+1]==null)continue;
             connection.setRequestProperty(args[i], args[i + 1]);
         }
         if (body != null) {
@@ -779,14 +780,16 @@ public class IO {
                     new InputStreamReader(
                         connection.getInputStream(), "UTF-8")));
         } catch (Exception exc) {
-            System.err.println("Utils: error doing http request:" + action
+            System.err.println("IO: error doing http request:" + action
                                + "\nURL:" + url + "\nreturn code:"
                                + connection.getResponseCode() + "\nBody:"
                                + body);
-            System.err.println(readError(connection));
+	    String error = readError(connection);
+            System.err.println(error);
             System.err.println(connection.getHeaderFields());
-
-            throw exc;
+	    exc.printStackTrace();
+	    throw new RuntimeException("Error reading URL:" + error);
+	    //            throw exc;
             //            System.err.println(connection.getContent());
         }
     }
