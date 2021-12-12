@@ -217,6 +217,15 @@ See the [ug::link templates.html documentation].
 
 
 
+<faqitem cat="Administration" id="github" q="Enable github embeds" >
+The wiki facility supports embedding github commit history. github rate limites requests so your
+repository can only make a few requests at a time. You can increase this rate limit by creating a github
+personal access token at: <a href="https://github.com/settings/tokens">https://github.com/settings/tokens</a>.
+Add the property to your .properties file:
+<pre>
+github.token=&lt;your token&gt;
+</pre>  
+</faqitem>
 
 
 <faqitem cat="Administration" id="template" q="I want to change the html design of RAMADDA" >
