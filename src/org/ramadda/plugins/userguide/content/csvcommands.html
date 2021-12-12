@@ -36,11 +36,13 @@
 </style>
 
 <h2>RAMADDA CSV Utils Commands</h2>
-<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA CSV Utils package provides 221 commands for manipulating CSV and other types of files</center>
+<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA CSV Utils package provides 224 commands for manipulating CSV and other types of files</center>
 
 
 <h2>Introduction</h2>
-The RAMADDA CSV commands can be used both interactively from within RAMADDA as well as via the command line. The examples here show the command line use. If running interactively the commands are the same form except for the csv.sh calls and the specification of the input file. So, for example, if you are calling the tool from the command line as:
+The RAMADDA CSV commands can be used both interactively from within RAMADDA as well as via the command line. Help with the ineractive version can be viewed
+<a href="https://ramadda.org/repository/userguide/etl.html">here</a>.
+The examples here show the command line use. If running interactively the commands are the same form except for the csv.sh calls and the specification of the input file. So, for example, if you are calling the tool from the command line as:
 <pre class=example>
 csv.sh -columns column1,column2 -p file.csv > output.csv
 </pre>
@@ -145,7 +147,7 @@ csv.sh -columns column1 -unique 0 -sort column1 -p test.csv > newtest.csv
 </pre>
 
 <hr><a name='Input'></a><b style='font-size:120%;'>Input</b><br>
-Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XML, Shapefile, etc<div class=header>Commands: <a href='#-delimiter'>-delimiter</a> <a href='#-tab'>-tab</a> <a href='#-widths'>-widths</a> <a href='#-quotesnotspecial'>-quotesnotspecial</a> <a href='#-cleaninput'>-cleaninput</a> <a href='#-bom'>-bom</a> <a href='#-header'>-header</a> <a href='#-htmltable'>-htmltable</a> <a href='#-htmlpattern'>-htmlpattern</a> <a href='#-harvest'>-harvest</a> <a href='#-json'>-json</a> <a href='#-geojson'>-geojson</a> <a href='#-pdf'>-pdf</a> <a href='#-xml'>-xml</a> <a href='#-shapefile'>-shapefile</a> <a href='#-lines'>-lines</a> <a href='#-text'>-text</a> <a href='#-extractpattern'>-extractpattern</a> <a href='#-tokenize'>-tokenize</a> <a href='#-sql'>-sql</a> <a href='#-prune'>-prune</a> <a href='#-deheader'>-deheader</a> <a href='#-headernames'>-headernames</a> <a href='#-ids'>-ids</a> <a href='#-cat'>-cat</a> <a href='#-append'>-append</a> </div>
+Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XML, Shapefile, etc<div class=header>Commands: <a href='#-delimiter'>-delimiter</a> <a href='#-tab'>-tab</a> <a href='#-widths'>-widths</a> <a href='#-quotesnotspecial'>-quotesnotspecial</a> <a href='#-cleaninput'>-cleaninput</a> <a href='#-bom'>-bom</a> <a href='#-header'>-header</a> <a href='#-htmltable'>-htmltable</a> <a href='#-htmlpattern'>-htmlpattern</a> <a href='#-harvest'>-harvest</a> <a href='#-json'>-json</a> <a href='#-geojson'>-geojson</a> <a href='#-pdf'>-pdf</a> <a href='#-xml'>-xml</a> <a href='#-shapefile'>-shapefile</a> <a href='#-lines'>-lines</a> <a href='#-text'>-text</a> <a href='#-extractpattern'>-extractpattern</a> <a href='#-tokenize'>-tokenize</a> <a href='#-sql'>-sql</a> <a href='#-prune'>-prune</a> <a href='#-deheader'>-deheader</a> <a href='#-headernames'>-headernames</a> <a href='#-headerids'>-headerids</a> <a href='#-ids'>-ids</a> <a href='#-cat'>-cat</a> <a href='#-append'>-append</a> </div>
 <b style='font-size:120%;'>Examples</b>  
 
 <pre class=examples>
@@ -403,7 +405,10 @@ Number of leading bytes to remove<br>
 </div><a name='-deheader'></a><div class=command> <i><a href='#-deheader'>-deheader</a></i> </div><div class=command-block>Strip off the RAMADDA point header<br>
 <br>
 </ul>
-</div><a name='-headernames'></a><div class=command> <i><a href='#-headernames'>-headernames</a></i> </div><div class=command-block>Clean up names<br>
+</div><a name='-headernames'></a><div class=command> <i><a href='#-headernames'>-headernames</a></i> </div><div class=command-block>Make the header proper capitalization<br>
+<br>
+</ul>
+</div><a name='-headerids'></a><div class=command> <i><a href='#-headerids'>-headerids</a></i> </div><div class=command-block>Make the header be ids<br>
 <br>
 </ul>
 </div><a name='-ids'></a><div class=command> <i><a href='#-ids'>-ids</a></i> </div><div class=command-block>Use canonical names<br>
@@ -677,7 +682,7 @@ Date Format, e.g. yyyy-MM-dd<br>
 Date Format, e.g. yyyy-MM-dd<br>
 <br>
 </ul>
-</div><a name='-latest'></a><div class=command> <i><a href='#-latest'>-latest</a></i>  &lt;columns&gt;  &lt;column&gt;  &lt;format&gt;  &lt;Date Format, e.g. yyyy-MM-dd&gt; </div><div class=command-block>Pass through rows whose date is the latest in the group of rows defined by the key column<br>
+</div><a name='-latest'></a><div class=command> <i><a href='#-latest'>-latest</a></i>  &lt;columns&gt;  &lt;column&gt;  &lt;format&gt; </div><div class=command-block>Pass through rows whose date is the latest in the group of rows defined by the key column<br>
 <b>Arguments:</b><br>
 <ul>
 <i>columns</i>
@@ -685,9 +690,7 @@ Key columns<br>
 <i>column</i>
 Date column<br>
 <i>format</i>
-<br>
-<i>Date Format, e.g. yyyy-MM-dd</i>
-<br>
+Date Format, e.g. yyyy-MM-dd<br>
 <br>
 </ul>
 </div><a name='-countvalue'></a><div class=command> <i><a href='#-countvalue'>-countvalue</a></i>  &lt;column&gt;  &lt;count&gt; </div><div class=command-block>No more than count unique values<br>
@@ -1208,7 +1211,7 @@ End index<br>
 <br>
 </ul>
 </div></ul><br><hr><a name='Change'></a><b style='font-size:120%;'>Change</b><br>
-<div class=header>Commands: <a href='#-change'>-change</a> <a href='#-changerow'>-changerow</a> <a href='#-set'>-set</a> <a href='#-macro'>-macro</a> <a href='#-setcol'>-setcol</a> <a href='#-copyif'>-copyif</a> <a href='#-copycolumns'>-copycolumns</a> <a href='#-filldown'>-filldown</a> <a href='#-priorprefix'>-priorprefix</a> <a href='#-case'>-case</a> <a href='#-padleft'>-padleft</a> <a href='#-padright'>-padright</a> <a href='#-trim'>-trim</a> <a href='#-trimquotes'>-trimquotes</a> <a href='#-width'>-width</a> <a href='#-prepend'>-prepend</a> <a href='#-pad'>-pad</a> <a href='#-prefix'>-prefix</a> <a href='#-suffix'>-suffix</a> <a href='#-ascii'>-ascii</a> <a href='#-ismobile'>-ismobile</a> <a href='#-js'>-js</a> <a href='#-func'>-func</a> <a href='#-endswith'>-endswith</a> <a href='#-truncate'>-truncate</a> <a href='#-extract'>-extract</a> <a href='#-urlarg'>-urlarg</a> <a href='#-map'>-map</a> <a href='#-format'>-format</a> <a href='#-denormalize'>-denormalize</a> <a href='#-break'>-break</a> <a href='#-makeids'>-makeids</a> </div><a name='-change'></a><div class=command> <i><a href='#-change'>-change</a></i>  &lt;columns&gt;  &lt;pattern&gt;  &lt;substitution string&gt; </div><div class=command-block>Change columns<br>
+<div class=header>Commands: <a href='#-change'>-change</a> <a href='#-changerow'>-changerow</a> <a href='#-replace'>-replace</a> <a href='#-set'>-set</a> <a href='#-macro'>-macro</a> <a href='#-setcol'>-setcol</a> <a href='#-copyif'>-copyif</a> <a href='#-copycolumns'>-copycolumns</a> <a href='#-filldown'>-filldown</a> <a href='#-priorprefix'>-priorprefix</a> <a href='#-case'>-case</a> <a href='#-padleft'>-padleft</a> <a href='#-padright'>-padright</a> <a href='#-trim'>-trim</a> <a href='#-trimquotes'>-trimquotes</a> <a href='#-width'>-width</a> <a href='#-prepend'>-prepend</a> <a href='#-pad'>-pad</a> <a href='#-prefix'>-prefix</a> <a href='#-suffix'>-suffix</a> <a href='#-ascii'>-ascii</a> <a href='#-ismobile'>-ismobile</a> <a href='#-js'>-js</a> <a href='#-func'>-func</a> <a href='#-endswith'>-endswith</a> <a href='#-truncate'>-truncate</a> <a href='#-extract'>-extract</a> <a href='#-urlarg'>-urlarg</a> <a href='#-map'>-map</a> <a href='#-format'>-format</a> <a href='#-denormalize'>-denormalize</a> <a href='#-break'>-break</a> <a href='#-makeids'>-makeids</a> </div><a name='-change'></a><div class=command> <i><a href='#-change'>-change</a></i>  &lt;columns&gt;  &lt;pattern&gt;  &lt;substitution string&gt; </div><div class=command-block>Change columns<br>
 <b>Arguments:</b><br>
 <ul>
 <i>columns</i>
@@ -1246,6 +1249,15 @@ Column indices. Can include ranges, e.g. 0-5<br>
 <br>
 <i>substitution string</i>
 <br>
+<br>
+</ul>
+</div><a name='-replace'></a><div class=command> <i><a href='#-replace'>-replace</a></i>  &lt;columns&gt;  &lt;substitution string&gt; </div><div class=command-block>Replace<br>
+<b>Arguments:</b><br>
+<ul>
+<i>columns</i>
+Column indices. Can include ranges, e.g. 0-5<br>
+<i>substitution string</i>
+use {value} for value<br>
 <br>
 </ul>
 </div><a name='-set'></a><div class=command> <i><a href='#-set'>-set</a></i>  &lt;columns&gt;  &lt;rows&gt;  &lt;value&gt; </div><div class=command-block>Write the value into the cells<br>
@@ -1901,7 +1913,7 @@ New column name<br>
 <br>
 </ul>
 </div></ul><br><hr><a name='Geospatial'></a><b style='font-size:120%;'>Geospatial</b><br>
-<div class=header>Commands: <a href='#-geocode'>-geocode</a> <a href='#-geocodeaddressdb'>-geocodeaddressdb</a> <a href='#-geocodejoin'>-geocodejoin</a> <a href='#-statename'>-statename</a> <a href='#-geoname'>-geoname</a> <a href='#-elevation'>-elevation</a> <a href='#-mercator'>-mercator</a> <a href='#-region'>-region</a> <a href='#-population'>-population</a> <a href='#-neighborhood'>-neighborhood</a> </div><a name='-geocode'></a><div class=command> <i><a href='#-geocode'>-geocode</a></i>  &lt;columns&gt;  &lt;prefix&gt;  &lt;suffix&gt; </div><div class=command-block>Geocode using given columns<br>
+<div class=header>Commands: <a href='#-geocode'>-geocode</a> <a href='#-geocodeaddressdb'>-geocodeaddressdb</a> <a href='#-geocodejoin'>-geocodejoin</a> <a href='#-statename'>-statename</a> <a href='#-geoname'>-geoname</a> <a href='#-geocontains'>-geocontains</a> <a href='#-elevation'>-elevation</a> <a href='#-mercator'>-mercator</a> <a href='#-region'>-region</a> <a href='#-population'>-population</a> <a href='#-neighborhood'>-neighborhood</a> </div><a name='-geocode'></a><div class=command> <i><a href='#-geocode'>-geocode</a></i>  &lt;columns&gt;  &lt;prefix&gt;  &lt;suffix&gt; </div><div class=command-block>Geocode using given columns<br>
 <b>Arguments:</b><br>
 <ul>
 <i>columns</i>
@@ -2029,11 +2041,13 @@ csv.sh -geocodejoin precinct precincts.csv precinct latitude longitude
 <br>
 <br>
 </ul>
-</div><a name='-geoname'></a><div class=command> <i><a href='#-geoname'>-geoname</a></i>  &lt;lookup&gt;  &lt;lat&gt;  &lt;lon&gt; </div><div class=command-block>Look up location name<br>
+</div><a name='-geoname'></a><div class=command> <i><a href='#-geoname'>-geoname</a></i>  &lt;lookup&gt;  &lt;fields&gt;  &lt;lat&gt;  &lt;lon&gt; </div><div class=command-block>Look up location name<br>
 <b>Arguments:</b><br>
 <ul>
 <i>lookup</i>
 ('counties' or 'states' or 'countries' or 'timezones')<br>
+<i>fields</i>
+fields in shapefile<br>
 <i>lat</i>
 Latitude column<br>
 <i>lon</i>
@@ -2061,7 +2075,20 @@ csv.sh -geoname countries  latitude longitude -geoname timezones  latitude longi
 
 
 
-<p></div><a name='-elevation'></a><div class=command> <i><a href='#-elevation'>-elevation</a></i>  &lt;lat&gt;  &lt;lon&gt; </div><div class=command-block>Look up elevation(using 1/3 arc-second DEM)<br>
+<p></div><a name='-geocontains'></a><div class=command> <i><a href='#-geocontains'>-geocontains</a></i>  &lt;lookup&gt;  &lt;name&gt;  &lt;lat&gt;  &lt;lon&gt; </div><div class=command-block>Check for containment<br>
+<b>Arguments:</b><br>
+<ul>
+<i>lookup</i>
+('counties' or 'states' or 'countries' or 'timezones')<br>
+<i>name</i>
+new column name<br>
+<i>lat</i>
+Latitude column<br>
+<i>lon</i>
+Longitude column<br>
+<br>
+</ul>
+</div><a name='-elevation'></a><div class=command> <i><a href='#-elevation'>-elevation</a></i>  &lt;lat&gt;  &lt;lon&gt; </div><div class=command-block>Look up elevation(using 1/3 arc-second DEM)<br>
 <b>Arguments:</b><br>
 <ul>
 <i>lat</i>
