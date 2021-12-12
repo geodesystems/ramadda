@@ -2401,7 +2401,7 @@ public class Utils extends IO {
      */
     public static String makeID(String label, boolean forCode) {
         label = stripTags(label);
-        label = label.trim().toLowerCase().replaceAll(" ",
+        label = label.trim().toLowerCase().replaceAll(":","_").replaceAll("&","_").replaceAll(" ",
                 "_").replaceAll("\\.", "_").replaceAll("\n",
                                 "_").replaceAll("\\(", "_").replaceAll("\\)",
                                     "_").replaceAll("\\?",
@@ -4919,6 +4919,14 @@ public class Utils extends IO {
         return (int) (now.getTime() - date.getTime()) / 1000 / 60;
     }
 
+
+    public static long minutesToMillis(int minutes) {
+	return 60*minutes*1000;
+    }
+
+    public static long secondsToMillis(int seconds) {
+	return seconds*1000;
+    }    
 
     /**
      * _more_
