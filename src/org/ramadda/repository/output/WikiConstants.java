@@ -317,6 +317,7 @@ public interface WikiConstants {
 
     public static final String WIKI_TAG_VERSION = "ramadda_version";
 
+    public static final String WIKI_TAG_MAKELABEL = "makelabel";
 
     /**  */
     public static final String WIKI_TAG_TEMPLATE = "template";

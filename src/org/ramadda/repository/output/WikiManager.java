@@ -400,7 +400,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             Hashtable tmpProps = HU.parseHtmlProperties(remainder);
             Hashtable props    = new Hashtable();
             for (Enumeration keys =
-                    tmpProps.keys(); keys.hasMoreElements(); ) {
+		     tmpProps.keys(); keys.hasMoreElements(); ) {
                 String key = (String) keys.nextElement();
                 if (key.startsWith("#")) {
                     continue;
@@ -492,7 +492,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
             String include = handleWikiImport(wikiUtil, request, entry,
-                                 theEntry, tag, props);
+					      theEntry, tag, props,remainder);
 	    if(tmpAddedGroup!=null) {
 		request.putExtraProperty(PROP_GROUP_VAR,tmpAddedGroup);
 	    }
@@ -1304,7 +1304,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      */
     private String my_getWikiInclude(WikiUtil wikiUtil, Request request,
                                      Entry originalEntry, Entry entry,
-                                     String tag, Hashtable props,
+                                     String tag, Hashtable props, String remainder,
                                      boolean doingApply)
             throws Exception {
 
@@ -1324,7 +1324,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                     attrPrefix + ATTR_SUFFIX, (String) null);
 
         String result = getWikiIncludeInner(wikiUtil, request, originalEntry,
-                                            entry, tag, props);
+                                            entry, tag, props,remainder);
 
         if (result == null) {
             result = getMessage(wikiUtil, props,
@@ -1670,7 +1670,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      */
     private String getWikiIncludeInner(WikiUtil wikiUtil, Request request,
                                        Entry originalEntry, Entry entry,
-                                       String theTag, Hashtable props)
+                                       String theTag, Hashtable props,String remainder)
             throws Exception {
 
 	if(!checkIf(wikiUtil,request,entry,props)) return "";
@@ -1889,6 +1889,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
         } else if (theTag.equals(WIKI_TAG_VERSION)) {
 	    return RepositoryUtil.getVersion();
+        } else if (theTag.equals(WIKI_TAG_MAKELABEL)) {
+	    return Utils.makeLabel(remainder);
         } else if (theTag.equals(WIKI_TAG_RESOURCE)) {
             String url = null;
             String label;
@@ -2727,7 +2729,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 			System.err.println("p7:" + firstProps.get("chartHeight"));
 		    }
                     buff.append(getWikiIncludeInner(wikiUtil, request,
-						    originalEntry, theEntry, tag, _props));
+						    originalEntry, theEntry, tag, _props,""));
                 }
 		if(tmpEntry!=null)
 		    wikiUtil.putProperty(ATTR_ENTRY, tmpEntry);
@@ -2850,8 +2852,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             for (Entry child : children) {
                 String childsHtml = my_getWikiInclude(wikiUtil, newRequest,
-                                        originalEntry, child, tag, tmpProps,
-                                        true);
+						      originalEntry, child, tag, tmpProps,remainder,
+						      true);
 
                 String prefix   = prefixTemplate;
                 String suffix   = suffixTemplate;
@@ -3048,7 +3050,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 tmpProps.put("defaultToCard", "true");
                 StringBuilder content =
                     new StringBuilder(my_getWikiInclude(wikiUtil, newRequest,
-                        originalEntry, child, tag, tmpProps, true));
+							originalEntry, child, tag, tmpProps, "", true));
                 if (showLink) {
                     String url;
                     if (linkResource
@@ -5851,12 +5853,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      */
     private String handleWikiImport(WikiUtil wikiUtil, final Request request,
                                     Entry originalEntry, Entry importEntry,
-                                    String tag, Hashtable props) {
+                                    String tag, Hashtable props, String remainder) {
         try {
 
             if ( !tag.equals(WIKI_TAG_IMPORT)) {
                 String include = my_getWikiInclude(wikiUtil, request,
-                                     originalEntry, importEntry, tag, props,
+						   originalEntry, importEntry, tag, props,remainder,
                                      tag.equals(WIKI_TAG_APPLY));
                 if (include != null) {
                     return include;
