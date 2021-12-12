@@ -32,6 +32,23 @@ See [ug::link installing.html#ssljetty here] if you are running stand-alone.
 </faqitem>
 
 
+<faqitem cat="Administration" id="lucene" q="How do I use Lucene for searching?" >
+RAMADDA has had the ability to uses Lucene for search indexing though up until 2021 this
+had been disabled by default.  Lucene provides a much better search experience as it indexes the
+contents of files (e.g., pdfs, ppt, word, csv, etc) and provides better searching - supporting
+entry hierarchy based searching, synonyoms, etc.
+
+As of 12-2021 RAMADDA now defaults to using Lucene. This can be overriden with the property:
+<pre>
+  ramadda.search.lucene.enabled=false
+</pre>
+The problem this introduces is that, once enabled,  the index does not get built with past content so a search
+will only show newly created content. To address this you can simply go to the Admin page:
+Go to: Admin-&gt;Maintenance-&gt;Reindex Lucene Index and select "Reindex all".
+Depending on the size of your repository this may take a few minutes but once complete your searching should be good to
+go.
+</faqitem>
+
 <faqitem cat="Administration" id="cdn" q="How do I improve the page loading performance?" >
 By default RAMADDA serves up all of its CSS and Javascript files as individual files. You can improve
 page loading performance in by setting the following properties:
