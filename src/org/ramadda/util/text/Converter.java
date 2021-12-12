@@ -1156,6 +1156,42 @@ public abstract class Converter extends Processor {
      * @version        $version$, Thu, Nov 4, '21
      * @author         Enter your name here...
      */
+    public static class HeaderIds extends Converter {
+
+        /**
+         */
+        public HeaderIds() {}
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ > 0) {
+                return row;
+            }
+            for (int i = 0; i < row.size(); i++) {
+                String s = row.getString(i);
+		s = Utils.makeID(s);
+                row.set(i, s);
+            }
+
+            return row;
+        }
+
+    }
+
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 4, '21
+     * @author         Enter your name here...
+     */
     public static class Ids extends Converter {
 
         /**
