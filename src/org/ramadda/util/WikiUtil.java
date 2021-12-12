@@ -3562,8 +3562,7 @@ public class WikiUtil {
 					    "Authorization",token!=null?"token "+token:null);
 		    handler.putWikiCache(url,json);		    
 		} else {
-		    System.err.println("got cache:" + json.substring(0,50));
-		    
+		    //		    System.err.println("got cache:" + json.substring(0,50));
 		}
 		
 		return  new JSONArray(json);
