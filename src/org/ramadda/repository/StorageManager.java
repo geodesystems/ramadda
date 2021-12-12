@@ -35,6 +35,10 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.Files;
 import java.nio.charset.*;
 
 import java.util.ArrayList;
@@ -1051,8 +1055,29 @@ public class StorageManager extends RepositoryManager implements PointFile
      * @throws Exception _more_
      */
     public Object getCacheObject(String group, String key) throws Exception {
+	return getCacheObject(group,key,-1);
+    }
+
+    public Object getCacheObject(String group, String key, long ttl) throws Exception {	
+	boolean debug = false;
         File f = getCacheFile(group, key);
         if (f.exists()) {
+	    if(ttl>0) {
+		if(debug) System.err.println("checking cache:" + ttl);
+		Path file = Paths.get(f.toString());
+		BasicFileAttributes attr = Files.readAttributes(file, BasicFileAttributes.class);
+		long last = attr.lastModifiedTime().toMillis();
+		long diff = new Date().getTime()-last;
+		if(debug) System.err.println("last modified:" + new Date(last));
+		if(debug) System.err.println("diff:" + diff);
+		if(diff>ttl) {
+		    if(debug) System.err.println("clearing cache");
+		    f.delete();
+		    return null;
+		}
+	    }
+
+
             FileInputStream fis = new FileInputStream(f);
             String          xml = IOUtil.readContents(fis);
             IOUtil.close(fis);
