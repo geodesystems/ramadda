@@ -369,6 +369,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                        HashSet notTags) {
 
         try {
+
+
             Entry   entry    = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
             Request request  = (Request) wikiUtil.getProperty(ATTR_REQUEST);
 
@@ -478,6 +480,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 }
             }
 
+	    if(Utils.getProperty(props,"primaryPage",false)) {
+		Entry primaryEntry = (Entry)wikiUtil.getProperty("primaryEntry");
+		if(primaryEntry==null || !entry.equals(primaryEntry)) return "";
+	    }
+
+
             theEntry.getTypeHandler().addWikiProperties(theEntry, wikiUtil,
                     tag, props);
             addWikiLink(wikiUtil, theEntry);
@@ -584,9 +592,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             throws Exception {
 
 	//Check for loops
+	boolean isPrimaryRequest = false;
 	Hashtable alreadyDoingIt  = (Hashtable) request.getExtraProperty("alreadyDoingIt");
 	if(alreadyDoingIt==null) {
 	    alreadyDoingIt = new Hashtable();
+	    isPrimaryRequest=true;
 	    request.putExtraProperty("alreadyDoingIt", alreadyDoingIt);
 	}
 	List contentList = (List) alreadyDoingIt.get(entry.getId());
@@ -598,7 +608,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 	}
 	contentList.add(wikiContent);
 
-
         Request myRequest = request.cloneMe();
         WikiUtil wikiUtil =
             initWikiUtil(myRequest,
@@ -606,7 +615,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                              ATTR_REQUEST,
                              myRequest, ATTR_ENTRY, entry })), entry);
 
-
+	if(isPrimaryRequest) {
+	    wikiUtil.putProperty("primaryEntry", entry);
+	}
         return wikifyEntry(request, entry, wikiUtil, wikiContent, wrapInDiv,
                            subGroups, subEntries, notTags, true);
     }
@@ -1419,8 +1430,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
         return sb.toString();
-
-
     }
 
 
@@ -1674,6 +1683,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             throws Exception {
 
 	if(!checkIf(wikiUtil,request,entry,props)) return "";
+
+
+
 
         boolean wikify  = getProperty(wikiUtil, props, ATTR_WIKIFY, true);
         String criteria = getProperty(wikiUtil, props, ATTR_IF,
