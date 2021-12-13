@@ -2346,7 +2346,7 @@ public class Service extends RepositoryManager {
                     if (existingFiles.contains(f) || newFiles.contains(f)) {
                         continue;
                     }
-                    System.err.println("Service.evaluate: deleting:" + f);
+		    //                    System.err.println("Service.evaluate: deleting:" + f);
                     f.delete();
                 }
             }
@@ -2372,7 +2372,7 @@ public class Service extends RepositoryManager {
 
         Entry currentEntry = (Entry) Utils.safeGet(entries, 0);
 
-        System.err.println("Command:" + commands);
+//        System.err.println("Command:" + commands);
 
         if (input.getForDisplay()) {
             commands.set(0, IOUtil.getFileTail(commands.get(0)));
@@ -2437,7 +2437,7 @@ public class Service extends RepositoryManager {
 
 
         for (File f : filesToDelete) {
-            System.err.println("Service: deleting file:" + f);
+	    //            System.err.println("Service: deleting file:" + f);
             f.delete();
         }
 
