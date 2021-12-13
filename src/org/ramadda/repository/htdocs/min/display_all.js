@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Dec 12 12:09:04 MST 2021";
+var build_date="RAMADDA build date: Mon Dec 13 07:06:58 MST 2021";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -28957,10 +28957,15 @@ let ID_TYPE_DIV = "typediv";
 let ID_TYPEFIELDS = "typefields";
 let ID_METADATA_FIELD = "metadatafield";
 let ID_COLUMN = "column";
-
 let ID_SEARCH_HIDEFORM = "searchhideform";
 
 
+addGlobalDisplayType({
+    type: DISPLAY_SIMPLESEARCH,
+    label: "Simple Search",
+    requiresData: false,
+    category: CATEGORY_ENTRIES
+});
 
 
 addGlobalDisplayType({
@@ -30898,7 +30903,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	{p:"pageSearchSelector",d:'.search-component,.entry-list-row'},	
     ];
 
-    if(!properties.width) properties.width="200px";
+    if(!properties.width) properties.width="230px";
     const SUPER   = new RamaddaSearcherDisplay(displayManager, id, DISPLAY_SIMPLESEARCH, properties);
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	callNumber:1,
