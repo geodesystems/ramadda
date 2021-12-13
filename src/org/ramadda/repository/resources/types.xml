@@ -182,6 +182,8 @@ message="" prefix="----_nl_:h3 Pages" showIcon=false details=false sort=entryord
      <wiki><![CDATA[
 +section title={{name}}
 {{description wikify="true"}}
+{{information}}
+:heading Contents
 {{zipfile}}
 -section
 ]]>
