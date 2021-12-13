@@ -1,5 +1,6 @@
 #!/bin/sh
 export mydir=`dirname $0`
+set -e
 
 #This assumes the directory you are in has a data sub-directory  that holds
 #the source files from
@@ -121,6 +122,16 @@ fi
 
 
 
+if [ ! -f ${prop_pruned} ]; then
+    echo "making ${prop_pruned}"
+#clean up header names, limit max rows produced, print out columns
+    csv  -headerids -maxrows ${maxrows} \
+	 -c "parid,${prop_pruned_columns}" \
+	 -p ${prop} > ${prop_pruned}
+fi
+
+
+
 if [ ! -f ${dof_pruned} ]; then
     echo "making ${dof_pruned}"
 #-maxrows: only process maxrows number of rows
@@ -129,18 +140,13 @@ if [ ! -f ${dof_pruned} ]; then
 #-c: select columns
     csv   -maxrows ${maxrows}  -headerids \
 	  -pattern valclass "^(1|2)$" \
+	  -ifin parid ${nyc_pruned} parid \
+	  -ifin parid ${prop_pruned} parid \
 	  -c parid,valclass,luc,sum_bal,sum_coll,sum_dsc,sum_liab \
 	  -p ${dof} > ${dof_pruned}
 fi
 
 
-if [ ! -f ${prop_pruned} ]; then
-    echo "making ${prop_pruned}"
-#clean up header names, limit max rows produced, print out columns
-    csv  -headerids -maxrows ${maxrows} \
-	 -c "parid,${prop_pruned_columns}" \
-	 -p ${prop} > ${prop_pruned}
-fi
 
 
 if [ ! -f ${joined1} ]; then
