@@ -1744,6 +1744,10 @@ thin_hr,.ramadda-thin-hr {
 }
 
 
+.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
+    font-size: var(--font-size) !important;
+}
+
 .ui-widget select , .ui-widget .ui-widget {
 }
 
