@@ -1566,9 +1566,9 @@ public class StorageManager extends RepositoryManager implements PointFile
 	File tmpFile = getTmpFile(request,fileName);
 	//data:image/png;...
 	String fileType = "text/plain";
-	boolean hasData = false;
+	boolean isBase64 = false;
 	if(fileContents.startsWith("data:")) {
-	    hasData = true;
+	    isBase64 = true;
 	    int idx = fileContents.indexOf(",");
 	    if(idx<0) {
 		throw new IllegalArgumentException("Bad file contents");
@@ -1590,11 +1590,15 @@ public class StorageManager extends RepositoryManager implements PointFile
 	    }
 	    ImageIO.write(bufferedImage, suffix, tmpFile);
 	} else {
-	    if(hasData)
-		fileContents = new String(Utils.decodeBase64(fileContents));
-	    FileOutputStream fos = new FileOutputStream(tmpFile);
-	    IOUtil.writeFile(tmpFile, fileContents);
-	    fos.close();
+	    byte[]b;
+	    if(isBase64)
+		b=Utils.decodeBase64(fileContents);
+	    else
+		b = fileContents.getBytes("UTF-8");
+	    IOUtil.writeBytes(tmpFile,b);
+	    //	    FileOutputStream fos = new FileOutputStream(tmpFile);
+	    //	    IOUtil.writeFile(tmpFile, fileContents);
+	    //	    fos.close();
 	}
 	return tmpFile;
     }
