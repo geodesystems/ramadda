@@ -569,7 +569,7 @@ public class CsvOperator {
      *
      * @return _more_
      */
-    public Integer getColumnIndex(TextReader ctx, String tok) {
+    public int getColumnIndex(TextReader ctx, String tok) {
         checkColumns();
         //      System.err.println("\tgetColumnIndex:" + tok);
         Integer iv = columnMap.get(tok);
@@ -584,8 +584,11 @@ public class CsvOperator {
             String colId = Utils.makeID(tok, false);
             iv = columnMap.get(colId);
         }
+        if (iv == null) {
+	    throw new IllegalArgumentException("Could not find column index:" + tok +" possible columns: " + Utils.getKeys(columnMap));
+	}
 
-        return iv;
+        return iv!=null?iv:-1;
     }
 
 
