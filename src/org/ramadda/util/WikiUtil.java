@@ -133,6 +133,7 @@ public class WikiUtil {
     List headings2 = new ArrayList();
 
 
+
     /**
      * _more_
      */
@@ -3556,7 +3557,6 @@ public class WikiUtil {
 		//Cache for 10 minutes
 		String json = handler.getWikiCache(url,Utils.minutesToMillis(10));
 		if(json==null) {
-		    System.err.println("calling:" + url);
 		    String token = handler.getWikiProperty("github.token",null);
 		    json = IO.doHttpRequest("GET",new URL(url),null,
 					    "Authorization",token!=null?"token "+token:null);
