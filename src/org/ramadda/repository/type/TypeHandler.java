@@ -3747,8 +3747,7 @@ public class TypeHandler extends RepositoryManager {
                     File workDir = getStorageManager().createProcessDir();
                     ServiceInput serviceInput = new ServiceInput(workDir,
                                                     entry);
-                    System.err.println("TypeHandler execing service: "
-                                       + service);
+		    //                    System.err.println("TypeHandler execing service: "  + service);
                     ServiceOutput output =
                         service.evaluate(getRepository().getTmpRequest(),
                                          serviceInput, null);
@@ -3759,8 +3758,7 @@ public class TypeHandler extends RepositoryManager {
 
 
                     //Defer to the entry's type handler
-                    System.err.println("calling handleServiceResults:"
-                                       + entry.getTypeHandler());
+		    //                    System.err.println("calling handleServiceResults:"  + entry.getTypeHandler());
                     entry.getTypeHandler().handleServiceResults(request,
                             entry, service, output);
                 } catch (Exception exc) {
