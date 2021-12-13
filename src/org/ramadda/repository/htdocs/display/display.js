@@ -1297,6 +1297,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'labelColumnAttrs',ex:'align,right',tt:'Attributes of the label column in the record templates'},
 	{p:'labelWidth',ex:'10',tt:'Width of labels the record templates'},	
 	{p:'displayStyle',ex:'css styles',tt:'Specify styles for display'},
+	{p:'primaryPage',ex:'true',tt:'Set to true if you only want this display to show in the  primary for the entry '},
 	{p:'title',ex:''},
 	{p:'titleBackground',ex:'color'},
 	{p:'linkField',ex:''},
