@@ -2293,8 +2293,8 @@ public class CsvUtil {
 		new Arg("suffix pattern")),
         new Cmd("-fields", "Print the fields"),
         new Cmd("-run", "", "Name of process directory"),
-        new Cmd("-dots", "Print a dot every count row. Used to show progress",
-		new Arg("every", "Dot every")),
+        new Cmd("-progress", "Show progress",
+		new Arg("rows", "How often to print")),
         new Cmd("-debugrows", "Debug # rows",
 		new Arg("rows", "# of rows")),	
 	new Cmd("-script", "Generate the script to call"),
@@ -3983,7 +3983,7 @@ public class CsvUtil {
 
 
 
-	defineFunction("-dots",1,(ctx,args,i) -> {
+	defineFunction(new String[]{"-progress","-dots"},1,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Dots(new Integer(args.get(++i))));
 		return i;
 	    });
