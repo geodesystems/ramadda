@@ -157,9 +157,8 @@ public class ZipFileOutputHandler extends OutputHandler {
 //        InputStream fis = getStorageManager().getFileInputStream(entry.getResource().getPath());
         Node           root    = null;
         Node           current = null;
-	root    = new Node("zip",true,-1);
+	root    = new Node("Zip File Contents",true,-1);
 	current = root;
-
         try {
 	    Enumeration zipEnum = zipFile.entries();
 	    while (zipEnum.hasMoreElements ())      { 
