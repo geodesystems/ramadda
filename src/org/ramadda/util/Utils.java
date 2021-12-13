@@ -1121,6 +1121,11 @@ public class Utils extends IO {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+        System.err.println(getStack(10,null,true));
+	System.err.println(getStack(10,null,false));
+	System.exit(0);
+
+
         Date d = new Date();
         System.err.println(formatIso(d));
 
@@ -5150,6 +5155,10 @@ public class Utils extends IO {
      * @return _more_
      */
     public static String getStack(int howMany, String not) {
+	return getStack(howMany, not, false);
+    }
+
+    public static String getStack(int howMany, String not, boolean stripPackage) {	
         List<String> lines = new ArrayList<String>();
         StringBuffer sb    = new StringBuffer();
         int          cnt   = 0;
@@ -5162,6 +5171,9 @@ public class Utils extends IO {
             if (cnt <= 3) {
                 continue;
             }
+	    if(stripPackage) {
+		line = line.replaceAll(".*?\\.([^\\.]+\\.[^\\.]+\\()","\t$1");
+	    }
             lines.add(line);
             if (lines.size() >= howMany) {
                 break;
