@@ -1121,6 +1121,11 @@ public class Utils extends IO {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+	InputStream fis = new FileInputStream(args[0]);
+	byte[] b = decodeBase64(IOUtil.readBytes(fis));
+	IOUtil.writeBytes(new File("out.pdf"),b);
+	System.exit(0);
+
         System.err.println(getStack(10,null,true));
 	System.err.println(getStack(10,null,false));
 	System.exit(0);
@@ -1966,14 +1971,21 @@ public class Utils extends IO {
      * @return The decoded bytes
      */
     public static byte[] decodeBase64(String s) {
-        try {
-            byte[] b = s.getBytes("UTF-8");
+	try {
+	    return decodeBase64(s.getBytes("UTF-8"));
+	} catch(Exception exc) {
+	    throw new RuntimeException("Failed to decode base64 string:"
+				       + s + "  Error:"+exc);
+	}
+    }
 
+    public static byte[] decodeBase64(byte[]b) {	
+        try {
             return base64Decoder.decode(b);
         } catch (Exception exc) {
             //In case it was a mime encoded b64
             try {
-                return base64MimeDecoder.decode(s.getBytes());
+                return base64MimeDecoder.decode(b);
             } catch (Exception exc2) {
                 /*
                 //Awful hack to not have to deal with why Don't synthid's are barfing
@@ -1982,8 +1994,7 @@ public class Utils extends IO {
                 s);
                 } catch (Exception exc3) {
                 */
-                throw new RuntimeException("Failed to decode base64 string:"
-                                           + s + "  Error:"
+                throw new RuntimeException("Failed to decode base64. error:"
                 //+ exc3);
                 + exc2);
                 //}
