@@ -98,16 +98,12 @@ public class JettyServer implements Constants {
 
 
         if ( !hadPort) {
-            //      Repository.propdebug = true;
             port = baseRepository.getProperty("ramadda.port", port);
-            //      Repository.propdebug = false;
-            //      System.err.println("port from properties:" + port);
         }
-
         baseRepository.setPort(port);
+        sslPort = baseRepository.getHttpsPort();
         server = new Server(port);
         server.setHandler(context);
-
 
         context.addServlet(new ServletHolder(baseServlet), "/");
         try {
@@ -239,12 +235,6 @@ public class JettyServer implements Constants {
         }
 
 
-        sslPort = -1;
-        String ssls = repository.getPropertyValue(PROP_SSL_PORT,
-                          (String) null, false);
-        if ((ssls != null) && (ssls.trim().length() > 0)) {
-            sslPort = new Integer(ssls.trim());
-        }
 
         if (sslPort < 0) {
             repository.getLogManager().logInfoAndPrint(
@@ -323,10 +313,6 @@ public class JettyServer implements Constants {
             "TLS_DHE_DSS_WITH_CAMELLIA_128_CBC_SHA",
             "TLS_RSA_WITH_CAMELLIA_128_CBC_SHA");
 
-
-
-
-
         sslContextFactory.setExcludeCipherSuites(
             "SSL_RSA_WITH_3DES_EDE_CBC_SHA", "SSL_DHE_RSA_WITH_DES_CBC_SHA",
             "SSL_DHE_DSS_WITH_DES_CBC_SHA", "EXP-RC4-MD5",
@@ -353,7 +339,6 @@ public class JettyServer implements Constants {
         httpsConnector.setPort(sslPort);
         httpsConnector.setIdleTimeout(500000);
         server.addConnector(httpsConnector);
-        repository.setHttpsPort(sslPort);
     }
 
 

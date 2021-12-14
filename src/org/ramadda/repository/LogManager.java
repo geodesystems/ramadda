@@ -282,7 +282,6 @@ public class LogManager extends RepositoryManager {
 	    String id = logId.replaceAll(".*\\.([^\\.]+)$","$1").toLowerCase();
 	    try {
 		String file = getLogDir()+"/"+id+".my.log";
-		System.err.println("logging to:" + file);
 		PrintWriter pw = new PrintWriter(new FileOutputStream(file));
 		logger = new MyLogger(pw);
 		loggers.put(logId, logger);

@@ -533,7 +533,7 @@ public class UserManager extends RepositoryManager {
                     new String[] { Tables.USERS.COL_ADMIN },
                     new Object[] { new Boolean(true) });
             }
-            logInfo("Password for:" + user.getId() + " has been updated");
+            logInfo("RAMADDA: password for:" + user.getId() + " has been updated");
         }
 
         for (UserAuthenticator userAuthenticator : userAuthenticators) {

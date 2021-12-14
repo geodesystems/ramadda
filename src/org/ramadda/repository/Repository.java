@@ -750,7 +750,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (sslIgnore) {
             return false;
         }
-
         return getHttpsPort() >= 0;
     }
 
@@ -1106,17 +1105,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
         StringBuilder statusMsg =
             new StringBuilder("RAMADDA: repository started at:" + new Date());
         statusMsg.append("\n");
-        statusMsg.append("Home dir: "
+        statusMsg.append("RAMADDA: home dir: "
                          + getStorageManager().getRepositoryDir());
 
-        statusMsg.append("  Version: "
+        statusMsg.append("  version: "
                          + RepositoryUtil.getVersion());
-        statusMsg.append("  Build Date: "
+        statusMsg.append("  build date: "
                          + getProperty(PROP_BUILD_DATE, "N/A"));
-        statusMsg.append("  Java version: "
+        statusMsg.append("  java version: "
                          + getProperty(PROP_JAVA_VERSION, "N/A"));
-        statusMsg.append("\n");
-        statusMsg.append("Running on port:" + getPort() + " "
+	statusMsg.append("\n");
+        statusMsg.append("RAMADDA: running on port:" + getPort() + " "
                          + (isSSLEnabled(null)
                             ? "SSL port:" + getHttpsPort()
                             : " SSL not enabled"));
@@ -1404,6 +1403,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
         readOnly = getProperty(PROP_READ_ONLY, false);
         doCache  = getProperty(PROP_DOCACHE, true);
 
+        int sslPort = -1;
+        String ssls = getPropertyValue(PROP_SSL_PORT,
+						  (String) null, false);
+        if ((ssls != null) && (ssls.trim().length() > 0)) {
+            sslPort = new Integer(ssls.trim());
+        }
+	if(sslPort>0) setHttpsPort(sslPort);
+
+
         if (readOnly) {
             println("RAMADDA: running in readonly mode");
         }
@@ -1652,6 +1660,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         try {
             for (String file : getPluginManager().getTypeDefFiles()) {
                 try {
+		    long t1 = System.currentTimeMillis();
                     file    = getStorageManager().localizePath(file);
                     theFile = file;
                     if (getPluginManager().haveSeen("types:" + file, false)) {
@@ -1663,6 +1672,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     }
                     loadTypeHandlers(root, false,file.indexOf("geodata/model")>=0);
                     getPluginManager().markSeen("types:" + file);
+		    long t2 = System.currentTimeMillis();
+		    //		    System.err.println("\t" + file +" time:" + (t2-t1));
                 } catch (java.lang.NoClassDefFoundError ncdfe) {
                     throw new RuntimeException(ncdfe);
                 } catch (Exception exc) {

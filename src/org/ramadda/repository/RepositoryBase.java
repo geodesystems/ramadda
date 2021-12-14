@@ -415,7 +415,7 @@ public class RepositoryBase implements Constants, RepositorySource {
      *
      * @return _more_
      */
-    protected int getHttpsPort() {
+    public int getHttpsPort() {
         return httpsPort;
     }
 
@@ -425,7 +425,7 @@ public class RepositoryBase implements Constants, RepositorySource {
      *
      * @param port _more_
      */
-    protected void setHttpsPort(int port) {
+    public void setHttpsPort(int port) {
         httpsPort = port;
     }
 
