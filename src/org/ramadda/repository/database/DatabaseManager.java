@@ -410,8 +410,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                                   + ".password", (String) null));
 
         if (connectionUrl == null) {
-            System.err.println("No connection url property for:" + full);
-
+	    //            System.err.println("No connection url property for:" + full);
             return null;
         }
 
