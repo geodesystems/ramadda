@@ -7,13 +7,13 @@ package org.ramadda.repository.database;
 
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.log4j.Logger;
+
+
 
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Log4jPrintWriter;
 import org.ramadda.util.Utils;
 
 import org.ramadda.util.sql.Clause;
@@ -378,15 +378,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         ds.setUsername(userName);
         ds.setPassword(password);
         ds.setUrl(connectionURL);
-
-
-
-        /*
-          Logger logger = getLogManager().getLogger(LOGID);
-          if (logger != null) {
-          ds.setLogWriter(new Log4jPrintWriter(logger));
-          }
-        */
 
         return ds;
     }
