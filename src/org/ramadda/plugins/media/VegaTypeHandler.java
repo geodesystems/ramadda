@@ -352,8 +352,6 @@ public class VegaTypeHandler extends ConvertibleTypeHandler {
         public InputStream doMakeInputStream(CsvUtil csvUtil,
                                              boolean buffered)
                 throws Exception {
-            System.err.println("VegaFile.doMakeInputStream[2] url="
-                               + dataUrl);
             if (dataUrl != null) {
                 return IO.getInputStream(new URL(dataUrl));
             }
