@@ -1303,7 +1303,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    //	    System.err.println("entry:"+ entry +" id:" + entry.getId());
 	    entries.add(entry);
         }
-	System.err.println("lucene results:" + docs.length +" #entries:" + entries.size() +" query:" + query);
+	getLogManager().logInfo("org.ramadda.repository.search",
+				"lucene results:" + docs.length +" #entries:" + entries.size() +" query:" + query);
     }
 
 
