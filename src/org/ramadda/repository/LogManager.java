@@ -5,44 +5,28 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
-
-import org.apache.log4j.Logger;
-
+import org.apache.logging.log4j.Logger;
+//import org.apache.logging.log4j.LogManager;
+//import org.apache.log4j.Logger;
 
 
 import org.ramadda.repository.auth.*;
-
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
-
 import ucar.unidata.util.IOUtil;
-
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
-
-
-
-
-
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
-
 import java.io.FileNotFoundException;
-
 import java.sql.SQLException;
-
-
 import java.text.SimpleDateFormat;
-
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
-
-
-
 
 /**
  *
@@ -90,6 +74,10 @@ public class LogManager extends RepositoryManager {
     public static final String QUOTE = "\"";
 
 
+    /** the log directory property */
+    public static final String PROP_LOGDIR = "ramadda.storage.logdir";
+
+
     /** _more_ */
     public static final String LOG_TEMPLATE = LOG_MACRO_IP + " " + "["
                                               + LOG_MACRO_TIME + "] " + QUOTE
@@ -110,15 +98,18 @@ public class LogManager extends RepositoryManager {
 
     /** _more_ */
     private final LogManager.LogId REPOSITORY_LOG_ID =
-        new LogManager.LogId("org.ramadda.repository.log");
+        new LogManager.LogId("org.ramadda.repository.ramadda");
 
     /** _more_ */
     private final LogManager.LogId REPOSITORY_ACCESS_LOG_ID =
         new LogManager.LogId("org.ramadda.repository.access");
 
     /** _more_ */
-    private Hashtable<String, Logger> loggers = new Hashtable<String,
-                                                    Logger>();
+    private Hashtable<String, MyLogger> loggers = new Hashtable<String,
+	MyLogger>();
+
+    /** the log directory */
+    private File logDir;
 
     /** _more_ */
     public static boolean debug = true;
@@ -146,6 +137,13 @@ public class LogManager extends RepositoryManager {
         sdf = RepositoryUtil.makeDateFormat(DateHandler.DEFAULT_TIME_FORMAT);
     }
 
+
+    @Override
+    public void initAttributes() {
+        super.initAttributes();
+        LOGGER_OK = repository.getProperty(PROP_USELOG4J, true);
+	System.err.println("initAttributes: " + LOGGER_OK);
+    }
 
     /**
      * _more_
@@ -228,7 +226,13 @@ public class LogManager extends RepositoryManager {
         message = message.replace(LOG_MACRO_USER, "-");
         message = message.replace(LOG_MACRO_SIZE, "" + count);
 	message = message.replaceAll("\\$","_dollar_");
-        getAccessLogger().info(message);
+
+
+	MyLogger logger = getAccessLogger();
+	if(logger!=null)
+	    logger.info(message);
+	else
+	    System.err.println("no logger:" + message);
     }
 
 
@@ -238,7 +242,7 @@ public class LogManager extends RepositoryManager {
      *
      * @return _more_
      */
-    public Logger getLogger() {
+    public MyLogger getLogger() {
         return getLogger(REPOSITORY_LOG_ID);
     }
 
@@ -248,7 +252,7 @@ public class LogManager extends RepositoryManager {
      *
      * @return _more_
      */
-    public Logger getAccessLogger() {
+    public MyLogger getAccessLogger() {
         return getLogger(REPOSITORY_ACCESS_LOG_ID);
     }
 
@@ -260,31 +264,52 @@ public class LogManager extends RepositoryManager {
      *
      * @return _more_
      */
-    public Logger getLogger(LogId logId) {
+    public MyLogger getLogger(LogId logId) {
+	return getLogger(logId.getId());
+    }
+
+    public MyLogger getLogger(String logId) {	
         if (getRepository().getParentRepository() != null) {
             return getRepository().getParentRepository().getLogManager()
-                .getLogger();
+                .getLogger(logId);
         }
-        //Check if we've already had an error
-        if ( !isLoggingEnabled()) {
-            return null;
-        }
-
-        Logger logger = loggers.get(logId.getId());
+        MyLogger logger = loggers.get(logId);
         if (logger != null) {
             return logger;
         }
+
+        //Check if we've already had an error
+        if (!isLoggingEnabled()) {
+	    String id = logId.replaceAll(".*\\.([^\\.]+)$","$1").toLowerCase();
+	    try {
+		String file = getLogDir()+"/"+id+".my.log";
+		System.err.println("logging to:" + file);
+		PrintWriter pw = new PrintWriter(new FileOutputStream(file));
+		logger = new MyLogger(pw);
+		loggers.put(logId, logger);
+		return logger;
+	    } catch(Exception exc) {
+		throw new RuntimeException(exc);
+	    }
+
+        }
+
+
         try {
-            logger = Logger.getLogger(logId.getId());
+	    //            logger = Logger.getLogger(logId.getId());
+	    long t1 = System.currentTimeMillis();
+	    Logger _logger = org.apache.logging.log4j.LogManager.getLogger(logId);
+	    if(_logger!=null) logger = new MyLogger(_logger);
+	    long t2 = System.currentTimeMillis();
+	    if(t2-t1>1000)
+		Utils.printTimes("log:",t1,t2);
         } catch (Exception exc) {
             LOGGER_OK = false;
             System.err.println("Error getting logger: " + exc);
             exc.printStackTrace();
-
             return null;
         }
-        loggers.put(logId.getId(), logger);
-
+        loggers.put(logId, logger);
         return logger;
     }
 
@@ -315,7 +340,7 @@ public class LogManager extends RepositoryManager {
      * @param logger _more_
      * @param message _more_
      */
-    public void debug(Logger logger, String message) {
+    public void debug(MyLogger logger, String message) {
         if (logger != null) {
             logger.debug(message);
         } else {
@@ -388,13 +413,20 @@ public class LogManager extends RepositoryManager {
     }
 
 
+    public void logInfo(String logId, String message) {
+        logInfo(getLogger(logId), message);
+    }
+    
+
+
+
     /**
      * _more_
      *
      * @param logger _more_
      * @param message _more_
      */
-    public void logInfo(Logger logger, String message) {
+    public void logInfo(MyLogger logger, String message) {
         if (logger != null) {
             logger.info(message);
         } else {
@@ -418,7 +450,7 @@ public class LogManager extends RepositoryManager {
      * @param logger _more_
      * @param message _more_
      */
-    public void logError(Logger logger, String message) {
+    public void logError(MyLogger logger, String message) {
         if (logger != null) {
             logger.error(message);
         }
@@ -432,7 +464,9 @@ public class LogManager extends RepositoryManager {
      * @param message _more_
      */
     public void logWarning(String message) {
-        logWarning(getLogger(), message);
+	MyLogger logger = getLogger();
+        logWarning(logger, message);
+
     }
 
     /**
@@ -441,7 +475,7 @@ public class LogManager extends RepositoryManager {
      * @param logger _more_
      * @param message _more_
      */
-    public void logWarning(Logger logger, String message) {
+    public void logWarning(MyLogger logger, String message) {
         if (logger != null) {
             logger.warn(message);
         } else {
@@ -477,7 +511,7 @@ public class LogManager extends RepositoryManager {
      * @param message _more_
      * @param exc _more_
      */
-    public void logError(Logger log, String message, Throwable exc) {
+    public void logError(MyLogger log, String message, Throwable exc) {
         message = encode(message);
         Throwable thr = null;
         if (exc != null) {
@@ -712,7 +746,7 @@ public class LogManager extends RepositoryManager {
     public Result adminLog(Request request) throws Exception {
         StringBuffer sb       = new StringBuffer();
         List<String> header   = new ArrayList();
-        File         f        = getStorageManager().getLogDir();
+        File         f        = getLogDir();
         File[]       logFiles = f.listFiles();
         String       log      = request.getString(ARG_LOG, "access");
         File         theFile  = null;
@@ -771,6 +805,71 @@ public class LogManager extends RepositoryManager {
 
         return getAdmin().makeResult(request, msg("Logs"), sb);
     }
+
+    /**
+     * Get the log directory
+     *
+     * @return  the log directory
+     */
+    public File getLogDir() {
+        if (logDir != null) {
+            return logDir;
+        }
+
+        synchronized (PROP_LOGDIR) {
+            //Check for race conditions
+            if (logDir != null) {
+                return logDir;
+            }
+
+
+            File tmpLogDir = getStorageManager().getFileFromProperty(PROP_LOGDIR);
+            if (getRepository().isReadOnly()) {
+                //                System.out.println("RAMADDA: skipping log4j");
+                logDir = tmpLogDir;
+                return logDir;
+            }
+
+            if ( !getLogManager().isLoggingEnabled()) {
+                //                System.out.println("RAMADDA: skipping log4j");
+                logDir = tmpLogDir;
+                return logDir;
+            }
+
+            File log4JFile = new File(tmpLogDir + "/" + "log4j.properties");
+            //For now always write out the log from the jar
+            if (true || !log4JFile.exists()) {
+                try {
+                    String c =
+                        IOUtil.readContents(
+                            "/org/ramadda/repository/resources/log4j.properties",
+                            getClass());
+                    String logDirPath = tmpLogDir.toString();
+                    //Replace for windows
+                    logDirPath = logDirPath.replace("\\", "/");
+                    c          = c.replace("${ramadda.logdir}", logDirPath);
+                    c = c.replace("${file.separator}", File.separator);
+                    IOUtil.writeFile(log4JFile, c);
+                } catch (Exception exc) {
+                    System.err.println("RAMADDA: Error writing log4j properties:" + exc);
+                    throw new RuntimeException(exc);
+                }
+            }
+            try {
+		java.util.Properties props = System.getProperties();
+		props.put("log4j2.configurationFile",log4JFile.toString());
+		//                org.apache.log4j.PropertyConfigurator.configure(log4JFile.toString());
+            } catch (Exception exc) {
+                System.err.println("RAMADDA: Error configuring log4j:" + exc);
+                exc.printStackTrace();
+            }
+            logDir = tmpLogDir;
+            return logDir;
+        }
+    }
+
+
+
 
     /**
      * _more_
@@ -1001,5 +1100,56 @@ public class LogManager extends RepositoryManager {
     }
 
 
+    private static class MyLogger {
+	Logger logger;
+	PrintWriter pw;
+	MyLogger(Logger logger) {
+	    this.logger = logger;
+	}
+	MyLogger(PrintWriter pw) {
+	    this.pw = pw;
+	}
+
+	MyLogger() {
+	}		
+
+	public void info(String message) {
+	    if(logger!=null) logger.info(message);
+	    else if(pw!=null) {
+		pw.println(message);
+		pw.flush();
+	    }
+	    else System.err.println(message);
+	}
+
+	public void debug(String message) {
+	    if(logger!=null) logger.debug(message);
+	    else if(pw!=null) {
+		pw.println(message);
+		pw.flush();
+	    }
+	    else System.err.println(message);
+	}	
+
+	public void warn(String message) {
+	    if(logger!=null) logger.warn(message);
+	    else if(pw!=null) {
+		pw.println(message);
+		pw.flush();
+	    }
+	    else System.err.println(message);
+	}
+
+	public void error(String message) {
+	    if(logger!=null) logger.error(message);
+	    else if(pw!=null) {
+		pw.println(message);
+		pw.flush();
+	    }
+	    else System.err.println(message);
+	}
+
+
+    }
 
 }
