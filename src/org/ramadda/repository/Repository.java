@@ -59,9 +59,6 @@ import org.ramadda.repository.type.ProcessFileTypeHandler;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.util.ServerInfo;
 
-
-
-
 import org.ramadda.service.Service;
 import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.CategoryBuffer;
@@ -605,6 +602,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public void init(String[] args, int port) throws Exception {
         //NOTE: Only do this for now so we can have snotel data
         trustAllCertificates();
+
         setPort(port);
         LogUtil.setTestMode(true);
         //This takes a second or two so do it in a thread
@@ -1050,7 +1048,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     public void init(Properties properties) throws Exception {
-
         //        MyTrace.startTrace();
         //This stops jython from processing jars and printing out its annoying message
         System.setProperty("python.cachedir.skip", "true");
@@ -1058,10 +1055,19 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         CacheManager.setDoCache(false);
         //      IO.debugStderr();
+
         initProperties(properties);
+
+
+	//Call this now since further initialize might trigger calls
+	getLogManager().initAttributes();
+
+
         //Clear the tmp dir as it gets set by the plugin manager and any tmp dir set in a properties file will be ignored
         getStorageManager().clearTmpDir();
+
         initServer();
+
         RepositoryServlet.debugRequests =
             getProperty("ramadda.debug.requests", false);
         RepositoryServlet.debugMultiPart =
@@ -1220,7 +1226,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-
         try {
             loadProperties(
                 coreProperties,
@@ -1234,6 +1239,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	RepositoryUtil.setVersion((String)coreProperties.get(PROP_VERSION_MAJOR),
 				  (String)coreProperties.get(PROP_VERSION_MINOR),
 				  (String)coreProperties.get(PROP_VERSION_PATCH));				  
+
 
 
 
@@ -1287,6 +1293,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
+
         //Load the context and the command line properties now 
         //so the storage manager can get to them
         if (contextProperties != null) {
@@ -1326,8 +1333,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
+
         //Call the storage manager so it can figure out the home dir
         getStorageManager();
+
 
         MyTrace.call1("plugin-init");
         //initialize the plugin manager with the properties
@@ -1335,8 +1344,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         MyTrace.call2("plugin-init");
 
         //create the log dir
-        getStorageManager().getLogDir();
-
+        getLogManager().getLogDir();
 
         MyTrace.msg("init-3");
         try {
@@ -1391,6 +1399,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
 
+
         debug    = getProperty(PROP_DEBUG, false);
         readOnly = getProperty(PROP_READ_ONLY, false);
         doCache  = getProperty(PROP_DOCACHE, true);
@@ -1416,6 +1425,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
             System.setProperty("derby.system.home", derbyHome);
         }
 
+
+
         mimeTypes = new Properties();
         for (String path : getResourcePaths(PROP_HTML_MIMEPROPERTIES)) {
             try {
@@ -1424,6 +1435,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 //noop
             }
         }
+
         for (String s :
                 Utils.split(getProperty("ramadda.html.htdocroots", BLANK),
                             ";", true, true)) {
@@ -1433,6 +1445,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if ( !debugSession) {
             debugSession = getProperty("ramadda.debug.session", false);
         }
+
 
     }
 
@@ -1581,7 +1594,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         getLogManager().initLogs();
 
         //Do this in a thread because (on macs) it hangs sometimes)
-        Misc.run(this, "getFtpManager");
+	//	Misc.run(this, "getFtpManager");
 
         //Initialize the local repositories in a thread
         Misc.run(getLocalRepositoryManager(), "initializeLocalRepositories");
@@ -1617,7 +1630,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     public void loadPluginResources() throws Exception {
+	long t1 = System.currentTimeMillis();
         loadTypeHandlers();
+	long t2 = System.currentTimeMillis();
+	System.err.println("loadTypeHandlers:" + (t2-t1));
         loadOutputHandlers();
         getApiManager().loadApi();
         getPageHandler().loadResources();
@@ -1645,7 +1661,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     if (root == null) {
                         continue;
                     }
-                    loadTypeHandlers(root, false);
+                    loadTypeHandlers(root, false,file.indexOf("geodata/model")>=0);
                     getPluginManager().markSeen("types:" + file);
                 } catch (java.lang.NoClassDefFoundError ncdfe) {
                     throw new RuntimeException(ncdfe);
@@ -1663,7 +1679,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     if (root == null) {
                         continue;
                     }
-                    loadTypeHandlers(root, false);
+                    loadTypeHandlers(root, false,false);
                     getPluginManager().markSeen("types:" + file);
                 } catch (Exception exc) {
                     System.err.println("RAMADDA: Error loading type handler:"
@@ -1693,7 +1709,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      * @throws Exception _more_
      */
-    public List<TypeHandler> loadTypeHandlers(Element root, boolean overwrite)
+    public List<TypeHandler> loadTypeHandlers(Element root, boolean overwrite, boolean debug)
             throws Exception {
         List children = XmlUtil.findChildren(root, TypeHandler.TAG_TYPE);
         List<TypeHandler> typeHandlers = new ArrayList<TypeHandler>();
@@ -1704,6 +1720,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             for (int i = 0; i < children.size(); i++) {
                 Element entryNode = (Element) children.get(i);
                 typeHandlers.add(loadTypeHandler(entryNode, overwrite));
+		//		if(debug)   System.err.println((t2-t1) +" " + XmlUtil.toString(entryNode));
             }
         }
 
@@ -1742,6 +1759,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
+
         Class handlerClass = Misc.findClass(classPath);
         Constructor ctor = Misc.findConstructor(handlerClass,
                                new Class[] { Repository.class,
@@ -1750,9 +1768,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             TypeHandler typeHandler =
                 (TypeHandler) ctor.newInstance(new Object[] { this,
                     entryNode });
-
             addTypeHandler(typeHandler.getType(), typeHandler, overwrite);
-
             return typeHandler;
         } catch (Exception exc) {
             System.err.println("Error creating type handler:"
