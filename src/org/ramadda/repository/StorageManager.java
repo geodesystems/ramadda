@@ -144,8 +144,6 @@ public class StorageManager extends RepositoryManager implements PointFile
     /** the temporary directory property */
     public static final String PROP_PROCESSDIR = "ramadda.storage.processdir";
 
-    /** the log directory property */
-    public static final String PROP_LOGDIR = "ramadda.storage.logdir";
 
     /** the storage directory property */
     public static final String PROP_STORAGEDIR = "ramadda.storage.storagedir";
@@ -193,8 +191,6 @@ public class StorageManager extends RepositoryManager implements PointFile
     /** the cache directory */
     private TempDir cacheDir;
 
-    /** the log directory */
-    private File logDir;
 
     /** the cache directory size */
     private long cacheDirSize = -1;
@@ -1089,79 +1085,6 @@ public class StorageManager extends RepositoryManager implements PointFile
     }
 
 
-    /**
-     * Get the log directory
-     *
-     * @return  the log directory
-     */
-    public File getLogDir() {
-        if (logDir != null) {
-            return logDir;
-        }
-
-        synchronized (PROP_LOGDIR) {
-            //Check for race conditions
-            if (logDir != null) {
-                return logDir;
-            }
-            File tmpLogDir = getFileFromProperty(PROP_LOGDIR);
-            if (getRepository().isReadOnly()) {
-                //                System.out.println("RAMADDA: skipping log4j");
-                logDir = tmpLogDir;
-
-                return logDir;
-            }
-
-            if ( !getLogManager().isLoggingEnabled()) {
-                //                System.out.println("RAMADDA: skipping log4j");
-                logDir = tmpLogDir;
-
-                return logDir;
-            }
-
-            File log4JFile = new File(tmpLogDir + "/" + "log4j.properties");
-            //For now always write out the log from the jar
-            //            System.out.println("RAMADDA: log4j file=" + log4JFile);
-            if (true || !log4JFile.exists()) {
-                try {
-                    String c =
-                        IOUtil.readContents(
-                            "/org/ramadda/repository/resources/log4j.properties",
-                            getClass());
-                    String logDirPath = tmpLogDir.toString();
-                    //Replace for windows
-                    logDirPath = logDirPath.replace("\\", "/");
-                    c          = c.replace("${ramadda.logdir}", logDirPath);
-                    c = c.replace("${file.separator}", File.separator);
-                    IOUtil.writeFile(log4JFile, c);
-                } catch (Exception exc) {
-                    System.err.println(
-                        "RAMADDA: Error writing log4j properties:" + exc);
-
-                    throw new RuntimeException(exc);
-                }
-            }
-            try {
-                //                System.err.println("RAMADDA: turning on log4j.debug");
-                //                System.setProperty("log4j.debug","");
-                /*
-                System.out.println(
-                    "RAMADDA: Configuring log4j with properties:" + log4JFile
-                    + " (this may print out a stack trace)");
-                */
-
-                org.apache.log4j.PropertyConfigurator.configure(
-                    log4JFile.toString());
-            } catch (Exception exc) {
-                System.err.println("RAMADDA: Error configuring log4j:" + exc);
-                exc.printStackTrace();
-            }
-            logDir = tmpLogDir;
-
-            return logDir;
-        }
-    }
-
 
     /**
      * Touch the temporary directory
@@ -1277,7 +1200,7 @@ public class StorageManager extends RepositoryManager implements PointFile
      *
      * @return  the location as a File
      */
-    private File getFileFromProperty(String property) {
+    protected File getFileFromProperty(String property) {
         String path = getRepository().getProperty(property, null);
         if (path == null) {
             throw new IllegalArgumentException("Directory property:"
