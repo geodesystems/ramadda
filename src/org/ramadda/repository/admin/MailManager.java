@@ -10,7 +10,6 @@ import org.ramadda.repository.*;
 
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
-import org.ramadda.repository.ftp.FtpManager;
 
 import org.ramadda.repository.harvester.*;
 
