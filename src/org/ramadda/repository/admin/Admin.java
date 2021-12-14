@@ -1310,7 +1310,7 @@ public class Admin extends RepositoryManager {
 
         //Force the creation of some of the managers
         getRepository().getMailManager();
-        getRepository().getFtpManager();
+	//        getRepository().getFtpManager();
         getRepository().getMapManager();
 
 
