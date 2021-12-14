@@ -13,15 +13,9 @@ import org.apache.ftpserver.ssl.*;
 import org.apache.ftpserver.usermanager.*;
 import org.apache.ftpserver.usermanager.impl.*;
 
-
-
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.util.HtmlUtils;
-
-
-
 
 import ucar.unidata.util.Misc;
 
@@ -58,9 +52,6 @@ public class FtpManager extends RepositoryManager {
     private final LogManager.LogId LOGID =
         new LogManager.LogId("org.apache.ftpserver");
 
-
-
-
     /** _more_ */
     private FtpServer server;
 
@@ -94,13 +85,10 @@ public class FtpManager extends RepositoryManager {
      * @throws Exception _more_
      */
     @Override
-
     public void addAdminSettings(Request request, StringBuffer sb)
             throws Exception {
         sb.append(HtmlUtils.row(HtmlUtils.colspan(msgHeader("FTP Settings"),
                 2)));
-
-
 
         sb.append(
             HtmlUtils.formEntry(
@@ -174,10 +162,12 @@ public class FtpManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public void checkServer() throws Exception {
+	//For now don't enable the ftp server
+	if(true) return;
         int newPort = getRepository().getProperty(PROP_FTP_PORT, -1);
+	System.err.println("FTP:" + newPort);
         if (newPort < 0) {
             stop();
-
             return;
         }
         if (newPort != port) {

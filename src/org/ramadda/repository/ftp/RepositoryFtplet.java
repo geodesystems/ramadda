@@ -11,7 +11,6 @@ import org.apache.ftpserver.ftplet.*;
 import org.apache.ftpserver.listener.*;
 import org.apache.ftpserver.usermanager.*;
 import org.apache.ftpserver.usermanager.impl.*;
-import org.apache.log4j.config.PropertyPrinter;
 
 
 import org.ramadda.repository.Constants;
