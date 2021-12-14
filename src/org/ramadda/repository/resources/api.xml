@@ -99,9 +99,11 @@
       <api request="/search/synonyms"            method="processSearchSynonyms"/>
    </group>
 
+<!--
   <group handler="graphmanager">
       <api request="/graph/get"              method="processGraphGet"/>
   </group>
+-->
 
   <group handler="repository">
       <api request="/message"                method="processMessage"     />
