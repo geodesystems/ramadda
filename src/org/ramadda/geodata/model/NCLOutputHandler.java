@@ -165,6 +165,8 @@ public class NCLOutputHandler extends OutputHandler {
     public static final Pattern versionPattern =
         Pattern.compile(NCL_VERSION_REGEX);
 
+    private static boolean warned = false;
+
     /**
      * Construct a new NCLOutputHandler
      *
@@ -176,8 +178,11 @@ public class NCLOutputHandler extends OutputHandler {
         super(repository, "NCL");
         ncargRoot = getRepository().getProperty(PROP_NCARG_ROOT, null);
         if (ncargRoot == null) {
-            repository.getLogManager().logWarning("To run NCL, set the "
-                    + PROP_NCARG_ROOT + " property");
+	    if(!warned) {
+		repository.getLogManager().logWarning("To run NCL, set the "
+						      + PROP_NCARG_ROOT + " property");
+		warned= true;
+	    }
         }
         convertPath = getRepository().getProperty(PROP_CONVERT_PATH,
                 "convert");
