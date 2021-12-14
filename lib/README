@@ -36,6 +36,21 @@ ramaddatds.jar:
 
   This unjars the war and unjars certain jars and makes repositorytds.jar
 
+ramaddatika.jar:
+ramaddatika.jar is generated running tclsh maketika.tcl
+this uzips the  tika-app-2.1.0.jar  and removes a bunch
+of conflicting dependencies including:
+com/google
+dods
+ucar
+thredds
+org/apache/logging
+org/slf4j
+org/apache/http
+com/drew 
+org/joda
+
+
 
 idv.jar:
 This contains a modified JythonManager.class file
@@ -71,17 +86,11 @@ This is the combination of the following all the jetty modules:
 abom.jar:
 This holds the Barnes analysis code from the IDV release
 
-tika.jar:
-tika.jar has been modified by the base tika-app-1.4.jar to remove a bunch
-of conflicting dependencies including:
-/com/google
-/dods
-/ucar
-/thredds
-/org/slf4j
-/org/apache/http
-/com/drew 
-/org.joda
+
+log4j-core-2.15.0.jar:
+This is updated with the log4j rce exploit but for good measure we deleted
+org/apache/logging/log4j/core/lookup/JndiLookup.class
+
 
 jmapproj.jar:
 
