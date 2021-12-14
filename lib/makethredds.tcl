@@ -5,16 +5,15 @@ cd thredds
 puts "Unjarring thredds.war"
 exec jar -xvf ../thredds.war
 
-set skips [list jfree  jcommon unidatacommon slf4j 52 json waterml c3p0 aws-java je-4 Saxon jackson jna- xmlbeans]
+set skips [list .*log4.* jfree  jcommon unidatacommon slf4j 52 json waterml c3p0 aws-java je-4 Saxon jackson jna- xmlbeans]
 
 cd WEB-INF/classes
+
 if {1} {
-##exec rm -r org/apache/log4j
 foreach jar [glob ../lib/*.jar] {
     set shouldSkip 0
     foreach skip $skips {
         if {[regexp $skip $jar]} {
-            puts "skipping $jar"
             set shouldSkip 1
             break;
         }
@@ -28,7 +27,6 @@ foreach jar [glob ../lib/*.jar] {
 #        puts "skipping $jar"
 #        continue
 #    }
-
 
 
     puts "Unjarring $jar"
@@ -46,6 +44,7 @@ foreach jar [glob ../lib/*.jar] {
 #puts "Unjarring ncIdv.jar"
 #exec jar -xvf ../../../ncIdv.jar
 
+file delete -force org/apache/log4j
 file delete -force org/slf4j
 
 
@@ -64,9 +63,7 @@ foreach file [glob *] {
 
 ##for good measure
 file delete -force org/apache/logging/log4j/core/lookup/JndiLookup.class
-
 file delete -force META-INF/MANIFEST.MF
-
 cd ../../META-INF
 file delete -force MANIFEST.MF
 
