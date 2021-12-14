@@ -27,7 +27,9 @@
       <ant antfile="${src_dir}/org/ramadda/geodata/fieldproject/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/geodata/gps/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/geodata/lidar/build.xml" inheritAll="false"/>
+<!--
       <ant antfile="${src_dir}/org/ramadda/geodata/publisher/build.xml" inheritAll="false"/>
+-->
       <ant antfile="${src_dir}/org/ramadda/geodata/ogc/build.xml" inheritAll="false"/>
 
       <ant antfile="${src_dir}/org/ramadda/geodata/model/build.xml" inheritAll="false"/>
