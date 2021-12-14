@@ -196,7 +196,7 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
         Element root = XmlUtil.getRoot(xml.toString());
         //true says to reload the typehandler if its already loaded
         TypeHandler newTypeHandler = getRepository().loadTypeHandlers(root,
-                                         true).get(0);
+								      true,false).get(0);
 
         request.put(ARG_TYPE, newTypeHandler.getType());
 
