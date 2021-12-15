@@ -5,7 +5,7 @@ cd thredds
 puts "Unjarring thredds.war"
 exec jar -xvf ../thredds.war
 
-set skips [list .*log4.* jfree  jdom jcommon unidatacommon slf4j 52 json waterml c3p0 aws-java je-4 Saxon jackson jna- xmlbeans httpmime Hikari SGT Saxon aws c3p0 commons-fileupload commons-codec commons-io commons-lang coverity-escapers d4 failureaccess hibernate-validator jackson jaxen jboss jcip jcl jcommander jmespath jsi- json quartz  taglibs validation waterml xmlbeans spring-webmvc checker-qual]
+set skips [list .*log4.* jfree  jdom jcommon unidatacommon slf4j 52 json waterml c3p0 aws-java je-4 Saxon jackson jna- xmlbeans httpmime Hikari SGT Saxon aws c3p0 commons-fileupload commons-codec commons-io commons-lang coverity-escapers d4 failureaccess hibernate-validator jackson jaxen jboss jcip jcl  jmespath jsi- json quartz  taglibs validation waterml xmlbeans spring-webmvc checker-qual]
 
 cd WEB-INF/classes
 
