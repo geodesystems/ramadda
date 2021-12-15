@@ -524,6 +524,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
     let myProps = [
 	{label:'Timeline'},
 	{p:'titleField',ex:''},
+	{p:'titleLength',ex:'100'},	
 	{p:'imageField',ex:''},
 	{p:'urlField',ex:''},
 	{p:'textTemplate',ex:''},
@@ -613,6 +614,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    if(titleField==null) {
 		titleField = this.getFieldById(null, "name");
 	    }
+	    let titleLength = this.getTitleLength();
 
 	    let startDateField = this.getFieldById(null,this.getPropertyStartDateField());
 	    if(!startDateField) startDateField = this.getFieldByType(null,"date");
@@ -633,6 +635,8 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 		let event = {
 		};	
 		let headline = titleField? tuple[titleField.getIndex()]:" record:" + (i+1);
+		if(titleLength && headline.length>titleLength)
+		    headline = headline.substring(0,titleLength)+"...";
 		let debug = false;
 		let text =  this.getRecordHtml(record, null, textTemplate,debug);
 		if(urlField) {
@@ -996,9 +1000,13 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	{p:'iconField'},
 	{p:'linkField'},
         {p:'showBar',ex:'true',tt:'Default show bar'},
+        {p:'&lt;field&gt;.nowrap',ex:'true',tt:"Don't wrap the column"},
+        {p:'&lt;field&gt;.width',ex:'30%',tt:"Column width"},
+        {p:'&lt;field&gt;.template',ex:'foo:${value}',tt:"Record template"},		
         {p:'&lt;field&gt;.showBar',ex:'true',tt:'Show bar'},
         {p:'&lt;field&gt;.barMin',ex:'0',tt:'Min value'},
         {p:'&lt;field&gt;.barMax',ex:'100',tt:'Max value'},
+	
 	{p:'barLabelInside',ex:'false'},
         {p:'barStyle',ex:'background:red;',tt:'Bar style'},			
 	{p:'tableHeaderStyle'},
@@ -1121,6 +1129,9 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		fieldMap[f.getId()] = f;
 		let sort = sortFields && sortFields[f.getId()];
 		let attrs = [TITLE,"Click to sort",CLASS,"ramadda-clickable display-table-header", "field-id",f.getId(),STYLE,headerStyle];
+		let width = this.getProperty(f.getId()+".width");
+		if(width) attrs.push("width",width);
+
 		if(sort) {
 		    attrs.push("sorted");
 		    attrs.push("true");
@@ -1161,6 +1172,16 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		return HU.td(Utils.mergeLists(tdAttrs,["nowrap","true"]),span);
 	    });
 
+	    let colAttrs = {
+	    }
+	    fields.forEach((f,idx)=>{
+		let attrs = colAttrs[f.getId()] = []
+		let width = this.getProperty(f.getId()+".width");
+		if(width) attrs.push("width",width);
+		if(this.getProperty(f.getId()+".nowrap",false))
+		    attrs.push("nowrap","true");
+	    });
+
 	    records.every((record,recordIdx)=>{
 		if(numRecords>-1 && recordIdx>numRecords) return false;
 		let d = record.getData();
@@ -1179,7 +1200,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		}
 
 		let clazz = (recordIdx%2)?"ramadda-row-odd":"ramadda-row-even";
-		clazz = "display-htmltable-row";
+		clazz = "display-htmltable-row  search-component";
 		if(record.isAggregate)
 		    html+=HU.openTag('tr',['aggregateRow',aggId,'style',HU.css("font-weight","550"), 'title','','valign','top','class',clazz, RECORD_ID,record.getId()]);
 		else if (aggByField)
@@ -1191,9 +1212,12 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		    html+=HU.td([],this.formatDate(r.getDate()));
 		}
 		this.recordMap[record.rowIndex] = record;
+		let formatFieldValue=(f,record)=>{
+		}
+
 		fields.forEach((f,idx)=>{
 		    let value = d[f.getIndex()]
-		    let sv = String(value);
+		    let sv =  this.formatFieldValue(f,record,String(value));
 		    if(sv.length>500) {
 			sv = HU.div([STYLE,"max-height:200px;overflow-y:auto;"],sv);
 		    }
@@ -1260,8 +1284,10 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		    } else {
 			showBar = false;
 		    }
-		    tdAttrs.push("class");
-		    tdAttrs.push("display-td");		    
+		    tdAttrs.push("class","display-td");		    
+		    let attrs = colAttrs[f.getId()];
+		    if(attrs) tdAttrs = Utils.mergeLists(tdAttrs,attrs);
+
 		    if(colorBy) {
 			let color =  colorBy.getColorFromRecord(record);
 			let fg =  Utils.getForegroundColor(color);
