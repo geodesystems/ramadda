@@ -4352,15 +4352,12 @@ public class CsvUtil {
 		    continue;
 		}
 
-		if (arg.startsWith("-")) {
-		    throw new IllegalArgumentException("Unknown arg:" + arg);
+		if (arg.startsWith("-") ||arg.length() == 0) {
+		    throw new IllegalArgumentException("Unknown argument: args[" + i+"]=" +
+						       arg+"  args:" + Utils.wrap(args,"a[${index}]=",", "));
 		}
 
 
-		if (arg.length() == 0) {
-		    throw new IllegalArgumentException("Unknown argument:"
-						       + arg);
-		}
 		if (addFiles) {
 		    if (debugFiles) {
 			System.err.println("adding file:" + arg);
