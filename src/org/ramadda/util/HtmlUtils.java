@@ -8,7 +8,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.util;
 
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 
 import org.apache.commons.net.ftp.*;
@@ -5259,7 +5259,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @return _more_
      */
     public static String entityDecode(String input) {
-        return StringEscapeUtils.unescapeHtml(input);
+        return StringEscapeUtils.unescapeHtml3(input);
 
     }
 

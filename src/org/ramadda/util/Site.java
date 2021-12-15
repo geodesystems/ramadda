@@ -6,8 +6,6 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.util;
 
 
-import org.apache.commons.lang.text.StrTokenizer;
-
 import org.ramadda.util.Utils;
 
 import ucar.unidata.util.IOUtil;
