@@ -62,6 +62,7 @@ import org.ramadda.util.NamedValue;
 import org.ramadda.util.SystemContext;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
+import org.ramadda.util.WikiPageHandler;
 import org.json.*;
 
 import ucar.unidata.util.IOUtil;
@@ -94,7 +95,7 @@ import java.util.function.*;
  */
 @SuppressWarnings("unchecked")
 public class WikiManager extends RepositoryManager implements WikiConstants,
-        WikiUtil.WikiPageHandler, SystemContext {
+							      WikiPageHandler, SystemContext {
 
 
 
