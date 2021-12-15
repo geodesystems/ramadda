@@ -1200,7 +1200,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
         },
 	getEgText:function(eg) {
-            eg = this.getProperty("placeholder",eg);
+            eg = this.getProperty("placeholder",eg||"Search");
             if (this.eg) {
                 eg = " " + this.eg;
             }
