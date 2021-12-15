@@ -392,10 +392,13 @@ public class GeoUtils {
 	    String _path = path.toLowerCase();
             if (path.equals("counties")) {
                 path = "/org/ramadda/util/geo/resources/counties.zip";
+		_path = path;
             } else if (path.equals("states")) {
                 path = "/org/ramadda/util/geo/resources/states.zip";
+		_path = path;
             } else if (path.equals("timezones")) {
                 path = "/org/ramadda/util/geo/resources/timezones.zip";
+		_path = path;
             }
             if ( !_path.endsWith(".zip") && !_path.startsWith("/") && !_path.endsWith("json")) {
                 path = "/org/ramadda/util/geo/resources/" + path + ".zip";
