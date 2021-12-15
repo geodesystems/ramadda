@@ -1,6 +1,48 @@
 <types supercategory="Miscellaneous" category="Business Data">
 
 
+  <type name="type_github_commits"  super="type_point" description="Github Commits"   foruser="true"
+	handler="org.ramadda.plugins.biz.GithubTypeHandler"	>
+     <property name="icon" value="/icons/github.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="html.numberofpoints.show" value="false"/>
+     <column name="user_id" type="string"  label="User ID"  showinform="true" />
+     <column name="owner" type="string"  label="Owner"  showinform="true" />
+     <column name="repository" type="string"  label="Repository"  showinform="true" />     
+     <wiki><![CDATA[
++section title="<img src={{root}}/icons/github.png> {{name}}"
+{{description wikify="true"}}
++tabs 
++tab Timeline
+{{display_timeline  titleField="message"  titleLength=30 dateFormat="yyyy-mm-dd hh:mm"
+textTemplate="
+<a href='${user_url}'><img width=40px src='${avatar_url}'> ${name}</a><br>
+${date}<br>
+${message}
+"
+}} 
+-tab
++tab  Table
++center
+{{display_simplesearch  doPageSearch=true }} 
+-center
+{{display_htmltable fields=name,date,message
+name.template="<a href='${user_url}'><img width=40px src='${avatar_url}'> ${name}</a>"
+message.template="<a href='${item_url}'>${message}</a>"
+name.nowrap=true
+date.nowrap=true
+}}
+-tab
+-tabs
+-section
+]]>
+</wiki>
+ </type>
+
+
+
   <type name="type_fred_category"  description="FRED Category"   foruser="true" handler="org.ramadda.plugins.biz.FredCategoryTypeHandler">
      <property name="icon" value="/biz/fred.png"/>
      <property name="form.resource.show" value="false"/>
