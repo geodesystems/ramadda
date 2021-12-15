@@ -4730,9 +4730,9 @@ public class Utils extends IO {
     public static String wrap(List l, String prefix, String suffix) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < l.size(); i++) {
-            sb.append(prefix);
-            sb.append(l.get(i));
-            sb.append(suffix);
+	    String s = prefix + l.get(i) + suffix;
+	    s = s.replace("${index}",i+"");
+            sb.append(s);
         }
 
         return sb.toString();
