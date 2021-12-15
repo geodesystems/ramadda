@@ -3538,146 +3538,34 @@ public class WikiUtil {
         sdf.setTimeZone(Utils.TIMEZONE_DEFAULT);
         SimpleDateFormat rsdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmz");
         rsdf.setTimeZone(Utils.TIMEZONE_DEFAULT);	
-	String user = Utils.getProperty(props,"user",(String)null);
-	String owner = Utils.getProperty(props,"owner",(String)null);
-	String repository = Utils.getProperty(props,"repository",(String)null);	
-	int max = Utils.getProperty(props,"max",100);
-	String since = Utils.getProperty(props,"since",(String)null);
-	if(since!=null) {
-	    since = rsdf.format(DateUtil.getRelativeDate(new Date(), since));	    
-	}
-	String until = Utils.getProperty(props,"until",(String)null);		
-	if(until!=null) {
-	    until = rsdf.format(DateUtil.getRelativeDate(new Date(), until));	    
-	}
-
-
-	Function<String,JSONArray> getJson = (url)->{
-	    try {
-		//Cache for 10 minutes
-		String json = handler.getWikiCache(url,Utils.minutesToMillis(10));
-		if(json==null) {
-		    String token = handler.getWikiProperty("github.token",null);
-		    json = IO.doHttpRequest("GET",new URL(url),null,
-					    "Authorization",token!=null?"token "+token:null);
-		    handler.putWikiCache(url,json);		    
-		} else {
-		    //		    System.err.println("got cache:" + json.substring(0,50));
-		}
-		
-		return  new JSONArray(json);
-	    } catch(Exception exc) {
-		throw new RuntimeException(exc);
-	    }
-	};
-
-
-
-
-
+	List<Github.Item> items = Github.fetch(handler,props);
 	boolean decorate = Utils.getProperty(props,"decorate",true);
 	boolean showAuthor = Utils.getProperty(props,"showAuthor",true);	
 	String height = Utils.getProperty(props,"height","200");
-	if(user!=null) {
-	    String apiUrl = HU.url("https://api.github.com/users/" + user+"/events/public","per_page","" + max);
-            JSONArray a = getJson.apply(apiUrl);
-	    
-	    int cnt = 0;
-            for (int itemIdx = 0; itemIdx < a.length(); itemIdx++) {
-                JSONObject item = a.getJSONObject(itemIdx);
-		if(!item.has("payload")) {
-		    continue;
-		}
-		String login = null;
-		String avatar = null;
-		if(item.has("actor")) {
-		    JSONObject actor = item.getJSONObject("actor");
-		    login = actor.optString("login",null);
-		    avatar = actor.optString("avatar_url",null);		    
-		}
-
-		JSONObject payload = item.getJSONObject("payload");
-		if(payload.has("commits")) {
-		    JSONArray commits = payload.getJSONArray("commits");
-		    String date = item.optString("created_at","");
-		    if(date.length()>0) date = sdf.format(Utils.parseDate(date));
-		    for (int commitIdx = 0; commitIdx < commits.length(); commitIdx++) {
-			JSONObject commit = commits.getJSONObject(commitIdx);
-			if(cnt++==0) {
-			    sb.append("<table table-height='" + height+"' class='ramadda-table stripe'><thead><tr>");
-			    if(showAuthor)sb.append("<th width=30%>Author</th>");
-			    sb.append("<th width=20%>Date</th><th>Commit</th></tr></thead><tbody>");
-			}
-			if(cnt>max) break;
-
-			String message = commit.optString("message","").replaceAll("<","&lt;").replaceAll(">","&gt;");
-			String url = commit.getString("url");
-			url = url.replace("//api.","//").replace("/repos/","/").replace("/commits/","/commit/");
-			
-			//https://api.github.com/repos/geodesystems/ramadda/commits/c20a284f23fa57b0d4f2912b741bfe2300d2e20d
-			//https://github.com/geodesystems/ramadda/commit/c20a284f23fa57b0d4f2912b741bfe2300d2e20d
-			message=HU.href(url, message);
-			
-			String name = Json.readValue(commit,"author.name","NA");
-			if(decorate && avatar!=null) {
-			    name = HU.image(avatar,"width","40px") +" "+ name;
-			}
-			if(login!=null) {
-			    name= HU.href("https://github.com/" + login,name);
-			}
-			HU.row(sb,showAuthor?HU.cols(name,date,message):HU.cols(date,message),HU.cssClass("search-component"));
-		    }
-		}
+	for (int itemIdx = 0; itemIdx < items.size(); itemIdx++) {
+	    Github.Item item=  items.get(itemIdx);
+	    if(itemIdx==0) {
+		sb.append("<table table-height='" + height+"' class='ramadda-table stripe'><thead><tr>");
+		if(showAuthor)sb.append("<th width=30%>Author</th>");
+		sb.append("<th width=20%>Date</th><th>Commit</th></tr></thead><tbody>");
 	    }
-	    if(cnt>0) {
-		sb.append("</table>");
-	    } else {
-		sb.append("Github: No commits found");
+	    Github.User user = item.getUser(); 
+	    String name = user.getName();
+	    if(decorate && user.getAvatarUrl()!=null) {
+		name = HU.image(user.getAvatarUrl(),"width","40px") +" "+ name;
 	    }
-	} else 	if(owner!=null && repository!=null) {
-	    String apiUrl = HU.url("https://api.github.com/repos/" + owner+"/" + repository+"/commits","per_page","" + max);
-	    if(since!=null) apiUrl+="&since=" + since;
-	    if(until!=null) apiUrl+="&until=" + until;	    
-            JSONArray a = getJson.apply(apiUrl);
-	    int cnt = 0;
-            for (int commitIdx = 0; commitIdx < a.length(); commitIdx++) {
-		if(cnt++==0) {
-		    sb.append("<table table-height='" + height+"' class='ramadda-table stripe'><thead><tr>");
-		    if(showAuthor)sb.append("<th width=30%>Author</th>");
-		    sb.append("<th width=20%>Date</th><th>Commit</th></tr></thead><tbody>");
-		}
-		if(cnt>max) break;
-                JSONObject item = a.getJSONObject(commitIdx);
-                JSONObject commit = item.getJSONObject("commit");
-                JSONObject committer = commit.getJSONObject("committer");		
-                JSONObject author = item.getJSONObject("author");				
-
-		String avatar = author.optString("avatar_url",null);
-		String authorUrl = author.getString("html_url");		
-		String date = committer.getString("date");
-		String name = committer.getString("name");
-		if(date.length()>0) date = sdf.format(Utils.parseDate(date));
-		String message = commit.getString("message").replaceAll("<","&lt;").replaceAll(">","&gt;");
-		
-		String url = item.getString("html_url");
-		message=HU.href(url, message);
-		if(decorate && avatar!=null) {
-		    name = HU.image(avatar,"width","40px") +" "+ name;
-		}
-		name= HU.href(authorUrl, name);
-		HU.row(sb,showAuthor?HU.cols(name,date,message):HU.cols(date,message),HU.cssClass("search-component"));
+	    if(user.getLogin()!=null) {
+		name= HU.href("https://github.com/" + user.getLogin(),name);
 	    }
-	    if(cnt>0) {
-		sb.append("</table>");
-	    } else {
-		sb.append("Github: No commits found");
-	    }
-	} else {
-	    sb.append("Github: No user, owner or repository specified");
+	    String date = sdf.format(item.getDate());
+	    String message= HU.href(item.getItemUrl(),item.getMessage());
+	    HU.row(sb,showAuthor?HU.cols(name,date,message):HU.cols(date,message),HU.cssClass("search-component"));
 	}
-	
-
-
+	if(items.size()>0) {
+	    sb.append("</table>");
+	} else {
+	    sb.append("Github: No commits found");
+	}
     }
 
     /**
