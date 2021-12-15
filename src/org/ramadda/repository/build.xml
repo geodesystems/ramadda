@@ -119,7 +119,7 @@
               <attribute name="Implementation-Version" value="1.0"/>
               <attribute name="Implementation-Vendor" value="RAMADDA"/>
               <attribute name="Main-class" value="org.ramadda.repository.client.RepositoryClient"/>
-              <attribute name="Class-Path" value="unidatautil.jar commons-httpclient-3.1.jar commons-logging-1.1.jar commons-codec-1.3.jar"/>
+              <attribute name="Class-Path" value="unidatautil.jar commons-httpclient-3.1.jar commons-logging-1.1.jar commons-codec-1.11.jar"/>
             </manifest> 
 
             <include name="org/**/*.class"/>
@@ -139,7 +139,7 @@
               <attribute name="Implementation-Version" value="1.0"/>
               <attribute name="Implementation-Vendor" value="RAMADDA"/>
               <attribute name="Main-class" value="org.ramadda.repository.client.RepositorySearch"/>
-              <attribute name="Class-Path" value="unidatautil.jar commons-httpclient-3.1.jar commons-logging-1.1.jar commons-codec-1.3.jar"/>
+              <attribute name="Class-Path" value="unidatautil.jar commons-httpclient-3.1.jar commons-logging-1.1.jar commons-codec-1.11.jar"/>
             </manifest> 
        </jar>
 
@@ -149,7 +149,7 @@
          <zipfileset dir="${lib_dir}" includes="unidatautil.jar" fullpath="${clientbase}/lib/unidatautil.jar"/>
          <zipfileset dir="${lib_dir}" includes="commons-httpclient-3.1.jar" fullpath="${clientbase}/lib/commons-httpclient-3.1.jar"/>
          <zipfileset dir="${lib_dir}" includes="commons-logging-1.1.jar" fullpath="${clientbase}/lib/commons-logging-1.1.jar"/>
-         <zipfileset dir="${lib_dir}" includes="commons-codec-1.3.jar" fullpath="${clientbase}/lib/commons-codec-1.3.jar"/>
+         <zipfileset dir="${lib_dir}" includes="commons-codec-1.11.jar" fullpath="${clientbase}/lib/commons-codec-1.11.jar"/>
          <zipfileset dir="${ramadda_dir}/release" includes="README.CLIENT" fullpath="${clientbase}/README"/>
          <zipfileset dir="${ramadda_dir}/client" includes="ramaddaclient.sh" fullpath="${clientbase}/ramaddaclient.sh"/>
          <zipfileset dir="${ramadda_dir}/client" includes="search.sh" fullpath="${clientbase}/search.sh"/>
@@ -394,7 +394,7 @@
         <unjar src="${lib_dir}/commons-fileupload-1.4.jar" dest="${tmpjar_dir}"/>
 
         <unjar src="${lib_dir}/rhino-1.7.13.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/httpmime-4.5.7.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/httpmime-4.5.13.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/httpcore-4.4.1.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/jcommon-1.0.23.jar" dest="${tmpjar_dir}"/>
 
