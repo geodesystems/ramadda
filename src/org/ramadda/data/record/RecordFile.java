@@ -37,9 +37,11 @@ import java.util.zip.*;
  */
 @SuppressWarnings("unchecked")
 public abstract class RecordFile {
+    static int xcnt = 0;
+    int mycnt = xcnt++;
 
     /** debug */
-    public static boolean debug = false;
+    public static boolean debug = true;
 
     /** _more_ */
     public static final String PROP_DATEFORMAT = "dateformat";
@@ -143,6 +145,7 @@ public abstract class RecordFile {
      */
     public RecordFile(Hashtable properties) {
         this.properties = properties;
+
     }
 
     /**
@@ -154,10 +157,6 @@ public abstract class RecordFile {
     public RecordFile(String filename, Hashtable properties) {
         this.filename   = filename;
         this.properties = properties;
-        if (debug) {
-            System.err.println("RecordFile.ctor:" + filename);
-            //      System.err.println(Utils.getStack(10));
-        }
     }
 
     /**
@@ -503,7 +502,9 @@ public abstract class RecordFile {
      * @return _more_
      */
     public String getProperty(String prop, String dflt) {
-        return getProperty(properties, prop, dflt);
+        String s= getProperty(properties, prop, dflt);
+
+	return s;
     }
 
 
@@ -646,7 +647,7 @@ public abstract class RecordFile {
         String path = getNormalizedFilename();
         //      System.err.println("RecordFile.doMakeInputStream:" + path);
         if (debug) {
-            System.err.println("RecordFile.doMakeInputStream path:" + path);
+            System.err.println(mycnt+" RecordFile.doMakeInputStream path:" + path);
         }
 
         if (path.endsWith(".zip") || getProperty("isZip", false)) {
@@ -704,7 +705,8 @@ public abstract class RecordFile {
      * @param properties _more_
      */
     public void setProperties(Hashtable properties) {
-        this.properties = properties;
+	if(this.properties!=null && properties!=null) this.properties.putAll(properties);
+	else  this.properties = properties;
     }
 
 
