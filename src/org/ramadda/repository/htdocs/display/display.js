@@ -602,6 +602,16 @@ function DisplayThing(argId, argProperties) {
 	macroHook: function(token,value) {
 	    return null;
 	},
+	formatFieldValue:function(f,record,v) {
+	    let template = this.getProperty(f.getId()+".template");
+	    if(template) {
+		let tv = this.applyRecordTemplate(record,this.getDataValues(record),null, template);
+		tv = tv.replace(/\${value}/g, v);
+		v = tv;
+	    }
+	    return v;
+	},
+
 	applyRecordTemplate: function(record, row, fields, template, props,macros, debug) {
 	    fields = this.getFields(fields);
 	    if(!props) {
