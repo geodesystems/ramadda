@@ -411,8 +411,6 @@
         <unjar src="${lib1}" dest="${tmpjar_dir}"/>
         <echo message="jarring ${lib_dir}/ramaddalib.jar"/>
 
-	<!-- just in case it sneaks in -->
-        <delete file="${tmpjar_dir}/org/apache/logging/log4j/core/lookup/JndiLookup.class"/>
         <delete file="${lib_dir}/ramaddalib.jar"/>	
         <jar 
             basedir="${tmpjar_dir}"
