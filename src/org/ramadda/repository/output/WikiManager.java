@@ -59,6 +59,7 @@ import org.ramadda.util.IO;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.Json;
 import org.ramadda.util.NamedValue;
+import org.ramadda.util.SystemContext;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 import org.json.*;
@@ -93,7 +94,7 @@ import java.util.function.*;
  */
 @SuppressWarnings("unchecked")
 public class WikiManager extends RepositoryManager implements WikiConstants,
-        WikiUtil.WikiPageHandler {
+        WikiUtil.WikiPageHandler, SystemContext {
 
 
 
@@ -6471,27 +6472,29 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
 
-    public void putWikiCache(String key, String value) {
+    /** methods that implement SystemContext*/
+    public void putSystemContextCache(String key, String value) {
 	key = Utils.makeID(key);
 	try {
-	    getStorageManager().putCacheObject("wiki",key,value);
+	    getStorageManager().putCacheObject("SystemContext",key,value);
 	} catch(Exception exc) {
 	    throw new RuntimeException(exc);
 	}
     }
 
-    public String getWikiCache(String key,long ttl) {
+    public String getSystemContextCache(String key,long ttl) {
 	key = Utils.makeID(key);
 	try {
-	    return (String) getStorageManager().getCacheObject("wiki",key,ttl);
+	    return (String) getStorageManager().getCacheObject("SystemContex",key,ttl);
 	} catch(Exception exc) {
 	    throw new RuntimeException(exc);
 	}
     }
 
-    public String getWikiProperty(String key, String dflt) {
+    public String getSystemContextProperty(String key, String dflt) {
 	return getRepository().getProperty(key,dflt);
     }
+
 
     /**
      * Get a wiki link
