@@ -392,20 +392,28 @@
         <unjar src="${lib_dir}/commons-pool2-2.2.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/commons-text-1.9.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/commons-fileupload-1.4.jar" dest="${tmpjar_dir}"/>
+
         <unjar src="${lib_dir}/rhino-1.7.13.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/httpmime-4.5.7.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/httpcore-4.4.1.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/jcommon-1.0.23.jar" dest="${tmpjar_dir}"/>
+
         <unjar src="${lib_dir}/ftplet-api-1.0.6.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/ftpserver-core-1.0.6.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/mina-core-2.0.0-M6.jar" dest="${tmpjar_dir}"/>
+
         <unjar src="${lib_dir}/slf4j-api-1.6.4.jar" dest="${tmpjar_dir}"/>
 	<unjar src="${lib_dir}/slf4j-nop-1.7.32.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/log4j-core-2.15.0.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/log4j-api-2.15.0.jar" dest="${tmpjar_dir}"/>		
+
+        <unjar src="${lib_dir}/log4j-core-2.16.0.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/log4j-api-2.16.0.jar" dest="${tmpjar_dir}"/>	
 
         <unjar src="${lib1}" dest="${tmpjar_dir}"/>
         <echo message="jarring ${lib_dir}/ramaddalib.jar"/>
+
+	<!-- just in case it sneaks in -->
+        <delete file="${tmpjar_dir}/org/apache/logging/log4j/core/lookup/JndiLookup.class"/>
+        <delete file="${lib_dir}/ramaddalib.jar"/>	
         <jar 
             basedir="${tmpjar_dir}"
             update="false"
@@ -413,6 +421,7 @@
             jarfile="${lib_dir}/ramaddalib.jar">
               <include name="**"/>
               <exclude name="ucar/multiarray/**"/>
+
         </jar>
         <delete dir="${tmpjar_dir}"/>
     </target>
