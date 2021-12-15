@@ -35,7 +35,7 @@ import java.util.regex.*;
 
 /**
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("checked")
 public class WikiUtil {
 
 
@@ -4798,12 +4798,8 @@ public class WikiUtil {
      *
      * @version $Revision: 1.3 $
      */
-    public static interface WikiPageHandler {
+    public static interface WikiPageHandler extends SystemContext {
 
-	public void putWikiCache(String key, String value);
-	public String getWikiCache(String key,long ttl);	
-	public String getWikiProperty(String key, String dflt);
-	
 
         /**
          * _more_

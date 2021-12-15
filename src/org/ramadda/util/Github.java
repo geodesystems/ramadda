@@ -42,7 +42,7 @@ public class Github {
 
     
 
-    public static List<Item>  fetch(WikiUtil.WikiPageHandler handler, Hashtable props) throws Exception {
+    public static List<Item>  fetch(SystemContext handler, Hashtable props) throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         sdf.setTimeZone(Utils.TIMEZONE_DEFAULT);
         SimpleDateFormat rsdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmz");
@@ -63,12 +63,12 @@ public class Github {
 	Function<String,JSONArray> getJson = (url)->{
 	    try {
 		//Cache for 10 minutes
-		String json = handler.getWikiCache(url,Utils.minutesToMillis(10));
+		String json = handler.getSystemContextCache(url,Utils.minutesToMillis(10));
 		if(json==null) {
-		    String token = handler.getWikiProperty("github.token",null);
+		    String token = handler.getSystemContextProperty("github.token",null);
 		    json = IO.doHttpRequest("GET",new URL(url),null,
 					    "Authorization",token!=null?"token "+token:null);
-		    handler.putWikiCache(url,json);		    
+		    handler.putSystemContextCache(url,json);		    
 		    //		    System.out.println(json);
 		} else {
 		    //		    System.err.println("got cache:" + json.substring(0,50));
