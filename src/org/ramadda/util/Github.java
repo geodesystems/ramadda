@@ -86,7 +86,7 @@ public class Github {
 	boolean decorate = Utils.getProperty(props,"decorate",true);
 	boolean showAuthor = Utils.getProperty(props,"showAuthor",true);	
 	String height = Utils.getProperty(props,"height","200");
-	if(user!=null) {
+	if(Utils.stringDefined(user)) {
 	    String apiUrl = HtmlUtils.url("https://api.github.com/users/" + user+"/events/public","per_page","" + max);
             JSONArray a = getJson.apply(apiUrl);
 	    
@@ -117,12 +117,12 @@ public class Github {
 			String url = commit.getString("url");
 			url = url.replace("//api.","//").replace("/repos/","/").replace("/commits/","/commit/");
 			String name = Json.readValue(commit,"author.name","NA");
-			String authorUrl = login==null?null: HtmlUtils.href("https://github.com/" + login,name);
+			String authorUrl = login==null?null: "https://github.com/" + login;
 			results.add(new Item(new User(name,login, authorUrl, avatarUrl), date, message,url));
 		    }
 		}
 	    }
-	} else 	if(owner!=null && repository!=null) {
+	} else 	if(Utils.stringDefined(owner) && Utils.stringDefined(repository)) {
 	    String apiUrl = HtmlUtils.url("https://api.github.com/repos/" + owner+"/" + repository+"/commits","per_page","" + max);
 	    if(since!=null) apiUrl+="&since=" + since;
 	    if(until!=null) apiUrl+="&until=" + until;	    
@@ -156,13 +156,13 @@ public class Github {
     public static class User {
 	private String login;
 	private String name;
-	private String  authorUrl;
+	private String url;
 	private String avatarUrl;
     
-	public User(String name, String login, String  authorUrl, String avatarUrl) {
+	public User(String name, String login, String  url, String avatarUrl) {
 	    this.login = login;
 	    this.name = name;
-	    this. authorUrl =  authorUrl;
+	    this.url =  url;
 	    this.avatarUrl = avatarUrl;
 	}
 
@@ -203,22 +203,14 @@ public class Github {
 	    return name;
 	}
 
-	/**
-	   Set the AuthorUrl property.
-
-	   @param value The new value for AuthorUrl
-	**/
-	public void setAuthorUrl (String value) {
-	    authorUrl = value;
-	}
 
 	/**
 	   Get the AuthorUrl property.
 
 	   @return The AuthorUrl
 	**/
-	public String getAuthorUrl () {
-	    return authorUrl;
+	public String getUrl () {
+	    return url;
 	}
 
 	/**
