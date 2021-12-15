@@ -16,7 +16,7 @@
 {{description wikify="true"}}
 +tabs 
 +tab Timeline
-{{display_timeline  titleField="message"  titleLength=30 dateFormat="yyyy-mm-dd hh:mm"
+{{display_timeline  startAtEnd=true titleField="message"  titleLength=30 dateFormat="yyyy-mm-dd hh:mm"
 textTemplate="
 <a href='${user_url}'><img width=40px src='${avatar_url}'> ${name}</a><br>
 ${date}<br>
