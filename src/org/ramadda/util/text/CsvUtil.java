@@ -1382,6 +1382,13 @@ public class CsvUtil {
     public static String columnsToString(List cols, String delimiter,
                                          boolean addNewLine) {
         StringBuilder sb = new StringBuilder();
+	columnsToString(sb, cols, delimiter,addNewLine);
+	return sb.toString();
+    }
+
+    public static void columnsToString(StringBuilder sb, List cols, String delimiter,
+				       boolean addNewLine) {
+
         for (int i = 0; i < cols.size(); i++) {
             Object o = cols.get(i);
             String s = ((o == null)
@@ -1412,7 +1419,6 @@ public class CsvUtil {
         if (addNewLine) {
             sb.append("\n");
         }
-        return sb.toString();
     }
 
 
