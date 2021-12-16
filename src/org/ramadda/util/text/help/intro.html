@@ -42,9 +42,9 @@
 <h2>Introduction</h2>
 The RAMADDA CSV commands can be used both interactively from within RAMADDA as well as via the command line. Help with the ineractive version can be viewed
 <a href="https://ramadda.org/repository/userguide/etl.html">here</a>.
-The examples here show the command line use. If running interactively the commands are the same form except for the csv.sh calls and the specification of the input file. So, for example, if you are calling the tool from the command line as:
+The examples here show the command line use. If running interactively the commands are the same form except for the csv calls and the specification of the input file. So, for example, if you are calling the tool from the command line as:
 <pre class=example>
-csv.sh -columns column1,column2 -p file.csv > output.csv
+csv -columns column1,column2 -p file.csv > output.csv
 </pre>
 
 The corresponding commands interactively would be:
@@ -52,13 +52,17 @@ The corresponding commands interactively would be:
 -columns column1,column2
 </pre>
 
+For brevity, in the below documentation we're assuming  that you are using an alias:
+<pre>
+alias csv="sh ~/csvutil/csv.sh"  
+</pre>
 
 <h2>Install</h2>
 <ul>
 <li> Download the csvutil.zip file from the RAMADDA <a href=https://geodesystems.com/repository/alias/release>download</a> site
 <li> Unzip the file
 <li> Consult the README
-<li> Usage:<br> csv.sh &lt;any number of commands&gt; -p &ltinput file&gt; &gt; output file
+<li> Usage:<br> csv &lt;any number of commands&gt; -p &ltinput file&gt; &gt; output file
 </ul>
 <p>
 
@@ -66,22 +70,22 @@ The corresponding commands interactively would be:
 <h2>Basic Use</h2>  
 The general use of the CSV tools is as follows:
 <pre class=examples>
-csv.sh &lt;a number of processing commands&gt; &lt;some output command&gt; file.csv &gt; output.csv
+csv &lt;a number of processing commands&gt; &lt;some output command&gt; file.csv &gt; output.csv
 
 #With no processing commands and just printing the header:
-csv.sh -printheader file.csv
+csv -printheader file.csv
 
 #Or a shortcut
-csv.sh -ph file.csv
+csv -ph file.csv
 
 #With no processing commands and csv output:
-csv.sh -p file.csv &gt; output.csv
+csv -p file.csv &gt; output.csv
 
 #With no processing commands and a record oriented  output:
-csv.sh -record file.csv &gt; output.csv
+csv -record file.csv &gt; output.csv
 
 #With the -columns command printing csv output
-csv.sh -columns column1,column2 -p file.csv > output.csv
+csv -columns column1,column2 -p file.csv > output.csv
 </pre>
 
 
@@ -102,7 +106,7 @@ column_1,column_2,some_funny_column
 
 You can always use the <span class=cmd>-ids</span> command to list the ids
 <pre class=examples>
-csv.sh -ids -printheader test.csv
+csv -ids -printheader test.csv
 </pre>
 
 
@@ -110,38 +114,37 @@ csv.sh -ids -printheader test.csv
 <pre class=examples>
 ####  selecting columns
 #Subset test.csv and only include column1 and column2
-csv.sh -columns column1,column2 -p test.csv > newtest.csv
+csv -columns column1,column2 -p test.csv > newtest.csv
 
 #You can also use numeric indices - zero based
-csv.sh -columns 0,1 -p test.csv > newtest.csv
+csv -columns 0,1 -p test.csv > newtest.csv
 
 #Specify a range of columns
 #either using column names:
-csv.sh -columns column1-columnN -p test.csv > newtest.csv
+csv -columns column1-columnN -p test.csv > newtest.csv
 #or indices:
-csv.sh -columns 1-5,6,7,10-15 -p test.csv > newtest.csv
+csv -columns 1-5,6,7,10-15 -p test.csv > newtest.csv
 
 #or mix and match
-csv.sh -columns 0-1,columnA,columnB,columnF-columnZ -p test.csv > newtest.csv
+csv -columns 0-1,columnA,columnB,columnF-columnZ -p test.csv > newtest.csv
 
 #Specify a step:
-#csv.sh -columns start-end:step
+#csv -columns start-end:step
 
 #e.g. below gives 0,3,6,9,12,15
-csv.sh -columns 0-15:3
+csv -columns 0-15:3
 
 #include all columns except column1
-csv.sh -notcolumns column1 -p test.csv > newtest.csv
+csv -notcolumns column1 -p test.csv > newtest.csv
 
 #subset columns and then change the values 
-csv.sh -columns column1,column2 -change column1,column2 "pattern" "new value" -p test.csv > newtest.csv
+csv -columns column1,column2 -change column1,column2 "pattern" "new value" -p test.csv > newtest.csv
 
 #Only include column1 and then only pass through unique values
-csv.sh -columns column1 -unique 0 -p test.csv > newtest.csv
+csv -columns column1 -unique 0 -p test.csv > newtest.csv
 
 #Only pass throught unique values in the first column and then sort the output
-csv.sh -columns column1 -unique 0 -sort column1 -p test.csv > newtest.csv
-
+csv -columns column1 -unique 0 -sort column1 -p test.csv > newtest.csv
 
 
 </pre>
