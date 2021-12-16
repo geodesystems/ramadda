@@ -20,12 +20,12 @@ sally,p7
 
 If you only want voters whose  precinct is in the precints.csv you would do:
 <pre>
-  csv -ifin precinct precincts.csv voter_precinct -p voters.csv
+seesv -ifin precinct precincts.csv voter_precinct -p voters.csv
 </pre>
 
 The  <span class=cmd>-ifnotin</span> command does the opposite only passing through rows that are not in the file, e.g.:
 <pre>
-  csv -ifnotin precinct precincts.csv voter_precinct -p voters.csv
+seesv -ifnotin precinct precincts.csv voter_precinct -p voters.csv
 </pre>
 
 

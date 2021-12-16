@@ -1,5 +1,5 @@
 <html>
-  <head><title>RAMADDA CSV Commands</title>
+  <head><title>RAMADDA SeeSV</title>
 </head>    
 <notcl>
 <style type='text/css'>
@@ -35,16 +35,22 @@
 
 </style>
 
-<h2>RAMADDA CSV Utils Commands</h2>
+<h2>RAMADDA SeeSV</h2>
 <center>${header}</center>
 
 
 <h2>Introduction</h2>
-The RAMADDA CSV commands can be used both interactively from within RAMADDA as well as via the command line. Help with the interactive version can be viewed
+The RAMADDA SeeSV can be used both interactively from within RAMADDA as well as via the command line. Help with the interactive version can be viewed
 <a href="https://ramadda.org/repository/userguide/etl.html">here</a>.
-The examples here show the command line use. If running interactively the commands are the same form except for the csv calls and the specification of the input file. So, for example, if you are calling the tool from the command line as:
+<p>
+For brevity, in the below documentation we're assuming  that you are using an alias:
+<pre>
+alias seesv="sh ~/seesv/seesv.sh"  
+</pre>
+
+The examples here show the command line use. If running interactively the commands are the same form except for the seesv calls and the specification of the input file. So, for example, if you are calling the tool from the command line as:
 <pre class=example>
-csv -columns column1,column2 -p file.csv > output.csv
+seesv -columns column1,column2 -p file.csv > output.csv
 </pre>
 
 The corresponding commands interactively would be:
@@ -52,47 +58,45 @@ The corresponding commands interactively would be:
 -columns column1,column2
 </pre>
 
-For brevity, in the below documentation we're assuming  that you are using an alias:
-<pre>
-alias csv="sh ~/csvutil/csv.sh"  
-</pre>
 
 <h2>Install</h2>
 <ul>
-<li> Download the csvutil.zip file from the RAMADDA <a href=https://geodesystems.com/repository/alias/release>download</a> site
+<li> Download the seesv.zip file from the RAMADDA <a href=https://geodesystems.com/repository/alias/release>download</a> site
 <li> Unzip the file
 <li> Consult the README
-<li> The csv utils run using Java 1.8 or higher. Set the JAVA environment variable to point to the java runtime.
-<li> Usage:<br> csv &lt;any number of commands&gt; -p &ltinput file&gt; &gt; output file
+<li> SeeSV runs using Java 1.8 or higher. Set the JAVA environment variable to point to the java runtime.
+<li> Usage:<br>seesv &lt;any number of commands&gt; -p &ltinput file&gt; &gt; output file
 </ul>
 <p>
 
 
 <h2>Basic Use</h2>  
-The general use of the CSV tools is as follows:
+The general use of the SeeSV tools is as follows:
 <pre class=examples>
-csv &lt;a number of processing commands&gt; &lt;some output command&gt; file.csv &gt; output.csv
+seesv &lt;a number of processing commands&gt; &lt;some output command&gt; file.csv &gt; output.csv
+#or
+seesv &lt;a number of processing commands&gt; &lt;some output command&gt; -o output.csv   file.csv 
 
 #To show help:
-csv -help
+seesv -help
 
 #To show help on a topic:
-csv -help:some_topic
+seesv -help:some_topic
 
 #With no processing commands and just printing the header:
-csv -printheader file.csv
+seesv -printheader file.csv
 
 #Or a shortcut
-csv -ph file.csv
+seesv -ph file.csv
 
 #With no processing commands and csv output:
-csv -p file.csv &gt; output.csv
+seesv -p file.csv &gt; output.csv
 
 #With no processing commands and a record oriented  output:
-csv -record file.csv &gt; output.csv
+seesv -record file.csv &gt; output.csv
 
 #With the -columns command printing csv output
-csv -columns column1,column2 -p file.csv > output.csv
+seesv -columns column1,column2 -p file.csv > output.csv
 </pre>
 
 
@@ -113,7 +117,7 @@ column_1,column_2,some_funny_column
 
 You can always use the <span class=cmd>-ids</span> command to list the ids
 <pre class=examples>
-csv -ids -printheader test.csv
+seesv -ids -printheader test.csv
 </pre>
 
 
@@ -121,37 +125,37 @@ csv -ids -printheader test.csv
 <pre class=examples>
 ####  selecting columns
 #Subset test.csv and only include column1 and column2
-csv -columns column1,column2 -p test.csv > newtest.csv
+seesv -columns column1,column2 -p test.csv > newtest.csv
 
 #You can also use numeric indices - zero based
-csv -columns 0,1 -p test.csv > newtest.csv
+seesv -columns 0,1 -p test.csv > newtest.csv
 
 #Specify a range of columns
 #either using column names:
-csv -columns column1-columnN -p test.csv > newtest.csv
+seesv -columns column1-columnN -p test.csv > newtest.csv
 #or indices:
-csv -columns 1-5,6,7,10-15 -p test.csv > newtest.csv
+seesv -columns 1-5,6,7,10-15 -p test.csv > newtest.csv
 
 #or mix and match
-csv -columns 0-1,columnA,columnB,columnF-columnZ -p test.csv > newtest.csv
+seesv -columns 0-1,columnA,columnB,columnF-columnZ -p test.csv > newtest.csv
 
 #Specify a step:
-#csv -columns start-end:step
+#seesv -columns start-end:step
 
 #e.g. below gives 0,3,6,9,12,15
-csv -columns 0-15:3
+seesv -columns 0-15:3
 
 #include all columns except column1
-csv -notcolumns column1 -p test.csv > newtest.csv
+seesv -notcolumns column1 -p test.csv > newtest.csv
 
 #subset columns and then change the values 
-csv -columns column1,column2 -change column1,column2 "pattern" "new value" -p test.csv > newtest.csv
+seesv -columns column1,column2 -change column1,column2 "pattern" "new value" -p test.csv > newtest.csv
 
 #Only include column1 and then only pass through unique values
-csv -columns column1 -unique 0 -p test.csv > newtest.csv
+seesv -columns column1 -unique 0 -p test.csv > newtest.csv
 
 #Only pass throught unique values in the first column and then sort the output
-csv -columns column1 -unique 0 -sort column1 -p test.csv > newtest.csv
+seesv -columns column1 -unique 0 -sort column1 -p test.csv > newtest.csv
 
 
 </pre>

@@ -22,7 +22,7 @@ full address,city,state
 And you only want to pass through rows in full.csv
 address begins with some address in the short.csv file. To do this call:
 <pre>
-  csv -ifmatchesfile "^${value}.*" address short.csv full_address -p fill.csv
+seesv -ifmatchesfile "^${value}.*" address short.csv full_address -p fill.csv
 </pre>
 
 What this does is construct regexp patterns as:

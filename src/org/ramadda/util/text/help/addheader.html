@@ -10,7 +10,7 @@ v1,v2,v3
 The addheader command is run as below passing in one set of name/value arguments. If the value has spaces then group the
 text with {...} brackets.
 <pre>
-  csv -addheader "arg1 value1 arg2 {value 2} arg3 value3"
+  seesv -addheader "arg1 value1 arg2 {value 2} arg3 value3"
 </pre>
 
 The args are typically of the form <i>canonical_field_name.some_property</i> where canonical field
@@ -28,7 +28,7 @@ some date,year,some field
 
 Running this command:
 <pre>
-csv -addheader "some_date.type date date.format yyyy-MM-dd year.type date year.format yyyy some_field.id temperature some_field.label {The Temperature} some_field.type celsius" -p testdate.csv
+seesv -addheader "some_date.type date date.format yyyy-MM-dd year.type date year.format yyyy some_field.id temperature some_field.label {The Temperature} some_field.type celsius" -p testdate.csv
 </pre>
 
 will result in an output:
