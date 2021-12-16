@@ -1,5 +1,30 @@
 <html>
-  <head><title>RAMADDA CSV Commands</title>
+<head>
+<title>RAMADDA SeeSV</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
+<a href="etl.html"><span title="Previous: ETL Tools"><i  style='font-size:20pt;'  class="fa fa-caret-left "></i></span></a> <a href="dataexample.html"><span title="Next: Data Example"><i  style='font-size:20pt;'  class="fa fa-caret-right "></i></span></a>  <a href="toc.html#seesv.html"><span title="Table of contents"><i  style='font-size:20pt;'  class="fa fa-list "></i></span></a>
+</td>
+<td width=40% align=center>
+<div class="ramadda-page-title"><a href="${root}/userguide/index.html">RAMADDA User Guide</a></div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="ramadda-page-heading">Section 7.1: RAMADDA SeeSV</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+<div style="margin-left:20px;">
+
 </head>    
 <notcl>
 <style type='text/css'>
@@ -35,16 +60,22 @@
 
 </style>
 
-<h2>RAMADDA CSV Utils Commands</h2>
-<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA CSV Utils package provides 224 commands for manipulating CSV and other types of files</center>
+<h2>RAMADDA SeeSV</h2>
+<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Add Values'>Add Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric/Boolean'>Numeric/Boolean</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc.'>Misc.</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 224 commands for manipulating CSV and other types of files</center>
 
 
 <h2>Introduction</h2>
-The RAMADDA CSV commands can be used both interactively from within RAMADDA as well as via the command line. Help with the interactive version can be viewed
+The RAMADDA SeeSV can be used both interactively from within RAMADDA as well as via the command line. Help with the interactive version can be viewed
 <a href="https://ramadda.org/repository/userguide/etl.html">here</a>.
-The examples here show the command line use. If running interactively the commands are the same form except for the csv calls and the specification of the input file. So, for example, if you are calling the tool from the command line as:
+<p>
+For brevity, in the below documentation we're assuming  that you are using an alias:
+<pre>
+alias seesv="sh ~/seesv/seesv.sh"  
+</pre>
+
+The examples here show the command line use. If running interactively the commands are the same form except for the seesv calls and the specification of the input file. So, for example, if you are calling the tool from the command line as:
 <pre class=example>
-csv -columns column1,column2 -p file.csv > output.csv
+seesv -columns column1,column2 -p file.csv > output.csv
 </pre>
 
 The corresponding commands interactively would be:
@@ -52,47 +83,45 @@ The corresponding commands interactively would be:
 -columns column1,column2
 </pre>
 
-For brevity, in the below documentation we're assuming  that you are using an alias:
-<pre>
-alias csv="sh ~/csvutil/csv.sh"  
-</pre>
 
 <h2>Install</h2>
 <ul>
-<li> Download the csvutil.zip file from the RAMADDA <a href=https://geodesystems.com/repository/alias/release>download</a> site
+<li> Download the seesv.zip file from the RAMADDA <a href=https://geodesystems.com/repository/alias/release>download</a> site
 <li> Unzip the file
 <li> Consult the README
-<li> The csv utils run using Java 1.8 or higher. Set the JAVA environment variable to point to the java runtime.
-<li> Usage:<br> csv &lt;any number of commands&gt; -p &ltinput file&gt; &gt; output file
+<li> SeeSV runs using Java 1.8 or higher. Set the JAVA environment variable to point to the java runtime.
+<li> Usage:<br>seesv &lt;any number of commands&gt; -p &ltinput file&gt; &gt; output file
 </ul>
 <p>
 
 
 <h2>Basic Use</h2>  
-The general use of the CSV tools is as follows:
+The general use of the SeeSV tools is as follows:
 <pre class=examples>
-csv &lt;a number of processing commands&gt; &lt;some output command&gt; file.csv &gt; output.csv
+  seesv &lt;a number of processing commands&gt; &lt;some output command&gt; file.csv &gt; output.csv
+#or
+seesv &lt;a number of processing commands&gt; &lt;some output command&gt; -o output.csv   file.csv 
 
 #To show help:
-csv -help
+seesv -help
 
 #To show help on a topic:
-csv -help:some_topic
+seesv -help:some_topic
 
 #With no processing commands and just printing the header:
-csv -printheader file.csv
+seesv -printheader file.csv
 
 #Or a shortcut
-csv -ph file.csv
+seesv -ph file.csv
 
 #With no processing commands and csv output:
-csv -p file.csv &gt; output.csv
+seesv -p file.csv &gt; output.csv
 
 #With no processing commands and a record oriented  output:
-csv -record file.csv &gt; output.csv
+seesv -record file.csv &gt; output.csv
 
 #With the -columns command printing csv output
-csv -columns column1,column2 -p file.csv > output.csv
+seesv -columns column1,column2 -p file.csv > output.csv
 </pre>
 
 
@@ -113,7 +142,7 @@ column_1,column_2,some_funny_column
 
 You can always use the <span class=cmd>-ids</span> command to list the ids
 <pre class=examples>
-csv -ids -printheader test.csv
+seesv -ids -printheader test.csv
 </pre>
 
 
@@ -121,37 +150,37 @@ csv -ids -printheader test.csv
 <pre class=examples>
 ####  selecting columns
 #Subset test.csv and only include column1 and column2
-csv -columns column1,column2 -p test.csv > newtest.csv
+seesv -columns column1,column2 -p test.csv > newtest.csv
 
 #You can also use numeric indices - zero based
-csv -columns 0,1 -p test.csv > newtest.csv
+seesv -columns 0,1 -p test.csv > newtest.csv
 
 #Specify a range of columns
 #either using column names:
-csv -columns column1-columnN -p test.csv > newtest.csv
+seesv -columns column1-columnN -p test.csv > newtest.csv
 #or indices:
-csv -columns 1-5,6,7,10-15 -p test.csv > newtest.csv
+seesv -columns 1-5,6,7,10-15 -p test.csv > newtest.csv
 
 #or mix and match
-csv -columns 0-1,columnA,columnB,columnF-columnZ -p test.csv > newtest.csv
+seesv -columns 0-1,columnA,columnB,columnF-columnZ -p test.csv > newtest.csv
 
 #Specify a step:
-#csv -columns start-end:step
+#seesv -columns start-end:step
 
 #e.g. below gives 0,3,6,9,12,15
-csv -columns 0-15:3
+seesv -columns 0-15:3
 
 #include all columns except column1
-csv -notcolumns column1 -p test.csv > newtest.csv
+seesv -notcolumns column1 -p test.csv > newtest.csv
 
 #subset columns and then change the values 
-csv -columns column1,column2 -change column1,column2 "pattern" "new value" -p test.csv > newtest.csv
+seesv -columns column1,column2 -change column1,column2 "pattern" "new value" -p test.csv > newtest.csv
 
 #Only include column1 and then only pass through unique values
-csv -columns column1 -unique 0 -p test.csv > newtest.csv
+seesv -columns column1 -unique 0 -p test.csv > newtest.csv
 
 #Only pass throught unique values in the first column and then sort the output
-csv -columns column1 -unique 0 -sort column1 -p test.csv > newtest.csv
+seesv -columns column1 -unique 0 -sort column1 -p test.csv > newtest.csv
 
 
 </pre>
@@ -162,24 +191,24 @@ Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XM
 
 <pre class=examples>
 #Specify a bar as a delimiter
-csv -delimiter "|" 
+seesv -delimiter "|" 
 
 #Specify tab as  delimiter
-csv -delimiter tab  
+seesv -delimiter tab  
 
 #Specify spaces as  delimiter
-csv -delimiter space  
+seesv -delimiter space  
 
 #Fixed widths
 #e.g,, 4 columns with the widths
-csv -widths 10,5,15,30 
+seesv -widths 10,5,15,30 
 
 #prepend the column names
-csv -header "name1,name2,name3"
+seesv -header "name1,name2,name3"
 
 #clean up the header names
 #This removes extraneous characters and upper cases the first letter of each word
-csv -headernames
+seesv -headernames
 
 
 </pre>
@@ -321,7 +350,7 @@ and more
 
 We are going to extract the names and age with:
 <pre>
-csv -text "name,age" "(?m)(?s).*?Person:(.*?$)" "name:(.*?)age: *(\d+)"
+seesv -text "name,age" "(?m)(?s).*?Person:(.*?$)" "name:(.*?)age: *(\d+)"
 #The (?m)(?s) are directives to match multiple lines
 #The (.*?$) in the first pattern is the group that is matched 
 #The second pattern: name:(.*?)age: *(\d+)  has 2 groups, one  for the name and one for the age
@@ -351,7 +380,7 @@ Person:  name: Sally age: 93
 
 Extract the data with:
 <pre>
-csv -extractpattern "name,age" "name:(.*)age:(.*)" -p file.txt
+seesv -extractpattern "name,age" "name:(.*)age:(.*)" -p file.txt
 </pre>
 
 
@@ -369,7 +398,7 @@ header1,header2...<br>
 <b>Arguments:</b><br>
 <ul>
 <i>db</i>
-The database id (defined in the environment) values:property:csv_dbs <br>
+The database id (defined in the environment) values:property:seesv_dbs <br>
 <i>table</i>
 Comma separate list of tables to select from<br>
 <i>columns</i>
@@ -393,14 +422,14 @@ e.g.:
 
 Where  for the given db  there should be 2 environment variables:
 <pre>
-export csv_db_&lt;db&gt;_url=JDBC URL
-export csv_db_&lt;db&gt;_tables=List of tables that can be accessed
+export seesv_db_&lt;db&gt;_url=JDBC URL
+export seesv_db_&lt;db&gt;_tables=List of tables that can be accessed
 </pre>
 So for the db "test" in a Derby database:
 
 <pre>
-export csv_db_test_url=jdbc:derby:/Users/home/derby/db1;create=true;
-export csv_db_test_tables=test_table1,test_table2,test_table3
+export seesv_db_test_url=jdbc:derby:/Users/home/derby/db1;create=true;
+export seesv_db_test_tables=test_table1,test_table2,test_table3
 </pre>
 
 
@@ -457,7 +486,7 @@ For example, the below command would change the value of column2 for all rows
 that match the -pattern column1 string command.
 
 <pre>
-  csv -if -pattern column1 string -change column2 .* XXX  -endif
+seesv -if -pattern column1 string -change column2 .* XXX  -endif
 </pre>
 <p></div><a name='-start'></a><div class=command> <i><a href='#-start'>-start</a></i>  &lt;start pattern&gt; </div><div class=command-block>Start at pattern in source file<br>
 <b>Arguments:</b><br>
@@ -754,12 +783,12 @@ sally,p7
 
 If you only want voters whose  precinct is in the precints.csv you would do:
 <pre>
-  csv -ifin precinct precincts.csv voter_precinct -p voters.csv
+seesv -ifin precinct precincts.csv voter_precinct -p voters.csv
 </pre>
 
 The  <span class=cmd>-ifnotin</span> command does the opposite only passing through rows that are not in the file, e.g.:
 <pre>
-  csv -ifnotin precinct precincts.csv voter_precinct -p voters.csv
+seesv -ifnotin precinct precincts.csv voter_precinct -p voters.csv
 </pre>
 
 
@@ -813,7 +842,7 @@ full address,city,state
 And you only want to pass through rows in full.csv
 address begins with some address in the short.csv file. To do this call:
 <pre>
-  csv -ifmatchesfile "^${value}.*" address short.csv full_address -p fill.csv
+seesv -ifmatchesfile "^${value}.*" address short.csv full_address -p fill.csv
 </pre>
 
 What this does is construct regexp patterns as:
@@ -1961,18 +1990,18 @@ Buffalo,NY
 
 To geocode
 <pre class=examples>
-csv -geocode city,state "" "" ...
+seesv -geocode city,state "" "" ...
 </pre>
 
 This concatenates the city and state field, e.g., "Boulder CO" and calls the API to geolocate.
 <p>
 To use internal location tables set the prefix argument to one of:
 <pre>
-csv -geocode columns "city:" "" ...
-csv -geocode columns "county:" "" ...
-csv -geocode columns "state:" "" ...
-csv -geocode columns "zip:" "" ...  
-csv -geocode columns "country:" "" ...    
+seesv -geocode columns "city:" "" ...
+seesv -geocode columns "county:" "" ...
+seesv -geocode columns "state:" "" ...
+seesv -geocode columns "zip:" "" ...  
+seesv -geocode columns "country:" "" ...    
 </pre>
 
 
@@ -1987,7 +2016,7 @@ Pueblo
 
 You can geocode with:
 <pre>
-  csv -geocode city "" "CO"
+seesv -geocode city "" "CO"
 </pre>
 
 
@@ -2040,7 +2069,7 @@ Jim Smith,2171207308
 
 To add the lat/lon:
 <pre>
-csv -geocodejoin precinct precincts.csv precinct latitude longitude
+seesv -geocodejoin precinct precincts.csv precinct latitude longitude
 </pre>
 
 
@@ -2080,7 +2109,7 @@ City 3,40.039912,-105.081393
 You can add the country and timezone with:
 
 <pre>
-csv -geoname countries  latitude longitude -geoname timezones  latitude longitude
+seesv -geoname countries  latitude longitude -geoname timezones  latitude longitude
 </pre>
 
 
@@ -2122,7 +2151,7 @@ City 3,40.039912,-105.081393
 You can add the elevation with:
 
 <pre>
-csv -geoname countries  latitude longitude -geoname timezones  latitude longitude
+seesv -geoname countries  latitude longitude -geoname timezones  latitude longitude
 </pre>
 
 
@@ -2163,7 +2192,7 @@ Colorado
 The region is added with:
 
 <pre>
-csv -region name
+seesv -region name
 </pre>
 <p></div><a name='-population'></a><div class=command> <i><a href='#-population'>-population</a></i>  &lt;columns&gt;  &lt;prefix&gt;  &lt;suffix&gt; </div><div class=command-block>Add in population from address<br>
 <b>Arguments:</b><br>
@@ -2196,7 +2225,7 @@ PRECISELY_API_KEY=
 
 Call
 <pre>
-  csv -neighborhood latitude_column longitude_column
+seesv -neighborhood latitude_column longitude_column
 </pre>  
 
 
@@ -2385,7 +2414,7 @@ v1,v2,v3
 The addheader command is run as below passing in one set of name/value arguments. If the value has spaces then group the
 text with {...} brackets.
 <pre>
-  csv -addheader "arg1 value1 arg2 {value 2} arg3 value3"
+  seesv -addheader "arg1 value1 arg2 {value 2} arg3 value3"
 </pre>
 
 The args are typically of the form <i>canonical_field_name.some_property</i> where canonical field
@@ -2403,7 +2432,7 @@ some date,year,some field
 
 Running this command:
 <pre>
-csv -addheader "some_date.type date date.format yyyy-MM-dd year.type date year.format yyyy some_field.id temperature some_field.label {The Temperature} some_field.type celsius" -p testdate.csv
+seesv -addheader "some_date.type date date.format yyyy-MM-dd year.type date year.format yyyy some_field.id temperature some_field.label {The Temperature} some_field.type celsius" -p testdate.csv
 </pre>
 
 will result in an output:
@@ -2500,3 +2529,13 @@ How often to print<br>
 <br>
 </ul>
 </div></ul>
+</div>
+<p>
+<div  class="childlist" ><table  width="100%" ></table></div>
+<p>&nbsp;<p>
+<a href="etl.html"><span title="Previous: ETL Tools"><i  style='font-size:20pt;'  class="fa fa-caret-left "></i></span></a> <a href="dataexample.html"><span title="Next: Data Example"><i  style='font-size:20pt;'  class="fa fa-caret-right "></i></span></a>  <a href="toc.html#seesv.html"><span title="Table of contents"><i  style='font-size:20pt;'  class="fa fa-list "></i></span></a>
+<p>
+</div>
+</body>
+</html>
+
