@@ -1875,6 +1875,7 @@ public class WikiUtil {
 		    if (tmp != null) {
 			clazz = tmp;
 		    }
+                    String       id = Utils.getProperty(props,"id",(String)null);
 		    style = (String) props.get("style");
 		    if (style == null) {
 			style = "";
@@ -1900,6 +1901,7 @@ public class WikiUtil {
 			style += " background: " + bg + "; ";
 		    }
 		    buff.append(HU.open(HU.TAG_DIV,
+					(id!=null?HU.id(id):"") +
 					HU.cssClass(clazz)
 					+ HU.style(style)));
 
