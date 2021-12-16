@@ -23,6 +23,7 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
+import org.apache.commons.lang3.text.StrTokenizer;
 
 import java.io.*;
 
@@ -1114,6 +1115,85 @@ public abstract class Processor extends CsvOperator {
         }
     }
 
+
+    public static class Ext extends Processor {
+
+	Process process;
+
+	OutputStream outputStream;
+	InputStream inputStream;	
+	PrintWriter pw;
+	BufferedReader reader;
+	StrTokenizer tokenizer;
+
+
+        /**
+         * _more_
+         */
+        public Ext(CsvUtil csvUtil, TextReader ctx,String id, List<String> args) {
+
+	    String path = (String)csvUtil.getProperty("seesv_ext_" + id);
+	    if(path==null)  fatal(ctx,"Could not find path property seesv_ext_" + id);
+	    List<String> commands = new ArrayList<String>();
+	    commands.add(path);
+	    commands.addAll(args);
+	    try {
+		//		System.err.println(commands);
+		tokenizer = StrTokenizer.getCSVInstance();
+		tokenizer.setEmptyTokenAsNull(true);
+		ProcessBuilder pb = new ProcessBuilder(commands);
+		process = pb.start();
+		outputStream = process.getOutputStream();
+		inputStream = process.getInputStream();		
+		pw = new PrintWriter(outputStream);
+
+		InputStreamReader isr =
+		    new InputStreamReader(
+					  inputStream,
+					  java.nio.charset.StandardCharsets.UTF_8);
+		reader = new BufferedReader(isr);
+	    } catch(Exception exc) {
+		fatal(ctx,"Error creating external command:" + args,exc);
+	    }
+	}
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param ctx _more_
+         * @param row _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) throws Exception {
+	    String output = CsvUtil.columnsToString(row.getValues(),",");
+	    pw.println(output);
+	    pw.flush();
+	    //	    System.err.println("write:" + output);
+	    Row r = new Row();
+	    String line = reader.readLine();
+	    //	    System.err.println("read:" + line);
+	    if(line==null) return null;
+	    if(line.trim().equals("_null_")) return null;
+	    List<String> toks = Utils.tokenizeColumns(line, tokenizer);
+	    for(String tok: toks) {
+		r.add(tok);
+	    }
+	    return r;
+        }
+
+        public void finish(TextReader ctx) throws Exception {
+            super.finish(ctx);
+	    process.destroy();
+	}
+
+    }
+    
 
 
 

@@ -2262,6 +2262,10 @@ public class CsvUtil {
         new Cmd("-comment", "", "string"),
         new Cmd("-verify",
                 "Verify that all of the rows have the same # of columns"),
+        new Cmd("-ext",
+                "Execute the external program",
+		new Arg("program_id",
+			"matches with seesv.ext.&lt;program_id&gt;=/path")),	
 
 
         /*  Output   */
@@ -2950,6 +2954,18 @@ public class CsvUtil {
 		ctx.addProcessor(new Processor.Verifier(ctx));
 		return i;
 	    });
+	defineFunction("-ext",1,(ctx,args,i) -> {
+		List<String> a = new ArrayList<String>();
+		String id = args.get(++i);
+		int j=i+1;
+		for(;j<args.size();j++) {
+		    String arg = args.get(j);
+		    if(arg.startsWith("-")) break;
+		    a.add(arg);
+		}
+		ctx.addProcessor(new Processor.Ext(this,ctx,id,a));
+		return j-1;
+	    });	
 
 	defineFunction("-count",0,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Counter(ctx));
@@ -4212,6 +4228,7 @@ public class CsvUtil {
 	List<String> newArgs = new ArrayList<String>();
 	for (int i = 0; i < args.size(); i++) {
 	    String arg = args.get(i);
+
 	    if(arg.equals("-value")) {
 		macros.put(args.get(++i),args.get(++i));
 		continue;
@@ -4266,6 +4283,7 @@ public class CsvUtil {
 	}
 
 	args = newArgs;
+	//	debugArgs = true;
 
 	for (int i = 0; i < args.size(); i++) {
 	    String arg = args.get(i);
