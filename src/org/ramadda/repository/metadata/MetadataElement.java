@@ -960,11 +960,16 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                                       HtmlUtils.SIZE_5);
             }
 
-            return HtmlUtils.fileInput(arg, HtmlUtils.SIZE_70) + image
-                   + "<br>" + msgLabel("Or download URL")
-                   + HtmlUtils.space(1)
-                   + HtmlUtils.input(arg + "_url", "", HtmlUtils.SIZE_70)
-                   + extra;
+	    StringBuilder sb = new StringBuilder();
+	    String inputId = formInfo.getId()+"_" + arg;
+            sb.append(HtmlUtils.fileInput(arg, HtmlUtils.SIZE_70+HtmlUtils.id(inputId)) + image
+		      + "<br>" + msgLabel("Or download URL")
+		      + HtmlUtils.space(1)
+		      + HtmlUtils.input(arg + "_url", "", HtmlUtils.SIZE_70)
+		      + extra);
+	    sb.append(HtmlUtils.script("Ramadda.initFormUpload(" +HU.squote(formInfo.getId())+"," + HU.squote(inputId)+");"));
+		      //+"','" + formInfo.getId()+"_dnd"+"');"));
+	    return sb.toString();
         } else if (dataType.equals(DATATYPE_GROUP)) {
             StringBuffer   sb            = new StringBuffer();
             String         lastGroup     = null;
