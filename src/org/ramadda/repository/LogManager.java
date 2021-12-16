@@ -856,6 +856,7 @@ public class LogManager extends RepositoryManager {
             try {
 		java.util.Properties props = System.getProperties();
 		props.put("log4j2.configurationFile",log4JFile.toString());
+		props.put("LOG4J_FORMAT_MSG_NO_LOOKUPS","true");
 		//                org.apache.log4j.PropertyConfigurator.configure(log4JFile.toString());
             } catch (Exception exc) {
                 System.err.println("RAMADDA: Error configuring log4j:" + exc);
