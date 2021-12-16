@@ -90,9 +90,37 @@ textarea, input {
     resize:both !important;
 }
 
-select, input, password, fileinput, textarea {
+select, input, password, .fileinput, textarea {
     border  :var(--basic-border)
 }
+
+.fileinput {
+
+}
+
+.fileinput_wrapper {
+    display:inline-block;
+    border  :var(--basic-border);
+    padding:2px;
+    cursor:pointer;
+    margin-right:10px;
+}
+
+.fileinput_wrapper:hover {
+    border  :var(--highlight-border);
+    background:#fafafa;
+}
+
+.fileinput_label {
+    display:inline-block;
+    width:300px;
+}
+
+.fileinput_label_empty {
+    margin-left:4px;
+    color:#ccc;
+}
+
 
 
 input:focus, textarea:focus, .ramadda-search-input:focus {
@@ -4987,10 +5015,10 @@ a.wiki-link-noexist {
 .ramadda-file-dnd-target {
     min-width:400px;
     display:inline-block;
-    margin-left:10px;
     padding:2px;
     background:#efefef;
     border: 2px dashed #aaa;    
+    margin-top:2px;
 }
 
 .ramadda-drop-active {

@@ -11,59 +11,85 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
     fileDrops:{
     },
-    initFormUpload:function(formId, targetId) {
-	let target = $("#" + targetId);
-	let fileDrop = {
-	    files:{},
-	    cnt:0,
-	    added:false
-	};
+    initFormUpload:function(formId,  inputId, targetId) {
 	let form = $("#"+formId);
-	target.append(HU.div([CLASS,"ramadda-dnd-target-files",ID,formId+"_dnd_files"]));
-	let files=$("#" +formId+"_dnd_files");
-	Utils.initDragAndDrop(target,
-			      event=>{
-			      },
-			      event=>{
-			      },
-			      (event,item,result,wasDrop) =>{
-				  fileDrop.cnt++;
-				  let name = item.name;
-				  if(!name) {
-				      let isImage = item.type && item.type.match("image/.*");
-				      name = prompt("Entry file name:",isImage?"image":"file");
-				      if(!name) return;
-				      if(item.type) {
-					  if(item.type=="text/plain") {
-					      if(!name.endsWith(".txt")) {
-						  name = name+".txt";
+	let input = $("#"+ inputId);
+	let custom = HU.div([TITLE,"Click to select a file", ID,inputId+"_filewrapper",CLASS, 'fileinput_wrapper'],HU.getIconImage("fas fa-cloud-upload-alt") +" " +HU.div([ID,inputId+"_filename",CLASS,"fileinput_label"]));
+	input.after(custom);
+	input.hide();
+	let inputWrapper = $("#" +inputId+"_filewrapper");
+	let inputLabel = $("#" +inputId+"_filename");
+	inputWrapper.click(()=>{input.trigger('click');});
+	let inputChanger = ()=>{
+	    let file  = input[0].files? input[0].files[0]:null;
+	    let fileName =  file?file.name:input.val(); 
+	    let idx = fileName.lastIndexOf("\\");
+	    if(idx<0)
+		idx = fileName.lastIndexOf("/");		
+	    if(idx>=0) {
+		fileName = fileName.substring(idx+1);
+	    }
+	    if(file) {
+		fileName = fileName +" (" + Utils.formatFileLength(file.size)+")";
+	    }
+	    if(fileName=="") fileName = HU.span([CLASS,"fileinput_label_empty"],"Please select a file");
+	    $('#' + inputId+"_filename").html(fileName); 
+	};
+	input.bind('change', inputChanger);
+	inputChanger();
+
+	if(targetId) {
+	    let target = $("#" + targetId);
+	    let fileDrop = {
+		files:{},
+		cnt:0,
+		added:false
+	    };
+	    target.append(HU.div([CLASS,"ramadda-dnd-target-files",ID,formId+"_dnd_files"]));
+	    let files=$("#" +formId+"_dnd_files");
+	    Utils.initDragAndDrop(target,
+				  event=>{
+				  },
+				  event=>{
+				  },
+				  (event,item,result,wasDrop) =>{
+				      fileDrop.cnt++;
+				      let name = item.name;
+				      if(!name) {
+					  let isImage = item.type && item.type.match("image/.*");
+					  name = prompt("Entry file name:",isImage?"image":"file");
+					  if(!name) return;
+					  if(item.type) {
+					      if(item.type=="text/plain") {
+						  if(!name.endsWith(".txt")) {
+						      name = name+".txt";
+						  }
+					      } else {
+						  let type  = item.type.replace(/.*\//,"");
+						  name = name+"."+type;
 					      }
-					  } else {
-					      let type  = item.type.replace(/.*\//,"");
-					      name = name+"."+type;
 					  }
 				      }
-				  }
-				  let listId = formId +"_list" + fileDrop.cnt;
-				  let inputId = formId +"_file" + fileDrop.cnt;
-				  let nameInputId = formId +"_file_name" + fileDrop.cnt;
-				  let fileName = "upload_file_" + fileDrop.cnt;
-				  let nameName = "upload_name_" + fileDrop.cnt;				  				  
-				  fileDrop.files[formId] = result;
-				  let del =HU.span([CLASS,"ramadda-clickable",ID,listId+"_trash"],HU.getIconImage(icon_trash));
-				  let size = Utils.isDefined(item.size)?Utils.formatFileLength(item.size):"";
-				  files.append(HU.div([ID,listId],del +" " +name+" "+size));
-				  form.append(HU.tag("input",['type','hidden','name',fileName,'id',inputId]));
-				  form.append(HU.tag("input",['type','hidden','name',nameName,'id',nameInputId]));				  
-				  $("#"+inputId).val(result);
-				  $("#"+nameInputId).val(name);				  
-				  $("#"+listId+"_trash").click(function(){
-				      $("#"+listId).remove();
-				      $("#"+inputId).remove();
-				      $("#"+nameInputId).remove();				      
-				  });
-			      },null, true);
-			      
+				      let listId = formId +"_list" + fileDrop.cnt;
+				      let inputId = formId +"_file" + fileDrop.cnt;
+				      let nameInputId = formId +"_file_name" + fileDrop.cnt;
+				      let fileName = "upload_file_" + fileDrop.cnt;
+				      let nameName = "upload_name_" + fileDrop.cnt;				  				  
+				      fileDrop.files[formId] = result;
+				      let del =HU.span([CLASS,"ramadda-clickable",ID,listId+"_trash"],HU.getIconImage(icon_trash));
+				      let size = Utils.isDefined(item.size)?Utils.formatFileLength(item.size):"";
+				      files.append(HU.div([ID,listId],del +" " +name+" "+size));
+				      form.append(HU.tag("input",['type','hidden','name',fileName,'id',inputId]));
+				      form.append(HU.tag("input",['type','hidden','name',nameName,'id',nameInputId]));				  
+				      $("#"+inputId).val(result);
+				      $("#"+nameInputId).val(name);				  
+				      $("#"+listId+"_trash").click(function(){
+					  $("#"+listId).remove();
+					  $("#"+inputId).remove();
+					  $("#"+nameInputId).remove();				      
+				      });
+				  },null, true);
+	}			      
 
     },
     handleDropEvent:function(event,file, result,entryId,callback) {
