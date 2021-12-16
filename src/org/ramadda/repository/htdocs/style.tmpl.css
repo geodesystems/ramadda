@@ -10,9 +10,7 @@
     --nav-color:#000;
     --nav-link-color:#000;
 
-
     --highlight-color:#398B54;
-    --highlight-color:#FA2900;
     --highlight-color:#213E86;
     --highlight-color:#4946DD;
     --highlight-color:#1D9EAE;
@@ -108,7 +106,7 @@ select, input, password, .fileinput, textarea {
 
 .fileinput_wrapper:hover {
     border  :var(--highlight-border);
-    background:#fafafa;
+    background:var(--highlight-background);
 }
 
 .fileinput_label {
@@ -5016,9 +5014,12 @@ a.wiki-link-noexist {
     min-width:400px;
     display:inline-block;
     padding:2px;
-    background:#efefef;
     border: 2px dashed #aaa;    
     margin-top:2px;
+}
+
+.ramadda-file-dnd-target:hover {
+    background:var(--highlight-background);
 }
 
 .ramadda-drop-active {
