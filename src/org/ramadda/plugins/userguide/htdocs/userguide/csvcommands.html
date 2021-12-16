@@ -67,9 +67,9 @@ pre {
 <h2>Introduction</h2>
 The RAMADDA CSV commands can be used both interactively from within RAMADDA as well as via the command line. Help with the ineractive version can be viewed
 <a href="https://ramadda.org/repository/userguide/etl.html">here</a>.
-The examples here show the command line use. If running interactively the commands are the same form except for the csv.sh calls and the specification of the input file. So, for example, if you are calling the tool from the command line as:
+The examples here show the command line use. If running interactively the commands are the same form except for the csv calls and the specification of the input file. So, for example, if you are calling the tool from the command line as:
 <pre class=example>
-csv.sh -columns column1,column2 -p file.csv > output.csv
+csv -columns column1,column2 -p file.csv > output.csv
 </pre>
 
 The corresponding commands interactively would be:
@@ -77,13 +77,17 @@ The corresponding commands interactively would be:
 -columns column1,column2
 </pre>
 
+For brevity, in the below documentation we're assuming  that you are using an alias:
+<pre>
+alias csv="sh ~/csvutil/csv.sh"  
+</pre>
 
 <h2>Install</h2>
 <ul>
 <li> Download the csvutil.zip file from the RAMADDA <a href=https://geodesystems.com/repository/alias/release>download</a> site
 <li> Unzip the file
 <li> Consult the README
-<li> Usage:<br> csv.sh &lt;any number of commands&gt; -p &ltinput file&gt; &gt; output file
+<li> Usage:<br> csv &lt;any number of commands&gt; -p &ltinput file&gt; &gt; output file
 </ul>
 <p>
 
@@ -91,22 +95,22 @@ The corresponding commands interactively would be:
 <h2>Basic Use</h2>  
 The general use of the CSV tools is as follows:
 <pre class=examples>
-csv.sh &lt;a number of processing commands&gt; &lt;some output command&gt; file.csv &gt; output.csv
+csv &lt;a number of processing commands&gt; &lt;some output command&gt; file.csv &gt; output.csv
 
 #With no processing commands and just printing the header:
-csv.sh -printheader file.csv
+csv -printheader file.csv
 
 #Or a shortcut
-csv.sh -ph file.csv
+csv -ph file.csv
 
 #With no processing commands and csv output:
-csv.sh -p file.csv &gt; output.csv
+csv -p file.csv &gt; output.csv
 
 #With no processing commands and a record oriented  output:
-csv.sh -record file.csv &gt; output.csv
+csv -record file.csv &gt; output.csv
 
 #With the -columns command printing csv output
-csv.sh -columns column1,column2 -p file.csv > output.csv
+csv -columns column1,column2 -p file.csv > output.csv
 </pre>
 
 
@@ -127,7 +131,7 @@ column_1,column_2,some_funny_column
 
 You can always use the <span class=cmd>-ids</span> command to list the ids
 <pre class=examples>
-csv.sh -ids -printheader test.csv
+csv -ids -printheader test.csv
 </pre>
 
 
@@ -135,38 +139,37 @@ csv.sh -ids -printheader test.csv
 <pre class=examples>
 ####  selecting columns
 #Subset test.csv and only include column1 and column2
-csv.sh -columns column1,column2 -p test.csv > newtest.csv
+csv -columns column1,column2 -p test.csv > newtest.csv
 
 #You can also use numeric indices - zero based
-csv.sh -columns 0,1 -p test.csv > newtest.csv
+csv -columns 0,1 -p test.csv > newtest.csv
 
 #Specify a range of columns
 #either using column names:
-csv.sh -columns column1-columnN -p test.csv > newtest.csv
+csv -columns column1-columnN -p test.csv > newtest.csv
 #or indices:
-csv.sh -columns 1-5,6,7,10-15 -p test.csv > newtest.csv
+csv -columns 1-5,6,7,10-15 -p test.csv > newtest.csv
 
 #or mix and match
-csv.sh -columns 0-1,columnA,columnB,columnF-columnZ -p test.csv > newtest.csv
+csv -columns 0-1,columnA,columnB,columnF-columnZ -p test.csv > newtest.csv
 
 #Specify a step:
-#csv.sh -columns start-end:step
+#csv -columns start-end:step
 
 #e.g. below gives 0,3,6,9,12,15
-csv.sh -columns 0-15:3
+csv -columns 0-15:3
 
 #include all columns except column1
-csv.sh -notcolumns column1 -p test.csv > newtest.csv
+csv -notcolumns column1 -p test.csv > newtest.csv
 
 #subset columns and then change the values 
-csv.sh -columns column1,column2 -change column1,column2 "pattern" "new value" -p test.csv > newtest.csv
+csv -columns column1,column2 -change column1,column2 "pattern" "new value" -p test.csv > newtest.csv
 
 #Only include column1 and then only pass through unique values
-csv.sh -columns column1 -unique 0 -p test.csv > newtest.csv
+csv -columns column1 -unique 0 -p test.csv > newtest.csv
 
 #Only pass throught unique values in the first column and then sort the output
-csv.sh -columns column1 -unique 0 -sort column1 -p test.csv > newtest.csv
-
+csv -columns column1 -unique 0 -sort column1 -p test.csv > newtest.csv
 
 
 </pre>
@@ -177,24 +180,24 @@ Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XM
 
 <pre class=examples>
 #Specify a bar as a delimiter
-csv.sh -delimiter "|" 
+csv -delimiter "|" 
 
 #Specify tab as  delimiter
-csv.sh -delimiter tab  
+csv -delimiter tab  
 
 #Specify spaces as  delimiter
-csv.sh -delimiter space  
+csv -delimiter space  
 
 #Fixed widths
 #e.g,, 4 columns with the widths
-csv.sh -widths 10,5,15,30 
+csv -widths 10,5,15,30 
 
 #prepend the column names
-csv.sh -header "name1,name2,name3"
+csv -header "name1,name2,name3"
 
 #clean up the header names
 #This removes extraneous characters and upper cases the first letter of each word
-csv.sh -headernames
+csv -headernames
 
 
 </pre>
@@ -336,7 +339,7 @@ and more
 
 We are going to extract the names and age with:
 <pre>
-csv.sh -text "name,age" "(?m)(?s).*?Person:(.*?$)" "name:(.*?)age: *(\d+)"
+csv -text "name,age" "(?m)(?s).*?Person:(.*?$)" "name:(.*?)age: *(\d+)"
 #The (?m)(?s) are directives to match multiple lines
 #The (.*?$) in the first pattern is the group that is matched 
 #The second pattern: name:(.*?)age: *(\d+)  has 2 groups, one  for the name and one for the age
@@ -366,7 +369,7 @@ Person:  name: Sally age: 93
 
 Extract the data with:
 <pre>
-csv.sh -extractpattern "name,age" "name:(.*)age:(.*)" -p file.txt
+csv -extractpattern "name,age" "name:(.*)age:(.*)" -p file.txt
 </pre>
 
 
@@ -472,7 +475,7 @@ For example, the below command would change the value of column2 for all rows
 that match the -pattern column1 string command.
 
 <pre>
-  csv.sh -if -pattern column1 string -change column2 .* XXX  -endif
+  csv -if -pattern column1 string -change column2 .* XXX  -endif
 </pre>
 <p></div><a name='-start'></a><div class=command> <i><a href='#-start'>-start</a></i>  &lt;start pattern&gt; </div><div class=command-block>Start at pattern in source file<br>
 <b>Arguments:</b><br>
@@ -1976,18 +1979,18 @@ Buffalo,NY
 
 To geocode
 <pre class=examples>
-csv.sh -geocode city,state "" "" ...
+csv -geocode city,state "" "" ...
 </pre>
 
 This concatenates the city and state field, e.g., "Boulder CO" and calls the API to geolocate.
 <p>
 To use internal location tables set the prefix argument to one of:
 <pre>
-csv.sh -geocode columns "city:" "" ...
-csv.sh -geocode columns "county:" "" ...
-csv.sh -geocode columns "state:" "" ...
-csv.sh -geocode columns "zip:" "" ...  
-csv.sh -geocode columns "country:" "" ...    
+csv -geocode columns "city:" "" ...
+csv -geocode columns "county:" "" ...
+csv -geocode columns "state:" "" ...
+csv -geocode columns "zip:" "" ...  
+csv -geocode columns "country:" "" ...    
 </pre>
 
 
@@ -2002,7 +2005,7 @@ Pueblo
 
 You can geocode with:
 <pre>
-  csv.sh -geocode city "" "CO"
+  csv -geocode city "" "CO"
 </pre>
 
 
@@ -2055,7 +2058,7 @@ Jim Smith,2171207308
 
 To add the lat/lon:
 <pre>
-csv.sh -geocodejoin precinct precincts.csv precinct latitude longitude
+csv -geocodejoin precinct precincts.csv precinct latitude longitude
 </pre>
 
 
@@ -2095,7 +2098,7 @@ City 3,40.039912,-105.081393
 You can add the country and timezone with:
 
 <pre>
-csv.sh -geoname countries  latitude longitude -geoname timezones  latitude longitude
+csv -geoname countries  latitude longitude -geoname timezones  latitude longitude
 </pre>
 
 
@@ -2137,7 +2140,7 @@ City 3,40.039912,-105.081393
 You can add the elevation with:
 
 <pre>
-csv.sh -geoname countries  latitude longitude -geoname timezones  latitude longitude
+csv -geoname countries  latitude longitude -geoname timezones  latitude longitude
 </pre>
 
 
@@ -2178,7 +2181,7 @@ Colorado
 The region is added with:
 
 <pre>
-csv.sh -region name
+csv -region name
 </pre>
 <p></div><a name='-population'></a><div class=command> <i><a href='#-population'>-population</a></i>  &lt;columns&gt;  &lt;prefix&gt;  &lt;suffix&gt; </div><div class=command-block>Add in population from address<br>
 <b>Arguments:</b><br>
@@ -2211,7 +2214,7 @@ PRECISELY_API_KEY=
 
 Call
 <pre>
-  csv.sh -neighborhood latitude_column longitude_column
+  csv -neighborhood latitude_column longitude_column
 </pre>  
 
 
