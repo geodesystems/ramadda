@@ -1,4 +1,8 @@
 
+Requirements:
+Java 1.8 or higher installed. Set the JAVA environment variable to
+point to the java runtime.
+
 To run:
 sh csv.sh -help
 
