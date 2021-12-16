@@ -39,14 +39,20 @@
        </exec>
     </target>
       
+    <target name="tagtest" depends="init" >
+      <echo message="tagging with version: ${version} comment: ${version_comment}"/>
+    </target>
+
+
     <target name="tag" depends="version">
-      <echo message="tagging with version: ${version}"/>
+      <echo message="tagging with version: ${version} comment: ${version_comment}"/>
+
       <exec executable="git">
 	<arg value="tag"/>	 
 	<arg value="-a"/>
 	<arg value="${version}"/>
 	<arg value="-m"/>	
-	<arg value="Updating to V${version}"/>	 	 
+	<arg value="Tag: ${version} -- ${version_comment}"/>	 	 
       </exec>
       <exec executable="git">
 	<arg value="push"/>
