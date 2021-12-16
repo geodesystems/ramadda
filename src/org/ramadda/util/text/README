@@ -4,7 +4,13 @@ Java 1.8 or higher installed. Set the JAVA environment variable to
 point to the java runtime.
 
 To run:
+sh csv.sh <commands>
+
+To show help:
 sh csv.sh -help
+
+To show help on a topic:
+sh csv.sh -help:some_topic
 
 e.g.:
 sh csv.sh -columns "0,1,2" -print input.csv
