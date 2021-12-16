@@ -377,21 +377,21 @@ public class CsvUtil {
 
 
     public Connection getDbConnection(TextReader ctx, CsvOperator op, Hashtable<String,String> props, String db, String table) throws Exception {
-	String dbs = getProperty("csv_dbs");
+	String dbs = getProperty("seesv_dbs");
 	if(!Utils.stringDefined(db)) {
 	    op.fatal(ctx, "No db specified." + (dbs!=null?"Available dbs:" + dbs:""));
 
 	}
-	String jdbcUrl = getProperty("csv_db_" + db + "_url");
+	String jdbcUrl = getProperty("seesv_db_" + db + "_url");
 	Properties connectionProps = new Properties();
 	if(jdbcUrl==null) {
-	    op.fatal(ctx, "No csv_db_" + db + "_url environment variable specified. " + (dbs!=null?"Available dbs:" + dbs:""));
+	    op.fatal(ctx, "No seesv_db_" + db + "_url environment variable specified. " + (dbs!=null?"Available dbs:" + dbs:""));
 	}
 
 	String     user            = props.get("db.user");
 	String     password        = props.get("db.password");
-	if(user==null) user = getProperty("csv_db_" + db +"_user");
-	if(password==null) password = getProperty("csv_db_" + db +"_password");	
+	if(user==null) user = getProperty("seesv_db_" + db +"_user");
+	if(password==null) password = getProperty("seesv_db_" + db +"_password");	
 
 	Connection connection = null;
 	try {
@@ -409,7 +409,7 @@ public class CsvUtil {
 
 
 	//Check tables whitelist
-	String tables   = getProperty("csv_db_" + db + "_tables",  "");
+	String tables   = getProperty("seesv_db_" + db + "_tables",  "");
 	List   okTables = Utils.split(tables, ",", true, true);
 	if ((okTables.size() == 1) && okTables.get(0).equals("*")) {
 	    okTables = SqlUtil.getTableNames(connection);
@@ -1668,7 +1668,7 @@ public class CsvUtil {
                 new Arg("header", "header1,header2..."),
                 new Arg("pattern", "", "type", "pattern")),
         new Cmd("-sql", "Read data from the given database",
-                new Arg("db", "The database id (defined in the environment)","type","enumeration","values","property:csv_dbs"),
+                new Arg("db", "The database id (defined in the environment)","type","enumeration","values","property:seesv_dbs"),
 		new Arg("table", "Comma separate list of tables to select from","size","60"),
 		new Arg("columns", "Comma separated list of columns to select"),
 		new Arg("where", "column1:expr:value;column2:expr:value;...\ne.g.: name:like:joe;age:>:60\nWhere expr is: =|<|>|<>|like|notlike","type","rows","delimiter",";","size","60"),				
@@ -2536,7 +2536,7 @@ public class CsvUtil {
 
         PrintWriter pw = new PrintWriter(getOutputStream());
 	String intro = IO.readContents("/org/ramadda/util/text/help/intro.html","");
-	intro = intro.replace("${header}",header.toString()+"<br>The RAMADDA CSV Utils package provides " + cnt +" commands for manipulating CSV and other types of files");
+	intro = intro.replace("${header}",header.toString()+"<br>The RAMADDA SeeSV package provides " + cnt +" commands for manipulating CSV and other types of files");
 	pw.println(intro);
 
 	String html = sb.toString();
@@ -4402,9 +4402,9 @@ public class CsvUtil {
     private void outputScript(List<String> args, TextReader ctx) throws Exception {
 	PrintWriter pw        = new PrintWriter(getOutputStream());
 	pw.println("#!/bin/sh");
-	pw.println("#the CSVUTIL environment variable needs to point to RAMADDA's csv release");
+	pw.println("#the SEESV environment variable needs to point to the seesv.sh script in RAMADDA's SeeSV  release");
 	pw.println("#");
-	pw.print("sh ${CSVUTIL}/csv.sh ");	
+	pw.print("sh ${SEESV}/seesv.sh ");	
 	boolean seenPrint = false;
 	for (String arg: args) {
 	    if(arg.equals("-script")) continue;
@@ -4544,7 +4544,7 @@ public class CsvUtil {
 		public List<Class> getClasses() {
 		    String _name=null;
 		    ArrayList<Class> classes = new ArrayList<Class>();
-		    String prop = System.getenv("CSV_CLASSES");
+		    String prop = System.getenv("SEESV_CLASSES");
 		    if(prop!=null) {
 			for(String name: Utils.split(prop,":",true,true)) {
 			    _name = name;

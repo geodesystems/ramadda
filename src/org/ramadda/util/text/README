@@ -4,23 +4,23 @@ Java 1.8 or higher installed. Set the JAVA environment variable to
 point to the java runtime.
 
 To run:
-sh csv.sh <commands>
+sh seesv.sh <commands>
 
 To show help:
-sh csv.sh -help
+sh seesv.sh -help
 
 To show help on a topic:
-sh csv.sh -help:some_topic
+sh seesv.sh -help:some_topic
 
 e.g.:
-sh csv.sh -columns "0,1,2" -print input.csv
+sh seesv.sh -columns "0,1,2" -print input.seesv
 
 
 Help:
-csvcommands.html
+seesv.html
 
 or:
-https://ramadda.org/repository/userguide/csvcommands.html
+https://ramadda.org/repository/userguide/seesv.html
 
 
 
