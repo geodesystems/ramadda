@@ -9,3 +9,8 @@ sh csv.sh -columns "0,1,2" -print input.csv
 Help:
 csvcommands.html
 
+or:
+https://ramadda.org/repository/userguide/csvcommands.html
+
+
+
