@@ -16,6 +16,7 @@
   <type name="type_document_pdf"  description="PDF File" pattern=".*\.pdf" super="type_document_tika">
      <service link="media_gs_thumbnail" target="attachment"/>
      <property name="icon" value="/icons/pdf.png"/>
+     <property name="file.accept" value="application/pdf"/>    
      <wiki><![CDATA[
 +section title={{name}}
 {{description wikify="true"}}
@@ -42,10 +43,12 @@
 
   <type name="type_document_doc"  description="Word File" pattern="(.*\.doc|.*\.docx)"  super="type_document_tika"         handler="org.ramadda.data.docs.MsDocTypeHandler" priority="10" >
      <property name="icon" value="/icons/doc.png"/>
+     <property name="file.accept" value=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"/>
 </type>
 
   <type name="type_document_ppt"  description="Powerpoint File" pattern="(.*\.ppt|.*\.pptx)"  super="type_document_tika"    priority="10" >
      <property name="icon" value="/icons/ppt.png"/>
+     <property name="file.accept" value=".ppt,.pptx"/>
 </type>
 
 
@@ -161,9 +164,13 @@
 
 
   <type name="type_image"  description="Image" foruser="true" category="Media" pattern="(.*\.png|.*\.gif|.*\.jpg|.*\.jpeg)" handler="org.ramadda.plugins.media.ImageTypeHandler" priority="1" >
-     <property name="icon" value="/icons/image.png"/>
-     <column   name="proxy" type="boolean" label="Proxy Image if URL"  showinhtml="false" default="false"/>
-     <column   name="filename" label="Alternate filename"  showinhtml="false" />
+    <property name="icon" value="/icons/image.png"/>
+    <property name="file.accept" value="image/*"/>
+  
+
+
+    <column   name="proxy" type="boolean" label="Proxy Image if URL"  showinhtml="false" default="false"/>
+    <column   name="filename" label="Alternate filename"  showinhtml="false" />
 </type>
 
 
