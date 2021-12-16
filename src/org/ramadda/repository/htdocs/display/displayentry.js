@@ -1985,12 +1985,13 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	{p:'maxHeight',ex:300},
 	{p:'maxWidth',ex:200},
 	{p:'maxWidth',ex:200},		
-	{p:"autoSearch",ex:true},
-	{p:"showHeader",ex:true},
-	{p:"inputSize",d:'100',ex:"100%"},
-	{p:"searchEntryType",ex:"",tt:"Constrain search to entries of this type"},		
-	{p:"doPageSearch",ex:"true"},
-	{p:"pageSearchSelector",d:'.search-component,.entry-list-row'},	
+	{p:'autoSearch',ex:true},
+	{p:'showHeader',ex:true},
+	{p:'inputSize',d:'100',ex:'100%'},
+	{p:'searchEntryType',ex:'',tt:'Constrain search to entries of this type'},		
+	{p:'doPageSearch',ex:'true'},
+	{p:'pageSearchSelector',d:'.search-component,.entry-list-row'},
+	{p:'pageSearchParent',ex:'.class or #id',tt:'set this to limit the scope of the search'},		
     ];
 
     if(!properties.width) properties.width="230px";
@@ -2124,7 +2125,14 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	},
 
 	getPageSearchSelectors:function() {
-	    let sel=$(this.getPageSearchSelector());
+	    let top = this.getPageSearchParent() || "body";
+	    let parent = $(top);
+	    //Try with "#" id
+	    if(parent.length==0 && this.getPageSearchParent()) {
+		parent = $("#"+this.getPageSearchParent());
+	    }
+
+	    let sel=parent.find(this.getPageSearchSelector());
 	    if(sel.length==0) {
 		console.log(this.type+" could not find page search components:" + this.getPageSearchSelector());
 	    }
