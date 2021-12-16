@@ -67,7 +67,7 @@
     <target name="release" depends="init">
       <antcall target="purge"/>
       <antcall target="plugins"/>
-      <antcall target="csvutil"/>
+      <antcall target="seesv"/>
 <!--
     dont build pointtools for now
       <antcall target="pointtools"/>
@@ -234,11 +234,11 @@
     </target>
 
 
-    <target name="csvutil" depends="init,clean">
-      <echo message="Building CSV Util"/>
-        <property name="csvutil_destdir" value="${dist_dir}/csvutil"/>
-        <mkdir dir="${csvutil_destdir}"/>
-        <mkdir dir="${csvutil_destdir}/lib"/>	
+    <target name="seesv" depends="init,clean">
+      <echo message="Building SeeSV"/>
+        <property name="seesv_destdir" value="${dist_dir}/seesv"/>
+        <mkdir dir="${seesv_destdir}"/>
+        <mkdir dir="${seesv_destdir}/lib"/>	
         <javac
             classpath="${classpath}"
             verbose="false"
@@ -260,7 +260,7 @@
             basedir="${src_dir}"
             update="false"
             compress="true"
-            jarfile="${csvutil_destdir}/lib/csvutil.jar">
+            jarfile="${seesv_destdir}/lib/seesv.jar">
             <include name="org/**/*.class"/>
 	    <include name="org/ramadda/repository/resources/geo/*"/>
 	    <include name="org/ramadda/util/**/*.zip"/>
@@ -268,28 +268,28 @@
 	    <include name="org/ramadda/util/text/*.csv"/>
 	    <include name="org/ramadda/util/text/*.properties"/>
            <manifest>
-              <attribute name="Implementation-Title" value="Ramadda CSV Utils"/>
+              <attribute name="Implementation-Title" value="Ramadda SeeSV"/>
               <attribute name="Implementation-Version" value="1.0"/>
               <attribute name="Implementation-Vendor" value="RAMADDA"/>
-              <attribute name="Main-class" value="org.ramadda.util.text.CsvUtil"/>
+              <attribute name="Main-class" value="org.ramadda.util.text.Seesv"/>
               <attribute name="Class-Path" value="unidatautil.jar json.jar rhino-1.7.13.jar commons-lang3-3.1.jar commons-io-2.8.0.jar"/>
             </manifest> 
 
 	</jar>
-	<copy overwrite="true" file="${src_dir}/org/ramadda/util/text/csv.sh"  todir="${csvutil_destdir}"/>
-	<copy overwrite="true" file="${basedir}/bin/tabula.sh"  todir="${csvutil_destdir}"/>
-	<copy overwrite="true" file="${src_dir}/org/ramadda/util/text/README"  todir="${csvutil_destdir}"/>	
-	<copy overwrite="true" file="${src_dir}/org/ramadda/util/text/csvcommands.html"  todir="${csvutil_destdir}"/>	
-	<copy overwrite="true" file="${lib_dir}/tabula.jar"  todir="${csvutil_destdir}/lib"/>
-	<copy overwrite="true" file="${lib_dir}/unidatautil.jar"  todir="${csvutil_destdir}/lib"/>
-	<copy overwrite="true" file="${lib_dir}/json.jar"  todir="${csvutil_destdir}/lib"/>
-	<copy overwrite="true" file="${lib_dir}/rhino-1.7.13.jar"  todir="${csvutil_destdir}/lib"/>
-	<copy overwrite="true" file="${lib_dir}/commons-io-2.8.0.jar"  todir="${csvutil_destdir}/lib"/>		
-	<copy overwrite="true" file="${lib_dir}/commons-lang3-3.1.jar"  todir="${csvutil_destdir}/lib"/>		
+	<copy overwrite="true" file="${src_dir}/org/ramadda/util/text/seesv.sh"  todir="${seesv_destdir}"/>
+	<copy overwrite="true" file="${basedir}/bin/tabula.sh"  todir="${seesv_destdir}"/>
+	<copy overwrite="true" file="${src_dir}/org/ramadda/util/text/README"  todir="${seesv_destdir}"/>	
+	<copy overwrite="true" file="${src_dir}/org/ramadda/util/text/seesv.html"  todir="${seesv_destdir}"/>	
+	<copy overwrite="true" file="${lib_dir}/tabula.jar"  todir="${seesv_destdir}/lib"/>
+	<copy overwrite="true" file="${lib_dir}/unidatautil.jar"  todir="${seesv_destdir}/lib"/>
+	<copy overwrite="true" file="${lib_dir}/json.jar"  todir="${seesv_destdir}/lib"/>
+	<copy overwrite="true" file="${lib_dir}/rhino-1.7.13.jar"  todir="${seesv_destdir}/lib"/>
+	<copy overwrite="true" file="${lib_dir}/commons-io-2.8.0.jar"  todir="${seesv_destdir}/lib"/>		
+	<copy overwrite="true" file="${lib_dir}/commons-lang3-3.1.jar"  todir="${seesv_destdir}/lib"/>		
 	
-	<zip destfile="${dist_dir}/csvutil.zip">
-          <zipfileset dir="${dist_dir}/csvutil" includes="*" prefix="csvutil"/>
-          <zipfileset dir="${dist_dir}/csvutil" includes="lib/*" prefix="csvutil"/>	  
+	<zip destfile="${dist_dir}/seesv.zip">
+          <zipfileset dir="${dist_dir}/seesv" includes="*" prefix="seesv"/>
+          <zipfileset dir="${dist_dir}/seesv" includes="lib/*" prefix="seesv"/>	  
 	</zip>
     </target>
 
