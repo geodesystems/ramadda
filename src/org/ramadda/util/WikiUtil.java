@@ -1867,6 +1867,16 @@ public class WikiUtil {
                     continue;
                 }
 
+                if (tline.startsWith("+quote")) {
+                    buff.append("<div class=boxquote>\n");
+		    continue;
+		}
+                if (tline.startsWith("-quote")) {
+                    buff.append("</div>\n");
+		    continue;
+		}		
+
+
                 if (tline.startsWith("+div")) {
                     String       style = "";
                     String       clazz = "";
