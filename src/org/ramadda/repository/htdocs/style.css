@@ -1,6 +1,5 @@
 @charset "UTF-8";
 
-
 /*
 @import url('https://fonts.googleapis.com/css2?family=Nunito&display=swap');
 */
@@ -25,8 +24,7 @@
 
     --hover-color:var(--highlight-color);
 
-    --highlight-background: #eee;
-    --highlight-background: #efefef;
+    --highlight-background: #f4f4f4;
     --header-background:  #eaeaea;
 
 
@@ -83,14 +81,10 @@ html, body {
   height: 100%;
 }
 
-
-
-
 form {
     margin:0px;
     padding: 0px;
 }
-
 
 textarea, input {
     resize:both !important;
@@ -101,7 +95,6 @@ select, input, password, .fileinput, textarea {
 }
 
 .fileinput {
-
 }
 
 .fileinput_wrapper {
@@ -127,8 +120,6 @@ select, input, password, .fileinput, textarea {
     color:#ccc;
 }
 
-
-
 input:focus, textarea:focus, .ramadda-search-input:focus {
     border:var(--highlight-border);
     outline:none;
@@ -143,8 +134,6 @@ select:focus {
     border:var(--highlight-border);
     outline:none;
 }
-
-
 
 /*Resets for bootstrap*/
 h1 {
@@ -175,7 +164,7 @@ h4 {
   justify-content: center;       
 }
 
-
+a
 .ramadda-page-heading, .ramadda-heading, .ramadda-lheading, .ramadda-blurb {
     font-size:140%;
 }
@@ -2872,10 +2861,12 @@ a.btn-primary:link, a.btn-primary  {
 
 .boxquote {
     font-style:italic;
-    margin:10pt;
-    padding:5pt;
-    border: solid #888 1px;
-    background-color:#eff;
+    margin-top:1em;
+    margin-bottom:1em;    
+    padding:4pt;
+    border  :var(--basic-border);
+    background-color:#EFFFFF;
+    border-radius: var(--default-radius);
 }
 
 
@@ -5022,12 +5013,13 @@ a.wiki-link-noexist {
     min-width:400px;
     display:inline-block;
     padding:2px;
-    border: 2px dashed #aaa;    
+    border: 2px dashed #ccc;    
     margin-top:2px;
 }
 
 .ramadda-file-dnd-target:hover {
     background:var(--highlight-background);
+    border: 2px dashed #aaa;    
 }
 
 .ramadda-drop-active {
