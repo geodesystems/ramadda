@@ -33,7 +33,7 @@
 <type name="type_file_java"  description="Java File" pattern=".*\.java"  category="Documents">
 </type>
 
-<type name="type_file_py"  description="Java File" pattern=".*\.py"  category="Documents">
+<type name="type_file_py"  description="Python File" pattern=".*\.py"  category="Documents">
 </type>
 
 
