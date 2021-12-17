@@ -37,6 +37,9 @@
 
     --color-mellow-yellow:#fffeec;
 
+    --default-radius:4px;
+    
+
    --nav-hover-color:var(--highlight-color);
    --cal-font-size:10pt;
    --cal-background:#C5E5F5;
@@ -207,7 +210,7 @@ h4 {
     padding:5px;
     box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px;
     -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px;
-    border-radius:4px;
+    border-radius:var(--default-radius);
     border:1px solid rgb(211, 220, 228); 
 }
 
@@ -252,7 +255,7 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
     cursor:pointer;
     padding:4px;
     border:var(--basic-border);
-    border-radius: 4px;
+    border-radius:var(--default-radius);
 }
 
 .ramadda-menu-divider {
@@ -352,8 +355,8 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
    display: inline-block;
    width: 8px;
    height: 8px;
-   -webkit-border-radius: 4px;
-   border-radius: 4px;
+   -webkit-border-radius: var(--default-radius);
+   border-radius: var(--default-radius);
    background-color: #444;
    margin-right:4px;
 }
@@ -838,7 +841,7 @@ a.ramadda-menubar-button:hover {
     border:var(--basic-border);
     border-left: 4px solid;
     padding:10px;
-    border-radius:4px;
+    border-radius:var(--default-radius);
     background:rgb(250,250,250);
 
 }
@@ -892,7 +895,7 @@ a.ramadda-menubar-button:hover {
 }
 
 .ramadda-block {
-    border-radius: 4px;
+    border-radius: var(--default-radius);
     overflow-y: auto;
     color:#000;
     z-index: var(--block-z-index);
@@ -928,7 +931,7 @@ a.ramadda-menubar-button:hover {
 }
 
 .note,  .ramadda-note, .ramadda-blurb, .ramadda-box, .ramadda-blurb {
-    border-radius: 6px;
+    border-radius: var(--default-radius);
 }
 
 .ramadda-note-outer {
@@ -1099,7 +1102,7 @@ a.ramadda-menubar-button:hover {
 .ramadda-grid-decorated .ramadda-gridbox, .ramadda-gridbox-decorated {
     border : var(--basic-border);
     background: #FbFbFb;
-    border-radius: 4px;
+    border-radius: var(--default-radius);
 }
 
 
@@ -1204,7 +1207,7 @@ a.ramadda-menubar-button:hover {
     padding:5px;
     padding-right:5px;    
     border:1px solid #888 !important;
-    border-radius:4px;
+    border-radius:var(--default-radius);
     box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
     max-height:400px;
   
@@ -1330,7 +1333,7 @@ a.ramadda-menubar-button:hover {
 
 .ramadda-message-plain, .ramadda-message {
     display: inline-block;
-    border-radius: 4px;
+    border-radius: var(--default-radius);
     border: 1px #aaa solid;
     margin:10px;
     padding:5px;
@@ -2458,7 +2461,7 @@ pre {
     border : var(--basic-border);
     background:rgb(245,245,245);
     padding:4px;
-    border-radius: 4px;
+    border-radius: var(--default-radius);
     margin-bottom:5px;
     margin-top:5px;
 }
@@ -2736,8 +2739,8 @@ a.btn-primary:link, a.btn-primary  {
     padding-bottom:0px;
     border-bottom:var(--basic-border); 
     background-color: #f0f0f0;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
+    border-top-left-radius: var(--default-radius);
+    border-top-right-radius: var(--default-radius);
 }
 
 
@@ -3395,7 +3398,7 @@ a.ramadda-heading-2-link:visited {
 .entry-sidebox {
     border: var(--basic-border);
     padding: 4px;
-    border-radius: 4px;
+    border-radius: var(--default-radius);
     max-width: 300px;
     overflow-x:auto;
 }
@@ -3406,8 +3409,8 @@ a.ramadda-heading-2-link:visited {
     padding-bottom: 2px;
     padding-top: 6px;
     margin-bottom:10px;
-    border-radius: 4px;
-    -webkit-border-radius: 4px;
+    border-radius: var(--default-radius);
+    -webkit-border-radius: var(--default-radius);
 }
 
 .entry-tools-box a:hover {
@@ -3712,10 +3715,10 @@ snippet-hide {
 }
 
 .subnavoffcomp, .subnavoncomp    {
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-    -webkit-border-top-left-radius: 4px;
-    -webkit-border-top-right-radius: 4px;
+    border-top-left-radius: var(--default-radius);
+    border-top-right-radius: var(--default-radius);
+    -webkit-border-top-left-radius: var(--default-radius);
+    -webkit-border-top-right-radius: var(--default-radius);
     margin-left:3px;
     margin-right:3px;
     padding-top:3px;
@@ -3957,7 +3960,7 @@ wiki {
     padding-right: 5px;
     margin: 4px;
     border : var(--basic-border);
-    border-radius: 4px;
+    border-radius: var(--default-radius);
     background-color: #eee;
     color: #000;
 }
@@ -4185,7 +4188,7 @@ wiki {
     border:1px solid #cfcfcf;
     margin:5px;
     background:#fff;
-    border-radius:4px;
+    border-radius:var(--default-radius);
 }
 
 .display-simplesearch-contents:not(:empty) {
@@ -4346,8 +4349,8 @@ a.toggleblocklabellink:visited {
 }
 
 .service-list-header, .service-results-header, .service-form-header {
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
+    border-top-left-radius: var(--default-radius);
+    border-top-right-radius: var(--default-radius);
     border: 1px #D1DEE4 solid;
     background-color:#E6F1F6;
     font-weight: bold;
@@ -4425,7 +4428,7 @@ a.toggleblocklabellink:visited {
 
 
 .service-form .ramadda-heading-1 {
-    border-top-left-radius: 6px;
+    border-top-left-radius: var(--default-radius);
     border-bottom: 1px #ccc solid;
     margin-top:5px;
     padding:5px;
@@ -4597,8 +4600,8 @@ a.wiki-link-noexist {
 
 
 .ramadda-treeview-header  {
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
+    border-top-left-radius: var(--default-radius);
+    border-top-right-radius: var(--default-radius);
     margin:0px;
     padding:5px;
     border: 1px #eee solid;

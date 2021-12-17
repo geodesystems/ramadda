@@ -583,7 +583,7 @@ a.display-container {
     cursor: pointer;
     background-color : #FFF; 
     padding:5px;
-    border-radius:4px;
+    border-radius:var(--default-radius);
     border: var(--basic-border);
     box-shadow: rgba(116, 129, 141, 0.4) 2px 2px 4px 0px;
     -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px;
@@ -940,7 +940,7 @@ svg > g > g:last-child { pointer-events: none }
 
 .display-date-input {
   width:90px;
-  border-radius: 5px;
+  border-radius: var(--default-radius);
   font-size: 11pt;
 }
 
@@ -949,7 +949,7 @@ svg > g > g:last-child { pointer-events: none }
     padding:0px;
     margin-left:2px;
     margin-right:2px;
-    border-radius: 5px;
+    border-radius: var(--default-radius);
     font-size: 11pt;
 }
 
@@ -962,7 +962,7 @@ svg > g > g:last-child { pointer-events: none }
 .display-search-input {
   max-width:100%;
   padding-left: 5px;
-  border-radius: 5px;
+  border-radius: var(--default-radius);
   font-size: 11pt;
   border-color:#ccc;
 }
@@ -1464,7 +1464,7 @@ svg > g > g:last-child { pointer-events: none }
 
 .display-map-message {
     position:relative;
-    border-radius: 4px;
+    border-radius: var(--default-radius);
     display:inline-block;
     border: 1px #aaa solid;
     background-color : #fffeec;
@@ -1701,7 +1701,7 @@ color:rgb(63, 127, 95);
    color:#ccc;
    padding-left:2px;
    padding-right:2px;
-   border-bottom-left-radius: 4px;
+   border-bottom-left-radius: var(--default-radius);
    border-left:1px #ccc solid;
    border-bottom:1px #ccc solid;
 }
@@ -2643,7 +2643,7 @@ table.dataTable tfoot td {
 
 .display-simplesearch-input {
   padding-left: 5px;
-  border-radius: 5px;
+  border-radius: var(--default-radius);
   font-size: 11pt;
 }
 
@@ -2757,7 +2757,7 @@ table.dataTable tfoot td {
 
 .display-fields-field-decorated {
     border:1px solid #ccc;
-    border-radius:4px;
+    border-radius:var(--default-radius);
 }
 
 .display-fields-field-selectable {
