@@ -883,6 +883,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    if(data=="") data="[]";
 		    try {
 			_this.loadAnnotationJson(JSON.parse(data),_this.map,_this.myLayer,_this.glyphMap);
+			this.featureHasBeenChanged = false;
 			if(!_this.getProperty("embedded") && _this.myLayer.features.length>0 && !_this.getProperty("zoomLevel")) {
 			    let bounds = new OpenLayers.Bounds();
 			    _this.myLayer.features.forEach(feature=>{
