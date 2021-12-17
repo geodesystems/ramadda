@@ -135,6 +135,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                         ATTR_COLUMNS, "3",
 					ATTR_SHOWICON, "true",
 					"includeChildren","false",
+					"showTags","false",
 					"#childrenWiki","wiki text to display children, e.g. {{tree details=false}}",
 					"#weights","3,6,3",
                                         "showSnippet","false",
@@ -2970,6 +2971,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             if ((children.size() == 0) && (message != null)) {
                 return message;
             }
+	    
             boolean doingSlideshow = theTag.equals(WIKI_TAG_SLIDESHOW);
             boolean doingGrid = theTag.equals(WIKI_TAG_GRID)
                                 || theTag.equals(WIKI_TAG_BOOTSTRAP);
@@ -2996,6 +2998,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     props.put("showLink", "false");
                 }
             }
+
+            boolean addTags = getProperty(wikiUtil, props, "addTags",
+					  false);
 
             boolean showHeading = getProperty(wikiUtil, props, "showHeading",
                                       true);
@@ -3062,9 +3067,25 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 urls.add(getEntryManager().getEntryUrl(request, child));
 
                 tmpProps.put("defaultToCard", "true");
-                StringBuilder content =
-                    new StringBuilder(my_getWikiInclude(wikiUtil, newRequest,
-							originalEntry, child, tag, tmpProps, "", true));
+		String inner = my_getWikiInclude(wikiUtil, newRequest,
+							originalEntry, child, tag, tmpProps, "", true);
+                StringBuilder content =   new StringBuilder();
+		if(addTags) {
+		    List<Metadata> metadataList =
+			getMetadataManager().findMetadata(request, child,
+							  "enum_tag", false);
+		    if(metadataList!=null && metadataList.size()>0) {
+			content.append("<div class=metadata-tags>");
+			for(Metadata metadata: metadataList) {
+			    String mtd = metadata.getAttr(1);
+			    HU.div(content,mtd,HU.cssClass("metadata-tag")+HU.attr("metadata-tag",mtd));
+			}
+			content.append("</div>");
+		    }
+
+		}
+
+		content.append(inner);
                 if (showLink) {
                     String url;
                     if (linkResource

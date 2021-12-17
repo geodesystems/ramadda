@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Dec 17 08:40:07 MST 2021";
+var build_date="RAMADDA build date: Fri Dec 17 13:47:18 MST 2021";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -30911,6 +30911,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	{p:'inputSize',d:'100',ex:'100%'},
 	{p:'searchEntryType',ex:'',tt:'Constrain search to entries of this type'},		
 	{p:'doPageSearch',ex:'true'},
+	{p:'doTagSearch',ex:'true'},	
 	{p:'pageSearchSelector',d:'.search-component,.entry-list-row'},
 	{p:'pageSearchParent',ex:'.class or #id',tt:'set this to limit the scope of the search'},		
     ];
@@ -30924,6 +30925,9 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
         getSelectedEntries: function() {
             return this.selectedEntries;
         },
+        getDoInlineSearch: function() {
+	    return this.getDoPageSearch() || this.getDoTagSearch();
+	},
         initDisplay: function() {
             let _this = this;
             if (this.getIsLayoutFixed() && this.haveDisplayed) {
@@ -30931,7 +30935,41 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
             }
             this.haveDisplayed = true;
             this.createUI();
-            this.setContents(this.getDefaultHtml());
+
+	    let contents = "";
+	    if(this.getDoTagSearch()) {
+		let sel = this.getPageSearchSelectors();
+		let tags = [];
+		contents += "<div class=metadata-tags>";
+		sel.find(".metadata-tag").each(function() {
+		    $(this).addClass("ramadda-clickable").click(function(){
+			_this.selectTag($(this).attr("metadata-tag"));
+		    });
+		    let tag = $(this).attr("metadata-tag");
+		    if(tags.indexOf(tag)<0) {
+			contents+=HU.div([CLASS,"metadata-tag ramadda-clickable","metadata-tag",tag],tag);
+			tags.push(tag);
+		    }
+		});
+		contents+="<div>";
+		if(this.getDoPageSearch()) {
+		    contents = HU.center(this.getDefaultHtml() + contents);
+		} 
+		this.setContents(contents);
+		this.find(".metadata-tag").click(function(){
+		    if($(this).hasClass("metadata-tag-selected")) {
+			$(this).removeClass("metadata-tag-selected");
+		    } else {
+			$(this).addClass("metadata-tag-selected");
+		    }
+		    _this.doInlineSearch();
+		});
+
+	    } else {
+		this.setContents(this.getDefaultHtml());
+	    }
+
+
 	    this.initHtml();
 	    let input = this.jq(ID_TEXT_FIELD);
 	    if(this.getAutoSearch(true)) {
@@ -31060,30 +31098,71 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    return sel;
 
 	},
-	doPageSearch:function() {
-	    let value = (this.jq(ID_TEXT_FIELD).val()||"").trim();
-	    if(value=="") {
+	selectTag:function(tag) {
+	    let _this  = this;
+	    let tags = this.find(".metadata-tag");
+	    tags.each(function() {
+		if(tag == $(this).attr('metadata-tag')) {
+		    $(this).addClass("metadata-tag-selected");
+		    _this.doInlineSearch();
+		}
+	    });
+	},
+	doInlineSearch:function() {
+	    let regExp;
+	    let value;
+	    let selectedTags;
+	    if(this.getDoPageSearch()) {
+		value = (this.jq(ID_TEXT_FIELD).val()||"").trim();
+		value  = value.toLowerCase();
+		if(value!="") {
+		    try {
+			regExp  = new RegExp(value);
+		    } catch(err) {
+			console.log("bad regexp:" + err);
+		    }
+		} else {
+		    value = null;
+		}
+	    }
+
+	    if(this.getDoTagSearch()) {
+		let tags = this.find(".metadata-tag-selected");
+		if(tags.length>0) {
+		    tags.each(function(){
+			let tag = $(this).attr("metadata-tag");
+			if(!selectedTags) selectedTags={};
+			selectedTags[tag] = true;
+		    });
+		}
+	    }
+
+	    if(!value && !selectedTags) {
 		this.clearPageSearch();
 		return
 	    }
 	    let sel = this.getPageSearchSelectors();
-	    value  = value.toLowerCase();
-	    let regexp;
-//	    console.clear();
-	    try {
-		regexp  = new RegExp(value);
-	    } catch(err) {
-		console.log("bad regexp:" + err);
-	    }
 	    sel.each(function() {
-		let html = Utils.stripTags($(this).html()).toLowerCase();
-		let ok = false;
-		if(html.indexOf(value)>=0) {
-		    ok=true;
-		} else if(regexp) {
-		    if(html.match(regexp)) ok = true;
+		let tagOk = true;
+		let textOk = true;		
+		if(selectedTags) {
+		    tagOk = false;
+		    let t = $(this).find(".metadata-tag");
+		    t.each(function(){
+			let tag = $(this).attr("metadata-tag");
+			if(selectedTags[tag]) tagOk=true;
+		    });
 		}
-		if(!ok) {
+		if(value) {
+		    textOk = false;
+		    let html = Utils.stripTags($(this).html()).toLowerCase();
+		    if(html.indexOf(value)>=0) {
+			textOk=true;
+		    } else if(regExp) {
+			if(html.match(regExp)) textOk = true;
+		    }
+		}
+		if(!tagOk || !textOk) {
 		    $(this).fadeOut();
 		} else {
 		    $(this).show();
@@ -31103,13 +31182,13 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		this.dialog.remove();
 		this.dialog = null;
 	    }
-	    if(this.getDoPageSearch()) {
-		this.clearPageSearch();
+	    if(this.getDoInlineSearch()) {
+		this.doInlineSearch();
 	    }
 	},
 	doSearch:function(auto, callNumber) {
 	    if(this.getDoPageSearch()) {
-		this.doPageSearch();
+		this.doInlineSearch();
 		return;
 	    }
 	    this.submitSearchForm(auto,callNumber);

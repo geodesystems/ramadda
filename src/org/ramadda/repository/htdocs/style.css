@@ -2536,6 +2536,10 @@ pre {
 }
 
 
+.metadata-tags {
+    text-align:center;
+}
+
 .metadata-tag {
     font-size:80%;
     display:inline-block;
@@ -2550,6 +2554,9 @@ pre {
     color:rgb(51,51,51);
 }
 
+.metadata-tag-selected {
+    background:#C5E5F5;
+}
 
 .metadata-image {
     max-width: 400px; 
