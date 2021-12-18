@@ -1712,7 +1712,7 @@ public class PageHandler extends RepositoryManager {
             try {
                 List<Metadata> metadataList =
                     getMetadataManager().findMetadata(request, entry,
-                        ContentMetadataHandler.TYPE_TEMPLATE, true);
+						      new String[]{ContentMetadataHandler.TYPE_TEMPLATE}, true);
                 if (metadataList != null) {
                     for (Metadata metadata : metadataList) {
                         HtmlTemplate template =
@@ -2327,7 +2327,7 @@ public class PageHandler extends RepositoryManager {
             }
             List<Metadata> metadataList =
                 getMetadataManager().findMetadata(request, entry,
-                    ContentMetadataHandler.TYPE_PAGESTYLE, true);
+						  new String[]{ContentMetadataHandler.TYPE_PAGESTYLE}, true);
             if ((metadataList == null) || (metadataList.size() == 0)) {
                 return pageStyle;
             }
@@ -3742,7 +3742,7 @@ public class PageHandler extends RepositoryManager {
         /*
         List<Metadata> metadataList =
             getMetadataManager().findMetadata(request, entry,
-                                              ContentMetadataHandler.TYPE_ALIAS,false);
+	    new String[]{ContentMetadataHandler.TYPE_ALIAS},false);
         String url;
         if(metadataList.size()>0) {
             url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);

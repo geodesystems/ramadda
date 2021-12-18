@@ -130,12 +130,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag(WIKI_TAG_TABS, null), 
                             new WikiTag(WIKI_TAG_GRID, null, 
                                         ATTR_TAG, WIKI_TAG_CARD, 
-                                        "inner-height","100", 
+                                        "inner-height","200", 
 					"width","200px",
                                         ATTR_COLUMNS, "3",
 					ATTR_SHOWICON, "true",
 					"includeChildren","false",
-					"showTags","false",
+					"addTags","false",
 					"#childrenWiki","wiki text to display children, e.g. {{tree details=false}}",
 					"#weights","3,6,3",
                                         "showSnippet","false",
@@ -457,7 +457,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             List<Metadata> metadataAttrs =
                 getMetadataManager().findMetadata(request, entry,
-                    "wikiattribute", true);
+						  new String[]{"wikiattribute"}, true);
             if (metadataAttrs != null) {
                 for (Metadata metadata : metadataAttrs) {
                     String mName  = metadata.getAttr1();
@@ -1539,7 +1539,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                           request.getString(ARG_ENTRYID, ""));
         List<Metadata> metadataList =
             getMetadataManager().findMetadata(request, entry,
-                "wiki_notebook", false);
+					      new String[]{"wiki_notebook"}, false);
 
 
         Metadata metadata = null;
@@ -1621,7 +1621,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         List<Metadata> metadataList =
             getMetadataManager().findMetadata(request, entry,
-                "wiki_notebook", false);
+					      new String[]{"wiki_notebook"}, false);
 
         String notebookId = request.getString("notebookId",
                                 "default_notebook");
@@ -3073,7 +3073,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 		if(addTags) {
 		    List<Metadata> metadataList =
 			getMetadataManager().findMetadata(request, child,
-							  "enum_tag", false);
+							  new String[]{"enum_tag","content.keyword"}, false);
 		    if(metadataList!=null && metadataList.size()>0) {
 			content.append("<div class=metadata-tags>");
 			for(Metadata metadata: metadataList) {
@@ -3857,7 +3857,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                        String id, String text)
             throws Exception {
         List<Metadata> list = getMetadataManager().findMetadata(request,
-                                  entry, "wiki_label", true);
+								entry, new String[]{"wiki_label"}, true);
         if (list == null) {
             return text;
         }
@@ -6956,7 +6956,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         List<Metadata> metadataList =
             getMetadataManager().findMetadata(request, entry,
-                "point_chart_wiki", true);
+					      new String[]{"point_chart_wiki"}, true);
         if ((metadataList != null) && (metadataList.size() > 0)) {
             wiki.append(metadataList.get(0).getAttr1());
         } else {
@@ -7052,7 +7052,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         List<Metadata> metadataAttrs =
             getMetadataManager().findMetadata(request, entry,
-                "wikiattribute", true);
+					      new String[]{"wikiattribute"}, true);
         if (metadataAttrs != null) {
             for (Metadata metadata : metadataAttrs) {
                 String attrName = metadata.getAttr1();
@@ -7438,14 +7438,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         if (isMap) {
             List<Metadata> layers =
                 getMetadataManager().findMetadata(request, entry,
-                    "map_layer", true);
+						  new String[]{"map_layer"}, true);
             if ((layers != null) && (layers.size() > 0)) {
                 defaultLayer = layers.get(0).getAttr1();
             }
 
             List<Metadata> markers =
                 getMetadataManager().findMetadata(request, entry,
-                    "map_marker", true);
+						  new String[]{"map_marker"}, true);
             if ((markers != null) && (markers.size() > 0)) {
                 int cnt = 1;
                 for (Metadata mtd : markers) {
@@ -7565,7 +7565,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         if (isMap) {
             List<Metadata> metadataList =
                 getMetadataManager().findMetadata(request, entry,
-                    "map_displaymap", true);
+						  new String[]{"map_displaymap"}, true);
             if ((metadataList != null) && (metadataList.size() > 0)) {
                 String kmlIds       = null;
                 String geojsonIds   = null;

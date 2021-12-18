@@ -4912,15 +4912,17 @@ public class TypeHandler extends RepositoryManager {
     public String getFileExtras(Request request, Entry entry)
             throws Exception {
         String addMetadata =
-            HtmlUtils.checkbox(
+            HtmlUtils.labeledCheckbox(
                 ARG_METADATA_ADD, "true",
                 Misc.equals(
                     getFormDefault(entry, ARG_METADATA_ADD, "false"),
-                    "false")) + HtmlUtils.space(1) + msg("Add properties")
-                              + HtmlUtils.space(1)
-                              + HtmlUtils.checkbox(ARG_METADATA_ADDSHORT)
-                              + HtmlUtils.space(1)
-                              + msg("Just spatial/temporal properties");
+                    "false"),"Add properties")
+	    + HtmlUtils.space(1)
+	    + HtmlUtils.labeledCheckbox(ARG_METADATA_ADDSHORT,"true",false,
+					"Just spatial/temporal properties") +"<br>" 
+	    + HtmlUtils.labeledCheckbox(ARG_EXTRACT_TAGS,"true",false,
+					"Extract tags");
+	    
 
         List datePatterns = new ArrayList();
         datePatterns.add(new TwoFacedObject("", BLANK));
@@ -4928,22 +4930,18 @@ public class TypeHandler extends RepositoryManager {
             datePatterns.add(DateUtil.DATE_FORMATS[i]);
         }
 
-        String unzipWidget = HtmlUtils.checkbox(ARG_FILE_UNZIP, "true", true)
-                             + HtmlUtils.space(1) + msg("Unzip archive")
-                             + " "
-                             + HtmlUtils.checkbox(ARG_FILE_PRESERVEDIRECTORY,
-                                 "true", false) + HtmlUtils.space(1)
-                                     + msg("Make folders from archive");
-        String makeNameWidget = HtmlUtils.checkbox(ARG_MAKENAME, "true",
-                                    true) + HtmlUtils.space(1)
-                                          + msg("Make name from filename");
+        String unzipWidget =
+	    HU.labeledCheckbox(ARG_FILE_UNZIP, "true", true, "Unzip archive")
+	    + HU.space(1)
+	    + HU.labeledCheckbox(ARG_FILE_PRESERVEDIRECTORY,
+                                 "true", false, "Make folders from archive");
+        String makeNameWidget = HtmlUtils.labeledCheckbox(ARG_MAKENAME, "true",
+							  true, "Make name from filename");
 
         String deleteFileWidget = ((entry != null) && entry.isFile())
-                                  ? HtmlUtils.checkbox(ARG_DELETEFILE,
-                                      "true", false) + HtmlUtils.space(1)
-                                          + msg("Delete file")
-                                  : "";
-
+	    ? HtmlUtils.labeledCheckbox(ARG_DELETEFILE,
+					"true", false,"Delete file")
+	    : "";
 
         /*
           String datePatternWidget = msgLabel("Date pattern")
@@ -4965,8 +4963,8 @@ public class TypeHandler extends RepositoryManager {
         String extraMore = "";
 
         if ((entry == null) && getType().equals(TYPE_FILE)) {
-            extraMore = HtmlUtils.checkbox(ARG_TYPE_GUESS, "true", true)
-                        + " " + msg("Figure out the type") + HtmlUtils.br();
+            extraMore = HtmlUtils.labeledCheckbox(ARG_TYPE_GUESS, "true", true,
+						  "Figure out the type") + HtmlUtils.br();
         }
 
 

@@ -248,7 +248,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
      *
      * @param entries _more_
      */
-    public void entriesModified(final List<Entry> entries) {
+    public void entriesModified(Request request, final List<Entry> entries) {
         handleEntriesChanged(entries, false);
     }
 
@@ -271,7 +271,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
      *
      * @param entries _more_
      */
-    public void entriesCreated(final List<Entry> entries) {
+    public void entriesCreated(Request request, final List<Entry> entries) {
         handleEntriesChanged(entries, true);
     }
 

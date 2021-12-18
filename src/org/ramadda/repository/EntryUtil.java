@@ -835,7 +835,7 @@ public class EntryUtil extends RepositoryManager {
         try {
             List<Metadata> metadataList =
                 getMetadataManager().findMetadata(null, entry,
-                    ContentMetadataHandler.TYPE_TIMEZONE, true);
+						  new String[]{ContentMetadataHandler.TYPE_TIMEZONE}, true);
             if ((metadataList != null) && (metadataList.size() > 0)) {
                 Metadata metadata = metadataList.get(0);
 
