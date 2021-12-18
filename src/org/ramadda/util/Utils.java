@@ -3352,6 +3352,21 @@ public class Utils extends IO {
 
 
 
+    
+
+    private static HashSet<String> stopWords;
+    public static HashSet<String> getStopWords() throws Exception {
+	if(stopWords==null) {
+	    HashSet<String> tmp = new HashSet<String>();
+	    for(String line: split(IO.readContents("/org/ramadda/util/stopwords.txt",Utils.class),"\n",true,true)) {
+		tmp.add(line);
+	    }
+	    stopWords = tmp;
+	}
+	return stopWords;
+    }
+
+
     /**
      * _more_
      *
