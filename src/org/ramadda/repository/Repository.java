@@ -7042,11 +7042,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @param entries _more_
      */
-    public void checkNewEntries(final List<Entry> entries) {
+    public void checkNewEntries(final Request request, final List<Entry> entries) {
+	System.err.println("check new:" + entries);
         Misc.run(new Runnable() {
             public void run() {
                 for (EntryChecker entryMonitor : getEntryCheckers()) {
-                    entryMonitor.entriesCreated(entries);
+                    entryMonitor.entriesCreated(request, entries);
                 }
             }
         });
@@ -7071,7 +7072,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @param ids _more_
      */
-    public void checkDeletedEntries(final List<String> ids) {
+    public void checkDeletedEntries(final Request request, final List<String> ids) {
         Misc.run(new Runnable() {
             public void run() {
                 for (EntryChecker entryMonitor : getEntryCheckers()) {
@@ -7087,11 +7088,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @param entries _more_
      */
-    public void checkModifiedEntries(final List<Entry> entries) {
+    public void checkModifiedEntries(final Request request, final List<Entry> entries) {
+	System.err.println("check modified:" + entries);
         Misc.run(new Runnable() {
             public void run() {
                 for (EntryChecker entryMonitor : getEntryCheckers()) {
-                    entryMonitor.entriesModified(entries);
+                    entryMonitor.entriesModified(request, entries);
                 }
             }
         });
