@@ -1198,7 +1198,7 @@ public class EntryManager extends RepositoryManager {
 
             List<Metadata> metadataList =
                 getMetadataManager().findMetadata(request, entry,
-						  ContentMetadataHandler.TYPE_LOGO, true);
+						  new String[]{ContentMetadataHandler.TYPE_LOGO}, true);
             if ((metadataList != null) && (metadataList.size() > 0)) {
                 Metadata metadata = metadataList.get(0);
                 String   title    = metadata.getAttr3();
@@ -1598,7 +1598,7 @@ public class EntryManager extends RepositoryManager {
                 if (isAnonymousUpload(entry)) {
                     List<Metadata> metadataList =
                         getMetadataManager().findMetadata(request, entry,
-							  AdminMetadataHandler.TYPE_ANONYMOUS_UPLOAD,
+							  new String[]{AdminMetadataHandler.TYPE_ANONYMOUS_UPLOAD},
 							  false);
                     String extra = "";
 
@@ -3368,7 +3368,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    private void deleteEntriesInner(Request request, List<Entry> entries,
+    private void deleteEntriesInner(final Request request, List<Entry> entries,
                                     Connection connection, Object actionId)
 	throws Exception {
 
@@ -3436,7 +3436,7 @@ public class EntryManager extends RepositoryManager {
             int batchCnt       = 0;
             int totalDeleteCnt = 0;
             //Go backwards so we go up the tree and hit the children first
-            List<String>   allIds            = new ArrayList<String>();
+            final List<String>   allIds            = new ArrayList<String>();
             List<Resource> resourcesToDelete = new ArrayList<Resource>();
             for (int i = found.size() - 1; i >= 0; i--) {
                 Object[] tuple  = found.get(i);
@@ -3491,7 +3491,7 @@ public class EntryManager extends RepositoryManager {
             for (String id : allIds) {
                 getStorageManager().deleteEntryDir(id);
             }
-            Misc.run(getRepository(), "checkDeletedEntries", allIds);
+	    getRepository().checkDeletedEntries(request,  allIds);
         } finally {
             getDatabaseManager().closeStatement(extraStmt);
             for (PreparedStatement stmt : statements) {
@@ -3541,7 +3541,7 @@ public class EntryManager extends RepositoryManager {
 	throws Exception {
         List<Metadata> metadataList =
             getMetadataManager().findMetadata(request, entry,
-					      AdminMetadataHandler.TYPE_ANONYMOUS_UPLOAD, false);
+					      new String[]{AdminMetadataHandler.TYPE_ANONYMOUS_UPLOAD}, false);
         //Reset the category
         if (metadataList != null) {
             Metadata metadata = metadataList.get(0);
@@ -3636,7 +3636,7 @@ public class EntryManager extends RepositoryManager {
             boolean sentNotification = false;
             List<Metadata> metadataList =
                 getMetadataManager().findMetadata(request, parentEntry,
-						  ContentMetadataHandler.TYPE_CONTACT, true);
+						  new String[]{ContentMetadataHandler.TYPE_CONTACT}, true);
             if (metadataList != null) {
                 for (Metadata metadata : metadataList) {
                     sentNotification = true;
@@ -4062,7 +4062,7 @@ public class EntryManager extends RepositoryManager {
             try {
                 List<Metadata> mtdl = getMetadataManager().findMetadata(
 									getRepository().getTmpRequest(),
-									entry, "cachetime", true);
+									entry, new String[]{"cachetime"}, true);
                 if ((mtdl != null) && (mtdl.size() > 0)) {
                     int  seconds = Integer.parseInt(mtdl.get(0).getAttr1());
                     Date now     = new Date();
@@ -7681,7 +7681,12 @@ public class EntryManager extends RepositoryManager {
      */
     public void updateEntries(Request request, List<Entry> entries)
 	throws Exception {
-        insertEntries(request, entries, false, false);
+	updateEntries(request, entries, true);
+    }
+
+    public void updateEntries(Request request, List<Entry> entries, boolean callCheckModified)
+	throws Exception {
+        insertEntries(request, entries, false, false, callCheckModified);
     }
 
 
@@ -7697,9 +7702,17 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    private void insertEntries(Request request, List<Entry> entries,
+    private void insertEntries(Request request, final List<Entry> entries,
                                boolean isNew, boolean fromImport)
 	throws Exception {
+	insertEntries(request, entries, isNew, fromImport, true);
+    }
+
+    private void insertEntries(Request request, final List<Entry> entries,
+                               boolean isNew, boolean fromImport, boolean callCheckModified)
+	throws Exception {
+
+
         if (entries.size() == 0) {
             return;
         }
@@ -7749,10 +7762,7 @@ public class EntryManager extends RepositoryManager {
         //We have our own connection
         Connection connection = getDatabaseManager().getConnection();
         try {
-            insertEntriesInner(entries, connection, isNew);
-            if ( !isNew) {
-                Misc.run(getRepository(), "checkModifiedEntries", entries);
-            } else {}
+            insertEntriesInner(request, entries, connection, isNew, callCheckModified);
         } finally {
             getDatabaseManager().closeConnection(connection);
         }
@@ -7769,8 +7779,8 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    private void insertEntriesInner(List<Entry> entries,
-                                    Connection connection, boolean isNew)
+    private void insertEntriesInner(final Request request, final List<Entry> entries,
+                                    Connection connection, boolean isNew, boolean callCheckModified)
 	throws Exception {
 
         if (entries.size() == 0) {
@@ -7796,7 +7806,6 @@ public class EntryManager extends RepositoryManager {
         for (Entry entry : entries) {
             entry.clearTransientProperties();
             entry.getTypeHandler().clearCache();
-
 
             //Do we want to clear it from the cache???
             removeFromCache(entry);
@@ -7937,9 +7946,10 @@ public class EntryManager extends RepositoryManager {
         }
 
 
-        Misc.run(getRepository(), isNew
-		 ? "checkNewEntries"
-		 : "checkModifiedEntries", entries);
+	if(callCheckModified) {
+	    if(isNew) getRepository().checkNewEntries(request,entries);
+	    else getRepository().checkModifiedEntries(request,entries);
+	}
 
     }
 
@@ -10359,7 +10369,7 @@ public class EntryManager extends RepositoryManager {
         try {
             List<Metadata> metadataList =
                 getMetadataManager().findMetadata(request, entry,
-						  ContentMetadataHandler.TYPE_ALIAS, false);
+						  new String[]{ContentMetadataHandler.TYPE_ALIAS}, false);
             if ((metadataList != null) && (metadataList.size() > 0)) {
                 for (Metadata metadata : metadataList) {
                     String alias = metadata.getAttr1();
