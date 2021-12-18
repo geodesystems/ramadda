@@ -22,14 +22,14 @@ public interface EntryChecker {
      *
      * @param entries _more_
      */
-    public void entriesCreated(List<Entry> entries);
+    public void entriesCreated(Request request, List<Entry> entries);
 
     /**
      * _more_
      *
      * @param entries _more_
      */
-    public void entriesModified(List<Entry> entries);
+    public void entriesModified(Request request, List<Entry> entries);
 
     /**
      * _more_
