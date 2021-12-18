@@ -789,7 +789,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	List<String> keywords = new ArrayList<String>();
 	String gptKey = getRepository().getProperty("gpt.api.key");
-	if(false && gptKey!=null) {
+	if(gptKey!=null) {
 	    String url = "https://api.openai.com/v1/engines/davinci/completions";
 	    //		String url = "https://api.openai.com/v1/engines/curie/completions";		
 		
