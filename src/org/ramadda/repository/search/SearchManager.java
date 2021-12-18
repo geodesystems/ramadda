@@ -753,7 +753,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    }
 		    List<Entry> tmp = new ArrayList<Entry>();
 		    tmp.add(entry);
-		    System.err.println("key:" + keywords);
+		    System.err.println("keywords:" + keywords);
 		    getEntryManager().updateEntries(request, tmp,false);
 		}
 	    }
@@ -789,19 +789,27 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	List<String> keywords = new ArrayList<String>();
 	String gptKey = getRepository().getProperty("gpt.api.key");
+	String text = fileCorpus.toString();
+	text = Utils.removeNonAscii(text," ").replaceAll("[,-\\.\n]+"," ").replaceAll("  +"," ");
+
 	if(gptKey!=null) {
 	    String url = "https://api.openai.com/v1/engines/davinci/completions";
 	    //		String url = "https://api.openai.com/v1/engines/curie/completions";		
 		
 	    StringBuilder gptCorpus = new StringBuilder("Text: ");
-	    List<String> toks = Utils.split(fileCorpus.toString()," ",true,true);
+	    List<String> toks = Utils.split(text," ",true,true);
 	    //limit is ~1500 words
-	    for(int i=0;i<toks.size() && i<1200;i++) {
-		gptCorpus.append(toks.get(i));
+	    int extraCnt = 0;
+	    for(int i=0;i<toks.size() && i+extraCnt<1000;i++) {
+		String tok = toks.get(i);
+		if(tok.length()>6) {
+		    extraCnt+=(int)(tok.length()/6);
+		}
+		gptCorpus.append(tok);
 		gptCorpus.append(" ");
 	    }
-	    String text = gptCorpus.toString().trim().replaceAll("\n"," ");
-	    text =  text+"\nKeywords:";
+	    System.err.println("gpt corpus:" + gptCorpus.length());
+	    text =  gptCorpus.toString().trim()+"\nKeywords:";
 	    String body = Json.map("prompt",
 				   Json.quote(text),
 				   "temperature", "0.3",
@@ -830,13 +838,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    }
 	}
 							  
-
 	if(keywords.size()==0) {
 	    Hashtable<String,WordCount> cnt = new Hashtable<String,WordCount>();
 	    List<WordCount> words = new ArrayList<WordCount>();
 	    HashSet stopWords = Utils.getStopWords();
-	    String text = fileCorpus.toString();
-	    text = Utils.removeNonAscii(text," ").replaceAll(","," ").replaceAll("\\."," ");
 	    for(String tok: Utils.split(text," ",true,true)) {
 		tok = tok.toLowerCase();
 		if(tok.length()<=2) continue;
