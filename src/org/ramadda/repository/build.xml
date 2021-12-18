@@ -406,8 +406,8 @@
         <unjar src="${lib_dir}/slf4j-api-1.6.4.jar" dest="${tmpjar_dir}"/>
 	<unjar src="${lib_dir}/slf4j-nop-1.7.32.jar" dest="${tmpjar_dir}"/>
 
-        <unjar src="${lib_dir}/log4j-core-2.16.0.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/log4j-api-2.16.0.jar" dest="${tmpjar_dir}"/>	
+        <unjar src="${lib_dir}/log4j-core-2.17.0.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/log4j-api-2.17.0.jar" dest="${tmpjar_dir}"/>	
 
         <unjar src="${lib1}" dest="${tmpjar_dir}"/>
         <echo message="jarring ${lib_dir}/ramaddalib.jar"/>
