@@ -537,6 +537,13 @@ public class MetadataManager extends RepositoryManager {
 
 
 
+    public List<Metadata> findMetadata(Request request, Entry entry,
+                                       String type, boolean checkInherited)
+            throws Exception {
+	return findMetadata(request, entry, new String[]{type}, checkInherited);
+
+    }
+
     /**
      * _more_
      *
@@ -551,7 +558,7 @@ public class MetadataManager extends RepositoryManager {
      * @throws Exception On badness
      */
     public List<Metadata> findMetadata(Request request, Entry entry,
-                                       String type, boolean checkInherited)
+                                       String[] type, boolean checkInherited)
             throws Exception {
         return findMetadata(request, entry, type, checkInherited, true);
     }
@@ -572,7 +579,7 @@ public class MetadataManager extends RepositoryManager {
      * @throws Exception On badness
      */
     public List<Metadata> findMetadata(Request request, Entry entry,
-                                       String type, boolean checkInherited,
+                                       String[] type, boolean checkInherited,
                                        boolean firstOk)
             throws Exception {
         List<Metadata> result = new ArrayList<Metadata>();
@@ -673,7 +680,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @throws Exception On badness
      */
-    private void findMetadata(Request request, Entry entry, String type,
+    private void findMetadata(Request request, Entry entry, String []type,
                               List<Metadata> result, boolean checkInherited,
                               boolean firstTime)
             throws Exception {
@@ -697,8 +704,11 @@ public class MetadataManager extends RepositoryManager {
                 continue;
             }
             if (type != null) {
-                if (metadata.getType().equals(type)) {
-                    result.add(metadata);
+		for(int i=0;i<type.length;i++) {
+		    if (metadata.getType().equals(type[i])) {
+			result.add(metadata);
+			break;
+		    }
                 }
             } else {
                 result.add(metadata);
@@ -1411,9 +1421,7 @@ public class MetadataManager extends RepositoryManager {
             }
             entry.setMetadata(null);
             entry.getTypeHandler().metadataChanged(request, entry);
-            Misc.run(getRepository(), "checkModifiedEntries",
-                     Misc.newList(entry));
-
+            getRepository().checkModifiedEntries(request,   Misc.newList(entry));
             return new Result(request.makeUrl(URL_METADATA_FORM, ARG_ENTRYID,
                     entry.getId()));
         }
@@ -2094,7 +2102,7 @@ public class MetadataManager extends RepositoryManager {
             return null;
         }
         List<Metadata> metadataList = findMetadata(request, entry,
-                                          ContentMetadataHandler.TYPE_SORT,
+						   new String[]{ContentMetadataHandler.TYPE_SORT},
                                           true);
         if ((metadataList != null) && (metadataList.size() > 0)) {
             return metadataList.get(0);
