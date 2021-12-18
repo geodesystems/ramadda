@@ -279,6 +279,7 @@
             <include name="org/ramadda/util/**/*.properties"/>
             <include name="org/ramadda/util/**/*.json"/>
             <include name="org/ramadda/util/**/*.zip"/>	    	    
+            <include name="org/ramadda/util/**/*.txt"/>	    	    
             <include name="org/ramadda/data/**/*.txt"/>
             <include name="org/ramadda/data/**/*.properties"/>
             <include name="${ramadda_relpath}/htdocs/**/*.*"/>
