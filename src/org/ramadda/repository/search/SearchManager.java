@@ -30,6 +30,7 @@ import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.CategoryList;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.Json;
 
@@ -94,6 +95,9 @@ import java.util.Properties;
 import java.util.TimeZone;
 
 import java.util.jar.*;
+import org.json.*;
+import java.util.Comparator;
+import java.util.Collections;
 
 
 
@@ -479,7 +483,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 				System.err.println(cnt[0]+" missing:" + entry +"  "+ entry.getId());
 			    }
 			    }*/
-			indexEntry(writer, entry);
+			indexEntry(writer, entry, null, false);
 			getEntryManager().removeFromCache(entry);
 			//			if(true) continue;
 			if(!ok[0]) break;
@@ -577,13 +581,13 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      *
      * @throws Exception _more_
      */
-    private  void indexEntries(List<Entry> entries)
+    private  void indexEntries(List<Entry> entries, Request request, boolean isNew)
 	throws Exception {
 	synchronized(luceneMutex) {
 	    IndexWriter writer = getLuceneWriter();
 	    try {
 		for (Entry entry : entries) {
-		    indexEntry(writer, entry);
+		    indexEntry(writer, entry, request,isNew);
 		}
 		//        writer.optimize();
 		writer.commit();
@@ -602,7 +606,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      *
      * @throws Exception _more_
      */
-    private void indexEntry(IndexWriter writer, Entry entry)
+    private void indexEntry(IndexWriter writer, Entry entry, Request request, boolean isNew)
 	throws Exception {
         org.apache.lucene.document.Document doc =
             new org.apache.lucene.document.Document();
@@ -734,7 +738,25 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	doc.add(new SortedNumericDocValuesField(FIELD_DATE_END, entry.getEndDate()));	
 
         if (entry.isFile()) {
-            addContentField(entry, doc, FIELD_CONTENTS, entry.getResource().getTheFile(), corpus);
+	    StringBuilder fileCorpus = new StringBuilder();
+            addContentField(entry, doc, FIELD_CONTENTS, entry.getResource().getTheFile(), fileCorpus);
+	    corpus.append(fileCorpus);
+	    if(/*isNew && */request!=null && request.get(ARG_EXTRACT_TAGS,false)) {
+		List<String> keywords = getKeywords(request, entry, fileCorpus);
+		if(keywords!=null && keywords.size()>0) {
+		    for(String word:keywords) {
+			getMetadataManager().addMetadata(
+							 entry,
+							 new Metadata(
+								      getRepository().getGUID(), entry.getId(),
+								      "content.keyword", false, word, "", "", "", ""),true);
+		    }
+		    List<Entry> tmp = new ArrayList<Entry>();
+		    tmp.add(entry);
+		    System.err.println("key:" + keywords);
+		    getEntryManager().updateEntries(request, tmp,false);
+		}
+	    }
         } else {
 	    StringBuilder contents = new StringBuilder();
 	    entry.getTypeHandler().getTextContents(entry, contents);
@@ -749,6 +771,120 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         writer.addDocument(doc);
     }
 
+
+
+    private List<String>  getKeywords(Request request, Entry entry, StringBuilder fileCorpus) throws Exception {
+	String path = entry.getResource().getPath();
+	if(path==null) return null;
+	path = path.toLowerCase();	
+	//Only do documents
+	if(!(path.endsWith("pdf") ||
+	     path.endsWith("doc") ||
+	     path.endsWith("ppt") ||
+	     path.endsWith("pptx") ||	   	   
+	     path.endsWith("docx"))) {
+	    //	    System.err.println("not doc:" + path);
+	    return null;
+	}
+
+	List<String> keywords = new ArrayList<String>();
+	String gptKey = getRepository().getProperty("gpt.api.key");
+	if(false && gptKey!=null) {
+	    String url = "https://api.openai.com/v1/engines/davinci/completions";
+	    //		String url = "https://api.openai.com/v1/engines/curie/completions";		
+		
+	    StringBuilder gptCorpus = new StringBuilder("Text: ");
+	    List<String> toks = Utils.split(fileCorpus.toString()," ",true,true);
+	    //limit is ~1500 words
+	    for(int i=0;i<toks.size() && i<1200;i++) {
+		gptCorpus.append(toks.get(i));
+		gptCorpus.append(" ");
+	    }
+	    String text = gptCorpus.toString().trim().replaceAll("\n"," ");
+	    text =  text+"\nKeywords:";
+	    String body = Json.map("prompt",
+				   Json.quote(text),
+				   "temperature", "0.3",
+				   "max_tokens" ,"60",
+				   "top_p", "1.0",
+				   "frequency_penalty", "0.8",
+				   "presence_penalty", "0.0",
+				   "stop","[\"\\n\"]");
+	    //	    System.err.println(body);
+	    String result = IO.doHttpRequest("GET", new URL(url), body,
+					     "Content-Type","application/json",
+					     "Authorization","Bearer " +gptKey);
+	    JSONObject json = new JSONObject(result);
+	    //		System.err.println(json);		
+	    if(json.has("choices")) {
+		JSONArray choices = json.getJSONArray("choices");
+		if(choices.length()>0) {
+		    JSONObject choice= choices.getJSONObject(0);
+		    for(String tok:Utils.split(choice.getString("text"),",",true,true)) {
+			if(!keywords.contains(tok)) {
+			    keywords.add(tok);
+			}
+		    }
+		    System.err.println(keywords);
+		}
+	    }
+	}
+							  
+
+	if(keywords.size()==0) {
+	    Hashtable<String,WordCount> cnt = new Hashtable<String,WordCount>();
+	    List<WordCount> words = new ArrayList<WordCount>();
+	    HashSet stopWords = Utils.getStopWords();
+	    String text = fileCorpus.toString();
+	    text = Utils.removeNonAscii(text," ").replaceAll(","," ").replaceAll("\\."," ");
+	    for(String tok: Utils.split(text," ",true,true)) {
+		tok = tok.toLowerCase();
+		if(tok.length()<=2) continue;
+		if(stopWords.contains(tok)) continue;
+		//		System.out.println("TOK:" + tok);
+		WordCount word = cnt.get(tok);
+		if(word==null) {
+		    word = new WordCount(tok);
+		    words.add(word);
+		    cnt.put(tok,word);
+		}
+		word.count++;
+	    }
+	    Collections.sort(words, new Comparator() {
+		    public int compare(Object o1, Object o2) {
+			WordCount w1 = (WordCount) o1;
+			WordCount w2 = (WordCount) o2;			
+			if(w2.count==w1.count) {
+			    return w2.word.length()-w1.word.length();
+			}
+			return w2.count - w1.count;
+		    }
+		});
+
+	    for(int i=0;i<words.size()&& i<3;i++) {
+		WordCount word = words.get(i);
+		if(word.count>2) {
+		    //		    System.err.println(word);
+		    keywords.add(word.word);
+		}
+	    }
+
+
+	}
+	return keywords;
+    }	
+
+
+    private static class WordCount {
+	int count=0;
+	String word;
+	WordCount(String word) {
+	    this.word = word;
+	}
+	public String toString() {
+	    return word+" #:" + count +" ";
+	}
+    }
 
 
     private String readContents(File f,List<org.apache.tika.metadata.Metadata> metadataList) throws Exception {
@@ -1313,12 +1449,13 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      *
      * @param entries _more_
      */
-    public void entriesCreated(List<Entry> entries) {
+    public void entriesCreated(Request request, List<Entry> entries) {
         if ( !isLuceneEnabled()) {
             return;
         }
         try {
-            indexEntries(entries);
+            indexEntries(entries, request, true);
+
         } catch (Exception exc) {
             logError("Error indexing entries", exc);
         }
@@ -1331,7 +1468,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      *
      * @param entries _more_
      */
-    public void entriesModified(List<Entry> entries) {
+    public void entriesModified(Request request, List<Entry> entries) {
         if ( !isLuceneEnabled()) {
             return;
         }
@@ -1341,7 +1478,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                 ids.add(entry.getId());
             }
             entriesDeleted(ids);
-            indexEntries(entries);
+            indexEntries(entries, request,false);
         } catch (Exception exc) {
             logError("Error adding entries to Lucene index", exc);
         }
@@ -1380,7 +1517,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	ids.add(entry.getId());
 	entries.add(entry);
 	entriesDeleted(ids);
-	indexEntries(entries);
+	indexEntries(entries, request, false);
     }
 
 
