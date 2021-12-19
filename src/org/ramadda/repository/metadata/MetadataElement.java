@@ -749,6 +749,10 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             }
             theFile = tmpFile.toString();
         } else {
+	    System.err.println(request);
+	    //		String name = request.getString("upload_name_"+i);
+	    //		String contents = request.getString("upload_file_"+i);
+
             String fileArg = request.getUploadedFile(arg);
             if (fileArg == null) {
                 return oldValue;
@@ -967,7 +971,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 		      + HtmlUtils.space(1)
 		      + HtmlUtils.input(arg + "_url", "", HtmlUtils.SIZE_70)
 		      + extra);
-	    sb.append(HtmlUtils.script("Ramadda.initFormUpload(" +HU.squote(formInfo.getId())+"," + HU.squote(inputId)+");"));
+	    HtmlUtils.script(sb, "Ramadda.initFormUpload("+HU.comma(HU.squote(inputId))+");");
 		      //+"','" + formInfo.getId()+"_dnd"+"');"));
 	    return sb.toString();
         } else if (dataType.equals(DATATYPE_GROUP)) {

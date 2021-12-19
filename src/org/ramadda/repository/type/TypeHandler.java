@@ -4696,10 +4696,10 @@ public class TypeHandler extends RepositoryManager {
                         tabTitles.add(msg(fileLabel));
 			if(entry==null) {
 			    String icon = HU.img("fas fa-upload");
-			    formContent += HU.div(HU.div(icon+" Or drag files here",HU.cssClass("ramadda-file-dnd-label")),HU.cssClass("ramadda-file-dnd-target")+HU.id(formInfo.getId()+"_dnd")+
-						  HU.attr("form-id",formInfo.getId()));
+			    formContent += HU.div(HU.div(icon+" Or drag files here",HU.cssClass("ramadda-file-dnd-label")),HU.cssClass("ramadda-file-dnd-target")+HU.id(inputId+"_dnd"));
+						  
 					      
-			    formContent+=HtmlUtils.script("Ramadda.initFormUpload('" +formInfo.getId()+"','" + inputId+"','" + formInfo.getId()+"_dnd"+"');");
+			    formContent+=HtmlUtils.script("Ramadda.initFormUpload("+HU.comma(HU.squote(inputId),HU.squote(inputId+"_dnd"))+");");
 			}
                         tabContent.add(HtmlUtils.inset(formContent, 8));
                     }

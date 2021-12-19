@@ -1996,9 +1996,7 @@ public class MetadataManager extends RepositoryManager {
                 insertMetadata(metadata);
             }
             entry.setMetadata(null);
-            Misc.run(getRepository(), "checkModifiedEntries",
-                     Misc.newList(entry));
-
+            getRepository().checkModifiedEntries(request,    Misc.newList(entry));
             return new Result(request.makeUrl(URL_METADATA_FORM, ARG_ENTRYID,
                     entry.getId()));
 

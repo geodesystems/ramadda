@@ -5106,12 +5106,15 @@ public class EntryManager extends RepositoryManager {
                                         makeFormSubmitDialog(sb,
 							     msg("Importing "
 								 + LABEL_ENTRIES)));
+	String inputId = getRepository().getGUID();
+
         sb.append(HU.hidden(ARG_GROUP, group.getId()));
         sb.append(HU.formTable());
         sb.append(HU.formEntry(msgLabel("File"),
 			       HU.fileInput(ARG_FILE,
-					    HU.SIZE_70)));
-
+					    HU.id(inputId) + HU.SIZE_70)));
+	
+	HtmlUtils.script(sb, "Ramadda.initFormUpload(" + HU.comma(HU.squote(inputId),HU.squote(""))+");");
         sb.append(HU.formEntry(msgLabel("Or URL"),
 			       HU.input(ARG_URL, "",
 					HU.SIZE_70)));
