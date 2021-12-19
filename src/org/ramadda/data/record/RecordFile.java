@@ -41,7 +41,7 @@ public abstract class RecordFile {
     int mycnt = xcnt++;
 
     /** debug */
-    public static boolean debug = true;
+    public static boolean debug = false;
 
     /** _more_ */
     public static final String PROP_DATEFORMAT = "dateformat";
