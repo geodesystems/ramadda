@@ -5554,7 +5554,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    html += HU.div([STYLE,HU.css("display","inline-block","width","8px","height","8px","background",color)]) +" " + f.getLabel() +"&nbsp;&nbsp; ";
 		    colorCnt++;
 		});
-		header2+= html;
+		header2+= HU.div([CLASS,"display-field-legend"], html);
 
 	    }
 
