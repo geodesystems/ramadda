@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Dec 18 07:38:26 MST 2021";
+var build_date="RAMADDA build date: Sat Dec 18 23:41:43 MST 2021";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -8591,7 +8591,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    html += HU.div([STYLE,HU.css("display","inline-block","width","8px","height","8px","background",color)]) +" " + f.getLabel() +"&nbsp;&nbsp; ";
 		    colorCnt++;
 		});
-		header2+= html;
+		header2+= HU.div([CLASS,"display-field-legend"], html);
 
 	    }
 
