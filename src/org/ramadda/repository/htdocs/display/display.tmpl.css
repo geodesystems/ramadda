@@ -2122,6 +2122,11 @@ font-weight:bold;
     background:#fffeec;
 }
 
+.display-field-legend {
+    padding-top:5px;
+    padding-bottom:5px;    
+}
+
 .display-topfields-record {
     display:inline-block;
     margin:5px;
