@@ -136,6 +136,48 @@ var MapUtils =  {
             $("#" + baseId + "_mapToggle").hide();
         }
     },
+    distance: function(lat1,lon1,lat2,lon2) {
+	//From: https://www.movable-type.co.uk/scripts/latlong.html
+	const R = 6371e3; // metres
+	const φ1 = lat1 * Math.PI/180; // φ, λ in radians
+	const φ2 = lat2 * Math.PI/180;
+	const Δφ = (lat2-lat1) * Math.PI/180;
+	const Δλ = (lon2-lon1) * Math.PI/180;
+	const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+              Math.cos(φ1) * Math.cos(φ2) *
+              Math.sin(Δλ/2) * Math.sin(Δλ/2);
+	const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+	const d = R * c; // in metres
+	return MapUtils.metersToFeet(d);
+    },
+    metersToFeet:function(m) {
+	return 3.28084*m;
+    },
+    squareMetersToSquareFeet:function(m) {
+	return 10.7639*m;
+    } ,
+    calculateArea: function(pts) {
+	let area = 0;
+	let ConvertToRadian = (input)=>{
+	    return input * Math.PI / 180;
+	};
+	if (pts.length > 2)   {
+	    for (let i = 0; i < pts.length; i++)    {
+		let p1 = pts[i];
+		let p2 = i<pts.length-1?pts[i + 1]:pts[0];
+		area += ConvertToRadian(p2.x - p1.x) * (2 + Math.sin(ConvertToRadian(p1.y)) + Math.sin(ConvertToRadian(p2.y)));
+	    }
+	    area = area * 6378137 * 6378137 / 2;
+	    if(area<0) area = -area;
+	    area = MapUtils.squareMetersToSquareFeet(area);
+//	    console.log(pts.length +" " + area);
+	    return area;
+	}
+	return -1;
+    },
+    squareFeetInASquareMile: 27878400,
+
+
 }
 
 MapUtils.defaults = {

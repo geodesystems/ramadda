@@ -2791,6 +2791,16 @@ table.dataTable tfoot td {
 
 
 
+.ramadda-editablemap-message2 {
+    min-width:300px;
+    padding:4px;
+    border : var(--basic-border);
+    position: absolute;
+    background-color : var(--color-mellow-yellow);
+    right:10px;
+    top:5px;
+}
+
 .ramadda-display-editablemap-feature {
     border:1px solid transparent;
 }

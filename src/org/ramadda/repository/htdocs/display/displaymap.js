@@ -74,6 +74,7 @@ function MapFeature(source, points) {
 }
 
 var ID_MAP = "map";
+var ID_MAP_CONTAINER = "mapcontainer";
 
 function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
     $.extend(this, {
@@ -150,7 +151,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    let map =HU.div(["tabindex","1",ATTR_CLASS, "display-map-map ramadda-expandable-target", STYLE,
 			     extraStyle, ATTR_ID, this.domId(ID_MAP)]);
 
-	    let mapContainer = HU.div([CLASS,"ramadda-map-container"],
+	    let mapContainer = HU.div([CLASS,"ramadda-map-container",ID,this.domId(ID_MAP_CONTAINER)],
 				      map+
 				      HU.div([CLASS,"ramadda-map-slider",STYLE,this.getProperty("popupSliderStyle", "max-height:400px;overflow-y:auto;max-width:300px;overflow-x:auto;"),ID,this.domId(ID_MAP)+"_slider"]));
 

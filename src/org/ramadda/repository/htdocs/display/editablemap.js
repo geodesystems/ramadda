@@ -15,6 +15,19 @@ addGlobalDisplayType({
 
 
 function RamaddaEditablemapDisplay(displayManager, id, properties) {
+    const GLYPH_MARKER = "marker";
+    const GLYPH_POINT = "point";
+    const GLYPH_LABEL = "label";
+    const GLYPH_BOX = "box";
+    const GLYPH_CIRCLE = "circle";
+    const GLYPH_TRIANGLE = "triangle";
+    const GLYPH_HEXAGON = "hexagon";
+    const GLYPH_LINE = "line";
+    const GLYPH_POLYLINE = "polyline";
+    const GLYPH_FREEHAND = "freehand";
+    const GLYPH_IMAGE = "image";
+
+    let _this = this;
     OpenLayers.Handler.ImageHandler = OpenLayers.Class(OpenLayers.Handler.RegularPolygon, {
 	initialize: function(control, callbacks, options) {
 	    OpenLayers.Handler.RegularPolygon.prototype.initialize.apply(this,arguments);
@@ -23,6 +36,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	finalize: function() {
 	    this.theImage = this.image;
 	    this.image =null;
+	    this.display.featureChanged();	    
 	    if(this.imageBounds) {
 		let aspect = this.imageBounds.width/this.imageBounds.height;
 		let ring = this.feature.geometry.components[0];
@@ -36,10 +50,6 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    }
 
 	    OpenLayers.Handler.RegularPolygon.prototype.finalize.apply(this,arguments);
-
-
-
-
 
 	    //call deactivate in a bit. If we do this now then there is an error in OL
 	    setTimeout(()=>{
@@ -85,7 +95,44 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
     });
 
 
+    OpenLayers.Handler.MyPoint = OpenLayers.Class(OpenLayers.Handler.Point, {
+	finalize: function() {
+	    OpenLayers.Handler.Point.prototype.finalize.apply(this,arguments);
+	    this.display.featureChanged();	    
+	},
+    });
+
+
+    OpenLayers.Handler.MyPath = OpenLayers.Class(OpenLayers.Handler.Path, {
+	finalize: function() {
+	    OpenLayers.Handler.Path.prototype.finalize.apply(this,arguments);
+	    this.display.featureChanged();	    
+	    this.display.jq(ID_MESSAGE2).hide(1000);
+	},
+	move: function(evt) {
+	    OpenLayers.Handler.Path.prototype.move.apply(this,arguments);
+	    if(!this.line || !this.line.geometry) return;
+	    this.display.showDistances(this.line.geometry,this.glyphType);
+	}
+	
+    });
+
+    OpenLayers.Handler.MyRegularPolygon = OpenLayers.Class(OpenLayers.Handler.RegularPolygon, {
+	finalize: function() {
+	    OpenLayers.Handler.RegularPolygon.prototype.finalize.apply(this,arguments);
+	    this.display.featureChanged();	    
+	    this.display.jq(ID_MESSAGE2).hide(1000);
+	},
+	move: function(evt) {
+	    OpenLayers.Handler.RegularPolygon.prototype.move.apply(this,arguments);
+	    if(!this.feature || !this.feature.geometry) return;
+	    this.display.showDistances(this.feature.geometry,this.glyphType);
+	}
+    });    
+    
+
     const ID_MESSAGE  ="message";
+    const ID_MESSAGE2  ="message2";    
     const ID_LIST_DELETE  ="listdelete";
     const ID_LIST_OK  ="listok";
     const ID_LIST_CANCEL = "listcancel";
@@ -148,6 +195,95 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	handleEvent:function(event,lonlat) {
 	    return;
 	},
+	showDistances:function(geometry, glyphType) {
+	    let msg = this.getDistances(geometry,glyphType);
+	    this.jq(ID_MESSAGE2).html(msg);
+	    this.jq(ID_MESSAGE2).show();
+	},
+
+	getLatLonPoints:function(geometry) {
+	    let components = geometry.components;
+	    if(components==null) return null;
+	    if(components.length) {
+		if(components[0].components) components = components[0].components;
+	    }
+	    let pts = components.map(pt=>{
+		return  this.map.transformProjPoint(pt)
+	    });
+	    return pts;
+	},
+
+	getDistances:function(geometry,glyphType) {
+	    if(!geometry) return null;
+	    let pts = this.getLatLonPoints(geometry);
+	    if(pts==null) return null;
+//            let garea = MapUtils.squareMetersToSquareFeet(geometry.getGeodesicArea(this.map.getMap().getProjectionObject()));
+            let garea = MapUtils.squareMetersToSquareFeet(geometry.getArea());
+	    let area = -1;
+	    let acres;
+
+
+	    if(glyphType == GLYPH_CIRCLE || glyphType == GLYPH_BOX || glyphType == GLYPH_POLYLINE || glyphType == GLYPH_TRIANGLE || glyphType == GLYPH_FREEHAND) {
+		area = MapUtils.calculateArea(pts);
+		acres = area/43560;
+	    }
+
+//	    console.log(glyphType +" " + area);
+	    let msg = "Distance: ";
+	    if(glyphType == GLYPH_BOX) {
+		msg = "";
+		let w = MapUtils.distance(pts[0].y,pts[0].x,pts[1].y,pts[1].x);
+		let h = MapUtils.distance(pts[1].y,pts[1].x,pts[2].y,pts[2].x);		
+		let unit = "ft";
+		if(w>5280 || h>5280) {
+		    unit = "m";
+		    w = w/5280;
+		    h = h/5280;		    
+		}
+
+		msg= "w: " + Utils.formatNumberComma(w) + " " + unit +
+		    " h: " + Utils.formatNumberComma(h) + " " + unit;
+	    } else {
+		let segments = "";
+		let total = 0;
+		for(let i=0;i<pts.length-1;i++) {
+		    let pt1 = pts[i];
+		    let pt2 = pts[i+1];		
+		    let d = MapUtils.distance(pt1.y,pt1.x,pt2.y,pt2.x);
+		    total+=d;
+		    let unit = "ft";
+		    if(d>5280) {
+			unit = "m";
+			d = d/5280;
+		    }
+		    d = Utils.formatNumberComma(d);
+		    segments+= d +" " + unit +" ";
+		}
+		let unit = "ft";
+		if(total>5280) {
+		    unit = "m";
+		    total = total/5280;
+		}
+		msg = "Total distance: " + Utils.formatNumberComma(total) +" " + unit;
+		if(pts.length>2 && pts.length<6)  {
+		    msg+="<br>Segments:" + segments;
+		}
+	    }
+	    if(area>0) {
+		unit="ft";
+		if(area>MapUtils.squareFeetInASquareMile) {
+		    unit = "miles";
+		    area = area/MapUtils.squareFeetInASquareMile;
+		}
+		msg+=   "<br>" +
+		    "area: " + Utils.formatNumber(area) +" sq " + unit + "<br>" +
+		    Utils.formatNumber(acres) +" acres";
+	    }
+
+	    return msg;
+	},
+
+
 	setCommand:function(command, args) {
 	    args = args ||{};
 	    this.clearCommands();
@@ -215,6 +351,10 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    col += " " + a+":" + style[a];
 		}
 	    }
+	    let msg = this.getDistances(feature.geometry,feature.type);
+	    if(msg) {
+		col+="<br>" + msg.replace(/<br>/g," ");
+	    }
 	    line+= HU.td([TITLE,'Shift click to edit',STYLE,HU.css("padding","5px")],col);
 	    return line;
 	},	    
@@ -225,7 +365,7 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
             this.myLayer.features.forEach((feature,idx)=>{
 		if(!feature.type) return;
 		this.featureListMap[idx]  = feature;
-		features+=HU.openTag("tr",[CLASS,"ramadda-clickable ramadda-display-editablemap-feature","feature-idx",idx]);
+		features+=HU.openTag("tr",['valign','top',CLASS,"ramadda-clickable ramadda-display-editablemap-feature","feature-idx",idx]);
 		features+=this.makeListItem(feature,idx);
 		features+="</tr>";
 	    });
@@ -908,19 +1048,19 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	},
 	doMakeMapGlyphs:function() {
 	    return [
-		new GlyphType(this,"marker","Marker",
+		new GlyphType(this,GLYPH_MARKER,"Marker",
 			     {strokeWidth:0, 
 			      fillColor:"transparent",
 			      externalGraphic: ramaddaBaseUrl+this.getExternalGraphic(),
 			      pointRadius:this.getPointRadius(10)},
-			     OpenLayers.Handler.Point),
-		new GlyphType(this,"point","Point",
+			      OpenLayers.Handler.MyPoint),
+		new GlyphType(this,GLYPH_POINT,"Point",
 			     {strokeWidth:this.getProperty("strokeWidth",2), 
 			      fillColor:"transparent",
 			      strokeColor:this.getStrokeColor(),
 			      pointRadius:this.getPointRadius(4)},
-			     OpenLayers.Handler.Point),
-		new GlyphType(this,"label","Label",
+			     OpenLayers.Handler.MyPoint),
+		new GlyphType(this,GLYPH_LABEL,"Label",
 			     {label : "label",
 			      fontColor: this.getProperty("labelFontColor","#000"),
 			      fontSize: this.getFontSize(),
@@ -933,55 +1073,55 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			      labelOutlineWidth: this.getProperty("labelOutlineWidth","0"),
 			      labelSelect:true,
 			     }, OpenLayers.Handler.Point),
-		new GlyphType(this,"box", "Box",
+		new GlyphType(this,GLYPH_BOX, "Box",
 			      {strokeColor:this.getStrokeColor(),
 			      strokeWidth:this.getStrokeWidth(),
 			      fillColor:"transparent",
 			      fillOpacity:1.0},
-			     OpenLayers.Handler.RegularPolygon,
+			     OpenLayers.Handler.MyRegularPolygon,
 			     {snapAngle:90,sides:4,irregular:true}
 			    ),
-		new GlyphType(this,"circle", "Circle",
+		new GlyphType(this,GLYPH_CIRCLE, "Circle",
 			     {strokeColor:this.getStrokeColor(),
 			      strokeWidth:this.getStrokeWidth(),
 			      fillColor:"transparent",
 			      fillOpacity:1.0},
-			     OpenLayers.Handler.RegularPolygon,
+			     OpenLayers.Handler.MyRegularPolygon,
 			     {snapAngle:45,sides:40}
 			    ),
-		new GlyphType(this,"triangle", "Triangle",
+		new GlyphType(this,GLYPH_TRIANGLE, "Triangle",
 			     {strokeColor:this.getStrokeColor(),
 			      strokeWidth:this.getStrokeWidth(),
 			      fillColor:"transparent",
 			      fillOpacity:1.0},
-			     OpenLayers.Handler.RegularPolygon,
+			     OpenLayers.Handler.MyRegularPolygon,
 			     {snapAngle:10,sides:3}
 			    ),				
-		new GlyphType(this,"hexagon", "Hexagon",
+		new GlyphType(this,GLYPH_HEXAGON, "Hexagon",
 			     {strokeColor:this.getStrokeColor(),
 			      strokeWidth:this.getStrokeWidth(),
 			      fillColor:"transparent",
 			      fillOpacity:1.0},
-			     OpenLayers.Handler.RegularPolygon,
+			     OpenLayers.Handler.MyRegularPolygon,
 			     {snapAngle:90,sides:6}
 			    ),		
-		new GlyphType(this,"line", "Line",
+		new GlyphType(this,GLYPH_LINE, "Line",
 			     {strokeColor:this.getStrokeColor(),
 			      strokeWidth:this.getStrokeWidth()},
-			     OpenLayers.Handler.Path,{maxVertices:2}),		
+			      OpenLayers.Handler.MyPath,{maxVertices:2}),		
 
-		new GlyphType(this,"polyline", "Polyline",
+		new GlyphType(this,GLYPH_POLYLINE, "Polyline",
 			     {strokeColor:this.getStrokeColor(),
 			      strokeWidth:this.getStrokeWidth(),
 			      fillColor:"transparent",
 			      fillOpacity:1.0},
-			     OpenLayers.Handler.Path),
-		new GlyphType(this,"freehand","Freehand",
+			     OpenLayers.Handler.MyPath),
+		new GlyphType(this,GLYPH_FREEHAND,"Freehand",
 			     {strokeColor:this.getStrokeColor(),
 			      strokeWidth:this.getStrokeWidth()},
-			     OpenLayers.Handler.Path,
+			     OpenLayers.Handler.MyPath,
 			     {freehand:true}),
-		new GlyphType(this,"image", "Image",
+		new GlyphType(this,GLYPH_IMAGE, "Image",
 			     {strokeColor:"blue",
 			      strokeWidth:1,
 			      imageOpacity:this.getImageOpacity(1),
@@ -1177,6 +1317,9 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    HU.div([ID,this.domId(ID_MENU_EDIT),CLASS,"ramadda-menubar-button"],"Edit") +
 		    HU.div([ID,this.domId(ID_MENU_NEW),CLASS,"ramadda-menubar-button"],"New");		    
 	    	menuBar = HU.div([CLASS,"ramadda-menubar"], menuBar);
+		let message2 = HU.div([ID,this.domId(ID_MESSAGE2),CLASS,"ramadda-editablemap-message2"],"");
+		this.jq(ID_MAP_CONTAINER).append(message2);
+
 		let message = HU.span([ID,this.domId(ID_MESSAGE),STYLE,HU.css("margin-left","10px")],"");
 		menuBar+=message;
 		let mapHeader = HU.div([STYLE,HU.css("margin-left","20px","display","inline-block"), ID,this.domId(ID_MAP)+"_header"]);
@@ -1279,6 +1422,7 @@ var GlyphType = function(display,type,label,style,handler,options) {
     this.glyphStyle = style;
     this.handler = handler;
     this.options = options || {};
+    this.options.glyphType = type;
     this.options.display = display;
     this.options.mapGlyph = this;
     $.extend(this,{
