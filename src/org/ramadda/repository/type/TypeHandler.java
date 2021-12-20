@@ -4558,7 +4558,7 @@ public class TypeHandler extends RepositoryManager {
             if (what.equals(ARG_TAGS)) {
 		StringBuilder tags = new StringBuilder();
 		for(int i=0;i<3;i++) {
-		    tags.append(HU.input(ARG_TAGS,"",HU.SIZE_10+HU.cssClass("metadata-tag-input")));
+		    tags.append(HU.input(ARG_TAGS,"",HU.SIZE_15+HU.cssClass("metadata-tag-input")));
 		}
 
 		if(entry!=null) {

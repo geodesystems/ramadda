@@ -2026,7 +2026,8 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		    });
 		    let tag = $(this).attr("metadata-tag");
 		    if(tags.indexOf(tag)<0) {
-			contents+=HU.div([CLASS,"metadata-tag ramadda-clickable","metadata-tag",tag],tag);
+			let label = tag.replace(/^[^:]+:/,"");
+			contents+=HU.div([CLASS,"metadata-tag ramadda-clickable","metadata-tag",tag],label);
 			tags.push(tag);
 		    }
 		});
