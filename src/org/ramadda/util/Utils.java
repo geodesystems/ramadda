@@ -3479,6 +3479,17 @@ public class Utils extends IO {
         return h;
     }
 
+    public static List makeListFromArray(Object[] a) {
+        List h = new ArrayList();
+        for (Object arg : a) {
+            h.add(arg);
+        }
+
+        return h;
+    }
+
+
+
     /** _more_ */
     public static final Hashtable<String, Color> COLORNAMES =
         (Hashtable<String,
