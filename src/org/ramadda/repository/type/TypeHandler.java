@@ -94,13 +94,14 @@ public class TypeHandler extends RepositoryManager {
 
     /** _more_ */
     private String[] FIELDS_ENTRY = {
-        ARG_NAME, ARG_DESCRIPTION, ARG_RESOURCE, ARG_CATEGORY, ARG_DATE,
+        ARG_NAME, ARG_DESCRIPTION, ARG_RESOURCE, ARG_TAGS, ARG_CATEGORY, ARG_DATE,
         ARG_LOCATION
     };
 
     /** _more_ */
     private String[] FIELDS_NOENTRY = { ARG_NAME, ARG_RESOURCE,
-                                        ARG_DESCRIPTION, ARG_DATE,
+                                        ARG_DESCRIPTION, ARG_TAGS,
+					ARG_DATE,
                                         ARG_LOCATION };
 
 
@@ -4554,6 +4555,30 @@ public class TypeHandler extends RepositoryManager {
                             : FIELDS_ENTRY;
         String   domId;
         for (String what : whatList) {
+            if (what.equals(ARG_TAGS)) {
+		StringBuilder tags = new StringBuilder();
+		for(int i=0;i<3;i++) {
+		    tags.append(HU.input(ARG_TAGS,"",HU.SIZE_10+HU.cssClass("metadata-tag-input")));
+		}
+
+		if(entry!=null) {
+		    List<Metadata> metadataList =
+			getMetadataManager().findMetadata(request, entry,
+							  new String[]{"enum_tag","content.keyword"}, false);
+		    if(metadataList!=null && metadataList.size()>0) {
+			for(Metadata metadata: metadataList) {
+			    String mtd = metadata.getAttr(1);
+			    HU.div(tags,mtd,HU.cssClass("metadata-tag")+HU.attr("metadata-tag",mtd)+HU.attr("metadata-id", metadata.getId()));
+			    tags.append(HU.hidden("metadata_state_"+metadata.getId(),"true",HU.id(metadata.getId())));
+			}
+		    }
+		}
+		HtmlUtils.script(tags,
+				 "Ramadda.initFormTags(" + HU.squote(formInfo.getId())+");");
+		sb.append(formEntry(request, msgLabel("Tags"),
+				    tags.toString()));
+	    }
+
             if (what.equals(ARG_NAME)) {
                 if ( !forUpload && okToShowInForm(entry, ARG_NAME)) {
                     domId = HtmlUtils.getUniqueId("entryinput");
