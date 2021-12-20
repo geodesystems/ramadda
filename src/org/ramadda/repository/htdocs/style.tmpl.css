@@ -1911,7 +1911,7 @@ ul {
     padding:10px;
 }
 
-label, .ramadda-clickable, .ramadda-noselect {
+label, .ramadda-clickable, .ramadda-noselect, .entry-toggleblock-label {
     -webkit-touch-callout: none; 
     -webkit-user-select: none; 
     -khtml-user-select: none; 
@@ -2537,11 +2537,29 @@ pre {
 }
 
 
+
 .metadata-tags {
     text-align:center;
 }
 
+.metadata-tag-input {
+    margin-right:5px;
+}
+
+.metadata-tag-deleted {
+    background:#aaa !important;
+    border:1px solid #888 !important;
+}
+
+
+
 .metadata-tag {
+    -webkit-touch-callout: none; 
+    -webkit-user-select: none; 
+    -khtml-user-select: none; 
+    -ms-user-select: none; 
+    user-select: none; 
+
     font-size:80%;
     display:inline-block;
     margin:3px;

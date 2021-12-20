@@ -11,6 +11,47 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
     fileDrops:{
     },
+    initFormTags: function(formId) {
+	let form = $('#'+formId);
+	let inputs = form.find('.metadata-tag-input');
+	form.attr('autocomplete','off');
+	inputs.attr('autocomplete','off');
+	inputs.keyup(function(event) {
+	    HtmlUtils.hidePopupObject();
+	    let val = $(this).val();
+	    if(val=="") return;
+	    let url = HU.getUrl(ramaddaBaseUrl +"/metadata/suggest",["value",val.trim()]);
+	    let input = $(this);
+	    $.getJSON(url, data=>{
+		if(data.length==0) return;
+		let suggest = "";
+		data.forEach(d=>{
+		    suggest+=HU.div([CLASS,"ramadda-clickable metadata-suggest","suggest",d],d);
+		});
+		let html = HU.div([CLASS,"ramadda-search-popup",STYLE,HU.css("max-width","200px",
+									     "padding","4px")],suggest);
+		let dialog = HU.makeDialog({content:html,my:"left top",at:"left bottom",anchor:input});
+		dialog.find(".metadata-suggest").click(function() {
+		    HtmlUtils.hidePopupObject();
+		    input.val($(this).attr("suggest"));
+		});
+	    }).fail(
+		    err=>{console.log("url failed:" + url +"\n" + err)});
+	});
+
+	let tags = $('#'+formId).find('.metadata-tag');
+	tags.attr('title','Click to remove');
+	tags.click(function() {
+	    let input = form.find("#" + $(this).attr('metadata-id'));
+	    if($(this).hasClass('metadata-tag-deleted')) {
+		$(this).removeClass('metadata-tag-deleted')		
+		input.val("");
+	    } else {
+		$(this).addClass('metadata-tag-deleted')		
+		input.val("delete");
+	    }
+	});
+    },
     initFormUpload:function(fileInputId, targetId) {
 	let input = $("#"+ fileInputId);
 	let form = input.closest('form');
