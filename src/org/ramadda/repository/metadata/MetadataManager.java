@@ -1429,6 +1429,34 @@ public class MetadataManager extends RepositoryManager {
 
 
 
+    public Result processMetadataSuggest(Request request) throws Exception {
+	StringBuilder sb = new StringBuilder();
+
+	String  value = request.getString("value","").trim();
+	Clause clause =  Clause.eq(Tables.METADATA.COL_TYPE, "enum_tag");
+	if(value.length()>0) {
+	    clause = Clause.and(clause, Clause.like(Tables.METADATA.COL_ATTR1, value+"%"));
+	}
+	int limit = 30;
+	String l = getDatabaseManager().makeOrderBy(Tables.METADATA.COL_ATTR1) +
+	    getDatabaseManager().getLimitString(0,limit);
+	    
+	Statement stmt = getDatabaseManager().select(
+						     SqlUtil.distinct(Tables.METADATA.COL_ATTR1),
+						     Tables.METADATA.NAME,clause,
+						     l);
+	List<String> values = (List<String>)Utils.makeListFromArray(
+								    SqlUtil.readString(getDatabaseManager().getIterator(stmt), 1));
+	if(values.size()>limit) {
+	    List<String> tmp = new ArrayList<String>();
+	    for(int i=0;i<values.size() && i<limit; i++) tmp.add(values.get(i));
+	    values = tmp;
+	}
+	sb.append(Json.list(values, true));
+        return new Result("", sb, Json.MIMETYPE);
+    }
+
+
     /**
      * _more_
      *
