@@ -2615,7 +2615,34 @@ public class EntryManager extends RepositoryManager {
                 }
             }
 
+	    List<String> tags = request.get(ARG_TAGS,new ArrayList<String>());
+	    //Check for deleted metadata. This input gets set in ramadda.js
+	    for(Entry e: entries) {
+		List<Metadata> existingMetadata = getMetadataManager().getMetadata(e);
+		for(Metadata mtd: existingMetadata) {
+		    if(request.getString("metadata_state_" + mtd.getId(),"").equals("delete")) {
+			mtd.setMarkedForDelete(true);
+		    }
+		}
+	    }
+
+	    for(String tag: tags) {
+		tag = tag.trim();
+		if(tag.length()==0) continue;
+		for(Entry e: entries) {
+		    getMetadataManager().addMetadata(
+						     e,
+						     new Metadata(getRepository().getGUID(), e.getId(),
+							      "enum_tag", false, tag, "", "", "", ""),true);
+		}
+	    }
+
+
             insertEntries(request, entries, newEntry, false);
+
+
+
+
             if (newEntry) {
                 for (Entry theNewEntry : entries) {
                     theNewEntry.getTypeHandler().doFinalEntryInitialization(
@@ -4956,8 +4983,8 @@ public class EntryManager extends RepositoryManager {
 
                 return new Result(
 				  request.entryUrl(getRepository().URL_ENTRY_SHOW, entry));
-            }
-        }
+	    }
+	}
 
 
 
@@ -7853,6 +7880,7 @@ public class EntryManager extends RepositoryManager {
                                          entry.getId()));
                 }
                 for (Metadata metadata : metadataList) {
+		    if(metadata.getMarkedForDelete()) continue;
                     int col = 1;
                     metadataCnt++;
                     metadataStmt.setString(col++, metadata.getId());
