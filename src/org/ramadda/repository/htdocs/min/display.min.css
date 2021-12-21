@@ -2792,6 +2792,7 @@ table.dataTable tfoot td {
 
 
 .ramadda-editablemap-message2 {
+    display:none;
     min-width:300px;
     padding:4px;
     border : var(--basic-border);

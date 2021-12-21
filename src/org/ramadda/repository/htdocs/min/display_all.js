@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Dec 20 14:13:51 MST 2021";
+var build_date="RAMADDA build date: Tue Dec 21 09:17:46 MST 2021";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -37909,6 +37909,8 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
     });    
     
 
+
+
     const ID_MESSAGE  ="message";
     const ID_MESSAGE2  ="message2";    
     const ID_LIST_DELETE  ="listdelete";
@@ -39032,9 +39034,21 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    }
 		    _this.featureChanged();
 		};
+		let mover =  this.addControl(ID_MOVER,"Click drag to move",new OpenLayers.Control.DragFeature(this.myLayer,{
+		    onDrag: function(feature, pixel) {
+			imageChecker(feature);
+		    }
+		}));
+
 		let MyMover =  OpenLayers.Class(OpenLayers.Control.ModifyFeature, {
+		    dragComplete: function() {
+			OpenLayers.Control.ModifyFeature.prototype.dragComplete.apply(this, arguments);
+			this.theDisplay.featureChanged();	    
+			this.theDisplay.jq(ID_MESSAGE2).hide(1000);
+		    },
 		    dragVertex: function(vertex, pixel) {
-			if(!this.feature.image) {
+			this.theDisplay.showDistances(this.feature.geometry,this.feature.type);
+			if(!this.feature.image && this.feature.type!=GLYPH_BOX) {
 			    OpenLayers.Control.ModifyFeature.prototype.dragVertex.apply(this, arguments);
 			    return;
 			}
@@ -39073,27 +39087,29 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 			this.layer.drawFeature(this.feature, this.standalone ? undefined :
 					       'select');
 			this.layer.drawFeature(vertex);
-			imageChecker(this.feature);
+			if(this.feature.image) {
+			    imageChecker(this.feature);
+			}
 		    }
 		});
-		let mover =  this.addControl(ID_MOVER,"Click drag to move",new OpenLayers.Control.DragFeature(this.myLayer,{
-		    onDrag: function(feature, pixel) {
-			imageChecker(feature);
-		    }
-		}));
+
+
+
 		let resizer = new MyMover(this.myLayer,{
+		    theDisplay:this,
 		    onDrag: function(feature, pixel) {imageChecker(feature);},
 		    mode:OpenLayers.Control.ModifyFeature.RESIZE|OpenLayers.Control.ModifyFeature.DRAG});
 		let reshaper = new MyMover(this.myLayer, {
+		    theDisplay:this,
 		    onDrag: function(feature, pixel) {imageChecker(feature);},
 		    createVertices:false,
 		    mode:OpenLayers.Control.ModifyFeature.RESHAPE});
 		this.addControl(ID_RESIZE,"Click to resize",resizer);
 		this.addControl(ID_RESHAPE,"Click to reshape",reshaper);
 
-		let menuBar=  HU.div([ID,this.domId(ID_MENU_FILE),CLASS,"ramadda-menubar-button"],"File")+
-		    HU.div([ID,this.domId(ID_MENU_EDIT),CLASS,"ramadda-menubar-button"],"Edit") +
-		    HU.div([ID,this.domId(ID_MENU_NEW),CLASS,"ramadda-menubar-button"],"New");		    
+		let menuBar=  "";
+		[[ID_MENU_FILE,"File"],[ID_MENU_EDIT,"Edit"],[ID_MENU_NEW,"New"]].forEach(t=>{
+		    menuBar+=   HU.div([ID,this.domId(t[0]),CLASS,"ramadda-menubar-button"],t[1])});
 	    	menuBar = HU.div([CLASS,"ramadda-menubar"], menuBar);
 		let message2 = HU.div([ID,this.domId(ID_MESSAGE2),CLASS,"ramadda-editablemap-message2"],"");
 		this.jq(ID_MAP_CONTAINER).append(message2);
