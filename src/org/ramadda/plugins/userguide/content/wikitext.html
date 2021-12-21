@@ -426,6 +426,19 @@ Add a link to the embed:
 }]
 
 
+Embed  Github checkins with:
+[wiki::text {
+@(github user=some_user_name)  
+
+#or a repository
+@(github owner=repository_owner repository=repository)
+
+#don't show avatar image
+@(github owner=repository_owner repository=repository decorate=false)
+}]
+
+
+
 [ug::subsubheading {Embedding Code} codeembed]
 To embed code do the following:
 [wiki::text {

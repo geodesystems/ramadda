@@ -1,0 +1,156 @@
+<html>
+<head>
+<title>API Keys and External Services</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
+<a href="tips.html"><span title="Previous: Tips and Tricks"><i  style='font-size:20pt;'  class="fa fa-caret-left "></i></span></a> <a href="page_ramaddawikifacilities.html"><span title="Next: RAMADDA Wiki Facilities"><i  style='font-size:20pt;'  class="fa fa-caret-right "></i></span></a>  <a href="toc.html#keys.html"><span title="Table of contents"><i  style='font-size:20pt;'  class="fa fa-list "></i></span></a>
+</td>
+<td width=40% align=center>
+<div class="ramadda-page-title"><a href="${root}/userguide/index.html">RAMADDA User Guide</a></div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="ramadda-page-heading">Section 6: API Keys and External Services</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+<div style="margin-left:20px;">
+
+
+
+
+<div  class="childlist" ><table  width="100%" ><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+6.0&nbsp;
+</span></td><td><a  class="childlist-link"  href="keys.html#cdn" >
+<a href="#cdn">Using a CDN</a>
+</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+6.1&nbsp;
+</span></td><td><a  class="childlist-link"  href="keys.html#github" >
+<a href="#github">Embedding Github checkins and using the Github check entry</a>
+</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+6.2&nbsp;
+</span></td><td><a  class="childlist-link"  href="keys.html#pdf" >
+<a href="#pdf">Generating thumbnails of PDFs</a>
+</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+6.3&nbsp;
+</span></td><td><a  class="childlist-link"  href="keys.html#jupyter" >
+<a href="#jupyter">Rendering Jupyter Notebooks</a>
+</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+6.4&nbsp;
+</span></td><td><a  class="childlist-link"  href="keys.html#otherapis" >
+<a href="#otherapis">Other API keys</a>
+</a><br></td></tr></table></div>
+
+<a name="cdn"></a><p><div class="ramadda-help-heading">6.0 <a href="#cdn">Using a CDN</a></div> 
+By default RAMADDA serves up all of its HTML resources (javascript, css, images etc) 
+from its own server. However, for performance, RAMADDA can be configured to use
+external content delivery networks (CDN) by setting this property:
+<pre>
+ramadda.cdnok=true
+</pre>
+
+For the core resources RAMADDA uses cdn.jsdeliver.net using the latest Github version tag, e.g.:
+<pre>
+https://cdn.jsdelivr.net/gh/geodesystems/ramadda@6.60.0/...
+</pre>
+
+For other resources RAMADDA uses the standard CDN for the resource, e.g.:
+<pre>
+https://code.jquery.com/jquery-3.3.1.min.js
+</pre>
+
+
+<a name="github"></a><p><div class="ramadda-help-heading">6.1 <a href="#github">Embedding Github checkins and using the Github check entry</a></div> 
+RAMADDA supports embedding Github checkins into wiki text with the form:
+<pre>
+@(github user=some_user_name)  
+or:
+@(github owner=repository_owner repository=repository)
+</pre>
+
+The access to the Github API is rate limited. To increase the request rate create a personal access
+token through Github and set the following RAMADDA property:  
+<pre>
+github.token=your token
+</pre>
+
+<a name="pdf"></a><p><div class="ramadda-help-heading">6.2 <a href="#pdf">Generating thumbnails of PDFs</a></div> 
+Install the <a href="https://www.ghostscript.com/doc/current/Install.htm">Ghostscript</a>
+package to automatically generate a thumbnail image of the the page of a PDF file by
+setting the property:
+
+<pre>
+service.gs=/path/to/bin/gs
+</pre>
+
+
+
+<a name="jupyter"></a><p><div class="ramadda-help-heading">6.3 <a href="#jupyter">Rendering Jupyter Notebooks</a></div> 
+RAMADDA supports a Jupyter Notebook entry type. It will do its own custom rendering
+of the notebook. You can also configure RAMADDA to use jupyter to do the rendering
+by setting the following property value:
+<pre>
+ramadda.jupyter.path=/path/to/anaconda/bin/jupyter
+</pre>
+
+
+<a name="otherapis"></a><p><div class="ramadda-help-heading">6.4 <a href="#otherapis">Other API keys</a></div> 
+
+There are a number of other services that access external APIs and require
+an API key. Here are some of them.
+
+<pre>
+#show google streetview images
+google.streetview.key=
+
+#for google geocoding
+google.key=
+
+#for enabling sms access
+twilio.accountsid=
+twilio.authtoken=
+twilio.phone=
+
+#for census data access
+census.api.key=
+
+#bureau of labor statistics
+bls.api.key=
+
+#fec
+fec.api.key=
+
+
+#used in the GTFS displays
+ramadda.uber.token=
+ramadda.lyft.clientid=
+ramadda.lyft.secret=
+
+#other...
+quandl.api.key=
+webhose.api.key=
+enigma.api.key=
+wolfram.api.key=
+
+</pre>  
+
+
+</div>
+<p>
+
+<p>&nbsp;<p>
+<a href="tips.html"><span title="Previous: Tips and Tricks"><i  style='font-size:20pt;'  class="fa fa-caret-left "></i></span></a> <a href="page_ramaddawikifacilities.html"><span title="Next: RAMADDA Wiki Facilities"><i  style='font-size:20pt;'  class="fa fa-caret-right "></i></span></a>  <a href="toc.html#keys.html"><span title="Table of contents"><i  style='font-size:20pt;'  class="fa fa-list "></i></span></a>
+<p>
+</div>
+</body>
+</html>
+

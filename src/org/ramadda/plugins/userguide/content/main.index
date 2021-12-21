@@ -21,6 +21,7 @@ index.html
 >>configuration.html
 >faq.html
 >tips.html
+
 >title:RAMADDA Wiki Facilities
 >>wiki.html
 >>wikitext.html
@@ -34,19 +35,13 @@ index.html
 -exampletemplate.jar
 
 
-#>title:Entries:Documentation for how to use the different types of entries available
-#>>localfileview.html
-#>>ftpview.html
-
-
-
-
 >title:Data ingest,  harvesters and import/export
 >>download.html
 >>dataingest.html
 >>entrytypes.html
 >>entryxml.html
 >>harvesters.html
+>>localfileview.html
 
 
 >title:Data Facilities
@@ -65,6 +60,7 @@ index.html
 >>aws.html
 >>build.html
 >>database.html
+>keys.html
 >>readonly.html
 >>plugins.html
 >>services.html
