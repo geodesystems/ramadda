@@ -737,7 +737,8 @@ proc gen::addSubHead {from content} {
 	       }
             incr cnt
             if {$intoc != "false"} {set intoc 1} else {set intoc 0}
-            #set intoc 1
+	       ##for not don't include the subheadings in the TOC
+            set intoc 0
             gen::definePage "$from#$id" "" $from  0 $intoc  link [string trim $label] ""
 	    gen::setDescription  "$from#$id" $desc
         }
@@ -1955,7 +1956,7 @@ proc gen::processFile {from to fileIdx template} {
 
     set allHtml $A(body)
     if {[gen::getPageType $from] == "virtual"} {
-        append allHtml $childlist
+	   append allHtml $childlist
     }
     set allHtml [gen::processPopups $from $to $allHtml $depth 1]
     set allHtml [gen::processDetails $from $to $allHtml $depth 1]
