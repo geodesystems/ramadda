@@ -482,6 +482,9 @@ public interface WikiConstants {
     /** the slideshow property */
     public static final String WIKI_TAG_SLIDESHOW = "slideshow";
 
+    public static final String WIKI_TAG_TAGS = "tags";
+
+
     /** wiki import */
     public static final String WIKI_TAG_GRID = "grid";
 

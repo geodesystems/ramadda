@@ -120,6 +120,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag(WIKI_TAG_SIMPLE, null, ATTR_TEXTPOSITION, POS_LEFT),
                             new WikiTag(WIKI_TAG_IMPORT, null, ATTR_ENTRY,"","showTitle","false"),
                             new WikiTag(WIKI_TAG_EMBED, null, ATTR_ENTRY,"",ATTR_SKIP_LINES,"0",ATTR_MAX_LINES,"1000",ATTR_FORCE,"false",ATTR_MAXHEIGHT,"300",ATTR_ANNOTATE,"true","raw","true","wikify","true"),
+                            new WikiTag(WIKI_TAG_TAGS),
                             new WikiTag(WIKI_TAG_FIELD, null, "name", "")),
         new WikiTagCategory("Layout", 
                             new WikiTag(WIKI_TAG_TREE, null, ATTR_DETAILS, "true"),
@@ -2958,6 +2959,21 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         } else if (theTag.equals(WIKI_TAG_SIMPLE)) {
             return makeSimpleDisplay(request, wikiUtil, props, originalEntry,
                                      entry);
+        } else if (theTag.equals(WIKI_TAG_TAGS)) {
+            String types = getProperty(wikiUtil, props, "types",
+				       "enum_tag,content.keyword");
+	    List<Metadata> metadataList =
+		getMetadataManager().findMetadata(request, entry,
+						  types.split(","), false);
+	    if(metadataList!=null && metadataList.size()>0) {
+		sb.append("<div class=metadata-tags>");
+		for(Metadata metadata: metadataList) {
+		    String mtd = metadata.getAttr(1);
+		    HU.div(sb,mtd,HU.cssClass("metadata-tag")+HU.attr("metadata-tag",mtd));
+		}
+		sb.append("</div>");
+	    }
+	    return sb.toString();
         } else if (theTag.equals(WIKI_TAG_TABS)
                    || theTag.equals(WIKI_TAG_ACCORDION)
                    || theTag.equals(WIKI_TAG_ACCORDIAN)
