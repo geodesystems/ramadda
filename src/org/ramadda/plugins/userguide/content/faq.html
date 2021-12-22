@@ -38,16 +38,17 @@ had been disabled by default.  Lucene provides a much better search experience a
 contents of files (e.g., pdfs, ppt, word, csv, etc) and provides better searching - supporting
 entry hierarchy based searching, synonyoms, etc.
 
-As of 12-2021 RAMADDA now defaults to using Lucene. This can be overriden with the property:
+As of December 2021 RAMADDA now defaults to using Lucene. This can be overriden with the property:
 <pre>
-  ramadda.search.lucene.enabled=false
+ramadda.search.lucene.enabled=false
 </pre>
 The problem this introduces is that, once enabled,  the index does not get built with past content so a search
 will only show newly created content. To address this you can simply go to the Admin page:
-Go to: Admin-&gt;Maintenance-&gt;Reindex Lucene Index and select "Reindex all".
+Admin-&gt;Maintenance-&gt;Reindex Lucene Index and select "Reindex all".
 Depending on the size of your repository this may take a few minutes but once complete your searching should be good to
 go.
 </faqitem>
+
 
 <faqitem cat="Administration" id="cdn" q="How do I improve the page loading performance?" >
 By default RAMADDA serves up all of its CSS and Javascript files as individual files. You can improve
@@ -66,23 +67,6 @@ ramadda.cdnok=true
 </pre>
 
 </faqitem>
-
-
-
-
-<faqitem cat="Administration" id="permgen" q="I got an out of memory error saying something about PermGen size. Whats up with that?" >
-You will need to change your java runtime memory settings by adding:
-<pre>
-  java ... -XX:MaxPermSize=256m ... 
-</pre>
-
-See the [ug::link installing.html#tomcat {Tomcat installation section}]
-for more information.
-
-</faqitem>
-
-
-
 
 
 <faqitem cat="Administration" id="allowedlogin" q="I want to restrict where users can login from" >

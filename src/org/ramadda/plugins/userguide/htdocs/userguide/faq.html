@@ -87,11 +87,11 @@ entry hierarchy based searching, synonyoms, etc.
 
 As of 12-2021 RAMADDA now defaults to using Lucene. This can be overriden with the property:
 <pre>
-  ramadda.search.lucene.enabled=false
+ramadda.search.lucene.enabled=false
 </pre>
 The problem this introduces is that, once enabled,  the index does not get built with past content so a search
 will only show newly created content. To address this you can simply go to the Admin page:
-Go to: Admin-&gt;Maintenance-&gt;Reindex Lucene Index and select "Reindex all".
+Admin-&gt;Maintenance-&gt;Reindex Lucene Index and select "Reindex all".
 Depending on the size of your repository this may take a few minutes but once complete your searching should be good to
 go.
 </div>

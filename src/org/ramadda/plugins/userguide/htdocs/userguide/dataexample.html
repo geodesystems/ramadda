@@ -15,7 +15,7 @@
 </td>
 <td width=30%>&nbsp;</td>
 </tr></table>
-<div class="ramadda-page-heading">Section 9.2: Data Example</div>
+<div class="ramadda-page-heading">Section 8.2: Data Example</div>
 
 <style type="text/css">
 pre {
@@ -39,7 +39,7 @@ The overall flow is to -
 </ul>
 
 
-<a name="rawdata"></a><p><div class="ramadda-help-heading">9.2.0 <a href="#rawdata">The raw data</a></div> 
+<a name="rawdata"></a><p><div class="ramadda-help-heading">8.2.0 <a href="#rawdata">The raw data</a></div> 
 The example we are using is data from the City of Boulder's Open Data Repository that shows  greenhouse gas emissions and looks like - 
 <pre>
 Year,Category,Sub-Category,Emissions per Sub-Category (MTCO2e)
@@ -51,7 +51,7 @@ Year,Category,Sub-Category,Emissions per Sub-Category (MTCO2e)
 ...
 </pre>
 
-<a name="upload"></a><p><div class="ramadda-help-heading">9.2.1 <a href="#upload">Upload the raw file</a></div> 
+<a name="upload"></a><p><div class="ramadda-help-heading">8.2.1 <a href="#upload">Upload the raw file</a></div> 
 <p>
 <ul>
 <li> First download the <a href="https://geodesystems.com/repository/entry/get/GHGI_Community_Emissions_Sector.csv?entryid=67609c54-abd1-4e5b-aa95-a78845e67853">GHGI_Community_Emissions_Source.csv</a> file.
@@ -64,7 +64,7 @@ Year,Category,Sub-Category,Emissions per Sub-Category (MTCO2e)
 <li> Once you upload the raw CSV file RAMADDA automatically creates a "CSV File" entry type. 
 </ul>
 
-<a name="convert"></a><p><div class="ramadda-help-heading">9.2.2 <a href="#convert">Convert the raw file</a></div> 
+<a name="convert"></a><p><div class="ramadda-help-heading">8.2.2 <a href="#convert">Convert the raw file</a></div> 
 Next, the data needs to be cleaned up, reformatting the numeric values, removing the missing years and transforming the data to group the fields by year to be able to create time series displays.
 From the menu choose "Convert Data" -
 <center><a name="image3"></a><div><a href="images/dataexample/menu2.png"><img  src="images/dataexample/menu2.png"  alt="width="400px"" ></a><br><span class="caption">Image 3: width="400px"</span></div></center>
@@ -86,7 +86,7 @@ value field (column 3 in the raw data), groups the different values by year, rem
 Once all is good use the "Make Files" button to process the entire raw file. This provides a link to download the temporary processed file.
 
 
-<a name="textpoint"></a><p><div class="ramadda-help-heading">9.2.3 <a href="#textpoint">Creating the Text Point Data Entry</a></div> 
+<a name="textpoint"></a><p><div class="ramadda-help-heading">8.2.3 <a href="#textpoint">Creating the Text Point Data Entry</a></div> 
 Once you download the file you can then upload it back to RAMADDA to the folder of your choice. 
 Instead of adding it as a regular CSV file you need to specify a "Text Point Data" entry type. Go to the folder's menu and choose "Pick a Type" -
 <center><div><a href="images/dataexample/picktype.png"><img  src="images/dataexample/picktype.png"  alt="images/dataexample/picktype.png" ></a></div></center> 
@@ -96,7 +96,7 @@ Since RAMADDA supports a huge number of entry types this next page can be daunti
 
 This  takes you to an Add Entry form. Upload the converted file. 
 
-<a name="plots"></a><p><div class="ramadda-help-heading">9.2.4 <a href="#plots">Creating the plots</a></div> 
+<a name="plots"></a><p><div class="ramadda-help-heading">8.2.4 <a href="#plots">Creating the plots</a></div> 
 You have now created a new entry with the structured data. You can view information about the entry including
 its file format with the entry menu "Information" link (example <a href="https://boulderdata.org/repository/entry/show/Home/Content/Community+Data/Colorado/Boulder+Data+Hub/Data/Energy+and+Utilities/Community+GHG+Emissions+by+Source?entryid=becb663b-d464-451a-a3c6-3ec8a4816515&output=html.info">here</a>).
 The default display of the new entry does not show any plots of data. To define a new display RAMADDA's wiki facility is used. From the entry's menu go to "Edit Entry". You will need to change the description. To specify that
@@ -115,7 +115,7 @@ shown <a href=https://geodesystems.com/repository/entry/show?entryid=1c99bcff-94
 </ul>
 
 
-<a name="otherdisplays"></a><p><div class="ramadda-help-heading">9.2.5 <a href="#otherdisplays">Creating other displays</a></div> 
+<a name="otherdisplays"></a><p><div class="ramadda-help-heading">8.2.5 <a href="#otherdisplays">Creating other displays</a></div> 
 You can change the default display of your new data entry by changing its description. Copy and paste the 
 <a href="https://boulderdata.org/repository/alias/boulder_emissons_source">example entry's</a> wiki text. 
 Alternately you can create other wiki pages that import and display data from other entries. Simple go to 
@@ -127,7 +127,7 @@ entry-
 </pre>
 
 
-<a name="databases"></a><p><div class="ramadda-help-heading">9.2.6 <a href="#databases">Making databases</a></div> 
+<a name="databases"></a><p><div class="ramadda-help-heading">8.2.6 <a href="#databases">Making databases</a></div> 
 Using the ETL tools one can also create searchable databases from CSV files. To do this the user needs to be a site administrator since a plugin is
 created and installed as part of this process.
 <p>
