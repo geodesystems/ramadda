@@ -63,7 +63,6 @@ OpenLayers.Renderer.symbol.arrow = [4,0,-2,10,12,10,6,0,4,0,-2,10,12,10,6,0];
 
 var MapUtils =  {
     me:"MapUtils",
-    CUSTOM_MAP : "CUSTOM",
     POSITIONMARKERID: "location",
     formatLocationValue:function(value) {
 	return number_format(value, 4);
@@ -82,59 +81,6 @@ var MapUtils =  {
     },
     createProjection: function(name) {
 	return new OpenLayers.Projection(name);
-    },
-    mapRegionSelected: function(selectId, baseId) {
-        let value = $("#" + selectId).val();
-        if (value == null) {
-            console.log("Error: No map region value");
-            return;
-        }
-        if (value == "") {
-            this.toggleMapWidget(baseId, false);
-            return;
-        }
-        let toks = value.split(",");
-
-        if (toks.length == 1) {
-            if (toks[0] != this.CUSTOM_MAP) {
-                return;
-            } else {
-                if (!firstCustom) {
-                    this.setMapRegion(baseId, "", "", "", "", "");
-                }
-                firstCustom = false;
-                this.toggleMapWidget(baseId, true);
-                return;
-            }
-        }
-        if (toks.length != 5) {
-            return;
-        }
-        this.toggleMapWidget(baseId, false);
-        this.setMapRegion(baseId, toks[0], toks[1], toks[2], toks[3], toks[4]);
-    },
-
-
-    setMapRegion: function(baseId, regionid, north, west, south, east) {
-        $("#" + baseId + "_regionid").val(regionid);
-        $("#" + baseId + "_north").val(north);
-        $("#" + baseId + "_west").val(west);
-        $("#" + baseId + "_south").val(south);
-        $("#" + baseId + "_east").val(east);
-
-    },
-
-    toggleMapWidget: function(baseId, onOrOff) {
-        if (onOrOff) {
-            // check if the map has been initialized
-            let mapVar = window[baseId];
-            if (mapVar && !mapVar.inited) {
-                mapVar.initMap(true);
-            }
-            $("#" + baseId + "_mapToggle").show();
-        } else {
-            $("#" + baseId + "_mapToggle").hide();
-        }
     },
     distance: function(lat1,lon1,lat2,lon2) {
 	//From: https://www.movable-type.co.uk/scripts/latlong.html
@@ -577,7 +523,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
 
 
 
-var firstCustom = true;
+
 
 
 var markerMap = {};
@@ -627,6 +573,10 @@ function ramaddaFindFeature(layer, point) {
 
 
 RepositoryMap.prototype = {
+    firstCustomRegion: true,
+    CUSTOM_MAP : "CUSTOM",
+    
+
     centerOnMarkers: function(dfltBounds, force, justMarkerLayer) {
 	if(debugBounds) {
 	    console.log("centerOnMarkers: force=" + force +" dflt:" + dfltBounds +" justMarkers:" + justMarkerLayer);
@@ -740,6 +690,80 @@ RepositoryMap.prototype = {
 	    console.log("calling setViewToBounds: " + bounds);
         this.setViewToBounds(bounds);
     },
+    initRegionSelector:function(selectId,div,forSelection) {
+	this.regionSelector = $('#' + selectId);
+	this.mapWidgetDiv = $('#' + div);
+	//Hide it to start
+	this.mapWidgetDiv.hide();
+
+	//When page is loaded then initialize
+	$( document ).ready(()=>{
+	    if(this.regionSelector.val() != this.CUSTOM_MAP) {
+		this.mapWidgetDiv.hide();
+	    } else {
+		this.initMap(forSelection);
+	    }
+	    this.regionSelector.change(()=>{
+		this.mapRegionSelected();
+	    });
+	    this.mapRegionSelected();
+	});
+    },
+    mapRegionSelected: function() {
+        let value = this.regionSelector.val();
+        if (value === null) {
+            console.log("Error: No map region value");
+            return;
+        }
+        if (value == "") {
+            this.toggleMapWidget(false);
+            return;
+        }
+        let toks = value.split(",");
+
+        if (toks.length == 1) {
+            if (toks[0] != this.CUSTOM_MAP) {
+                return;
+            } else {
+                if (!this.firstCustomRegionm) {
+                    this.setMapRegion( "", "", "", "", "");
+                }
+                this.firstCustomRegion = false;
+                this.toggleMapWidget(true);
+                return;
+            }
+        }
+        if (toks.length != 5) {
+            return;
+        }
+        this.toggleMapWidget(false);
+        this.setMapRegion(toks[0], toks[1], toks[2], toks[3], toks[4]);
+    },
+
+
+    setMapRegion: function(regionid, north, west, south, east) {
+	let baseId = this.mapId;
+        $("#" + baseId + "_regionid").val(regionid);
+        $("#" + baseId + "_north").val(north);
+        $("#" + baseId + "_west").val(west);
+        $("#" + baseId + "_south").val(south);
+        $("#" + baseId + "_east").val(east);
+
+    },
+
+    toggleMapWidget: function(onOrOff) {
+        if (onOrOff) {
+            // check if the map has been initialized
+            if (!this.inited) {
+                this.initMap(true);
+            }
+            this.mapWidgetDiv.show();
+        } else {
+            this.mapWidgetDiv.hide();
+        }
+    },
+
+
     setViewToBounds: function(bounds) {
         let projBounds = this.transformLLBounds(bounds);
         if (projBounds.getWidth() == 0) {
