@@ -807,13 +807,21 @@ public class MapInfo {
             retBuf.append(mapStuff);
             retBuf.append("</div>");
             // Hack to hide the maps if they haven't selected a custom region.
+            addJS(getVariableName()+".initRegionSelector(" +
+		  HU.comma(HU.squote(getVariableName() + "_regions"),
+			   HU.squote(getVariableName() + "_mapToggle"),
+			   ""+forSelection) +");");
+	    /*
             addJS("if ($('#" + getVariableName()
                   + "_regions option:selected').val() != \"CUSTOM\") {"
                   + "$('#" + getVariableName()
-                  + "_mapToggle').hide(); } else {" + getVariableName()
+      
+
+            + "_mapToggle').hide(); } else {" + getVariableName()
                   + ".initMap(" + forSelection + ");}\n");
             // Fire the map selection change to pick up the current map params
             addJS("$('#" + getVariableName() + "_regions').change();");
+	    */
         } else {
             retBuf.append(mapStuff);
             // this wasn't done in the initial making of the JS
@@ -863,15 +871,12 @@ public class MapInfo {
             }
             values.add(new TwoFacedObject("Custom", "CUSTOM"));
             String regionSelectId = getVariableName() + "_regions";
-            widget.append(HU.hidden(arg + "_regionid", "",
-                                    HU.id(getVariableName() + "_regionid")));
+            HU.hidden(widget, arg + "_regionid", "",
+		      HU.id(getVariableName() + "_regionid"));
             widget.append(HU.select("mapregion", values,
                                     getDefaultMapRegion(),
-                                    HU.id(regionSelectId)
-                                    + HU.attr(HU.ATTR_ONCHANGE,
-                                        HU.call("MapUtils.mapRegionSelected",
-                                            HU.squote(regionSelectId),
-                                            HU.squote(mapDivId)))));
+                                    HU.id(regionSelectId)));
+
         }
 
         return widget.toString();
