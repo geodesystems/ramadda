@@ -1271,6 +1271,19 @@ public class IO {
                 oldErr.print(x);
             }
             @Override
+            public void println(boolean x) {
+                oldErr.println("**************   ERROR\n"
+                               + Utils.getStack(10) + "\n************");
+                oldErr.println(x);
+            }
+            @Override
+            public void print(boolean x) {
+                oldErr.println("**************   ERROR\n"
+                               + Utils.getStack(10) + "\n************");
+                oldErr.print(x);
+            }
+
+            @Override
             public void println(String x) {
                 oldErr.println("**************   ERROR\n"
                                + Utils.getStack(10) + "\n************");
