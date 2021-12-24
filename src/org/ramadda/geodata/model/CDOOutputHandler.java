@@ -501,6 +501,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
     private void addForm(Request request, Entry entry, Appendable sb)
             throws Exception {
 
+	getPageHandler().entrySectionOpen(request, entry, sb, "Dataset Analysis");
         String formUrl = request.makeUrl(getRepository().URL_ENTRY_SHOW);
         sb.append(HtmlUtils.form(formUrl));
         /*
@@ -514,12 +515,10 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         String buttons = HtmlUtils.submit("Extract Data", ARG_SUBMIT);
         //sb.append(buttons);
-        sb.append(HtmlUtils.h2("Dataset Analysis"));
-        sb.append(HtmlUtils.hr());
         addToForm(request, entry, sb);
         sb.append(HtmlUtils.formTableClose());
         sb.append(buttons);
-
+	getPageHandler().entrySectionClose(request, entry, sb);
         /*
         sb.append(
             HtmlUtils.href(
