@@ -299,6 +299,23 @@ var Utils =  {
 	});
 	return accum;
     },
+    toFront: function(list,element) {
+	const index = list.indexOf(element);
+	if (index > -1) {
+	    list.splice(index, 1);
+	    list.push(element);
+	}
+	return list;
+    },
+    toBack: function(list,element) {
+	const index = list.indexOf(element);
+	if (index > -1) {
+	    list.splice(index, 1);
+	    list.unshift(element);			
+	}
+	return list;
+    },
+
     mergeLists: function(l1,l2,l3,l4,l5) {
 	let l = [];
 	if(l1) l1.map(e=>l.push(e));
