@@ -1330,6 +1330,14 @@ RepositoryMap.prototype = {
             this.initialLayers.push(layer);
         }
     },
+    toFront: function(layer) {
+	Utils.toFront(this.nonSelectLayers, layer);
+	this.checkLayerOrder();
+    },
+    toBack: function(layer) {
+	Utils.toBack(this.nonSelectLayers, layer);
+	this.checkLayerOrder();
+    },    
     checkLayerOrder: function() {
 	let base = this.numberOfBaseLayers;
 	this.nonSelectLayers.every(layer=>{
@@ -1365,8 +1373,8 @@ RepositoryMap.prototype = {
 	//            this.getMap().resetLayersZIndex();
     },
     addImageLayer: function(layerId, name, desc, url, visible, north, west, south, east, width, height, args) {
-        var _this = this;
-        var theArgs = {
+        let _this = this;
+        let theArgs = {
             forSelect: false,
             addBox: true,
             isBaseLayer: false,
@@ -1377,9 +1385,9 @@ RepositoryMap.prototype = {
         //Things go blooeey with lat up to 90
         if (north > 88) north = 88;
         if (south < -88) south = -88;
-        var latLonBounds = MapUtils.createBounds(west, south, east, north);
-        var imageBounds = this.transformLLBounds(latLonBounds);
-        var image = new OpenLayers.Layer.Image(
+        let latLonBounds = MapUtils.createBounds(west, south, east, north);
+        let imageBounds = this.transformLLBounds(latLonBounds);
+        let image = new OpenLayers.Layer.Image(
             name, url,
             imageBounds,
             new OpenLayers.Size(width, height), {
@@ -1395,7 +1403,7 @@ RepositoryMap.prototype = {
         if (theArgs.forSelect) {
             this.selectImage = image;
         }
-        var lonlat = new MapUtils.createLonLat(west, north);
+        let lonlat = new MapUtils.createLonLat(west, north);
         image.lonlat = this.transformLLPoint(lonlat);
         image.setVisibility(visible);
         image.id = layerId;
