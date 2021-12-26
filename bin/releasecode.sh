@@ -6,7 +6,8 @@
 
 
 #This is where the released files are stored
-dest=/mnt/ramadda/release/ramadda_6.0
+#dest=/mnt/ramadda/release/ramadda_6.0
+dest=/mnt/ramadda/release/latest
 
 #Where the build products are put
 dist=/mnt/ramadda/source/ramadda/dist
