@@ -1225,6 +1225,7 @@ a.ramadda-menubar-button:hover {
 
 .ramadda-map-inner {
     border:1px #aaa solid;
+    border: var(--basic-border);
     background-color:#7391ad; 
 }
 
@@ -1814,9 +1815,6 @@ ul {
     margin-bottom:0px;    
 }
 
-.ui-slider  {
-    background: rgb(238,238,238);
-}
 
 .slick-prev:before, .slick-next:before {
     color:#aaa !important;
@@ -4832,6 +4830,11 @@ a.wiki-link-noexist {
     border: none;
 }
 
+.ui-slider.ui-widget  {
+    background: rgb(238,238,238);
+    border: var(--basic-border);
+}
+
 .ui-widget-content {
     border: none;
 }
@@ -4842,7 +4845,7 @@ a.wiki-link-noexist {
 }
 
 .ui-dialog {
-    -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+     -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
     box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
     filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray');
     -ms-filter:"progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray')";
