@@ -3932,7 +3932,7 @@ public class EntryManager extends RepositoryManager {
         StringBuilder sb = new StringBuilder();
         List<Link> linkList = getEntryManager().getEntryLinks(request, entry);
         String links = getEntryManager().getEntryActionsTable(request, entry,
-                           OutputType.TYPE_MENU, linkList, false, null);
+							      OutputType.TYPE_ALL, linkList, false, null);
 
 	Result result = new Result("",new StringBuilder(links));
 	result.setShouldDecorate(false);
