@@ -1922,7 +1922,7 @@ public class Admin extends RepositoryManager {
         statusSB.append(
             HtmlUtils.formEntry(
                 msgLabel("Version"),
-                getRepository().getProperty(PROP_BUILD_VERSION, "1.0")));
+                getRepository().getProperty(PROP_VERSION, "1.0")));
         statusSB.append(
             HtmlUtils.formEntry(
                 msgLabel("Build Date"),
