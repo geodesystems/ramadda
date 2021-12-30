@@ -40,17 +40,12 @@
 
     <target name="initcore" if="core">
        <property name="classpath" value="${lib_dir}/ramaddalib.jar:${lib_dir}/servlet-api.jar:${lib_dir}/jetty.jar"/>
-       <property name="manifestjars" value=" ramaddalib.jar   servlet-api.jar jetty.jar allplugins_classes.jar ${tika_jar} "/>
-       <property name="lib1" value="${lib_dir}/dummy.jar"/>
-       <property name="lib2" value="${lib_dir}/dummy.jar"/>
-       <property name="lib3" value="${lib_dir}/dummy.jar"/>
+       <property name="manifestjars" value=" ramaddalib.jar   servlet-api.jar jetty.jar allplugins_classes.jar ramaddatika.jar "/>
     </target>
 
     <target name="initfull">
-       <property name="classpath" value="${lib_dir}/ramaddalib.jar:${lib_dir}/${unidata_jar}:${lib_dir}/${tika_jar}:${lib_dir}/ramaddatds.jar:${lib_dir}/servlet-api.jar:${lib_dir}/jetty.jar"/>
-       <property name="manifestjars" value="${unidata_jar} ramaddalib.jar   ramaddatds.jar servlet-api.jar jetty.jar allplugins_classes.jar  ${tika_jar}  " />
-       <property name="lib1" value="${lib_dir}/visad.jar" />
-       <property name="lib2" value="${lib_dir}/ncIdv.jar"/>
+       <property name="classpath" value="${lib_dir}/ramaddalib.jar:${lib_dir}/${unidata_jar}:${lib_dir}/ramaddatika.jar:${lib_dir}/ramaddatds.jar:${lib_dir}/servlet-api.jar:${lib_dir}/jetty.jar"/>
+       <property name="manifestjars" value="${unidata_jar} ramaddalib.jar   ramaddatds.jar servlet-api.jar jetty.jar allplugins_classes.jar  ramaddatika.jar  " />
     </target>
 
 
@@ -316,7 +311,7 @@
         <copy  file="${dist_dir}/${ramadda_jar}" todir="${release_dir}/lib" overwrite="true" />
         <copy  file="${lib_dir}/${unidata_jar}" todir="${release_dir}/lib" overwrite="true" />
         <copy  file="${lib_dir}/ramaddalib.jar" todir="${release_dir}/lib" overwrite="true" />
-        <copy  file="${lib_dir}/${tika_jar}" todir="${release_dir}/lib" overwrite="true" />
+        <copy  file="${lib_dir}/ramaddatika.jar" todir="${release_dir}/lib" overwrite="true" />
         <copy  todir="${release_dir}" overwrite="true">
           <fileset dir="${ramadda_dir}/release/standalone">
               <exclude name="**/init.sh"/>
@@ -353,85 +348,11 @@
           <lib file="${lib_dir}/ramaddalib.jar"/>
           <lib file="${lib_dir}/ramaddatds.jar"/>
           <lib file="${lib_dir}/${unidata_jar}"/>
-          <lib file="${lib_dir}/${tika_jar}"/>
+          <lib file="${lib_dir}/ramaddatika.jar"/>
       </war>
     </target>
 
 
-    <target name="ramaddalib" depends="init">
-        <mkdir dir="${tmpjar_dir}"/>
-        <delete includeemptydirs="true">
-            <fileset dir="${tmpjar_dir}" includes="**/*"/>
-
-        </delete>
-
-
-        <unjar src="${lib_dir}/extra.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/json.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/jython.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/javax.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/jmapproj.jar" dest="${tmpjar_dir}"/>
-	<unjar src="${lib_dir}/fuzzywuzzy-1.3.0.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/lucene-core-8.8.2.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/lucene-queryparser-8.2.0.jar" dest="${tmpjar_dir}"/>		
-        <unjar src="${lib_dir}/mail.jar" dest="${tmpjar_dir}"/>
-
-        <unjar src="${lib_dir}/activation.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/javadiff.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/smtp.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/ij.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/postgresql-42.2.5.jre7.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/mysql-connector-java-5.1.32-bin.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/h2.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/derby.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/derbytools.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/abom.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/commons-lang3-3.1.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/commons-net-3.3.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/commons-io-2.8.0.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/commons-dbcp2-2.0.1.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/commons-pool2-2.2.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/commons-text-1.9.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/commons-fileupload-1.4.jar" dest="${tmpjar_dir}"/>
-
-        <unjar src="${lib_dir}/rhino-1.7.13.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/httpmime-4.5.13.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/httpcore-4.4.1.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/jcommon-1.0.23.jar" dest="${tmpjar_dir}"/>
-
-        <unjar src="${lib_dir}/ftplet-api-1.0.6.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/ftpserver-core-1.0.6.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/mina-core-2.0.0-M6.jar" dest="${tmpjar_dir}"/>
-
-        <unjar src="${lib_dir}/slf4j-api-1.6.4.jar" dest="${tmpjar_dir}"/>
-	<unjar src="${lib_dir}/slf4j-nop-1.7.32.jar" dest="${tmpjar_dir}"/>
-
-
-        <unjar src="${lib_dir}/log4j-core-2.17.1.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/log4j-api-2.17.1.jar" dest="${tmpjar_dir}"/>	
-
-
-<!--
-        <unjar src="${lib_dir}/log4j-1.2.15.jar" dest="${tmpjar_dir}"/>	
--->
-
-
-
-        <unjar src="${lib1}" dest="${tmpjar_dir}"/>
-        <echo message="jarring ${lib_dir}/ramaddalib.jar"/>
-
-        <delete file="${lib_dir}/ramaddalib.jar"/>	
-        <jar 
-            basedir="${tmpjar_dir}"
-            update="false"
-            compress="true"
-            jarfile="${lib_dir}/ramaddalib.jar">
-              <include name="**"/>
-              <exclude name="ucar/multiarray/**"/>
-
-        </jar>
-        <delete dir="${tmpjar_dir}"/>
-    </target>
 
 
     <target name="javadoc" depends="init">
