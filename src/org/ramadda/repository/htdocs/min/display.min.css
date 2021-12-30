@@ -38,7 +38,7 @@ a.display-container {
 .display-tooltip {
     max-width:600px;
     margin:0px;
-    background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
+    /* shadow popup */ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
 }
 
 .display-dialog {
@@ -2830,7 +2830,7 @@ table.dataTable tfoot td {
 }
 
 .display-three-globe-popup {
-    background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
+    /* shadow popup */ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
     color:#000;
     background-color:rgba(250,250,250,0.9);    
     width:300px;

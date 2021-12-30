@@ -533,7 +533,7 @@ i.fa, i.fas,i.fab {
 }
 
 .ramadda-nav-arrow:hover {
-    text-decoration:none; color:var(--highlight-color);    cursor:pointer;
+    /* nav-hover */ text-decoration:none; color:var(--highlight-color);    cursor:pointer;
 }
 
 
@@ -566,7 +566,7 @@ a.ramadda-entry-nav-page {
     margin-left:40px;
     margin-right:40px;
     vertical-align:center;
-    background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
+    /* shadow popup */ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
 }
 
 .ramadda-entry-nav-page-decorated a {
@@ -1669,7 +1669,7 @@ a.ramadda-menubar-button:hover {
 
 
 .ui-selectmenu-menu {
-    background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
+    /* shadow popup */ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
 }
 
 .ui-selectmenu-menu {
@@ -2712,7 +2712,7 @@ a.btn-primary:link, a.btn-primary  {
 
 .ramadda-popup, .ramadda-selectdiv {
     position: absolute; 
-    background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
+    /* shadow popup */ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
 }
 
 .ramadda-popup-contents {
@@ -2829,7 +2829,7 @@ a.btn-primary:link, a.btn-primary  {
 
 .ramadda-popup-box {
     padding:1px;
-    background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
+    /* shadow popup */ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
 }
 
 .ramadda-menu-item {
@@ -2918,7 +2918,7 @@ label {
   position:relative;
   padding:10px;
   color:#333;
-background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
+/* shadow popup */ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
   border-radius:10px;
 }
 
@@ -3056,7 +3056,7 @@ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;
 }
 
 .ramadda-header a:hover  {
-    text-decoration:none; color:var(--highlight-color);    cursor:pointer;
+    /* nav-hover */ text-decoration:none; color:var(--highlight-color);    cursor:pointer;
 }
 
 .ramadda-header-layoutbar {
@@ -3490,7 +3490,7 @@ a.ramadda-menuitem-link {
 
 
 a.ramadda-menuitem-link:hover {
-text-decoration:none; color:var(--highlight-color);    cursor:pointer;
+/* nav-hover */ text-decoration:none; color:var(--highlight-color);    cursor:pointer;
 }
 
 
@@ -3701,7 +3701,7 @@ snippet-hide {
 }
 
 .subnav a:hover  {
-    text-decoration:none; color:var(--highlight-color);    cursor:pointer;
+    /* nav-hover */ text-decoration:none; color:var(--highlight-color);    cursor:pointer;
 }
 
 .subnavoncomp  {
@@ -3744,7 +3744,7 @@ snippet-hide {
 }
 
 .subnavoffcomp a:hover {
-    text-decoration:none; color:var(--highlight-color);    cursor:pointer;
+    /* nav-hover */ text-decoration:none; color:var(--highlight-color);    cursor:pointer;
 }
 
 .cimg {
