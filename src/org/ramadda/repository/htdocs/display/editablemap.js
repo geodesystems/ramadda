@@ -528,6 +528,11 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    }
 		    feature.style[prop] = v;
 		});
+		if(Utils.stringDefined(feature.style.popupText)) {
+		    feature.style.cursor = 'pointer';
+		} else {
+		    feature.style.cursor = 'auto';
+		}
 		if(feature.style.imageUrl) {
 		    if(feature.image) feature.image.setOpacity(feature.style.imageOpacity);
 		    this.checkImage(feature);
@@ -577,6 +582,8 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 	    } else {
 		props = ["strokeColor","strokeWidth","pointRadius","externalGraphic","fontSize","fontWeight","fontFamily"];
 	    }
+	    
+	    if(!props.includes("popupText")) props.push("popupText");
 	    props.forEach(prop=>{
 		if(prop=="labelSelect") return;
 		let label = prop;
@@ -608,12 +615,16 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		    let v = values[prop];
 		    if(!Utils.isDefined(v)) {
 			let propFunc = "get" + prop[0].toUpperCase()+prop.substring(1);
-			v = propFunc?this[propFunc]():this.getProperty(prop);
+			v = this[propFunc]?this[propFunc]():this.getProperty(prop);
 		    }
 		    let size = "20";
 		    if(prop=="label") {
 			size="80"
 			widget =  HU.textarea("",v,[ID,this.domId(prop),"rows",5,"cols", 60]);
+		    } else if(prop=="popupText") {
+			label = "Popup text";
+			size="80"
+			widget =  HU.textarea("",v||"",[ID,this.domId(prop),"rows",5,"cols", 60]);			
 		    } else {
 			if(prop=="strokeWidth" || prop=="pointRadius" || prop=="fontSize" || prop=="fontWeight" || prop=="imageOpacity") size="4";
 			else if(prop=="fontFamily") size="60";
@@ -995,6 +1006,11 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 		if(style.label) {
 		    style.pointRadius=0
 		}
+		if(Utils.stringDefined(style.popupText)) {
+		    style.cursor = 'pointer';
+		} else {
+		    style.cursor = 'auto';
+		}
 		if(!style.fillColor) style.fillColor = "transparent";
 		let feature;
 		if(mapGlyph.points.length>1) {
@@ -1176,6 +1192,13 @@ function RamaddaEditablemapDisplay(displayManager, id, properties) {
 
 	    this.map.featureClickHandler = e=>{
 		if(this.command!=null) return;
+		if(!e.feature || !e.feature.style || !Utils.stringDefined(e.feature.style.popupText)) return;
+		let location = e.feature.geometry.getBounds().getCenterLonLat();
+		let text = e.feature.style.popupText;
+		text = text.replace(/\n/g,"<br>");
+		let popup = this.getMap().makePopup(location,text);
+		this.getMap().getMap().addPopup(popup);
+		this.getMap().currentPopup = popup;
 	    };
 
 	    let control;
