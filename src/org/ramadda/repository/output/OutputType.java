@@ -101,10 +101,10 @@ public class OutputType {
     /** All types */
     public static final int TYPE_ALL = TYPE_VIEW | TYPE_ACTION | TYPE_FEEDS
                                        | TYPE_FILE | TYPE_EDIT | TYPE_TOOLBAR
-                                       | TYPE_OTHER | TYPE_IMPORTANT;
+	| TYPE_OTHER | TYPE_IMPORTANT;
 
-    /**  */
-    public static final int TYPE_MENU = TYPE_VIEW | TYPE_FILE | TYPE_EDIT
+    /** types for the entry menu */
+    public static final int TYPE_MENU = TYPE_VIEW | TYPE_FILE | TYPE_EDIT |  TYPE_OTHER 
                                         | TYPE_CHILDREN;
 
 
