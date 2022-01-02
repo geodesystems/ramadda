@@ -6,6 +6,7 @@
 #To use set the environment variable:
 #export RAMADDA_TABULA=/path/to/tabula.sh
 #
+# --pages all
 myDir=`dirname $0`
 if [ -e ${myDir}/lib/tabula.jar ]
 then
