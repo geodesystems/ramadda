@@ -23,6 +23,7 @@ import org.ramadda.repository.output.WikiManager;
 
 
 import org.ramadda.repository.type.TypeHandler;
+import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.Json;
@@ -363,6 +364,28 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
         return new Result(Json.list(regions), Result.TYPE_JSON);
     }
+
+
+
+    public Result processGetAddress(Request request) throws Exception {
+
+        List<String> results = new ArrayList<String>();
+	if(!request.isAnonymous()) {
+	    String[] result = GeoUtils.getAddressFromLatLon(request.get("latitude",0.0), request.get("longitude",0.0));
+	    if(result!=null) {
+		int idx =0;
+		results.add(Json.mapAndQuote("address", result[idx++],
+					     "city",result[idx++],
+					     "county",result[idx++],
+					     "state",result[idx++],
+					     "zip",result[idx++],
+					     "country",result[idx++]));
+	    }
+	}
+        return new Result(Json.list(results), Result.TYPE_JSON);
+    }
+
+
 
 
     /**
