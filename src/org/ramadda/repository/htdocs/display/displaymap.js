@@ -2104,7 +2104,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(args.source=="animation") return;
 		if(this.getCenterOnFilterChange(false)) {
 		    if (this.vectorLayer && this.showVectorLayer) {
-			this.map.zoomToLayer(this.vectorLayer,1.2);
+			if(this.getShowPoints()) {
+			    this.map.centerOnMarkers(null, false, true);
+			} else {
+			    this.map.zoomToLayer(this.vectorLayer,1.2);
+			}
 		    } else if(this.lastImageLayer) {
 			this.map.zoomToLayer(this.lastImageLayer);
 		    } else {

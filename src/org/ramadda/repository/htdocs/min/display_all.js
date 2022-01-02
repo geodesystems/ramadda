@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Jan  2 10:03:49 MST 2022";
+var build_date="RAMADDA build date: Sun Jan  2 15:19:14 MST 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -34678,7 +34678,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(args.source=="animation") return;
 		if(this.getCenterOnFilterChange(false)) {
 		    if (this.vectorLayer && this.showVectorLayer) {
-			this.map.zoomToLayer(this.vectorLayer,1.2);
+			if(this.getShowPoints()) {
+			    this.map.centerOnMarkers(null, false, true);
+			} else {
+			    this.map.zoomToLayer(this.vectorLayer,1.2);
+			}
 		    } else if(this.lastImageLayer) {
 			this.map.zoomToLayer(this.lastImageLayer);
 		    } else {
