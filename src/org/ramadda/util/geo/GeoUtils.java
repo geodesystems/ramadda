@@ -911,7 +911,7 @@ public class GeoUtils {
             lonString = StringUtil.findPattern(result,
                     "\"x\"\\s*:\\s*([-\\d\\.]+)\\s*");
             if (latString == null) {
-                System.err.println("null census result:" + result);
+                System.err.println("null census result:" + encodedAddress +" result:" + result);
             } else {
                 //              System.err.println("census:" + latString +" " + lonString);
             }

@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Dec 31 11:17:18 MST 2021";
+var build_date="RAMADDA build date: Sat Jan  1 18:01:49 MST 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -40317,6 +40317,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	{p:'scrollY',ex:'300px'},				
 	{p:'includeGeo',ex:'true',d:false},
 	{p:'includeDate',ex:'true',d:true},
+	{p:'includeRowIndex',ex:'true',d:false},	
 	{p:'fancy',ex:'true',d:true},
 	{p:'colorCells',ex:'field1,field2'},
 	{p:'iconField'},
@@ -40406,6 +40407,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	    });
 	    
 	    let numRecords = this.getNumRecords();
+	    let includeIdx = this.getIncludeRowIndex();
 	    let includeGeo = this.getIncludeGeo();
 	    let includeDate = this.getIncludeGeo();	    
 	    let html =HU.openTag('table',[CLASS,"ramadda-table stripe", 'width','100%',ID,this.domId(ID_TABLE)]);
@@ -40438,6 +40440,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 	    } 
 
 	    html+="<tr  valign=top>\n"
+	    if(includeIdx) html+=HU.th(HU.div([],""));
 	    let headerStyle = this.getTableHeaderStyle("")+"text-align:center;";
 	    let fieldMap = {}
 	    let sortFields = this.getProperty("sortFields");
@@ -40530,6 +40533,9 @@ function RamaddaHtmltableDisplay(displayManager, id, properties) {
 		else
 		    html+=HU.openTag('tr',["aggregateId", aggId,'title','','valign','top','class',clazz, RECORD_ID,record.getId()]);				
 //		html+="<td>#" + recordIdx": </td>";		
+		if(includeIdx) html+=HU.td(['width','5px'],HU.div([],"#" +(recordIdx+1)));
+
+
 		if(includeDate) {
 		    html+=HU.td([],this.formatDate(r.getDate()));
 		}
