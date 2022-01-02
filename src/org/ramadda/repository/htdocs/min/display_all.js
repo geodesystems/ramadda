@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Jan  1 18:01:49 MST 2022";
+var build_date="RAMADDA build date: Sun Jan  2 10:03:49 MST 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -33972,7 +33972,39 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.propagateEvent(DisplayEvent.filterChanged, args);
 	    });
 	},	    
+	doneLocation:false,
         handleClick: function(theMap, event, lon, lat) {
+	    if(event.shiftKey && event.metaKey) {
+		if(!this.doneLocation) {
+		    if(Utils.isAnonymous()) {
+			console.log("latitude,longitude");
+		    } else {
+			console.log("latitude,longitude,address,city,state,zip,country");
+		    }
+		    this.doneLocation = true;
+		}
+		let loc = lat+"," + lon;
+		if(Utils.isAnonymous()) {
+                    let point= this.map.addPoint("", new OpenLayers.LonLat(lon, lat));
+		    Utils.copyToClipboard(loc+"\n");
+		    console.log(loc);
+		} else  {
+		    let url = ramaddaBaseUrl +"/map/getaddress?latitude=" + lat +"&longitude=" + lon;
+		    $.getJSON(url, data=>{
+			if(data.length==0) {
+			    console.log(loc+",,,,,");
+			} else {
+			    let comp = data[0];
+			    let point= this.map.addPoint("", new OpenLayers.LonLat(lon, lat),null,comp.address);
+			    console.log(loc+"," + comp.address+"," + comp.city +"," + comp.state +"," + comp.zip +"," + comp.country); 
+			}
+		    }).fail(err=>{
+			console.log(loc+",,,,,");
+		    });
+		}
+		return;
+	    }
+
 	    let debug = false;
 	    if(debug)   console.log("click");
 	    if(this.lastFeatureSelectTime) {
@@ -34175,6 +34207,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         return;
                     }
                     var point = new OpenLayers.LonLat(longitude, latitude);
+
                     if (dflt.doCircle) {
                         attrs = {
                             pointRadius: dfltCircle.pointRadius,
