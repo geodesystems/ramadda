@@ -90,6 +90,9 @@ public class GeoUtils {
     /** _more_ */
     private static String geocodeioKey;
 
+    /** _more_ */
+    private static String hereKey;
+    
 
     /** _more_ */
     private static File cacheDir;
@@ -100,6 +103,23 @@ public class GeoUtils {
     /** _more_ */
     private static String cacheDelimiter = "_delim_";
 
+    private static boolean haveInitedKeys = false;
+
+    private static void initKeys() {
+	if(haveInitedKeys) return;
+	if (googleKey == null) {
+	    googleKey = System.getenv("GOOGLE_API_KEY");
+        }
+        if (geocodeioKey == null) {
+            geocodeioKey = System.getenv("GEOCIDEIO_API_KEY");
+        }
+        if (hereKey == null) {
+            hereKey = System.getenv("HERE_API_KEY");
+        }
+	haveInitedKeys = true;
+    }
+
+
     /**
      * _more_
      *
@@ -109,12 +129,16 @@ public class GeoUtils {
         googleKey = key;
     }
 
+    public static void setHereKey(String key) {
+        hereKey = key;
+    }    
+
     /**
      * _more_
      *
      * @param key _more_
      */
-    public static void setGeocodeIO(String key) {
+    public static void setGeocodeioKey(String key) {
         geocodeioKey = key;
     }
 
@@ -295,6 +319,128 @@ public class GeoUtils {
 
 
 
+
+
+
+    /**
+       this returns null if not enabled or not found else it returns
+       [address,city,county,state,zip,country]
+       
+     */
+    public static String[] getAddressFromLatLon(double lat, double lon) throws Exception {
+	initKeys();
+        if(hereKey !=null)
+	    return  getAddressFromLatLonHere(lat,lon);	
+        if(geocodeioKey !=null)
+	    return  getAddressFromLatLonGeocodeio(lat,lon);
+	return null;
+    }
+
+
+    private static String[] getAddressFromLatLonGeocodeio(double lat, double lon) throws Exception {
+	/*
+https://www.geocod.io/docs/#reverse-geocoding
+	  {
+	  "results": [
+	  {
+	  "address_components": {
+	  "number": "508",
+	  "street": "H",
+	  "suffix": "St",
+	  "postdirectional": "NE",
+	  "formatted_street": "H St NE",
+	  "city": "Washington",
+	  "county": "District of Columbia",
+	  "state": "DC",
+	  "zip": "20002",
+	  "country": "US"
+	  },*/
+
+	String url =  HtmlUtils.url("https://api.geocod.io/v1.7/reverse","q",lat+","+ lon,"api_key", geocodeioKey);
+	//	System.err.println(url);
+	String json = IO.readContents(url, GeoUtils.class);
+	//	System.err.println(json);
+        JSONObject obj = new JSONObject(json);
+	if(!obj.has("results")) {
+	    System.err.println("No results");
+	    return null;
+	}
+	JSONArray results   = obj.getJSONArray("results");
+	JSONObject result = results.getJSONObject(0);
+	JSONObject components = result.getJSONObject("address_components");
+	if(!components.has("number")) {
+	    System.err.println("No results");
+	    return null;
+	}
+
+	String address = components.getString("number") + " " +
+	    components.getString("street") +" " +
+	    components.getString("suffix");
+	    return new String[]{address.trim(),
+				components.getString("city"),
+				components.getString("county"),
+				components.getString("state"),
+				components.getString("zip"),
+				components.getString("country")};
+	
+    }
+
+    private static String[] getAddressFromLatLonHere(double lat, double lon) throws Exception {
+	/*
+	  https://developer.here.com/develop/rest-apis
+	  https://revgeocode.search.hereapi.com/v1/revgeocode?at=52.5228,13.4124
+	  Authorization: Bearer [your token] 
+{
+  "items": [
+    {
+      "title": "5 Rue Daunou, 75002 Paris, France",
+      "id": "here:af:streetsection:z42doZW8EyzEiPcuOd5MXB:CggIBCCi-9SPARABGgE1KGQ",
+      "resultType": "houseNumber",
+      "houseNumberType": "PA",
+      "address": {
+        "label": "5 Rue Daunou, 75002 Paris, France",
+        "countryCode": "FRA",
+        "countryName": "France",
+        "state": "Île-de-France",
+        "county": "Paris",
+        "city": "Paris",
+        "district": "2e Arrondissement",
+        "street": "Rue Daunou",
+        "postalCode": "75002",
+        "houseNumber": "5"
+      },
+	*/
+	String url =  HtmlUtils.url("https://revgeocode.search.hereapi.com/v1/revgeocode","at",lat+","+ lon,"apiKey",hereKey);
+	//	System.err.println(url);
+	String json = IO.doGet(new URL(url));
+	//	System.err.println(json);
+        JSONObject obj = new JSONObject(json);
+	if(!obj.has("items")) {
+	    System.err.println("No items");
+	    return null;
+	}
+	JSONArray items   = obj.getJSONArray("items");
+	if(items.length()==0) {
+	    System.err.println("No items");
+	    return null;
+	}
+	JSONObject item = items.getJSONObject(0);
+	if(!item.has("address")) {
+	    System.err.println("No address");
+	    return null;
+	}
+	JSONObject address= item.getJSONObject("address");
+
+	String a = address.getString("houseNumber") + " " +
+	    address.getString("street");
+	    return new String[]{a.trim(),
+				address.getString("city"),
+				address.getString("county"),
+				address.getString("state"),
+				address.getString("postalCode"),
+				address.getString("countryName")};
+	
+    }
 
 
 
@@ -784,15 +930,7 @@ public class GeoUtils {
         if (debug) {
             System.err.println("address:" + address);
         }
-        if (googleKey == null) {
-            googleKey = GeoUtils.googleKey;
-            if (googleKey == null) {
-                googleKey = System.getenv("GOOGLE_API_KEY");
-            }
-        }
-        if (geocodeioKey == null) {
-            geocodeioKey = System.getenv("GEOCIDEIO_API_KEY");
-        }
+	initKeys();
         //      geocodeioKey = null;
         //      googleKey = null;       
         if (addressToLocation == null) {
@@ -1254,6 +1392,16 @@ public class GeoUtils {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+	if(true) {
+	    String [] a = getAddressFromLatLon(39.95488,-105.17590);
+	    if(a==null) System.err.println("null result");
+	    else {
+		System.err.println(a[0]+", " + a[1] + " " + a[3] +", " + a[4]);
+	    }
+	    return;
+	}
+
+
 	if(true) {
 	    System.err.println(findFeatureField(args[0],"drainage",
 						Double.parseDouble(args[1]),
