@@ -2196,6 +2196,9 @@ public class CsvUtil {
                 new Arg("column", "key column", "type", "columns"),
                 new Arg("csv file", "File to get lat/lon from", "type",
                         "file"), "key idx", "lat idx", "lon idx"),
+        new Cmd("-getaddress", "Get address from lat/lon",
+                new Arg("latitude", "latitude column"),
+                new Arg("latitude", "latitude column")),		
         new Cmd("-statename", "Add state name from state ID",
                 new Arg("column")),
 	new Cmd("-geoname", "Look up location name",
@@ -3184,33 +3187,42 @@ public class CsvUtil {
 	    });
 
 	defineFunction("-statename",1,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.StateNamer(args.get(++i)));
+		ctx.addProcessor(new Geo.StateNamer(args.get(++i)));
 		return i;
 	    });
 	defineFunction("-geoname",4,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.GeoNamer(args.get(++i),args.get(++i),args.get(++i),args.get(++i)));
+		ctx.addProcessor(new Geo.GeoNamer(args.get(++i),args.get(++i),args.get(++i),args.get(++i)));
 		return i;
 	    });
+	defineFunction("-getaddress",2,(ctx,args,i) -> {
+		ctx.addProcessor(new Geo.GeoContains(args.get(++i),args.get(++i),args.get(++i),args.get(++i)));
+		return i;
+	    });	
 	defineFunction("-geocontains",4,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.GeoContains(args.get(++i),args.get(++i),args.get(++i),args.get(++i)));
+		ctx.addProcessor(new Geo.GeoContains(args.get(++i),args.get(++i),args.get(++i),args.get(++i)));
 		return i;
 	    });	
 	defineFunction("-elevation",2,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.Elevation(args.get(++i),args.get(++i)));
+		ctx.addProcessor(new Geo.Elevation(args.get(++i),args.get(++i)));
 		return i;
 	    });
 	defineFunction("-neighborhood",2,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.Neighborhood(args.get(++i),args.get(++i)));
+		ctx.addProcessor(new Geo.Neighborhood(args.get(++i),args.get(++i)));
 		return i;
 	    });			
 
 	defineFunction("-geocode",3,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.Geocoder(getCols(args.get(++i)), args.get(++i).trim(),args.get(++i).trim()));
+		ctx.addProcessor(new Geo.Geocoder(getCols(args.get(++i)), args.get(++i).trim(),args.get(++i).trim()));
 		return i;
 	    });
 
+	defineFunction("-getaddress",2,(ctx,args,i) -> {
+		ctx.addProcessor(new Geo.GetAddress(args.get(++i), args.get(++i)));
+		return i;
+	    });	
+
 	defineFunction("-geocodejoin",5,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.Geocoder(args.get(++i),args.get(++i), Integer.parseInt(args.get(++i)),
+		ctx.addProcessor(new Geo.Geocoder(args.get(++i),args.get(++i), Integer.parseInt(args.get(++i)),
 							Integer.parseInt(args.get(++i)),
 							Integer.parseInt(args.get(++i)), false));
 		return i;
@@ -3219,12 +3231,12 @@ public class CsvUtil {
 
 
 	defineFunction("-geocodeaddressdb",3,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.Geocoder(getCols(args.get(++i)), args.get(++i).trim(),args.get(++i).trim(), true));
+		ctx.addProcessor(new Geo.Geocoder(getCols(args.get(++i)), args.get(++i).trim(),args.get(++i).trim(), true));
 		return i;
 	    });
 
 	defineFunction("-geocodedb",5,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.Geocoder(args.get(++i),args.get(++i), Integer.parseInt(args.get(++i)),
+		ctx.addProcessor(new Geo.Geocoder(args.get(++i),args.get(++i), Integer.parseInt(args.get(++i)),
 							Integer.parseInt(args.get(++i)),
 							Integer.parseInt(args.get(++i)), true));
 		return i;
@@ -3232,12 +3244,12 @@ public class CsvUtil {
 
 
 	defineFunction("-population",3,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.Populator(getCols(args.get(++i)), args.get(++i).trim(),args.get(++i).trim()));
+		ctx.addProcessor(new Geo.Populator(getCols(args.get(++i)), args.get(++i).trim(),args.get(++i).trim()));
 		return i;
 	    });
 
 	defineFunction("-region",1,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.Regionator(getCols(args.get(++i))));
+		ctx.addProcessor(new Geo.Regionator(getCols(args.get(++i))));
 		return i;
 	    });
 
