@@ -29,8 +29,12 @@ import org.ramadda.util.Json;
 import org.ramadda.util.MapProvider;
 import org.ramadda.util.MapRegion;
 import org.ramadda.util.Utils;
+
 import org.ramadda.util.geo.Address;
+import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.geo.GeoUtils;
+import org.ramadda.util.geo.Place;
+
 
 import ucar.unidata.geoloc.Bearing;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -39,6 +43,8 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
+import org.json.*;
+
 import java.awt.geom.Rectangle2D;
 
 import java.io.InputStream;
@@ -46,6 +52,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -368,6 +375,151 @@ public class MapManager extends RepositoryManager implements WikiConstants,
     }
 
 
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result processGeocode(Request request) throws Exception {
+
+        StringBuilder sb       = new StringBuilder();
+        String        q        = request.getString("query", "").trim();
+        int           max      = 50;
+        String        smax     = StringUtil.findPattern(q, "max=([\\d]+)");
+
+        boolean       doGoogle = true;
+        boolean       doLocal  = true;
+        boolean       doPlaces = true;
+        if (q.indexOf("nogoogle") >= 0) {
+            doGoogle = false;
+            q        = q.replace("nogoogle", "").trim();
+        }
+
+        if (q.indexOf("nolocal") >= 0) {
+            doLocal = false;
+            q       = q.replace("nolocal", "").trim();
+        }
+
+        if (q.indexOf("noplaces") >= 0) {
+            doPlaces = false;
+            q        = q.replace("noplaces", "").trim();
+        }
+
+        if (smax != null) {
+            max = Integer.parseInt(smax);
+            q   = q.replace("max=" + smax, "").trim();
+        }
+
+        boolean startsWith = q.startsWith("^");
+        if (startsWith) {
+            q = q.substring(1);
+        }
+        List<String> objs   = new ArrayList<String>();
+        Bounds       bounds = null;
+        if (request.defined("bounds")) {
+            List<String> toks = Utils.split(request.getString("bounds", ""),
+                                            ",");
+           bounds = new Bounds(Double.parseDouble(toks.get(0)),
+                                Double.parseDouble(toks.get(1)),
+                                Double.parseDouble(toks.get(2)),
+                                Double.parseDouble(toks.get(3)));
+        }
+        HashSet<String> seen = new HashSet<String>();
+        if (doGoogle) {
+            Place place1 = GeoUtils.getLocationFromAddress(q, bounds);
+            if (place1 != null) {
+                seen.add(place1.getName());
+                objs.add(Json.map("name", Json.quote(place1.getName()),
+                                  "latitude", "" + place1.getLatitude(),
+                                  "longitude", "" + place1.getLongitude()));
+            }
+        }
+        if (doLocal) {
+            List<Place> places = Place.search(q, max, bounds, startsWith);
+            for (Place place : places) {
+                if (seen.contains(place.getName())) {
+                    continue;
+                }
+                seen.add(place.getName());
+                objs.add(Json.map("name", Json.quote(place.getName()),
+                                  "latitude", "" + place.getLatitude(),
+                                  "longitude", "" + place.getLongitude()));
+            }
+        }
+
+        if (doPlaces) {
+            if (startsWith) {
+                q = q + "%";
+            }
+            String encodedq = q.replaceAll(" ", "%20").replaceAll("%", "%25");
+            String dbUrl =
+                "https://geodesystems.com/repository/entry/show?entryid=e71b0cc7-6740-4cf5-8e4b-61bd45bf883e&db.search=Search&text="
+                + encodedq + "&db.view=json&max=" + max;
+
+            if (bounds != null) {
+                dbUrl +=
+                    "&"
+                    + HtmlUtils.arg("search.db_us_places.location_south",
+                                    "" + bounds.getSouth());
+                dbUrl += "&"
+                         + HtmlUtils.arg("search.db_us_places.location_east",
+                                         "" + bounds.getEast());
+                dbUrl += "&"
+                         + HtmlUtils.arg("search.db_us_places.location_west",
+                                         "" + bounds.getWest());
+                dbUrl +=
+                    "&"
+                    + HtmlUtils.arg("search.db_us_places.location_north",
+                                    "" + bounds.getNorth());
+            }
+
+            try {
+                JSONObject json    = Json.readUrl(dbUrl);
+                JSONArray  results = Json.readArray(json, "results");
+                if (results != null) {
+                    for (int i = 0; i < results.length(); i++) {
+                        JSONObject result = results.getJSONObject(i);
+                        String name = result.get("feature_name").toString();
+                        String fclass =
+                            result.get("feature_class").toString();
+                        String icon =
+                            getRepository().getProperty("icon." + fclass.toLowerCase(),
+                                        (String) null);
+                        String state = result.get("state_alpha").toString();
+                        String county = result.get("county_name").toString();
+                        List<String> toks =
+                            Utils.splitUpTo(
+                                result.get("location").toString(), "|", 2);
+                        if (icon != null) {
+                            icon = getRepository().getUrlBase() + icon;
+                        }
+                        objs.add(Json.map("name",
+                                          Json.quote(name + " (" + fclass
+                                              + ") " + county + ", "
+                                                  + state), "icon",
+                                                      ((icon != null)
+                                ? Json.quote(icon)
+                                : null), "latitude", toks.get(0),
+                                         "longitude", toks.get(1)));
+                    }
+                }
+            } catch (Exception exc) {
+                exc.printStackTrace();
+                System.err.println("Error:" + exc);
+
+            }
+        }
+
+        sb.append(Json.map("result", Json.list(objs)));
+
+        return new Result("", sb, Json.MIMETYPE);
+
+    }
 
     /**
      *
