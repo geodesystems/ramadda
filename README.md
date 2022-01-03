@@ -2,17 +2,16 @@
 
 RAMADDA is a freely available content and data management platform that is simple to install and use - in the cloud or even on your laptop. With its open and extensible framework, RAMADDA provides a place for all of your documents, data and digital stuff.
 
-* See the main site [here](https://geodesystems.com).
-* Check out the [Boulder Data Hub](https://boulderdata.org).
+* See the main site [here](https://ramadda.org).
 * [User guide](https://boulderdata.org/repository/userguide/index.html)
-* Here are some [examples](https://geodesystems.com/repository/alias/example_charts) of what you can do with RAMADDA:
+* Below are some [examples](https://ramadda.org/repository/alias/example_charts) of what you can do with RAMADDA. Also check out the [Boulder Data Hub](https://boulderdata.org).
 
 <center><img src=gallery.png width="80%"></center>
 
 
 # Download
 You can build from source (below) or download prebuilt versions of RAMADDA at 
-[https://geodesystems.com/repository/alias/release/](https://geodesystems.com/repository/alias/release/)
+[https://ramadda.org/repository/alias/release/](https://ramadda.org/repository/alias/release/)
 
 
 # Building
