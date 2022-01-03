@@ -123,21 +123,14 @@ get placed there.
 
 html resources:
 The core JS, images and css are in:
+<pre>
 src/org/ramadda/repository/htdocs
-
-We have  a simple template mechanism used to generate the two core css files:
-style.css display/display.css
-
-These files both have a source css template file:
-style.tmpl.css display/display.tmpl.css
-
-That contain macros of the form @MACRO_NAME@
-The files are generated in the ant task css in the
-src/org/ramadda/repository/build.xml
-file. They get generated in the build process
+</pre>
 
 The JS and CSS files that  are used are created with the script:
+<pre>
 src/org/ramadda/repository/htdocs/build.sh
+</pre>
 This script cats together groups of JS and CSS files and then runs a minify script on them.
 This script uses the jsmin python  script for minification. See the script on how to install it
 
