@@ -68,7 +68,7 @@ If you don't have this then you can either define the path to tclsh in the build
 file or when you run ant do:
 
 <pre>
-     ant -Dtclsh=<path to tclsh>
+     ant -Dtclsh=&lt;path to tclsh&gt;
 </pre>
 
 # Making a release
