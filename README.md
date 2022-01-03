@@ -48,7 +48,7 @@ java  -Xmx2048m org.ramadda.repository.server.JettyServer
 </pre>
 
 # Plugins
-To build the ramadda.org plugins run:
+To build the plugins run:
 <pre>
 ant plugins
 </pre>
