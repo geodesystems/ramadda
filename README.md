@@ -34,8 +34,8 @@ is /repository
 
 You can run RAMADDA stand-alone from the source tree. After building do:
 <pre>
-   cd  dist/ramadda<version>/
-   sh ramadda.sh
+cd  dist/ramadda<version>/
+sh ramadda.sh
 </pre>
 
 You can also run from your classpath with:
@@ -86,8 +86,8 @@ directory
 
 You can build the individual plugins from their build.xml in their own directory, e.g.:
 <pre>
-    cd src/org/ramadda/geodata/data
-    ant
+cd src/org/ramadda/geodata/data
+ant
 </pre>
 
 The user guide and the workshop plugins use a tcl script from the IDV source release.
@@ -96,7 +96,7 @@ If you don't have this then you can either define the path to tclsh in the build
 file or when you run ant do:
 
 <pre>
-     ant -Dtclsh=&lt;path to tclsh&gt;
+ant -Dtclsh=&lt;path to tclsh&gt;
 </pre>
 
 
