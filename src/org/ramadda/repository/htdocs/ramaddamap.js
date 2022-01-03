@@ -599,7 +599,7 @@ RepositoryMap.prototype = {
 	    let didMarkers = false;
 
 	    this.externalLayers.forEach(layer=>{
-                var dataBounds = layer.getDataExtent();
+                let dataBounds = layer.getDataExtent();
 		if(debugBounds)
 		    console.log("centerOnMarkers using external layer");
                 bounds = this.transformProjBounds(dataBounds);
@@ -608,7 +608,7 @@ RepositoryMap.prototype = {
 
             if (this.markers) {
                 // markers are in projection coordinates
-                var dataBounds = this.markers.getDataExtent();
+                let dataBounds = this.markers.getDataExtent();
 		if(debugBounds)
 		    console.log("centerOnMarkers using markers.getDataExtent");
                 bounds = this.transformProjBounds(dataBounds);
@@ -631,8 +631,8 @@ RepositoryMap.prototype = {
 
             if ( !bounds || !didMarkers || !justMarkerLayer) {
                 if (this.lines) {
-                    var dataBounds = this.lines.getDataExtent();
-                    var fromLine = this.transformProjBounds(dataBounds);
+                    let dataBounds = this.lines.getDataExtent();
+                    let fromLine = this.transformProjBounds(dataBounds);
                     if (bounds)
                         bounds.extend(fromLine);
                     else
@@ -640,7 +640,7 @@ RepositoryMap.prototype = {
 		    if(debugBounds)
 			console.log("centerOnMarkers using lines.getDataExtent");
                 }
-                for (var layer in this.getMap().layers) {
+                for (let layer in this.getMap().layers) {
                     layer = this.getMap().layers[layer];
                     if (!layer.getDataExtent) {
 			continue;
@@ -648,9 +648,9 @@ RepositoryMap.prototype = {
                     if (layer.isBaseLayer || !layer.getVisibility()) {
 			continue;
 		    }
-                    var dataBounds = layer.getDataExtent();
+                    let dataBounds = layer.getDataExtent();
                     if (dataBounds) {
-                        var latlon = this.transformProjBounds(dataBounds);
+                        let latlon = this.transformProjBounds(dataBounds);
                         if (bounds)
                             bounds.extend(latlon);
                         else
