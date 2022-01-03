@@ -165,6 +165,11 @@ public abstract class Geo extends Processor {
         /** _more_ */
         private String lonLabel = "Longitude";
 
+	private boolean ifNeeded;
+
+	private String sLatColumn;
+	private String sLonColumn;
+
         /**
          * @param col _more_
          * @param mapFile _more_
@@ -196,13 +201,20 @@ public abstract class Geo extends Processor {
          * @param suffix _more_
          */
         public Geocoder(List<String> cols, String prefix, String suffix) {
-
             super(cols);
             this.prefix     = prefix;
             this.suffix     = suffix;
             this.writeForDb = false;
             doAddress       = true;
         }
+
+        public Geocoder(List<String> cols, String prefix, String suffix, String lat,String lon) {
+	    this(cols,prefix,suffix);
+	    ifNeeded=true;
+	    sLatColumn = lat;
+	    sLonColumn = lon;	    
+        }
+
 
         /**
          * @param cols _more_
@@ -270,15 +282,24 @@ public abstract class Geo extends Processor {
         public Row processRow(TextReader ctx, Row row) {
             List values = row.getValues();
             if ( !doneHeader) {
-                if (writeForDb) {
+		if(ifNeeded) {
+		    latIndex = getIndex(ctx,sLatColumn);
+		    lonIndex = getIndex(ctx,sLonColumn);		    
+		} else if (writeForDb) {
                     add(ctx, row, "Location");
                 } else {
                     add(ctx, row, latLabel, lonLabel);
                 }
                 doneHeader = true;
-
                 return row;
             }
+
+	    if(ifNeeded) {
+		if(Utils.stringDefined(row.getString(latIndex)) &&
+		   Utils.stringDefined(row.getString(lonIndex))) {
+		    return row;
+		}
+	    }
 
             List<Integer> indices = getIndices(ctx);
             StringBuilder key     = new StringBuilder();
@@ -346,7 +367,10 @@ public abstract class Geo extends Processor {
                     lon = place.getLongitude();
                 }
             }
-            if (writeForDb) {
+	    if(ifNeeded) {
+                row.set(latIndex, lat);
+		row.set(lonIndex, lon);
+	    } else if (writeForDb) {
                 add(ctx, row, lat + ";" + lon);
             } else {
                 add(ctx, row, new Double(lat), new Double(lon));

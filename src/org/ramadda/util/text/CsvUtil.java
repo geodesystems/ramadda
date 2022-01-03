@@ -2187,9 +2187,16 @@ public class CsvUtil {
         new Cmd(true, "Geospatial"),
         new Cmd("-geocode", 
 		"Geocode using given columns", 
-		new Arg("columns", "", "type", "columns"),
+		new Arg("columns", "Address columns", "type", "columns"),
                 new Arg("prefix", "optional prefix e.g., state: or county: or country:"),
                 new Arg("suffix")),
+        new Cmd("-geocodeifneeded", 
+		"Geocode if needed", 
+		new Arg("columns", "Address columns", "type", "columns"),
+                new Arg("prefix", "optional prefix e.g., state: or county: or country:"),
+                new Arg("suffix"),
+                new Arg("latitude", "latitude column"),
+                new Arg("latitude", "latitude column")),		
         new Cmd("-geocodeaddressdb", "Geocode for import into RAMADDA's DB. The lat/lon is one semi-colon delimited column", 
                 new Arg("columns"), "prefix", "suffix"),
         new Cmd("-geocodejoin", "Geocode with file",
@@ -3215,6 +3222,11 @@ public class CsvUtil {
 		ctx.addProcessor(new Geo.Geocoder(getCols(args.get(++i)), args.get(++i).trim(),args.get(++i).trim()));
 		return i;
 	    });
+	defineFunction("-geocodeifneeded",5,(ctx,args,i) -> {
+		ctx.addProcessor(new Geo.Geocoder(getCols(args.get(++i)), args.get(++i).trim(),args.get(++i).trim(),args.get(++i),
+						  args.get(++i)));
+		return i;
+	    });	
 
 	defineFunction("-getaddress",2,(ctx,args,i) -> {
 		ctx.addProcessor(new Geo.GetAddress(args.get(++i), args.get(++i)));
