@@ -959,7 +959,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                               IOUtil.getFileExtension(f.toString()));
 
         if (false && request.get(ARG_THUMBNAIL, false)) {
-            System.err.println("Making thumb " + request);
             File thumb = getStorageManager().getTmpFile(request,
                              IOUtil.getFileTail(f.toString()));
             if ( !thumb.exists()) {

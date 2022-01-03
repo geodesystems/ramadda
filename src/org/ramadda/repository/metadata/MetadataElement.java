@@ -749,7 +749,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             }
             theFile = tmpFile.toString();
         } else {
-	    System.err.println(request);
 	    //		String name = request.getString("upload_name_"+i);
 	    //		String contents = request.getString("upload_file_"+i);
 
