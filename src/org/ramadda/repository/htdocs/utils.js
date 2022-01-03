@@ -412,15 +412,15 @@ var Utils =  {
         let newv;
 	let toks;
 	while((toks = v.match(/([^ ]+) *= *"([^"]*)"/))!=null) {
-	    attrs[toks[1].trim()] = toks[2].trim();
+	    attrs[toks[1].trim()] = toks[2];
 	    v = Utils.replaceAll(v, toks[0],"");
 	}
 	while((toks = v.match(/([^ ]+) *= *'([^']*)'/))!=null) {
-	    attrs[toks[1].trim()] = toks[2].trim();
+	    attrs[toks[1].trim()] = toks[2];
 	    v = Utils.replaceAll(v, toks[0],"");
 	}
 	while((toks = v.match(/([^ ]+) *= *([^ ]*)( |$)/))!=null) {
-	    attrs[toks[1].trim()] = toks[2].trim();
+	    attrs[toks[1].trim()] = toks[2];
 	    v = Utils.replaceAll(v, toks[0],"");
 	}
 	while((toks = v.match(/([^ ]+)( |$)/))!=null) {
@@ -1292,7 +1292,7 @@ var Utils =  {
         if (v == null || v == "") return false;
         return true;
     },
-    tokenizeMacros:function(s,args) {
+    tokenizeMacros:function(s,args,debug) {
 	let opts = {
 	};
 	if(args) $.extend(opts,args);
@@ -1336,7 +1336,10 @@ var Utils =  {
 		tag = macro.substring(0,idx).trim();
 		let attrString = macro.substring(idx).trim();
 		attrs = Utils.parseAttributes(attrString);
+		if(debug)
+		    console.dir(attrs);
 	    }
+
 	    let token = {id:String(cnt++), attrs:attrs,tag:tag,macro:macro};
 	    tokens.push(token);
 	    tokenMap[tag] = token;
@@ -1461,8 +1464,6 @@ var Utils =  {
 				value = t.attrs["negativeTemplate"].replace("${value}",value);
 			    }
 			} 
-
-
 
 			if(t.attrs["youtube"]) {
 			    if(value.trim().length==0) return null;
@@ -5442,5 +5443,4 @@ $( document ).ready(function() {
 
 
 Utils.areDisplaysReady()
-
 

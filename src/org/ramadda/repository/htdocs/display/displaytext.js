@@ -504,7 +504,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TEMPLATE, properties);
     let myProps = [
 	{label:"Template"},
-	{p: "template"},
+	{p: "template",ex:' '
+},
 	{p:"toggleTemplate",ex:"",tt:'Used as the toggle label for hiding/showing the main template'},
 	{p:"headerTemplate",ex:"... ${totalCount} ... ${selectedCount}"},
 	{p:"footerTemplate",ex:"... ${totalCount} ... ${selectedCount}"},
@@ -586,8 +587,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    let fields = pointData.getRecordFields();
 	    let uniqueFields  = this.getFieldsByIds(fields, this.getProperty("uniqueFields"));
 	    let uniqueMap ={};
-	    let template = this.getProperty("template","");
-	    let toggleTemplate = this.getProperty("toggleTemplate");
+	    let template = this.getTemplate("");
+	    let toggleTemplate = this.getToggleTemplate();
 	    let select = this.getProperty("select","all");
 	    let selected = [];
 	    let summary = {};
@@ -740,8 +741,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    let attrs = {};
 	    attrs["selectedCount"] = selected.length;
 	    attrs["totalCount"] = records.length;
-
-
 	    for(var i=0;i<fields.length;i++) {
 		var f = fields[i];
 		var s = summary[f.getId()];
@@ -778,25 +777,26 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    headerTemplate = headerTemplate.replace(pattern,value);
 		    footerTemplate = footerTemplate.replace(pattern,value);		    
 		};
-		for(var filterIdx=0;filterIdx<this.filters.length;filterIdx++) {
+		for(let filterIdx=0;filterIdx<this.filters.length;filterIdx++) {
 		    let filter = this.filters[filterIdx];
 		    if(!filter.isEnabled()) {
 			continue;
 		    }
 		    let f = filter.getField();
+		    let fid = "filter_" + f.getId();
 		    if(f.isNumeric()) {
-			var min = $("#" + this.domId("filterby_" + f.getId()+"_min")).val().trim();
-			var max = $("#" + this.domId("filterby_" + f.getId()+"_max")).val().trim();
-			attrs["filter_" + f.getId() +"_min"] = min;
-			attrs["filter_" + f.getId() +"_max"] = max;
+			let min = $("#" + this.domId("filterby_" + f.getId()+"_min")).val().trim();
+			let max = $("#" + this.domId("filterby_" + f.getId()+"_max")).val().trim();
+			attrs[fid +"_min"] = min;
+			attrs[fid +"_max"] = max;
 		    } else {
-			var widget =$("#" + this.domId("filterby_" + f.getId())); 
+			let widget =$("#" + this.domId("filterby_" + f.getId())); 
 			if(!widget.val || widget.val()==null) continue;
-			var value = widget.val();
+			let value = widget.val();
 			if(!value) continue;
 			if(Array.isArray(value)) {
-			    var tmp = "";
-			    value.map(v=>{
+			    let tmp = "";
+			    value.forEach(v=>{
 				if(tmp!="") tmp+=", ";
 				tmp+=v;
 			    });
@@ -804,21 +804,27 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			}
 			value = value.trim();
 			if(value==FILTER_ALL) {
-			    var regexp = new RegExp("\\${filter_" + f.getId()+"[^}]*\\}",'g');
+			    let regexp = new RegExp("\\${filter_" + f.getId()+"[^}]*\\}",'g');
+//			    attrs[fid] = "";
 			    replace(regexp,"");
 			} else {
-			    var regexp = new RegExp("\\${filter_" + f.getId()+" +prefix='([^']*)' +suffix='([^']*)' *\\}",'g');
+			    /*
+			    let regexp = new RegExp("\\${filter_" + f.getId()+" +prefix='([^']*)' +suffix='([^']*)' *\\}",'g');
+
 			    replace(regexp,"$1" + value +"$2");
-			    var regexp = new RegExp("\\${filter_" + f.getId()+" +prefix='([^']*)' *\\}",'g');
+			    regexp = new RegExp("\\${filter_" + f.getId()+" +prefix='([^']*)' *\\}",'g');
 			    replace(regexp,"$1" + value);
-			    var regexp = new RegExp("\\${filter_" + f.getId()+" +suffix='([^']*)' *\\}",'g');
+			    regexp = new RegExp("\\${filter_" + f.getId()+" +suffix='([^']*)' *\\}",'g');
 			    replace(regexp,value +"$1");
-			    var regexp = new RegExp("\\${filter_" + f.getId()+" *\\}",'g');
+			    regexp = new RegExp("\\${filter_" + f.getId()+" *\\}",'g');
 			    replace(regexp,value);
+			    */
+			    attrs[fid] = value;
 			}
 		    }
 		}
 	    }
+
 
 	    let th = Utils.tokenizeMacros(headerTemplate);
 	    let tf = Utils.tokenizeMacros(footerTemplate);
