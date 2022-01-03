@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Jan  2 22:55:39 MST 2022";
+var build_date="RAMADDA build date: Mon Jan  3 09:44:35 MST 2022";
 
 /**
    Copyright 2008-2021 Geode Systems LLC
@@ -34680,12 +34680,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	dataFilterChanged: function(args) {
 	    if(!args) args = {};
 	    this.vectorMapApplied  = false;
-	    this.updateUI({source:args.source, dataFilterChanged:true, dontSetBounds:true,  reload:true,callback: ()=>{
+	    this.updateUI({source:args.source, dataFilterChanged:true, dontSetBounds:true,  reload:true,callback: (records)=>{
 		if(args.source=="animation") return;
 		if(this.getCenterOnFilterChange(false)) {
 		    if (this.vectorLayer && this.showVectorLayer) {
 			if(this.getShowPoints()) {
-			    this.map.centerOnMarkers(null, false, true);
+			    if(records && records.length)
+				this.map.centerOnMarkers(null, false, true);
 			} else {
 			    this.map.zoomToLayer(this.vectorLayer,1.2);
 			}
@@ -34693,7 +34694,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			this.map.zoomToLayer(this.lastImageLayer);
 		    } else {
 			//true -> Just markers
-			this.map.centerOnMarkers(null, false, true);
+			if(records && records.length)
+			    this.map.centerOnMarkers(null, false, true);
 		    }
 		}
 	    }});
@@ -35061,7 +35063,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    setTimeout(()=>{
 		try {
 		    this.updateUIInner(args, pointData, records,debug);
-		    if(args.callback)args.callback();
+		    if(args.callback)args.callback(records);
 		    this.clearProgress();
 		} catch(exc) {
 		    console.log(exc)
