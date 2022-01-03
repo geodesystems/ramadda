@@ -23,13 +23,14 @@ import org.ramadda.repository.output.WikiManager;
 
 
 import org.ramadda.repository.type.TypeHandler;
-import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.Json;
 import org.ramadda.util.MapProvider;
 import org.ramadda.util.MapRegion;
 import org.ramadda.util.Utils;
+import org.ramadda.util.geo.Address;
+import org.ramadda.util.geo.GeoUtils;
 
 import ucar.unidata.geoloc.Bearing;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -314,9 +315,10 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             extra = "function initExtraMap(map) {\n" + extra + "\n}\n";
         }
 
-	Result result =  new Result(extra, Result.TYPE_JS);
-	result.setCacheOk(true);
-	return result;
+        Result result = new Result(extra, Result.TYPE_JS);
+        result.setCacheOk(true);
+
+        return result;
     }
 
 
@@ -367,21 +369,32 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
 
 
+    /**
+     *
+     * @param request _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result processGetAddress(Request request) throws Exception {
 
         List<String> results = new ArrayList<String>();
-	if(!request.isAnonymous()) {
-	    String[] result = GeoUtils.getAddressFromLatLon(request.get("latitude",0.0), request.get("longitude",0.0));
-	    if(result!=null) {
-		int idx =0;
-		results.add(Json.mapAndQuote("address", result[idx++],
-					     "city",result[idx++],
-					     "county",result[idx++],
-					     "state",result[idx++],
-					     "zip",result[idx++],
-					     "country",result[idx++]));
-	    }
-	}
+        if ( !request.isAnonymous()) {
+            Address address =
+                GeoUtils.getAddressFromLatLon(request.get("latitude", 0.0),
+                    request.get("longitude", 0.0));
+            if (address != null) {
+                int idx = 0;
+                results.add(Json.mapAndQuote("address", address.getAddress(),
+                                             "city", address.getCity(),
+                                             "county", address.getCounty(),
+                                             "state", address.getState(),
+                                             "zip", address.getPostalCode(),
+                                             "country",
+                                             address.getCountry()));
+            }
+        }
+
         return new Result(Json.list(results), Result.TYPE_JSON);
     }
 
@@ -533,40 +546,41 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
         boolean minified = getRepository().getMinifiedOk();
-	if (minified) {
-	    HtmlUtils.cssLink(
-			      sb,
-			      getPageHandler().getCdnPath(
-							  OPENLAYERS_BASE_V2
-							  + "/theme/default/style.mini.css"));
-	    sb.append("\n");
-	    HtmlUtils.importJS(
-			       sb,
-			       getPageHandler().getCdnPath(
-							   OPENLAYERS_BASE_V2 + "/OpenLayers.mini.js"));
-	    sb.append("\n");
-	} else {
-	    HtmlUtils.cssLink(sb,
-			      getPageHandler().getCdnPath(
-							  OPENLAYERS_BASE_V2 + "/theme/default/style.css"));
-	    sb.append("\n");
-	    HtmlUtils.importJS(sb,
-			       getPageHandler().getCdnPath(OPENLAYERS_BASE_V2 + "/OpenLayers.debug.js"));
-	    sb.append("\n");
-	}
+        if (minified) {
+            HtmlUtils.cssLink(sb,
+                              getPageHandler().getCdnPath(OPENLAYERS_BASE_V2
+                                  + "/theme/default/style.mini.css"));
+            sb.append("\n");
+            HtmlUtils.importJS(sb,
+                               getPageHandler().getCdnPath(OPENLAYERS_BASE_V2
+                                   + "/OpenLayers.mini.js"));
+            sb.append("\n");
+        } else {
+            HtmlUtils.cssLink(sb,
+                              getPageHandler().getCdnPath(OPENLAYERS_BASE_V2
+                                  + "/theme/default/style.css"));
+            sb.append("\n");
+            HtmlUtils.importJS(sb,
+                               getPageHandler().getCdnPath(OPENLAYERS_BASE_V2
+                                   + "/OpenLayers.debug.js"));
+            sb.append("\n");
+        }
 
         //        addGoogleMapsApi(request, sb);
-	if (minified) {
-	    HtmlUtils.importJS(sb, getPageHandler().getCdnPath("/min/ramaddamap.min.js"));
-	    sb.append("\n");
-	} else {
-	    HtmlUtils.importJS(sb, getPageHandler().getCdnPath("/ramaddamap.js"));
-	    sb.append("\n");
-	}
+        if (minified) {
+            HtmlUtils.importJS(
+                sb, getPageHandler().getCdnPath("/min/ramaddamap.min.js"));
+            sb.append("\n");
+        } else {
+            HtmlUtils.importJS(sb,
+                               getPageHandler().getCdnPath("/ramaddamap.js"));
+            sb.append("\n");
+        }
 
 
-	String extra =  getRepository().getUrlBase() + "/map/extra/"  + RepositoryUtil.getHtdocsVersion() + "/extra.js";
-        HtmlUtils.importJS(sb,extra);
+        String extra = getRepository().getUrlBase() + "/map/extra/"
+                       + RepositoryUtil.getHtdocsVersion() + "/extra.js";
+        HtmlUtils.importJS(sb, extra);
 
         if (minified) {
             HtmlUtils.cssLink(
@@ -1388,25 +1402,25 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             map.getMapProps().putAll(mapProps);
         }
 
-	for(Object key: Utils.getKeys(props)) {
-	    String skey = key.toString();
-	    String converted  = skey.replaceAll("[^a-zA-Z0-9_]","X");
-	    if(!skey.equals(converted)) {
-		//		System.err.println("skipping:" + skey +" converted:" + converted);
-		continue;
-	    }
-	    String v = (String)props.get(skey);
-	    if(v.equals("true") || v.equals("false")) {
-	    } else {
-		try {
-		    Double.parseDouble(v);
-		} catch(Exception exc) {
-		    v = Json.quote(v);
-		}
-	    }
-	    //	    System.err.println("key:" + skey+"=" + v);
-            map.getMapProps().put(skey,v);
-	}
+        for (Object key : Utils.getKeys(props)) {
+            String skey      = key.toString();
+            String converted = skey.replaceAll("[^a-zA-Z0-9_]", "X");
+            if ( !skey.equals(converted)) {
+                //              System.err.println("skipping:" + skey +" converted:" + converted);
+                continue;
+            }
+            String v = (String) props.get(skey);
+            if (v.equals("true") || v.equals("false")) {}
+            else {
+                try {
+                    Double.parseDouble(v);
+                } catch (Exception exc) {
+                    v = Json.quote(v);
+                }
+            }
+            //      System.err.println("key:" + skey+"=" + v);
+            map.getMapProps().put(skey, v);
+        }
 
         if ((entriesToUse.size() == 1)
                 && !entriesToUse.get(0).hasAreaDefined()) {
@@ -1566,7 +1580,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         layoutMap(request, sb, map, listentries, numEntries, listwidth,
                   height, categories, catMap, mapHtml, navTop, extra);
 
-        String js = map.getVariableName()+".highlightMarkers('." + map.getVariableName() + " .ramadda-earth-nav');";
+        String js = map.getVariableName() + ".highlightMarkers('."
+                    + map.getVariableName() + " .ramadda-earth-nav');";
         if (searchMarkers) {
             js += map.getVariableName() + ".initSearch(" + sqt(searchId)
                   + ");";
@@ -1825,5 +1840,3 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
 
 }
-
-
