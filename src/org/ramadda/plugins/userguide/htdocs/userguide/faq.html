@@ -37,20 +37,19 @@ pre {
 <div class="faq-question"> <b>1.3.</b> <a class="faq-question-link" href="#ssl">How do I configure SSL access to RAMADDA?</a></div>
 <div class="faq-question"> <b>1.4.</b> <a class="faq-question-link" href="#lucene">How do I use Lucene for searching?</a></div>
 <div class="faq-question"> <b>1.5.</b> <a class="faq-question-link" href="#cdn">How do I improve the page loading performance?</a></div>
-<div class="faq-question"> <b>1.6.</b> <a class="faq-question-link" href="#permgen">I got an out of memory error saying something about PermGen size. Whats up with that?</a></div>
-<div class="faq-question"> <b>1.7.</b> <a class="faq-question-link" href="#allowedlogin">I want to restrict where users can login from</a></div>
-<div class="faq-question"> <b>1.8.</b> <a class="faq-question-link" href="#terms">I want my users to agree to certain terms when they log in</a></div>
-<div class="faq-question"> <b>1.9.</b> <a class="faq-question-link" href="#fixssl">Oops, I told RAMADDA to use an SSL port and SSL is not working. Now I cannot access the admin page to turn off SSL and I'm stuck. What can I do?</a></div>
-<div class="faq-question"> <b>1.10.</b> <a class="faq-question-link" href="#faq1_cat1_9">I forgot the administrator password and cannot access RAMADDA. How do I login?</a></div>
-<div class="faq-question"> <b>1.11.</b> <a class="faq-question-link" href="#hostname">I set the hostname to an incorrect hostname. Now I can't login?</a></div>
-<div class="faq-question"> <b>1.12.</b> <a class="faq-question-link" href="#hostnamemap">Map a hostname to some entry</a></div>
-<div class="faq-question"> <b>1.13.</b> <a class="faq-question-link" href="#email">How do I configure RAMADDA to send email?</a></div>
-<div class="faq-question"> <b>1.14.</b> <a class="faq-question-link" href="#not_for_server">I have a root .ramadda home dir that I don't want to run in</a></div>
-<div class="faq-question"> <b>1.15.</b> <a class="faq-question-link" href="#github">Enable github embeds</a></div>
-<div class="faq-question"> <b>1.16.</b> <a class="faq-question-link" href="#template">I want to change the html design of RAMADDA</a></div>
-<div class="faq-question"> <b>1.17.</b> <a class="faq-question-link" href="#template">Changing the initial welcome text and entries</a></div>
-<div class="faq-question"> <b>1.18.</b> <a class="faq-question-link" href="#characterset">Running with non-ascii characters</a></div>
-<div class="faq-question"> <b>1.19.</b> <a class="faq-question-link" href="#missing">I've cleaned up files on my server that I had harvested in RAMADDA. How do I delete those entries in RAMADDA?</a></div>
+<div class="faq-question"> <b>1.6.</b> <a class="faq-question-link" href="#allowedlogin">I want to restrict where users can login from</a></div>
+<div class="faq-question"> <b>1.7.</b> <a class="faq-question-link" href="#terms">I want my users to agree to certain terms when they log in</a></div>
+<div class="faq-question"> <b>1.8.</b> <a class="faq-question-link" href="#fixssl">Oops, I told RAMADDA to use an SSL port and SSL is not working. Now I cannot access the admin page to turn off SSL and I'm stuck. What can I do?</a></div>
+<div class="faq-question"> <b>1.9.</b> <a class="faq-question-link" href="#faq1_cat1_8">I forgot the administrator password and cannot access RAMADDA. How do I login?</a></div>
+<div class="faq-question"> <b>1.10.</b> <a class="faq-question-link" href="#hostname">I set the hostname to an incorrect hostname. Now I can't login?</a></div>
+<div class="faq-question"> <b>1.11.</b> <a class="faq-question-link" href="#hostnamemap">Map a hostname to some entry</a></div>
+<div class="faq-question"> <b>1.12.</b> <a class="faq-question-link" href="#email">How do I configure RAMADDA to send email?</a></div>
+<div class="faq-question"> <b>1.13.</b> <a class="faq-question-link" href="#not_for_server">I have a root .ramadda home dir that I don't want to run in</a></div>
+<div class="faq-question"> <b>1.14.</b> <a class="faq-question-link" href="#github">Enable github embeds</a></div>
+<div class="faq-question"> <b>1.15.</b> <a class="faq-question-link" href="#template">I want to change the html design of RAMADDA</a></div>
+<div class="faq-question"> <b>1.16.</b> <a class="faq-question-link" href="#template">Changing the initial welcome text and entries</a></div>
+<div class="faq-question"> <b>1.17.</b> <a class="faq-question-link" href="#characterset">Running with non-ascii characters</a></div>
+<div class="faq-question"> <b>1.18.</b> <a class="faq-question-link" href="#missing">I've cleaned up files on my server that I had harvested in RAMADDA. How do I delete those entries in RAMADDA?</a></div>
 </div></div>
 <div class="faq-bottom"><p><hr><p><div class="faq-category-title"><a name="faq1_cat1_"></a>1.0 Administration</div><div class="faq-category"><a name="faq1_cat1_0"></a><div class="faq-question">
 <h3> 1.1.  I forgot my user id. How do I retrieve it?</h3>
@@ -85,7 +84,7 @@ had been disabled by default.  Lucene provides a much better search experience a
 contents of files (e.g., pdfs, ppt, word, csv, etc) and provides better searching - supporting
 entry hierarchy based searching, synonyoms, etc.
 
-As of 12-2021 RAMADDA now defaults to using Lucene. This can be overriden with the property:
+As of December 2021 RAMADDA now defaults to using Lucene. This can be overriden with the property:
 <pre>
 ramadda.search.lucene.enabled=false
 </pre>
@@ -115,21 +114,8 @@ ramadda.cdnok=true
 </pre>
 
 </div>
-<p><hr align="center" width="10%"><p><a name="permgen"></a><div class="faq-question">
-<h3> 1.6.  I got an out of memory error saying something about PermGen size. Whats up with that?</h3>
-</div>
-</a><div class="faq-answer"><b>A.</b> 
-You will need to change your java runtime memory settings by adding:
-<pre>
-  java ... -XX:MaxPermSize=256m ... 
-</pre>
-
-See the <a href='installing.html#tomcat'>Tomcat installation section</a>
-for more information.
-
-</div>
 <p><hr align="center" width="10%"><p><a name="allowedlogin"></a><div class="faq-question">
-<h3> 1.7.  I want to restrict where users can login from</h3>
+<h3> 1.6.  I want to restrict where users can login from</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
 For security reasons you can configure what IP addresses users are allowed to login from.
@@ -145,7 +131,7 @@ ramadda.login.allowedips=127.0.0,201.43.72.5
 </pre>
 </div>
 <p><hr align="center" width="10%"><p><a name="terms"></a><div class="faq-question">
-<h3> 1.8.  I want my users to agree to certain terms when they log in</h3>
+<h3> 1.7.  I want my users to agree to certain terms when they log in</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
 When the following property is set then any user logging in must agree to the
@@ -157,15 +143,15 @@ ramadda.user.agree= I have read and agree to the terms of service
 </pre>
 </div>
 <p><hr align="center" width="10%"><p><a name="fixssl"></a><div class="faq-question">
-<h3> 1.9.  Oops, I told RAMADDA to use an SSL port and SSL is not working. Now I cannot access the admin page to turn off SSL and I'm stuck. What can I do?</h3>
+<h3> 1.8.  Oops, I told RAMADDA to use an SSL port and SSL is not working. Now I cannot access the admin page to turn off SSL and I'm stuck. What can I do?</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
 You need to comment out the ramadda.ssl.port property in your .properties file.
 Alternatively, you can run RAMADDA with the command line argument:
 <pre>-Dramadda.ssl.ignore=true</pre>
 </div>
-<p><hr align="center" width="10%"><p><a name="faq1_cat1_9"></a><div class="faq-question">
-<h3> 1.10.  I forgot the administrator password and cannot access RAMADDA. How do I login?</h3>
+<p><hr align="center" width="10%"><p><a name="faq1_cat1_8"></a><div class="faq-question">
+<h3> 1.9.  I forgot the administrator password and cannot access RAMADDA. How do I login?</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
 
@@ -193,7 +179,7 @@ that are processed by RAMADDA.
 
 </div>
 <p><hr align="center" width="10%"><p><a name="hostname"></a><div class="faq-question">
-<h3> 1.11.  I set the hostname to an incorrect hostname. Now I can't login?</h3>
+<h3> 1.10.  I set the hostname to an incorrect hostname. Now I can't login?</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
 Make a &lt;anyname&gt;.properties that contains:
@@ -208,7 +194,7 @@ In general, you can override any property that has been set by defining a proper
 
 </div>
 <p><hr align="center" width="10%"><p><a name="hostnamemap"></a><div class="faq-question">
-<h3> 1.12.  Map a hostname to some entry</h3>
+<h3> 1.11.  Map a hostname to some entry</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
 You can configure your RAMADDA so that access via some specific hostname (e.g. <a href="http://boulderdata.org/">http://boulderdata.org/</a>) uses some entry.
@@ -238,7 +224,7 @@ Note: when searching under the alias the whole site will be searched.
 
 </div>
 <p><hr align="center" width="10%"><p><a name="email"></a><div class="faq-question">
-<h3> 1.13.  How do I configure RAMADDA to send email?</h3>
+<h3> 1.12.  How do I configure RAMADDA to send email?</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
 RAMADDA can send email for both the password reset process and for monitoring new entries.
@@ -246,7 +232,7 @@ On the main Site Administration  page under the &quot;Contact&quot; area you can
 a SMTP server that RAMADDA will use to send email.
 </div>
 <p><hr align="center" width="10%"><p><a name="not_for_server"></a><div class="faq-question">
-<h3> 1.14.  I have a root .ramadda home dir that I don't want to run in</h3>
+<h3> 1.13.  I have a root .ramadda home dir that I don't want to run in</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
 
@@ -258,7 +244,7 @@ If this occurs then <b>anyone can hit your site and go through the installation 
 See the <a href='templates.html'>documentation</a>.
 </div>
 <p><hr align="center" width="10%"><p><a name="github"></a><div class="faq-question">
-<h3> 1.15.  Enable github embeds</h3>
+<h3> 1.14.  Enable github embeds</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
 The wiki facility supports embedding github commit history. github rate limites requests so your
@@ -270,13 +256,13 @@ github.token=&lt;your token&gt;
 </pre>  
 </div>
 <p><hr align="center" width="10%"><p><a name="template"></a><div class="faq-question">
-<h3> 1.16.  I want to change the html design of RAMADDA</h3>
+<h3> 1.15.  I want to change the html design of RAMADDA</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
 See the <a href='templates.html'>documentation</a>.
 </div>
 <p><hr align="center" width="10%"><p><a name="template"></a><div class="faq-question">
-<h3> 1.17.  Changing the initial welcome text and entries</h3>
+<h3> 1.16.  Changing the initial welcome text and entries</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
 When RAMADDA is first installed it populates your repository with some initial folders and sets the description
@@ -312,7 +298,7 @@ This is just the entries xml format. The ID of the top-level entry is simply "ro
 
 </div>
 <p><hr align="center" width="10%"><p><a name="characterset"></a><div class="faq-question">
-<h3> 1.18.  Running with non-ascii characters</h3>
+<h3> 1.17.  Running with non-ascii characters</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
 There are a number of things you will need to do to run with content that is non-ascii (e.g., Chinese characters).
@@ -330,7 +316,7 @@ Your Java runtime should also have the system property -Dfile.encoding=utf-8  de
 
 </div>
 <p><hr align="center" width="10%"><p><a name="missing"></a><div class="faq-question">
-<h3> 1.19.  I've cleaned up files on my server that I had harvested in RAMADDA. How do I delete those entries in RAMADDA?</h3>
+<h3> 1.18.  I've cleaned up files on my server that I had harvested in RAMADDA. How do I delete those entries in RAMADDA?</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
 
