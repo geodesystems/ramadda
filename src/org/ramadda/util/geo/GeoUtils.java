@@ -8,11 +8,12 @@ package org.ramadda.util.geo;
 
 import org.json.*;
 
-
-import org.ramadda.util.geo.Bounds;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
+
+
+import org.ramadda.util.geo.Bounds;
 
 import org.w3c.dom.*;
 
@@ -26,13 +27,14 @@ import java.io.*;
 
 import java.net.URL;
 
+import java.util.ArrayList;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.TimeZone;
@@ -92,7 +94,7 @@ public class GeoUtils {
 
     /** _more_ */
     private static String hereKey;
-    
+
 
     /** _more_ */
     private static File cacheDir;
@@ -103,20 +105,25 @@ public class GeoUtils {
     /** _more_ */
     private static String cacheDelimiter = "_delim_";
 
+    /**  */
     private static boolean haveInitedKeys = false;
 
+    /**
+     */
     private static void initKeys() {
-	if(haveInitedKeys) return;
-	if (googleKey == null) {
-	    googleKey = System.getenv("GOOGLE_API_KEY");
+        if (haveInitedKeys) {
+            return;
+        }
+        if (googleKey == null) {
+            setGoogleKey(System.getenv("GOOGLE_API_KEY"));
         }
         if (geocodeioKey == null) {
-            geocodeioKey = System.getenv("GEOCIDEIO_API_KEY");
+            setGeocodeioKey(System.getenv("GEOCIDEIO_API_KEY"));
         }
         if (hereKey == null) {
-            hereKey = System.getenv("HERE_API_KEY");
+            setHereKey(System.getenv("HERE_API_KEY"));
         }
-	haveInitedKeys = true;
+        haveInitedKeys = true;
     }
 
 
@@ -129,9 +136,13 @@ public class GeoUtils {
         googleKey = key;
     }
 
+    /**
+     *
+     * @param key _more_
+     */
     public static void setHereKey(String key) {
         hereKey = key;
-    }    
+    }
 
     /**
      * _more_
@@ -323,123 +334,159 @@ public class GeoUtils {
 
 
     /**
-       this returns null if not enabled or not found else it returns
-       [address,city,county,state,zip,country]
-       
+     *
+     * @param lat _more_
+     * @param lon _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
      */
-    public static String[] getAddressFromLatLon(double lat, double lon) throws Exception {
-	initKeys();
-        if(hereKey !=null)
-	    return  getAddressFromLatLonHere(lat,lon);	
-        if(geocodeioKey !=null)
-	    return  getAddressFromLatLonGeocodeio(lat,lon);
-	return null;
+    public static Address getAddressFromLatLon(double lat, double lon)
+            throws Exception {
+        initKeys();
+        Address address = null;
+        if ((address == null) && (hereKey != null)) {
+            address = getAddressFromLatLonHere(lat, lon);
+        }
+        if ((address == null) && (geocodeioKey != null)) {
+            address = getAddressFromLatLonGeocodeio(lat, lon);
+        }
+
+        return address;
     }
 
 
-    private static String[] getAddressFromLatLonGeocodeio(double lat, double lon) throws Exception {
-	/*
-https://www.geocod.io/docs/#reverse-geocoding
-	  {
-	  "results": [
-	  {
-	  "address_components": {
-	  "number": "508",
-	  "street": "H",
-	  "suffix": "St",
-	  "postdirectional": "NE",
-	  "formatted_street": "H St NE",
-	  "city": "Washington",
-	  "county": "District of Columbia",
-	  "state": "DC",
-	  "zip": "20002",
-	  "country": "US"
-	  },*/
+    /**
+     *
+     * @param lat _more_
+     * @param lon _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private static Address getAddressFromLatLonGeocodeio(double lat,
+            double lon)
+            throws Exception {
+        /*
+          https://www.geocod.io/docs/#reverse-geocoding
+          {
+          "results": [
+          {
+          "address_components": {
+          "number": "508",
+          "street": "H",
+          "suffix": "St",
+          "postdirectional": "NE",
+          "formatted_street": "H St NE",
+          "city": "Washington",
+          "county": "District of Columbia",
+          "state": "DC",
+          "zip": "20002",
+          "country": "US"
+          },*/
 
-	String url =  HtmlUtils.url("https://api.geocod.io/v1.7/reverse","q",lat+","+ lon,"api_key", geocodeioKey);
-	//	System.err.println(url);
-	String json = IO.readContents(url, GeoUtils.class);
-	//	System.err.println(json);
+        String url = HtmlUtils.url("https://api.geocod.io/v1.7/reverse", "q",
+                                   lat + "," + lon, "api_key", geocodeioKey);
+        //      System.err.println(url);
+        String json = IO.readContents(url, GeoUtils.class);
+        //      System.err.println(json);
         JSONObject obj = new JSONObject(json);
-	if(!obj.has("results")) {
-	    System.err.println("No results");
-	    return null;
-	}
-	JSONArray results   = obj.getJSONArray("results");
-	JSONObject result = results.getJSONObject(0);
-	JSONObject components = result.getJSONObject("address_components");
-	if(!components.has("number")) {
-	    System.err.println("No results");
-	    return null;
-	}
+        if ( !obj.has("results")) {
+            System.err.println("No results");
 
-	String address = components.getString("number") + " " +
-	    components.getString("street") +" " +
-	    components.getString("suffix");
-	    return new String[]{address.trim(),
-				components.getString("city"),
-				components.getString("county"),
-				components.getString("state"),
-				components.getString("zip"),
-				components.getString("country")};
-	
+            return null;
+        }
+        JSONArray  results    = obj.getJSONArray("results");
+        JSONObject result     = results.getJSONObject(0);
+        JSONObject components = result.getJSONObject("address_components");
+        if ( !components.has("number")) {
+            System.err.println("No results");
+
+            return null;
+        }
+
+        String address = components.getString("number") + " "
+                         + components.getString("street") + " "
+                         + components.getString("suffix");
+
+        return new Address(address.trim(), components.getString("city"),
+                           components.getString("county"),
+                           components.getString("state"),
+                           components.getString("zip"),
+                           components.getString("country"));
+
     }
 
-    private static String[] getAddressFromLatLonHere(double lat, double lon) throws Exception {
-	/*
-	  https://developer.here.com/develop/rest-apis
-	  https://revgeocode.search.hereapi.com/v1/revgeocode?at=52.5228,13.4124
-	  Authorization: Bearer [your token] 
-{
-  "items": [
-    {
-      "title": "5 Rue Daunou, 75002 Paris, France",
-      "id": "here:af:streetsection:z42doZW8EyzEiPcuOd5MXB:CggIBCCi-9SPARABGgE1KGQ",
-      "resultType": "houseNumber",
-      "houseNumberType": "PA",
-      "address": {
-        "label": "5 Rue Daunou, 75002 Paris, France",
-        "countryCode": "FRA",
-        "countryName": "France",
-        "state": "Île-de-France",
-        "county": "Paris",
-        "city": "Paris",
-        "district": "2e Arrondissement",
-        "street": "Rue Daunou",
-        "postalCode": "75002",
-        "houseNumber": "5"
-      },
-	*/
-	String url =  HtmlUtils.url("https://revgeocode.search.hereapi.com/v1/revgeocode","at",lat+","+ lon,"apiKey",hereKey);
-	//	System.err.println(url);
-	String json = IO.doGet(new URL(url));
-	//	System.err.println(json);
+    /**
+     *
+     * @param lat _more_
+     * @param lon _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private static Address getAddressFromLatLonHere(double lat, double lon)
+            throws Exception {
+        /*
+          https://developer.here.com/develop/rest-apis
+          https://revgeocode.search.hereapi.com/v1/revgeocode?at=52.5228,13.4124
+          Authorization: Bearer [your token]
+          {
+          "items": [
+          {
+          "title": "5 Rue Daunou, 75002 Paris, France",
+          "id": "here:af:streetsection:z42doZW8EyzEiPcuOd5MXB:CggIBCCi-9SPARABGgE1KGQ",
+          "resultType": "houseNumber",
+          "houseNumberType": "PA",
+          "address": {
+          "label": "5 Rue Daunou, 75002 Paris, France",
+          "countryCode": "FRA",
+          "countryName": "France",
+          "state": "Île-de-France",
+          "county": "Paris",
+          "city": "Paris",
+          "district": "2e Arrondissement",
+          "street": "Rue Daunou",
+          "postalCode": "75002",
+          "houseNumber": "5"
+          },
+        */
+        String url =
+            HtmlUtils.url(
+                "https://revgeocode.search.hereapi.com/v1/revgeocode", "at",
+                lat + "," + lon, "apiKey", hereKey);
+        //      System.err.println(url);
+        String json = IO.doGet(new URL(url));
+        //      System.err.println(json);
         JSONObject obj = new JSONObject(json);
-	if(!obj.has("items")) {
-	    System.err.println("No items");
-	    return null;
-	}
-	JSONArray items   = obj.getJSONArray("items");
-	if(items.length()==0) {
-	    System.err.println("No items");
-	    return null;
-	}
-	JSONObject item = items.getJSONObject(0);
-	if(!item.has("address")) {
-	    System.err.println("No address");
-	    return null;
-	}
-	JSONObject address= item.getJSONObject("address");
+        if ( !obj.has("items")) {
+            System.err.println("No items");
 
-	String a = address.getString("houseNumber") + " " +
-	    address.getString("street");
-	    return new String[]{a.trim(),
-				address.getString("city"),
-				address.getString("county"),
-				address.getString("state"),
-				address.getString("postalCode"),
-				address.getString("countryName")};
-	
+            return null;
+        }
+        JSONArray items = obj.getJSONArray("items");
+        if (items.length() == 0) {
+            System.err.println("No items");
+
+            return null;
+        }
+        JSONObject item = items.getJSONObject(0);
+        if ( !item.has("address")) {
+            System.err.println("No address");
+
+            return null;
+        }
+        JSONObject address = item.getJSONObject("address");
+
+        String a = address.getString("houseNumber") + " "
+                   + address.getString("street");
+
+        return new Address(a.trim(), address.getString("city"),
+                           address.getString("county"),
+                           address.getString("state"),
+                           address.getString("postalCode"),
+                           address.getString("countryName"));
+
     }
 
 
@@ -471,28 +518,14 @@ https://www.geocod.io/docs/#reverse-geocoding
      * _more_
      *
      * @param address _more_
-     * @param googleKey _more_
-     *
-     * @return _more_
-     */
-    public static Place getLocationFromAddress(String address,
-            String googleKey) {
-        return getLocationFromAddress(address, googleKey, null);
-    }
-
-    /**
-     * _more_
-     *
-     * @param address _more_
-     * @param googleKey _more_
      * @param bounds _more_
      *
      * @return _more_
      */
     public static Place getLocationFromAddress(String address,
-            String googleKey, Bounds bounds) {
+            Bounds bounds) {
         try {
-            return getLocationFromAddressInner(address, googleKey, bounds);
+            return getLocationFromAddressInner(address, bounds);
         } catch (Exception exc) {
             exc.printStackTrace();
 
@@ -535,22 +568,23 @@ https://www.geocod.io/docs/#reverse-geocoding
         FeatureCollection fc = FeatureCollection.getFeatureCollection(path,
                                    null);
         if (fc == null) {
-	    String _path = path.toLowerCase();
+            String _path = path.toLowerCase();
             if (path.equals("counties")) {
-                path = "/org/ramadda/util/geo/resources/counties.zip";
-		_path = path;
+                path  = "/org/ramadda/util/geo/resources/counties.zip";
+                _path = path;
             } else if (path.equals("states")) {
-                path = "/org/ramadda/util/geo/resources/states.zip";
-		_path = path;
+                path  = "/org/ramadda/util/geo/resources/states.zip";
+                _path = path;
             } else if (path.equals("timezones")) {
-                path = "/org/ramadda/util/geo/resources/timezones.zip";
-		_path = path;
+                path  = "/org/ramadda/util/geo/resources/timezones.zip";
+                _path = path;
             }
-            if ( !_path.endsWith(".zip") && !_path.startsWith("/") && !_path.endsWith("json")) {
+            if ( !_path.endsWith(".zip") && !_path.startsWith("/")
+                    && !_path.endsWith("json")) {
                 path = "/org/ramadda/util/geo/resources/" + path + ".zip";
             }
             fc = FeatureCollection.getFeatureCollection(path,
-							IO.getInputStream(path));
+                    IO.getInputStream(path));
         }
 
         return fc.find((float) lat, (float) lon);
@@ -583,34 +617,47 @@ https://www.geocod.io/docs/#reverse-geocoding
         return dflt;
     }
 
-    public static List<Object> findFeatureFields(String path, List<String> fields,
-                                          double lat, double lon)
+    /**
+     *
+     * @param path _more_
+     * @param fields _more_
+     * @param lat _more_
+     * @param lon _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static List<Object> findFeatureFields(String path,
+            List<String> fields, double lat, double lon)
             throws Exception {
-	if(fields.size()==0) {
-	    String v  = findFeatureName(path, lat,lon,"");
-	    List<Object> vs = new ArrayList<Object>();
-	    vs.add(v);
-	    return vs;
-	}
+        if (fields.size() == 0) {
+            String       v  = findFeatureName(path, lat, lon, "");
+            List<Object> vs = new ArrayList<Object>();
+            vs.add(v);
+
+            return vs;
+        }
 
         Feature feature = findFeature(path, lat, lon);
         if (feature != null) {
             Hashtable data = feature.getData();
             if (data != null) {
-		List<Object> vs = new ArrayList<Object>();
-		for(String field: fields) {
-		    Object o = data.get(field);
-		    if(o==null) {
-			o = data.get(field.toUpperCase());
-		    }
-		    vs.add(o);
-		}
-		return vs;
+                List<Object> vs = new ArrayList<Object>();
+                for (String field : fields) {
+                    Object o = data.get(field);
+                    if (o == null) {
+                        o = data.get(field.toUpperCase());
+                    }
+                    vs.add(o);
+                }
+
+                return vs;
             }
         }
-	return null;
+
+        return null;
     }
-    
+
     /** _more_ */
     private static final String[] NAME_FIELDS = new String[] { "name",
             "state_name", "cntry_name", "tzid" };
@@ -684,18 +731,32 @@ https://www.geocod.io/docs/#reverse-geocoding
      * _more_
      *
      * @param address _more_
-     * @param googleKey _more_
      * @param bounds _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public static Place getLocationFromAddressInner(String address,
-            String googleKey, Bounds bounds)
+    private static Place getLocationFromAddressInner(String address,
+            Bounds bounds)
+            throws Exception {
+        return getLocationFromAddressInner(address, bounds, false);
+    }
+
+
+    /**
+     *
+     * @param address _more_
+     * @param bounds _more_
+     * @param debug _more_
+      * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private static Place getLocationFromAddressInner(String address,
+            Bounds bounds, boolean debug)
             throws Exception {
 
-        boolean debug = false;
         if (address == null) {
             return null;
         }
@@ -930,9 +991,10 @@ https://www.geocod.io/docs/#reverse-geocoding
         if (debug) {
             System.err.println("address:" + address);
         }
-	initKeys();
-        //      geocodeioKey = null;
-        //      googleKey = null;       
+        initKeys();
+        //geocodeioKey = null;
+        //hereKey = null;
+        //googleKey = null;       
         if (addressToLocation == null) {
             addressToLocation = new Hashtable<String, Place>();
             if (cacheDir != null) {
@@ -959,7 +1021,9 @@ https://www.geocod.io/docs/#reverse-geocoding
         }
 
 
-        place = addressToLocation.get(address);
+        if (addressToLocation != null) {
+            place = addressToLocation.get(address);
+        }
         if (place != null) {
             if (debug) {
                 System.out.println("found in cached address list");
@@ -986,25 +1050,37 @@ https://www.geocod.io/docs/#reverse-geocoding
         String encodedAddress = StringUtil.replace(address, " ", "%20");
         String name           = null;
 
-
-
-        //      System.err.println("new key:" + geocodeioKey);
-        if (geocodeioKey != null) {
+        if (hereKey != null) {
+            String url = HtmlUtils.url(
+                             "https://geocode.search.hereapi.com/v1/geocode",
+                             "q", encodedAddress, "apiKey", hereKey);
+            String result = IO.doGet(new URL(url));
+            latString = StringUtil.findPattern(result,
+                    "\"lat\"\\s*:\\s*([-\\d\\.]+),");
+            lonString = StringUtil.findPattern(result,
+                    "\"lng\"\\s*:\\s*([-\\d\\.]+)\\s*");
+            if (debug) {
+                System.err.println("here:" + latString + " " + lonString);
+            }
+        }
+        if ((latString == null) && (geocodeioKey != null)) {
             String url = "https://api.geocod.io/v1.6/geocode?";
             url += HtmlUtils.arg("q", address, true);
             url += "&";
             url += HtmlUtils.arg("api_key", geocodeioKey, true);
-            if (debug) {
-                System.err.println("geocodeio url:" + url);
-            }
             String result = IO.readContents(url, GeoUtils.class);
             //"lat":39.988424,"lng":-105.226083
             latString = StringUtil.findPattern(result,
                     "\"lat\"\\s*:\\s*([-\\d\\.]+),");
             lonString = StringUtil.findPattern(result,
                     "\"lng\"\\s*:\\s*([-\\d\\.]+)\\s*");
-	    //            System.err.println("geocodeio:" + latString + " " + lonString);
-        } else if (googleKey != null) {
+            if (debug) {
+                System.err.println("geocodeio:" + latString + " "
+                                   + lonString);
+            }
+        }
+
+        if ((latString == null) && (googleKey != null)) {
             String result = null;
             try {
                 //                https://maps.googleapis.com/maps/api/geocode/json?address=Winnetka&bounds=34.172684,118.604794|34.236144,-118.500938&key=YOUR_API_KEY
@@ -1030,28 +1106,35 @@ https://www.geocod.io/docs/#reverse-geocoding
             } catch (Exception exc) {
                 System.err.println("exc:" + exc);
             }
-            if (latString == null) {
-                System.err.println("geocode null result:" + result);
-            } else {
-                System.err.println("google:" + latString + " " + lonString);
+            if (debug) {
+                if (latString == null) {
+                    System.err.println("geocode null result:" + result);
+                } else {
+                    System.err.println("google:" + latString + " "
+                                       + lonString);
+                }
             }
-        } else {
+        }
+
+
+        if (latString == null) {
             //fall back to us census
             String url =
                 "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?format=json&benchmark=2020&address="
                 + encodedAddress;
             String result = IO.readContents(url, GeoUtils.class);
-            if (debug) {
-                System.err.println("census url:" + url);
-            }
             latString = StringUtil.findPattern(result,
                     "\"y\"\\s*:\\s*([-\\d\\.]+)");
             lonString = StringUtil.findPattern(result,
                     "\"x\"\\s*:\\s*([-\\d\\.]+)\\s*");
-            if (latString == null) {
-                System.err.println("null census result:" + encodedAddress +" result:" + result);
-            } else {
-                //              System.err.println("census:" + latString +" " + lonString);
+            if (debug) {
+                if (latString == null) {
+                    System.err.println("null census result:" + encodedAddress
+                                       + " result:" + result);
+                } else {
+                    System.err.println("census:" + latString + " "
+                                       + lonString);
+                }
             }
         }
         if ((latString != null) && (lonString != null)) {
@@ -1059,7 +1142,9 @@ https://www.geocod.io/docs/#reverse-geocoding
                               ? address
                               : name, new Double(latString),
                                       new Double(lonString));
-            addressToLocation.put(address, place);
+            if (addressToLocation != null) {
+                addressToLocation.put(address, place);
+            }
             if (cacheWriter != null) {
                 cacheWriter.println(address + cacheDelimiter
                                     + place.getName() + cacheDelimiter
@@ -1392,52 +1477,49 @@ https://www.geocod.io/docs/#reverse-geocoding
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-	if(true) {
-	    String [] a = getAddressFromLatLon(39.95488,-105.17590);
-	    if(a==null) System.err.println("null result");
-	    else {
-		System.err.println(a[0]+", " + a[1] + " " + a[3] +", " + a[4]);
-	    }
-	    return;
-	}
+        if (true) {
+            System.err.println(
+                getAddressFromLatLon(
+                    Double.parseDouble(args[0]),
+                    Double.parseDouble(args[1])));
+
+            return;
+        }
 
 
-	if(true) {
-	    System.err.println(findFeatureField(args[0],"drainage",
-						Double.parseDouble(args[1]),
-						Double.parseDouble(args[2]),null));
-	    return;
-	}
+        /*
 
+          if(true) {
+          System.err.println(findFeatureField(args[0],"drainage",
+          Double.parseDouble(args[1]),
+          Double.parseDouble(args[2]),null));
+          return;
+          }
+        */
 
         setCacheDir(new File("."));
 
         /*
-        if(true) {
-            //      System.err.println(getPreciselyToken(true));
-            System.err.println(getNeighborhood(39.989094,-105.222402));
-            return;
-            }*/
+          if(true) {
+          //      System.err.println(getPreciselyToken(true));
+          System.err.println(getNeighborhood(39.989094,-105.222402));
+          return;
+          }*/
 
-
-
-        String key = null;
         try {
             for (int i = 0; i < args.length; i++) {
                 String arg = args[i];
                 if (arg.equals("-googlekey")) {
-                    key = args[++i];
+                    setGoogleKey(args[++i]);
                     continue;
                 }
 
-                Place place = getLocationFromAddress(arg,
-                                  !Utils.stringDefined(key)
-                                  ? null
-                                  : key);
+                Place place = getLocationFromAddressInner(arg, null, true);
+
                 if (place == null) {
                     System.out.println(arg + ": NA");
                 } else {
-                    System.out.println(arg + ": " + place);
+                    System.out.println(arg + ": PLACE: " + place);
                 }
             }
         } catch (Exception exc) {
